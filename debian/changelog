@@ -1,11 +1,17 @@
-kdelibs (4:2.1-20010122-1) unstable; urgency=low
+kdelibs (4:2.1-beta2-2) unstable; urgency=low
  
-   * more upstream bug fixes
-     more html and js fixes
+   * Fixes problem with version number not showing
+   * Cleaning up depends for -dev packages
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 23 Jan 2001 12:36:00 -0700
+
+kdelibs (4:2.1-beta2-1) unstable; urgency=low
+ 
+   * New upstream beta
    * Fixing shlibs
    * Fixing confliction problem (Closes: #83083)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 22 Jan 2001 00:10:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 22 Jan 2001 06:00:00 -0700
 
 kdelibs (4:2.1-20010118-1) unstable; urgency=low
  

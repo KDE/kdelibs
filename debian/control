@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.3-8), libpng2-dev, libtiff3g-dev, libz-dev, xlibs-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets, libasound1-dev
+Build-Depends: automake, debhelper, libqt2.2-dev (>= 2:2.2.3-8), libtiff3g-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, docbook-stylesheets, libasound1-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -97,7 +97,7 @@ Package: libkmid-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs3-dev (<= 4:2.1-20010114-0), libarts-dev (<= 4:2.1-20010115-1)
-Depends: libkmid (= ${Source-Version}), libc6-dev
+Depends: libkmid (= ${Source-Version}), kdelibs3-dev, libqt2.2-dev, libc6-dev
 Suggests: kdelibs3-dev
 Conflicts: kdelibs3-dev (<= 4:2.1-20001210-0)
 Description: aRts Sound system (midi development files)
@@ -119,7 +119,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0)
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev, libc6-dev, libtiff3g-dev, libz-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt2.2-dev, libc6-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev
