@@ -15,7 +15,7 @@ static unsigned char downarrow_bits[] = {
 
 static unsigned char leftarrow_bits[] = {
  0x80,0x01,0xe0,0x01,0xf8,0x01,0xfe,0x01,0xff,0x01,0xfe,0x01,0xf8,0x01,0xe0,
- 0x01,0x80,0x01}; 
+ 0x01,0x80,0x01};
 
 static unsigned char rightarrow_bits[] = {
  0x03,0x00,0x0f,0x00,0x3f,0x00,0xff,0x00,0xff,0x01,0xff,0x00,0x3f,0x00,0x0f,
@@ -74,7 +74,7 @@ void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,
     QPen oldPen = p->pen();
     int x2 = x+w-1;
     int y2 = y+h-1;
-    
+
     if(!sunken){
         p->fillRect(x+1, y+1, w-2, h-2,
                     fill ? *fill : g.brush(QColorGroup::Button));
@@ -113,7 +113,7 @@ void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
     }
     drawButton(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
                btn->isOn() || btn->isDown());
-    
+
 }
 
 void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
@@ -147,11 +147,11 @@ void KStepStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
 {
     drawButton(p, x, y, w, h, nextGrp, sunken, fill);
     int deco_y = (h-6)/2;
-    drawButton(p, w-16, deco_y, 10, 6, nextGrp, false, fill);
+    drawButton(p, x + w-16, y + deco_y, 10, 6, nextGrp, false, fill);
     p->setPen(g.mid());
-    p->drawLine(w-6, deco_y+6, w-15, deco_y+6);
-    p->drawLine(w-6, deco_y+1, w-6, deco_y+6);
-    
+    p->drawLine( x+w-6, y+deco_y+6, x+w-15, y+deco_y+6);
+    p->drawLine( x+w-6, y+deco_y+1, x+w-6, y+deco_y+6);
+
 }
 
 QRect KStepStyle::comboButtonRect(int x, int y, int w, int h){
@@ -174,7 +174,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     int len = (horizontal) ? sb->width() : sb->height();
     int extent = (horizontal) ? sb->height() : sb->width();
     QColorGroup g = sb->colorGroup();
-    
+
     scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
     if(sliderStart > sliderMax)
         sliderStart = sliderMax;
@@ -294,7 +294,7 @@ void KStepStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
         sliderMin = buttonDim*2;
     else
         sliderMin = 1;
-    
+
     maxlen = len - buttonDim*2 - 1;
     sliderLength = (sb->pageStep()*maxlen) / (sb->maxValue() -
         sb->minValue() + sb->pageStep());
@@ -365,7 +365,7 @@ void KStepStyle::drawStepBarCircle(QPainter *p, int x, int y, int w,
     3, 4, 4,4, 5,4,
     3,5, 4,5
     };
-    
+
     QPen oldPen = p->pen();
     x = x + w/2 - 3;
     y = y + h/2 - 3;
@@ -420,7 +420,7 @@ void KStepStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     1,11,
     2,12
     };
-    
+
     static QCOORD circle_light[] = {14,5,
     14,6,
     14,7,
@@ -509,7 +509,7 @@ void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
         break;
     }
 
-    
+
 }
 
 void KStepStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
@@ -543,7 +543,7 @@ void KStepStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
 
 void KStepStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
                             int y, int w, int h, const QColorGroup &g,
-                            bool enabled, const QBrush *)        
+                            bool enabled, const QBrush *)
 {
     qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);
 }
@@ -721,11 +721,11 @@ void KStepStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                      const QPalette& pal, bool act,
                                      bool enabled, int x, int y, int w, int h)
 {
-static const int motifItemFrame         = 2;    
-static const int motifItemHMargin       = 3;    
-static const int motifItemVMargin       = 2;    
-static const int motifArrowHMargin      = 6;    
-static const int windowsRightBorder     = 12;                                                                        
+static const int motifItemFrame         = 2;
+static const int motifItemHMargin       = 3;
+static const int motifItemVMargin       = 2;
+static const int motifArrowHMargin      = 6;
+static const int windowsRightBorder     = 12;
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
