@@ -51,8 +51,8 @@ bigwrite_LDADD = libkabc.la
 bigwrite_SOURCES = bigwrite.cpp
 
 testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testdb_LDADD = libkabc.la
-testdb_SOURCES = testdb.cpp resourcesql.cpp
+testdb_LDADD = libkabc.la resourcesql.lo
+testdb_SOURCES = testdb.cpp 
 
 kabcargl_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kabcargl_LDADD = libkabc.la
