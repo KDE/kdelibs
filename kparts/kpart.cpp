@@ -6,6 +6,15 @@
 #include <qpainter.h>
 
 #include <klibloader.h>
+#include <kio_job.h>
+
+#include <stdlib.h>
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+#ifndef _PATH_TMP
+#define _PATH_TMP "/tmp"
+#endif
 
 KPart::KPart( QWidget* parent, const char* name )
     : QWidget( parent, name )
@@ -82,6 +91,8 @@ KPlugin* KPart::plugin( const char* libname )
     return (KPlugin*)obj;
 }
 
+//////////////////////////////////////////////////
+
 KReadOnlyPart::KReadOnlyPart( QWidget *parent, const char *name )
  : KPart( parent, name )
 {
@@ -101,23 +112,42 @@ bool KReadOnlyPart::openURL( const QString &url )
   m_url = url;
   if ( m_url.isLocalFile() )
   {
-    m_file = m_url.path();		
+    m_file = m_url.path();
     bool ret = openFile();
     emit completed();
     return ret;
   }
   else
   {
-    // TODO use kiojob
+    char tempfname[256];
+    sprintf(tempfname, _PATH_TMP"/kpartXXXXXX");
+    if (mkstemp(tempfname) == -1)
+      return false;
+    m_file = tempfname;
+
+    KIOJob * job = new KIOJob;
+    connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
+    connect( job, SIGNAL( sigError( int, int, const char * ) ),
+             this, SLOT( slotJobError ( int, int, const char * ) ) );
+    job->copy( url, m_file );
     return true;
   }  
 }
+
+//TODO closeURL -> unlink( m_file.ascii() );  ??
 
 void KReadOnlyPart::slotJobFinished( int /*_id*/ )
 {
   openFile();
   emit completed();
 }
+
+void KReadOnlyPart::slotJobError( int, int, const char * text )
+{
+  emit canceled( QString(text) );
+}
+
+//////////////////////////////////////////////////
 
 KReadWritePart::KReadWritePart( QWidget *parent, const char *name )
  : KReadOnlyPart( parent, name )

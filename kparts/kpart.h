@@ -53,6 +53,7 @@ signals:
   
 protected slots:
   void slotJobFinished( int _id );
+  void slotJobError( int, int, const char * );
     
 protected:
   // Reimplement this, to open m_file

@@ -2,7 +2,7 @@
 
 INCLUDES= -I$(srcdir)/../ $(all_includes)
 LDFLAGS	= $(all_libraries)  -version-info 1:0:0
-libkparts2_la_LIBADD  = $(LIB_KDEUI)
+libkparts2_la_LIBADD  = $(LIB_KIO)
 
 ####### Files
 
