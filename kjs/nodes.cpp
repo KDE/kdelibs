@@ -40,7 +40,6 @@ using namespace KJS;
 #define KJS_BREAKPOINT if (!hitStatement(script,context)) return Completion(Normal);
 #define KJS_ABORTPOINT if (abortStatement(script,context)) return Completion(Normal);
 
-int Node::s_nodeCount = 0;
 std::list<Node *> Node::s_nodes;
 
 // ------------------------------ Node -----------------------------------------
@@ -52,7 +51,6 @@ Node::Node()
   line = 0; // ### FIXME
   refcount = 0;
 #ifndef NDEBUG
-  s_nodeCount++;
   s_nodes.push_back( this );
 #endif
 }
@@ -60,7 +58,6 @@ Node::Node()
 Node::~Node()
 {
 #ifndef NDEBUG
-  s_nodeCount--;
   s_nodes.remove( this );
 #endif
 }
@@ -68,12 +65,10 @@ Node::~Node()
 #ifndef NDEBUG
 void Node::finalCheck()
 {
-  fprintf( stderr, "Node::finalCheck(): global node count: %d\n", s_nodeCount );
   fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
   std::list<Node *>::iterator it = s_nodes.begin();
   for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s)\n", i, *it, typeid( **it ).name() );
-  //assert( s_nodeCount == 0 );
 }
 #endif
 

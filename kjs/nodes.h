@@ -91,10 +91,7 @@ namespace KJS {
   private:
     unsigned int refcount;
 #ifndef NDEBUG
-    // Global counter of nodes, for debugging purposes (to check that
-    // they have all been deleted at the very end)
-    static int s_nodeCount;
-    // List of the remaining nodes, for debugging purposes. Don't remove!
+    // List of all nodes, for debugging purposes. Don't remove!
     static std::list<Node *> s_nodes;
 #endif
     // disallow assignment
