@@ -28,9 +28,11 @@ KMimeType* KMimeType::s_pDefaultType = 0L;
 
 void KMimeType::initStatic()
 {
+  if ( s_mapTypes != 0L )
+    return;
+  
   s_mapTypes = new QDict<KMimeType>;
 
-  /*
   // Read the application bindings in the local directories
   QString path = kapp->localkdedir().data();
   path += "/share/mimelnk";
@@ -39,7 +41,6 @@ void KMimeType::initStatic()
   // Read the application bindings in the global directories
   path = kapp->kde_mimedir().copy();
   scanMimeTypes( path.data() );
-  */
 }
 
 void KMimeType::check()

@@ -32,6 +32,8 @@ public:
   virtual QString comment( K2URL& _url, bool _is_local ) { return m_strComment; }
   virtual const char* mimeType() { return m_strMimeType; }
   
+  virtual QStrList patterns() { return m_lstPatterns; }
+  
   /**
    * Looks wether the given filename matches this mimetypes extension patterns.
    *
@@ -53,11 +55,13 @@ public:
    * while @ref KfmRun is async. If no extension matches, then @ref KMimeMagic is used if the URL a local
    * file or "application/octet-stream" is returned otherwise.
    *
-   * @param _url is the right most URL with a filesystem protocol. It is up to you to find out about
-   *             that if you have a nested URL. For example "http://localhost/mist.gz#gzip:/decompress"
+   * @param _url is the right most URL with a filesystem protocol. It is up to you to
+   *             find out about that if you have a nested URL.
+   *             For example "http://localhost/mist.gz#gzip:/decompress"
    *             would have to pass the "http://..." URL part, while
-   *             "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would have to pass the "tar:/..." part
-   *             of the URL, since gzip is a filter protocol and not a filesystem protocol.
+   *             "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would have
+   *             to pass the "tar:/..." part of the URL, since gzip is a filter
+   *             protocol and not a filesystem protocol.
    * @param _fast_mode If set to true no disk access is allowed to find out the mimetype. The result may be suboptimal,
    *                   but it is FAST.
    * @return a pointer to the matching mimetype. 0L is NEVER returned.
