@@ -1,22 +1,22 @@
 #KDE Config File
 [PushButton]
-Background=219,219,219
-#Highlight=2
-#Gradient=ReverseBevel
-#GradientHigh=171,171,171
-#GradientLow=233,233,233
-Gradient=Diagonal
-GradientHigh=171,171,171
+Border=0
+Background=170,170,170
+Gradient=Vertical
+GradientHigh=125,125,125
 GradientLow=233,233,233
 XShift=1
 YShift=1
+Round=true
 
 [PushButtonDown]
+Border=0
 Background=171,171,171
 Foreground=255,255,255
 Gradient=Diagonal
 GradientHigh=171,171,191
 GradientLow=233,233,253
+Round=true
 
 [HScrollGroove]
 Pixmap=graytexture.png
@@ -280,6 +280,6 @@ windowForeground=0,0,0
 windowBackground=255,255,255
 
 [KDE]
-contrast=4
+contrast=2
 widgetStyle=basicstyle.la
 
