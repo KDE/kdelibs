@@ -187,7 +187,7 @@ public:
      * if (kapp->isRestored()){
      *   int n = 1;
      *   while (KMainWindow::canBeRestored(n)){
-     *     (new childTLW)->restore(n);
+     *     (new childMW)->restore(n);
      *     n++;
      *   }
      * } else {
@@ -201,7 +201,7 @@ public:
      *
      * If your application uses different kinds of toplevel
      * windows, then you can use @ref KMainWindow::classNameOfToplevel(n)
-     * to determine the exact type before calling the childTLW
+     * to determine the exact type before calling the childMW
      * constructor in the example from above.
      *
      * If your client has only one kind of toplevel widgets (which should
@@ -209,7 +209,7 @@ public:
      *
      * <pre>
      * if (kapp->isRestored())
-     *   RESTORE(childTLW)
+     *   RESTORE(childMW)
      * else {
      * // create default application as usual
      * }
@@ -521,7 +521,7 @@ private:
     QMap<QCString, KToolBar*> nameBarMap;
     QList<KToolBar> toolbarList;
     KMainWindowPrivate *d;
-    
+
 };
 
 #define RESTORE(type) { int n = 1;\
