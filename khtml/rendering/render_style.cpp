@@ -94,6 +94,7 @@ RenderStyle::setBitDefaults()
     _list_style_position = OUTSIDE;
     _visiblity = VISIBLE;
     _text_align = JUSTIFY;
+    _text_transform = TTNONE;
     _direction = LTR;
     _text_decoration = TDNONE;
     _white_space = NORMAL;
@@ -174,6 +175,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _list_style_position = other._list_style_position;
     _visiblity = other._visiblity;
     _text_align = other._text_align;
+    _text_transform = other._text_transform;
     _direction = other._direction;
     _white_space = other._white_space;
     _text_decoration = other._text_decoration;
@@ -235,6 +237,7 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _list_style_position = inheritParent->_list_style_position;
     _visiblity = inheritParent->_visiblity;
     _text_align = inheritParent->_text_align;
+    _text_transform = inheritParent->_text_transform;
     _direction = inheritParent->_direction;
     _text_decoration = inheritParent->_text_decoration;
     _white_space = inheritParent->_white_space;
@@ -257,7 +260,7 @@ RenderStyle::~RenderStyle()
     while (ps) {
         prev = ps;
         ps = ps->pseudoStyle;
-	// to prevent a double deletion. 
+	// to prevent a double deletion.
 	// this works only because the styles below aren't really shared
 	// Dirk said we need another construct as soon as these are shared
 	prev->pseudoStyle = 0;
@@ -265,16 +268,42 @@ RenderStyle::~RenderStyle()
     }
 }
 
-bool RenderStyle::operator==(const RenderStyle& other) const
+bool RenderStyle::operator==(const RenderStyle& o) const
 {
-    return
-        *box.get() == *other.box.get() &&
-        *visual.get() == *other.visual.get() &&
-    	*background.get() == *other.background.get() &&
-        *surround.get() == *other.surround.get() &&
+// compare everything except the pseudoStyle pointer
+    return (*box.get() == *o.box.get() &&
+            *visual.get() == *o.visual.get() &&
+            *background.get() == *o.background.get() &&
+            *surround.get() == *o.surround.get() &&
+            *inherited.get() == *o.inherited.get() &&
+            _display == o._display);// &&
+//             _border_collapse == o._border_collapse &&
+//             _empty_cells == o._empty_cells &&
+//             _caption_side == o._caption_side &&
+//             _list_style_type == o._list_style_type &&
+//             _list_style_position == o._list_style_position &&
+//             _visiblity == o._visiblity &&
+//             _text_align == o._text_align &&
+//             _direction == o._direction &&
+//             _white_space == o._white_space &&
+//             _text_decoration == o._text_decoration &&
+//             _visuallyOrdered == o._visuallyOrdered &&
+//             _cursor == o._cursor &&
+//             _htmlHacks == o._htmlHacks &&
+//             _overflow == o._overflow &&
+//             _vertical_align == o._vertical_align &&
+//             _clear == o._clear &&
+//             _table_layout && o._table_layout &&
+//             _bg_repeat == o._bg_repeat &&
+//             _bg_attachment == o._bg_attachment &&
+//             _position == o._position &&
+//             _floating == o._floating &&
+//             _flowAroundFloats == o._flowAroundFloats &&
+//             _styleType == o._styleType);
 
-    	*inherited.get() == *other.inherited.get() &&
-        _display == other._display;
+//             _hasHover == o._hasHover &&
+//             _hasFocus == o._hasFocus &&
+//             _hasActive == o._hasActive);
 }
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)

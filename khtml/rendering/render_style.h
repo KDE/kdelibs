@@ -218,10 +218,6 @@ class StyleSurroundData : public SharedData
 public:
     StyleSurroundData();
 
-    virtual ~StyleSurroundData()
-    {
-    }
-
     StyleSurroundData(const StyleSurroundData& o );
     bool operator==(const StyleSurroundData& o) const;
 
@@ -384,15 +380,19 @@ enum EWhiteSpace {
     NORMAL, PRE, NOWRAP
 };
 
-enum ETextAlign{
+enum ETextAlign {
     LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
 };
 
-enum EDirection{
+enum ETextTransform {
+    CAPITALIZE, UPPERCASE, LOWERCASE, TTNONE
+};
+
+enum EDirection {
     LTR, RTL
 };
 
-enum ETextDecoration{
+enum ETextDecoration {
     TDNONE = 0x0 , UNDERLINE = 0x1, OVERLINE = 0x2, LINE_THROUGH= 0x4, BLINK = 0x8
 };
 
@@ -428,7 +428,18 @@ public:
 
     bool operator==(const StyleInheritedData& o) const
     {
-    	return memcmp(this, &o, sizeof(*this))==0;
+        return indent == o.indent &&
+               line_height == o.line_height &&
+               letter_spacing == o.letter_spacing &&
+               word_spacing == o.word_spacing &&
+               border_spacing == o.border_spacing &&
+               style_image == o.style_image &&
+               font == o.font &&
+               color == o.color &&
+               decoration_color == o.decoration_color;
+
+        // doesn't work because structs are not packed
+    	//return memcmp(this, &o, sizeof(*this))==0;
     }
 
     Length indent;
@@ -509,6 +520,7 @@ protected:
     EListStylePosition _list_style_position :1;
     EVisiblity _visiblity : 2;
     ETextAlign _text_align : 3;
+    ETextTransform _text_transform : 4;
     EDirection _direction : 1;
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;
@@ -556,7 +568,7 @@ public:
 
     RenderStyle();
     // used to create the default style.
-    RenderStyle(bool _default);
+    RenderStyle(bool);
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();
@@ -565,6 +577,7 @@ public:
 
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
+    bool hasPseudoStyle() const { return pseudoStyle; }
     void removePseudoStyle(PseudoId pi);
 
     bool hasHover() const { return _hasHover; }
@@ -576,8 +589,6 @@ public:
     void setHasActive() { _hasActive = true; }
     
     bool operator==(const RenderStyle& other) const;
-
-//    static int counter;
 
     bool        isFloating() const { return (_floating == FLEFT || _floating == FRIGHT); }
     bool        hasMargin() const { return surround->margin.nonZero(); }
@@ -647,6 +658,7 @@ public:
     const QColor & color() const { return inherited->color; }
     Length textIndent() const { return inherited->indent; }
     ETextAlign textAlign() const { return _text_align; }
+    ETextTransform textTransform() const { return _text_transform; }
     int textDecoration() const { return _text_decoration; }
     const QColor &textDecorationColor() const { return inherited->decoration_color; }
     int wordSpacing() const { return inherited->word_spacing; }
@@ -744,6 +756,7 @@ public:
     void setColor(const QColor & v) { SET_VAR(inherited,color,v) }
     void setTextIndent(Length v) { SET_VAR(inherited,indent,v) }
     void setTextAlign(ETextAlign v) { _text_align = v; }
+    void setTextTransform(ETextTransform v) { _text_transform = v; }
     void setTextDecoration(int v) { _text_decoration = v; }
     void setTextDecorationColor(const QColor &v) { SET_VAR(inherited,decoration_color,v) }
     void setDirection(EDirection v) { _direction = v; }
