@@ -34,22 +34,22 @@ if (!open( H_OUT, ">../addressee.h" ) ) {
     if (/--DECLARATIONS--/) {
       for( $i=0; $i<@entryNames; ++$i ) {
         if ( $entryCtrl[$i] =~ /A/ ) {
-          print H_OUT "    /*\n";
-          print H_OUT "      Set $entryRealNames[$i].\n";
-          print H_OUT "    */\n";
+          print H_OUT "    /**\n";
+          print H_OUT "     * Set $entryRealNames[$i].\n";
+          print H_OUT "     */\n";
           print H_OUT "    void set" . ucfirst($entryNames[$i]);
           print H_OUT "( const $entryTypes[$i] &$entryNames[$i] );\n";
 
-          print H_OUT "    /*\n";
-          print H_OUT "      Return $entryRealNames[$i].\n";
-          print H_OUT "    */\n";
+          print H_OUT "    /**\n";
+          print H_OUT "     * Return $entryRealNames[$i].\n";
+          print H_OUT "     */\n";
           print H_OUT "    $entryTypes[$i] $entryNames[$i]() const;\n";
         }
 
         if ( $entryCtrl[$i] !~ /L/ ) { next; }
-        print H_OUT "    /*\n";
-        print H_OUT "      Return translated label for $entryNames[$i] field.\n";
-        print H_OUT "    */\n";
+        print H_OUT "    /**\n";
+        print H_OUT "     * Return translated label for $entryNames[$i] field.\n";
+        print H_OUT "     */\n";
         print H_OUT "    static QString $entryNames[$i]Label();\n\n";
       }
     } else {
