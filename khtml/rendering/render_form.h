@@ -402,6 +402,7 @@ public:
 protected:
     virtual bool event (QEvent *e );
     virtual QPopupMenu *createPopupMenu(const QPoint& pos);
+    virtual QPopupMenu* createPopupMenu() { return KTextEdit::createPopupMenu(); }
 private slots:
     void slotFind();
     void slotDoFind();
