@@ -56,8 +56,8 @@
  * KRun::run(*ptr, lst);
  * </PRE>
  *
- * It should be noted that in the above example, using 
- * @ref KServiceTypeProfile would be the better choice sincea you would
+ * It should be noted that in the above example, using
+ * @ref KServiceTypeProfile would be the better choice since you would
  * probably want the preferred service and the trader doesn't take
  * this into account.  The trader does allow you to do more complex
  * things, though.  Say, for instance, you want to only choose
@@ -81,7 +81,7 @@
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
  * the name. So for example a constraint expression like
- *  X-KDE-Blah < 4 
+ *  X-KDE-Blah < 4
  * needs to be written as
  * [X-KDE-Blah] < 4
  * otherwise it could also be interpreted as
@@ -149,7 +149,7 @@ public:
 
 protected:
     /**
-     * @internal  
+     * @internal
      */
     KTrader();
 
