@@ -111,6 +111,7 @@ public:
     m_doc = 0L;
     m_decoder = 0L;
     m_jscript = 0L;
+    m_kjs_lib = 0;
     m_job = 0L;
     m_bComplete = true;
     m_bParsing = false;
@@ -138,6 +139,8 @@ public:
       delete m_extension;
     delete m_settings;
     delete m_jscript;
+    if ( m_kjs_lib )
+      delete m_kjs_lib;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
@@ -152,6 +155,7 @@ public:
   QStringList m_cachedHtml;  
 
   KJSProxy *m_jscript;
+  KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
 
@@ -554,11 +558,14 @@ KJSProxy *KHTMLPart::jScript()
       return 0;
     // look for plain C init function
     void *sym = lib->symbol("kjs_html_init");
-    if ( !sym )
+    if ( !sym ) {
+      delete lib;
       return 0;
+    }
     typedef KJSProxy* (*initFunction)(KHTMLPart *);
     initFunction initSym = (initFunction) sym;
     d->m_jscript = (*initSym)(this);
+    d->m_kjs_lib = lib;
   }
 
   return d->m_jscript;
