@@ -1755,8 +1755,9 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
 void KApplication::invokeMailer(const KURL &mailtoURL)
 {
    KConfig config("emaildefaults");
-   config.setGroup("ClientInfo");
+   config.setGroup( QString::fromLatin1("PROFILE_Default") );
    QString command = config.readEntry("EmailClient");
+   
    if (command.isEmpty() || command == QString::fromLatin1("kmail"))
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
 
@@ -1785,7 +1786,6 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      else
      if ((*it).startsWith("attach="))
        attach = KURL::decode_string((*it).mid(7));
-
 
    // WARNING: This will only work as long as the path of the
    // email client doesn't contain spaces (this is currently
