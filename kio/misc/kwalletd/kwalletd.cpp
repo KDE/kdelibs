@@ -22,16 +22,17 @@
 
 #include "kwalletd.h"
 
-#include <klocale.h>
-#include <kapplication.h>
 #include <dcopclient.h>
-#include <kglobal.h>
-#include <kstddirs.h>
+#include <kapplication.h>
 #include <kdebug.h>
-#include <kwalletentry.h>
+#include <kglobal.h>
+#include <klocale.h>
 #include <kpassdlg.h>
+#include <kstddirs.h>
+#include <kwalletentry.h>
 
 #include <qdir.h>
+#include <qregexp.h>
 
 #include <assert.h>
 
@@ -92,6 +93,10 @@ int KWalletD::open(const QString& wallet) {
 DCOPClient *dc = callingDcopClient();
 int rc = -1;
 bool brandNew = false;
+
+	if (!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
+		return -1;
+	}
 
 	if (dc) {
 		for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
