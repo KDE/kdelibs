@@ -2,6 +2,9 @@
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
 //
+// Revision 1.35  1997/10/22 20:42:56  kalle
+// Help menu works as advertised
+//
 // Revision 1.34  1997/10/17 17:32:08  ettrich
 // Matthias: typo in documentation :)
 //
@@ -300,6 +303,43 @@ class KApplication : public QApplication
   KIconLoader* getIconLoader();
 
   /**
+    * Get a KLocale object for the application. If it does not yet exist,
+  /** Sets the main widget of the application 
+	*
+	* The special thing about the main widget is that destroying it will
+	* leave the main event loop and exit the application.
+	* 
+	* Further, this function automatically unregisters an existing main widget 
+	* from the _DT_APP_WINDOWS root window property and registers the new main
+	* widget.
+	*
+	* @see #registerMainWidget
+	* @see #unregisteMainWidget
+	*/
+  void setMainWidget( QWidget *mainWidget );
+  KCharsets* getCharsets()const
+  /** Adds window ID of the main widget to _DT_APP_WINDOWS property on root.
+	*
+	* The window ID of the main widget is appended to the string held in the
+	* _DT_APP_WINDOWS property on the root window. This property contains
+	* the IDs of all windows that understand the KDE style change messaging
+	* protocol
+	*
+	* @see #unregisterMainWidget
+	*/
+  void registerMainWidget();
+
+  /** Removes window ID of the main widget from _DT_APP_WINDOWS property on 
+	* root.
+	*
+	* If a main widget exists its window ID is removed from the string held
+	* in the _DT_APP_WINDOWS property on the root window. This property
+	* contains the IDs of all windows that understand the KDE style change
+	* messaging protocol.
+	*
+	* @see #registerMainWidget
+	*/
+  void unregisterMainWidget();
 	* @see QPixmap
 	*/
   QPixmap getIcon() const

@@ -1,6 +1,12 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.40  1997/10/04 20:29:11  kulow
+// I just waited for Kalle' "I go to bed" ;)
+//
+// parseCommandLine works now correct. I've just rewritten it,
+// so you easy add more command line options.
+//
 // Revision 1.39  1997/10/04 20:03:02  kalle
 // You can turn of debugging output completely.
 //
@@ -252,6 +258,7 @@
 //   PseudoSessionManagement (this is the default when session management
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
+//
 // Revision 1.66  1997/10/25 22:27:40  kalle
 // Fixed bug with default help menu (Thanks, Bernd! This one was just in time!)
 //
@@ -1179,6 +1186,103 @@ void KApplication::setUnsavedData( bool bUnsaved )
 {
   bUnsavedData = bUnsaved;
   KWM::setUnsavedDataHint( mainWidget()->winId(), bUnsavedData );
+    QString s = t.readLine();
+    if(!s.isEmpty())
+      fontlist->append( s );
+void KApplication::setMainWidget( QWidget *mainWidget )
+
+  unregisterMainWidget();
+  QApplication::setMainWidget( mainWidget );
+  registerMainWidget();
+  if( pFilename[0] != '/' )
+	{
+void KApplication::registerMainWidget()
+	  aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
+  if( mainWidget() ) {
+	
+    int ID=0;
+    QString IDstr;
+	
+    ID = (int) mainWidget()->winId();
+    IDstr.sprintf("0x%x", ID);
+	
+    Atom type;
+    int format;
+    unsigned long nitems;
+    unsigned long bytes_after;
+    char *buf;
+	
+    Display *kde_display = KApplication::desktop()->x11Display();
+    int screen = DefaultScreen(kde_display);
+    Window root = RootWindow(kde_display, screen);
+	
+    Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
+	
+    XGetWindowProperty( kde_display, root, at, 0, 256,
+						False, XA_STRING, &type, &format, &nitems, 
+						&bytes_after,
+						(unsigned char **)&buf);
+	
+    QString s( buf );
+	
+    // write in new main widget ID
+	
+    if ( s.length() > 0) s += ",";
+    s += IDstr;
+	
+    // write back to porperty
+	
+    XChangeProperty(kde_display, root, at,
+					XA_STRING, 8, PropModeReplace,
+					(unsigned char *)s.data(), s.length());
+  }
+	}
+  else
+void KApplication::unregisterMainWidget()
+
+  if( mainWidget() ) {
+	
+    int ID=0;
+    QString IDstr;
+	
+    ID = (int) mainWidget()->winId();
+    IDstr.sprintf("%x", ID);
+	
+    Atom type;
+    int format;
+    unsigned long nitems;
+    unsigned long bytes_after;
+    char *buf;
+	
+    Display *kde_display = KApplication::desktop()->x11Display();
+    int screen = DefaultScreen(kde_display);
+    Window root = RootWindow(kde_display, screen);
+	
+    Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
+	
+    XGetWindowProperty( kde_display, root, at, 0, 256,
+						False, XA_STRING, &type, &format, &nitems, 
+						&bytes_after,
+						(unsigned char **)&buf);
+	
+    QString s( buf );
+	
+    // cut out current main widget ID if there is a current main widget
+	
+    if( ID ) {
+      int i = s.find( IDstr );
+      if ( i > 0 )
+        s.remove( i-3, IDstr.length()+3 ); // cut out comma too
+      else if ( i == 0 )
+        s.remove( i-2, IDstr.length()+2 ); // just cut out the ID
+    }
+	
+    // write back to porperty
+	
+    XChangeProperty(kde_display, root, at,
+					XA_STRING, 8, PropModeReplace,
+					(unsigned char *)s.data(), s.length());
+  }
   if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
