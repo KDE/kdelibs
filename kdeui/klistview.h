@@ -64,7 +64,9 @@ public:
   bool itemsMovable() const;
   bool itemsRenameable() const;
   bool dragEnabled() const;
-  bool getRenameableRow(int row);
+  bool autoOpen() const;
+  bool getRenameableRow(int row) const;
+  bool dropVisualizer() const;
 
 signals:
 
@@ -127,7 +129,8 @@ public slots:
   virtual void setItemsMovable(bool b);
   virtual void setItemsRenameable(bool b);
   virtual void setDragEnabled(bool b);
-
+  virtual void setAutoOpen(bool b);
+  virtual void setDropVisualizer(bool b);
 
 protected slots:
   void slotOnItem( QListViewItem *item );

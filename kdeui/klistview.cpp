@@ -41,6 +41,12 @@ public:
   QPoint *startDragPos;
   KListViewLineEdit *editor;
   QValueList<int> renameable;
+
+  bool itemsMovable;
+  bool itemsRenameable;
+  bool dragEnabled;
+  bool autoOpen;
+  bool dropVisualizer;
 };
 
 class QListViewItemHack
@@ -138,6 +144,10 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->pressPos=0;
 		d->startDragPos=0;
 		d->editor=new KListViewLineEdit(this);
+		d->itemsMovable=true;
+		d->itemsRenameable=false;
+		d->dragEnabled=false;
+		d->autoOpen=true;
 		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
 	}
 
@@ -594,35 +604,55 @@ QDragObject *KListView::dragObject() const
 	return new QStoredDrag("application/x-qlistviewitem", viewport());
 }
 
-void KListView::setItemsMovable(bool)
+void KListView::setItemsMovable(bool b)
 {
-
+	d->itemsMovable=b;
 }
 
 bool KListView::itemsMovable() const
 {
-	return true;
+	return d->itemsMovable;
 }
 
-void KListView::setItemsRenameable(bool)
+void KListView::setItemsRenameable(bool b)
 {
-
+	d->itemsRenameable=b;
 }
 
 bool KListView::itemsRenameable() const
 {
-	return true;
+	return d->itemsRenameable;
 }
 
 
-void KListView::setDragEnabled(bool)
+void KListView::setDragEnabled(bool b)
 {
-
+	d->dragEnabled=b;
 }
 
 bool KListView::dragEnabled() const
 {
-	return true;
+	return d->dragEnabled;
+}
+
+void KListView::setAutoOpen(bool b)
+{
+	d->autoOpen=b;
+}
+
+bool KListView::autoOpen() const
+{
+	return d->autoOpen;
+}
+
+bool KListView::dropVisualizer() const
+{
+	return d->dropVisualizer;
+}
+
+void KListView::setDropVisualizer(bool b)
+{
+	d->dropVisualizer=b;
 }
 
 QList<QListViewItem> KListView::selectedItems() const
@@ -665,7 +695,7 @@ void KListView::rename(QListViewItem *item, int c)
 
 }
 
-bool KListView::getRenameableRow(int row)
+bool KListView::getRenameableRow(int row) const
 {
 	return (bool)d->renameable.contains(row);
 }
