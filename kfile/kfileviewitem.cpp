@@ -53,12 +53,12 @@ class KFileViewItem::KFileViewItemPrivate
 public:
     KFileViewItemPrivate() {}
     ~KFileViewItemPrivate() {}
-    
+
     QString access;
     QString date;
     int pixmapSize;
     bool isReadable;
-    
+
 };
 
 KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
@@ -74,6 +74,7 @@ KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url
     : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand,
 		 _urlIsDirectory )
 {
+    d = new KFileViewItemPrivate();
     d->isReadable = true;
 
     init();
@@ -135,7 +136,7 @@ void KFileViewItem::stat(bool alreadyindir)
 
 KFileViewItem::~KFileViewItem()
 {
-    
+    delete d;
 }
 
 void KFileViewItem::init()
@@ -294,8 +295,8 @@ const KFileViewItem * KFileViewItemList::findByName( const QString& url ) const
     return myDict.find( url );
 }
 
-QPixmap KFileViewItem::pixmap() const 
-{ 
+QPixmap KFileViewItem::pixmap() const
+{
     return pixmap( d->pixmapSize );
 }
 
