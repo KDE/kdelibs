@@ -197,7 +197,12 @@ void
 KTempFile::unlink()
 {
    if (!mTmpName.isEmpty())
+   {
+      if ( bOpen )
+          close();
+
       QFile::remove( mTmpName );
+   }
    mTmpName = QString::null;
 }
 
