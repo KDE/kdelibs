@@ -839,6 +839,10 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 	return 0L;
     }
     image = new QImage(icon.path);
+    // In some cases (since size in findMatchingIcon() is more a hint than a
+    // constraint) image->size can be != size. If so perform rescaling.
+    if ( size != image->width() )
+        *image = image->smoothScale( size, size );
     d->imgDict.insert(key, image);
     return image;
 }
