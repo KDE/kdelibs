@@ -2510,6 +2510,11 @@ void KMdiMainFrm::nextToolViewInDock() {
     td->nextToolView();
 }
 
+KTabWidget * KMdiMainFrm::tabWidget() const
+{
+    return m_documentTabWidget;
+}
+
 #include "kmdimainfrm.moc"
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
