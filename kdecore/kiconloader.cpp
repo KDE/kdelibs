@@ -220,7 +220,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	d->mpGroups[i].size = config->readNumEntry("Size", 0);
 	d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
 	if (QPixmap::defaultDepth()>8)
-	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", false);
+	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", true);
 	else
 	    d->mpGroups[i].alphaBlending = false;
 
