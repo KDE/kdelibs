@@ -103,12 +103,12 @@ public:
         if (t1 != t2)
         {
             if (as.accel() == -1)  {
-                removed_string  += "<tr><td>" + t1 + "</td></tr>";
+                removed_string  += "<tr><td>" + QStyleSheet::escape(t1) + "</td></tr>";
             } else if (as.originalAccel() == -1) {
-                added_string += "<tr><td>" + t2 + "</td></tr>";
+                added_string += "<tr><td>" + QStyleSheet::escape(t2) + "</td></tr>";
             } else {
-                changed_string += "<tr><td>" + t1 + "</td>";
-                changed_string += "<td>" + t2 + "</td></tr>";
+                changed_string += "<tr><td>" + QStyleSheet::escape(t1) + "</td>";
+                changed_string += "<td>" + QStyleSheet::escape(t2) + "</td></tr>";
             }
             return true;
         }
