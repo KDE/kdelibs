@@ -613,22 +613,20 @@ void HTTPProtocol::http_checkConnection()
 
 static bool waitForConnect( int sock, int maxTimeout )
 {
-  fd_set rd, wr;
+  fd_set wr;
   struct timeval timeout;
 
   int n = maxTimeout; // Timeout in seconds
   while(n--){
-      FD_ZERO(&rd);
       FD_ZERO(&wr);
-      FD_SET(sock, &rd);
       FD_SET(sock, &wr);
 
       timeout.tv_usec = 1000*1000; // 1 sec
       timeout.tv_sec = 0;
 
-      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+      select(sock + 1, (fd_set *)0, &wr, (fd_set *)0, &timeout);
 
-      if (FD_ISSET(sock, &rd) || FD_ISSET(sock, &wr))
+      if (FD_ISSET(sock, &wr))
       {
          int errcode;
          ksize_t len = sizeof(errcode);
