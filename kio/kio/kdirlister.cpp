@@ -1072,7 +1072,7 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
 
   connect( this, SIGNAL( completed() ), SLOT( slotClearState() ) );
   connect( this, SIGNAL( canceled() ), SLOT( slotClearState() ) );
-  connect( this, SIGNAL( canceled( const KURL& ) ), SLOT( slotCanceledState( const KURL& ) ) );
+  connect( this, SIGNAL( canceled( const KURL& ) ), SLOT( slotCanceled( const KURL& ) ) );
 }
 
 KDirLister::~KDirLister()
