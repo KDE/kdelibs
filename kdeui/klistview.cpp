@@ -1709,15 +1709,19 @@ void KListView::setFullWidth(bool fullWidth)
   {
     connect(header(), SIGNAL(sizeChange(int, int, int)),
       SLOT(slotHeaderChanged()));
-    connect(header(), SIGNAL(indexChange(int, int, int)),
-      SLOT(slotHeaderChanged()));
+    // HACK: This is a signal/slot used internally by QListView
+    // it updates the H-scrollbar and interferes with what
+    // we want.
+    disconnect(SIGNAL(sizeChange(int, int, int)), header(),
+      SLOT(handleSizeChange( int, int, int )));
   }
   else
   {
     disconnect(SIGNAL(sizeChange(int, int, int)), header(),
       SLOT(slotHeaderChanged()));
-    disconnect(SIGNAL(indexChange(int, int, int)), header(),
-      SLOT(slotHeaderChanged()));
+    // HACK: Restore QListView signal/slot.
+    connect(header(), SIGNAL(sizeChange(int, int, int)),
+      SLOT(handleSizeChange( int, int, int )));
   }
   slotHeaderChanged();
 }
