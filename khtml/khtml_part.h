@@ -423,7 +423,7 @@ public:
    * This option is mainly intended for enabling the "mail reader mode", where you load untrusted
    * content with a file:/ url.
    *
-   * Please note that enabling this option currently automatically disables Javascript, 
+   * Please note that enabling this option currently automatically disables Javascript,
    * Java and Plugins support. This might change in the future if the security model
    * is becoming more sophisticated, so don't rely on this behaviour.
    *
@@ -432,7 +432,7 @@ public:
   void setOnlyLocalReferences( bool enable );
 
   /**
-   * Returns whether only file:/ or data:/ references are allowed 
+   * Returns whether only file:/ or data:/ references are allowed
    * to be loaded ( default false ). @see setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
@@ -675,8 +675,9 @@ public:
    */
   enum FindOptions
   {
-  	FindLinksOnly = 1 * KFindDialog::MinimumUserOption,
-  	FindNoPopups  = 2 * KFindDialog::MinimumUserOption
+  	FindLinksOnly   = 1 * KFindDialog::MinimumUserOption,
+  	FindNoPopups    = 2 * KFindDialog::MinimumUserOption
+  	//FindIncremental = 4 * KFindDialog::MinimumUserOption
   };
 
   /**
@@ -705,7 +706,7 @@ public:
   /**
    * Finds the next occurrence of the string or expression.
    * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
-   * @DEPRECATED
+   * @DEPRECATED, use findText( str, options, parent, findDialog )
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
