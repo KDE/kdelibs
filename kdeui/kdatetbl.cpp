@@ -41,7 +41,8 @@
 
 KDateTable::KDateTable(QWidget *parent, QDate date, 
 		       const char *name, WFlags f) 
-  : QTableView(parent, name, f)
+  : QTableView(parent, name, f),
+    fontsize(10)
 {
   initMetaObject();
   // Mirko, March 17 1998: translate day names
@@ -91,14 +92,14 @@ void KDateTable::paintCell( QPainter *p, int row, int col )
   if (row==0) 
     { // paint headline
       p->setPen(darkBlue);
-      p->setFont(QFont("Arial", 12, QFont::Bold, false));
+      p->setFont(QFont("Arial", fontsize, QFont::Bold, false));
       p->drawText(0, 0, w, h, AlignCenter, Days[col]);
       p->setPen(black);
       p->moveTo(0, h-1);
       p->lineTo(w-1, h-1);
     } else { // paint day cell
       int nDay = dayNum(row, col);
-      p->setFont(QFont("Arial", 12));
+      p->setFont(QFont("Arial", fontsize));
       /* Will be implemented the next time: the preset date
        * will be drawn with a gray background to give feedback 
        * to the user. --Mirko
@@ -356,6 +357,17 @@ void KDateTable::getNextYear(QDate dtnow, QDate &dtnxt)
   dtnxt = QDate(dtnow.year()+1, dtnow.month(), 1);
 }
 // end of new methods from May 13 1998 by highstick
+
+/* Mirko: Aug 21 1998 */
+void KDateTable::setFontSize(int size)
+{
+  if(size>0)
+    {
+      fontsize=size;
+    }
+}
+
+
 /**********************************************************/
 
 

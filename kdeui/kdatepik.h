@@ -82,6 +82,20 @@ public:
     * fit in the headline.
     */
   QSize sizeHint() const;
+  // Mirko, Aug 21 1998:
+  /** Set the size of the contents of the datepicker widget using 
+    * setFontSize.
+    * The days are displayed with the font size, the headline gets a size
+    * of fontsize + 2 by default. The default is 12pt.
+    * Important: this changes the headline size, so adjust it later!
+    */
+  void setFontSize(int size);
+  int fontSize(); // return it
+  /** Set the font size of the headline, independent from the rest of the widget.
+    * The default size is fontsize + 2.
+    */
+  void setHeadlineSize(int size);
+  int headlineSize();
   // ^^^^^^^^^^^^^^^^^^^
 private:
   KDateTable *m_tbl;
@@ -104,6 +118,7 @@ protected:
   static const int NoOfMonth;
   /// The names of the 12 month translated to the user language.
   const char* Month[12];
+  int fontsize;
 signals:
   /** This signal is emmitted when the user picked a date.
     */

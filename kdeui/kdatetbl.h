@@ -55,6 +55,8 @@ public:
   /** Returns a recommended size for the widget.
     */
   QSize sizeHint() const;
+  // Mirko, Aug 21 1998:
+  void setFontSize(int size);
   // ^^^^^^^^^^^^^^^^^^^
 public slots:
   void goForward();
@@ -77,6 +79,7 @@ protected:
   void resizeEvent( QResizeEvent * );
   void mousePressEvent(QMouseEvent *e);
   const char* Days[7];
+  int fontsize;
 private:
   QDate m_date;
   int m_firstDayOfWeek;

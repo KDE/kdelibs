@@ -76,7 +76,8 @@ const int KDatePicker::NoOfMonth=12;
 
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  :QFrame(parent,name)
+  : QFrame(parent,name),
+    fontsize(10)
 {
   // Mirko: added Feb 25 1998
   QBitmap left // a left arrow, 32 Bytes
@@ -165,9 +166,8 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
 		     old_cg.base());
   m_header->setPalette(QPalette(new_cg,new_cg,new_cg));
    
-  m_header->setFont(QFont("Times", 18/*, QFont::Bold*/));
-  m_footer->setFont(QFont("Arial", 12, QFont::Bold));
-   
+  m_footer->setFont(QFont("Arial", fontsize, QFont::Bold));
+  m_header->setFont(QFont("Times", fontsize+2/*, QFont::Bold*/));   
 }
 
 
@@ -311,4 +311,40 @@ void KDatePicker::setDate(QDate date)
 }
 
 // end of new methods from March 17 1998
+
+/* Mirko: Aug 19 1998 */
+void KDatePicker::setFontSize(int size)
+{
+  if(size>0)
+    {
+      fontsize=size;
+      m_tbl->setFontSize(size);
+      setHeadlineSize(size+2);
+      repaint();
+    }
+}
+
+int KDatePicker::fontSize()
+{
+  return fontsize;
+}
+
+void KDatePicker::setHeadlineSize(int size)
+{
+  QFont font=m_header->font();
+  if(size>0)
+    {
+      font.setPointSize(size);
+      m_header->setFont(font);
+      m_header->repaint();
+    }
+}
+
+int KDatePicker::headlineSize()
+{
+  return m_header->fontInfo().pointSize();
+}
+
+// end of new methods from Aug 19 1998
+
 /**********************************************************/
