@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.15  1997/08/30 00:09:55  kdecvs
+// Kalle: new signal appearanceChanged when either font, palette or GUI style has changed
+//
 // Revision 1.14  1997/07/26 18:33:45  ettrich
 // Matthias: added a little "public:" before the color definitions. Otherwise
 //    clients (for example kwm) cannot read the settings, so they are senseless
@@ -112,7 +115,7 @@
 //
 // KApplication header file - base class for all KDE applications
 //
-// (C) 1996 Matthias Kalle Dalheimer <mda@stardivision.de>
+// (C) 1996 Matthias Kalle Dalheimer <kalle@kde.org>
 //
 // DND stuff by Torben Weis <weis@stud.uni-frankfurt.de>
 // 09.12.96
@@ -124,6 +127,8 @@
 #include <Kconfig.h>
 #endif
 // Save icon and mini-icon pixmap
+// Support for session management
+// make KDebug compile on HP-UX
 // - KApplication::saveYourself (signal)
 // - KApplication::tempFileName()
 // - KApplication::checkRecoverFile()
@@ -207,6 +212,14 @@ class KCharsets;
 */
 
   /** 
+  bool isRestored() const { return bIsRestored; }
+
+  /** 
+	* Enable session management
+	*
+	QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
+	* @ Note that you do not get an instance specific config object with
+	* @ getSessionConfig() in this case!
 	*/
   QPixmap getIcon() const
 	{ return aIconPixmap; }
@@ -384,6 +397,13 @@ private slots:
 	*/
   Atom DndProtocol;
   Atom DndEnterProtocol;
+  Atom DndLeaveProtocol;
+  void* dummy1; // do not use these without asking kalle@kde.org
+  void* dummy2;
+  /**
+	* The X11 display
+  
+
  void appHelpActivated();
   void aboutKDE();
   void aboutApp();

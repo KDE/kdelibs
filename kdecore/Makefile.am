@@ -14,16 +14,16 @@ CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
-	kprocess.h kprocctrl.h klocale.h
+	kprocess.h kprocctrl.h klocale.h kiconloader.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
-	klocale.cpp libintl.cpp setenv.cpp
+	klocale.cpp libintl.cpp setenv.cpp kiconloader.cpp
 
 libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
-	kprocctrl.moc
+	kprocctrl.moc kiconloader.moc
 
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc
@@ -31,6 +31,7 @@ kkeyconf.cpp: kkeydata.moc
 kapp.cpp: kapp.moc
 kprocess.cpp: kprocess.moc
 kprocctrl.cpp: kprocctrl.moc
+kiconloader.cpp: kiconloader.moc
 
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
@@ -55,3 +56,6 @@ kprocess.moc: kprocess.h
 
 kprocctrl.moc: kprocctrl.h
 	$(MOC) kprocctrl.h -o kprocctrl.moc
+
+kiconloader.moc: kiconloader.h
+	$(MOC) kiconloader.h -o kiconloader.moc

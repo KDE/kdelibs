@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.20  1997/08/13 10:54:54  kulow
+ * Coolo: bugfix against endless parsing
+ *
  * Revision 1.19  1997/08/05 14:24:37  ettrich
  * Matthias: Final solution to the sync() problem. Sync() doesn't reparse,
  *   but a new method reparseConfiguration() will fullfill this task.
@@ -296,6 +299,10 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
 	    }
 	  continue;
 	};
+
+      if( aCurrentLine[0] == '#' )
+	// comment character in the first column, skip the line
+	continue;
       
       int nEqualsPos = aCurrentLine.find( '=' );
       if( nEqualsPos == -1 )
@@ -778,6 +785,9 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
   rConfigFile.close();
   rConfigFile.open( IO_Truncate | IO_WriteOnly );
   pStream = new QTextStream( &rConfigFile );
+
+  // write a magic cookie for Fritz' mime magic
+  *pStream << "# KDE Config File\n";
 
   // write back -- start with the default group
   KEntryDict* pDefWriteGroup = aTempDict[ "<default>" ];

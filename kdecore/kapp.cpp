@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.20  1997/08/30 00:09:56  kdecvs
+// Kalle: new signal appearanceChanged when either font, palette or GUI style has changed
+//
 // Revision 1.19  1997/08/29 23:52:02  kdecvs
 // Kalle: Do not crash when $HOME/.kde/config does not exist
 //
@@ -145,6 +148,10 @@
 
 #ifndef _KKEYCONF_H
 //       for the miniicon if "-miniicon" is not defined.
+#endif
+
+#ifndef _KICONLOADER_H
+//
 #endif
 
 //   PseudoSessionManagement (this is the default when session management
@@ -312,6 +319,15 @@ void KApplication::init()
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
+  kdisplaySetPalette();
+  kdisplaySetStyleAndFont();
+
+  // install an event filter for KDebug
+  installEventFilter( this );
+
+  pSessionConfig = 0L;
+  bIsRestored = False;
+  bSessionManagement = False;
 void KApplication::restoreTopLevelGeometry() const
 {
   QWidget* mw = kapp->mainWidget();
@@ -353,6 +369,9 @@ void KApplication::restoreTopLevelGeometry() const
 	}
 
 		  aMiniIconPixmap = aIconPixmap;
+		else
+		  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
+      }
       aDummyString2 += argv[i+1];
       aDummyString2 += " ";
       break;
