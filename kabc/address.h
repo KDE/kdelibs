@@ -276,6 +276,15 @@ class Address
     QString formattedAddress( const QString &realName=QString::null
                             , const QString &orgaName=QString::null ) const;
 
+    /**
+      Returns ISO code for a localized country name. Only localized country
+      names will be understood. This might be replaced by a KLocale method in
+      the future.
+      @param cname  name of the country
+      @return       two digit ISO code
+    */
+    QString countryToISO( const QString &cname ) const;
+    
   private:
     /** 
       Parses a snippet of an address template
@@ -295,15 +304,6 @@ class Address
     */
     int  findBalancedBracket( const QString &tsection, int pos ) const;
 
-    /**
-      Returns ISO code for a localized country name. Only localized country
-      names will be understood. This might be replaced by a KLocale method in
-      the future.
-      @param cname  name of the country
-      @return       two digit ISO code
-    */
-    QString countryToISO( const QString &cname ) const;
-    
     bool mEmpty;
   
     QString mId;
