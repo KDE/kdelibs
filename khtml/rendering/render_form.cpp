@@ -233,7 +233,7 @@ void RenderCheckBox::updateFromElement()
 
 void RenderCheckBox::slotStateChanged(int state)
 {
-    element()->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
+    element()->setChecked(state == 2);
 }
 
 // -------------------------------------------------------------------------------
@@ -1064,8 +1064,6 @@ void RenderTextArea::calcMinMaxWidth()
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
-    qDebug("scrollbar sizehint: %d", w->verticalScrollBar()->sizeHint().width());
-
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +
