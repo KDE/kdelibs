@@ -71,6 +71,8 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	addChild(box);
 	setFrameStyle(NoFrame);
 	viewport()->setBackgroundMode(Qt::PaletteBackground);
+/*	box->setPaletteBackgroundColor(Qt::red);
+	setPaletteBackgroundColor(Qt::green);*/
 }
 
 void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
@@ -99,6 +101,7 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 			box->setFixedHeight(24);
 			setFixedHeight(24);
 		}
+		addChild(box);
 	        for (uint i=0;i<m_tabs.count();i++)
         	        mainLayout->add(m_tabs.at(i));
 		mainLayout->setAutoAdd(true);
@@ -164,7 +167,9 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 }
 
 void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
-	//kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
+/*	kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
+	kdDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry()<<endl;
+	kdDebug()<<"KMultiTabBarInternal::resizeEvent - geometry"<<geometry()<<endl;*/
 	if (ev) QScrollView::resizeEvent(ev);
 
 	if ( (m_style==KMultiTabBar::KDEV3) ||
@@ -246,6 +251,14 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 
 
 		//kdDebug()<<"needed lines:"<<m_lines<<endl;
+	} else {
+		int size=0; /*move the calculation into another function and call it only on add tab and tab click events*/
+		for (int i=0;i<m_tabs.count();i++)
+			size+=(m_barMode==KMultiTabBar::Vertical?m_tabs.at(i)->height():m_tabs.at(i)->width());
+		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
+			box->setGeometry(0,0,size,height());
+		else box->setGeometry(0,0,width(),size);
+
 	}
 }
 
