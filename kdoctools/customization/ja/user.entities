@@ -9,7 +9,7 @@
 <!-- Temporary hack! Please adapt to Japanese keyboards and language -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY etc    "<abbrev>ç­?</abbrev>">
+<!ENTITY etc    "<abbrev>ç­‰</abbrev>">
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY kcontrolcenter "<application>&kde;ã,³ã?³ã??ã?­ã?¼ã?«ã,»ã?³ã,¿ã?¼</application>">
+<!ENTITY kcontrolcenter "<application>&kde;ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚»ãƒ³ã‚¿ãƒ¼</application>">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
