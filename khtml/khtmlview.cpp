@@ -96,7 +96,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     kimgioRegister();
 
     setCursor(arrowCursor);
-
+    linkCursor = QCursor(PointingHandCursor);
     init();
 
     viewport()->show();
