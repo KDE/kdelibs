@@ -44,6 +44,7 @@ KApplet::KApplet( QWidget* parent, const char* name  )
     : QWidget( parent, name), DCOPObject()
 {
     d = new KAppletData;
+    s = Fixed;
 }
 
 KApplet::~KApplet()
@@ -100,6 +101,17 @@ void KApplet::moveRequest()
     kapp->dcopClient()->send("kicker", "appletArea", "moveMe(QCString)", data);
 }
 
+void KApplet::setStretch(Stretch size)
+{
+    s = size;
+    QByteArray data;
+    QDataStream dataStream( data, IO_WriteOnly );
+    dataStream << objId();
+    dataStream << (int)s;
+    kapp->dcopClient()->send("kicker", "appletArea",
+                             "setStretch(QCString,int)", data);
+}
+
 
 bool KApplet::process(const QCString &fun, const QByteArray &data,
 	     QCString& replyType, QByteArray &replyData)
@@ -147,3 +159,9 @@ Qt::Orientation KApplet::orientation() const
 #include "kapplet.moc"
 
 // $Log$
+// Revision 1.10  1999/11/14 05:53:32  ettrich
+//
+// Added KDockWindow, a simpler and more comfortable way of doing panel docking.
+//
+// Removed obsolete KWMModuleApplicaton as announced some time ago.
+//

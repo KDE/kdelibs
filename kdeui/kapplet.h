@@ -38,7 +38,8 @@ class KApplet : public QWidget, DCOPObject
 {
     Q_OBJECT
 public:
-
+    enum Stretch{Fixed=0, Small, Medium, Large, Huge};
+    
     /**
        Constructs a KApplet widget just like any other widget.
    */
@@ -87,7 +88,12 @@ public:
     virtual void setupGeometry( Orientation orientation, int width, int height );
 
 
+    void setStretch(Stretch size);
+    Stretch stretch(){return s;}
+    
     QSize sizeHint() const;
+
+    
 
 
     /**
@@ -121,6 +127,7 @@ public slots:
 
 private:
     KAppletData* d;
+    Stretch s;
 };
 
 
