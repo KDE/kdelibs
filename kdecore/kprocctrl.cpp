@@ -35,13 +35,13 @@
 #include <stdio.h>
 
 #include "kprocess.h"
-#define _MAY_INCLUDE_KPROCESSCONTROLLER_
+
 #include "kprocctrl.h"
 
 #include "kprocctrl.moc"
 
 
-KProcessController *theKProcessController = NULL;
+KProcessController *theKProcessController = 0;
 
 KProcessController::KProcessController()
 {
@@ -127,4 +127,19 @@ void KProcessController::slotDoHousekeeping(int )
   }
 }
 
+KProcessController::~KProcessController()
+{
+  struct sigaction act;
 
+  notifier->setEnabled(FALSE);
+
+  // Turn off notification for processes that have exited
+  act.sa_handler=SIG_IGN;
+  sigemptyset(&(act.sa_mask));
+  sigaddset(&(act.sa_mask), SIGCHLD);
+  act.sa_flags = 0;
+  sigaction( SIGCHLD, &act, NULL);
+  
+  delete processList;
+  delete notifier;
+}
