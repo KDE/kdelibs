@@ -612,15 +612,6 @@ void FileProtocol::del( const KURL& url, bool isfile)
 	}
     } else {
 
-	/*****
-	 * Delete empty directory
-	 *****/
-
-	kdDebug(7101) << "Deleting directory " << url.url() << endl;
-
-	// TODO deletingFile( source );
-
-
       /*****
        * Delete empty directory
        *****/
