@@ -37,7 +37,7 @@ class KPanelAppletData;
 */
 class KPanelApplet : public QWidget, DCOPObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 
  public:
 

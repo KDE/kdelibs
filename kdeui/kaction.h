@@ -688,11 +688,11 @@ private:
 class KSelectAction : public KAction
 {
     Q_OBJECT
-    Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem );
-    Q_PROPERTY( QStringList items READ items WRITE setItems );
-    Q_PROPERTY( bool editable READ isEditable WRITE setEditable );
-    Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth );
-    Q_PROPERTY( QString currentText READ currentText );
+    Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem )
+    Q_PROPERTY( QStringList items READ items WRITE setItems )
+    Q_PROPERTY( bool editable READ isEditable WRITE setEditable )
+    Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth )
+    Q_PROPERTY( QString currentText READ currentText )
 public:
 
     /**
@@ -944,7 +944,7 @@ private:
 class KRecentFilesAction : public KListAction
 {
   Q_OBJECT
-  Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems );
+  Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems )
 public:
   /**
    *  @param text The text that will be displayed.

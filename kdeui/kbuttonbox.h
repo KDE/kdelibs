@@ -100,8 +100,9 @@ public:
     */
   void layout();
 
-protected:
+public: // as PrivateData needs Item, it has to be exported
   class Item;
+protected:
   class PrivateData;  
 
   /**

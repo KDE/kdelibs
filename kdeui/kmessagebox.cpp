@@ -45,7 +45,9 @@
   * @version $Id$
   */
 
+#ifdef __GNUC__
 #warning FIXME - Implement Notification
+#endif
 
 int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,

@@ -127,19 +127,19 @@ public:
   {
   }
 
-  QString xmlFile(QString xml_file)
+  QString xmlFile(const QString& xml_file)
   {
-    return xml_file.isNull() ? m_instance->instanceName() + "ui.rc" :
+    return xml_file.isNull() ? QString(m_instance->instanceName()) + "ui.rc" :
                                xml_file;
   }
 
   /**
    * Load in the specified XML file and dump the raw xml
    */
-  QString loadXMLFile(QString xml_file)
+  QString loadXMLFile(const QString& _xml_file)
   {
     QString raw_xml;
-    xml_file = xmlFile(xml_file);
+    QString xml_file = xmlFile(_xml_file);
 
     if ( xml_file[0] == '/' )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
