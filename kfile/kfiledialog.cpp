@@ -138,7 +138,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     d->completionLock = false;
     d->myStatusLine = 0;
-    KDirComboBox *combo = new KDirComboBox( this, "path combo" );
+    toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
+    KDirComboBox *combo = new KDirComboBox( toolbar, "path combo" );
     connect( combo, SIGNAL( urlActivated( const QString&  )),
 	     this,  SLOT( comboActivated( const QString& )));
     QToolTip::add( combo, i18n("Often used directories") );
@@ -178,7 +179,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     visitedDirs = new QStringList();
 
-    toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar");
     QActionCollection *coll = ops->actionCollection();
     coll->action( "up" )->plug( toolbar );
     coll->action( "back" )->plug( toolbar );
@@ -196,12 +196,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     if (!bmFile.isNull())
 	bookmarks->read(bmFile);
 
-    toolbar->insertButton(BarIcon(QString::fromLatin1("flag")),
-			  HOTLIST_BUTTON, true,
-			  i18n("Bookmarks"), -1);
+    toolbar->insertButton(QString::fromLatin1("flag"),
+			  (int)HOTLIST_BUTTON, true,
+			  i18n("Bookmarks"));
 
-    toolbar->insertButton(BarIcon(QString::fromLatin1("configure")),
-			  CONFIGURE_BUTTON, true,
+    toolbar->insertButton(QString::fromLatin1("configure"),
+			  (int)CONFIGURE_BUTTON, true,
 			  i18n("Configure this dialog"));
 
     connect(toolbar, SIGNAL(clicked(int)),
@@ -210,9 +210,11 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(toolbar, SIGNAL(pressed(int)),
     	    this, SLOT(toolbarPressedCallback(int)));
 
-    toolbar->insertWidget(PATH_COMBO, 30, d->pathCombo);
+    toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
     toolbar->setItemAutoSized (PATH_COMBO);
+    toolbar->setIconSize(KIconLoader::Medium);
+    toolbar->setIconText(KToolBar::IconOnly);
     toolbar->setBarPos(KToolBar::Top);
     toolbar->enableMoving(false);
     toolbar->adjustSize();
