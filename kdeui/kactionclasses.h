@@ -1161,7 +1161,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleFullScreenAction( const QString& pix, const KShortcut &cut, 
+    KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              QObject* parent, const char* name );
     virtual ~KToggleFullScreenAction();

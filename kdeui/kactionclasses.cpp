@@ -1807,10 +1807,10 @@ void KToggleToolBarAction::setChecked( bool c )
 
 ////////
 
-KToggleFullScreenAction::KToggleFullScreenAction( const QString& pix, const KShortcut &cut, 
+KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut, 
                              const QObject* receiver, const char* slot,
                              QObject* parent, const char* name )
-  : KToggleAction( QString::null, pix, cut, receiver, slot, parent, name )
+  : KToggleAction( QString::null, cut, receiver, slot, parent, name )
 {
 }
 
@@ -1820,10 +1820,16 @@ KToggleFullScreenAction::~KToggleFullScreenAction()
 
 void KToggleFullScreenAction::setChecked( bool c )
 {
-  if (c) 
+  if (c)
+  {
      setText(i18n("Exit F&ull Screen Mode"));
+     setIcon("window_nofullscreen");
+  }
   else
+  {
      setText(i18n("F&ull Screen Mode"));
+     setIcon("window_fullscreen");
+  }
   KToggleAction::setChecked( c );
 }
 

@@ -196,8 +196,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 case FullScreen:
 		 {
 			KToggleFullScreenAction *ret;
-			ret = new KToggleFullScreenAction( pInfo->psIconName, cut,
-					recvr, slot,
+			ret = new KToggleFullScreenAction( cut, recvr, slot,
 					parent, (name) ? name : pInfo->psName );
 			ret->setChecked( false );
 			pAction = ret;
