@@ -104,11 +104,8 @@ KSycocaFactory::save(QDataStream &str)
        ++it)
    {
       KSycocaEntry *entry = (*it.current());
-      if ( !entry->isDeleted() ) 
-      {
-         entry->save(str);
-         entryCount++;
-      }
+      entry->save(str);
+      entryCount++;
    }
 
    m_endEntryOffset = str.device()->at();
@@ -121,10 +118,7 @@ KSycocaFactory::save(QDataStream &str)
        ++it)
    {
       KSycocaEntry *entry = (*it.current());
-      if ( !entry->isDeleted() )
-      {
-         str << (Q_INT32) entry->offset(); 
-      }
+      str << (Q_INT32) entry->offset(); 
    }
 
    // Dictionary index
