@@ -309,16 +309,6 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         abort();
 }
 
-static void kDebugBackend2( unsigned short nLevel, unsigned int nArea, const char* fmt, va_list arguments )
-{
-    char buf[4096] = "";
-    int nSize = vsnprintf( buf, 4096, fmt, arguments );
-    if( nSize > 4094 ) nSize = 4094;
-    buf[nSize] = '\n';
-    buf[nSize+1] = '\0';
-    kDebugBackend( nLevel, nArea, buf);
-}
-
 kdbgstream &perror( kdbgstream &s) { return s << " " << QString::fromLocal8Bit(strerror(errno)); }
 kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
