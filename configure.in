@@ -172,9 +172,10 @@ AC_SUBST(LIB_KIMGIO)
 
 dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
-
 AC_LANG_C
+kde_save_cc=$CC
 AC_LIBLTDL
+CC=$kde_save_cc
 
 AC_ARG_ENABLE(new-stuff, [  --enable-new-stuff      compile the experimental code too (none currently)], [
     if test "$enableval" = "no";
