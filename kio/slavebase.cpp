@@ -287,8 +287,10 @@ void SlaveBase::data( const QByteArray &data )
 void SlaveBase::dataReq( )
 {
     kdDebug(7019) << "(" << getpid() << ") SlaveBase::dataReq" << endl;
+/*
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
+*/
     if (d->needSendCanResume)
         canResume(0);
     m_pConnection->send( MSG_DATA_REQ );
