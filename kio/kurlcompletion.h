@@ -29,8 +29,8 @@
 #include <qstringlist.h>
 
 class KURL;
-
 class KURLCompletionPrivate;
+class MyURL;
 
 /**
  * This class does completion of URLs including user directories (~user)
@@ -47,8 +47,8 @@ class KURLCompletion : public KCompletion
 public:
 	/**
 	 * Determines how completion is done
-	 * @li ExeCompletion - executables in $PATH or with full path
-	 * @li FileCompletion - all files with full path or in dir(), URLs are listed
+	 * ExeCompletion - executables in $PATH or with full path
+	 * FileCompletion - all files with full path or in dir(), URLs are listed
 	 *                  using KIO
 	 */
     enum Mode { ExeCompletion=1, FileCompletion };
@@ -56,7 +56,7 @@ public:
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
-	 * or FileCompletion without using @ref setMode. Default is FileCompletion
+	 * or FileCompletion without using @ref setMode
 	 */
 	KURLCompletion(Mode);
 
@@ -78,22 +78,22 @@ public:
 	 * Set the current directory (used as base for completion)
 	 * Default = $HOME
 	 */
-	virtual void setDir( QString dir) { m_dir = dir; };
+	virtual void setDir( QString dir) { m_cwd = dir; };
 	
 	/**
 	 * Get the current directory
 	 */
-	virtual QString dir() { return m_dir; };
+	virtual QString dir() { return m_cwd; };
 
 	/**
 	 * Returns true if asyncronous completion is in progress
 	 */
-	virtual bool isRunning() { return m_running; };
+	virtual bool isRunning();
 
 	/**
 	 * Stop asyncronous copmpletion
 	 */
-	virtual void stop() { /* not implemented */ } ;
+	virtual void stop();
 
 	/**
 	 * Return completion mode: exe or file completion (default FileCompletion)
@@ -110,9 +110,6 @@ public:
 	 */
 	virtual bool replaceEnv() { return m_replace_env; };
 	
-        /**
-	 * Enables/disables replacing of environment variables (default is enabled)
-	 */
 	virtual void setReplaceEnv( bool replace ) { m_replace_env = replace; };
 
 	/**
@@ -120,14 +117,10 @@ public:
 	 */
 	virtual bool replaceHome() { return m_replace_home; };
 	
-        /**
-	 * Enables/disables replacing of ~username with the user's homedirectory.
-	 * Default is enabled.
-	 */
 	virtual void setReplaceHome( bool replace ) { m_replace_home = replace; };
 
 protected:
-	// Called by KCompletion, adds quotes
+	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match );
 	void postProcessMatches( QStringList *matches );
 
@@ -135,25 +128,60 @@ protected slots:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
 	void slotIOFinished( KIO::Job * );
 
-private:
-	// List a directory using readdir()
-	void list(const QString& dir, const QString& file,
-		  QStringList &list, bool only_exe);
+private slots:
+	void slotTimer();
 
-	// Expand environment variables and user home dirs in text
-	bool expandEnv( QString &text );
-	bool expandTilde( QString &text );
+private:
+	bool isAutoCompletion();
+	
+	bool userCompletion(const MyURL &url, QString *match);
+	bool envCompletion(const MyURL &url, QString *match);
+	bool exeCompletion(const MyURL &url, QString *match);
+	bool fileCompletion(const MyURL &url, QString *match);
+	bool urlCompletion(const MyURL &url, QString *match);
+	bool infoCompletion(const MyURL &url, QString *match);
+    bool manCompletion(const MyURL &url, QString *match);
+
+	// List a directory using readdir()
+	void listDir( const QString& dir, 
+	              QStringList *matches,
+	              const QString& filter,
+	              bool only_exe, 
+	              bool no_hidden );
 
 	// List the next dir in m_dirs
-	QString listDirectories();
+	QString listDirectories(const QStringList &, 
+	                        const QString &,
+	                        bool only_exe = false,
+	                        bool no_hidden = false,
+	                        bool stat_files = true);
+
+	void listURLs( const QValueList<KURL *> &urls,
+		           const QString &filter = QString::null,
+	               bool only_exe = false,
+	               bool no_hidden = false );
+	
+	void addMatches( QStringList * );
+	QString finished();
+	
 	void init();
 
+	void setListedURL(int compl_type /* enum ComplType */,
+	                  QString dir = QString::null,
+	                  QString filter = QString::null,
+	                  bool no_hidden = false ); 
+
+	bool isListedURL( int compl_type /* enum ComplType */,
+	                  QString dir = QString::null,
+	                  QString filter = QString::null,
+	                  bool no_hidden = false ); 
+ 
 	QString m_last_path_listed;
 	QString m_last_file_listed;
 	int m_last_compl_type;
-	int m_last_mode;
+	int m_last_no_hidden; // int m_last_mode;
 
-	QString m_dir; // "current directory" = base dir for completion
+	QString m_cwd; // "current directory" = base dir for completion // WAS: m_dir
 	
 	Mode m_mode; // ExeCompletion or FileCompletion
 	bool m_replace_env;
@@ -161,18 +189,15 @@ private:
 
 	KIO::ListJob *m_list_job; // kio job to list directories
 
-	bool m_list_exe; // true = only list executables
-	bool m_running; // flag set when all dirs have been listed
 	QString m_prepend; // text to prepend to listed items
 	QString m_compl_text; // text to pass on to KCompletion
 
-	QStringList m_dirs; // dirs to be listed
-	QString m_file_filter; // filter for listed files
+	bool m_list_urls_only_exe; // true = only list executables
+	bool m_list_urls_no_hidden; // bool m_running; // flag set when all dirs have been listed
+	QString m_list_urls_filter; // QString m_file_filter; // filter for listed files
 
-	KURL *m_current_url; // the url beeing listed by KIO
-
-	// Remove quotes/escapes
-	QString unescape(const QString &text);
+	QStringList dummy_for_bc1; // QStringList m_dirs; // dirs to be listed
+	KURL *dummy_for_bc2; //	KURL *m_current_url; // the url beeing listed by KIO
 
 	QChar m_word_break_char;
 	QChar m_quote_char1;
