@@ -1248,8 +1248,6 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // drag of URL
     if(pressed && !m_strSelectedURL.isEmpty())
     {
-#if 0
-	// ### broken...
 	QStrList uris;
 	KURL u(completeURL(m_strSelectedURL));
 	uris.append(u.url().ascii());
@@ -1258,7 +1256,10 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	if(p.isNull()) printf("null pixmap\n");
 	d->setPixmap(p);
 	d->drag();
-#endif
+
+	// when we finish our drag, we need to undo our mouse press
+	pressed = false;
+	return;
     }
 
     int xm, ym;
