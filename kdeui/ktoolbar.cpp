@@ -1063,7 +1063,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     //kdDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
 
-    if(!config->hasDefault("IconText") && icontext == d->IconTextDefault )
+    if(d->m_honorStyle && icontext == d->IconTextDefault && !config->hasDefault("IconText") )
     {
       //kdDebug(220) << name() << "                reverting icontext to default" << endl;
       config->revertToDefault("IconText");
