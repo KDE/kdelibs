@@ -111,7 +111,7 @@ Scheduler::debug_info()
     SimpleJob *job = joblist.first();
     for(; job; job = joblist.next())
     {
-        kdDebug(7006) << " Job: " << job->url().url() << endl;
+        kdDebug(7006) << " Job: " << job << " " << job->url().url() << endl;
     }
 }
 
@@ -121,27 +121,27 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
     return DCOPObject::process( fun, data, replyType, replyData );
 
   replyType = "void";
-  
+
   QDataStream stream( data, IO_ReadOnly );
-  
+
   QString proto;
-  
+
   stream >> proto;
 
   kdDebug( 7006 ) << "reparseConfiguration( " << proto << " )" << endl;
-  
+
   Slave *slave = slaveList->first();
   for (; slave; slave = slaveList->next() )
     if ( slave->protocol() == proto || proto.isEmpty() )
       slave->connection()->send( CMD_REPARSECONFIGURATION );
-  
+
   return true;
-} 
+}
 
 QCString Scheduler::functions()
 {
   return DCOPObject::functions() + "reparseSlaveConfiguration(QString);";
-} 
+}
 
 void Scheduler::_doJob(SimpleJob *job) {
     joblist.append(job);
@@ -238,6 +238,7 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
              {
                  kdError() << "ERROR " << error << ": couldn't create slave : "
                            << errortext << endl;
+                 joblist.remove(job);
                  job->slotError( error, errortext );
                  return;
              }
