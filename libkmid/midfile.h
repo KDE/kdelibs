@@ -47,8 +47,11 @@ int patchesUsed[256]; // 0 - it's not used
 };
 
 double tempoToMetronomeTempo(ulong x);
+double metronomeTempoToTempo(ulong x);
 
 track **readMidiFile(char *name,midifileinfo *info,int &ok);
+
+void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo);
 
 void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm);
 

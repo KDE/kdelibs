@@ -28,7 +28,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#ifndef __FreeBSD__
+// Note: getopt_long seems not to be defined on FreeBSD systems
 #include <getopt.h>
+#endif
 #include <limits.h>
 #include <g++/iostream.h>
 #include "midispec.h"
@@ -70,24 +73,24 @@ int quiet=0;
 
 void consoleOutput(void)
 {
-if ((pctl.ev->command==MIDI_SYSTEM_PREFIX)&&((pctl.ev->command|pctl.ev->chn)==META_EVENT)&&(!quiet))
+    if ((pctl.ev->command==MIDI_SYSTEM_PREFIX)&&((pctl.ev->command|pctl.ev->chn)==META_EVENT)&&(!quiet))
     {
-    if ((pctl.ev->d1==5)||(pctl.ev->d1==1))
-	{
-	char *text=new char[pctl.ev->length+1];
-	strncpy(text,(char *)pctl.ev->data,pctl.ev->length);
-	text[pctl.ev->length]=0;
-        char c=text[0];
-        if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')||(c=='@')) cout << endl;
-        cout << text;
-        cout.flush();
+        if ((pctl.ev->d1==5)||(pctl.ev->d1==1))
+        {
+            char *text=new char[pctl.ev->length+1];
+            strncpy(text,(char *)pctl.ev->data,pctl.ev->length);
+            text[pctl.ev->length]=0;
+            char c=text[0];
+            if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')||(c=='@')) cout << endl;
+            cout << text;
+            cout.flush();
         };
-    if (pctl.ev->d1==ME_SET_TEMPO)
-	{
-	printf("Tempo : %g\n",tempoToMetronomeTempo((pctl.ev->data[0]<<16)|(pctl.ev->data[1]<<8)|(pctl.ev->data[2])));
-	};
+        if (pctl.ev->d1==ME_SET_TEMPO)
+        {
+            printf("Tempo : %g\n",tempoToMetronomeTempo((pctl.ev->data[0]<<16)|(pctl.ev->data[1]<<8)|(pctl.ev->data[2])));
+        };
     };
-
+    
 };
 
 int main(int argc, char **argv)
@@ -106,6 +109,8 @@ int main(int argc, char **argv)
         map_path=new char[strlen(DEFAULT_MAP)+1];
         strcpy(map_path,DEFAULT_MAP);
     };
+    int c;
+#ifndef __FreeBSD__
     struct option long_options[]=
     {
         {"device",1,NULL,'d'},
@@ -120,8 +125,11 @@ int main(int argc, char **argv)
         {"help",0,NULL,'h'},
         { 0, 0, 0, 0}
     };
-
-    int c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
+    c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
+#else
+    c=getopt( argc, argv, "d:lm:v:f:3iqh");
+#endif
+    
     long l;
     while (c!=-1)
     {
@@ -163,10 +171,14 @@ int main(int argc, char **argv)
             printf("Try '%s --help' for more information\n",argv[0]);
             error=1;
             break;
-        };
+        }
+#ifndef __FreeBSD__
         c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
+#else
+        c=getopt( argc, argv, "d:lm:v:f:3iqh");
+#endif
     };
-
+    
     if (inputfile!=NULL)
     {
         inputfh=fopen(inputfile,"rt");
@@ -177,7 +189,7 @@ int main(int argc, char **argv)
         };
         delete inputfile;
     };
-
+    
     if (error) exit(0);
     printf("ConsoleKMid version %s, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n",VERSION_SHORTTXT);
     if (!quiet)
@@ -186,7 +198,7 @@ int main(int argc, char **argv)
         printf("This is free software, and you are welcome to redistribute it\n");
         printf("under certain conditions\n");
     };
-
+    
     if ((argc<2)||(help))
     {
         printf("\nUsage:  %s [Options] MidiFiles \n",argv[0]);
@@ -202,12 +214,12 @@ int main(int argc, char **argv)
         printf("\nPlease report bugs to Antonio Larrosa (antlarr@arrakis.es)\n");
         exit(0);
     };
-
-
+    
+    
     DeviceManager * devman=new DeviceManager(device);
     devman->initManager();
     if (!devman->OK()) exit(0);
-
+    
     if (list_dev)
     {
         printf("Available devices :\n");
@@ -224,7 +236,7 @@ int main(int argc, char **argv)
     MidiMapper *map=new MidiMapper(map_path);
     if (!map->OK()) exit(0);
     devman->setMidiMap(map);
-
+    
     SongList *songlist=new SongList();
     int nmid=optind;
     while (nmid<argc)
@@ -241,7 +253,7 @@ int main(int argc, char **argv)
         };
         fclose(inputfh);
     };
-
+    
     player *Player=new player(devman,&pctl);
     Player->setParseSong(false);
     pctl.message=0;
@@ -250,45 +262,45 @@ int main(int argc, char **argv)
     pctl.volumepercentage=vol_percentage;
     for (int i=0;i<16;i++)
     {
-	pctl.forcepgm[i]=0;
+        pctl.forcepgm[i]=0;
         pctl.pgm[i]=0;
     };
-
+    
     songlist->setActiveSong(1);
     int ok=1;
     char *name;
     int playfile=1;
     while (ok)
     {
-	name=songlist->getActiveSongName();
-	if (interactive==1)
-	{
-	   cout << "Do you want to hear " << name << " ? ";
-	   char c[20];
-	   cin >> c;
-	   if ((c[0]=='N')||(c[0]=='n')) playfile=0;
-	   else 
-	   {
-	      if (c[0]=='q') 
-	      {
-		   playfile=0;
-		   break;
-	      }
-	      else
-	      {	
-		playfile=1;
-		if ((c[0]=='A')||(c[0]=='a')||(c[0]=='*')) interactive=0;
-	      };
-	   };
-	};
-	if (playfile)
-	   {
-           cout << "Loading song : " << name << endl;
-   	   if (strncmp(name,"file:",5)==0) name+=5;
-           if (Player->loadSong(name)==0)
-               Player->play(1,consoleOutput);
-           if (!quiet) cout << endl;
-	   };
+        name=songlist->getActiveSongName();
+        if (interactive==1)
+        {
+            cout << "Do you want to hear " << name << " ? ";
+            char c[20];
+            cin >> c;
+            if ((c[0]=='N')||(c[0]=='n')) playfile=0;
+            else 
+            {
+                if (c[0]=='q') 
+                {
+                    playfile=0;
+                    break;
+                }
+                else
+                {	
+                    playfile=1;
+                    if ((c[0]=='A')||(c[0]=='a')||(c[0]=='*')) interactive=0;
+                };
+            };
+        };
+        if (playfile)
+        {
+            cout << "Loading song : " << name << endl;
+            if (strncmp(name,"file:",5)==0) name+=5;
+            if (Player->loadSong(name)==0)
+                Player->play(1,consoleOutput);
+            if (!quiet) cout << endl;
+        };
         ok=songlist->next();
     };
     delete songlist;

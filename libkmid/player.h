@@ -32,112 +32,114 @@
 
 struct SpecialEvent
 {
-	int	id;
-	ulong	diffmilliseconds; //delta milliseconds from previous sp ev
-	ulong   absmilliseconds; // milliseconds from beginning of song
-        int     ticks; // ticks from begining of song
-	int	type;// 1 Text, 2 Lyrics, 3 Change Tempo
-		//     0 Nothing, end of linked list
-	char	text[1024];
-	int	tempo;   
-	struct  SpecialEvent *next;
+    int	    id;
+    ulong   diffmilliseconds; //delta milliseconds from previous sp ev
+    ulong   absmilliseconds; // milliseconds from beginning of song
+    int     ticks; // ticks from begining of song
+    int     type;// 1 Text, 2 Lyrics, 3 Change Tempo
+             //     0 Nothing, end of linked list
+    char    text[1024];
+    int	    tempo;
+    struct  SpecialEvent *next;
 };
 
 
 struct PlayerController
 {
-	volatile ulong	ticksTotal;
-	volatile ulong	ticksPlayed;
-	volatile double  millisecsPlayed;
-	volatile ulong  beginmillisec;
-
-	volatile int	tempo;
-
-	volatile int	SPEVprocessed;
-	volatile int	SPEVplayed;
-
-	volatile int    OK; // when pause is released, the ui must know
-			// when the player has opened the devices and it is
-			// playing again then it put OK=1
-
-	volatile int	playing; // if 1, the player is playing (or paused)
-	volatile int	paused;  // if 1, the player is paused
-	volatile int    moving;  // if 1, the player is moving the position
-	volatile int	finished; // if 1, the song has finished playing
-	volatile int	message; // set one of the following :
-
+    volatile ulong	ticksTotal;
+    volatile ulong	ticksPlayed;
+    volatile double     millisecsPlayed;
+    volatile ulong      beginmillisec;
+    
+    volatile int	tempo;
+    
+    volatile int	SPEVprocessed;
+    volatile int	SPEVplayed;
+    
+    volatile int        OK; // when pause is released, the ui must know
+    // when the player has opened the devices and it is
+    // playing again then it put OK=1
+    
+    volatile int	playing; // if 1, the player is playing (or paused)
+    volatile int	paused;  // if 1, the player is paused
+    volatile int        moving;  // if 1, the player is moving the position
+    volatile int	finished;// if 1, the song has finished playing
+    volatile int	message; // set one of the following :
+    
 #define PLAYER_DOPAUSE	1
 #define PLAYER_DOSTOP	2
 #define PLAYER_SETPOS	4
 #define PLAYER_HALT	8
-
-	volatile int    error; //An error has ocurred(i.e. couldn't open device)
-	volatile ulong	gotomsec;//milliseconds to go to,if player_setpos is set
-	
-	volatile int	gm; // if 1 then song is GeneralMidi, if 0 then MT32
-
-	volatile int	volumepercentage ; //100 is no change, 50 halfs the
-				// volume and 200 doubles it (if possible)
-
-        volatile bool forcepgm[16];  // Force to use patch ... or not forced
-        volatile int  pgm[16];       // Patch used at "this" moment
-
-        volatile Midi_event	*ev;
-
+    
+    volatile int        error; //An error has ocurred(i.e. couldn't open device)
+    volatile ulong	gotomsec;//milliseconds to go to,if player_setpos is set
+    
+    volatile int	gm; // if 1 then song is GeneralMidi, if 0 then MT32
+    
+    volatile int	volumepercentage ; //100 is no change, 50 halfs the
+    // volume and 200 doubles it (if possible)
+    
+    volatile bool       forcepgm[16];  // Force to use patch ... or not forced
+    volatile int        pgm[16];       // Patch used at "this" moment
+    
+    
+    volatile double      ratioTempo; // ratio to multiply the tempo
+    
+    volatile Midi_event	*ev;
 };
-
 
 
 class midiStat;
 
 class player
 {
-
-DeviceManager *midi;
-midifileinfo *info;
-track **tracks;
-SpecialEvent *spev;
-NoteArray *na;
-
-int songLoaded;
-
-PlayerController *ctl;
-
-bool parseSong;
-
-void removeSpecialEvents(void);
-void parseSpecialEvents(void);
-
+    
+    DeviceManager *midi;
+    midifileinfo *info;
+    track **tracks;
+    SpecialEvent *spev;
+    NoteArray *na;
+    
+    int songLoaded;
+    
+    PlayerController *ctl;
+    
+    bool parseSong;
+    
+    void removeSpecialEvents(void);
+    void parseSpecialEvents(void);
+    
 public:
-
-
-player(DeviceManager *midi_,PlayerController *pctl);
-~player();
-
-int loadSong(char *filename);
-void removeSong(void); // Unload the current song, so that everything is empty
-
-int isSongLoaded(void) { return songLoaded; };
-SpecialEvent *takeSpecialEvents() { return spev; };
-void writeSPEV(void);
-//NoteArray *parseNotes(void);
-NoteArray *getNoteArray(void) { return na; };
-
-void play(int calloutput,void output(void));
-
-void setParseSong(bool b);
-
-midifileinfo *Info(void) {return info;};
-
-void SetPos(ulong gotomsec,midiStat *midistat);
-
-
-/*
-void pause(int i);
-void stop(void);
-
-void go_to(ulong ticks);
-*/
+    
+    
+    player(DeviceManager *midi_,PlayerController *pctl);
+    ~player();
+    
+    int loadSong(char *filename);
+    void removeSong(void); // Unload the current song, so that everything is empty
+    
+    int isSongLoaded(void) { return songLoaded; };
+    SpecialEvent *takeSpecialEvents() { return spev; };
+    void writeSPEV(void);
+    //NoteArray *parseNotes(void);
+    NoteArray *getNoteArray(void) { return na; };
+    
+    void play(int calloutput,void output(void));
+    
+    void setParseSong(bool b);
+    
+    midifileinfo *Info(void) {return info;};
+    
+    void SetPos(ulong gotomsec,midiStat *midistat);
+    
+    void changeTempoRatio(double ratio);
+    
+    /*
+     void pause(int i);
+     void stop(void);
+     
+     void go_to(ulong ticks);
+     */
 };
 
 #endif
