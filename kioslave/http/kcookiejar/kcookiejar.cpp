@@ -244,6 +244,14 @@ KCookieJar::KCookieJar()
     m_globalAdvice = KCookieDunno;
     m_configChanged = false;
     m_cookiesChanged = false;
+    
+    KConfig cfg("khtml/domain_info", true, false, "data");
+    QStringList countries = cfg.readListEntry("twoLevelTLD");
+    for(QStringList::ConstIterator it = countries.begin();
+        it != countries.end(); ++it)
+    {
+       m_twoLevelTLD.replace(*it, (int *) 1);
+    }
 }
 
 //
@@ -528,14 +536,14 @@ static const char * parseNameValue(const char *header,
 
 }
 
-static void stripDomain(const QString &_fqdn, QString &_domain)
+void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
 {
    QStringList domains;
-   KCookieJar::extractDomains(_fqdn, domains);
+   extractDomains(_fqdn, domains);
    _domain = domains[0];
 }
 
-static QString stripDomain( KHttpCookiePtr cookiePtr)
+QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
 {
     QString domain; // We file the cookie under this domain.
     if (cookiePtr->domain().isEmpty())
@@ -620,6 +628,13 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     {
        if (partList.count() == 1)
          break; // We only have a TLD left.
+       
+       if ((partList.count() == 2) && (m_twoLevelTLD[partList[1].lower()]))
+       {
+          // This domain uses two-level TLDs in the form xxxx.yy
+          break;
+       }
+       
        if ((partList.count() == 2) && (partList[1].length() == 2))
        {
           // If this is a TLD, we should stop. (e.g. co.uk)
@@ -633,14 +648,6 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
               break;
        }
-
-       // The .name domain uses <name>.<surname>.name
-       // Although the TLD is striclty speaking .name, for our purpose
-       // it should be <surname>.name since people should not be able
-       // to set cookies for everyone with the same surname.
-       // Matches <surname>.name
-       if ((partList.count() == 2)&& (partList[1].lower() == L1("name")))
-          break;
 
        QString domain = partList.join(L1("."));
        _domains.append('.' + domain);
