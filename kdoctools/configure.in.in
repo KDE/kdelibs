@@ -34,7 +34,7 @@ fi
 if test -n "$HELP_SUBDIR"; then
 
   KDE_FIND_PATH(xslt-config, XSLT_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
-    AC_MSG_WARN([Could not find libxslt anywhere, check ftp://xmlsoft.org/ for libxslt >= 1.0.6. (we also keep a version of it in kdesupport for CVS users' convience)])
+    AC_MSG_WARN([Could not find libxslt anywhere, check ftp://xmlsoft.org/ for libxslt >= 1.0.7. (we also keep a version of it in kdesupport for CVS users' convience)])
     HELP_SUBDIR=
   ])
 
@@ -54,7 +54,7 @@ if test -n "$HELP_SUBDIR"; then
        LIBXSLT_CFLAGS="`$XSLT_CONFIG --cflags`"
 
      else
-       AC_MSG_WARN([You need at least libxslt 1.0.6])
+       AC_MSG_WARN([You need at least libxslt 1.0.7])
        HELP_SUBDIR=
      fi
   fi
