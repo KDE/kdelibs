@@ -77,7 +77,7 @@ KGuiItem KStdGuiItem::cancel()
 
 KGuiItem KStdGuiItem::yes()
 {
-  return KGuiItem(i18n("&Yes"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("yes" ) : QIconSet(),
+  return KGuiItem(i18n("&Yes"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("ok" ) : QIconSet(),
                    "yes" );
 }
 

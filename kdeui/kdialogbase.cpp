@@ -623,7 +623,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   {
     QPushButton *pb = d->mButton.append( Close, i18n("&Close") );
     if( showIcons )
-      pb->setIconSet( SmallIconSet("close") );
+      pb->setIconSet( SmallIconSet("fileclose") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
   }
 
