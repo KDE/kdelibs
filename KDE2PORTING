@@ -226,19 +226,32 @@ must have created a KApplication object before the methods can be used.
 // * KIconLoader
 
 KIconLoader in 1.1 used to mix icons for applications and for toolbars.
-This has changed, so you may notice that your application doesn't find
-the right icons. loadIcon (used by BarIcon) returns only toolbar icons.
-If you need icons for applications, use loadApplicationIcon.
-loadMiniIcon and loadApplicationMiniIcon have been removed, instead
-loadApplicationIcon now takes a "size" argument where you can specify the
-size of the icon (small, medium, large).
-The other big change you may notice, is that ICON and Icon have been
-removed as they caused big confusion for not loading application icons
-(see above). For this we added BarIcon which does the same as ICON before.
-The third change in this row is that loadIcon doesn't need the extension
-anymore, but looks for standard extensions (png, xpm) itself. If you hard-
-coded .xpm, loadIcon will issue a warning at runtime, but will still work
-in stripping off the .xpm part
+Now, the icons are grouped by type: apps, devices, filesys, mimetype,
+toolbar.  They are also grouped by size (small, medium, large) and by
+color depth (locolor, hicolor).
+
+There are now two ways to access the icons.  loadIcon *may* be used to
+access all icons but it's not recommended.  Rather, it should be used
+only for apps, devices, filesys, and mimetype icons.  Toolbar (and
+application "pics") icons should be accessed using the BarIcon
+function.
+
+To reiterate, use the functions like so:
+
+loadIcon - ALL icons except toolbar and application "pics"
+BarIcon  - Toolbar and application "pics"
+
+The loadMiniIcon and loadApplicationMiniIcon functions have been
+removed.  In their place, use 'loadIcon' and specify the size of the
+icon you wish to load.
+
+The ICON and Icon functions have also been removed.  BarIcon may be
+used as a replacement for ICON.
+
+The loadIcon function no longer needs the extension of the icon if the
+icon is a "standard" type (png, xpm).  If you hardcode .xpm, loadIcon
+will issue a warning at runtime, but will still work in stripping off
+the .xpm part
 
 ////////////////////////////////////////////////////////////////////////
 // * KDialog
