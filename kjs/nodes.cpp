@@ -334,7 +334,7 @@ KJSO NewExprNode::evaluate()
 
   if (!v.isObject()) {
     delete argList;
-    return throwError(TypeError, "Expression is no object.");
+    return throwError(TypeError, "Expression is no object. Cannot be new'ed");
   }
 
   Constructor constr = Constructor::dynamicCast(v);
@@ -364,7 +364,7 @@ KJSO FunctionCallNode::evaluate()
 
   if (!v.isObject()) {
     delete argList;
-    return throwError(TypeError, "Expression is no object.");
+    return throwError(TypeError, "Expression is no object. Cannot be called.");
   }
 
   if (!v.implementsCall()) {
