@@ -694,14 +694,15 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
-    if (d->clickCount > 0 && d->clickX == xm && d->clickY == ym) // ### support mouse threshold
+    if (d->clickCount > 0 &&
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	d->clickCount++;
-    else {
+    else { // shouldn't happen, if Qt has the same criterias for double clicks.
 	d->clickCount = 1;
 	d->clickX = xm;
 	d->clickY = ym;
     }
-     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     if (mev.innerNode.handle())
@@ -1856,11 +1857,13 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
     if (targetNode) {
 	// send the actual event
+        bool dblclick = ( eventId == EventImpl::CLICK_EVENT &&
+                          _mouse->type() == QEvent::MouseButtonDblClick );
 	MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
 						detail,screenX,screenY,clientX,clientY,
 						ctrlKey,altKey,shiftKey,metaKey,
-						button,0, _mouse);
+						button,0, _mouse, dblclick );
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
         if (me->defaultHandled() || me->defaultPrevented())

@@ -307,6 +307,7 @@ MouseEventImpl::MouseEventImpl()
     m_button = 0;
     m_relatedTarget = 0;
     m_qevent = 0;
+    m_isDoubleClick = false;
 }
 
 MouseEventImpl::MouseEventImpl(EventId _id,
@@ -324,7 +325,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 			       bool metaKeyArg,
 			       unsigned short buttonArg,
 			       NodeImpl *relatedTargetArg,
-			       QMouseEvent *qe)
+			       QMouseEvent *qe,
+                               bool isDoubleClick)
 		   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
     m_screenX = screenXArg;
@@ -341,6 +343,7 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 	m_relatedTarget->ref();
     computeLayerPos();
     m_qevent = qe;
+    m_isDoubleClick = isDoubleClick;
 }
 
 MouseEventImpl::~MouseEventImpl()

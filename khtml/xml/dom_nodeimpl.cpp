@@ -696,22 +696,26 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
         return;
 
     Event ev = evt;
-    // removeEventListener (e.g. called from a JS event listener) might invalidate the current iterator
-    // (and make it point to the QPtrList::current() item - which is difficult to set correctly).
+    // removeEventListener (e.g. called from a JS event listener) might
+    // invalidate the item after the current iterator (which "it" is pointing to).
     // So we make a copy of the list.
     QPtrList<RegisteredEventListener> listeners = *m_regdListeners;
     for (QPtrListIterator<RegisteredEventListener> it(listeners); it.current();) {
         RegisteredEventListener* current = it();
         if (current->id == evt->id() && current->useCapture == useCapture)
             current->listener->handleEvent(ev);
+
         // ECMA legacy hack
         if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
-            QEvent* qevt = static_cast<MouseEventImpl*>(evt)->qEvent(); // null if event was created via DOM
-            if ( ( qevt && qevt->type() == QEvent::MouseButtonRelease
-                   && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-                 ( qevt && qevt->type() == QEvent::MouseButtonDblClick
-                   && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
-            current->listener->handleEvent(ev);
+            MouseEventImpl* me = static_cast<MouseEventImpl*>(evt);
+            // To find whether to call onclick or ondblclick, we can't
+            // * use me->detail(), it's 2 when clicking twice w/o moving, even very slowly
+            // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
+            // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
+            // dblclicks from the DOM API, we'll need a timer here (well in the doc).
+            if ( ( !me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+              ( me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
+                current->listener->handleEvent(ev);
         }
     }
 }

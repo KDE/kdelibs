@@ -1,3 +1,17 @@
+2003-10-28  David Faure  <faure@kde.org>
+
+	* khtmlview.cpp (viewportMouseDoubleClickEvent): Set bool in MouseEventImpl
+	when handling a double click. The DOM API only has "number of clicks at the
+	same place" notion, but not whether they happened quick or over a long time.
+	Added support for small mouse movement when double-clicking, like in mousePressEvent.
+
+	* xml/dom2_eventsimpl.*: Added m_isDoubleClick bool for the reason above.
+
+	* xml/dom_nodeimpl.cpp (handleLocalEvents): Use new MouseEventImpl::isDoubleClick()
+	to differenciate between click and dblclick. Lars used the QMouseEvent type,
+	but when the event comes from JS - initMouseEvent+dispatchEvent, there's
+	no QMouseEvent - which broke test_regression.
+
 2003-10-28  Stephan Kulow  <coolo@kde.org>
 
        * khtml_part.cpp (reparseConfiguration): clear the style selector

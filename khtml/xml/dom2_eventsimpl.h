@@ -190,7 +190,8 @@ public:
 		   bool metaKeyArg,
 		   unsigned short buttonArg,
 		   NodeImpl *relatedTargetArg,
-		   QMouseEvent *qe = 0);
+		   QMouseEvent *qe = 0,
+                   bool isDoubleClick = false);
     virtual ~MouseEventImpl();
     long screenX() const { return m_screenX; }
     long screenY() const { return m_screenY; }
@@ -198,6 +199,7 @@ public:
     long clientY() const { return m_clientY; }
     long layerX() const { return m_layerX; } // non-DOM extension
     long layerY() const { return m_layerX; } // non-DOM extension
+    bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
     bool altKey() const { return m_altKey; }
@@ -237,6 +239,7 @@ protected:
     bool m_altKey  : 1;
     bool m_shiftKey : 1;
     bool m_metaKey : 1;
+    bool m_isDoubleClick : 1;
     unsigned short m_button;
     NodeImpl *m_relatedTarget;
     QMouseEvent *m_qevent;
