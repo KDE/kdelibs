@@ -621,8 +621,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 cBuffer[cBufferPos++] = cc;
                 ++src;
             }
-            qDebug( "Decimal: %02x, %d", uc, uc );
-
             EntityChar = QChar(uc);
             if(cBufferPos == 9)  Entity = SearchSemicolon;
             break;
@@ -675,7 +673,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "unknown entity!" << endl;
 #endif
-
                 checkBuffer(10);
                 // ignore the sequence, add it to the buffer as plaintext
                 *dest++ = '&';
@@ -687,8 +684,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                     prePos += cBufferPos+1;
             }
 
-            EntityChar = QChar::null;
             Entity = NoEntity;
+            EntityChar = QChar::null;
             return;
         };
     }
@@ -1230,8 +1227,6 @@ void HTMLTokenizer::setPlainText()
 
 void HTMLTokenizer::write( const QString &str, bool appendData )
 {
-    // we have to make this function reentrant. This is needed, because some
-    // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
     kdDebug( 6036 ) << "Recursion is " << recursion << endl;
@@ -1320,7 +1315,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
             default:
             {
-
                 if( ((cc >= 'a') && (cc <= 'z')) || ((cc >= 'A') && (cc <= 'Z')))
                 {
                     // Start of a Start-Tag
@@ -1360,16 +1354,12 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             tag = TagName;
             parseTag(src);
         }
-        else if ( cc == '&' )
+        else if ( cc == '&' && !src.escaped())
         {
             ++src;
-
-            discard = NoneDiscard;
-            if (pending)
-                addPending();
             parseEntity(src, dest, true);
         }
-        else if ( cc == '<')
+        else if ( cc == '<' && !src.escaped())
         {
             ++src;
             startTag = true;

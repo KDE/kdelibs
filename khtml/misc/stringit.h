@@ -60,6 +60,7 @@ public:
     const QChar& operator*() const  { return pushedChar.isNull() ? *s : pushedChar; }
     const QChar* operator->() const { return pushedChar.isNull() ? s : &pushedChar; }
 
+    bool escaped() const { return !pushedChar.isNull(); }
     uint length() const { return l+(!pushedChar.isNull()); }
 
     const QChar *current() const { return pushedChar.isNull() ? s : &pushedChar; }
