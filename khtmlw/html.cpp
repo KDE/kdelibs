@@ -1499,8 +1499,18 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
       actualURL = _url;
       reference = actualURL.reference();
       setBaseURL( _url);
-    }
 
+      // Set a default title
+      KURL title(_url);
+      title.setReference(0);
+      title.setSearchPart(0);
+      emit setTitle( title.url().data() );
+    }
+    else
+    {
+      emit setTitle( "* Unknown *" );
+    }
+  
     baseTarget = "";
 
     if ( stringTok )
