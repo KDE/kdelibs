@@ -53,6 +53,9 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_canCopyFromFile = config.readBoolEntry( "copyFromFile", false );
   m_canCopyToFile = config.readBoolEntry( "copyToFile", false );
   m_listing = config.readListEntry( "listing" );
+  // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
+  if ( m_listing.count() == 1 && m_listing.first() == "false" )
+    m_listing.clear();
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
   m_determineMimetypeFromExtension = config.readBoolEntry( "determineMimetypeFromExtension", true );
