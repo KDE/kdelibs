@@ -42,11 +42,13 @@ public:
    * for session management, you should call it first and map the
    * window later, since this avoids unnecessary flickering.
    *
+   * setProperties returns the geometry of the property string.
+   *
    * Note: Some window managers may not understand all kwm properties,
    * but all common properties such as geometry or IconicState should
    * nevertheless work anyway.
    */
-  static void setProperties(Window w, const QString &props);
+  static QRect setProperties(Window w, const QString &props);
 
 
   /**

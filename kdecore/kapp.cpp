@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.49  1997/10/09 11:46:17  kalle
+// Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
+//
 // Revision 1.48  1997/10/08 13:44:48  kulow
 // corrected the path creation due to Torben's changes
 //
@@ -352,7 +355,6 @@
 #include <kdebug.h>
 #include "kwm.h"
   pIconLoader = NULL;
-  pConfigStream = NULL;
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -446,9 +448,63 @@ void KApplication::init()
 	// there is no global app config file
 	aGlobalAppConfigName = "";
   aGlobalAppConfigFile.close();
+
+  pSessionConfig = NULL;
+  char* pHome;
+  if( (pHome = getenv( "HOME" )) )
+	aConfigName = pHome;
+  pTopWidget = NULL;
+  if( !bSuccess )
+	{
+	  // try to open at least read-only
+	  bSuccess = aConfigFile.open( IO_ReadOnly );
+	  if( !bSuccess )
+		{
+		  // we didn't succeed to open an app-config file
+		  pConfig = new KConfig( aGlobalAppConfigName );
+		  eConfigState = APPCONFIG_NONE;
+		}
+	  else
+		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
+  aConfigName += "/.kde/config/";
+  
+  pCharsets = new KCharsets();
+		}
+	}
+  else
+	{
+	  // we succeeded to open an app-config file read-write
+	  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
+	  eConfigState = APPCONFIG_READWRITE;
+	}
+
+  pCharsets = new KCharsets();
+  
+  pLocale = new KLocale(aAppName);
+  bLocaleConstructed = true;
+    pSessionConfig = new KConfig(NULL, aSessionConfigName);
+  // Drag 'n drop stuff taken from kfm
+  display = desktop()->x11Display();
+  DndSelection = XInternAtom( display, "DndSelection", False );
+  DndProtocol = XInternAtom( display, "DndProtocol", False );    
+  DndEnterProtocol = XInternAtom( display, "DndEnterProtocol", False );    
+  DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );    
+  DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );    
+void KApplication::enableSessionManagement(bool userdefined = False){
+  dropZones.setAutoDelete( FALSE );
+
+  // initialize file search paths
+  pSearchPaths = new QStrList();
+  buildSearchPaths();
+
+  // initialize KKeyConfig
+  initKKeyConfig( getConfig() );  
+
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
+
+  readSettings();
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
 
@@ -538,9 +594,9 @@ KLocale* KApplication::getLocale()
     pLocale = new KLocale();
 
   return pLocale;
-  enum parameter_code { unknown = 0, caption, icon, miniicon };
-  char *parameter_strings[3] = { "-caption", "-icon", "-miniicon" };
-  int parameter_count = 3;
+}
+
+
 bool KApplication::eventFilter ( QObject*, QEvent* e )
   int i = 0;
 	{    
@@ -574,6 +630,33 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 			  pConfig->writeEntry( "ErrorFilename", pDialog->errorFile() );
 			  pConfig->writeEntry( "ErrorShow", pDialog->errorShow() );
   int parameter_count = 4;
+
+			  bAreaCalculated = false;
+			}
+		  else
+			{
+			  /* User pressed Cancel, do nothing */
+
+    for ( int p = 0 ; p < parameter_count; p++)
+		  /* restore old group */
+        parameter = (parameter_code)(p + 1);
+
+		  return TRUE; // do not process event further
+	  aSessionConfigName += "/.kde/config/";
+	}
+  return FALSE; // process event further
+}
+
+	aSessionName = argv[i+1];
+	QString aSessionConfigName;
+	if (argv[i+1][0] == '/')
+	    pSessionConfig = new KConfig(NULL, aSessionConfigName);
+	else {
+	  char* pHome;
+	  if( (pHome = getenv( "HOME" )) )
+	    aSessionConfigName = pHome;
+	  else
+	    aSessionConfigName = "."; // use current dir if $HOME is not set
 	  aSessionConfigName += argv[i+1];
 	}
 	if (QFile::exists(aSessionConfigName)){
@@ -601,7 +684,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
       if (aMiniIconPixmap.isNull()){
 		if (argv[i+1][0] == '/')
-  unregisterMainWidget();
+  unregisterTopWidget();
 
 		  aMiniIconPixmap = aIconPixmap;
 		else
@@ -624,20 +707,39 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		aSessionName = argv[i+1];
 		QString aSessionConfigName;
 		if (argv[i+1][0] == '/')
-
 		  aSessionConfigName = argv[i+1];
 		else {
 		  char* pHome;
 		  if( (pHome = getenv( "HOME" )) )
 			aSessionConfigName = pHome;
-			  // WM asks us to save ourselves
-			  KDEBUG( KDEBUG_INFO, 102, "Save yourself message from WM" );
+			  if (!mainWidget() || 
+			      cme->window != mainWidget()->winId()){
+		  aSessionConfigName += "/.kde/share/config/";
+		  aSessionConfigName += argv[i+1];
+		}
+		if (QFile::exists(aSessionConfigName)){
 		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
 		  if( bSuccess ){
 			  KWM::setUnsavedDataHint( mainWidget()->winId(),
 									   bUnsavedData );
-			  // FIXME: Richtigen Befehl einsetzen
-			  KWM::setWmCommand( mainWidget()->winId(), argv()[0] );
+			  
+			aConfigFile.close();
+			    KWM::setWmCommand( mainWidget()->winId(), aWmCommand);
+  theKProcessController = 0L;
+
+    if ( parameter != unknown ) { // remove arguments
+			      QString aCommand = argv()[0];
+  if (aMiniIconPixmap.isNull()){
+    aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
+			      KWM::setWmCommand( mainWidget()->winId(), 
+}
+				if (argv()[0][0]=='/')
+				  aCommand = argv()[0];
+			      KWM::setWmCommand( mainWidget()->winId(), 
+						 argv()[0]);
+				  delete [] s;
+				  aCommand+=aAppName;
+				}
     
   if( pLocale )
     delete pLocale;
@@ -1207,30 +1309,37 @@ QString KApplication::localconfigdir()
 void KApplication::setUnsavedData( bool bUnsaved )
 {
   bUnsavedData = bUnsaved;
-  KWM::setUnsavedDataHint( mainWidget()->winId(), bUnsavedData );
+  if (topWidget())
+    KWM::setUnsavedDataHint( topWidget()->winId(), bUnsavedData );
     QString s = t.readLine();
     if(!s.isEmpty())
       fontlist->append( s );
-void KApplication::setMainWidget( QWidget *mainWidget )
+  }
 
-  unregisterMainWidget();
-  QApplication::setMainWidget( mainWidget );
-  registerMainWidget();
+  unregisterTopWidget();
+  fontfile.close();
+  registerTopWidget();
+
+
+const char* KApplication::tempSaveName( const char* pFilename )
+{
+      KWM::setWmCommand( topWidget->winId(), argv()[0] );
+
   if( pFilename[0] != '/' )
 	{
-void KApplication::registerMainWidget()
+	  KDEBUG( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
 	  aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
-  if( mainWidget() ) {
+  if( topWidget() ) {
 	
     int ID=0;
     QString IDstr;
 
     // set the specified icons
-    KWM::setIcon(mainWidget()->winId(), getIcon());
-    KWM::setMiniIcon(mainWidget()->winId(), getMiniIcon());
+    KWM::setIcon(topWidget()->winId(), getIcon());
+    KWM::setMiniIcon(topWidget()->winId(), getMiniIcon());
 	
 
-    ID = (int) mainWidget()->winId();
+    ID = (int) topWidget()->winId();
     IDstr.sprintf("0x%x", ID);
 	
     Atom type;
@@ -1245,34 +1354,45 @@ void KApplication::registerMainWidget()
 	
     Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
 	
-    XGetWindowProperty( kde_display, root, at, 0, 256,
-						False, XA_STRING, &type, &format, &nitems, 
-						&bytes_after,
-						(unsigned char **)&buf);
+    QString s;
+    do {
+      XGetWindowProperty( kde_display, root, at, 0, 256,
+			  False, XA_STRING, &type, &format, &nitems, 
+			  &bytes_after,
+			  (unsigned char **)&buf);
+      
+      s =  buf;
+      
+      // write in new top widget ID
+      if ( s.length() > 0) s += ",";
+      s += IDstr;
 	
-    QString s( buf );
-	
-    // write in new main widget ID
-	
-    if ( s.length() > 0) s += ",";
-    s += IDstr;
-	
-    // write back to porperty
-	
-    XChangeProperty(kde_display, root, at,
-					XA_STRING, 8, PropModeReplace,
-					(unsigned char *)s.data(), s.length());
+      // write back to property
+      XChangeProperty(kde_display, root, at,
+		      XA_STRING, 8, PropModeReplace,
+		      (unsigned char *)s.data(), s.length());
+      XSync(kde_display, False);
+
+      // make a check wether we really managed to write this
+      // property. But that is still NOT sufficient.
+      // If you do stuff like this you have to protect it
+      // with a mutex! (Matthias)
+      XGetWindowProperty( kde_display, root, at, 0, 256,
+			  False, XA_STRING, &type, &format, &nitems, 
+			  &bytes_after,
+			  (unsigned char **)&buf);
+    } while (s != buf); 
   }
 	}
   else
-void KApplication::unregisterMainWidget()
+	aFilename = pFilename;
 
-  if( mainWidget() ) {
+  if( topWidget() ) {
 	
     int ID=0;
     QString IDstr;
 	
-    ID = (int) mainWidget()->winId();
+    ID = (int) topWidget()->winId();
     IDstr.sprintf("%x", ID);
 	IDstr.prepend("0x");
 	
@@ -1287,29 +1407,43 @@ void KApplication::unregisterMainWidget()
     Window root = RootWindow(kde_display, screen);
 	
     Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
-	
-    XGetWindowProperty( kde_display, root, at, 0, 256,
-						False, XA_STRING, &type, &format, &nitems, 
-						&bytes_after,
-						(unsigned char **)&buf);
-	
-    QString s( buf );
-	
-    // cut out current main widget ID if there is a current main widget
-	
-    if( ID ) {
-      int i = s.find( IDstr );
-      if ( i > 0 )
-        s.remove( i-1, IDstr.length()+1 ); // cut out comma in front
-      else if ( i == 0 )
-        s.remove( i, IDstr.length()+1 ); // cut out comma behind
-    }
-	
-    // write back to porperty
-	
-    XChangeProperty(kde_display, root, at,
-					XA_STRING, 8, PropModeReplace,
-					(unsigned char *)s.data(), s.length());
+
+    QString s;
+    do {
+      XGetWindowProperty( kde_display, root, at, 0, 256,
+			  False, XA_STRING, &type, &format, &nitems, 
+			  &bytes_after,
+			  (unsigned char **)&buf);
+      
+      s = buf;
+      
+      // cut out current top widget ID if there is a current top widget
+      
+      if( ID ) {
+	int i = s.find( IDstr );
+	if ( i > 0 )
+	  s.remove( i-1, IDstr.length()+1 ); // cut out comma in front
+	else if ( i == 0 )
+	  s.remove( i, IDstr.length()+1 ); // cut out comma behind
+      }
+      
+      // write back to property
+      
+      XChangeProperty(kde_display, root, at,
+		      XA_STRING, 8, PropModeReplace,
+		      (unsigned char *)s.data(), s.length());
+  QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
+      XSync(kde_display, False);
+      
+      // make a check wether we really managed to write this
+      // property. But that is still NOT sufficient.
+      // If you do stuff like this you have to protect it
+      // with a mutex! (Matthias)
+      XGetWindowProperty( kde_display, root, at, 0, 256,
+			  False, XA_STRING, &type, &format, &nitems, 
+			  &bytes_after,
+			  (unsigned char **)&buf);
+    } while (s != buf); 
   }
   if( !aAutosaveDir.exists() )
 	{

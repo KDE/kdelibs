@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// KApplication::localconfigdir()
+// KApplication::localkdedir()
+// KConfig searches in $KDEDIR/share/config/kderc
 //
 // Revision 1.35  1997/10/22 20:42:56  kalle
 // Help menu works as advertised
@@ -269,6 +272,44 @@ class KApplication : public QApplication
 */
 
   /** 
+/** 
+* Retrieve the application config object. 
+*
+* @return a pointer to the application's global KConfig object.
+* @see KConfig
+*/
+	*/
+  virtual bool eventFilter( QObject*, QEvent* );
+/** 
+* Retrieve the application session config object. 
+*
+* @return a pointer to the application's instance specific KConfig object.
+* @see KConfig
+*/
+	* created in the same application. It saves the trouble of having to pass
+	* the pointer to it explicitly to every function that may require it.
+/** 
+* Is the application restored from the session manager? 
+*
+* @ In this case the getSessionConfig()-object probably contains 
+* @ important data.
+*/
+  const QString& appName() const { return aAppName; }
+* @ Session management will apply to the main widget.
+/** 
+* Enable session management
+*
+* @ If userdefined = True then the WmCommand can be defined with setWmCommand.
+* @ Note that you do not get an instance specific config object with
+* @ getSessionConfig() in this case!
+* @
+* @ Session management will apply to the top widget.
+*/
+	* Retrieve the application session config object. 
+	*
+/** 
+* Set the WmCommand for the session manager.
+	*/
   bool isRestored() const { return bIsRestored; }
 
   /** 
@@ -313,33 +354,38 @@ class KApplication : public QApplication
 	* from the _DT_APP_WINDOWS root window property and registers the new main
 	* widget.
 	*
-	* @see #registerMainWidget
-	* @see #unregisteMainWidget
+	* @see #registerTopWidget
+	* @see #unregisteTopWidget
 	*/
-  void setMainWidget( QWidget *mainWidget );
+
+  /**
+    * Get a KCharsets object for the application. 
+    * @return a pointer to the KCharsets object of the application
+    * @see KCharsets
+    */
   KCharsets* getCharsets()const
   /** Adds window ID of the main widget to _DT_APP_WINDOWS property on root.
 	*
-	* The window ID of the main widget is appended to the string held in the
+	* The window ID of the top widget is appended to the string held in the
 	* _DT_APP_WINDOWS property on the root window. This property contains
 	* the IDs of all windows that understand the KDE style change messaging
 	* protocol
 	*
-	* @see #unregisterMainWidget
+	* @see #unregisterTopWidget
 	*/
-  void registerMainWidget();
+  /**
 
   /** Removes window ID of the main widget from _DT_APP_WINDOWS property on 
 	* root.
 	*
-	* If a main widget exists its window ID is removed from the string held
+	* If a top widget exists its window ID is removed from the string held
 	* in the _DT_APP_WINDOWS property on the root window. This property
 	* contains the IDs of all windows that understand the KDE style change
 	* messaging protocol.
 	*
-	* @see #registerMainWidget
+	* @see #registerTopWidget
 	*/
-  void unregisterMainWidget();
+	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
   QPixmap getIcon() const
@@ -541,10 +587,12 @@ protected:
   /**
 	* Two X11 atoms used for session management
 private slots:
-  QTextStream* pConfigStream; // stream of the application-specific config file
-  QFile* pConfigFile; // application-specific config file
+  void appHelpActivated();
+
+  /**
 	* X11 atoms used for IPC
 	*/
+  Atom DndSelection;
   Atom DndProtocol;
   Atom DndEnterProtocol;
   Atom DndLeaveProtocol;
@@ -558,6 +606,9 @@ private slots:
   Atom KDEChangePalette;
   bool bUnsavedData; // there is data to be saved before the app should exit
   Atom KDEChangeGeneral;
+  Atom KDEChangeStyle;
+
+  /// Current application object.
 
  private slots:
  void appHelpActivated();
@@ -629,6 +680,14 @@ public:
 	*
 	* Normally, widgets will update their palettes automatically, but you
 	* should connect to this to program special behaviour.
+	*/
+  void kdisplayPaletteChanged();
+
+  /** 
+	* KApplication has changed its GUI Style due to a KDisplay request.
+	*
+	* Normally, widgets will update their styles automatically (as they would
+	* respond to an explicit setGUIStyle() call), but you should connect to
 	* this to program special behaviour.
 	*/
   void kdisplayStyleChanged();

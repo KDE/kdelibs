@@ -174,11 +174,12 @@ QString KWM::getProperties(Window w){
   return result;
 } 
 
-void KWM::setProperties(Window w, const QString &props){
+QRect KWM::setProperties(Window w, const QString &props){
   int a;
   int data[13];
   int d1,d2,d3,d4;
   int n = 0;
+  QRect result;
   QString arg = props.data();
   while ((a = arg.find('+', 0)) != -1){
     if (n<13)
@@ -189,7 +190,7 @@ void KWM::setProperties(Window w, const QString &props){
     data[n++] = arg.toInt();
   if (n!=13){
 //     fprintf(stderr, "KWM::setProperties: <bad properties error>\n");
-    return;
+    return result;
   }
   n = 0;
   moveToDesktop(w, data[n++]);
@@ -197,7 +198,8 @@ void KWM::setProperties(Window w, const QString &props){
   d2 = data[n++];
   d3 = data[n++];
   d4 = data[n++];
-  setGeometry(w, QRect(d1,d2,d3,d4));
+  result = QRect(d1,d2,d3,d4);
+  setGeometry(w, result);
   d1 = data[n++];
   d2 = data[n++];
   d3 = data[n++];
@@ -207,6 +209,7 @@ void KWM::setProperties(Window w, const QString &props){
   setMaximize(w, (data[n++] != 0) );
   setSticky(w, (data[n++] != 0) );
   setDecoration(w, data[n++] );
+  return result;
 }
 
 
