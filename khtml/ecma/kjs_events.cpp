@@ -25,7 +25,6 @@
 #include "kjs_views.h"
 #include "kjs_proxy.h"
 #include "kjs_debugwin.h"
-#include <qptrdict.h>
 #include <qptrlist.h>
 #include <kdebug.h>
 #include <xml/dom_nodeimpl.h>
@@ -33,8 +32,6 @@
 #include <rendering/render_object.h>
 
 using namespace KJS;
-
-QPtrDict<DOMEvent> events;
 
 // -------------------------------------------------------------------------
 
@@ -176,7 +173,7 @@ DOMEvent::DOMEvent(ExecState *exec, DOM::Event e)
 
 DOMEvent::~DOMEvent()
 {
-  events.remove(event.handle());
+  ScriptInterpreter::forgetDOMObject(event.handle());
 }
 
 Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
@@ -234,10 +231,11 @@ Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &
 
 Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
 {
-  DOMEvent *ret;
+  DOMObject *ret;
   if (e.isNull())
     return Null();
-  else if ((ret = events[e.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(e.handle())))
     return ret;
 
   DOM::DOMString module = e.eventModuleName();
@@ -250,7 +248,7 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
   else
     ret = new DOMEvent(exec, e);
 
-  events.insert(e.handle(),ret);
+  interp->putDOMObject(e.handle(),ret);
   return ret;
 }
 

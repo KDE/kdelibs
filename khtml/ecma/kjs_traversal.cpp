@@ -26,14 +26,9 @@
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
 #include <khtmlview.h>
-#include <qptrdict.h>
 #include <kdebug.h>
 
 using namespace KJS;
-
-QPtrDict<DOMNodeIterator> nodeIterators;
-QPtrDict<DOMNodeFilter> nodeFilters;
-QPtrDict<DOMTreeWalker> treeWalkers;
 
 // -------------------------------------------------------------------------
 
@@ -60,7 +55,7 @@ DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
 
 DOMNodeIterator::~DOMNodeIterator()
 {
-  nodeIterators.remove(nodeIterator.handle());
+  ScriptInterpreter::forgetDOMObject(nodeIterator.handle());
 }
 
 Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
@@ -108,16 +103,7 @@ Value DOMNodeIteratorProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
 
 Value KJS::getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
 {
-  DOMNodeIterator *ret;
-  if (ni.isNull())
-    return Null();
-  else if ((ret = nodeIterators[ni.handle()]))
-    return ret;
-  else {
-    ret = new DOMNodeIterator(exec,ni);
-    nodeIterators.insert(ni.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::NodeIterator, DOMNodeIterator>(exec, ni);
 }
 
 
@@ -177,7 +163,7 @@ DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
 
 DOMNodeFilter::~DOMNodeFilter()
 {
-  nodeFilters.remove(nodeFilter.handle());
+  ScriptInterpreter::forgetDOMObject(nodeFilter.handle());
 }
 
 Value DOMNodeFilterProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -197,16 +183,7 @@ Value DOMNodeFilterProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
 
 Value KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
 {
-  DOMNodeFilter *ret;
-  if (nf.isNull())
-    return Null();
-  else if ((ret = nodeFilters[nf.handle()]))
-    return ret;
-  else {
-    ret = new DOMNodeFilter(exec,nf);
-    nodeFilters.insert(nf.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::NodeFilter, DOMNodeFilter>(exec, nf);
 }
 
 // -------------------------------------------------------------------------
@@ -239,7 +216,7 @@ DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
 
 DOMTreeWalker::~DOMTreeWalker()
 {
-  treeWalkers.remove(treeWalker.handle());
+  ScriptInterpreter::forgetDOMObject(treeWalker.handle());
 }
 
 Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
@@ -306,16 +283,7 @@ Value DOMTreeWalkerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
 
 Value KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
 {
-  DOMTreeWalker *ret;
-  if (tw.isNull())
-    return Null();
-  else if ((ret = treeWalkers[tw.handle()]))
-    return ret;
-  else {
-    ret = new DOMTreeWalker(exec,tw);
-    treeWalkers.insert(tw.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::TreeWalker, DOMTreeWalker>(exec, tw);
 }
 
 DOM::NodeFilter KJS::toNodeFilter(const Value& val)

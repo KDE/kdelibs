@@ -1236,47 +1236,17 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 
 Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
 {
-  DOMObject *ret;
-  if (m.isNull())
-    return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(m.handle())))
-    return ret;
-  else {
-    ret = new DOMNamedNodeMap(exec, m);
-    interp->putDOMObject(m.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m);
 }
 
 Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
 {
-  DOMObject *ret;
-  if (l.isNull())
-    return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(l.handle())))
-    return ret;
-  else {
-    ret = new DOMNodeList(exec, l);
-    interp->putDOMObject(l.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l);
 }
 
 Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 {
-  DOMObject *ret;
-  if (i.isNull())
-    return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(i.handle())))
-    return ret;
-  else {
-    ret = new DOMDOMImplementation(exec, i);
-    interp->putDOMObject(i.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i);
 }
 
 // -------------------------------------------------------------------------

@@ -20,12 +20,9 @@
 
 #include "kjs_range.h"
 #include "kjs_range.lut.h"
-#include <qptrdict.h>
 #include <kdebug.h>
 
 using namespace KJS;
-
-QPtrDict<DOMRange> ranges;
 
 // -------------------------------------------------------------------------
 
@@ -69,7 +66,7 @@ DOMRange::DOMRange(ExecState *exec, DOM::Range r)
 
 DOMRange::~DOMRange()
 {
-  ranges.remove(range.handle());
+  ScriptInterpreter::forgetDOMObject(range.handle());
 }
 
 Value DOMRange::tryGet(ExecState *exec, const UString &p) const
@@ -185,16 +182,7 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
 
 Value KJS::getDOMRange(ExecState *exec, DOM::Range r)
 {
-  DOMRange *ret;
-  if (r.isNull())
-    return Null();
-  else if ((ret = ranges[r.handle()]))
-    return ret;
-  else {
-    ret = new DOMRange(exec,r);
-    ranges.insert(r.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::Range, KJS::DOMRange>(exec, r);
 }
 
 // -------------------------------------------------------------------------

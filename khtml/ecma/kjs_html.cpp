@@ -47,8 +47,6 @@
 
 using namespace KJS;
 
-QPtrDict<KJS::HTMLCollection> htmlCollections;
-
 IMPLEMENT_PROTOFUNC(HTMLDocFunction)
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -2589,7 +2587,7 @@ HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
 
 HTMLCollection::~HTMLCollection()
 {
-  htmlCollections.remove(collection.handle());
+  ScriptInterpreter::forgetDOMObject(collection.handle());
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
@@ -2959,28 +2957,20 @@ Image::~Image()
 
 Value KJS::getHTMLCollection(ExecState *exec,DOM::HTMLCollection c)
 {
-  HTMLCollection *ret;
-  if (c.isNull())
-    return Null();
-  else if ((ret = htmlCollections[c.handle()]))
-    return ret;
-  else {
-    ret = new HTMLCollection(exec,c);
-    htmlCollections.insert(c.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
 }
 
 Value KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
 {
-  HTMLCollection *ret;
+  DOMObject *ret;
   if (c.isNull())
     return Null();
-  else if ((ret = htmlCollections[c.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(c.handle())))
     return ret;
   else {
     ret = new HTMLSelectCollection(exec, c, e);
-    htmlCollections.insert(c.handle(),ret);
+    interp->putDOMObject(c.handle(),ret);
     return ret;
   }
 }

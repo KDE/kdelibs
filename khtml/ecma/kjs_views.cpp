@@ -21,12 +21,9 @@
 #include "kjs_views.h"
 #include "kjs_views.lut.h"
 #include "kjs_css.h"
-#include <qptrdict.h>
 #include <dom2_events.h>
 
 using namespace KJS;
-
-QPtrDict<DOMAbstractView> abstractViews;
 
 // -------------------------------------------------------------------------
 
@@ -41,7 +38,7 @@ IMPLEMENT_PROTOFUNC(DOMAbstractViewFunc)
 
 DOMAbstractView::~DOMAbstractView()
 {
-  abstractViews.remove(abstractView.handle());
+  ScriptInterpreter::forgetDOMObject(abstractView.handle());
 }
 
 Value DOMAbstractView::tryGet(ExecState *exec, const UString &p) const
@@ -77,16 +74,7 @@ Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
 Value KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractView av)
 {
-  DOMAbstractView *ret;
-  if (av.isNull())
-    return Null();
-  else if ((ret = abstractViews[av.handle()]))
-    return ret;
-  else {
-    ret = new DOMAbstractView(exec,av);
-    abstractViews.insert(av.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::AbstractView, DOMAbstractView>(exec, av);
 }
 
 DOM::AbstractView KJS::toAbstractView (const Value& val)

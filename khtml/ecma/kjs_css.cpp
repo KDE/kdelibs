@@ -23,23 +23,12 @@
 #include "kjs_css.lut.h"
 
 #include <dom/html_head.h> // for HTMLStyleElement
-#include <qptrdict.h>
 
 #include <css/cssparser.h>
 #include "kjs_dom.h"
 
 using namespace KJS;
 #include <kdebug.h>
-
-QPtrDict<DOMCSSStyleDeclaration> domCSSStyleDeclarations;
-QPtrDict<DOMStyleSheet> styleSheets;
-QPtrDict<DOMStyleSheetList> styleSheetLists;
-QPtrDict<DOMMediaList> mediaLists;
-QPtrDict<DOMCSSRuleList> cssRuleLists;
-QPtrDict<DOMCSSRule> cssRules;
-QPtrDict<DOMCSSValue> cssValues;
-QPtrDict<DOMRect> rects;
-QPtrDict<DOMCounter> counters;
 
 static QString jsNameToProp( const UString &p )
 {
@@ -82,7 +71,7 @@ DOMCSSStyleDeclaration::DOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDec
 
 DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
 {
-  domCSSStyleDeclarations.remove(styleDecl.handle());
+  ScriptInterpreter::forgetDOMObject(styleDecl.handle());
 }
 
 bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p,
@@ -221,16 +210,7 @@ Value DOMCSSStyleDeclarationProtoFunc::tryCall(ExecState *exec, Object &thisObj,
 
 Value KJS::getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclaration s)
 {
-  DOMCSSStyleDeclaration *ret;
-  if (s.isNull())
-    return Null();
-  else if ((ret = domCSSStyleDeclarations[s.handle()]))
-    return ret;
-  else {
-    ret = new DOMCSSStyleDeclaration(exec, s);
-    domCSSStyleDeclarations.insert(s.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::CSSStyleDeclaration, KJS::DOMCSSStyleDeclaration>(exec, s);
 }
 
 // -------------------------------------------------------------------------
@@ -250,7 +230,7 @@ const ClassInfo DOMStyleSheet::info = { "StyleSheet", 0, &DOMStyleSheetTable, 0 
 
 DOMStyleSheet::~DOMStyleSheet()
 {
-  styleSheets.remove(styleSheet.handle());
+  ScriptInterpreter::forgetDOMObject(styleSheet.handle());
 }
 
 Value DOMStyleSheet::tryGet(ExecState *exec, const UString &propertyName) const
@@ -290,10 +270,11 @@ void DOMStyleSheet::tryPut(ExecState *exec, const UString &propertyName, const V
 
 Value KJS::getDOMStyleSheet(ExecState *exec, DOM::StyleSheet ss)
 {
-  DOMStyleSheet *ret;
+  DOMObject *ret;
   if (ss.isNull())
     return Null();
-  else if ((ret = styleSheets[ss.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(ss.handle())))
     return ret;
   else {
     if (ss.isCSSStyleSheet()) {
@@ -303,7 +284,7 @@ Value KJS::getDOMStyleSheet(ExecState *exec, DOM::StyleSheet ss)
     }
     else
       ret = new DOMStyleSheet(exec,ss);
-    styleSheets.insert(ss.handle(),ret);
+    interp->putDOMObject(ss.handle(),ret);
     return ret;
   }
 }
@@ -322,7 +303,7 @@ IMPLEMENT_PROTOFUNC(DOMStyleSheetListFunc) // not really a proto, but doesn't ma
 
 DOMStyleSheetList::~DOMStyleSheetList()
 {
-  styleSheetLists.remove(styleSheetList.handle());
+  ScriptInterpreter::forgetDOMObject(styleSheetList.handle());
 }
 
 Value DOMStyleSheetList::tryGet(ExecState *exec, const UString &p) const
@@ -377,14 +358,16 @@ Value DOMStyleSheetList::tryGet(ExecState *exec, const UString &p) const
 
 Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::Document doc)
 {
-  DOMStyleSheetList *ret;
+  // Can't use the cacheDOMObject macro because of the doc argument
+  DOMObject *ret;
   if (ssl.isNull())
     return Null();
-  else if ((ret = styleSheetLists[ssl.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(ssl.handle())))
     return ret;
   else {
     ret = new DOMStyleSheetList(exec, ssl, doc);
-    styleSheetLists.insert(ssl.handle(),ret);
+    interp->putDOMObject(ssl.handle(),ret);
     return ret;
   }
 }
@@ -426,7 +409,7 @@ DOMMediaList::DOMMediaList(ExecState *exec, DOM::MediaList ml)
 
 DOMMediaList::~DOMMediaList()
 {
-  mediaLists.remove(mediaList.handle());
+  ScriptInterpreter::forgetDOMObject(mediaList.handle());
 }
 
 Value DOMMediaList::tryGet(ExecState *exec, const UString &p) const
@@ -454,16 +437,7 @@ void DOMMediaList::tryPut(ExecState *exec, const UString &propertyName, const Va
 
 Value KJS::getDOMMediaList(ExecState *exec, DOM::MediaList ml)
 {
-  DOMMediaList *ret;
-  if (ml.isNull())
-    return Null();
-  else if ((ret = mediaLists[ml.handle()]))
-    return ret;
-  else {
-    ret = new DOMMediaList(exec, ml);
-    mediaLists.insert(ml.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::MediaList, KJS::DOMMediaList>(exec, ml);
 }
 
 Value KJS::DOMMediaListProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -561,7 +535,7 @@ IMPLEMENT_PROTOFUNC(DOMCSSRuleListFunc) // not really a proto, but doesn't matte
 
 DOMCSSRuleList::~DOMCSSRuleList()
 {
-  cssRuleLists.remove(cssRuleList.handle());
+  ScriptInterpreter::forgetDOMObject(cssRuleList.handle());
 }
 
 Value DOMCSSRuleList::tryGet(ExecState *exec, const UString &p) const
@@ -598,16 +572,7 @@ Value DOMCSSRuleListFunc::tryCall(ExecState *exec, Object &thisObj, const List &
 
 Value KJS::getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleList rl)
 {
-  DOMCSSRuleList *ret;
-  if (rl.isNull())
-    return Null();
-  else if ((ret = cssRuleLists[rl.handle()]))
-    return ret;
-  else {
-    ret = new DOMCSSRuleList(exec, rl);
-    cssRuleLists.insert(rl.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::CSSRuleList, KJS::DOMCSSRuleList>(exec, rl);
 }
 
 // -------------------------------------------------------------------------
@@ -616,7 +581,7 @@ IMPLEMENT_PROTOFUNC(DOMCSSRuleFunc) // Not a proto, but doesn't matter
 
 DOMCSSRule::~DOMCSSRule()
 {
-  cssRules.remove(cssRule.handle());
+  ScriptInterpreter::forgetDOMObject(cssRule.handle());
 }
 
 const ClassInfo DOMCSSRule::info = { "CSSRule", 0, &DOMCSSRuleTable, 0 };
@@ -813,16 +778,7 @@ Value DOMCSSRuleFunc::tryCall(ExecState *exec, Object &thisObj, const List &args
 
 Value KJS::getDOMCSSRule(ExecState *exec, DOM::CSSRule r)
 {
-  DOMCSSRule *ret;
-  if (r.isNull())
-    return Null();
-  else if ((ret = cssRules[r.handle()]))
-    return ret;
-  else {
-    ret = new DOMCSSRule(exec, r);
-    cssRules.insert(r.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::CSSRule, KJS::DOMCSSRule>(exec, r);
 }
 
 // -------------------------------------------------------------------------
@@ -896,7 +852,7 @@ const ClassInfo DOMCSSValue::info = { "CSSValue", 0, &DOMCSSValueTable, 0 };
 */
 DOMCSSValue::~DOMCSSValue()
 {
-  cssValues.remove(cssValue.handle());
+  ScriptInterpreter::forgetDOMObject(cssValue.handle());
 }
 
 Value DOMCSSValue::tryGet(ExecState *exec, const UString &p) const
@@ -918,10 +874,11 @@ void DOMCSSValue::tryPut(ExecState *exec, const UString &propertyName, const Val
 
 Value KJS::getDOMCSSValue(ExecState *exec, DOM::CSSValue v)
 {
-  DOMCSSValue *ret;
+  DOMObject *ret;
   if (v.isNull())
     return Null();
-  else if ((ret = cssValues[v.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(v.handle())))
     return ret;
   else {
     if (v.isCSSValueList())
@@ -930,7 +887,7 @@ Value KJS::getDOMCSSValue(ExecState *exec, DOM::CSSValue v)
       ret = new DOMCSSPrimitiveValue(exec,v);
     else
       ret = new DOMCSSValue(exec,v);
-    cssValues.insert(v.handle(),ret);
+    interp->putDOMObject(v.handle(),ret);
     return ret;
   }
 }
@@ -1196,17 +1153,7 @@ Value DOMRect::tryGet(ExecState *exec, const UString &p) const
 
 Value KJS::getDOMRect(ExecState *exec, DOM::Rect r)
 {
-  DOMObject *ret;
-  if (r.isNull())
-    return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(r.handle())))
-    return ret;
-  else {
-    ret = new DOMRect(r);
-    interp->putDOMObject(r.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::Rect, KJS::DOMRect>(exec, r);
 }
 
 // -------------------------------------------------------------------------
@@ -1221,7 +1168,7 @@ const ClassInfo DOMCounter::info = { "Counter", 0, &DOMCounterTable, 0 };
 */
 DOMCounter::~DOMCounter()
 {
-  counters.remove(counter.handle());
+  ScriptInterpreter::forgetDOMObject(counter.handle());
 }
 
 Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
@@ -1236,16 +1183,7 @@ Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getDOMCounter(ExecState *, DOM::Counter c)
+Value KJS::getDOMCounter(ExecState *exec, DOM::Counter c)
 {
-  DOMCounter *ret;
-  if (c.isNull())
-    return Null();
-  else if ((ret = counters[c.handle()]))
-    return ret;
-  else {
-    ret = new DOMCounter(c);
-    counters.insert(c.handle(),ret);
-    return ret;
-  }
+  return cacheDOMObject<DOM::Counter, KJS::DOMCounter>(exec, c);
 }

@@ -104,6 +104,22 @@ namespace KJS {
     KHTMLPart* m_part;
     QPtrDict<DOMObject> m_domObjects;
   };
+  /** Retrieve from cache, or create, a KJS object around a DOM object */
+  template<class DOMObj, class KJSDOMObj>
+  inline Value cacheDOMObject(ExecState *exec, DOMObj domObj)
+  {
+    DOMObject *ret;
+    if (domObj.isNull())
+      return Null();
+    ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+    if ((ret = interp->getDOMObject(domObj.handle())))
+      return ret;
+    else {
+      ret = new KJSDOMObj(exec, domObj);
+      interp->putDOMObject(domObj.handle(),ret);
+      return ret;
+    }
+  }
 
   /**
    * Convert an object to a Node. Returns a null Node if not possible.

@@ -263,7 +263,7 @@ namespace KJS {
 
   class DOMRect : public DOMObject {
   public:
-    DOMRect(DOM::Rect r) : rect(r) { }
+    DOMRect(ExecState *, DOM::Rect r) : rect(r) { }
     ~DOMRect();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
@@ -278,7 +278,7 @@ namespace KJS {
 
   class DOMCounter : public DOMObject {
   public:
-    DOMCounter(DOM::Counter c) : counter(c) { }
+    DOMCounter(ExecState *, DOM::Counter c) : counter(c) { }
     ~DOMCounter();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
