@@ -21,12 +21,16 @@
 #include "resourceldapkio.h"
 #include "resourceldapkioconfig.h"
 
+#include <kglobal.h>
+#include <klocale.h>
+
 using namespace KABC;
 
 extern "C"
 {
   KDE_EXPORT void *init_kabc_ldapkio()
   {
+    KGlobal::locale()->insertCatalogue("kabc_ldapkio");
     return new KRES::PluginFactory<ResourceLDAPKIO, ResourceLDAPKIOConfig>();
   }
 }
