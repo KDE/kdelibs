@@ -30,10 +30,12 @@ htmlview.cpp: htmlview.moc
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h
-libkhtmlw_la_LDFLAGS = -version-info 0:91
+libkhtmlw_la_LDFLAGS = -version-info 1:0
 
 data_DATA = khtmlw_dnd.xpm
 datadir = $(kde_datadir)/khtmlw/pics
+
+EXTRA_DIST = khtmlw_dnd.xpm
 
 INCLUDES = -I../kdecore -I../kdeui -I../jscript $(all_includes)
 

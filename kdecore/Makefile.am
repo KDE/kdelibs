@@ -19,7 +19,7 @@
 
 INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
 DISTCLEANFILES = $(BUILT_SOURCES)
-EXTRA_DIST = convert_key.c
+EXTRA_DIST = convert_key.c charsets.config
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
@@ -37,7 +37,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp 
 
-libkdecore_la_LDFLAGS = -version-info 0:91
+libkdecore_la_LDFLAGS = -version-info 1:0
 libkdecore_la_LIBADD = 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\

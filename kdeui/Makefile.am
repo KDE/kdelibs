@@ -23,7 +23,7 @@ EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -version-info 0:91  
+libkdeui_la_LDFLAGS = -version-info 1:0  
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \
@@ -221,3 +221,5 @@ data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
 
+EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
+	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	

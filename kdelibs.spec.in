@@ -3,14 +3,14 @@
 Name: %{name}
 Summary: K Desktop Environment - Libraries
 Version: %{version}
-Release: 2
-Source: ftp.kde.org:/pub/kde/stable/Beta4/distribution/rpm/source/%{name}-%{version}-1.src.tar.gz
+Release: 1
+Source: ftp.kde.org:/pub/kde/stable/1.0pre/distribution/rpm/source/%{name}-%{version}-1.src.tar.gz
 Group: X11/KDE/Base
 Copyright: GPL/LGPL
 BuildRoot: /tmp/realhot_%{name}
 Requires: qt >= 1.33
 Distribution: KDE
-Packager: Preston Brown <pbrown@kde.org>
+Packager: Kalle Dalheimer <kalle@kde.org>
 Vendor: The KDE Team
 
 %description
@@ -28,7 +28,7 @@ mediatool: KDE mediatool library
 %prep
 rm -rf $RPM_BUILD_ROOT
 
-%setup -n kdelibs
+%setup -n kdelibs-%{version}
 
 %build
 export KDEDIR=/opt/kde

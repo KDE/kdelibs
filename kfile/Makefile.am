@@ -33,7 +33,7 @@ include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
 	xview.h kfilesimpleview.h
 
-noinst_HEADERS = kfiledialogconf.h kfilefilter.h
+noinst_HEADERS = kfiledialogconf.h kfilefilter.h debug.h
 
 kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
@@ -43,11 +43,14 @@ libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kfilepreview.cpp xview.cpp kfilefilter.cpp
 
 toolbar_DATA = configure.xpm 
+
+EXTRA_DIST = configure.xpm
+
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
-libkfile_la_LDFLAGS = -version-info 0:90 $(LDFLAGS)
+libkfile_la_LDFLAGS = -version-info 1:0 $(LDFLAGS)
 libkfile_la_LIBADD = -lqt -lXext -lX11 $(LIBSOCKET)
 
 check_PROGRAMS = kfstest

@@ -35,6 +35,7 @@ libjscript_la_LDFLAGS = -version-info $(SOMINOR):$(SOMAJOR)
 libjscript_la_LIBADD =  
 
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
+noinst_HEADERS = t1.h
 
 grammarfiles: t1.y t2.l
 	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c t1.c
