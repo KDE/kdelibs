@@ -20,20 +20,19 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/khtml -I$(top_src
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS) $(WOVERLOADED_VIRTUAL)
 
-kde_module_LTLIBRARIES = kjs_html.la
+noinst_LTLIBRARIES = libkjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 	kjs_binding.h kjs_proxy.h kjs_css.h kjs_range.h \
 	kjs_traversal.h kjs_events.h kjs_views.h kjs_debugwin.h
 
-# HTML module
-kjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
+libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp
-kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
-kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
-kjs_html_la_METASOURCES = AUTO
+#libkjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
+libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
+libkjs_html_la_METASOURCES = AUTO
 
 hashtables:
 	cd $(srcdir); \
