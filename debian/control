@@ -1,5 +1,5 @@
 Source: kdelibs4
-Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, nas-dev, libpng2-dev | libpng-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libfam-dev, libssl-dev
+Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, nas-dev, libpng2-dev | libpng-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libfam-dev, pkg-config, libglib1.3-dev, libssl-dev
 Build-Depends-Indep: kdoc, qt3-doc
 Section: libs
 Priority: optional
@@ -32,7 +32,6 @@ Architecture: any
 Section: libs
 Replaces: kdelibs3-cups
 Depends: ${shlibs:Depends}
-Enhances: kdebase-cvs
 Suggests: cupsomatic-ppd
 Conflicts: kdelibs3-cups
 Description: KDE print system (CUPS support)
@@ -45,7 +44,6 @@ Replaces: libarts1-alsa, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
 Recommends: libarts-bin
 Suggests: kdelibs4, artsbuilder-cvs
-Enhances: kdebase-cvs
 Conflicts: suidmanager (<< 0.50), libarts1-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -61,7 +59,6 @@ Architecture: any
 Section: libs
 Replaces: libkmid0-alsa, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
-Enhances: kdebase-cvs
 Recommends: libkmid-bin
 Conflicts: libkmid0-alsa
 Description: aRts Sound system (midi/kmedia support libraries)
@@ -80,7 +77,6 @@ Section: libs
 Priority: extra
 Replaces: libkmid0, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
-Enhances: kdebase-cvs
 Recommends: libkmid-bin
 Conflicts: libkmid0
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
@@ -100,7 +96,6 @@ Priority: extra
 Replaces: libarts1, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs4, artsbuilder-cvs
-Enhances: kdebase-cvs
 Recommends: libarts-bin
 Conflicts: suidmanager (<< 0.50), libarts1
 Description: aRts Sound system (built with alsa support)
