@@ -529,9 +529,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     while ( src.length() )
     {
         checkBuffer();
-
-        const QChar &curChar = src[0];
-        const char curchar = src[0].latin1();
+        char curchar = src[0].latin1();
 
         // decide if quoted or not....
         if ( curchar == '\"' || curchar == '\'' )
@@ -555,7 +553,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 pending = NonePending; // remove space at the end of value
 
             }
-            else if (tquote == IgnoreQuote) 
+            else if (tquote == IgnoreQuote)
             {
                 // we remove additional quotes directly following the
                 // end of the quoted section. Helps with bad html as
@@ -563,7 +561,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             else
             {
-                *dest++ = curChar;
+                *dest++ = src[0];
             }
             ++src;
         }
@@ -578,7 +576,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         {
             if (tquote == IgnoreQuote)
                 tquote = NoQuote;
-            
+
             switch(tag) {
             case NoTag:
             {
@@ -597,7 +595,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 if (searchCount > 0)
                 {
-                    if (curChar == commentStart[searchCount])
+                    if (src[0] == commentStart[searchCount])
                     {
                         searchCount++;
                         if (searchCount == 4)
@@ -619,7 +617,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                             return; // Finished parsing tag!
                         }
-                        *dest = curChar.lower();
+                        *dest = src[0].lower();
                         dest++;
                         ++src;
                         break;
@@ -629,12 +627,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         searchCount = 0; // Stop looking for '<!--' sequence
                     }
                 }
+                
+                curchar = src[0].latin1();
                 if( ((curchar >= 'a') && (curchar <= 'z')) ||
                     ((curchar >= 'A') && (curchar <= 'Z')) ||
                     ((curchar >= '0') && (curchar <= '9')) ||
                     curchar == '/' )
                 {
-                    *dest = curChar.lower();
+                    *dest = src[0].lower();
                     dest++;
                     ++src;
                 }
@@ -696,12 +696,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     break;
                 }
+                curchar = src[0].latin1();
                 if( curchar == '>' )
                 {
                     tag = SearchEnd; // we reached the end
                     break;
                 }
-                if( curChar.row() ) // we ignore everything that isn't ascii
+                if( !curchar ) // we ignore everything that isn't ascii
                 {
                     ++src;
                     break;
@@ -725,7 +726,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                      ((curchar >= '0') && (curchar <= '9')) ||
                      curchar == '-') && !tquote )
                 {
-                    *dest = curChar.lower();
+                    *dest = src[0].lower();
                     dest++;
                     ++src;
                 }
@@ -778,6 +779,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 else if( curchar == '=' )
                 {
+#ifdef TOKEN_DEBUG                    
+                    kdDebug(6036) << "found equal" << endl;
+#endif                    
                     tag = SearchValue;
                     pending = NonePending; // ignore spaces before '='
                     discard = SpaceDiscard; // discard spaces after '='
@@ -810,6 +814,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 {
                     tag = Value;
                 }
+                pending = NonePending;
                 break;
             }
             case QuotedValue:
@@ -835,6 +840,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     if(a.id==0) a.setName( attrName );
                     while(*(dest-1) == ' ' && dest>buffer+1) dest--; // remove trailing spaces
                     a.setValue(buffer+1, dest-buffer-1);
+#ifdef TOKEN_DEBUG
+                    kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
+#endif                    
+                    
                     currToken->attrs.add(a);
 
                     dest = buffer;
@@ -846,7 +855,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if( pending ) addPending();
 
                 discard = NoneDiscard;
-                *dest++ = curChar;
+                *dest++ = src[0];
                 ++src;
                 break;
             }
@@ -865,13 +874,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 // if discard==NoneDiscard at this point, it means
                 // that we passed an empty "" pair. bit hacky, but...
                 // helps with <tag attr=""otherattr="something">
-                if ( pending || curchar == '>' || discard==NoneDiscard)
+                if ( pending || src[0].latin1() == '>' || discard==NoneDiscard)
                 {
                     // no quotes. Every space means end of value
                     Attribute a;
                     a.id = *buffer;
                     if(a.id==0) a.setName( attrName );
                     a.setValue(buffer+1, dest-buffer-1);
+#ifdef TOKEN_DEBUG
+                    kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
+#endif                                     
                     currToken->attrs.add(a);
 
                     dest = buffer;
@@ -880,7 +892,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     pending = NonePending;
                     break;
                 }
-                *dest++ = curChar;
+                *dest++ = src[0];
                 ++src;
                 break;
             }
@@ -1339,9 +1351,9 @@ void HTMLTokenizer::write( const QString &str )
             {
                 prePos++;
             }
-	    unsigned char row = src[0].row();
-	    if ( row > 0x05 && row < 0x10 || row > 0xfd ) // might be complex text...
-		currToken->complexText = true;
+            unsigned char row = src[0].row();
+            if ( row > 0x05 && row < 0x10 || row > 0xfd )
+                    currToken->complexText = true;
             *dest++ = src[0];
             ++src;
         }
@@ -1385,14 +1397,14 @@ void HTMLTokenizer::processToken()
         if(currToken->id && currToken->id != ID_COMMENT)
             kdDebug( 6036 ) << "Error in processToken!!!" << endl;
 #endif
-	if ( currToken->complexText ) {
-	    // ### we do too much QString copying here, but better here than in RenderText...
-	    // anyway have to find a better solution in the long run (lars)
-	    QString s = QConstString(buffer, dest-buffer).string();
-	    s.compose();
-	    currToken->text = DOMString( s );
-	} else
-	    currToken->text = DOMString( buffer, dest - buffer );
+        if ( currToken->complexText ) {
+            // ### we do too much QString copying here, but better here than in RenderText...
+            // anyway have to find a better solution in the long run (lars)
+            QString s = QConstString(buffer, dest-buffer).string();
+            s.compose();
+            currToken->text = DOMString( s );
+        } else
+            currToken->text = DOMString( buffer, dest - buffer );
         if (currToken->id != ID_COMMENT)
             currToken->id = ID_TEXT;
     }
