@@ -301,7 +301,7 @@ namespace KJS {
     bool hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
   }; \
   const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
-  };
+  }
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
     KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
@@ -345,7 +345,7 @@ namespace KJS {
   private: \
     int id; \
   }; \
-  };
+  }
 
   // To be used in all call() implementations, before casting the type of thisObj
 #define KJS_CHECK_THIS( ClassName, theObj ) \

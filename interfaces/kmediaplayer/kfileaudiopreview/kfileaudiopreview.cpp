@@ -26,7 +26,7 @@ protected:
     }
 };
 
-K_EXPORT_COMPONENT_FACTORY( kfileaudiopreview, KFileAudioPreviewFactory );
+K_EXPORT_COMPONENT_FACTORY( kfileaudiopreview, KFileAudioPreviewFactory )
 
 
 ///////////////////////////////////////////////////////////////////

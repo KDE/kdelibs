@@ -31,6 +31,7 @@
 
 #include "resource.h"
 #include "factory.h"
+#include "manager.h"
 #include "managerimpl.h"
 #include "manageriface_stub.h"
 

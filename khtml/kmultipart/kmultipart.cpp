@@ -34,7 +34,7 @@
 #include <kxmlguifactory.h>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
-K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory );
+K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
 
 //#define DEBUG_PARSING
 

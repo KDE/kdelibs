@@ -2335,7 +2335,7 @@ void KMdiMainFrm::fakeSDIApplication()
    if (m_pTaskBar)
       m_pTaskBar->close();
    m_pTaskBar = 0L;
-};
+}
 
 void KMdiMainFrm::closeViewButtonPressed()
 {

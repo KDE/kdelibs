@@ -30,7 +30,7 @@
 #include "kcmkresources.h"
 
 typedef KGenericFactory<KCMKResources, QWidget> ResourcesFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_kresources, ResourcesFactory( "kcmkresources" ) );
+K_EXPORT_COMPONENT_FACTORY( kcm_kresources, ResourcesFactory( "kcmkresources" ) )
 
 KCMKResources::KCMKResources( QWidget *parent, const char *name, const QStringList& )
   : KCModule( ResourcesFactory::instance(), parent, name )

@@ -26,7 +26,7 @@
 #include <scriptclientinterface.h>
 //using namespace KScriptInterface;
 typedef KGenericFactory<ShellScript, KScriptClientInterface> ShellScriptFactory;
-K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) );
+K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) )
 
 ShellScript::ShellScript(KScriptClientInterface *parent, const char *name, const QStringList &args )
 {

@@ -41,7 +41,7 @@
 #include "kjavaappletserver.h"
 
 
-K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory);
+K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory)
 
 KInstance *KJavaAppletViewerFactory::s_instance = 0;
 
