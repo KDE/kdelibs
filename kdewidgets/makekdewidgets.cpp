@@ -126,6 +126,11 @@ int main( int argc, char **argv ) {
     KCmdLineArgs::init( argc, argv, &about );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    if ( args->count() < 1 ) {
+        args->usage();
+        return ( 1 );
+    }
+
     QFileInfo fi( args->arg( args->count() - 1 ) );
 
     QString outputFile = args->getOption( "o" );
