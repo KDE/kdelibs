@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.3  1999/12/13 23:01:49  kulow
+// some "real C++" fixes. I wish gcc -ansi would serve real ANSI ;(
+//
 // Revision 1.2  1999/10/31 19:44:47  bero
 // More template definitions for -frepo
 //
@@ -36,7 +39,6 @@
 
 #include "ktoolbaritem.h"
 
-template class QList<KToolBarItem>;
 
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)
