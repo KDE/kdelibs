@@ -142,7 +142,7 @@ DOMEvent::~DOMEvent()
 KJSO DOMEvent::tryGet(const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::Event::tryGet " << p.qstring() << endl;
+  kdDebug() << "KJS::DOMEvent::tryGet " << p.qstring() << endl;
 #endif
 
   if (p == "type")
@@ -310,9 +310,9 @@ KJSO DOMMouseEvent::tryGet(const UString &p) const
     return Number(static_cast<DOM::MouseEvent>(event).screenX());
   else if (p == "screenY")
     return Number(static_cast<DOM::MouseEvent>(event).screenY());
-  else if (p == "clientX")
+  else if (p == "clientX" || p == "x")
     return Number(static_cast<DOM::MouseEvent>(event).clientX());
-  else if (p == "clientY")
+  else if (p == "clientY" || p == "y")
     return Number(static_cast<DOM::MouseEvent>(event).clientY());
   else if (p == "ctrlKey")
     return Boolean(static_cast<DOM::MouseEvent>(event).ctrlKey());

@@ -78,7 +78,7 @@ bool DOMNode::hasProperty(const UString &p, bool recursive) const
       p == "normalize"  || p == "supports" */
       // no DOM standard, found in IE only
       p == "offsetLeft" || p == "offsetTop" || p == "offsetWidth" || p == "offsetHeight" ||
-      p == "offsetParent" ||
+      p == "offsetParent" || p == "parentElement" ||
       p == "scrollLeft" || p == "scrollTop" || p == "addEventListener" ||
       p == "removeEventListener" || p == "dispatchEvent")
     return true;
@@ -98,6 +98,8 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "nodeType")
     result = Number((unsigned int)node.nodeType());
   else if (p == "parentNode")
+    result = getDOMNode(node.parentNode());
+  else if (p == "parentElement") // IE only apparently
     result = getDOMNode(node.parentNode());
   else if (p == "childNodes")
     result = getDOMNodeList(node.childNodes());
