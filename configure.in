@@ -137,6 +137,9 @@ AC_SUBST(KOM_INCLUDES)
 PARTSUI_INCLUDES='-I$(top_srcdir)/corba/partsui -I$(top_builddir)/corba/partsui'
 AC_SUBST(PARTSUI_INCLUDES)
 
+PARTS_INCLUDES='-I$(top_srcdir)/corba/parts -I$(top_builddir)/corba/parts'
+AC_SUBST(PARTS_INCLUDES)
+
 LIB_KOM='$(top_builddir)/corba/kom/libkom.la'
 AC_SUBST(LIB_KOM)
 
@@ -159,6 +162,9 @@ if test "$ac_new_stuff" = "yes"; then
 else
   EXTRA_SUBDIRS=""
 fi
+
+all_includes='-I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)'
+AC_SUBST(all_includes)
 
 AC_SUBST(EXTRA_SUBDIRS)
 

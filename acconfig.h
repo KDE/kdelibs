@@ -92,9 +92,6 @@
 /* Where KDE config files should be installed */
 #undef KDE_CONFIGDIR
 
-/* If the platform supports strdup */
-#undef HAVE_STRDUP
-
 /* Define if you have an SGI like STL implementation */
 #undef HAVE_SGI_STL
 
@@ -129,16 +126,6 @@ extern "C"
 #endif
 int gethostname (char *Name, int Namelen);
 #endif  
-
-/*
- * This is needed for systems with broken headers that won't work with
- *  gcc -ansi
- */
-#ifndef HAVE_STRDUP
-#define kstrdup qstrdup
-#else
-#define kstrdup strdup
-#endif
 
 /*
  * This is an ugly little hack incase someone uses the inline keyword,

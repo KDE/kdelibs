@@ -20,7 +20,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES=  -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES=  $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 3:0

@@ -17,7 +17,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES = $(all_includes)
 EXTRA_DIST = convert_key.c charsets.config $(kdebug_DATA) kdebugareas.txt \
 	kstddirs.h kstddirs.cpp
 lib_LTLIBRARIES = libkdecore.la

@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdeutils $(QT_INCLUDES) $(X_INCLUDES) 
+INCLUDES = -I$(top_srcdir)/kdeutils $(all_includes) 
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0

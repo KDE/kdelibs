@@ -40,9 +40,7 @@ libkhtml_la_LDFLAGS = -version-info 3:0
 data_DATA = khtml_dnd.xpm
 datadir = $(kde_datadir)/khtml/pics
 
-INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
-	-I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio \
-	$(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES = -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 

@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfmlib $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES= -I$(top_srcdir)/kfmlib $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
 

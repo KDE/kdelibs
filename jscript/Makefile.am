@@ -20,7 +20,7 @@
 
 ####### General stuff
 
-INCLUDES	= $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES	= $(all_includes)
 lib_LTLIBRARIES = libjscript.la
 YACC		= bison -y
 LEX		= flex

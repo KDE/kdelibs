@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES = -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES = $(all_includes)
 LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs $(QT_LDFLAGS) $(X_LDFLAGS)
 
 LDADD = $(LIB_KDEUI)

@@ -3,7 +3,7 @@
 # set "REMOVE_NANA" to get rid of the NANA assertions:
 # (REMOVE_NANA is now defined by default if the compiler directives
 #  do not define DEBUG), I use MS_NANA_DEFINES for this:
-INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfile -I$(top_srcdir)/kfmlib $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES= -I$(top_srcdir)/kfile -I$(top_srcdir)/kfmlib $(all_includes)
 
 # $(MS_NANA_DEFINES)
 # -DREMOVE_NANA

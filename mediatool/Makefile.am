@@ -23,7 +23,7 @@ lib_LTLIBRARIES = libmediatool.la
 #
 MEDIATOOLVERSION=	0.0
 MEDIATOOLPATCH	 =	91
-INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
+INCLUDES = $(all_includes) 
 libmediatool_la_SOURCES = chunk.c eventcounter.c \
 			connect.c filename.c playlist.c kaudio.cpp
 
