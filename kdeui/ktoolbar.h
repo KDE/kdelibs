@@ -348,9 +348,21 @@ public:
     int insertSeparator(int index=-1);
 
     /**
+     * Insert a separator into the toolbar with the given id.
+     * Returns the separator's index
+     */
+    int insertSeparator( int index, int id ); // ### KDE 3.0: BCI: merge
+
+    /**
    * Insert line separator.
    */
     int insertLineSeparator(int index=-1);
+
+    /**
+     * Insert a line separator into the toolbar with the given id.
+     * Returns the separator's index
+     */
+    int insertLineSeparator( int index, int id ); // ### KDE 3.0: BCI: merge
 
     /**
    * Insert a user-defined widget.  The widget @p must have this

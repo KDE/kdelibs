@@ -23,6 +23,7 @@
 #include "ktoolbar.h"
 #include "kstatusbar.h"
 #include "kmainwindow.h"
+#include "kaction.h"
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -299,10 +300,14 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         }
       }
 
-      if ( isLineSep )
-        return bar->insertLineSeparator( index );
+      int id = KAction::getToolButtonID();
 
-      return bar->insertSeparator( index );
+      if ( isLineSep )
+          bar->insertLineSeparator( index, id );
+      else
+          bar->insertSeparator( index, id );
+
+      return id;
     }
   }
   else if ( element.tagName().lower() == d->tagTearOffHandle )
