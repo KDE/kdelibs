@@ -4,6 +4,7 @@
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000 Simon Hausmann <hausmann@kde.org>
+ *                     2000 Stefan Schimanski <1Stein@gmx.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,6 +37,7 @@ class KHTMLPartBrowserExtension;
 class KJSProxy;
 class KHTMLView;
 class KHTMLSettings;
+class KJavaAppletContext;
 
 namespace DOM
 {
@@ -221,6 +223,17 @@ public:
    * Return if Java applet support is enabled/disabled.
    */
   bool javaEnabled() const;
+
+  /**
+   * Return the java context of the applets. If no applet exists, 0 is returned.
+   */
+  KJavaAppletContext *javaContext();
+
+  /**
+   * Return the java context of the applets. If no context exists yet, a new one is
+   * created.
+   */
+  KJavaAppletContext *createJavaContext();
 
   /**
    * Should images be loaded automatically? Default is @p true.
@@ -712,6 +725,11 @@ private slots:
 
   void slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
   void checkCompleted();
+
+  /**
+   * @internal
+   */
+  void slotShowDocument( const QString &url, const QString &target );
 
   /**
    * @internal

@@ -25,23 +25,14 @@
 #include <klocale.h>
 
 #include "render_applet.h"
+#include "../khtmlview.h"
+#include "../khtml_part.h"
 
 #include <qlabel.h>
 #include <qscrollview.h>
 
 #include <java/kjavaappletwidget.h>
 #include <misc/htmltags.h>
-
-/**
- * We use single applet context to run all applets in all pages.
- * If all appelts are deleted we delete the context too. It has its
- * drawback: deleting context stops Java process and next applet have to
- * restart it again.
- * TODO: Implement contex manager which will create different context
- * for different URLs.
- */
-static KJavaAppletContext *context = 0;
-static int context_counter = 0;
 
 using namespace khtml;
 
@@ -51,31 +42,26 @@ RenderApplet::RenderApplet(QScrollView *view,
 {
     // init RenderObject attributes
     m_inline = true;   // our object is Inline
+    m_applet = applet;
 
-    if( context == 0 ) {
-        context = new KJavaAppletContext();
-        context_counter = 0;
+    KJavaAppletContext *context = 0;
+    KHTMLView *_view = dynamic_cast<KHTMLView*>(view);
+    if ( _view ) {
+        KHTMLPart *part = _view->part();
+        context = part->createJavaContext();
     }
 
-    m_applet = applet;
-    setQWidget(new KJavaAppletWidget(context, view->viewport()));
-    context_counter++;
-
-    processArguments(args);
-
-    ((KJavaAppletWidget*) m_widget)->create();
+    if ( context ) {
+        setQWidget( new KJavaAppletWidget(context, view->viewport()) );
+        processArguments(args);
+        ((KJavaAppletWidget*) m_widget)->create();
+    }
 
     m_layoutPerformed = FALSE;
 }
 
 RenderApplet::~RenderApplet()
 {
-  context_counter--;
-  if( context_counter == 0 )
-  {
-    delete context;
-    context = 0;
-  }
 }
 
 void RenderApplet::layout()
@@ -84,20 +70,20 @@ void RenderApplet::layout()
         return;
 
     KJavaAppletWidget *tmp = ((KJavaAppletWidget*) m_widget);
+    if ( tmp ) {
+        NodeImpl *child = m_applet->firstChild();
 
-    NodeImpl *child = m_applet->firstChild();
+        while(child) {
 
-    while(child)
-    {
-        if(child->id() == ID_PARAM)
-        {
-            HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>(child);
-            tmp->setParameter( p->name(), p->value());
+            if(child->id() == ID_PARAM) {
+                HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>(child);
+                tmp->setParameter( p->name(), p->value());
+            }
+            child = child->nextSibling();
         }
-        child = child->nextSibling();
-    }
 
-    tmp->showApplet();
+        tmp->showApplet();
+    }
 
     m_layoutPerformed = TRUE;
 }
@@ -106,23 +92,25 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
 {
     KJavaAppletWidget *tmp = (KJavaAppletWidget*) m_widget;
 
-    tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
-    tmp->setAppletClass( args[QString::fromLatin1("code") ] );
+    if ( tmp ) {
+        tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
+        tmp->setAppletClass( args[QString::fromLatin1("code") ] );
 
-    m_width = args[QString::fromLatin1("width") ].toInt();
-    m_minWidth = m_maxWidth = m_width;
-    m_height = args[QString::fromLatin1("height") ].toInt();
-    tmp->resize( m_width, m_height );
+        m_width = args[QString::fromLatin1("width") ].toInt();
+        m_minWidth = m_maxWidth = m_width;
+        m_height = args[QString::fromLatin1("height") ].toInt();
+        tmp->resize( m_width, m_height );
 
-    if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
-        tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
-    if( !args[QString::fromLatin1("name") ].isNull() )
-        tmp->setAppletName( args[QString::fromLatin1("name") ] );
-    else
-        tmp->setAppletName( args[QString::fromLatin1("code") ] );
+        if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
+            tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
+        if( !args[QString::fromLatin1("name") ].isNull() )
+            tmp->setAppletName( args[QString::fromLatin1("name") ] );
+        else
+            tmp->setAppletName( args[QString::fromLatin1("code") ] );
 
-    if( !args[QString::fromLatin1("archive") ].isEmpty() )
-        tmp->setJARFile( args[QString::fromLatin1("archive") ] );
+        if( !args[QString::fromLatin1("archive") ].isEmpty() )
+            tmp->setJARFile( args[QString::fromLatin1("archive") ] );
+    }
 }
 
 

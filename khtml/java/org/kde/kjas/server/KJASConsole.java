@@ -59,7 +59,7 @@ class KJASConsoleStream
 {
     TextArea txt;
     
-    public KJASConsoleStream(TextArea _txt) {
+    public KJASConsoleStream(TextArea _txt ) {
         txt = _txt;
     }
     

@@ -43,9 +43,16 @@ public:
   void start( KJavaApplet * );
   void stop( KJavaApplet * );
 
+signals:
+  void showStatus( const QString &txt );
+  void showDocument( const QString &url, const QString &target );
+
 protected:
    //* The applet server this context is attached to.
    KJavaAppletServer *server;
+
+protected slots:
+   void received( const QString &cmd, const QStringList &arg );
 
 private:
    int id;
@@ -57,6 +64,9 @@ private:
 /**
  *
  * $Log$
+ * Revision 1.4  2000/06/06 22:53:36  gehrmab
+ * Beauty and wellness for the API documentation
+ *
  * Revision 1.3  2000/03/21 03:44:43  rogozin
  *
  * New Java support has been merged.

@@ -4,6 +4,7 @@
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000 Simon Hausmann <hausmann@kde.org>
+ *                     2000 Stefan Schimanski <1Stein@gmx.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,6 +41,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
+#include "java/kjavaappletcontext.h"
 using namespace DOM;
 
 #include "khtmlview.h"
@@ -143,6 +145,7 @@ public:
     keepCharset = false;
     m_findDialog = 0;
     m_ssl_in_use = false;
+    m_javaContext = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -153,6 +156,7 @@ public:
     delete m_jscript;
     if ( m_kjs_lib && !--kjs_lib_count )
       delete m_kjs_lib;
+    delete m_javaContext;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
@@ -171,7 +175,9 @@ public:
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
-    bool keepCharset;
+  KJavaAppletContext *m_javaContext;
+
+  bool keepCharset;
 
   KHTMLSettings *m_settings;
 
@@ -678,6 +684,83 @@ void KHTMLPart::enableJava( bool enable )
 bool KHTMLPart::javaEnabled() const
 {
   return d->m_bJavaEnabled;
+}
+
+KJavaAppletContext *KHTMLPart::javaContext()
+{
+  return d->m_javaContext;
+}
+
+KJavaAppletContext *KHTMLPart::createJavaContext()
+{
+  if ( !d->m_javaContext ) {
+      d->m_javaContext = new KJavaAppletContext();
+      connect( d->m_javaContext, SIGNAL(showStatus(const QString&)),
+               this, SIGNAL(setStatusBarText(const QString&)) );
+      connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),
+               this, SLOT(slotShowDocument(const QString&, const QString&)) );
+  }
+
+  return d->m_javaContext;
+}
+
+void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
+{
+  // this is mostly copied from KHTMLPart::slotChildURLRequest. The better approach
+  // would be to put those functions into a single one.
+  khtml::ChildFrame *child = 0;
+  KParts::URLArgs args;
+  args.frameName = target;
+
+  QString frameName = args.frameName.lower();
+  if ( !frameName.isEmpty() )
+  {
+    if ( frameName == QString::fromLatin1( "_top" ) )
+    {
+      emit d->m_extension->openURLRequest( url, args );
+      return;
+    }
+    else if ( frameName == QString::fromLatin1( "_blank" ) )
+    {
+      emit d->m_extension->createNewWindow( url, args );
+      return;
+    }
+    else if ( frameName == QString::fromLatin1( "_parent" ) )
+    {
+      KParts::URLArgs newArgs( args );
+      newArgs.frameName = QString::null;
+
+      emit d->m_extension->openURLRequest( url, newArgs );
+      return;
+    }
+    else if ( frameName != QString::fromLatin1( "_self" ) )
+    {
+      khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
+
+      if ( !_frame )
+      {
+        emit d->m_extension->openURLRequest( url, args );
+        return;
+      }
+
+      child = _frame;
+    }
+  }
+
+  // TODO: handle child target correctly! currently the script are always executed fur the parent
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+      executeScript( url.right( url.length() - 11) );
+      return;
+  }
+
+  if ( child ) {
+      requestObject( child, KURL(url), args );
+  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  {
+      KParts::URLArgs newArgs( args );
+      newArgs.frameName = QString::null;
+      emit d->m_extension->openURLRequest( KURL(url), newArgs );
+  }
 }
 
 void KHTMLPart::autoloadImages( bool enable )
@@ -2174,16 +2257,16 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 {
-  assert( obj->inherits( "KParts::ReadOnlyPart" ) );
-  const KParts::ReadOnlyPart *part = static_cast<const KParts::ReadOnlyPart *>( obj );
+    assert( obj->inherits( "KParts::ReadOnlyPart" ) );
+    const KParts::ReadOnlyPart *part = static_cast<const KParts::ReadOnlyPart *>( obj );
 
-  FrameIt it = d->m_frames.begin();
-  FrameIt end = d->m_frames.end();
-  for (; it != end; ++it )
-    if ( (KParts::ReadOnlyPart *)it.data().m_part == part )
-      return &it.data();
+    FrameIt it = d->m_frames.begin();
+    FrameIt end = d->m_frames.end();
+    for (; it != end; ++it )
+      if ( (KParts::ReadOnlyPart *)it.data().m_part == part )
+        return &it.data();
 
-  return 0L;
+    return 0L;
 }
 
 KHTMLPart *KHTMLPart::findFrame( const QString &f )

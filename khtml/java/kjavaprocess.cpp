@@ -32,11 +32,11 @@ KJavaProcess::KJavaProcess()
    CHECK_PTR( javaProcess );
 
    connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
-	    this, SLOT( wroteData() ) );
+            this, SLOT( wroteData() ) );
    connect( javaProcess, SIGNAL( processExited( KProcess * ) ),
-	    this, SLOT( javaHasDied() ) );
+            this, SLOT( javaHasDied() ) );
    connect( javaProcess, SIGNAL( receivedStdout( KProcess *, char *, int ) ),
-	    this, SLOT( receivedData( KProcess *, char *, int ) ) );
+            this, SLOT( receivedData( KProcess *, char *, int ) ) );
 
    d->jvmPath = "java";
    d->mainClass = "-help";
@@ -101,7 +101,7 @@ void KJavaProcess::setFTPProxy( const QString& host, int port )
 }
 
 void KJavaProcess::setSystemProperty( const QString& name,
-				      const QString& value )
+                                      const QString& value )
 {
    systemProps.insert( name, value );
 }
@@ -129,10 +129,10 @@ void KJavaProcess::send( const QString& command )
 
     // If there's nothing being sent right now
     if ( inputBuffer.count() == 1 ) {
-	if ( !javaProcess->writeStdin( inputBuffer.first(),
-				       qstrlen( inputBuffer.first() ) ) ) {
-	    kdWarning() << "Could not write " << command << " command\n";
-	}
+        if ( !javaProcess->writeStdin( inputBuffer.first(),
+                                       qstrlen( inputBuffer.first() ) ) ) {
+            kdWarning() << "Could not write " << command << " command\n";
+        }
     }
 }
 
@@ -141,10 +141,10 @@ void KJavaProcess::wroteData( )
     inputBuffer.removeFirst();
 
     if ( inputBuffer.count() >= 1 ) {
-	if ( !javaProcess->writeStdin( inputBuffer.first(),
-				       qstrlen( inputBuffer.first() ) ) ) {
-	    qWarning( "Could not lazy write %s command", inputBuffer.first() );
-	}
+        if ( !javaProcess->writeStdin( inputBuffer.first(),
+                                       qstrlen( inputBuffer.first() ) ) ) {
+            qWarning( "Could not lazy write %s command", inputBuffer.first() );
+        }
     }
 }
 
@@ -196,5 +196,5 @@ void KJavaProcess::receivedData( KProcess *, char *buffer, int len )
     s = (const char *) cpy;
     delete cpy;
 
-    emit received( s );
+    emit received( s.stripWhiteSpace() );
 }

@@ -23,7 +23,7 @@ public:
      */
     static KJavaAppletServer *allocateJavaServer();
     static void               freeJavaServer();
-    
+
     /**
      * Create an applet context with the specified id.
      */
@@ -40,8 +40,8 @@ public:
      * name, class etc. are specified in the same way as in the HTML APPLET tag.
      */
     void createApplet( int contextId, int appletId,
-		       const QString name, const QString clazzName,
-		       const QString baseURL, const QString codeBase,
+                       const QString name, const QString clazzName,
+                       const QString baseURL, const QString codeBase,
                        const QString jarFile, QSize size );
 
     /**
@@ -54,13 +54,13 @@ public:
      * treated as strings (though the string might of course be a number e.g. "1".
      */
     void setParameter( int contextId, int appletId,
-		       const QString name, const QString value );
+                       const QString name, const QString value );
 
     /**
      * Display the specified applet and set the window title as specified.
      */
     void showApplet( int contextId, int appletId,
-		     const QString title );
+                     const QString title );
 
     /**
      * Start the specified applet.
@@ -77,6 +77,12 @@ public:
      */
     void quit();
 
+signals:
+    /**
+     * Command received from java vm
+     */
+    void receivedCommand( const QString &cmd, const QStringList &arg );
+
 protected:
     KJavaProcess *process;
     struct KJavaAppletServerPrivate *d;
@@ -86,6 +92,10 @@ protected:
      */
     KJavaAppletServer();
     ~KJavaAppletServer();
+
+protected slots:
+    void received( const QString &s );
+
 private:
     void setupJava( KJavaProcess *p );
 };
@@ -95,6 +105,9 @@ private:
 /**
  *
  * $Log$
+ * Revision 1.7  2000/06/06 22:53:36  gehrmab
+ * Beauty and wellness for the API documentation
+ *
  * Revision 1.6  2000/03/21 03:44:44  rogozin
  *
  * New Java support has been merged.

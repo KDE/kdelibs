@@ -1,5 +1,7 @@
 package org.kde.kjas.server;
 
+import java.io.*;
+
 /**
  *  KJAS server recognizes these variablers:
  *    kjas.debug - makes server actions verbose 
@@ -8,8 +10,10 @@ package org.kde.kjas.server;
 
 public class Main {
    public static final boolean debug;
+   public static final PrintStream stdout;
    static {
        debug = System.getProperty("kjas.debug") != null; 
+       stdout = System.out;
    }
     
    public static void main( String[] args )
