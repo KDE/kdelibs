@@ -350,11 +350,11 @@ class KDECORE_EXPORT KAccel : public QAccel
 	 */
 	bool setItemEnabled( const QString& sAction, bool bEnable ) KDE_DEPRECATED;
 	/**
-	 * @deprecated
+	 * @deprecated see KDE3PORTING.html
 	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
 	/**
-	 * @deprecated
+	 * @deprecated see KDE3PORTING.html
 	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
 	/**

@@ -51,7 +51,7 @@ class KToggleFullScreenAction;
  *
  * \code
  * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
- *                               KStdAccel::key(KStdAccel::New), this,
+ *                               KStdAccel::shortcut(KStdAccel::New), this,
  *                               SLOT(fileNew()), actionCollection());
  * \endcode
  *
