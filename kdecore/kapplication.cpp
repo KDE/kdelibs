@@ -681,7 +681,8 @@ void KApplication::init(bool GUIenabled)
   if (i18n( "_: Dear Translator! Translate this string to the string 'LTR' in "
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout." ) == "RTL")
-  	setReverseLayout( true );
+//  	setReverseLayout( true );
+	setReverseLayout( !rtl );
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
