@@ -2481,7 +2481,7 @@ int HTTPProtocol::readChunked()
         return -1;
      }
 
-     kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
+     //kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
 
      if (m_iBytesLeft == 0)
      {
