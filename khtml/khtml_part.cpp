@@ -2643,6 +2643,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 void KHTMLPart::slotViewDocumentSource()
 {
   KURL url(m_url);
+  bool isTempFile = false;
   if (!(url.isLocalFile()) && KHTMLPageCache::self()->isValid(d->m_cacheId))
   {
      KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
@@ -2651,11 +2652,11 @@ void KHTMLPart::slotViewDocumentSource()
         KHTMLPageCache::self()->saveData(d->m_cacheId, sourceFile.dataStream());
         url = KURL();
         url.setPath(sourceFile.name());
+        isTempFile = true;
      }
   }
 
-  //  emit d->m_extension->openURLRequest( m_url, KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
-  (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
+  (void) KRun::runURL( url, QString::fromLatin1("text/plain"), isTempFile );
 }
 
 void KHTMLPart::slotViewPageInfo()
@@ -2700,6 +2701,7 @@ void KHTMLPart::slotViewFrameSource()
     return;
 
   KURL url = frame->url();
+  bool isTempFile = false;
   if (!(url.isLocalFile()) && frame->inherits("KHTMLPart"))
   {
        long cacheId = static_cast<KHTMLPart *>(frame)->d->m_cacheId;
@@ -2712,11 +2714,12 @@ void KHTMLPart::slotViewFrameSource()
                KHTMLPageCache::self()->saveData(cacheId, sourceFile.dataStream());
                url = KURL();
                url.setPath(sourceFile.name());
+               isTempFile = true;
            }
      }
   }
 
-  (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
+  (void) KRun::runURL( url, QString::fromLatin1("text/plain"), isTempFile );
 }
 
 KURL KHTMLPart::backgroundURL() const
