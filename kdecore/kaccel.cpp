@@ -38,7 +38,7 @@
 #include <qaccel.h>
 
 KAccel::KAccel( QWidget * parent, const char *name ):
-  aKeyDict(100){
+  aKeyDict(100, false){
 	aAvailableId = 1;
 	bEnabled = true;
 	aGroup = "Keys";
@@ -254,67 +254,67 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 	switch( id ) {
 		case Open:
 			name=i18n("Open") ;
-			key = "CTRL+O";
+			key = "Ctrl+O";
 			break;
 		case New:
 			name=i18n("New") ;
-			key = "CTRL+N";
+			key = "Ctrl+N";
 			break;
 		case Close:
 			name=i18n("Close") ;
-			key = "CTRL+W";
+			key = "Ctrl+W";
 			break;
 		case Save:
 			name=i18n("Save") ;
-			key = "CTRL+S";
+			key = "Ctrl+S";
 			break;
 		case Print:
 			name=i18n("Print") ;
-			key = "CTRL+P";
+			key = "Ctrl+P";
 			break;
 		case Quit:
 			name=i18n("Quit") ;
-			key = "CTRL+Q";
+			key = "Ctrl+Q";
 			break;
 		case Cut:
 			name=i18n("Cut") ;
-			key = "CTRL+X";
+			key = "Ctrl+X";
 			break;
 		case Copy:
 			name=i18n("Copy") ;
-			key = "CTRL+C";
+			key = "Ctrl+C";
 			break;
 		case Paste:
 			name=i18n("Paste") ;
-			key = "CTRL+V";
+			key = "Ctrl+V";
 			break;
 		case Undo:
 			name=i18n("Undo") ;
-			key = "CTRL+Z";
+			key = "Ctrl+Z";
 			break;
 		case Redo:
 			name=i18n("Redo") ;
-			key = "CTRL+Y";
+			key = "Ctrl+Y";
 			break;
 		case Find:
 			name=i18n("Find") ;
-			key = "CTRL+F";
+			key = "Ctrl+F";
 			break;
 		case Replace:
 			name=i18n("Replace") ;
-			key = "CTRL+R";
+			key = "Ctrl+R";
 			break;
 		case Insert:
 			name=i18n("Insert") ;
-			key = "CTRL+Insert";
+			key = "Ctrl+Insert";
 			break;
 		case Home:
 			name=i18n("Home") ;
-			key = "CTRL+Home";
+			key = "Ctrl+Home";
 			break;
 		case End:
 			name=i18n("End") ;
-			key = "CTRL+End";
+			key = "Ctrl+End";
 			break;
 		case Prior:
 			name=i18n("Prior") ;
@@ -686,18 +686,18 @@ QString KAccel::keyToString( uint keyCode, bool i18_n )
 	
 	if ( keyCode == 0 ) return res;
 	if ( keyCode & Qt::SHIFT ){
-		if (i18_n) res += i18n("SHIFT");
-	    else       res += "SHIFT";
+		if (i18_n) res += i18n("Shift");
+	    else       res += "Shift";
 	    res += "+";
 	}
 	if ( keyCode & Qt::CTRL ){
-	   if (i18_n) res += i18n("CTRL");
-	   else       res += "CTRL";
+	   if (i18_n) res += i18n("Ctrl");
+	   else       res += "Ctrl";
 	    res += "+";
 	}
 	if ( keyCode & Qt::ALT ){
-		if (i18_n) res += i18n("ALT");
-		else       res += "ALT";
+		if (i18_n) res += i18n("Alt");
+		else       res += "Alt";
 	    res += "+";
 	}
 
@@ -747,7 +747,7 @@ uint KAccel::stringToKey(const QString& key)
 	QString str;
 	uint keyCode = 0;
 	for (uint i=0; i<k; i++) {
-		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
+		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1).upper();
 		str.stripWhiteSpace();
 		if ( str.isEmpty() ) {
 			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
