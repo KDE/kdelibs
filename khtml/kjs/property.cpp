@@ -39,12 +39,6 @@ KJSProperty::KJSProperty(const UString &n, KJSO *o, int attr)
 // ECMA 8.6.2.1
 KJSO *KJSO::get(const UString &p) const
 {
-  // hack to allow code like "abc".charAt(0). ECMA compliant ????
-  if (isA(String)) {
-    KJSObject *tmp = KJSObject::create(StringClass); /* TODO: leak ? */
-    return tmp->get(p);
-  }
-
   if (prop) {
     KJSProperty *pr = prop;
     while (pr) {

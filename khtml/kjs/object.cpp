@@ -140,12 +140,6 @@ KJSO::~KJSO()
 // [[call]]
 KJSO *KJSO::executeCall(KJSO *thisV, KJSList *args)
 {
-  // second part of our hack to allow code like "abc".charAt(0).
-  if (thisV->isA(String)) {
-    Ptr str = new KJSString(thisV->sVal());
-    thisV = KJSObject::create(StringClass, str);
-  }
-
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
   KJSContext *save = KJScript::context();

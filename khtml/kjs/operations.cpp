@@ -220,13 +220,13 @@ KJSO *KJS::toObject(KJSO *obj)
     case Null:
       return new KJSError(ErrNullToObject, o);
     case Boolean:
-      o = new KJSBoolean(obj->bVal());
+      o = KJSObject::create(BooleanClass, zeroRef(new KJSBoolean(obj->bVal())));
       break;
     case Number:
-      o = new KJSNumber(obj->dVal());
+      o = KJSObject::create(NumberClass, zeroRef(new KJSNumber(obj->dVal())));
       break;
     case String:
-      o = new KJSString(obj->sVal());
+      o = KJSObject::create(StringClass, zeroRef(new KJSString(obj->sVal())));
       break;
     case Object:
     case Host:
