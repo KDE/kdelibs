@@ -357,7 +357,7 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 
     if (strcmp(params[P_XWIN_ONLY].value, "no"))
     {
-	system("kdeinit");
+	system("kdeinit --suicide");
     }
 
 fprintf(stderr," before forking\n");
