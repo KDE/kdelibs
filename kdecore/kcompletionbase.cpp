@@ -70,9 +70,10 @@ KCompletion* KCompletionBase::completionObject( bool create, bool hsig )
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
     if ( m_bAutoDelCompObj && compObj != m_pCompObj )
-	delete m_pCompObj;
+        delete m_pCompObj;
 
-    m_pCompObj = compObj;
+   m_pCompObj = compObj;
+
     // We emit rotation and completion signals
     // if completion object is not NULL.
     setup( false, hsig, !m_pCompObj.isNull() );
@@ -89,8 +90,8 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
     m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if(  m_pCompObj &&
-    	 m_iCompletionMode != KGlobalSettings::CompletionNone )
+    if( m_pCompObj &&
+        m_iCompletionMode != KGlobalSettings::CompletionNone )
     {
         m_pCompObj->setCompletionMode( m_iCompletionMode );
     }
@@ -113,10 +114,10 @@ bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
 
 void KCompletionBase::useGlobalKeyBindings()
 {
-	m_keyMap.clear();
-	m_keyMap.insert( TextCompletion, 0 );
-	m_keyMap.insert( PrevCompletionMatch, 0 );
-	m_keyMap.insert( NextCompletionMatch, 0 );
+    m_keyMap.clear();
+    m_keyMap.insert( TextCompletion, 0 );
+    m_keyMap.insert( PrevCompletionMatch, 0 );
+    m_keyMap.insert( NextCompletionMatch, 0 );
 }
 
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )

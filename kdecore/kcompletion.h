@@ -501,7 +501,7 @@ private:
  * to see how easily such support can be added using this as a base
  * class.
  *
- * @short A basic abstract class for adding text completion support in widgets.
+ * @short An abstract class for adding text completion support to widgets.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KCompletionBase
@@ -513,14 +513,14 @@ public:
      * Constants that represent the items whose short-cut
      * key-binding is programmable.  The default key-bindings
      * for these items are defined in @ref KStdAccel().
-     */	
+     */
     enum KeyBindingType {
        TextCompletion,
        PrevCompletionMatch,
        NextCompletionMatch
     };
 
-	
+
     // Map for the key binding types mentioned above.
     typedef QMap<KeyBindingType, int> KeyBindingMap;
 
@@ -621,7 +621,7 @@ public:
     * @param autoDelete if true, delete completion object on destruction.
     */
     void setAutoDeleteCompletionObject( bool autoDelete ) {
-	m_bAutoDelCompObj = autoDelete;
+        m_bAutoDelCompObj = autoDelete;
     }
 
     /**
@@ -691,7 +691,7 @@ public:
     * @return the completion mode.
     */
     KGlobalSettings::Completion completionMode() const {
-	return m_iCompletionMode;
+        return m_iCompletionMode;
     }
 
     /**
