@@ -1065,7 +1065,9 @@ void RegressionTest::testStaticFile(const QString & filename)
 
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
-        if ( !reportResult( checkPaintdump(filename), "PAINT" ) )
+        bool dumped = checkPaintdump(filename);
+        reportResult( dumped, "PAINT");
+        if (!dumped)
             failures |= PaintFailure;
 
         doFailureReport(m_baseDir, filename, failures );
@@ -1254,7 +1256,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
         if ( m_known_failures & AllFailure ) {
             printf("FAIL (known): ");
             m_failures_fail++;
-            passed = true; // we knew about
+            passed = true; // we knew about it
         } else {
             printf("FAIL: ");
             m_failures_work++;
