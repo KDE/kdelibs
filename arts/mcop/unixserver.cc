@@ -25,6 +25,7 @@
 #include "unixserver.h"
 #include "socketconnection.h"
 #include "dispatcher.h"
+#include "debug.h"
 #define queue cqueue
 #include <arpa/inet.h>
 #undef queue
@@ -76,13 +77,13 @@ bool UnixServer::initSocket(string serverID)
 	theSocket = socket(PF_UNIX,SOCK_STREAM,0);
 	if(theSocket < 0)
 	{
-		fprintf(stderr,"MCOP UnixServer: can't create a socket\n");
+		arts_warning("MCOP UnixServer: can't create a socket");
 		return false;
 	}
 
 	if(fcntl(theSocket,F_SETFL,O_NONBLOCK)<0)
 	{
-		fprintf(stderr,"MCOP UnixServer: can't initialize non blocking I/O\n");
+		arts_warning("MCOP UnixServer: can't initialize non blocking I/O");
 		close(theSocket);
 		return false;
 	}
@@ -99,7 +100,7 @@ bool UnixServer::initSocket(string serverID)
     if ( bind( theSocket, (struct sockaddr *) &socket_addr,
                sizeof(struct sockaddr_un) ) < 0 )
     {
-		fprintf(stderr,"MCOP UnixServer: can't bind to file \"%s\"\n",
+		arts_warning("MCOP UnixServer: can't bind to file \"%s\"",
 			pathname.c_str());
         close(theSocket);
 		return false;
@@ -107,7 +108,7 @@ bool UnixServer::initSocket(string serverID)
 
 	if(listen(theSocket,16) < 0)
 	{
-		fprintf(stderr,"MCOP UnixServer: can't listen on the socket\n");
+		arts_warning("MCOP UnixServer: can't listen on the socket");
         close(theSocket);
 		return false;
 	}
@@ -124,7 +125,7 @@ void UnixServer::notifyIO(int fd, int types)
 	assert(fd == theSocket);
 	assert(socketOk);
 
-	printf("UnixManager: got notifyIO\n");
+	arts_debug("UnixManager: got notifyIO");
 	if(types & IOType::read)
 	{
 		int clientfd;
@@ -145,6 +146,6 @@ void UnixServer::notifyIO(int fd, int types)
 				new SocketConnection(clientfd));
 		}
 	}
-	if(types & IOType::write) printf("- write\n");
-	if(types & IOType::except) printf("- except\n");
+	arts_assert((types & IOType::write) == 0);
+	arts_assert((types & IOType::except) == 0);
 }

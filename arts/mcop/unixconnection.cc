@@ -22,6 +22,7 @@
 
 #include "unixconnection.h"
 #include "dispatcher.h"
+#include "debug.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -62,14 +63,14 @@ static int unix_connect(const char *url)
 	struct sockaddr_un *remote_addr = parse_unix_url(url);
 	if(remote_addr == 0)
 	{
-		fprintf(stderr,"unix_connect: couldn't parse url %s\n",url);
+		arts_warning("unix_connect: couldn't parse url %s",url);
 		return 0;
 	}
 
 	int my_socket = socket(AF_UNIX,SOCK_STREAM,0);
 	if(my_socket < 0)
 	{
-		fprintf(stderr,"unix_connect: unable to open socket for read");
+		arts_warning("unix_connect: unable to open socket for read");
 		return 0;
 	}
 
@@ -79,8 +80,7 @@ static int unix_connect(const char *url)
     if ( setsockopt( my_socket, SOL_SOCKET, SO_LINGER,
                      (char*)&lin, sizeof(struct linger) ) < 0 )
     {
-        fprintf(stderr,
-				"unix_connect: unable to set socket linger value to %d\n",
+        arts_warning("unix_connect: unable to set socket linger value to %d",
                 lin.l_linger);
 		close(my_socket);
         return 0;
@@ -90,7 +90,7 @@ static int unix_connect(const char *url)
 	rc=connect(my_socket,(struct sockaddr *)remote_addr, sizeof(*remote_addr));
 	if(rc != 0)
 	{
-		fprintf(stderr,"unix_connect: can't connect to server (%s)\n",url);
+		arts_warning("unix_connect: can't connect to server (%s)",url);
 		close(my_socket);
 		return 0;
 	}

@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "mcoputils.h"
+#include "debug.h"
 
 using namespace std;
 using namespace Arts;
@@ -83,13 +84,13 @@ bool TCPServer::initSocket()
 	theSocket = socket(PF_INET,SOCK_STREAM,0);
 	if(theSocket < 0)
 	{
-		fprintf(stderr,"MCOP TCPServer: can't create a socket\n");
+		arts_warning("MCOP TCPServer: can't create a socket");
 		return false;
 	}
 
 	if(fcntl(theSocket,F_SETFL,O_NONBLOCK)<0)
 	{
-		fprintf(stderr,"MCOP TCPServer: can't initialize non blocking I/O\n");
+		arts_warning("MCOP TCPServer: can't initialize non blocking I/O");
 		close(theSocket);
 		return false;
 	}
@@ -100,7 +101,7 @@ bool TCPServer::initSocket()
 		if(setsockopt (theSocket, SOL_SOCKET, SO_REUSEADDR,
 		               (const char *)&optval, sizeof (optval)) < 0)
 		{
-			fprintf(stderr,"MCOP TCPServer: can't set adress reuse\n");
+			arts_warning("MCOP TCPServer: can't set adress reuse");
 			close(theSocket);
 			return false;
 		}
@@ -112,7 +113,7 @@ bool TCPServer::initSocket()
     if ( bind( theSocket, (struct sockaddr *) &socket_addr,
                sizeof(struct sockaddr_in) ) < 0 )
     {
-		fprintf(stderr,"MCOP TCPServer: can't bind to port/address\n");
+		arts_warning("MCOP TCPServer: can't bind to port/address");
         close(theSocket);
 		return false;
     }
@@ -124,14 +125,14 @@ bool TCPServer::initSocket()
 	}
 	else
 	{
-		fprintf(stderr,"MCOP TCPServer: getsockname failed\n");
+		arts_warning("MCOP TCPServer: getsockname failed");
         close(theSocket);
 		return false;
 	}
 
 	if(listen(theSocket,16) < 0)
 	{
-		fprintf(stderr,"MCOP TCPServer: can't listen on the socket\n");
+		arts_warning("MCOP TCPServer: can't listen on the socket");
         close(theSocket);
 		return false;
 	}
@@ -151,7 +152,7 @@ void TCPServer::notifyIO(int fd, int types)
 	assert(fd == theSocket);
 	assert(socketOk);
 
-	printf("TCPManager: got notifyIO\n");
+	arts_debug("TCPManager: got notifyIO");
 	if(types & IOType::read)
 	{
 		int clientfd;
@@ -172,6 +173,6 @@ void TCPServer::notifyIO(int fd, int types)
 				new SocketConnection(clientfd));
 		}
 	}
-	if(types & IOType::write) printf("- write\n");
-	if(types & IOType::except) printf("- except\n");
+	arts_assert((types & IOType::write) == 0);
+	arts_assert((types & IOType::except) == 0);
 }

@@ -22,6 +22,7 @@
 
 #include "tcpconnection.h"
 #include "dispatcher.h"
+#include "debug.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -61,7 +62,7 @@ SocketConnection::SocketConnection(int fd)
 {
 	_broken = false;
 
-	printf("socketconnection created, fd = %d\n",fd);
+	arts_debug("socketconnection created, fd = %d",fd);
 	this->fd = fd;
 	Dispatcher::the()->ioManager()->watchFD(fd,
 									IOType::read|IOType::except|IOType::reentrant,this);

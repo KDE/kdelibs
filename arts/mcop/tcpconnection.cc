@@ -31,6 +31,7 @@
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <errno.h>
+#include "debug.h"
 
 using namespace std;
 using namespace Arts;
@@ -56,7 +57,7 @@ static struct sockaddr_in *parse_tcp_url(const char *url)
     struct hostent *server = gethostbyname(host);
    	if(server == 0)
 	{
-		fprintf(stderr,"parse_tcp_url: unknown host '%s'\n",host);
+		arts_warning("parse_tcp_url: unknown host '%s'",host);
 		return 0;
 	}
 
@@ -73,14 +74,14 @@ static int tcp_connect(const char *url)
 	struct sockaddr_in *remote_addr = parse_tcp_url(url);
 	if(remote_addr == 0)
 	{
-		fprintf(stderr,"tcp_connect: couldn't parse url %s\n",url);
+		arts_warning("tcp_connect: couldn't parse url %s",url);
 		return 0;
 	}
 
 	int my_socket = socket(AF_INET,SOCK_STREAM,0);
 	if(my_socket < 0)
 	{
-		fprintf(stderr,"tcp_connect: unable to open socket for read\n");
+		arts_warning("tcp_connect: unable to open socket for read");
 		return 0;
 	}
 
@@ -90,7 +91,7 @@ static int tcp_connect(const char *url)
     if ( setsockopt( my_socket, SOL_SOCKET, SO_LINGER,
                      (char*)&lin, sizeof(struct linger) ) < 0 )
     {
-        fprintf(stderr,"tcp_connect: unable to set socket linger value to %d\n",
+        arts_warning("tcp_connect: unable to set socket linger value to %d",
                 lin.l_linger);
 		close(my_socket);
         return 0;
@@ -100,7 +101,7 @@ static int tcp_connect(const char *url)
 	rc=connect(my_socket,(struct sockaddr *)remote_addr, sizeof(*remote_addr));
 	if(rc != 0)
 	{
-		fprintf(stderr,"tcp_connect: can't connect to server (%s)\n", url);
+		arts_warning("tcp_connect: can't connect to server (%s)", url);
 		close(my_socket);
 		return 0;
 	}
