@@ -48,7 +48,7 @@ public:
      */
     KPasswordEdit(QWidget *parent=0, const char *name=0);
     // KDE4: either of the two must go! add default values for parameters
-    
+
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a QLineEdit::EchoMode.
@@ -192,13 +192,18 @@ public:
     // getPassword() below. i guess the above constructor needs to be extended.
 
     /**
-     * Construct a password dialog. Essentially the same as above but allows the 
+     * Construct a password dialog. Essentially the same as above but allows the
      * icon in the password dialog to be set via @p iconName.
      * @param type if NewPassword is given here, the dialog contains two
      * input fields, so that the user must confirm his password
      * and possible typos are detected immediately
-     * @param iconName the name of the icon to be shown in the dialog. If empty, 
+     * @param enableKeep: if true, a check box is shown in the dialog
+     *        which allows the user to keep his password input for later.
+     * @param extraBttn: allows to show additional buttons.
+     * @param iconName the name of the icon to be shown in the dialog. If empty,
      * a default icon is used
+     * @param parent Passed to lower level constructor.
+     * @param name Passed to lower level constructor
      * @since 3.3
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& iconName,
