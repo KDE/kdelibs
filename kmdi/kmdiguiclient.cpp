@@ -213,14 +213,14 @@ void KMDIGUIClient::setupActions()
         addList.append(m_toolMenu);
       if (m_mdiMode==KMdi::IDEAlMode) addList.append(m_gotoToolDockMenu);
       if (m_mdiModeAction) addList.append(m_mdiModeAction);
-      kdDebug()<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
+      kdDebug(760)<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
 
 //    connectToActionContainers();
 }
 
 void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva) {
-	kdDebug()<<"*****void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva)*****"<<endl;
+	kdDebug(760)<<"*****void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva)*****"<<endl;
 	KAction *a=new ToggleToolViewAction(i18n("Show %1").arg(mtva->wrappedWidget()->caption()),
 		QString::null,dynamic_cast<KDockWidget*>(mtva->wrapperWidget()),m_mdiMainFrm,actionCollection(),"nothing");
 	connect(a,SIGNAL(destroyed(QObject*)),this,SLOT(actionDeleted(QObject*)));
@@ -245,7 +245,7 @@ void KMDIGUIClient::clientAdded( KXMLGUIClient *client )
 
 
 void KMDIGUIClient::mdiModeHasBeenChangedTo(KMdi::MdiMode mode) {
-	kdDebug()<<"KMDIGUIClient::mdiModeHasBennChangeTo"<<endl;
+	kdDebug(760)<<"KMDIGUIClient::mdiModeHasBennChangeTo"<<endl;
 	m_mdiMode=mode;
         if (m_mdiModeAction) {
 		switch (mode) {

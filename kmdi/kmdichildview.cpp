@@ -99,7 +99,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f)
 
 KMdiChildView::~KMdiChildView()
 {
-  kdDebug()<<"~KMdiChildView()"<<endl;
+  kdDebug(760)<<"~KMdiChildView()"<<endl;
 }
 
 //============== internal geometry ==============//
