@@ -26,6 +26,7 @@
 
 #include <qcstring.h>
 #include <qdir.h>
+#include <kdebug.h>
 
 #include "ktar.h"
 
@@ -59,19 +60,15 @@ bool KTarBase::open( int mode )
 
   if ( mode == IO_ReadOnly )
   {
-/* What is this good for ? (David)
-   Isn't m_dir internal anyway ?
+    // We'll use the permission and user/group of m_dir
+    // for any directory we emulate (see findOrCreate)
+      //struct stat buf;
+      //stat( m_filename, &buf );
 
-    // Find infos about the tar file itself
-    struct stat buf;
-    stat( m_filename, &buf );
+    struct passwd* pw =  getpwuid( getuid() );
+    struct group* grp = getgrgid( getgid() );
 
-    struct passwd* pw =  getpwuid( buf.st_uid );
-    struct group* grp = getgrgid( buf.st_gid );
-
-    m_dir = new KTarDirectory( this, "/", (int)buf.st_mode, (int)buf.st_mtime, pw->pw_name , grp->gr_name );
-*/
-    m_dir = new KTarDirectory( this, "/", 0, 0, "", "", "" );
+    m_dir = new KTarDirectory( this, QString::fromLatin1("/"), (int)0666, 0, QFile::decodeName(pw->pw_name) , QFile::decodeName(grp->gr_name), QString::null );
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -223,7 +220,7 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
     parent = findOrCreate( left ); // recursive call... until we find an existing dir.
   }
 
-  //debug("found parent %s adding %s to ensure %s", parent->name().latin1(), dirname.latin1(), path.latin1());
+  //kdDebug() << "found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
   // Found -> add the missing piece
   KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(),
                                          m_dir->date(), m_dir->user(),
