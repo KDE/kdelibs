@@ -91,7 +91,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
 
   KEntryMapIterator aIt;
-  KEntryKey groupKey = { pGroup, QString() };
+  KEntryKey groupKey = { pGroup, QString("") };
 
   aIt = aEntryMap.find(groupKey);
   if (aIt != aEntryMap.end()) {
