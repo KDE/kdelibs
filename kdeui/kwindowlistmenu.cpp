@@ -67,63 +67,7 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
 #endif
 }
 
-class WindowListDesktopMenuItem : public QCustomMenuItem
-{
-public:
-    WindowListDesktopMenuItem(const QString &name, const QFont &font) : 
-        QCustomMenuItem(),
-        m_desktopName(name),
-        m_font(font)
-    {
-        m_font.setBold(true);
-    }
-
-    bool fullSpan () const { return true; }
-
-    void paint(QPainter* p, const QColorGroup& cg, 
-               bool /* act */, bool /*enabled*/, 
-               int x, int y, int w, int h)
-    {
-        p->save();
-        QRect r(x, y, w, h);
-        kapp->style().drawPrimitive(QStyle::PE_HeaderSection, 
-                                    p, r, cg);
-
-        if (!m_desktopName.isEmpty())
-        {
-            p->setPen(cg.text());
-            p->setFont(m_font);
-            p->drawText(x, y, w, h,
-                        AlignCenter | SingleLine, 
-                        m_desktopName);
-        }
-
-        p->setPen(cg.highlight());
-        p->drawLine(0, 0, r.right(), 0);
-        p->restore();
-    }
-
-    void setFont(const QFont &font)
-    {
-        m_font = font;
-        m_font.setBold(true);
-    }
-
-    QSize sizeHint()
-    {
-      QSize size = QFontMetrics(m_font).size(AlignHCenter, m_desktopName);
-      size.setHeight(size.height() + 
-                     (kapp->style().pixelMetric(QStyle::PM_DefaultFrameWidth) * 2 + 1));
-      return size;
-    }
-
-  private:
-    QString m_desktopName;
-    QFont m_font;
-};
-
 } // namespace
-
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : KPopupMenu(parent, name)
@@ -168,12 +112,17 @@ void KWindowListMenu::init()
     clear();
     map.clear();
 
-    insertItem( i18n("Unclutter Windows"),
-		this, SLOT( slotUnclutterWindows() ) );
-    insertItem( i18n("Cascade Windows"),
-		this, SLOT( slotCascadeWindows() ) );
+    int unclutter = insertItem( i18n("Unclutter Windows"),
+                                this, SLOT( slotUnclutterWindows() ) );
+    int cascade = insertItem( i18n("Cascade Windows"),
+                              this, SLOT( slotCascadeWindows() ) );
 
-    insertSeparator();
+    // if we only have one desktop we won't be showing titles, so put a separator in
+    if (nd == 1)
+    {
+        insertSeparator();
+    }
+
 
     QValueList<KWin::WindowInfo> windows;
     for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
@@ -183,16 +132,6 @@ void KWindowListMenu::init()
     bool show_all_desktops_group = ( nd > 1 );
     for (d = 1; d <= nd + (show_all_desktops_group ? 1 : 0); d++) {
         bool on_all_desktops = ( d > nd );
-	if ( nd > 1 )
-        {
-            if( !on_all_desktops )
-	        insertItem(new WindowListDesktopMenuItem(kwin_module->desktopName( d ), 
-                       font()), 1000 + d);
-            else
-                insertItem(new WindowListDesktopMenuItem(i18n("On All Desktops"),
-                        font()), 2000 );
-        }
-
 	int items = 0;
 
 	if (!active_window && d == cd)
@@ -213,7 +152,7 @@ void KWindowListMenu::init()
 
         for (KWin::WindowInfo* info = list.first(); info!=0; info = list.next(), i++)
         {
-            QString title = info->visibleNameWithState();
+            QString itemText = KStringHandler::cEmSqueeze(info->visibleNameWithState(), fontMetrics(), 40);
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
@@ -222,21 +161,45 @@ void KWindowListMenu::init()
                 && !(info->state() & NET::SkipTaskbar) ) {
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
-                if (items == 1 && nd > 1)
-                    insertSeparator();
-		QString itemText =  KStringHandler::csqueeze(title,25);
-		// Avoid creating unwanted accelerators.
-		itemText.replace("&", "&&");
-                insertItem( pm, QString("   ")+ itemText, i);
+
+                // ok, we have items on this desktop, let's show the title
+                if ( items == 1 && nd > 1 )
+                {
+                    if( !on_all_desktops )
+                        insertTitle(kwin_module->desktopName( d ), 1000 + d);
+                    else
+                        insertTitle(i18n("On All Desktops"), 2000 );
+                }
+
+                // Avoid creating unwanted accelerators.
+                itemText.replace("&", "&&");
+                insertItem( pm, itemText, i);
                 map.insert(i, info->win());
                 if (info->win() == active_window)
                     setItemChecked(i, TRUE);
             }
         }
-        if (d < nd + (show_all_desktops_group ? 1 : 0))
+
+        if (d == cd)
+        {
+            setItemEnabled(unclutter, items > 0);
+            setItemEnabled(cascade, items > 0);
+        }
+    }
+
+    // no windows?
+    if (i == 0)
+    {
+        if (nd > 1)
+        {
+            // because we don't have any titles, nor a separator
             insertSeparator();
+        }
+
+        setItemEnabled(insertItem(i18n("No windows")), false);
     }
 #endif
+
     adjustSize();
 }
 
