@@ -20,8 +20,6 @@
 
 int main(int argc, char *argv[])
 {
-    char data[1024];
-
     KApplication a(argc, argv, "testkhtml");
 
     KHTMLWidget *doc = new KHTMLWidget;
