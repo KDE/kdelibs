@@ -310,6 +310,7 @@ static const ushort tag_list_0[] = {
 };
 
 static const ushort tag_list_1[] = {
+    ID_TEXT,
     ID_P,
     ID_H1,
     ID_H2,
@@ -337,7 +338,6 @@ static const ushort tag_list_1[] = {
     ID_TABLE,
     ID_FIELDSET,
     ID_ADDRESS,
-    ID_TEXT,
     ID_TT,
     ID_I,
     ID_B,
@@ -395,6 +395,7 @@ static const ushort tag_list_2[] = {
 };
 
 static const ushort tag_list_3[] = {
+    ID_TEXT,
     ID_P,
     ID_H1,
     ID_H2,
@@ -430,6 +431,7 @@ static const ushort tag_list_3[] = {
 };
 
 static const ushort tag_list_4[] = {
+    ID_TEXT,
     ID_PARAM,
     ID_P,
     ID_H1,
@@ -513,6 +515,7 @@ static const ushort tag_list_6[] = {
 };
 
 static const ushort tag_list_7[] = {
+    ID_TEXT,
     ID_OPTGROUP,
     ID_OPTION,
     ID_COMMENT,
@@ -529,6 +532,7 @@ static const ushort tag_list_10[] = {
 };
 
 static const ushort tag_list_11[] = {
+    ID_TEXT,
     ID_SCRIPT,
     ID_STYLE,
     ID_META,
@@ -546,7 +550,7 @@ static bool check_array(ushort child, const ushort *tagList)
     while(tagList[i] != 0)
     {
         if(tagList[i] == child) return true;
-    i++;
+        i++;
     }
     return false;
 }
@@ -619,12 +623,10 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         return false;
     case ID_BODY:
         // BODY: _1 * + _2
-        if( check_array(childID, tag_list_1) ) return true;
-        return check_array(childID, tag_list_2);
+        return check_array(childID, tag_list_1) || check_array(childID, tag_list_2);
     case ID_ADDRESS:
         // ADDRESS: ( _0 | P ) *
-        if( check_array(childID, tag_list_0) ) return true;
-        return (childID == ID_P);
+        return check_array(childID, tag_list_0) || childID == ID_P;
     case ID_DT:
         if ( childID == ID_DL ) return false;
     case ID_LI:
