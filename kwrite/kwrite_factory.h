@@ -18,7 +18,6 @@ public:
     virtual KParts::Part* createPart( QWidget *parentWidget, const char *, QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
 
     static KInstance* instance();
-    static KInstance* instance2();
 
 private:
 
