@@ -50,7 +50,6 @@
 #include <qtextstream.h>
 #include <kinstance.h>
 #include <kstddirs.h>
-#include <kdebug.h>
 #include <kapp.h>
 
 #include "ltdl.h"
@@ -574,10 +573,12 @@ static void handle_launcher_request(int sock = -1)
       name = request_data + sizeof(long);
       args = name + strlen(name) + 1;
 
+#ifndef NDEBUG
       if (launcher)
-         kdDebug () << "KInit: Got EXEC '" << name << "' from klauncher" << endl;
+         fprintf(stderr, "KInit: Got EXEC '%s' from klauncher.\n", name);
       else
-         kdDebug () << "KInit: Got EXEC '" << name << "' from socket" << endl;
+         fprintf(stderr, "KInit: Got EXEC '%s' from socket.\n", name);
+#endif
 
       {
          int i = 1;
@@ -590,7 +591,9 @@ static void handle_launcher_request(int sock = -1)
          }
          if ((arg_n - request_data) != request_header.arg_length)
          {
-           kdWarning () << "kdeinit: EXEC request has invalid format." << endl;
+#ifndef NDEBUG
+           fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
+#endif
            free(request_data);
            return;
          }
@@ -619,15 +622,19 @@ static void handle_launcher_request(int sock = -1)
       env_name = request_data;
       env_value = env_name + strlen(env_name) + 1;
 
+#ifndef NDEBUG
       if (launcher)
-         kdDebug () << "Got SETENV '" << env_name << "=" << env_value << "' from klauncher" << endl;
+         fprintf(stderr, "kdeinit: Got SETENV '%s=%s' from klauncher.\n", env_name, env_value);
       else
-         kdDebug () << "Got SETENV '" << env_name << "=" << env_value << "' from socket" << endl;
+         fprintf(stderr, "kdeinit: Got SETENV '%s=%s' from socket.\n", env_name, env_value);
+#endif
 
       if ( request_header.arg_length !=
           (int) (strlen(env_name) + strlen(env_value) + 2))
       {
-         kdWarning () << "kdeinit: SETENV request has invalid format." << endl;
+#ifndef NDEBUG
+         fprintf(stderr, "kdeinit: SETENV request has invalid format.\n");
+#endif
          free(request_data);
          return;
       }
@@ -662,7 +669,9 @@ static void handle_requests(pid_t waitForPid)
         exit_pid = waitpid(-1, 0, WNOHANG);
         if (exit_pid > 0)
         {
-           kdDebug () << "kdeinit: PID " << exit_pid << " terminated." << endl;
+#ifndef NDEBUG
+           fprintf(stderr, "kdeinit: PID %ld terminated.\n", (long) exit_pid);
+#endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
            if (d.launcher_pid)
@@ -836,7 +845,9 @@ static int initXconnection()
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)) );
-    kdDebug() << "kdeinit: opened connection to " << DisplayString(X11display) << endl;
+#ifndef NDEBUG
+    fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
+#endif
     return XConnectionNumber( X11display );
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
@@ -907,7 +918,9 @@ int main(int argc, char **argv, char **envp)
    if (launch_dcop)
    {
       pid = launch( 2, "dcopserver", "--nosid" );
-      kdDebug () << "DCOPServer: pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched DCOPServer, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
       WaitPid(pid);
       if (!WIFEXITED(d.exit_status) || (WEXITSTATUS(d.exit_status) != 0))
       {
@@ -919,7 +932,9 @@ int main(int argc, char **argv, char **envp)
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );
-      kdDebug () << "KLauncher: pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
       WaitPid(pid);
    }
 
@@ -929,7 +944,9 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "+kdesktop") == 0)
       {
          pid = launch( 2, "kdesktop", "--waitforkded" );
-         kdDebug () << "KDesktop: pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched KDesktop, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
          WaitPid(pid);
          safe_argv[i][0] = '-'; // Make it an option so that it won't be launched a second time!
          break;
@@ -939,7 +956,9 @@ int main(int argc, char **argv, char **envp)
    if (launch_kded)
    {
       pid = launch( 1, "kded", 0 );
-      kdDebug () << "KDED: pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
       WaitPid(pid);
    }
 
@@ -950,7 +969,9 @@ int main(int argc, char **argv, char **envp)
       if (safe_argv[i][0] == '+')
       {
          pid = launch( 1, safe_argv[i]+1, 0);
-         kdDebug () << "Launched: " << safe_argv[i]+1 << ", pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched '%s', pid = %ld result = %d\n", safe_argv[i]+1, (long) pid, d.result);
+#endif
 
 //         WaitPid(pid);
          handle_requests(pid);
@@ -962,7 +983,9 @@ int main(int argc, char **argv, char **envp)
       else
       {
          pid = launch( 1, safe_argv[i], 0 );
-         kdDebug () << "Launched: " << safe_argv[i] << ", pid = " << pid << " result = " << d.result << endl;
+#ifndef NDEBUG
+      fprintf(stderr, "kdeinit: Launched '%s', pid = %ld result = %d\n", safe_argv[i], (long) pid, d.result);
+#endif
       }
    }
 
