@@ -174,4 +174,4 @@ zh      Chinese
 <!ENTITY % glossentry.attlist "IGNORE">
 
 <!-- Temporary lifting of restriction -->
-<!ENTITY % local.smallcptr.char.mix "envar">
+<!ENTITY % local.smallcptr.char.mix "|envar">
