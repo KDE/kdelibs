@@ -34,7 +34,6 @@ class QWidget;
 
 //----------------------------------------------------
 
-class KAccelBasePrivate;
 /**
  * @internal
  * Handle keyboard accelerators.
@@ -225,10 +224,6 @@ class KAccelBase
 	KAccelBase& operator =( const KAccelBase& );
 
 	friend class KAccelActions;
- protected:
-	virtual void virtual_hook( int id, void* data );
- private:
-	KAccelBasePrivate* d;
 };
 
 #endif // _KACCELBASE_H

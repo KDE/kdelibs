@@ -603,6 +603,3 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 	pMenu->updateShortcuts();
 	return pMenu;
 }
-
-void KAccelBase::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
