@@ -271,7 +271,6 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     static int sepIndex;
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
-
     s_sepToolBar = tb;
     s_sepToolBar->removeItemDelayed(sepId);
 
@@ -459,6 +458,8 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
+	if (dptr()->m_actions.count() == 0)
+	  return false;
         bool _atFirst;
         KAction *_a; 
         _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
