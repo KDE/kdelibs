@@ -557,9 +557,6 @@ void CachedImage::movieStatus(int status)
 {
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
         movieUpdated(valid_rect()); //wow, that's ugly!
-
-    if( !m->running() )
-        m->restart();
 }
 
 void CachedImage::clear()
