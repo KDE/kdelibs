@@ -31,6 +31,7 @@ class KKeyNative;
 * (Shift, Ctrl, Alt, Win).  It can represent both keys which are
 * understood by Qt as well as those which are additionally supported
 * by the underlying system (e.g. X11).
+* @see KKeyNative
 * @see KKeySequence
 * @see KShortcut
 */
@@ -192,12 +193,12 @@ class KKey
  // Comparison Methods
 	/**
 	 * Compares this key with the given KKey object. Returns a negative 
-	 * number of the given KKey is larger, 0 if they are equal and
+	 * number if the given KKey is larger, 0 if they are equal and
 	 * a positive number this KKey is larger. The returned value
 	 * is the difference between the symbol or, if the symbols 
 	 * are equal, the difference between the encoded modifiers.
 	 * @param key the key to compare with this key
-	 * @return a negative number of the given KKey is larger, 0 if 
+	 * @return a negative number if the given KKey is larger, 0 if 
 	 * they are equal and a positive number this KKey is larger
 	 */
 	int compare( const KKey& key ) const;

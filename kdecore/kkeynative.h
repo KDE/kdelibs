@@ -25,53 +25,188 @@
 typedef union _XEvent XEvent;
 
 class KKeyNativePrivate;
-// Representation of a key in the format native the windowing system (i.e. X11).
+/** 
+ * Representation of a key in the format native of the windowing system (eg. X11).
+ * @see KKey
+ */
 class KKeyNative
 {
  public:
+	/**
+	 * Creates a new null KKey.
+	 * @see clear()
+	 * @see isNull()
+	 * @see null()
+	 */
 	KKeyNative();
-	KKeyNative( const XEvent* );
-	KKeyNative( const KKey& );
+
+	/**
+	 * Extracts a new native key from the given xevent.
+	 * @param xevent the XEvent that contains the key
+	 */
+	KKeyNative( const XEvent* xevent );
+
+	/**
+	 * Creates a new native key for the given KKey code.
+	 * @param key the @ref KKey that contains the generic key
+	 */
+	KKeyNative( const KKey& key );
+
+	/**
+	 * Copy constructor.
+	 */
 	KKeyNative( const KKeyNative& );
+
 	/**
 	 * @internal
 	 */
 	KKeyNative( uint code, uint mod, uint sym );
 	~KKeyNative();
 
+	/**
+	 * Clears the key. The key is null after calling this function.
+	 * @see isNull()
+	 */
 	void clear();
-	bool init( const XEvent* );
-	bool init( const KKey& );
-	bool init( const KKeyNative& );
 
+	/**
+	 * Initializes the native key by extracting the information
+	 * from the given xevent.
+	 * @param xevent the XEvent that contains the key
+	 * @return true if succesful, false otherwise
+	 */
+	bool init( const XEvent* xevent );
+
+	/**
+	 * Creates a new native key for the given KKey code.
+	 * @param key the @ref KKey that contains the generic key
+	 * @return true if succesful, false otherwise
+	 */
+	bool init( const KKey& key );
+
+	/**
+	 * Copies the given key into this key.
+	 * @param key the key to copy
+	 * @return true if succesful, false otherwise
+	 */
+	bool init( const KKeyNative& key );
+
+	/**
+	 * Copies the given key into this key.
+	 * @param key the key to copy
+	 * @return this key
+	 */	
 	KKeyNative& operator =( const KKeyNative& key )
 		{ init( key ); return *this; }
 
+	/**
+	 * Returns the qt key code.
+	 * @return the qt key code or 0 if there is no key set.
+	 * @see Qt::Key
+	 */
+	
 	int keyCodeQt() const;
+
+	/**
+	 * Returns the KKey representation of this key.
+	 * @return the KKey representation
+	 */
 	KKey key() const;
+
+	/**
+	 * Converts this key to its KKey representation.
+	 * @return the KKey representation
+	 * @see key()
+	 */
 	operator KKey() const     { return key(); }
 
+	/**
+	 * The native keycode of the key.
+	 * @return the native keycode
+	 */
 	uint code() const;
+
+	/**
+	 * The native modifier flags of the key.
+	 * @return the native modifier flags
+	 */
 	uint mod() const;
+
+	/**
+	 * The native symbol (KeySym) of the key.
+	 * @return the native symbol (KeySym)
+	 */
 	uint sym() const;
 
+	/**
+	 * Returns true if the key is null (after @ref clear() or empty
+	 * constructor).
+	 * @return true if the key is null
+	 * @see clear()
+	 * @see null()
+	 */
 	bool isNull() const;
-	int compare( const KKeyNative& ) const;
+
+	/**
+	 * Compares this key with the given KKeyNative object. Returns a 
+	 * negative number if the given KKeyNative is larger, 0 if they 
+	 * are equal and a positive number this KKeyNative is larger. The 
+	 * returned value is the difference between the symbol, modifier
+	 * or code, whatever is non-zero first.
+	 *
+	 * @param key the key to compare with this key
+	 * @return a negative number if the given KKeyNative is larger, 0 if 
+	 * they are equal and a positive number this KKeyNative is larger
+	 */
+	int compare( const KKeyNative& key ) const;
+
+	/**
+	 * Compares the symbol, modifiers and code of both keys.
+	 * @see compare()
+	 */
 	bool operator == ( const KKeyNative& key ) const
 		{ return compare( key ) == 0; }
+
+	/**
+	 * Compares the symbol, modifiers and code of both keys.
+	 * @see compare()
+	 */
 	bool operator != ( const KKeyNative& key ) const
 		{ return compare( key ) != 0; }
+
+	/**
+	 * Compares the symbol, modifiers and code of both keys.
+	 * @see compare()
+	 */
 	bool operator < ( const KKeyNative& key ) const
 		{ return compare( key ) < 0; }
 
+	/**
+	 * Returns a null key.
+	 * @return the null key
+	 * @see isNull()
+	 * @see clear()
+	 */
 	static KKeyNative& null();
 
 	// General query functions. //
+	/**
+	 * Checks whether the keyboard has a Win key.
+	 * @return true if the keyboard has a Win key
+	 */
 	static bool keyboardHasWinKey();
+
+	/**
+	 * Returns the equivalent X modifier mask of the given modifier flag.
+	 * @param modFlag the mod flags to test
+	 * @return the equivalent native flags of the window system
+	 */
 	static uint modX( KKey::ModFlag modFlag );
+
 	/**
 	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
 	 * Win (if available).
+	 * @return the mask of Shift, Ctrl, Alt and Win.
 	 */
 	static uint accelModMaskX();
 
