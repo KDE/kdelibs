@@ -39,10 +39,11 @@ KService* KService::service( const QString& _name )
   return 0L;
 }
 
-KService::KService( const QString& _name, const QString& _exec, const QString& _icon,
-		    const QStringList& _lstServiceTypes, const QString& _comment,
-		    bool _allow_as_default, const QString& _path,
-		    const QString& _terminal, const QString&, const QString& _act_mode,
+KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
+                    const QString& _icon, const QStringList& _lstServiceTypes, 
+		    const QString& _comment, bool _allow_as_default, 
+		    const QString& _path, const QString& _terminal, 
+		    const QString&, const QString& _act_mode,
 		    const QStringList& _repo_ids, bool _put_in_list )
 {
   initStatic();
@@ -53,6 +54,7 @@ KService::KService( const QString& _name, const QString& _exec, const QString& _
   
   m_strName = _name;
   m_strExec = _exec;
+  m_strCORBAExec = _corbaexec;
   m_strIcon = _icon;
   m_strComment = _comment;
   m_lstServiceTypes = _lstServiceTypes;
@@ -90,12 +92,13 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
     return;
   }
 
+  m_strCORBAExec = config.readEntry( "CORBAExec" ); //should we use X-KDE-CORBAExec instead?? (Simon)
   m_strIcon = config.readEntry( "Icon", "unknown.xpm" );
   m_strTerminalOptions = config.readEntry( "TerminalOptions" );  
   m_strPath = config.readEntry( "Path" );
   m_strComment = config.readEntry( "Comment" );
-  m_strActivationMode = config.readEntry( "ActivationMode", "UNIX" );
-  m_lstRepoIds = config.readListEntry( "RepoIds" );
+  m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
+  m_lstRepoIds = config.readListEntry( "X-KDE-RepoIds" );
   m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
@@ -139,9 +142,9 @@ void KService::load( QDataStream& s )
 {
   Q_INT8 b;
   
-  s >> m_strName >> m_strExec >> m_strIcon >> m_strTerminalOptions >> m_strPath
-    >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps >> m_strActivationMode
-    >> m_lstRepoIds;
+  s >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions 
+    >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps 
+    >> m_strActivationMode >> m_lstRepoIds;
   m_bAllowAsDefault = b;
   
   m_bValid = true;
@@ -149,9 +152,9 @@ void KService::load( QDataStream& s )
 
 void KService::save( QDataStream& s ) const
 {
-  s << m_strName << m_strExec << m_strIcon << m_strTerminalOptions << m_strPath
-    << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault << m_mapProps
-    << m_strActivationMode << m_lstRepoIds;
+  s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions 
+    << m_strPath << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault 
+    << m_mapProps << m_strActivationMode << m_lstRepoIds;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -173,6 +176,8 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QProperty( m_strName );
   if ( _name == "Exec" )
     p = new QProperty( m_strExec );
+  if ( _name == "CORBAExec" )
+    p = new QProperty( m_strCORBAExec );
   if ( _name == "Icon" )
     p = new QProperty( m_strIcon );
   if ( _name == "TerminalOptions" )
@@ -216,6 +221,7 @@ QStringList KService::propertyNames() const
   res.append( "Comment" );
   res.append( "Icon" );
   res.append( "Exec" );
+  res.append( "CORBAExec" );
   res.append( "TerminalOptions" );
   res.append( "Path" );
   res.append( "File" );

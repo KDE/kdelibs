@@ -62,12 +62,12 @@ public:
    *        services. But sometimes you may just want to create
    *        a service object for internal purposes.
    */
-  KService( const QString& _name, const QString& _exec, const QString& _icon,
-	    const QStringList& _lstServiceTypes, const QString& _comment = QString::null,
-	    bool _allow_as_default = true, const QString& _path = QString::null,
-	    const QString& _terminal = QString::null, const QString& _file = QString::null, 
-	    const QString& _act_mode = QString::null, const QStringList& _repoids = QStringList(),
-	    bool _put_in_list = true );
+  KService( const QString& _name, const QString& _exec, const QString &_corbaexec, 
+            const QString& _icon, const QStringList& _lstServiceTypes, 
+	    const QString& _comment = QString::null, bool _allow_as_default = true, 
+	    const QString& _path = QString::null, const QString& _terminal = QString::null, 
+	    const QString& _file = QString::null, const QString& _act_mode = QString::null, 
+	    const QStringList& _repoids = QStringList(), bool _put_in_list = true );
   KService( bool _put_in_list = true );
   KService( KSimpleConfig& _cfg, bool _put_in_list = true );
   KService( QDataStream& _str, bool _put_in_list = true );
@@ -82,6 +82,11 @@ public:
    * @return the command that the service executes. 
    */
   QString exec() const { return m_strExec; }
+  /** 
+   * @return the command that the CORBA based service executes.
+   *         (usually something like "myapp --server" )
+   */
+  QString CORBAExec() const { return m_strCORBAExec; }
   /**
    * @return the icon associated with the service. 
    */
@@ -101,7 +106,14 @@ public:
    * @return the descriptive comment for the service, if there is one. 
    */
   QString comment() const { return m_strComment; }
+  /**
+   * @return the CORBA activation mode for the service, if there is one.
+   *         (to be used for the IMR)
+   */
   QString activationMode() const { return m_strActivationMode; }
+  /**
+   * @return the CORBA Repository IDs for the service, if there are any.
+   */
   QStringList repoIds() const { return m_lstRepoIds; }
 
   /**
@@ -163,6 +175,7 @@ private:
 
   QString m_strName;
   QString m_strExec;
+  QString m_strCORBAExec;
   QString m_strIcon;
   QString m_strTerminalOptions;
   QString m_strPath;
