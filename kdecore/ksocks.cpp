@@ -1,15 +1,15 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -64,7 +64,7 @@ static int     (*F_SOCKSinit)   (char *) = 0L;
 static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t) = 0L;
 static signed long int (*F_read)        (int, void *, unsigned long int) = 0L;
 static signed long int (*F_write)       (int, const void *, unsigned long int) = 0L;
-static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *, 
+static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *,
                                  ksocklen_t *) = 0L;
 static int     (*F_sendto)      (int, const void *, unsigned long int, int,
                                  const struct sockaddr *, ksocklen_t) = 0L;
@@ -73,7 +73,7 @@ static int     (*F_send)        (int, const void *, unsigned long int, int) = 0L
 static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *) = 0L;
 static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *) = 0L;
 static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = 0L;
-static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *, 
+static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *,
                                                      struct timeval *) = 0L;
 static int     (*F_listen)      (int, int) = 0L;
 static int     (*F_bind)        (int, const struct sockaddr *, ksocklen_t) = 0L;
@@ -83,7 +83,8 @@ static int     (*F_bind)        (int, const struct sockaddr *, ksocklen_t) = 0L;
 class KSocksTable {
  public:
    KSocksTable();
- 
+  virtual ~KSocksTable();
+
    // The name of each symbol and it's SOCKS replacement
    QMap<SymbolKeys,QString>  symbols;
    // The name of this library
@@ -95,10 +96,13 @@ class KSocksTable {
 KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
 }
 
+KSockTable::~KSocksTable() {
+}
+
 
 /*
  *   How to add support for a new SOCKS package.
- * 
+ *
  *   1) Subclass KSocksTable as is done below and write out all the symbols
  *   1.b) Give the class a "myname"
  *   2) Make sure that all possible library names are written into the
@@ -194,10 +198,10 @@ KDanteSocksTable::~KDanteSocksTable() {
 KSocks *KSocks::_me = 0;
 bool KSocks::_disabled = false;
 
-void KSocks::disable() 
-{ 
+void KSocks::disable()
+{
    if (!_me)
-      _disabled = true; 
+      _disabled = true;
 }
 
 KSocks *KSocks::self() {
@@ -218,7 +222,7 @@ void KSocks::setConfig(KConfigBase *config)
 {
   // We can change the config from disabled to enabled
   // but not the other way around.
-  if (_me && _disabled) { 
+  if (_me && _disabled) {
      delete _me;
      _me = 0;
      _disabled = false;
@@ -269,7 +273,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
 
    // Load the proper libsocks and KSocksTable
    KLibLoader *ll = KLibLoader::self();
-   
+
 
    int _meth = config->readNumEntry("SOCKS_method", 1);
          /****       Current methods
@@ -280,11 +284,11 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
    if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
       _socksLib = ll->library(config->readPathEntry("SOCKS_lib").latin1());
       if (_socksLib && _socksLib->symbol("Rconnect")) {  // Dante compatible?
-         _st = new KDanteSocksTable;       
+         _st = new KDanteSocksTable;
          _useSocks = true;
          _hasSocks = true;
       } else if (_socksLib && _socksLib->symbol("connect")) { // NEC compatible?
-         _st = new KNECSocksTable;       
+         _st = new KNECSocksTable;
          _useSocks = true;
          _hasSocks = true;
       } else if (_socksLib) {
@@ -307,7 +311,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
             _useSocks = true;
             _hasSocks = true;
             break;
-         } else if ((_meth == 1 || _meth == 3) && 
+         } else if ((_meth == 1 || _meth == 3) &&
                     _socksLib->symbol("sockaddr2ruleaddress") != 0L) { //Dante
             kdDebug(171) << "Found Dante SOCKS" << endl;
             _st = new KDanteSocksTable;
@@ -344,7 +348,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                      _socksLib->symbol(it.data().latin1());
           break;
          case S_recvfrom:
-           F_recvfrom = (int (*)(int, void *, unsigned long int, int, 
+           F_recvfrom = (int (*)(int, void *, unsigned long int, int,
                                  struct sockaddr *, ksocklen_t *))
                         _socksLib->symbol(it.data().latin1());
           break;
@@ -390,7 +394,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
           break;
          }
       }
- 
+
       // Now we check for the critical stuff.
       if (F_SOCKSinit) {
          int rc = (*F_SOCKSinit)((char *)"KDE");
@@ -431,7 +435,7 @@ void KSocks::stopSocks() {
    }
 }
 
- 
+
 bool KSocks::usingSocks() {
    return _useSocks;
 }
