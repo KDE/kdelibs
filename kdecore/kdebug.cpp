@@ -168,7 +168,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
   if (debug_Config && oldarea != nArea) {
     debug_Config->setGroup( QString::number(static_cast<int>(nArea)) );
     oldarea = nArea;
-    if ( nArea > 0)
+    if ( nArea > 0 && KGlobal::_instance )
       aAreaName = getDescrFromNum(nArea);
     if ((nArea == 0) || aAreaName.isEmpty())
       if ( KGlobal::_instance )
