@@ -26,11 +26,14 @@
 #include "operations.h"
 #include "number_object.h"
 #include "error_object.h"
+#include "dtoa.h"
 
 #include "number_object.lut.h"
 
-using namespace KJS;
+#include <assert.h>
+#include <math.h>
 
+using namespace KJS;
 
 // ------------------------------ NumberInstanceImp ----------------------------
 
@@ -54,9 +57,18 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  putDirect(toStringPropertyName,       new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1), DontEnum);
-  putDirect(toLocaleStringPropertyName, new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0), DontEnum);
-  putDirect(valueOfPropertyName,        new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,        0), DontEnum);
+  putDirect(toStringPropertyName,
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,1),DontEnum);
+  putDirect(toLocaleStringPropertyName,
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString,0),DontEnum);
+  putDirect(valueOfPropertyName,
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,0),DontEnum);
+  putDirect("toFixed",
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToFixed,1),DontEnum);
+  putDirect("toExponential",
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToExponential,1),DontEnum);
+  putDirect("toPrecision",
+	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToPrecision,1),DontEnum);
 }
 
 
@@ -74,6 +86,40 @@ NumberProtoFuncImp::NumberProtoFuncImp(ExecState */*exec*/,
 bool NumberProtoFuncImp::implementsCall() const
 {
   return true;
+}
+
+UString integer_part_noexp(double d)
+{
+  int decimalPoint;
+  int sign;
+  char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
+  int length = strlen(result);
+
+  UString str = sign ? "-" : "";
+  if (decimalPoint == 9999) {
+    str += UString(result);
+  } else if (decimalPoint <= 0) {
+    str += UString("0");
+  } else {
+    char *buf;
+
+    if (length <= decimalPoint) {
+      buf = (char*)malloc(decimalPoint+1);
+      strcpy(buf,result);
+      memset(buf+length,'0',decimalPoint-length);
+    } else {
+      buf = (char*)malloc(decimalPoint+1);
+      strncpy(buf,result,decimalPoint);
+    }
+
+    buf[decimalPoint] = '\0';
+    str += UString(buf);
+    free(buf);
+  }
+
+  kjs_freedtoa(result);
+
+  return str;
 }
 
 // ECMA 15.7.4.2 - 15.7.4.7
@@ -111,6 +157,56 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
   case ValueOf:
     result = Number(v.toNumber(exec));
+    break;
+  case ToFixed: {
+    Value fractionDigits = args[0];
+    int f = fractionDigits.toInteger(exec);
+    if (f < 0 || f > 20) {
+      Object err = Error::create(exec,RangeError);
+      exec->setException(err);
+      return err;
+    }
+
+    double x = v.toNumber(exec);
+    if (isNaN(x))
+      return String("NaN");
+
+    UString s = "";
+    if (x < 0) {
+      s += "-";
+      x = -x;
+    }
+
+    if (x >= pow(10,21))
+      return String(s+UString::from(x));
+
+    double n = floor(x*pow(10,f));
+    if (fabs(n/pow(10,f)-x) > fabs((n+1)/pow(10,f)-x))
+      n++;
+
+    UString m = integer_part_noexp(n);
+
+    int k = m.size();
+    if (m.size() < f) {
+      UString z = "";
+      for (int i = 0; i < f+1-k; i++)
+	z += "0";
+      m = z + m;
+      k = f + 1;
+      assert(k == m.size());
+    }
+    if (k-f < m.size())
+      return String(s+m.substr(0,k-f)+"."+m.substr(k-f));
+    else
+      return String(s+m.substr(0,k-f));
+  }
+  case ToExponential:
+    // ###
+    result = Undefined();
+    break;
+  case ToPrecision:
+    // ###
+    result = Undefined();
     break;
   }
 
