@@ -65,6 +65,7 @@
  *
  * @short Class for manipulating words and sentences in strings
  * @author Ian Zepp <icszepp@islc.net>
+ * @see KShell
  */
 class KStringHandler
 {
@@ -317,6 +318,7 @@ public:
      * @return true if the given filename matches the given pattern
      */
     static bool matchFileName( const QString& filename, const QString& pattern );
+    // KDE4: move to KShell
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -402,6 +404,25 @@ public:
       @since 3.2
     */
     static QString obscure( const QString &str );
+
+    /**
+      Guess whether a string is UTF8 encoded.
+
+      @param str the string to check
+      @return true if UTF8. If false, the string is probably in Local8Bit.
+      @since 3.2
+     */
+    static bool isUtf8( const char *str );
+
+    /**
+      Construct QString from a c string, guessing whether it is UTF8- or
+      Local8Bit-encoded.
+
+      @param str the input string
+      @return the (hopefully correctly guessed) QString representation of @p str
+      @since 3.2
+     */
+    static QString from8Bit( const char *str );
 
 #ifdef KDE_NO_COMPAT
 private:
