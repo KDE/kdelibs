@@ -104,6 +104,8 @@ private slots:
   void slotCopyImageLocation();
   void slotViewImage();
   void slotReloadFrame();
+  void slotFrameInWindow();
+  void slotFrameInTab();
 private:
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;

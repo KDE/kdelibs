@@ -297,6 +297,8 @@ public:
   KAction *m_paStopAnimations;
   KAction *m_paCopyImageLocation;
   KAction *m_paViewImage;
+  KAction *m_paFrameInWindow;
+  KAction *m_paFrameInTab;
   KAction *m_paReloadFrame;
   KAction *m_paViewFrameSource;
   KAction *m_paViewFrameInfo;
@@ -318,6 +320,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   // frameset? -> add "Reload Frame" etc.
   if ( khtml->parentPart() )
   {
+    d->m_paFrameInWindow = new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
+                                      actionCollection(), "frameinwindow" );
+    d->m_paFrameInTab = new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
+                                      actionCollection(), "frameintab" );
     d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
                                       actionCollection(), "reloadframe" );
     d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
@@ -461,6 +467,21 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->closeURL();
   d->m_khtml->browserExtension()->setURLArgs( args );
   d->m_khtml->openURL( d->m_khtml->url() );
+}
+
+void KHTMLPopupGUIClient::slotFrameInWindow()
+{
+  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  args.metaData()["referrer"] = d->m_khtml->pageReferrer();
+  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
+}
+
+void KHTMLPopupGUIClient::slotFrameInTab()
+{
+  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  args.metaData()["referrer"] = d->m_khtml->pageReferrer();
+  args.setNewTab(true);
+  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
 }
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
