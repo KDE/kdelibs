@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.11  1999/11/16 01:57:52  ettrich
+    KWinModule shouldn't filter out ALL client messages
+
     Revision 1.10  1999/11/14 06:08:20  ettrich
     track icon changes as well
 
@@ -86,6 +89,7 @@ static Atom sound;
 static Atom register_sound;
 static Atom unregister_sound;
 static Atom kwm_window_region_changed;
+static Atom kwm_win_desktop;
 
 //new stuff
 static Atom net_client_list;
@@ -143,6 +147,8 @@ static void createAtoms() {
 
 	kwm_window_region_changed = XInternAtom(qt_xdisplay(), "KWM_WINDOW_REGION_CHANGED", False);
 
+	
+	kwm_win_desktop = XInternAtom(qt_xdisplay(), "KWM_WIN_DESKTOP", False);
 	
 	// new stuff
 	net_client_list = XInternAtom(qt_xdisplay(), "_NET_CLIENT_LIST", False);
@@ -384,7 +390,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	case XA_WM_HINTS:
 	    doit = TRUE;
 	default:
-	    if ( doit || a == qt_wm_state ) {
+	    if ( doit || a == qt_wm_state || a == kwm_win_desktop ) {
 		XEvent dummy;
 		while (XCheckTypedWindowEvent (qt_xdisplay(), ev->xproperty.window,
 					       PropertyNotify, &dummy) )
