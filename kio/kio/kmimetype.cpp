@@ -224,20 +224,24 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   if ( !_is_local_file || _fast_mode )
   {
+    QString def = KProtocolInfo::defaultMimetype( _url );
     if ( path.endsWith( slash ) || path.isEmpty() )
     {
       // We have no filename at all. Maybe the protocol has a setting for
       // which mimetype this means. For HTTP we set unknown now, because
       // of redirections (e.g. freshmeat downloads).
       // Assume inode/directory otherwise.
-      QString def = KProtocolInfo::defaultMimetype( _url );
       return mimeType( def.isEmpty() ? QString::fromLatin1("inode/directory") : def );
     }
-  }
+    if ( !def.isEmpty() && def != defaultMimeType() )
+    {
+       // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
+       return mimeType( def );
+    }
 
-  // No more chances for non local URLs
-  if ( !_is_local_file || _fast_mode )
+    // No more chances for non local URLs
     return mimeType( defaultMimeType() );
+  }
 
   // Do some magic for local files
   //kdDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
