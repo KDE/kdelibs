@@ -1672,8 +1672,8 @@ bool HTTPProtocol::readHeader()
     }
 
     kdDebug(7113) << "(" << getpid() << ") request.url: " << m_request.url.url() << endl
-                  << "LocationStr: " << locationStr.data() << endl;
-    kdDebug(7113) << "(" << getpid() << ") Requesting redirection to: " << u.url() << endl;
+                  << "(" << getpid() << ") LocationStr: " << locationStr.data() << endl
+                  << "(" << getpid() << ") Requesting redirection to: " << u.url() << endl;
 
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
