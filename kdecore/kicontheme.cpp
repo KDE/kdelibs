@@ -76,6 +76,34 @@ private:
     QString mDir;
 };
 
+// Helper for generating mSizes
+class MinMaxCache
+{
+public:
+	MinMaxCache()
+	{
+	}
+	
+	MinMaxCache(const MinMaxCache &other)
+	{
+		(*this) = other;
+	}
+
+	MinMaxCache &operator=(const MinMaxCache &other)
+	{
+		min = other.min;
+		max = other.max;
+		return (*this);
+	}
+	
+	bool operator<(const MinMaxCache &other) const
+	{
+		// Sort by 'min'; not by 'max'
+		return (min < other.min);
+	}
+	
+	int min, max;
+};	
 
 /*** KIconTheme ***/
 
@@ -178,17 +206,25 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     // Expand available sizes for scalable icons to their full range
     int i;
-    QMap<int,QValueList<int> > scIcons;
-    for (KIconThemeDir *dir=mDirs.first(); dir!=0L; dir=mDirs.next())
-    {
-        if ((dir->type() == KIcon::Scalable) && !scIcons.contains(dir->size()))
-        {
-            QValueList<int> lst;
-            for (i=dir->minSize(); i<=dir->maxSize(); i++)
-                lst += i;
-            scIcons[dir->size()] = lst;
-        }
-    }
+	
+	typedef QMap< MinMaxCache, QValueList<int> > MyMap;
+
+	QMap< MinMaxCache, QValueList<int> > scIcons;
+	for(KIconThemeDir *dir = mDirs.first(); dir != 0; dir = mDirs.next())
+	{
+		if(dir->type() == KIcon::Scalable)
+		{
+			MinMaxCache cache;
+			cache.min = dir->minSize();
+			cache.max = dir->maxSize();
+			
+			QValueList<int> lst;
+			for(i = dir->minSize(); i <= dir->maxSize(); i++)
+				lst += i;
+		
+			scIcons[cache] = lst;
+		}
+	}
 
     QStringList groups;
     groups += "Desktop";
@@ -196,23 +232,43 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "MainToolbar";
     groups += "Small";
     groups += "Panel";
+	
+	cfg.setGroup(mainSection);
+
     const int defDefSizes[] = { 32, 22, 22, 16, 32 };
-    cfg.setGroup(mainSection);
-    for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
+	for(it = groups.begin(), i = 0; it != groups.end(); it++, i++)
     {
         mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
         QValueList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
-        QValueList<int>::ConstIterator it2;
-        for (it2=lst.begin(); it2!=lst.end(); ++it2)
-        {
-            if (scIcons.contains(*it2))
-                exp += scIcons[*it2];
-            else
-                exp += *it2;
-        }
+			
+		QMap< MinMaxCache, QValueList<int> >::Iterator it2 = scIcons.begin();
+		QMap< MinMaxCache, QValueList<int> >::Iterator end2 = scIcons.end();
+		for(; it2 != end2; it2++)
+		{
+			MinMaxCache cur = it2.key();
+
+			bool addScalablePart = false;
+			QValueList<int> needToAdd;
+
+			QValueList<int>::ConstIterator it3 = lst.begin(), end3 = lst.end();
+			for(; it3 != end3; it3++)
+			{
+				int check = *it3;
+						
+				if(check > cur.max || check < cur.min)
+					needToAdd += check;
+				else
+					addScalablePart = true;					
+			}
+
+			if(addScalablePart)
+				exp += scIcons[cur];
+
+			exp += needToAdd;
+		}
+
         mSizes[i] = exp;
     }
-
 }
 
 KIconTheme::~KIconTheme()
@@ -556,11 +612,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
 QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
-#ifdef HAVE_LIBART
-    QStringList lst = dir.entryList("*.png;*.svg;*.svgz;*.xpm", QDir::Files);
-#else
-    QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
-#endif
+    QStringList lst = dir.entryList("*.svgz;*.svg;*.png", QDir::Files);
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); ++it)

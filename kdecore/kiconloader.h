@@ -242,7 +242,7 @@ public:
 				    KIcon::Context context=KIcon::Any) const;
 
     /**
-     * Returns a list of all icons (*.png or *.xpm extension) in the
+     * Returns a list of all icons (*.svgz, *.svg or *.png extension) in the
      * given directory.
      * @param iconsDir the directory to search in
      * @return A QStringList containing the icon paths

@@ -150,38 +150,82 @@ AC_CHECK_HEADERS(sys/mount.h)
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
 SVGICONS=
-	
-KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
-  AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
+
+dnl KDE_PKG_CHECK_MODULES(GSTUFF, gtk+-2.0 >= 1.3 glib = 1.3.4, action-if, action-not)
+dnl defines GSTUFF_LIBS, GSTUFF_CFLAGS, see pkg-config man page
+dnl also defines GSTUFF_PKG_ERRORS on error
+AC_DEFUN([KDE_PKG_CHECK_MODULES], [
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+  fi
+
+  if test "$PKG_CONFIG" != "no" ; then
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        AC_MSG_CHECKING(for $2)
+
+        if $PKG_CONFIG --exists "$2" ; then
+            AC_MSG_RESULT(yes)
+            succeeded=yes
+
+            AC_MSG_CHECKING($1_CFLAGS)
+            $1_CFLAGS=`$PKG_CONFIG --cflags "$2"`
+            AC_MSG_RESULT($$1_CFLAGS)
+
+            AC_MSG_CHECKING($1_LIBS)
+            $1_LIBS=`$PKG_CONFIG --libs "$2"`
+            AC_MSG_RESULT($$1_LIBS)
+        else
+            $1_CFLAGS=""
+            $1_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            $1_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "$2"`
+            ifelse([$4], ,echo $$1_PKG_ERRORS,)
+        fi
+
+        AC_SUBST($1_CFLAGS)
+        AC_SUBST($1_LIBS)
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+  if test $succeeded = yes; then
+     ifelse([$3], , :, [$3])
+  else
+     ifelse([$4], , AC_MSG_WARN([Library requirements ($2) not met; consider adjusting the PKG_CONFIG_PATH environment variable if your libraries are in a nonstandard prefix so pkg-config can find them.]), [$4])
+  fi
 ])
 
-if test -n "$LIBART_CONFIG"; then
-  vers=`$LIBART_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-  if test -n "$vers" && test "$vers" -ge 2003008
-  then
-     LIBART_LIBS="`$LIBART_CONFIG --libs`"
-     LIBART_RPATH=
-     for args in $LIBART_LIBS; do
-	  case $args in
-	    -L*)
-  	       LIBART_RPATH="$LIBART_RPATH $args"
- 	       ;;
-          esac
-     done
-     LIBART_RPATH=`echo $LIBART_RPATH | sed -e "s/-L/-R/g"`
-     LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
-     SVGICONS=svgicons
+###############################################################################
+# BEGIN PKG-CONFIG CHECK
+###############################################################################
 
-     AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
-  else
-     AC_MSG_WARN([You need at least libart 2.3.8])
-  fi
+AC_ARG_VAR(PKGCONFIGFOUND, [Path to pkg-config])
+AC_CHECK_PROG(PKGCONFIGFOUND, pkg-config,[yes])
+
+###############################################################################
+# AGG2 PKG-CONFIG CHECK
+###############################################################################
+
+if test "$PKGCONFIGFOUND" = "yes" ; then
+	# check for AntiGrainGeometry
+	have_agg=no
+
+	AGG_REQ=2.2
+	KDE_PKG_CHECK_MODULES(AGG, libagg >= $AGG_REQ, have_agg=yes,have_agg=no)
+	
+	dnl Give error if we don't have libagg
+	if test "x$have_agg" = "xno"; then
+		SVGICONS=
+	else
+		SVGICONS=svgicons
+	fi
 fi
 
-
-AC_SUBST(LIBART_LIBS)
-AC_SUBST(LIBART_CFLAGS)
-AC_SUBST(LIBART_RPATH)
 AM_CONDITIONAL(include_SVGICONS, test -n "$SVGICONS")
 
 AC_CHECK_HEADERS([sys/stropts.h sys/select.h libutil.h util.h termios.h pty.h termio.h])
