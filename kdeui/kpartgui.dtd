@@ -13,6 +13,9 @@
 
 <!--The root element that must enclose all other tags in the document. This element
   replaces the kpartgui element used previously.
+  
+  NOTE: do not forget to increase the version attribute for each change in
+  your file or the changes will not be taken!!
   -->
 <!ELEMENT gui ((ActionProperties | MenuBar | ToolBar | Merge | MergeLocal | DefineGroup | MainWindow | StatusBar | Menu | State)*)>
 <!ATTLIST gui
