@@ -1,5 +1,7 @@
 This is GNU libltdl, a system independent dlopen wrapper for GNU libtool.
 
+It has some slight changes for use in KDE.
+
 It supports the following dlopen interfaces:
 * dlopen (Solaris, Linux and various BSD flavors)
 * shl_load (HP-UX)

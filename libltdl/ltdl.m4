@@ -27,7 +27,17 @@ AC_DEFUN(AC_LIB_LTDL,
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_C_CONST])dnl
 AC_REQUIRE([AC_C_INLINE])dnl
+AC_REQUIRE([AC_LIB_LTDL_COMMON])dnl
+])
 
+AC_DEFUN(KDE_LIB_LTDL,
+[AC_PREREQ(2.13)dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_LIB_LTDL_COMMON])dnl
+])
+
+AC_DEFUN(AC_LIB_LTDL_COMMON,
+[dnl
 dnl AC_LIB_LTDL must perform all the checks necessary for compilation
 dnl of the ltdl objects -- including compiler checks (above) and header
 dnl checks (below).

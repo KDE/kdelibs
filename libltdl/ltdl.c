@@ -65,6 +65,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 #include "ltdl.h"
 
+/* Bah.  We don't want inline.  Needs autoconf check, which we don't want.  */
+#define inline
 
 
 
