@@ -99,7 +99,7 @@ KFMExec::KFMExec()
             else
             // We must fetch the file
             {
-                // Build the destination filename, in ~/.kde/share/apps/kioexec/tmp/
+                // Build the destination filename, in ~/.kde/cache-*/krun/
                 // Unlike KDE-1.1, we put the filename at the end so that the extension is kept
                 // (Some programs rely on it)
                 QString tmp = KGlobal::dirs()->saveLocation( "cache", "krun/" ) +
