@@ -206,7 +206,7 @@
 ;; Here is also better than in a LaTeX style file, as it will also work for RTF
 (define ($center-header$ #!optional (gi (gi)))
   (make external-graphic
-    entity-system-id: "kde.eps"
+    entity-system-id: "logotp3.eps"
     notation-system-id: "EPS"))
 
    </STYLE-SPECIFICATION-BODY>
