@@ -48,8 +48,8 @@ libkhtml_la_LDFLAGS = -version-info 3:0
 libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la 
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes) -I./misc \
-	-I./dom -I./xml -I./html -I./css
+	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes) -I$(srcdir)/misc \
+	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
