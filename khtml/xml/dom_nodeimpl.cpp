@@ -220,7 +220,7 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
-    qDebug("NodeImpl::toHTML");
+    kdDebug(6020) << "NodeImpl::toHTML" << endl;
     NodeImpl* fc = firstChild();
     if ( fc )
         return fc->recursive_toHTML(true);
