@@ -22,6 +22,11 @@
 
 INCLUDES = $(LIBART_CFLAGS) $(all_includes)
 
+if include_SVGICONS
+SVGICONS=svgicons
+SVGICON_LIB=svgicons/libkdesvgicons.la
+endif
+
 SUBDIRS = malloc $(SVGICONS) . tests
 
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
@@ -81,7 +86,8 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel kclipboard.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) $(SVGICON_LIBS)
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) $(SVGICON_LIB)
+libkdecore_la_DEPENDENCIES = $(LIB_DCOP) $(SVGICON_LIB)
 
 libkdecore_la_METASOURCES = AUTO
 
@@ -110,7 +116,7 @@ EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
 	kentities.c kentities.gperf makeentities kmdcodec_compat.h
 
-kcharsets.cpp: kentities.c
+kcharsets.lo: kentities.c
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c

@@ -226,7 +226,6 @@ AC_ARG_WITH(ipv6-lookup,
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
 SVGICONS=
-SVGICON_LIBS=
 	
 KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
   AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
@@ -249,9 +248,6 @@ if test -n "$LIBART_CONFIG"; then
      LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
 
      AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
-
-	SVGICONS=svgicons
-	SVGICON_LIBS=svgicons/libkdesvgicons.la
   else
      AC_MSG_WARN([You need at least libart 2.3.8])
   fi
@@ -261,5 +257,5 @@ fi
 AC_SUBST(LIBART_LIBS)
 AC_SUBST(LIBART_CFLAGS)
 AC_SUBST(LIBART_RPATH)
-AC_SUBST(SVGICONS)
-AC_SUBST(SVGICON_LIBS)
+AM_CONDITIONAL(include_SVGICONS, test -n "$SVGICONS")
+

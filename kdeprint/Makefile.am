@@ -1,4 +1,8 @@
 
+if include_cups_SUBDIR
+CUPSSUBDIR=cups
+endif
+
 SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tools tests
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_includes)
@@ -24,6 +28,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kpmarginpage.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
+libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) $(LIB_KFILE)
 libkdeprint_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmdbentry.h kmfactory.h \

@@ -78,5 +78,5 @@ if test "$ac_use_cups" = "yes"; then
   LIB_CUPS="-lcups $LIBDL $LIBSOCKET"
   AC_DEFINE(HAVE_CUPS, 1, [Defines if you have CUPS (Common UNIX Printing System)])
 fi
-AC_SUBST(CUPSSUBDIR)
+AM_CONDITIONAL(include_cups_SUBDIR, test -n "$CUPSDIR")
 AC_SUBST(LIB_CUPS)
