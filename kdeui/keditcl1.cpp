@@ -672,16 +672,32 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	setAutoUpdate(false);
 	int upperbound;
 
+	QMultiLineEdit::insertChar((char)1); //Matthias
 	bool did_format = format2(par,upperbound);
 
-	if(!did_format)
+	if(!did_format){
+	  backspace(); //Matthias
 	  return;
+	}
     
 	int num_of_rows = 0;
 	QString newpar;
 
+	int cursorline = upperbound; //Matthias 
+	int cursorcol = 0; //Matthias
+	bool cursor_found = false; //Matthias
 	for( int k = 0; k < (int)par.count(); k++){
-	  newpar += par.at(k);
+	  QString tmp = par.at(k); //Matthias
+	  { //Matthias
+	    int f = tmp.find((char)1);
+	    if (f>-1){
+	      cursor_found = true;
+	      cursorcol = f;
+	      tmp.remove(f,1);
+	    }
+	  }
+	  newpar += tmp; //Matthias
+	  if (!cursor_found) cursorline++; //Matthias
 	  if(k != (int)par.count() -1 )
 	    newpar += '\n';
 	}
@@ -691,9 +707,11 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	num_of_rows = par.count();
 	par.clear();
     
-	setCursorPosition(templine,tempcol);
-
 	setAutoUpdate(true);
+
+	// setCursorPosition(templine,tempcol); Matthias: do the next line instead
+	setCursorPosition(cursorline, cursorcol); //Matthias
+
 	repaint();
     
 	computePosition();
@@ -726,22 +744,40 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	}
 
 	int templine,tempcol;
-	getCursorPosition(&templine,&tempcol);	
+	getCursorPosition(&templine,&tempcol);     
+
 	//	printf("GETCURSOR %d %d\n",templine,tempcol);
 	
 	computePosition();
 	//	printf("LINEPOS %d\n",col_pos);
 	setAutoUpdate(false);
 	
+	QMultiLineEdit::insertChar((char)1); //Matthias
 	bool did_break = format(par);
 	int num_of_rows = 0;
 
-	if(did_break){
+	if(!did_break){
+	  backspace(); //Matthias
+	}
+	else {
 
 	  QString newpar;
 
+	  int cursorline = templine; //Matthias
+	  int cursorcol = 0; //Matthias
+	  bool cursor_found = false; //Matthias
 	  for( int k = 0; k < (int)par.count(); k++){
-	    newpar += par.at(k);
+	    QString tmp = par.at(k); //Matthias
+	    { //Matthias
+	      int f = tmp.find((char)1);
+	      if (f>-1){
+		cursor_found = true;
+		cursorcol = f;
+		tmp.remove(f,1);
+	      }
+	    }
+	    newpar += tmp; //Matthias
+	    if (!cursor_found) cursorline++; //Matthias
 	    if(k != (int)par.count() -1 )
 	      newpar += '\n';
 	  }
@@ -751,7 +787,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	  num_of_rows = par.count();
 	  par.clear();
 
-
+	  /*
+	    Matthias: no longer necessary
 	  if(col_pos +1 > fill_column_value){
 	    setCursorPosition(templine+1,cursor_offset);
 	    //	    printf("SETCURSOR1 %d %d\n",templine +1,cursor_offset);
@@ -761,6 +798,9 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	    //	    printf("SETCURSOR2 %d %d\n",templine ,tempcol);
 
 	  }
+	  */
+	  // do this instead:
+	  setCursorPosition(cursorline, cursorcol); //Matthias
 	}
 
 	setAutoUpdate(true);
@@ -947,7 +987,6 @@ bool KEdit::format(QStrList& par){
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
 	par.insert(i+1,temp1);
-
       }
       else{
 	if(autoIndentMode)
