@@ -18,7 +18,7 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	         $(KIMGIO_TIFF_MODULES) kimg_ico.la $(KIMGIO_JP2_MODULES) \
-             kimg_pcx.la kimg_tga.la kimg_rgb.la kimg_dds.la $(KIMGIO_EXR_MODULES)
+             kimg_pcx.la kimg_tga.la kimg_rgb.la kimg_xcf.la kimg_dds.la $(KIMGIO_EXR_MODULES)
 
 KIMGIO_PLUGIN = -avoid-version -export-symbols-regex 'kimgio_.*_(read|write)'
 
@@ -58,6 +58,10 @@ kimg_rgb_la_SOURCES = rgb.cpp
 kimg_rgb_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_rgb_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
 
+kimg_xcf_la_SOURCES = xcf.cpp
+kimg_xcf_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
+kimg_xcf_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
+
 kimg_exr_la_SOURCES = exr.cpp
 kimg_exr_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_exr_la_LIBADD = $(LIB_QT) $(LIB_KDECORE) $(LIB_EXR)
@@ -66,7 +70,7 @@ kimg_dds_la_SOURCES = dds.cpp
 kimg_dds_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_dds_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
 
-noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h rgb.h exr.h dds.h
+noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h rgb.h xcf.h gimp.h exr.h dds.h
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(all_includes) -Drestrict= $(EXR_FLAGS)
 
@@ -74,5 +78,5 @@ servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
 	       ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio eps.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
-           gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio dds.kimgio \
+           gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio xcf.kimgio dds.kimgio \
            $(KIMGIO_EXR_DATAFILES)

@@ -15,6 +15,7 @@ TGA	<read> <write>
 PCX	<read> <write>
 SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
 DDS	<read>
+XCF	<read>
 
 (Some example files are in kdenonbeta/kimgio_examples.)
 
