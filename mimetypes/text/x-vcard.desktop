@@ -1,7 +1,10 @@
 [Desktop Entry]
 Comment=Electronic Business Card
 Comment[ca]=Tarja de visita electrònica
-Icon=calendar
+Comment[de]=Elektronische Visitenkarte
+Comment[fi]=Sähköinen käyntikortti
+Comment[hu]=Elektronikus névjegykártya
+Icon=mimetypes/vcard
 Type=MimeType
 MimeType=text/x-vcard
 Patterns=
