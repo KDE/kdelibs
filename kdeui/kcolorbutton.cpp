@@ -33,7 +33,7 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
   : QPushButton( parent, name )
 {
   setAcceptDrops( true);
-  
+
   // 2000-10-15 (putzer): fixes broken keyboard usage
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
@@ -52,6 +52,7 @@ void KColorButton::setColor( const QColor &c )
 {
   col = c;
   repaint( false );
+  emit changed(col);
 }
 
 void KColorButton::drawButtonLabel( QPainter *painter )
@@ -67,10 +68,10 @@ void KColorButton::drawButtonLabel( QPainter *painter )
   int w = r.width();
   int h = r.height();
   int b = 5;
-  
+
   QColor lnCol = colorGroup().text();
   QColor fillCol = isEnabled() ? col : backgroundColor();
-  
+
   if ( isDown() ) {
     qDrawPlainRect( painter, l+b+1, t+b+1, w-b*2, h-b*2, lnCol, 1, 0 );
     b++;
@@ -106,7 +107,7 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
-  if( (e->state() & LeftButton) && 
+  if( (e->state() & LeftButton) &&
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     // Drag color object
