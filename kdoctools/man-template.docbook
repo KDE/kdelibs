@@ -1,0 +1,408 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY kappname "kfoo">
+  <!ENTITY % addindex "IGNORE">  <!-- We don't want indexes in these -->
+  <!ENTITY % English "INCLUDE" > <!-- change language only here -->
+]>
+
+<refentry id="kfoo-1">
+<refmeta>
+<refentrytitle>diff</refentrytitle><manvolnum>1</manvolnum>
+<refmiscinfo class="date">20 Dec 1996</refmiscinfo>
+<!-- 
+<refmiscinfo class="sectdesc">man1</refmiscinfo>
+<refmiscinfo class="software">release</refmiscinfo>
+<refmiscinfo class="arch">generic</refmiscinfo> -->
+<refmiscinfo class="copyright">Copyright KDE</refmiscinfo> 
+</refmeta>
+
+<refnamediv id="name">
+<refname>kfoo</refname>
+<refpurpose>Performs a foo operation on files</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="synopsis">
+<title>Synopsis</title>
+
+<cmdsynopsis>
+<command>kfoo</command>
+<group choice="opt"><option>Qt-options</option></group>
+<group choice="opt"><option>KDE-options</option></group>
+<group choice="opt"><option>options</option></group>
+<group choice="opt"><arg>args</arg></group>
+</cmdsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+
+<para>The <command>kfoo</command> utility performs foo operations on
+files specified on the command line, and writes the result to standard
+output.</para>
+
+<para>More descriptive stuff.</para>
+
+</refsect1>
+
+<refsect1><title>Options</title>
+
+<variablelist>
+<varlistentry>
+<term>
+<option>--bar</option>
+</term>
+<listitem>
+<para>Use the bar method to foo the files</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--baz</option>
+</term>
+<listitem>
+<para>Use the baz method to foo the files</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+<para>The following options apply to all &kde; applications:</para>
+
+<variablelist>
+<varlistentry>
+<term>
+<option>--caption</option> <parameter>caption</parameter>
+</term>
+<listitem>
+<para>Use <parameter>caption</parameter> as name in the
+titlebar.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--icon</option> <parameter>icon</parameter>
+</term>
+<listitem>
+<para>Use <parameter>icon</parameter> as the application icon.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--miniicon</option> <parameter>icon</parameter>
+</term>
+<listitem>
+<para>Use <parameter>icon</parameter> as the icon in the
+titlebar</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--dcopserver</option> <parameter>server</parameter>
+</term>
+<listitem>
+<para>Use the <acronym>DCOP</acronym> Server specified by
+<parameter>server</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--nocrashhandler</option>
+</term>
+<listitem>
+<para>Disable the crash handler, to get core dumps.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--waitforwm</option>
+</term>
+<listitem>
+<para>Waits for a WM_NET compatible windowmanager.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--style</option> <parameter>style</parameter>
+</term>
+<listitem>
+<para>Sets the appliction &GUI; style.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--geometry</option> <parameter>geometry</parameter>
+</term>
+<listitem>
+<para>Sets the client geometry of the main widget.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+<para>The following options apply to all &Qt; applications:</para>
+
+<variablelist> <!-- all this could be entitiesan entity -->
+<varlistentry>
+<term>
+<option>--display</option> <parameter>displayname</parameter>
+</term>
+<listitem>
+<para>Use the X-server display
+<parameter>displayname</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--session</option> <parameter>sessionId</parameter>
+</term>
+<listitem>
+<para>Restore the application for the given
+<parameter>sessionId</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--cmap</option>
+</term>
+<listitem>
+<para>Causes the application to install a private color map on an
+8-bit display.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--ncols</option> <parameter>count</parameter>
+</term>
+<listitem>
+<para>Limits the number of colors allocated in the color cube on an
+8-bit display, if the application is using the
+<methodname>QApplication::ManyColor</methodname> color
+specification.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--nograb</option>
+</term>
+<listitem>
+<para>Tells &Qt; to never grab the mouse or the keyboard.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--dograb</option>
+</term>
+<listitem>
+<para>Running under a debugger can cause an implicit
+<option>--nograb</option>, use <option>--dograb</option> to
+override.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--sync</option>
+</term>
+<listitem>
+<para>Switches to synchronous mode for debugging.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--fn</option>,<option>--font</option>
+<parameter>fontname</parameter>
+</term>
+<listitem>
+<para>Defines the application font.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--bg</option>,<option>--background</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default background color and an application palette
+(light and dark shades are calculated).</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--fg</option>,<option>--foreground</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default foreground color</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--btn</option>,<option>--button</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default button color.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--name</option> <parameter>name</parameter>
+</term>
+<listitem>
+<para>Sets the application name.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--title</option> <parameter>title</parameter>
+</term>
+<listitem>
+<para>Sets the application title (caption).</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--visual</option> <parameter>TrueColor</parameter>
+</term>
+<listitem>
+<para>Forces the application to use a <parameter>TrueColor</parameter>
+visual on an 8-bit display.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--inputstyle</option> <parameter>inputstyle</parameter>
+</term>
+<listitem>
+<para>Sets XIM (X Input Method) input style.  Possible values are
+<parameter>onthespot</parameter>, <parameter>overthespot</parameter>,
+<parameter>offthespot</parameter> and
+<parameter>root</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--im</option> <parameter>XIM server</parameter>
+</term>
+<listitem>
+<para>Set XIM server.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--noxim</option>
+</term>
+<listitem>
+<para>Disable XIM</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
+<refsect1><title>Arguments</title>
+
+<para>The following arguments are supported</para>
+
+<variablelist>
+<varlistentry>
+<term>
+<replaceable>filename</replaceable>
+</term>
+<listitem>
+<para>The filename to foo</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1 id="usage"><title>Usage</title>
+
+<para>Use <command>kfoo</command> to do fabulous foo things to all
+your files.</para>
+
+<para>More usage tips here.</para>
+
+</refsect1>
+
+<refsect1 id="examples"><title>Examples</title>
+
+<para>Some usage examples here</para>
+
+</refsect1>
+
+<refsect1 id="envars">
+<title>Environment Variables</title>
+
+<para><command>kfoo</command> is affected by the following environment
+variables:</para>
+
+<variablelist>
+<varlistentry>
+<term><envar>BAR</envar></term>
+<listitem>
+<para>Default to using bar to foo the files.  This is the equivalent
+of always using the <option>--bar</option> option.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1><title>Files</title>
+
+<para>kfoo uses the following files:</para>
+
+<variablelist>
+<varlistentry>
+<term><filename>/path/to/rcfile</filename></term>
+<listitem>
+<para>kfoo stores settings here.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><filename>/path/to/tempfile</filename></term>
+<listitem>
+<para>kfoo creates a temporary file here while it is
+operating.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1><title>See Also</title>
+<para></para>
+<!-- question - how to handle links to other man pages.  I don't think -->
+<!-- the sun way of using citerefentry will work out of the box for us -->
+</refsect1>
+
+<refsect1><title>Note</title>
+<para>Any special notes</para>
+</refsect1>
+
+</refentry>
+
