@@ -171,7 +171,6 @@ int main(int argc, char *argv[])
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
    
-   /********************************************************* Space in the value test
    arg1 = "http://x.y.z/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: another_value=\"abcd efgh ijkl mnopq rstuv wxyz\"; Path=\"/\"; domain=\".y.z\"";
@@ -399,5 +398,4 @@ int main(int argc, char *argv[])
    result = findDOMCookies(arg1);
    printf("EXPECTED: %s\n", "set_by_8=x.y.foobar.co.uk" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
-*/
 }
