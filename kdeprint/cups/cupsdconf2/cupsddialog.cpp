@@ -188,12 +188,6 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	return true;
 }
 
-void CupsdDialog::slotOk()
-{
-        slotApply();
-        KDialogBase::slotOk();
-}
-
 bool CupsdDialog::restartServer(QString& msg)
 {
 	int	serverPid = getServerPid();
@@ -268,7 +262,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 		QFile::remove(fn);
 }
 
-void CupsdDialog::slotApply()
+void CupsdDialog::slotOk()
 {
 	if (conf_ && !filename_.isEmpty())
 	{ // try to save the file
@@ -292,6 +286,8 @@ void CupsdDialog::slotApply()
 		{
 			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
 		}
+		else
+			KDialogBase::slotOk();
 	}
 }
 

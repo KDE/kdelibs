@@ -471,3 +471,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     be modified now.
   * general: needed stuff to provide translations for filters (Coolo will
     now extract the strings from XML files for translators)
+
+10/03/2002 Michael Goffioul <goffioul@imec.be>
+  * CUPS: allow any integer value for RIPCache + don't upload the cupsd.conf
+    with wrong settings

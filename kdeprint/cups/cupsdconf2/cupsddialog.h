@@ -42,7 +42,6 @@ public:
 
 protected slots:
 	void slotOk();
-        void slotApply();
 	void slotUser1();
 
 protected:

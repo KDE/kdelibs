@@ -36,8 +36,8 @@ public:
 	void setInfos(CupsdConf*);
 
 private:
-	QLineEdit	*user_, *group_;
-	KIntNumInput	*ripcache_, *filterlimit_;
+	QLineEdit	*user_, *group_, *ripcache_;
+	KIntNumInput	*filterlimit_;
 	QComboBox	*ripunit_;
 };
 

@@ -38,12 +38,11 @@ CupsdFilterPage::CupsdFilterPage(QWidget *parent, const char *name)
 
 	user_ = new QLineEdit(this);
 	group_ = new QLineEdit(this);
-	ripcache_ = new KIntNumInput(this);
+	ripcache_ = new QLineEdit(this);
 	filterlimit_ = new KIntNumInput(this);
 	ripunit_ = new QComboBox(this);
 
-	ripcache_->setRange(1, 100, 1, true);
-	ripcache_->setSteps(1, 5);
+	ripcache_->setAlignment(Qt::AlignRight);
 	ripunit_->insertItem(i18n("KB"));
 	ripunit_->insertItem(i18n("MB"));
 	ripunit_->insertItem(i18n("GB"));
@@ -84,18 +83,25 @@ bool CupsdFilterPage::loadConfig(CupsdConf *conf, QString&)
 	conf_ = conf;
 	user_->setText(conf_->user_);
 	group_->setText(conf_->group_);
-	ripcache_->setValue(conf_->ripcache_);
+	ripcache_->setText(QString::number(conf_->ripcache_));
 	ripunit_->setCurrentItem(conf_->ripunit_);
 	filterlimit_->setValue(conf_->filterlimit_);
 
 	return true;
 }
 
-bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString&)
+bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString& msg)
 {
+	int	n = ripcache_->text().toInt();
+	if (n <= 0)
+	{
+		// FIXME: translate that string
+		msg = "Invalid RIP Cache";
+		return false;
+	}
 	conf->user_ = user_->text();
 	conf->group_ = group_->text();
-	conf->ripcache_ = ripcache_->value();
+	conf->ripcache_ = n;
 	conf->ripunit_ = ripunit_->currentItem();
 	conf->filterlimit_ = filterlimit_->value();
 
