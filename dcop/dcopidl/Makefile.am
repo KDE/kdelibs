@@ -19,10 +19,10 @@ parser:
 	cd $(srcdir) && flex -B -8 -oscanner.cc scanner.ll  ;\
 	bison -t -d -v -o yacc.cc yacc.yy && mv yacc.hh yacc.cc.h
 
-dcopidl_output.kidl: dcopidl $(srcdir)/dcopidl_test.h
-	./dcopidl $(srcdir)/dcopidl_test.h > dcopidl_output.kidl
+$(srcdir)/dcopidl_output.kidl: dcopidl $(srcdir)/dcopidl_test.h
+	builddir=`pwd`; cd $(srcdir) ; $$builddir/dcopidl ./dcopidl_test.h > dcopidl_output.kidl
 
-check-local: dcopidl_output.kidl
+check-local: $(srcdir)/dcopidl_output.kidl
 
 EXTRA_DIST = dcopidl_test.h scanner.ll yacc.yy
 

@@ -5,6 +5,7 @@
 <INCLUDE>qstring.h</INCLUDE>
 <CLASS>
     <NAME>Test</NAME>
+    <LINK_SCOPE>KDEUI_EXPORT</LINK_SCOPE>
     <SUPER>MyNamespace::MyParentClass</SUPER>
     <SUPER>DCOPObject</SUPER>
     <SUPER>QValueList&lt;<TYPE>QString</TYPE>&gt;</SUPER>
@@ -71,7 +72,7 @@
      </SIGNAL>
 </CLASS>
 <CLASS>
-    <NAME>Test3</NAME>
+    <NAME>TheNameSpace::Test3</NAME>
     <SUPER>DCOPObject</SUPER>
 </CLASS>
 </DCOP-IDL>

@@ -85,11 +85,15 @@ k_dcop_signals:
     void fooSignal(int arg);
 };
 
-class Test3 : public DCOPObject
-{
-    K_DCOP
-public:
-    void yadda();
+namespace TheNameSpace {
+
+  class Test3 : public DCOPObject
+  {
+      K_DCOP
+  public:
+      void yadda();
+  };
+
 };
 
 #endif // end of line comment
