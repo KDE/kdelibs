@@ -1,9 +1,2 @@
 libarts: setuid-binary usr/bin/artswrapper 4755 root/root
-libarts: link-to-undocumented-manpage usr/share/man/man1/mcopidl.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artsd.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artsplay.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artscat.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artswrapper.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artsdsp.1.gz
-libarts: link-to-undocumented-manpage usr/share/man/man1/artsshell.1.gz
 
