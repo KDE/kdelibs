@@ -874,7 +874,7 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
          .arg( relpath+"/output/"+test+"-dump.png" );
     cl += QString ("<style>\n"
                    ".buttondown { cursor: pointer; padding: 0px 20px; color: white; background-color: blue; border: inset blue 2px;}\n"
-                   ".button { padding: 0px 20px; color: black; background-color: white; border: outset blue 2px;}\n"
+                   ".button { cursor: pointer; padding: 0px 20px; color: black; background-color: white; border: outset blue 2px;}\n"
 
                    "</style>\n" );
 
