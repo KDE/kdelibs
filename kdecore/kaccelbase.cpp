@@ -526,7 +526,7 @@ bool KAccelBase::setShortcut( const QString& sAction, const KShortcut& cut )
 
 		pAction->setShortcut( cut );
 
-		if( m_bAutoUpdate )
+		if( m_bAutoUpdate && !pAction->shortcut().isNull() )
 			insertConnection( *pAction );
 
 		return true;
