@@ -29,21 +29,28 @@
 #define BUFSIZE		1024
 #define BUFSIZE2	32
 
+#define	USE_LOG		0
+
 /* global variables */
 char	passwd[BUFSIZE2] = {0};
 int	pwd_asked = 0;
+#if USE_LOG
+FILE	*debugF = NULL;
+#endif
 
 /* utility functions */
 void error(const char* msg)
 {
 	fprintf(stderr, "%s\n", msg);
+#if USE_LOG
+	if (debugF != NULL) fclose(debugF);
+#endif
 	exit(-1);
 }
 
 void usage()
 {
-	fprintf(stderr, "usage: cupsdoprint [-H host[:port]][-P dest][-J name][-o opt=value[,...]][-U login[:password]] files...\n");
-	exit(-1);
+	error("usage: cupsdoprint [-H host[:port]][-P dest][-J name][-o opt=value[,...]][-U login[:password]] files...");
 }
 
 const char* getPasswordCB(const char* prompt)
@@ -86,8 +93,17 @@ int main(int argc, char* argv[])
 	int	num_files = 0;
 	int	jobID = 0;
 
+#if USE_LOG
+	debugF = fopen("/tmp/cupsdoprint.debug","w");
+	if (debugF == NULL)
+		error("unable to open log file");
+#endif
+
 	while ((c=getopt(argc, argv, "P:J:H:o:U:?")) != -1)
 	{
+#if USE_LOG
+		fprintf(debugF,"%c: %s\n",c,optarg);
+#endif
 		switch (c)
 		{
 			case 'P':
@@ -115,8 +131,15 @@ int main(int argc, char* argv[])
 					*a = 0;
 					strncpy(passwd, ++a, BUFSIZE2);
 				}
+				break;
 			case 'o':
+#if USE_LOG
+				fprintf(debugF,"Parsing options (n=%d)\n",num_options);
+#endif
 				num_options = cupsParseOptions(optarg, num_options, &options);
+#if USE_LOG
+				fprintf(debugF,"Options parsed (n=%d)\n",num_options);
+#endif
 				break;
 			case '?':
 			default:
@@ -138,6 +161,7 @@ int main(int argc, char* argv[])
 	if (host[0] != 0) cupsSetServer(host);
 	if (port > 0) ippSetPort(port);
 	if (login[0] != 0) cupsSetUser(login);
+	if (jobname[0] == 0) strcpy(jobname,"KDE Print System");
 	cupsSetPasswordCB(getPasswordCB);
 
 	/* check for files */
@@ -155,10 +179,18 @@ int main(int argc, char* argv[])
 				files[num_files++] = strdup(argv[c]);
 		}
 
+#if USE_LOG
+	fprintf(debugF,"Processed options:\n");
+	for (c=0; c<num_options; c++)
+		fprintf(debugF,"%s = %s\n",options[c].name,options[c].value);
+#endif
 	/* print files */
 	jobID = cupsPrintFiles(printer, num_files, files, jobname, num_options, options);
 	if (jobID <= 0)
 		error(ippErrorString(cupsLastError()));
 
+#if USE_LOG
+	fclose(debugF);
+#endif
 	return 0;
 }

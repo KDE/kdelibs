@@ -34,6 +34,7 @@
 #include <kapp.h>
 #include <kstddirs.h>
 #include <kdatastream.h>
+#include <kdebug.h>
 
 #include <stdlib.h>
 
@@ -110,6 +111,8 @@ void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 
 int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool removeflag)
 {
+	kdDebug() << "kdeprint: print command: " << cmd << endl;
+
 	int result = 0;
 	DCOPClient	*dclient = kapp->dcopClient();
 	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
