@@ -374,15 +374,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
     }
 
     m_listBox->setSelectionMode( KListBox::Single );
-    QPalette pal = palette();
-    QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
-    QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
-    pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
-    pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
-    pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
-    pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
-
-    setPalette( pal );
+    paletteChange( palette() );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
     m_listBox->setFocusPolicy( TabFocus );
 
@@ -424,6 +416,22 @@ void KURLBar::resizeEvent( QResizeEvent *e )
 {
     QFrame::resizeEvent( e );
     m_listBox->resize( width(), height() );
+}
+
+void KURLBar::paletteChange( const QPalette & )
+{
+    QPalette pal = palette();
+    QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
+    QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
+    QColor foreground = pal.color( QPalette::Normal, QColorGroup::Foreground );
+    pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
+    pal.setColor( QPalette::Normal,   QColorGroup::Text, foreground );
+    pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
+    pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
+    pal.setColor( QPalette::Inactive, QColorGroup::Text, foreground );
+
+    setPalette( pal );
 }
 
 QSize KURLBar::sizeHint() const

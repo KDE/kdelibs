@@ -418,6 +418,8 @@ protected:
 
     virtual void resizeEvent( QResizeEvent * );
 
+    virtual void paletteChange( const QPalette & );
+
     /**
      * The currently active item.
      */
