@@ -146,7 +146,6 @@ void KWinModulePrivate::updateStackingOrder()
 
 void KWinModulePrivate::addClient(Window w)
 {
-    //qDebug("KWinModulePrivate add client %d", w);
     if ( !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
     windows.append( w );
@@ -155,20 +154,17 @@ void KWinModulePrivate::addClient(Window w)
 
 void KWinModulePrivate::removeClient(Window w)
 {
-    //qDebug("KWinModulePrivate remove client %d", w);
     windows.remove( w );
     emit module->windowRemoved( w );
 }
 void KWinModulePrivate::addDockWin(Window w)
 {
-    qDebug("KWinModulePrivate add dock win %d", w);
     dockWindows.append( w );
     emit module->dockWindowAdded( w );
 }
 
 void KWinModulePrivate::removeDockWin(Window w)
 {
-    qDebug("KWinModulePrivate remove dock win %d", w);
     dockWindows.remove( w );
     emit module->dockWindowRemoved( w );
 }

@@ -39,11 +39,13 @@ class NETRootInfo : public NET {
 public:
     // Use this constructor for window managers.
     NETRootInfo(Display *, Window, const char *, unsigned long, int = -1);
-    // Use this constructor for clients.
+    // Use this constructor for clients. Do not forget to call
+    // activate() after the object has been fully instantiated.
     NETRootInfo(Display *, unsigned long, int = -1);
     NETRootInfo(const NETRootInfo &);
     virtual ~NETRootInfo();
 
+    // late initialization
     void activate();
 
     inline Display *x11Display() const;

@@ -363,6 +363,11 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
     role = WindowManager;
 
     if (! netwm_atoms_created) create_atoms(p->display);
+    
+    // DO NOT CALL UPDATE HERE, BUT USE ACTIVATE() INSTEAD FROM
+    // OUTSIDE.  Calling update() in the constructor will break all
+    // the virtual functions. It's C++, i.e. we lack a
+    // post-constructor.
 }
 
 
@@ -396,8 +401,6 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
-    if (p->protocols)
-	update(p->protocols);
 }
 
 
@@ -971,8 +974,9 @@ void NETRootInfo::update(unsigned long dirty) {
 			delete [] p->clients;
 		    } else {
 			unsigned long n;
-			for (n = 0; n < nitems_ret; n++)
+			for (n = 0; n < nitems_ret; n++) {
 			    addClient(wins[n]);
+			}
 		    }
 
 		    p->clients_count = nitems_ret;
