@@ -291,23 +291,84 @@ namespace KJS {
 
   /**
    * @short Native list type.
+   *
+   * List is a native ECMAScript type. List values are only used for
+   * intermediate results of expression evaluation and cannot be stored
+   * as properties of objects.
+   *
+   * The class takes care of memory management via reference counting.
    */
   class List : public KJSO {
   public:
+    /**
+     * Constructor.
+     */
     List();
+    /**
+     * Destructor.
+     */
     ~List();
+    /**
+     * @return KJS::ListType
+     */
     Type type() const { return ListType; }
+    /**
+     * Append an object to the end of the list.
+     *
+     * @param obj Pointer to object.
+     */
     void append(KJSO *obj);
+    /**
+     * Insert an object at the beginning of the list.
+     *
+     * @param obj Pointer to object.
+     */
     void prepend(KJSO *obj);
+    /**
+     * Remove the element at the beginning of the list.
+     */
     void removeFirst();
+    /**
+     * Remove the element at the end of the list.
+     */
     void removeLast();
+    /**
+     * Remove all elements from the list.
+     */
     void clear();
+    /**
+     * @return A @ref KJS::ListIterator pointing to the first element.
+     */
     ListIterator begin() const { return ListIterator(hook->next); }
+    /**
+     * @return A @ref KJS::ListIterator pointing to the last element.
+     */
     ListIterator end() const { return ListIterator(hook); }
+    /**
+     * @return true if the list is empty. false otherwise.
+     */
     bool isEmpty() const { return (hook->prev == hook); }
+    /**
+     * @return the current size of the list.
+     */
     int size() const;
+    /**
+     * Retrieve an element at an indexed position. If you want to iterate
+     * trough the whole list using @ref KJS::ListIterator will be faster.
+     *
+     * @param i List index.
+     * @return Pointer to the element at position i. @ref KJS::Undefined if the
+     * index is out of range.
+     */
     KJSO *at(int i) const;
+    /**
+     * Equivalent to @ref at.
+     */
     KJSO *operator[](int i) const { return at(i); }
+    /**
+     * Returns a pointer to a static instance of an empty list. Useful if a
+     * function has a @ref KJS::List parameter.
+     */
     static const List *empty();
   private:
     void erase(ListIterator it);
