@@ -502,8 +502,10 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 }
                 else
                 {
+                    KURL cleanDest = destURL;
+                    cleanDest.setPass( QString::null ); // don't put password into commandline
                     cmd += " " + KProcess::quote(url.url()) + " " +
-                           KProcess::quote(destURL.url());
+                           KProcess::quote(cleanDest.url());
                     kdDebug(1000) << "Calling command  "<<cmd<<endl;
                     KRun::runCommand(cmd);
                 }
