@@ -2,7 +2,6 @@
 [KDE Desktop Entry]
 MimeType=audio/x-mp3
 Comment=MPEG Sound file
-Comment[no]=MPEG-lydfil
 DefaultApp=kmpg
 Icon=sound.xpm
 Type=MimeType
