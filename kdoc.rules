@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = dcop kdefx kdecore kdeui kio kded kfile kparts kjs khtml kdejava kspell kab kdeprint libkmid interfaces
+kde_MODULES = dcop kdefx kdecore kdeui kio kded kssl kfile kparts kjs khtml kdejava kspell kab kdeprint libkmid interfaces
 
 dcop_FILES = *.h
 dcop_LIBS = -lqt
@@ -24,6 +24,7 @@ kab_FILES = kabapi.h addressbook.h
 kab_LIBS = -lkdecore -lkdeui -lqt
 
 kfile_FILES= *.h
+kfile_PATH = kio/kfile
 kfile_LIBS= -lkio -lkdecore -lkdeui -lkdefx -lqt
 
 kspell_FILES = *.h
@@ -40,11 +41,16 @@ kdejava_PATH = khtml/java
 kdejava_LIBS = -lkdecore -lkdeui -lkdefx -lqt
 
 kio_FILES = *.h
+kio_PATH = kio/kio
 kio_LIBS = -lkdecore -lkdeui -lkdefx -ldcop -lqt
 
 kded_FILES = *.h
 kded_PATH = kio/kded
 kded_LIBS = -lkio -lkdecore -lkdeui -lkdefx -ldcop -lqt
+
+kssl_FILES = *.h
+kssl_PATH = kio/kssl
+kssl_LIBS = -lkdeui -lkdefx -ldcop -lqt
 
 kparts_FILES = *.h
 kparts_LIBS = -lkdeui -lkdefx -lkdecore -lqt
