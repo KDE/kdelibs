@@ -23,6 +23,10 @@
 #ifndef _NETSUPP_H_
 #define _NETSUPP_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/socket.h>
 #include <netdb.h>
 #include "ksockaddr.h"
