@@ -1820,7 +1820,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(e->parentNode()) {
             oldSize = e->parentNode()->style()->font().pixelSize();
         } else {
-            oldSize = ( int )standardSizes[3]*toPix;
+            oldSize = QString::number(standardSizes[3]*toPix).toInt();
         }
 
         if(value->valueType() == CSSValue::CSS_INHERIT)
@@ -1881,7 +1881,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 
-        setFontSize( f, size, s );
+        setFontSize( f, QString::number(size).toInt(), s );
 
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);
