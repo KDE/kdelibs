@@ -48,12 +48,16 @@ KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 
 	m_toolbar->setOrientation(Qt::Vertical);
 	m_toolbar->setIconText(KToolBar::IconTextRight);
+	m_toolbar->setMovingEnabled(false);
 
 	initActions();
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 0);
 	main_->addWidget(m_view);
-	main_->addWidget(m_toolbar);
+	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
+	main_->addLayout(sub_);
+	sub_->addWidget(m_toolbar);
+	sub_->addStretch(1);
 }
 
 KMInstancePage::~KMInstancePage()

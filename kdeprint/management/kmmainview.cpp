@@ -47,6 +47,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
+#include <kdebug.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
@@ -85,6 +86,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_timer = new QTimer(this);
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
+	m_toolbar->setMovingEnabled(false);
 	m_plugin = new PluginComboBox(this, "Plugin");
 	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
 	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
