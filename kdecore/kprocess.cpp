@@ -82,14 +82,14 @@ KProcess::KProcess()
     runs(false),
     pid_(0),
     status(0),
+    keepPrivs(false),
     innot(0),
     outnot(0),
     errnot(0),
     communication(NoCommunication),
     input_data(0),
     input_sent(0),
-    input_total(0),
-    keepPrivs(false)
+    input_total(0)
 {
   if (0 == KProcessController::theKProcessController) {
         KProcessController::theKProcessController= new KProcessController();
