@@ -185,6 +185,7 @@ namespace khtml
     {
     public:
 	CachedCSSStyleSheet(DocLoader* dl, const DOM::DOMString &url, bool reload, int _expireDate, const QString& charset);
+	CachedCSSStyleSheet(const DOM::DOMString &url, const QString &stylesheet_data);
 	virtual ~CachedCSSStyleSheet();
 
 	const DOM::DOMString &sheet() const { return m_sheet; }
@@ -211,6 +212,7 @@ namespace khtml
     {
     public:
 	CachedScript(DocLoader* dl, const DOM::DOMString &url, bool reload, int _expireDate, const QString& charset);
+	CachedScript(const DOM::DOMString &url, const QString &script_data);
 	virtual ~CachedScript();
 
 	const DOM::DOMString &script() const { return m_script; }
@@ -424,11 +426,21 @@ namespace khtml
 	 */
 	static CachedCSSStyleSheet *requestStyleSheet( DocLoader* l, const DOM::DOMString &url, bool reload=false, int _expireDate=0, const QString& charset = QString::null);
 
+        /**
+         * Pre-loads a stylesheet into the cache.
+         */
+        static void preloadStyleSheet(const QString &url, const QString &stylesheet_data);
+
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
 	static CachedScript *requestScript( DocLoader* l, const DOM::DOMString &url, bool reload=false, int _expireDate=0, const QString& charset=QString::null);
+
+        /**
+         * Pre-loads a script into the cache.
+         */
+        static void preloadScript(const QString &url, const QString &script_data);
 
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some

@@ -115,6 +115,17 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, bo
         m_codec = QTextCodec::codecForMib(4); // latin-1
 }
 
+CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const QString &stylesheet_data)
+    : CachedObject(url, CSSStyleSheet, false, 0)
+{
+    m_loading = false;
+    m_status = Persistent;
+    m_codec = 0;
+    m_size = stylesheet_data.length();
+    m_sheet = DOMString(stylesheet_data);
+}
+
+
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
 }
@@ -184,6 +195,16 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, bool reload, int
         m_codec = KGlobal::charsets()->codecForName(charset, b);
     else
 	m_codec = QTextCodec::codecForMib(4); // latin-1
+}
+
+CachedScript::CachedScript(const DOMString &url, const QString &script_data)
+    : CachedObject(url, Script, false, 0)
+{
+    m_loading = false;
+    m_status = Persistent;
+    m_codec = 0;
+    m_size = script_data.length();
+    m_script = DOMString(script_data);
 }
 
 CachedScript::~CachedScript()
@@ -917,10 +938,7 @@ void DocLoader::setAutoloadImages( bool enable )
             CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( co ) );
 
             CachedObject::Status status = img->status();
-            if ( status != CachedObject::Unknown ||
-                 status == CachedObject::Cached ||
-                 status == CachedObject::Uncacheable ||
-                 status == CachedObject::Pending )
+            if ( status != CachedObject::Unknown )
                 continue;
 
             Cache::loader()->load(this, img, true);
@@ -1287,6 +1305,16 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
     return static_cast<CachedCSSStyleSheet *>(o);
 }
 
+void Cache::preloadStyleSheet( const QString &url, const QString &stylesheet_data)
+{
+    CachedObject *o = cache->find(url);
+    if(o)
+        removeCacheEntry(o);
+
+    CachedCSSStyleSheet *stylesheet = new CachedCSSStyleSheet(url, stylesheet_data);
+    cache->insert( url, stylesheet );
+}
+
 CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bool reload, int _expireDate, const QString& charset)
 {
     // this brings the _url to a standard form...
@@ -1338,6 +1366,16 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
         dl->m_docObjects.append( o );
     }
     return static_cast<CachedScript *>(o);
+}
+
+void Cache::preloadScript( const QString &url, const QString &script_data)
+{
+    CachedObject *o = cache->find(url);
+    if(o)
+        removeCacheEntry(o);
+
+    CachedScript *script = new CachedScript(url, script_data);
+    cache->insert( url, script );
 }
 
 void Cache::flush(bool force)

@@ -694,6 +694,16 @@ public:
    */
   QString lastModified() const;
 
+  /**
+   * Loads a style sheet into the stylesheet cache.
+   */
+  void preloadStyleSheet(const QString &url, const QString &stylesheet);
+
+  /**
+   * Loads a script into the script cache.
+   */
+  void preloadScript(const QString &url, const QString &script);
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

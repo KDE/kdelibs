@@ -4357,6 +4357,16 @@ void KHTMLPart::setOpenedByJS(bool _openedByJS)
     d->m_openedByJS = _openedByJS;
 }
 
+void KHTMLPart::preloadStyleSheet(const QString &url, const QString &stylesheet)
+{
+    khtml::Cache::preloadStyleSheet(url, stylesheet);
+}
+
+void KHTMLPart::preloadScript(const QString &url, const QString &script)
+{
+    khtml::Cache::preloadScript(url, script);
+}
+
 using namespace KParts;
 #include "khtml_part.moc"
 
