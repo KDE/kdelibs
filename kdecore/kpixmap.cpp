@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998	Mark Donohoe <donohoe@kde.org>
-						Stephan Kulow				  
+						Stephan Kulow				
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -135,7 +135,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 				l2[x+1] += err>>4;
 			    }
 			    l2[x]+=(err*5)>>4;
-			    if (x>1) 
+			    if (x>1)
 				l2[x-1]+=(err*3)>>4;
 			}
 		    } else {
@@ -150,7 +150,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 				l2[x-1] += err>>4;
 			    }
 			    l2[x]+=(err*5)>>4;
-			    if (x+1 < sw) 
+			    if (x+1 < sw)
 				l2[x+1]+=(err*3)>>4;
 			}
 		    }
@@ -200,27 +200,27 @@ void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
     	ySize = height();
     else
     	ySize = width();
-    
+
     pmCrop.resize( 30, ySize );
     QImage image( 30, ySize, 32 );
-    
+
     rca = ca.red();
     gca = ca.green();
     bca = ca.blue();
     rDiff = cb.red() - ca.red();
     gDiff = cb.green() - ca.green();
     bDiff = cb.blue() - ca.blue();
-    
-    for ( int y = ySize - 1; y > 0; y-- ) {
+
+    for ( int y = ySize - 1; y >= 0; y-- ) {
 	    p = (uint *) image.scanLine( ySize - y - 1 );
 	    rat = 1.0 * y / ySize;
-	    
+	
 		cRow.setRgb( rca + (int) ( rDiff * rat ),
-						gca + (int) ( gDiff * rat ), 
+						gca + (int) ( gDiff * rat ),
 						bca + (int) ( bDiff * rat ) );
-	    
+	
 		rgbRow = cRow.rgb();
-	    
+	
 	    for( int x = 0; x < 30; x++ ) {
 			*p = rgbRow;
 			p++;
@@ -245,7 +245,7 @@ void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
 		
 		delete [] dPal;	
 		
-	} else 
+	} else
 		pmCrop.convertFromImage( image );
 	
 	// Copy the cropped pixmap into the KPixmap.
@@ -288,7 +288,7 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
     pt.begin( &tile );
     pt.setBackgroundColor( cb );
     pt.setPen( ca );
-    
+
     for ( int y = 0; y < 8; y++ ) {
 		uint v = pattern[y];
 		for ( int x = 0; x < 8; x++ ) {
@@ -297,7 +297,7 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 	    	v /= 2;
 		}
     }
-    
+
     pt.end();
 
     int sx, sy = 0;
@@ -381,7 +381,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     detach();					// detach other references
 	
 	int dd = defaultDepth();
-    
+
 	// If color mode not one of KPixmaps extra modes nothing to do
 	if( ( conversion_flags & KColorMode_Mask ) != LowOnly &&
 	     ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
@@ -429,7 +429,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 			if ( isMask ) QPixmap::setMask( mask );
 			return true;
 		} else
-			return false; 
+			return false;
 	} else {
 		QImage  image = img.convertDepth( 32 );
 		image.setAlphaBuffer( img.hasAlphaBuffer() );
@@ -440,7 +440,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 
 static QColor* kpixmap_iconPalette = 0;
 
-bool KPixmap::checkColorTable( const QImage &image ) 
+bool KPixmap::checkColorTable( const QImage &image )
 {
     int i = 0;
 
@@ -508,15 +508,15 @@ bool KPixmap::checkColorTable( const QImage &image )
 	kpixmap_iconPalette[i++] = QColor( 220, 220, 220 );
 	
     }
-    
+
     QRgb* ctable = image.colorTable();
 
     int ncols = image.numColors();
     int j;
-    
+
     // Allow one failure which could be transparent background
     int failures = 0;
-    
+
     for ( i=0; i<ncols; i++ ) {
 	for ( j=0; j<40; j++ ) {
 	    if ( kpixmap_iconPalette[j].red() == qRed( ctable[i] ) &&
@@ -530,7 +530,7 @@ bool KPixmap::checkColorTable( const QImage &image )
 	    failures ++;			
 	}
     }
-    
+
     if( failures > 1 )
 	return FALSE;
     else
