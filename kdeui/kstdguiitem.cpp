@@ -40,6 +40,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Defaults : return defaults();
   case Back     : return back();
   case Forward  : return forward();
+  case Print    : return print();
   default       : return KGuiItem();
   };
 }
@@ -61,6 +62,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Defaults : return QString::fromLatin1("defaults");
   case Back     : return QString::fromLatin1("back");
   case Forward  : return QString::fromLatin1("forward");
+  case Print    : return QString::fromLatin1("print");
   default       : return QString::null;
   };
 }
@@ -167,5 +169,11 @@ QPair<KGuiItem, KGuiItem> KStdGuiItem::backAndForward()
     return qMakePair( back( UseRTL ), forward( UseRTL ) );
 }
 
-// vim: set ts=2 sts=2 sw=2 et:
+KGuiItem KStdGuiItem::print()
+{
+  return KGuiItem( i18n( "&Print" ), "fileprint",
+                   i18n( "Opens the print dialog to print "
+                         "the current document" ) );
+}
 
+// vim: set ts=2 sts=2 sw=2 et:

@@ -37,7 +37,7 @@ public:
     enum StdItem
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-        Apply, Clear, Help, Defaults, Close, Back, Forward
+        Apply, Clear, Help, Defaults, Close, Back, Forward, Print
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -54,6 +54,7 @@ public:
     static KGuiItem clear();
     static KGuiItem defaults();
     static KGuiItem close();
+    static KGuiItem print();
 
     /**
      * Return a GUI item for a 'back' action, like Konqueror's back button.
