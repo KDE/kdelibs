@@ -325,7 +325,8 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
     BidiIterator current = start;
     BidiIterator last = current;
-    while(current != end) {
+    bool atEnd = false;
+    while( 1 ) {
 
 	if ( emptyRun ) {
 	    sor = current;
@@ -639,21 +640,27 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
         last = current;
 
+	if ( atEnd ) break;
 	// this causes the operator ++ to open and close embedding levels as needed
 	// for the CSS unicode-bidi property
 	adjustEmbeddding = true;
         ++current;
 	adjustEmbeddding = false;
+
+	if ( current == end ) {
+	    if ( end.obj )
+		break;
+	    else 
+		atEnd = true;
+	}
     }
 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "reached end of line current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
     if ( !emptyRun ) {
-	if ( eor != last && !(dir == context->dir) )
+	    eor = last;
 	    appendRun();
-	eor = last;
-	appendRun();
     }
 
     BidiContext *endEmbed = context;
