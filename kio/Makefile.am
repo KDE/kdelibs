@@ -60,7 +60,9 @@ libkio_la_SOURCES = \
 	kmimemagic.cpp \
 	slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
-	statusbarprogress.cpp #listprogressdlg.cpp
+	statusbarprogress.cpp
+
+#listprogressdlg.cpp
 
 METASOURCES = AUTO
 
@@ -70,7 +72,9 @@ kioinclude_HEADERS = connection.h renamedlg.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h #listprogressdlg.h
+	statusbarprogress.h
+
+#listprogressdlg.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
