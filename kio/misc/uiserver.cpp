@@ -1315,6 +1315,10 @@ void UIServer::hideEvent(QHideEvent* e)
   writeSettings();
 }
 
+UIServer* UIServer::createInstance()
+{
+    return new UIServer;
+}
 
 //------------------------------------------------------------
 
@@ -1346,7 +1350,8 @@ int main(int argc, char **argv)
     app.disableSessionManagement();
     app.dcopClient()->setDaemonMode( true );
 
-    uiserver = new UIServer();
+    uiserver = UIServer::createInstance();
+
 //    app.setMainWidget( uiserver );
 
     return app.exec();

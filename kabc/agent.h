@@ -21,6 +21,10 @@
 #ifndef KABC_AGENT_H
 #define KABC_AGENT_H
 
+class QDataStream;
+
+#include <qstring.h>
+
 namespace KABC {
 
 class Addressee;

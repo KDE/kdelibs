@@ -27,8 +27,8 @@
 #include <qdict.h>
 #include <qstringlist.h>
 
-#include "factory.h"
-#include "managerimpl.h"
+#include <kresources/factory.h>
+#include <kresources/managerimpl.h>
 
 namespace KRES {
 
@@ -41,6 +41,14 @@ class ManagerListener
     virtual void resourceAdded( T *resource ) = 0;
     virtual void resourceModified( T *resource ) = 0;
     virtual void resourceDeleted( T *resource ) = 0;
+};
+
+class ManagerImplListener
+{
+  public:
+    virtual void resourceAdded( Resource *resource ) = 0;
+    virtual void resourceModified( Resource *resource ) = 0;
+    virtual void resourceDeleted( Resource *resource ) = 0;
 };
 
 // TODO:

@@ -25,6 +25,7 @@
 #define __kio_metainfojob_h__
 
 #include <kio/job.h>
+#include <kio/kfileitem.h>
 
 namespace KIO {
     /**

@@ -208,6 +208,7 @@ class UIServerSystemTray;
  * @short Graphical server for progress information with an optional all-in-one progress window.
  * @author David Faure <faure@kde.org>
  * @author Matej Koss <koss@miesto.sk>
+ *
  * @internal
  */
 class UIServer : public KMainWindow, public DCOPObject {
@@ -215,10 +216,11 @@ class UIServer : public KMainWindow, public DCOPObject {
   K_DCOP
   Q_OBJECT
 
-public:
-
   UIServer();
   virtual ~UIServer();
+
+public:
+   static UIServer* createInstance();
 
 k_dcop:
 

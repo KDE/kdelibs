@@ -29,6 +29,7 @@
 #include <qdict.h>
 
 #include "manageriface.h"
+#include <kresources/manager.h>
 
 class KConfig;
 
@@ -36,15 +37,7 @@ namespace KRES {
 
 class Resource;
 class Factory;
-
-class ManagerImplListener
-{
-  public:
-    virtual void resourceAdded( Resource *resource ) = 0;
-    virtual void resourceModified( Resource *resource ) = 0;
-    virtual void resourceDeleted( Resource *resource ) = 0;
-};
-
+class ManagerImplListener;
 
 /**
   @internal

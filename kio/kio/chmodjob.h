@@ -25,6 +25,7 @@
 #include <qstring.h>
 
 #include <kio/global.h>
+#include <kio/job.h>
 #include <kfileitem.h>
 
 /*
