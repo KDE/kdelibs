@@ -80,7 +80,7 @@ struct KStartupInfoPrivate
     
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
     : QObject( parent_P, name_P ), 
-        clean_on_cantdetect( clean_on_cantdetect_P )
+        clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 )
     {
     d = new KStartupInfoPrivate;
     d->wm_module = new KWinModule( this );
@@ -89,7 +89,7 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     QTimer* cleanup = new QTimer( this );
     connect( cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
-    cleanup->start( 10000 ); // 10 secs
+    cleanup->start( 1000 ); // 1 sec
     }
 
 KStartupInfo::~KStartupInfo()
@@ -436,14 +436,34 @@ QString KStartupInfo::get_window_hostname( WId w_P )
     return QString::null;
     }
     
+void KStartupInfo::setTimeout( unsigned int secs_P )
+    {
+    timeout = secs_P;
+ // schedule removing entries that are older than the new timeout    
+    QTimer::singleShot( 0, this, SLOT( startups_cleanup_no_age()));
+    }
+    
+void KStartupInfo::startups_cleanup_no_age()
+    {
+    startups_cleanup_internal( false );
+    }
+    
 void KStartupInfo::startups_cleanup()
+    {
+    if( d->startups.count() == 0 )
+        return;
+    startups_cleanup_internal( true );
+    }
+    
+void KStartupInfo::startups_cleanup_internal( bool age_P )
     {
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          )
         {
-        ( *it ).age++;
-        if( ( *it ).age >= 3 ) // 30 seconds CHECKME
+        if( age_P )
+            ( *it ).age++;
+        if( ( *it ).age >= timeout )
             {
             const KStartupInfoId& key = it.key();
             ++it;

@@ -59,6 +59,7 @@ class KStartupInfo
         startup_t checkStartup( WId w, KStartupInfoId& id );
         startup_t checkStartup( WId w, KStartupInfoData& data );
         startup_t checkStartup( WId w, KStartupInfoId& id, KStartupInfoData& data );
+        void setTimeout( unsigned int secs );
         class Data; // internal
     signals:
         void gotNewStartup( const KStartupInfoId& id, const KStartupInfoData& data );
@@ -66,6 +67,7 @@ class KStartupInfo
         void gotRemoveStartup( const KStartupInfoId& id, const KStartupInfoData& data );
     private slots:
         void startups_cleanup();
+        void startups_cleanup_no_age();
         void got_message( const QString& msg );
         void window_added( WId w );
     private:
@@ -85,8 +87,10 @@ class KStartupInfo
             KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove );
         static QString get_window_startup_id( WId w_P );
         static QString get_window_hostname( WId w_P );
+        void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
         bool clean_on_cantdetect;
+        unsigned int timeout;
         KStartupInfoPrivate* d;
     };
 
