@@ -376,7 +376,7 @@ void KHTMLSettings::resetFontSizes()
     if ( sizeAdjust > 9 )
 	sizeAdjust = 9;
     //kdDebug(6050) << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
-    const float factor = 1.11820715;
+    const float factor = 1.2;
     float scale = 1.0 / ( factor*factor*factor );
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
       	m_fontSizes << ( KMAX( int( m_fontSize * scale + 0.5), m_minFontSize ) );
@@ -436,7 +436,7 @@ QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
     if (fontList.count() > (uint) i)
        font = fontList[i];
     if (font.isEmpty())
-       font = defaultFonts[i];
+        font = defaultFonts[i];
     return font;
 }
 
