@@ -392,9 +392,6 @@ void HTMLTable::calcSize( HTMLClue * )
     HTMLTableCell *cell;
 
     // recalculate min/max widths
-    calcColInfo();
-
-    // recalculate min/max widths
     calcColumnWidths();
 
     // If it doesn't fit... MAKE IT FIT!
@@ -424,7 +421,7 @@ void HTMLTable::calcSize( HTMLClue * )
 
 	    cell->setMaxWidth( columnOpt[c+1] - columnOpt[ indx ] - spacing -
 		 padding - padding );
-	    cell->calcSize( 0 );
+	    cell->calcSize();
 	}
     }
 
@@ -1055,13 +1052,13 @@ void HTMLTable::calcColInfo()
     }
 
     // Remove redundant rows
-    unsigned int i,j;
+    unsigned int i;
     unsigned int totalRowInfos;
     totalRowInfos = 1;
     for(i = 1; i < totalRows; i++)
     {
     	bool unique = TRUE;
-    	for(j = 0; (j < totalRowInfos) && (unique == TRUE); j++)
+    	for(unsigned int j = 0; (j < totalRowInfos) && (unique == TRUE); j++)
     	{
     	    unsigned k;
     	    if (rowInfo[i].nrEntries == rowInfo[j].nrEntries)
@@ -1105,7 +1102,7 @@ void HTMLTable::calcColInfo()
     {
         int min = 0;
         int pref = 0;
-        for(j = 0; j < rowInfo[i].nrEntries; j++)
+        for(int j = 0; j < rowInfo[i].nrEntries; j++)
         {
            int index = rowInfo[i].entry[j];
            min += colInfo[index].minSize;
