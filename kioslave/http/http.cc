@@ -180,7 +180,7 @@ void HTTPProtocol::resetConnectionSettings()
   m_qTransferEncodings.clear();
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
-  m_bErrorPage = config()->readBoolEntry("errorPage");
+  m_bErrorPage = config()->readBoolEntry("errorPage", true);
 }
 
 void HTTPProtocol::resetSessionSettings()
