@@ -350,10 +350,10 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
 {
   if (!force && ((!m_view->dynWordWrap() && c.line == (int)startLine()) || c == startPos()))
     return;
-  
+
   if (c.line < 0)
     c.line = 0;
-  
+
   KateTextCursor limit = maxStartPos();
   if (c > limit) {
     c = limit;
@@ -367,25 +367,28 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
     if (!force && ((!m_view->dynWordWrap() && c.line == (int)startLine()) || c == startPos()))
       return;
   }
-  
+
   int viewLinesScrolled = displayViewLine(c);
-  
+
   m_oldStartPos = m_startPos;
   m_startPos = c;
-  
+
   // set false here but reversed if we return to makeVisible
   m_madeVisible = false;
-  
+
   if (!force) {
     int lines = linesDisplayed();
     if ((int)m_doc->numVisLines() < lines) {
       KateTextCursor end(m_doc->numVisLines() - 1, m_doc->lineLength(m_doc->getRealLine(m_doc->numVisLines() - 1)));
       lines = displayViewLine(end) + 1;
     }
-      
+
     Q_ASSERT(lines >= 0);
-    
+
     if (QABS(viewLinesScrolled) < lines) {
+      // temporary fix for scroll() not translating pending paint events
+      KApplication::kApplication()->processEvents();
+
       updateView(false, viewLinesScrolled);
       int scrollHeight = -(viewLinesScrolled * m_doc->viewFont.fontHeight);
       scroll(0, scrollHeight);
@@ -393,7 +396,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
       return;
     }
   }
-  
+
   updateView();
   update();
   leftBorder->update();
