@@ -183,8 +183,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
                                          "Script-generated " + filename + "-render");
             } else {
                 // compare with output file
-                if ( m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom") ) )
-                    m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"));
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
             }
             break;
         }
