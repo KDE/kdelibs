@@ -58,6 +58,7 @@ DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
 
 ####### Build rules
 
+samplestorage_impl.cc: soundserver.h
 soundserver.cc: soundserver.h
 soundserver.mcoptype: soundserver.h
 soundserver.mcopclass: soundserver.h
