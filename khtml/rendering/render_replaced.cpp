@@ -200,12 +200,15 @@ void RenderWidget::setStyle(RenderStyle *_style)
     RenderReplaced::setStyle(_style);
     if(m_widget)
     {
-	m_widget->setFont(style()->font());
+        m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
-	    m_widget->hide();
-	    m_widgetShown = false;
-	}
+            m_widget->hide();
+            m_widgetShown = false;
+        }
     }
+
+    // do not paint background or borders for widgets
+    setSpecialObjects(false);
 }
 
 void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty)
