@@ -389,6 +389,11 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
   return true;
 }
 
+void ObjectImp::deleteAllProperties( ExecState * )
+{
+  _prop->clear();
+}
+
 // ECMA 8.6.2.6
 Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
 {

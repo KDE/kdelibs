@@ -500,6 +500,13 @@ namespace KJS {
                                 const UString &propertyName);
 
     /**
+     * Remove all properties from this object.
+     * This doesn't take DontDelete into account, and isn't in the ECMA spec.
+     * It's simply a quick way to remove everything before destroying.
+     */
+    void deleteAllProperties( ExecState * );
+
+    /**
      * Implementation of the [[DefaultValue]] internal property (implemented by
      * all Objects)
      *

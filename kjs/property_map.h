@@ -75,6 +75,7 @@ namespace KJS {
     void remove(UString name);
     ValueImp *get(UString name);
 
+    void clear(PropertyMapNode *node = 0);
     void dump(PropertyMapNode *node = 0, int indent = 0);
     void checkTree(PropertyMapNode *node = 0);
 

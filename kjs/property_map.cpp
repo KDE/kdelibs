@@ -204,6 +204,22 @@ ValueImp *PropertyMap::get(UString name)
   return n ? n->value : 0;
 }
 
+void PropertyMap::clear(PropertyMapNode *node)
+{
+  if (node == 0)
+    node = root;
+  if (node == 0) // nothing to do
+    return;
+
+  if (node->left)
+    clear(node->left);
+  if (node->right)
+    clear(node->right);
+  if (node == root)
+    root = 0;
+  delete node;
+}
+
 void PropertyMap::dump(PropertyMapNode *node, int indent)
 {
   if (!node && indent > 0)
@@ -334,7 +350,7 @@ PropertyMapNode * PropertyMap::remove(PropertyMapNode *node)
     updateHeight(parent);
   else if (root)
     updateHeight(root);
-    
+
 
   // balance the tree
   PropertyMapNode *bal = parent;
@@ -442,7 +458,7 @@ void PropertyMap::rotateLL(PropertyMapNode* &node)
 {
   /*
     Perform a LL ("single right") rotation, e.g.
-    
+
 
         a              b
        / \            / \
@@ -463,7 +479,7 @@ void PropertyMap::rotateLL(PropertyMapNode* &node)
   // do the rotation
   a->setLeft(b->right);
   b->setRight(a);
-  
+
   // now node is b
   node = b;
   if (parent) {
@@ -491,8 +507,8 @@ void PropertyMap::rotateRL(PropertyMapNode* &node)
      W      c      -->   W      b          -->     a       c
            / \                 / \                / \     / \
           b   Z               X   c              W   X   Y   Z
-         / \                     / \       
-        X   Y                   Y   Z      
+         / \                     / \
+        X   Y                   Y   Z
 
   */
 
@@ -512,14 +528,14 @@ void PropertyMap::rotateLR(PropertyMapNode* &node)
 {
   /*
     Perform a LR ("double right") rotation, e.g.
-  
+
           a                         a                      b
         /   \    RR on c          /   \     LL on a      /   \
       c       Z    -->          b       Z     -->      c       a
      / \                       / \                    / \     / \
-    W   b                     c   Y                  W   X   Y   Z 
-       / \                   / \              
-      X   Y                 W   X         
+    W   b                     c   Y                  W   X   Y   Z
+       / \                   / \
+      X   Y                 W   X
   */
 
   PropertyMapNode *a = node;
