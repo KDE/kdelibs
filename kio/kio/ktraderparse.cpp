@@ -33,7 +33,7 @@ void KTraderParse_mainParse( const char *_code );
 
 using namespace KIO;
 
-ParseTreeBase::Ptr *pTree = 0L;
+static ParseTreeBase::Ptr *pTree;
 
 ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
 {
