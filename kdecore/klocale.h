@@ -742,21 +742,21 @@ public:
    * The Metric system will give you information in mm, while the
    * Imperial system will give you information in inches.
    */
-  enum MessureSystem { Metric, Imperial };
+  enum MeasureSystem { Metric, Imperial };
 
   /**
-   * Retrieves which messuring system we use.
+   * Retrieves which measuring system we use.
    *
-   * @return The prefered messuring system
+   * @return The prefered measuring system
    */
-  MessureSystem messureSystem() const;
+  MeasureSystem measureSystem() const;
 
   /**
-   * Changes the prefered messuring system.
+   * Changes the prefered measuring system.
    *
    * @return value The prefered messuring system
    */
-  void setMessureSystem(MessureSystem value);
+  void setMeasureSystem(MeasureSystem value);
 
   /**
    * Adds another catalogue to search for translation lookup.
