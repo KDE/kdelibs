@@ -208,6 +208,8 @@ protected:
   Connection *m_pConnection;
 };
 
+
+
 class ConnectionSlots
 {
 public:
@@ -285,6 +287,7 @@ protected:
 
   list<string> m_lstSource;
 };
+
 
 class IOProtocol : public ConnectionSignals, public ConnectionSlots
 {
