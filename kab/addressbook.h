@@ -84,7 +84,7 @@ protected:
 #ifdef KAB_STATE
 #undef KAB_STATE
 #endif
-#define KAB_VERSION 1
+#define KAB_VERSION 2
 #define KAB_MINOR   0
 #define KAB_PATCH   0
 #define KAB_STATE   "alpha"
@@ -315,7 +315,6 @@ public:
       QString org; /**< The organisation of the person at this address. */
       QString orgUnit;  /**< The org unit of the person at this address. */
       QString orgSubUnit; /**< The org subunit of the person at this address. */
-      QString role; /**< The role of the person at this address. */      
       QString deliveryLabel; /**< The description for delivering. */
       QString address; /**< Street, with house number. */
       QString zip; /**< Zip or postal code. */
