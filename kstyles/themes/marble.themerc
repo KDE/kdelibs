@@ -149,11 +149,11 @@ ArrowType=3D
 Name=Marble
 Name[ca]=Marbre
 Name[hu]=Márvány
-Name[sv]=Marmor
+Name[ja]=¥Þ¡¼¥Ö¥ë
 Comment=Light marble themed style
 Comment[ca]=Estil marbre lleuger amb temes
 Comment[hu]=Halvány márvány téma stílus
-Comment[sv]=Temad stil med ljus marmor
+Comment[ja]=¥é¥¤¥È¥Þ¡¼¥Ö¥ë¥Æ¡¼¥Þ¥¹¥¿¥¤¥ë
 
 [General]
 foreground=0,0,0

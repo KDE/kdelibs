@@ -210,11 +210,11 @@ ShadeStyle=Motif
 Name=Testing
 Name[ca]=Proves
 Name[hu]=Próba
-Name[sv]=Testar
+Name[ja]=¥Æ¥¹¥ÈÃæ
 Comment=Unstable development style
 Comment[ca]=Estil desenvolupament inestable
 Comment[hu]=Rendszer téma stílus
-Comment[sv]=Ostabil utvecklingsstil
+Comment[ja]=ÉÔ°ÂÄê¤Ê³«È¯Ãæ¤Î¥Æ¡¼¥Þ¥¹¥¿¥¤¥ë
 ScrollBarExtent=14
 
 [General]
