@@ -46,6 +46,11 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp \
 	ksycoca.skel
 
+#This dependency is needed, cause am_edit does not include it automatically
+#(different programs), but nevertheless kmimetype.cpp includes
+#kdirnotify_stub.h
+$(srcdir)/kmimetype.cpp: kdirnotify_stub.h
+
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
