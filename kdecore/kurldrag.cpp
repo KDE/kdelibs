@@ -62,7 +62,10 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         return QUriDrag::encodedData( mime );
     else if ( mimetype == "text/plain" )
     {
-        QCString s = QStringList::fromStrList(m_urls).join( "\n" ).latin1();
+	QStringList uris;
+        for (QStrListIterator it(m_urls); *it; ++it)
+         uris.append(KURL(*it, QFont::Unicode).prettyURL());
+        QCString s = uris.join( "\n" ).local8Bit();
         a.resize( s.length() + 1 ); // trailing zero
         memcpy( a.data(), s.data(), s.length() + 1 );
     }
