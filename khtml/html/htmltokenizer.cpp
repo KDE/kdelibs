@@ -718,12 +718,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         kdDebug( 6036 ) << "found tag id=" << tagID << endl;
 #endif
                         if (beginTag)
+                        {
                             currToken->id = tagID;
+                            tag = SearchAttribute;
+                        }
                         else
+                        {
                             currToken->id = tagID + ID_CLOSE_TAG;
-
+                            tag = SearchEnd;
+                        }
                         dest = buffer;
-                        tag = SearchAttribute;
                     }
                 }
                 break;
