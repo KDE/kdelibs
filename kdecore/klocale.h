@@ -173,6 +173,16 @@ public:
    */
   QString translate( const char *index, const char *fallback) const;
 
+  /**
+   * Used to get the correct, translated singular or plural of a
+   * word.
+   * @param singular the singular form of the word, for example "file".
+   * @param plural the plural form of the word. Must contain a "%n" that will
+   *               be replaced by the number @n, for example "%n files"
+   * @param n the number
+   * @return the correct singular or plural for the selected language, 
+   *         depending on n
+   */
   QString translate( const char *singular, const char *plural,
 		     unsigned long n) const;
 
@@ -316,7 +326,7 @@ public:
    * If and only if the currency symbol precedes a negative value,
    * this will be true.
    *
-   * @return Where to print the currency symbol for negative numbers.
+   * @return True if the currency symbol precedes negative numbers.
    */
   bool negativePrefixCurrencySymbol() const;
 
@@ -346,9 +356,11 @@ public:
    *
    * @param num The number we want to format
    * @param currency The currency symbol you want.
-   * @param digits Number of fractional digits.
+   * @param digits Number of fractional digits, or -1 for the default
+   *               value
    *
    * @return The number of money as a localized string
+   * @see fracDigits()
    */
   QString formatMoney(double num,
 		      const QString & currency = QString::null,
@@ -508,6 +520,7 @@ public:
    *
    * @param numStr the string we want to convert.
    * @param ok the boolean that is set to false if it's not a number.
+   *           If @ok is 0, it will be ignored
    *
    * @return The string converted to a double
    */
@@ -518,6 +531,7 @@ public:
    *
    * @param numStr the string we want to convert.
    * @param ok the boolean that is set to false if it's not a number.
+   *           If @ok is 0, it will be ignored
    *
    * @return The string converted to a double
    */
@@ -529,6 +543,7 @@ public:
    *
    * @param str the string we want to convert.
    * @param ok the boolean that is set to false if it's not a valid date.
+   *           If @ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
    */
@@ -546,6 +561,7 @@ public:
    *
    * @param str the string we want to convert.
    * @param ok the boolean that is set to false if it's not a valid time.
+   *           If @ok is 0, it will be ignored
    *
    * @return The string converted to a QTime
    */
@@ -648,11 +664,41 @@ public:
   /**
    * Changes the current date format.
    *
+   * The format of the date is a string which contains variables that will
+   * be replaced:
+   * @li %Y with the century (e.g. "19" for "1984")
+   * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
+   * @li %n with the month (January="1", December="12")
+   * @li %m with the month with two digits (January="01", December="12")
+   * @li %e with the day of the month (e.g. "1" on the first of march)
+   * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
+   * @li %b with the short form of the month (e.g. "Jan" for January)
+   * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
+   * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+   * Everything else in the format string will be taken as is.
+   * For example, March 20th 1989 with the format "%y:%m:%d" results 
+   * in "89:03:20".
+   *
    * @param format The new date format
    */
   void setDateFormat(const QString & format);
   /**
    * Changes the current short date format.
+   *
+   * The format of the date is a string which contains variables that will
+   * be replaced:
+   * @li %Y with the century (e.g. "19" for "1984")
+   * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
+   * @li %n with the month (January="1", December="12")
+   * @li %m with the month with two digits (January="01", December="12")
+   * @li %e with the day of the month (e.g. "1" on the first of march)
+   * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
+   * @li %b with the short form of the month (e.g. "Jan" for January)
+   * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
+   * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
+   * Everything else in the format string will be taken as is.
+   * For example, March 20th 1989 with the format "%y:%m:%d" results 
+   * in "89:03:20".
    *
    * @param format The new short date format
    */
@@ -665,6 +711,19 @@ public:
   void setDateMonthNamePossessive(bool possessive);
   /**
    * Changes the current time format.
+   *
+   * The format of the time is string a which contains variables that will
+   * be replaced:
+   * @li %H with the hour in 24h format and 2 digits (e.g. 5pm is "17", 5am is "05")
+   * @li %k with the hour in 24h format and one digits (e.g. 5pm is "17", 5am is "5")
+   * @li %I with the hour in 12h format and 2 digits (e.g. 5pm is "05", 5am is "05")
+   * @li %l with the hour in 12h format and one digits (e.g. 5pm is "5", 5am is "5")
+   * @li %M with the minute with 2 digits (e.g. the minute of 07:02:09 is "02")
+   * @li %S with the seconds with 2 digits  (e.g. the minute of 07:02:09 is "09")
+   * @li %p with pm or am (e.g. 17.00 is "pm", 05.00 is "am")
+   * Everything else in the format string will be taken as is.
+   * For example, 5.23pm with the format "%H:%M" results 
+   * in "17:23".
    *
    * @param format The new time format
    */
@@ -690,18 +749,21 @@ public:
    * Returns the currently selected date format.
    *
    * @return Current date format.
+   * @see setDateFormat()
    */
   QString dateFormat() const;
   /**
    * Returns the currently selected short date format.
    *
    * @return Current short date format.
+   * @see setDateFormatShort()
    */
   QString dateFormatShort() const;
   /**
    * Returns the currently selected time format.
    *
    * @return Current time format.
+   * @see setTimeFormat()
    */
   QString timeFormat() const;
 
@@ -830,8 +892,17 @@ public:
    */
   void insertCatalogue(const QString& catalogue);
 
+  /**
+   * Removes a catalog for translation lookup.
+   * @param catalogue The catalogue to remove.
+   * @see insertCatalogue()
+   */
   void removeCatalogue(const QString &catalogue);
 
+  /**
+   * Sets the active catalog for translation lookup.
+   * @param catalogue The catalogue to activate.   
+   */
   void setActiveCatalogue(const QString &catalogue);
 
   /**
@@ -844,24 +915,30 @@ public:
 		      const char *message) const;
 
   /**
-   * Returns list of all known ISO 639-1 codes
+   * Returns list of all known ISO 639-1 codes.
+   * @return a list of all language codes
    */
   QStringList allLanguagesTwoAlpha() const;
 
   /**
-   * Convert a ISO 639-1 code to a human readable form
+   * Convert a ISO 639-1 code to a human readable form.
+   * @param code the language ISO 639-1 code
+   * @return the human readable form
    */
-  QString twoAlphaToLanguageName(const QString &) const;
+  QString twoAlphaToLanguageName(const QString &code) const;
 
   /**
-   * Returns list of all known country codes
+   * Returns list of all known country codes.
+   * @return a list of all country codes
    */
   QStringList allCountriesTwoAlpha() const;
 
   /**
-   * Convert a country code to a human readable form
+   * Convert a country code to a human readable form.
+   * @param code the country code
+   * @return the human readable form of the country name
    */
-  QString twoAlphaToCountryName(const QString &) const;
+  QString twoAlphaToCountryName(const QString &code) const;
 
   /**
    * Returns the parts of the parameter str understood as language setting
@@ -882,7 +959,7 @@ public:
    * will be used. This function is best to be the very first instruction
    * in your program's main function as it only has an effect before the
    * first KLocale object is created (and this is in common KDE applications
-   * quite early)
+   * quite early).
    *
    * @param catalogue Catalogue to override all other main catalogues.
    */
