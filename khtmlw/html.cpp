@@ -2684,8 +2684,10 @@ const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
 const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	const char *attr )
 {
-	static const char *endth[] = { "</th>", NULL };
-	static const char *endtd[] = { "</td>", NULL };    
+	static const char *endth[] = { "</th>", "<th", "<td", "<tr", "</table",
+		NULL };
+	static const char *endtd[] = { "</td>", "<th", "<td", "<tr", "</table",
+		NULL };    
 	static const char *endcap[] = { "</caption>", NULL };    
 	const char* str = NULL;
 	bool firstRow = TRUE;
@@ -2744,7 +2746,9 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	//       _clue->append( table ); 
 	// CC: Moved at the end since we might decide to discard the table while parsing...
 
-    while ( ht->hasMoreTokens() )
+	bool done = false;
+
+    while ( !done && ht->hasMoreTokens() )
 	{
 	str = ht->nextToken();
 
@@ -2772,150 +2776,160 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			parseBody( caption, endcap );
 			table->setCaption( caption, capAlign );
 		}
-		else if ( strncasecmp( str, "<tr", 3 ) == 0 )
+
+		while ( str && ( strncasecmp( str, "<td", 3 ) == 0 ||
+			strncasecmp( str, "<th", 3 ) == 0 ||
+			strncasecmp( str, "</table>", 8 ) == 0 ||
+			strncasecmp( str, "<tr", 3 ) == 0 ) )
 		{
-			if ( !firstRow )
-				table->endRow();
-			table->startRow();
-			firstRow = FALSE;
-			rowvalign = HTMLClue::VNone;
-			rowhalign = HTMLClue::HNone;
-
-			QString s = str + 4;
-			StringTokenizer st( s, " >" );
-			while ( st.hasMoreTokens() )
+			if ( strncasecmp( str, "<tr", 3 ) == 0 )
 			{
-				const char* token = st.nextToken();
-				if ( strncasecmp( token, "valign=", 7 ) == 0)
-				{
-					if ( strncasecmp( token+7, "top", 3 ) == 0)
-						rowvalign = HTMLClue::Top;
-					else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-						rowvalign = HTMLClue::Bottom;
-					else
-						rowvalign = HTMLClue::VCenter;
-				}
-				else if ( strncasecmp( token, "align=", 6 ) == 0)
-				{
-					if ( strncasecmp( token+6, "left", 4 ) == 0)
-						rowhalign = HTMLClue::Left;
-					else if ( strncasecmp( token+6, "right", 5 ) == 0)
-						rowhalign = HTMLClue::Right;
-					else
-						rowhalign = HTMLClue::HCenter;
-				}
-			}
-		}
-		else if ( strncasecmp( str, "<td", 3 ) == 0 ||
-			strncasecmp( str, "<th", 3 ) == 0 )
-	 	{
-			bool heading = false;
-			if ( strncasecmp( str, "<th", 3 ) == 0 )
-				heading = true;
-			// <tr> may not be specified for the first row
-			if ( firstRow )
-			{
-				table->startRow();
-				firstRow = FALSE;
-			}
-
-			int rowSpan = 1, colSpan = 1;
-			int width = _clue->getMaxWidth();
-			int percent = -1;
-			QColor bgcolor;
-			HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
-							HTMLClue::VCenter : rowvalign);
-
-			if ( heading )
-				divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
-					rowhalign);
-			else
-				divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
-					rowhalign);
-
-			QString s = str + 4;
-			StringTokenizer st( s, " >" );
-			while ( st.hasMoreTokens() )
-			{
-				const char* token = st.nextToken();
-				if ( strncasecmp( token, "rowspan=", 8 ) == 0)
-					rowSpan = atoi( token+8 );
-				else if ( strncasecmp( token, "colspan=", 8 ) == 0)
-					colSpan = atoi( token+8 );
-				else if ( strncasecmp( token, "valign=", 7 ) == 0)
-				{
-					if ( strncasecmp( token+7, "top", 3 ) == 0)
-						valign = HTMLClue::Top;
-					else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-						valign = HTMLClue::Bottom;
-					else
-						valign = HTMLClue::VCenter;
-				}
-				else if ( strncasecmp( token, "align=", 6 ) == 0)
-				{
-					if ( strncasecmp( token+6, "center", 6 ) == 0)
-						divAlign = HTMLClue::HCenter;
-					else if ( strncasecmp( token+6, "right", 5 ) == 0)
-						divAlign = HTMLClue::Right;
-					else
-						divAlign = HTMLClue::Left;
-				}
-				else if ( strncasecmp( token, "width=", 6 ) == 0 )
-				{
-					if ( strchr( token + 6, '%' ) )
-						percent = atoi( token + 6 );
-					else
-					{
-						width = atoi( token + 6 );
-						percent = 0;
-					}
-				}
-				else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
-				{
-					if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-					{
-						QString col = "#";
-						col += token+8;
-						bgcolor.setNamedColor( col );
-					}
-					else
-						bgcolor.setNamedColor( token+8 );
-				}
-			}
-
-			HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
-				rowSpan, colSpan, padding );
-			if ( bgcolor.isValid() )
-				cell->setBGColor( bgcolor );
-			cell->setVAlign( valign );
-			table->addCell( cell );
-			has_cell = 1;
-			flow = 0;
-			if ( heading )
-			{
-				weight = QFont::Bold;
-				selectFont( 0 );
-				str = parseBody( cell, endth );
-				popFont();
-			}
-			else
-				str = parseBody( cell, endtd );
-			if ( str == NULL )
-			{ 
-				// CC: Close table description in case of a malformed table
-				// before returning!
 				if ( !firstRow )
 					table->endRow();
-				table->endTable(); 
-				delete table;
-				divAlign = olddivalign;
-				flow = oldFlow;
-				return NULL;
+				table->startRow();
+				firstRow = FALSE;
+				rowvalign = HTMLClue::VNone;
+				rowhalign = HTMLClue::HNone;
+
+				QString s = str + 4;
+				StringTokenizer st( s, " >" );
+				while ( st.hasMoreTokens() )
+				{
+					const char* token = st.nextToken();
+					if ( strncasecmp( token, "valign=", 7 ) == 0)
+					{
+						if ( strncasecmp( token+7, "top", 3 ) == 0)
+							rowvalign = HTMLClue::Top;
+						else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+							rowvalign = HTMLClue::Bottom;
+						else
+							rowvalign = HTMLClue::VCenter;
+					}
+					else if ( strncasecmp( token, "align=", 6 ) == 0)
+					{
+						if ( strncasecmp( token+6, "left", 4 ) == 0)
+							rowhalign = HTMLClue::Left;
+						else if ( strncasecmp( token+6, "right", 5 ) == 0)
+							rowhalign = HTMLClue::Right;
+						else
+							rowhalign = HTMLClue::HCenter;
+					}
+				}
+
+				break;
 			}
-		}
-		else if ( strncasecmp( str, "</table>", 8 ) == 0 )
-		{
-			break;
+			else if ( strncasecmp( str, "<td", 3 ) == 0 ||
+				strncasecmp( str, "<th", 3 ) == 0 )
+			{
+				bool heading = false;
+				if ( strncasecmp( str, "<th", 3 ) == 0 )
+					heading = true;
+				// <tr> may not be specified for the first row
+				if ( firstRow )
+				{
+					table->startRow();
+					firstRow = FALSE;
+				}
+
+				int rowSpan = 1, colSpan = 1;
+				int width = _clue->getMaxWidth();
+				int percent = -1;
+				QColor bgcolor;
+				HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
+								HTMLClue::VCenter : rowvalign);
+
+				if ( heading )
+					divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
+						rowhalign);
+				else
+					divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
+						rowhalign);
+
+				QString s = str + 4;
+				StringTokenizer st( s, " >" );
+				while ( st.hasMoreTokens() )
+				{
+					const char* token = st.nextToken();
+					if ( strncasecmp( token, "rowspan=", 8 ) == 0)
+						rowSpan = atoi( token+8 );
+					else if ( strncasecmp( token, "colspan=", 8 ) == 0)
+						colSpan = atoi( token+8 );
+					else if ( strncasecmp( token, "valign=", 7 ) == 0)
+					{
+						if ( strncasecmp( token+7, "top", 3 ) == 0)
+							valign = HTMLClue::Top;
+						else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+							valign = HTMLClue::Bottom;
+						else
+							valign = HTMLClue::VCenter;
+					}
+					else if ( strncasecmp( token, "align=", 6 ) == 0)
+					{
+						if ( strncasecmp( token+6, "center", 6 ) == 0)
+							divAlign = HTMLClue::HCenter;
+						else if ( strncasecmp( token+6, "right", 5 ) == 0)
+							divAlign = HTMLClue::Right;
+						else
+							divAlign = HTMLClue::Left;
+					}
+					else if ( strncasecmp( token, "width=", 6 ) == 0 )
+					{
+						if ( strchr( token + 6, '%' ) )
+							percent = atoi( token + 6 );
+						else
+						{
+							width = atoi( token + 6 );
+							percent = 0;
+						}
+					}
+					else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+					{
+						if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
+						{
+							QString col = "#";
+							col += token+8;
+							bgcolor.setNamedColor( col );
+						}
+						else
+							bgcolor.setNamedColor( token+8 );
+					}
+				}
+
+				HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
+					rowSpan, colSpan, padding );
+				if ( bgcolor.isValid() )
+					cell->setBGColor( bgcolor );
+				cell->setVAlign( valign );
+				table->addCell( cell );
+				has_cell = 1;
+				flow = 0;
+				if ( heading )
+				{
+					weight = QFont::Bold;
+					selectFont( 0 );
+					str = parseBody( cell, endth );
+					popFont();
+				}
+				else
+					str = parseBody( cell, endtd );
+				if ( str == NULL )
+				{ 
+					// CC: Close table description in case of a malformed table
+					// before returning!
+					if ( !firstRow )
+						table->endRow();
+					table->endTable(); 
+					delete table;
+					divAlign = olddivalign;
+					flow = oldFlow;
+					return NULL;
+				}
+			}
+			else if ( strncasecmp( str, "</table>", 8 ) == 0 )
+			{
+				done = true;
+				break;
+			}
 		}
 	}
     }

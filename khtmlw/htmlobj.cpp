@@ -94,9 +94,7 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 
 void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    if ( url.isNull() )
-	return;
-    if ( url[0] == 0 )
+    if ( url.isEmpty() )
 	return;
     
     KURL u( url.data() );
@@ -113,7 +111,7 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
-    if ( _select == isSelected() || url.data() == 0 || url[0] == 0 )
+    if ( _select == isSelected() || url.isEmpty() )
 	return;
 	
     setSelected( _select );
@@ -913,7 +911,8 @@ void HTMLTable::addCell( HTMLTableCell *cell )
 
 void HTMLTable::endRow()
 {
-	row++;
+	if ( col )
+		row++;
 }
 
 void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
@@ -1558,8 +1557,33 @@ bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
 			if ( r < row - 1 && cells[r+1][c] == cell )
 				continue;
 
-			isSel |= cell->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
-				_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+			if ( _y1 < y - ascent && _y2 > y )
+			{
+				isSel |= cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+					width + 1, _y2 - ( y - ascent ), _tx, _ty );
+			}
+			else if ( _y1 < y - ascent )
+			{
+				isSel |= cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+					_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+			}
+			else if ( _y2 > y )
+			{
+				isSel |= cell->selectText( _painter, _x1 - x,
+					_y1 - ( y - ascent ), width + 1, _y2 - ( y - ascent ),
+					_tx, _ty );
+			}
+			else if ( (_x1 - x < cell->getXPos() + cell->getWidth() &&
+					_x2 - x > cell->getXPos() ) )
+			{
+				isSel |= cell->selectText( _painter, _x1 - x,
+					_y1 - ( y - ascent ), _x2 - x, _y2 - ( y - ascent ),
+					_tx, _ty );
+			}
+			else
+			{
+				cell->selectText( _painter, 0, 0, 0, 0, _tx, _ty );
+			}
 		}
 	}
 

@@ -1,8 +1,16 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 28 July 1997 - Martin Jones.
+Last Change: 31 July 1997 - Martin Jones.
 
+
+Version 0.8.5 - Martin
+----------------------
+
+ Discard empty rows, e.g. <TR><TR>
+ Do not require </td>, </th>, </tr>
+
+ Do text selection in tables properly.
 
 
 Version 0.8.4 - Martin

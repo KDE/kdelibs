@@ -165,7 +165,7 @@ void read_jpeg_jfif(QImageIO * iio)
 
 void qimageio_jpeg_src(j_decompress_ptr cinfo, QDataStream * image)
 {
-    struct qimageio_jpeg_source_mgr *src;
+    qimageio_jpeg_source_mgr *src;
 
     // Set up buffer for the first time
 
@@ -175,7 +175,7 @@ void qimageio_jpeg_src(j_decompress_ptr cinfo, QDataStream * image)
 	    (*cinfo->mem->alloc_small)
 	    ((j_common_ptr) cinfo,
 	     JPOOL_PERMANENT,
-	     sizeof(struct qimageio_jpeg_source_mgr));
+	     sizeof(qimageio_jpeg_source_mgr));
 
 	src = (qimageio_jpeg_source_mgr *) cinfo->src;
 
