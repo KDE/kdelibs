@@ -1,4 +1,5 @@
 // $Id$
+#include "kio_listprogress_dlg.h"
 
 #include <qtimer.h>
 #include <qmessagebox.h>
@@ -11,7 +12,6 @@
 #include <kglobal.h>
 #include <ktoolbarbutton.h>
 
-#include "kio_listprogress_dlg.h"
 
 static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
 				    160, // LOCAL_FILENAME
