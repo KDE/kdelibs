@@ -34,6 +34,7 @@
 #include <qsessionmanager.h>
 #include <qlist.h>
 #include <qtranslator.h>
+#include <qstylesheet.h>
 #include <qpixmapcache.h>
 
 #include <kapp.h>
@@ -291,6 +292,12 @@ void KApplication::init(bool GUIenabled)
     kdisplaySetPalette();
     propagateSettings(SETTINGS_QT);
   }
+
+  // "patch" standard QStyleSheet to follow our fonts
+  QStyleSheet* sheet = QStyleSheet::defaultSheet();
+  sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
+  sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
+  sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
 
   installTranslator(new KDETranslator(this));
 
@@ -1273,6 +1280,13 @@ void KApplication::kdisplaySetPalette()
 void KApplication::kdisplaySetFont()
 {
     QApplication::setFont(KGlobalSettings::generalFont(), true);
+
+    // "patch" standard QStyleSheet to follow our fonts
+    QStyleSheet* sheet = QStyleSheet::defaultSheet();
+    sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
+
     emit kdisplayFontChanged();
     emit appearanceChanged();
 }
