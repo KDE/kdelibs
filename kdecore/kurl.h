@@ -34,7 +34,7 @@ class KURLPrivate;
  *
  * A prototypical URL looks like:
  * \code
- *   protocol:/user:password\@hostname:port/path/to/file.ext#reference
+ *   protocol://user:password\@hostname:port/path/to/file.ext#reference
  * \endcode
  *
  * KURL handles escaping of URLs. This means that the specification

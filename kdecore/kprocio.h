@@ -157,7 +157,8 @@ public:
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
    * @return the number of characters read, or -1 if no data is available.
-   * @deprecated use readln
+   * @deprecated use readln. Note that it has an inverted autoAck default,
+   *  though.
    **/
   KDE_DEPRECATED int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }
