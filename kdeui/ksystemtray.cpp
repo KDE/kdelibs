@@ -151,8 +151,8 @@ void KSystemTray::toggleMinimizeRestore()
 	parentWidget()->move( info.geometry.topLeft() );
 #endif
 	parentWidget()->show();
-	parentWidget()->raise();
 #ifndef Q_WS_QWS //FIXME
+        KWin::deIconifyWindow( parentWidget()->winId() );
 	KWin::setActiveWindow( parentWidget()->winId() );
 #endif
     } else {
