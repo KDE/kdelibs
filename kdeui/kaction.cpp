@@ -377,18 +377,7 @@ KSelectAction::KSelectAction( QObject* parent = 0, const char* name = 0 )
 
 void KSelectAction::setCurrentItem( int id )
 {
-    if ( id >= (int)items().count() )
-	return;
-
-    if ( popupMenu() )
-    {
-	if ( currentItem() >= 0 )
-	    popupMenu()->setItemChecked( currentItem(), FALSE );
-	if ( id >= 0 )
-	    popupMenu()->setItemChecked( id, TRUE );
-    }
-
-    setCurrentItem( id );
+    QSelectAction::setCurrentItem( id );
 	
     int len = containerCount();
     for( int i = 0; i < len; ++i )
