@@ -240,8 +240,8 @@ void HTTPProtocol::resetSessionSettings()
     cleanCache();
 
   // Deal with HTTP tunneling
-  if ( m_bIsSSL && m_bUseProxy && (m_proxyURL.protocol() != "https" ||
-       m_proxyURL.protocol() != "webdavs") && !m_bKeepAlive )
+  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" &&
+       m_proxyURL.protocol() != "webdavs" && !m_bKeepAlive )
   {
     setEnableSSLTunnel( true );
 
