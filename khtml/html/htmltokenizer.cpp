@@ -878,7 +878,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         break;
                     }
                 }
-                cBuffer[cBufferPos++] = tolower(curchar);
+                cBuffer[cBufferPos++] = 
+                     (  curchar >= 'A' && curchar <= 'Z' ) ? curchar | 0x20 : curchar;
                 ++src;
             }
             if ( cBufferPos == CBUFLEN ) {
