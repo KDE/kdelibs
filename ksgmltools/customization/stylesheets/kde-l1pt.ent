@@ -8,8 +8,8 @@
     value for the character (e.g. \U-00F3).
     Let us know should you know of other encodings that work.
  -->
-<!ENTITY Default "Default">
-<!ENTITY Portuguese "Portugues">
-<!ENTITY Version "Version">
-<!ENTITY LastUpdated "Last updated">
+<!ENTITY Default "Por omissão">
+<!ENTITY Portuguese "Português">
+<!ENTITY Version "Versão">
+<!ENTITY LastUpdated "Última Actualização">
 <!--ENTITY By "By"-->

@@ -18,6 +18,6 @@
 <!ENTITY FDLFrontCoverText "sem Textos de Capa Frontal">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTAR OS SEUS TÍTULOS" -- keep capitals -->
-<!ENTITY FDLBackCoverText "sendos os Textos de Capa Traseira &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "sendo os Textos de Capa Traseira &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "sem Textos de Capa Traseira">
