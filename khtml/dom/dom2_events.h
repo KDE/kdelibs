@@ -217,7 +217,6 @@ public:
      */
     void preventDefault();
 
-
     /**
      * The initEvent method is used to initialize the value of an Event created
      * through the DocumentEvent interface. This method may only be called
@@ -321,34 +320,35 @@ public:
     long detail() const;
 
     /**
-     * IE extension
+     * Non-standard extension to support IE-style keyCode event property.
+     *
      */
     int keyCode() const;
 
     /**
-     * IE extension
+     * Non-standard extension to support IE-style charCode event property.
      *
      */
     int charCode() const;
 
     /**
+     * Non-standard extensions to support Netscape-style pageX and pageY event properties.
      *
-     * Netscape extension. only returns something useful when the mouse
-     * was involved. Otherwise its 0
      */
     int pageX() const;
     int pageY() const;
 
     /**
-     * Netscape extension. only returns something useful when the mouse
-     * was involved. Otherwise its 0
+     * Non-standard extensions to support Netscape-style layerX and layerY event properties.
+     *
      */
     int layerX() const;
     int layerY() const;
 
     /**
-     * Non-standard Netscape style "which" extension
-    */
+     * Non-standard extension to support Netscape-style "which" event property.
+     *
+     */
     int which() const;
 
     /**
