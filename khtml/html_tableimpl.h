@@ -83,16 +83,10 @@ public:
     virtual ushort id() const;
 
     virtual int hSpace() {
-    	if (isFloating() && hspace.isUndefined())
-	    return 2;
-	else
-	    return hspace.minWidth(width);
+    	return hspace.minWidth(width);
     }
     virtual int vSpace() {
-    	if (isFloating() && vspace.isUndefined())
-	    return 2;
-	else
-	    return vspace.minWidth(getHeight());
+	return vspace.minWidth(getHeight());
     }
 
     virtual tagStatus startTag() { return TABLEStartTag; }
@@ -469,6 +463,8 @@ public:
 
     virtual VAlign vAlign();
     virtual HAlign hAlign();
+    
+    virtual int getHeight();
 
 protected:
     int _row;

@@ -1450,7 +1450,9 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
     _tx += x;
     _ty += y;
 
-    if((_ty > _y + _h) || (_ty + descent < _y)) return;
+    if((_ty - ascent > _y + _h) || (_ty + ascent + descent < _y)) return;
+    if((_tx > _x + _w) || (_tx + width < _x)) return;
+    
     if(!layouted()) return;
 
     if ( tCaption )
@@ -2044,6 +2046,8 @@ void HTMLTableCellElementImpl::calcMinMaxWidth()
 
 }
 
+#include "khtml.h"
+
 void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
 					int _w, int _h,
 					int _tx, int _ty)
@@ -2053,12 +2057,12 @@ void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
     int _ascent = parentNode()->getAscent();
 
     _ty += y + _ascent;
+    _tx += x;    
 
     // check if we need to do anything at all...
-    if((_ty - padding > _y + _h) || (_ty + rowHeight - padding < _y)) return;
-    // add relative position of the element
-    _tx += x;
-
+    if((_ty - ascent > _y + _h) || (_ty + rowHeight < _y)) return;
+    if((_tx > _x + _w) || (_tx + width < _x)) return;
+    
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 
     NodeImpl *child = firstChild();
@@ -2223,6 +2227,11 @@ HAlign HTMLTableCellElementImpl::hAlign()
     if (rowimpl && ha==HNone)
     	ha = rowimpl->hAlign();
     return ha;
+}
+
+int HTMLTableCellElementImpl::getHeight()
+{
+    return MAX(predefinedHeight.minWidth(0),ascent+descent);
 }
 
 // -------------------------------------------------------------------------

@@ -353,7 +353,7 @@ void HTMLDocumentImpl::updateSize()
 	    }
 	}
 	if (view)	
-	   view->viewport()->repaint(true);
+	   view->viewport()->repaint(false);
     }
 }
 

@@ -103,6 +103,11 @@ protected:
      * from the internet for example.
      */
     QPixmap *pixmap;
+    
+    /*
+     * Cache for images that need resizing
+     */
+    QPixmap *resizeCache;
 
     /**
      * The URL of this image.

@@ -500,8 +500,6 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
     }
     case RESET:
     {
-	QPushButton *b = new QPushButton(view->viewport());
-	w = b;
 	if ( _value.length() )
 	    b->setText( _value.string() );
 	else
@@ -512,8 +510,6 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
     }
     case BUTTON:
     {
-	QPushButton *b = new QPushButton(view->viewport());
-	w = b;
 	if ( _value.length() )
 	    b->setText( _value.string() );
 	else

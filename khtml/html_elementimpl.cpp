@@ -574,12 +574,12 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
+    if((_tx > _x + _w) || (_tx + width < _x)) return;
     //if(!layouted()) return;
 
 #ifdef DEBUG_LAYOUT
     printf("print 2\n");
 #endif
-
 
     // default implementation. Just pass things through to the children
     // and paint paragraphs (groups of inline elements)
@@ -617,8 +617,8 @@ void HTMLBlockElementImpl::printObject(QPainter *p, int _x, int _y,
 
 void HTMLBlockElementImpl::layout( bool deep )
 {
-  //if (layouted())
-  //	return;
+   //if (layouted())
+    //	return;
 
     width = availableWidth;
 #ifdef DEBUG_LAYOUT

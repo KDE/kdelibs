@@ -61,7 +61,7 @@ QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
 
 using namespace DOM;
 
-QPixmap* KHTMLWidget::paintBuffer = 0L;
+static QPixmap* KHTMLWidget::paintBuffer = 0L;
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     : QScrollView( parent, name)
@@ -370,8 +370,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     document->open();
     // clear widget
     resizeContents(0, 0);
-    setBackgroundMode(PaletteBackground);
-    viewport()->repaint(true);
+//    setBackgroundMode(PaletteBackground);
+//    viewport()->repaint(false);
 
     m_bParsing = true;
 }
@@ -970,15 +970,10 @@ void KHTMLWidget::end()
 
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 {
-    printf("resizeEvent\n");
-    viewport()->setUpdatesEnabled(false);
-    QScrollView::resizeEvent(event);
-    layout();
-    viewport()->setUpdatesEnabled(true);
 
-    //repaint without erasing the background
-    viewport()->repaint(false);
-    //viewport()->repaint(true);
+    printf("resizeEvent\n");
+    layout();
+    QScrollView::resizeEvent(event);
 
     //emit resized( event->size() );
 }
@@ -990,6 +985,18 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     if(!document) return;
     NodeImpl *body = document->body();
     if(!body) return;
+    
+    printf("drawContents x=%d,y=%d,w=%d,h=%d\n",clipx,clipy,clipw,cliph);
+    
+    // we sometimes get doubled requests
+    // last one seems always to be unneccery
+    static QRect lastrect;
+    QRect newrect = QRect(clipx,clipy,clipw,cliph);
+    if (lastrect==newrect)
+    	return;
+
+    lastrect = newrect;    
+        
 #if 1
     if (paintBuffer==0)
             paintBuffer=new QPixmap(width()+100,height()+100);
@@ -1001,7 +1008,7 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
         delete paintBuffer;
         paintBuffer = new QPixmap(width()+100,height()+100);            
     }
-    paintBuffer->fill(defaultSettings->bgColor);
+//    paintBuffer->fill(defaultSettings->bgColor);
         
     QPainter* tp = new QPainter;
     tp->begin( paintBuffer );
@@ -1009,7 +1016,10 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     
 
     // ### fix this for frames...
+    QTime qt;
+    qt.start();
     body->print(tp, clipx, clipy, clipw, cliph, 0, 0);
+    printf("TIME: print() dt=%d\n",qt.elapsed());
     
     tp->end();
     delete tp;
@@ -1043,7 +1053,8 @@ void KHTMLWidget::layout()
 
 	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
 
-	if(w < _width-5 || w > _width + 5)
+//	if(w < _width-5 || w > _width + 5)
+    	if (w!=_width)
 	{
 	    printf("layouting document\n");
 
@@ -1052,7 +1063,7 @@ void KHTMLWidget::layout()
 	    document->setAvailableWidth(_width);
 	    document->layout(true);
 	    resizeContents(document->getWidth(), document->getHeight());
-	    viewport()->repaint(true);
+	    viewport()->repaint(false);
 	}
     }
     else
