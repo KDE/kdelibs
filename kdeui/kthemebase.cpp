@@ -510,6 +510,7 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
         pixmap->resize(w, h);
         QBitmap mask;
         mask.resize(w, h);
+        mask.fill(color0);
         QPainter mPainter;
         mPainter.begin(&mask);
 

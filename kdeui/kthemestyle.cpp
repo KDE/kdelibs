@@ -124,7 +124,7 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken, bool
                                  rounded, WidgetType type, const QBrush *)
 {
-    int offset = decoWidth(type);
+    int offset = borderPixmap(type) ? 0 : decoWidth(type);
     QPen oldPen = p->pen();
 
     // handle reverse bevel here since it uses decowidth differently
@@ -137,10 +137,6 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
             p->drawRect(x, y, w, h);
     }
     else{
-        if(borderPixmap(type)) // have to do this first
-            bitBlt(p->device(), x, y, scaleBorder(w, h, type), 0, 0, w, h,
-                   Qt::CopyROP, false);
-
         if((w-offset*2) > 0 && (h-offset*2) > 0){
             if(isPixmap(type))
                 if(rounded)
@@ -154,8 +150,10 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                 p->fillRect(x+offset, y+offset, w-offset*2, h-offset*2,
                             g.brush(QColorGroup::Button));
         }
-
-        if(!borderPixmap(type)); // have to do this last ;-)
+        if(borderPixmap(type))
+            bitBlt(p->device(), x, y, scaleBorder(w, h, type), 0, 0, w, h,
+                   Qt::CopyROP, false);
+        else
             drawShade(p, x, y, w, h, g, sunken, rounded,
                       highlightWidth(type), borderWidth(type), shade());
     }
