@@ -790,6 +790,8 @@ int TCPSlaveBase::verifyCertificate()
       } while (result != KMessageBox::No);
    }
 
+   #if 0
+   // This will probably go to khtml_part
    //  - mixed SSL/nonSSL
         // I assert that if any two portions of a loaded document are of
         // opposite SSL status then either one of them must be different
@@ -801,7 +803,7 @@ int TCPSlaveBase::verifyCertificate()
         metaData("ssl_was_in_use") != "TRUE") {
       // FIXME: do something!
    }
-
+   #endif
    }   // if ssl_activate_warnings
 
 
