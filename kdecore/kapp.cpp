@@ -1257,7 +1257,8 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     KSimpleConfig pConfig( "kstylerc", true );
     QString oldGroup = pConfig.group();
     pConfig.setGroup("KDE");
-    QString styleStr = pConfig.readEntry("widgetStyle", "Default");
+    QString styleStr = pConfig.readEntry("widgetStyle",
+                                          QPixmap::defaultDepth() > 8 ? "hcstyle.la" : "Default");
 
     void *oldHandle = styleHandle;
 
