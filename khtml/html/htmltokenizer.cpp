@@ -1464,9 +1464,6 @@ void HTMLTokenizer::end()
 
 void HTMLTokenizer::finish()
 {
-    if ( buffer && tag ) {
-        qDebug( "in tag: %s", QString( buffer, dest-buffer ).latin1() );
-    }
     // do this as long as we don't find matching comment ends
     while((comment || server) && scriptCode && scriptCodeSize)
     {
