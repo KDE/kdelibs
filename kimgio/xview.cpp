@@ -1,6 +1,6 @@
 // Oliver Eiden <o.eiden@pop.ruhr.de>
 // 23.3.99
-// changed the mapping from 3-3-2 decoded pixels to 8-8-8 decoded true-colour pixels
+// changed the mapping from 3-3-2 decoded pixels to 8-8-8 decoded true-color pixels
 // now it uses the same mapping as xv, this leads to better visual results
 // Patch merged in HEAD by Chris Spiegel <matrix@xirtam.org>
 // This library is distributed under the conditions of the GNU LGPL.

@@ -31,7 +31,7 @@ public:
     /**
      * The back and forward items by default use the RTL settings for Hebrew
      * and Arab countries. If you want those actions to ignore the RTL value
-     * and force 'Western' behaviour instead, use the IgnoreRTL value instead.
+     * and force 'Western' behavior instead, use the IgnoreRTL value instead.
      */
     enum BidiMode { UseRTL = 0, IgnoreRTL };
     
@@ -65,7 +65,7 @@ public:
 
     /**
      * Return a GUI item for a 'back' action, like Konqueror's back button.
-     * This GUI item can optionally honour the user's setting for BiDi, so the
+     * This GUI item can optionally honor the user's setting for BiDi, so the
      * icon for right-to-left languages (Hebrew and Arab) has the arrow
      * pointing in the opposite direction.
      * By default the arrow points in the Western 'back' direction (i.e.
@@ -77,7 +77,7 @@ public:
     
     /**
      * Return a GUI item for a 'forward' action, like Konqueror's forward
-     * button. This GUI item can optionally honour the user's setting for BiDi,
+     * button. This GUI item can optionally honor the user's setting for BiDi,
      * so the icon for right-to-left languages (Hebrew and Arab) has the arrow
      * pointing in the opposite direction.
      * By default the arrow points in the Western 'forward' direction (i.e.

@@ -238,7 +238,7 @@ protected:
     
     /** Fill the read buffer with bytes from the SSL connection as far
         as possible. Whether this method blocks or not depends on the
-        behaviour set for your socket (@see setBlocking). If the socket
+        behavior set for your socket (@see setBlocking). If the socket
         is blocking, this blocks the calling thread/process.
         Remember that if this method returns BufferOverflow, this is
         most probably no error condition, but non-handled application

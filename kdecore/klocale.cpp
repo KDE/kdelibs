@@ -114,7 +114,7 @@ void KLocale::initCatalogue(const QString & catalogue)
 
   if (mainCatalogue.isEmpty()) {
     kdDebug(173) << "KLocale instance created called without valid "
-                 << "catalogue! Give an argument or call setMainCatalogue "
+                 << "catalog! Give an argument or call setMainCatalogue "
                  << "before init" << endl;
   }
   else
@@ -376,7 +376,7 @@ bool KLocale::isLanguageInstalled(const QString & language) const
       {
 	bRes = !catalogueFileName( language, *it ).isNull();
         if ( !bRes )
-	  kdDebug(173) << "message catalogue not found: "
+	  kdDebug(173) << "message catalog not found: "
 		       << (*it).name() << endl;
       }
 
@@ -625,7 +625,7 @@ QString KLocale::translate_priv(const char *msgid,
 {
   if (!msgid || !msgid[0])
     {
-      kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -662,7 +662,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
 {
   if (!index || !index[0] || !fallback || !fallback[0])
     {
-      kdDebug(173) << "KLocale: trying to look up \"\" in catalogue. "
+      kdDebug(173) << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -699,7 +699,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 {
   if (!singular || !singular[0] || !plural || !plural[0])
     {
-      kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -845,7 +845,7 @@ QString KLocale::translateQt( const char *context, const char *source,
 			      const char *message) const
 {
   if (!source || !source[0]) {
-    kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
+    kdWarning() << "KLocale: trying to look up \"\" in catalog. "
 		<< "Fix the program" << endl;
     return QString::null;
   }

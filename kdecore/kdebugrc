@@ -1,4 +1,4 @@
-# This files includes the default behaviour for some specific debug areas
+# This files includes the default behavior for some specific debug areas
 # This allows to leave the kdDebug* calls in the code, but still have them
 # disabled for most users.
 #

@@ -365,7 +365,7 @@ public:
    */
    QPopupMenu* windowMenu() const { return m_pWindowMenu; };
    /**
-   * Sets a background colour for the MDI view area widget.
+   * Sets a background color for the MDI view area widget.
    */
    virtual void setBackgroundColor( const QColor &c) { m_pMdi->setBackgroundColor( c); };
    /**

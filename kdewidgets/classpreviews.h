@@ -20,7 +20,7 @@
 /*
 
    This class is intended as a place to widgets previews for designer. Simply inherit
-   your widget and modify its behaviour (i.e. enter example data or do a reparent()).
+   your widget and modify its behavior (i.e. enter example data or do a reparent()).
 
    This will only affect the preview, designer/uic will still use the original widget
    in the final source output!

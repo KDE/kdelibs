@@ -59,7 +59,7 @@ public:
 
 
     /**
-     * Clear the colour list and don't show it, till the next setColor() call
+     * Clear the color list and don't show it, till the next setColor() call
      **/
      void showEmptyList();
 

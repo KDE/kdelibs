@@ -683,7 +683,7 @@ extern "C" int kdemain(int argc, char *argv[])
 
      KCmdLineArgs::addCmdLineOptions( options );
 
-     // this program is in kdelibs so it uses kdelibs as catalogue
+     // this program is in kdelibs so it uses kdelibs as catalog
      KLocale::setMainCatalogue("kdelibs");
 
      // WABA: Make sure not to enable session management.

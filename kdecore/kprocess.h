@@ -65,7 +65,7 @@ class KPty;
  * a KProcess on the stack with NotifyOnExit.
  *
  * @li  OwnGroup -- like NotifyOnExit, but the child process is started
- * in an own process group (and an own session, FWIW). The behaviour of
+ * in an own process group (and an own session, FWIW). The behavior of
  * kill() changes to killing the whole process group - this makes
  * this mode useful for implementing primitive job management. It can be
  * used to work around broken wrapper scripts that don't propagate signals

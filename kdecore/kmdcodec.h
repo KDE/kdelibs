@@ -370,7 +370,7 @@ class KMD5Private;
  * update() as long as you didn't request the digest value yet.
  * After the digest value was requested, the object is "finalized"
  * and you have to call reset() to be able to do another calculation
- * with it.  The reason for this behaviour is that upon requesting
+ * with it.  The reason for this behavior is that upon requesting
  * the message digest KMD5 has to pad the received contents up to a
  * 64 byte boundary to calculate its value. After this operation it
  * is not possible to resume consuming data.

@@ -264,7 +264,7 @@ class KMdiChildFrm : public QFrame
      */
      inline int captionHeight() const { return m_pCaption->height(); };
      /**
-     * sets new raise behaviour and pixmaps of the buttons depending on the current decoration style
+     * sets new raise behavior and pixmaps of the buttons depending on the current decoration style
      */
      void redecorateButtons();
 

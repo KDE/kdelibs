@@ -105,7 +105,7 @@ class KLocale
   friend class KGlobal; // for initInstance()
 public:
   /**
-   * Constructs a KLocale with the given catalogue name.
+   * Constructs a KLocale with the given catalog name.
    * The constructor looks for an entry Locale/Language in the
    * configuration file.
    * If no config file is specified, it will also look for languages
@@ -117,7 +117,7 @@ public:
    * If you specify a configuration file, it has to be valid until
    * the KLocale object is destroyed.
    *
-   * @param catalogue The name of the main language file
+   * @param catalog The name of the main language file
    * @param config The configuration file to use.
    */
   KLocale( const QString& catalogue, KConfig *config = 0 );
@@ -144,7 +144,7 @@ public:
    * There is a KDE wide message file that contains the most
    * often used phrases, so we can avoid duplicating the
    * translation of these phrases. If a phrase is not found
-   * in the catalogue given to the constructor, it will search
+   * in the catalog given to the constructor, it will search
    * in the system catalog. This makes it possible to override
    * some phrases for your needs.
    *
@@ -938,27 +938,27 @@ public:
   void setMeasureSystem(MeasureSystem value);
 
   /**
-   * Adds another catalogue to search for translation lookup.
+   * Adds another catalog to search for translation lookup.
    * This function is useful for extern libraries and/or code,
    * that provides its own messages.
    *
-   * If the catalogue does not exist for the chosen language,
+   * If the catalog does not exist for the chosen language,
    * it will be ignored and en_US will be used.
    *
-   * @param catalogue The catalogue to add.
+   * @param catalog The catalog to add.
    */
   void insertCatalogue(const QString& catalogue);
 
   /**
    * Removes a catalog for translation lookup.
-   * @param catalogue The catalogue to remove.
+   * @param catalog The catalog to remove.
    * @see insertCatalogue()
    */
   void removeCatalogue(const QString &catalogue);
 
   /**
    * Sets the active catalog for translation lookup.
-   * @param catalogue The catalogue to activate.
+   * @param catalog The catalog to activate.
    */
   void setActiveCatalogue(const QString &catalogue);
 
@@ -1017,13 +1017,13 @@ public:
 			  QString & charset);
 
   /**
-   * Use this to as main catalogue for *all* KLocales, if not the appname
+   * Use this to as main catalog for *all* KLocales, if not the appname
    * will be used. This function is best to be the very first instruction
    * in your program's main function as it only has an effect before the
    * first KLocale object is created (and this is in common KDE applications
    * quite early).
    *
-   * @param catalogue Catalogue to override all other main catalogues.
+   * @param catalog Catalogue to override all other main catalogues.
    */
   static void setMainCatalogue(const char *catalogue);
 
@@ -1125,7 +1125,7 @@ private:
   /**
    * @internal Figures out which catalogues to use.
    *
-   * @param catalogue The name of the main catalogue
+   * @param catalog The name of the main catalog
    */
   void initCatalogue(const QString & catalogue);
 
@@ -1146,7 +1146,7 @@ private:
   static QString decodeFileNameUTF8( const QCString & localFileName );
 
   /**
-   * @internal Changes the file name of the catalogue to the correct
+   * @internal Changes the file name of the catalog to the correct
    * one.
    */
   void initCatalogue( KCatalogue & catalogue );
@@ -1184,7 +1184,7 @@ private:
   bool isLanguageInstalled(const QString & language) const;
 
   /**
-   * @internal Retrieves the file name of the catalogue, or QString::null
+   * @internal Retrieves the file name of the catalog, or QString::null
    *           if not found.
    */
   static QString catalogueFileName(const QString & language,

@@ -22,7 +22,7 @@ int kde_malloc_is_used = 0;
 /*
   This is a version (aka dlmalloc) of malloc/free/realloc written by
   Doug Lea and released to the public domain.  Use, modify, and
-  redistribute this code without permission or acknowledgement in any
+  redistribute this code without permission or acknowledgment in any
   way you wish.  Send questions, comments, complaints, performance
   data, etc to dl@cs.oswego.edu
 

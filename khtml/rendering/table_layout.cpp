@@ -73,7 +73,7 @@ using namespace khtml;
 
 _____________________________________________________
 
-  This is not quite true when comparing to IE. IE always honours
+  This is not quite true when comparing to IE. IE always honors
   table-layout:fixed and treats a variable table width as 100%. Makes
   a lot of sense, and is implemented here the same way.
 
@@ -668,7 +668,7 @@ int AutoTableLayout::calcEffectiveWidth()
                     fixedWidth += layoutStruct[lastCol].width.value();
                     allColsArePercent = false;
                     // IE resets effWidth to Variable here, but this breaks the konqueror about page and seems to be some bad
-                    // legacy behaviour anyway. mozilla doesn't do this so I decided we don't neither.
+                    // legacy behavior anyway. mozilla doesn't do this so I decided we don't neither.
                     break;
                 }
                 // fall through

@@ -289,7 +289,7 @@ KStyle::KStyleFlags KStyle::styleFlags() const
 void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
 	const QPopupMenu* /* popup */ ) const
 {
-	pix.fill(cg.button());	// Just tint as the default behaviour
+	pix.fill(cg.button());	// Just tint as the default behavior
 }
 
 

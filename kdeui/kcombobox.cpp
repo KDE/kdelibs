@@ -622,7 +622,7 @@ void KHistoryCombo::setPixmapProvider( KPixmapProvider *prov )
     myPixProvider = prov;
 
     // re-insert all the items with/without pixmap
-    // I would prefer to use changeItem(), but that doesn't honour the pixmap
+    // I would prefer to use changeItem(), but that doesn't honor the pixmap
     // when using an editable combobox (what we do)
     if ( count() > 0 ) {
         QStringList items( historyItems() );

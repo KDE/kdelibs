@@ -285,7 +285,7 @@ int Backend::open(const QByteArray& password) {
 	}
 
 	for (size_t i = 0; i < n; ++i) {
-		KMD5::Digest d, d2; // judgement day
+		KMD5::Digest d, d2; // judgment day
 		MD5Digest ba;
 		QMap<MD5Digest,QValueList<MD5Digest> >::iterator it;
 		size_t fsz;

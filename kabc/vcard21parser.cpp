@@ -238,7 +238,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   //set the addressee's nick name
   tmpStr = mVCard->getValue(VCARD_NICKNAME);
   addressee.setNickName(tmpStr);
-  //set the addressee's organisation
+  //set the addressee's organization
   tmpStr = mVCard->getValue(VCARD_ORG);
   addressee.setOrganization(tmpStr);
   //set the addressee's title

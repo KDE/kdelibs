@@ -6,7 +6,7 @@
    - adding / removing a table cell should never invalidate the layout,
      unless the colinfo structure changes in a way it makes a relayout
      necessary. (this is only rarely needed if the colinfo is maybe
-     slightly changed). will fix the O(n^2) behaviour which currenty
+     slightly changed). will fix the O(n^2) behavior which currenty
      is the biggest slowdown for khtml
    - remove all the hacks that were added from various people
      to fix one or the other rare problem (mostly layout invalidation
@@ -15,7 +15,7 @@
    - fix the painting routines to not iterate over all cells  
      i.e. change the O(n) to O(log n) by binary-searching the right cell
      to print.
-   - rework the progressive update behaviour of table cells. do not
+   - rework the progressive update behavior of table cells. do not
      distribute extra width over cells as long as the table is not
      yet completely loaded (assume that most pages set good 
      colum width hints). wait for the first 2 rows of the table to be

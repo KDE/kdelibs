@@ -32,7 +32,7 @@
  * \b Detail:\n
  *
  * This class includes prompt handling etc. Also provides some
- * static functions which can be used to create custom behaviour
+ * static functions which can be used to create custom behavior
  * instead of using the class directly.
  *
  * \b Example:\n
@@ -77,7 +77,7 @@
  *          res = m_find->find();
  *
  *          if ( res == KFind::NoMatch ) {
- *              <Move to the next text fragment, honouring the FindBackwards setting for the direction>
+ *              <Move to the next text fragment, honoring the FindBackwards setting for the direction>
  *          }
  *      }
  *

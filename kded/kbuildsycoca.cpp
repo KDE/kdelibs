@@ -727,7 +727,7 @@ extern "C" int kdemain(int argc, char **argv)
    KCrash::setEmergencySaveFunction(crashHandler);
    KCrash::setApplicationName(QString(appName));
 
-   // this program is in kdelibs so it uses kdelibs as catalogue
+   // this program is in kdelibs so it uses kdelibs as catalog
    KLocale::setMainCatalogue("kdelibs");
    // force generating of KLocale object. if not, the database will get
    // be translated

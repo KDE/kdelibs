@@ -1895,17 +1895,17 @@ AddressBook::ErrorCode AddressBook::Entry::Address::get(const char* fieldname,
       return NoError;
     }
   if(fieldname==Fields[dummy++])
-    { // the organisation
+    { // the organization
       field=org;
       return NoError;
     }
   if(fieldname==Fields[dummy++])
-    { // the organisational unit
+    { // the organizational unit
       field=orgUnit;
       return NoError;
     }
   if(fieldname==Fields[dummy++])
-    { // the organisational subunit
+    { // the organizational subunit
       field=orgSubUnit;
       return NoError;
     }

@@ -59,7 +59,7 @@ KSimpleConfig::~KSimpleConfig()
 {
   // we need to call the KSimpleConfig version of sync.  Relying on the
   // regular KConfig sync is bad, because the KSimpleConfig sync has
-  // different behaviour.  Syncing here will insure that the sync() call
+  // different behavior.  Syncing here will insure that the sync() call
   // in the KConfig destructor doesn't actually do anything.
   sync();
 }

@@ -825,7 +825,7 @@ int TCPSlaveBase::verifyCertificate()
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
          } else {
-            // A policy was already set so let's honour that.
+            // A policy was already set so let's honor that.
             permacache = d->cc->isPermanent(pc);
          }
 

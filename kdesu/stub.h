@@ -92,7 +92,7 @@ protected:
     void notifyTaskbar(const QString &suffix);
 
     /** 
-     * This virtual function can be overloaded when special behaviour is
+     * This virtual function can be overloaded when special behavior is
      * desired. By default, it returns the value returned by KCookie.
      */
     virtual QCString display() { return m_pCookie->display(); }

@@ -121,7 +121,7 @@ bool KSSLSettings::tlsv1() const {
  
 // FIXME: we should make a default list available if this fails
 //        since OpenSSL seems to just choose any old thing if it's given an
-//        empty list.  This behaviour is not confirmed though.
+//        empty list.  This behavior is not confirmed though.
 QString KSSLSettings::getCipherList() {
 QString clist = "";
 #ifdef KSSL_HAVE_SSL
@@ -162,7 +162,7 @@ QString clist = "";
       // DO NOT TRUST THIS TO MAKE IT MORE SECURE.  It is here only
       // for peace of mind of the users.  Eventually it would be best
       // to set an internal preference order based on accepted strength
-      // analyses of the various algorithms INCLUDING the key length.
+      // analyzes of the various algorithms INCLUDING the key length.
 
       for(int i = 0;; i++) {
         SSL_CIPHER *sc = (meth->get_cipher)(i);

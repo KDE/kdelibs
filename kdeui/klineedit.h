@@ -206,7 +206,7 @@ public:
     * after calling this method.  Also by default, the context
     * menu is automatically created if this widget is editable. Thus
     * you need to call this function with the argument set to false
-    * if you do not want this behaviour.
+    * if you do not want this behavior.
     *
     * @param showMenu If @p true, show the context menu.
     */
@@ -220,7 +220,7 @@ public:
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
      * drops an URL, the decoded URL will be inserted. Otherwise the default
-     * behaviour of QLineEdit is used, which inserts the encoded URL.
+     * behavior of QLineEdit is used, which inserts the encoded URL.
      *
      * @param enable If @p true, insert decoded URLs
      */

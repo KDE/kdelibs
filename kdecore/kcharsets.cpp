@@ -563,7 +563,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
     // these codecs are built into Qt, but the name given for the codec is different,
-    // so QTextCodec did not recognise it.
+    // so QTextCodec did not recognize it.
     QCString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
 
     if(!cname.isEmpty())

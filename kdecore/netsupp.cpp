@@ -205,9 +205,9 @@ static int check_ipv6_stack()
  * I decided to add this wrapper function for getaddrinfo
  * and have this be called by KExtendedSocket instead of
  * the real getaddrinfo so that we can make sure that the
- * behaviour is the desired one.
+ * behavior is the desired one.
  *
- * Currently, the only "undesired" behaviour is getaddrinfo
+ * Currently, the only "undesired" behavior is getaddrinfo
  * not returning PF_UNIX sockets in some implementations.
  *
  * getaddrinfo and family are defined in POSIX 1003.1g

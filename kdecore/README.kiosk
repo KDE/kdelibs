@@ -1,4 +1,4 @@
-In KDE3 a kiosk-framework gets introduced. 
+In KDE3 a kiosk-framework gets introduced.
 
 One of the driving forces behind KDE is to put the user in control and
 give him or her a large amount of possibilities to adjust KDE to his or her 
@@ -338,7 +338,7 @@ print/dialog
         - disables the complete print dialog. Selecting the print option will
           immediate print the selected document using default settings.
           Make sure that a system wide default printer has been selected.
-          No application specific settings are honoured.
+          No application specific settings are honored.
 
 Other defined actions:
 

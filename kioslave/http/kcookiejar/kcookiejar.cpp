@@ -431,7 +431,7 @@ static const char * parseNameValue(const char *header,
         if ((*s=='\0') || (*s==';') || (*s=='\n'))
         {
             // No '=' sign -> use string as the value, name is empty
-            // (behaviour found in Mozilla and IE)
+            // (behavior found in Mozilla and IE)
             Name = "";
             Value = header;
             Value.truncate( s - header );

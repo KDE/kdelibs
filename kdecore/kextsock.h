@@ -389,7 +389,7 @@ public:
    * When an IPv6 socket is in use, communication with IPv4 sockets is
    * guaranteed by translating those IPv4 addresses into IPv6 ones
    * (specifically, the v4-mapped addresses). This flag allows that
-   * behaviour to be turned on and off.
+   * behavior to be turned on and off.
    *
    * Note that this does not have any effect on sockets that are not
    * IPv6 and the function will always return false in those cases.
@@ -616,7 +616,7 @@ public:
    * data as possible, but it will stop as soon as the kernel cannot receive
    * any more data, and would possibly block.
    *
-   * By repeatedly calling this function, the behaviour will be like that of
+   * By repeatedly calling this function, the behavior will be like that of
    * a blocking socket. Indeed, if this function is called with the kernel not
    * ready to receive data, it will block, unless this is a non-blocking socket.
    *

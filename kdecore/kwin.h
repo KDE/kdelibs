@@ -80,7 +80,7 @@ public:
      *
      * The usage of setActiveWindow() is meant only for pagers
      * and similar tools, which represent direct user actions.
-     * Except for rare cases, this request will be always honoured,
+     * Except for rare cases, this request will be always honored,
      * and normal applications are forbidden to use it.
      *
      * @param win the if of the window to make active

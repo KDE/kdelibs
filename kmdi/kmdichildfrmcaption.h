@@ -51,7 +51,7 @@ public:
    */
    ~KMdiChildFrmCaption();
    /**
-   * Repaint the caption bar in active background colours
+   * Repaint the caption bar in active background colors
    */
    void setActive(bool bActive);
    /**

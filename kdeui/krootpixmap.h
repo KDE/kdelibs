@@ -34,11 +34,11 @@ class KRootPixmapData;
  * pointer to your widget. That's it! Moving, resizing and background changes
  * are handled automatically.
  *
- * Instead of using the default behaviour, you can ask KRootPixmap
+ * Instead of using the default behavior, you can ask KRootPixmap
  * to emit a backgroundUpdated(const QPixmap &) signal whenever
  * the background needs updating by using setCustomPainting(bool).
  * Alternatively by reimplementing updateBackground(KSharedPixmap*)
- * you can take complete control of the behaviour.
+ * you can take complete control of the behavior.
  *
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$

@@ -27,8 +27,8 @@ struct kde_loaded_l10nfile;
 class KCataloguePrivate;
 
 /**
- * This class abstracts a gettext message catalogue. It will take care of
- * opening the file and reading the catalogue.
+ * This class abstracts a gettext message catalog. It will take care of
+ * opening the file and reading the catalog.
  *
  * @see KLocale
  */
@@ -39,7 +39,7 @@ public:
   /**
    * Constructor.
    *
-   * @param name The name of the catalogue
+   * @param name The name of the catalog
    */
   explicit KCatalogue(const QString & name = QString::null);
 
@@ -59,9 +59,9 @@ public:
   virtual ~KCatalogue();
 
   /**
-   * Returns the name of the catalogue.
+   * Returns the name of the catalog.
    *
-   * @return The name of the catalogue
+   * @return The name of the catalog
    */
   QString name() const;
 

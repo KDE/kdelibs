@@ -72,7 +72,7 @@ public:
      * The parent widget @p parent has a special meaning:
      * Besides owning the tray window, the parent widget will
      * dissappear from taskbars when it is iconified while the tray
-     * window is visible. This is the desired behaviour. After all,
+     * window is visible. This is the desired behavior. After all,
      * the tray window @p is the parent's taskbar icon.
      *
      * Furthermore, the parent widget is shown or raised respectively
@@ -112,7 +112,7 @@ public:
    protected:
 
     /**
-       Reimplemented to provide the standard show/raise behaviour
+       Reimplemented to provide the standard show/raise behavior
        for the parentWidget() and the context menu.
 
        Feel free to reimplement this if you need something special.
@@ -120,7 +120,7 @@ public:
     void mousePressEvent( QMouseEvent * );
 
     /**
-       Reimplemented to provide the standard show/raise behaviour
+       Reimplemented to provide the standard show/raise behavior
        for the parentWidget() and the context menu.
 
        Feel free to reimplement this if you need something special.

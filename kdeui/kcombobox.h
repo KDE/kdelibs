@@ -248,7 +248,7 @@ public:
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
      * drops an URL, the decoded URL will be inserted. Otherwise the default
-     * behaviour of QComboBox is used, which inserts the encoded URL.
+     * behavior of QComboBox is used, which inserts the encoded URL.
      *
      * @param enable If @p true, insert decoded URLs
      */

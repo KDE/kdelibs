@@ -94,7 +94,7 @@ public:
   void setWinSize(int lines, int columns);
 
   /**
-   * Set whether the pty should honour Xon/Xoff flow control.
+   * Set whether the pty should honor Xon/Xoff flow control.
    *
    * Xon/Xoff flow control is off by default.
    *

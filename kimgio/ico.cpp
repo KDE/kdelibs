@@ -115,7 +115,7 @@ namespace
                  std::abs( int( rhs.width - size ) ) ) return true;
             else if ( colors == 0 )
             {
-                // high/true colour requested
+                // high/true color requested
                 if ( lhs.colors == 0 ) return true;
                 else if ( rhs.colors == 0 ) return false;
                 else return lhs.colors > rhs.colors;

@@ -202,8 +202,8 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 {
     /*
      * For the font library, the address is a string formatted
-     * as "protocol/host:port[/catalogue]".  Note that the catologue
-     * is optional.  At this time, the catologue info is ignored, but
+     * as "protocol/host:port[/catalog]".  Note that the catalog
+     * is optional.  At this time, the catalog info is ignored, but
      * we have to parse it anyways.
      *
      * Other than fontlib, the address is a string formatted
@@ -313,14 +313,14 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 
 #if defined(FONT_t) || defined(FS_t)
     /*
-     * Is there an optional catalogue list?
+     * Is there an optional catalog list?
      */
 
     if ((mybuf = strchr (mybuf,'/')) != NULL)
 	*mybuf ++= '\0';
 
     /*
-     * The rest, if any, is the (currently unused) catalogue list.
+     * The rest, if any, is the (currently unused) catalog list.
      *
      * _catalogue = mybuf;
      */

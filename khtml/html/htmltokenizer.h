@@ -323,7 +323,7 @@ protected:
     bool onHold;
 
     // if we found one broken comment, there are most likely others as well
-    // store a flag to get rid of the O(n^2) behaviour in such a case.
+    // store a flag to get rid of the O(n^2) behavior in such a case.
     bool brokenComments;
     // current line number
     int lineno;

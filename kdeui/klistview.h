@@ -321,7 +321,7 @@ public:
    * This only has an effect if the items are KListViewItems
    *
    * @param c the color to use for every other item. Set to an invalid
-   *        colour to disable alternate colours.
+   *        color to disable alternate colours.
    *
    * @see alternateBackground()
    **/
@@ -965,7 +965,7 @@ private:
  * A listview item with support for alternate background colours. It is
  * a drop-in replacement for QListViewItem
  *
- * @short listview item with alternate background colour support
+ * @short listview item with alternate background color support
  */
 class KListViewItem : public QListViewItem
 {
@@ -1012,7 +1012,7 @@ public:
    */
   bool isAlternate();
   /**
-   * returns the background colour for this item
+   * returns the background color for this item
    */
   const QColor &backgroundColor();
 

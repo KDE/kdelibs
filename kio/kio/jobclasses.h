@@ -626,7 +626,7 @@ namespace KIO {
         /**
 	 * A stat() can have two meanings. Either we want to read from this URL,
          * or to check if we can write to it. First case is "source", second is "dest".
-         * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
+         * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
 	 * @param source true for "source" mode, false for "dest" mode
          */

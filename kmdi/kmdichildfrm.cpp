@@ -456,7 +456,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Maximized:
          m_pClient->m_stateChanged = TRUE;
          m_state=state;
-         // client min / max size / layout behaviour don't change
+         // client min / max size / layout behavior don't change
          // set frame max size indirectly by setting the clients max size to
          // it's current value (calls setMaxSize() of frame)
          m_pClient->setMaximumSize(m_pClient->maximumSize().width(), m_pClient->maximumSize().height());
@@ -466,7 +466,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Minimized:
          m_pClient->m_stateChanged = TRUE;
          m_state=state;
-         // restore client min / max size / layout behaviour
+         // restore client min / max size / layout behavior
          m_pClient->setMinimumSize(m_oldClientMinSize.width(),m_oldClientMinSize.height());
          m_pClient->setMaximumSize(m_oldClientMaxSize.width(),m_oldClientMaxSize.height());
          if (m_pClient->layout() != 0L) {
@@ -487,7 +487,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Minimized: {
             m_pClient->m_stateChanged = TRUE;
             m_state=state;
-            // restore client min / max size / layout behaviour
+            // restore client min / max size / layout behavior
             m_pClient->setMinimumSize(m_oldClientMinSize.width(),m_oldClientMinSize.height());
             m_pClient->setMaximumSize(m_oldClientMaxSize.width(),m_oldClientMaxSize.height());
             if (m_pClient->layout() != 0L) {
@@ -511,7 +511,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Normal: {
             m_pClient->m_stateChanged = TRUE;
             m_state=state;
-            // client min / max size / layout behaviour don't change
+            // client min / max size / layout behavior don't change
             setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
             m_pMaximize->setPixmap( *m_pRestoreButtonPixmap);
             int nFrameWidth = KMDI_CHILDFRM_DOUBLE_BORDER;
@@ -535,7 +535,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Maximized:
          m_pClient->m_stateChanged = TRUE;
          m_state=state;
-         // save client min / max size / layout behaviour
+         // save client min / max size / layout behavior
          m_oldClientMinSize = m_pClient->minimumSize();
          m_oldClientMaxSize = m_pClient->maximumSize();
          if (m_pClient->layout() != 0L) {
@@ -552,7 +552,7 @@ void KMdiChildFrm::setState(MdiWindowState state, bool /*bAnimate*/)
       case Normal:
          m_pClient->m_stateChanged = TRUE;
          m_state=state;
-         // save client min / max size / layout behaviour
+         // save client min / max size / layout behavior
          m_oldClientMinSize = m_pClient->minimumSize();
          m_oldClientMaxSize = m_pClient->maximumSize();
          if (m_pClient->layout() != 0L) {

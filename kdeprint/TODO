@@ -10,7 +10,7 @@ BUGS
 WISHES
 ------
 
-- Implement a generic banner behaviour: banners would be insrted
+- Implement a generic banner behavior: banners would be insrted
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 

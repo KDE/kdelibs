@@ -10,7 +10,7 @@ kconf_update is a tool designed to update config files. Over time applications
 sometimes need to rearrange the way configuration options are stored. Since 
 such an update shouldn't influence the configuration options that the user
 has selected, the application must take care that the options stored in the
-old way will still be honoured.
+old way will still be honored.
 
 What used to happen is that the application looks up both the old and the
 new configuration option and then decides which one to use. This method has 
@@ -92,7 +92,7 @@ $(kde_datadir) that contains a simple exec:
 This is equivalent to what KDE 3.2 can do directly, but of course the .upd
 file now points to the .sh script instead of the binary application.
 
-If Script was issued after a "Group" command the behaviour is slightly
+If Script was issued after a "Group" command the behavior is slightly
 different:
 All entries from <oldfile>/<oldgroup> are piped into <script>. The output
 of script is used as new entries for <newfile>/<newgroup>, unless a different

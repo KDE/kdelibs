@@ -81,7 +81,7 @@ feature may not work ).
 
  Ideally, every .desktop file should have X-KDE-StartupNotify set to the correct
 value, and for apps which need it also X-KDE-WMClass should be set. This
-sometimes gives slightly better behaviour than when these entries are not set.
+sometimes gives slightly better behavior than when these entries are not set.
 
 
 The KStartupInfo classes : 

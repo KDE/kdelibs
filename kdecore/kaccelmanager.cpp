@@ -614,7 +614,7 @@ void KAccelString::dump()
 
  The algorithm has some advantages:
 
-   * it favours 'nice' accelerators (first characters in a word, etc.)
+   * it favors 'nice' accelerators (first characters in a word, etc.)
    * it is quite fast, O(N²)
    * it is easy to understand :-)
 

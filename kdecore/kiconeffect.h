@@ -29,7 +29,7 @@ class KIconEffectPrivate;
  *
  * This class applies effects to icons depending on their state and
  * group. For example, it can be used to make all disabled icons
- * in a toolbar grey.
+ * in a toolbar gray.
  * @see KIcon
  */
 class KIconEffect

@@ -174,7 +174,7 @@ public:
    * Writes the (key/value) pair.
    * Same as above, but writes a color.
    * @param rKey The key to write.
-   * @param rColor The colour to write.
+   * @param rColor The color to write.
    * @return The old value for this key. If this key did not
    *  exist, a null string is returned.
    **/

@@ -454,7 +454,7 @@ Wed Mar 25 18:39:09 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
 
 	* kfileinfocontents.cpp: completion now working
         
-        * kcombiview.cpp: changed behaviour for completion, it
+        * kcombiview.cpp: changed behavior for completion, it
         now highlights completed directory and file                
         
 Tue Mar 24 16:08:46 1998  Daniel Grana <grana@ie.iwi.unibe.ch>

@@ -453,7 +453,7 @@ public:
   QPoint dragOffset;
 
   /**
-   * These flags store information about the splitter behaviour
+   * These flags store information about the splitter behavior
    */
   bool splitterOpaqueResize;
   bool splitterKeepSize;
@@ -913,18 +913,18 @@ KDockWidget *KDockWidget::findNearestDockWidget(DockPosition pos)
 	Orientation orientation=((pos==DockLeft) || (pos==DockRight)) ? Vertical:Horizontal;
 		if (((KDockSplitter*)(parent()))->orientation()==orientation)
 		{
-			KDockWidget *neighbour=
+			KDockWidget *neighbor=
 				((pos==DockLeft)||(pos==DockTop))?
 				static_cast<KDockWidget*>(((KDockSplitter*)(parent()))->getFirst()):
 				static_cast<KDockWidget*>(((KDockSplitter*)(parent()))->getLast());
 
-			if (neighbour==this)
+			if (neighbor==this)
 			return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
 			else
-			if (neighbour->getWidget() && (neighbour->getWidget()->qt_cast("KDockTabGroup")))
-				return (KDockWidget*)(((KDockTabGroup*)neighbour->getWidget())->page(0));
+			if (neighbor->getWidget() && (neighbor->getWidget()->qt_cast("KDockTabGroup")))
+				return (KDockWidget*)(((KDockTabGroup*)neighbor->getWidget())->page(0));
 			else
-			return neighbour;
+			return neighbor;
 		}
 		else
 		return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
@@ -1552,7 +1552,7 @@ void KDockWidget::dockBack()
     }
   }
 
-  // else dockback to the dockmainwindow (default behaviour)
+  // else dockback to the dockmainwindow (default behavior)
   manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
   formerBrotherDockWidget = 0L;
   if (parent())

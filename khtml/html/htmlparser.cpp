@@ -760,7 +760,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         if ( inBody && !haveFrameSet && !haveContent && !haveBody) {
             popBlock( ID_BODY );
             // ### actually for IE document.body returns the now hidden "body" element
-            // we can't implement that behaviour now because it could cause too many
+            // we can't implement that behavior now because it could cause too many
             // regressions and the headaches are not worth the work as long as there is
             // no site actually relying on that detail (Dirk)
             if (static_cast<HTMLDocumentImpl*>(document->document())->body())

@@ -155,7 +155,7 @@ private:
 };
 
 /**
- * Frame with popup menu behaviour.
+ * Frame with popup menu behavior.
  * @author Tim Gilman, Mirko Boehm
  * @version $Id$
  */

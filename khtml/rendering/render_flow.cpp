@@ -1205,7 +1205,7 @@ void RenderFlow::calcMinMaxWidth()
     }
 
     int cw = containingBlock()->contentWidth();
-    // "style()->width().isVariable()" in the contition below gives more mozilla like behaviour, the current
+    // "style()->width().isVariable()" in the condition below gives more mozilla like behavior, the current
     // condition is more IE like.
     bool tableCell = (isTableCell() && !style()->width().isFixed());
 

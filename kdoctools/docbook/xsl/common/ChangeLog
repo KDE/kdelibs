@@ -117,7 +117,7 @@
 
 	* gentext.xsl: Pass allow-anchors through properly
 
-	* labels.xsl: Fix question labelling
+	* labels.xsl: Fix question labeling
 
 	* titles.xsl: Output anchors for titles if the titles have ids
 

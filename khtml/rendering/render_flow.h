@@ -38,7 +38,7 @@ namespace khtml {
  * Inline elements don't layout themselves, but the whole paragraph
  * gets layouted by the surrounding block element. This is, because
  * one needs to know the whole paragraph to calculate bidirectional
- * behaviour of text, so putting the layouting routines in the inline
+ * behavior of text, so putting the layouting routines in the inline
  * elements is impossible.
  */
 class RenderFlow : public RenderBox

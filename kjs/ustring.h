@@ -257,7 +257,7 @@ namespace KJS {
      * implementation for a construction from QString.
      *
      * Note: feel free to contact me if you want to see a dummy header for
-     * your favourite FooString class here !
+     * your favorite FooString class here !
      */
     UString(const QString &);
     /**

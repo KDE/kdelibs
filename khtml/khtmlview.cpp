@@ -3851,8 +3851,8 @@ inline RenderTableCell *findNearestTableCell(KHTMLPart *part, int x,
  *
  * It will dive into nested tables as necessary to provide seamless navigation.
  *
- * If the cell at @p x is not editable, its left neighbour is tried, then its
- * right neighbour, then the left neighbour's left neighbour etc. If no
+ * If the cell at @p x is not editable, its left neighbor is tried, then its
+ * right neighbor, then the left neighbor's left neighbor etc. If no
  * editable cell can be found, 0 is returned.
  * @param part khtml part
  * @param x absolute x-coordinate

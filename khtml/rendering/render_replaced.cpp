@@ -295,7 +295,7 @@ void RenderWidget::updateFromElement()
                     // light bg, dark fg - need a lighter disabled fg - but only if !black
                     disfg = disfg.light(highlightVal);
                 else
-                    // black fg - use darkgrey disabled fg
+                    // black fg - use darkgray disabled fg
                     disfg = Qt::darkGray;
                 pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
             }

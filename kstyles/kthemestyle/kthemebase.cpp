@@ -1633,7 +1633,7 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
         // light bg, dark fg - need a lighter disabled fg - but only if !black
         disfg = disfg.light( highlightVal );
     else
-        // black fg - use darkgrey disabled fg
+        // black fg - use darkgray disabled fg
         disfg = Qt::darkGray;
 
 

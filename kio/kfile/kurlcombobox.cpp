@@ -340,7 +340,7 @@ QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 void KURLComboBox::updateItem( const KURLComboItem *item,
                                int index, const QPixmap& pixmap )
 {
-    // QComboBox::changeItem() doesn't honour the pixmap when
+    // QComboBox::changeItem() doesn't honor the pixmap when
     // using an editable combobox, so we just remove and insert
     if ( editable() ) {
 	removeItem( index );

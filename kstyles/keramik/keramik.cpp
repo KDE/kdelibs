@@ -2018,7 +2018,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 					drawPrimitive( PE_FocusRect, p2, re, cg,
 					Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
 				}
-				// QComboBox draws the text on its own and uses the painter's current colours
+				// QComboBox draws the text on its own and uses the painter's current colors
 				if ( cb->hasFocus() )
 				{
 					p->setPen( cg.highlightedText() );

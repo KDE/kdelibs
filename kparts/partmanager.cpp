@@ -445,7 +445,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 
 void PartManager::setActiveInstance( KInstance * instance )
 {
-  // It's a separate method to allow redefining this behaviour
+  // It's a separate method to allow redefining this behavior
   KGlobal::_activeInstance = instance;
 }
 

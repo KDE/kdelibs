@@ -185,7 +185,7 @@ huerotate(float mat[3][3],	/* I - Matrix to append to */
 
 
  /*
-  * Rotate the grey vector into positive Z...
+  * Rotate the gray vector into positive Z...
   */
 
   xrs = M_SQRT1_2;
@@ -221,7 +221,7 @@ huerotate(float mat[3][3],	/* I - Matrix to append to */
   zshear(hmat, -zsx, -zsy);
 
  /*
-  * Rotate the grey vector back into place...
+  * Rotate the gray vector back into place...
   */
 
   yrotate(hmat, -yrs, yrc);

@@ -278,12 +278,12 @@ namespace KJS {
     bool implementsHasInstance() const;
 
     /**
-     * Checks whether value delegates behaviour to this object. Used by the
+     * Checks whether value delegates behavior to this object. Used by the
      * instanceof operator.
      *
      * @param exec The current execution state
      * @param value The value to check
-     * @return true if value delegates behaviour to this object, otherwise
+     * @return true if value delegates behavior to this object, otherwise
      * false
      */
     Boolean hasInstance(ExecState *exec, const Value &value);

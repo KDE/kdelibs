@@ -199,7 +199,7 @@ KEdit::cleanWhiteSpace()
    {
       // If wordwrap is off, we have to do some line-wrapping ourselves now
       // We use another QMultiLineEdit for this, so that we get nice undo
-      // behaviour.
+      // behavior.
       QMultiLineEdit *we = new QMultiLineEdit();
       we->setWordWrap(FixedColumnWidth);
       we->setWrapColumnOrWidth(78);

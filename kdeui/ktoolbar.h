@@ -88,7 +88,7 @@ private:
   * insert... methods, or remove them with the removeItem() method. This
   * can be done at any time; the toolbar will be automatically updated.
   * There are also many methods to set per-child properties like alignment
-  * and toggle behaviour.
+  * and toggle behavior.
   *
   * KToolBar uses a global config group to load toolbar settings on
   * construction. It will reread this config group on a

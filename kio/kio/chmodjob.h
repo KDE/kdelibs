@@ -92,7 +92,7 @@ namespace KIO {
      *
      * Inside directories, the "x" bits will only be changed for files that had
      * at least one "x" bit before, and for directories.
-     * This emulates the behaviour of chmod +X.
+     * This emulates the behavior of chmod +X.
      *
      * @param lstItems The file items representing several files or directories.
      * @param permissions the permissions we want to set

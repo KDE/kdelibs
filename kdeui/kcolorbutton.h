@@ -24,13 +24,13 @@
 
 class KColorButtonPrivate;
 /**
-* This widget can be used to display or allow user selection of a colour.
+* This widget can be used to display or allow user selection of a color.
 *
 * @see KColorDialog
 *
 * \image html kcolorbutton.png "KDE Color Button"
 *
-* @short A pushbutton to display or allow user selection of a colour.
+* @short A pushbutton to display or allow user selection of a color.
 * @version $Id$
 */
 class KColorButton : public QPushButton

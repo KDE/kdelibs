@@ -698,7 +698,7 @@ public:
     /**
      *  checkModifier
      *
-     * Note: the below description does not match the actual behaviour.
+     * Note: the below description does not match the actual behavior.
      *       it's extended in a way that you can query multiple modifiers
      *       at once by logically OR`ing them.
      *       also, we use the Qt modifier enum instead of the DOM one.

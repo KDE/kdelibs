@@ -369,7 +369,7 @@ namespace KJS {
     /**
      * Call this to enable a compatibility mode with another browser.
      * (by default konqueror is in "native mode").
-     * Currently, in KJS, this only changes the behaviour of Date::getYear()
+     * Currently, in KJS, this only changes the behavior of Date::getYear()
      * which returns the full year under IE.
      */
     void setCompatMode(CompatMode mode);

@@ -179,7 +179,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
    	color = ( led_state ) ? led_color : d->offcolor;
 
 	// Set the brush to SolidPattern, this fills the entire area
-	// of the ellipse which is drawn with a thin grey "border" (pen)
+	// of the ellipse which is drawn with a thin gray "border" (pen)
 	brush.setStyle( QBrush::SolidPattern );
 	brush.setColor( color );
 
@@ -265,7 +265,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
 	pos++; light_width--;
     }
 
-    // Drawing of bright spot finished, now draw a thin grey border
+    // Drawing of bright spot finished, now draw a thin gray border
     // around the LED; it looks nicer that way. We do this here to
     // avoid that the border can be erased by the bright spot of the LED
 

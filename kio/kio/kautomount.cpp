@@ -96,7 +96,7 @@ void KAutoUnmount::slotResult( KIO::Job * job )
 
     // Notify about the new stuff in that dir, in case of opened windows showing it
     // You may think we removed files, but this may have also readded some
-    // (if the mountpoint wasn't empty). The only possible behaviour on FilesAdded
+    // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
     // is to relist the directory anyway.
     allDirNotify.FilesAdded( m_mountpoint );
 

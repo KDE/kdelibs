@@ -379,8 +379,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_dcopobject = new KHTMLPartIface(this);
 
-  // "khtml" catalogue does not exist, our translations are in kdelibs.
-  // removing this catalogue from KGlobal::locale() prevents problems
+  // "khtml" catalog does not exist, our translations are in kdelibs.
+  // removing this catalog from KGlobal::locale() prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
   KGlobal::locale()->removeCatalogue("khtml");
 }

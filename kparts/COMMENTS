@@ -222,7 +222,7 @@ another kind of container ?
          started saving. I would like to introduce
          a) three new signals for KReadWritePart
          b) A parameter to the signals telling wether this is a read or write operation.
-         Basically I am in favour for a small API -> b)
+         Basically I am in favor for a small API -> b)
          And b) is source compatible to the current solution!
 (David)  ok
 
@@ -275,7 +275,7 @@ changes.
 <dfaure> like read, write, open ?
 <weis> dfaure: unix io: open/read/write/opendir ...
 <dfaure> that would be great IMHO
-<dfaure> I think he didn't realise that - the fact that moving the code to a central place involves switching to a lowlevel unix-like aPI for the slaves
+<dfaure> I think he didn't realize that - the fact that moving the code to a central place involves switching to a lowlevel unix-like aPI for the slaves
 <weis> dfaure: If I have  a nested URL: Are we going to start two processes to get the URL from the net or one (with Coolos approach)
 <weis> dfaure: Currently it is two processes. One for file and one for tar, for example.
 <dfaure> weis: we're not sure. would one be ok ? (like opening the two libs and connecting signals and slots..)

@@ -119,7 +119,7 @@ public:
 	 * is being converted to 8-bits. This is the default when
 	 * converting to a pixmap.
 	 * @li AvoidDither - Only dither 32-bit images if the image has
-	 * more than 256 colours and it is being converted to 8-bits.
+	 * more than 256 colors and it is being converted to 8-bits.
 	 * This is the default when an image is converted for the
 	 * purpose of saving to a file.
 	 *

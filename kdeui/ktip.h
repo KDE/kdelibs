@@ -159,7 +159,7 @@ public:
     static void showTip(const QString &tipFile = QString::null, bool force = false);
 
     /**
-     * Toggles the start behaviour.
+     * Toggles the start behavior.
      *
      * Normally, the user can disable the display of the tip in the dialog.
      * This is just a way to change this setting from outside.

@@ -457,7 +457,7 @@ strrchr(str, ch)
 
 /* NOTE:  Neither bcopy nor the memcpy implementation below can
           reliably handle copying in overlapping areas of memory, so
-          do not rely on this behaviour when invoking memcpy later.  */
+          do not rely on this behavior when invoking memcpy later.  */
 #if ! HAVE_MEMCPY
 
 #  if HAVE_BCOPY

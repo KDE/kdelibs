@@ -193,7 +193,7 @@ class KStyle: public QCommonStyle
 		 * handle.
 		 *
 		 * @li KPE_ToolBarHandle - This primitive must be reimplemented. It currently
-		 * only paints a filled rectangle as default behaviour. This primitive is used
+		 * only paints a filled rectangle as default behavior. This primitive is used
 		 * to render QToolBar handles.
 		 *
 		 * @li KPE_GeneralHandle - This primitive must be reimplemented. It is used

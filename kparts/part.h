@@ -491,7 +491,7 @@ protected:
   /**
    * Reimplemented from Part, so that the window caption is set to
    * the current url (decoded) when the part is activated
-   * This is the usual behaviour in 99% of the apps
+   * This is the usual behavior in 99% of the apps
    * Reimplement if you don't like it - test for event->activated() !
    *
    * Technical note : this is done with GUIActivateEvent and not with
@@ -557,7 +557,7 @@ public:
   bool isReadWrite() const { return m_bReadWrite; }
 
   /**
-   * Changes the behaviour of this part to readonly or readwrite.
+   * Changes the behavior of this part to readonly or readwrite.
    * @param readwrite set to true to enable readwrite mode
    */
   virtual void setReadWrite ( bool readwrite = true );

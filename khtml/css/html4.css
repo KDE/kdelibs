@@ -117,7 +117,7 @@ APPLET {
       
 CENTER { 
 	display: block;
-	/* special centering to be able to emulate the html4/netscape behaviour */
+	/* special centering to be able to emulate the html4/netscape behavior */
 	text-align: \2d konq-center;
 }  
       

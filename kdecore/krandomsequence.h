@@ -121,7 +121,7 @@ public:
    *
    * With this scenario "undo" can no longer be used to repeat a 
    * certain move over and over again until the computer reacts 
-   * with a favourable response or to predict the response for a 
+   * with a favorable response or to predict the response for a 
    * certain move based on the response to another move.
    * @param i the sequence identified
    */

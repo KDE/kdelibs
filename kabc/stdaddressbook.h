@@ -66,7 +66,7 @@ class StdAddressBook : public AddressBook
 
     /**
       This is the same as above, but with specified
-      behaviour of resource loading.
+      behavior of resource loading.
 
       @param asynchronous When true, the resources are loaded asynchronous, that
                           means you have the data foremost the addressBookChanged()

@@ -1678,7 +1678,7 @@ void KApplication::applyGUIStyle()
 
     if (d->overrideStyle.isEmpty()) {
       // ### add check wether we already use the correct style to return then
-      // (workaround for Qt misbehaviour to avoid double style initialization)
+      // (workaround for Qt misbehavior to avoid double style initialization)
 
       QStyle* sp = QStyleFactory::create( styleStr );
 
@@ -1780,7 +1780,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
 	// light bg, dark fg - need a lighter disabled fg - but only if !black
 	disfg = disfg.light(highlightVal);
     else
-	// black fg - use darkgrey disabled fg
+	// black fg - use darkgray disabled fg
 	disfg = Qt::darkGray;
 
 
@@ -1818,7 +1818,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
 	// light buttonText, dark button - need a lighter disabled buttonText - but only if !black
 	disbtntext = disbtntext.light(highlightVal);
     else
-	// black button - use darkgrey disabled buttonText
+	// black button - use darkgray disabled buttonText
 	disbtntext = Qt::darkGray;
 
     disabledgrp.setColor(QColorGroup::ButtonText, disbtntext);

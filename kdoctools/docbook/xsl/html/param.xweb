@@ -120,7 +120,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &use.extensions;
 </reference>
 
-<reference><title>Automatic labelling</title>
+<reference><title>Automatic labeling</title>
 &chapter.autolabel;
 &appendix.autolabel;
 &part.autolabel;

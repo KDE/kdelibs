@@ -960,7 +960,7 @@ const KSocketAddress *KExtendedSocket::localAddress()
 /*
  * Same thing, but for peer address. Which means this does not work on
  * passiveSocket and that we require to be connected already. Also note that
- * the behaviour on connectionless sockets is not defined here.
+ * the behavior on connectionless sockets is not defined here.
  */
 const KSocketAddress* KExtendedSocket::peerAddress()
 {

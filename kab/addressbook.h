@@ -297,9 +297,9 @@ public:
    *  The keys defined in an address subsection are: <DL>
    *  <DD> "headline" A headline shown for the address. </DD>
    *  <DD> "position" The position of the person. </DD>
-   *  <DD> "org" The organisation. </DD>
-   *  <DD> "orgunit" The organisational unit. </DD>
-   *  <DD> "orgsubunit" The organisational subunit. </DD>
+   *  <DD> "org" The organization. </DD>
+   *  <DD> "orgunit" The organizational unit. </DD>
+   *  <DD> "orgsubunit" The organizational subunit. </DD>
    *  <DD> "role" The role of the person. </DD>
    *  <DD> "deliverylabel" A label for delivering to this address. </DD>
    *  <DD> "address" The street, house no., flat etc line. </DD>
@@ -354,7 +354,7 @@ public:
       QString headline; 
       /** The position of the person at this address. */
       QString position; 
-      /** The organisation of the person at this address. */
+      /** The organization of the person at this address. */
       QString org; 
       /** The org unit of the person at this address. */
       QString orgUnit;  

@@ -156,7 +156,7 @@ void KColorCombo::resizeEvent( QResizeEvent *re )
 }
 
 /**
-   Show an empty list, till the next colour is set with setColor
+   Show an empty list, till the next color is set with setColor
  */
 void KColorCombo::showEmptyList()
 {
