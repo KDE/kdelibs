@@ -445,6 +445,19 @@ class KJanusWidget : public QWidget
     /*virtual*/ void unfoldTreeList( bool persist = false ); //### KDE4 BIC add virtual
 
     /**
+     * Add a button at the bottom of the TreeList/IconList.
+     *
+     * @param text     The text on the PushButton.
+     * @param recv     The object that is to receive the signal when the button
+     *                 is clicked.
+     * @param slot     The slot to connect to the clicked signal of the button.
+     *
+     * @since 3.2
+     */
+    /*virtual*/ void addButtonBelowList( const QString & text, QObject * recv,
+		    const char * slot ); //### KDE4
+
+    /**
      * This function has only effect in IconList mode.
      *
      * Defines how the icon list widget is displayed. By default it is

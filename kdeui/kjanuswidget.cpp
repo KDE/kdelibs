@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include "kjanuswidget.h"
 #include <klistview.h>
+#include <qpushbutton.h>
 
 class KJanusWidget::IconListItem : public QListBoxItem
 {
@@ -64,7 +65,7 @@ class KJanusWidget::IconListItem : public QListBoxItem
 class KJanusWidget::KJanusWidgetPrivate
 {
 public:
-  KJanusWidgetPrivate() : mNextPageIndex(0) { }
+  KJanusWidgetPrivate() : mNextPageIndex(0), mListFrame( 0 ) { }
 
   int mNextPageIndex; // The next page index.
 
@@ -74,6 +75,8 @@ public:
   QMap<QWidget*,int> mPageToInt;
   // Dictionary of title string associated with page.
   QMap<int, QString> mIntToTitle;
+
+  QWidget * mListFrame;
 };
 
 template class QPtrList<QListViewItem>;
@@ -98,7 +101,9 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       topLayout->addWidget( splitter, 10 );
       mTreeListResizeMode = QSplitter::KeepSize;
 
-      mTreeList = new KListView( splitter );
+      d->mListFrame = new QWidget( splitter );
+      ( new QVBoxLayout( d->mListFrame, 0, 0 ) )->setAutoAdd( true );
+      mTreeList = new KListView( d->mListFrame );
       mTreeList->addColumn( QString::null );
       mTreeList->header()->hide();
       mTreeList->setRootIsDecorated(true);
@@ -121,14 +126,17 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     else
     {
       QHBoxLayout *hbox = new QHBoxLayout( topLayout );
-      mIconList = new IconListBox( this );
+      d->mListFrame = new QWidget( this );
+      hbox->addWidget( d->mListFrame );
+
+      ( new QVBoxLayout( d->mListFrame, 0, 0 ) )->setAutoAdd( true );
+      mIconList = new IconListBox( d->mListFrame );
 
       QFont listFont( mIconList->font() );
       listFont.setBold( true );
       mIconList->setFont( listFont );
 
       mIconList->verticalScrollBar()->installEventFilter( this );
-      hbox->addWidget( mIconList );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
       hbox->addSpacing( KDialog::marginHint() );
       page = new QFrame( this );
@@ -840,6 +848,15 @@ void KJanusWidget::unfoldTreeList( bool persist )
 
     for( QListViewItem * item = mTreeList->firstChild(); item; item = item->itemBelow() )
       item->setOpen( true );
+  }
+}
+
+void KJanusWidget::addButtonBelowList( const QString & text, QObject * recv, const char * slot )
+{
+  if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
+  {
+    QPushButton * button = new QPushButton( text, d->mListFrame );
+    connect( button, SIGNAL( clicked() ), recv, slot );
   }
 }
 
