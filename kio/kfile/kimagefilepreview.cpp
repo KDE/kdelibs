@@ -40,7 +40,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     autoMode = config->readBoolEntry( "Automatic Preview", true );
 
     QGridLayout *vb = new QGridLayout( this, 2, 2, 0, KDialog::spacingHint() );
-    vb->setColSpacing( 0, KDialog::marginHint() );
+    vb->addItem( new QSpacerItem(KDialog::marginHint(), 0, QSizePolicy::Fixed), 0, 0 );
 
     imageLabel = new QLabel( this );
     imageLabel->setFrameStyle( QFrame::Panel | QFrame::Sunken );
