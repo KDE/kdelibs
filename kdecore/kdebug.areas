@@ -173,11 +173,11 @@
 
 # toys and games
 10000        amor
+10500        KBackgammon
 11000        libkdegames
 11001        libkdegames (KGame)
 12000        KPoker
 12001        KPoker (Server)
-13000        KBackgammon
 
 #Kate/Kant/KWrite 
 13000   Kate
