@@ -757,4 +757,27 @@ void KWizard::closeEvent(QCloseEvent *e)
   emit closed();
 }
 
+QSize KWizard::sizeHint()
+{
+  QSize s = minimumSize();
+  int h = 0;
+  if(pwiz->title)
+    h += pwiz->title->height();
+  if(pwiz->previous)
+    h += pwiz->previous->height();
+  if(pwiz->ok)
+    h += pwiz->ok->height();
+  else if(pwiz->cancel)
+    h += pwiz->cancel->height();
+  else if(pwiz->def)
+    h += pwiz->def->height();
+  else if(pwiz->help)
+    h += pwiz->help->height();
+
+  h += 20;
+
+  s.setHeight(s.height() + h);
+  return s;
+}
+
 

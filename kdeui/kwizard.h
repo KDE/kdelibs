@@ -298,7 +298,7 @@ public:
 * @return Returns 'true' if the arrow buttons are enabled.
 */
         bool enableArrowButtons();
-        QSize sizeHint() { return minimumSize(); };
+        QSize sizeHint();
         void adjustSize() { resize(sizeHint()); };
 /**
 * getTitle
