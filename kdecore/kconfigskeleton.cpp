@@ -34,15 +34,15 @@
 
 void KConfigSkeletonItem::readImmutability( KConfig *config )
 {
-  mIsImmutable = config->entryIsImmutable( mName );
+  mIsImmutable = config->entryIsImmutable( mKey );
 }
 
 
-KConfigSkeleton::ItemString::ItemString( const QString &group, const QString &name,
+KConfigSkeleton::ItemString::ItemString( const QString &group, const QString &key,
                                     QString &reference,
                                     const QString &defaultValue,
                                     Type type )
-  : KConfigSkeletonGenericItem<QString>( group, name, reference, defaultValue ),
+  : KConfigSkeletonGenericItem<QString>( group, key, reference, defaultValue ),
     mType( type )
 {
 }
@@ -52,14 +52,14 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
     config->setGroup( mGroup );
-    if ((mDefault == mReference) && !config->hasDefault( mName))
-      config->revertToDefault( mName );
+    if ((mDefault == mReference) && !config->hasDefault( mKey))
+      config->revertToDefault( mKey );
     else if ( mType == Path )
-      config->writePathEntry( mName, mReference );
+      config->writePathEntry( mKey, mReference );
     else if ( mType == Password )
-      config->writeEntry( mName, KStringHandler::obscure( mReference ) );
+      config->writeEntry( mKey, KStringHandler::obscure( mReference ) );
     else
-      config->writeEntry( mName, mReference );
+      config->writeEntry( mKey, mReference );
   }
 }
 
@@ -70,17 +70,17 @@ void KConfigSkeleton::ItemString::readConfig( KConfig *config )
 
   if ( mType == Path )
   {
-    mReference = config->readPathEntry( mName, mDefault );
+    mReference = config->readPathEntry( mKey, mDefault );
   }
   else if ( mType == Password ) 
   {
-    QString value = config->readEntry( mName,
+    QString value = config->readEntry( mKey,
                                        KStringHandler::obscure( mDefault ) );
     mReference = KStringHandler::obscure( value );
   }
   else
   {
-    mReference = config->readEntry( mName, mDefault );
+    mReference = config->readEntry( mKey, mDefault );
   }
 
   mLoadedValue = mReference;
@@ -98,32 +98,32 @@ QVariant KConfigSkeleton::ItemString::property() const
   return QVariant(mReference);
 }
 
-KConfigSkeleton::ItemPassword::ItemPassword( const QString &group, const QString &name,
+KConfigSkeleton::ItemPassword::ItemPassword( const QString &group, const QString &key,
                                     QString &reference,
                                     const QString &defaultValue)
-  : ItemString( group, name, reference, defaultValue, Password )
+  : ItemString( group, key, reference, defaultValue, Password )
 {
 }
 
-KConfigSkeleton::ItemPath::ItemPath( const QString &group, const QString &name,
+KConfigSkeleton::ItemPath::ItemPath( const QString &group, const QString &key,
                                     QString &reference,
                                     const QString &defaultValue)
-  : ItemString( group, name, reference, defaultValue, Path )
+  : ItemString( group, key, reference, defaultValue, Path )
 {
 }
 
 KConfigSkeleton::ItemProperty::ItemProperty( const QString &group,
-                                        const QString &name,
+                                        const QString &key,
                                         QVariant &reference,
                                         QVariant defaultValue )
-  : KConfigSkeletonGenericItem<QVariant>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QVariant>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemProperty::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readPropertyEntry( mName, mDefault );
+  mReference = config->readPropertyEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -139,16 +139,16 @@ QVariant KConfigSkeleton::ItemProperty::property() const
   return mReference;
 }
 
-KConfigSkeleton::ItemBool::ItemBool( const QString &group, const QString &name,
+KConfigSkeleton::ItemBool::ItemBool( const QString &group, const QString &key,
                                 bool &reference, bool defaultValue )
-  : KConfigSkeletonGenericItem<bool>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<bool>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemBool::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readBoolEntry( mName, mDefault );
+  mReference = config->readBoolEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -165,9 +165,9 @@ QVariant KConfigSkeleton::ItemBool::property() const
 }
 
 
-KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &name,
+KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &key,
                               int &reference, int defaultValue )
-  : KConfigSkeletonGenericItem<int>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<int>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -175,7 +175,7 @@ KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &name,
 void KConfigSkeleton::ItemInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readNumEntry( mName, mDefault );
+  mReference = config->readNumEntry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -222,9 +222,9 @@ void KConfigSkeleton::ItemInt::setMaxValue(int v)
 }
 
 
-KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &name,
+KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &key,
                               Q_INT64 &reference, Q_INT64 defaultValue )
-  : KConfigSkeletonGenericItem<Q_INT64>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<Q_INT64>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -232,7 +232,7 @@ KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &name
 void KConfigSkeleton::ItemInt64::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readNum64Entry( mName, mDefault );
+  mReference = config->readNum64Entry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -278,18 +278,18 @@ void KConfigSkeleton::ItemInt64::setMaxValue(Q_INT64 v)
   mMax = v;
 }
 
-KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &name,
+KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &key,
                                      int &reference,
                                      const QValueList<Choice> &choices,
                                      int defaultValue )
-  : ItemInt( group, name, reference, defaultValue ), mChoices( choices )
+  : ItemInt( group, key, reference, defaultValue ), mChoices( choices )
 {
 }
 
 void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  if (!config->hasKey(mName))
+  if (!config->hasKey(mKey))
   {
     mReference = mDefault;
   }
@@ -297,7 +297,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
   {
     int i = 0;
     mReference = -1;
-    QString tmp = config->readEntry( mName ).lower();
+    QString tmp = config->readEntry( mKey ).lower();
     for(QValueList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
@@ -308,7 +308,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
       }
     }
     if (mReference == -1)
-       mReference = config->readNumEntry( mName, mDefault );
+       mReference = config->readNumEntry( mKey, mDefault );
   }
   mLoadedValue = mReference;
 
@@ -320,12 +320,12 @@ void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
     config->setGroup( mGroup );
-    if ((mDefault == mReference) && !config->hasDefault( mName))
-      config->revertToDefault( mName );
+    if ((mDefault == mReference) && !config->hasDefault( mKey))
+      config->revertToDefault( mKey );
     else if ((mReference >= 0) && (mReference < (int) mChoices.count()))
-      config->writeEntry( mName, mChoices[mReference].name );
+      config->writeEntry( mKey, mChoices[mReference].name );
     else
-      config->writeEntry( mName, mReference );
+      config->writeEntry( mKey, mReference );
   }
 }
 
@@ -335,10 +335,10 @@ QValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices
 }
 
 
-KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &name,
+KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &key,
                                 unsigned int &reference,
                                 unsigned int defaultValue )
-  : KConfigSkeletonGenericItem<unsigned int>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned int>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -346,7 +346,7 @@ KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &name,
 void KConfigSkeleton::ItemUInt::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readUnsignedNumEntry( mName, mDefault );
+  mReference = config->readUnsignedNumEntry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -393,9 +393,9 @@ void KConfigSkeleton::ItemUInt::setMaxValue(unsigned int v)
 }
 
 
-KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &name,
+KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &key,
                               Q_UINT64 &reference, Q_UINT64 defaultValue )
-  : KConfigSkeletonGenericItem<Q_UINT64>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<Q_UINT64>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -403,7 +403,7 @@ KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &na
 void KConfigSkeleton::ItemUInt64::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readUnsignedNum64Entry( mName, mDefault );
+  mReference = config->readUnsignedNum64Entry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -449,9 +449,9 @@ void KConfigSkeleton::ItemUInt64::setMaxValue(Q_UINT64 v)
   mMax = v;
 }
 
-KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &name,
+KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &key,
                                 long &reference, long defaultValue )
-  : KConfigSkeletonGenericItem<long>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<long>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -459,7 +459,7 @@ KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &name,
 void KConfigSkeleton::ItemLong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readLongNumEntry( mName, mDefault );
+  mReference = config->readLongNumEntry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -506,10 +506,10 @@ void KConfigSkeleton::ItemLong::setMaxValue(long v)
 }
 
 
-KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &name,
+KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &key,
                                   unsigned long &reference,
                                   unsigned long defaultValue )
-  : KConfigSkeletonGenericItem<unsigned long>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned long>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -517,7 +517,7 @@ KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &name
 void KConfigSkeleton::ItemULong::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readUnsignedLongNumEntry( mName, mDefault );
+  mReference = config->readUnsignedLongNumEntry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -564,9 +564,9 @@ void KConfigSkeleton::ItemULong::setMaxValue(unsigned long v)
 }
 
 
-KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &name,
+KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &key,
                                     double &reference, double defaultValue )
-  : KConfigSkeletonGenericItem<double>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<double>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -574,7 +574,7 @@ KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &na
 void KConfigSkeleton::ItemDouble::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readDoubleNumEntry( mName, mDefault );
+  mReference = config->readDoubleNumEntry( mKey, mDefault );
   if (mHasMin)
     mReference = QMAX(mReference, mMin);
   if (mHasMax)
@@ -621,17 +621,17 @@ void KConfigSkeleton::ItemDouble::setMaxValue(double v)
 }
 
 
-KConfigSkeleton::ItemColor::ItemColor( const QString &group, const QString &name,
+KConfigSkeleton::ItemColor::ItemColor( const QString &group, const QString &key,
                                   QColor &reference,
                                   const QColor &defaultValue )
-  : KConfigSkeletonGenericItem<QColor>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QColor>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemColor::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readColorEntry( mName, &mDefault );
+  mReference = config->readColorEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -648,17 +648,17 @@ QVariant KConfigSkeleton::ItemColor::property() const
 }
 
 
-KConfigSkeleton::ItemFont::ItemFont( const QString &group, const QString &name,
+KConfigSkeleton::ItemFont::ItemFont( const QString &group, const QString &key,
                                 QFont &reference,
                                 const QFont &defaultValue )
-  : KConfigSkeletonGenericItem<QFont>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QFont>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemFont::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readFontEntry( mName, &mDefault );
+  mReference = config->readFontEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -675,17 +675,17 @@ QVariant KConfigSkeleton::ItemFont::property() const
 }
 
 
-KConfigSkeleton::ItemRect::ItemRect( const QString &group, const QString &name,
+KConfigSkeleton::ItemRect::ItemRect( const QString &group, const QString &key,
                                 QRect &reference,
                                 const QRect &defaultValue )
-  : KConfigSkeletonGenericItem<QRect>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QRect>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemRect::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readRectEntry( mName, &mDefault );
+  mReference = config->readRectEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -702,17 +702,17 @@ QVariant KConfigSkeleton::ItemRect::property() const
 }
 
 
-KConfigSkeleton::ItemPoint::ItemPoint( const QString &group, const QString &name,
+KConfigSkeleton::ItemPoint::ItemPoint( const QString &group, const QString &key,
                                   QPoint &reference,
                                   const QPoint &defaultValue )
-  : KConfigSkeletonGenericItem<QPoint>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QPoint>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemPoint::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readPointEntry( mName, &mDefault );
+  mReference = config->readPointEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -729,17 +729,17 @@ QVariant KConfigSkeleton::ItemPoint::property() const
 }
 
 
-KConfigSkeleton::ItemSize::ItemSize( const QString &group, const QString &name,
+KConfigSkeleton::ItemSize::ItemSize( const QString &group, const QString &key,
                                 QSize &reference,
                                 const QSize &defaultValue )
-  : KConfigSkeletonGenericItem<QSize>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QSize>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemSize::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readSizeEntry( mName, &mDefault );
+  mReference = config->readSizeEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -756,17 +756,17 @@ QVariant KConfigSkeleton::ItemSize::property() const
 }
 
 
-KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &group, const QString &name,
+KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &group, const QString &key,
                                         QDateTime &reference,
                                         const QDateTime &defaultValue )
-  : KConfigSkeletonGenericItem<QDateTime>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QDateTime>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemDateTime::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  mReference = config->readDateTimeEntry( mName, &mDefault );
+  mReference = config->readDateTimeEntry( mKey, &mDefault );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -783,20 +783,20 @@ QVariant KConfigSkeleton::ItemDateTime::property() const
 }
 
 
-KConfigSkeleton::ItemStringList::ItemStringList( const QString &group, const QString &name,
+KConfigSkeleton::ItemStringList::ItemStringList( const QString &group, const QString &key,
                                             QStringList &reference,
                                             const QStringList &defaultValue )
-  : KConfigSkeletonGenericItem<QStringList>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QStringList>( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemStringList::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  if ( !config->hasKey( mName ) )
+  if ( !config->hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readListEntry( mName );
+    mReference = config->readListEntry( mKey );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -813,20 +813,20 @@ QVariant KConfigSkeleton::ItemStringList::property() const
 }
 
 
-KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &name,
+KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &key,
                                       QValueList<int> &reference,
                                       const QValueList<int> &defaultValue )
-  : KConfigSkeletonGenericItem<QValueList<int> >( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QValueList<int> >( group, key, reference, defaultValue )
 {
 }
 
 void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
 {
   config->setGroup( mGroup );
-  if ( !config->hasKey( mName ) )
+  if ( !config->hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readIntListEntry( mName );
+    mReference = config->readIntListEntry( mKey );
   mLoadedValue = mReference;
 
   readImmutability( config );
@@ -936,8 +936,9 @@ void KConfigSkeleton::writeConfig()
 
 void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
 {
+  item->setName( name.isEmpty() ? item->key() : name );
   mItems.append( item );
-  mItemDict.insert( name.isNull() ? item->name() : name, item );
+  mItemDict.insert( item->name(), item );
   item->readDefault( mConfig );
 }
 
@@ -945,7 +946,7 @@ KConfigSkeleton::ItemString *KConfigSkeleton::addItemString( const QString &name
                                      const QString &defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemString *item;
-  item = new KConfigSkeleton::ItemString( mCurrentGroup, key.isNull() ? name : key,
+  item = new KConfigSkeleton::ItemString( mCurrentGroup, key.isEmpty() ? name : key,
                                           reference, defaultValue,
                                           KConfigSkeleton::ItemString::Normal );
   addItem( item, name );

@@ -60,8 +60,8 @@
      * @param group Config file group.
      * @param name Config file key.
      */
-    KConfigSkeletonItem(const QString & group, const QString & name)
-      :mGroup(group),mName(name), mIsImmutable(true)
+    KConfigSkeletonItem(const QString & group, const QString & key)
+      :mGroup(group),mKey(key), mIsImmutable(true)
     {
     }
 
@@ -82,6 +82,22 @@
 
     /**
      * Return config file key.
+     */
+    QString key() const
+    {
+      return mKey;
+    }
+
+    /**
+     * Set internal name of entry.
+     */
+    void setName(const QString &name)
+    {
+      mName = name;
+    }
+
+    /**
+     * Return internal name of entry.
      */
     QString name() const
     {
@@ -181,6 +197,7 @@
     void readImmutability(KConfig *);
 
     QString mGroup;
+    QString mKey;
     QString mName;
 
   private:
@@ -194,9 +211,9 @@
 template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
-    KConfigSkeletonGenericItem(const QString & group, const QString & name, T & reference,
+    KConfigSkeletonGenericItem(const QString & group, const QString & key, T & reference,
                 T defaultValue)
-      : KConfigSkeletonItem(group, name), mReference(reference),
+      : KConfigSkeletonItem(group, key), mReference(reference),
         mDefault(defaultValue), mLoadedValue(defaultValue)
     {
     }
@@ -243,10 +260,10 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
       if ( mReference != mLoadedValue ) // Is this needed?
       {
         config->setGroup(mGroup);
-        if ((mDefault == mReference) && !config->hasDefault( mName))
-          config->revertToDefault( mName );
+        if ((mDefault == mReference) && !config->hasDefault( mKey))
+          config->revertToDefault( mKey );
         else
-          config->writeEntry(mName, mReference);
+          config->writeEntry(mKey, mReference);
       }
     }
 
@@ -337,7 +354,7 @@ public:
   public:
     enum Type { Normal, Password, Path };
 
-    ItemString(const QString & group, const QString & name,
+    ItemString(const QString & group, const QString & key,
                QString & reference,
                const QString & defaultValue = QString::null,
                Type type = Normal);
@@ -357,7 +374,7 @@ public:
   class ItemPassword:public ItemString
   {
   public:
-    ItemPassword(const QString & group, const QString & name,
+    ItemPassword(const QString & group, const QString & key,
                QString & reference,
                const QString & defaultValue = QString::null);
   };
@@ -368,7 +385,7 @@ public:
   class ItemPath:public ItemString
   {
   public:
-    ItemPath(const QString & group, const QString & name,
+    ItemPath(const QString & group, const QString & key,
              QString & reference,
              const QString & defaultValue = QString::null);
   };
@@ -380,7 +397,7 @@ public:
   class ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
-    ItemProperty(const QString & group, const QString & name,
+    ItemProperty(const QString & group, const QString & key,
                  QVariant & reference, QVariant defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -395,7 +412,7 @@ public:
   class ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
-    ItemBool(const QString & group, const QString & name, bool & reference,
+    ItemBool(const QString & group, const QString & key, bool & reference,
              bool defaultValue = true);
 
     void readConfig(KConfig * config);
@@ -410,7 +427,7 @@ public:
   class ItemInt:public KConfigSkeletonGenericItem < int >
   {
   public:
-    ItemInt(const QString & group, const QString & name, int &reference,
+    ItemInt(const QString & group, const QString & key, int &reference,
             int defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -435,7 +452,7 @@ public:
   class ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
   {
   public:
-    ItemInt64(const QString & group, const QString & name, Q_INT64 &reference,
+    ItemInt64(const QString & group, const QString & key, Q_INT64 &reference,
             Q_INT64 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -468,7 +485,7 @@ public:
       QString whatsThis;
     };
 
-    ItemEnum(const QString & group, const QString & name, int &reference,
+    ItemEnum(const QString & group, const QString & key, int &reference,
              const QValueList<Choice> &choices, int defaultValue = 0);
 
     QValueList<Choice> choices() const;
@@ -487,7 +504,7 @@ public:
   class ItemUInt:public KConfigSkeletonGenericItem < unsigned int >
   {
   public:
-    ItemUInt(const QString & group, const QString & name,
+    ItemUInt(const QString & group, const QString & key,
              unsigned int &reference, unsigned int defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -513,7 +530,7 @@ public:
   class ItemLong:public KConfigSkeletonGenericItem < long >
   {
   public:
-    ItemLong(const QString & group, const QString & name, long &reference,
+    ItemLong(const QString & group, const QString & key, long &reference,
              long defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -539,7 +556,7 @@ public:
   class ItemULong:public KConfigSkeletonGenericItem < unsigned long >
   {
   public:
-    ItemULong(const QString & group, const QString & name,
+    ItemULong(const QString & group, const QString & key,
               unsigned long &reference, unsigned long defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -564,7 +581,7 @@ public:
   class ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
   {
   public:
-    ItemUInt64(const QString & group, const QString & name, Q_UINT64 &reference,
+    ItemUInt64(const QString & group, const QString & key, Q_UINT64 &reference,
             Q_UINT64 defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -590,7 +607,7 @@ public:
   class ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
-    ItemDouble(const QString & group, const QString & name,
+    ItemDouble(const QString & group, const QString & key,
                double &reference, double defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -616,7 +633,7 @@ public:
   class ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
-    ItemColor(const QString & group, const QString & name,
+    ItemColor(const QString & group, const QString & key,
               QColor & reference,
               const QColor & defaultValue = QColor(128, 128, 128));
 
@@ -632,7 +649,7 @@ public:
   class ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
-    ItemFont(const QString & group, const QString & name, QFont & reference,
+    ItemFont(const QString & group, const QString & key, QFont & reference,
              const QFont & defaultValue = KGlobalSettings::generalFont());
 
     void readConfig(KConfig * config);
@@ -647,7 +664,7 @@ public:
   class ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
-    ItemRect(const QString & group, const QString & name, QRect & reference,
+    ItemRect(const QString & group, const QString & key, QRect & reference,
              const QRect & defaultValue = QRect());
 
     void readConfig(KConfig * config);
@@ -662,7 +679,7 @@ public:
   class ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
-    ItemPoint(const QString & group, const QString & name, QPoint & reference,
+    ItemPoint(const QString & group, const QString & key, QPoint & reference,
               const QPoint & defaultValue = QPoint());
 
     void readConfig(KConfig * config);
@@ -677,7 +694,7 @@ public:
   class ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
-    ItemSize(const QString & group, const QString & name, QSize & reference,
+    ItemSize(const QString & group, const QString & key, QSize & reference,
              const QSize & defaultValue = QSize());
 
     void readConfig(KConfig * config);
@@ -692,7 +709,7 @@ public:
   class ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
-    ItemDateTime(const QString & group, const QString & name,
+    ItemDateTime(const QString & group, const QString & key,
                  QDateTime & reference,
                  const QDateTime & defaultValue = QDateTime());
 
@@ -708,7 +725,7 @@ public:
   class ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
-    ItemStringList(const QString & group, const QString & name,
+    ItemStringList(const QString & group, const QString & key,
                    QStringList & reference,
                    const QStringList & defaultValue = QStringList());
 
@@ -724,7 +741,7 @@ public:
   class ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
   {
   public:
-    ItemIntList(const QString & group, const QString & name,
+    ItemIntList(const QString & group, const QString & key,
                 QValueList < int >&reference,
                 const QValueList < int >&defaultValue = QValueList < int >());
 
@@ -782,7 +799,7 @@ public:
 
   /**
    * Register a custom @ref KConfigSkeletonItem with a given name. If the name
-   * parameter is null, take the name from KConfigSkeletonItem::name().
+   * parameter is null, take the name from KConfigSkeletonItem::key().
    */
   void addItem(KConfigSkeletonItem *, const QString & name = QString::null );
 
