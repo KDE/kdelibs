@@ -21,6 +21,7 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kstddirs.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -792,8 +793,8 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
 {
     if(shading == Motif){
         int highlightVal, lowlightVal;
-        highlightVal=100+(2*kapp->contrast()+4)*16/10;
-        lowlightVal=100+((2*kapp->contrast()+4)*10);
+        highlightVal=100+(2*KGlobalSettings::contrast()+4)*16/10;
+        lowlightVal=100+((2*KGlobalSettings::contrast()+4)*10);
         return(new QColorGroup(fg, bg, bg.light(highlightVal),
                                bg.dark(lowlightVal), bg.dark(120),
                                fg, kapp->palette().normal().base()));

@@ -125,6 +125,13 @@ QColor KGlobalSettings::activeTextColor()
     return c->readColorEntry( "activeForeground", &Qt::white );
 }
 
+int KGlobalSettings::contrast()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("KDE") );
+    return c->readNumEntry( "contrast", 7 );
+}
+
 QFont KGlobalSettings::generalFont()
 {
     if (_generalFont)

@@ -560,18 +560,7 @@ private:
   void parseCommandLine( int&, char** ); // search for special KDE arguments
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
-  virtual void kdisplaySetPalette();
-  virtual void kdisplaySetStyle();
-  virtual void kdisplaySetFont();
-  virtual void applyGUIStyle(GUIStyle);
-
-  int contrast_;
-  int captionLayout;
-
 public:
-
-  int contrast() const;
-
   /**
       @internal
     */
@@ -580,7 +569,8 @@ public:
   /**
    * Valid values for the settingsChanged signal
    */
-  enum { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS, SETTINGS_POPUPMENU };
+  enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS, 
+         SETTINGS_POPUPMENU, SETTINGS_QT };
 
   signals:
   /**
@@ -661,7 +651,7 @@ public:
      manipulate the UI in that slot, it is blocked by the session
      manager.
 
-     Use the @ref ::getSessionConfig KConfig object to store all your
+     Use the @ref ::sessionConfig KConfig object to store all your
      instance specific datas.
 
      Do not do any closing at this point! The user may still select
@@ -682,6 +672,13 @@ public:
 
 
 private:
+  void propagateSettings(SettingsCategory category);
+  void kdisplaySetPalette();
+  void kdisplaySetStyle();
+  void kdisplaySetFont();
+  void applyGUIStyle(GUIStyle);
+
+  int captionLayout;
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
@@ -746,6 +743,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.158  2000/06/03 01:18:17  gehrmab
+// KGlobal <-> KGlobalSettings <-> KApplication cleanup
+//
 // Revision 1.157  2000/05/31 21:40:26  ettrich
 //
 // Make dcop calls smarter: no more hanging user interfaces

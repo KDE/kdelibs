@@ -12,6 +12,7 @@
 #include <qlabel.h>
 
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
 #include <kapp.h>
 #include <kcharsets.h>
@@ -67,7 +68,7 @@ void Test::createFields()
   
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
-  label->setFont(KGlobal::generalFont());
+  label->setFont(KGlobalSettings::generalFont());
   label->show();
 }
 

@@ -280,6 +280,7 @@ void KApplication::init(bool GUIenabled)
     kdisplaySetStyle();
     kdisplaySetFont();
     kdisplaySetPalette();
+    propagateSettings(SETTINGS_QT);
   }
 
   installTranslator(new KDETranslator(this));
@@ -906,6 +907,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	    case KIPC::FontChanged:
 		KGlobal::config()->reparseConfiguration();
+                KGlobalSettings::rereadFontSettings();
 		kdisplaySetFont();
 		break;
 
@@ -915,7 +917,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	    case KIPC::SettingsChanged:
 		KGlobal::config()->reparseConfiguration();
-                emit settingsChanged(arg);
+                propagateSettings((SettingsCategory)arg);
 		break;
 
 	    case KIPC::IconChanged:
@@ -1184,6 +1186,8 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 
 void KApplication::kdisplaySetPalette()
 {
+    int contrast_ = KGlobalSettings::contrast();
+    
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
@@ -1197,9 +1201,6 @@ void KApplication::kdisplaySetPalette()
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor foreground = config->readColorEntry( "windowForeground", &black );
-
-    config->setGroup( "KDE");
-    contrast_ = config->readNumEntry( "contrast", 7 );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -1244,16 +1245,7 @@ void KApplication::kdisplaySetPalette()
         newPal.setInactive(iGrp);
     }
 */
-    setPalette(newPal, true);
-
-    // GJ: The cursor blink rate doesn't belong here. It should get it's own
-    // change message but it doesn't really matter because it isn't set.
-    int num = config->readNumEntry("cursorBlinkRate", cursorFlashTime());
-    if (num < 200)
-	num = 200;
-    if (num > 2000)
-	num = 2000;
-    setCursorFlashTime(num);
+    QApplication::setPalette(newPal, true);
 
     //style().polish(newPal);
     emit kdisplayPaletteChanged();
@@ -1262,7 +1254,6 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-    KGlobalSettings::rereadFontSettings();
     QApplication::setFont(KGlobalSettings::generalFont(), true);
     emit kdisplayFontChanged();
     emit appearanceChanged();
@@ -1274,6 +1265,26 @@ void KApplication::kdisplaySetStyle()
     applyGUIStyle(WindowsStyle);
     emit kdisplayStyleChanged();
     emit appearanceChanged();
+}
+
+
+void KApplication::propagateSettings(SettingsCategory arg)
+{
+    KConfigBase* config = KGlobal::config();
+    KConfigGroupSaver saver( config, "General" );
+    
+    int num = config->readNumEntry("cursorBlinkRate", QApplication::cursorFlashTime());
+    if (num < 200)
+	num = 200;
+    if (num > 2000)
+	num = 2000;
+    QApplication::setCursorFlashTime(num);
+    num = config->readNumEntry("doubleClickInterval", QApplication::doubleClickInterval());
+    QApplication::setDoubleClickInterval(num);
+    num = config->readNumEntry("wheelScrollLines", QApplication::wheelScrollLines());
+    QApplication::setWheelScrollLines(num);
+
+    emit settingsChanged(arg);
 }
 
 
@@ -1649,11 +1660,6 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // a user?
     XSetIconName( qt_xdisplay(), topWidget->winId(), caption().ascii() );
   }
-}
-
-int KApplication::contrast() const
-{
-    return contrast_;
 }
 
 int KApplication::random()

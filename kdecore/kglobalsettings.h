@@ -159,6 +159,7 @@ class KGlobalSettings
     static QColor inactiveTextColor();
     static QColor activeTitleColor();
     static QColor activeTextColor();
+    static int contrast();
 
     static QFont generalFont();
     static QFont fixedFont();
