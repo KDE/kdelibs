@@ -53,6 +53,12 @@ public:
   void setAutoReconfig(bool ar);
 
   /**
+   * This will reseed the PRNG with the EGD if the EGD is configured and
+   * enabled.
+   */
+  int seedWithEGD();
+
+  /**
    * Set a new KSSLSettings instance as the settings.
    * This deletes the current instance of KSSLSettings.
    */

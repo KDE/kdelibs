@@ -32,6 +32,7 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/pem.h>
+#include <openssl/rand.h>
 #undef crypt
 #endif
 
@@ -65,7 +66,8 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
-  if (init) initialize();
+
+ if (init) initialize();
 }
 
 
@@ -73,6 +75,20 @@ KSSL::~KSSL() {
   close();
   delete m_cfg;
   delete d;
+}
+
+
+int KSSL::seedWithEGD() {
+int rc = 0;
+  if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
+    rc = RAND_egd(m_cfg->getEGDPath().latin1());
+    if (rc < 0) 
+      kdDebug() << "KSSL: Error seeding PRNG with the EGD." << endl;
+    else 
+      kdDebug() << "KSSL: PRNG was seeded with " << rc 
+                << " bytes from the EGD." << endl;
+  }
+  return rc;
 }
 
 
@@ -84,6 +100,7 @@ bool KSSL::TLSInit() {
   if (m_bAutoReconfig)
     m_cfg->load();
 
+  seedWithEGD();
   d->m_meth = TLSv1_client_method();
   d->lastInitTLS = true;
 
@@ -114,6 +131,8 @@ bool KSSL::initialize() {
 
   if (m_bAutoReconfig)
     m_cfg->load();
+
+  seedWithEGD();
   // TLS1 goes first - it excludes SSL2/3
   // FIXME: we should be able to force SSL off entirely.
   //        This logic here makes v2 a "default" if no other SSL

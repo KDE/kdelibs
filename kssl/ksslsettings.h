@@ -41,6 +41,8 @@ public:
   bool warnOnSelfSigned() const;
   bool warnOnRevoked() const;
   bool warnOnExpired() const;
+
+  bool useEGD() const;
   
   void setTLSv1(bool enabled);
   void setSSLv2(bool enabled);
@@ -49,6 +51,8 @@ public:
   // Returns the OpenSSL cipher list for selecting the list of ciphers to
   // use in a connection
   QString getCipherList();
+
+  QString& getEGDPath();
 
   void load();
   void defaults();
@@ -59,6 +63,9 @@ private:
   bool m_bUseSSLv2, m_bUseSSLv3, m_bUseTLSv1;
   bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
   bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
+  bool m_bUseEGD;
+
+  QString m_EGDPath;
 
   QValueList<QString> v2ciphers, v2selectedciphers,
                       v3ciphers, v3selectedciphers;

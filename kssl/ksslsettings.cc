@@ -197,6 +197,10 @@ void KSSLSettings::load() {
   m_bWarnExpired = m_cfg->readBoolEntry("WarnExpired", true);
   m_bWarnRevoked = m_cfg->readBoolEntry("WarnRevoked", true);
 
+  m_cfg->setGroup("EGD");
+  m_bUseEGD = m_cfg->readBoolEntry("UseEGD", false);
+  m_EGDPath = m_cfg->readEntry("EGDPath");
+
   #ifdef HAVE_SSL
 
 
@@ -216,7 +220,8 @@ void KSSLSettings::defaults() {
   m_bWarnSelfSigned = true;
   m_bWarnExpired = true;
   m_bWarnRevoked = true;
-
+  m_bUseEGD = false;
+  m_EGDPath = "";
 }
 
 
@@ -240,6 +245,10 @@ void KSSLSettings::save() {
   m_cfg->writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
   m_cfg->writeEntry("WarnExpired", m_bWarnExpired);
   m_cfg->writeEntry("WarnRevoked", m_bWarnRevoked);
+
+  m_cfg->setGroup("EGD");
+  m_cfg->writeEntry("UseEGD", m_bUseEGD);
+  m_cfg->writeEntry("EGDPath", m_EGDPath);
 
   // FIXME - ciphers
 #if 0
@@ -280,10 +289,11 @@ bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
 bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
 bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }
 bool KSSLSettings::warnOnExpired() const     { return m_bWarnExpired; }
+bool KSSLSettings::useEGD() const            { return m_bUseEGD;      }
 
 void KSSLSettings::setTLSv1(bool enabled) { m_bUseTLSv1 = enabled; }
 void KSSLSettings::setSSLv2(bool enabled) { m_bUseSSLv2 = enabled; }
 void KSSLSettings::setSSLv3(bool enabled) { m_bUseSSLv3 = enabled; }
 
-
+QString& KSSLSettings::getEGDPath()       { return m_EGDPath; }
 
