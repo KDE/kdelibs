@@ -36,7 +36,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kpushbutton.h>
@@ -96,7 +95,7 @@ void KTipDatabase::loadTips(const QString &tipFile)
 	tips.append(tip);
     }
 
-    file.close();    
+    file.close();
 }
 
 void KTipDatabase::nextTip()
@@ -135,7 +134,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
      * be the case only in ktip, so let's use the ktip layout.
      */
     bool isTipDialog = (parent != 0);
- 
+
     QImage img;
     int h,s,v;
 
@@ -158,8 +157,8 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     _baseColor.setHsv(h,s*(10/6.0),v*(93/99.0));
 
     _textColor = KGlobalSettings::textColor();
-    
-	
+
+
     _database = db;
 
     setCaption(i18n("Tip of the Day"));
@@ -197,7 +196,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     topLeft->setBackgroundColor(_baseColor);
 
     _tipText = new KTextBrowser(topLeft);
-    
+
     _tipText->setWrapPolicy( QTextEdit::AtWordOrDocumentBoundary );
     _tipText->mimeSourceFactory()->addFilePath(
 	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
@@ -241,12 +240,12 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     _tipOnStart = new QCheckBox(i18n("&Show tips on startup"), this);
     hbox2->addWidget(_tipOnStart, 1);
 
-    KPushButton *prev = new KPushButton( KStdGuiItem::back( 
+    KPushButton *prev = new KPushButton( KStdGuiItem::back(
             KStdGuiItem::UseRTL ), this );
     prev->setText( i18n("&Previous") );
     hbox2->addWidget(prev);
 
-    KPushButton *next = new KPushButton( KStdGuiItem::forward( 
+    KPushButton *next = new KPushButton( KStdGuiItem::forward(
             KStdGuiItem::UseRTL ), this );
     next->setText( i18n("&Next") );
     hbox2->addWidget(next);
@@ -328,7 +327,7 @@ bool KTipDialog::eventFilter(QObject *o, QEvent *e)
 		(((QKeyEvent *)e)->key() == Key_Return ||
 		((QKeyEvent *)e)->key() == Key_Space ))
 		accept();
-		    
+
 	// If the user presses Return or Space, we close the dialog as if the
 	// default button was pressed even if the KTextBrowser has the keyboard
 	// focus. This could have the bad side-effect that the user cannot use the
@@ -337,10 +336,10 @@ bool KTipDialog::eventFilter(QObject *o, QEvent *e)
 
 	return QWidget::eventFilter( o, e );
 }
-				
+
 void KTipDialog::virtual_hook( int id, void* data )
 {
 	KDialog::virtual_hook( id, data );
 }
-				
+
 #include "ktip.moc"

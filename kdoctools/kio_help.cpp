@@ -37,7 +37,6 @@
 #include <kinstance.h>
 #include <limits.h>
 #include <qtextcodec.h>
-#include <qregexp.h>
 
 #include "kio_help.h"
 #include <libxslt/xsltutils.h>

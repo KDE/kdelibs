@@ -26,7 +26,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 #include <qshared.h>
 #include <qdatastream.h>
@@ -64,7 +64,7 @@ public:
 
   /**
    * Construct a service type and take all informations from a config file.
-   * @param _fullpath path of the desktop file, set to "" if calling from 
+   * @param _fullpath path of the desktop file, set to "" if calling from
    *                  a inherited constructor.
    */
   KServiceType( const QString & _fullpath );
@@ -139,7 +139,7 @@ public:
    * Returns the requested property. Some often used properties
    * have convenience access functions like @ref name(),
    * @ref comment() etc.
-   * 
+   *
    * @param _name the name of the property
    * @return the property, or invalid if not found
    */
@@ -159,7 +159,7 @@ public:
 
   /**
    * Returns the type of the property with the given @p _name.
-   * 
+   *
    * @param _name the name of the property
    * @return the property type, or null if not found
    */

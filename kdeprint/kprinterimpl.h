@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KPrinter;
 class KMPrinter;

@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <qfont.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KGlobal;
 class KCharsetsPrivate;
@@ -65,7 +65,7 @@ public:
      *         it returns a default (Latin-1) codec
      */
     QTextCodec *codecForName(const QString &name) const;
-    
+
     /**
      * Tries to find a QTextCodec to convert the given encoding from and to
      * Unicode. If no codec could be found the latin1 codec will be returned an
@@ -127,16 +127,16 @@ public:
      * @return a list of all languages
      */
     QStringList languages();
-    
+
     /**
      * Lists all available encodings for language name 'language'.
      * @param language to language to search for
      * @return the list of encodings for the language
      */
     QStringList encodingsForLanguage( const QString &language );
-    
+
     /**
-     * Returns the language the encoding is used for. 
+     * Returns the language the encoding is used for.
      * @param encoding the encoding for the language
      * @return the language of the encoding
      */
@@ -148,7 +148,7 @@ public:
      * @return the name of the encoding
      */
     QString encodingForName( const QString &descriptiveName );
-	    
+
 private:
     KCharsetsPrivate *d;
 };

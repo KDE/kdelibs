@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qsocketnotifier.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -54,7 +54,7 @@ public:
 
 signals:
    void statusUpdate(IdleSlave *);
-   
+
 protected slots:
    void gotInput();
 
@@ -154,7 +154,7 @@ protected:
 
 
    void queueRequest(KLaunchRequest *);
-   
+
    void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QCString& startup_id,
        const QValueList<QCString> &envs );
    void cancel_service_startup_info( KLaunchRequest *request, const QCString& startup_id,

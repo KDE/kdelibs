@@ -18,7 +18,6 @@
 */
 
 #include <qfontdatabase.h>
-#include <qregexp.h>
 
 #include "khtml_settings.h"
 #include "khtmldefaults.h"
@@ -289,7 +288,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "BackRightClick" ) )
         d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
   }
-  
+
   if (reset || config->hasGroup("HTML Settings"))
   {
     config->setGroup( "HTML Settings" );

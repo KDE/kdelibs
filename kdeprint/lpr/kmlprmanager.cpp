@@ -29,7 +29,7 @@
 #include "editentrydialog.h"
 
 #include <qfileinfo.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>

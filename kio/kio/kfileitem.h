@@ -28,7 +28,6 @@
 #include <kio/global.h>
 #include <kurl.h>
 #include <kmimetype.h>
-#include <kio/global.h>
 #include <kfilemetainfo.h>
 
 /**
@@ -196,7 +195,7 @@ public:
   time_t time( unsigned int which ) const;
 
   /**
-   * Requests the modification, access or creation time as a string, depending 
+   * Requests the modification, access or creation time as a string, depending
    * on @p which.
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
    * @returns a formatted string of the requested time.
@@ -235,7 +234,7 @@ public:
 
   /**
    * Returns the mimetype of the file item.
-   * If @p _determineMimeTypeOnDemand was used in the constructor, this will determine 
+   * If @p _determineMimeTypeOnDemand was used in the constructor, this will determine
    * the mimetype first. Equivalent to determineMimeType()->name()
    * @return the mime type of the file
    */
@@ -243,7 +242,7 @@ public:
 
   /**
    * Returns the mimetype of the file item.
-   * If _determineMimeTypeOnDemand was used in the constructor, this will determine 
+   * If _determineMimeTypeOnDemand was used in the constructor, this will determine
    * the mimetype first.
    * @return the mime type
    */
@@ -283,7 +282,7 @@ public:
 
   /**
    * Returns the overlays (bitfield of KIcon::*Overlay flags) that are used
-   * for this item's pixmap. Overlays are used to show for example, whether 
+   * for this item's pixmap. Overlays are used to show for example, whether
    * a file can be modified.
    * @return the overlays of the pixmap
    */

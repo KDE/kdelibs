@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc and/or kaddressbook.
-    Copyright (c) 2002 Klarälvdalens Datakonsult AB 
+    Copyright (c) 2002 Klarälvdalens Datakonsult AB
         <info@klaralvdalens-datakonsult.se>
 
     This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 #include "resourceimap.h"
 #include <kglobal.h>
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 #include <kabc/formatfactory.h>
 #include <ktempfile.h>
@@ -104,7 +104,7 @@ bool ResourceIMAP::load()
     kdDebug(5700) << "DCOP call failed" << endl;
     return false;
   }
-    
+
   // Now parse the vCards in that file
   QFile file( tempFile.name() );
   if ( !file.open( IO_ReadOnly ) ) {
@@ -113,9 +113,9 @@ bool ResourceIMAP::load()
   }
 
   kdDebug(5700) << "Opened temp file " << tempFile.name() << endl;
-    
+
   mFormat->loadAll( addressBook(), this, &file );
-    
+
   tempFile.unlink();
 
   Resource::load();
@@ -152,7 +152,7 @@ bool ResourceIMAP::save( Ticket *ticket )
   bool ok;
   argIn >> ok;
   tempFile.unlink();
-    
+
   // Always try to unlock
   if ( !dcopClient->call( "kmail", "KMailIface",
                           "unlockContactsFolder()", QByteArray(),

@@ -228,7 +228,6 @@ CSSValueList CSS2CursorImpl::uris() const
 
 
 
-#include "CSSValueList.h"
 #include "DOMException.h"
 #include "DOMString.h"
 
@@ -248,7 +247,6 @@ CSSValueList CSS2FontFaceSrcImpl::format() const
 
 
 
-#include "CSSValueList.h"
 #include "DOMException.h"
 #include "DOMString.h"
 

@@ -21,7 +21,7 @@
 
 #include <qstring.h>
 #include <kurl.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 namespace KIO {
   class Job;
@@ -44,7 +44,7 @@ namespace KIO {
    * @see pasteClipboard()
    */
   void pasteData( const KURL& _dest_url, const QByteArray& _data );
-  
+
   /**
    * Checks whether the clipboard is empty.
    * @return true if empty

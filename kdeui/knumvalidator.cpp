@@ -203,7 +203,6 @@ bool KFloatValidator::acceptLocalizedNumbers() const
     return d->acceptLocalizedNumbers;
 }
 
-#include <kdebug.h>
 QValidator::State KFloatValidator::validate ( QString &str, int & ) const
 {
   bool    ok;
@@ -338,7 +337,7 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
     if ( !p.isEmpty() )
       for ( int idx = s.find( p ) ; idx >= 0 ; idx = s.find( p, idx ) )
 	s.remove( idx, p.length() );
-	
+
 
     if ( !t.isEmpty() )
       for ( int idx = s.find( t ) ; idx >= 0 ; idx = s.find( t, idx ) )

@@ -21,7 +21,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "xml/dom_nodeimpl.h"
 #include "dom/dom_exception.h"
 #include "misc/htmlattrs.h"
 #include "misc/htmltags.h"

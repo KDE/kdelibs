@@ -28,7 +28,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <time.h>
 
 class KConfig;
@@ -305,34 +305,34 @@ public:
 
     /** Returns the */
     int preferredDefaultPolicy() const { return m_preferredPolicy; }
-    
+
     /** Returns the */
     bool showCookieDetails () const { return m_showCookieDetails; }
-      
+
      /**
       * Sets the user's default preference cookie policy.
-      */     
+      */
      void setPreferredDefaultPolicy (int value) { m_preferredPolicy = value; }
-     
+
      /**
       * Sets the user's preference of level of detail displayed
       * by the cookie dialog.
-      */     
+      */
      void setShowCookieDetails (bool value) { m_showCookieDetails = value; }
-     
-     
+
+
 protected:
     QStringList m_domainList;
     KCookieAdvice m_globalAdvice;
     QDict<KHttpCookieList> m_cookieDomains;
-   
+
     bool m_configChanged;
-    bool m_cookiesChanged;    
+    bool m_cookiesChanged;
     bool m_showCookieDetails;
     bool m_rejectCrossDomainCookies;
-    bool m_autoAcceptSessionCookies;   
-    bool m_ignoreCookieExpirationDate;    
-    
-    int m_preferredPolicy;    
+    bool m_autoAcceptSessionCookies;
+    bool m_ignoreCookieExpirationDate;
+
+    int m_preferredPolicy;
 };
 #endif

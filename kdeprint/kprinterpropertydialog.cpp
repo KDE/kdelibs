@@ -32,7 +32,6 @@
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kguiitem.h>
-#include <kguiitem.h>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
 : KDialogBase(parent, name, true, QString::null, KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KGuiItem(i18n("&Save"), "filesave")),

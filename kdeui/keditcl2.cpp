@@ -23,7 +23,6 @@
 
 #include <qframe.h>
 #include <qlabel.h>
-#include <qlayout.h>
 #include <qlineedit.h>
 #include <qvbuttongroup.h>
 #include <qcheckbox.h>
@@ -671,13 +670,13 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   topLayout->addWidget( group );
 
   QHBox* row1 = new QHBox( group );
-  
+
   text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, row1, "case");
   text = i18n("Find &backwards");
   direction = new QCheckBox( text, row1, "direction" );
 
-  
+
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
 
   if ( !modal )
@@ -994,7 +993,7 @@ void KEdit::corrected (const QString &originalword, const QString &newword, unsi
     insert(newword);
     setReadOnly ( true );
   }
-  else 
+  else
   {
     deselect();
   }

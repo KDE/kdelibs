@@ -21,8 +21,8 @@
 #include "driver.h"
 #include "kxmlcommand.h"
 
-#include <qheader.h>
 #include <qlayout.h>
+#include <qheader.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
@@ -31,7 +31,6 @@
 #include <kpushbutton.h>
 #include <qtooltip.h>
 #include <ktextedit.h>
-#include <qheader.h>
 #include <qregexp.h>
 #include <klistview.h>
 #include <klocale.h>

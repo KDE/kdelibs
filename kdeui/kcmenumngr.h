@@ -24,7 +24,6 @@
 class QWidget;
 class QPopupMenu;
 class KContextMenuManagerPrivate;
-#include <qkeysequence.h>
 #include <qobject.h>
 #include <qptrdict.h>
 #include <qkeysequence.h>

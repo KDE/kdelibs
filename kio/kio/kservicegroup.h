@@ -19,7 +19,7 @@
 #ifndef __kservicegroup_h__
 #define __kservicegroup_h__
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qshared.h>
 #include <qdatastream.h>
@@ -80,7 +80,7 @@ public:
    * @since 3.1
    */
   KServiceGroup( const QString & name );
-  
+
   /**
    * Construct a service and take all informations from a config file
    * @param _fullpath full path to the config file
@@ -107,7 +107,7 @@ public:
    * @return the service group's name
    */
   virtual QString name() const { return entryPath(); }
-  
+
   /**
    * Returns the relative path of the service group.
    * @return the service group's relative path
@@ -201,7 +201,7 @@ public:
    * @return the root service group
    */
   static Ptr root();
-  
+
   /**
    * Returns the group with the given relative path.
    * @param relPath the path of the service group

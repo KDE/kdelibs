@@ -50,7 +50,6 @@
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qstylesheet.h>
-#include <qobjectlist.h>
 #include <kapplication.h>
 
 #include <kimageio.h>

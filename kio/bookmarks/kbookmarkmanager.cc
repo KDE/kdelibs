@@ -22,7 +22,6 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
-#include <qtextstream.h>
 #include <qregexp.h>
 #include <kmessagebox.h>
 #include <kprocess.h>

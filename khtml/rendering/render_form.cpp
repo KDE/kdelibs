@@ -43,7 +43,6 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <kdebug.h>
 #include <qpopupmenu.h>
 
 using namespace khtml;

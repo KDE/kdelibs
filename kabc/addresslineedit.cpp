@@ -37,7 +37,6 @@
 
 #include <kabc/stdaddressbook.h>
 #include <kabc/distributionlist.h>
-#include <kurldrag.h>
 #include "ldapclient.h"
 
 #include <kdebug.h>

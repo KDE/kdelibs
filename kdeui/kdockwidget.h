@@ -37,7 +37,7 @@
    - KDockManager                  - helper class
    - KDockMainWindow               - IMPORTANT CLASS: a special KMainWindow that can have dockwidgets
    - KDockArea                     - like KDockMainWindow but inherits just QWidget
-   
+
    IMPORTANT Note: This file compiles also in Qt-only mode by using the NO_KDE2 precompiler definition!
 */
 
@@ -48,7 +48,7 @@
 #define _KDOCKWIDGET_2_2_
 
 #include <qpoint.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qframe.h>
 #include <qdom.h>
 #include <qtabwidget.h>
@@ -588,10 +588,10 @@ public:
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
   KDockTabGroup* parentDockTabGroup() const;
-  
+
   /// @since 3.1
   QWidget *parentDockContainer() const;
-  
+
 #ifndef NO_KDE2
 
   /**
@@ -617,17 +617,17 @@ public:
    * @since 3.1
    */
   KDockWidget *findNearestDockWidget(DockPosition pos);
-  
+
 public slots:
   /**
-   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
+   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps
    * KDE 3.1.x oder 3.2
    * width is in pixel. It only affects a widget, which is placed directly into a horizontal KDockSplitter
    * @since 3.1
    **/
   void setForcedFixedWidth(int);
   /**
-   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
+   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps
    * KDE 3.1.x oder 3.2
    * height is in pixel. It only affects a widget, which is placed directly into a vertical KDockSplitter
    * @since 3.1
@@ -640,7 +640,7 @@ public slots:
   int forcedFixedWidth();
   /// @since 3.1
   int forcedFixedHeight();
-  
+
   /**
    * Docks a dockwidget back to the dockwidget that was the neighbor
    widget before the current dock position.
@@ -680,7 +680,7 @@ protected:
   void setLatestKDockContainer(QWidget *);
   /// @since 3.1
   QWidget *latestKDockContainer();
-  
+
 signals:
   /**
    * Emitted when another dock widget is docking to this.
@@ -721,7 +721,7 @@ protected slots:
    * "To get back to where you once belonged" ;-)
    */
   void loseFormerBrotherDockWidget();
-  
+
   virtual void paintEvent(QPaintEvent*);
 
   virtual void mousePressEvent(QMouseEvent*);
@@ -943,7 +943,7 @@ public:
 
   /**
    * Enables opaque resizing. Opaque resizing is initially turned off.
-   * Call this method before you create any dock widgets!   
+   * Call this method before you create any dock widgets!
    */
   void setSplitterOpaqueResize(bool b=true);
 

@@ -23,13 +23,10 @@
 #include <kdirnotify_stub.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
-#include <kio/global.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
-#include <kurldrag.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <kfiletreeview.h>
 #include <kio/job.h>
 #include <kio/global.h>
 #include <kurldrag.h>

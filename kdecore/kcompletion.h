@@ -21,7 +21,7 @@
 #define KCOMPLETION_H
 
 #include <qmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -207,7 +207,7 @@ public:
      * When reaching the last item, the list is rotated, so it will return
      * the first match and a sound is issued (depending on
      * @ref isSoundsEnabled()).
-     * @return the next item from the matching-items-list.  When there is no 
+     * @return the next item from the matching-items-list.  When there is no
      * match, QString::null is returned and a sound is issued
      * @see #slotNextMatch
      */
@@ -216,7 +216,7 @@ public:
     /**
      * Returns the last match. Might be useful if you need to check whether
      * a completion is different from the last one.
-     * @return the last match. QString::null is returned when there is no 
+     * @return the last match. QString::null is returned when there is no
      *         last match.
      */
     virtual const QString& lastMatch() const { return myLastMatch; }
@@ -763,7 +763,7 @@ public:
      * See @ref setCompletionObject() and @ref enableCompletion()
      * for details.
      *
-     * @return true if the completion object will be deleted 
+     * @return true if the completion object will be deleted
      *              automatically
      */
     bool isCompletionObjectAutoDeleted() const {
