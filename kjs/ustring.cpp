@@ -181,7 +181,9 @@ UString::UString()
 
 UString::UString(char c)
 {
-  rep = Rep::create(new UChar(0, c), 1);
+    UChar *d = new UChar[1];
+    d[0] = UChar(0, c);
+    rep = Rep::create(d, 1);
 }
 
 UString::UString(const char *c)
