@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=text/css
+Comment=Context Style Sheet
+Icon=txt.png
+Type=MimeType
+Patterns=*.css;*.CSSL;

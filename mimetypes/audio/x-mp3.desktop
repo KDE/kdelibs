@@ -1,6 +1,6 @@
 [Desktop Entry]
 MimeType=audio/x-mp3
-Comment=MPEG Sound file
+Comment=MPEG layer 3 audio
 Comment[ca]=Fitxer de so MPEG
 Comment[cs]=Zvukový soubor koprimovaný v MPEG Layer3
 Comment[da]=MPEG lydfil
@@ -14,7 +14,9 @@ Comment[hu]=MPEG hang fájl
 Comment[is]=MPEG-hljóðskrá
 Comment[it]=File sonoro MPEG
 Comment[ja]=MPEG¥µ¥¦¥ó¥É¥Õ¥¡¥¤¥ë
+Comment[mi]=MPEG hang fájl
 Comment[no]=MPEG-komprimert lydfil
+Comment[no_NY]=MPEG lydfil
 Comment[pl]=Plik d¿wiêkowy MPEG III
 Comment[pt]=Ficheiro de som MPEG Layer 3
 Comment[pt_BR]=Arquivo de som MPEG
@@ -22,6 +24,7 @@ Comment[ro]=Fiºier de muzicã în format Mpeg Layer 3
 Comment[ru]=ú×ÕËÏ×ÏÊ ÆÁÊÌ MPEG-3
 Comment[sk]=Zvukový súbor komprimovaný ¹tandardom MPEG Layer 3
 Comment[sl]=Zvoèna datoteka MPEG
+Comment[sr]=mp3 fajl
 Comment[sv]=Komprimerat ljud i formatet MPEG layer 3
 DefaultApp=kmpg
 Icon=sound.png

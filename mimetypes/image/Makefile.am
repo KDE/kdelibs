@@ -1,6 +1,7 @@
 
 data_DATA = jpeg.desktop tiff.desktop x-xpm.desktop x-xbm.desktop \
-	png.desktop gif.desktop fax-g3.desktop cgm.desktop x-bmp.desktop
+	png.desktop gif.desktop fax-g3.desktop cgm.desktop x-bmp.desktop \
+	x-photo-cd.desktop
 
 datadir = $(kde_mimedir)/image
 

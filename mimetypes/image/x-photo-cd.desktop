@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=image/x-photo-cd
+Icon=image.png
+Patterns=*.pcd;*.PCD;
+Comment=PhotoCD image

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=eXtended Markup Language document
+Icon=html.png
+Type=MimeType
+MimeType=text/xml
+Patterns=*.xml;*.XML;
