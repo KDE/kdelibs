@@ -628,6 +628,7 @@ void KDoubleNumInput::init(double value)
 {
     m_value = value;
     m_format = qstrdup("%.2f");
+    m_range = false;
 
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
     edit->setAlignment(AlignRight);
