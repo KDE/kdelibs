@@ -76,6 +76,7 @@
 #include "kio/ioslave_defaults.h"
 #include "kio/http_slave_defaults.h"
 
+#include "httpfilter.h"
 #include "http.h"
 
 using namespace KIO;
@@ -1538,7 +1539,6 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   do
   {
-
     ret = TCPSlaveBase::read( b, nbytes);
     if (ret == 0)
       m_bEOF = true;
@@ -1993,8 +1993,7 @@ bool HTTPProtocol::httpOpen()
     {
 #ifdef DO_GZIP
       // Content negotiation
-      // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
-      header += "Accept-Encoding: x-gzip, gzip, identity\r\n";
+      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
 #endif
     }
 
@@ -3389,138 +3388,6 @@ void HTTPProtocol::special( const QByteArray &data )
   }
 }
 
-void HTTPProtocol::decodeDeflate()
-{
-#ifdef DO_GZIP
-  // Okay the code below can probably be replaced with
-  // a single call to decompress(...) instead of a read/write
-  // to and from a temporary file, but I was not sure of how to
-  // estimate the size of the decompressed data which needs to be
-  // passed as a parameter to decompress function call.  Anyone
-  // want to try this approach or have a better experience with
-  // the cool zlib library ??? (DA)
-  //
-  // TODO: Neither deflate nor gzip completely check for errors!!!
-  z_stream z;
-  QByteArray tmp_buf;
-  const unsigned int max_len = 1024;
-  unsigned char in_buf[max_len];  // next_in
-  unsigned char out_buf[max_len]; // next_out
-  int status = Z_OK; //status of the deflation
-  char* filename=strdup("/tmp/kio_http.XXXXXX");
-
-  z.avail_in = 0;
-  z.avail_out = max_len;
-  z.next_out = out_buf;
-
-  // Create the file
-  int fd = mkstemp(filename);
-
-  // TODO: Need sanity check here. Doing no error checking when writing
-  // to HD cannot be good :))  What if the target is bloody full or it
-  // for some reason could not be written to ?? (DA)
-  ::write(fd, m_bufEncodedData.data(), m_bufEncodedData.size()); // Write data into file
-  lseek(fd, 0, SEEK_SET);
-  FILE* fin = fdopen( fd, "rb" );
-
-  // Read back and decompress data.
-  for( ; ; )
-  {
-    if( z.avail_in == 0 )
-    {
-        z.next_in = in_buf;
-        z.avail_in = ::fread(in_buf, 1, max_len, fin );
-    }
-    if( z.avail_in == 0 )
-        break;
-    status = inflate( &z, Z_NO_FLUSH );
-    if( status !=  Z_OK )
-        break;
-    unsigned int count = max_len - z.avail_out;
-    if( count )
-    {
-        unsigned int old_len = tmp_buf.size();
-        memcpy( tmp_buf.data() + old_len, out_buf, count );
-        z.next_out = out_buf;
-        z.avail_out = max_len;
-    }
-  }
-
-  for( ; ; )
-  {
-    status = inflate( &z, Z_FINISH );
-    unsigned int count = max_len - z.avail_out;
-    if ( count )
-    {
-        unsigned int old_len = tmp_buf.size();
-        // Copy the data into a temporary buffer
-        memcpy( tmp_buf.data() + old_len, out_buf, count );
-        z.next_out = out_buf;
-        z.avail_out = max_len;
-    }
-    if( status !=  Z_OK )
-        break;
-  }
-  if( fin )
-    ::fclose( fin );
-  ::unlink(filename); // Bye bye to beloved temp file.  We will miss you!!
-
-  // Replace m_bufEncodedData with the
-  // "decoded" data.
-  m_bufEncodedData.resize(0);
-  m_bufEncodedData = tmp_buf;
-  m_bufEncodedData.detach();
-#endif
-}
-
-void HTTPProtocol::decodeGzip()
-{
-#ifdef DO_GZIP
-  // Note I haven't found an implementation
-  // that correctly handles this stuff.  Apache
-  // sends both Transfer-Encoding and Content-Length
-  // headers, which is a no-no because the content
-  // could really be bigger than the content-length
-  // header implies.. like with gzip.
-  // eek. This is no fun for progress indicators.
-  QByteArray ar;
-
-  int fd;
-  signed long len;
-  char tmp_buf[1024];
-
-  kdDebug(7103) << "decode gzip" << endl;
-
-  // Siince I can't figure out how to do the mem to mem
-  // gunzipping, this should suffice.  It just writes out
-  // the gzip'd data to a file.
-  char *filename = strdup("/tmp/kio_http.XXXXXX");
-  fd=mkstemp(filename);
-  ::write(fd, m_bufEncodedData.data(), m_bufEncodedData.size());
-  lseek(fd, 0, SEEK_SET);
-  gzFile gzf = gzdopen(fd, "rb");
-  unlink(filename); // If you want to inspect the raw data, comment this line out
-  free(filename);
-  filename = 0;
-
-  // And then reads it back in with gzread so it'll
-  // decompress on the fly.
-  while ( (len=gzread(gzf, tmp_buf, 1024))>0){
-    if (len < 0) break; // -1 is error
-    int old_len=ar.size();
-    ar.resize(ar.size()+len);
-    memcpy(ar.data()+old_len, tmp_buf, len);
-  }
-  gzclose(gzf);
-
-  // And then we replace m_bufEncodedData with
-  // the "decoded" data.
-  m_bufEncodedData.resize(0);
-  m_bufEncodedData=ar;
-  m_bufEncodedData.detach();
-#endif
-}
-
 /**
  * Read a chunk from the data stream.
  */
@@ -3619,7 +3486,25 @@ int HTTPProtocol::readUnlimited()
   }
   m_bufReceive.resize(4096);
 
-  return read(m_bufReceive.data(), m_bufReceive.size());
+  int result = read(m_bufReceive.data(), m_bufReceive.size());
+  return (result > 0) ? result : 0;
+}
+
+void HTTPProtocol::slotData(const QByteArray &d)
+{
+   if (!d.size())
+      return;
+      
+   if ( !m_dataInternal )
+   {
+      data( d );
+      if (m_bCachedWrite && m_fcache)
+         writeCacheEntry(d.data(), d.size());
+   }
+   else
+   {
+      m_intData += m_bufReceive;
+   }
 }
 
 /**
@@ -3638,13 +3523,12 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // 2) _not_ advertise the data, speed, size, etc., through the
   //    corresponding functions.
   // This is used for returning data to WebDAV.
+  m_dataInternal = dataInternal;
   if ( dataInternal )
     m_intData = QString::null;
 
   // Check if we need to decode the data.
   // If we are in copy mode, then use only transfer decoding.
-  bool decode = ( !m_qTransferEncodings.isEmpty() ||
-                  !m_qContentEncodings.isEmpty() );
   bool useMD5 = !m_sContentMD5.isEmpty();
 
   // Deal with the size of the file.
@@ -3656,7 +3540,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // it is compressed, or when the data is to be handled
   // internally (webDAV).  If compressed we have to wait
   // until we uncompress to find out the actual data size
-  if ( !decode && !dataInternal ) {
+  if ( !dataInternal ) {
     if ( m_iSize > 0 ) {
        totalSize(m_iSize);
        infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
@@ -3671,7 +3555,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (m_bCachedRead)
   {
     kdDebug(7113) << "HTTPProtocol::readBody: read data from cache!" << endl;
-
+    m_bCachedWrite = false;
+    
     char buffer[ MAX_IPC_SIZE ];
 
     // Jippie! It's already in the cache :-)
@@ -3682,23 +3567,19 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       if (nbytes > 0)
       {
         m_bufReceive.setRawData( buffer, nbytes);
-        if ( !dataInternal )
-          data( m_bufReceive );
-        else
-          m_intData += m_bufReceive;
-
+        slotData( m_bufReceive );
         m_bufReceive.resetRawData( buffer, nbytes );
         sz += nbytes;
       }
     }
 
-    if ( !dataInternal )
-      processedSize( sz );
-
     m_bufReceive.resize( 0 );
 
     if ( !dataInternal )
+    {
+      processedSize( sz );
       data( QByteArray() );
+    }
 
     return true;
   }
@@ -3712,12 +3593,59 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     m_iBytesLeft = -1;
 
   // Main incoming loop...  Gather everything while we can...
-  KMD5 context;
   bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
-  m_bufEncodedData.resize(0);
   struct timeval last_tv;
   gettimeofday( &last_tv, 0L );
+
+  HTTPFilterChain chain;
+  
+  QObject::connect(&chain, SIGNAL(output(const QByteArray &)), 
+          this, SLOT(slotData(const QByteArray &)));
+  QObject::connect(&chain, SIGNAL(error(int, const QString &)), 
+          this, SLOT(error(int, const QString &)));
+
+   // decode all of the transfer encodings
+  while (!m_qTransferEncodings.isEmpty())
+  {
+    QString enc = m_qTransferEncodings.last();
+    m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
+    if ( enc == "gzip" )
+      chain.addFilter(new HTTPFilterGZip);
+    else if ( enc == "deflate" )
+      chain.addFilter(new HTTPFilterDeflate);
+  }
+
+  // From HTTP 1.1 Draft 6:
+  // The MD5 digest is computed based on the content of the entity-body,
+  // including any content-coding that has been applied, but not including
+  // any transfer-encoding applied to the message-body. If the message is
+  // received with a transfer-encoding, that encoding MUST be removed
+  // prior to checking the Content-MD5 value against the received entity.
+  HTTPFilterMD5 *md5Filter = 0;
+  if ( useMD5 )
+  {
+     md5Filter = new HTTPFilterMD5;
+     chain.addFilter(md5Filter);
+  }
+
+  // now decode all of the content encodings
+  // -- Why ?? We are not
+  // -- a proxy server, be a client side implementation!!  The applications
+  // -- are capable of determinig how to extract the encoded implementation.
+  // WB: That's a misunderstanding. We are free to remove the encoding.
+  // WB: Some braindead www-servers however, give .tgz files an encoding
+  // WB: of "gzip" (or even "x-gzip") and a content-type of "applications/tar"
+  // WB: They shouldn't do that. We can work around that though...
+  while (!m_qContentEncodings.isEmpty())
+  {
+    QString enc = m_qContentEncodings.last();
+    m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+    if ( enc == "gzip" )
+      chain.addFilter(new HTTPFilterGZip);
+    else if ( enc == "deflate" )
+      chain.addFilter(new HTTPFilterDeflate);
+  }
 
   while (!m_bEOF)
   {
@@ -3730,6 +3658,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        bytesReceived = readUnlimited();
 
     // make sure that this wasn't an error, first
+    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " << m_bChunked << endl;
     if (bytesReceived == -1)
     {
       // erg.  oh well, log an error and bug out
@@ -3803,144 +3732,28 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
         }
       }
 
-      // check on the encoding.  can we get away with it as is?
-      if ( !decode )
-      {
-        // Important: truncate the buffer to the actual size received!
-        // Otherwise garbage will be passed to the app
-        m_bufReceive.truncate( bytesReceived );
+      // Important: truncate the buffer to the actual size received!
+      // Otherwise garbage will be passed to the app
+      m_bufReceive.truncate( bytesReceived );
 
-        // Update the message digest engine...
-        if (useMD5)
-          context.update( m_bufReceive );
-        // Let the world know that we have some data, unless it is
-        // requested by webDAV
-        if ( !dataInternal )
-          data( m_bufReceive );
-        else
-          m_intData += m_bufReceive;
-
-        if (m_bCachedWrite && m_fcache)
-           writeCacheEntry(m_bufReceive.data(), bytesReceived);
-
-        sz += bytesReceived;
-        if (!dataInternal)
-          processedSize( sz );
-      }
-      else
-      {
-        // nope.  slap this all onto the end of a big buffer for later use
-        unsigned int old_len = 0;
-        old_len = m_bufEncodedData.size();
-        m_bufEncodedData.resize(old_len + bytesReceived);
-        memcpy( m_bufEncodedData.data() + old_len, m_bufReceive.data(),
-                bytesReceived );
-      }
+      chain.slotInput(m_bufReceive);
+      
+      if (m_bError)
+         return false;
+       
+      sz += bytesReceived;
+      if (!dataInternal)
+        processedSize( sz );
     }
     m_bufReceive.resize(0); // res
     if (m_iBytesLeft == 0)
       break;
   }
-
-  // if we have something in m_bufEncodedData, then we know that we have
-  // encoded data.  of course, we need to do something about this
-  if (!m_bufEncodedData.isNull())
-  {
-    // decode all of the transfer encodings
-    while (!m_qTransferEncodings.isEmpty())
-    {
-      QString enc = m_qTransferEncodings.last();
-      m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
-      if ( enc == "gzip" )
-        decodeGzip();
-      else if ( enc == "deflate" )
-        decodeDeflate();
-    }
-
-    // From HTTP 1.1 Draft 6:
-    // The MD5 digest is computed based on the content of the entity-body,
-    // including any content-coding that has been applied, but not including
-    // any transfer-encoding applied to the message-body. If the message is
-    // received with a transfer-encoding, that encoding MUST be removed
-    // prior to checking the Content-MD5 value against the received entity.
-    if ( useMD5 )
-      context.update( m_bufEncodedData );
-
-    // now decode all of the content encodings
-    // -- Why ?? We are not
-    // -- a proxy server, be a client side implementation!!  The applications
-    // -- are capable of determinig how to extract the encoded implementation.
-    // WB: That's a misunderstanding. We are free to remove the encoding.
-    // WB: Some braindead www-servers however, give .tgz files an encoding
-    // WB: of "gzip" (or even "x-gzip") and a content-type of "applications/tar"
-    // WB: They shouldn't do that. We can work around that though...
-    while (!m_qContentEncodings.isEmpty())
-    {
-      QString enc = m_qContentEncodings.last();
-      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
-      if ( enc == "gzip" )
-        decodeGzip();
-      else if ( enc == "deflate" )
-        decodeDeflate();
-    }
-    
-    uint bytesToSend = MAX_IPC_SIZE;
-    uint bytesReceived = m_bufEncodedData.size();
-
-    if ( !dataInternal )
-      totalSize( bytesReceived );
-
-    if ( bytesReceived > bytesToSend )
-    {
-      sz = 0;
-      QByteArray array;
-
-      while ( 1 )
-      {
-        array.setRawData( m_bufEncodedData.data()+sz, bytesToSend);
-
-        if ( !dataInternal )
-          data( array );
-        else
-          m_intData += array;
-
-        array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
-        sz += bytesToSend;
-
-        if ( !dataInternal )
-          processedSize( sz );
-
-        if ( sz >= bytesReceived )
-          break;
-
-        if ( bytesReceived-sz < bytesToSend )
-          bytesToSend = bytesReceived-sz;
-      }
-    }
-    else
-    {
-      sz = bytesReceived;
-      if ( !dataInternal )
-      {
-        data( m_bufEncodedData );
-        processedSize( bytesReceived );
-      }
-      else
-      {
-        m_intData += m_bufEncodedData;
-      }
-    }
-
-    if ( m_bCachedWrite &&  m_fcache )
-    {
-      writeCacheEntry(m_bufEncodedData.data(), m_bufEncodedData.size());
-      closeCacheEntry();
-    }
-  }
+  chain.slotInput(QByteArray()); // Flush chain.
 
   if ( useMD5 )
   {
-    QString calculatedMD5 = QString::fromLatin1(context.base64Digest());
+    QString calculatedMD5 = md5Filter->md5();
 
     if ( m_sContentMD5 == calculatedMD5 )
       kdDebug(7113) << "(" << m_pid << ") MD5 checksum MATCHED!!" << endl;
@@ -5183,3 +4996,5 @@ static const char* webdavDTD =
 "  <!ELEMENT supportedlock (lockentry)* >"
 "]>";
 */
+
+#include "http.moc"

@@ -12,7 +12,8 @@ bin_PROGRAMS = kio_http_cache_cleaner
 lib_LTLIBRARIES = kio_http_cache_cleaner.la
 kde_module_LTLIBRARIES = kio_http.la
 
-kio_http_la_SOURCES = http.cc
+kio_http_la_SOURCES = http.cc httpfilter.cc
+kio_http_la_METASOURCES = AUTO
 kio_http_la_LIBADD = $(LIB_KIO) $(LIBZ)
 kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 

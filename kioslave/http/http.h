@@ -44,8 +44,9 @@ namespace KIO {
     class AuthInfo;
 }
 
-class HTTPProtocol : public KIO::TCPSlaveBase
+class HTTPProtocol : public QObject, public KIO::TCPSlaveBase
 {
+  Q_OBJECT
 public:
   HTTPProtocol( const QCString &protocol, const QCString &pool,
                 const QCString &app );
@@ -179,10 +180,11 @@ public:
   bool checkRequestURL( const KURL& );
   void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
-protected:
-
+protected slots:
+  void slotData(const QByteArray &);
   void error( int _errid, const QString &_text );
 
+protected:
   int readChunked();    // Read a chunk
   int readLimited();    // Read maximum m_iSize bytes.
   int readUnlimited();  // Read as much as possible.
@@ -390,6 +392,7 @@ protected:
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
+  bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
   char *m_linePtr;
   size_t m_lineCount;
@@ -431,7 +434,6 @@ protected:
   // Language/Encoding
   QStringList m_qTransferEncodings;
   QStringList m_qContentEncodings;
-  QByteArray m_bufEncodedData;
   QString m_sContentMD5;
   QString m_strMimeType;
   QString m_strCharset;
