@@ -508,9 +508,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             c = KCursor::waitCursor();
             break;
         case CURSOR_HELP:
-#if QT_VERSION >= 300
-            c = KCursor::whatsThisCursor;
-#endif
+            c = KCursor::whatsThisCursor();
             break;
         case CURSOR_DEFAULT:
             break;
