@@ -151,7 +151,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	resize(400,100);
 }
 
-void KMSpecialPrinterDlg::slotTextChanged(const QString & text)
+void KMSpecialPrinterDlg::slotTextChanged(const QString & )
 {
 	enableButton(Ok, !m_name->text().isEmpty());
 }
