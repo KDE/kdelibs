@@ -171,6 +171,8 @@ Window::~Window()
 
 Window *Window::retrieve(KHTMLPart *p)
 {
+  if (!p)
+    kdWarning(6070) << "Window::retrieve(0)" << endl;
   Window *w;
   if (!window_dict)
     window_dict = new QPtrDict<Window>;
@@ -202,6 +204,11 @@ void Window::mark(Imp *)
     frames->mark();
   if (loc && !loc->refcount)
     loc->mark();
+  if (!opener.isNull()) {
+    Window *op = retrieve(opener);
+    if (!op->refcount)
+      op->mark();
+  }
 }
 
 bool Window::hasProperty(const UString &p, bool recursive) const
