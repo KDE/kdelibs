@@ -425,6 +425,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	
 	// Insert the new items into the dictionary and reconnect if neccessary
 	// Note also swap config and current key codes !!!!!!
+	delete aKeyIt; // tanghus
 	aKeyIt = new QDictIterator<KKeyEntry>( nKeyDict );
 	aKeyIt->toFirst();
 #define pE aKeyIt->current()
@@ -440,6 +441,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->aAccelId = pE->aAccelId;
 		pEntry->receiver = pE->receiver;
 		pEntry->member = pE->member;
+		pEntry->descr = pE->descr; // tanghus
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
@@ -450,6 +452,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	}
 #undef pE
 		
+	delete aKeyIt; // tanghus
 	return true;
 }
 
