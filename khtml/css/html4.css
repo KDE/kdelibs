@@ -42,7 +42,7 @@
       TBODY           { display: table-row-group;
       	    	    	    vertical-align: inherit; border: inherit;
 			    padding: inherit; }
-      TFOOT           { display: table-footer-group: border: inherit; }
+      TFOOT           { display: table-footer-group; border: inherit; }
       COL             { display: table-column; }
       COLGROUP        { display: table-column-group; }
       TD, TH          { display: table-cell;
