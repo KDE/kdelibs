@@ -53,7 +53,7 @@ include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h \
-	kidna.h ktempdir.h kshell.h
+	kidna.h ktempdir.h kshell.h fixx11h.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
