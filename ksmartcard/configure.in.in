@@ -1,3 +1,5 @@
+DO_NOT_COMPILE="$DO_NOT_COMPILE ksmartcard"
+
 dnl ------------------------------------------------------------------------
 dnl Try to find the pc/sc headers and libraries.
 dnl $(PCSC_LDFLAGS) will be -Lpcscliblocation (if needed)
