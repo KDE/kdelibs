@@ -98,7 +98,7 @@ public:
 	 */
 	virtual ~KStandardDirs();
 
-	/*
+	/**
 	 * This adds another search dir to front of the fsstnd list.
 	 * @li when compiling kdelibs, the prefix is added to this.
 	 * @li when compiling a separate app, kapp adds the new prefix
@@ -109,7 +109,7 @@ public:
 	void addPrefix( QString dir );
 
 
-	/*
+	/**
 	 * with this we add suffixes for types. You may add as many as
 	 * you need, but it is advised that there is exactly one to make
 	 * writing definite.
@@ -206,6 +206,25 @@ public:
 				       bool recursive = false,
 				       bool uniq = false) const;
 
+	/**
+	 * Tries to find all resources with the specified type.
+	 * The function will look into all specified directories
+	 * and returns all filenames (full and relative paths) in
+	 * these directories.
+	 *
+	 * @param type the type of resource to locate directories for.
+	 * @param filter only accept filenames that fit to filter. The filter
+	 *        may consist of an optional directory and a QRexExp 
+	 *        wildcard expression. E.g. "images\*.jpg" 
+	 * @param recursive specifies if the function should decend
+	 *        into subdirectories.
+	 * @param uniq if specified,  only return items which have 
+	 *        unique suffixes.
+	 * @param list of relative paths for the given type.
+	 *        
+	 * @return a list of directories matching the resource specified,
+	 *         or an empty list if the resource type is unknown.
+	 */
 	QStringList findAllResources( const QString& type, 
 				       const QString& filter,
 				       bool recursive,
