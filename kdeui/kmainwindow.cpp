@@ -155,6 +155,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     setDockMenuEnabled( FALSE );
     mHelpMenu = 0;
     kapp->setTopWidget( this );
+    actionCollection()->setWidget( this );
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
         memberList = new QPtrList<KMainWindow>;
@@ -183,7 +184,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
-    d->kaccel = 0L;
+    d->kaccel = actionCollection()->accel();
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
