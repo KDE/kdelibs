@@ -74,7 +74,7 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool 
   return true;
 }
 
-bool ConnectionSignals::copy( list<string>& _source, const char *_dest )
+bool ConnectionSignals::copy( QStringList& _source, const char *_dest )
 {
   assert( m_pConnection );
   
@@ -82,9 +82,9 @@ bool ConnectionSignals::copy( list<string>& _source, const char *_dest )
   if ( l >= 0xFFFF )
     return false;
   
-  list<string>::iterator it = _source.begin();
+  QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
-    if ( !source( it->c_str() ) )
+    if ( !source( (*it) ) )
       return false;
   
   m_pConnection->send( CMD_MCOPY, _dest, l + 1 );
@@ -119,7 +119,7 @@ bool ConnectionSignals::source( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::move( list<string>& _source, const char *_dest )
+bool ConnectionSignals::move( QStringList& _source, const char *_dest )
 {
   assert( m_pConnection );
 
@@ -127,9 +127,9 @@ bool ConnectionSignals::move( list<string>& _source, const char *_dest )
   if ( l >= 0xFFFF )
     return false;
   
-  list<string>::iterator it = _source.begin();
+  QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
-    if ( !source( it->c_str() ) )
+    if ( source( (*it) ) )
       return false;
   
   m_pConnection->send( CMD_MMOVE, _dest, l + 1 );
@@ -154,13 +154,13 @@ bool ConnectionSignals::move( const char *_source, const char *_dest )
   return true;
 }
 
-bool ConnectionSignals::del( list<string>& _source )
+bool ConnectionSignals::del( QStringList& _source )
 {
   assert( m_pConnection );
 
-  list<string>::iterator it = _source.begin();
+  QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
-    if ( !source( it->c_str() ) )
+    if ( source( (*it) ) )
       return false;
   
   m_pConnection->send( CMD_MDEL, "", 0 );
@@ -561,7 +561,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
   switch( _cmd )
     {
     case CMD_SOURCE:
-      m_lstSource.push_back( (const char*)(_p) );
+      m_lstSource.append( (const char*)(_p) );
       break;
     case CMD_UNMOUNT:
       slotUnmount( (const char*)(_p) );
@@ -787,8 +787,8 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 
 void ConnectionSlots::slotDel (const char *_url)
 {
-  list<string> lst;
-  lst.push_back( _url );
+  QStringList lst;
+  lst.append( _url );
 
   slotDel( lst );
 }

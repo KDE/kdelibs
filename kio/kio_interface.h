@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include <qstringlist.h>
+
 #define CMD_NONE 0
 #define CMD_GET 1
 #define CMD_COPY 2
@@ -168,11 +170,11 @@ public:
   virtual bool mkdir( const char *_url, int _mode );
 
   virtual bool copy( const char* _source, const char *_dest );
-  virtual bool copy( list<string>&_source, const char *_dest );
+  virtual bool copy( QStringList&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
-  virtual bool move( list<string>& _source, const char *_dest );
+  virtual bool move( QStringList& _source, const char *_dest );
   virtual bool del( const char *_url );
-  virtual bool del( list<string>& _source );
+  virtual bool del( QStringList& _source );
 
   virtual bool testDir( const char *_url );
   virtual bool listDir( const char *_url );
@@ -239,11 +241,11 @@ public:
   virtual void slotPut( const char *, int ,
 			bool , bool , int ) { };
   virtual void slotCopy( const char* , const char * ) { };
-  virtual void slotCopy( list<string>&, const char * ) { };
+  virtual void slotCopy( QStringList&, const char * ) { };
   virtual void slotMove( const char *, const char * ) { };
-  virtual void slotMove( list<string>& , const char *) { };
+  virtual void slotMove( QStringList& , const char *) { };
   virtual void slotDel( const char * );
-  virtual void slotDel( list<string>& ) { };
+  virtual void slotDel( QStringList& ) { };
   virtual void slotListDir( const char * ) { };
   virtual void slotMkdir( const char *, int ) { };
   virtual void slotTestDir( const char * ) { };
@@ -300,7 +302,7 @@ protected:
 
   Connection *m_pConnection;  
 
-  list<string> m_lstSource;
+  QStringList m_lstSource;
 };
 
 

@@ -316,35 +316,30 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 
 bool KIOJob::copy( QStrList& _source, const char *_dest, bool _move )
 {
-  list<string> stlurls;
-  const char *s;
-  for( s = _source.first(); s != 0; s = _source.next() )
-    stlurls.push_back( s );
+  QStringList stlurls;
+  QString s;
+  for( s = _source.first(); s != _source.last(); s = _source.next() )
+    stlurls.append( s );
 
   return copy( stlurls, _dest, _move );
 }
 
 
-bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
+bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move )
 {
   assert( !m_pSlave );
 
-  QString protocol;
-  QString host;
-  QString user;
-  QString pass;
-  list<string>::iterator it = _source.begin();
+  QString protocol, host, user, pass;
+  QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
-    KURL u( it->c_str() );
-    if ( u.isMalformed() )
-    {
-      slotError( ERR_MALFORMED_URL, it->c_str() );
+    KURL u( (*it) );
+    if ( u.isMalformed() ){
+      slotError( ERR_MALFORMED_URL, (*it) );
       return false;
     }
 
-    if ( protocol.isEmpty() )
-    {
+    if ( protocol.isEmpty() ) {
       protocol = u.protocol();
       host = u.host();
       user = u.user();
@@ -388,7 +383,7 @@ bool KIOJob::move( QStrList& _source, const char *_dest )
 }
 
 
-bool KIOJob::move( list<string>& _source, const char *_dest )
+bool KIOJob::move( QStringList& _source, const char *_dest )
 {
   return copy( _source, _dest, true );
 }
@@ -419,16 +414,16 @@ bool KIOJob::del( const char *_source )
 
 bool KIOJob::del( QStrList& _source )
 {
-  list<string> stlurls;
-  const char *s;
-  for( s = _source.first(); s != 0; s = _source.next() )
-    stlurls.push_back( s );
+  QStringList stlurls;
+  QString s;
+  for( s = _source.first(); s != _source.last(); s = _source.next() )
+    stlurls.append( s );
 
   return del( stlurls );
 }
 
 
-bool KIOJob::del( list<string>& _source )
+bool KIOJob::del( QStringList& _source )
 {
   assert( !m_pSlave );
 
@@ -436,18 +431,15 @@ bool KIOJob::del( list<string>& _source )
   QString host;
   QString user;
   QString pass;
-  list<string>::iterator it = _source.begin();
-  for( ; it != _source.end(); ++it )
-  {    
-    KURL u( it->c_str() );
-    if ( u.isMalformed() )
-    {
-      slotError( ERR_MALFORMED_URL, it->c_str() );
+  QStringList::Iterator it = _source.begin();
+  for( ; it != _source.end(); ++it ) {
+    KURL u( (*it) );
+    if ( u.isMalformed() ) {
+      slotError( ERR_MALFORMED_URL, (*it) );
       return false;
     }
 
-    if ( protocol.isEmpty() )
-    {
+    if ( protocol.isEmpty() ) {
       protocol = u.protocol();
       host = u.host();
       user = u.user();

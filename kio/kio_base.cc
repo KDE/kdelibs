@@ -44,7 +44,7 @@ bool IOJob::testDir( const char *_url )
   return ConnectionSignals::testDir( _url );
 }
 
-bool IOJob::copy( list<string>& _source, const char *_dest )
+bool IOJob::copy( QStringList& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MCOPY;
@@ -66,7 +66,7 @@ bool IOJob::copy( const char* _source, const char *_dest )
   return ConnectionSignals::copy( _source, _dest );
 }
 
-bool IOJob::move( list<string>& _source, const char *_dest )
+bool IOJob::move( QStringList& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MMOVE;
@@ -88,7 +88,7 @@ bool IOJob::move( const char* _source, const char *_dest )
   return ConnectionSignals::move( _source, _dest );
 }
 
-bool IOJob::del( list<string>& _source )
+bool IOJob::del( QStringList& _source )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MDEL;

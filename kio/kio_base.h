@@ -23,11 +23,11 @@ public:
   virtual bool mkdir( const char *_url, int _mode );
 
   virtual bool copy( const char* _source, const char *_dest );
-  virtual bool copy( list<string>& _source, const char *_dest );
+  virtual bool copy( QStringList& _source, const char *_dest );
   virtual bool move( const char* _source, const char *_dest );
-  virtual bool move( list<string>& _source, const char *_dest );
+  virtual bool move( QStringList& _source, const char *_dest );
   virtual bool del( const char *_url );
-  virtual bool del( list<string>& _source );
+  virtual bool del( QStringList& _source );
 
   virtual bool testDir( const char *_url );
   virtual bool listDir( const char *_url );
