@@ -915,7 +915,7 @@ void RenderSelect::layout( )
 
     // update contents listbox/combobox based on options in m_element
     if ( m_optionsChanged ) {
-        QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+        QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
         int listIndex;
 
         if(m_useListBox)
@@ -1022,7 +1022,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-    QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
 	foundOption = (listItems[i]->id() == ID_OPTION);
@@ -1054,7 +1054,7 @@ void RenderSelect::slotSelected(int index)
 
     assert( !m_useListBox );
 
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1100,7 +1100,7 @@ void RenderSelect::slotSelectionChanged()
 {
     if ( m_ignoreSelectEvents ) return;
 
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1141,7 +1141,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index

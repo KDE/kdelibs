@@ -32,7 +32,7 @@
 
 #include "render_table.h"
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstack.h>
 #include <qbrush.h>
 #include <qpainter.h>
@@ -50,7 +50,7 @@
 
 using namespace khtml;
 
-template class QArray<LengthType>;
+template class QMemArray<LengthType>;
 
 #define FOR_EACH_CELL(r,c,cell) \
     for ( unsigned int r = 0; r < totalRows; r++ )                    \
@@ -1702,7 +1702,7 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 	*stream << " collapseBorders";
 
 // ###    RenderTableCell ***cells;
-// ###    QVector<ColInfoLine> colInfos;
+// ###    QPtrVector<ColInfoLine> colInfos;
 // ###    Frame frame;
 // ###    Rules rules;
 // ###    RenderTableCol *_oldColElem;

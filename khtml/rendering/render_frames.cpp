@@ -48,7 +48,7 @@ using namespace khtml;
 using namespace DOM;
 
 RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
-                                QList<khtml::Length> *rows, QList<khtml::Length> *cols )
+                                QPtrList<khtml::Length> *rows, QPtrList<khtml::Length> *cols )
     : RenderBox()
 {
   // init RenderObject attributes

@@ -217,7 +217,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
 {
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
 	if (r->node->containingBlock()==this) {
 	    RenderObject *o = r->node;
@@ -301,7 +301,7 @@ void RenderFlow::layoutSpecialObjects()
 	//kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
 
         SpecialObject* r;
-        QListIterator<SpecialObject> it(*specialObjects);
+        QPtrListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "have a positioned object" << endl;
             if (r->type == SpecialObject::Positioned)
@@ -485,7 +485,7 @@ RenderFlow::insertPositioned(RenderObject *o)
     }
 
     // don't insert it twice!
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     SpecialObject* f;
     while ( (f = it.current()) ) {
         if (f->node == o) return;
@@ -515,7 +515,7 @@ RenderFlow::insertFloat(RenderObject *o)
     }
 
     // don't insert it twice!
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     SpecialObject* f;
     while ( (f = it.current()) ) {
         if (f->node == o) return;
@@ -545,7 +545,7 @@ RenderFlow::insertFloat(RenderObject *o)
 void RenderFlow::removeSpecialObject(RenderObject *o)
 {
     if (specialObjects) {
-	QListIterator<SpecialObject> it(*specialObjects);
+	QPtrListIterator<SpecialObject> it(*specialObjects);
 	while (it.current()) {
 	    if (it.current()->node == o)
 		specialObjects->removeRef(it.current());
@@ -696,7 +696,7 @@ RenderFlow::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 
     if ( heightRemaining ) *heightRemaining = 1;
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
 	//kdDebug( 6040 ) <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
@@ -739,7 +739,7 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 
     if (heightRemaining) *heightRemaining = 1;
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
 //      kdDebug( 6040 ) << "right: sy, ey, x, w " << //     r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
@@ -767,7 +767,7 @@ RenderFlow::floatBottom() const
     if (!specialObjects) return 0;
     int bottom=0;
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
         if (r->endY>bottom && r->type <= SpecialObject::FloatRight)
             bottom=r->endY;
@@ -794,7 +794,7 @@ RenderFlow::lowestPosition() const
 
     if (specialObjects) {
         SpecialObject* r;
-        QListIterator<SpecialObject> it(*specialObjects);
+        QPtrListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
             lp = 0;
             if ( r->type == SpecialObject::FloatLeft || r->type == SpecialObject::FloatRight ){
@@ -826,7 +826,7 @@ int RenderFlow::rightmostPosition() const
 
     if (specialObjects) {
         SpecialObject* r;
-        QListIterator<SpecialObject> it(*specialObjects);
+        QPtrListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
             int specialRight=0;
             if ( r->type == SpecialObject::FloatLeft || r->type == SpecialObject::FloatRight ){
@@ -849,7 +849,7 @@ RenderFlow::leftBottom()
     if (!specialObjects) return 0;
     int bottom=0;
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
         if (r->endY>bottom && r->type == SpecialObject::FloatLeft)
             bottom=r->endY;
@@ -863,7 +863,7 @@ RenderFlow::rightBottom()
     if (!specialObjects) return 0;
     int bottom=0;
     SpecialObject* r;
-    QListIterator<SpecialObject> it(*specialObjects);
+    QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
         if (r->endY>bottom && r->type == SpecialObject::FloatRight)
             bottom=r->endY;
@@ -950,7 +950,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 	specialObjects->setAutoDelete(true);
     }
 
-    QListIterator<SpecialObject> it(*flow->specialObjects);
+    QPtrListIterator<SpecialObject> it(*flow->specialObjects);
     SpecialObject *r;
     for ( ; (r = it.current()); ++it ) {
 	if ( r->type <= SpecialObject::FloatRight &&
@@ -959,7 +959,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 
 	    SpecialObject* f = 0;
 	    // don't insert it twice!
-	    QListIterator<SpecialObject> it(*specialObjects);
+	    QPtrListIterator<SpecialObject> it(*specialObjects);
 	    while ( (f = it.current()) ) {
 		if (f->node == r->node) break;
 		++it;
@@ -1505,7 +1505,7 @@ void RenderFlow::printTree(int indent) const
 
     if(specialObjects)
     {
-        QListIterator<SpecialObject> it(*specialObjects);
+        QPtrListIterator<SpecialObject> it(*specialObjects);
         SpecialObject *r;
         for ( ; (r = it.current()); ++it )
         {
@@ -1526,7 +1526,7 @@ void RenderFlow::dump(QTextStream *stream, QString ind) const
     if(specialObjects && !specialObjects->isEmpty())
     {
 	*stream << " special(";
-        QListIterator<SpecialObject> it(*specialObjects);
+        QPtrListIterator<SpecialObject> it(*specialObjects);
         SpecialObject *r;
 	bool first = true;
         for ( ; (r = it.current()); ++it )

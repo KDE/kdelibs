@@ -45,7 +45,7 @@ class RenderFrameSet : public RenderBox
   friend class DOM::HTMLFrameSetElementImpl;
 public:
   RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
-                  QList<khtml::Length> *rows, QList<khtml::Length> *cols );
+                  QPtrList<khtml::Length> *rows, QPtrList<khtml::Length> *cols );
 
   virtual ~RenderFrameSet();
 
@@ -68,8 +68,8 @@ public:
 private:
   DOM::HTMLFrameSetElementImpl *m_frameset;
 
-  QList<khtml::Length> *m_rows;
-  QList<khtml::Length> *m_cols;
+  QPtrList<khtml::Length> *m_rows;
+  QPtrList<khtml::Length> *m_cols;
   KHTMLView *m_view;
   int *m_rowHeight;
   int *m_colWidth;

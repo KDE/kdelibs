@@ -24,8 +24,8 @@
 #ifndef RENDERTEXT_H
 #define RENDERTEXT_H
 
-#include <qvector.h>
-#include <qarray.h>
+#include <qptrvector.h>
+#include <qmemarray.h>
 
 #include "dom_string.h"
 #include "dom_stringimpl.h"
@@ -100,7 +100,7 @@ private:
     friend class RenderText;
 };
 
-class TextSlaveArray : public QVector<TextSlave> // ### change this to QArray for Qt 3.0
+class TextSlaveArray : public QPtrVector<TextSlave> // ### change this to QArray for Qt 3.0
 {
 public:
     TextSlaveArray();
