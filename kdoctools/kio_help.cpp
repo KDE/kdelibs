@@ -287,9 +287,7 @@ void HelpProtocol::emitFile( const KURL& url )
     }
 
     QString filedata = splitOut(parsed, index);
-
-    filedata.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
-                      QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg(  QTextCodec::codecForLocale()->name() ) );
+    replaceCharsetHeader( filedata );
 
     data( fromUnicode( filedata ) );
     data( QByteArray() );

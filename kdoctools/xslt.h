@@ -12,6 +12,7 @@ void fillInstance(KInstance &ins);
 bool saveToCache( const QString &contents, const QString &filename );
 QString lookForCache( const QString &filename );
 QCString fromUnicode( const QString &data );
+void replaceCharsetHeader( QString &output );
 
 extern bool warnings_exist;
 

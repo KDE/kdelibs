@@ -417,3 +417,12 @@ QCString fromUnicode( const QString &data )
     }
     return result;
 }
+
+void replaceCharsetHeader( QString &output )
+{
+    QString name = QTextCodec::codecForLocale()->name();
+    name.replace( QRegExp( "ISO " ), "iso-" );
+    kdDebug() << "name " << name << endl;
+    output.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
+                    QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name  ) );
+}

@@ -242,8 +242,7 @@ int main(int argc, char **argv) {
                 file.setName( "index.html" );
                 file.open(IO_WriteOnly);
             }
-            output.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
-                            QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg(  QTextCodec::codecForLocale()->name() ) );
+            replaceCharsetHeader( output );
 
             QCString data = output.local8Bit();
             file.writeBlock(data.data(), data.length());
@@ -263,8 +262,7 @@ int main(int argc, char **argv) {
                 QString filedata = splitOut(output, index);
                 QFile file(filename);
                 file.open(IO_WriteOnly);
-                filedata.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
-                                  QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg(  QTextCodec::codecForLocale()->name() ) );
+                replaceCharsetHeader( filedata );
                 QCString data = fromUnicode( filedata );
                 file.writeBlock(data.data(), data.length());
                 file.close();
