@@ -135,7 +135,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLFontSizeAction;
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava )
-  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages )
+  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
@@ -205,7 +205,12 @@ public:
    * If you want to have the default UserSettings, don't call this
    * method.
    */
-  void enableJScript( bool enable );
+  void setJScriptEnabled( bool enable );
+
+  /**
+   * Deprecated, use setJScriptEnabled instead.
+   */
+  void enableJScript( bool enable ); // ### KDE 3.0: removeme
 
   /**
    * Returns @p true if Javascript support is enabled or @p false
@@ -236,7 +241,14 @@ public:
    */
   QVariant executeScript( const DOM::Node &n, const QString &script );
 
+  /**
+   * Enable or disable Drag'n'Drop support. A drag operation is started if
+   * the users drags a link.
+   */
   void setDNDEnabled( bool b );
+  /**
+   * Returns whether Dragn'n'Drop support is enabled or not.
+   */
   bool dndEnabled() const;
 
   /**
@@ -245,7 +257,11 @@ public:
    * Not calling this function is the only way to let the default settings
    * apply.
    */
-  void enableJava( bool enable );
+  void setJavaEnabled( bool enable );
+  /**
+   * Deprecated, use setJavaEnabled instead.
+   */
+  void enableJava( bool enable ); // ### KDE 3.0: removeme
 
   /**
    * Return if Java applet support is enabled/disabled.
@@ -264,9 +280,14 @@ public:
   KJavaAppletContext *createJavaContext();
 
   /**
+   * Deprecated. Use setPluginsEnabled instead.
+   */
+  void enablePlugins( bool enable ); // ### KDE 3.0: removeme
+
+  /**
    * Enable or disable plugins via, default is enabled
    */
-  void enablePlugins( bool enable );
+  void setPluginsEnabled( bool enable );
 
   /**
    * Return if plugins are enabled/disabled.
@@ -274,11 +295,18 @@ public:
   bool pluginsEnabled() const;
 
   /**
-   * Should images be loaded automatically? Default is @p true.
-   *
-   * (not implemented at the moment)
+   * Deprecated. Use setAutoloadImages instead.
    */
-  void autoloadImages( bool enable );
+  void autoloadImages( bool enable ); // ### KDE 3.0: removeme
+  /**
+   * Specify whether images contained in the document should be loaded
+   * automatically or not.
+   */
+  void setAutoloadImages( bool enable );
+  /**
+   * Return whether images contained in the document are loaded automatically
+   * or not.
+   */
   bool autoloadImages() const;
 
   /**
@@ -384,14 +412,15 @@ public:
   QString baseTarget() const;
 
   /**
-   * @internal
+   * Constructs a KURL object (representing an absolute URL) given a possibly
+   * relative URL (for example from a document's anchor) .
    */
-  KURL completeURL( const QString &url, const QString &target = QString::null );
+  KURL completeURL( const QString &url, const QString &target = QString::null ); // ### KDE 3.0: remove unused target argument
 
   /**
    * @internal
    */
-  void scheduleRedirection( int delay, const QString &url );
+  void scheduleRedirection( int delay, const QString &url ); // ### KDE 3.0: make private?
 
   /**
    * Set the charset to use for displaying HTML pages.
@@ -414,7 +443,7 @@ public:
    *
    * Note that the encoding might be different from the charset.
    */
-  QString encoding();
+  QString encoding(); // ### KDE 3.0: make const
 
   /**
    * Set a user defined style sheet to be used on top of the HTML 4
@@ -496,7 +525,7 @@ public:
   /**
    * Retrieve the cursor which is used when the cursor is on a link.
    */
-  const QCursor& urlCursor() const;
+  const QCursor& urlCursor() const; // ### KDE 3.0: change return type to plain QCursor
 
   /**
    * Initiate a text search.
@@ -523,10 +552,10 @@ public:
    */
   DOM::Range selection() const;
 
-    /**
-     * set the current selection
-     */
-    void setSelection( const DOM::Range & );
+  /**
+   * set the current selection
+   */
+  void setSelection( const DOM::Range & );
 
   /**
    * Has the user selected anything?
@@ -538,6 +567,9 @@ public:
    */
   bool hasSelection() const;
 
+  /**
+   * Marks all text in the document as selected.
+   */
   void selectAll();
 
   /**
@@ -555,7 +587,8 @@ public:
   void hide();
 
   /**
-   * @internal
+   * Retrieve a reference to the partmanager instance which
+   * manages html frame objects.
    */
   KParts::PartManager *partManager();
 
@@ -578,7 +611,11 @@ public:
    **/
   virtual void restoreState( QDataStream &stream );
 
-  bool restoreURL( const KURL &url );
+  /**
+   * Internal method called by restoreState() when the document, which is to
+   * be restored, is contained in the html page-cache.
+   */
+  bool restoreURL( const KURL &url ); // ### KDE 3.0: make private!
 
   /**
    * Retrieve the @p Node currently under the mouse
@@ -588,7 +625,7 @@ public:
   /**
    * @internal
    */
-  const KHTMLSettings *settings() const;
+  const KHTMLSettings *settings() const; // ### KDE 3.0: make private!
 
   /**
    * Retrieve a pointer to the parent @ref KHTMLPart if the part is a frame
@@ -598,6 +635,11 @@ public:
    */
   KHTMLPart *parentPart();
 
+  /**
+   * Retrieve a list of names of all frame (including iframe) objects of
+   * the current document. Note that this method is not working recursively
+   * for sub-frames.
+   */
   QStringList frameNames() const;
 
   // ### KDE 3.0: remove leading const
@@ -616,7 +658,12 @@ public:
    */
   bool frameExists( const QString &frameName );
 
-  bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+  /**
+   * The real implementation of the openURLInFrame method of
+   * KParts::BrowserExtension, called by khtml's implementation
+   * of the BrowserExtension interface.
+   */
+  bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs ); // ### KDE 3.0: make private
 
 signals:
   /**
@@ -629,22 +676,55 @@ signals:
    */
   void popupMenu(const QString &url, const QPoint &point);
 
+  /**
+   * This signal is emitted when the selection changes.
+   */
   void selectionChanged();
 
+  /**
+   * This signal is emitted when an element retrieves the
+   * keyboard focus. Note that the signal argument can be
+   * a null node if no element is active, meaning a node
+   * has explicitly been deactivated without a new one
+   * becoming active.
+   */
   void nodeActivated(const DOM::Node &);
-
 
 protected:
 
+  /**
+   * Reimplementation of KParts::ReadOnlyPart::event .
+   */
   virtual bool event( QEvent *event );
+  /**
+   * Reimplementation of QObject::eventFilter .
+   */
   virtual bool eventFilter( QObject *o, QEvent *event );
 
+  /**
+   * Eventhandler of the khtml::MousePressEvent.
+   */
   virtual void khtmlMousePressEvent( khtml::MousePressEvent *event );
+  /**
+   * Eventhandler for the khtml::MouseDoubleClickEvent.
+   */
   virtual void khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * );
+  /**
+   * Eventhandler for the khtml::MouseDoubleClickEvent.
+   */
   virtual void khtmlMouseMoveEvent( khtml::MouseMoveEvent *event );
+  /**
+   * Eventhandler for the khtml::MouseMoveEvent.
+   */
   virtual void khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event );
+  /**
+   * Eventhandler for the khtml::DrawContentsEvent.
+   */
   virtual void khtmlDrawContentsEvent( khtml::DrawContentsEvent * );
 
+  /**
+   * Internal reimplementation of KParts::Part::guiActivateEvent .
+   */
   virtual void guiActivateEvent( KParts::GUIActivateEvent *event );
 
   /**
@@ -655,53 +735,68 @@ protected:
   /**
    * @internal
    */
-  virtual void overURL( const QString &url, const QString &target );
-  /**
-   * @internal
-   */
-  virtual void urlSelected( const QString &url, int button = 0, int state = 0, const QString &_target = QString::null );
+  virtual void overURL( const QString &url, const QString &target ); // ### KDE 3.0: make private
 
   /**
    * @internal
    */
-  bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
+  virtual void urlSelected( const QString &url, int button = 0, int state = 0,
+                            const QString &_target = QString::null ); // ### KDE 3.0: make private
 
   /**
    * @internal
    */
-  virtual void submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &target, const QString& contentType = QString::null, const QString& boundary = QString::null );
+  bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype ); // ### KDE 3.0: make private
 
   /**
    * @internal
    */
-  virtual void popupMenu( const QString &url );
+  virtual void submitForm( const char *action, const QString &url, const QByteArray &formData,
+                           const QString &target, const QString& contentType = QString::null,
+                           const QString& boundary = QString::null ); // ### KDE 3.0: make private
 
   /**
    * @internal
    */
-  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
-                                            const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
-                                            const QStringList &params);
+  virtual void popupMenu( const QString &url ); // ### KDE 3.0: make private
 
   /**
-     * @internal
-     */
-  void updateFontSize( int add );
+   * This method is called when a new embedded object (include html frames) is to be created.
+   * Reimplement it if you want to add support for certain embeddable objects without registering
+   * them in the KDE wide registry system (KSyCoCa) . Another reason for re-implementing this
+   * method could be if you want to derive from KTHMLPart and also want all html frame objects
+   * to be a object of your derived type, in which case you should return a new instance for
+   * the mimetype 'text/html' .
+   */
+  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName,
+                                            QObject *parent, const char *name,
+                                            const QString &mimetype, QString &serviceName,
+                                            QStringList &serviceTypes, const QStringList &params);
 
   /**
-    * @internal
-    */
-  void setFontBaseInternal( int base, bool absolute );
+   * @internal
+   */
+  void updateFontSize( int add ); // ### KDE 3.0: make private
+
+  /**
+   * @internal
+   */
+  void setFontBaseInternal( int base, bool absolute ); // ### KDE 3.0: make private
 
 public slots:
 
+  /**
+   * Call this method to explicitly pass the focus to a certain element of the
+   * current document.
+   */
   void setActiveNode(const DOM::Node &);
 
 protected slots:
+
   /**
    * Internal. Called by the @ref BrowserExtension .
    */
-  void reparseConfiguration();
+  void reparseConfiguration(); // ### KDE 3.0: make private
 
 private slots:
   /**
@@ -819,7 +914,7 @@ private slots:
 
 protected:
     // @internal
-    void emitSelectionChanged();
+    void emitSelectionChanged(); // ### KDE 3.0: make private
 
 private:
   void startAutoScroll();
@@ -833,9 +928,6 @@ private:
 
   QVariant executeScheduledScript();
 
-  /**
-   * @internal
-   */
   bool requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                      const QStringList &args = QStringList(), bool isIFrame = false );
 
@@ -848,15 +940,9 @@ private:
    */
   QString requestFrameName();
 
-  /**
-   * @internal
-   */
   bool requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                       const QStringList &args = QStringList() );
 
-  /**
-   * @internal
-   */
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
 
@@ -866,14 +952,8 @@ private:
 
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
-  /**
-   * @internal
-   */
   bool checkLinkSecurity(const KURL &linkURL);
 
-  /**
-   * @internal
-   */
   KJSProxy *jScript();
 
   KHTMLPartPrivate *d;

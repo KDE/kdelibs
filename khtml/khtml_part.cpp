@@ -749,6 +749,11 @@ KHTMLView *KHTMLPart::view() const
 
 void KHTMLPart::enableJScript( bool enable )
 {
+    setJScriptEnabled( enable );
+}
+
+void KHTMLPart::setJScriptEnabled( bool enable )
+{
   d->m_bJScriptForce = enable;
   d->m_bJScriptOverride = true;
 }
@@ -873,6 +878,11 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
 
 void KHTMLPart::enablePlugins( bool enable )
 {
+    setPluginsEnabled( enable );
+}
+
+void KHTMLPart::setPluginsEnabled( bool enable )
+{
   d->m_bPluginsForce = enable;
   d->m_bPluginsOverride = true;
 }
@@ -954,6 +964,11 @@ void KHTMLPart::slotDebugRenderTree()
 }
 
 void KHTMLPart::autoloadImages( bool enable )
+{
+    setAutoloadImages( enable );
+}
+
+void KHTMLPart::setAutoloadImages( bool enable )
 {
   khtml::Cache::autoloadImages( enable );
 
@@ -3890,7 +3905,7 @@ void KHTMLPart::setActiveNode(const DOM::Node &node)
 }
 
 DOM::Node KHTMLPart::activeNode() const
-{ 
+{
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
