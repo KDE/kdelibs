@@ -1056,6 +1056,93 @@ void B2Style::polishPopupMenu(QPopupMenu *mnu)
     // (void)new B2AniMenu(mnu); 
 }
 
+void B2Style::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
+                      bool selected)
+{
+    if(tabBar->shape() != QTabBar::RoundedAbove){
+        KStyle::drawTab(p, tabBar, tab, selected);
+        return;
+    }
+
+    QRect r = tab->rect();
+    QColorGroup g = tabBar->colorGroup();
+    if(selected){
+        p->setPen(g.light());
+        p->drawLine(r.x()+2, r.y(), r.right()-8, r.y());
+        p->drawPoint(r.x()+1, r.y()+1);
+        p->drawLine(r.x(), r.y()+2, r.x(), r.bottom());
+        p->drawPoint(r.right()-7, r.y()+1);
+
+        p->setPen(Qt::black);
+        p->drawLine(r.right()-5, r.y()+3, r.right()-5, r.bottom()-5);
+        p->drawLine(r.right()-4, r.bottom()-4, r.right(), r.bottom());
+        p->setPen(g.dark());
+        p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom()-5);
+        p->drawLine(r.right()-5, r.bottom()-4, r.right()-1, r.bottom());
+
+        //evidently masks don't work so we need to do the bg manually
+        p->fillRect(r.x()+2, r.y()+2, r.width()-10, r.height()-2,
+                    g.button());
+        p->setPen(g.button());
+        p->drawLine(r.x()+2, r.y()+1, r.right()-8, r.y()+1);
+        p->drawLine(r.x()+1, r.y()+2, r.x()+1, r.bottom());
+        p->drawLine(r.right()-7, r.y()+2, r.right()-7, r.bottom());
+
+        p->drawLine(r.right()-6, r.bottom()-4, r.right()-6, r.bottom());
+        p->drawLine(r.right()-5, r.bottom()-3, r.right()-5, r.bottom());
+        p->drawLine(r.right()-4, r.bottom()-2, r.right()-4, r.bottom());
+        p->drawLine(r.right()-3, r.bottom()-1, r.right()-3, r.bottom());
+        p->drawPoint(r.right()-2, r.bottom());
+    }
+    else{
+        r.setY(r.y()+3);
+        p->fillRect(r.x()+2, r.y()+2, r.width()-9, r.height()-2,
+                    g.brush(QColorGroup::Button));
+
+        p->setPen(g.light());
+        p->drawLine(r.x()+2, r.y(), r.right()-8, r.y());
+        p->drawPoint(r.x()+1, r.y()+1);
+        p->drawLine(r.x(), r.y()+2, r.x(), r.bottom());
+        p->drawPoint(r.right()-7, r.y()+1);
+
+        //p->drawLine(r.right()-4, r.bottom()-1, r.right(), r.bottom()-1);
+
+        p->setPen(g.midlight());
+        p->drawLine(r.x()+1, r.y()+2, r.x()+1, r.bottom());
+        p->drawLine(r.x()+2, r.y()+1, r.right()-8, r.y()+1);
+
+        //p->drawLine(r.right()-4, r.bottom(), r.right(), r.bottom());
+
+        p->setPen(g.dark());
+        p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom());
+        p->drawLine(r.x(), r.bottom()-1, r.right()-5, r.bottom()-1);
+        p->setPen(Qt::black);
+        p->drawLine(r.right()-5, r.y()+3, r.right()-5, r.bottom());
+        p->drawLine(r.x(), r.bottom(), r.right()-5, r.bottom());
+
+    }
+}
+
+// isn't being called :P
+void B2Style::drawTabMask(QPainter *p, const QTabBar*, QTab *tab,
+                          bool )
+
+{
+    p->fillRect(tab->rect(), Qt::color1);
+}
+
+void B2Style::tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
+                            int &overlap)
+{
+    if(t->shape() == QTabBar::RoundedAbove){
+        overlap = 5;
+        hFrame = 24;
+        vFrame = 10;
+    }
+    else
+        KStyle::tabbarMetrics(t, hFrame, vFrame, overlap);
+}
+
 #include "b2style.moc"
 
 
