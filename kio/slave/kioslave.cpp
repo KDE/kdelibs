@@ -335,8 +335,6 @@ int main(int argc, char **argv)
   KCmdLineArgs::init(argc, argv, &aboutData);
   KUniqueApplication::addCmdLineOptions();
 
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
   LTDL_SET_PRELOADED_SYMBOLS();
   if (lt_dlinit() != 0) {
     fprintf (stderr, "error during initialization: %s\n", lt_dlerror());
