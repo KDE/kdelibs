@@ -79,4 +79,4 @@ service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
 	       ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio eps.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
            gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio xcf.kimgio dds.kimgio \
-           $(KIMGIO_EXR_DATAFILES)
+           $(KIMGIO_EXR_DATAFILES) mng.kimgio

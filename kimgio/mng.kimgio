@@ -1,0 +1,9 @@
+[Image Format]
+Type=MNG
+Header=
+Name=MNG Image
+Read=true
+Write=true
+Suffices=mng,MNG
+Mimetype=video/x-mng
+Library=
