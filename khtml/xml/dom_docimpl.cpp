@@ -994,7 +994,7 @@ NodeImpl *DocumentImpl::findElement( int id )
     return 0;
 }
 
-HTMLElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
+ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
 {
     if (!start)
 	start = forward?_first:_last;
@@ -1022,9 +1022,9 @@ HTMLElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forwa
 		    }
 		}
 	    }
-	    if (start->isElementNode() && static_cast<ElementImpl *>(start)->isHTMLElement() &&
+	    if (start->isElementNode()&&
 		static_cast<ElementImpl *>(start)->isSelectable())
-		return static_cast<HTMLElementImpl*>(start);
+		return static_cast<ElementImpl*>(start);
 	}
     else
 	while (1)
@@ -1050,9 +1050,9 @@ HTMLElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forwa
 		    }
 		}
 	    }
-	    if (start->isElementNode() && static_cast<ElementImpl *>(start)->isHTMLElement() &&
+	    if (start->isElementNode() &&
 		static_cast<ElementImpl*>(start)->isSelectable())
-		return static_cast<HTMLElementImpl*>(start);
+		return static_cast<ElementImpl*>(start);
 	}
     kdFatal(6000) << "some error in findElement\n";
 }
@@ -1062,15 +1062,15 @@ int DocumentImpl::findHighestTabIndex()
 {
     NodeImpl *n=this;
     NodeImpl *next=0;
-    HTMLAreaElementImpl *a;
+    ElementImpl *a;
     int retval=-1;
     int tmpval;
     while(n)
     {
 	//find out tabindex of current element, if availiable
-	if (n->id()==ID_A && n->renderer())
+	if (n->isElementNode())
         {
-	    a=static_cast<HTMLAreaElementImpl *>(n);
+	    a=static_cast<ElementImpl *>(n);
 	    tmpval=a->tabIndex();
 	    if (tmpval>retval)
 		retval=tmpval;
@@ -1096,7 +1096,7 @@ int DocumentImpl::findHighestTabIndex()
     return retval;
 }
 
-HTMLElementImpl *DocumentImpl::findNextLink(HTMLElementImpl *cur, bool forward)
+ElementImpl *DocumentImpl::findNextLink(ElementImpl *cur, bool forward)
 {
     int curTabIndex = (cur?cur->tabIndex():(forward?-1:0));
 
@@ -1111,12 +1111,12 @@ HTMLElementImpl *DocumentImpl::findNextLink(HTMLElementImpl *cur, bool forward)
     }
 }
 
-HTMLElementImpl *DocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
+ElementImpl *DocumentImpl::findLink(ElementImpl *n, bool forward, int tabIndexHint)
 {
     // tabIndexHint is the tabIndex that should be found.
     // if tabIndex is -1, items containing tabIndex are skipped.
 
-  kdDebug(6000)<<"DocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
+    //  kdDebug(6000)<<"DocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
 
     int maxTabIndex;
 
@@ -1132,7 +1132,7 @@ HTMLElementImpl *DocumentImpl::findLink(HTMLElementImpl *n, bool forward, int ta
     return n;
 }
 
-HTMLElementImpl *DocumentImpl::notabindex(HTMLElementImpl *cur, bool forward)
+ElementImpl *DocumentImpl::notabindex(ElementImpl *cur, bool forward)
 {
     // REQ: n must be after the current node and its tabindex must be -1
     if ((cur = findLink(cur, forward, -1)))
@@ -1143,7 +1143,7 @@ HTMLElementImpl *DocumentImpl::notabindex(HTMLElementImpl *cur, bool forward)
     return 0;
 }
 
-HTMLElementImpl *DocumentImpl::intabindex(HTMLElementImpl *cur, bool forward)
+ElementImpl *DocumentImpl::intabindex(ElementImpl *cur, bool forward)
 {
     short tmptabindex;
     short maxtabindex = findHighestTabIndex();
@@ -1166,7 +1166,7 @@ HTMLElementImpl *DocumentImpl::intabindex(HTMLElementImpl *cur, bool forward)
         return notabindex(cur, forward) ;
 }
 
-HTMLElementImpl *DocumentImpl::tabindexzero(HTMLElementImpl *cur, bool forward)
+ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
 {
     //REQ: tabindex of result must be 0 and it must be after the current node ;
     if ((cur = findLink(cur, forward, 0)))

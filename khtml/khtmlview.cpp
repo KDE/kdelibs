@@ -88,11 +88,11 @@ public:
     NodeImpl *underMouse;
 
     // the currently selected node
-    HTMLElementImpl *currentNode;
+    ElementImpl *currentNode;
     // the node that was selected when enter was pressed
-    HTMLElementImpl *originalNode;
+    ElementImpl *originalNode;
     // the node the will be approached next.
-    HTMLElementImpl *newNode;
+    ElementImpl *newNode;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -557,7 +557,7 @@ bool KHTMLView::gotoLink()
   return gotoLink(d->currentNode);
 }
 
-bool KHTMLView::gotoLink(HTMLElementImpl *n)
+bool KHTMLView::gotoLink(ElementImpl *n)
 {
     if(!n)
         {
@@ -569,9 +569,9 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
             d->currentNode = 0;
             return false;
         }
-    n->focus();
+    n->setFocus();
     if (d->linkPressed)
-        n->setKeyboardFocus(DOM::ActivationActive);
+        n->setPressed();
     //calculate x- and ypos
 
     QRect bounds = n->getRect();
@@ -579,10 +579,10 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     kdDebug() << "KHTMLView::gotoLink: Bounding rectangle:" << bounds.x() <<":"<< bounds.y() <<":"<< bounds.width() <<":"<< bounds.height() << "\n";
 
     int x = 0, y = 0;
-    n->getAnchorPosition(x,y);
+    n->getUpperLeftCorner(x,y);
 
     int xe = 0, ye = 0;
-    n->getAnchorBounds(xe,ye);
+    n->getLowerRightCorner(xe,ye);
 
     int deltax;
     int deltay;
@@ -697,8 +697,9 @@ bool KHTMLView::gotoLink(bool forward)
     // ### enable dir change also when !d->currentNode
     if (d->currentNode && d->newNode && (d->newNode != m_part->xmlDocImpl()->findNextLink(d->currentNode, forward)))
     {
-	d->currentNode->blur();
-	HTMLElementImpl *tmpNode = d->newNode;
+	d->currentNode->setFocus(false);
+	d->currentNode->setPressed(false);
+	ElementImpl *tmpNode = d->newNode;
 	d->newNode = d->currentNode;
 	d->currentNode = tmpNode;
     }
@@ -710,12 +711,16 @@ bool KHTMLView::gotoLink(bool forward)
 	return gotoLink(d->newNode);
 
     if (d->currentNode)
-	d->currentNode->blur();
-
+    {
+	d->currentNode->setFocus(false);
+	d->currentNode->setPressed(false);
+    }
     // currently, no node is targeted.
     // find a new node
     d->newNode = m_part->xmlDocImpl()->findNextLink(d->currentNode, forward);
 
+    //    if (d->newNode) emit m_part->nodeActivated(Node(d->newNode));
+    //
     // none found ? abort
     if (!d->newNode)
     {
@@ -860,25 +865,26 @@ void KHTMLView::toggleActLink(bool actState)
     if ( d->currentNode )
     {
         //retrieve url
-        HTMLElementImpl *e = static_cast<HTMLElementImpl *>(d->currentNode);
+        ElementImpl *e = static_cast<ElementImpl *>(d->currentNode);
         if (!actState) // inactive->active
         {
             int x,y;
-            d->currentNode->setKeyboardFocus(DOM::ActivationActive);
+	    d->currentNode->setPressed(true);
+            d->currentNode->setFocus(true);
             d->originalNode=d->currentNode;
             d->linkPressed=true;
-            e->getAnchorPosition(x,y);
+            e->getUpperLeftCorner(x,y);
             ensureVisible(x,y);
         }
         else //active->inactive
         {
-            e->setKeyboardFocus(DOM::ActivationOff);
+            e->setPressed(false);
             d->linkPressed=false;
             if (d->currentNode==d->originalNode)
             {
-              if (e->id()==ID_A)
+              if (e->id()==ID_A || e->id()==ID_AREA)
                 {
-                  HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+                  HTMLAreaElementImpl *a = static_cast<HTMLAreaElementImpl *>(d->currentNode);
                   d->currentNode=0;
                   m_part->urlSelected( a->areaHref().string(),
                                        LeftButton, 0,
@@ -922,7 +928,7 @@ void KHTMLView::restoreScrollBar ( )
     }
 }
 
-void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
+void KHTMLView::setLinkCursor(DOM::ElementImpl *n)
 {
   if (lstViews)
   {
@@ -936,7 +942,10 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
           if (actView != this)
           {
               if (actView->d->currentNode && actView->d->currentNode!=n)
-                  actView->d->currentNode->blur();
+	      {
+                  actView->d->currentNode->setFocus(false);
+		  actView->d->currentNode->setPressed(false);
+	      }
               actView->d->currentNode = 0;
           }
 
@@ -946,13 +955,13 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
   if (d->currentNode != n)
   {
       if (d->currentNode)
-          d->currentNode->blur();
+          d->currentNode->setFocus(false);
       d->currentNode = n;
       if (n)
       {
           kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
-          n->setKeyboardFocus(DOM::ActivationPassive);
-          n->focus();
+          n->setPressed(false);
+          n->setFocus();
       }
   }
   d->linkPressed=false;

@@ -157,11 +157,16 @@ public:
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,
 			     MouseEvent *ev);
+    virtual void setFocus(bool = true);
+    virtual void setPressed(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
     virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
                                     DOM::Node & node, int & offset );
     virtual bool isSelectable();
     virtual bool childAllowed( NodeImpl *newChild );
+
+    virtual short tabIndex() const;
+    virtual void setTabIndex( short );
 
 protected: // member variables
 
@@ -171,6 +176,9 @@ protected: // member variables
     // for setting this according to the corresponding element description
     // in the DTD
     virtual khtml::AttributeList *defaultMap() const;
+private:
+    bool has_tabindex;
+    short tabindex;
 };
 
 

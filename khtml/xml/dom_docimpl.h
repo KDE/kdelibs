@@ -211,7 +211,7 @@ public:
      * @param start node to start search from
      * @param forward whether to search forward or backward.
      */
-    HTMLElementImpl *findNextLink(HTMLElementImpl *start, bool forward);
+    ElementImpl *findNextLink(ElementImpl *start, bool forward);
 
     // overrides NodeImpl
     virtual bool mouseEvent( int x, int y,
@@ -235,12 +235,12 @@ public slots:
     virtual void slotFinishedParsing();
 
 private:
-    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
-    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
+    ElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
+    ElementImpl *findLink(ElementImpl *start, bool forward, int tabIndexHint=-1);
     int findHighestTabIndex();
-    HTMLElementImpl *notabindex(DOM::HTMLElementImpl *cur, bool forward);
-    HTMLElementImpl *intabindex(DOM::HTMLElementImpl *cur, bool forward);
-    HTMLElementImpl *tabindexzero(DOM::HTMLElementImpl *cur, bool forward);
+    ElementImpl *notabindex(DOM::ElementImpl *cur, bool forward);
+    ElementImpl *intabindex(DOM::ElementImpl *cur, bool forward);
+    ElementImpl *tabindexzero(DOM::ElementImpl *cur, bool forward);
 
 
 protected:

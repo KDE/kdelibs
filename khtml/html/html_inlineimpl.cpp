@@ -59,12 +59,10 @@ ushort HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::blur(  )
 {
-  setKeyboardFocus(DOM::ActivationOff);
 }
 
 void HTMLAnchorElementImpl::focus(  )
 {
-  setKeyboardFocus(DOM::ActivationPassive);
 }
 
 bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y,

@@ -270,6 +270,9 @@ ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     namedAttrMap = new NamedAttrMapImpl(this);
     namedAttrMap->ref();
+
+    has_tabindex=false;
+    tabindex=0;
 }
 
 ElementImpl::~ElementImpl()
@@ -438,14 +441,31 @@ NodeListImpl *ElementImpl::getElementsByNameAttr( const DOMString &name )
     return new NameNodeListImpl( this, name);
 }
 
+short ElementImpl::tabIndex() const
+{
+  if (has_tabindex)
+    return tabindex;
+  else
+    return -1;
+}
+
+void ElementImpl::setTabIndex( short _tabindex )
+{
+  has_tabindex=true;
+  tabindex=_tabindex;
+}
+
 khtml::RenderStyle* ElementImpl::activeStyle()
 {
     if (!m_style) return 0;
 
     RenderStyle* dynamicStyle=0;
-    if ( mouseInside() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER)) )
+    if ( pressed() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::ACTIVE)))
+	return dynamicStyle;
+    else if (m_focused && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::FOCUS)))
+	return dynamicStyle;
+    else if  ( mouseInside() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER)))
         return dynamicStyle;
-
     return m_style;
 }
 
@@ -547,8 +567,8 @@ void ElementImpl::recalcStyle()
     }
 
     m_style->setFlowAroundFloats(faf);
-    if( m_render ) m_render->setStyle(activeStyle());
-
+    if( m_render && m_style ) 
+	m_render->setStyle(activeStyle());
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
 	n->recalcStyle();
@@ -625,6 +645,37 @@ bool ElementImpl::mouseEvent( int _x, int _y,
         applyChanges(true,false);
 
     return inside;
+}
+
+void ElementImpl::setFocus(bool received)
+{
+    if (!m_render)
+	return;
+
+    if (received)
+	m_render->setKeyboardFocus(DOM::ActivationPassive);
+    else
+	m_render->setKeyboardFocus(DOM::ActivationOff);
+
+    RenderObject *cb = m_render->containingBlock();
+    cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
+
+    NodeBaseImpl::setFocus(received);
+}
+
+void ElementImpl::setPressed(bool down)
+{
+    if (!m_render)
+	return;
+    if (down)
+	m_render->setKeyboardFocus(DOM::ActivationActive);
+    else 
+	m_render->setKeyboardFocus(DOM::ActivationOff);
+
+    RenderObject *cb = m_render->containingBlock();
+    cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
+
+    NodeBaseImpl::setPressed(down);
 }
 
 int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )

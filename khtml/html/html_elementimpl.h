@@ -57,19 +57,22 @@ public:
     void removeCSSProperty(int id);
     void removeCSSProperty(const DOMString &id);
 
-    void getAnchorPosition(int &xPos, int &yPos);
-    void getAnchorBounds(int &xPos, int &yPos);
+    virtual void setFocus(bool);
 
-    virtual short tabIndex() const;
-    virtual void setTabIndex( short );
-
-    /**
-     * returns true if this node may receive the keyboard focus,
-     * false otherwise.
-     */
     virtual bool isSelectable();
 
+    /**
+     * triggered by setFocus(false)
+     * triggers javaScript code and
+     * propagates the event the the widget.
+     */
     virtual void blur(){};
+
+    /**
+     * triggered by setFocus(true)
+     * triggers javaScript code and
+     * propagates the event the the widget.
+     */
     virtual void focus(){};
 
     DOMString innerHTML() const;
@@ -79,10 +82,6 @@ public:
     
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
-
-private:
-    bool has_tabindex;
-    short tabindex;
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl

@@ -50,8 +50,6 @@ using namespace khtml;
 HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 {
     m_styleDecls = 0;
-    has_tabindex=false;
-    tabindex=0;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
@@ -140,9 +138,18 @@ void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
     }
 }
 
+void HTMLElementImpl::setFocus(bool received)
+{
+    if (received)
+	focus();
+    else
+	blur();
+    ElementImpl::setFocus(received);
+}
+
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
-  DOMString indexstring;
+    DOMString indexstring;
     switch( attr->attrId )
     {
 // the core attributes...
@@ -166,15 +173,9 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 	setHasTooltip();
 	break;
     case ATTR_TABINDEX:
-        indexstring=getAttribute(ATTR_TABINDEX);
-        if (indexstring.length()) {
-	  has_tabindex=true;
-	  tabindex=indexstring.string().toInt();
-	} else {
-	  has_tabindex=false;
-	  tabindex=0;
-	}
-	has_tabindex=true;
+	indexstring=getAttribute(ATTR_TABINDEX);
+        if (indexstring.length()) 
+	    setTabIndex(indexstring.string().toInt());
 	break;
 // i18n attributes
     case ATTR_LANG:
@@ -262,20 +263,6 @@ DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )
     return m_styleDecls->getPropertyValue( prop );
 }
 
-short HTMLElementImpl::tabIndex() const
-{
-  if (has_tabindex)
-    return tabindex;
-  else
-    return -1;
-}
-
-void HTMLElementImpl::setTabIndex( short _tabindex )
-{
-  has_tabindex=true;
-  tabindex=_tabindex;
-}
-
 bool HTMLElementImpl::isSelectable()
 {
   switch(id())
@@ -301,91 +288,6 @@ bool HTMLElementImpl::isSelectable()
     default:
       return false;
     };
-}
-
-// I don't like this way of implementing the method, but I didn't find any
-// other way. Lars
-void HTMLElementImpl::getAnchorPosition(int &xPos, int &yPos)
-{
-    if (!m_render)
-    {
-	kdDebug(6000) << "HTMLElementImpl::getAnchorPosition: no rendering object.\n";
-	return;
-    }
-    m_render->absolutePosition( xPos, yPos );
-    if ( !isInline() ) 
-	return;
-//     if (m_render->containingBlock())
-// 	m_render->containingBlock()->absolutePosition( xPos, yPos );
-//     else
-	m_render->absolutePosition(xPos, yPos);
-
-    RenderObject *o = m_render;
-    // find the next text/image after the anchor, to get a position
-    while(o) {
-	if(o->firstChild())
-	    o = o->firstChild();
-	else if(o->nextSibling())
-	    o = o->nextSibling();
-	else {
-	    RenderObject *next = 0;
-	    while(!next) {
-		o = o->parent();
-		if(!o) return;
-		next = o->nextSibling();
-	    }
-	    o = next;
-	}
-	if(o->isText() || o->isReplaced()) {
-	    xPos += o->xPos();
-	    yPos += o->yPos();
-	    return;
-	}
-    }
-}
-
-void HTMLElementImpl::getAnchorBounds(int &xPos, int &yPos)
-{
-    if (!m_render)
-    {
-	kdDebug(6000) << "HTMLElementImpl::getAnchorBounds: no rendering object.\n";
-	return;
-    }
-
-    RenderObject *myRenderer;
-    if (m_render->containingBlock())
-    {
-	myRenderer=m_render->containingBlock();
-    }
-    else
-    {
-	myRenderer=m_render;
-    }
-
-    myRenderer->absolutePosition( xPos, yPos );
-
-    RenderObject *o = m_render;
-    // find the next text/image after the anchor, to get a position
-    while(o) {
-	if(o->firstChild())
-	    o = o->firstChild();
-	else if(o->nextSibling())
-	    o = o->nextSibling();
-	else {
-	    RenderObject *next = 0;
-	    while(!next) {
-		o = o->parent();
-		if(!o) return;
-		next = o->nextSibling();
-	    }
-	    o = next;
-	}
-	if(o->isText() || o->isReplaced()) {
-	    xPos += o->xPos()+o->width();
-	    yPos += o->yPos()+o->height();
-	    return;
-	}
-    }
 }
 
 DOMString HTMLElementImpl::innerHTML() const

@@ -157,7 +157,7 @@ public:
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
 private:
-    void setLinkCursor(DOM::HTMLElementImpl *);
+    void setLinkCursor(DOM::ElementImpl *);
 
 signals:
     void cleared();
@@ -207,9 +207,8 @@ private:
 
     /**
      * move the view towards a given element.
-     * Note: currently this works only if the node is an anchor
      */
-    bool gotoLink(DOM::HTMLElementImpl *);
+    bool gotoLink(DOM::ElementImpl *);
 
     /**
      * move the view towards the next node

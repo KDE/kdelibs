@@ -491,7 +491,7 @@ public:
     static void cleanup();
 
     // LINK is only used in the CSSStyleSelector, to get the pseudo style for :hover right.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK };
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK, FOCUS, ACTIVE };
 
 protected:
     void setBitDefaults();

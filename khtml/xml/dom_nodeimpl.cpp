@@ -319,19 +319,6 @@ QRect NodeImpl::getRect()
     return QRect();
 }
 
-void NodeImpl::setKeyboardFocus(ActivationState b)
-{
-  if (m_render)
-    {
-      m_render->setKeyboardFocus(b);
-      RenderObject *cb = m_render->containingBlock();
-      // repaint one pixel outside the element`s dimensions to make
-      // sure that a Selection (that can be larger than the object)
-      // is completely redrawn.
-      cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
-    }
-}
-
 void NodeImpl::setChanged(bool b)
 {
     if (b && !changed() && document)
@@ -456,6 +443,7 @@ NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
     m_style = 0;
 }
 
+
 NodeBaseImpl::~NodeBaseImpl()
 {
     //kdDebug( 6020 ) << "NodeBaseImpl destructor" << endl;
@@ -477,6 +465,7 @@ NodeBaseImpl::~NodeBaseImpl()
     if (m_style)
 	m_style->deref();
 }
+
 
 NodeImpl *NodeBaseImpl::firstChild() const
 {
@@ -872,6 +861,102 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
     {
 	clone->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
     }
+}
+
+// I don't like this way of implementing the method, but I didn't find any
+// other way. Lars
+bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
+{
+    if (!m_render)
+    {
+	kdDebug(6000) << "HTMLElementImpl::getAnchorPosition: no rendering object.\n";
+	return false;
+    }
+    m_render->absolutePosition( xPos, yPos );
+    if ( !isInline() ) 
+	return true;
+//     if (m_render->containingBlock())
+// 	m_render->containingBlock()->absolutePosition( xPos, yPos );
+//     else
+	m_render->absolutePosition(xPos, yPos);
+
+    RenderObject *o = m_render;
+    // find the next text/image after the anchor, to get a position
+    while(o) {
+	if(o->firstChild())
+	    o = o->firstChild();
+	else if(o->nextSibling())
+	    o = o->nextSibling();
+	else {
+	    RenderObject *next = 0;
+	    while(!next) {
+		o = o->parent();
+		if(!o) return false;
+		next = o->nextSibling();
+	    }
+	    o = next;
+	}
+	if(o->isText() || o->isReplaced()) {
+	    xPos += o->xPos();
+	    yPos += o->yPos();
+	    return true;
+	}
+    }
+    return true;
+}
+
+bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
+{
+    if (!m_render)
+    {
+	kdDebug(6000) << "HTMLElementImpl::getAnchorBounds: no rendering object.\n";
+	return false;
+    }
+
+    RenderObject *myRenderer;
+    if (m_render->containingBlock())
+    {
+	myRenderer=m_render->containingBlock();
+    }
+    else
+    {
+	myRenderer=m_render;
+    }
+
+    myRenderer->absolutePosition( xPos, yPos );
+
+    RenderObject *o = m_render;
+    // find the next text/image after the anchor, to get a position
+    while(o) {
+	if(o->firstChild())
+	    o = o->firstChild();
+	else if(o->nextSibling())
+	    o = o->nextSibling();
+	else {
+	    RenderObject *next = 0;
+	    while(!next) {
+		o = o->parent();
+		if(!o) return false;
+		next = o->nextSibling();
+	    }
+	    o = next;
+	}
+	if(o->isText() || o->isReplaced()) {
+	    xPos += o->xPos()+o->width();
+	    yPos += o->yPos()+o->height();
+	    return true;
+	}
+    }
+    return true;
+}
+
+QRect NodeBaseImpl::getRect()
+{
+    int xPos, yPos;
+    getUpperLeftCorner(xPos, yPos);
+    int xEnd, yEnd;
+    getLowerRightCorner(xEnd, yEnd);
+    return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
 }
 
 void NodeBaseImpl::setStyle(khtml::RenderStyle *style)

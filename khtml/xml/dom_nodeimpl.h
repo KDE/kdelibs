@@ -195,7 +195,13 @@ public:
     void setPressed(bool b=true) { m_pressed = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
+    virtual void setFocus(bool b=true) { m_focused = b; }
     virtual void setChanged(bool b=true);
+
+    /**
+     * whether this node can receive the keyboard focus.
+     */
+    virtual bool isSelectable() { return false; };
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -218,7 +224,6 @@ public:
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     virtual QRect getRect();
 
-    void setKeyboardFocus(ActivationState b=ActivationPassive);
     virtual void recalcStyle() {}
 
     virtual DOMString namespaceURI() const;
@@ -237,6 +242,7 @@ protected:
     bool m_attached : 1;
     bool m_changed : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
+    bool m_focused : 1;
 private:
     static const QChar LESSTHAN;
     static const QChar MORETHAN;
@@ -310,6 +316,10 @@ public:
 
     virtual void setStyle(khtml::RenderStyle *style);
     virtual khtml::RenderStyle *style() { return m_style; }
+
+    virtual QRect getRect();
+    bool getUpperLeftCorner(int &xPos, int &yPos);
+    bool getLowerRightCorner(int &xPos, int &yPos);
 
 protected:
     NodeImpl *_first;

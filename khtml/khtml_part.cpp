@@ -1629,7 +1629,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
 
   int x = 0, y = 0;
   HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
-  a->getAnchorPosition(x, y);
+  a->getUpperLeftCorner(x, y);
   d->m_view->setContentsPos(x-50, y-50);
   return true;
 }
