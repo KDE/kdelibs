@@ -298,16 +298,14 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
   int textPos = pxWidth;
 
   QRect br(buttonRect(x, y, w, h));
+
+  if (sunken)
+    p->translate(1,1);
   
   if ((NULL != pixmap) && (!pixmap->isNull())) {
 
     int dx = (pxWidth - pixmap->width())  / 2;
     int dy = (h - pixmap->height())       / 2;
-
-    if (sunken) {
-      dx++;
-      dy++;
-    }
 
     p->drawPixmap(br.x() + dx, dy, *pixmap);
   }
@@ -321,8 +319,8 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
   if (-1 != modStrPos) {
 
-    // 11 because we include a space after the closing brace.
-    s.remove(modStrPos, 11);
+    // +1 because we include a space after the closing brace.
+    s.remove(modStrPos, modStr.length()+1);
 
     QPixmap modPixmap = SmallIcon("modified");
 
@@ -349,7 +347,7 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(sunken ? g.light() : g.buttonText());
 
     p->drawText(
-      br.x() + textPos, 0,
+      br.x() + textPos, -1,
       w - textPos, h,
       AlignLeft | AlignVCenter,
       s
