@@ -62,12 +62,13 @@ public class KJASAppletStub extends Frame
             appletName = appletName.substring(0, idx);
         }
         String fixedClassName = _className;
-        if (_className.endsWith(".class") 
-            || _className.endsWith(".java")
-            || _className.endsWith(".CLASS")
-            || _className.endsWith(".JAVA"))
+        if (_className.endsWith(".class") || _className.endsWith(".CLASS"))
         {
-            fixedClassName = _className.substring(0, _className.length() - 5);   
+            fixedClassName = _className.substring(0, _className.length()-6);   
+        }
+        else if (_className.endsWith(".java")|| _className.endsWith(".JAVA"))
+        {
+            fixedClassName = _className.substring(0, _className.length()-5);   
         }
         className = fixedClassName.replace('/', '.');
             
