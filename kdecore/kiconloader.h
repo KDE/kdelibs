@@ -199,7 +199,7 @@ QPixmap AppIcon(const QString& pixmap,
  * so @see loadIcon
  */
 QPixmap MimeIcon(const QString& pixmap,
-		const KInstance* library = KGlobal::instance());
+		 const KInstance* library = KGlobal::instance());
 
 /**
  * Helper function to load device icons with. It simply returns
@@ -215,6 +215,18 @@ QPixmap DevIcon(const QString& pixmap,
  * so @see loadIcon
  */
 QPixmap FileIcon(const QString& pixmap,
-		const KInstance* library = KGlobal::instance());
+		 const KInstance* library = KGlobal::instance());
+
+/**
+ * Helper function to load iconlist icons with. It simply returns
+ * library->iconLoader()->loadIcon("listitems/" + pixmap)
+ * so @see loadIcon
+ */
+QPixmap ListIcon(const QString& pixmap ,
+		 const KInstance* library = KGlobal::instance());
 
 #endif // KICONLOADER_H
+
+
+
+

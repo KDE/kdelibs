@@ -286,3 +286,13 @@ QPixmap FileIcon(const QString& pixmap , const KInstance* library )
     else
         return library->iconLoader()->loadIcon("filesystems/" + pixmap);
 }
+
+QPixmap ListIcon(const QString& pixmap , const KInstance* library )
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("listitems/" + pixmap);
+}
+
+
