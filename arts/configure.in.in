@@ -70,8 +70,23 @@ AC_DEFUN(AC_CHECK_IOCTL_TYPE,
     ],
     [
     ],
-	ac_cv_ioctl_type=1,
+	ac_cv_ioctl_type=1)
+    AC_TRY_COMPILE(
+    [
+      #include <sys/ioctl.h>
+	  int ioctl(int d, unsigned long request,...);
+    ],
+    [
+    ],
 	ac_cv_ioctl_type=2)
+    AC_TRY_COMPILE(
+    [
+      #include <sys/ioctl.h>
+	  int ioctl(int d, unsigned long int request,...);
+    ],
+    [
+    ],
+	ac_cv_ioctl_type=3)
   ])
   AC_MSG_RESULT($ac_cv_ioctl_type)
   AC_LANG_RESTORE
@@ -79,9 +94,14 @@ AC_DEFUN(AC_CHECK_IOCTL_TYPE,
 if test $ac_cv_ioctl_type = 1; then
   AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
 	      [Define if ioctl is declared as int ioctl(int d, int request,...)])
-else
-  AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,1,
+fi
+if test $ac_cv_ioctl_type = 2; then
+  AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,2,
 	      [Define if ioctl is declared as int ioctl(int d, unsigned long request,...)])
+fi
+if test $ac_cv_ioctl_type = 3; then
+  AC_DEFINE(HAVE_IOCTL_INT_ULONGINT_DOTS,3,
+	      [Define if ioctl is declared as int ioctl(int d, unsigned long int request,...)])
 fi
 ])
 
