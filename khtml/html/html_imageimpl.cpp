@@ -462,7 +462,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
         int y1 = coords->at(3)->minWidth(height_);
         region = QRegion(x0,y0,x1-x0,y1-y0);
     }
-    else /*if (shape==Default || shape == Unknown)*/ {
+    else if (shape==Default) {
         //cout << "default/unknown" << endl;
         region = QRegion(0,0,width_,height_);
     }
