@@ -124,9 +124,11 @@ QByteArray KCodecs::base64Encode( const QByteArray& in )
     if ( in.isEmpty() )
         return QByteArray();
 
-    uint sidx=0, didx=0, len = in.size();
+    uint sidx=0;
+    uint didx=0;
+    uint len = in.size();
     QByteArray out( ((len+2)/3)*4 );
-    const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(in.copy().data()));
+    const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
     for ( ; sidx < len-2; sidx += 3)
@@ -174,7 +176,7 @@ QByteArray KBase64::base64Decode( const QByteArray& in )
     uint len = in.size(), tail = len;
     while( in[tail-1] == '=' ) tail--;
     QByteArray out( tail-(len/4) );
-    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(in.data()));
+    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // ascii printable to 0-63 conversion
     for (uint idx = 0; idx < len; idx++)
@@ -216,7 +218,7 @@ QByteArray KCodecs::uuencode( const QByteArray& in )
     uint line_len = 45;
     uint nl_len = strlen(nl);
     QByteArray out( (len+2)/3*4 + ((len+line_len-1)/line_len)*(nl_len+1) );
-    const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(in.data()));
+    const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // split into lines, adding line-length and line terminator
     for ( ; sidx+line_len < len; )
@@ -296,7 +298,7 @@ QByteArray KCodecs::uudecode( const QByteArray& in )
     uint len = in.size();
     uint line_len, end;
     QByteArray out( len/4*3 );
-    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(in.data()));
+    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
     for (; sidx < len; )
     {
         // get line length (in number of encoded octets)
