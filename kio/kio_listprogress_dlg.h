@@ -7,8 +7,9 @@
 
 #include <ktmainwindow.h>
 
-class QTimer;
+#include "kio_job.h" 
 
+class QTimer;
 class KIOListView;
 
 class KIOListViewItem : public QObject, public QListViewItem, KIO {
@@ -34,8 +35,10 @@ public slots:
   void slotTotalSize( int, unsigned long _bytes );
   void slotTotalFiles( int, unsigned long _files );
   void slotTotalDirs( int, unsigned long _dirs );
+//   void slotProcessedSize( int, unsigned long _bytes );
   void slotPercent( int, unsigned long _bytes );
   void slotProcessedFiles( int, unsigned long _files );
+//   void slotProcessedDirs( int, unsigned long _dirs );
   void slotScanningDir( int, const char *_dir );
   void slotSpeed( int, unsigned long _bytes_per_second );
   void slotCopyingFile( int, const char *_from, const char *_to );
@@ -44,7 +47,7 @@ public slots:
   void slotDeletingFile( int, const char *_url );
   void slotRenamed( int, const char* _new_url);
 
-//   void slotProcessedSize( int, unsigned long _bytes );
+  void slotFinished( int );
 
 protected:
 
@@ -55,6 +58,9 @@ protected:
   unsigned long m_iTotalDirs;
 
   KIOListView *listView;
+
+signals:
+  void statusChanged( QListViewItem* );
 };
 
 
@@ -131,7 +137,7 @@ public:
 
 protected:
 
-//   void closeEvent( QCloseEvent * );
+  void closeEvent( QCloseEvent * );
 
   QTimer* updateTimer;
   KIOListView *myListView;
@@ -153,6 +159,8 @@ protected slots:
 
   void slotOpenSimple( QListViewItem * );
   void slotSelection();
+
+  void slotStatusChanged( QListViewItem * );
 };
 
 #endif

@@ -1,7 +1,7 @@
 // $Id$
 
-#include "kio_job.h" 
 #include <qtimer.h>
+#include <qmessagebox.h>
 
 #include <kconfig.h>
 #include <kapp.h>
@@ -13,15 +13,15 @@
 
 #include "kio_listprogress_dlg.h"
 
-int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
-			     160, // LOCAL_FILENAME
-			     40,  // RESUME
-			     60,  // COUNT
-			     30,  // PROGRESS
-			     65,  // TOTAL
-			     70,  // SPEED
-			     70,  // REMAINING_TIME
-			     450  // URL
+static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
+				    160, // LOCAL_FILENAME
+				    40,  // RESUME
+				    60,  // COUNT
+				    30,  // PROGRESS
+				    65,  // TOTAL
+				    70,  // SPEED
+				    70,  // REMAINING_TIME
+				    450  // URL
 };
 
 #define INIT_MAX_ITEMS 16
@@ -48,8 +48,8 @@ KIOListViewItem::KIOListViewItem( KIOListView* view, KIOJob *job )
 	   SLOT( slotPercent( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
 	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
-	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
+//   connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
+// 	   SLOT( slotProcessedDirs( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigCopying( int, const char*, const char* ) ),
 	   SLOT( slotCopyingFile( int, const char*, const char* ) ) );
   connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
@@ -64,6 +64,13 @@ KIOListViewItem::KIOListViewItem( KIOListView* view, KIOJob *job )
 	   SLOT( slotDeletingFile( int, const char* ) ) );
   connect( m_pJob, SIGNAL( sigRenamed( int, const char* ) ),
 	   SLOT( slotRenamed( int, const char* ) ) );
+
+  connect( job, SIGNAL( sigFinished( int ) ),
+	   SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigCanceled( int ) ),
+	   SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ),
+	   SLOT( slotFinished( int ) ) );
 }
 
 
@@ -203,6 +210,11 @@ void KIOListViewItem::slotCanResume( int, bool _resume ) {
 }
 
 
+void KIOListViewItem::slotFinished( int ) {
+  emit statusChanged( this );
+}
+
+
 //-----------------------------------------------------------------------------
 
 KIOListView::KIOListView (QWidget *parent, const char *name)
@@ -267,14 +279,6 @@ void KIOListView::writeConfig() {
 KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
   readSettings();
 
-  if ( properties != "" ) // !!!
-    setGeometry(KWM::setProperties(winId(), properties));
-  else
-    resize( 460, 150 );
-
-  setCaption("Progress Dialog");
-//   setMinimumSize( 350, 150 ); // !!!
-
   // setup toolbar
   toolBar()->insertButton(BarIcon("delete"), TOOL_CANCEL,
 			  SIGNAL(clicked()), this,
@@ -294,64 +298,79 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
   statusBar()->insertItem( i18n(" Time : 00:00:00 "), ID_TOTAL_TIME);
   statusBar()->insertItem( i18n(" %1 kB/s ").arg("123.34"), ID_TOTAL_SPEED);
 
-//   updateStatusBar();
-
-  // setup listbox
+  // setup listview
   myListView = new KIOListView( this, "kiolist" );
 
   setView( myListView, true);
 
   connect( myListView, SIGNAL( selectionChanged() ), 
-	   this, SLOT( slotSelection() ) );
+	   SLOT( slotSelection() ) );
   connect( myListView, SIGNAL( doubleClicked( QListViewItem* ) ), 
-	   this, SLOT( slotOpenSimple( QListViewItem* ) ) );
+	   SLOT( slotOpenSimple( QListViewItem* ) ) );
 
   // setup animation timer
   updateTimer = new QTimer( this );
   connect( updateTimer, SIGNAL( timeout() ),
-	   this, SLOT( slotUpdate() ) );
+	   SLOT( slotUpdate() ) );
 
   updateTimer->start( 1000 );
 
-  this->hide();
+  setCaption("Progress Dialog");
+  setMinimumSize( 350, 150 );
+  resize( 460, 150 );
+
+  hide();
 }
 
 
 KIOListProgressDlg::~KIOListProgressDlg() {
   updateTimer->stop();
   writeSettings();
-//   KIOJob::m_pListProgressDlg = 0L;
 }
 
 
-// void KIOListProgressDlg::closeEvent( QCloseEvent * ){
-//   updateTimer->stop();
-//   writeSettings();
-// }
+void KIOListProgressDlg::closeEvent( QCloseEvent * ){
+  updateTimer->stop();
+  writeSettings();
+  hide();
+}
 
 
 void KIOListProgressDlg::addJob( KIOJob *job ) {
+  KIOListViewItem *item;
 
   QListViewItemIterator it( myListView );
   for ( ; it.current(); ++it ) {
-    KIOListViewItem *item = (KIOListViewItem*) it.current();
+    item = (KIOListViewItem*) it.current();
     if ( item->id() == job->id() ) {
       item->update();
       return;
     }
   }
 
-  new KIOListViewItem( myListView, job );
+  item = new KIOListViewItem( myListView, job );
+  connect( item, SIGNAL( statusChanged( QListViewItem* ) ),
+	   SLOT( slotStatusChanged( QListViewItem* ) ) );
+}
+
+
+void KIOListProgressDlg::slotStatusChanged( QListViewItem *item ) {
+  delete item;
 }
 
 
 void KIOListProgressDlg::slotUpdate() {
+  if ( myListView->childCount() == 0 ) {
+    hide();
+    return;
+  }
+
   int totalFiles = 0;
   int totalSize = 0;
   int totalSpeed = 0;
   QTime totalRemTime;
 
-  // fill the list with kiojobs
+  // count totals !!! how ?
 
   // update statusbar
   statusBar()->changeItem( i18n( " Files : %1 ").arg( totalFiles ), ID_TOTAL_FILES);
@@ -361,11 +380,7 @@ void KIOListProgressDlg::slotUpdate() {
   statusBar()->changeItem( i18n( " %1/s ").arg( KIOJob::convertSize( totalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
-  if ( myListView->childCount() > 0 ) {
-    show();
-  } else {
-    hide();
-  }
+  show();
 }
 
 
@@ -396,8 +411,6 @@ void KIOListProgressDlg::readSettings() { // finish !!!
 void KIOListProgressDlg::writeSettings() { // finish !!!
   KConfig config("kioslaverc");
   config.setGroup( "ListProgress" );
-
-  config.sync();
 }
 
 
@@ -408,7 +421,6 @@ void KIOListProgressDlg::cancelCurrent() {
     if ( it.current()->isSelected() ) {
       KIOListViewItem *item = (KIOListViewItem*) it.current();
       item->remove();
-      delete item;
     } else {
       it++; // update counts
     }

@@ -12,7 +12,7 @@
 
 
 KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified )
-  : QDialog( 0L ) {
+  : QWidget( 0L ) {
 
   m_pJob = _job;
   connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
@@ -23,10 +23,10 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
 	   SLOT( slotTotalFiles( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned long ) ),
 	   SLOT( slotTotalDirs( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
-	   SLOT( slotPercent( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigProcessedSize( int, unsigned long ) ),
 	   SLOT( slotProcessedSize( int, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
+	   SLOT( slotPercent( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned long ) ),
 	   SLOT( slotProcessedFiles( int, unsigned long ) ) );
   connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned long ) ),
@@ -92,7 +92,7 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
 
   QPushButton *pb = new QPushButton( i18n("Cancel"), this );
   pb->setFixedSize( pb->sizeHint() );
-  connect( pb, SIGNAL( clicked() ), SLOT( done() ) );
+  connect( pb, SIGNAL( clicked() ), SLOT( quit() ) );
   m_pLayout->addSpacing( 10 );
   m_pLayout->addWidget( pb );
 
@@ -112,11 +112,15 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
 }
 
 
-void KIOSimpleProgressDlg::done( int ) {
+void KIOSimpleProgressDlg::closeEvent( QCloseEvent * ){
+  quit();
+}
+
+
+void KIOSimpleProgressDlg::quit() {
   if ( m_pJob ) {
     m_pJob->kill();
   }
-//   hide(); !!! test closing
 }
 
 

@@ -1,7 +1,7 @@
 #ifndef __kio_simpleprogress_dlg_h__
 #define __kio_simpleprogress_dlg_h__
 
-#include <qdialog.h>
+#include <qwidget.h>
 #include <qlabel.h>
 #include <qlayout.h>
 
@@ -9,7 +9,7 @@
 
 class KIOJob;
 
-class KIOSimpleProgressDlg : public QDialog {
+class KIOSimpleProgressDlg : public QWidget {
 
   Q_OBJECT
 
@@ -35,9 +35,11 @@ public slots:
   void slotCanResume( int, bool );
 
 protected slots:
-  virtual void done ( int r );
+  void quit();
 
 protected:
+  void closeEvent( QCloseEvent * );
+
   QVBoxLayout *m_pLayout;
   QLabel* m_pLine1;
   QLabel* m_pLine2;

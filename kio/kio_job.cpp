@@ -766,7 +766,7 @@ void KIOJob::slotProcessedSize( unsigned long _bytes ) {
 
   m_iProcessedSize = _bytes;
 
-  if ( m_iProcessedSize == 0 || m_iTotalSize == 0 ) {
+  if ( m_iTotalSize != 0 ) {
     m_iPercent = (int)(( (float)m_iProcessedSize / (float)m_iTotalSize ) * 100.0);
     if ( m_iPercent != old ) {
       emit sigPercent( m_id, m_iPercent );
