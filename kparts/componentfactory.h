@@ -169,7 +169,7 @@ namespace KParts
             KLibFactory *factory = library->factory();
             if ( !factory )
             {
-                delete library;
+                library->unload();
                 if ( error )
                     *error = ErrNoFactory;
                 return 0;
@@ -177,7 +177,7 @@ namespace KParts
             KParts::Factory *partFactory = dynamic_cast<KParts::Factory *>( factory );
             if ( !partFactory )
             {
-                delete library;
+                library->unload();
                 if ( error )
                     *error = ErrNoFactory;
                 return 0;
@@ -186,7 +186,7 @@ namespace KParts
                                                        widgetName, parent, name, args );
             if ( !res )
             {
-                delete library;
+                library->unload();
                 if ( error )
                     *error = ErrNoComponent;
             }
