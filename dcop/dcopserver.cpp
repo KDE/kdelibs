@@ -369,6 +369,8 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 	free(remAuthFile);
     }
 
+    umask (original_umask);
+
     return (0);
 }
 
@@ -713,12 +715,14 @@ DCOPServer::DCOPServer(bool _only_local)
 	}
 
     char errormsg[256];
+    int orig_umask = umask(0); /*old libICE's don't reset the umask() they set */
     if (!IceListenForConnections (&numTransports, &listenObjs,
 				  256, errormsg))
 	{
 	    fprintf (stderr, "%s\n", errormsg);
 	    exit (1);
 	} else {
+	    (void) umask(orig_umask);
 	    // publish available transports.
 	    QCString fName = dcopServerFile();
 	    FILE *f;
