@@ -28,7 +28,7 @@
 // This value has been deprecated!! Use
 // KProtocolManager::defaultUserAgent() instead.
 #define DEFAULT_USERAGENT_STRING \
-QString("Mozilla/5.0 (Konqueror/%1; compatible MSIE 5.5; X11)").arg(KDE_VERSION_STRING)
+QString("Mozilla/5.0 (compatible; Konqueror/%1; X11").arg(KDE_VERSION_MAJOR)
 
 class KConfig;
 class KPAC;
