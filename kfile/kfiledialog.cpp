@@ -260,7 +260,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory
-            if ( lastDirectory->path(+1) == home.path(+1) || 
+            if ( lastDirectory->path(+1) == home.path(+1) ||
                  QDir::currentDirPath() != QDir::homeDirPath() )
                 *lastDirectory = QDir::currentDirPath();
         }
@@ -1504,8 +1504,11 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    KFileDialog dlg(QString::null, filter, parent, "filedialog", true);
-    dlg.setSelection( dir ); // may also be a filename
+    bool specialDir = dir.at(0) == ':';
+    KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    if ( !specialDir )
+        dlg.setSelection( dir ); // may also be a filename
+    
     dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
@@ -1521,8 +1524,11 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(QString::null, filter, parent, "filedialog", true);
-    dlg.setSelection( dir ); // may also be a filename
+    bool specialDir = dir.at(0) == ':';
+    KFileDialog dlg(specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    if ( !specialDir )
+        dlg.setSelection( dir ); // may also be a filename
+
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
 
