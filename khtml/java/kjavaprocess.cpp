@@ -28,6 +28,10 @@
 #include <qmap.h>
 #include <unistd.h>
 #include <qptrlist.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
 
 class KJavaProcessPrivate
 {
@@ -41,15 +45,17 @@ private:
     QPtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
     bool processKilled;
+    int sync_count;
 };
 
-KJavaProcess::KJavaProcess()
+KJavaProcess::KJavaProcess() : KProcess()
 {
     d = new KJavaProcessPrivate;
     d->BufferList.setAutoDelete( true );
     d->processKilled = false;
+    d->sync_count = 0;
     
-    javaProcess = new KProcess();
+    javaProcess = this; //new KProcess();
 
     connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
              this, SLOT( slotWroteData() ) );
@@ -70,7 +76,7 @@ KJavaProcess::~KJavaProcess()
         stopJava();
     }
 
-    delete javaProcess;
+    //delete javaProcess;
     delete d;
 }
 
@@ -176,6 +182,73 @@ void KJavaProcess::sendBuffer( QByteArray* buff )
     }
 }
 
+void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
+    kdDebug(6100) << ">KJavaProcess::sendSync " << d->sync_count << endl;
+    if (d->sync_count++ == 0)
+        javaProcess->suspend();
+    QByteArray* buff = addArgs( cmd_code, args );
+    storeSize( buff );
+    int dummy;
+    int current_sync_count;
+    int size = buff->size();
+    char *data = buff->data();
+    fd_set fds;
+    timeval tv;
+    do {
+        FD_ZERO(&fds);
+        FD_SET(in[1], &fds);
+        tv.tv_sec = 5;
+        tv.tv_usec = 0;
+        int retval = select(in[1]+1, 0L, &fds, 0L, &tv);
+        FD_CLR(in[1], &fds);
+        if (retval < 0 && errno == EINTR) {
+            continue;
+        } else if (retval <= 0) {
+            kdError(6100) << "KJavaProcess::sendSync " << retval << endl;
+            goto bail_out;
+        } else if (KProcess::input_data) {
+            KProcess::slotSendData(dummy);
+        } else {
+            int nr = ::write(in[1], data, size);
+            size -= nr;
+            data += nr;
+        }
+    } while (size > 0);
+    current_sync_count = d->sync_count;
+    do {
+        FD_ZERO(&fds);
+        FD_SET(out[0], &fds);
+        tv.tv_sec = 5;
+        tv.tv_usec = 0;
+        kdDebug(6100) << "KJavaProcess::sendSync bf read" << endl;
+        int retval = select(out[0]+1, &fds, 0L, 0L, &tv);
+        FD_CLR(out[0], &fds);
+        if (retval < 0 && errno == EINTR) {
+            continue;
+        } else if (retval <= 0) {
+            kdError(6100) << "KJavaProcess::sendSync timeout" <<endl;
+            d->sync_count--;
+            break;
+        } else {
+            slotReceivedData(out[0], dummy);
+        }
+        if (d->sync_count < current_sync_count)
+            break;
+    } while(true);
+bail_out:
+    delete buff;
+    if (d->sync_count == 0)
+        javaProcess->resume();
+    kdDebug(6100) << "<KJavaProcess::sendSync " << d->sync_count << endl;
+}
+
+void KJavaProcess::syncCommandReceived() {
+    if (--d->sync_count < 0) {
+        kdError(6100) << "syncCommandReceived() sync_count below zero" << endl;
+        d->sync_count = 0;
+    }
+}
+
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
     if( isRunning() )
@@ -235,6 +308,7 @@ void KJavaProcess::slotWroteData( )
 {
     //do this here- we can't free the data until we know it went through
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
+    kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
     if ( d->BufferList.count() >= 1 )
     {

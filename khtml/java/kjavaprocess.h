@@ -39,7 +39,7 @@
  */
 
 class KJavaProcessPrivate;
-class KJavaProcess : public QObject
+class KJavaProcess : public KProcess //QObject
 {
 Q_OBJECT
 
@@ -109,7 +109,14 @@ public:
      * out of the data, and then writes it standard out.
      */
     void send( char cmd_code, const QStringList& args );
-
+    /**
+     * As above, but block until the return value is received
+     **/
+    void sendSync( char cmd_code, const QStringList& args );
+    /**
+     * Notify that the return values has arrived
+     **/
+    void syncCommandReceived();
     /**
      * Sends a command to the KJAS Applet Server by building a QByteArray
      * out of the data, and then writes it standard out.  It adds each QString

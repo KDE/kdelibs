@@ -454,9 +454,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 d->jsstack->args = args;
                 d->jsstack->ready = true;
                 d->jsstack = d->jsstack->up;
+                process->syncCommandReceived();
             } else
                 kdDebug(6100) << "Error: Missed return member data" << endl;
-            break;
+            return;
         case KJAS_AUDIOCLIP_PLAY:
             cmd = QString::fromLatin1( "audioclip_play" );
             kdDebug(6100) << "Audio Play: url=" << args[0] << endl;
@@ -507,15 +508,8 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
 
     JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    process->send( KJAS_GET_MEMBER, args );
-
-    //dirty sync
-    extern QApplication *qApp;
-    int count = 100 + frame->size;
-    while (!frame->ready && --count > 0) {
-        usleep(50000); 
-        qApp->processEvents(100);
-    }
+    kdDebug(6100) << "KJavaAppletServer::getMember " << name << endl;
+    process->sendSync( KJAS_GET_MEMBER, args );
 
     bool retval = frame->ready;
     if (retval) {
@@ -526,7 +520,7 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
         } else
             retval = false;
     } else {
-        kdError(6100) << "Error: timeout on Java  member return data" << endl;
+        kdError(6100) << "getMember: timeout" << endl;
         d->jsstack = frame->up; // FIXME: if(d->jsstack != frame)
     }
 
@@ -543,22 +537,16 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
     args.append( name );
     args.append( value );
 
+    kdDebug(6100) << "KJavaAppletServer::putMember " << name << endl;
     JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    process->send( KJAS_PUT_MEMBER, args );
-
-    extern QApplication *qApp;
-    int count = 100 + frame->size;
-    while (!frame->ready && --count > 0) {
-        usleep(50000); 
-        qApp->processEvents(100);
-    }
+    process->sendSync( KJAS_PUT_MEMBER, args );
 
     bool retval = frame->ready;
     if (retval) {
         retval = frame->args[0].toInt(&retval);
     } else {
-        kdError(6100) << "Error: timeout on Java member return data" << endl;
+        kdError(6100) << "putMember: timeout" << endl;
         d->jsstack = frame->up;
     }
 
@@ -578,14 +566,8 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
 
     JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    process->send( KJAS_CALL_MEMBER, args );
-
-    extern QApplication *qApp;
-    int count = 100 + frame->size;
-    while (!frame->ready && --count > 0) {
-        usleep(50000); 
-        qApp->processEvents(100);
-    }
+    kdDebug(6100) << "KJavaAppletServer::callMember " << name << endl;
+    process->sendSync( KJAS_CALL_MEMBER, args );
 
     bool retval = frame->ready;
     if (retval) {
@@ -597,7 +579,7 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
         } else
             retval = false;
     } else {
-        kdError(6100) << "Error: timeout on Java  member return data" << endl;
+        kdError(6100) << "callMember: timeout return data" << endl;
         d->jsstack = frame->up;
     }
 

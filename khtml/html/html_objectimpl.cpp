@@ -109,8 +109,10 @@ void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString
     }
     script += ")";
 
-    timer->start(0, true);
     kdDebug(6036) << "HTMLEmbedElementImpl::liveConnectEvent " << script << endl;
+    KHTMLView* w = getDocument()->view();
+    w->part()->executeScript(this, script);
+    //timer->start(0, true);
 }
 
 void LiveConnectElementImpl::timerDone() {
