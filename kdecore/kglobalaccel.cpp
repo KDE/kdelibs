@@ -520,6 +520,8 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     kdDebug(125) << "x11EventFilter: seek " << KAccel::keySymXToString( keySymX, keyModX, false )
     	<< QString( " keyCodeX: %1 state: %2 keySym: %3 keyMod: %4\n" )
     		.arg( event_->xkey.keycode, 0, 16 ).arg( event_->xkey.state, 0, 16 ).arg( keySymX, 0, 16 ).arg( keyModX, 0, 16 );
+    if( keySymX == 0 )
+    	return false;
 
     // Search for which accelerator activated this event:
     KKeyEntry entry;

@@ -239,7 +239,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     d->aKeyMapOrder[d->aKeyMapOrder.count()] = action;
     // Program:XXX and Group:XXX labels should be disabled.
     if( action.contains( ':' ) )
-    	entry.bEnabled = false;
+    	entry.bEnabled = entry.bConfigurable = false;
 
     return true;
 }

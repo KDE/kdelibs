@@ -733,6 +733,7 @@ void KKeyChooser::toChange( QListViewItem *item )
         d->kbGroup->find(DefaultKey)->setEnabled( false );
         d->kbGroup->find(CustomKey)->setEnabled( false );
 	d->bChange->setEnabled( false );
+	d->bChange->setKey( 0 );
     } else {
         /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
@@ -887,6 +888,7 @@ void KKeyChooser::listSync()
         item = item->itemBelow();
     }
     updateAction( d->wList->currentItem() );
+    toChange( d->wList->currentItem() );
 }
 
 void KKeyChooser::setKey( int keyCode )
