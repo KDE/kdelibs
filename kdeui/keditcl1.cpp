@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstdaccel.h>
+#include <kurldrag.h>
 
 #include "keditcl.h"
 #include "keditcl.moc"
@@ -558,7 +559,7 @@ void KEdit::doGotoLine() {
 
 void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
 
-  if(QUriDrag::canDecode(e))
+  if(KURLDrag::canDecode(e))
     e->accept();
   else if(QTextDrag::canDecode(e))
     QMultiLineEdit::dragMoveEvent(e);
@@ -568,7 +569,7 @@ void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
 void  KEdit::dragEnterEvent(QDragEnterEvent* e) {
 
   kdDebug() << "KEdit::dragEnterEvent()" << endl;
-  e->accept(QUriDrag::canDecode(e) || QTextDrag::canDecode(e));
+  e->accept(KURLDrag::canDecode(e) || QTextDrag::canDecode(e));
 }
 
 
@@ -576,7 +577,7 @@ void  KEdit::dropEvent(QDropEvent* e) {
 
   kdDebug() << "KEdit::dropEvent()" << endl;
 
-  if(QUriDrag::canDecode(e)) {
+  if(KURLDrag::canDecode(e)) {
    emit gotUrlDrop(e);
   }
   else if(QTextDrag::canDecode(e))
@@ -592,7 +593,7 @@ void KEdit::setOverwriteEnabled(bool b)
 void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
   QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
-  KCursor::setAutoHideCursor( this, true, true );
+  KCursor::setAutoHideCursor( this, true );
 }
 
 
