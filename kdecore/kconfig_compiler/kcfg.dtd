@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--  kcfg DTD v1.0 -->
 <!-- 
    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
@@ -12,8 +13,6 @@
    any purpose.  It is provided "as is" without expressed or implied
    warranty.
 -->
-
-<?xml version="1.0" encoding="UTF-8"?>
 
 <!ELEMENT kcfg (include*,kcfgfile,group*)>
 
@@ -34,7 +33,7 @@
   <!ATTLIST entry 
                   name CDATA #REQUIRED
 		  type (String|StringList|Font|Rect|Size|Color|
-		        Point|Int|UInt|Bool|Double||DateTime|
+		        Point|Int|UInt|Bool|Double|DateTime|
 			LongLong|ULongLong|IntList|Enum|Path) #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
