@@ -359,10 +359,10 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
 	return openPassDlg( head, user, pass, QString::null );
 }
 
-bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, const QString& host )
+bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, const QString& key )
 {
     kdDebug(7007) << "openPassDlg " << head << endl;
-    KIO_DATA << host << head << user << pass;
+    KIO_DATA << key << head << user << pass;
     m_pConnection->send( INF_NEED_PASSWD, data );
     int cmd;
     if ( m_pConnection->read( &cmd, data ) == -1 ) {

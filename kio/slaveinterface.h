@@ -151,9 +151,36 @@ protected:
 
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
-    // BCI - Remove me later and add default value to function below
-    void openPassDlg( const QString& head, const QString& user, const QString& pass );
-    void openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& host );
+
+    /**
+     * Call this when requesting for a login and password.
+     *
+     * BCI - remove me and use default value for the function
+     * below.
+     *
+     * @param head and i18n'ed message to explain the dialog box
+     * @param user user name, in and out
+     * @param pass password, in and out
+     *
+     * @return true on ok, false on cancel
+     */
+    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/ );
+
+    /**
+     * Call this when requesting for a login and password.
+     *
+     * This function is only different from the above only because
+     * it takes one more extra argument, the name of the host, so
+     * that any authorization can kept around for a whole session.
+     *
+     * @param head and i18n'ed message to explain the dialog box
+     * @param user user name, in and out
+     * @param pass password, in and out
+     * @param key the string to be used to cache the password.
+     *
+     * @return true on ok, false on cancel
+     */
+    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ );
 
 protected:
     Connection * m_pConnection;

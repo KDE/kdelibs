@@ -36,50 +36,32 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
 		          const QString& _user, const QString& _pass )
         : KDialog(parent, name, modal, wflags)
 {
-	init( _head, _user, _pass, QString::null );
-}
 
-PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
-				  WFlags wflags, const QString& _head, const QString& _user,
-				  const QString& _pass, const QString& _host )
-        : KDialog(parent, name, modal, wflags)
-{
-	init( _head, _user, _pass, _host );
-}
-
-void PassDlg::init( const QString& _head, const QString& _user,
-		   			const QString& _pass, const QString& _host )
-{
    QVBoxLayout *layout = new QVBoxLayout( this, marginHint(), spacingHint() );
    //
    // Bei Bedarf einen kleinen Kommentar als Label einfuegen
    //
+   QString msg;
    if ( !_head.isNull() )
    {
-       QString msg;
-       if( _host.isNull() )
-       {
-           msg = i18n("<qt>"
-       				  "<center><nobr>Authorization is required to access</nobr></center>"
-       				  "<center><b>%1</b></center>"
-       				  "</qt>").arg( _head );
-       }
-       else
-       {
-           msg = i18n("<qt>"
-       				  "<center><nobr>Authorization is required to access</nobr></center>"
-       				  "<center><b>%1</b> at %2</center>"
-       				  "</qt>").arg( _head ).arg( _host );
-       }
+		msg = i18n("<qt>"
+       	 		   "<center><nobr>Authorization is required to access</nobr></center>"
+				   "<center>%1</center>"
+				   "</qt>").arg( _head );
 
-       QLabel *l = new QLabel(msg, this);
-       layout->addWidget( l );
    }
+   else
+   {
+   		msg = i18n( "Enter your user name and password." );
+   }
+
+   QLabel *l = new QLabel(msg, this);
+   layout->addWidget( l );
 
    QGridLayout *grid = new QGridLayout( 3, 5 );
    layout->addLayout( grid );
 
-   QLabel *l = new QLabel( i18n( "Username:" ), this );
+   l = new QLabel( i18n( "Username:" ), this );
    l->setAlignment( Qt::AlignVCenter | Qt::AlignRight );
    grid->addWidget( l, 0, 1 );
    m_pUser = new QLineEdit( this );

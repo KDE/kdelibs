@@ -609,15 +609,15 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
-QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& host )
+QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& key )
 {
     QByteArray packedArgs;
   	QDataStream stream( packedArgs, IO_WriteOnly );
   	bool isCached = false;
    	KDEsuClient client;
-  	if( !host.isNull() )
+  	if( !key.isNull() )
   	{
-        kdDebug(7024) << "Checking if password is cached for " << host.utf8() << endl;  	
+        kdDebug(7024) << "Checking if password is cached for " << key.utf8() << endl;  	
     	int sucess = client.ping();
     	if( sucess == -1 )
     	{
@@ -628,13 +628,13 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     		
 		if( sucess != - 1 )
 		{
-   		    QString u = QString::fromUtf8( client.getVar( (host + "-user").utf8() ) );
+   		    QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
    		    // Do not retrieve password for the wrong user!!!   		
 			if( !user.isNull() && u == user )
 			{
 			    isCached = true;
-	   		    kdDebug(7024) << "Found cached Authorization for " << host.utf8() << endl;
-			    QString p = QString::fromUtf8( client.getVar( (host + "-pass").utf8() ) );
+	   		    kdDebug(7024) << "Found cached Authorization for " << key.utf8() << endl;
+			    QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
            		stream << Q_UINT8(1) << u << p;
 	   		    kdDebug(7024) << "Sending back authorization..." << endl;           		
            		return packedArgs;
@@ -643,14 +643,14 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
 	}
 	if( !isCached )
 	{
-    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null, host );
+    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null );
         if ( dlg.exec() )
 	    {
 	    	QString u = dlg.user();
 	    	QString p = dlg.password();
-   		    kdDebug(7024) << "Caching Authorization for " << host.utf8() << endl;
-			client.setVar( (host + "-user").utf8() , u.utf8(), 0 );
-			client.setVar( (host + "-pass").utf8() , p.utf8(), 0 );
+   		    kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
+			client.setVar( (key + "-user").utf8() , u.utf8(), 0 );
+			client.setVar( (key + "-pass").utf8() , p.utf8(), 0 );
        		stream << Q_UINT8(1) << u << p;
    		    kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
        		return packedArgs;			

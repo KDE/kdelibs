@@ -83,11 +83,11 @@ public:
    * @param user  the user to be allowed authorized access
    * @param pass  the password of the authorized user
    * @param head  the resource the requires authorization
-   * @param host  the host requesting the authorization
+   * @param key   the key used to cache the password.
    *
    * @return true if authrization information was obtained.
    */
-  bool authorize( QString& user, QString& pass, const QString& head, const QString& host );
+  bool authorize( QString& /*user*/, QString& /*pass*/, const QString& /*head*/, const QString& /*key*/ );
 
 k_dcop:
   /**

@@ -155,11 +155,11 @@ void Observer::slotCanResume( KIO::Job* job, bool can_resume )
   m_uiserver->canResume( job->progressId(), (uint)can_resume );
 }
 
-bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& host )
+bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
 {
 	if( m_uiserver )
 	{
-		QByteArray resultArgs = m_uiserver->authorize( user, head, host );
+		QByteArray resultArgs = m_uiserver->authorize( user, head, key );
 	  	QDataStream stream( resultArgs, IO_ReadOnly );
 	  	Q_UINT8 authorized;
 	  	QString u, p;	  	

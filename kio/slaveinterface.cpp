@@ -157,9 +157,9 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_NEED_PASSWD: {
 	kdDebug(7007) << "needs passwd\n";
-	QString host, user, pass;
-	stream >> host >> str1 >> user >> pass;
-	openPassDlg(str1, user, pass, host);
+	QString key, user, pass;
+	stream >> key >> str1 >> user >> pass;
+	openPassDlg(str1, user, pass, key);
 	break;
     }
     default:
@@ -172,13 +172,13 @@ void SlaveInterface::openPassDlg( const QString& head, const QString& user, cons
 	openPassDlg( head, user, pass, QString::null );
 }
 
-void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& host )
+void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )
 {
     kdDebug(7007) << "openPassDlg " << head << endl;
     QByteArray packedArgs;
   	QDataStream stream( packedArgs, IO_WriteOnly );
   	QString u = user, p = pass;
-  	bool result = Observer::self()->authorize( u, p, head, host );
+  	bool result = Observer::self()->authorize( u, p, head, key );
   	if( result )
   	{
   	    stream << u << p;

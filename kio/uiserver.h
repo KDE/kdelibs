@@ -212,11 +212,11 @@ k_dcop:
    *
    * @param user  the username to be authenticated
    * @param head  the resource the requires authorization
-   * @param host  the host name/address requesting the authorization
+   * @param key   the key used to cache the password.
    *
    * @return serialized autorization info: (bool authorized, QString user, QString password)
    */
-  QByteArray authorize( const QString& user, const QString& head, const QString& hostname );
+  QByteArray authorize( const QString& /*user*/, const QString& /*head*/, const QString& /*key*/ );
 
 protected slots:
 

@@ -185,10 +185,11 @@ public:
      * @param head and i18n'ed message to explain the dialog box
      * @param user user name, in and out
      * @param pass password, in and out
-     * @param host host whose password is to be stored
+     * @param key the string to be used to cache the password.
+     *
      * @return true on ok, false on cancel
      */
-    bool openPassDlg( const QString& head, QString& user, QString& pass, const QString& host );
+    bool openPassDlg( const QString& /*head*/, QString& /*user*/, QString& /*pass*/, const QString& /*key*/ );
 
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement
