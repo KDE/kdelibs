@@ -25,8 +25,7 @@
 #include <qregexp.h>            // for the word ranges
 
 
-/** General description of this class:
- *
+/**
  * This class is @em not a substitute for the @ref QString class. What
  * I tried to do with this class is provide an easy way to
  * cut/slice/splice words inside sentences in whatever order desired.
@@ -69,31 +68,46 @@ class KStringHandler
 public:
     /** Returns the nth word in the string if found
       * Returns a EMPTY (not null) string otherwise.
-      * Note that the FIRST index is 0
+      * Note that the FIRST index is 0.
+      * @param the the string to search for the words
+      * @param pos the position of the word to search
+      * @return the word, or an empty string if not found
       */
     static QString        word( const QString &text , uint pos );
 
     /** Returns a range of words from that string.
       * Ie:
-      *
-      * "0"        returns the very first word
-      * "0:"    returns the first to the last word
-      * "0:3"    returns the first to fourth words
-      * ":3"    returns everything up to the fourth word
+      * @li "0" returns the very first word
+      * @li "0:" returns the first to the last word
+      * @li "0:3" returns the first to fourth words
+      * @li ":3" returns everything up to the fourth word
       *
       * If you grok python, you're set.
+      * @param the the string to search for the words
+      * @param range the words to return (see description)
+      * @return the words, or an empty string if not found
       */
     static QString        word( const QString &text , const char *range );
 
     /** Inserts a word into the string, and returns
       * a new string with the word included. the first
-      * index is zero (0)
+      * index is zero (0). If there are not @p pos words in the original 
+      * string, the new word will be appended to the end.
+      * @param text the original text
+      * @param word the word to insert
+      * @param pos the position (in words) for the new word
+      * @return the resulting string
       */
     static QString        insword( const QString &text , const QString &word , uint pos );
 
     /** Replaces a word in the string, and returns
       * a new string with the word included. the first
-      * index is zero (0)
+      * index is zero (0). If there are not @p pos words in the original 
+      * string, the new word will be appended to the end.
+      * @param text the original text
+      * @param word the word to insert
+      * @param pos the position (in words) for the new word
+      * @return the resulting string
       */
     static QString        setword( const QString &text , const QString &word , uint pos );
 
@@ -101,86 +115,122 @@ public:
       * and returns a new string. The ranges definitions
       * follow the definitions for the word() function.
       *
-      * "0"        removes the very first word
-      * "0:"    removes the first the the last word
-      * "0:3"    removes the first to fourth words
-      * ":3"    removes everything up to the fourth word
+      * @li "0"        removes the very first word
+      * @li "0:"    removes the first the the last word
+      * @li "0:3"    removes the first to fourth words
+      * @li ":3"    removes everything up to the fourth word
+      * @param text the original text
+      * @param range the words to remove (see description)
+      * @return the resulting string
       */
     static QString        remrange( const QString &text , const char *range );
 
 
     /** Removes a word at the given index, and returns a
-      * new string. The first index is zero (0)
+      * new string. The first index is zero (0).
+      * @param text the original text
+      * @param pos the position (in words) of thw word to delete
+      * @return the resulting string
       */
     static QString        remword( const QString &text , uint pos );
 
     /** Removes a matching word from the string, and returns
       * a new string. Note that only ONE match is removed.
+      * @param text the original text
+      * @param word the word to remove
+      * @return the resulting string
       */
     static QString        remword( const QString &text , const QString &word );
 
     /** Capitalizes each word in the string
       * "hello there" becomes "Hello There"        (string)
+      * @param text the text to capitalize
+      * @return the resulting string
       */
     static QString        capwords( const QString &text );
 
     /** Capitalizes each word in the list
       * [hello, there] becomes [Hello, There]    (list)
+      * @param list the list to capitalize
+      * @return the resulting list
       */
     static QStringList    capwords( const QStringList &list );
 
     /** Reverses the order of the words in a string
       * "hello there" becomes "there hello"        (string)
+      * @param text the text to reverse
+      * @return the resulting string
       */
     static QString        reverse( const QString &text );
 
     /** Reverses the order of the words in a list
       * [hello, there] becomes [there, hello]    (list)
+      * @param list the list to reverse
+      * @return the resulting list
       */
     static QStringList    reverse( const QStringList &list );
 
-    /** These string justify a string along x, and returns a
-      * string at least 'width' characters wide, and justified.
-      * If the string is longer than the width, the original
+    /** Left-justifies a string and returns a string at least 'width' characters 
+      * wide.
+      * If the string is longer than the @p width, the original
       * string is returned. It is never truncated.
-      * ljust    Left justify
-      * rjust    Right justify
-      * center    Centers
+      * @param text the text to justify
+      * @param width the desired width of the new string
+      * @return the resulting string
       */
     static QString        ljust( const QString &text , uint width );
+
+    /** Right-justifies a string and returns a string at least 'width' characters 
+      * wide.
+      * If the string is longer than the @p width, the original
+      * string is returned. It is never truncated.
+      * @param text the text to justify
+      * @param width the desired width of the new string
+      * @return the resulting string
+      */
     static QString        rjust( const QString &text , uint width );
+
+    /** Centers a string and returns a string at least 'width' characters 
+      * wide.
+      * If the string is longer than the @p width, the original
+      * string is returned. It is never truncated.
+      * @param text the text to justify
+      * @param width the desired width of the new string
+      * @return the resulting string
+      */
     static QString        center( const QString &text , uint width );
 
     /** Substitute characters at the beginning of a string by "...".
-     * @return the modified string
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
      */
     static QString        lsqueeze( const QString & str, uint maxlen = 40 );
 
     /** Substitute characters at the middle of a string by "...".
-     * @return the modified string
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
      */
     static QString        csqueeze( const QString & str, uint maxlen = 40 );
 
     /** Substitute characters at the end of a string by "...".
-     * @return the modified string
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
      */
     static QString        rsqueeze( const QString & str, uint maxlen = 40 );
 
     /**
-     * @return true if the given filename matches the given pattern
+     * Match a filename.
      * @param filename is the real decoded filename (or dirname
      *        without trailing '/').
      * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, etc.
      * Patterns with two asterisks like "*.*pk" are not supported.
+     * @return true if the given filename matches the given pattern
      */
     static bool matchFileName( const QString& filename, const QString& pattern );
 
@@ -191,12 +241,14 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
+     * <pre>
      * perlSplit("__", "some__string__for__you__here", 4)
      * QStringList contains: "some", "string", "for", "you__here"
+     * </pre>
      *
-     * @return A QStringList containing tokens extracted from s.
      * @param sep is the string to use to delimit s.
      * @param max is the maximum number of extractions to perform, or 0.
+     * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
       (const QString & sep, const QString & s, uint max = 0);
@@ -208,12 +260,14 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
+     * <pre>
      * perlSplit(' ', "kparts reaches the parts other parts can't", 3)
      * QStringList contains: "kparts", "reaches", "the pats other parts can't"
+     * </pre>
      *
-     * @return A QStringList containing tokens extracted from s.
      * @param sep is the character to use to delimit s.
      * @param max is the maximum number of extractions to perform, or 0.
+     * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
       (const QChar & sep, const QString & s, uint max = 0);
@@ -225,12 +279,14 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
+     * <pre>
      * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 3)
      * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
+     * </pre>
      *
-     * @return A QStringList containing tokens extracted from s.
      * @param sep is the regular expression to use to delimit s.
      * @param max is the maximum number of extractions to perform, or 0.
+     * @return A QStringList containing tokens extracted from s.
      */
     static QStringList perlSplit
       (const QRegExp & sep, const QString & s, uint max = 0);
@@ -239,6 +295,8 @@ public:
      * This method auto-detects URLs in strings, and adds HTML markup to them
      * so that richtext or HTML-enabled widgets (such as KActiveLabel)
      * will display the URL correctly.
+     * @param text the string which may contain URLs
+     * @return the resulting text
      */
     static QString tagURLs( const QString& text );
 
