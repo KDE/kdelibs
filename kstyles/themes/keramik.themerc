@@ -1,11 +1,5 @@
 [Misc]
 Name=Keramik
-Name[bg]=Керамик
-Name[cs]=Keramika
-Name[eo]=Ceramiko
-Name[it]=Ceramica
-Name[ja]=セラミック
-Name[nn]=Keramikk
 Comment=A style using alphablending 
 
 [KDE]
