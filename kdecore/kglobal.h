@@ -45,7 +45,7 @@ public:
      */
     static KIconLoader	        *iconLoader();
     
-    static KLocale		*locale();
+    static KLocale             *locale();
     static KCharsets	        *charsets();
     
     static QFont                generalFont();
@@ -72,12 +72,14 @@ public:
      * @return CompletionNone, completion should be disabled
      *         CompletionAuto, automatic completion
      *         CompletionEOL, manual completion at end of line (with Right/End keys)
+     *         CompletionMan, like automatic completion except the user initiates
+     *                        the completion using the completion key as in CompletionEOL
      **/
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL };
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL, CompletionMan };
     static Completion completionMode();
   
     static  KInstance           *_instance;
-    static  KLocale		*_locale;
+    static  KLocale            *_locale;
     static  KCharsets	        *_charsets;
     
     static  QFont               *_generalFont;
