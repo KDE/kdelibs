@@ -4,7 +4,7 @@
  * Copyright (c) 2000-2001 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation; either version 2.1 of the License, or
  *  (at your option) any later version.
  *
@@ -84,7 +84,7 @@ public:
     int getPolicy() { return _policy; }
     bool isPermanent() { return _perm; }
     QDateTime getExpires() { return _exp; }
-    void setPolicy(int x) { _policy = x; } 
+    void setPolicy(int x) { _policy = x; }
     void setPermanent(bool x) { _perm = x; }
     void setExpires(QDateTime x) { _exp = x; }
 
@@ -276,7 +276,7 @@ public slots:
   void slotCARestore();
   void slotCAItemChanged();
   void slotCAChecked();
-  
+
 private:
 
   void setAuthCertLists();
@@ -323,7 +323,7 @@ private:
   QLabel *yValidFrom, *yValidUntil;
   KURLLabel *untilDate;
 
-  QButtonGroup  *oInfo;
+  QVGroupBox  *oInfo;
   KURLRequester *oPath;
   QPushButton *oTest;
   QPtrList<OtherCertItem> otherCertDelList;

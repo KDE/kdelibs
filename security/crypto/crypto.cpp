@@ -5,7 +5,7 @@
  *               2000 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation; either version 2.1 of the License, or
  *  (at your option) any later version.
  *
@@ -412,13 +412,11 @@ QString whatstr;
   tabOSSL = new QFrame(this);
   QBoxLayout *vbox = new QVBoxLayout(tabOSSL, KDialog::marginHint(), KDialog::spacingHint());
 
-  oInfo = new QVButtonGroup(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
+  oInfo = new QVGroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
   vbox->addWidget(oInfo);
   oPath = new KURLRequester(oInfo);
   oPath->setMode(KFile::Directory);
-  vbox->addWidget(oPath);
   oTest = new QPushButton(i18n("&Test"), oInfo);
-  vbox->addWidget(oTest);
   connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
   vbox->addStretch();
 
