@@ -61,8 +61,6 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d = new KMenuBarPrivate;
     d->frameStyle = frameStyle();
 
-    mouseActive = false;
-
     connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
 
     slotReadConfig();
@@ -70,7 +68,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
 
 KMenuBar::~KMenuBar()
 {
-  delete d; d = 0;
+  delete d;
 }
 
 void KMenuBar::setTopLevelMenu(bool top_level)
@@ -118,23 +116,6 @@ void KMenuBar::slotReadConfig()
   setTopLevelMenu( config->readBoolEntry( keyMac, false ) );
 }
 
-void KMenuBar::drawContents(QPainter *p)
-{
-    QMenuBar::drawContents(p);
-}
-
-void KMenuBar::enterEvent(QEvent *ev)
-{
-    mouseActive = true;
-    QMenuBar::enterEvent(ev);
-}
-
-void KMenuBar::leaveEvent(QEvent *ev)
-{
-    mouseActive = false;
-    QMenuBar::leaveEvent(ev);
-}
-
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 {
 
@@ -158,11 +139,6 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     return QMenuBar::eventFilter( obj, ev );
 }
 
-
-void KMenuBar::show()
-{
-    QMenuBar::show();
-}
 
 void KMenuBar::showEvent( QShowEvent* )
 {

@@ -72,22 +72,14 @@ public:
      */
     bool isTopLevelMenu() const;
 
-    
-    // reimplemented show
-    void show();				
-
 protected slots:
     void slotReadConfig();
 
 protected:
-    void drawContents(QPainter *p);
-    void enterEvent(QEvent *ev);
-    void leaveEvent(QEvent *ev);
     void showEvent( QShowEvent* );
     bool eventFilter(QObject *, QEvent *);
 
-    bool mouseActive;
-
+private:
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
 };
