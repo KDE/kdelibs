@@ -91,8 +91,14 @@ public:
 
   /**
    * Retrieve the value of the "Path=" entry.
+   * @deprecated
    */
   QString readPath();
+
+  /**
+   * Retrieve the value of the "Dev=" entry.
+   */
+  QString readDev();
 
   /**
    * Retrieve the value of the "URL=" entry.
