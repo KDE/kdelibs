@@ -51,12 +51,12 @@ DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
 ####### Build rules
 
 soundserver.h: $(top_srcdir)/arts/soundserver/soundserver.idl kmedia2.h $(MCOPIDL)
-	$(MCOPIDL) $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
+	$(MCOPIDL) -t $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
 
 soundserver.cc: soundserver.h
 
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
-	$(MCOPIDL) $(top_srcdir)/arts/soundserver/kmedia2.idl
+	$(MCOPIDL) -t $(top_srcdir)/arts/soundserver/kmedia2.idl
 
 kmedia2.cc: kmedia2.h
 
@@ -83,3 +83,9 @@ endif
 install-exec-local: install-binPROGRAMS
 	@(chown root $(bindir)/artswrapper && chmod 4755 $(bindir)/artswrapper) \
 		|| echo "please make $(bindir)/artswrapper suid root"
+
+######## install idl typeinfo files
+
+mcoptypedir = $(libdir)/mcop
+mcoptype_DATA = soundserver.mcoptype soundserver.mcopclass \
+	kmedia2.mcoptype kmedia2.mcopclass

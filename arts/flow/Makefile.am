@@ -34,4 +34,9 @@ DISTCLEANFILES = artsflow.cc artsflow.h
 
 artsflow.cc: artsflow.h
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
-	$(MCOPIDL) $(top_srcdir)/arts/flow/artsflow.idl
+	$(MCOPIDL) -t $(top_srcdir)/arts/flow/artsflow.idl
+
+######## install idl typeinfo files
+
+mcoptypedir = $(libdir)/mcop
+mcoptype_DATA = artsflow.mcoptype artsflow.mcopclass
