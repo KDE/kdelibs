@@ -1,3 +1,7 @@
+2004-10-05  Rob Buis   <buis@kde.org>
+	* render/render_form.{cpp,h}:
+	Implemented onchange event generating for checkbox and radio buttons (fixes #51765).
+
 2004-10-05  David Faure  <faure@kde.org>
 
         * html/html_baseimpl.cpp (parseAttribute): 
