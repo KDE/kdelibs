@@ -44,6 +44,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 #include <locale.h>
 
 #include "kjs.h"
@@ -78,16 +79,51 @@ namespace KJS {
   };
 
   // helper functions
-  KJSO parseDate(const KJSO &s);
+  KJSO parseDate(const String &s);
   KJSO timeClip(const KJSO &t);
 };
 
 using namespace KJS;
 
-KJSO KJS::parseDate(const KJSO &)
+KJSO KJS::parseDate(const String &s)
 {
-  /* TODO */
-  return Number(0);
+  UString u = s.value();
+  int firstSlash = u.find('/');
+  if ( firstSlash == -1 )
+  {
+    /* TODO parse dates like "December 25, 1995 23:15:00"*/
+    fprintf(stderr,"KJS::parseDate parsing for this format isn't implemented\n%s", u.ascii());
+    return Number(0);
+  }
+  else
+  {
+    // Found 12/31/2099 on some website -> obviously MM/DD/YYYY
+    int month = u.substr(0,firstSlash).toULong();
+    int secondSlash = u.find('/',firstSlash+1);
+    //fprintf(stdout,"KJS::parseDate firstSlash=%d, secondSlash=%d\n", firstSlash, secondSlash);
+    if ( secondSlash == -1 )
+    {
+      fprintf(stderr,"KJS::parseDate parsing for this format isn't implemented\n%s", u.ascii());
+      return Number(0);
+    }
+    int day = u.substr(firstSlash+1,secondSlash-firstSlash-1).toULong();
+    int year = u.substr(secondSlash+1).toULong();
+    //fprintf(stdout,"KJS::parseDate day=%d, month=%d, year=%d\n", day, month, year);
+    struct tm t;
+    memset( &t, 0, sizeof(t) );
+    year = (year > 2037) ? 2037 : year; // mktime is limited to 2037 !!!
+    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
+    t.tm_mon = month-1; // mktime wants 0-11 for some reason
+    t.tm_mday = day;
+    time_t seconds = mktime(&t);
+    if ( seconds == -1 )
+    {
+      fprintf(stderr,"KJS::parseDate mktime returned -1.\n%s", u.ascii());
+      return Undefined();
+    }
+    else
+      return Number(seconds * 1000.0);
+  }
 }
 
 KJSO KJS::timeClip(const KJSO &t)
@@ -127,7 +163,7 @@ Object DateObject::construct(const List &args)
   } else if (numArgs == 1) {
     KJSO p = args[0].toPrimitive();
     if (p.isA(StringType))
-      value = parseDate(p);
+      value = parseDate(p.toString());
     else
       value = p.toNumber();
   } else {
@@ -168,7 +204,10 @@ Completion DateObjectFunc::execute(const List &args)
   KJSO result;
 
   if (id == Parse)
-    result = parseDate(args[0]);
+    if (args[0].isA(StringType))
+      result = parseDate(args[0].toString());
+    else
+      result = Undefined();
   else {
     struct tm t;
     int n = args.size();
