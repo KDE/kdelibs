@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2000/02/12 12:46:41  espen
+ * Added a black frame around the drag pixmap. Looks better.
+ *
  * Revision 1.1  1999/05/06 02:46:13  steffen
  * Drag&drop for colors. Qt drag&drop is really easy to use. We should have stuff like this all over KDE.
  *
@@ -29,7 +32,7 @@
 #include <qpainter.h> 
 #include "kcolordrag.h"
 
-static const char *color_mime_string = "application/x-color";
+static const char * const color_mime_string = "application/x-color";
 
 KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource, 
 			const char *name) 

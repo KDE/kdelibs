@@ -71,8 +71,8 @@ extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 #define HSV_X 305
 #define RGB_X 385
 
-static const char *recentColors = "Recent_Colors";
-static const char *customColors = "Custom_Colors";
+static const char * const recentColors = "Recent_Colors";
+static const char * const customColors = "Custom_Colors";
 
 
 #define STANDARD_PAL_SIZE 17
@@ -556,13 +556,13 @@ KPaletteTable::palette()
 }
 
 
-static const char **namedColorFilePath( void )
+static const char * const *namedColorFilePath( void )
 {
   //
   // 2000-02-05 Espen Sand.
   // Add missing filepaths here. Make sure the last entry is 0!
   //
-  static const char *path[] =
+  static const char * const path[] =
   {
 #ifdef X11_RGBFILE
     X11_RGBFILE,
@@ -589,7 +589,7 @@ KPaletteTable::readNamedColor( void )
   // Code somewhat inspired by KPalette.
   //
 
-  const char **path = namedColorFilePath();
+  const char * const *path = namedColorFilePath();
   for( int i=0; path[i] != 0; i++ )
   {
     QFile paletteFile( path[i] );
@@ -649,7 +649,7 @@ KPaletteTable::slotShowNamedColorReadError( void )
       "Unable to read X11 rgb color strings. The following\n"
       "file location(s) were examined:\n\n");
 
-    const char **path = namedColorFilePath();
+    const char * const *path = namedColorFilePath();
     for( int i=0; path[i] != 0; i++ )
     {
       msg += path[i];

@@ -164,19 +164,19 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeListBox = new KListBox( page, "sizeListBox");
   gridLayout->addWidget(sizeListBox, row, 2);
 
-  const char *c[] =
+  static const int c[] =
   {
-    "4",  "5",  "6",  "7",
-    "8",  "9",  "10", "11",
-    "12", "13", "14", "15",
-    "16", "17", "18", "19",
-    "20", "22", "24", "26",
-    "28", "32", "48", "64",
+    4,  5,  6,  7,
+    8,  9,  10, 11,
+    12, 13, 14, 15,
+    16, 17, 18, 19,
+    20, 22, 24, 26,
+    28, 32, 48, 64,
     0
   };
   for(int i = 0; c[i] != 0; i++)
   {
-    sizeListBox->insertItem(QString::fromLatin1(c[i]));
+    sizeListBox->insertItem(QString::number(c[i]));
   }
   sizeListBox->setMinimumWidth( minimumListWidth(sizeListBox) +
     sizeListBox->fontMetrics().maxWidth() );
@@ -601,6 +601,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.66  2001/08/26 10:03:47  bero
+* Allow to build with Qt/Embedded
+*
 * Revision 1.65  2001/08/18 15:02:42  hausmann
 * - disable all charset related functionality for qt3
 *

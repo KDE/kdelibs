@@ -113,7 +113,7 @@ kdepackages:
 	-rm $(srcdir)/kdepackages.h
 	if test -f $(top_srcdir)/../bugs/Maintainers; then \
 		echo "// DO NOT EDIT - EDIT bugs/Maintainers instead" >  $(srcdir)/kdepackages.h ;\
-		echo "const char *packages[] = {" >> $(srcdir)/kdepackages.h ;\
+		echo "const char * const packages[] = {" >> $(srcdir)/kdepackages.h ;\
 		grep -v "^todo-" $(top_srcdir)/../bugs/Maintainers | sed -e "s#^\([^ ]*\).*#\"\1\",#" | sort >> $(srcdir)/kdepackages.h ; \
 		echo "0 };" >>  $(srcdir)/kdepackages.h ; \
 	fi

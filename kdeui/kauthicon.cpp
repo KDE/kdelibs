@@ -29,7 +29,7 @@
 #include "kauthicon.h"
 
 /* XPM */
-static const char * lock_xpm[] = {
+static const char * const lock_xpm[] = {
 "22 22 5 1",
 "       c None",
 ".      c #808080",
@@ -60,7 +60,7 @@ static const char * lock_xpm[] = {
 "                      "};
 
 /* XPM */
-static const char * openlock_xpm[] = {
+static const char * const openlock_xpm[] = {
 "22 22 5 1",
 "       c None",
 ".      c #808080",
@@ -91,7 +91,9 @@ static const char * openlock_xpm[] = {
 "                      "};
 
 KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
-  : QWidget(parent, name), lockPM(lock_xpm), openLockPM(openlock_xpm)
+  : QWidget(parent, name),
+   lockPM( const_cast< const char** >( lock_xpm)),
+   openLockPM( const_cast< const char** >(openlock_xpm))
 {
   lockText = i18n("Editing disabled");
   openLockText = i18n("Editing enabled");

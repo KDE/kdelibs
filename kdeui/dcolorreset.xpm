@@ -1,5 +1,5 @@
 /* XPM */
-const char * dcolorreset_xpm[] = {
+const char * const dcolorreset_xpm[] = {
 "12 12 4 1",
 " 	c None",
 ".	c #808080",

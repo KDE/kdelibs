@@ -610,7 +610,7 @@ void KDialogBase::setButtonStyle( int style )
   int layoutMax = 0;
   if (mMessageBoxMode)
   {
-    static int layoutRule[5][6] =
+    static const int layoutRule[5][6] =
     {
       {Details,Stretch,User2|Stretch,User1|Stretch,Cancel|Stretch, Details|Filler},
       {Details,Stretch,User2|Stretch,User1|Stretch,Cancel|Stretch, Details|Filler},
@@ -623,7 +623,7 @@ void KDialogBase::setButtonStyle( int style )
   }
   else if (mButtonOrientation == Horizontal)
   {
-    static int layoutRule[5][9] =
+    static const int layoutRule[5][9] =
     {
       {Help,Default,Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
       {Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
@@ -636,7 +636,7 @@ void KDialogBase::setButtonStyle( int style )
   }
   else
   {
-    static int layoutRule[5][9] =
+    static const int layoutRule[5][9] =
     {
       {Ok,Apply|Try,User1,User2,User3,Stretch,Default,Cancel|Close,Help},
       //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help},

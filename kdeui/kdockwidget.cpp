@@ -43,7 +43,7 @@
 
 #define DOCK_CONFIG_VERSION "0.0.5"
 
-static const char*close_xpm[]={
+static const char* const close_xpm[]={
 "5 5 2 1",
 "# c black",
 ". c None",
@@ -53,7 +53,7 @@ static const char*close_xpm[]={
 ".#.#.",
 "#...#"};
 
-static const char*dockback_xpm[]={
+static const char* const dockback_xpm[]={
 "5 5 2 1",
 "# c black",
 ". c None",
@@ -63,7 +63,7 @@ static const char*dockback_xpm[]={
 "...##",
 "..###"};
 
-static const char*not_close_xpm[]={
+static const char* const not_close_xpm[]={
 "5 5 2 1",
 "# c black",
 ". c None",
@@ -221,19 +221,19 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   drag = new KDockWidgetHeaderDrag( this, parent );
 
   closeButton = new KDockButton_Private( this, "DockCloseButton" );
-  closeButton->setPixmap(close_xpm);
+  closeButton->setPixmap( const_cast< const char** >(close_xpm));
   closeButton->setFixedSize(9,9);
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new KDockButton_Private( this, "DockStayButton" );
   stayButton->setToggleButton( true );
-  stayButton->setPixmap(not_close_xpm);
+  stayButton->setPixmap( const_cast< const char** >(not_close_xpm));
   stayButton->setFixedSize(9,9);
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new KDockButton_Private( this, "DockbackButton" );
-  dockbackButton->setPixmap(dockback_xpm);
+  dockbackButton->setPixmap( const_cast< const char** >(dockback_xpm));
   dockbackButton->setFixedSize(9,9);
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));

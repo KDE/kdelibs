@@ -148,16 +148,16 @@ void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
 void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear)
 {
     // round edge fills
-    static QCOORD btm_left_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,1,
+    static const QCOORD btm_left_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,1,
     1,2,2,2,3,2,4,2,2,3,3,3,4,3,3,4,4,4 };
 
-    static QCOORD btm_right_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,
+    static const QCOORD btm_right_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,
     1,0,2,1,2,2,2,3,2,0,3,1,3,2,3,0,4,1,4 };
 
-    static QCOORD top_left_fill[]={ 3,0,4,0,2,1,3,1,4,1,1,2,2,2,3,2,4,2,0,3,
+    static const QCOORD top_left_fill[]={ 3,0,4,0,2,1,3,1,4,1,1,2,2,2,3,2,4,2,0,3,
     1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
 
-    static QCOORD top_right_fill[]={ 0,0,1,0,0,1,1,1,2,1,0,2,1,2,2,2,3,2,0,
+    static const QCOORD top_right_fill[]={ 0,0,1,0,0,1,1,1,2,1,0,2,1,2,2,2,3,2,0,
     3,1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
 
     if(clear)

@@ -34,7 +34,7 @@
 
 template class QIntCache<KThemePixmap>;
 
-static const char *widgetEntries[] = { // unsunken widgets (see header)
+static const char * const widgetEntries[] = { // unsunken widgets (see header)
 "PushButton", "ComboBox", "HSBarSlider", "VSBarSlider", "Bevel", "ToolButton",
 "ScrollButton", "HScrollDeco", "VScrollDeco", "ComboDeco", "MenuItem", "Tab",
 "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
@@ -231,7 +231,7 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
 void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
 {
 #define PREBLEND_ITEMS 12
-    static WidgetType preBlend[]={Slider, IndicatorOn, IndicatorOff,
+    static const WidgetType preBlend[]={Slider, IndicatorOn, IndicatorOff,
     ExIndicatorOn, ExIndicatorOff, HScrollDeco, VScrollDeco, HScrollDecoDown,
     VScrollDecoDown, ComboDeco, ComboDecoDown, CheckMark};
 

@@ -204,7 +204,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   {
     // Severity
     m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
-    const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
+    static const char * const sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
     const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
 
     for (int i = 0 ; i < 5 ; i++ )
