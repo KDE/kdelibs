@@ -18,6 +18,7 @@
 
 #include "ktabbar.h"
 #include "ktabwidget.h"
+#include <kglobalsettings.h>
 
 KTabBar::KTabBar( QWidget * parent, const char *name )
     : QTabBar( parent, name )
@@ -35,7 +36,10 @@ void KTabBar::mouseDoubleClickEvent(QMouseEvent *e)
 
 void KTabBar::mousePressEvent(QMouseEvent *e)
 {
-  if(e->button() == MidButton) {
+  if(e->button() == LeftButton) {
+    mDragStart = e->pos();
+  }
+  else if(e->button() == MidButton) {
     QTab *tab = selectTab(e->pos() );
     if( tab== 0L ) return;
 
@@ -51,6 +55,24 @@ void KTabBar::mousePressEvent(QMouseEvent *e)
   }
 
   QTabBar::mousePressEvent(e);
+}
+
+void KTabBar::mouseMoveEvent(QMouseEvent *e)
+{
+  if (e->state() && LeftButton) {
+    int delay = KGlobalSettings::dndEventDelay();
+    QPoint newPos = e->pos();
+    if(newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
+       newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay)
+    {
+      QTab *tab = selectTab(e->pos() );
+      if( tab== 0L ) return;
+
+      QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
+      emit( dragInitiated( page ) );
+    }
+  }
+  QTabBar::mouseMoveEvent(e);
 }
 
 #include "ktabbar.moc"

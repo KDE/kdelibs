@@ -34,12 +34,16 @@ signals:
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
     void mouseMiddleClick( QWidget * );
-
+    void dragInitiated( QWidget * );
+    
 protected slots:
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseMoveEvent(QMouseEvent *e);
 
 private:
+    QPoint mDragStart;
+
     KTabBarPrivate * d;
 };
 

@@ -31,11 +31,12 @@ private slots:
   void toggleTabPosition(bool);
   void toggleTabShape(bool);
   void toggleCloseButtons(bool);
-  
+
   void currentChanged(QWidget*);
   void contextMenu(QWidget*, const QPoint&);
   void tabbarContextMenu(const QPoint&);
   void receivedDropEvent( QDropEvent* );
+  void dragInitiated( QWidget * );
   void mouseDoubleClick(QWidget*);
   void mouseMiddleClick(QWidget*);
 
