@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Reginald Stadlbauer <reggie@kde.org>
-   Copyright (C) 2000 Charles Samuels <charles@kde.org>
+   Copyright (C) 2000,2003 Charles Samuels <charles@kde.org>
    Copyright (C) 2000 Peter Putzer
 
    This library is free software; you can redistribute it and/or
@@ -984,25 +984,34 @@ int KListView::depthToPixels( int depth )
 
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
 {
-  QPoint p (contentsToViewport(pos));
+	QPoint p (contentsToViewport(pos));
 
-  // Get the position to put it in
-  QListViewItem *atpos = itemAt(p);
+	// Get the position to put it in
+	QListViewItem *atpos = itemAt(p);
 
-  QListViewItem *above;
-  if (!atpos) // put it at the end
-    above = lastItem();
-  else
-  {
-    // Get the closest item before us ('atpos' or the one above, if any)
-      if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2))
-          above = atpos->itemAbove();
-      else
-          above = atpos;
-  }
+	QListViewItem *above;
+	if (!atpos) // put it at the end
+		above = lastItem();
+	else
+	{
+		// Get the closest item before us ('atpos' or the one above, if any)
+		if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2))
+			above = atpos->itemAbove();
+		else
+			above = atpos;
+	}
 
-  if (above)
-  {
+	if (above)
+	{
+		// if above has children, I might need to drop it as the first item there
+
+		if (above->firstChild() && above->isOpen())
+		{
+			parent = above;
+			after = 0;
+			return;
+		}
+
       // Now, we know we want to go after "above". But as a child or as a sibling ?
       // We have to ask the "above" item if it accepts children.
       if (above->isExpandable())
@@ -1148,7 +1157,7 @@ QPtrList<QListViewItem> KListView::selectedItems() const
 
 void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after)
 {
-  // sanity check - don't move a item into it's own child structure
+  // sanity check - don't move a item into its own child structure
   QListViewItem *i = parent;
   while(i)
     {
@@ -1947,6 +1956,10 @@ bool KListView::ascendingSort(void) const
   return d->sortAscending;
 }
 
+
+
+
+
 KListViewItem::KListViewItem(QListView *parent)
   : QListViewItem(parent)
 {
@@ -2083,4 +2096,4 @@ void KListView::virtual_hook( int, void* )
 #include "klistview.moc"
 #include "klistviewlineedit.moc"
 
-// vim: ts=2 sw=2 et
+// vim: noet
