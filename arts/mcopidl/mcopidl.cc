@@ -297,7 +297,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 			result = indent + "float "+name+" = request->readFloat();\n";
 		if(model==MODEL_REQ_READ_SEQ)
-			result = indent + "vector<float> "+name+";\n"
+			result = indent + "std::vector<float> "+name+";\n"
 				   + indent + "request->readFloatSeq("+name+");\n";
 		if(model==MODEL_WRITE)
 			result = "stream.writeFloat("+name+")";
@@ -347,7 +347,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 			result = indent + "bool "+name+" = request->readBool();\n";
 		if(model==MODEL_REQ_READ_SEQ)
-			result = indent + "vector<bool> "+name+";\n"
+			result = indent + "std::vector<bool> "+name+";\n"
 				   + indent + "request->readBoolSeq("+name+");\n";
 		if(model==MODEL_WRITE)
 			result = "stream.writeBool("+name+")";
@@ -450,7 +450,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 			result = indent + "long "+name+" = request->readLong();\n";
 		if(model==MODEL_REQ_READ_SEQ)
-			result = indent + "vector<long> "+name+";\n"
+			result = indent + "std::vector<long> "+name+";\n"
 				   + indent + "request->readLongSeq("+name+");\n";
 		if(model==MODEL_WRITE)
 			result = "stream.writeLong("+name+")";
