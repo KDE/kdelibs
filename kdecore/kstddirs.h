@@ -46,7 +46,7 @@ class KConfig;
 * and applications always refer to a file with a resource type
 * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
 * the application would make no assumption where this file is and
-* leaves it up to KStandardDirs::Resource("icon", "khexdit.xpm")
+* leaves it up to KStandardDirs::findResource("apps", "Home.desktop")
 * to apply this knowledge.
 *
 * The main idea behind KStandardDirs is that there are several
@@ -78,7 +78,6 @@ class KConfig;
 * @li lib - libraries
 * @li locale - translation files for KLocale
 * @li mime - mime types
-* @li mini - miniature icons
 * @li services - services
 * @li servicetypes - service types
 * @li sound - application sounds
@@ -314,7 +313,7 @@ public:
 	 *         saved, or QString::null if the resource type is unknown.
 	 */
 	 QString saveLocation(const char *type,
-			      const QString& suffix = QString::null, 
+			      const QString& suffix = QString::null,
 			      bool create = true) const;
 
 	/**
@@ -365,8 +364,8 @@ public:
  *    default in his local .kde directory:
  *
  *    // Code example
- *    myFile = locate("appdata", "groups.lst")
- *    myData =  myReadGroups(myFile);
+ *    myFile = locate("appdata", "groups.lst");
+ *    myData =  myReadGroups(myFile); // myFile may be null
  *
  * 2) A resource file is read and written. If the user has no
  *    local version of the file the system default is used.
@@ -379,7 +378,7 @@ public:
  *    ...
  *    doSomething(myData);
  *    ...
- *    myFile = locateLocal("appdata", "groups.lst")
+ *    myFile = locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
  *
  * 3) A resource file is read and written. No system default
@@ -388,12 +387,12 @@ public:
  *    .kde directory.
  *
  *    // Code example
- *    myFile = locateLocal("appdata", "groups.lst")
+ *    myFile = locateLocal("appdata", "groups.lst");
  *    myData =  myReadGroups(myFile);
  *    ...
  *    doSomething(myData);
  *    ...
- *    myFile = locateLocal("appdata", "groups.lst")
+ *    myFile = locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
  **/
 
