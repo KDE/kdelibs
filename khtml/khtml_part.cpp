@@ -5789,7 +5789,7 @@ KWallet::Wallet* KHTMLPart::wallet()
 
   KHTMLPart* p;
 
-  for (p = this; p->parentPart(); p = p->parentPart())
+  for (p = parentPart(); p && p->parentPart(); p = p->parentPart())
     ;
 
   if (p)
