@@ -2581,8 +2581,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      QString device = mp->mountedFrom();
      kdDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType()<<endl;
 
-     if (device.startsWith("/") && (mountPoint != "-") &&
-         (mountPoint != "none") && !mountPoint.isEmpty())
+     if ((mountPoint != "-") && (mountPoint != "none") && !mountPoint.isEmpty()
+          && device != "none")
      {
         devices.append( device + QString::fromLatin1(" (")
                         + mountPoint + QString::fromLatin1(")") );
