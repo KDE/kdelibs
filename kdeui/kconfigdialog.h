@@ -28,7 +28,7 @@ class KConfigDialogManager;
 #include <qasciidict.h>
 
 /**
- * @author Waldo Bastian <bastian@kde.org>
+ * \short Standard %KDE configuration dialog class
  *
  * The KConfigDialog class provides an easy and uniform means of displaying
  * a settings dialog using KDialogBase, KConfigDialogManager and a
@@ -66,6 +66,7 @@ class KConfigDialogManager;
  * currently yields broken behaviour at runtime; use @ref addPage() instead.
  *
  * @see KConfigSkeleton
+ * @author Waldo Bastian <bastian@kde.org>
  * @since 3.2
  */
 class KDEUI_EXPORT KConfigDialog : public KDialogBase {
@@ -102,7 +103,7 @@ public:
    * @param name - The name of this object.  The name is used in determining if
    * there can be more than one dialog at a time.  Use names such as:
    * "Font Settings" or "Color Settings" and not just "Settings" in
-   * applications where there are more than one dialog.
+   * applications where there is more than one dialog.
    *
    * @param dialogType - Type used in creating the dialog.  @see KDialogBase
    *
