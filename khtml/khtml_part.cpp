@@ -2244,20 +2244,17 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   KURL cURL = completeURL( url );
 
+  if ( !cURL.isValid() )
+    // ### ERROR HANDLING
+    return;
+
   //kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
 
-// no need to do that here, the historymngr is going to be notified
-// about this new URL sooner or later anyway
-//  KHTMLFactory::vLinks()->insert( cURL.url() );
-
-  if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
+  if ( button == LeftButton && ( state & ShiftButton ) )
   {
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As..." ), cURL );
     return;
   }
-
-  if ( url.isEmpty() )
-    return;
 
   if (!checkLinkSecurity(cURL,
 			 i18n( "<qt>The link <B>%1</B><BR>leads from this untrusted page to your local filesystem.<BR>Do you want to follow the link?" ),
@@ -2776,7 +2773,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   KURL u = completeURL( url, target );
 
-  if ( u.isMalformed() )
+  if ( !u.isValid() )
   {
     // ### ERROR HANDLING!
     return;
@@ -2821,10 +2818,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   if ( d->m_bParsing ) {
     if( d->m_submitForm ) {
-        kdWarning( 6070 ) << "Submit() while parsing, but another submit (while parsing) was going on before... Please report this as a bug!" << endl;
         return;
     }
-    kdWarning( 6070 ) << "Submit() while parsing, will try to submit again in 3 seconds" << endl;
     d->m_submitForm = new KHTMLPartPrivate::SubmitForm;
     d->m_submitForm->submitAction = action;
     d->m_submitForm->submitUrl = url;
