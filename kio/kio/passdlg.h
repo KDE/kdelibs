@@ -125,6 +125,15 @@ public:
     void setPassword( const QString& password );
 
     /**
+     * Presets a number of login+password pairs that the user can choose from.
+     * The passwords can be empty if you simply want to offer usernames to choose from.
+     * This is incompatible with setUserReadOnly(true).
+     * @param knownLogins map of known logins: the keys are usernames, the values are passwords.
+     * @since 3.4
+     */
+    void setKnownLogins( const QMap<QString, QString>& knownLogins );
+
+    /**
      * A convienence static method for obtaining authorization
      * information from the end user.
      *
@@ -149,6 +158,7 @@ public:
 
 private slots:
     void slotKeep( bool );
+    void slotActivated( const QString& userName );
 
 private:
     void init( const QString&, const QString&, bool );

@@ -35,16 +35,21 @@
 #include <kseparator.h>
 
 #include "passdlg.h"
+#include <kcombobox.h>
 
 using namespace KIO;
 
 struct PasswordDialog::PasswordDialogPrivate
 {
     QGridLayout *layout;
-    KLineEdit* userEdit;
+    QLineEdit* userEdit;
     KLineEdit* passEdit;
+    QLabel* userNameLabel;
     QLabel* prompt;
     QCheckBox* keepCheckBox;
+    QMap<QString,QString> knownLogins;
+    KComboBox* userEditCombo;
+    QHBox* userNameHBox;
 
     bool keep;
     short unsigned int nRow;
@@ -104,18 +109,18 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     // Row 2-3: Reserved for an additional comment
 
     // Row 4: Username field
-    lbl = new QLabel( i18n("&Username:"), main );
-    lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
-    lbl->setFixedSize( lbl->sizeHint() );
-    QHBox* hbox = new QHBox( main );
-    d->userEdit = new KLineEdit( hbox );
-    lbl->setBuddy( d->userEdit );
+    d->userNameLabel = new QLabel( i18n("&Username:"), main );
+    d->userNameLabel->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
+    d->userNameLabel->setFixedSize( d->userNameLabel->sizeHint() );
+    d->userNameHBox = new QHBox( main );
+
+    d->userEdit = new KLineEdit( d->userNameHBox );
     QSize s = d->userEdit->sizeHint();
     d->userEdit->setFixedHeight( s.height() );
     d->userEdit->setMinimumWidth( s.width() );
-    lbl->setBuddy( d->userEdit );
-    d->layout->addWidget( lbl, 4, 0 );
-    d->layout->addWidget( hbox, 4, 2 );
+    d->userNameLabel->setBuddy( d->userEdit );
+    d->layout->addWidget( d->userNameLabel, 4, 0 );
+    d->layout->addWidget( d->userNameHBox, 4, 2 );
 
     // Row 5: Row spacer
     d->layout->addRowSpacing( 5, 4 );
@@ -124,13 +129,12 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl = new QLabel( i18n("&Password:"), main );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
-    hbox = new QHBox( main );
+    QHBox* hbox = new QHBox( main );
     d->passEdit = new KLineEdit( hbox );
     if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
     else
         d->passEdit->setEchoMode( QLineEdit::Password );
-    lbl->setBuddy( d->passEdit );
     s = d->passEdit->sizeHint();
     d->passEdit->setFixedHeight( s.height() );
     d->passEdit->setMinimumWidth( s.width() );
@@ -164,6 +168,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     else
         d->userEdit->setFocus();
 
+    d->userEditCombo = 0;
 //    setFixedSize( sizeHint() );
 }
 
@@ -287,6 +292,45 @@ void PasswordDialog::setUserReadOnly( bool readOnly )
         d->passEdit->setFocus();
 }
 
+void PasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins )
+{
+    const int nr = knownLogins.count();
+    if ( nr == 0 )
+        return;
+    if ( nr == 1 ) {
+        d->userEdit->setText( knownLogins.begin().key() );
+        setPassword( knownLogins.begin().data() );
+        return;
+    }
+
+    Q_ASSERT( !d->userEdit->isReadOnly() );
+    if ( !d->userEditCombo ) {
+        delete d->userEdit;
+        d->userEditCombo = new KComboBox( true, d->userNameHBox );
+        d->userEdit = d->userEditCombo->lineEdit();
+        QSize s = d->userEditCombo->sizeHint();
+        d->userEditCombo->setFixedHeight( s.height() );
+        d->userEditCombo->setMinimumWidth( s.width() );
+        d->userNameLabel->setBuddy( d->userEditCombo );
+        d->layout->addWidget( d->userNameHBox, 4, 2 );
+    }
+
+    d->knownLogins = knownLogins;
+    d->userEditCombo->insertStringList( knownLogins.keys() );
+    d->userEditCombo->setFocus();
+
+    connect( d->userEditCombo, SIGNAL( activated( const QString& ) ),
+             this, SLOT( slotActivated( const QString& ) ) );
+}
+
+void PasswordDialog::slotActivated( const QString& userName )
+{
+    QMap<QString, QString>::ConstIterator it = d->knownLogins.find( userName );
+    if ( it != d->knownLogins.end() )
+        setPassword( it.data() );
+}
+
+
 int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep,
                                         const QString& prompt, bool readOnly,
                                         const QString& caption,
@@ -323,6 +367,5 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
 
 void PasswordDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }
-
 
 #include "passdlg.moc"
