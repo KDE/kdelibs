@@ -705,7 +705,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			// Check if we are a normal toolbar or a hidden dockwidget.
 			if ( widget->parent() &&
 			    (widget->parent()->inherits("QToolBar") ||		// Normal toolbar
-				(widget->parent()->inherits("QMainWindow")) ))	// Collapsed dock
+				(widget->parent()->inherits("QMainWindow")) )) // Collapsed dock
 			{
 				// Draw a toolbar handle
 				int x = r.x(); int y = r.y();
@@ -716,81 +716,107 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 					renderGradient( p, r, cg.button(), true);
 
 					p->setPen(cg.light());
+					p->drawLine(x+4, y+1, x2-4, y+1);
 					p->drawLine(x+4, y+3, x2-4, y+3);
 					p->drawLine(x+4, y+5, x2-4, y+5);
-					p->drawLine(x+4, y+7, x2-4, y+7);
 
 					p->setPen(cg.mid());
+					p->drawLine(x+4, y+2, x2-4, y+2);
 					p->drawLine(x+4, y+4, x2-4, y+4);
 					p->drawLine(x+4, y+6, x2-4, y+6);
-					p->drawLine(x+4, y+8, x2-4, y+8);
 
 				} else {
 					renderGradient( p, r, cg.button(), false);
 
 					p->setPen(cg.light());
+					p->drawLine(x+1, y+4, x+1, y2-4);
 					p->drawLine(x+3, y+4, x+3, y2-4);
 					p->drawLine(x+5, y+4, x+5, y2-4);
-					p->drawLine(x+7, y+4, x+7, y2-4);
 
 					p->setPen(cg.mid());
+					p->drawLine(x+2, y+4, x+2, y2-4);
 					p->drawLine(x+4, y+4, x+4, y2-4);
 					p->drawLine(x+6, y+4, x+6, y2-4);
-					p->drawLine(x+8, y+4, x+8, y2-4);
 				}
-			} else
-				// We have a docked handle with a close button
-				if ( widget->inherits("QDockWindowHandle") &&
-					 widget->width()  > 2 && 
+			} else if ( widget->inherits("QDockWindowHandle") &&
+					 widget->width()  > 2 &&
 					 widget->height() > 2 )
-				{
-					bool horizontal = flags & Style_Horizontal;
-					int x,y,w,h,x2,y2;
+			{
+				bool horizontal = flags & Style_Horizontal;
+				int x,y,w,h,x2,y2;
 
-					r.rect( &x, &y, &w, &h );
-					x2 = x + w - 1;
-					y2 = y + h - 1;
+				r.rect( &x, &y, &w, &h );
+				x2 = x + w - 1;
+				y2 = y + h - 1;
 
-					QFont fnt;
-					fnt = QApplication::font(widget);
-					fnt.setPointSize( fnt.pointSize()-2 );
+				QFont fnt;
+				fnt = QApplication::font(widget);
+				fnt.setPointSize( fnt.pointSize()-2 );
 
-					// Draw the item on an off-screen pixmap
-					// to preserve Xft antialiasing for 
-					// vertically oriented handles.
-					QPixmap pix;
-					if (horizontal)
-						pix.resize( h-2, w-2 );
-					else	
-						pix.resize( w-2, h-2 );
+				// Draw the item on an off-screen pixmap
+				// to preserve Xft antialiasing for
+				// vertically oriented handles.
+				QPixmap pix;
+				if (horizontal)
+					pix.resize( h-2, w-2 );
+				else
+					pix.resize( w-2, h-2 );
 
-					pix.fill(cg.highlight());
-					QPainter p2;
-					p2.begin(&pix);
-					p2.setPen(cg.background());	// ### debug
-					p2.setFont(fnt);
-					p2.drawText(pix.rect(), AlignCenter, 
-							widget->property("caption").toString());
-					p2.end();
+				pix.fill(cg.highlight());
+				QPainter p2;
+				p2.begin(&pix);
+				p2.setPen(cg.background());	// ### debug
+				p2.setFont(fnt);
+				p2.drawText(pix.rect(), AlignCenter,
+						widget->property("caption").toString());
+				p2.end();
 
-					// Draw a sunken bevel
-					p->setPen(cg.dark());
-					p->drawLine(x, y, x2, y);
-					p->drawLine(x, y, x, y2);
-					p->setPen(cg.light());
-					p->drawLine(x+1, y2, x2, y2);
-					p->drawLine(x2, y+1, x2, y2);
-					
-					if (horizontal) {
-						QWMatrix m;
-						m.rotate(-90.0);
-						QPixmap vpix = pix.xForm(m);
-						bitBlt(widget, r.x()+1, r.y()+1, &vpix); 
-					} else
-						bitBlt(widget, r.x()+1, r.y()+1, &pix);
+				// Draw a sunken bevel
+				p->setPen(cg.dark());
+				p->drawLine(x, y, x2, y);
+				p->drawLine(x, y, x, y2);
+				p->setPen(cg.light());
+				p->drawLine(x+1, y2, x2, y2);
+				p->drawLine(x2, y+1, x2, y2);
 
+				if (horizontal) {
+					QWMatrix m;
+					m.rotate(-90.0);
+					QPixmap vpix = pix.xForm(m);
+					bitBlt(widget, r.x()+1, r.y()+1, &vpix);
 				} else
-					p->fillRect(r, cg.highlight());
+					bitBlt(widget, r.x()+1, r.y()+1, &pix);
+
+			} else { // Something else, probably kicker applet handles.
+				int x = r.x(); int y = r.y();
+				int x2 = r.x() + r.width()-1;
+				int y2 = r.y() + r.height()-1;
+
+				if (!(flags & Style_Horizontal)) {
+
+					p->setPen(cg.light());
+					p->drawLine(x, y+1, x2, y+1);
+					p->drawLine(x, y+3, x2, y+3);
+					p->drawLine(x, y+5, x2, y+5);
+
+					p->setPen(cg.mid());
+					p->drawLine(x, y+2, x2, y+2);
+					p->drawLine(x, y+4, x2, y+4);
+					p->drawLine(x, y+6, x2, y+6);
+
+				} else {
+
+					p->setPen(cg.light());
+					p->drawLine(x+1, y, x+1, y2);
+					p->drawLine(x+3, y, x+3, y2);
+					p->drawLine(x+5, y, x+5, y2);
+
+					p->setPen(cg.mid());
+					p->drawLine(x+2, y, x+2, y2);
+					p->drawLine(x+4, y, x+4, y2);
+					p->drawLine(x+6, y, x+6, y2);
+				}
+			}
 			break;
 		}
 
