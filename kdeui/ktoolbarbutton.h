@@ -280,8 +280,9 @@ private:
   QPixmap defaultPixmap;
   QPixmap activePixmap;
   QPixmap disabledPixmap;
-
+  virtual void setIcon(const QPixmap &) {}
   KToolBarButtonPrivate *d;
+
 
 protected slots:
   void slotClicked();

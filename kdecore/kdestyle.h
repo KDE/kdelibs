@@ -168,6 +168,8 @@ protected:
 private:
     QColorGroup radioOnGrp;
     QWidget *highlightWidget;
+    void polish(QApplication *) {}
+    void unPolish(QApplication *) {}
 };
 
 #endif

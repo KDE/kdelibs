@@ -94,6 +94,9 @@ private:
     QLabel *toolTip;
     int th;
     int myIconSize;
+    virtual void insertItem(QIconViewItem *, QIconViewItem *) {}
+    virtual void setSelectionMode(QIconView::SelectionMode) {}
+    virtual void setSelected(QIconViewItem *, bool, bool) {}
 
 private:
     class KFileIconViewPrivate;

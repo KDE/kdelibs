@@ -15,6 +15,9 @@ class KSgiStyle : public KStyle
 	
     virtual void polish(QWidget *w);
     virtual void unPolish(QWidget *w);
+    virtual void polish(QApplication *a) { KStyle::polish(a); }
+    virtual void unPolish(QApplication *a) { KStyle::unPolish(a); }
+    virtual void polish(QPalette &a) { KStyle::polish(a); }
 
     bool eventFilter(QObject *obj, QEvent *ev);
 		

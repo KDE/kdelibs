@@ -71,6 +71,8 @@ public:
     ~HCStyle();
     virtual void polish(QWidget *w);
     virtual void unPolish(QWidget *w);
+    virtual void polish(QApplication *a) { KStyle::polish(a); }
+    virtual void unPolish(QApplication *a) { KStyle::unPolish(a); }
     virtual void polish(QPalette &p);
     void drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken = FALSE,

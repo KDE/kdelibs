@@ -242,6 +242,11 @@ protected:
   QStringList m_lstPatterns;
 
   static Ptr s_pDefaultType;
+
+private:
+  virtual QString icon() const { return QString::null; }
+  virtual QString comment() const { return QString::null; }
+  virtual void load(QDataStream&) {}
 };
 
 /**
@@ -263,6 +268,10 @@ public:
   virtual QString icon( const KURL& _url, bool _is_local ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
+
+private:
+  virtual QString icon() const { return QString::null; }
+  virtual QString comment() const { return QString::null; }
 };
 
 /**
@@ -337,6 +346,11 @@ protected:
   static bool runApplication( const KURL& _url, const QString & _serviceFile );
   static bool runLink( const KURL& _url, const KSimpleConfig &cfg );
   static bool runMimeType( const KURL& _url, const KSimpleConfig &cfg );
+
+private:
+  QString icon() const { return QString::null; }
+  QString comment() const { return QString::null; }
+  QPixmap pixmap(int, int, int, QString *) const { return QPixmap(); }
 };
 
 /**

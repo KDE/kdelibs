@@ -60,8 +60,7 @@ public:
     virtual void setChar( const QChar &_chr );
     virtual void setTableNum( int _tableNum );
 
-    virtual QChar chr()
-{ return vChr; }
+    virtual QChar chr() { return vChr; }
 
 protected:
     virtual void paintCell( class QPainter *p, int row, int col );
@@ -96,6 +95,7 @@ signals:
 
 private:
     KCharSelectTablePrivate *d;
+    virtual void setFont(const QFont &) {}
 };
 
 /** 
@@ -240,6 +240,7 @@ signals:
 
 private:
     KCharSelectPrivate *d;
+    virtual void setFont(const QFont &) {}
 };
 
 #endif

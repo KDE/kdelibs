@@ -41,7 +41,7 @@ class MainWindowPrivate;
  * Inherit your main window from this class
  * and don't forget to call @ref setXMLFile() in the inherited constructor.
  *
- * It implements all internal interfaces in the case of a 
+ * It implements all internal interfaces in the case of a
  * @ref KTMainWindow as host: the builder and servant interface (for menu
  * merging).
  */
@@ -80,6 +80,7 @@ protected slots:
 
 private:
   MainWindowPrivate *d;
+  virtual void createGUI( const QString &, bool) {}
 };
 
 };
