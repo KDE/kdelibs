@@ -30,7 +30,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
-#include "../kdeui/kxmlguifactory.h"
 
 //----------------------------------------------------
 
@@ -164,7 +163,7 @@ QString KKey::toString() const
 	s = KKeyServer::modToStringUser( m_mod );
 	if( !s.isEmpty() )
 		s += '+';
-	s += KKeyServer::symToStringUser( m_key );
+	s += KKeyServer::Sym(m_key).toString();
 
 	return s;
 }
@@ -179,7 +178,7 @@ QString KKey::toStringInternal() const
 	s = KKeyServer::modToStringInternal( m_mod );
 	if( !s.isEmpty() )
 		s += '+';
-	s += KKeyServer::symToStringInternal( m_key );
+	s += KKeyServer::Sym(m_key).toStringInternal();
 	return s;
 }
 
@@ -608,149 +607,4 @@ KShortcut& KShortcut::null()
 	if( !g_pcut->isNull() )
 		g_pcut->clear();
 	return *g_pcut;
-}
-
-//---------------------------------------------------------------------
-// KShortcutMap
-//---------------------------------------------------------------------
-
-KShortcutSet::KShortcutSet()
-{
-}
-
-KShortcutSet::~KShortcutSet()
-{
-}
-
-bool KShortcutSet::readSettings( const QString& sConfigGroup, KConfigBase* pConfig )
-{
-	kdDebug(125) << "KShortcutSet::readSettings( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
-	if( !pConfig )
-		pConfig = KGlobal::config();
-	// If the config file still has the old group name:
-	// FIXME: need to rename instead -- and don't do this if hasGroup( "Shortcuts" ).
-	if( sConfigGroup == "Shortcuts" && pConfig->hasGroup( "Keys" ) ) {
-		readSettings( "Keys", pConfig );
-		pConfig->deleteGroup( "Keys" );
-	}
-	KConfigGroupSaver cgs( pConfig, sConfigGroup );
-
-	uint nSize = count();
-	for( uint i = 0; i < nSize; i++ ) {
-		if( isConfigurable(i) ) {
-			QString sEntry = pConfig->readEntry( name(i) );
-			if( !sEntry.isNull() ) {
-				if( sEntry == "none" )
-					setShortcut( i, KShortcut() );
-				else
-					setShortcut( i, KShortcut(sEntry) );
-			}
-			kdDebug(125) << "\t" << name(i) << " = '" << sEntry << "'" << endl;
-		}
-	}
-
-	kdDebug(125) << "KShortcutSet::readSettings done" << endl;
-	return true;
-}
-
-bool KShortcutSet::writeSettings( const QString &sGroup, KConfigBase* pConfig, bool bWriteAll, bool bGlobal ) const
-{
-	kdDebug(125) << "KShortcutSet::writeSettings( " << sGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
-	if( !pConfig )
-		pConfig = KGlobal::config();
-	KConfigGroupSaver cs( pConfig, sGroup );
-
-	uint nSize = count();
-	for( uint i = 0; i < nSize; i++ ) {
-		if( isConfigurable(i) ) {
-			const QString& sName = name(i);
-			bool bConfigHasAction = !pConfig->readEntry( sName ).isEmpty();
-			bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
-			// If we're using a global config or this setting
-			//  differs from the default, then we want to write.
-			if( bWriteAll || !bSameAsDefault ) {
-				QString s = shortcut(i).toStringInternal();
-				if( s.isEmpty() )
-					s = "none";
-				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
-				// Is passing bGlobal irrelevant, since if it's true,
-				//  then we're using the global config anyway? --ellis
-				pConfig->writeEntry( sName, s, true, bGlobal );
-			}
-			// Otherwise, this key is the same as default
-			//  but exists in config file.  Remove it.
-			else if( bConfigHasAction ) {
-				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
-				pConfig->deleteEntry( sName, bGlobal );
-			}
-		}
-	}
-
-	pConfig->sync();
-	return true;
-}
-
-bool KShortcutSet::readXML( const QString& )
-{
-	return false;
-}
-
-bool KShortcutSet::writeXML( const QString& /*sXmlFile*/ ) const
-{/*
-	// let's start saving this info
-	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
-	QDomDocument doc;
-	doc.setContent( raw_xml );
-
-	QString tagActionProp = QString::fromLatin1("ActionProperties");
-	QString tagAction     = QString::fromLatin1("Action");
-	QString attrName      = QString::fromLatin1("name");
-	QString attrShortcut  = QString::fromLatin1("shortcut");
-
-	// first, lets see if we have existing properties
-	QDomElement elem;
-	QDomElement it = doc.documentElement();
-	KXMLGUIFactory::removeDOMComments( it );
-	it = it.firstChild().toElement();
-	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
-		if( it.tagName() == tagActionProp ) {
-			elem = it;
-			break;
-		}
-	}
-
-	// if there was none, create one
-	if( elem.isNull() ) {
-		elem = doc.createElement( tagActionProp );
-		doc.firstChild().appendChild(elem);
-	}
-
-	// now, iterate through our actions
-	uint nSize = count();
-	for( uint i = 0; i < nSize; i++ ) {
-		QString& sName = name(i);
-
-		// now see if this element already exists
-		QDomElement act_elem;
-		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
-			if( it.attribute( attrName ) == sName ) {
-				act_elem = it;
-				break;
-			}
-		}
-
-		// nope, create a new one
-		if( act_elem.isNull() ) {
-			act_elem = doc.createElement( tagAction );
-			act_elem.setAttribute( attrName, sName );
-		}
-		act_elem.setAttribute( attrShortcut, shortcut(i).toStringInternal() );
-
-		elem.appendChild( act_elem );
-	}
-
-	// finally, write out the result
-	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
-*/
-	return true;
 }

@@ -24,14 +24,17 @@
 #include <qstring.h>
 
 class QKeyEvent;
+class QVariant;
 class KConfigBase;
+class KInstance;
 
-/**
- * A KKey object represents a single key with possible modifiers
- * (Shift, Ctrl, Alt, Win).  It can represent both keys which are
- * understood by Qt as well as those which are additionally supported
- * by the underlying system (e.g. X11).
- */
+/**********************************************************************
+* A KKey object represents a single key with possible modifiers
+* (Shift, Ctrl, Alt, Win).  It can represent both keys which are
+* understood by Qt as well as those which are additionally supported
+* by the underlying system (e.g. X11).
+**********************************************************************/
+
 class KKey
 {
  public:
@@ -103,10 +106,12 @@ class KKey
 	friend class KKeyNative;
 };
 
-/**
- * A KKeySequence object holds a sequence of up to 4 keys.
- * Ex: Ctrl+X,I
- */
+/**********************************************************************
+* class KKeySequence
+* A KKeySequence object holds a sequence of up to 4 keys.
+* Ex: Ctrl+X,I
+**********************************************************************/
+
 class KKeySequence
 {
  public:
@@ -164,13 +169,14 @@ class KKeySequence
 	friend class KKeyNative;
 };
 
-/**
- * The KShortcut class is used to represent a keyboard shortcut to an action.
- * A shortcut is normally a single key with modifiers, such as Ctrl+V.
- * A KShortcut object may also contain an alternate key which will also
- * activate the action it's associated to, as long as no other actions have
- * defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
- */
+/**********************************************************************
+* The KShortcut class is used to represent a keyboard shortcut to an action.
+* A shortcut is normally a single key with modifiers, such as Ctrl+V.
+* A KShortcut object may also contain an alternate key which will also
+* activate the action it's associated to, as long as no other actions have
+* defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
+**********************************************************************/
+
 class KShortcut
 {
  public:
@@ -234,31 +240,6 @@ class KShortcut
  public:
 	operator int () const    { return keyCodeQt(); }
 #endif
-};
-
-class KShortcutSet
-{
- public:
-	KShortcutSet();
-	virtual ~KShortcutSet();
-
-	virtual uint count() const = 0;
-	virtual int index( const QString& sName ) const = 0;
-	virtual const QString& name( uint ) const = 0;
-	virtual const KShortcut& shortcut( uint ) const = 0;
-	virtual const KShortcut& shortcutDefault( uint ) const = 0;
-	virtual bool isConfigurable( uint ) const = 0;
-	virtual bool setShortcut( uint, const KShortcut& ) = 0;
-
-	virtual bool readSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
-	virtual bool writeSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0,
-			bool bWriteAll = false, bool bGlobal = false ) const;
-
-	virtual bool readXML( const QString& sXMLFile );
-	virtual bool writeXML( const QString& sXMLFile ) const;
-
- private:
-	class KShortcutSetPrivate* d;
 };
 
 #endif // __KSHORTCUT_H
