@@ -159,6 +159,17 @@ namespace KJS {
     virtual ~Value();
 
     Value& operator=(const Value &v);
+    /**
+     * Returns whether or not this is a valid value. An invalid value
+     * has a 0 implementation pointer and should not be used for
+     * any other operation than this check. Current use: as a
+     * distinct return value signalling failing dynamicCast() calls.
+     */
+    bool isValid() const;
+    /**
+     * @deprecated
+     * Use !isValid() instead.
+     */
     bool isNull() const;
     ValueImp *imp() const;
 

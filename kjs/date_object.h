@@ -123,7 +123,7 @@ namespace KJS {
   Value parseDate(const String &s);
   double KRFCDate_parseDate(const UString &_date);
   Value timeClip(const Value &t);
-  static int local_timeoffset();
+  int local_timeoffset();
 
 }; // namespace
 

@@ -116,7 +116,7 @@ unsigned short ValueImp::toUInt16(ExecState *exec) const
 }
 
 // TODO: remove
-Value ValueImp::getBase(ExecState *exec) const
+Value ValueImp::getBase(ExecState *) const
 {
 #ifndef NDEBUG
   fprintf(stderr, "ValueImp::getBase: deprecated\n");
@@ -232,6 +232,11 @@ Value& Value::operator=(const Value &v)
     //fprintf(stderr, "Value::operator=(%p)(copying %p) imp=%p ref=%d\n", this, &v, rep, rep->refcount);
   }
   return *this;
+}
+
+bool Value::isValid() const
+{
+  return !rep;
 }
 
 bool Value::isNull() const
