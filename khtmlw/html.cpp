@@ -175,6 +175,12 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     mapList.setAutoDelete( true );
     colorStack.setAutoDelete( true );
 
+    /* parsedURLs.setAutoDelete( true );
+    parsedTargets.setAutoDelete( true );
+    
+    standardFont = "times";
+    fixedFont = "courier"; */
+
     defaultSettings = new HTMLSettings;
     settings = new HTMLSettings;
 
@@ -271,20 +277,22 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 {
     if ( clue == 0L )
 	return;
-     
+
+    // Make this frame the active one
     if ( bIsFrame && !bIsSelected )
 	htmlView->setSelected( TRUE );
     
     if ( _mouse->button() == LeftButton )
     {
-	// start point for text selection
     	pressed = TRUE;
+	// deselect all currently selected text
 	if ( bIsTextSelected )
 	{
 	    bIsTextSelected = false;
 	    selectText( 0, 0, 0, 0, 0 );	// deselect all text
 	    emit textSelected( false );
 	}
+	// start point for text selection
 	selectPt1.setX( _mouse->pos().x() + x_offset - leftBorder );
 	selectPt1.setY( _mouse->pos().y() + y_offset - topBorder );
     }
@@ -295,13 +303,25 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 
     obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder,
 	    _mouse->pos().y() + y_offset - topBorder );
-    
+
+    pressedURL = "";
+    pressedTarget = "";
+
     if ( obj != 0L)
     {
 	if ( obj->getURL() != 0 )
 	{
 	    if (obj->getURL()[0] != 0)
 	    {
+		// Save data. Perhaps the user wants to start a drag.
+		if ( _mouse->button() == LeftButton )
+		{
+		    pressedURL = obj->getURL();
+		    pressedURL.detach();
+		    pressedTarget = obj->getTarget();
+		    pressedTarget.detach();
+		}
+		
 		// Does the parent want to process the event now ?
 	        if ( htmlView )	
 		{
@@ -315,21 +335,11 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 		    emit popupMenu(obj->getURL(),mapToGlobal( _mouse->pos() ));
 		    return;
 		}
-	
-		// Save data. Perhaps the user wants to start a drag.
-		// debugT(">>>>>>>>>>>>>> preparing for drag <<<<<<<<<<<<<<<<<\n");
-		pressedURL = obj->getURL();
-		pressedURL.detach();
-		pressedTarget = obj->getTarget();
-		pressedTarget.detach();
 		return;
 	    }
 	}
     }
     
-    pressedURL = "";
-    pressedTarget = "";
-
     if ( htmlView )	
       if ( htmlView->mousePressedHook( 0L, 0L, _mouse, FALSE ) )
 	return;
@@ -400,7 +410,7 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
     }
 
     // text selection
-    if ( pressed )
+    if ( pressed && pressedURL.isEmpty() )
     {
 	QPoint point = _mouse->pos();
 	if ( point.y() > height() )
@@ -512,12 +522,13 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	return;
     if ( pressedURL.isEmpty() )
 	return;
-    
+
     // if ( pressedURL.data()[0] == '#' )
     //	gotoAnchor( pressedURL.data() + 1 );
     // else
     if ( _mouse->button() != RightButton )
     {
+	printf("pressedURL='%s'\n",pressedURL.data());
 	emit URLSelected( pressedURL.data(), _mouse->button(), pressedTarget.data() );
 	// required for backward compatability
 	emit URLSelected( pressedURL.data(), _mouse->button() );
@@ -2599,11 +2610,15 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		// image map
 		char *newtarget = new char [256];
 		newtarget[0] = '\0';
+
 		if ( target )
 		{
 		    strcpy( newtarget, target );
 		    delete [] target;
 		}
+		else
+		    strcpy( newtarget, "" );
+
 		target = newtarget;
 		parsedTargets.removeLast();
 		parsedTargets.append( target );
