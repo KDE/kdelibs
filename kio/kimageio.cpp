@@ -387,9 +387,12 @@ KImageIOFactory::load()
                // Already in list
                delete format;
                format = 0;
+               break;
             }
          }
-         if (format && !format->mHeader.isEmpty() && !format->mLib.isEmpty())
+         if (!format)
+            continue;
+         if (!format->mHeader.isEmpty() && !format->mLib.isEmpty())
          {
             void (*readFunc)(QImageIO *);
             void (*writeFunc)(QImageIO *);
