@@ -17,7 +17,7 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
     size = 0L;
     cFrames = 0;
     
-    QString s = _src + 10;
+    QString s = _src + 9;
     StringTokenizer st( s, " >" );
     while ( st.hasMoreTokens() )
     {

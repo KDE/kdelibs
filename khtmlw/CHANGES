@@ -1,7 +1,15 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 22 September 1997 - Martin Jones.
+Last Change: 27 September 1997 - Martin Jones.
+
+Version 0.10.0 - Martin
+-----------------------
+
+Change the way <dl> <dt> <dd> is handled to be more like Netscape, and
+less dependant on correct HTML.
+Tokenizer fixes.
+
 
 Version 0.9.1 - Martin
 ----------------------

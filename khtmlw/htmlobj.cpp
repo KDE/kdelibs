@@ -71,7 +71,7 @@ void HTMLObject::getSelected( QStrList &_list )
 	return;
     }
 
-    char *u = getURL();
+    const char *u = getURL();
 
     if ( u != 0 && *u != '\0' && isSelected() )
     {
@@ -87,7 +87,7 @@ void HTMLObject::getSelected( QStrList &_list )
 
 void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
 {
-    char *u = getURL();
+    const char *u = getURL();
 
     if ( u == 0 )
 	return;
@@ -103,7 +103,7 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 
 void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    char *u = getURL();
+    const char *u = getURL();
 
     if ( u == 0 || *u == '\0' )
 	return;
@@ -122,7 +122,7 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
-    char *u = getURL();
+    const char *u = getURL();
     if ( u == 0 || *u == '\0' || _select == isSelected() )
 	return;
 	

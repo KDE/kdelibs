@@ -156,6 +156,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     bIsTextSelected = false;
     formList.setAutoDelete( true );
     listStack.setAutoDelete( true );
+    glossaryStack.setAutoDelete( true );
     mapList.setAutoDelete( true );
     colorStack.setAutoDelete( true );
     parsedURLs.setAutoDelete( true );
@@ -662,13 +663,9 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 
 void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 {
-	debugM( "KHTMLWidget::resizeEvent\n" );
-
 	if ( clue == 0L )
 	    return;
 
-	debugM( "KHTMLWidget::doing it\n" );
-	
 	if ( isFrameSet() )
 	{
 	    framesetList.getFirst()->setGeometry( 0, 0, width(), height() );
@@ -1186,6 +1183,7 @@ void KHTMLWidget::parse()
     bodyParsed = false;
 
     listStack.clear();
+    glossaryStack.clear();
     mapList.clear();
 
     parsing = true;
@@ -1315,12 +1313,13 @@ void KHTMLWidget::slotTimeout()
 	if ( ( s = framesetList.getFirst() ) )
 	    s->setGeometry( 0, 0, width(), height() );
 
+/*
 	clue->printCount();
 	debugM( "HTMLObject   Size: %d\n", sizeof( HTMLObject ) );
 	debugM( "HTMLText     Size: %d\n", sizeof( HTMLText ) );
 	debugM( "HTMLClue     Size: %d\n", sizeof( HTMLClue ) );
 	debugM( "HTMLClueFlow Size: %d\n", sizeof( HTMLClueFlow ) );
-	debugM( "QList<int>   Size: %d\n", sizeof( QList<int> ) );
+*/
     }
 }
 
@@ -1397,7 +1396,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		    indx = toupper( str[1] ) - 'A';
 		
 		if ( indx >= 0 && indx < 26 )
-		    (this->*(parseFuncArray[indx]))( _clue, str );
+		    (this->*(parseFuncArray[indx]))( _clue, str+1 );
 		
 		// perhaps we have the frame read complete. So skip the rest
 		if ( bFramesComplete )
@@ -1466,12 +1465,12 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 // <area            </area>
 void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 {
-    if ( strncasecmp( str, "<area", 5 ) == 0 )
+    if ( strncasecmp( str, "area", 4 ) == 0 )
     {
 	if ( mapList.isEmpty() )
 	    return;
 
-	QString s = str + 3;
+	QString s = str + 5;
 	StringTokenizer st( s, " >" );
 
 	QString href;
@@ -1578,7 +1577,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		    mapList.getLast()->addArea( area );
 	}
     }
-    else if ( strncasecmp( str, "<a ", 3 ) == 0 )
+    else if ( strncasecmp( str, "a ", 2 ) == 0 )
     {
 	char tmpurl[1024];
 	tmpurl[0] = '\0';
@@ -1586,7 +1585,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	vspace_inserted = false;
 	bool visited = false;
 
-	QString s = str + 3;
+	QString s = str + 2;
 	StringTokenizer st( s, " >" );
 
 	while ( st.hasMoreTokens() )
@@ -1643,7 +1642,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    parsedURLs.append( url );
 	}
     }
-    else if ( strncasecmp( str, "</a>", 4 ) == 0 )
+    else if ( strncasecmp( str, "/a", 2 ) == 0 )
     {
 	if ( url )
 	{
@@ -1654,7 +1653,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	url = 0;
 	target = 0;
     }
-    else if ( strncasecmp( str, "<address", 8) == 0 )
+    else if ( strncasecmp( str, "address", 7) == 0 )
     {
 //	vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
@@ -1664,7 +1663,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	weight = QFont::Normal;
 	selectFont();
     }
-    else if ( strncasecmp( str, "</address>", 10) == 0 )
+    else if ( strncasecmp( str, "/address", 8) == 0 )
     {
 	popFont();
     }
@@ -1679,18 +1678,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 // <br
 void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 {
-    if ( strncasecmp( str, "<basefont", 9 ) == 0 )
+    if ( strncasecmp( str, "basefont", 8 ) == 0 )
     {
     }
-    else if ( strncasecmp(str, "<big", 4 ) == 0 )
+    else if ( strncasecmp(str, "big", 3 ) == 0 )
     {
 	selectFont( +2 );
     }
-    else if ( strncasecmp(str, "</big>", 6 ) == 0 )
+    else if ( strncasecmp(str, "/big", 4 ) == 0 )
     {
 	popFont();
     }
-    else if ( strncasecmp(str, "<blockquote", 11 ) == 0 )
+    else if ( strncasecmp(str, "blockquote", 10 ) == 0 )
     {
 	static const char *end[] = { "</blockquote>", 0 };  
 	HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
@@ -1715,7 +1714,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 
 	flow = 0;
     }
-    else if ( strncasecmp( str, "<body", 5 ) == 0 )
+    else if ( strncasecmp( str, "body", 4 ) == 0 )
     {
 	if ( bodyParsed )
 	    return;
@@ -1724,7 +1723,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	bool bgColorSet = FALSE;
 	bool bgPixmapSet = FALSE;
 	QColor bgColor;
-	QString s = str + 6;
+	QString s = str + 5;
 	StringTokenizer st( s, " >" );
 	while ( st.hasMoreTokens() )
 	{
@@ -1798,7 +1797,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	if ( painter )
 	    painter->setBackgroundColor( backgroundColor() );
     }
-    else if ( strncasecmp( str, "<br", 3 ) == 0 )
+    else if ( strncasecmp( str, "br", 2 ) == 0 )
     {
 	vspace_inserted = FALSE;
 
@@ -1815,15 +1814,15 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    _clue->append( t );
 	}
     }
-    else if ( strncasecmp(str, "<b", 2 ) == 0 )
+    else if ( strncasecmp(str, "b", 1 ) == 0 )
     {
-	if ( str[2] == '>' || str[2] == ' ' )
+	if ( str[1] == '>' || str[1] == ' ' )
 	{
 	    weight = QFont::Bold;
 	    selectFont();
 	}
     }
-    else if ( strncasecmp(str, "</b>", 4 ) == 0 )
+    else if ( strncasecmp(str, "/b", 2 ) == 0 )
     {
 	popFont();
     }
@@ -1836,17 +1835,17 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 // <comment>        </comment>      unimplemented
 void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 {
-	if (strncasecmp( str, "<center", 7 ) == 0)
+	if (strncasecmp( str, "center", 6 ) == 0)
 	{
 		divAlign = HTMLClue::HCenter;
 		flow = 0;
 	}
-	else if (strncasecmp( str, "</center>", 9 ) == 0)
+	else if (strncasecmp( str, "/center", 7 ) == 0)
 	{
 		divAlign = HTMLClue::Left;
 		flow = 0;
 	}
-	else if (strncasecmp( str, "<cell", 5 ) == 0)
+	else if (strncasecmp( str, "cell", 4 ) == 0)
 	{
 	    HTMLClue *f = flow;
 	    if ( flow == 0L )
@@ -1861,21 +1860,21 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 		
 	    flow = f;
 	}
-	else if (strncasecmp( str, "<cite", 5 ) == 0)
+	else if (strncasecmp( str, "cite", 4 ) == 0)
 	{
 		italic = TRUE;
 		weight = QFont::Normal;
 		selectFont();
 	}
-	else if (strncasecmp( str, "</cite>", 7) == 0)
+	else if (strncasecmp( str, "/cite", 5) == 0)
 	{
 		popFont();
 	}
-	else if (strncasecmp(str, "<code", 5 ) == 0 )
+	else if (strncasecmp(str, "code", 4 ) == 0 )
 	{
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}
-	else if (strncasecmp(str, "</code>", 7 ) == 0 )
+	else if (strncasecmp(str, "/code", 5 ) == 0 )
 	{
 		popFont();
 	}
@@ -1886,62 +1885,114 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 // <dl>             </dl>           partial
 void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 {
-	if ( strncasecmp( str, "<dir", 4 ) == 0 )
+    if ( strncasecmp( str, "dir", 3 ) == 0 )
+    {
+	listStack.push( new HTMLList( Dir ) );
+	indent += INDENT_SIZE;
+    }
+    else if ( strncasecmp( str, "/dir", 4 ) == 0 )
+    {
+	listStack.pop();
+	indent -= INDENT_SIZE;
+	flow = 0;
+    }
+    else if ( strncasecmp( str, "div", 3 ) == 0 )
+    {
+	QString s = str + 4;
+	StringTokenizer st( s, " >" );
+	while ( st.hasMoreTokens() )
 	{
-		listStack.push( new HTMLList( Dir ) );
-		indent += INDENT_SIZE;
-//		parseList( _clue, _clue->getMaxWidth(), Dir );
+	    const char* token = st.nextToken();
+	    if ( strncasecmp( token, "align=", 6 ) == 0 )
+	    {
+		if ( strcasecmp( token + 6, "right" ) == 0 )
+		    divAlign = HTMLClue::Right;
+		else if ( strcasecmp( token + 6, "center" ) == 0 )
+		    divAlign = HTMLClue::HCenter;
+		else
+		    divAlign = HTMLClue::Left;
+	    }
 	}
-	else if ( strncasecmp( str, "</dir>", 6 ) == 0 )
-	{
-		listStack.pop();
-		indent -= INDENT_SIZE;
-		flow = 0;
-	}
-	else if ( strncasecmp( str, "<div", 4 ) == 0 )
-	{
-		QString s = str + 5;
-		StringTokenizer st( s, " >" );
-		while ( st.hasMoreTokens() )
-		{
-			const char* token = st.nextToken();
-			if ( strncasecmp( token, "align=", 6 ) == 0 )
-			{
-				if ( strcasecmp( token + 6, "right" ) == 0 )
-					divAlign = HTMLClue::Right;
-				else if ( strcasecmp( token + 6, "center" ) == 0 )
-					divAlign = HTMLClue::HCenter;
-				else
-					divAlign = HTMLClue::Left;
-			}
-		}
 
-		flow = 0;
-	}
-	else if ( strncasecmp( str, "</div>", 6 ) == 0 )
+	flow = 0;
+    }
+    else if ( strncasecmp( str, "/div", 4 ) == 0 )
+    {
+	divAlign = HTMLClue::Left;
+	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	flow->setIndent( indent );
+	flow->setHAlign( divAlign );
+	_clue->append( flow );
+    }
+    else if ( strncasecmp( str, "dl", 2 ) == 0 )
+    {
+	if ( glossaryStack.top() )
 	{
-		divAlign = HTMLClue::Left;
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
+	    indent += INDENT_SIZE;
 	}
-	else if ( strncasecmp( str, "<dl", 3 ) == 0 )
+	glossaryStack.push( new GlossaryEntry( GlossaryDL ) );
+	flow = 0;
+    }
+    else if ( strncasecmp( str, "/dl", 3 ) == 0 )
+    {
+	if ( !glossaryStack.top() )
+	    return;
+
+	if ( *glossaryStack.top() == GlossaryDD )
 	{
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		parseGlossary( _clue, _clue->getMaxWidth() );
+	    glossaryStack.pop();
+	    indent -= INDENT_SIZE;
 	}
+	glossaryStack.pop();
+	if ( glossaryStack.top() )
+	    indent -= INDENT_SIZE;
+	vspace_inserted = false;
+	flow = 0;
+    }
+    else if (strncasecmp( str, "dt", 2 ) == 0)
+    {
+	if ( !glossaryStack.top() )
+	    return;
+
+	if ( *glossaryStack.top() == GlossaryDD )
+	{
+	    glossaryStack.pop();
+	    indent -= INDENT_SIZE;
+	}
+	vspace_inserted = false;
+	flow = 0;
+
+	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	flow->setIndent( indent );
+	_clue->append( flow );
+    }
+    else if (strncasecmp( str, "dd", 2 ) == 0)
+    {
+	if ( !glossaryStack.top() )
+	    return;
+
+	if ( *glossaryStack.top() != GlossaryDD )
+	{
+	    glossaryStack.push( new GlossaryEntry( GlossaryDD ) );
+	    indent += INDENT_SIZE;
+	}
+	flow = 0;
+
+	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	flow->setIndent( indent );
+	_clue->append( flow );
+    }
 }
 
 // <em>             </em>
 void KHTMLWidget::parseE( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp( str, "<em>", 4 ) == 0 )
+	if ( strncasecmp( str, "em", 2 ) == 0 )
 	{
 		italic = TRUE;
 		selectFont();
 	}
-	else if ( strncasecmp( str, "</em>", 5 ) == 0 )
+	else if ( strncasecmp( str, "/em", 3 ) == 0 )
 	{
 		popFont();
 	}
@@ -1953,7 +2004,7 @@ void KHTMLWidget::parseE( HTMLClueV *, const char *str )
 // <frameset        </frameset>
 void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp( str, "<font", 5 ) == 0 )
+	if ( strncasecmp( str, "font", 4 ) == 0 )
 	{
 	    QString s = str + 5;
 	    StringTokenizer st( s, " >" );
@@ -1978,12 +2029,12 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	    colorStack.push( color );
 	    selectFont( newSize );
 	}
-	else if ( strncasecmp( str, "</font>", 7 ) == 0 )
+	else if ( strncasecmp( str, "/font", 5 ) == 0 )
 	{
 		popColor();
 		popFont();
 	}
-	else if ( strncasecmp( str, "<frameset", 9 ) == 0 )
+	else if ( strncasecmp( str, "frameset", 8 ) == 0 )
         {
 	  if ( !htmlView )
 	      return;
@@ -2003,7 +2054,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	  framesetStack.append( f );
 	  framesetList.append( f );
 	}
-	else if ( strncasecmp( str, "</frameset", 10 ) == 0 )
+	else if ( strncasecmp( str, "/frameset", 9 ) == 0 )
         {
 	  if ( !htmlView )
 	      return;
@@ -2024,7 +2075,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		framesetStack.removeLast();
 	    }
 	}	
-	else if ( strncasecmp( str, "<frame", 6 ) == 0 )
+	else if ( strncasecmp( str, "frame", 5 ) == 0 )
         {
 	    if ( !framesetStack.isEmpty() )
 	    {
@@ -2038,7 +2089,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	      // -1 = default ( 5 )
 	      int frameborder = -1;
 	      
-	      QString s = str + 7;
+	      QString s = str + 6;
 	      StringTokenizer st( s, " >" );
 	      while ( st.hasMoreTokens() )
 		{
@@ -2105,7 +2156,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	      frameList.append( html->getKHTMLWidget() );  
 	    }
 	}
-	else if ( strncasecmp( str, "<form", 5 ) == 0 )
+	else if ( strncasecmp( str, "form", 4 ) == 0 )
 	{
 		QString action = "";
 		QString method = "GET";
@@ -2131,7 +2182,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		connect( form, SIGNAL( submitted( const char *, const char *) ),
 				SLOT( slotFormSubmitted( const char *, const char * ) ) );
 	}
-	else if ( strncasecmp( str, "</form>", 7 ) == 0 )
+	else if ( strncasecmp( str, "/form", 5 ) == 0 )
 	{
 		form = 0;
 	}
@@ -2140,7 +2191,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 // <grid>           </grid>
 void KHTMLWidget::parseG( HTMLClueV *, const char * )
 {
-    /* if ( strncasecmp( str, "<grid", 5 ) == 0 )
+    /* if ( strncasecmp( str, "grid", 4 ) == 0 )
     {
 	vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	flow = 0L;
@@ -2152,14 +2203,14 @@ void KHTMLWidget::parseG( HTMLClueV *, const char * )
 // <hr
 void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 {
-	static QRegExp re("<h[1-6]", FALSE );
+	static QRegExp re("h[1-6]", FALSE );
 
 	if ( re.match( str ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
 
-		QString s = str + 3;
+		QString s = str + 2;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2178,7 +2229,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		flow->setHAlign( align );
 		_clue->append( flow );
 
-		switch ( str[2] )
+		switch ( str[1] )
 		{
 			case '1':
 				weight = QFont::Bold;
@@ -2216,12 +2267,12 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 				break;
 		}
 	}
-	else if ( strncasecmp(str, "</h1>", 5 ) == 0 ||
-		strncasecmp(str, "</h2>", 5 ) == 0 ||
-		strncasecmp(str, "</h3>", 5 ) == 0 ||
-		strncasecmp(str, "</h4>", 5 ) == 0 ||
-		strncasecmp(str, "</h5>", 5 ) == 0 ||
-		strncasecmp(str, "</h6>", 5 ) == 0 )
+	else if ( strncasecmp(str, "/h1", 3 ) == 0 ||
+		strncasecmp(str, "/h2", 3 ) == 0 ||
+		strncasecmp(str, "/h3", 3 ) == 0 ||
+		strncasecmp(str, "/h4", 3 ) == 0 ||
+		strncasecmp(str, "/h5", 3 ) == 0 ||
+		strncasecmp(str, "/h6", 3 ) == 0 )
 	{
 		// Insert a vertical space if this did not happen already.
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
@@ -2230,7 +2281,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		// Restore the old font
 		popFont();
 	}
-	else if ( strncasecmp(str, "<hr", 3 ) == 0 )
+	else if ( strncasecmp(str, "hr", 2 ) == 0 )
 	{
 		int size = 1;
 		int length = _clue->getMaxWidth();
@@ -2242,7 +2293,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		if ( flow )
 			oldAlign = align = flow->getHAlign();
 
-		QString s = str + 4;
+		QString s = str + 3;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2295,13 +2346,13 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 // <input                           partial
 void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 {
-    if (strncasecmp( str, "<img", 4 ) == 0)
+    if (strncasecmp( str, "img", 3 ) == 0)
     {
 	vspace_inserted = FALSE;
 
 	// Parse all arguments but delete '<' and '>' and skip 'cell'
 	const char* filename = 0L;
-	QString s = str + 5;
+	QString s = str + 4;
 	QString fullfilename;
 	QString usemap;
 	bool    ismap = false;
@@ -2421,7 +2472,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    }
 	} 
     } 
-    else if (strncasecmp( str, "<input", 6 ) == 0)
+    else if (strncasecmp( str, "input", 5 ) == 0)
     {
 	if ( form == 0 )
 		return;
@@ -2432,17 +2483,17 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    flow->setHAlign( divAlign );
 	    _clue->append( flow );
 	}
-	parseInput( str + 7 );
+	parseInput( str + 6 );
     }
-    else if ( strncasecmp(str, "<i", 2 ) == 0 )
+    else if ( strncasecmp(str, "i", 1 ) == 0 )
     {
-	if ( str[2] == '>' || str[2] == ' ' )
+	if ( str[1] == '>' || str[1] == ' ' )
 	{
 	    italic = TRUE;
 	    selectFont();
 	}
     }
-    else if ( strncasecmp( str, "</i>", 4 ) == 0 )
+    else if ( strncasecmp( str, "/i", 2 ) == 0 )
     {
 	popFont();
     }
@@ -2455,11 +2506,11 @@ void KHTMLWidget::parseJ( HTMLClueV *, const char * )
 // <kbd>            </kbd>
 void KHTMLWidget::parseK( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp(str, "<kbd", 4 ) == 0 )
+	if ( strncasecmp(str, "kbd", 3 ) == 0 )
 	{
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}
-	else if ( strncasecmp(str, "</kbd>", 6 ) == 0 )
+	else if ( strncasecmp(str, "/kbd", 4 ) == 0 )
 	{
 		popFont();
 	}
@@ -2469,10 +2520,10 @@ void KHTMLWidget::parseK( HTMLClueV *, const char *str )
 // <li>
 void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 {
-    if (strncasecmp( str, "<link", 5 ) == 0)
+    if (strncasecmp( str, "link", 4 ) == 0)
     {
     }
-    else if (strncasecmp( str, "<li", 3 ) == 0)
+    else if (strncasecmp( str, "li", 2 ) == 0)
     {
 	QString item;
 	ListType listType = Unordered;
@@ -2555,7 +2606,7 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 // <menu>           </menu>         partial
 void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 {
-	if (strncasecmp( str, "<menu", 5 ) == 0)
+	if (strncasecmp( str, "menu", 4 ) == 0)
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		listStack.push( new HTMLList( Menu ) );
@@ -2563,15 +2614,15 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 //		parseList( _clue, _clue->getMaxWidth(), Menu );
 		flow = 0;
 	}
-	else if (strncasecmp( str, "</menu>", 7 ) == 0)
+	else if (strncasecmp( str, "/menu", 5 ) == 0)
 	{
 		listStack.pop();
 		indent -= INDENT_SIZE;
 		flow = 0;
 	}
-	else if ( strncasecmp( str, "<map", 4 ) == 0 )
+	else if ( strncasecmp( str, "map", 3 ) == 0 )
 	{
-		QString s = str + 5;
+		QString s = str + 4;
 
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
@@ -2597,11 +2648,11 @@ void KHTMLWidget::parseN( HTMLClueV *, const char * )
 // <option
 void KHTMLWidget::parseO( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp( str, "<ol", 3 ) == 0 )
+	if ( strncasecmp( str, "ol", 2 ) == 0 )
 	{
 		ListNumType listNumType = Numeric;
 
-		QString s = str + 4;
+		QString s = str + 3;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2633,13 +2684,13 @@ void KHTMLWidget::parseO( HTMLClueV *, const char *str )
 		indent += INDENT_SIZE;
 //		parseList( _clue, _clue->getMaxWidth(), Ordered );
 	}
-	else if ( strncasecmp( str, "</ol>", 5 ) == 0 )
+	else if ( strncasecmp( str, "/ol", 3 ) == 0 )
 	{
 		listStack.pop();
 		indent -= INDENT_SIZE;
 		flow = 0;
 	}
-	else if ( strncasecmp( str, "<option", 7 ) == 0 )
+	else if ( strncasecmp( str, "option", 6 ) == 0 )
 	{
 		if ( !formSelect )
 			return;
@@ -2674,7 +2725,7 @@ void KHTMLWidget::parseO( HTMLClueV *, const char *str )
 		inOption = true;
 		formText = "";
 	}
-	else if ( strncasecmp( str, "</option>", 9 ) == 0 )
+	else if ( strncasecmp( str, "/option", 7 ) == 0 )
 	{
 		inOption = false;
 	}
@@ -2684,25 +2735,25 @@ void KHTMLWidget::parseO( HTMLClueV *, const char *str )
 // <pre             </pre>          partial
 void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 {
-	if ( strncasecmp( str, "<pre", 4 ) == 0 )
+	if ( strncasecmp( str, "pre", 3 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		_clue->append( flow );
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}	
-	else if ( strncasecmp( str, "</pre", 5 ) == 0 )
+	else if ( strncasecmp( str, "/pre", 4 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		flow = 0;
 		popFont();
 	}
-	else if ( strncasecmp( str, "<p", 2 ) == 0 )
+	else if ( strncasecmp( str, "p", 1 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
 
-		QString s = str + 3;
+		QString s = str + 2;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2722,7 +2773,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		flow->setHAlign( align );
 		_clue->append( flow );
 	}
-	else if ( strncasecmp( str, "</p>", 4 ) == 0 )
+	else if ( strncasecmp( str, "/p", 2 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		flow = 0;
@@ -2747,15 +2798,15 @@ void KHTMLWidget::parseR( HTMLClueV *, const char * )
 // <sup>            </sup>          unimplemented
 void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 {
-	if ( strncasecmp(str, "<samp", 5 ) == 0 )
+	if ( strncasecmp(str, "samp", 4 ) == 0 )
 	{
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}
-	else if ( strncasecmp(str, "</samp>", 7 ) == 0)
+	else if ( strncasecmp(str, "/samp", 5 ) == 0)
 	{
 		popFont();
 	}
-	else if ( strncasecmp(str, "<select", 7 ) == 0)
+	else if ( strncasecmp(str, "select", 6 ) == 0)
 	{
 		if ( !form )
 			return;
@@ -2764,7 +2815,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		int size = 0;
 		bool multi = false;
 
-		QString s = str + 8;
+		QString s = str + 7;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2799,7 +2850,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 
 		flow->append( formSelect );
 	}
-	else if ( strncasecmp(str, "</select>", 9 ) == 0 )
+	else if ( strncasecmp(str, "/select", 7 ) == 0 )
 	{
 		if ( inOption )
 			formSelect->setText( formText );
@@ -2807,38 +2858,38 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		formSelect = 0;
 		inOption = false;
 	}
-	else if ( strncasecmp(str, "<small", 6 ) == 0 )
+	else if ( strncasecmp(str, "small", 5 ) == 0 )
 	{
 		selectFont( -1 );
 	}
-	else if ( strncasecmp(str, "</small>", 8 ) == 0 )
+	else if ( strncasecmp(str, "/small", 6 ) == 0 )
 	{
 		popFont();
 	}
-	else if ( strncasecmp(str, "<strong", 7 ) == 0 )
+	else if ( strncasecmp(str, "strong", 6 ) == 0 )
 	{
 		weight = QFont::Bold;
 		selectFont();
 	}
-	else if ( strncasecmp(str, "</strong>", 9 ) == 0 )
+	else if ( strncasecmp(str, "/strong", 7 ) == 0 )
 	{
 		popFont();
 	}
-	else if ( strncasecmp(str, "<s", 2 ) == 0 )
+	else if ( strncasecmp(str, "s", 1 ) == 0 )
 	{
-	    if ( str[2] == '>' || str[2] == ' ' )
+	    if ( str[1] == '>' || str[1] == ' ' )
 	    {
 		strikeOut = TRUE;
 		selectFont();
 	    }
 	}
-	else if ( strncasecmp( str, "<strike", 7 ) == 0 )
+	else if ( strncasecmp( str, "strike", 6 ) == 0 )
 	{
 		strikeOut = TRUE;
 		selectFont();
 	}
-	else if ( strncasecmp(str, "</s>", 4 ) == 0 ||
-		strncasecmp( str, "</strike>", 9 ) == 0 )
+	else if ( strncasecmp(str, "/s", 2 ) == 0 ||
+		strncasecmp( str, "/strike", 7 ) == 0 )
 	{
 		popFont();
 	}
@@ -2850,7 +2901,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 // <tt>             </tt>
 void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 {
-	if ( strncasecmp( str, "<table", 6 ) == 0 )
+	if ( strncasecmp( str, "table", 5 ) == 0 )
 	{
 		if ( flow == 0 )
 		{
@@ -2859,19 +2910,19 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 		}
-		parseTable( flow, _clue->getMaxWidth(), str + 7 );
+		parseTable( flow, _clue->getMaxWidth(), str + 6 );
 	}
-	else if ( strncasecmp( str, "<title", 6 ) == 0 )
+	else if ( strncasecmp( str, "title", 5 ) == 0 )
 	{
 		title = "";
 		inTitle = true;
 	}
-	else if ( strncasecmp( str, "</title>", 8 ) == 0 )
+	else if ( strncasecmp( str, "/title", 6 ) == 0 )
 	{
 		emit setTitle( title.data() );
 		inTitle = false;
 	}
-	else if ( strncasecmp( str, "<textarea", 9 ) == 0 )
+	else if ( strncasecmp( str, "textarea", 8 ) == 0 )
 	{
 		if ( !form )
 			return;
@@ -2917,7 +2968,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 		formText = "";
 		inTextArea = true;
 	}
-	else if ( strncasecmp( str, "</textarea>", 11 ) == 0 )
+	else if ( strncasecmp( str, "/textarea", 9 ) == 0 )
 	{
 		if ( inTextArea )
 			formTextArea->setText( formText );
@@ -2925,11 +2976,11 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 		formTextArea = 0;
 		inTextArea = false;
 	}
-	else if ( strncasecmp( str, "<tt", 3 ) == 0 )
+	else if ( strncasecmp( str, "tt", 2 ) == 0 )
 	{
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}
-	else if ( strncasecmp( str, "</tt>", 5 ) == 0 )
+	else if ( strncasecmp( str, "/tt", 3 ) == 0 )
 	{
 		popFont();
 	}
@@ -2939,11 +2990,11 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 // <ul              </ul>           partial
 void KHTMLWidget::parseU( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp( str, "<ul", 3 ) == 0 )
+	if ( strncasecmp( str, "ul", 2 ) == 0 )
 	{
 		ListType type = Unordered;
 
-		QString s = str + 4;
+		QString s = str + 3;
 		StringTokenizer st( s, " >" );
 		while ( st.hasMoreTokens() )
 		{
@@ -2957,21 +3008,21 @@ void KHTMLWidget::parseU( HTMLClueV *, const char *str )
 		flow = 0;
 //		parseList( _clue, _clue->getMaxWidth(), type );
 	}
-	else if ( strncasecmp( str, "</ul>", 5 ) == 0 )
+	else if ( strncasecmp( str, "/ul", 3 ) == 0 )
 	{
 		listStack.pop();
 		indent -= INDENT_SIZE;
 		flow = 0;
 	}
-	else if ( strncasecmp(str, "<u", 2 ) == 0 )
+	else if ( strncasecmp(str, "u", 1 ) == 0 )
 	{
-	    if ( str[2] == '>' || str[2] == ' ' )
+	    if ( str[1] == '>' || str[1] == ' ' )
 	    {
 		underline = TRUE;
 		selectFont();
 	    }
 	}
-	else if ( strncasecmp( str, "</u>", 4 ) == 0 )
+	else if ( strncasecmp( str, "/u", 2 ) == 0 )
 	{
 		popFont();
 	}
@@ -2980,12 +3031,12 @@ void KHTMLWidget::parseU( HTMLClueV *, const char *str )
 // <var>            </var>
 void KHTMLWidget::parseV( HTMLClueV *, const char *str )
 {
-	if ( strncasecmp(str, "<var", 4 ) == 0 )
+	if ( strncasecmp(str, "var", 3 ) == 0 )
 	{
 		italic = TRUE;
 		selectFont();
 	}
-	else if ( strncasecmp( str, "</var>", 6 ) == 0)
+	else if ( strncasecmp( str, "/var", 4 ) == 0)
 	{
 		popFont();
 	}
@@ -3045,87 +3096,6 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
     _clue->append( vc );
 
-    return str;
-}
-
-// glossary parser.
-//
-const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
-{
-    const char* str = 0;
-    HTMLClueV *vc;
-    static const char *enddt[] = { "<dt", "<dd", "<dl","</dl>", 0 };
-    static const char *enddd[] = { "<dt", "</dl>", 0 };
-
-	HTMLClueV *container = new HTMLClueV( 0, 0, _max_width );
-	_clue->append( container );
- 
-    while ( ht->hasMoreTokens() )
-    {
-	str = ht->nextToken();
-
-	// Every tag starts with an escape character
-	if ( str[0] == TAG_ESCAPE )
-	{
-	    str++;
-	    
-		while ( str && ( strncasecmp( str, "<dt", 3 ) == 0 ||
-			strncasecmp( str, "<dd", 3 ) == 0 ||
-			strncasecmp( str, "<dl", 3 ) == 0 ) )
-		{
-			if ( strncasecmp( str, "<dt", 3 ) == 0 )
-			{
-				HTMLClueFlow *c = new HTMLClueFlow( 0, 0, _max_width );
-				c->setVAlign( HTMLClue::Top );
-				container->append( c );
-				vc = new HTMLClueV( 0, 0, _max_width );
-				c->append( vc );
-				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
-				vc->append( flow );
-				if ( ( str = parseBody( vc, enddt ) ) == 0 )
-				{
-					delete container;
-					return 0;
-				}
-			}
-			else if ( strncasecmp( str, "<dd", 3 ) == 0 )
-			{
-				HTMLClueH *c = new HTMLClueH( 0, 0, _max_width );
-				container->append( c );
-				vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 ); // fixed width spacer
-				c->append( vc );
-				vc = new HTMLClueV( 0, 0, _max_width-INDENT_SIZE );
-				c->append( vc );
-				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
-				vc->append( flow );
-				if ( ( str = parseBody( vc, enddd ) ) == 0 )
-				{
-					delete container;
-					return 0;
-				}
-			}
-			else if ( strncasecmp( str, "<dl", 3 ) == 0 )
-			{
-			    HTMLClueH *c = new HTMLClueH( 0, 0, _max_width );
-			    container->append( c );
-			    vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 ); // fixed width spacer
-			    c->append( vc );
-			    vc = new HTMLClueV( 0, 0, _max_width-INDENT_SIZE );
-			    c->append( vc );
-			    if ( ( str = parseGlossary( vc, _max_width-INDENT_SIZE ) ) == 0 )
-				{
-					return 0;
-				}
-			}
-		}
-
-		if ( !str || strncasecmp( str, "</dl>", 5 ) == 0 )
-			break;
-	}
-    }
-
-    flow = 0;
-    
     return str;
 }
 

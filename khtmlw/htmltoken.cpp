@@ -59,6 +59,9 @@ const char *BlockingToken::token()
 	case Cell:
 		return "</cell";
 		break;
+
+	case BlockQuote:
+		return "</blockquote";
     }
 
     return "";
@@ -278,20 +281,37 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if ( *src == '<' )
 	{
-	    if ( strncasecmp( src, "<pre>", 5 ) == 0 )
-	    {
-		pre_pos = 0;
-		pre = true;
-	    }
-	    else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
-		pre = false;
-	    else if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
+	    if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
 	    {
 		src += 4;
 		comment = true;
 		continue;
 	    }
-	    else if ( strncasecmp( src, "<script", 7 ) == 0 )
+
+	    space = false;
+	    tquote = false;
+
+	    if ( dest > buffer )
+	    {
+		*dest++ = 0;
+		tokenList.append( buffer );
+		dest = buffer;
+	    }
+	    *dest++ = TAG_ESCAPE;
+	    *dest++ = '<';
+	    tag = true;
+	    src++;
+	}
+	else if ( *src == '>' && tag && !tquote )
+	{
+	    if ( strncasecmp( buffer+1, "<pre", 4 ) == 0 )
+	    {
+		pre_pos = 0;
+		pre = true;
+	    }
+	    else if ( strncasecmp( buffer+1, "</pre", 5 ) == 0 )
+		pre = false;
+	    else if ( strncasecmp( buffer+1, "<script", 7 ) == 0 )
 	    {
 		script = true;
 //		blocking.append( new BlockingToken( BlockingToken::Script,
@@ -306,44 +326,51 @@ void HTMLTokenizer::write( const char *str )
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
 	    }
-	    else if ( strncasecmp( src, "<frameset", 9 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<frameset", 9 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::FrameSet,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<cell", 5 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<cell", 5 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Cell,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<table", 6 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<table", 6 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Table,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<ul", 3 ) == 0 )
+/*
+	    else if ( strncasecmp( buffer+1, "<ul", 3 ) == 0 )
 	    {
 		blocking.append( new BlockingToken(BlockingToken::UnorderedList,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<ol", 3 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<ol", 3 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::OrderedList,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<menu", 5 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<menu", 5 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Menu,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<dir", 4 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<dir", 4 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Dir,
 				tokenList.at() ) );
 	    }
-	    else if ( strncasecmp( src, "<dl", 3 ) == 0 )
+	    else if ( strncasecmp( buffer+1, "<dl", 3 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Glossary,
+				tokenList.at() ) );
+	    }
+*/
+	    else if ( strncasecmp( buffer+1, "<blockquote", 11 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::BlockQuote,
 				tokenList.at() ) );
 	    }
 	    else if ( !blocking.isEmpty() && 
@@ -353,25 +380,6 @@ void HTMLTokenizer::write( const char *str )
 		blocking.removeLast();
 	    }
 
-	    space = false;
-	    tquote = false;
-
-	    if ( !script )
-	    {
-		if ( dest > buffer )
-		{
-		    *dest++ = 0;
-		    tokenList.append( buffer );
-		    dest = buffer;
-		}
-		*dest++ = TAG_ESCAPE;
-		*dest++ = '<';
-		tag = true;
-		src++;
-	    }
-	}
-	else if ( *src == '>' && !tquote )
-	{
 	    space = false;
 
 	    *dest++ = '>';

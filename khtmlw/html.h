@@ -8,7 +8,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  901		// 00.09.01
+#define KHTMLW_VERSION  1000		// 00.10.00
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -673,7 +673,7 @@ protected slots:
   
 protected:
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
-	enum ListNumType { Numeric, LowAlpha, UpAlpha, LowRoman, UpRoman };
+    enum ListNumType { Numeric, LowAlpha, UpAlpha, LowRoman, UpRoman };
 
     virtual void mousePressEvent( QMouseEvent * );
 
@@ -768,11 +768,6 @@ protected:
      * This function is called after the <cell> tag.
      */
     const char* parseCell( HTMLClue *_clue, const char *attr );
-
-    /*
-     * parse glossaries
-     */
-    const char* parseGlossary( HTMLClueV *_clue, int _max_width );
 
     /*
      * parse table
@@ -1050,6 +1045,13 @@ protected:
      * The top affects whether a bullet or numbering is used by <li>
      */
     QStack<HTMLList> listStack;
+
+    enum GlossaryEntry { GlossaryDL, GlossaryDD };
+
+    /*
+     * Stack of glossary entries currently active
+     */
+    QStack<GlossaryEntry> glossaryStack;
 
     /*
      * The current alignment, set by <DIV > or <CENTER>

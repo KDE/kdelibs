@@ -12,7 +12,7 @@ htmlview.cpp: htmlview.moc
 
 CLEANFILES = $(BUILT_SOURCES)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h htmltoken.h htmlframe.h htmlview.h htmlclue.h
-libkhtmlw_la_LDFLAGS = -version-info 0:9 #  -rpath $(libdir)
+libkhtmlw_la_LDFLAGS = -version-info 0:10 #  -rpath $(libdir)
 
 data_DATA = khtmlw_dnd.xpm
 datadir = $(prefix)/share/icons
