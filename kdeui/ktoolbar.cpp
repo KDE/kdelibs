@@ -196,9 +196,6 @@ KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, cons
 
 KToolBar::~KToolBar()
 {
-    for ( QWidget *w = widgets.first(); w; w = widgets.next() )
-        disconnect( w, SIGNAL( destroyed() ),
-                    this, SLOT( widgetDestroyed() ) );
     delete d;
 }
 
