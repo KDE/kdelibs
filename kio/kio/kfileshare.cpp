@@ -32,7 +32,6 @@
 #include <kdirnotify_stub.h>
 #include <ksimpleconfig.h>
 #include <kuser.h>
-#include <kgroup.h>
 
 KFileShare::Authorization KFileShare::s_authorization = NotInitialized;
 QStringList* KFileShare::s_shareList = 0L;
