@@ -35,7 +35,7 @@ vector<long> connect(long l)
 	return connseq;
 }
 
-main()
+int main()
 {
 	Dispatcher dispatcher;
 
