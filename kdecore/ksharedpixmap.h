@@ -126,7 +126,8 @@ public:
      *
      * @param id The pixmap ID string.
      * @param rect The rectangle to copy. Use the default argument
-     * to copy the entire pixmap.
+     * to copy the entire pixmap. When you specify a rectangle, a tile is
+     * returned which is able to fill up the rectangle correctly.
      * @return True if successfull, False otherwise.
      */
     bool loadFromShared(QString id, QRect rect=QRect());

@@ -190,38 +190,34 @@ bool KSharedPixmap::copy(QString id, QRect rect)
     KSharedPixmapData pmd(desc);
     if (!pmd.ok())
 	return false;
-    if (rect.isEmpty())
-	rect = QRect(0, 0, pmd.width(), pmd.height());
 
-    QPoint p1 = rect.topLeft();
-    QPoint p2 = rect.bottomRight();
-    QSize size = rect.size();
-    int offx=0, offy=0;
-
-    // Topleft corner out of desktop?
-    if ((p1.x() > pmd.width()) || (p1.y() > pmd.height()))
-	return false;
-    if (p1.x() < 0) {
-	offx = -p1.x();
-	p1.setX(0);
-    }
-    if (p1.y() < 0) {
-	offy = -p1.y();
-	p1.setY(0);
+    if (rect.isEmpty()) {
+	XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+		0, 0, pmd.width(), pmd.height(), 0, 0);
+	return true;
     }
 
-    // Bottom right corner out of desktop?
-    if (p2.x() > pmd.width())
-	size.setWidth(pmd.width() - p1.x() + offx);
-    if (p2.y() > pmd.height())
-	size.setHeight(pmd.height() - p1.y() + offy);
+    // Do some more processing here: Generate a tile that can be used as a
+    // background tile for the rectangle "rect".
+	
+    int sw = pmd.width(), sh = pmd.height();
+    int w = rect.width(), h = rect.height();
+    int tw = QMIN(sw, w), th = QMIN(sh, h);
+    int xa = rect.x() % sw, ya = rect.y() % sh;
+    int t1w = QMIN(sw-xa,tw), t1h = QMIN(sh-ya,th);
 
     detach(); 
-    resize(size);
+    resize(tw, th);
 
     XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
-	p1.x(), p1.y(), size.width(), size.height(), offx, offy);
-
+	    xa, ya, t1w, t1h, 0, 0);
+    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+	    0, ya, tw-t1w, t1h, t1w, 0);
+    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+	    xa, 0, t1w, th-t1h, 0, t1h);
+    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+	    0, 0, tw-t1w, th-t1h, t1w, t1h);
+    
     return true;
 }
 
