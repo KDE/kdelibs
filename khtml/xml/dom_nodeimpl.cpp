@@ -198,7 +198,7 @@ QString NodeImpl::recursive_toHTML(bool start) const
     if ( nodeType() == Node::TEXT_NODE )
         me = nodeValue().string();
     else
-    {   
+    {
 	// If I am an element, not a text
 	NodeImpl* temp = previousSibling();
 	if(temp)
@@ -367,7 +367,7 @@ void NodeImpl::removeEventListener(const DOMString &type,
 	return;
 
     RegisteredEventListener rl(type,listener,useCapture);
-	
+
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
     for (; it.current() && !found; ++it)
@@ -857,7 +857,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 
 void NodeBaseImpl::applyChanges(bool top, bool force)
 {
-        // ### find a better way to handle non-css attributes
+    // ### find a better way to handle non-css attributes
     setChanged(false);
 
     int ow = (m_style?m_style->outlineWidth():0);
@@ -923,8 +923,9 @@ void NodeBaseImpl::detach()
     NodeImpl *child = _first;
     while(child != 0)
     {
-	child->detach();
-	child = child->nextSibling();
+        NodeImpl* prev = child;
+        child = child->nextSibling();
+	prev->detach();
     }
     NodeWParentImpl::detach();
 }

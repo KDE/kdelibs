@@ -752,7 +752,7 @@ void DocumentImpl::close(  )
     if (m_render)
         m_render->close();
 
-    if(m_tokenizer) delete m_tokenizer;
+    delete m_tokenizer;
     m_tokenizer = 0;
 }
 
@@ -782,10 +782,10 @@ void DocumentImpl::finishParsing (  )
 
 void DocumentImpl::clear()
 {
-    if(m_tokenizer) delete m_tokenizer;
+    delete m_tokenizer;
     m_tokenizer = 0;
 
-    // #### clear tree
+    removeChildren();
 }
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
@@ -1373,7 +1373,7 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
 	return new MutationEventImpl();
     else {
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	return 0;	
+	return 0;
     }
 }
 
