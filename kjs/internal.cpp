@@ -1107,12 +1107,42 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       v = o.getValue(exec);
 
     UString name;
-    if (v.type() == ObjectType) {
+    switch ( v.type() ) {
+    case UnspecifiedType:
+      name = "Unspecified value";
+      break;
+    case UndefinedType:
+      name = "Undefined";
+      break;
+    case NullType:
+      name = "Null";
+      break;
+    case BooleanType:
+      name = "Boolean value";
+      break;
+    case StringType:
+      name = "String value";
+      break;
+    case NumberType:
+      name = "Number value";
+      break;
+    case ObjectType:
       name = Object::dynamicCast(v).getClass();
+      if (name.isNull())
+        name = "(unknown class)";
+      break;
+    case ReferenceType:
+      name = "Reference";
+      break;
+    case ListType:
+      name = "List value";
+      break;
+    case CompletionType:
+      name = "Completion value";
+      break;
+    default:
+      break;
     }
-    if (name.isNull())
-      name = "(unknown class)";
-
     // Can't use two UString::ascii() in the same fprintf call
     char * vString = strdup( v.toString(exec).value().ascii() );
 
