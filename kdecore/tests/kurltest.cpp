@@ -448,14 +448,14 @@ int main(int argc, char *argv[])
   check("Broken stuff #3 directory(false, true)", waba1.directory(true, true), "");
   KURL broken;
   broken.setPath( QString::null );
-  check("Broken stuff #3 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
+  check("Broken stuff #4 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
   // It's valid: because isValid refers to parsing, not to what happens afterwards.
-  check("Broken stuff #3 valid", broken.isValid()?"VALID":"MALFORMED", "VALID");
-  check("Broken stuff #3 path", broken.path(), "");
+  check("Broken stuff #4 valid", broken.isValid()?"VALID":"MALFORMED", "VALID");
+  check("Broken stuff #4 path", broken.path(), "");
   broken = "file://"; // just because coolo wondered
-  check("Broken stuff #3 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
-  check("Broken stuff #3 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
-  check("Broken stuff #3 path", broken.path(), "");
+  check("Broken stuff #5 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
+  check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
+  check("Broken stuff #5 path", broken.path(), "");
 
 #if 0
   // UNC like names
