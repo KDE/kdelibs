@@ -692,6 +692,10 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 {
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
 
+	if (!pItem) {
+		return false;
+	}
+
 	// If editing global shortcuts, check them for conflicts with the stdaccels.
 	if( m_type == ApplicationGlobal || m_type == Global ) {
 		// For each key sequence in the shortcut,

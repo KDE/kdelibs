@@ -182,8 +182,8 @@ DistributionListEditor::~DistributionListEditor()
 
 void DistributionListEditor::slotSelectionEntryViewChanged()
 {
-    EditEntryItem *entryItem =dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
-    bool state=entryItem;
+    EditEntryItem *entryItem = dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
+    bool state = (entryItem != 0L);
 
     changeEmailButton->setEnabled(state);
     removeEntryButton->setEnabled(state);
@@ -276,8 +276,8 @@ void DistributionListEditor::updateEntryView()
   for( it = entries.begin(); it != entries.end(); ++it ) {
     new EditEntryItem( mEntryView, (*it).addressee, (*it).email );
   }
-   EditEntryItem *entryItem =dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
-   bool state=entryItem;
+   EditEntryItem *entryItem = dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
+   bool state = (entryItem != 0L);
 
    changeEmailButton->setEnabled(state);
    removeEntryButton->setEnabled(state);
@@ -304,6 +304,6 @@ void DistributionListEditor::slotSelectionAddresseeViewChanged()
 {
     AddresseeItem *addresseeItem =
         dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
-    bool state=addresseeItem;
+    bool state = (addresseeItem != 0L);
     addEntryButton->setEnabled( state && !mNameCombo->currentText().isEmpty());
 }

@@ -4,7 +4,7 @@
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
               (C) 2000 Michael Koch <koch@kde.org>
-	      (C) 2001 Holger Freyther <freyther@kde.org>
+              (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
 

@@ -205,9 +205,9 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     } else d->_chain->setEnabled(false);
 
     layout->addWidget(new QLabel(i18n("Peer certificate:"), this), 2, 0);
-    layout->addWidget(d->_subject = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
+    layout->addWidget(d->_subject = static_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
     layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
-    layout->addWidget(d->_issuer = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
+    layout->addWidget(d->_issuer = static_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
     d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
 
     layout = new QGridLayout(11, 2, KDialog::spacingHint());

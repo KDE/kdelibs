@@ -615,14 +615,19 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
       curEntry = curDir->entry(*it);
       if ( curEntry->isFile() ) {
         curFile = dynamic_cast<KArchiveFile*>( curEntry );
-        fileList.append( curFile );
-        fileToDir.insert( curFile->position(), curDirName );
+	if (curFile) {
+          fileList.append( curFile );
+          fileToDir.insert( curFile->position(), curDirName );
+        }
       }
 
       if ( curEntry->isDirectory() )
         if ( recursiveCopy ) {
-          dirStack.push( dynamic_cast<KArchiveDirectory*>( curEntry ) );
-          dirNameStack.push( curDirName + "/" + curEntry->name() );
+          KArchiveDirectory *ad = dynamic_cast<KArchiveDirectory*>( curEntry );
+          if (ad) {
+            dirStack.push( ad );
+            dirNameStack.push( curDirName + "/" + curEntry->name() );
+          }
         }
     }
   } while (!dirStack.isEmpty());
