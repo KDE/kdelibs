@@ -18,12 +18,23 @@ public:
     ~KScanDialog();
 
 protected:
-    KScanDialog( QWidget *parent=0L, const char *name=0, bool modal=false );
+    KScanDialog( int dialogFace=Tabbed, int buttonMask = Close|Help, 
+		 QWidget *parent=0L, const char *name=0, bool modal=false );
+
+    int id() const { return m_currentId; }
+    int nextId() { return ++m_currentId; }
 
 signals:
-    void finalImage( const QImage& );
+    // we need an id so that applications can distinguish between new
+    // scans and redone scans!
+    void preview( const QImage&, int id );
 
-    void textRecognized( const QString& );
+    void finalImage( const QImage&, int id );
+
+    void textRecognized( const QString&, int id );
+
+private:
+    int m_currentId;
 
 };
 
