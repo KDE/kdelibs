@@ -416,6 +416,8 @@ bool KHTMLPart::openURL( const KURL &url )
       d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
   }
 
+  if (widget())
+     d->m_job->setWindow(widget()->topLevelWidget());
   d->m_job->addMetaData(args.metaData());
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
@@ -988,6 +990,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // When the first data arrives, the metadata has just been made available
     d->m_httpHeaders = d->m_job->queryMetaData("HTTP-Headers");
+    time_t cacheCreationDate =  d->m_job->queryMetaData("cache-creation-date").toLong();
+    d->m_doc->docLoader()->setCacheCreationDate(cacheCreationDate);
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
 

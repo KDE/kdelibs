@@ -1422,14 +1422,18 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
     else if(strcasecmp(equiv, "expires") == 0)
     {
+        bool relative = false;
         QString str = content.string().stripWhiteSpace();
         time_t expire_date = KRFCDate::parseDate(str);
         if (!expire_date)
+        {
             expire_date = str.toULong();
+            relative = true;
+        }
         if (!expire_date)
             expire_date = 1; // expire now
         if (m_docLoader)
-            m_docLoader->setExpireDate(expire_date);
+            m_docLoader->setExpireDate(expire_date, relative);
     }
     else if(strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0)
     {

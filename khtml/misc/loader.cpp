@@ -848,6 +848,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 {
     m_cachePolicy = KIO::CC_Verify;
     m_expireDate = 0;
+    m_creationDate = time(0);
     m_bautoloadImages = true;
     m_showAnimations = KHTMLSettings::KAnimationEnabled;
     m_part = part;
@@ -861,9 +862,17 @@ DocLoader::~DocLoader()
     Cache::docloader->remove( this );
 }
 
-void DocLoader::setExpireDate(time_t _expireDate)
+void DocLoader::setCacheCreationDate(time_t _creationDate)
 {
-    m_expireDate = _expireDate;
+    m_creationDate = _creationDate;
+}
+
+void DocLoader::setExpireDate(time_t _expireDate, bool relative)
+{
+    if (relative)
+       m_expireDate = _expireDate + m_creationDate; // Relative date
+    else
+       m_expireDate = _expireDate; // Absolute date
 }
 
 bool DocLoader::needReload(const KURL &fullURL)

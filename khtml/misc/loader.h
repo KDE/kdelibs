@@ -330,7 +330,8 @@ namespace khtml
         KHTMLPart* part() const { return m_part; }
         DOM::DocumentImpl* doc() const { return m_doc; }
 
-        void setExpireDate( time_t );
+        void setCacheCreationDate( time_t );
+        void setExpireDate( time_t, bool relative );
         void setAutoloadImages( bool );
         void setCachePolicy( KIO::CacheControl cachePolicy );
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
@@ -345,6 +346,7 @@ namespace khtml
         QStringList m_reloadedURLs;
         mutable QPtrList<CachedObject> m_docObjects;
 	time_t m_expireDate;
+	time_t m_creationDate;
 	KIO::CacheControl m_cachePolicy;
         bool m_bautoloadImages : 1;
         KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
