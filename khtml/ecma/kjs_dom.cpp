@@ -113,6 +113,12 @@ KJSO DOMNode::tryGet(const UString &p) const
 //  else if (p == "supports") // new for DOM2 - not yet in khtml
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
   // no DOM standard, found in IE only
+  else if (p == "offsetLeft")
+    result = rend ? Number(rend->xPos()) : KJSO(Undefined());
+  else if (p == "offsetTop")
+    result = rend ? Number(rend->yPos()) : KJSO(Undefined());
+  else if (p == "offsetParent")
+    result = getDOMNode(node.parentNode()); // not necessarily correct
   else if (p == "clientWidth")
       result = rend ? Number(rend->contentWidth()) : KJSO(Undefined());
   else if (p == "clientHeight")
