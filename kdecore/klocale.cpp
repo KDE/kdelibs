@@ -1123,15 +1123,15 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	      break;
 	    case 'b':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, calendar()->monthNamePossessive(month, true) );
+		put_it_in( buffer, index, calendar()->monthNamePossessive(month, year, true) );
 	      else
-		put_it_in( buffer, index, calendar()->monthName(month, true) );
+		put_it_in( buffer, index, calendar()->monthName(month, year, true) );
 	      break;
 	    case 'B':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, calendar()->monthNamePossessive(month, false) );
+		put_it_in( buffer, index, calendar()->monthNamePossessive(month, year, false) );
 	      else
-		put_it_in( buffer, index, calendar()->monthName(month, false) );
+		put_it_in( buffer, index, calendar()->monthName(month, year, false) );
 	      break;
 	    case 'd':
 	      put_it_in( buffer, index, day );
@@ -1407,7 +1407,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  if (d->nounDeclension && d->dateMonthNamePossessive) {
 	    j = 1;
 	    while (error && (j < 13)) {
-	      QString s = calendar()->monthNamePossessive(j, c == 'b').lower();
+	      QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
 	      int len = s.length();
 	      if (str.mid(strpos, len) == s) {
 	        month = j;
@@ -1419,7 +1419,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  }
 	  j = 1;
 	  while (error && (j < 13)) {
-	    QString s = calendar()->monthName(j, c == 'b').lower();
+	    QString s = calendar()->monthName(j, year, c == 'b').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s) {
 	      month = j;
