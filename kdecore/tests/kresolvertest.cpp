@@ -165,7 +165,8 @@ bool testKernel()
 
 #else
   int sock;
-  socklen_t len = 0;
+  kde_sockaddr_in6 sin6;
+  socklen_t len = sizeof(sin6);
 
   printf("\tAF_INET6 == %d\n", AF_INET6);
   printf("\tTrying to create an IPv6 socket...");
@@ -176,7 +177,7 @@ bool testKernel()
     {
       printf("succeeded\n");
 
-      if (getsockname(sock, NULL, &len) == 0)
+      if (getsockname(sock, (struct sockaddr*)&sin6, &len) == 0)
 	printf("\tSize of kernel's sockaddr_in6 is %d bytes\n", len);
       else
 	printf("\tCould not get socket name\n");
@@ -196,7 +197,6 @@ bool testKernel()
     return false;
 
   printf("\tTrying to bind the socket to an address...");
-  kde_sockaddr_in6 sin6;
   sin6.sin6_family = AF_INET6;
 # ifdef HAVE_SOCKADDR_SA_LEN
   sin6.sin6_len = sizeof(sin6);
@@ -216,8 +216,11 @@ bool testKernel()
   printf("succeeded\n");
 
   KSocketAddress *ksin = KExtendedSocket::localAddress(sock);
-  printf("\tWe got socket %s\n", (const char*)ksin->pretty().local8Bit());
-  delete ksin;
+  if (ksin != NULL)
+    {
+      printf("\tWe got socket %s\n", (const char*)ksin->pretty().latin1());
+      delete ksin;
+    }
 
   close(sock);
   return true;
