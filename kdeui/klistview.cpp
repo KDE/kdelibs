@@ -22,7 +22,6 @@
 #include <qtimer.h>
 #include <qheader.h>
 #include <qcursor.h>
-#include <qptrstack.h>
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <qpainter.h>
@@ -1840,20 +1839,28 @@ const QColor &KListViewItem::backgroundColor()
   KListView *lv = dynamic_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    KListViewItem *above = 0;
-    QPtrStack<KListViewItem> items;
-    for (KListViewItem *item = this; item; item = above)
+    if (!m_known)
     {
-      items.push(item);
-      above = dynamic_cast<KListViewItem *>(item->itemAbove());
-      if (!above || above->m_known)
-        break;
-    }
-    while (items.top())
-    {
-      items.top()->m_odd = above ? !above->m_odd : false;
-      items.top()->m_known = true;
-      above = items.pop();
+       KListViewItem *item;
+       bool previous = true;
+       if (parent())
+       {
+          item = dynamic_cast<KListViewItem *>(parent());
+          if (item)
+             previous = item->m_odd;
+          item = dynamic_cast<KListViewItem *>(parent()->firstChild());
+       }
+       else
+       {
+          item = dynamic_cast<KListViewItem *>(lv->firstChild());
+       }
+
+       while(item)
+       {
+          item->m_odd = previous = !previous;
+          item->m_known = true;
+          item = dynamic_cast<KListViewItem *>(item->nextSibling());
+       }
     }
     if (m_odd)
       return lv->alternateBackground();
