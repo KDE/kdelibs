@@ -29,7 +29,7 @@
 
 #include "ustring.h"
 #include "simple_number.h"
-#include <kjs/global.h>
+#include "global.h"
 
 // Primitive data types
 

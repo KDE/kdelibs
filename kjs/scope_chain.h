@@ -22,7 +22,7 @@
 #ifndef KJS_SCOPE_CHAIN_H
 #define KJS_SCOPE_CHAIN_H
 
-#include <kjs/global.h>
+#include "global.h"
 
 namespace KJS {
 
