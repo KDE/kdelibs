@@ -25,11 +25,13 @@
 #include <kio/kded/kdedmodule.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qmap.h>
 
 
 class KPCSC;
-
 class KSimpleConfig;
+class QTimer;
+
 
 class KardSvc : public KDEDModule
 {
@@ -46,9 +48,15 @@ k_dcop:
   QStringList getSlotList();
   bool isCardPresent(QString slot);
 
+private slots:
+  void poll();
+
 private:
   KPCSC *_pcsc;
   KSimpleConfig *_cfg;
+  QTimer *_timer;
+  QStringList _readers;
+  QMap<QString,long> _states;
 
 };
 

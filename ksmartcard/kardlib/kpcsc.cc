@@ -90,15 +90,16 @@ long rc;
 		return res;
 	}
 
-	rstr = (char *)malloc(sizeof(char)*readers);
+	rstr = new char[readers];
 	rc = SCardListReaders(_ctx, (char *)NULL, rstr, &readers);
 	if (rc != SCARD_S_SUCCESS) {
 		if (err) *err = rc;
+		delete[] rstr;
 		return res;
 	}
 
 	res << rstr;
-	free(rstr);
+	delete[] rstr;
 	if (err) *err = 0;
 
 return res;

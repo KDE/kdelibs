@@ -46,6 +46,10 @@ extern "C" {
 KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 {
 	_pcsc = new KPCSC;
+	_timer = new QTimer(this);
+	connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
+	_timer->start(2500, false);
+	_readers = _pcsc->listReaders(NULL);
 }
   
 
@@ -71,6 +75,39 @@ KCardReader *_card = _pcsc->getReader(slot);
    delete _card;
 
 return rc;
+}
+
+
+void KardSvc::poll() {
+int err;
+QStringList newReaders = _pcsc->listReaders(&err);
+
+	if (_readers != newReaders) {
+		if (err != 0) {
+			kdDebug() << "kardsvc: reader list changed." << endl;
+			_readers = newReaders;
+		} else return;
+	}
+
+	for (QStringList::Iterator s = _readers.begin();
+	     s != _readers.end();
+	     ++s) {
+		KCardReader *_card = _pcsc->getReader(*s);
+		if (_card) {
+			if (_states[*s] == 0) {
+				_states[*s] = 1;
+				kdDebug() << "kardsvc: card inserted in slot " 
+					  << *s << endl;
+			}
+			delete _card;
+		} else {
+			if (_states[*s] == 1) {
+				_states[*s] = 0;
+				kdDebug() << "kardsvc: card removed from slot " 
+					  << *s << endl;
+			}
+		}
+	}
 }
 
 
