@@ -268,8 +268,10 @@ KGzipFilter::Result KGzipFilter::uncompress()
     {
         //kdDebug() << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
         int result = inflate(&d->zStream, Z_SYNC_FLUSH);
-        if ( result != Z_OK )
+#ifndef NDEBUG
+        if ( result != Z_OK && result != Z_STREAM_END )
             kdDebug() << "inflate returned " << result << endl;
+#endif
         return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
     } else
         return uncompress_noop();
@@ -284,8 +286,10 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     ulong len = d->zStream.avail_in;
     //kdDebug() << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
     int result = deflate(&d->zStream, finish ? Z_FINISH : Z_SYNC_FLUSH);
-    if ( result != Z_OK )
+#ifndef NDEBUG
+    if ( result != Z_OK && result != Z_STREAM_END )
         kdDebug() << "  deflate returned " << result << endl;
+#endif
     //kdDebug() << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
     m_crc = crc32(m_crc, p, len - d->zStream.avail_in);
     if ( result == Z_STREAM_END )
