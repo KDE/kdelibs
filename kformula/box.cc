@@ -412,8 +412,9 @@ void box::calculate(QPainter &p, int setFontsize)
       rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
 		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
       b2x += fontsize / 4 + rect.height() / 10;
-      rect.setRect(rect.x(), rect.y() - b2x * 3 / 4,
-		   rect.width() + b2x * 2, rect.height() + b2x * 3 / 2);
+      rect.setRect(rect.x() - SPACE / 2, rect.y() - b2x * 3 / 4,
+		   rect.width() + b2x * 2 + SPACE,
+		   rect.height() + b2x * 3 / 2);
 
       break;
 
@@ -592,10 +593,11 @@ void box::draw(QPainter &p, int x, int y)
   case PAREN: //the parentheses are ellipse arcs.
     p.setPen(QPen(Qt::black, 2));
 
-    p.drawArc(rect.left() + x, rect.top() + y, b2x * 2, rect.height(),
+    p.drawArc(SPACE / 2 + rect.left() + x, rect.top() + y,
+	      b2x * 2, rect.height(),
 	      100 * 16, 160 * 16);
 
-    p.drawArc(rect.right() - b2x * 2 + x, rect.top() + y,
+    p.drawArc(rect.right() - SPACE / 2 - b2x * 2 + x, rect.top() + y,
 	      b2x * 2, rect.height(), -80 * 16, 160 * 16);
 
     p.setPen(QPen());

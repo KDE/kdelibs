@@ -48,15 +48,15 @@ MatrixDialog::MatrixDialog(QWidget *parent)
 
   QSpinBox *width, *height;
 
-  width = new QSpinBox(1, MAX_SIZE, 1, this);
-  grid->addWidget(width, 1, 0);
-  width->setValue(DEFAULT_SIZE);
-  connect(width, SIGNAL(valueChanged(int)), SLOT(setWidth(int)));
-
   height = new QSpinBox(1, MAX_SIZE, 1, this);
-  grid->addWidget(height, 1, 1);
+  grid->addWidget(height, 1, 0);
   height->setValue(DEFAULT_SIZE);
   connect(height, SIGNAL(valueChanged(int)), SLOT(setHeight(int)));
+
+  width = new QSpinBox(1, MAX_SIZE, 1, this);
+  grid->addWidget(width, 1, 1);
+  width->setValue(DEFAULT_SIZE);
+  connect(width, SIGNAL(valueChanged(int)), SLOT(setWidth(int)));
 
   QCheckBox *fill = new QCheckBox("Zero-Fill", this);
   grid->addMultiCellWidget(fill, 2, 2, 0, 1);
@@ -71,7 +71,7 @@ MatrixDialog::MatrixDialog(QWidget *parent)
   grid->addWidget(cancel, 3, 1);
   connect(cancel, SIGNAL(clicked()), SLOT(reject()));
 
-  width->setFocus();
+  height->setFocus();
 }
 
 void MatrixDialog::setHeight(int value)
