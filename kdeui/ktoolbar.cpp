@@ -211,7 +211,6 @@ void KToolBar::init( bool readConfig, bool honorStyle )
 {
     d = new KToolBarPrivate;
     setFullSize( TRUE );
-    setGeometry( -10, -10, 0, 0 );
     d->m_honorStyle = honorStyle;
     context = 0;
     layoutTimer = new QTimer( this );
