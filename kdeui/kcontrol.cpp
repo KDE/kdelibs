@@ -80,7 +80,7 @@ KControlApplication::KControlApplication(int &argc, char **argv, char *name, cha
   dialog = new KControlDialog();
   if (!dialog)
     return;
-  dialog->setCaption(title);
+  dialog->setCaption(klocale->translate(title));
 
   // connect the buttons
   connect(dialog, SIGNAL(applyButtonPressed()), this, SLOT(apply()));
