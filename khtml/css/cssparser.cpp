@@ -599,9 +599,10 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
          return;
     }
 
-    if(!parseValue(curP, endP, propPtr->id, important, propList))
+    if(!parseValue(curP, endP, propPtr->id, important, propList)) {
+	kdDebug(6080) << "invalid property, clearing list" << endl;
 	propList->clear();
-
+    }
 }
 
 QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
@@ -851,8 +852,18 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_LETTER_SPACING:
     case CSS_PROP_OUTLINE_WIDTH:
     case CSS_PROP_WORD_SPACING:
-	parsedValue = parseUnit(curP, endP, LENGTH);
-	break;
+	{
+	    const struct css_value *cssval = findValue(val, value.length());
+	    if (cssval) {
+		if(cssval->id == CSS_VAL_THIN || cssval->id == CSS_VAL_MEDIUM ||
+		   cssval->id == CSS_VAL_THICK )
+		    //kdDebug( 6080 ) << "got value " << cssval->id << endl;
+		    parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+		break;
+	    }
+	    parsedValue = parseUnit(curP, endP, LENGTH);
+	    break;
+	}
 
 // length, percent
     case CSS_PROP_PADDING_TOP:
@@ -1037,6 +1048,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_BOTTOM:
     case CSS_PROP_BORDER_LEFT:
     {
+	kdDebug(6080) << "parsing border property" << endl;
 	const int *properties;
 	const int properties_border[3] = {
 	    CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE, CSS_PROP_BORDER_COLOR };
@@ -1074,10 +1086,14 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 		nextP++;
 	    }
 	    bool found;
+	    kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
 	    found = parseValue(curP, nextP, properties[0], important, propList);
 	    if(!found) found = parseValue(curP, nextP, properties[1], important, propList);
 	    if(!found) found = parseValue(curP, nextP, properties[2], important, propList);
-	    if(!found) return false;
+	    if(!found) {
+		kdDebug(6080) << "invalid border prop" << endl;
+		return false;
+	    }
 	    curP = nextP+1;
 	    if(curP >= endP) break;
 	}		
