@@ -109,7 +109,8 @@ KAboutData::KAboutData( const char *appName,
   mCopyrightStatement( copyrightStatement ),
   mOtherText( text ),
   mHomepageAddress( homePageAddress ),
-  mBugEmailAddress( bugsEmailAddress )
+  mBugEmailAddress( bugsEmailAddress ),
+  mLicenseText (0)
 {
    d = new KAboutDataPrivate;
 
@@ -125,6 +126,8 @@ KAboutData::KAboutData( const char *appName,
 
 KAboutData::~KAboutData()
 {
+    if (mLicenseKey == License_File)
+        delete [] mLicenseText;
     delete d;
 }
 
