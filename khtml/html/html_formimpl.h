@@ -210,7 +210,7 @@ public:
     virtual void attach();
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttributeImpl *attr);
-   
+
 protected:
     NodeImpl *m_legend;
 };
@@ -296,7 +296,6 @@ protected:
     typeEnum m_type : 4;
     bool m_clicked : 1 ;
     bool m_checked : 1;
-    bool m_haveType : 1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
     bool m_inited : 1;
@@ -329,7 +328,7 @@ class HTMLLegendElementImpl : public HTMLGenericFormElementImpl
 public:
     HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLLegendElementImpl();
-    
+
     virtual Id id() const;
     virtual void attach();
     virtual void parseAttribute(AttributeImpl *attr);
@@ -363,7 +362,7 @@ public:
 
     bool multiple() const { return m_multiple; }
 
-    void add ( const HTMLElement &element, const HTMLElement &before );
+    void add ( const HTMLElement &element, const HTMLElement &before, int& exceptioncode );
     void remove ( long index );
     void blur();
     void focus();

@@ -558,6 +558,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     }
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "couldn't find form!" << endl;
+    kdDebug( 6030 ) << kdBacktrace() << endl;
 #endif
     return 0;
 }
@@ -802,7 +803,7 @@ void HTMLFieldSetElementImpl::attach()
     addCSSProperty(CSS_PROP_PADDING_RIGHT, "4px");
     addCSSProperty(CSS_PROP_PADDING_BOTTOM, "4px");
 
-    
+
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE)
@@ -822,7 +823,7 @@ NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
         m_legend = child;
         return r;
     }
-    return HTMLGenericFormElementImpl::addChild(child); 
+    return HTMLGenericFormElementImpl::addChild(child);
 }
 
 void HTMLFieldSetElementImpl::parseAttribute(AttributeImpl *attr)
@@ -1258,8 +1259,8 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 DOMString HTMLInputElementImpl::value() const
 {
     if(m_value.isNull())
-        return (m_type == CHECKBOX || m_type ==RADIO) ? 
-            DOMString("on") : DOMString(""); 
+        return (m_type == CHECKBOX || m_type ==RADIO) ?
+            DOMString("on") : DOMString("");
     return m_value;
 }
 
@@ -1295,6 +1296,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         m_render->absolutePosition(offsetX,offsetY);
         xPos = me->clientX()-offsetX;
         yPos = me->clientY()-offsetY;
+
 
 	me->setDefaultHandled();
     }
@@ -1404,7 +1406,7 @@ void HTMLLegendElementImpl::attach()
     HTMLGenericFormElementImpl::attach();
     _style->deref();
 }
-    
+
 void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -1488,12 +1490,11 @@ long HTMLSelectElementImpl::length() const
     return len;
 }
 
-void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before )
+void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before, int& exceptioncode )
 {
     if(element.isNull() || element.handle()->id() != ID_OPTION)
         return;
 
-    int exceptioncode = 0;
     insertBefore(element.handle(), before.handle(), exceptioncode );
     if (!exceptioncode)
         setRecalcListItems();
