@@ -37,6 +37,27 @@ template class QAsciiDict<KLibrary>;
 #include <stdlib.h> //getenv
 
 
+#if HAVE_DLFCN_H
+#  include <dlfcn.h>
+#endif
+ 
+#ifdef RTLD_GLOBAL
+#  define LT_GLOBAL             RTLD_GLOBAL
+#else
+#  ifdef DL_GLOBAL
+#    define LT_GLOBAL           DL_GLOBAL
+#  endif
+#endif /* !RTLD_GLOBAL */
+#ifndef LT_GLOBAL
+#  define LT_GLOBAL             0
+#endif /* !LT_GLOBAL */
+
+
+extern "C" {
+extern int lt_dlopen_flag;
+};
+
+
 class KLibFactoryPrivate {
 public:
 };
@@ -346,6 +367,23 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
     }
     return libfile;
 }
+
+
+KLibrary* KLibLoader::globalLibrary( const char *name )
+{
+KLibrary *tmp;
+int olt_dlopen_flag = lt_dlopen_flag;
+
+   lt_dlopen_flag |= LT_GLOBAL;
+   kdDebug(150) << "Loading the next library global with flag " 
+                << lt_dlopen_flag
+                << "." << endl;
+   tmp = library(name);
+   lt_dlopen_flag = olt_dlopen_flag;
+
+return tmp;
+}
+
 
 KLibrary* KLibLoader::library( const char *name )
 {

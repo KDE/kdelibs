@@ -245,6 +245,30 @@ public:
      */
     virtual KLibrary* library( const char* libname );
 
+    /**
+     * Loads and initializes a library. Loading a library multiple times is
+     * handled gracefully.   The library is loaded such that the symbols are
+     * globally accessible so libraries with dependencies can be loaded
+     * sequentially.
+     *
+     * @param libname  This is the library name without extension. Usually that is something like
+     *                 "libkspread". The function will then search for a file named
+     *                 "libkspread.la" in the KDE library paths.
+     *                 The *.la files are created by libtool and contain
+     *                 important information especially about the libraries dependencies
+     *                 on other shared libs. Loading a "libfoo.so" could not solve the
+     *                 dependencies problem.
+     *
+     *                 You can, however, give a library name ending in ".so"
+     *                 (or whatever is used on your platform), and the library
+     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
+     * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
+     *
+     * @see #factory
+     */
+    KLibrary* globalLibrary( const char *name );
+
     /*
      * returns an error message that can be useful to debug the problem
      * returns QString::null if the last call to ::library(const char*) was successful
