@@ -547,10 +547,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int minx =  1000000;
         int maxx = -1000000;
         int outlinebox_y = m_lines[si]->m_y;
+	QList <QRect> linerects;
+	linerects.append(new QRect());
 
-        RenderStyle* outlineStyle = 0;
-        if (!outlineStyle && style()->outlineWidth())
-            outlineStyle = style();
+	bool renderOutline = style()->outlineWidth()!=0;
 
         // run until we find one that is outside the range, then we
         // know we can stop
@@ -593,13 +593,15 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 startPos -= diff;
                 //kdDebug(6040) << this << " startPos now " << startPos << ", endPos now " << endPos << endl;
             }
-            if(outlineStyle) {
+            if(renderOutline) {
                 if(outlinebox_y == s->m_y) {
                     if(minx > s->m_x)  minx = s->m_x;
                     if(maxx < s->m_x+s->m_width) maxx = s->m_x+s->m_width;
                 }
                 else {
-                    printOutline(p, tx+minx, ty+outlinebox_y, maxx-minx, m_lineHeight, outlineStyle);
+                    QRect *curLine = new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight);
+                    linerects.append(curLine);
+
                     outlinebox_y = s->m_y;
                     minx = s->m_x;
                     maxx = s->m_x+s->m_width;
@@ -618,8 +620,14 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h, m_lineHeight));
 
-        if(outlineStyle)
-            printOutline(p, tx+minx, ty+outlinebox_y, maxx-minx, m_lineHeight, outlineStyle);
+        if(renderOutline)
+	  {
+	    linerects.append(new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight));
+	    linerects.append(new QRect());
+
+	    for (unsigned int i = 1; i < linerects.count() - 1; i++)
+                printTextOutline(p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
+	  }
     }
 }
 
@@ -937,6 +945,83 @@ QFontMetrics RenderText::metrics(bool firstLine) const
     if ( khtml::printpainter )
 	return fontMetrics(style()->font());
     return *fm;
+}
+
+void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
+{
+  int ow = style()->outlineWidth();
+  EBorderStyle os = style()->outlineStyle();
+  QColor oc = style()->outlineColor();
+
+  // left edge
+  drawBorder(p,
+	     tx + thisline.left()   - ow,
+	     ty + thisline.top()    - (lastline.isEmpty() || thisline.left() <= lastline.left() || lastline.right() <= thisline.left() ? ow : 1),
+	     tx + thisline.left()   ,
+	     ty + thisline.bottom() + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 1),
+	     BSLeft,
+	     oc, style()->color(), os, false, false,
+	     (lastline.isEmpty() || thisline.left() <= lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
+	     (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
+	     true);
+
+  // right edge
+  drawBorder(p,
+	     tx + thisline.right()  ,
+	     ty + thisline.top()    - (lastline.isEmpty() || lastline.right() <= thisline.right() || thisline.right() <= lastline.left() ? ow : 1),
+	     tx + thisline.right()  + ow,
+	     ty + thisline.bottom() + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 1),
+	     BSRight,
+	     oc, style()->color(), os, false, false,
+	     (lastline.isEmpty() || lastline.right() <= thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
+	     (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
+	     true);
+  // upper edge
+  if ( thisline.left() < lastline.left() )
+      drawBorder(p,
+		 tx + thisline.left() - ow,
+		 ty + thisline.top()  - ow,
+		 tx + QMIN(thisline.right() + ow, lastline.isValid()?lastline.left():1000000),
+		 ty + thisline.top() ,
+		 BSTop, oc, style()->color(), os, false, false,
+		 ow,
+		 (lastline.isValid() && lastline.left()<thisline.right()+ow?-ow:ow),
+		 true);
+
+  if (lastline.right() < thisline.right())
+      drawBorder(p,
+		 tx + QMAX(lastline.isValid()?lastline.right():-1000000, thisline.left() - ow),
+		 ty + thisline.top() - ow,
+		 tx + thisline.right() + ow,
+		 ty + thisline.top() ,
+		 BSTop, oc, style()->color(), os, false, false,
+		 (lastline.isValid() && thisline.left()-ow < lastline.right()?-ow:ow),
+		 ow,
+		 true);
+
+
+  // lower edge
+  if ( thisline.left() < nextline.left())
+      drawBorder(p,
+		 tx + thisline.left() - ow,
+		 ty + thisline.bottom(),
+		 tx + QMIN(thisline.right() + ow, nextline.isValid()?nextline.left():1000000),
+		 ty + thisline.bottom() + ow,
+		 BSBottom, oc, style()->color(), os, false, false,
+		 ow,
+		 (nextline.isValid() && nextline.left()<thisline.right()+ow?-ow:ow),
+		 true);
+
+  if (nextline.right() < thisline.right())
+      drawBorder(p,
+		 tx + QMAX(nextline.isValid()?nextline.right():-1000000, thisline.left() - ow),
+		 ty + thisline.bottom(),
+		 tx + thisline.right()  + ow,
+		 ty + thisline.bottom() + ow,
+		 BSBottom, oc, style()->color(), os, false, false,
+		 (nextline.isValid() && thisline.left()-ow < nextline.right()?-ow:ow),
+		 ow,
+		 true);
 }
 
 #undef BIDI_DEBUG

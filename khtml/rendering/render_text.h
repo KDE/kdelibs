@@ -191,6 +191,8 @@ public:
     QFontMetrics metrics(bool firstLine) const;
     
 protected:
+    void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
+
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
     QFontMetrics *fm;
