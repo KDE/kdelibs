@@ -185,13 +185,18 @@ CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
     m_type = CSSRule::MEDIA_RULE;
-    m_lstMedia = 0;
-    m_cssRules = 0;
+    m_lstMedia = new MediaListImpl( this );
+    m_lstMedia->ref();
+    m_lstCSSRules = new CSSRuleListImpl();
+    m_lstCSSRules->ref();
 }
 
 CSSMediaRuleImpl::~CSSMediaRuleImpl()
 {
-    if(m_lstMedia) m_lstMedia->deref();
+    if( m_lstMedia )
+        m_lstMedia->deref();
+    if( m_lstCSSRules )
+        m_lstCSSRules->deref();
 }
 
 MediaListImpl *CSSMediaRuleImpl::media() const
@@ -201,18 +206,27 @@ MediaListImpl *CSSMediaRuleImpl::media() const
 
 CSSRuleListImpl *CSSMediaRuleImpl::cssRules()
 {
-    return m_cssRules;
+    return m_lstCSSRules;
 }
 
-unsigned long CSSMediaRuleImpl::insertRule( const DOMString &/*rule*/, unsigned long /*index*/ )
+unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
+                                            unsigned long index )
 {
-    // ###
-    return 0;
+    const QChar *curP = rule.unicode();
+    CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
+                                   
+    if( newRule )
+    {
+        newRule->ref();
+        return m_lstCSSRules->insertRule( newRule, index );
+    }
+    else
+        return 0;
 }
 
-void CSSMediaRuleImpl::deleteRule( unsigned long /*index*/ )
+void CSSMediaRuleImpl::deleteRule( unsigned long index )
 {
-    // ###
+    m_lstCSSRules->deleteRule( index );
 }
 
 // ---------------------------------------------------------------------------
@@ -333,5 +347,26 @@ unsigned long CSSRuleListImpl::length() const
 CSSRuleImpl *CSSRuleListImpl::item ( unsigned long index )
 {
     return m_lstCSSRules.at( index );
+}
+
+void CSSRuleListImpl::deleteRule ( unsigned long index )
+{
+    CSSRuleImpl *rule = m_lstCSSRules.at( index );
+    if( rule )
+    {
+        m_lstCSSRules.remove( index );
+        rule->deref();
+    }
+}
+
+unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
+                                           unsigned long index )
+{
+    if( m_lstCSSRules.insert( index, rule ) )
+        return index;
+    else
+        rule->deref();    // insertion failed
+        
+    return 0;
 }
 

@@ -140,7 +140,7 @@ public:
     virtual bool isMediaRule() { return true; }
 protected:
     MediaListImpl *m_lstMedia;
-	CSSRuleListImpl *m_cssRules;
+	CSSRuleListImpl *m_lstCSSRules;
 };
 
 
@@ -211,6 +211,12 @@ public:
 
     unsigned long length() const;
     CSSRuleImpl *item ( unsigned long index );
+   
+    /**
+     * Internal API, _NOT_ to be exposed outside! (Used by CSSMediaRuleImpl)
+     */
+    unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
+    void deleteRule ( unsigned long index );
     
 protected:
     QList<CSSRuleImpl> m_lstCSSRules;
