@@ -1218,6 +1218,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 	//
 	for (; it != end; ++it) {
 		QString name;
+		QString url;
 		bool is_exe = false;
 		bool is_dir = false;
 
@@ -1235,9 +1236,19 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 				case KIO::UDS_FILE_TYPE:
 					is_dir = ((*it_2).m_long & S_IFDIR) != 0;
 					break;
+				case KIO::UDS_URL:
+					url = (*it_2).m_str;                  
+					break;
 			}
 		}
-
+	        
+		if (!url.isEmpty()) {
+			// kdDebug() << "KURLCompletion::slotEntries url: " << url << endl;
+			name = KURL(url).fileName();
+		}
+        
+		// kdDebug() << "KURLCompletion::slotEntries name: " << name << endl;
+        
 		if ( name[0] == '.' &&
 		     ( d->list_urls_no_hidden ||
 		        name.length() == 1 ||
