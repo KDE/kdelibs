@@ -241,19 +241,22 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
         if (found = fillinButtonInfo(b, tb, a, pos))
             break;
     }
+    /*
     if (found)
     {
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
-        if (pos.x() <= ((r.left() + r.right())/2) && index > 0 && index < tb->count()-1)
+        if (pos.x() <= ((r.left() + r.right())/2) && index > 0)
         {
-            --it;
+            index--;
             a = (*it);
+            // TODO lookup in reverse
             found = fillinButtonInfo(b, tb, a, pos);
             Q_ASSERT(found);
             index = tb->itemIndex(b->id());
         }
     }
+    */
     return found;
 }
 
