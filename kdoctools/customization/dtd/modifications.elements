@@ -3,14 +3,15 @@
 
 <!-- One modification: BookInfo is compulsory, because
      it contains ReleaseInfo, which is compulsory -->
-<!ELEMENT book ((%div.title.content;)?, bookinfo,
+<!ELEMENT book %ho; ((%div.title.content;)?, bookinfo,
  		(dedication | toc | lot
  		| glossary | bibliography | preface
 		| %chapter.class; | reference | part
 		| %article.class;
  		| %appendix.class;
 		| %index.class;
-		| colophon)*)>
+		| colophon)*)
+		%ubiq.inclusion;>
 
 <!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
      compulsory.  Not all orders that could be valid are allowed (the
@@ -20,18 +21,10 @@
      Abstract and Keywordset must follow Date and ReleaseInfo when they
      are used the first time.
 -->
-<!ELEMENT bookinfo ((graphic | mediaobject | legalnotice
-		        | modespec | subjectset | itermset
-		        | %kde.bibliocomponent.mix; )*,
-		        ((date, releaseinfo) | (releaseinfo, date)),
-                        (graphic | mediaobject | legalnotice
-			| modespec | subjectset
-			| itermset | %kde.bibliocomponent.mix;
-			)*,
-                        ((abstract, keywordset) | (keywordset, abstract)),
-		       (graphic | mediaobject | legalnotice | modespec 
-		       | subjectset | itermset
-		       | %bibliocomponent.mix; | keywordset)*)>
+<!ELEMENT bookinfo %ho; ((%kde.info.class;)*, date, releaseinfo, 
+                         (%kde.info.class;)*, abstract, keywordset, 
+                         (%info.class;)*)
+		%beginpage.exclusion;>
 
 <!-- value of Type changed from IMPLIED CDATA
      default value of LinkMode set from #IMPLIED to kdems-default -->
@@ -40,6 +33,8 @@
 		linkmode	IDREF		"kdems-default"
 		localinfo 	CDATA		#IMPLIED
 		type		(href|other)	"href"
+		targetdoc	CDATA		#IMPLIED
+		targetptr	CDATA		#IMPLIED
 		%common.attrib;
 		%olink.role.attrib;
 		%local.olink.attrib;

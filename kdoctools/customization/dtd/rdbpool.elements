@@ -192,13 +192,21 @@ zu	Zulu
 		|collab|confgroup|contractnum|contractsponsor
 		|copyright|corpauthor|corpname|edition
 		|editor|invpartnumber|isbn|issn|issuenum|orgname
+		|biblioid|citebiblioid|bibliosource|bibliorelation|bibliocoverage
 		|othercredit|pagenums|printhistory|productname
 		|productnumber|pubdate|publisher|publishername
 		|pubsnumber|revhistory|seriesvolnums
 		|subtitle|title|titleabbrev|volumenum|citetitle
-		|%person.ident.mix;
+		|personname|%person.ident.mix;
 		|%ndxterm.class;
 		%local.bibliocomponent.mix;">
+<!-- Unchanged -->
+<!ENTITY % local.info.class "">
+<!-- Copy of info.class with %kde.bibliocomponent.mix; -->
+<!ENTITY % kde.info.class
+		"graphic | mediaobject | legalnotice | modespec
+		 | subjectset | keywordset | itermset | %kde.bibliocomponent.mix;
+                 %local.info.class;">
 <!-- End of compulsory ReleaseInfo -->]]>
 
 <!-- KDE uses a more specific list of attributes -->
