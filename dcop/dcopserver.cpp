@@ -623,18 +623,24 @@ static void sighandler(int sig)
     //exit(0);
 }
 
+#ifdef HAVE__ICETRANSNOLISTEN
 extern "C" int _IceTransNoListen(const char *protocol);
+#endif
 
 DCOPServer::DCOPServer(bool _only_local)
     : QObject(0,0), appIds(263), clients(263)
 {
     time = 0; // the beginning of time....
-    
+
     only_local = _only_local;
 
+#ifdef HAVE__ICETRANSNOLISTEN
     if (only_local)
 	_IceTransNoListen("tcp");
-    
+#else
+    only_local = false;
+#endif
+
     dcopSignals = new DCOPSignals;
 
     extern int _IceLastMajorOpcode; // from libICE
