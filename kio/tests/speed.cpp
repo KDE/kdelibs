@@ -22,19 +22,19 @@ SpeedTest::SpeedTest()
 
 void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
 
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
-        UDSEntry::ConstIterator it2 = it.current()->begin();
-        for( ; it2 != it.current()->end(); it2++ ) {
+    UDSEntryListConstIterator it=list.begin();
+    for (; it != list.end(); ++it) {
+      UDSEntry::ConstIterator it2 = (*it).begin();
+        for( ; it2 != (*it).end(); it2++ ) {
             if ((*it2).m_uds == UDS_NAME)
-		debug( "%s", debugString(( *it2 ).m_str));
+              kdDebug() << ( *it2 ).m_str << endl;
         }
     }
 }
 
 
 void SpeedTest::finished(Job*) {
-    debug("job finished");
+    kdDebug() << "job finished" << endl;
 }
 
 int main(int argc, char **argv) {

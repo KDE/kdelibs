@@ -3,41 +3,42 @@
 #include <kservicetype.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 
 int main(int argc, char *argv[])
 {
    KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
 for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
-   debug("All services");
+   kdDebug() << "All services" << endl;
    KService::List services = KService::allServices();
-   debug("got %d services", services.count());
+   kdDebug() << "got " << services.count() << " services" << endl;
    QValueListIterator<KService::Ptr> s = services.begin();
    for ( ; s != services.end() ; ++s )
    {
-     debug((*s)->name());
+     kdDebug() << (*s)->name() << endl;
    }
 }
    
-   debug("All mimeTypes");
+   kdDebug() << "All mimeTypes" << endl;
    KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-   debug("got %d mimeTypes", mimeTypes.count());
+   kdDebug() << "got " << mimeTypes.count() << " mimeTypes" << endl;
    QValueListIterator<KMimeType::Ptr> m = mimeTypes.begin();
    for ( ; m != mimeTypes.end() ; ++m )
    {
-     debug((*m)->name());
+     kdDebug() << (*m)->name() << endl;
    }
    
-   debug("All service types");
+   kdDebug() << "All service types" << endl;
    KServiceType::List list = KServiceType::allServiceTypes();
-   debug("got %d service types", list.count());
+   kdDebug() << "got " << list.count() << " service types" << endl;
    QValueListIterator<KServiceType::Ptr> st = list.begin();
    for ( ; st != list.end() ; ++st )
    {
-     debug((*st)->name());
+     kdDebug() << (*st)->name() << endl;
    }
 
-   debug("done");
+   kdDebug() << "done" << endl;
    
    return 0;
 }

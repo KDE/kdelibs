@@ -96,11 +96,11 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   rbDelete = new QRadioButton( "Delete", opButtons );
   opButtons->insert( rbDelete, Delete );
   hbLayout->addWidget( rbDelete, 5 );
-  
+
   rbShred = new QRadioButton( "Shred", opButtons );
   opButtons->insert( rbShred, Shred );
   hbLayout->addWidget( rbShred, 5 );
-  
+
   rbMkdir = new QRadioButton( "Mkdir", opButtons );
   opButtons->insert( rbMkdir, Mkdir );
   hbLayout->addWidget( rbMkdir, 5 );
@@ -271,7 +271,7 @@ void KioslaveTest::startJob() {
   case Delete:
     job = KIO::del( src, false, observe );
     break;
-    
+
   case Shred:
     job = KIO::del(src, true, observe);
     break;
@@ -356,10 +356,10 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 
 void KioslaveTest::slotEntries(KIO::Job*, const KIO::UDSEntryList& list) {
 
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
-        UDSEntry::ConstIterator it2 = it.current()->begin();
-        for( ; it2 != it.current()->end(); it2++ ) {
+    UDSEntryListConstIterator it=list.begin();
+    for (; it != list.end(); ++it) {
+        UDSEntry::ConstIterator it2 = (*it).begin();
+        for( ; it2 != (*it).end(); it2++ ) {
             if ((*it2).m_uds == UDS_NAME)
                 kdDebug() << "" << ( *it2 ).m_str << endl;
         }

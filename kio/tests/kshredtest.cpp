@@ -1,7 +1,7 @@
 #include "kshred.h"
 #include <qstring.h>
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 
 {
   if (argc < 3)
@@ -43,9 +43,10 @@ main(int argc, char **argv)
         fprintf(stderr, "ERROR in shredding\n");
       break;
     default:
-      if (!shredder->fillpattern(argv[2], strlen(argv[2])))
+      if (!shredder->fillpattern((unsigned char*)(argv[2]), strlen(argv[2])))
         fprintf(stderr, "ERROR in filling with pattern '%s'\n", argv[2]);
       break;
   }
   fprintf(stdout, "Done\n");
+  return 0;
 }

@@ -4,6 +4,7 @@
 #include <qdir.h>
 #include <kopenwith.h>
 #include <kurl.h>
+#include <kdebug.h>
 
 int main(int argc, char **argv)
 {
@@ -15,10 +16,10 @@ int main(int argc, char **argv)
 
     KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
-        debug("Dialog ended successfully\ntext: %s", dlg->text().ascii());
+        kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }
     else
-        debug("Dialog was cancelled.");
+        kdDebug() << "Dialog was cancelled." << endl;
 
     return 0;
 }
