@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.46  1999/01/18 10:57:13  kulow
+ // .moc files are back in kdelibs. Built fine here using automake 1.3
+ //
  // Revision 1.45  1999/01/15 09:31:32  kulow
  // it's official - kdelibs builds with srcdir != builddir. For this I
  // automocifized it, the generated rules are easier to maintain than
@@ -89,15 +92,11 @@
 //QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
 
 KTopLevelWidget::KTopLevelWidget( const char *name )
-  : KTMainWindow(name)
+  : KTMainWindow(name, 0)
 {}
 
 KTopLevelWidget::~KTopLevelWidget()
 {}
 
-void KTopLevelWidget::closeEvent (QCloseEvent *ev)
-{
-  ev->accept();
-}
 #include "ktopwidget.moc"
 

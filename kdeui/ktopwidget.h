@@ -8,6 +8,13 @@
  * You can still use is under this name, if you are so nostalgic.
  * You shouldn't use this widget it might be removed from libraries
  * in future.
+ *
+ * The only difference is that KTMainWindow is per default created with
+ * the WDestructiveClose flag. This means, it is automatically 
+ * deleted when the widget accepts a close event. A KTopLevelWidget
+ * needs to be deleted manually ( it is basically a just a KTMainWindow( "name", 0 ); )
+ *
+ *
  * @see KTMainWindow
  * @short Old KDE top level window
  * @author Stephan Kulow (coolo@kde.org), was maintained by Sven Radej (radej@kde.org)
@@ -24,20 +31,11 @@ public:
      */
     KTopLevelWidget( const char *name = 0L );
     /**
-     * Destructor. 
+     * Destructor.
      */
     ~KTopLevelWidget();
 
 protected:
-    /**
-     * This is called when the widget is closed.
-     * The default implementation jut calls accepts the event.
-     * This method is only difference from KTMainWindow. Old
-     * applications reimplement closeEvent, new should use 
-     * @ref KTMainWindow and reimplement some of special handlers
-     * there.
-     */
-    virtual void closeEvent ( QCloseEvent *);
 
 };
 
