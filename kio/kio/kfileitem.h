@@ -464,6 +464,11 @@ public:
    */
   void assign( const KFileItem & item );
 
+  /**
+   * Tries to give a local URL for this file item if possible.
+   * The given boolean indicates if the returned url is local or not.
+   */
+  KURL mostLocalURL(bool &local) const;
 
   /////////////
 
@@ -480,12 +485,6 @@ protected:
   QString parsePermissions( mode_t perm ) const;
 
 private:
-  /**
-   * Tries to give a local URL for this file item if possible.
-   * The given boolean indicates if the returned url is local or not.
-   */
-  KURL mostLocalURL(bool &local) const;
-
   /**
    * We keep a copy of the UDSEntry since we need it for getStatusBarInfo
    */
