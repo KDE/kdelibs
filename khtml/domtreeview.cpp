@@ -96,6 +96,8 @@ void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
 void DOMTreeView::slotItemClicked(QListViewItem *cur_item)
 {
     DOM::Node *handle = m_nodedict[cur_item];
-    if(handle)
+    if(handle) {
 	emit part->setActiveNode(*handle);
+        //kdDebug() << handle->toHTML() << endl;
+    }
 }
