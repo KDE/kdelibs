@@ -488,8 +488,8 @@ bool ReadWritePart::queryClose()
 
   int res = KMessageBox::warningYesNoCancel( widget(),
           i18n( "The document \"%1\" has been modified.\n"
-                "Do you want to save it?" ).arg( docName ),
-          i18n( "Save Document?" ), KStdGuiItem::save(), KStdGuiItem::discard() );
+                "Do you want to save your changes or discard them?" ).arg( docName ),
+          i18n( "Close Document" ), KStdGuiItem::save(), KStdGuiItem::discard() );
 
   bool abortClose=false;
   bool handled=false;
@@ -543,7 +543,7 @@ bool ReadWritePart::save()
   if( saveFile() )
     return saveToURL();
   else
-    emit canceled(QString::null);    
+    emit canceled(QString::null);
   return false;
 }
 
@@ -582,13 +582,13 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (result)
     emit setWindowCaption( m_url.prettyURL() );
   else
-  {  
-    m_url = d->m_originalURL;    
+  {
+    m_url = d->m_originalURL;
     d->m_duringSaveAs = false;
     d->m_originalURL = KURL();
   }
-        
-  return result;    
+
+  return result;
 }
 
 bool ReadWritePart::saveToURL()
