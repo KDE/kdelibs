@@ -70,6 +70,8 @@ class KCharsetConverter;
 void debugT( const char *msg , ...);
 void debugM( const char *msg , ...);
 
+enum ScrollType {SCROLL_NONE, SCROLL_LEFT, SCROLL_RIGHT, SCROLL_UP, SCROLL_DOWN};
+
 struct HTMLPendingFile
 {
 public:
@@ -835,6 +837,8 @@ public slots:
 protected slots:
 //    void slotTimeout();
 
+    void scrollBlobTimeout ();
+
     /*
      * INTERNAL
      *
@@ -879,6 +883,12 @@ public:
 
 protected:
     virtual void mousePressEvent( QMouseEvent * );
+
+    virtual void mouseMoveEvent( QMouseEvent * );
+
+    void setBlob (QPoint pos);
+
+    void clearBlob ();
 
     /**
      * This function emits the 'doubleClick' signal when the user
@@ -1600,6 +1610,10 @@ protected:
      */
     QDict<HTMLPendingFile> mapPendingFiles;
 
+    QPixmap scrollBlobPixmap;
+    QWidget *scrollBlob;
+    QTimer *scrollBlobTimer;
+    enum ScrollType scrollBlobType;
 };
 
 #endif // HTML

@@ -256,6 +256,16 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
   mapPendingFiles.insert( _url, p );
   
   emit fileRequest( _url );
+
+  // Initialize all the scroll blob stuff.
+  // Even if you undef out the other stuff, the blob's hooks
+  // are still inited.
+  scrollBlob=0;
+  scrollBlobType = SCROLL_NONE;
+  scrollBlobPixmap=QPixmap();
+  scrollBlobTimer = new QTimer (this, "scrollBlobTimer");
+  QObject::connect (scrollBlobTimer, SIGNAL(timeout()), this, SLOT(scrollBlobTimeout()));
+
 }
 
 void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
@@ -428,6 +438,26 @@ void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, cons
     emit formSubmitted( _method, _url, _data );
 }
 
+void KHTMLWidget::mouseMoveEvent( QMouseEvent *e )
+{
+#ifdef USE_THE_BLOB_ALEX_MADE
+  if (scrollBlob) {
+    if (e->pos().y() < scrollBlob->y()) {
+      scrollBlobType = SCROLL_UP;
+      if (scrollBlobType != SCROLL_UP)
+	scrollBlobTimeout();
+    } else if (e->pos().y() > scrollBlob->y()+scrollBlob->height()) {
+      scrollBlobType=SCROLL_DOWN;
+      if (scrollBlobType != SCROLL_DOWN)
+	scrollBlobTimeout();
+    } else {
+      scrollBlobType=SCROLL_NONE;
+    }
+  }
+  KDNDWidget::mouseMoveEvent(e);
+#endif
+}
+
 void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 {
     if ( clue == 0 )
@@ -436,6 +466,19 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
     // Make this frame the active one
     if ( bIsFrame && !bIsSelected )
 	htmlView->setSelected( TRUE );
+
+#ifdef USE_THE_BLOB_ALEX_MADE
+    if (_mouse->button() == MidButton ) {
+      // If we have a blob already, then remove the old one before
+      // we create another one.
+      if (scrollBlob)
+	clearBlob();
+      // Create a new blob at the site of the mouse click
+      setBlob (_mouse->pos());
+      return;
+    }
+    clearBlob();   
+#endif
 
     if ( clue->mouseEvent( _mouse->x() + x_offset - leftBorder,
 	    _mouse->y() + y_offset - topBorder, _mouse->button(),
@@ -705,6 +748,67 @@ void KHTMLWidget::dragEndEvent()
     // Used to prevent dndMouseMoveEvent from initiating a new drag before
     // the mouse is pressed again.
     pressed = false;
+}
+
+void KHTMLWidget::setBlob( QPoint pos )
+{
+#ifdef USE_THE_BLOB_ALEX_MADE
+  setCursor(waitCursor);
+  scrollBlob = new QWidget(this);
+  scrollBlob->resize(scrollBlobPixmap.size());
+  scrollBlob->setBackgroundPixmap(scrollBlobPixmap);
+  scrollBlob->move(pos);
+  scrollBlob->show();
+  scrollBlobTimer->start(500, false);
+#endif
+}
+
+void KHTMLWidget::clearBlob ()
+{
+#ifdef USE_THE_BLOB_ALEX_MADE
+  scrollBlobTimer->stop();
+  setCursor(arrowCursor);
+  delete scrollBlob; scrollBlob=0;
+#endif
+}
+
+void KHTMLWidget::scrollBlobTimeout ()
+{
+#ifdef USE_THE_BLOB_ALEX_MADE
+  int newY=0;
+  
+  switch (scrollBlobType) {
+  case SCROLL_NONE:
+    break;
+  case SCROLL_UP: {
+    if ( docHeight() < height() ) {
+      clearBlob();
+      break;
+    }
+    newY = y_offset - 20;
+    if ( newY < 0 )
+      newY = 0;
+    slotScrollVert( newY );
+    emit scrollVert( newY );
+    break;
+  }
+  case SCROLL_DOWN: {
+    if ( docHeight() < height() ) {
+      clearBlob();
+      break;
+    }
+    newY = y_offset + 20;
+    if ( newY > docHeight() - height() )
+      newY = docHeight() - height();
+    slotScrollVert( newY );
+    emit scrollVert( newY );
+    break;
+  }
+  default:{
+    break;
+  }
+  return;
+#endif
 }
 
 bool KHTMLWidget::URLVisited( const char *_url )

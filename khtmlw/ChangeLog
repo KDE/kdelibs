@@ -1,0 +1,6 @@
+1998-11-30  Alex Zepeda  <garbanzo@hooked.net>
+
+	* html.cpp, html.h: Implement a scroll blob thingy a la SO5 && MSIE.
+	It's ifdef'd out at the moment, cause it needs a bit of work, but the
+	binary incompatable changes are already in place and "activated".
+
