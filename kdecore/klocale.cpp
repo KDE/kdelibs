@@ -68,7 +68,6 @@ char *k_bindtextdomain (const char* __domainname,
 #include "klocale.h"
 #include <kapp.h>
 #include <kconfig.h>
-#include <kcharsets.h>
 
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
@@ -79,25 +78,12 @@ char *k_bindtextdomain (const char* __domainname,
 
 #define SYSTEM_MESSAGES "kdelibs"
 
-QString KLocale::mergeLocale(const QString& lang,const QString& country,
-				   const QString& charset)
-{
-    if (lang.isEmpty())
-	return QString::fromLatin1("C");
-    QString ret = lang;
-    if (!country.isEmpty())
-	ret += QString::fromLatin1("_") + country;
-    if (!charset.isEmpty())
-	ret+= QString::fromLatin1(".") +charset;
-    return ret;
-}
-
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
 			  QString& chrset){
 
-    QString str = aStr.copy();
+    QString str = aStr;
 
     // just in case, there is another language appended
     int f = str.find(':');
@@ -178,6 +164,12 @@ KLocale::KLocale( const QString& _catalogue )
     */
     setlocale (LC_MESSAGES, "");
 #endif
+    KConfig *config = KGlobal::instance()->_config;
+    {
+      KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
+      if (!config || (chset = config->readEntry(QString::fromLatin1("Charset")).isNull()))
+        chset = QString::fromLatin1("unicode");
+    }
     QString catalogue;
 
     if (_catalogue.isNull())
@@ -187,37 +179,34 @@ KLocale::KLocale( const QString& _catalogue )
 
     catalogues = new QStrList(true);
 
-    initLanguage(KGlobal::instance()->_config, catalogue);
-    initFormat(KGlobal::instance()->_config);
+    initLanguage(config, catalogue);
+    initFormat(config);
 }
 
-void KLocale::setCharsetLang(const QString &_lang)
+void KLocale::setEncodingLang(const QString &_lang)
 {
-  QTextCodec *p = 0;
   QString location = locate("locale", _lang + QString::fromLatin1("/charset"));
   if (!location.isNull())
   {
     QFile f(location);
     if (f.open(IO_ReadOnly))
     {
-      char *buf=new char[256];
+      char *buf = new char[256];
       int l=f.readLine(buf,256);
       if (l>0)
       {
         if (buf[l-1]=='\n') buf[l-1]=0;
-        if ((p = QTextCodec::codecForName( buf )))
-          chset = buf;
+        codec = QTextCodec::codecForName( buf );
       }
       f.close();
       delete [] buf;
     }
   }
-  if (p)
-    codec = p;
-  else
+  // default to us-ascii
+  if (!codec)
   {
-    codec = QTextCodec::codecForName( "iso8859-1" );
-    chset = "us-ascii";
+    debug("charset file invalide or not found. Defaulting to us-ascii");
+    codec = QTextCodec::codecForName( "us-ascii" );
   }
 }
 
@@ -295,7 +284,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   }
   lang = _lang; // taking deep copy
 
-  setCharsetLang(lang);
+  setEncodingLang(lang);
 #ifdef HAVE_SETLOCALE
   setlocale(LC_MESSAGES,lang.ascii());
 #endif
@@ -396,7 +385,7 @@ void KLocale::initFormat(KConfig *config)
 void KLocale::setLanguage(const QString &_lang)
 {
   lang = _lang;
-  setCharsetLang(lang);
+  setEncodingLang(lang);
 
   QStrList *cats = catalogues;
   catalogues = new QStrList;
@@ -751,19 +740,6 @@ void KLocale::aliasLocale( const char* text, long int index)
     aliases.insert(index, new QString(translate(text)));
 }
 
-// Using strings seems to be more portable (for systems without locale.h
-QString KLocale::getLocale(const QString& cat){
-
-#ifdef HAVE_SETLOCALE
-    cat.upper();
-    if (cat==QString::fromLatin1("LC_MESSAGES")) return QString::fromLatin1(setlocale(LC_MESSAGES,0));
-    else if (cat==QString::fromLatin1("LC_COLLATE")) return QString::fromLatin1(setlocale(LC_COLLATE,0));
-    else if (cat==QString::fromLatin1("LC_TIME")) return QString::fromLatin1(setlocale(LC_TIME,0));
-    else if (cat==QString::fromLatin1("LC_CTYPE")) return QString::fromLatin1(setlocale(LC_CTYPE,0));
-#endif	
-    return QString::fromLatin1("C");
-}
-
 QStringList KLocale::languageList() const
 {
 
@@ -896,10 +872,6 @@ void KLocale::aliasLocale(const char *text, long int index)
     aliases.insert(index, new QString(text));
 }
 
-QString KLocale::getLocale(const QString& ) {
-    return "C";
-}
-
 QStringList KLocale::languageList() const {
     return QStringList();
 }
@@ -950,4 +922,3 @@ void KLocale::initInstance() {
   else
     debug("no app name available using KLocale - nothing to do");
 }
-

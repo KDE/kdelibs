@@ -195,12 +195,16 @@ public:
      * the localized monetary equivalent.
      * 
      * e.g. given 123456, return "$123,456".  
+     *
+     * @return The number of money as a localized string
      */
     QString formatMoney(double num) const;
 
     /**
      * This function differs from the above only in that it can take
      * a QString as the argument for convenience.
+     *
+     * @return The number of money as a localized string
      */
     QString formatMoney(const QString &numStr) const;
 
@@ -210,18 +214,24 @@ public:
      * 
      * e.g. given 123456.78, return "123,456.78" (for some European country).  
      * If precision isn't specified, fracDigits is used.
+     *
+     * @return The number as a localized string
      */
     QString formatNumber(double num, int precision = -1) const;
 
     /**
      * This function differs from the above only in that it can take
      * a QString as the argument for convenience.
+     *
+     * @return The number as a formated string
      */
     QString formatNumber(const QString &numStr) const;
 
     /**
      * Return a string formatted to the current locale's conventions
      * regarding dates.
+     *
+     * @return The date as a string
      */
     QString formatDate(const QDate &pDate, bool shortfmt = false) const;
 
@@ -231,22 +241,30 @@ public:
      * 
      * @param includeSecs if true, seconds are included in the output,
      *        otherwise only hours and minutes are formatted.
+     *
+     * @return The time as a string
      */
     QString formatTime(const QTime &pTime, bool includeSecs = false) const;
 
     /**
      * Return a string containing the name of the month name.
+     *
+     * @return The name of the month
      */
     QString MonthName(int i) const;
 
     /**
      * Return a string containing the name of the week day.
+     *
+     * @return The name of the week
      */
     QString WeekDayName(int i) const;
 
     /**
-     * Return a string formatted to the current locale's conventions
+     * Return a string formated to the current locale's conventions
      * regarding both date and time.
+     *
+     * @return The date and time as a string
      */
     QString formatDateTime(const QDateTime &pDateTime) const;
 
@@ -254,6 +272,8 @@ public:
      * Converts a localized monetary string to a double.
      * @param numStr the string we want to convert.
      * @param ok the boolean that is set to false if it's not a number.
+     *
+     * @return The string converted to a double
      */
     double readMoney(const QString &numStr, bool * ok=0) const;
 
@@ -261,6 +281,8 @@ public:
      * Converts a localized numeric string to a double.
      * @param numStr the string we want to convert.
      * @param ok the boolean that is set to false if it's not a number.
+     *
+     * @return The string converted to a double
      */
     double readNumber(const QString &numStr, bool * ok=0) const;
 
@@ -303,9 +325,12 @@ public:
     QStringList languageList() const;
     
     /**
-      * Returns the charset name used by selected locale.
-      * Special file with charset name must be available
-      * "us-ascii" is default 
+      * Returns the charset name by selected locale.
+      * This will be the charset defined in the config file.
+      * NOTE: This is no longer the same as encoding.
+      * "unicode" is default
+      *
+      * @return Name of the prefered charset for fonts
       */
     QString charset() const { return chset; }
     
@@ -319,21 +344,6 @@ public:
      **/
     void insertCatalogue(const QString& catalogue);
 
-    /**
-       The category argument tells the setlocale() function which attributes to
-       set.  The choices are:
-       
-       LC_COLLATE      Changes the behavior of the strcoll() and strxfrm() functions.
-       LC_CTYPE        Changes the behavior of the character-handling functions:
-                       isalpha(), islower(), isupper(), isprint(), ...
-       LC_MESSAGES     Changes the language in which messages are displayed.
-       LC_MONETARY     Changes the information returned by localeconv().
-       LC_NUMERIC      Changes the radix character for numeric conversions.
-       LC_TIME         Changes the behavior of the strftime() function.
-       LC_ALL          Changes all of the above.
-    **/
-    QString getLocale(const QString& CATEGORY);
-
     /** 
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
@@ -341,19 +351,13 @@ public:
     static void splitLocale(const QString& str,QString& language, QString& country,
                      QString &charset);
 
-    /** 
-     * does the same as the above, just reverse
-     */
-    static QString mergeLocale(const QString& lang, const QString& country,
-			      const QString& charset);
-
     /**
-     * Makes {format,read}*() methods ready for use.
+     * Init the l10n part of the instance with the config object.
      */
     void initFormat(KConfig *config);
 
     /**
-     * Init the instance with the given config object. It should
+     * Init the l18n part of the instance with the given config object. It should
      * be valid and contain the global entries.
      **/
     void initLanguage(KConfig *config, const QString& catalogue);
@@ -398,7 +402,7 @@ private:
     QString _datefmt;
     QString _datefmtshort;
 
-    void setCharsetLang(const QString &_lang);
+    void setEncodingLang(const QString &_lang);
 
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
