@@ -183,6 +183,7 @@ private:
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
     bool canPreview( const KFileItem * ) const;
+    void stopPreview();
 
     void updateIcons();
 

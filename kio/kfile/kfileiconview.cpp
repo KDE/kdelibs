@@ -108,6 +108,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     // icon (and not the text), we have to create our own tooltips
     setShowToolTips( false );
     slotSmallColumns();
+    d->smallColumns->setChecked( true );
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
@@ -280,10 +281,7 @@ void KFileIconView::clearView()
     m_resolver->m_lstPendingMimeIconItems.clear();
 
     KIconView::clear();
-    if ( d->job ) {
-        d->job->kill();
-        d->job = 0L;
-    }
+    stopPreview();
 }
 
 void KFileIconView::insertItem( KFileItem *i )
@@ -484,15 +482,16 @@ void KFileIconView::slotSelectionChanged()
 
 void KFileIconView::slotSmallColumns()
 {
+    // Make sure to uncheck previews if selected
+    if ( d->previews->isChecked() )
+    {
+        stopPreview();
+        d->previews->setChecked( false );
+    }
     setItemTextPos( Right );
 //    setArrangement( TopToBottom );
     setArrangement( LeftToRight );
     setIconSize( KIcon::SizeSmall );
-
-    if ( d->job ) {
-        d->job->kill();
-        d->job = 0L;
-    }
 }
 
 void KFileIconView::slotLargeRows()
@@ -502,15 +501,20 @@ void KFileIconView::slotLargeRows()
     setIconSize( KIcon::SizeMedium );
 }
 
+void KFileIconView::stopPreview()
+{
+    if ( d->job ) {
+        d->job->kill();
+        d->job = 0L;
+    }
+}
+
 void KFileIconView::slotPreviewsToggled( bool on )
 {
     if ( on )
         showPreviews();
     else {
-        if ( d->job ) {
-            d->job->kill();
-            d->job = 0L;
-        }
+        stopPreview();
         slotLargeRows();
     }
 }
@@ -520,6 +524,7 @@ void KFileIconView::showPreviews()
     if ( d->previewMimeTypes.isEmpty() )
         d->previewMimeTypes = KIO::PreviewJob::supportedMimeTypes();
 
+    stopPreview();
     d->previews->setChecked( true );
 
     if ( !d->largeRows->isChecked() ) {
@@ -528,9 +533,6 @@ void KFileIconView::showPreviews()
     }
     else
         updateIcons();
-
-    if ( d->job )
-        d->job->kill();
 
     d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
 
