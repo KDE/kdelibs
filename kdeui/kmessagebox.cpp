@@ -43,6 +43,7 @@
 #include <qlayout.h>
 #include <kstdguiitem.h>
 #include <kactivelabel.h>
+#include <kiconloader.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -60,6 +61,34 @@
 
 static bool KMessageBox_queue = false;
 
+static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
+{
+    QString icon_name;
+
+    switch(icon)
+    {
+    case QMessageBox::NoIcon:
+        return QPixmap();
+        break;
+    case QMessageBox::Information:
+        icon_name = "messagebox_info";
+        break;
+    case QMessageBox::Warning:
+        icon_name = "messagebox_warning";
+        break;
+    case QMessageBox::Critical:     
+        icon_name = "messagebox_critical";
+        break;
+    }
+
+   QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, KIcon::NoGroup, KIcon::SizeMedium, KIcon::DefaultState, 0, true);
+
+   if (ret.isNull())
+       return QMessageBox::standardIcon(icon);
+   else
+       return ret;
+}
+
 static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn, int options, const QString &details=QString::null)
 {
     QVBox *topcontents = new QVBox (dialog);
@@ -71,7 +100,10 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     lay->setSpacing(KDialog::spacingHint()*2);
 
     QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(icon));
+
+    if (icon != QMessageBox::NoIcon)
+        label1->setPixmap(themedMessageBoxIcon(icon));
+
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
     // Enforce <p>text</p> otherwise the word-wrap doesn't work well
