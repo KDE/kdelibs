@@ -1,14 +1,27 @@
-/* 
+/*
    $Id$
 
    This file is part of the KDE libraries
    Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
    KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
+   Port version 0.8.7   
 
    Palette setup code is from KApplication,
 	Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
 	Copyright (C) 1998, 1999, 2000 KDE Team
+
+  Includes code portions from the KDE HighColor style.
+
+  KDE3 HighColor Style
+	Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
+		  (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+
+	Drawing routines adapted from the KDE2 HCStyle,
+	Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
+		  (C) 2000 Dirk Mueller      <mueller@kde.org>
+		  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+
 
 
    This library is free software; you can redistribute it and/or
@@ -38,6 +51,7 @@
 
 #include <qsettings.h>
 #include <qapplication.h>
+#include <qscrollbar.h>
 
 typedef QMap<QString, QString> Prop;
 
@@ -1409,7 +1423,6 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
 	QColor background = pal.active().background();
     QColor foreground = pal.active().foreground();
     QColor button = background; //CHECKME
-    QColor buttonText = foreground;
     QColor highlight = pal.active().highlight();
     QColor highlightedText = pal.active().highlightedText();//CHECKME
     QColor base = pal.active().base();//config->readColorEntry( "windowBackground", &white );
@@ -1435,6 +1448,8 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
 	//Now, try to get the button color from the pixmap
 	if ( uncached(Bevel) )
 		button=d->pixmapAveColor(uncached(Bevel));
+
+	QColor buttonText = foreground;
 
 
     if ( isPixmap( Background ) || isColor( Background ) )
@@ -1650,6 +1665,144 @@ bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID,
                         pixmap->width()*pixmap->height()*pixmap->depth()/8));
 }
 
+
+QRect KThemeBase::querySubControlMetrics( ComplexControl control,
+					const QWidget* widget,
+					SubControl sc,
+					const QStyleOption& opt ) const
+{
+	QRect ret;
+	if (control == CC_ScrollBar && (scrollBarLayout() != SBOpposite))
+	{
+		//TODO: Bottom left and bottom right are different..
+
+		//This code is from KStyle, simplified to handle only platinum.
+		//It would be much nicer if we could re-configure KStyle's scrollbar code after construction
+		const QScrollBar *sb = (const QScrollBar*)widget;
+		bool horizontal = sb->orientation() == Qt::Horizontal;
+		int sliderstart = sb->sliderStart();
+		int sbextent    = pixelMetric(PM_ScrollBarExtent, widget);
+		int maxlen      = (horizontal ? sb->width() : sb->height())
+						  - (sbextent * 2);
+		int sliderlen;
+
+		bool btm_left = (scrollBarLayout() == SBBottomLeft);
+
+		// calculate slider length
+		if (sb->maxValue() != sb->minValue())
+		{
+			uint range = sb->maxValue() - sb->minValue();
+			sliderlen = (sb->pageStep() * maxlen) /	(range + sb->pageStep());
+
+			int slidermin = pixelMetric( PM_ScrollBarSliderMin, widget );
+			if ( sliderlen < slidermin || range > INT_MAX / 2 )
+				sliderlen = slidermin;
+			if ( sliderlen > maxlen )
+				sliderlen = maxlen;
+		} else
+			sliderlen = maxlen;
+
+		// Subcontrols
+		switch (sc)
+		{
+			case SC_ScrollBarSubLine: {
+				// top/left button
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(sb->width() - 2 * sbextent, 0, sbextent, sbextent);
+					else
+						ret.setRect(0,0,sbextent, sbextent);
+				}
+				else
+					ret.setRect(0, sb->height() - 2 * sbextent, sbextent, sbextent);
+				break;
+			}
+
+			case SC_ScrollBarAddLine: {
+				// bottom/right button
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
+					else
+						ret.setRect(sbextent, 0, sbextent, sbextent);
+				}
+				else
+					ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
+				break;
+			}
+
+			case SC_ScrollBarSubPage: {
+				// between top/left button and slider
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(1, 0, sliderstart, sbextent);
+					else
+					    ret.setRect(sbextent*2+1, 0, sliderstart-sbextent*2, sbextent);
+				}
+				else
+					ret.setRect(0, 1, sbextent, sliderstart);
+				break;
+			}
+
+			case SC_ScrollBarAddPage: {
+				// between bottom/right button and slider
+				int fudge = 0;
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(sliderstart + sliderlen, 0,
+								maxlen - sliderstart - sliderlen + fudge, sbextent);
+					else
+						ret.setRect(sliderstart + sliderlen, 0,
+								maxlen - sliderstart - sliderlen + 2*sbextent, sbextent);
+				}
+				else
+					ret.setRect(0, sliderstart + sliderlen, sbextent,
+							maxlen - sliderstart - sliderlen + fudge);
+				break;
+			}
+
+			case SC_ScrollBarGroove: {
+				int multi = 2;
+				int fudge = 1;
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(1, 0, sb->width() - sbextent * 2, sb->height());
+					else
+						ret.setRect(2*sbextent, 0, sb->width() - sbextent * 2, sb->height());
+				}
+				else
+					ret.setRect(0, 1, sb->width(), sb->height() - sbextent * multi);
+				break;
+			}
+
+			case SC_ScrollBarSlider: {
+				if (horizontal)
+				{
+					if (!btm_left)
+						ret.setRect(sliderstart, 0, sliderlen, sbextent);
+					else
+						ret.setRect(sliderstart, 0, sliderlen, sbextent);
+				}
+				else
+					ret.setRect(0, sliderstart, sbextent, sliderlen);
+				break;
+			}
+
+			default:
+				ret = QCommonStyle::querySubControlMetrics(control, widget, sc, opt);
+				break;
+		}
+		return ret;
+
+	}
+	else return KStyle::querySubControlMetrics( control,
+					widget,  sc, opt );
+}
 
 
 #include "kthemebase.moc"

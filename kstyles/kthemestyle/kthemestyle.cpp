@@ -5,7 +5,7 @@
   Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
   KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-  Port version 0.8.6
+  Port version 0.8.7
 
   Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -300,7 +300,6 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 }
 
 
-
 int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget  ) const
 {
     int m;
@@ -324,6 +323,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget  ) con
                3+decoWidth( PushButton ) : 3+decoWidth( PushButtonDown );
 
     case PM_ScrollBarExtent:
+    case PM_SliderThickness: //Should this be 16 allways?
         return getSBExtent();
 
     case PM_ButtonDefaultIndicator:
@@ -627,7 +627,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 				w-=1;
 
 			points[0]=x;           points[1]=y+h-1;
-			points[2]=x+w-2;     points[3]=y+h-1;
+			points[2]=x+w-1;     points[3]=y+h-1;
    			points[4]=x+(w-1)/2; points[5]=y;
 			points[6]=points[0];
 			points[7]=points[1];
@@ -660,7 +660,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 				w-=1;
 
 			points[0]=x;           points[1]=y;
-			points[2]=x+w-2;     points[3]=y;
+			points[2]=x+w-1;     points[3]=y;
    			points[4]=x+(w-1)/2; points[5]=y+h-1;
 			points[6]=points[0];
 			points[7]=points[1];

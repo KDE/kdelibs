@@ -1,4 +1,4 @@
-/* 
+/*
    $Id$
 
    This file is part of the KDE libraries
@@ -548,6 +548,11 @@ protected:
 	{
 		KStyle::drawComplexControl(control, p, widget, r, cg, flags, controls, active, opt);
 	}
+
+	virtual QRect querySubControlMetrics( ComplexControl control,
+					const QWidget* widget,
+					SubControl sc,
+					const QStyleOption& = QStyleOption::Default ) const;
 
 
     virtual void drawKStylePrimitive( KStylePrimitive kpe,
