@@ -674,6 +674,11 @@ class DCOPClient : public QObject
    * For backwards compatibility with KDE 2.x
    */
   static QCString dcopServerFileOld(const QCString &hostname=0);
+  
+  /**
+   * Return the path of iceauth or an empty string if not found.
+   */
+  static QCString iceauthPath();
 
 signals:
   /**

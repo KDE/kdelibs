@@ -58,9 +58,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopglobal.h>
 #include "dcop-path.h"
 
-// We don't do tcp in the first place.
-// #define HAVE_KDE_ICETRANSNOLISTEN 1
-
 // #define DCOP_DEBUG
 
 DCOPServer* the_server;
@@ -75,8 +72,6 @@ template class QPtrList<DCOPListener>;
    fcntl(fd, F_SETFL, fd_fl | O_NDELAY);
 #define _DCOPIceSendEnd()	\
    fcntl(fd, F_SETFL, fd_fl);
-
-static bool only_local = false;
 
 static QCString findDcopserverShutdown()
 {
@@ -100,7 +95,7 @@ static QCString findDcopserverShutdown()
 
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
-    return only_local; // no host based authentication
+    return false; // no host based authentication
 }
 
 extern "C" {
@@ -490,8 +485,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #endif
 }
 
-#define MAGIC_COOKIE_LEN 16
-
+#if 0
 Status SetAuthentication_local (int count, IceListenObj *listenObjs)
 {
     int i;
@@ -521,6 +515,9 @@ Status SetAuthentication_local (int count, IceListenObj *listenObjs)
     }
     return 1;
 }
+#endif
+
+#define MAGIC_COOKIE_LEN 16
 
 Status
 SetAuthentication (int count, IceListenObj *_listenObjs,
@@ -529,8 +526,8 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     FILE        *addfp = NULL;
     const char  *path;
     int         original_umask;
-    char        command[PATH_MAX + 32];
     int         i;
+    QCString command;    
 #ifdef HAVE_MKSTEMP
     int         fd;
 #endif
@@ -588,7 +585,16 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     umask (original_umask);
 
-    snprintf (command, PATH_MAX + 32, "iceauth source %s", addAuthFile);
+    command = DCOPClient::iceauthPath();
+    
+    if (command.isEmpty())
+    {
+       fprintf( stderr, "dcopserver: 'iceauth' not found in path, aborting.\n" );
+       exit(1);
+    }
+    
+    command += " source ";
+    command += addAuthFile;
     system (command);
 
     unlink(addAuthFile);
@@ -618,9 +624,6 @@ FreeAuthenticationData(int count, IceAuthDataEntry *_authDataEntries)
 {
     /* Each transport has entries for ICE and XSMP */
     int i;
-
-    if (only_local)
-	return;
 
     for (i = 0; i < count * 2; i++) {
 	free (_authDataEntries[i].network_id);
@@ -939,24 +942,12 @@ static void sighandler(int sig)
     //exit(0);
 }
 
-#ifdef HAVE_KDE_ICETRANSNOLISTEN
-extern "C" int _kde_IceTransNoListen(const char *protocol);
-#endif
-
-DCOPServer::DCOPServer(bool _only_local, bool _suicide)
+DCOPServer::DCOPServer(bool _suicide)
     : QObject(0,0), currentClientNumber(0), appIds(263), clients(263)
 {
     serverKey = 42;
 
-    only_local = _only_local;
     suicide = _suicide;
-
-#ifdef HAVE_KDE_ICETRANSNOLISTEN
-    if (only_local)
-	_kde_IceTransNoListen("tcp");
-#else
-    only_local = false;
-#endif
 
     dcopSignals = new DCOPSignals;
 
@@ -1019,13 +1010,12 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
             ::symlink(fName,compatName);
 	}
 
-    if (only_local) {
+#if 0
 	if (!SetAuthentication_local(numTransports, listenObjs))
 	    qFatal("DCOPSERVER: authentication setup failed.");
-    } else {
-	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
-	    qFatal("DCOPSERVER: authentication setup failed.");
-    }
+#endif
+    if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
+        qFatal("DCOPSERVER: authentication setup failed.");
 
     IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
     _IceWriteHandler = DCOPIceWriteChar;
@@ -1534,7 +1524,7 @@ static bool isRunning(const QCString &fName, bool printNetworkId = false)
 }
 
 const char* const ABOUT =
-"Usage: dcopserver [--nofork] [--nosid] [--nolocal] [--help]\n"
+"Usage: dcopserver [--nofork] [--nosid] [--help]\n"
 "       dcopserver --serverid\n"
 "\n"
 "DCOP is KDE's Desktop Communications Protocol. It is a lightweight IPC/RPC\n"
@@ -1549,7 +1539,6 @@ int main( int argc, char* argv[] )
     bool serverid = false;
     bool nofork = false;
     bool nosid = false;
-    bool nolocal = false;
     bool suicide = false;
     for(int i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "--nofork") == 0)
@@ -1557,7 +1546,7 @@ int main( int argc, char* argv[] )
 	else if (strcmp(argv[i], "--nosid") == 0)
 	    nosid = true;
 	else if (strcmp(argv[i], "--nolocal") == 0)
-	    nolocal = true;
+	    ; // Ignore
 	else if (strcmp(argv[i], "--suicide") == 0)
 	    suicide = true;
 	else if (strcmp(argv[i], "--serverid") == 0)
@@ -1626,7 +1615,7 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer *server = new DCOPServer(!nolocal, suicide); // this sets the_server
+    DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
     int ret = a.exec();
     delete server;

@@ -106,7 +106,7 @@ class DCOPServer : public QObject
 {
     Q_OBJECT
 public:
-    DCOPServer(bool _only_local, bool _suicide);
+    DCOPServer(bool _suicide);
     ~DCOPServer();
 
     void* watchConnection( IceConn iceConn );

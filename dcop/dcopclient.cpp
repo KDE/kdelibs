@@ -183,6 +183,27 @@ struct ReplyStruct
 };
 } // namespace
 
+
+QCString DCOPClient::iceauthPath()
+{
+   QCString path = ::getenv("PATH");
+   if (path.isEmpty())
+      path = "/bin:/usr/bin";
+   path += ":/usr/bin/X11:/usr/X11/bin:/usr/X11R6/bin";
+   QCString fPath = strtok(path.data(), ":\b");
+   while (!fPath.isNull())
+   {
+      fPath += "/iceauth";
+      if (access(fPath.data(), X_OK) == 0)
+      {
+         return fPath;
+      }
+   
+      fPath = strtok(NULL, ":\b");
+   }
+   return 0;
+}
+
 static QCString dcopServerFile(const QCString &hostname, bool old)
 {
    QCString fName = ::getenv("HOME");
