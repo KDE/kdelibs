@@ -84,7 +84,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
   setTopLevelMenuInternal( top_level );
 }
 
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
 namespace
 {
 class QWidgetHack
@@ -102,7 +102,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
     top_level = true;
 
   if( parentWidget()
-#if QT_VERSION >= 310
+#if QT_VERSION >= 0x030100
       && parentWidget()->topLevelWidget()->isFullScreen()) {
 #else
       && static_cast<QWidgetHack*>(parentWidget()->topLevelWidget())->isFullScreen()) {
@@ -110,7 +110,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
     d->wasTopLevel = top_level;
     top_level = false;
   }
-      
+
   if ( isTopLevelMenu() == top_level )
     return;
   d->topLevel = top_level;
@@ -210,14 +210,14 @@ void KMenuBar::setGeometry( int x, int y, int w, int h )
    // With the toolbar in toplevel-mode it sometimes has the tendency to cuddle up in
    // the topleft corner due to a misguided attempt from the layout manager (?) to
    // size us. The follow line filters out any resize attempt while in toplevel-mode.
-   if ( !d->topLevel ) 
+   if ( !d->topLevel )
        QMenuBar::setGeometry(x,y,w,h);
 }
 
 void KMenuBar::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-    
+
 
 
 #include "kmenubar.moc"
