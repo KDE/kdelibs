@@ -28,6 +28,7 @@
 #include <qmainwindow.h>
 #include <qmetaobject.h>
 #include <ktoolbar.h>
+#include <kdebug.h>
 
 class KPopupMenu;
 class KXMLGUIFactory;
@@ -802,7 +803,6 @@ private:
 };
 
 #ifndef NDEBUG
-#include <kdebug.h>
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
       if( QString::fromLatin1( type::staticMetaObject()->className())\
