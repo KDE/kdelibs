@@ -188,15 +188,47 @@ namespace KJS {
      */
     bool derivedFrom(const char *s) const;
 
+    /**
+     * @return Conversion to primitive type (Undefined, Boolean, Number
+     * or String)
+     * @param preferred Optional hint. Either StringType or NumberType.
+     */
     KJSO toPrimitive(Type preferred = UndefinedType) const; // ECMA 9.1
+    /**
+     * @return Conversion to Boolean type.
+     */
     Boolean toBoolean() const; // ECMA 9.2
+    /**
+     * @return Conversion to Number type.
+     */
     Number toNumber() const; // ECMA 9.3
+    /**
+     * @return Conversion to double. 0.0 if conversion failed.
+     */
     double round() const;
+    /**
+     * @return Conversion to Number type containing an integer value.
+     */
     Number toInteger() const; // ECMA 9.4
+    /**
+     * @return Conversion to signed integer value.
+     */
     int toInt32() const; // ECMA 9.5
+    /**
+     * @return Conversion to unsigned integer value.
+     */
     unsigned int toUInt32() const; // ECMA 9.6
+    /**
+     * @return Conversion to unsigned short value.
+     */
     unsigned short toUInt16() const; // ECMA 9.7
+    /**
+     * @return Conversion to String type.
+     */
     String toString() const; // ECMA 9.8
+    /**
+     * @return Conversion to Object type.
+     */
     Object toObject() const; // ECMA 9.9
     
     // Properties
@@ -242,22 +274,69 @@ namespace KJS {
      */
     void deleteProperty(const UString &p);
 
+    /**
+     * Same as above put() method except the additional attribute. Right now,
+     * this only works with native types as Host Objects don't reimplement
+     * this method.
+     * @param attr One of @ref KJS::Attribute.
+     */
     void put(const UString &p, const KJSO& v, int attr);
+    /**
+     * Convenience function for adding a Number property constructed from
+     * a double value.
+     */
     void put(const UString &p, double d, int attr = None);
+    /**
+     * Convenience function for adding a Number property constructed from
+     * an integer value.
+     */
     void put(const UString &p, int i, int attr = None);
+    /**
+     * Convenience function for adding a Number property constructed from
+     * an unsigned integer value.
+     */
     void put(const UString &p, unsigned int u, int attr = None);
 
-    // Reference
+    /**
+     * Reference method.
+     * @return Reference base if object is a reference. Throws
+     * a ReferenceError otherwise.
+     */
     KJSO getBase() const;
+    /**
+     * Reference method.
+     * @return Property name of a reference. Null string if object is not
+     * a reference.
+     */
     UString getPropertyName() const;
+    /**
+     * Reference method.
+     * @return Referenced value. This object if no reference.
+     */
     KJSO getValue();
+    /**
+     * Reference method. Set referenced value to v.
+     */
     ErrorType putValue(const KJSO& v);
 
-    // function call
+    /**
+     * @return True if object supports @ref executeCall() method. That's the
+     * case for all objects derived from FunctionType.
+     */
     bool implementsCall() const;
+    /**
+     * Execute function implemented via the @ref Function::execute() method.
+     *
+     * Note: check availability via @ref implementsCall() beforehand.
+     * @param thisV Object serving as the 'this' value.
+     * @param args Pointer to the list of arguments or null.
+     * @return Result of the function call.
+     */
     KJSO executeCall(const KJSO &thisV, const List *args);
 
-    // constructor
+    /**
+     * Set this object's constructor.
+     */
     void setConstructor(KJSO c);
 
     /**
@@ -428,11 +507,23 @@ namespace KJS {
   };
 
   /**
-   * @short Factory methos for error objects.
+   * @short Factory methods for error objects.
    */
   class Error {
   public:
+    /**
+     * Factory method for error objects. The error will be registered globally
+     * and the execution will continue as if a "throw" statement was
+     * encountered.
+     * @param e Type of error.
+     * @param m Optional error message.
+     * @param l Optional line number.
+     */ 
     static KJSO create(ErrorType e, const char *m = 0, int l = -1);
+    /**
+     * Same as above except the different return type (which is not casted
+     * here).
+     */
     static Object createObject(ErrorType e, const char *m = 0, int l = -1);
   };
 
