@@ -90,7 +90,7 @@ class KDialog : public QDialog
     /**
      * Make a KDE compliant caption.
      * 
-     * @param caption Your caption. @bf Do @bf not include the application name
+     * @param caption Your caption. Do @em not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
      */

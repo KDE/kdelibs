@@ -25,7 +25,7 @@
 namespace KIO {
 
   /**
-   * A dialog for requesting a login and a password to the user
+   * A dialog for requesting a login and a password to the user.
    * KIO-Slave authors should have a look at @ref SlaveBase::openPassDlg instead.
    */
   class PassDlg : public KDialog {

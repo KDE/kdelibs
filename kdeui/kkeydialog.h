@@ -144,7 +144,9 @@ public:
   bool isEditing() const;
 
 protected:
-
+  /**
+   * Reimplemented for internal reasons.
+   */
   void drawButton( QPainter* _painter );
 
 private:

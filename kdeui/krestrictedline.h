@@ -28,12 +28,16 @@
 #include <klineedit.h>
 
 /** 
- * Restricted Editline: Only selected Characters are valid input. 
- * All other characters will be discarded and the signal @ref invalidChar() 
- * will be emitted for each of them. Valid characters can be passed 
- * through a pointer to the constructor or call of a public method.
- * The default key binding of @ref QLineEdit is still in effect.
+ * The KRestrictedLine widget is a variant of @ref QLineEdit which
+ * accepts only a restricted set of characters as input. 
+ * All other characters will be discarded and the signal @ref #invalidChar() 
+ * will be emitted for each of them.
  *
+ * Valid characters can be passed as a QString to the constructor
+ * or set afterwards via @ref #setValidChars().
+ * The default key bindings of @ref QLineEdit are still in effect.
+ *
+ * @short A line editor for restricted character sets.
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  * @version 0.0.1
  */
@@ -54,6 +58,9 @@ public:
   KRestrictedLine( QWidget *parent=0, const char *name=0, 
 		   const QString& valid = QString::null);
 
+  /**
+   * Destructs the restricted line editor.
+   */
   ~KRestrictedLine();
 
   /**
@@ -69,12 +76,14 @@ public:
 signals:
 
   /**
-   * This signal is emitted if an invalid character was typed.
+   * Emitted when an invalid character was typed.
    */
   void	invalidChar(int);
 
 protected:
-  /// Handles the special keys
+  /**
+   * @reimplemented
+   */
   void	keyPressEvent( QKeyEvent *e );
 
 private:

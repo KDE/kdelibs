@@ -114,7 +114,7 @@ private:
  * Those elements trigger actions, defined by the part (@ref action()).
  * The layout of the actions in the GUI is defined by an XML file (@ref setXMLFile()).
  *
- * See also @ref PartReadOnly and @ref PartReadWrite, which define the
+ * See also @ref ReadOnlyPart and @ref ReadWritePart, which define the
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
  */
@@ -262,9 +262,9 @@ class ReadOnlyPartPrivate;
  * KParts Application can use the signals to show feedback while the URL is being loaded.
  *
  * ReadOnlyPart handles the window caption by setting it to the current URL
- * (set in @ref openURL, and each time the part is activated).
- * If you want another caption, set it in @ref openFile and
- * (if the part might ever be used with a part manager) in @ref guiActivateEvent
+ * (set in @ref #openURL(), and each time the part is activated).
+ * If you want another caption, set it in @ref openFile() and
+ * (if the part might ever be used with a part manager) in @ref guiActivateEvent()
  */
 class ReadOnlyPart : public Part
 {
@@ -310,7 +310,7 @@ public:
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that @ref openURL calls it
+   * when switching to another url (note that @ref #openURL() calls it
    * automatically in this case).
    * If the current URL is not fully loaded yet, aborts loading.
    * Deletes the temporary file used when the url is remote.
@@ -343,7 +343,7 @@ protected slots:
 
 protected:
   /**
-   * If the part uses the standard implementation of @ref openURL,
+   * If the part uses the standard implementation of @ref #openURL(),
    * it must reimplement this, to open @p m_file.
    * Otherwise simply define it to { return false; }
    */
@@ -390,7 +390,7 @@ private:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
  *
- * A read-write part can be set to read-only mode, using @ref setReadWrite.
+ * A read-write part can be set to read-only mode, using @ref setReadWrite().
  *
  * Part writers :
  * Any part inheriting ReadWritePart should check @ref isReadWrite
@@ -410,9 +410,10 @@ public:
   /**
    * Destructor
    * Applications using a ReadWritePart should make sure, before
-   * destroying it, to call closeURL().
-   * In queryClose, for instance, they should allow closing only if
-   * the return value of closeURL was true. This allows to cancel.
+   * destroying it, to call @ref #closeURL().
+   * In @ref KTMainWindow::queryClose(), for instance, they should allow
+   * closing only if the return value of @ref #closeURL() was true.
+   * This allows to cancel.
    */
   virtual ~ReadWritePart();
 
@@ -434,7 +435,7 @@ public:
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that @ref openURL calls it
+   * when switching to another url (note that @ref openURL() calls it
    * automatically in this case).
    * If the current URL is not fully loaded yet, aborts loading.
    * Reimplemented from ReadOnlyPart, to handle modified parts
@@ -466,7 +467,7 @@ public slots:
   /**
    * Save the file in the location from which it was opened.
    * You can connect this to the "save" action.
-   * Calls @ref saveFile and @ref saveToURL, no need to reimplement.
+   * Calls @ref saveFile() and @ref saveToURL(), no need to reimplement.
    */
   virtual bool save();
 

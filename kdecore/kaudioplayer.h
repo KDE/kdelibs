@@ -38,12 +38,16 @@
  *
  * An example of using this class is:
  *
+ * <pre>
  *   KAudioPlayer::play("/var/share/foo.wav");
+ * </pre>
  *
  * If you want to use signals & slots, you can do something like:
  *
+ * <pre>
  *   KAudioPlayer player("/var/share/foo.wav");
  *   connect(&button, SIGNAL(clicked()), &player, SLOT(play()));
+ * </pre>
  *
  */
 class KAudioPlayer : public QObject {

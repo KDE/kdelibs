@@ -143,22 +143,24 @@ class KDialogBaseTile : public QObject
  *
  * @sect Standard compliance:
  *
- * The class is derived form @ref KDialog(), so you get automatic access to
- * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the 
- * extended @ref KDialog::setCaption() method. NOTE: The main widget you 
- * use will be positioned inside the dialog using a margin (or border) 
+ * The class is derived from @ref KDialog, so you get automatic access to
+ * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the
+ * extended @ref KDialog::setCaption() method. NOTE: The main widget you
+ * use will be positioned inside the dialog using a margin (or border)
  * equal to @ref KDialog::marginHint(). You shall not add a margin yourself.
  * The example below (from kedit) shows how you use the top level widget
- * and its layout. The second argument (the border) to <tt>QVBoxLayout</tt> 
+ * and its layout. The second argument (the border) to @ref QVBoxLayout
  * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
  * @ref addHBoxPage , @ref addGridPage , @ref makeMainWidget, 
  * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget and 
  * @ref makeGridMainWidget as well.
- * 
+ *
+ * Example:
+ *
  * <pre>
- * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
- *		const QString& urltext)
- * : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
+ * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
+ *                 const QString& urltext)
+ *   : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
  * {
  *   QWidget *page = new QWidget( this ); 
  *   setMainWidget(page);
@@ -175,8 +177,8 @@ class KDialogBaseTile : public QObject
  * }
  * </pre>
  *
- * If you use @ref makeVBoxMainWidget , then the dialog above can be made
- * simpler but you loose the ability to add a stretchable area.
+ * If you use @ref makeVBoxMainWidget(), then the dialog above can be made
+ * simpler but you lose the ability to add a stretchable area:
  *
  * <pre>
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
@@ -201,19 +203,19 @@ class KDialogBase : public KDialog
   public:
 
     /**
-     *  @li @p Help    Show Help-button.
-     *  @li @p Default Show Default-button.
-     *  @li @p Ok      Show Ok-button.
-     *  @li @p Apply   Show Apply-button.
-     *  @li @p Try     Show Try-button.
-     *  @li @p Cancel  Show Cancel-button.
-     *  @li @p Close   Show Close-button.
-     *  @li @p User1   Show User define-button 1.
-     *  @li @p User2   Show User define-button 2.
-     *  @li @p User3   Show User define-button 3.
-     *  @li @p No      Show No-button.
-     *  @li @p Yes     Show Yes-button.
-     *  @li @p Stretch Used internally. Ignored when used in a constructor.
+     *  @li @p Help -    Show Help-button.
+     *  @li @p Default - Show Default-button.
+     *  @li @p Ok -      Show Ok-button.
+     *  @li @p Apply -   Show Apply-button.
+     *  @li @p Try -     Show Try-button.
+     *  @li @p Cancel -  Show Cancel-button.
+     *  @li @p Close -   Show Close-button.
+     *  @li @p User1 -   Show User define-button 1.
+     *  @li @p User2 -   Show User define-button 2.
+     *  @li @p User3 -   Show User define-button 3.
+     *  @li @p No -      Show No-button.
+     *  @li @p Yes -     Show Yes-button.
+     *  @li @p Stretch - Used internally. Ignored when used in a constructor.
      */
     enum ButtonCode
     {
@@ -243,13 +245,13 @@ class KDialogBase : public KDialog
     };
 
     /**
-     *  @li @p TreeList A dialog with a tree on the left side
-     *                  and a representation of the contents on thr right side.
-     *  @li @p Tabbed   A dialog using a @ref QTabWidget.
-     *  @li @p Plain    A normal dialog.
-     *  @li @p Swallow  
-     *  @li @p IconList A dialog with an iconlist on the left side
-     *                  and a representation of the contents on the right side.
+     *  @li @p TreeList - A dialog with a tree on the left side
+     *                    and a representation of the contents on the right side.
+     *  @li @p Tabbed -   A dialog using a @ref QTabWidget.
+     *  @li @p Plain -    A normal dialog.
+     *  @li @p Swallow
+     *  @li @p IconList - A dialog with an iconlist on the left side
+     *                    and a representation of the contents on the right side.
      */
     enum DialogType
     {
@@ -371,10 +373,10 @@ class KDialogBase : public KDialog
 		 const QString &user2=QString::null,
 		 const QString &user3=QString::null);
 
-    
-    /** 
-     * Constructor for a message box mode where the @p buttonMask can only 
-     * contain Yes, No, or Cancel. 
+
+    /**
+     * Constructor for a message box mode where the @p buttonMask can only
+     * contain Yes, No, or Cancel.
      *
      * If you need other names you can rename
      * the buttons with @ref setButtonText(). The dialog box is not resizeable 
@@ -449,8 +451,8 @@ class KDialogBase : public KDialog
      * Note: The returned frame widget has no
      * layout manager associated with it. In order to use it you must 
      * create a layout yourself as the example below illustrates:
-     * <pre>
      *
+     * <pre>
      * QFrame *page = addPage( i18n("Layout") );
      * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
      * QLabel *label = new QLabel( i18n("Layout type"), page );
@@ -490,8 +492,8 @@ class KDialogBase : public KDialog
      * toplevel widget for this particular page. The widget contains a 
      * QVBoxLayout layout so the widget children are lined up vertically. 
      * You can use it as follows:
-     * <pre>
      *
+     * <pre>
      * QVBox *page = addVBoxPage( i18n("Layout") );
      * QLabel *label = new QLabel( i18n("Layout type"), page );
      * ..
@@ -524,10 +526,10 @@ class KDialogBase : public KDialog
 			const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Adds a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode. The returned widget must be used as the 
-     * toplevel widget for this particular page. The widget contains a 
-     * QHBoxLayout layout so the widget children are lined up horizontally. 
+     * Adds a page to the dialog when the class is used in TreeList,
+     * IconList or Tabbed mode. The returned widget must be used as the
+     * toplevel widget for this particular page. The widget contains a
+     * @ref QHBoxLayout layout so the widget children are lined up horizontally.
      * You can use it as follows:
      *
      * @param itemName String used in the list or as tab item name.
@@ -604,10 +606,10 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QFrame widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * and use @ref #setMainWidget() to register it. You can @em not use this
+     * function more than once, @em not if you have already defined a
+     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList).
      *
      * @return The main widget or 0 if any of the rules described above 
@@ -617,10 +619,10 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QVBox widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * and use @ref #setMainWidget() to register it. You can @em use this
+     * function more than once, @em not if you have already defined a
+     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
      * @return The main widget or 0 if any of the rules described above 
@@ -630,10 +632,10 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QHBox widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * and use @ref #setMainWidget() to register it. You can @em not use this
+     * function more than once, @em not if you have already defined a
+     * main widget with @ref #setMainWidget() and @em not if you have used the
+     * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
      * @return The main widget or 0 if any of the rules described above 
@@ -643,10 +645,10 @@ class KDialogBase : public KDialog
 
     /**
      * Makes a main widget. The function will make a @ref QGrid widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * and use @ref #setMainWidget() to register it. You can @em not use this
+     * function more than once, @em not if you have already defined a
+     * main widget with @ref #setMainWidget and @em not if you have used the
+     * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
      * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
@@ -706,7 +708,7 @@ class KDialogBase : public KDialog
     void showButtonCancel( bool state );
 
     /**
-     * Set the page with @ref index to be displayed.
+     * Set the page with @p index to be displayed.
      *
      * This method will only 
      * work when the dialog is using the predefined shape of TreeList,
@@ -729,17 +731,17 @@ class KDialogBase : public KDialog
 
 
     /**
-     * Returns the index of a page created with @ref addPage ,
-     * @ref addVBoxPage , @ref addHBoxPage or @ref addGridPage .
-     * You can can compare this index with the value returned from 
-     * @ref activePageIndex if you need to do some page specific actions
+     * Returns the index of a page created with @ref #addPage(),
+     * @ref #addVBoxPage(), @ref addHBoxPage() or @ref #addGridPage().
+     * You can can compare this index with the value returned from
+     * @ref #activePageIndex() if you need to do some page specific actions
      * in your code.
      *
      * The returned index will never change so you can safely use this
      * function once and save the value.
      *
-     * @param widget The widget returned by @ref addPage , @ref addVBoxPage ,
-     *        @ref addHBoxPage or @ref addGridPage .
+     * @param widget The widget returned by @ref #addPage(), @ref #addVBoxPage(),
+     *        @ref #addHBoxPage() or @ref #addGridPage().
      *
      * @return The index or -1 if the face is not Tabbed, TreeList or 
      *         IconList
@@ -925,10 +927,9 @@ class KDialogBase : public KDialog
      *        same time. The vertical scrollbar will never be visible.
      */
     void setIconListAllVisible( bool state );
-     
 
-    /** 
-     * Check whether the background tile is set or not. 
+    /**
+     * Check whether the background tile is set or not.
      *
      * @return @true if there is defined a background tile.
      */
@@ -1014,8 +1015,8 @@ class KDialogBase : public KDialog
     /**
      * Returns the action button that corresponds to the id. Normally
      * you should not use this function. NEVER delete the object returned
-     * by this function. See also @ref enableButton @ref showButton 
-     * @ref setButtonTip @ref setButtonWhatsThis and @ref setButtonText
+     * by this function. See also @ref #enableButton(), @ref #showButton(),
+     * @ref #setButtonTip(), @ref #setButtonWhatsThis(), and @ref #setButtonText().
      *
      * @param id Integer identifier of the button.
      * @return The action button or 0 if the button does not exists.
@@ -1193,7 +1194,7 @@ class KDialogBase : public KDialog
      * This signal is also emitted when you call @ref hide()
      *
      * If you have stored a pointer to the
-     * dialog do @bf not try to delete the pointer in the slot that is
+     * dialog do @em not try to delete the pointer in the slot that is
      * connected to this signal.
      *
      * You should use @ref delayedDestruct() instead.

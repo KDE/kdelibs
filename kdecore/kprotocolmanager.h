@@ -38,7 +38,7 @@ class KProtocolManagerPrivate;
  *
  * However, please note that these settings apply to all applications.
  * This means that the proxy, timeouts etc. are saved in the users config
- * file and @bf not in the config file of the application.
+ * file and @em not in the config file of the application.
  *
  * @author Torben Weis <weis@kde.org>
  */

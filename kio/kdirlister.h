@@ -49,6 +49,8 @@ namespace KIO { class Job; class ListJob; }
  *
  * Advanced usage : call openURL with _keep = true to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
+ *
+ *@short Helper class for the kiojob used to list and update a directory.
  */
 class KDirLister : public QObject
 {

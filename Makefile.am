@@ -64,3 +64,5 @@ cvs-local:
 
 kde_conf_DATA = kde-config
 
+kdedoc:
+	makekdedoc -p'--skip-internal'

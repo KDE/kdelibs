@@ -24,6 +24,9 @@
 
 #include "progressbase.h"
 
+/*
+ * @ref ProgressBase
+ */
 class DefaultProgress : public ProgressBase {
 
   Q_OBJECT

@@ -35,10 +35,10 @@ class KContextMenuManagerPrivate;
 @version $Id$
 
 KContextMenuManager manages configurable context popup menus.  Instead
-of reimplementing QWidget::mousePressEvent() or
-QWidget::mouseReleaseEvent() and/or QWidget::keyPressEvent(), simply
+of reimplementing @ref QWidget::mousePressEvent() or
+@ref QWidget::mouseReleaseEvent() and/or @ref QWidget::keyPressEvent(), simply
 create the popup menu and insert it into the context menu manager with
-the static function insert(). 
+the static function @ref #insert(). 
 
 Example:
 <pre>

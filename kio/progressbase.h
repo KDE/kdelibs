@@ -48,8 +48,8 @@ namespace KIO
 * Add your GUI code to the constructor and implemement those virtual
 * methods which you need in order to display progress.
 *
-* E.g. @ref #StatusbarProgress only implements @ref #slotTotalSize,
-* @ref #slotPercent and @ref slotSpeed.
+* E.g. @ref #StatusbarProgress only implements @ref #slotTotalSize(),
+* @ref #slotPercent() and @ref #slotSpeed().
 *
 * Custom progress dialog will be used like this :
 * <pre>
@@ -63,7 +63,7 @@ namespace KIO
 * ...
 * </pre>
 *
-* There is a special method @ref setStopOnClose that controls the behaviour of
+* There is a special method @ref #setStopOnClose() that controls the behavior of
 * the dialog.
 * @short Base class for IO progress dialogs.
 * @author Matej Koss <koss@miesto.sk>

@@ -75,6 +75,9 @@ struct PreferencesMaxima
   double fMin;
 };
 
+/**
+ * @internal
+ */
 class ParseContext
 {
 public:
@@ -106,6 +109,9 @@ public:
   const KServiceTypeProfile::OfferList& offers;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeBase : public KShared
 {
 public:
@@ -120,6 +126,9 @@ protected:
 ParseTreeBase::Ptr parseConstraints( const QString& _constr );
 ParseTreeBase::Ptr parsePreferences( const QString& _prefs );
 
+/**
+ * @internal
+ */
 class ParseTreeOR : public ParseTreeBase
 {
 public:
@@ -132,6 +141,9 @@ protected:
   ParseTreeBase::Ptr m_pRight;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeAND : public ParseTreeBase
 {
 public:
@@ -144,6 +156,9 @@ protected:
   ParseTreeBase::Ptr m_pRight;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeCMP : public ParseTreeBase
 {
 public:
@@ -157,6 +172,9 @@ protected:
   int m_cmd;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeIN : public ParseTreeBase
 {
 public:
@@ -169,6 +187,9 @@ protected:
   ParseTreeBase::Ptr m_pRight;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeMATCH : public ParseTreeBase
 {
 public:
@@ -181,6 +202,9 @@ protected:
   ParseTreeBase::Ptr m_pRight;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeCALC : public ParseTreeBase
 {
 public:
@@ -194,6 +218,9 @@ protected:
   int m_cmd;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeBRACKETS : public ParseTreeBase
 {
 public:
@@ -205,6 +232,9 @@ protected:
   ParseTreeBase::Ptr m_pLeft;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeNOT : public ParseTreeBase
 {
 public:
@@ -216,6 +246,9 @@ protected:
   ParseTreeBase::Ptr m_pLeft;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeEXIST : public ParseTreeBase
 {
 public:
@@ -227,6 +260,9 @@ protected:
   QString m_id;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeID : public ParseTreeBase
 {
 public:
@@ -238,6 +274,9 @@ protected:
   QString m_str;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeSTRING : public ParseTreeBase
 {
 public:
@@ -249,6 +288,9 @@ protected:
   QString m_str;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeNUM : public ParseTreeBase
 {
 public:
@@ -260,6 +302,9 @@ protected:
   int m_int;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeDOUBLE : public ParseTreeBase
 {
 public:
@@ -271,6 +316,9 @@ protected:
   double m_double;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeBOOL : public ParseTreeBase
 {
 public:
@@ -282,6 +330,9 @@ protected:
   bool m_bool;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeMAX2 : public ParseTreeBase
 {
 public:
@@ -293,6 +344,9 @@ protected:
   QString m_strId;
 };
 
+/**
+ * @internal
+ */
 class ParseTreeMIN2 : public ParseTreeBase
 {
 public:

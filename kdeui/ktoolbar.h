@@ -319,7 +319,7 @@ public:
   int insertLineSeparator(int index=-1);
 
   /**
-   * Insert a user-defined widget.  The widget @bf must have this
+   * Insert a user-defined widget.  The widget @em must have this
    * toolbar as its parent.
    *
    * Widget must have a QWidget for base class.  Widget can be
@@ -588,7 +588,7 @@ public:
    * Set item autosized.
    *
    * This works only if the toolbar is set to full width.
-   * @bf Only @bf one item can be autosized, and it has to be
+   * Only @em one item can be autosized, and it has to be
    * the last left-aligned item. Items that come after this must be right
    * aligned. Items that can be right aligned are Lineds, Frames, Widgets and
    * Combos. An autosized item will resize itself whenever the toolbar geometry

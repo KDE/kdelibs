@@ -46,15 +46,19 @@ namespace KIO {
      * The base class for all jobs.
      * For all jobs created in an application, the code looks like
      *
+     * <pre>
      *   KIO::Job * job = KIO::someoperation( some parameters );
      *   connect( job, SIGNAL( result( KIO::Job * ) ),
      *            this, SLOT( slotResult( KIO::Job * ) ) );
+     * </pre>
      *   (other connects, specific to the job)
      *
      * And slotResult is usually at least:
      *
+     * <pre>
      *  if ( job->error() )
      *      job->showErrorDialog( this or 0L  );
+     * </pre>
      *
      */
     class Job : public QObject {

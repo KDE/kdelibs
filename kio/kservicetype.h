@@ -47,7 +47,7 @@ class KServiceType : public KSycocaEntry
 public:
   typedef KSharedPtr<KServiceType> Ptr;
   typedef QValueList<Ptr> List;
-public: // KDoc seems to barf on those typedefs and generates no docs after them
+public:
 
   /**
    * Constructor.  You may pass in arguments to create a servicetype with

@@ -28,7 +28,10 @@ class Job;
 /**
  * This class implements synchronous mounting of devices,
  * as well as showing a file-manager window after mounting a device, optionally.
- * It is a wrapper around the asychronous KIO::special call for mount, used by KMimeType.
+ * It is a wrapper around the asychronous @ref KIO::special() call for mount,
+ * used by @ref KMimeType.
+ *
+ * @short This class implements synchronous mounting of devices.
  */
 class KAutoMount : public QObject
 {
@@ -59,7 +62,10 @@ protected:
 
 /**
  * This class implements synchronous unmounting of devices,
- * It is a wrapper around the asychronous KIO::special call for unmount, used by KMimeType.
+ * It is a wrapper around the asychronous @ref KIO::special() call for unmount,
+ * used by @ref KMimeType.
+ *
+ * @short This class implements synchronous unmounting of devices,
  */
 class KAutoUnmount : public QObject
 {

@@ -26,7 +26,7 @@
 /**
  * Title widget for use in KPopupMenu. You usually don't have to create this
  * manually since KPopupMenu::insertTitle will do it for you, but it is allowed
- * if you wish to customize it's look.
+ * if you wish to customize its look.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  * @short KPopupMenu title widget.
@@ -87,7 +87,7 @@ protected:
  * The titles support a text string, an icon, plus user defined gradients,
  * colors, and background pixmaps.
  *
- * @short A menu with title items.
+ * @short A popup menu with title items.
  * @author Daniel M. Duley <mosfet@kde.org>
  */
 class KPopupMenu : public QPopupMenu {

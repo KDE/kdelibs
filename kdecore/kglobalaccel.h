@@ -26,6 +26,8 @@
 #include <qdict.h>
 #include "kaccel.h"
 
+class KGlobalAccelPrivate;
+
 /**
  * Returns the X key modifier for the key code keyCode.
  */	
@@ -73,8 +75,6 @@ uint keyToXSym( uint keyCode );
  * ga->readSettings();
  *
 */
-
-class KGlobalAccelPrivate;
 
 class KGlobalAccel : public QObject
 {

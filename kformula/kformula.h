@@ -71,17 +71,17 @@ public:
  * The KFormula class is used for parsing and displaying formulas.
  *
  * If you want to draw a formula from a c-style expression,
- * call KFormula::fromUgly on your string and pass the result
- * to parse.  Decide where you want it to be drawn by calling setPos
+ * call @ref fromUgly() on your string and pass the result
+ * to parse.  Decide where you want it to be drawn by calling @ref setPos()
  * and passing the center to it (for other alignments, you can always
- * get the size).  Then draw your formula by calling redraw (then you
+ * get the size).  Then draw your formula by calling @ref redraw() (then you
  * pass the painter--for now its font is used for arranging and drawing
  * the formula).
  *
  * You can also evaluate a formula that you constructed with
  * the restricted flag set to true--pass the appropriate arguments
  * to evaluate.  Beware that the error handling is not great,
- * especially in fromUgly (whose output you need to pass to parse
+ * especially in @ref fromUgly() (whose output you need to pass to parse
  * before you can evaluate anything).
  *
  * The other use of KFormula is with KFormulaEdit--it's much cooler

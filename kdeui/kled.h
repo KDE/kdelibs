@@ -293,7 +293,9 @@ protected:
    * sunken, depending on its argument.
    */
   virtual void paintRectFrame(bool raised);
-
+  /**
+   * @reimplemented
+   */
   void paintEvent( QPaintEvent * );
   
 private:

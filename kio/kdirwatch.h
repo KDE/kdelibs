@@ -50,7 +50,7 @@ class KDirWatch : public QObject
     
   public:
    /**
-    * Constructor. Does not begin with scanning until @ref startScan
+    * Constructor. Does not begin with scanning until @ref startScan()
     * is called. Default frequency is 500 ms. The created list of
     * directories has deep copies.
     */
@@ -83,7 +83,7 @@ class KDirWatch : public QObject
     * just skips it. Call this function when you make an huge operation
     * on this directory (copy/move big files or lot of files). When finished,
     * call @ref #restartDirScan (path).
-    * Returns 'false' if specified path is not in list, 'true' otherwise.
+    * Returns @p false if specified path is not in list, @p true otherwise.
     */
    bool stopDirScan(const QString& path);
 
@@ -92,20 +92,20 @@ class KDirWatch : public QObject
     * the change, since ctime value is reset. Call it when you are finished
     * with big operations on that path, *and* when *you* have refreshed that
     * path.
-    * Returns 'false' if specified path is not in list, 'true' otherwise.
+    * Returns @p false if specified path is not in list, @p true otherwise.
     */
    bool restartDirScan(const QString& path);
 
    /**
     * Starts scanning of all dirs in list. If notify is true, all changed
-    * dirs (since @ref #stopScan call) will be notified for refresh. If
+    * dirs (since @ref #stopScan() call) will be notified for refresh. If
     * notify is false, all ctimes will be reset (except those who are stopped,
     * but only if skippedToo is false) and changed dirs won't be
     * notified. You can start scanning even if the list is empty. First call
     * should be called with 'false' or else all dirs in list will be notified.
     * Note that direcories that were.
-    * If 'skippedToo' is true, the skipped dirs, (scanning of which was
-    * stopped with @ref #stopDirScan ) will be reset and notified for change.
+    * If @p skippedToo is true, the skipped dirs, (scanning of which was
+    * stopped with @ref #stopDirScan() ) will be reset and notified for change.
     * Otherwise, stopped dirs will continue to be unnotified.
     */
    void startScan( bool notify=false, bool skippedToo=false );
@@ -118,7 +118,7 @@ class KDirWatch : public QObject
   
    bool contains( const QString& path ) const;
   
-   /** @see signal fileDirty */
+   /** @ref signal fileDirty() */
    void setFileDirty( const QString & _file );
 
    static KDirWatch* self();

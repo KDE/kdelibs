@@ -25,7 +25,7 @@ class KConfig;
 #include <qstring.h>
 
 /**
- * Settings for the HTML veiw
+ * Settings for the HTML view.
  * We need this in konqueror since we need to call reparseConfiguration
  * on the static instance (even when we don't have an HTML view any longer).
  */

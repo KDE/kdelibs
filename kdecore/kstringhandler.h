@@ -48,7 +48,7 @@
  *
  * Quick example on how to use:
  *
- * <code>
+ * <pre>
  * KStringHandler kstr;
  * QString line = "This is a test of the strings";
  *
@@ -56,7 +56,7 @@
  * cout << "2> " << kstr.remrange( line , "2:5" ) << "\n";
  * cout << "2> " << kstr.reverse( line ) << "\n";
  * cout << "2> " << kstr.center( kstr.word( line , 4 ) , 15 ) << "\n";
- * </code>
+ * </pre>
  *
  * and so forth.
  *

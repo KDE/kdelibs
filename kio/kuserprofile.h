@@ -31,6 +31,8 @@
  * This class holds the characteristics of a service offer
  * (whether it can be a default offer or not, how big is the preference
  * for this offer, ...)
+ *
+ * @short Holds the characteristics of a service offer.
  */
 class KServiceOffer
 {

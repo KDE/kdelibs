@@ -39,7 +39,7 @@
 /**
  * Represents a mime type, like "text/plain".
  * The starting point you need is often the static methods.
- * See also KServiceType.
+ * See also @ref KServiceType.
  */
 class KMimeType : public KServiceType
 {
@@ -48,7 +48,7 @@ class KMimeType : public KServiceType
 public:
   typedef KSharedPtr<KMimeType> Ptr;
   typedef QValueList<Ptr> List;
-public: // KDoc seems to barf on those typedefs and generates no docs after them
+public:
   /**
    * Constructor.  You may pass in arguments to create a mimetype with
    * specific properties
@@ -77,7 +77,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * Return the filename of the icon associated with the mimetype.
    * The arguments are unused, but provided so that KMimeType derived classes
-   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
+   * can use them (e.g. @ref KFolderType uses the URL to return one out of 2 icons)
    * @return the path to the icon associated with this MIME type.
    */
   virtual QString icon( const QString& , bool ) const { return m_strIcon; }
@@ -107,8 +107,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * @param _url URL for the file
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: KIcon::DefaultState,
-   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _state The icon state, one of: @p KIcon::DefaultState,
+   * @p KIcon::ActiveState or @p KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
   virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
@@ -301,7 +301,8 @@ public:
    *
    * @return true on success and false on failure.
    *
-   * @see KRun::runURL */
+   * @see KRun::runURL
+   */
 
   static bool run( const KURL& _url, bool _is_local );
 

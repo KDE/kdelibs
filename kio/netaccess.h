@@ -43,6 +43,8 @@ namespace KIO {
  *  and uploads, as well as temporary file creation and removal.
  *
  *  Port to kio done by David Faure, faure@kde.org
+ *
+ * @short Provides a synchronous interface to io jobs.
  */
 class NetAccess : public QObject
 {

@@ -31,6 +31,7 @@ class QWidget;
 
 /**
  * Internal class. For internal purposes, only (It supports the dock process).
+ * @internal
  *
  * @author Max Judin.
  * @version $Id$
@@ -90,6 +91,7 @@ private:
 
 /**
  * Like QSplitter but specially designed for dockwidgets stuff.
+ * @internal
  *
  * @author Max Judin.
  * @version $Id$
@@ -131,6 +133,7 @@ private:
 
 /**
  * A mini-button usually placed in the dockpanel.
+ * @internal
  *
  * @author Max Judin.
  * @version $Id$

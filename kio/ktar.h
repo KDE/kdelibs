@@ -100,9 +100,10 @@ protected:
    */
   virtual int position() = 0;
 
-  /** @internal
+  /**
    * Ensure path exists, create otherwise.
    * This handles tar files missing directory entries, like mico-2.3.0.tar.gz :)
+   *  @internal
    */
   KTarDirectory * findOrCreate( const QString & path );
 

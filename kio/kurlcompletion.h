@@ -47,8 +47,8 @@ class KURLCompletion : public KCompletion
 public:
 	/**
 	 * Determines how completion is done
-	 * ExeCompletion - executables in $PATH or with full path
-	 * FileCompletion - all files with full path or in dir(), URLs are listed
+	 * @li ExeCompletion - executables in $PATH or with full path
+	 * @li FileCompletion - all files with full path or in dir(), URLs are listed
 	 *                  using KIO
 	 */
     enum Mode { ExeCompletion=1, FileCompletion };

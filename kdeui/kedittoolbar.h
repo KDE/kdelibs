@@ -81,7 +81,7 @@ class KEditToolbar : public KDialogBase
 public:
   /**
    * Constructor for apps that do not use components.  This is the
-   * only entry point to this class.  You @bf must pass along your
+   * only entry point to this class.  You @em must pass along your
    * collection of actions (some of which appear in your toolbars).
    * The other two parameters are optional.
    *
@@ -169,7 +169,7 @@ class KEditToolbarWidget : public QWidget, virtual public KXMLGUIClient
 public:
   /**
    * Constructor.  This is the only entry point to this class.  You
-   * @bf must pass along your collection of actions (some of which
+   * @em must pass along your collection of actions (some of which
    * appear in your toolbars).  The other three parameters are
    * optional.
    *
@@ -224,7 +224,7 @@ public:
 
   /**
    * Destructor.  Note that any changes done in this widget will
-   * @bf NOT be saved in the destructor.  You @bf must call @ref save
+   * @em NOT be saved in the destructor.  You @em must call @ref save()
    * to do that.
    */
   virtual ~KEditToolbarWidget();

@@ -42,7 +42,7 @@ class PartManagerPrivate;
  * @ref KPartsMainWindow for example, in addition to a part manager.
  *
  * Parts know about the part manager to add nested parts to it.
- * See also @ref KParts::Part::manager and @ref KParts::Part::setManager .
+ * See also @ref KParts::Part::manager() and @ref KParts::Part::setManager().
  */
 class PartManager : public QObject
 {

@@ -62,8 +62,13 @@ public:
     * calculated by the width/height of all buttons plus border/autoborder.
     */
   virtual QSize sizeHint() const;
+  /**
+   * @reimplemented
+   */
   virtual QSizePolicy sizePolicy() const;
-
+  /**
+   * @reimplemented
+   */
   virtual void resizeEvent(QResizeEvent *);
 
   /**

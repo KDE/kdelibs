@@ -9,30 +9,6 @@
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
  *
- *
- *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.5  2000/01/27 23:41:56  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.4  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.3  1999/11/12 01:22:34  rich
- * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
- *
- * Revision 1.2  1999/10/09 18:10:10  rich
- * Const QString fixes
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
@@ -115,3 +91,29 @@ private:
 };
 
 #endif // KJAVAAPPLETSERVER_H
+
+/**
+ *
+ * $Log$
+ * Revision 1.6  2000/03/21 03:44:44  rogozin
+ *
+ * New Java support has been merged.
+ *
+ * Revision 1.5  2000/01/27 23:41:56  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
+ * Revision 1.3  1999/11/12 01:22:34  rich
+ * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
+ *
+ * Revision 1.2  1999/10/09 18:10:10  rich
+ * Const QString fixes
+ *
+ * Revision 1.1.1.1  1999/07/22 17:28:07  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
+ */

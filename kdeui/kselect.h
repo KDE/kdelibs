@@ -97,9 +97,17 @@ protected:
    * indicates the currently selected value pair.
    */
   virtual void drawCursor( QPainter *p, int xp, int yp );
-
+  /**
+   * @reimplemented
+   */
   virtual void paintEvent( QPaintEvent *e );
+  /**
+   * @reimplemented
+   */
   virtual void mousePressEvent( QMouseEvent *e );
+  /**
+   * @reimplemented
+   */
   virtual void mouseMoveEvent( QMouseEvent *e );
 
 private:
@@ -197,13 +205,22 @@ protected:
    * to draw the new one.
    */
   virtual void drawArrow( QPainter *painter, bool show, const QPoint &pos );
+
   /**
-   * Reimplemented from QRangeControl for internal reasons.
+   * @reimplemented
    */
   virtual void valueChange();
-
+  /**
+   * @reimplemented
+   */
   virtual void paintEvent( QPaintEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void mousePressEvent( QMouseEvent *e );
+  /**
+   * @reimplemented
+   */
   virtual void mouseMoveEvent( QMouseEvent *e );
 
 private:
@@ -252,7 +269,7 @@ public:
 
 protected:
   /**
-   * Reimplemented from KSelector.
+   * @reimplemented
    */
   virtual void drawContents( QPainter * );
 

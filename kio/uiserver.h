@@ -171,6 +171,7 @@ protected:
  * @short Graphical server for progress information with an optional all-in-one progress window.
  * @author David Faure <faure@kde.org>
  * @author Matej Koss <koss@miesto.sk>
+ * @internal
  */
 class UIServer : public KTMainWindow, public DCOPObject {
 

@@ -27,13 +27,13 @@
 
 /**
  * This class provides the standard "About Application" dialog box that 
- * is used @ref KHelpMenu I use the infomation of the global 
+ * is used by @ref KHelpMenu. It uses the information of the global 
  * @ref KAboutData that is specified at the start of you program in 
  * main(). Normally you should not use this class directly but 
  * rather the @ref KHelpMenu class or even better just subclass your 
  * toplevel window from @ref KTMainWindow. If you do the latter, the help
  * menu and thereby this dialog box is available through the 
- * @ref KTMainWindow::helpMenu function.
+ * @ref KTMainWindow::helpMenu() function.
  *
  * @short Standard "About Application" dialog box.
  * @author Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
@@ -53,8 +53,8 @@ class KAboutApplication : public KAboutDialog
      * @param name Internal name of the widget. This name in not used in the
      *        caption.
      * @param modal If false, this widget will be modeless and must be 
-     *        made visible using @ref QWidget::show() Otherwise it will be 
-     *        modal and must be made visible using @ref QWidget::exec()
+     *        made visible using @ref QWidget::show(). Otherwise it will be 
+     *        modal and must be made visible using @ref QWidget::exec().
      */
     KAboutApplication( QWidget *parent=0, const char *name=0, bool modal=true);
 };

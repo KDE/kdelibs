@@ -12,20 +12,6 @@ class KJavaApplet;
 /**
  * @short Provides a context for KJavaAppletWidgets
  *
- *
- *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.2  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
@@ -68,5 +54,18 @@ private:
 
 #endif // KJAVAAPPLETCONTEXT_H
 
-
-
+/**
+ *
+ * $Log$
+ * Revision 1.3  2000/03/21 03:44:43  rogozin
+ *
+ * New Java support has been merged.
+ *
+ * Revision 1.2  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
+ * Revision 1.1.1.1  1999/07/22 17:28:07  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
+ */

@@ -112,8 +112,8 @@ protected:
     virtual void viewportMousePressEvent( QMouseEvent * );
 
     /**
-     * This function emits the 'doubleClick' signal when the user
-     * double clicks a &lt;a href=...&gt; tag.
+     * This function emits the @ref doubleClick() signal when the user
+     * double clicks a <a href=...> tag.
      */
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
 

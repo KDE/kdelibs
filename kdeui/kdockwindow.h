@@ -69,7 +69,7 @@ public:
      * Besides owning the dock window, the parent widget will
      * dissappear from taskbars when it is iconified while the dock
      * window is visible. This is the desired behaviour. After all,
-     * the dock window @bf is the parent's taskbar icon.
+     * the dock window @em is the parent's taskbar icon.
      *
      * Furthermore, the parent widget is shown or raised respectively
      * when the user clicks on the dock window with the left mouse

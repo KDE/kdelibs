@@ -60,7 +60,7 @@ public:
 
   /**
    * Retrieve an action of the client by name.
-   * This method is provided for convenience, as it uses @ref actionCollection
+   * This method is provided for convenience, as it uses @ref #actionCollection()
    * to get the action object.
    */
   KAction* action( const char* name ) const;
@@ -68,7 +68,7 @@ public:
   /**
    * Retrieve an action for a given @ref QDomElement. The default
    * implementation uses the "name" attribute to query the action
-   * object via the other @ref action method.
+   * object via the other action() method.
    */
   virtual KAction *action( const QDomElement &element ) const;
 
@@ -90,8 +90,8 @@ public:
   virtual QDomDocument domDocument() const;
 
   /**
-   * This will return the XML file as set by @ref setXMLFile.  If
-   * @ref setXML is used directly, then this will return NULL.
+   * This will return the name of the XML file as set by @ref #setXMLFile().
+   * If @ref #setXML() is used directly, then this will return NULL.
    *
    * The filename that this returns is obvious for components as each
    * component has exactly one XML file.  In non-components, however,
@@ -113,7 +113,7 @@ public:
 
   /**
    * default implementation, returning a previously via
-   * @ref storeContainerStateBuffer saved data. Called from
+   * @ref #storeContainerStateBuffer() saved data. Called from
    * KXMLGUIFactory when creating a new container.
    */
   virtual QByteArray takeContainerStateBuffer( const QString &key );
@@ -176,7 +176,7 @@ public:
 
   /**
    * Retrieve the client's GUI builder or 0L if no client specific
-   * uilder has been assigned via @ref setClientBuilder
+   * uilder has been assigned via @ref #setClientBuilder()
    */
   KXMLGUIBuilder *clientBuilder() const;
 

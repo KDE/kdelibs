@@ -75,7 +75,7 @@ public:
 
   /**
    * Default constructor.  This will not do anything until you use
-   * @ref setIcons later.
+   * @ref setIcons() later.
    *
    * @param parent The standard parent
    * @param name   The standard internal name

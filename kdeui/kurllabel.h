@@ -151,7 +151,7 @@ public slots:
      *
      * When this is on, the
      * text will switch to the selected color whenever the mouse
-     * passes over it.  By default, it is @bf on.
+     * passes over it.  By default, it is @true.
      */
     void setGlow(bool glow = true);
 
@@ -164,7 +164,7 @@ public slots:
      * over it.  In addition, underlining is turned on for as
      * long as the mouse is overhead.  Note that if "glow" and
      * underlining are both already turned on, this feature
-     * will have no visible effect.  By default, it is @bf off.
+     * will have no visible effect.  By default, it is @p false.
      */
     void setFloat(bool do_float = true);
 
@@ -174,7 +174,7 @@ public slots:
      *  When this is on, the
      * cursor will change to a custom cursor (default is a "pointing
      * hand") whenever the cursor passes over the label.  By default,
-     * it is @bf on.
+     * it is on.
      */
     void setUseCursor(bool use_cursor, const QCursor* cursor = 0);
 
@@ -183,7 +183,7 @@ public slots:
      *
      *  When this is on, the
      * URL will be displayed as a tooltip whenever the mouse passes
-     * passes over it.  By default, it is @bf off.
+     * passes over it.  By default, it is @p false.
      */
     void setUseTips(bool tips = true);
 
@@ -205,7 +205,7 @@ public slots:
      * Turn on or off the underlining.
      *
      *  When this is on, the
-     * text will be underlined.  By default, it is @bf on.
+     * text will be underlined.  By default, it is @p true.
      */
     void setUnderline(bool underline = true);
 
@@ -213,7 +213,7 @@ public slots:
      * Set the highlight color.
      *
      * This is the default foreground
-     * color (non-selected).  By default, it is @bf blue.
+     * color (non-selected).  By default, it is @p blue.
      */
     void setHighlightedColor(const QColor& highcolor);
 
@@ -229,7 +229,7 @@ public slots:
      *
      * This is the color the text will change
      * to when either a mouse passes over it and "glow" mode is on or
-     * when it is selected (clicked).  By default, it is @bf red.
+     * when it is selected (clicked).  By default, it is @p red.
      */
     void setSelectedColor(const QColor& selcolor);
 
@@ -378,13 +378,13 @@ protected:
     void timerEvent(QTimerEvent *);
 
     /**
-     * <CODE>emit</CODE>s the @ref #enteredURL signal.  If glow is
+     * emits the @ref #enteredURL() signal.  If glow is
      * on, it sets the selected color. 
      */
     void m_enterEvent();
 
     /**
-     * <CODE>emit</CODE>s the @ref #leftURL signal.  If glow is
+     * emits the @ref #leftURL() signal.  If glow is
      * on, it sets the normal color. 
      */
     void m_leaveEvent();
@@ -396,15 +396,15 @@ protected:
 
     /**
      * Tracks if the cursor is above the text as well as the mouse state.
-     * It <CODE>emit</CODE>s either the @ref #enteredURL, @ref #leftURL,
-     * @ref #leftClickedURL, @ref #middleClickedURL, or @ref #rightClickedURL
+     * It emits either the @ref #enteredURL(), @ref #leftURL(),
+     * @ref #leftClickedURL(), @ref #middleClickedURL(), or @ref #rightClickedURL()
      * as appropriate.
      */
     void mouseMoveEvent(QMouseEvent *);
 
     /**
-     * <CODE>emit</CODE>s either the @ref #leftClickedURL,
-     * @ref #rightClickedURL, or @ref #middleClickedURL signal depending
+     * emits either the @ref #leftClickedURL(), @ref #rightClickedURL(),
+     * or @ref #middleClickedURL() signal depending
      * on which one the user clicked.  Changes the color to selected
      * to indicate that it was selected.  Starts a timer to deselect
      * it.

@@ -53,7 +53,7 @@ class KApplicationPrivate;
 * Controls and provides information to all KDE applications.
 *
 * Only one object of this class can be instantiated in a single app.
-* This instance is always accessible via the @ref kApplication method.
+* This instance is always accessible via the @ref #kApplication() method.
 *
 * This class provides the following services to all KDE applications.
 *
@@ -636,14 +636,14 @@ public:
 
      This signal is provided for compatibility only. For new
      appliations, simply use KTMainWindow. By reimplementing @ref
-     KTMainWindow::queryClose, @ref KTMainWindow::saveProperties and
-     @ref KTMainWindow::readProperties you can simply handle session
+     KTMainWindow::queryClose(), @ref KTMainWindow::saveProperties() and
+     @ref KTMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
 
      For purposes without KTMainWindow, create an instance of
      KSessionManaged and reimplement the functions @ref
-     KSessionManaged::commitData and/or @ref
-     KSessionManaged::saveState
+     KSessionManaged::commitData() and/or @ref
+     KSessionManaged::saveState()
 
      If you still want to use this signal, here is what you should do:
 
@@ -651,7 +651,7 @@ public:
      manipulate the UI in that slot, it is blocked by the session
      manager.
 
-     Use the @ref ::sessionConfig KConfig object to store all your
+     Use the @ref #sessionConfig() KConfig object to store all your
      instance specific datas.
 
      Do not do any closing at this point! The user may still select
@@ -712,9 +712,9 @@ bool checkAccess(const QString& pathname, int mode);
    subclassing KApplication. KTMainWindow internally makes use of this.
 
    You don't need to do anything with this class when using
-   KTMainWindow. Instead, use @ref KTMainWindow::saveProperties,
-   @ref KTMainWindow::readProperties, @ref KTMainWindow::queryClose,
-   @ref KTMainWindow::queryExit and friends.
+   KTMainWindow. Instead, use @ref KTMainWindow::saveProperties(),
+   @ref KTMainWindow::readProperties(), @ref KTMainWindow::queryClose(),
+   @ref KTMainWindow::queryExit() and friends.
 
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
@@ -726,13 +726,13 @@ public:
   virtual ~KSessionManaged();
 
     /**
-       See @ref QApplication::saveState for documentation.
+       See @ref QApplication::saveState() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
      */
   virtual bool saveState( QSessionManager& sm );
     /**
-       See @ref QApplication::commitData for documentation.
+       See @ref QApplication::commitData() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
      */
@@ -743,6 +743,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.159  2000/06/03 23:19:28  gehrmab
+// For consistency, moved contrast() from KApplication to KGlobalSettings, like the colors. Also, some Qt settings like the double click interval are propagated to QApplication now
+//
 // Revision 1.158  2000/06/03 01:18:17  gehrmab
 // KGlobal <-> KGlobalSettings <-> KApplication cleanup
 //

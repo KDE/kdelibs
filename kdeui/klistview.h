@@ -30,14 +30,14 @@ class QDragObject;
  * ChangeCursorOverLink (TM).
  *
  * There is a new signal executed(). It gets connected to either
- * QListView::clicked() or QListView::doubleClicked() depending on the KDE
- * wide Single Click/Double Click settings. It is strongly recomended that
+ * @ref QListView::clicked() or  @ref QListView::doubleClicked() depending on the KDE
+ * wide Single Click/Double Click settings. It is strongly recommended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
  * QListView::selectionChanged() signal.
  *
- * Drag-and-Drop is supported with the signal @ref dropped, just setAcceptDrops (true)
+ * Drag-and-Drop is supported with the signal @ref #dropped(), just @ref #setAcceptDrops(true)
  * and connect it to a suitable slot.
  * To see where you are dropping, @ref setDropVisualizer(true).
  *
@@ -67,8 +67,8 @@ public:
 
   /**
    * This function determines whether the given coordinates are within the
-   * execute area. The execute area is the part of an QListViewItem where mouse
-   * clicks or double clicks respectively generate a executed() signal.
+   * execute area. The execute area is the part of a @ref QListViewItem where mouse
+   * clicks or double clicks respectively generate a @ref #executed() signal.
    * Depending on @ref QListView::allColumnsShowFocus() this is either the
    * whole item or only the first column.
    * @return true if point is inside execute area of an item, false in all
@@ -102,7 +102,7 @@ public:
   /**
    * @return whether inplace-renaming has been enabled.
    *
-   * @see #setItemsRenameable
+   * @see #setItemsRenameable()
    */
   bool itemsRenameable() const;
 
@@ -113,6 +113,8 @@ public:
 
   /**
    * @return true if AutoOpen is enabled.
+   *
+   * @see #setAutoOpen()
    */
   bool autoOpen() const;
 
@@ -197,7 +199,7 @@ signals:
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it´s better
-   * to use @ref executed instead.
+   * to use @ref #executed() instead.
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
@@ -205,11 +207,11 @@ signals:
    * This signal gets emitted whenever something acceptable is
    * dropped onto the listview.
    *
-   * @param e is the drop-event itself (it has already been accepted)
+   * @param e is the drop event itself (it has already been accepted)
    * @param after is the item after which the drop occured (or 0L, if
    * the drop was above all items)
    *
-   * @see acceptDrop
+   * @see #acceptDrop()
    */
   void dropped(QDropEvent * e, QListViewItem *after);
 
@@ -237,7 +239,7 @@ signals:
 
 public slots:
   /**
-   * Rename colum @p c of @p item.
+   * Rename column @p c of @p item.
    */
   virtual void rename(QListViewItem *item, int c);
 
@@ -245,8 +247,8 @@ public slots:
    * is column renameable? Set it.  by default, all columns
    * are not renameable.  If you want more intelligent
    * selection, you'll have to derive from KListView,
-   * and override @ref rename where you only call
-   * KListView::rename if you want it renamed.
+   * and override @ref rename() and call only call it
+   * if you want the item to be renamed.
    **/
   void setRenameable (int column, bool yesno=true);
 
@@ -261,8 +263,8 @@ public slots:
   /**
    * Enables inplace-renaming of items.
    *
-   * @see itemsRenameable
-   * @see setRenameable
+   * @see itemsRenameable()
+   * @see setRenameable()
    */
   virtual void setItemsRenameable(bool b);
 
@@ -295,7 +297,7 @@ public slots:
    * 
    * Do not use.
    * @deprecated
-   * Highlight a parent if I drop into it's children
+   * Highlight a parent if I drop into its children
    */
   virtual void setDropHighlighter(bool b);
 
@@ -474,7 +476,7 @@ protected:
   /**
    * @return a dragobject encoding the current selection.
    *
-   * @see setDragEnabled
+   * @see setDragEnabled()
    */
   virtual QDragObject *dragObject() const;
 
@@ -513,7 +515,7 @@ protected:
   void cleanItemHighlighter ();
 
   /**
-   * This method calls @ref dragObject () and starts the drag.
+   * This method calls @ref dragObject() and starts the drag.
    *
    * Reimplement it to do fancy stuff like setting a pixmap or
    * using a non-default DragMode

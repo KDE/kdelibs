@@ -44,10 +44,10 @@ public:
 
 /**
  * This event is sent to a Part when its GUI has been activated or deactivated.
- * @see KParts::Part::guiActivateEvent
  * This is related to PartActivateEvent, but the difference is that
  * GUIActivateEvent happens later (when the GUI is actually built),
  * only for parts that have GUI elements, and only if using KParts::MainWindow.
+ * @see KParts::Part::guiActivateEvent()
  */
 class GUIActivateEvent : public Event
 {

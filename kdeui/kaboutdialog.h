@@ -268,7 +268,7 @@ class KAboutDialog : public KDialogBase
   /**
    * Make a modeless (modal = false in constructor) dialog visible.
    *
-   * If you reimplmement this method make sure you run it
+   * If you reimplement this method make sure you run it
    * in the new method (i.e., @ref show()). Reimplemented
    * from @ref KDialogBase.
    */

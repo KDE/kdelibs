@@ -703,6 +703,7 @@ private:
 };
 
 /**
+ * @internal
  * INTERNAL class. *NOT* part of the public API.
  */
 class KHTMLPopupGUIClient : public QObject, public KXMLGUIClient

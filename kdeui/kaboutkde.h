@@ -30,7 +30,7 @@
  * rather the @ref KHelpMenu class or even better just subclass your 
  * toplevel window from @ref KTMainWindow. If you do the latter, the help
  * menu and thereby this dialog box is available through the 
- * @ref KTMainWindow::helpMenu function.
+ * @ref KTMainWindow::helpMenu() function.
  *
  * @short Standard "About KDE" dialog box,
  * @author Espen Sand (espen@kde.org)
@@ -50,7 +50,7 @@ class KAboutKDE : public KAboutDialog
      * @param name Internal name of the widget. This name in not used in the
      *        caption.
      * @param modal If false, this widget will be modeless and must be 
-     *        made visible using @ref QWidget::show() Otherwise it will be 
+     *        made visible using @ref QWidget::show(). Otherwise it will be 
      *        modal and must be made visible using @ref QWidget::exec()
      */
     KAboutKDE( QWidget *parent=0, const char *name=0, bool modal=true );

@@ -54,15 +54,15 @@ class KIO::Job;
 struct KFileDialogPrivate;
 
 /**
- * Provide a user (and developer) friendly way to
- * select files.
+ * The KFileDialog provides a user (and developer) friendly way to
+ * select files and directories.
  *
  * The widget can be used as a drop in replacement for the
  * @ref  QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the static methods
  * @ref getOpenFileName(), @ref getSaveFileName(), @ref getOpenURL()
- * or for multiple files @ref getOpenFileNames() or @ref getOpenURLs()
+ * or for multiple files @ref getOpenFileNames() or @ref getOpenURLs().
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -78,13 +78,13 @@ class KFileDialog : public KDialogBase
 
 public:
     /**
-      * Construct a KFileDialog
+      * Constructs a file dialog.
       *
       * @param urlName  The url of the directory to start in. Use QString::null
                         to start in the current working directory, or the last
 			directory where a file has been selected.
       * @param filter   A shell glob that specifies which files to display.
-      * See @ref setFilter for details on how to use this argument
+      * See @ref #setFilter() for details on how to use this argument.
       * @param acceptURLs If set to false, @ref KFileDialog will just accept
       * files on the local filesystem.
       */
@@ -93,27 +93,28 @@ public:
 		bool modal);
 
     /**
-     * Clean up.
+     * Destructs the file dialog.
      */
     ~KFileDialog();
 
     /**
-     * Retrieve the fully qualified filename.
+     * @returns the selected fully qualified filename.
      */
     KURL selectedURL() const;
 
     /**
-     * Retrieve the list a selected URLs
+     * @returns the list of selected URLs.
      */
     KURL::List selectedURLs() const;
 
     /**
-     * Retrieve the current directory.
+     * @returns the currently shown directory.
      */
     KURL baseURL() const;
 
     /**
-     * @return Full path in local filesystem. (Local files only)
+     * @returns the full path of the selected file in the local filesystem.
+     * (Local files only)
      */
     QString selectedFile() const;
 
@@ -123,7 +124,7 @@ public:
     QStringList selectedFiles() const;
 
     /**
-     * Set the directory to view.
+     * Sets the directory to view.
      *
      * @param name URL to show
      * @param clearforward Indicate whether the forward queue
@@ -132,14 +133,14 @@ public:
     void setURL(const KURL &url, bool clearforward = true);
 
     /**
-     * Set the filename to preselect.
+     * Sets the file name to preselect to @p name
      *
      * This takes absolute URLs and relative file names.
      */
     void setSelection(const QString& name);
 
     /**
-     * Set the filter to be used to filter.
+     * Sets the filter to be used to @p filter.
      *
      * You can set more
      * filters for the user to select seperated by '\n'. Every
@@ -156,8 +157,8 @@ public:
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
-     * @see #setFilter
-     * @see #filterChanged
+     * @see #setFilter()
+     * @see #filterChanged()
      */
     void setFilter(const QString& filter);
 
@@ -166,13 +167,13 @@ public:
      * predefined set via @ref setFilter().
      * @param @p filter contains the new filter (only the extension part,
      * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".
-     * @see #setFilter
-     * @see #filterChanged
+     * @see #setFilter()
+     * @see #filterChanged()
      */
     QString currentFilter() const;
 
     /**
-     * Add a preview widget and enter the preview mode.
+     * Adds a preview widget and enters the preview mode.
      *
      * In this mode
      * the dialog is split and the right part contains your widget.
@@ -302,12 +303,12 @@ public:
 					const QString& caption= QString::null);
 
     /**
-     * Show the widget.
+     * @reimplemented
      **/
     virtual void show();
 
     /**
-     * Set the mode of the dialog.
+     * Sets the mode of the dialog.
      * The mode is defined as (in kfile.h):
      * <pre>    enum Mode {
      *                      File         = 1,
@@ -321,23 +322,23 @@ public:
      * <pre>
      * KFile::Mode mode = static_cast<KFile::Mode>( KFile::Files |
      *                                              KFile::ExistingOnly |
-     *						    KFile::LocalOnly );
+     *                                              KFile::LocalOnly );
      * setMode( mode );
      * </pre>
      * You need an explicit cast, which looks a little ugly, but is unavoidable
      * without using (even uglier) #defines
-     * @see #mode
+     * @see #mode()
      */
     void setMode( KFile::Mode m );
 
     /**
-     * Retrieve the mode of the filedialog.
-     * @see #setMode
+     * @returns the mode of the filedialog.
+     * @see #setMode()
      */
     KFile::Mode mode() const;
 
     /**
-     * sets the text to be displayed in front of the
+     * Sets the text to be displayed in front of the
      * selection. The default is "Location".
      * Most useful if you want to make clear what
      * the location is used for.
@@ -345,12 +346,14 @@ public:
     void setLocationLabel(const QString& text);
 
     /**
-     * @returns a pointer to the toolbar. You can use this to insert custom
+     * Returns a pointer to the toolbar. You can use this to insert custom
      * items into it, e.g.:
-     * <pre>yourAction = new KAction( i18n("Your Action"), 0,
+     * <pre>
+     *      yourAction = new KAction( i18n("Your Action"), 0,
      *                                this, SLOT( yourSlot() ),
      *                                this, "action name" );
      *      yourAction->plug( kfileDialog->toolBar() );
+     * </pre>
      */
     KToolBar *toolBar() const { return toolbar; }
 
@@ -384,8 +387,8 @@ signals:
      * or chose one of the predefined set via @ref setFilter().
      * @param @p filter contains the new filter (only the extension part,
      * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".
-     * @see #setFilter
-     * @see #currentFilter
+     * @see #setFilter()
+     * @see #currentFilter()
      */
     void filterChanged( const QString& filter );
 

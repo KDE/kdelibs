@@ -193,11 +193,12 @@ private:
  * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
  * which displays the real open-with dialog box.
  *
- * If you use KRun you _need_ to create an instance of KFileOpenWithHandler
+ * If you use KRun you @em need to create an instance of KFileOpenWithHandler
  * (except if you can make sure you only use it for executables or
  *  Type=Application desktop files)
  *
  * @see KFileOpenWithHandler
+ * @short Handler for KRun's displayOpenWithDialog() call
  */
 class KOpenWithHandler
 {

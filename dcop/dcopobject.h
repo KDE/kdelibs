@@ -160,7 +160,7 @@ public:
 
   /**
    * Creates an object id for the QObject @p obj. This is done
-   * using the @ref QObject::name function.
+   * using the @ref QObject::name() function.
    */
   static QCString objectName( QObject* obj );
 

@@ -42,7 +42,7 @@ class KProcessPrivate;
 /**
  *  Child process invocation, monitoring and control.
  *
- * @sect 1) General usage and features
+ * @sect General usage and features
  *
  *This class allows a KDE application to start child processes without having
  *to worry about UN*X signal handling issues and zombie process reaping.
@@ -91,7 +91,7 @@ class KProcessPrivate;
  *
  *When the child process exits, the respective Qt signal will be emitted.
  *
- *@sect 2) Communication with the child process
+ *@sect Communication with the child process
  *
  *KProcess supports communication with the child process through
  *stdin/stdout/stderr.
@@ -270,7 +270,7 @@ public:
   void resume();
 
   /** 
-   * @return @true if the process has already finished and has exited
+   * @return @p true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
   */
   bool normalExit();
@@ -290,8 +290,7 @@ public:
   /**
    *	 Transmit data to the child process's stdin.
    *
-   * @ref KProcess::writeStdin
-   *     may return false in the following cases:
+   * KProcess::writeStdin may return false in the following cases:
    *
    *     @li The process is not currently running.
    *

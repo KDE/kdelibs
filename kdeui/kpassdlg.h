@@ -71,7 +71,8 @@ private:
 
 /**
  * This dialog asks the user to enter a password. The functions you're 
- * probably interested in are @ref #getPassword and @ref #getNewPassword.
+ * probably interested in are the static methods, @ref #getPassword() and
+ * @ref #getNewPassword().
  *
  * @sect Usage example
  *
@@ -87,12 +88,12 @@ private:
  * Keeping passwords in memory can be a potential security hole. You should
  * handle this situation with care.
  *
- * @li You may want to use @ref #disableCoreDump to disable core dumps. 
+ * @li You may want to use @ref #disableCoreDump() to disable core dumps. 
  * Core dumps are dangerous because they are an image of the process memory, 
  * and thus include any passwords that were in memory.
  *
  * @li You should delete passwords as soon as they are not needed anymore.
- * The functions @ref #getPassword and @ref #getNewPassword return the 
+ * The functions @ref #getPassword() and @ref #getNewPassword() return the 
  * password as a QCString. I believe this is safer than a QString. A QString 
  * stores its characters internally as 16-bit wide values, so conversions are 
  * needed, both for creating the QString and by using it. The temporary 
@@ -167,7 +168,8 @@ protected slots:
 protected:
 
     /** Virtual function that can be overridden to provide password
-     * checking in derived classes. */
+     * checking in derived classes. It should return @p if the
+     * password is valid, @false otherwise. */
     virtual bool checkPassword(const char *) { return true; }
 
 private:

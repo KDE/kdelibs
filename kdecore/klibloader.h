@@ -57,7 +57,7 @@ class KLibraryPrivate;
  * to the library.
  *
  * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
- * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory
+ * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
  * function.
  *
  * The KLibFactory is used to create the components, the library has to offer.
@@ -152,7 +152,7 @@ private:
  * Dependend libraries are loaded automatically.
  *
  * KLibLoader follows the singleton pattern. You can not create multiple
- * instances. Use @ref #self to get a pointer to the loader.
+ * instances. Use @ref #self() to get a pointer to the loader.
  *
  * @author Torben Weis <weis@kde.org>
  */

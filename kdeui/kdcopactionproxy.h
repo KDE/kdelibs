@@ -32,6 +32,8 @@ class KAction;
  *
  * This class can generate DCOP object ids for given action objects, which it automatically
  * processes, as being a @ref DCOPObjectProxy .
+ *
+ * @short A proxy class publishing a DCOP interface for actions.
  */
 class KDCOPActionProxy : public DCOPObjectProxy
 {
@@ -44,8 +46,8 @@ public:
   KDCOPActionProxy( KActionCollection *actionCollection, DCOPObject *parent );
   /**
    * Use this constructor if do not want to provide the exportable actions through a
-   * @ref KActionCollection . You have to reimplement the virtual actions() and action() 
-   * methods if using this constructor.
+   * @ref KActionCollection . You have to reimplement the virtual @ref #actions() and
+   * @ref #action() methods if you use this constructor.
    */
   KDCOPActionProxy( DCOPObject *parent );
   /**
@@ -55,12 +57,12 @@ public:
 
   /**
    * Returns a list of exportable actions. The default implementation returns a list of actions
-   * provided by a KActionCollection, if the first constructor has been used.
+   * provided by a @ref KActionCollection, if the first constructor has been used.
    */
   virtual QValueList<KAction *> actions() const;
   /**
    * Returns an action object with the given name. The default implementation queries the action object
-   * from the KActionCollection, if the first constructor has been used.
+   * from the @ref KActionCollection, if the first constructor has been used.
    */
   virtual KAction *action( const char *name ) const;
 

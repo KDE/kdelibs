@@ -1,6 +1,9 @@
 #ifndef TESTKHTML_H
 #define TESTKHTML_H
 
+/**
+ * @internal
+ */
 class Dummy : public QObject
 {
   Q_OBJECT

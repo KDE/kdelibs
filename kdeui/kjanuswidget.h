@@ -69,16 +69,16 @@ class KSeparator;
  *
  * The Swallow face is provided in order to simplify the usage of existing
  * widgets and to allow changing the visible widget. You specify the widget
- * to be displayed by @ref setSwallowedWidget . Your widget will be 
+ * to be displayed by @ref #setSwallowedWidget(). Your widget will be 
  * reparented inside the widget. You can specify a Null (0) widget. A empty
  * space is then displayed.
  *
- * For all modes it is important that you specify the @ref QWidget::minimumSize
+ * For all modes it is important that you specify the @ref QWidget::minimumSize()
  * on the page, plain widget or the swallowed widget. If you use a QLayout
  * on the page, plain widget or the swallowed widget this will be taken care
  * of automatically. The size is used when the KJanusWidget determines its 
  * own minimum size. You get the minimum size by using the 
- * @ref minimumSizeHint or @ref sizeHint methods.
+ * @ref #minimumSizeHint() or @ref #sizeHint() methods.
  *
  *
  * @short Easy to use widget with many layouts
@@ -132,7 +132,7 @@ class KJanusWidget : public QWidget
     /**
      * Raises the page which was added by @ref addPage().
      *
-     * @parame index The index of the page you want to raise.
+     * @param index The index of the page you want to raise.
      */
     virtual bool showPage( int index );
 
@@ -420,7 +420,7 @@ class KJanusWidget : public QWidget
 
     /**
      * This function is used internally when in IconList mode. If you 
-     * reimplment this class a make your own event filter, make sure to
+     * reimplement this class a make your own event filter, make sure to
      * call this function from your filter.
      *
      * @param o Object that has received an event.

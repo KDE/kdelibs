@@ -48,6 +48,9 @@ class DCOPListener;
 
 typedef QValueList<QCString> QCStringList;
 
+/**
+ * @internal
+ */
 class DCOPServer : public QObject
 {
     Q_OBJECT

@@ -140,7 +140,7 @@ public:
      * This function returns the filtered url if one
      * of the plugins sucessfully filtered the original
      * URL.  Otherwise, it returns the original URL.
-     * See @ref hasBeenFiltered and
+     * See @ref #hasBeenFiltered() and
      *
      * @return the filtered or original url.
      */

@@ -19,7 +19,7 @@ class KPixmapIOData;
 /**
  * @short Fast QImage to/from QPixmap conversion.
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id: $
+ * @version $Id$
  *
  * KPixmapIO implements a fast path for QPixmap to/from QImage conversions.
  * It uses the MIT-SHM shared memory extension for this. If this extension is 
@@ -47,19 +47,19 @@ class KPixmapIOData;
  * @image kpixmapio-perf.png Ignored_But_Necessary_Word_For_Kdoc
  *
  * The threshold size, amongst other causes, is determined by the shared 
- * memory allocation policy. If the policy is @em ShmDontKeep, the 
+ * memory allocation policy. If the policy is @p ShmDontKeep, the 
  * shared memory segment is discarded right after usage, and thus needs to 
  * be allocated before each transfer. This introduces a a setup penalty not 
- * present when the policy is @em ShmKeepAndGrow. In this case the 
+ * present when the policy is @p ShmKeepAndGrow. In this case the 
  * shared memory segment is kept and resized when necessary, until the 
  * KPixmapIO object is destroyed.
  *
- * The default policy is @em ShmDontKeep. This policy makes sense when
+ * The default policy is @p ShmDontKeep. This policy makes sense when
  * loading pixmaps once. The corresponding threshold is taken at 5.000 
  * pixels as suggested by experiments. Below this threshold, KPixmapIO 
  * will not use shared memory and fall back on the Qt routines.
  *
- * When the policy is @em ShmKeepAndGrow, the threshold is taken at
+ * When the policy is @p ShmKeepAndGrow, the threshold is taken at
  * 2.000 pixels. Using this policy, you might want to use @ref #preAllocShm
  * to pre-allocate a certain amount of shared memory, in order to avoid
  * resizes. This allocation policy makes sense in a multimedia type

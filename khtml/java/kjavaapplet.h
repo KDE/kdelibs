@@ -12,25 +12,6 @@ class KJavaAppletContext;
 /**
  * @short A Java applet
  *
- *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.4  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.3  1999/10/09 18:09:52  rich
- * Const QString fixes
- *
- * Revision 1.2  1999/10/09 11:20:55  rich
- * Const clean and no longer needs KWMModuleApp
- *
- * Revision 1.1.1.1  1999/07/22 17:28:06  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
@@ -114,3 +95,23 @@ private:
 
 #endif // KJAVAAPPLET_H
 
+/**
+ * $Log$
+ * Revision 1.5  2000/01/27 23:41:56  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
+ * Revision 1.3  1999/10/09 18:09:52  rich
+ * Const QString fixes
+ *
+ * Revision 1.2  1999/10/09 11:20:55  rich
+ * Const clean and no longer needs KWMModuleApp
+ *
+ * Revision 1.1.1.1  1999/07/22 17:28:06  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
+ */

@@ -33,7 +33,7 @@
  * TODO: See documentation at http://??????? for information on how to use kparts in
  * general. A simple (but sufficient) implementation is shown below.
  *
- ****************************************************************************
+ * <pre>
  * QHBoxLayout *layout = new QHBoxLayout(this);
  * QSplitter *fixme = new QSplitter(this);
  *
@@ -48,7 +48,7 @@
  * m_part->createView( fixme, 0 );
  * layout->addWidget(fixme);
  * m_part->setText( "" );
- ****************************************************************************
+ * </pre>
  *
  * You may also be able to use a dynamic_cast for the document part above
  * (depending on compliation of the library used)

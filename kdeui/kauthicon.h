@@ -69,7 +69,7 @@ public slots:
 signals:
   /**
    * this signal is emitted when authorization has changed from
-   * it's previous state.
+   * its previous state.
    * @param authorized will be true if the type of authorization
    * described by the icon is true, otherwise it will be false.
    */

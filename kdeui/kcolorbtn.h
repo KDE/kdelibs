@@ -66,7 +66,7 @@ public:
 signals:
 	/**
 	* This signal will be emitted when the colour of the widget
-	* is changed, either with @ref #setColor or via user selection.
+	* is changed, either with @ref #setColor() or via user selection.
 	*/
 	void changed( const QColor &newColor );
 
@@ -74,16 +74,28 @@ protected slots:
 
 protected:
 	/**
-	*/
+         * @reimplemented
+         */
 	virtual void drawButtonLabel( QPainter *p );
-
 	/**
-	 * For XDnd
+	 * @reimplemented
 	 */
 	virtual void dragEnterEvent( QDragEnterEvent *);
+	/**
+	 * @reimplemented
+	 */
         virtual void dropEvent( QDropEvent *);
+	/**
+	 * @reimplemented
+	 */
         virtual void mousePressEvent( QMouseEvent *e );
+	/**
+	 * @reimplemented
+	 */
         virtual void mouseMoveEvent( QMouseEvent *e);
+	/**
+	 * @reimplemented
+	 */
         virtual void mouseReleaseEvent ( QMouseEvent *e );
 private:
         QColor col;

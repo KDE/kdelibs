@@ -67,7 +67,9 @@ protected:
    * which is used for buffering.
    */
   virtual void drawPalette( QPixmap *pixmap );
-    
+  /**
+   * @reimplemented
+   */
   virtual void resizeEvent( QResizeEvent * );
   /**
    * Reimplemented from KXYSelector. This drawing is
@@ -117,7 +119,9 @@ protected:
    * which is used for buffering.
    */
   virtual void drawPalette( QPixmap *pixmap );
-
+  /**
+   * @reimplemented
+   */
   virtual void resizeEvent( QResizeEvent * );
   /**
    * Reimplemented from KSelector. The drawing is
@@ -241,12 +245,33 @@ public:
   void colorSelected( int col );
 
 protected:
+  /**
+   * @reimplemented
+   */
   virtual void paintCell( QPainter *painter, int row, int col );
+  /**
+   * @reimplemented
+   */
   virtual void resizeEvent( QResizeEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void mouseReleaseEvent( QMouseEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void mousePressEvent( QMouseEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void mouseMoveEvent( QMouseEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void dragEnterEvent( QDragEnterEvent *);
+  /**
+   * @reimplemented
+   */
   virtual void dropEvent( QDropEvent *);
 
   int posToCell(const QPoint &pos, bool ignoreBorders=false);
@@ -296,7 +321,7 @@ private:
 };
 
 /** 
- * Color selection dialog.
+ * The KColorDialog provides a dialog for color selection.
  *
  * @sect Features:
  * 
@@ -313,7 +338,8 @@ private:
  *         if ( result == KColorDialog::Accepted )
  *            ...
  * </pre>
- * 
+ *
+ * @short A color selection dialog.
  **/
 class KColorDialog : public KDialogBase
 {
@@ -321,13 +347,13 @@ class KColorDialog : public KDialogBase
 
   public:
     /** 
-     * Construct a KColorDialog 
+     * Constructs a KColorDialog.
      */
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 		  bool modal = FALSE );
 
     /** 
-     * Retrieve the currently selected color. 
+     * @returns the currently selected color. 
      **/
     QColor color();
   
@@ -345,13 +371,13 @@ class KColorDialog : public KDialogBase
 
   public slots:
     /** 
-     * Preselect a color.
+     * Preselects a color.
      */
     void setColor( const QColor &col );
 
   signals:
     /** 
-     * Notify when a color is selected.
+     * Emitted when a color is selected.
      * Connect to this to monitor the color as it as selected if you are
      * not running modal.
      */
@@ -383,7 +409,13 @@ class KColorDialog : public KDialogBase
     void _setColor( const KColor &col, const QString &name=QString::null );
 
   protected:
+   /**
+    * @reimplemented
+    */
     virtual void mouseReleaseEvent( QMouseEvent * );
+   /**
+    * @reimplemented
+    */
     virtual void keyPressEvent( QKeyEvent * );
 
   private:
@@ -431,6 +463,9 @@ signals:
 	void highlighted( const QColor &col );
 
 protected:
+        /**
+         * @reimplemented
+         */
 	virtual void resizeEvent( QResizeEvent *re );
 
 private:

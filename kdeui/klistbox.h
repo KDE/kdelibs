@@ -26,13 +26,15 @@
  * wide settings for Single Click/Double Click mode, Auto Selection and
  * Change Cursor over Link.
  *
- * There is a new signal executed(). It gets connected to either
- * QListBox::clicked() or QListBox::doubleClicked() depending on the KDE
+ * There is a new signal @ref #executed(). It gets connected to either
+ * @ref QListBox::clicked() or @ref QListBox::doubleClicked() depending on the KDE
  * wide Single Click/Double Click settings. It is strongly recomended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
- * QListBox::selectionChanged() signal.
+ * @ref QListBox::selectionChanged() signal.
+ * 
+ * @short A variant of QListBox that honors KDE's system-wide settings.
  **/
 class KListBox : public QListBox
 {
@@ -95,10 +97,25 @@ protected slots:
 protected:
   void emitExecute( QListBoxItem *item, const QPoint &pos );
 
+  /**
+   * @reimplemented
+   */
   virtual void keyPressEvent(QKeyEvent *e);
+  /**
+   * @reimplemented
+   */
   virtual void focusOutEvent( QFocusEvent *fe );
+  /**
+   * @reimplemented
+   */
   virtual void leaveEvent( QEvent *e );
+  /**
+   * @reimplemented
+   */
   virtual void contentsMousePressEvent( QMouseEvent *e );
+  /**
+   * @reimplemented
+   */
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
   QCursor oldCursor;

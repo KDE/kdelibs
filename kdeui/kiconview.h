@@ -29,12 +29,14 @@
  * Change Cursor over Link.
  *
  * There is a new signal executed(). It gets connected to either
- * QIconView::clicked() or QIconView::doubleClicked() depending on the KDE
+ * @ref QIconView::clicked() or @ref QIconView::doubleClicked() depending on the KDE
  * wide Single Click/Double Click settings. It is strongly recomended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
- * QIconView::selectionChanged() signal.
+ * @ref QIconView::selectionChanged() signal.
+ *
+ * @short A variant of QIconView that honors KDE's system-wide settings.
  **/
 class KIconView : public QIconView
 {
@@ -79,7 +81,7 @@ signals:
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it´s better 
-   * to use @ref #executed instead.
+   * to use @ref #executed() instead.
    */
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
 

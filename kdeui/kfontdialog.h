@@ -37,8 +37,14 @@ class QStringList;
 class KListBox;
 
 /**
- * Widget for interactive font selection.
+ * The KFontChooser provides a widget for interactive font selection.
  *
+ * While KFontChooser as an ordinary widget can be embedded in
+ * custom dialogs and therefore is very flexible, in most cases
+ * it is preferable to use the convenience functions in
+ * @ref KFontDialog.
+ *
+ * @short A font selection widget.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
@@ -55,7 +61,7 @@ public:
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
 
   /**
-   * Constructor.  Create a new font picker widget.
+   * Constructs a font picker widget.
    *
    * @param parent The parent widget.
    * @param name The widget name.
@@ -85,7 +91,7 @@ public:
   void enableColumn( int column, bool state );
 
   /**
-   * Set the currently selected font in the chooser.
+   * Sets the currently selected font in the chooser.
    * 
    * @param font The font to select.
    * @param onlyFixed Readjust the font list to display only fixed
@@ -105,7 +111,7 @@ public:
   QString sampleText() const { return sampleEdit->text(); }
 
   /**
-   * Set the sample text. Normally you should not change this 
+   * Sets the sample text. Normally you should not change this 
    * text, but it can be better to do this if the default text is
    * too large for the edit area when using the default font of your
    * application.
@@ -118,7 +124,7 @@ public:
   }
 
   /**
-   * Convert a @ref QFont into the corresponding X Logical Font 
+   * Converts a @ref QFont into the corresponding X Logical Font 
    * Description (XLFD).
    *
    * @param theFont The font to convert.
@@ -128,7 +134,7 @@ public:
     { return theFont.rawName(); }
 
   /**
-   * Construct a list of font strings that matches the pattern.
+   * Creates a list of font strings that match @p pattern.
    * 
    * @param list The list is returned here.
    * @param pattern The font pattern.
@@ -136,7 +142,7 @@ public:
   static void getFontList( QStringList &list, const char *pattern );
 
   /**
-   * Returns the preferred size of the widget
+   * Reimplemented for internal reasons.
    */
   virtual QSize sizeHint( void ) const;
 
@@ -189,9 +195,11 @@ protected:
 };
 
 /**
- * Dialog for interactive font selection.  Provides a wrapper around
- * KFontChooser.
+ * The KFontDialog provides a dialog for interactive font selection.
+ * It is basically a thin wrapper around the @ref KFontChooser widget,
+ * which can also be used standalone.
  *
+ * @short A font selection dialog.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
@@ -200,7 +208,7 @@ class KFontDialog : public KDialogBase  {
 
 public:
   /**
-   * Constructor.  Creates a new font picker dialog.
+   * Constructs a font selection dialog.
    *
    * @param parent The parent widget of the dialog, if any.
    * @param name The name of the dialog.
@@ -270,7 +278,8 @@ public:
 
 signals:
   /**
-   * connect to this to monitor the font as it is selected if you are
+   * Emitted whenever the currently selected font changes. 
+   * Connect to this to monitor the font as it is selected if you are
    * not running modal.
    */
   void fontSelected( const QFont &font );

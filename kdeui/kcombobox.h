@@ -53,21 +53,21 @@
  * signals are emitted when the user presses the return key.
  *
  * This widget by default creates a completion object when you invoke
- * the @ref completionObject member function for the first time or use
- * @ref setCompletionObject to assign your own completion object.
+ * the @ref #completionObject() member function for the first time or use
+ * @ref #setCompletionObject() to assign your own completion object.  
  * Additionally, to make this widget more functional, KComboBox will
  * automatically handle the iteration and completion signals internally
  * when a completion object is created through either one of the methods
  * mentioned above.  If you do not need these feature, simply use
- * @ref KCompletionBase::setHandleSignals or alternatively the boolean
- * parameter in @p setCompletionObject, to turn them off.
+ * @ref KCompletionBase::setHandleSignals() or alternatively the boolean
+ * parameter in @ref #setCompletionObject(), to turn them off.
  *
  * The default key-binding for completion and rotation is determined
  * from the global settings in @ref KStdAccel.  These values, however,
  * can be set locally to override the global settings through the
- * @ref setKeyBinding member function.  To default the values back,
- * simply invoke @ref useGlobalSettings.  You can also default
- * individual key-binding by simply calling the @p setKeyBinding member
+ * @ref #setKeyBinding() member function.  To default the values back,
+ * simply invoke @ref #useGlobalSettings().  You can also default
+ * individual key-binding by simply calling the @ref #setKeyBinding() member
  * function with the default the second argument.
  *
  * Note that if this widget is not editable, i.e. it is constructed as a
@@ -345,16 +345,12 @@ protected:
     virtual void connectSignals( bool handle ) const;
 
     /**
-    * Re-implemented for internal reasons.  API is not affected.
-    *
-    * See @ref QComboBox::keyPressEvent.
+    * @reimplemented
     */
     virtual void keyPressEvent ( QKeyEvent* );
 
     /**
-    * Re-implemented for internal reasons.  API is not affected.
-    *
-    * See @ref QComboBox::mousePressEvent.
+    * @reimplemented
     */
     virtual bool eventFilter( QObject *, QEvent * );
 

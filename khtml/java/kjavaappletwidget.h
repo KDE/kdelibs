@@ -22,14 +22,14 @@ class KWinModule;
  * actually, they can, but only via some very evil tricks). Once you have
  * created a KJavaAppletContext, you can create as many applets in it as you
  * want.
- * <P>
+ *
  * Once you have created the applet widget, you should call the various setXXX
  * methods to configure it, they pretty much correspond to the HTML tags used
  * to embed applets in a web page. Once the applet is configured call the
  * create() method to set things in motion. The applet is running when it
  * first appears, but you can start or stop it when you like (for example
  * if it scrolls off the screen).
- * <P>
+ *
  * This widget works by firing off a Java server process with which it
  * communicates using the KDE Java Applet Server (KJAS) protocol via a pipe.
  * The applet windows are swallowed and attached to the QWidget, but they are
@@ -41,35 +41,13 @@ class KWinModule;
  * wishing to add java support to other systems (for example a perl/Tk binding
  * is perfectly feasible). All you need to do is implement the protocol and
  * (optionally) swallow the applet windows.
- * <P>
+ *
  * Note that the KJAS protocol is not yet stable - it will certainly change for
  * a while before settling down. This will not affect you unless you use the
  * KJAS protocol directly.
- * <P>
+ *
  * The window swallowing code used in this widget is based on KSwallowWidget by
  * Matthias Hoelzer.
- *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.5  2000/01/27 23:41:56  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.4  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.3  1999/10/09 13:20:45  rich
- * Changed Wid to WId
- *
- * Revision 1.2  1999/10/09 11:20:55  rich
- * Const clean and no longer needs KWMModuleApp
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
  *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
@@ -201,3 +179,27 @@ private:
 
 #endif // KJAVAAPPLETWIDGET_H
 
+/*
+ * $Log$
+ * Revision 1.6  2000/03/21 03:44:44  rogozin
+ *
+ * New Java support has been merged.
+ *
+ * Revision 1.5  2000/01/27 23:41:56  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
+ * Revision 1.3  1999/10/09 13:20:45  rich
+ * Changed Wid to WId
+ *
+ * Revision 1.2  1999/10/09 11:20:55  rich
+ * Const clean and no longer needs KWMModuleApp
+ *
+ * Revision 1.1.1.1  1999/07/22 17:28:07  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
+ */

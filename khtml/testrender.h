@@ -51,6 +51,9 @@ class QTextStream;
 class KHTMLPart;
 class MyKHTMLView;
 
+/**
+ * @internal
+ */
 class TestRender : public QWidget
 {
   Q_OBJECT

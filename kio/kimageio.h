@@ -13,14 +13,51 @@
 #include <qstringlist.h>
 
 /**
-* Interface to the KDE Image IO plugin architecture.
-*
-* Just call KImageIO::registerFormats() to register all extra
-* image formats.
-*
-* @author Sirtaj Singh Kang <taj@kde.org>
-* @version $Id$
-*/
+ * Interface to the KDE Image IO plugin architecture.
+ *
+ * This library allows KDE applications to read and write images in a
+ * variety of formats, transparently via the @ref QImage and @ref QPixmap load
+ * and save methods.
+ *
+ * The image processing backends are written as image handlers compatible
+ * with the @ref QImageIO handler format. The backends are loaded on demand
+ * when a particular format is requested.
+ * 
+ * @sect Formats
+ *
+ * Currently supported formats include:
+ * @li JPEG    <read>
+ * @li XV      <read> <write>
+ * @li EPS     <read> <write>
+ * @li NETPBM  <incomplete>
+ * @li PNG     <read> <write, only with newer libraries>
+ * @li TIFF    <read>
+ * @li KRL     <read> 
+ *
+ * @sect Usage
+ *
+ * Simply call the @ref KImageIO::registerFormats() static method declared
+ * in kimgageio.h.
+ * 
+ * @sect Example
+ *
+ * <pre>
+	#include<qpixmap.h>
+ 	#include<kimgio.h>
+
+	int main( int argc, char **argv )
+	{
+		....
+		KImageIO::registerFormats();
+		
+		...	// start main program
+	}
+ * </pre>
+ *
+ * @see KImageIO, QPixmap, QImage, QImageIO
+ * @author Sirtaj Singh Kang
+ * @version $Id$
+ */
 class KImageIO
 {
 public:
@@ -91,52 +128,6 @@ public:
   static QString mimeType( const QString& _filename );
 };
 
-/**
- * @libdoc The KDE Image I/O Library
- *
- * This library allows KDE applications to read and write images in a
- * variety of formats, transparently via the @ref QImage and @ref QPixmap load
- * and save methods.
- *
- * The image processing backends are written as image handlers compatible
- * with the @ref QImageIO handler format. The backends are loaded on demand
- * when a particular format is requested.
- * 
- * @sect Formats
- *
- * Currently supported formats include:
- * @li JPEG    <read>
- * @li XV      <read> <write>
- * @li EPS     <read> <write>
- * @li NETPBM  <incomplete>
- * @li PNG     <read> <write, only with newer libraries>
- * @li TIFF    <read>
- * @li KRL     <read> 
- *
- * @sect Usage
- *
- * Simply call the @ref KImageIO::registerFormats() static method declared
- * in kimgio.h, and link libkimgio into your project.
- * 
- * @sect Example
- *
- * <pre>
-	#include<qpixmap.h>
- 	#include<kimgio.h>
-
-	int main( int argc, char **argv )
-	{
-		....
-		KImageIO::registerFormats();
-		
-		...	// start main program
-	}
- * </pre>
- *
- * @see KImageIO, QPixmap, QImage, QImageIO
- * @author Sirtaj Singh Kang
- * @version $Id$
- */
 
 #endif
 

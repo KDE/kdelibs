@@ -42,7 +42,7 @@ class KUniqueApplication : public KApplication, DCOPObject
   Q_OBJECT
 public:
   /**
-   * @depreciated
+   * @deprecated
    * Constructor. Parses command-line arguments.
    * Parameters : See @ref KApplication constructor.
    */
@@ -148,7 +148,7 @@ public:
   virtual int newInstance();
 
   /**
-   * @depreciated 
+   * @deprecated 
    */
   virtual int newInstance(QValueList<QCString> params);
 

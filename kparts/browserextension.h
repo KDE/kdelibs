@@ -90,21 +90,21 @@ class BrowserExtensionPrivate;
   * The following standard actions are defined by the host of the view :
   *
   * [selection-dependent actions]
-  * cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
-  * copy : copy selected items to clipboard (and notifies it's not a cut)
-  * pastecut : called when doing a paste after a cut
-  * pastecopy : called when doing a paste after a copy
-  * trash : move selected items to trash
-  * del : delete selected items (couldn't call it delete!)
-  * shred : shred selected items (secure deletion)
-  * properties : show file/document properties
-  * editMimeType : show file/document's mimetype properties
-  *      <P>
+  * @li cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
+  * @li copy : copy selected items to clipboard (and notifies it's not a cut)
+  * @li pastecut : called when doing a paste after a cut
+  * @li pastecopy : called when doing a paste after a copy
+  * @li trash : move selected items to trash
+  * @li del : delete selected items (couldn't call it delete!)
+  * @li shred : shred selected items (secure deletion)
+  * @li properties : show file/document properties
+  * @li editMimeType : show file/document's mimetype properties
+  *
   * [normal actions]
-  * print : print :-)
-  * reparseConfiguration : re-read configuration and apply it
-  * refreshMimeTypes : if the view uses mimetypes it should re-determine them
-  *      <P>
+  * @li print : print :-)
+  * @li reparseConfiguration : re-read configuration and apply it
+  * @li refreshMimeTypes : if the view uses mimetypes it should re-determine them
+  *
   *
   * The view defines a slot with the name of the action in order to implement the action.
   * The browser will detect the slot automatically and connect its action to it when
@@ -112,15 +112,16 @@ class BrowserExtensionPrivate;
   *
   *
   * The selection-dependent actions are disabled by default and the view should
-  * enable them when the selection changes, emitting @ref enableAction.
+  * enable them when the selection changes, emitting @ref enableAction().
   *
   * The normal actions does not depend on the selection. For each slot that is
   * defined in the second list, the action is automatically enabled.
   *
   * A special case is the configuration slots, not connected to any action directly,
   * and having parameters.
+  *
   * [configuration slot]
-  * setSaveViewPropertiesLocally( bool ): if true, view properties are saved into .directory
+  * @li setSaveViewPropertiesLocally( bool ): if true, view properties are saved into .directory
   *                                       otherwise, they are saved globally.
   */
 class BrowserExtension : public QObject
@@ -180,15 +181,19 @@ public:
    * iterator.
    * Checking if the extension implements a certain slot can be done like this:
    *
-   *  extension->metaObject()->slotNames().contains( actionName + "()" )
+   * <pre>
+   *   extension->metaObject()->slotNames().contains( actionName + "()" )
+   * </pre>
    *
    * (note that "actionName" equals the iterator's key value if already
    *  iterating over the action slot map, returned by this method)
    *
    * Connecting to the slot can be done like this:
    *
-   * connect( yourObject, SIGNAL( yourSignal() ),
-   *          extension, mapIterator.data() )
+   * <pre>
+   *   connect( yourObject, SIGNAL( yourSignal() ),
+   *            extension, mapIterator.data() )
+   * </pre>
    *
    * (where "mapIterator" is your QMap<QCString,QCString> iterator)
    */
@@ -210,9 +215,9 @@ signals:
 
   /**
    * Tell the hosting browser that the part opened a new URL (which can be
-   * queried via KParts::Part::url().
+   * queried via @ref KParts::Part::url().
    * This helps the browser to update/create an entry in the history.
-   * The part may *not* emit this signal together with @ref openURLRequest.
+   * The part may *not* emit this signal together with @ref #openURLRequest().
    * Emit openURLRequest if you want the browser to handle an URL the user
    * asked to open (from within your part/document). This signal however is
    * useful if you want to handle URLs all yourself internally, while still
@@ -220,7 +225,7 @@ signals:
    * a proper history functionality to the user.
    * An example of usage is a html rendering component which wants to emit
    * this signal when a child frame document changed its URL.
-   * Conclusion: you probably want to use @ref openURLRequest instead
+   * Conclusion: you probably want to use @ref #openURLRequest() instead
    */
   void openURLNotify();
 
@@ -237,10 +242,10 @@ signals:
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * Since the part emits the jobid in the started() signal,
+   * Since the part emits the jobid in the @ref #started() signal,
    * progress information is automatically displayed.
    * However, if you don't use a KIO::Job in the part,
-   * you can use @ref loadingProgress and @ref speedProgress
+   * you can use @ref #loadingProgress() and @ref #speedProgress()
    * to display progress information
    */
   void loadingProgress( int percent );
