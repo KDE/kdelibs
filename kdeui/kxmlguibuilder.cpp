@@ -198,13 +198,6 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       else
         id = static_cast<KMenuBar *>(parent)->insertItem( i18nText, popup, -1, index );
     }
-    else if ( parent && parent->inherits( "KPopupMenu" ) )
-    {
-      if ( !icon.isEmpty() )
-        id = static_cast<KPopupMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
-      else
-        id = static_cast<KPopupMenu *>(parent)->insertItem( i18nText, popup, -1, index );
-    }
     else if ( parent && parent->inherits( "QPopupMenu" ) )
     {
       if ( !icon.isEmpty() )
@@ -301,9 +294,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 {
   if ( element.tagName().lower() == d->tagSeparator )
   {
-    if ( parent->inherits( "KPopupMenu" ) )
-      return static_cast<KPopupMenu *>(parent)->insertSeparator( index );
-    else if ( parent->inherits( "QPopupMenu" ) )
+    if ( parent->inherits( "QPopupMenu" ) )
       return static_cast<QPopupMenu *>(parent)->insertSeparator( index );
     else if ( parent->inherits( "QMenuBar" ) )
        return static_cast<QMenuBar *>(parent)->insertSeparator( index );
@@ -340,8 +331,6 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   else if ( element.tagName().lower() == d->tagTearOffHandle )
   {
     if ( parent->inherits( "QPopupMenu" )  && KGlobalSettings::insertTearOffHandle())
-      return static_cast<KPopupMenu *>(parent)->insertTearOffHandle( -1, index );
-    else if ( parent->inherits( "QPopupMenu" )  && KGlobalSettings::insertTearOffHandle())
       return static_cast<QPopupMenu *>(parent)->insertTearOffHandle( -1, index );
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )

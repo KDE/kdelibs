@@ -451,44 +451,8 @@ int KAction::plug( QWidget *w, int index )
   // hiding the menubar.
   if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
     plugMainWindowAccel( w );
-if ( w->inherits("KPopupMenu") )
-  {
-    KPopupMenu* menu = static_cast<KPopupMenu*>( w );
-    int id;
-    // Don't insert shortcut into menu if it's already in a KAccel object.
-    int keyQt = (d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
 
-    if ( d->hasIconSet() )
-        id = menu->insertItem( iconSet(), d->text(), this,//dsweet
-                               SLOT( slotActivated() ), keyQt,
-                               -1, index );
-    else
-        id = menu->insertItem( d->text(), this,
-                               SLOT( slotActivated() ),  //dsweet
-                               keyQt, -1, index );
-
-    // If the shortcut is already in a KAccel object, then
-    //  we need to set the menu item's shortcut text.
-    if ( d->m_kaccel )
-        setShortcut( menu, id );
-
-    // call setItemEnabled only if the item really should be disabled,
-    // because that method is slow and the item is per default enabled
-    if ( !d->isEnabled() )
-        menu->setItemEnabled( id, false );
-
-    if ( !d->whatsThis().isEmpty() )
-        menu->setWhatsThis( id, whatsThisWithIcon() );
-
-    addContainer( menu, id );
-    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    if ( m_parentCollection )
-      m_parentCollection->connectHighlight( menu, this );
-
-    return d->m_containers.count() - 1;
-  }
-  else if ( w->inherits("QPopupMenu") )
+  if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
@@ -1489,38 +1453,7 @@ void KSelectAction::setItems( int id, const QStringList& lst )
 int KSelectAction::plug( QWidget *widget, int index )
 {
 	kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( widget->inherits("KPopupMenu") )
-  {
-    // Create the PopupMenu and store it in m_menu
-    (void)popupMenu();
-
-    KPopupMenu* menu = static_cast<KPopupMenu*>( widget );
-    int id;
-    if ( !pixmap().isNull() )
-    {
-      id = menu->insertItem( pixmap(), d->m_menu, -1, index );
-    }
-    else
-    {
-      if ( hasIconSet() )
-        id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
-      else
-        id = menu->insertItem( text(), d->m_menu, -1, index );
-    }
-
-    if ( !isEnabled() )
-        menu->setItemEnabled( id, false );
-
-    QString wth = whatsThis();
-    if ( !wth.isEmpty() )
-        menu->setWhatsThis( id, wth );
-
-    addContainer( menu, id );
-    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    return containerCount() - 1;
-  }
-  else if ( widget->inherits("QPopupMenu") )
+  if ( widget->inherits("QPopupMenu") )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
@@ -2452,7 +2385,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     int id;
 
     id = bar->insertItem( text(), popupMenu(), -1, index );
-    popupMenu()->insertTearOffHandle(); // we add one right to the bottom
+
     if ( !isEnabled() )
         bar->setItemEnabled( id, false );
 
