@@ -42,7 +42,7 @@ Comment[ru]=Системные сообщений KDE
 Comment[sl]=Sistemska obvestila KDE
 Comment[tr]=KDE Sistem Bildirimleri
 
-[KCompletion: rotation]
+[Textcompletion: rotation]
 Name=KCompletion End of Matches
 Name[ca]=Final de coincidències KCompletion
 Name[cs]=Kcompletion konec odpovídajících položek
@@ -96,7 +96,7 @@ Comment[tr]=Eşleşme listesinin sonuna gelindi.
 Comment[uk]=Кінець списку відповідних елементів.
 default_presentation=0
 
-[KCompletion: no match]
+[Textcompletion: no match]
 Name=KCompletion No Match
 Name[ca]=Cap coincidència KCompletion
 Name[cs]=Kcompletion nenalezeny odpovídající položky
@@ -150,7 +150,7 @@ Comment[tr]=Eşleşen tamamlama bulunamadı.
 Comment[uk]=Чідповідні елементи не знайдено.
 default_presentation=0
 
-[KCompletion: partial match]
+[Textcompletion: partial match]
 Name=KCompletion Partial Match
 Name[ca]=Coincidència parcial KCompletion
 Name[cs]=Kcompletion částečná schoda položek
