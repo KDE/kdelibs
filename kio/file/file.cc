@@ -44,7 +44,7 @@ int main( int , char ** )
 {
   signal(SIGCHLD, KIOProtocol::sigchld_handler);
 #ifdef NDEBUG
-  signal(SIGSEGV, IOProtocol::sigsegv_handler);
+  signal(SIGSEGV, KIOProtocol::sigsegv_handler);
 #endif
   qDebug( "kio_file : Starting");
 
