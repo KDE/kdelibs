@@ -2660,27 +2660,25 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 
 	double ret = 0.0;
 
-	bool ok = false;
+	double value = 0;
+	const char *start = check.latin1();
+	const char *end = getCoord(start, value);
 
-	double value = check.toDouble(&ok);
-
-	if(!ok)
+	if(uint(end - start) < check.length())
 	{
-		check.replace(QRegExp("[0-9 .-]"), QString::null);
-
-		if(check.compare("px") == 0)
+		if(check.endsWith("px"))
 			ret = value;
-		else if(check.compare("cm") == 0)
+		else if(check.endsWith("cm"))
 			ret = (value / 2.54) * dpi();
-		else if(check.compare("pc") == 0)
+		else if(check.endsWith("pc"))
 			ret = (value / 6.0) * dpi();
-		else if(check.compare("mm") == 0)
+		else if(check.endsWith("mm"))
 			ret = (value / 25.4) * dpi();
-		else if(check.compare("in") == 0)
+		else if(check.endsWith("in"))
 			ret = value * dpi();
-		else if(check.compare("pt") == 0)
+		else if(check.endsWith("pt"))
 			ret = (value / 72.0) * dpi();
-		else if(check.compare("%") == 0)
+		else if(check.endsWith("%"))
 		{
 			ret = value / 100.0;
 
@@ -2689,7 +2687,7 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 			else
 				ret *= d->drawHeight;
 		}
-		else if(check.compare("em") == 0)
+		else if(check.endsWith("em"))
 		{
 			ret = value * 10.0; // TODO make this depend on actual font size
 		}
