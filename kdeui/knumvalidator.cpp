@@ -183,7 +183,7 @@ void KFloatValidator::setAcceptLocalizedNumbers(bool _b)
 {
     d->acceptLocalizedNumbers=_b;
 }
-
+#include <kdebug.h>
 QValidator::State KFloatValidator::validate ( QString &str, int & ) const
 {
   bool    ok;
@@ -212,10 +212,13 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   if (! ok)
     return QValidator::Invalid;
 
-  if ((! _min && ! _max) || (val >= _min && val <= _max))
+  if (( !_min && !_max) || (val >= _min && val <= _max))
     return QValidator::Acceptable;
 
   if (_max && _min >= 0 && val < 0)
+    return QValidator::Invalid;
+
+  if ( (_min || _max) && (val < _min || val > _max))
     return QValidator::Invalid;
 
   return QValidator::Valid;
