@@ -1,7 +1,7 @@
 #! /bin/sh
 
 if test -z "$KDB2HTML_UNINSTALLED"; then
-ksgmldir=@prefix@/share/apps/ksgmltools/
+ksgmldir=@prefix@/share/apps/docbook
 else
 ksgmldir=$KDB2HTML_UNINSTALLED
 fi

@@ -11,9 +11,9 @@ AC_ARG_WITH(sgml-cat,[  --with-sgml-cat=DIR     adds DIR to the search path for 
   IFS=$ac_save_IFS])
 
 dnl The order of the directories in this list matters
-dtd_paths="/usr/share/sgml/iso-entities-8879.1986 /usr/share/sgml/docbook/dtd-3.1 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
+dtd_paths="/usr/share/sgml/iso-entities-8879.1986 /usr/share/sgml/docbook/dtd-3.1 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /etc/sgml /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
 
-AC_DEFUN(KDE_FIND_CAT, 
+AC_DEFUN(KDE_FIND_CAT,
 [
    AC_FIND_FILE($1, $dtd_paths, CAT)
    if test ! "x$CAT" = "xNO"; then
@@ -22,6 +22,7 @@ AC_DEFUN(KDE_FIND_CAT,
 ])
 
 dnl The order of the files in this list matters
+KDE_FIND_CAT(sgml-docbook-3.1.cat)
 KDE_FIND_CAT(iso-entities.cat)
 KDE_FIND_CAT(docbook.cat)
 KDE_FIND_CAT(nwalsh-modular.cat)
@@ -46,13 +47,18 @@ KDE_CATALOG=$prefix
 AC_SUBST(KDE_CATALOG)
 AC_SUBST(KDE_STYLESHEET)
 
-catdir=$kde_datadir/ksgmltools
+KDE_FIND_PATH(install-catalog, INSTALL_CATALOG,
+	AC_MSG_WARN([no install-catalog found])
+)
+AC_SUBST(INSTALL_CATALOG)
+
+catdir=$kde_datadir/docbook
 AC_SUBST(catdir)
 
 dtddir=$catdir
 AC_SUBST(dtddir)
 
-dsldir=$kde_datadir/ksgmltools/stylesheets
+dsldir=$kde_datadir/docbook/stylesheets
 AC_SUBST(dsldir)
 
 dnl Don't remove !
