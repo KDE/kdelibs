@@ -1,6 +1,6 @@
 [Image Format]
 Type=DDS
-Header=^DDS 
+Header=^DDS
 Name=Direct Draw Surface
 Name[be]=Паверхня Draw Surface
 Name[bg]=Област с директно изчертаване
