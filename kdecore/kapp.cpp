@@ -1740,14 +1740,7 @@ void KApplication::invokeBrowser( const QString &url )
 QCString
 KApplication::launcher()
 {
-   char host[200];
-   if (gethostname(host, 200) == -1) {
-       qDebug("Couldn't find hostname, using localhost");
-       strcpy( host, "localhost" );
-   }
-   QCString name;
-   name.sprintf("klauncher_%s_%d", host, getuid());
-   return name;
+   return "klauncher";
 }
 
 static int
