@@ -29,6 +29,7 @@
 #include <qstring.h>
 #include <kapp.h>
 #include <klocale.h>
+#include "kglobal.h"
 
 HTMLFontManager* pFontManager = 0;
 
@@ -39,7 +40,7 @@ HTMLFont::HTMLFont( const char *_family, int _size, const int fontSizes[7],
     textCol = Qt::black;
     fsize = _size;
     if (_charset) setCharset(_charset);
-    else setCharset(klocale->charset());
+    else setCharset(KGlobal::locale()->charset());
     pointsize = fontSizes[ _size ];
 	
 }
