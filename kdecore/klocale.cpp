@@ -1,4 +1,3 @@
-#undef NDEBUG
 // -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
@@ -227,7 +226,7 @@ void KLocale::doFormatInit()
   KSimpleConfig entry(locate("locale",
                              QString::fromLatin1("l10n/%1/entry.desktop")
                              .arg(m_country)), true);
-  entry.setGroup(QString::fromLatin1("KCM Locale"));
+  entry.setGroup("KCM Locale");
 
   // Numeric
   m_decimalSymbol = config->readEntry(QString::fromLatin1("DecimalSymbol"));
