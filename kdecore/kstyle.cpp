@@ -52,8 +52,9 @@ void KStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
 
 void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
                                 QColorGroup &g, bool sunken, bool raised,
-                                bool enabled, bool popup, int icontext,
-                                const QString btext, const QPixmap *pixmap,
+                                bool enabled, bool popup,
+                                KToolButtonType icontext, const QString btext,
+                                const QPixmap *pixmap,
                                 QFont *font)
 {
     if ( sunken )
@@ -63,7 +64,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
 
     int dx, dy;
 
-    if (icontext == 0){ // icon only
+    if (icontext == Icon){ // icon only
         if (pixmap){
             dx = ( w - pixmap->width() ) / 2;
             dy = ( h - pixmap->height() ) / 2;
@@ -75,7 +76,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
             p->drawPixmap( x+dx, y+dy, *pixmap );
         }
     }
-    else if (icontext == 1){ // icon and text (if any)
+    else if (icontext == IconTextRight){ // icon and text (if any)
         if (pixmap){
             dx = 1;
             dy = ( h - pixmap->height() ) / 2;
@@ -105,7 +106,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
-    else if (icontext == 2){ // only text, even if there is a icon
+    else if (icontext == Text){ // only text, even if there is a icon
         if (!btext.isNull()){
             int tf = AlignVCenter|AlignLeft;
             if (!enabled)
@@ -123,7 +124,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
-    else if (icontext == 3){
+    else if (icontext == IconTextBottom){
         if (pixmap){
             dx = (w - pixmap->width()) / 2;
             dy = 1;

@@ -10,6 +10,7 @@ class KStyle : public QPlatinumStyle
 {
     Q_OBJECT
 public:
+    enum KToolButtonType{Icon=0, IconTextRight, Text, IconTextBottom};
     KStyle() : QPlatinumStyle(){;}
     virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, bool floating = false);
@@ -19,7 +20,8 @@ public:
     virtual void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, bool sunken=false,
                                     bool raised = true, bool enabled = true,
-                                    bool popup = false, int icontext = 0,
+                                    bool popup = false,
+                                    KToolButtonType icontext = Icon,
                                     const QString btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);
