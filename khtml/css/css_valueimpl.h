@@ -233,6 +233,40 @@ protected:
 };
 // ------------------------------------------------------------------------------
 
+// another helper class
+class CSSProperty
+{
+public:
+    CSSProperty()
+    {
+	m_id = -1;
+	m_value = 0;
+	m_bImportant = false;
+	nonCSSHint = false;
+    }
+    ~CSSProperty() {
+	if(m_value) m_value->deref();
+    }
+
+    void setValue(CSSValueImpl *val) {
+	if ( val != m_value ) {
+	    if(m_value) m_value->deref();
+	    m_value = val;
+	    if(m_value) m_value->ref();
+	}
+    }
+    
+    CSSValueImpl *value() { return m_value; }
+
+    // make sure the following fits in 4 bytes.
+    int  m_id 		: 29;
+    bool m_bImportant 	: 1;
+    bool nonCSSHint 	: 1;
+protected:
+    CSSValueImpl *m_value;
+};
+
+
 }; // namespace
 
 #endif

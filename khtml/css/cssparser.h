@@ -50,8 +50,15 @@ namespace DOM {
 class CSSSelector
 {
 public:
-    CSSSelector(void);
-    ~CSSSelector(void);
+    CSSSelector(void)
+	: tagHistory(0), attr(0), tag(0), relation( Descendant ), 
+    match( None ), nonCSSHint( false ), pseudoId( 0 ) {}
+
+    ~CSSSelector(void) {
+	if (tagHistory)
+	    delete tagHistory;
+    }
+    
     void print(void);
 
     // checks if the 2 selectors (including sub selectors) agree.
@@ -218,31 +225,6 @@ public:
     protected:
 	QPtrList<StyleBaseImpl> *m_lstChildren;
     };
-
-
-// another helper class
-class CSSProperty
-{
-public:
-    CSSProperty()
-    {
-	m_id = -1;
-	m_value = 0;
-	m_bImportant = false;
-	nonCSSHint = false;
-    }
-    ~CSSProperty();
-
-    void setValue(CSSValueImpl *val);
-    CSSValueImpl *value();
-
-    // make sure the following fits in 4 bytes.
-    int  m_id 		: 29;
-    bool m_bImportant 	: 1;
-    bool nonCSSHint 	: 1;
-protected:
-    CSSValueImpl *m_value;
-};
 
 }; // namespace
 

@@ -2881,23 +2881,6 @@ StyleListImpl::~StyleListImpl()
 
 // --------------------------------------------------------------------------------
 
-CSSSelector::CSSSelector(void)
-: tag(0), tagHistory(0)
-{
-    attr = 0;
-    match = None;
-    relation = Descendant;
-    nonCSSHint = false;
-    pseudoId = 0;
-}
-
-CSSSelector::~CSSSelector(void)
-{
-    if (tagHistory)
-    {
-        delete tagHistory;
-    }
-}
 
 void CSSSelector::print(void)
 {
@@ -2959,19 +2942,3 @@ bool CSSSelector::operator == ( const CSSSelector &other )
 
 // ----------------------------------------------------------------------------
 
-CSSProperty::~CSSProperty()
-{
-    if(m_value) m_value->deref();
-}
-
-void CSSProperty::setValue(CSSValueImpl *val)
-{
-    if(m_value) m_value->deref();
-    m_value = val;
-    if(m_value) m_value->ref();
-}
-
-CSSValueImpl *CSSProperty::value()
-{
-    return m_value;
-}
