@@ -236,6 +236,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             KMessageBox::detailedError(0L, i18n("Java error while loading applet."), errorDetail);
             */
             applet->setFailed();
+            emit appletLoaded();
         }
     }
 }
@@ -244,7 +245,7 @@ bool KJavaAppletContext::appletsLoaded() const {
     AppletMap::const_iterator it = d->applets.begin();
     for (; it != d->applets.end(); it++) {
         if (!(*it).isNull()) {
-            if (!(*it)->isAlive()) {
+            if (!(*it)->isAlive() && !(*it)->failed()) {
                 return false;
             }
         }
