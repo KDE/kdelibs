@@ -27,6 +27,7 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
+#include "htmltokenizer.h"
 #include "misc/htmlattrs.h"
 #include "dom2_eventsimpl.h"
 #include "htmltags.h"
@@ -841,6 +842,8 @@ void RenderPartObject::close()
 
 bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType )
 {
+    KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+    //kdDebug() << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
     // Check if we just tried with e.g. nsplugin
     // and fallback to the activexhandler if there is a classid
     // and a codebase, where we may download the ocx if it's missing
@@ -859,7 +862,6 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
         if( embed && !o->classId.isEmpty() &&
             !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
         {
-            KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
             KParts::URLArgs args;
             args.serviceType = "application/x-activex-handler";
             if (part->requestObject( childFrame, url, args ))
@@ -869,6 +871,13 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
     // Dissociate ourselves from the current event loop (to prevent crashes
     // due to the message box staying up)
     QTimer::singleShot( 0, this, SLOT( slotPartLoadingErrorNotify() ) );
+    /*
+     // The proper fix, but this doesn't work well yet (msg box keeps appearing)
+    Tokenizer *tokenizer = static_cast<DOM::DocumentImpl *>(part->document().handle())->tokenizer();
+    if (tokenizer) tokenizer->setOnHold( true );
+    slotPartLoadingErrorNotify();
+    if (tokenizer) tokenizer->setOnHold( false );
+    */
     return false;
 }
 
