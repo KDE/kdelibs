@@ -50,7 +50,7 @@ class KServerSocketPrivate;
  * \code
  *   QString service = "http";
  *   KServerSocket *ss = new KServerSocket(service);
- *   QObject::connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()))
+ *   connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
  *   ss->listen();
  * \endcode
  * 
@@ -75,15 +75,20 @@ class KServerSocketPrivate;
  *   for( unsigned int port = firstport; port <= lastport; ++port) {
  *     ss->setAddress( QString::number( port ) );
  *     bool success = ss->listen();
- *     if( found = ( success && m_serverSocket->error() == 
+ *     if( found = ( success && ss->error() == 
  *                              KSocketBase::NoError ) )
  *       break;
- *     m_serverSocket->close();
+ *     ss->close();
  *   }
  *   if( !found ) {
  *     //Couldn't connect to any port.
+ *   } else {
+ *     connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
+ *     ss->listen();
  *   }
  * \endcode
+ * The called slot, slotReadyAccept(), is responsible for calling
+ * @ref accept.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
