@@ -13,7 +13,7 @@
 #include <kstddirs.h>
 #include <kglobal.h>
 
-QPixmap* KPixmapCache::pixmapForURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _mini )
+QPixmap* KPixmapCache::pixmapForURL( const KURL& _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   return pixmap( KMimeType::findByURL( _url, _mode, _is_local_file )->icon( _url, _is_local_file ).ascii(), _mini );
 }
@@ -42,7 +42,7 @@ QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, bool _mini )
   return pixmap( _mime_type->icon( QString::null, false ).ascii(), _mini );
 }
 
-QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, KURL& _url, bool _is_local_file, bool _mini )
+QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, const KURL& _url, bool _is_local_file, bool _mini )
 {
   return pixmap( _mime_type->icon( _url, _is_local_file ).ascii(), _mini );
 }
