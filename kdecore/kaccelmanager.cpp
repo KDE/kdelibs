@@ -149,7 +149,7 @@ static KStaticDeleter<QStringList> kaccmp_sns_d;
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
 {
     if (!kaccmp_sns)
-        kaccmp_sns =  kaccmp_sns_d.setObject(new QStringList(KStdAction::internal_stdNames()));
+        kaccmp_sns_d.setObject(kaccmp_sns, new QStringList(KStdAction::internal_stdNames()));
         return kaccmp_sns->contains(str);
 }
 
@@ -288,16 +288,27 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
     if (w->isFocusEnabled() || (w->inherits("QLabel") && static_cast<QLabel*>(w)->buddy()) || w->inherits("QGroupBox"))
     {
       QString content;
-      QVariant variant = w->property("text");
+      QVariant variant;
+      int tprop = w->metaObject()->findProperty("text");
+      if (tprop != -1)  {
+          const QMetaProperty* p = w->metaObject()->property( tprop, TRUE );
+          if ( p && p->isValid() )
+              w->qt_property( tprop, 1, &variant );
+          else
+              tprop = -1;
+      }
+
+      if (tprop != -1)  {
+          tprop = w->metaObject()->findProperty("title");
+          if (tprop != -1)  {
+              const QMetaProperty* p = w->metaObject()->property( tprop, TRUE );
+              if ( p && p->isValid() )
+                  w->qt_property( tprop, 1, &variant );
+          }
+      }
+
       if (variant.isValid())
           content = variant.toString();
-
-      if (content.isEmpty())
-      {
-          variant = w->property("title");
-          if (variant.isValid())
-              content = variant.toString();
-      }
 
       if (!content.isEmpty())
       {
