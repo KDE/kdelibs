@@ -2721,7 +2721,7 @@ KHTMLWidget::saveYourself(SavedPage *p)
     p->xOffset = x_offset;
     p->yOffset = y_offset;
 
-    if(isFrameSet() && !parser)
+    if(isFrameSet() && !parser && frameSet)
 	buildFrameTree(p, frameSet);
 
     return p;
