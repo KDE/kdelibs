@@ -223,6 +223,19 @@ bool KDesktopFile::tryExec() const
      }
   }
   
+  // See also KService::username()
+  bool su = readBoolEntry("X-KDE-SubstituteUID");
+  if (su)
+  {
+      QString user = readEntry("X-KDE-Username");
+      if (user.isEmpty())
+        user = ::getenv("ADMIN_ACCOUNT");
+      if (user.isEmpty())
+        user = "root";
+      if (!kapp->authorize("user/"+user))
+        return false;
+  }
+  
   return true;
 }
 

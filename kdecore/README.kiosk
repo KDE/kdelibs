@@ -188,6 +188,8 @@ action/help_report_bug
 action/help_about_app
 action/help_about_kde
 
+
+
 Applications may use additional actions that they defined themselves.
 You can get a list of the actions used by a certain applications by using the
 following dcop command:
@@ -197,6 +199,14 @@ dcop <dcopid> qt objects | grep KActionCollection/ | cut -d '/' -f 3
 or with
 
 dcop <dcopid> <maindwindowid> actions
+
+
+Actions that refer to applications that need to be run as a different user
+are prefixed by user/ and identified by the username. For example:
+
+user/root=false
+
+will disables all application entries that require root access. 
 
 
 The most important task is to define a managable number of actions that can be 
