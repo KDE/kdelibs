@@ -37,7 +37,6 @@ using namespace DOM;
 
 #include "khtmlattrs.h"
 #include "khtmlstyle.h"
-#include "khtmlstyle.h"
 #include "khtmltokenizer.h"
 
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)

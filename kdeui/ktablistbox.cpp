@@ -47,7 +47,6 @@
 //   Todo:
 //    - Save the current status of checkbutton/arrows to the config file.
 
-#include "ktablistbox.h"
 #include <kconfig.h>
 
 #include <qfontmetrics.h>

@@ -4,7 +4,6 @@
  */
 
 #include "kprogress.h"
-#include "kprogress.h"
 
 #include <qpainter.h>
 #include <qstring.h>

@@ -19,6 +19,9 @@
 /*
  *
  * $Log$
+ * Revision 1.22  1999/10/10 08:18:57  bero
+ * Code cleanup ((void) stuff)
+ *
  * Revision 1.21  1999/09/18 18:26:14  espensa
  * Added QSize(4,4) to the returned sizeHint(). Seems that the border size has
  * been forgotten.
@@ -137,7 +140,6 @@
 #include "qpainter.h"
 #include "qpixmap.h"
 
-#include "ktabctl.h"
 #include "ktabctl.h"
 
 KTabCtl::KTabCtl(QWidget *parent, const char *name)

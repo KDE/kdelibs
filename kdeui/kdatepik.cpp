@@ -25,7 +25,6 @@
 #include <kiconloader.h>
 #include <qframe.h>
 #include <qpainter.h>
-#include <qtoolbutton.h>
 #include <qtableview.h>
 #include <qdialog.h>
 #include <qtoolbutton.h>

@@ -40,7 +40,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include "kcolordlg.h"
-#include "kcolordlg.h"
 #include "kcolordrag.h"
 #include <qvalidator.h>
 

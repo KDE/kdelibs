@@ -1,7 +1,6 @@
 // programm to test the new khtml implementation
 
 
-#include "khtmltokenizer.h"
 #include "khtmldecoder.h"
 #include "kapp.h"
 #include "qfile.h"

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <qimage.h>
 #include <qiodevice.h>
-#include <qstring.h>
 #include <qdatastream.h>
 #include <qtextstream.h>
 #include <qfile.h>
