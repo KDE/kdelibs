@@ -1,3 +1,33 @@
+Thu Feb 10 17:06:36 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kdiroperator.cpp (connectView): 
+	- Now that KToggleAction is fixed, I can commit the new stuff:
+	  Offer Actions for all the common functionality, i.e. sorting, setting
+	  the view, home(), cdUp(), back, forward, etc.
+	  All actions are exposed through a QActionCollection
+
+	  BTW, I'd really like to have a way to change the state of an action
+	  without it calling the associated slot. For now I use blockSignals()
+	  (thanks, Simon), but this sucks.
+	
+	- renamed fileList to fileView (that was an old relic of KDE 1)
+
+	* kfiledialog.*:
+	- make use of the new Actions and fill the toolbar again (up, back, 
+	  forward, reload, home).
+
+	- the combo in the toolbar is going to change, it does nothing now
+	  (only shows the Root and Desktop dirs with a nice icon).
+
+Thu Feb 10 12:59:29 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kdiroperator.cpp (insertNewFiles): 
+	aahhh, finally fixed that infinite loop in KFileView::mergeLists
+	clear the view before calling view->addItemList( currentContents );
+
+	* kfilereader.cpp (setURL): 
+	don't disable dirWatch update (setAutoUpdate) when setting a remote URL
+
 Fri Feb  4 12:42:37 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledetailview.cpp (insertItem): 

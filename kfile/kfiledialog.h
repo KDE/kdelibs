@@ -24,27 +24,29 @@
 #define __KFILEDIALOG_H__
 
 #include <qcombobox.h>
-#include <qdialog.h>
 #include <qlineedit.h>
 #include <qstring.h>
 #include <qobjectlist.h>
-#include <kdialogbase.h>
-#include <kfileviewitem.h>
-#include <kfilereader.h>
 
-class KToolBar;
-class KFileView;
-class QPopupMenu;
+#include <kdialogbase.h>
+
+#include "kfilereader.h"
+
 class QCheckBox;
-class KFileBookmarkManager;
-class KFileBookmark;
-class QLabel;
-class QVBoxLayout;
-class QGridLayout;
 class QHBoxLayout;
-class KFileFilter;
+class QGridLayout;
+class QLabel;
+class QPopupMenu;
+class QVBoxLayout;
+
 class KDirOperator;
+class KFileBookmark;
+class KFileBookmarkManager;
 class KFileComboBox;
+class KFileFilter;
+class KFileView;
+class KToolBar;
+
 struct KFileDialogPrivate;
 
 /**

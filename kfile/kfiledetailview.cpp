@@ -125,7 +125,7 @@ void KFileDetailView::selected( QListViewItem *item )
     const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi ) {
 	select( const_cast<KFileViewItem*>( fi ) );
-	setContentsPos( 0, 0 ); // scroll to top left
+	// ContentsPos( 0, 0 ); // scroll to top left
     }
 }
 

@@ -190,7 +190,6 @@ bool KFileIconView::isSelected( const KFileViewItem *i ) const
 	return false;
     KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
     return (item && item->isSelected());
-
 }
 
 void KFileIconView::updateView( bool b )

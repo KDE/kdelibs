@@ -21,36 +21,43 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kfileview.h"
-#include "krecentdocument.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <qtimer.h>
-#include <qtabdialog.h>
-#include <qstrlist.h>
-#include <qstring.h>
-#include <qstack.h>
-#include <qpushbutton.h>
-#include <qpopupmenu.h>
-#include <qpixmap.h>
-#include <qcollection.h>
-#include <kmessagebox.h>
-#include <qlineedit.h>
-#include <qlistbox.h>
-#include <qlist.h>
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qcolor.h>
-#include <qcheckbox.h>
-#include <qbuttongroup.h>
+
 #include <qaccel.h>
-#include <kurl.h>
+#include <qbuttongroup.h>
+#include <qcollection.h>
+#include <qcolor.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qlist.h>
+#include <qlistbox.h>
+#include <qpixmap.h>
+#include <qpopupmenu.h>
+#include <qpushbutton.h>
+#include <qstack.h>
+#include <qstrlist.h>
+#include <qtabdialog.h>
+#include <qtimer.h>
+
+#include <kapp.h>
+#include <kaction.h>
+#include <kconfig.h>
+#include <kdebug.h>
+#include <kglobal.h>
+#include <kiconloader.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kmimetype.h>
+#include <kprocess.h>
+#include <kstddirs.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
-#include <kstddirs.h>
-#include <kiconloader.h>
+#include <kurl.h>
+
+#include "kfileview.h"
+#include "krecentdocument.h"
 #include "kfiledialogconf.h"
 #include "kfiledialog.h"
 #include "kfileiconview.h"
@@ -59,14 +66,7 @@
 #include "config-kfile.h"
 #include "kfilefilter.h"
 #include "kfilebookmark.h"
-#include <kprocess.h>
-#include <kapp.h>
-#include <klocale.h>
-#include <kio_job.h>
-#include <ksimpleconfig.h>
-#include <kglobal.h>
 #include "kdiroperator.h"
-#include <kdebug.h>
 
 enum Buttons { HOTLIST_BUTTON,
 	       PATH_COMBO, CONFIGURE_BUTTON };
@@ -170,12 +170,13 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->showStatusLine = c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar");
+    QActionCollection *coll = ops->actionCollection();
+    coll->action( "up" )->plug( toolbar );
+    coll->action( "back" )->plug( toolbar );
+    coll->action( "forward" )->plug( toolbar );
+    coll->action( "home" )->plug( toolbar );
+    coll->action( "reload" )->plug( toolbar );
 
-    /*
-      toolbar->insertButton(BarIcon("reload"),
-      RELOAD_BUTTON, true,
-      i18n("Reload"));
-    */
 
     bookmarks= new KFileBookmarkManager();
     CHECK_PTR( bookmarks );
@@ -210,7 +211,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     toolbar->enableMoving(false);
     toolbar->adjustSize();
 
-    locationEdit = new KFileComboBox(true, d->mainWidget, "KFileDialog::locationEdit");
+    locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
 
@@ -528,13 +529,21 @@ void KFileDialog::urlEntered(const KURL& url)
     kDebugInfo(kfile_area, "urlEntered %s", debugString(url.url()));
     toolbar->getCombo(PATH_COMBO)->clear();
 
-    QStringList list;
-    list.append(i18n("Root Directory (%1:)").arg(url.protocol()));
+    KURL tmpURL = QString::fromLatin1("/");
+    static QString desktop=QDir::homeDirPath()+QString::fromLatin1("/Desktop");
+    KIconLoader::Size small = KIconLoader::Small;
+    QComboBox *combo = toolbar->getCombo( PATH_COMBO );
+    combo->insertItem( KMimeType::pixmapForURL( tmpURL, 0, small ),
+		       i18n("Root Directory /") );
+    // list.append(i18n("Root Directory (%1:)").arg(url.protocol()));
+    // list.append(i18n("Desktop"));
+    tmpURL.setPath( desktop );
+    combo->insertItem( KMimeType::pixmapForURL( tmpURL, 0, small ), desktop );
 
     const QString urlstr = url.url(1);
 
     kDebugInfo(kfile_area, debugString(urlstr));
-
+#if 0
     int pos = urlstr.find('/', 0); // getting past the protocol
 
     while( pos >= 0 ) {
@@ -542,11 +551,19 @@ void KFileDialog::urlEntered(const KURL& url)
 	if (newpos < 0)
 	    break;
 
+	tmpURL.setPath( urlstr.right
 	QString tmp = urlstr.mid(pos + 1, newpos - pos - 1);
 	list.append(tmp);
 	pos = newpos;
     }
-    toolbar->getCombo(PATH_COMBO)->insertStringList(list);
+
+    QStringList::ConstIterator it = list.begin();
+    for ( ; it != list.end(); ++it )
+	combo->insertItem( KMimeType::pixmapForURL( *it, 0, KIconLoader::Small,
+						    *it ));
+#endif
+
+    //    toolbar->getCombo(PATH_COMBO)->insertStringList(list);
 
     // add item to visitedDirs.
     if( !visitedDirs->contains(urlstr) ) {
@@ -745,8 +762,7 @@ void KFileDialog::completion() // SLOT
 {
     QString base = ops->url().url();
 
-    // if someone uses completion, he doesn't like the current
-    // selection
+    // if someone uses completion, he doesn't like the current selection
     d->selection = QString::null;
 
     QString text = locationEdit->currentText();

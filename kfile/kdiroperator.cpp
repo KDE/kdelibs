@@ -19,32 +19,35 @@
 */
 
 #include <qdir.h>
-
-#include "kdiroperator.h"
-#include "kfileviewitem.h"
-#include "kfilereader.h"
-#include "kfileview.h"
-#include "config-kfile.h"
 #include <qapplication.h>
-#include <qtimer.h>
-#include <kmessagebox.h>
-#include <qpopupmenu.h>
-#include <klocale.h>
+#include <qdialog.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <qdialog.h>
 #include <qpushbutton.h>
+#include <qpopupmenu.h>
+#include <qtimer.h>
+
+#include <kaction.h>
 #include <kapp.h>
-#include <kcombiview.h>
-#include <kfilepreview.h>
-#include <kfileiconview.h>
-#include <kfiledetailview.h>
-#include <kprogress.h>
 #include <kdebug.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kprogress.h>
+#include <kstdaction.h>
+
+#include "config-kfile.h"
+#include "kcombiview.h"
+#include "kdiroperator.h"
+#include "kfiledetailview.h"
+#include "kfileiconview.h"
+#include "kfilepreview.h"
+#include "kfilereader.h"
+#include "kfileview.h"
+#include "kfileviewitem.h"
 
 // for public enums
-#include <kfiledialog.h>
+#include "kfiledialog.h"
 
 template class QStack<KURL>;
 template class QDict<KFileViewItem>;
@@ -53,10 +56,8 @@ QString *KDirOperator::lastDirectory = 0; // to set the start path
 
 KDirOperator::KDirOperator(const QString& dirName,
 			   QWidget *parent, const char* _name)
-    : QWidget(parent, _name), fileList(0), oldList(0), progress(0)
+    : QWidget(parent, _name), fileView(0), oldView(0), progress(0)
 {
-
-
     _mode=KFileDialog::Files;
 
     if (dirName.isEmpty()) // no dir specified -> current dir
@@ -89,11 +90,16 @@ KDirOperator::KDirOperator(const QString& dirName,
     KConfigGroupSaver sa(c, ConfigGroup);
     setShowHiddenFiles(c->readBoolEntry(QString::fromLatin1("ShowHidden"), DefaultShowHidden));
     setFocusPolicy(QWidget::WheelFocus);
+
+
+    // action stuff
+    setupActions();
+    setupMenu();
 }
 
 KDirOperator::~KDirOperator()
 {
-    delete fileList;
+    delete fileView;
 }
 
 void KDirOperator::readNextMimeType()
@@ -108,7 +114,7 @@ void KDirOperator::readNextMimeType()
     (void) item->mimeType();
 
     if ( item->pixmap().serialNumber() != p.serialNumber() ) // reloads the pixmap in case
-        fileList->updateView(item);
+        fileView->updateView(item);
     pendingMimeTypes.removeFirst();
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
 }
@@ -132,95 +138,8 @@ void KDirOperator::resetCursor()
 void KDirOperator::activatedMenu( const KFileViewItem *item )
 {
     if ( !item ) {
-	QPopupMenu *p = new QPopupMenu();
-	int id;
-	id = p->insertItem(BarIcon(QString::fromLatin1("up")),
-			   i18n("Up"), this, SLOT(cdUp()));
-	p->setItemEnabled(id, !isRoot());
-
-	id = p->insertItem(BarIcon(QString::fromLatin1("back")),
-			   i18n("Back"), this, SLOT(back()));
-	p->setItemEnabled(id, !backStack.isEmpty());
-
-	id = p->insertItem(BarIcon(QString::fromLatin1("forward")),
-			   i18n("Forward"), this, SLOT(forward()));
-	p->setItemEnabled(id, !forwardStack.isEmpty());
-
-	id = p->insertItem(BarIcon(QString::fromLatin1("home")),
-			   i18n("Home"), this, SLOT(home()));
-
-	p->insertSeparator();
-
-	id = p->insertItem(i18n("New Folder..."),
-		      this, SLOT(mkdir()));
-	p->setItemEnabled(id, dir->isLocalFile());
-
-	
-	p->insertSeparator();
-	QDir::SortSpec sorting = fileList->sorting();
-	
-	// grr, who had the idea to set QDir::Name to 0x0?
-	bool byName = (sorting & QDir::Time) != QDir::Time &&
-		      (sorting & QDir::Size) != QDir::Size;
-	
-	QPopupMenu *sortMenu = new QPopupMenu( p );
-	id = sortMenu->insertItem(i18n("By Name"), this, SLOT(sortByName()));
-	sortMenu->setItemChecked( id, byName );
-
-	id = sortMenu->insertItem(i18n("By Date"), this, SLOT(sortByDate()));
-	sortMenu->setItemChecked( id, (sorting & QDir::Time) == QDir::Time );
-
-	id = sortMenu->insertItem(i18n("By Size"), this, SLOT(sortBySize()));
-	sortMenu->setItemChecked( id, (sorting & QDir::Size) == QDir::Size );
-	
-	id = sortMenu->insertItem(i18n("Reverse"), this, SLOT(sortReversed()));
-	sortMenu->setItemChecked( id, fileList->isReversed() );
-
-	sortMenu->insertSeparator();
-	id = sortMenu->insertItem(i18n("Directories first"), this,
-			     SLOT(toggleDirsFirst()));
-	sortMenu->setItemChecked( id, (sorting & QDir::DirsFirst) == QDir::DirsFirst );
-	id = sortMenu->insertItem(i18n("Case insensitive"), this,
-			     SLOT(toggleIgnoreCase()));
-	sortMenu->setItemChecked( id, (sorting & QDir::IgnoreCase) == QDir::IgnoreCase );
-	p->insertItem( i18n("Sorting"), sortMenu );
-	
-	
-	if (viewKind) {
-	    p->insertSeparator();
-
-	    QPopupMenu *views = new QPopupMenu(p);
-	    id = views->insertItem(i18n("Short View"),
-				   this, SLOT(simpleView()));
-	    views->setItemChecked(id, (fileList->viewName() == i18n("Short View")));
-	    id = views->insertItem(i18n("Detailed View"),
-			      this, SLOT(detailedView()));
-	    views->setItemChecked(id, (fileList->viewName() == i18n("Detailed View")));
-	    views->insertSeparator();
-	    id = views->insertItem(i18n("Show Hidden Files"),
-			       this, SLOT(toggleHidden()));
-	    views->setItemChecked(id, showHiddenFiles());
-
-	    id = views->insertItem(i18n("Separate Directories"),
-				   this, SLOT(toggleMixDirsAndFiles()));
-	    views->setItemChecked(id, (viewKind & SeparateDirs) == SeparateDirs);
-
-	    id = p->insertItem(i18n("View"), views);
-	}
-
-	p->exec( QCursor::pos() );
-	delete p;
+	actionMenu->popup( QCursor::pos() );
     }
-}
-
-void KDirOperator::detailedView()
-{
-    setView(Detail, (viewKind & SeparateDirs) == SeparateDirs);
-}
-
-void KDirOperator::simpleView()
-{
-    setView(Simple, (viewKind & SeparateDirs) == SeparateDirs);
 }
 
 void KDirOperator::setPreviewWidget(const QWidget *w) {
@@ -235,63 +154,73 @@ void KDirOperator::setPreviewWidget(const QWidget *w) {
 
 int KDirOperator::numDirs() const
 {
-    return fileList->numDirs();
+    return fileView->numDirs();
 }
 
 int KDirOperator::numFiles() const
 {
-    return fileList->numFiles();
+    return fileView->numFiles();
 }
 
-void KDirOperator::toggleHidden()
+void KDirOperator::slotDetailedView()
+{
+    setView(Detail, (viewKind & SeparateDirs) == SeparateDirs);
+}
+
+void KDirOperator::slotSimpleView()
+{
+    setView(Simple, (viewKind & SeparateDirs) == SeparateDirs);
+}
+
+void KDirOperator::slotToggleHidden()
 {
     setShowHiddenFiles(!showHidden);
 }
 
-void KDirOperator::toggleMixDirsAndFiles()
+void KDirOperator::slotToggleMixDirsAndFiles()
 {
     setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) != SeparateDirs);
 }
 
-void KDirOperator::sortByName()
+void KDirOperator::slotSortByName()
 {
-    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
-    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Name ));
+    int sorting = (fileView->sorting()) & ~QDir::SortByMask;
+    fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Name ));
 }
 
-void KDirOperator::sortBySize()
+void KDirOperator::slotSortBySize()
 {
-    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
-    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Size ));
+    int sorting = (fileView->sorting()) & ~QDir::SortByMask;
+    fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Size ));
 }
 
-void KDirOperator::sortByDate()
+void KDirOperator::slotSortByDate()
 {
-    int sorting = (fileList->sorting()) & ~QDir::SortByMask;
-    fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Time ));
+    int sorting = (fileView->sorting()) & ~QDir::SortByMask;
+    fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Time ));
 }
 
-void KDirOperator::sortReversed()
+void KDirOperator::slotSortReversed()
 {
-    fileList->sortReversed();
+    fileView->sortReversed();
 }
 
-void KDirOperator::toggleDirsFirst()
+void KDirOperator::slotToggleDirsFirst()
 {
-    QDir::SortSpec sorting = fileList->sorting();
+    QDir::SortSpec sorting = fileView->sorting();
     if ( (sorting & QDir::DirsFirst) == 0 )
-	fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::DirsFirst ));
+	fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::DirsFirst ));
     else
-	fileList->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::DirsFirst));
+	fileView->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::DirsFirst));
 }
 
-void KDirOperator::toggleIgnoreCase()
+void KDirOperator::slotToggleIgnoreCase()
 {
-    QDir::SortSpec sorting = fileList->sorting();
+    QDir::SortSpec sorting = fileView->sorting();
     if ( (sorting & QDir::IgnoreCase) == 0 )
-	fileList->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::IgnoreCase ));
+	fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::IgnoreCase ));
     else
-	fileList->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::IgnoreCase));
+	fileView->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::IgnoreCase));
 }
 
 void KDirOperator::mkdir()
@@ -464,8 +393,8 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
        what is the sense of this? If it's set, it's set, not?
        this was for blending out/in completion matches (pfeiffer)
        if (dir->url() == pathstr) { // already set
-       fileList->clear();
-       fileList->addItemList(dir->currentContents());
+       fileView->clear();
+       fileView->addItemList(dir->currentContents());
        return;
        }
     */
@@ -497,12 +426,19 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 			   i18n("The specified directory does not exist\n"
 				"or was not readable."));
 	dir->setURL(backup);
+	backStack.pop();
     } else {
 
         myCompletion.clear();
 	emit urlEntered(*dir);
 	pathChanged();
     }
+
+
+    // enable/disable actions
+    forwardAction->setEnabled( !forwardStack.isEmpty() );
+    backAction->setEnabled( !backStack.isEmpty() );
+    upAction->setEnabled( !isRoot() );
 }
 
 void KDirOperator::rereadDir()
@@ -515,12 +451,12 @@ void KDirOperator::rereadDir()
 // Protected
 void KDirOperator::pathChanged()
 {
-    if (!fileList)
+    if (!fileView)
 	return;
 
     kDebugInfo(kfile_area, "changed %ld", time(0));
 
-    fileList->clear();
+    fileView->clear();
     myCompletion.clear();
 
     // it may be, that we weren't ready at this time
@@ -676,9 +612,11 @@ void KDirOperator::setView(FileView view, bool separateDirs)
 
 void KDirOperator::deleteOldView()
 {
-    oldList->widget()->hide();
-    delete oldList;
-    oldList = 0;
+    if ( oldView ) {
+	oldView->widget()->hide();
+	delete oldView;
+	oldView = 0;
+    }
 }
 
 void KDirOperator::connectView(KFileView *view)
@@ -686,36 +624,79 @@ void KDirOperator::connectView(KFileView *view)
     // TODO: do a real timer and restart it after that
     pendingMimeTypes.clear();
 
-    if (fileList) {
+    if (fileView) {
         QApplication::setOverrideCursor( waitCursor );
 	finished = false;
-	fileList->setOperator(0);
-	// it's _very_ unlikly that oldList still has a value
-	oldList = fileList;
+	fileView->setOperator(0);
+	// it's _very_ unlikly that oldView still has a value
+	oldView = fileView;
 	QTimer::singleShot(0, this, SLOT(deleteOldView()));
     }
 
-    fileList = view;
-    fileList->setOperator(this);
+    fileView = view;
+    fileView->setOperator(this);
 
     if ( _mode == KFileDialog::File ) {
-	fileList->setViewMode( KFileView::All );
-	fileList->setSelectMode( KFileView::Single );
+	fileView->setViewMode( KFileView::All );
+	fileView->setSelectMode( KFileView::Single );
     } else if ( _mode == KFileDialog::Directory ) {
-	fileList->setViewMode( KFileView::Directories );
-	fileList->setSelectMode( KFileView::Single );
+	fileView->setViewMode( KFileView::Directories );
+	fileView->setSelectMode( KFileView::Single );
     } else if ( _mode == KFileDialog::Files ) {
-	fileList->setViewMode( KFileView::All );
-	fileList->setSelectMode( KFileView::Multi );
+	fileView->setViewMode( KFileView::All );
+	fileView->setSelectMode( KFileView::Multi );
     }
     else if( _mode == KFileDialog::Preview ) {
-    fileList->setViewMode( KFileView::All );
-    fileList->setSelectMode( KFileView::Single );
+    fileView->setViewMode( KFileView::All );
+    fileView->setSelectMode( KFileView::Single );
     }
 
     dir->listContents();
-    fileList->widget()->show();
-    fileList->widget()->resize(size());
+
+    // set the actions (without calling the slots)
+    byNameAction->blockSignals( true );
+    byDateAction->blockSignals( true );
+    bySizeAction->blockSignals( true );
+    reverseAction->blockSignals( true );
+    dirsFirstAction->blockSignals( true );
+    caseInsensitiveAction->blockSignals( true );
+    showHiddenAction->blockSignals( true );
+    separateDirsAction->blockSignals( true );
+
+    shortAction->blockSignals( true );
+    detailedAction->blockSignals( true );
+
+    QDir::SortSpec sorting = fileView->sorting();
+	
+    // grr, who had the idea to set QDir::Name to 0x0?
+    bool byName = (sorting & QDir::Time) != QDir::Time && (sorting & QDir::Size) != QDir::Size;
+    byNameAction->setChecked( byName );
+    byDateAction->setChecked((sorting & QDir::Time) == QDir::Time);
+    bySizeAction->setChecked((sorting & QDir::Size) == QDir::Size);
+    reverseAction->setChecked( fileView->isReversed() );
+    dirsFirstAction->setChecked((sorting & QDir::DirsFirst)== QDir::DirsFirst);
+    caseInsensitiveAction->setChecked( (sorting & QDir::IgnoreCase ) == QDir::IgnoreCase );
+    showHiddenAction->setChecked( showHiddenFiles() );
+    separateDirsAction->setChecked( (viewKind & SeparateDirs) == SeparateDirs);
+
+    shortAction->setChecked( (fileView->viewName() == i18n("Short View")));
+    detailedAction->setChecked((fileView->viewName() ==i18n("Detailed View")));
+
+    byNameAction->blockSignals( false );
+    byDateAction->blockSignals( false );
+    bySizeAction->blockSignals( false );
+    reverseAction->blockSignals( false );
+    dirsFirstAction->blockSignals( false );
+    caseInsensitiveAction->blockSignals( false );
+    showHiddenAction->blockSignals( false );
+    separateDirsAction->blockSignals( false );
+
+    shortAction->blockSignals( false );
+    detailedAction->blockSignals( false );
+    //////////
+
+    fileView->widget()->show();
+    fileView->widget()->resize(size());
 }
 
 KFileDialog::Mode KDirOperator::mode() const
@@ -757,7 +738,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
 
     bool isLocal = dir->isLocalFile();
     if (!isLocal)
-	fileList->addItemList(newone);
+	fileView->addItemList(newone);
 
     KFileViewItemListIterator it(*newone);
     for( ; it.current(); ++it ) {
@@ -772,8 +753,8 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
 	    progress->setValue(100);
 
 	if (isLocal) {
-		fileList->clear();
-		fileList->addItemList(dir->currentContents());
+		fileView->clear();
+		fileView->addItemList(dir->currentContents());
 	}
 
 	QTimer::singleShot(0, this, SLOT(readNextMimeType()));
@@ -792,7 +773,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
 	// we have to redraw this in as fast as possible
 	QApplication::flushX();
     }
-    emit updateInformation(fileList->numDirs(), fileList->numFiles());
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 void KDirOperator::selectDir(const KFileViewItem *item)
@@ -809,9 +790,9 @@ void KDirOperator::itemsDeleted(const KFileViewItemList *list)
 
     KFileViewItemListIterator it(*list);
     for( ; it.current(); ++it )
-        fileList->updateView( it.current() );
+        fileView->updateView( it.current() );
 
-    emit updateInformation(fileList->numDirs(), fileList->numFiles());
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 void KDirOperator::selectFile(const KFileViewItem *item)
@@ -831,16 +812,16 @@ void KDirOperator::highlightFile(const KFileViewItem *i)
 
 void KDirOperator::filterChanged()
 {
-    fileList->clear();
+    fileView->clear();
     myCompletion.clear();
     dir->listContents();
-    emit updateInformation(fileList->numDirs(), fileList->numFiles());
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 QString KDirOperator::makeCompletion(const QString& string)
 {
     if ( string.isEmpty() ) {
-        fileList->clearSelection();
+        fileView->clearSelection();
         return QString::null;
     }
 
@@ -865,10 +846,10 @@ void KDirOperator::slotCompletionMatch(const QString& match)
     if ( !match.isNull() )
         item = dir->currentContents()->findByName( match );
     else
-        fileList->clearSelection();
+        fileView->clearSelection();
 
     if ( item )
-        fileList->setCurrentItem( QString::null, item );
+        fileView->setCurrentItem( QString::null, item );
     emit completion( match );
 }
 
@@ -887,20 +868,143 @@ void KDirOperator::slotCompletionMatches(const QStringList& /*matches*/)
 	        list.append( item );
 	}
 
-	fileList->clear();
+	fileView->clear();
 	if ( !list.isEmpty() )
-	    fileList->addItemList( &list );
+	    fileView->addItemList( &list );
     }
 
-    emit updateInformation(fileList->numDirs(), fileList->numFiles());
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
   */
 }
 
 
+void KDirOperator::setupActions()
+{
+    actionMenu = new KActionMenu( i18n("Menu"), this, "popupMenu" );
+
+    upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
+    backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
+    forwardAction = KStdAction::forward( this, SLOT(forward()), this, "forward");
+    homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
+    reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
+    actionSeparator = new KActionSeparator( this, "separator" );
+    mkdirAction = new KAction( i18n("New Folder..."), 0,
+				 this, SLOT( mkdir() ), this, "mkdir");
+    reloadAction->setText( i18n("Reload") );
+
+
+    sortActionMenu = new KActionMenu( i18n("Sorting"), this, "sorting menu");
+    byNameAction = new KToggleAction( i18n("By Name"), 0,
+					this, SLOT( slotSortByName() ),
+					this, "by name" );
+    byDateAction = new KToggleAction( i18n("By Date"), 0,
+					this, SLOT( slotSortByDate() ),
+					this, "by date" );
+    bySizeAction = new KToggleAction( i18n("By Size"), 0,
+				       this, SLOT( slotSortBySize() ),
+				       this, "by size" );
+    reverseAction = new KToggleAction( i18n("Reverse"), 0,
+					 this, SLOT( slotSortReversed() ),
+					 this, "reversed" );
+
+    QString sortGroup = QString::fromLatin1("sort");
+    byNameAction->setExclusiveGroup( sortGroup );
+    byDateAction->setExclusiveGroup( sortGroup );
+    bySizeAction->setExclusiveGroup( sortGroup );
+
+    dirsFirstAction = new KToggleAction( i18n("Directories first"), 0,
+					 this, SLOT( slotToggleDirsFirst() ),
+					 this, "dirs first");
+    caseInsensitiveAction = new KToggleAction(i18n("Case insensitive"),0, this,
+					      SLOT( slotToggleIgnoreCase() ),
+					      this, "case insensitive" );
+
+
+    viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
+    shortAction = new KToggleAction( i18n("Short View"), 0,
+				     this, SLOT( slotSimpleView() ),
+				     this, "short view" );
+    detailedAction = new KToggleAction( i18n("Detailed View"), 0,
+					this, SLOT( slotDetailedView() ),
+					this, "detailed view" );
+
+    showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
+					  this, SLOT( slotToggleHidden() ),
+					  this, "show hidden" );
+    separateDirsAction = new KToggleAction( i18n("Separate Directories"), 0,
+					    this,
+					    SLOT(slotToggleMixDirsAndFiles()),
+					    this, "separate dirs" );
+
+    QString viewGroup = QString::fromLatin1("view");
+    shortAction->setExclusiveGroup( viewGroup );
+    detailedAction->setExclusiveGroup( viewGroup );
+
+
+    // insert them into the actionCollection
+    myActionCollection = new QActionCollection( this, "action collection" );
+    myActionCollection->insert( actionMenu );
+    myActionCollection->insert( backAction );
+    myActionCollection->insert( forwardAction );
+    myActionCollection->insert( homeAction );
+    myActionCollection->insert( upAction );
+    myActionCollection->insert( reloadAction );
+    myActionCollection->insert( actionSeparator );
+    myActionCollection->insert( mkdirAction );
+    myActionCollection->insert( sortActionMenu );
+    myActionCollection->insert( byNameAction );
+    myActionCollection->insert( byDateAction );
+    myActionCollection->insert( bySizeAction );
+    myActionCollection->insert( reverseAction );
+    myActionCollection->insert( dirsFirstAction );
+    myActionCollection->insert( caseInsensitiveAction );
+    myActionCollection->insert( viewActionMenu );
+    myActionCollection->insert( shortAction );
+    myActionCollection->insert( detailedAction );
+    myActionCollection->insert( showHiddenAction );
+    myActionCollection->insert( separateDirsAction );
+}
+
+
+void KDirOperator::setupMenu()
+{
+    // first fill the submenus (sort and view)
+    sortActionMenu->insert( byNameAction );
+    sortActionMenu->insert( byDateAction );
+    sortActionMenu->insert( bySizeAction );
+    sortActionMenu->insert( reverseAction );
+    sortActionMenu->insert( actionSeparator );
+    sortActionMenu->insert( dirsFirstAction );
+    sortActionMenu->insert( caseInsensitiveAction );
+
+    viewActionMenu->insert( shortAction );
+    viewActionMenu->insert( detailedAction );
+    viewActionMenu->insert( actionSeparator );
+    viewActionMenu->insert( showHiddenAction );
+    viewActionMenu->insert( separateDirsAction );
+
+
+    // now plug everything into the popupmenu
+    actionMenu->insert( upAction );
+    actionMenu->insert( backAction );
+    actionMenu->insert( forwardAction );
+    actionMenu->insert( homeAction );
+    actionMenu->insert( actionSeparator );
+
+    actionMenu->insert( mkdirAction );
+    actionMenu->insert( actionSeparator );
+
+    actionMenu->insert( sortActionMenu );
+    actionMenu->insert( actionSeparator );
+    actionMenu->insert( viewActionMenu );
+}
+
+
+
 void KDirOperator::resizeEvent( QResizeEvent * )
 {
-    if (fileList)
-	fileList->widget()->resize( size() );
+    if (fileView)
+	fileView->widget()->resize( size() );
     if ( progress )
 	progress->move(2, height() - progress->height() -2);
 }

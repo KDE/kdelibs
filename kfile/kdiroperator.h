@@ -22,14 +22,23 @@
 
 #include <qobject.h>
 #include <qstack.h>
+
+#include <kaction.h>
 #include <kcompletion.h>
-#include <kfileviewitem.h>
+
+
+#include "kfileviewitem.h"
 
 // for public enums - may move to KFile (TODO)
-#include <kfiledialog.h>
+#include "kfiledialog.h"
 
+class QPopupMenu;
 class QTimer;
 
+class KAction;
+class KToggleAction;
+class KActionSeparator;
+class KActionMenu;
 class KFileReader;
 class KFileView;
 class QWidgetStack;
@@ -57,11 +66,9 @@ class KDirOperator : public QWidget {
 
     void setURL(const KURL& url, bool clearforward);
 
-    void rereadDir();
-
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
-    const KFileView * view() const { return fileList; }
+    const KFileView * view() const { return fileView; }
     void setView(FileView view, bool separateDirs = false);
 
     bool isRoot() const;
@@ -76,9 +83,52 @@ class KDirOperator : public QWidget {
     int numDirs() const;
     int numFiles() const;
 
+    /**
+     * an accessor to a collection of all available Actions. The actions
+     * are static, they will be there all the time (no need to connect to
+     * the signals QActionCollection::inserted() or removed().
+     *
+     * There are the following actions:
+     * 
+     * @li popupMenu : a ActionMenu presenting a popupmenu with all actions
+     * @li up : changes to the parent directory
+     * @li back : goes back to the previous directory
+     * @li forward : goes forward in the history
+     * @li home : changes to the user's home directory
+     * @li reload : reloads the current directory
+     * @li separator : a separator
+     * @li mkdir : opens a dialog box to create a directory
+     * @li sorting menu : an ActionMenu containing all sort-options
+     * @li by name : sorts by name
+     * @li by date : sorts by date
+     * @li by size : sorts by size
+     * @li reversed : reverses the sort order
+     * @li dirs first : sorts directories before files
+     * @li case insensitive : sorts case insensitively
+     * @li view menu : an ActionMenu containing all actions concerning the view
+     * @li short view : shows a simple fileview
+     * @li detailed view : shows a detailed fileview (dates, permissions ,...)
+     * @li show hidden : shows hidden files
+     * @li separate dirs : shows directories in a separate pane
+     *
+     * The short and detailed view are in an exclusive group. The sort-by 
+     * actions are in an exclusive group as well.
+     *
+     * You can e.g. use 
+     * <pre>actionCollection()->action( "up" )->plug( someToolBar );</pre>
+     * to add an button into a toolbar, which makes the dirOperator change to
+     * its parent directory.
+     *
+     * @returns all available Actions 
+     */
+    QActionCollection * actionCollection() const { return myActionCollection; }
+
+
  protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
+    void setupActions();
+    void setupMenu();
 
 
  private:
@@ -110,13 +160,11 @@ class KDirOperator : public QWidget {
 
     void connectView(KFileView *);
 
-    // flag for perfomance hype ;)
-    bool repaint_files;
     // for the handling of the cursor
     bool finished;
 
-    KFileView *fileList;
-    KFileView *oldList;
+    KFileView *fileView;
+    KFileView *oldView;
 
     KFileViewItemList pendingMimeTypes;
 
@@ -127,11 +175,39 @@ class KDirOperator : public QWidget {
 
     QWidget *preview;    // temporary pointer for the preview widget
 
+    // actions for the popupmenus
+    KActionMenu *actionMenu;
+
+    KAction 	*backAction;
+    KAction 	*forwardAction;
+    KAction 	*homeAction;
+    KAction 	*upAction;
+    KAction 	*reloadAction;
+    KActionSeparator *actionSeparator;
+    KAction 	*mkdirAction;
+
+    KActionMenu *sortActionMenu;
+    KToggleAction *byNameAction;
+    KToggleAction *byDateAction;
+    KToggleAction *bySizeAction;
+    KToggleAction *reverseAction;
+    KToggleAction *dirsFirstAction;
+    KToggleAction *caseInsensitiveAction;
+
+    KActionMenu *viewActionMenu;
+    KToggleAction *shortAction;
+    KToggleAction *detailedAction;
+    KToggleAction *showHiddenAction;
+    KToggleAction *separateDirsAction;
+    
+    QActionCollection *myActionCollection;
+    
  public slots:
     void back();
     void forward();
     void home();
     void cdUp();
+    void rereadDir();
     void mkdir();
     QString makeCompletion(const QString&);
 
@@ -149,21 +225,33 @@ class KDirOperator : public QWidget {
     void highlightFile(const KFileViewItem*);
     void activatedMenu( const KFileViewItem * );
 
-    void detailedView();
-    void simpleView();
-    void toggleHidden();
-    void toggleMixDirsAndFiles();
-    void sortByName();
-    void sortBySize();
-    void sortByDate();
-    void sortReversed();
-    void toggleDirsFirst();
-    void toggleIgnoreCase();
+    void detailedView() 	{ detailedAction->setChecked( true ); }
+    void simpleView() 		{ shortAction->setChecked( true ); }
+    void toggleHidden() 	{ showHiddenAction->setChecked( !showHiddenAction->isChecked() ); }
+    void toggleMixDirsAndFiles(){ separateDirsAction->setChecked( !separateDirsAction->isChecked() ); }
+    void sortByName() 		{ byNameAction->setChecked( true ); }
+    void sortBySize() 		{ bySizeAction->setChecked( true ); }
+    void sortByDate() 		{ byDateAction->setChecked( true ); }
+    void sortReversed() 	{ reverseAction->setChecked( !reverseAction->isChecked() ); }
+    void toggleDirsFirst() 	{ dirsFirstAction->setChecked( !dirsFirstAction->isChecked() ); }
+    void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
 
     void deleteOldView();
 
     void slotCompletionMatch(const QString&);
     void slotCompletionMatches(const QStringList&);
+
+private slots:
+    void slotDetailedView();
+    void slotSimpleView();
+    void slotToggleHidden();
+    void slotToggleMixDirsAndFiles();
+    void slotSortByName();
+    void slotSortBySize();
+    void slotSortByDate();
+    void slotSortReversed();
+    void slotToggleDirsFirst();
+    void slotToggleIgnoreCase();
 
   signals:
     void urlEntered(const KURL& );
