@@ -144,7 +144,7 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
         for ( p = knewstuff.firstChild(); !p.isNull(); p = p.nextSibling() ) {
           QDomElement stuff = p.toElement();
           if ( stuff.tagName() != "stuff" ) continue;
-          if ( stuff.attribute("type", mType ) != mType) continue;
+          if ( stuff.attribute("type", mType) != mType ) continue;
 
           Entry *entry = new Entry( stuff );
           mNewStuffList.append( entry );
