@@ -743,6 +743,15 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                 *lastDirectory = QDir::currentDirPath();
         }
         d->url = *lastDirectory;
+        // If local, check it exists. If not, go up until it exists.
+        if ( d->url.isLocalFile() ) {
+            QDir dir( d->url.path() );
+            while ( !dir.exists() )
+            {
+                d->url = d->url.upURL();
+                dir.setPath( d->url.path() );
+            }
+        }
     }
 
     ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
