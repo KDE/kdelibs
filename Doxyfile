@@ -329,7 +329,9 @@ EXCLUDE                =
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
 # certain files from those directories.
 
-EXCLUDE_PATTERNS       = Makefile Makefile.in *.desktop
+EXCLUDE_PATTERNS       = Makefile.* ChangeLog CHANGES CHANGES.* README \
+                         README.* *.png AUTHORS DESIGN DESIGN.* *.desktop \
+                         DESKTOP* COMMENTS HOWTO magic NOTES TODO THANKS
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or 
 # directories that contain example code fragments that are included (see 
