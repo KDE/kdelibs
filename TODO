@@ -80,6 +80,8 @@ that we would like to make for the next binary incompatible release.
 - KParts: remove plugin loading from setInstance, add an explicit loadPlugins() call
   in all parts that should load plugins (at the end of the derived-part ctor).
 
+- KParts: come up with better names for ReadOnlyPart and ReadWritePart, ReadOnly is a minimum requirement, but this does not become clear until you dig deeper into the class. With QTextEdit and QTextBrowser for instance, it's the other way around.
+
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
 
