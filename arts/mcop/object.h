@@ -67,6 +67,7 @@ protected:
 
 	virtual ObjectLocation _location();
 
+	string _internalObjectID;	// two objects are "_isEqual" when these match
 	long _nextNotifyID;
 	long _refCnt;				// reference count
 	static long _staticObjectCount;
@@ -129,6 +130,11 @@ public:
 
 	// object creation
 	static Object *_create(const std::string& subClass = "Object");
+
+	// comparision
+	inline bool _isEqual(Object *object) {
+		return (_internalObjectID == object->_internalObjectID);
+	}
 
 	// static converter (from reference)
 	static Object *_fromString(std::string objectref);

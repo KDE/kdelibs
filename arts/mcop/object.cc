@@ -209,6 +209,10 @@ Object_skel::Object_skel() :_remoteSendCount(0), _remoteSendUpdated(false)
 {
 	_objectID = Dispatcher::the()->addObject(this);
 	_methodTableInit = false;
+
+	char ioid[1024];
+	sprintf(ioid,"SKEL:%p",this);
+	_internalObjectID = ioid;
 }
 
 Object_skel::~Object_skel()
@@ -546,6 +550,10 @@ Object_stub::Object_stub(Connection *connection, long objectID)
 	_connection->_copy();
 	_objectID = objectID;
 	_lookupCacheRandom = rand();
+
+	char ioid[1024];
+	sprintf(ioid,"STUB:%d:%p",_objectID,connection);
+	_internalObjectID = ioid;
 }
 
 Object_stub::~Object_stub()

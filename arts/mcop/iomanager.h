@@ -34,8 +34,41 @@
 
 // constants:
 
+/**
+ * What does the reentrant flag do?
+ *
+ * The IOManager offers a processOneEvent call. This means, that you can ask
+ * that I/O is handled, even while in a routine that handles I/O. As a
+ * practical example: you may have got a remote invocation for the function
+ * foo. Now you are in function foo() and call function bar() on a remote
+ * server. When you wait for the result, you obviously will again require
+ * the IOManager to wait for it. Thus this is a case where you need reentrant
+ * I/O handling.
+ *
+ * That way, you get a multiple level stack:
+ *
+ *    [...]
+ *      |
+ * [ Hander for I/O ]
+ *      |
+ * [ IOManager ]              level 2
+ *      |
+ * [ Some other function ]
+ *      |
+ * [ Hander for I/O ]
+ *      |
+ * [ IOManager ]              level 1
+ *      |
+ * [ main() ]
+ *
+ * What reentrant does, is to allow that IO Watch to be activated at levels
+ * higher than one.
+ *
+ * Timers and notifications, on the other hand will only be carried out at
+ * level 1.
+ */
 struct IOType {
-	enum { read = 1, write = 2, except = 4, all = 7 };
+	enum { read = 1, write = 2, except = 4, reentrant = 8, all = 15 };
 };
 
 class IONotify {
@@ -129,7 +162,10 @@ protected:
 
 	bool fdListChanged;	// causes the fd_sets to be rebuilt before using them
 	fd_set readfds, writefds, exceptfds;
+	fd_set reentrant_readfds, reentrant_writefds, reentrant_exceptfds;
 	int maxfd;
+
+	int level;
 
 public:
 	StdIOManager();

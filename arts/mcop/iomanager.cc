@@ -25,6 +25,8 @@
 
 #include "iomanager.h"
 #include "notification.h"
+#include <stdio.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -39,17 +41,25 @@ StdIOManager::StdIOManager()
 {
 	// force initialization of the fd_set's
 	fdListChanged = true;
+	level = 0;
 }
 
 void StdIOManager::processOneEvent(bool blocking)
 {
-	NotificationManager::the()->run();
+	level++;
+
+	// notifications not carried out reentrant
+	if(level == 1)
+		NotificationManager::the()->run();
 
 	if(fdListChanged)
 	{
 		FD_ZERO(&readfds);
 		FD_ZERO(&writefds);
 		FD_ZERO(&exceptfds);
+		FD_ZERO(&reentrant_readfds);
+		FD_ZERO(&reentrant_writefds);
+		FD_ZERO(&reentrant_exceptfds);
 
 		maxfd = 0;
 
@@ -62,22 +72,43 @@ void StdIOManager::processOneEvent(bool blocking)
 			if(w->types() & IOType::write)    FD_SET(w->fd(),&writefds);
 			if(w->types() & IOType::except)   FD_SET(w->fd(),&exceptfds);
 
+			if(w->types() & IOType::reentrant)
+			{
+				if(w->types() & IOType::read)
+					FD_SET(w->fd(),&reentrant_readfds);
+				if(w->types() & IOType::write)
+					FD_SET(w->fd(),&reentrant_writefds);
+				if(w->types() & IOType::except)
+					FD_SET(w->fd(),&reentrant_exceptfds);
+			}
+
 			if(w->types() && w->fd() > maxfd) maxfd = w->fd();
 		}
 
 		fdListChanged = false;
 	}
-	fd_set rfd = readfds;
-	fd_set wfd = writefds;
-	fd_set efd = exceptfds;
+	fd_set rfd,wfd,efd;
+	if(level == 1)
+	{
+		rfd = readfds;
+		wfd = writefds;
+		efd = exceptfds;
+	}
+	else
+	{
+		// watch out, this is reentrant I/O
+		rfd = reentrant_readfds;
+		wfd = reentrant_writefds;
+		efd = reentrant_exceptfds;
+	}
 
 	/* default timeout 5 seconds */
 	timeval select_timeout;
 	select_timeout.tv_sec = 5;
 	select_timeout.tv_usec = 0;
 
-	/* prepare timers */
-	if(timeList.size())
+	/* prepare timers - only at level 1 */
+	if(level == 1 && timeList.size())
 	{
 		long selectabs = 5000000;
 
@@ -152,8 +183,8 @@ void StdIOManager::processOneEvent(bool blocking)
 			tonotify--;
 		}
 	}
-	/* handle timers */
-	if(timeList.size())
+	/* handle timers - only at level 1 */
+	if(level == 1 && timeList.size())
 	{
 		struct timeval currenttime;
 		gettimeofday(&currenttime,0);
@@ -166,7 +197,11 @@ void StdIOManager::processOneEvent(bool blocking)
 		}
 	}
 
-	NotificationManager::the()->run();
+	// notifications not carried out reentrant
+	if(level == 1)
+		NotificationManager::the()->run();
+
+	level--;
 }
 
 void StdIOManager::run()

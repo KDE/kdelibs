@@ -63,7 +63,7 @@ SocketConnection::SocketConnection(int fd)
 	printf("socketconnection created, fd = %d\n",fd);
 	this->fd = fd;
 	Dispatcher::the()->ioManager()->watchFD(fd,
-									IOType::read|IOType::except,this);
+									IOType::read|IOType::except|IOType::reentrant,this);
 	initReceive();
 }
 
@@ -89,7 +89,7 @@ void SocketConnection::qSendBuffer(Buffer *buffer)
 
 		// but if it blocks, we'll need to watch for write chances to send
 		// that buffer later
-		Dispatcher::the()->ioManager()->watchFD(fd,IOType::write,this);
+		Dispatcher::the()->ioManager()->watchFD(fd,IOType::write|IOType::reentrant,this);
 	}
 	pending.push_back(buffer);
 }

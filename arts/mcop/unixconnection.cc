@@ -98,7 +98,7 @@ UnixConnection::UnixConnection(string url)
 	if(!_broken)
 	{
 		Dispatcher::the()->ioManager()->watchFD(fd,
-									IOType::read|IOType::except,this);
+									IOType::read|IOType::except|IOType::reentrant,this);
 		initReceive();
 	}
 }

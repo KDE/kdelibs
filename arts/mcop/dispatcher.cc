@@ -240,12 +240,12 @@ Dispatcher *Dispatcher::the()
 
 Buffer *Dispatcher::waitForResult(long requestID, Connection *connection)
 {
-	Buffer *b;
+	Buffer *b = 0;
 
-	do {
+	while(!b && !connection->broken()) {
 		_ioManager->processOneEvent(true);
 		b = requestResultPool[requestID];
-	} while(!b && !connection->broken());
+	}
 
 	requestResultPool.releaseSlot(requestID);
 
