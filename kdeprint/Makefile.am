@@ -1,11 +1,47 @@
-icondata_DATA = kdeprint_collate.png kdeprint_collate_reverse.png kdeprint_color.png kdeprint_duplex_none.png \
-		kdeprint_duplex_long.png kdeprint_duplex_short.png kdeprint_grayscale.png kdeprint_landscape.png \
-		kdeprint_nup1.png kdeprint_nup2.png kdeprint_nup4.png kdeprint_portrait.png kdeprint_revlandscape.png \
-		kdeprint_revportrait.png kdeprint_uncollate.png kdeprint_uncollate_reverse.png
-icondatadir = $(kde_datadir)/kdeprint/pics
+CUPSSUBDIR = @CUPSSUBDIR@
 
-stdicon_ICON = kdeprint_job kdeprint_job_error kdeprint_job_process kdeprint_job_stopped kdeprint_printer \
-	       kdeprint_printer_class kdeprint_printer_class_stopped kdeprint_printer_defect kdeprint_printer_remote \
-	       kdeprint_printer_remote_stopped kdeprint_printer_stopped kdeprint_printer_remote_process \
-	       kdeprint_printer_process kdeprint_printer_class_process
-stdicondir = $(kde_datadir)/kdeprint/icons
+SUBDIRS = . management $(CUPSSUBDIR) lpd
+
+INCLUDES= $(all_includes)
+
+lib_LTLIBRARIES = libkdeprint.la
+
+libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp kmprinter.cpp \
+		         kmuimanager.cpp kmvirtualmanager.cpp driver.cpp driveritem.cpp droptionview.cpp \
+			 driverview.cpp maticscanner.cpp maticparser.cpp matic.cpp kmdbentry.cpp \
+		         kprintpreview.cpp kprinter.cpp kprinterimpl.cpp kprintdialog.cpp kprintdialogpage.cpp \
+			 kpcopiespage.cpp kpdriverpage.cpp kprinterpropertydialog.cpp kpgeneralpage.cpp kpqtpage.cpp
+libkdeprint_la_LDFLAGS = $(all_libraries) -version 0:1
+libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIB_KFILE) -lz
+libkdeprint_la_METASOURCES = AUTO
+
+noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmobject.h kmprinter.h \
+		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
+		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
+		 kprintdialogpage.h kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
+		 kpqtpage.h
+
+include_HEADERS = kprinter.h
+
+kdeprint_HEADERS = kmmainview.h
+kdeprintdir = $(includedir)/kdeprint
+
+EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc
+
+#messages:
+#        $(XGETTEXT) $(libkdeprint_la_SOURCES) -o $(podir)/kdeprint.pot
+
+# installation of UI files
+uidata_DATA = kprintpreviewui.rc
+uidatadir = $(kde_confdir)/ui
+
+# Test page
+testpage_DATA = testprint.ps
+testpagedir = $(kde_datadir)/kdeprint
+
+# parser and scanner
+maticparser.cpp: matic.h maticparser.yy
+	bison -d -p matic maticparser.yy -o maticparser.cpp
+
+maticscanner.cpp: matic.h maticparser.cpp maticscanner.ll
+	flex -omaticscanner.cpp -Pmatic maticscanner.ll
