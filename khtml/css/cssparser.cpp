@@ -777,6 +777,7 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = validUnit( value, FLength, strict&(!nonCSSHint) );
 	break;
 
+    case CSS_PROP_TEXT_INDENT:          // <length> | <percentage> | inherit
     case CSS_PROP_PADDING_TOP:          //// <padding-width> | inherit
     case CSS_PROP_PADDING_RIGHT:        //   Which is defined as
     case CSS_PROP_PADDING_BOTTOM:       //   <length> | <percentage>
@@ -784,10 +785,16 @@ bool CSSParser::parseValue( int propId, bool important )
 	valid_primitive = ( !id && validUnit( value, FLength|FPercent, strict&(!nonCSSHint) ) );
 	break;
 
-    case CSS_PROP_TEXT_INDENT:          // <length> | <percentage> | inherit
+    case CSS_PROP_MAX_HEIGHT:           // <length> | <percentage> | none | inherit
+    case CSS_PROP_MAX_WIDTH:            // <length> | <percentage> | none | inherit
+	if ( id == CSS_VAL_NONE ) {
+	    valid_primitive = true;
+	    break;
+	}
+	/* nobreak */
     case CSS_PROP_MIN_HEIGHT:           // <length> | <percentage> | inherit
     case CSS_PROP_MIN_WIDTH:            // <length> | <percentage> | inherit
-    	valid_primitive = ( !id && validUnit( value, FLength|FPercent, strict&(!nonCSSHint) ) );
+    	valid_primitive = ( !id && validUnit( value, FLength|FPercent|FNonNeg, strict&(!nonCSSHint) ) );
 	break;
 
     case CSS_PROP_FONT_SIZE:
@@ -818,21 +825,13 @@ bool CSSParser::parseValue( int propId, bool important )
 	    valid_primitive = ( !id && validUnit( value, FLength|FPercent, strict&(!nonCSSHint) ) );
 	break;
 
-    case CSS_PROP_MAX_HEIGHT:           // <length> | <percentage> | none | inherit
-    case CSS_PROP_MAX_WIDTH:            // <length> | <percentage> |s none | inherit
-	if ( id == CSS_VAL_NONE )
-	    valid_primitive = true;
-	else
-	    valid_primitive = ( !id && validUnit( value, FLength|FPercent, strict&(!nonCSSHint) ) );
-	break;
-
     case CSS_PROP_HEIGHT:               // <length> | <percentage> | auto | inherit
     case CSS_PROP_WIDTH:                // <length> | <percentage> | auto | inherit
 	if ( id == CSS_VAL_AUTO )
 	    valid_primitive = true;
-	    else
-		// ### handle multilength case where we allow relative units
-		valid_primitive = ( !id && validUnit( value, FLength|FPercent|FNonNeg, strict&(!nonCSSHint) ) );
+	else
+	    // ### handle multilength case where we allow relative units
+	    valid_primitive = ( !id && validUnit( value, FLength|FPercent|FNonNeg, strict&(!nonCSSHint) ) );
 	break;
 
     case CSS_PROP_BOTTOM:               // <length> | <percentage> | auto | inherit
@@ -855,8 +854,7 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
             break;
 	}
-	// break explicitly missing, looking for <number>
-
+	/* nobreak */
     case CSS_PROP_ORPHANS:              // <integer> | inherit
     case CSS_PROP_WIDOWS:               // <integer> | inherit
 	// ### not supported later on
