@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 MimeType=text/plain
-Comment=Plain Text
+Comment=Plain Text Document
 Comment[af]=Eenvoudig Teks
 Comment[ar]=نص
 Comment[az]=Düz Mətn
@@ -20,6 +20,7 @@ Comment[eu]=Testu Laua
 Comment[fa]=متن ساده
 Comment[fi]=Normaali teksti
 Comment[fr]=Texte simple
+Comment[ga]=Téacs Simplí
 Comment[gl]=Texto Plano
 Comment[he]=טקסט רגיל
 Comment[hr]=Čisti tekst
@@ -33,6 +34,7 @@ Comment[lt]=Paprastas Tekstas
 Comment[lv]=Atklāts Teksts
 Comment[mi]=Panui Mäori
 Comment[mk]=Обичен текст
+Comment[mn]=Энгийн текст
 Comment[mt]=Test Sempliċi
 Comment[nb]=Enkel tekst
 Comment[nl]=Platte tekst
