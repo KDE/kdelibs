@@ -1081,8 +1081,7 @@ class PostErrorJob : public TransferJob
 {
 public:
 
-  // KDE 4: Make it const QString &
-  PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
+  PostErrorJob(const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
       : TransferJob(KURL(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
     m_error = KIO::ERR_POST_DENIED;
