@@ -101,7 +101,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "tis620.2533-1",
     "gb2312.1980-0",
     "gb2312.1980-0",
-    "big5-0"
+	"big5-0",
     "big5-0",
     "tscii-0",
     "utf8",
@@ -136,8 +136,8 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Set_Th_TH,
     QFont::Set_GBK,
     QFont::Set_Zh,
-    QFont::Set_Zh_TW,
     QFont::Set_Big5,
+    QFont::Set_Zh_TW,
     QFont::TSCII,
     QFont::Unicode,
     QFont::Unicode,
@@ -200,7 +200,7 @@ void KCharsetsPrivate::getAvailableCharsets()
 	    family = family.right( family.length() - family.find('-' ) - 1);
 	//kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *it << " " << family <<endl;
 	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
-	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << charsets->xNameToID( *ch ) << endl;
+	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
 	    QFont::CharSet qcs = xNameToID( cs );
             if ( qcs != QFont::AnyCharSet )
