@@ -1,21 +1,21 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-*/     
+*/
 
 #ifndef __kbrowser_h__
 #define __kbrowser_h__
@@ -42,6 +42,8 @@ public:
   virtual void reparseConfiguration() = 0;
   virtual void saveLocalProperties() = 0;
   virtual void savePropertiesAsDefault() = 0;
+  // Reimplement if the view shows icons (Icon/Tree/DirTree...)
+  virtual void refreshMimeTypes() {}
 };
 
 class PrintingExtension : public QObject
@@ -68,7 +70,7 @@ public:
   virtual void moveSelection( const QString &destinationURL = QString::null ) = 0;
 
 signals:
-  void selectionChanged();  
+  void selectionChanged();
 
 };
 
@@ -86,13 +88,13 @@ public:
     MenuEdit  = 0x02,
     ToolBar   = 0x04
   };
-  
+
   struct ViewAction
   {
     ViewAction() : m_action( 0L ) { }
     ViewAction( QAction *action, int flags )
     : m_action( action ), m_flags( flags ) { }
-    
+
     QAction *m_action;
     int m_flags;
   };
@@ -107,7 +109,7 @@ public:
 
   virtual void saveState( QDataStream &stream )
   { stream << url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
-  
+
   virtual void restoreState( QDataStream &stream )
   { QString u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
     openURL( u, false, xOfs, yOfs ); }
@@ -125,7 +127,7 @@ signals:
   void loadingProgress( int percent );
   void speedProgress( int bytesPerSecond );
   void popupMenu( const QPoint &_global, const KFileItemList &_items );
-  
+
 private:
   QValueList<ViewAction> m_actionCollection;
 };
