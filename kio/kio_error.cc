@@ -12,7 +12,7 @@ QString kioErrorString( int _errid, const char *_errortext )
   switch( _errid )
     {
     case  ERR_CANNOT_OPEN_FOR_READING:
-	result = i18n( "Could not read\n%1" ).arg( _errortext );      
+      result = i18n( "Could not read\n%1" ).arg( _errortext );      
       break;
     case  ERR_CANNOT_OPEN_FOR_WRITING:
       result = i18n( "Could not write to\n%1" ).arg( _errortext );
@@ -112,6 +112,7 @@ QString kioErrorString( int _errid, const char *_errortext )
       break;
     case  ERR_COULD_NOT_AUTHENTICATE:
       result = i18n( "Athorization failed, %1 authentication not supported" ).arg( _errortext );
+      break;
     case  ERR_WARNING:
       result = i18n( "Warning: %1" ).arg( _errortext );
       break;
