@@ -1578,7 +1578,13 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
   return QTime(-1, -1, -1); // return invalid date if it didn't work
 }
 
+//BIC: merge with below
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
+{
+  return formatTime( pTime, includeSecs, false );
+}
+
+QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuration) const
 {
   const QString rst = timeFormat();
 
@@ -1610,7 +1616,10 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	      put_it_in( buffer, index, pTime.hour() );
 	      break;
 	    case 'I':
-	      put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
+	      if ( isDuration )
+	          put_it_in( buffer, index, pTime.hour() );
+	      else
+	          put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
 	      break;
 	    case 'M':
 	      put_it_in( buffer, index, pTime.minute() );
@@ -1631,12 +1640,13 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	    case 'l':
 	      // to share the code
 	      if ( rst.at( format_index ).unicode() == 'l' )
-		number = (pTime.hour() + 11) % 12 + 1;
+		number = isDuration ? pTime.hour() : (pTime.hour() + 11) % 12 + 1;
 	      if ( number / 10 )
 		buffer[index++] = number / 10 + '0';
 	      buffer[index++] = number % 10 + '0';
 	      break;
 	    case 'p':
+	      if ( !isDuration )
 	      {
 		QString s;
 		if ( pTime.hour() >= 12 )
