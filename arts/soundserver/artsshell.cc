@@ -413,6 +413,26 @@ void stereoEffect(Arts::SoundServerV2 server, int argc, char **argv)
 	cerr << "invalid arguments" << endl;
 }
 
+// traderquery command
+void traderQuery(int argc, char **argv)
+{
+	Arts::TraderQuery query;
+
+	for(int i=0;i<argc;i++)
+	{
+		char *buffer = strdup(argv[i]);
+		char *key = strtok(buffer,"=");
+		char *value = strtok(0,"\n");
+
+		query.supports(key, value);
+	}
+	vector<Arts::TraderOffer> *offers = query.query();
+	vector<Arts::TraderOffer>::iterator i;
+	for (i = offers->begin(); i != offers->end(); i++)
+		cout << i->interfaceName() << endl;
+	delete offers;
+}
+
 void help()
 {
 	cout << "Commands:\n\
@@ -484,6 +504,11 @@ int executeCommand(Arts::SoundServerV2 server, int argc, char **argv)
 
 	if(!strcmp(argv[0], "stereoeffect") && (argc >= 2)) {
 		stereoEffect(server, argc-1, &argv[1]);
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "traderquery")) {
+		traderQuery(argc-1, &argv[1]);
 		return 0;
 	}
 
