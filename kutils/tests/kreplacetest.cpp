@@ -122,7 +122,11 @@ int main( int argc, char **argv )
 "    You should have received a copy of the GNU Library General Public License\n"
 "    along with this library; see the file COPYING.LIB.  If not, write to\n"
 "    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
-"    Boston, MA 02111-1307, USA.";
+"    Boston, MA 02111-1307, USA.\n"
+"More tests:\n"
+"ThisThis This, This. This\n"
+"aGNU\n"
+"free";
   KReplaceTest test( QStringList::split( '\n', text, true ) );
 
   test.replace( "GNU", "KDE", /*KReplaceDialog::PromptOnReplace*/ 0 );

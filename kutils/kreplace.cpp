@@ -28,6 +28,9 @@
 #include "kreplacedialog.h"
 #include <qregexp.h>
 
+//#define DEBUG_REPLACE
+#define INDEX_NOMATCH -1
+
 class KReplaceNextDialog : public KDialogBase
 {
 public:
@@ -99,48 +102,70 @@ void KReplace::displayFinalDialog() const
 
 KFind::Result KReplace::replace()
 {
-    //kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
-    Q_ASSERT( m_index != -1 );
+#ifdef DEBUG_REPLACE
+    kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
+#endif
+    Q_ASSERT( m_index != INDEX_NOMATCH );
     if ( m_text.isEmpty() ) {
-        m_index = -1;
+        m_index = INDEX_NOMATCH;
+        m_lastResult = NoMatch;
         return NoMatch;
     }
-    do
+
+    if ( m_lastResult == Match )
     {
+        // Move on before doing a match
+        if (m_options & KFindDialog::FindBackwards) {
+            m_index--;
+            if ( m_index == -1 ) // don't call KFind::find with -1, it has a special meaning
+            {
+                m_lastResult = NoMatch;
+                return NoMatch;
+            }
+        } else
+            m_index++;
+    }
+
+    do // this loop is only because validateMatch can fail
+    {
+#ifdef DEBUG_REPLACE
+        kdDebug() << k_funcinfo << "beginning of loop: m_index=" << m_index << endl;
+#endif
         // Find the next match.
-        if (m_options & KReplaceDialog::RegularExpression)
+        if ( m_options & KReplaceDialog::RegularExpression )
             m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
         else
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
-        if (m_index != -1)
+#ifdef DEBUG_REPLACE
+        kdDebug() << k_funcinfo << "KFind::find returned m_index=" << m_index << endl;
+#endif
+        if ( m_index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
             if ( validateMatch( m_text, m_index, m_matchedLength ) )
             {
-                if (m_options & KReplaceDialog::PromptOnReplace)
+                if ( m_options & KReplaceDialog::PromptOnReplace )
                 {
-                    //kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
-                    if ( !m_dialogClosed )
-                    {
-                        // Display accurate initial string and replacement string, they can vary
-                        QString matchedText = m_text.mid( m_index, m_matchedLength );
-                        QString rep = matchedText;
-                        KReplace::replace(rep, m_replacement, 0, m_matchedLength);
-                        dialog()->setLabel( matchedText, rep );
-                    }
+#ifdef DEBUG_REPLACE
+                    kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
+#endif
+                    // Display accurate initial string and replacement string, they can vary
+                    QString matchedText = m_text.mid( m_index, m_matchedLength );
+                    QString rep = matchedText;
+                    KReplace::replace(rep, m_replacement, 0, m_matchedLength);
+                    dialog()->setLabel( matchedText, rep );
+                    dialog()->show();
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
                     emit highlight(m_text, m_index, m_matchedLength);
 
-                    if ( !m_dialogClosed )
-                        dialog()->show();
+                    if ( m_dialogClosed ) {
+                        delete m_dialog; // hide it again
+                        m_dialog = 0L;
+                    }
 
-                    // Get ready for next match
-                    if (m_options & KFindDialog::FindBackwards)
-                        m_index--;
-                    else
-                        m_index++;
+                    m_lastResult = Match;
                     return Match;
                 }
                 else
@@ -153,10 +178,12 @@ KFind::Result KReplace::replace()
                     m_index -= m_matchedLength;
                 else
                     m_index += m_matchedLength;
-        }
+        } else
+            m_index = INDEX_NOMATCH;
     }
-    while (m_index != -1);
+    while (m_index != INDEX_NOMATCH);
 
+    m_lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -232,11 +259,17 @@ void KReplace::doReplace()
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
     emit replace(m_text, m_index, replacedLength, m_matchedLength);
+#ifdef DEBUG_REPLACE
+    kdDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
+#endif
     m_replacements++;
     if (m_options & KReplaceDialog::FindBackwards)
         m_index--;
     else
         m_index += replacedLength;
+#ifdef DEBUG_REPLACE
+    kdDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
+#endif
 }
 
 void KReplace::resetCounts()

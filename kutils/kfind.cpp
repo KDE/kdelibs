@@ -29,6 +29,8 @@
 
 //#define DEBUG_FIND
 
+#define INDEX_NOMATCH -1
+
 class KFindNextDialog : public KDialogBase
 {
 public:
@@ -62,7 +64,8 @@ void KFind::init( const QString& pattern )
     m_pattern = pattern;
     m_dialog = 0;
     m_dialogClosed = false;
-    m_index = -1;
+    m_index = INDEX_NOMATCH;
+    m_lastResult = NoMatch;
     if (m_options & KFindDialog::RegularExpression)
         m_regExp = new QRegExp(pattern, m_options & KFindDialog::CaseSensitive);
     else {
@@ -81,7 +84,7 @@ bool KFind::needData() const
     if (m_options & KFindDialog::FindBackwards)
         return m_index < 0;
     else
-        return m_index >= (int)m_text.length() || m_index == -1;
+        return m_index >= (int)m_text.length() || m_index == INDEX_NOMATCH;
 }
 
 void KFind::setData( const QString& data, int startPos )
@@ -96,7 +99,8 @@ void KFind::setData( const QString& data, int startPos )
 #ifdef DEBUG_FIND
     kdDebug() << "setData: '" << m_text << "' m_index=" << m_index << endl;
 #endif
-    Q_ASSERT( m_index != -1 );
+    Q_ASSERT( m_index != INDEX_NOMATCH );
+    m_lastResult = NoMatch;
 }
 
 KDialogBase* KFind::findNextDialog( bool create )
@@ -112,26 +116,41 @@ KDialogBase* KFind::findNextDialog( bool create )
 
 KFind::Result KFind::find()
 {
-    Q_ASSERT( m_index != -1 );
+    Q_ASSERT( m_index != INDEX_NOMATCH );
     if ( m_text.isEmpty() ) {
 #ifdef DEBUG_FIND
         kdDebug() << k_funcinfo << "Empty -> NoMatch" << endl;
 #endif
-        m_index = -1;
+        m_index = INDEX_NOMATCH;
+        m_lastResult = NoMatch;
         return NoMatch;
+    }
+
+    if ( m_lastResult == Match )
+    {
+        // Move on before looking for the next match, _if_ we just found a match
+        if (m_options & KFindDialog::FindBackwards) {
+            m_index--;
+            if ( m_index == -1 ) // don't call KFind::find with -1, it has a special meaning
+            {
+                m_lastResult = NoMatch;
+                return NoMatch;
+            }
+        } else
+            m_index++;
     }
 
 #ifdef DEBUG_FIND
     kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
 #endif
-    do
+    do // this loop is only because validateMatch can fail
     {
-        // Find the next match.
-        if (m_options & KFindDialog::RegularExpression)
+        // Find the next candidate match.
+        if ( m_options & KFindDialog::RegularExpression )
             m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
         else
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
-        if (m_index != -1)
+        if ( m_index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
             if ( validateMatch( m_text, m_index, m_matchedLength ) )
@@ -144,14 +163,10 @@ KFind::Result KFind::find()
                 if ( !m_dialogClosed )
                     findNextDialog(true)->show();
 
-                // Get ready for next match
-                if (m_options & KFindDialog::FindBackwards)
-                    m_index--;
-                else
-                    m_index++;
 #ifdef DEBUG_FIND
                 kdDebug() << k_funcinfo << "Match. Next m_index=" << m_index << endl;
 #endif
+                m_lastResult = Match;
                 return Match;
             }
             else // Skip match
@@ -159,13 +174,15 @@ KFind::Result KFind::find()
                     m_index -= m_matchedLength;
                 else
                     m_index += m_matchedLength;
-        }
+        } else
+            m_index = INDEX_NOMATCH;
     }
-    while (m_index != -1);
+    while (m_index != INDEX_NOMATCH);
 
 #ifdef DEBUG_FIND
     kdDebug() << k_funcinfo << "NoMatch. m_index=" << m_index << endl;
 #endif
+    m_lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -387,30 +404,6 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
 
 void KFind::setOptions( long options )
 {
-    // For now always true. But if we ever implement "letting the app say
-    // where 'find next' should start from", like kwrite/kate does, then
-    // this adjustement must be disabled (by some future method).
-    //bool adjust = true;
-    if ( /*adjust &&*/ m_options != options )
-    {
-        bool wasBack = (m_options & KFindDialog::FindBackwards);
-        bool isBack = (options & KFindDialog::FindBackwards);
-#ifdef DEBUG_FIND
-        kdDebug() << k_funcinfo << "wasBack=" << wasBack << " isBack=" << isBack << " m_index=" << m_index << endl;
-#endif
-        // If we changed direction, the "++ or --" done right after the last match
-        // was done in the wrong direction. So undo it, and go the other way, to
-        // avoid catching the same match again.
-        if ( wasBack && !isBack )
-            m_index += 2;
-        else if ( !wasBack && isBack ) {
-            // If m_index==-1, setData will be called anyway.
-            m_index = QMAX( -1, m_index - 2 );
-        }
-#ifdef DEBUG_FIND
-        kdDebug() << "setOptions: m_index now " << m_index << endl;
-#endif
-    }
     m_options = options;
 }
 
