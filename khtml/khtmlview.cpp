@@ -323,7 +323,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     QApplication::sendEvent( m_part, &event );
 }
 
-void KHTMLView::layout(bool)
+void KHTMLView::layout(bool force)
 {
     //### take care of frmaes (hide scrollbars,...)
     if( m_part->xmlDocImpl() ) {
@@ -350,8 +350,14 @@ void KHTMLView::layout(bool)
 
         //QTime qt;
         //qt.start();
+        if (force) {
+            root->setMinMaxKnown(false);
+            root->setLayouted(false);
+            d->timerId = 42; //make sure we don't recurse into relayouts
+        }
+        if (!root->layouted())
             root->layout();
-            //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+        //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
     }
@@ -979,8 +985,8 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
 
         root->setLayouted( false );
-	root->setMinMaxKnown( false );
-	root->layout();
+        root->setMinMaxKnown( false );
+        root->layout();
 
         // ok. now print the pages.
         kdDebug(6000) << "printing: html page width = " << root->docWidth()
@@ -1111,7 +1117,7 @@ void KHTMLView::restoreScrollBar ( )
     QScrollView::setVScrollBarMode(d->vmode);
     if (visibleWidth() != ow)
     {
-        layout();
+        layout(true /* force */);
         updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
@@ -1324,7 +1330,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
     killTimers();
     layout();
-    repaintContents( 0, 0, visibleWidth(), visibleHeight(), FALSE ); 
+    repaintContents( 0, 0, visibleWidth(), visibleHeight(), FALSE );
     d->timerId = 0;
 }
 
