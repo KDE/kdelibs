@@ -19,6 +19,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.52  1998/07/02 15:42:43  ettrich
+// Matthias: Added a new signal
+//
+//                  void shutDown();
+//
+//           which is emitted when the client is killed (for example via
+//           kwm's logout)
+//
 // Revision 1.51  1998/06/30 20:09:35  kalle
 // version macros:
 //
@@ -741,7 +749,7 @@ private:
   virtual void kdisplaySetStyleAndFont();
   virtual void readSettings();
   void resizeAll();
-  virtual void KApplication::applyGUIStyle(GUIStyle newstyle);
+  virtual void applyGUIStyle(GUIStyle newstyle);
 
 public:
 
