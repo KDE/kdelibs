@@ -35,8 +35,6 @@
 #include <qvgroupbox.h>
 #include <qhbox.h>
 
-#include <iostream.h>
-
 #undef Bool
 
 class MetaPropsScrollView : public QScrollView
