@@ -62,6 +62,8 @@ public:
     /**
      * Constructor used internally by Kicker. You don't really want to use it.
      * @param startDir a directory to associate with this menu
+     * @param parent parent object
+     * @param name name of the object
      * @see path(), setPath()
      */
     KPanelMenu(const QString &startDir, QWidget *parent=0, const char *name=0);

@@ -143,7 +143,7 @@ public:
   /**
    *  @since 3.2
    *
-   *  Returns true if an item with @id exists already in KStatusBar,
+   *  Returns true if an item with @p id exists already in KStatusBar,
    *  otherwise returns false.
    *
    *  @param id id of the item

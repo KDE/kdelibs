@@ -49,15 +49,22 @@ public:
    * Constructs a combobox widget with parent parent called name.
    *
    * @param parent The parent of the combo box
+   * @param name The name of the combo box
    */
   KLanguageButton(QWidget * parent = 0, const char * name = 0);
+  
   /**
    * Constructs a version with static text. The parent parent is called name.
    *
-   * @text The text of the button.
-   * @param parent The parent of the button.
+   * @param text The text of the button
+   * @param parent The parent of the button
+   * @param name The name of the button
    */
   KLanguageButton(const QString & text, QWidget * parent = 0, const char * name = 0);
+  
+  /**
+   * Deconstructor
+   */ 
   virtual ~KLanguageButton();
 
   /**
@@ -85,7 +92,6 @@ public:
   /**
    * Inserts a seperator item into the combo box. A negative index will append the item.
    *
-   * @param id The text string used to identify the item.
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
