@@ -173,10 +173,11 @@ void KAboutContributor::updateLayout( void )
   }
 
   int row = 0;
-  if( mText[0]->text() != QString::null ) { row += 1; }
-  if( mText[1]->text() != QString::null ) { row += 1; }
-  if( mText[2]->text() != QString::null ) { row += 1; }
-  if( mText[3]->text() != QString::null ) { row += 1; }
+  if( !mText[0]->text().isEmpty() ) { row += 1; }
+  if( !mText[1]->text().isEmpty() ) { row += 1; }
+  if( !mText[2]->text().isEmpty() ) { row += 1; }
+  if( !mText[3]->text().isEmpty() ) { row += 1; }
+
 
   QGridLayout *gbox;
   if( row == 0 )
@@ -190,7 +191,7 @@ void KAboutContributor::updateLayout( void )
   }
   else
   {
-    if( mText[0]->text() == QString::null && mShowHeader == false )
+    if( mText[0]->text().isEmpty() && mShowHeader == false )
     {
       gbox = new QGridLayout( this, row, 1, frameWidth()+1, 2 );
     }
@@ -212,7 +213,7 @@ void KAboutContributor::updateLayout( void )
 	mText[i]->setFixedHeight( fontMetrics().lineSpacing() );
       }
 
-      if( mText[i]->text() != QString::null )
+      if( !mText[i]->text().isEmpty() )
       {
 	if( mShowHeader == true )
 	{
