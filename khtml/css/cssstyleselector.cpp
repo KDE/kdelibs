@@ -2189,10 +2189,11 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         FontDef fontDef = style->htmlFont().fontDef;
         int oldSize;
         float size = 0;
-        int minFontSize = settings->minFontSize();
 
         float toPix = paintDeviceMetrics->logicalDpiY()/72.;
         if (toPix  < 96./72.) toPix = 96./72.;
+
+        int minFontSize = settings->minFontSize() * toPix;
 
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
