@@ -573,7 +573,11 @@ KLauncher::slotAutoStart()
       {
          // Done
          // Emit signal
-         emitDCOPSignal("autoStartDone()", QByteArray());
+	 QCString autoStartSignal( "autoStartDone()" );
+	 int phase = mAutoStart.phase();
+	 if ( phase > 1 )
+	     autoStartSignal.sprintf( "autoStart%dDone()", phase ); 
+         emitDCOPSignal(autoStartSignal, QByteArray());
          return;
       }
       s = new KService(service);

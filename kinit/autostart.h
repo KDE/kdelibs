@@ -32,6 +32,7 @@ public:
   void loadAutoStartList();
   QString startService();
   void    setPhase(int phase);
+  int     phase() const { return m_phase; }
 
 private:
   AutoStartList *m_startList;  
