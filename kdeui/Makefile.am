@@ -18,7 +18,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kdocktoolbar.h kcolorbtn.h kiconloaderdialog.h \
-		kwmmapp.h kbuttonbox.h kconfigmodule.h ktablistbox.h
+		kwmmapp.h kbuttonbox.h kconfigmodule.h ktablistbox.h knewpanner.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
@@ -28,7 +28,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		klined.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
-		kbuttonbox.cpp ktablistbox.cpp
+		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -38,7 +38,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
 		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
-		ktablistbox.moc
+		ktablistbox.moc knewpanner.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -69,6 +69,7 @@ kiconloaderdialog.cpp: kiconloaderdialog.moc
 kwmmapp.cpp: kwmmapp.moc
 kbuttonbox.cpp: kbuttonbox.moc
 ktablistbox.cpp: ktablistbox.moc
+knewpanner.cpp: knewpanner.moc
 
 kledlamp.moc: kledlamp.h
 	$(MOC) kledlamp.h -o kledlamp.moc
@@ -156,6 +157,9 @@ kbuttonbox.moc: kbuttonbox.h
 
 ktablistbox.moc: ktablistbox.h
 	$(MOC) ktablistbox.h -o ktablistbox.moc
+
+knewpanner.moc: knewpanner.h
+	$(MOC) knewpanner.h -o knewpanner.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 datadir = $(kde_datadir)/kde/pics
