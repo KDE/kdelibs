@@ -65,6 +65,20 @@ private:
     static QPtrDict<KBookmarkBarPrivate>* d_ptr;
 };
 
+static bool *s_advanced = 0;
+
+static bool isAdvanced()
+{
+  if (!s_advanced) 
+  {
+    s_advanced = new bool;
+    KConfig config("kbookmarkrc", false, false);
+    config.setGroup("Bookmarks");
+    (*s_advanced) = config.readBoolEntry("AdvancedAddBookmark", false);
+  }
+  return (*s_advanced);
+}
+
 class KBookmarkBarPrivate : public Private<KBookmarkBar, KBookmarkBarPrivate> {
 public:
     QPtrList<KAction> m_actions;
@@ -82,10 +96,11 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 {
     m_lstSubMenus.setAutoDelete( true );
 
-#if 0
-    m_toolBar->setAcceptDrops( true );
-    m_toolBar->installEventFilter( this ); // for drops
-#endif
+    if ( isAdvanced() )
+    {
+        m_toolBar->setAcceptDrops( true );
+        m_toolBar->installEventFilter( this ); // for drops
+    }
 
     dptr()->m_actions.setAutoDelete( true );
 
