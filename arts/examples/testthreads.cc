@@ -32,18 +32,9 @@ int main()
 	else
 		printf("No system threads (counters will not count parallel).\n");
 
-	Mutex mutex;
-
-	for(int i=0;i<10000000;i++)
-	{
-		mutex.lock();
-		mutex.unlock();
-	}
-/*
 	c1.start();
 	c2.start();
 	c1.waitDone();
 	c2.waitDone();
-*/
 	return 0;
 }
