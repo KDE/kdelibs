@@ -156,7 +156,7 @@ namespace KStdAction
 	inline KAction* create( StdAction id,
 		const QObject *recvr, const char *slot,
 		KActionCollection* parent )
-		{ return create( id, 0, recvr, slot, parent ); }
+		{ return KStdAction::create( id, 0, recvr, slot, parent ); }
 
 	/**
 	* @obsolete. Creates an action corresponding to the
@@ -165,7 +165,7 @@ namespace KStdAction
 	inline KAction *action(StdAction act_enum,
 		const QObject *recvr, const char *slot,
 		KActionCollection *parent, const char *name = 0L )
-		{ return create( act_enum, name, recvr, slot, parent ); }
+		{ return KStdAction::create( act_enum, name, recvr, slot, parent ); }
 
 	/**
 	 * This will return the internal name of a given standard action.

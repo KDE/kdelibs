@@ -179,93 +179,93 @@ const char* name( StdAction id )
 }
 
 KAction *openNew( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( New, name, recvr, slot, parent ); }
+	{ return KStdAction::create( New, name, recvr, slot, parent ); }
 KAction *open( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Open, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Open, name, recvr, slot, parent ); }
 KRecentFilesAction *openRecent( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return (KRecentFilesAction*) create( OpenRecent, name, recvr, slot, parent ); }
+	{ return (KRecentFilesAction*) KStdAction::create( OpenRecent, name, recvr, slot, parent ); }
 KAction *save( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Save, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Save, name, recvr, slot, parent ); }
 KAction *saveAs( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( SaveAs, name, recvr, slot, parent ); }
+	{ return KStdAction::create( SaveAs, name, recvr, slot, parent ); }
 KAction *revert( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Revert, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Revert, name, recvr, slot, parent ); }
 KAction *print( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Print, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Print, name, recvr, slot, parent ); }
 KAction *printPreview( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( PrintPreview, name, recvr, slot, parent ); }
+	{ return KStdAction::create( PrintPreview, name, recvr, slot, parent ); }
 KAction *close( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Close, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Close, name, recvr, slot, parent ); }
 KAction *mail( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Mail, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Mail, name, recvr, slot, parent ); }
 KAction *quit( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Quit, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Quit, name, recvr, slot, parent ); }
 KAction *undo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Undo, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Undo, name, recvr, slot, parent ); }
 KAction *redo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Redo, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Redo, name, recvr, slot, parent ); }
 KAction *cut( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Cut, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Cut, name, recvr, slot, parent ); }
 KAction *copy( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Copy, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Copy, name, recvr, slot, parent ); }
 KAction *paste( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Paste, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Paste, name, recvr, slot, parent ); }
 KAction *selectAll( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( SelectAll, name, recvr, slot, parent ); }
+	{ return KStdAction::create( SelectAll, name, recvr, slot, parent ); }
 KAction *deselect( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Deselect, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Deselect, name, recvr, slot, parent ); }
 KAction *find( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Find, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Find, name, recvr, slot, parent ); }
 KAction *findNext( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FindNext, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FindNext, name, recvr, slot, parent ); }
 KAction *findPrev( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FindPrev, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FindPrev, name, recvr, slot, parent ); }
 KAction *replace( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Replace, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Replace, name, recvr, slot, parent ); }
 KAction *actualSize( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( ActualSize, name, recvr, slot, parent ); }
+	{ return KStdAction::create( ActualSize, name, recvr, slot, parent ); }
 KAction *fitToPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FitToPage, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FitToPage, name, recvr, slot, parent ); }
 KAction *fitToWidth( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FitToWidth, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FitToWidth, name, recvr, slot, parent ); }
 KAction *fitToHeight( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FitToHeight, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FitToHeight, name, recvr, slot, parent ); }
 KAction *zoomIn( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( ZoomIn, name, recvr, slot, parent ); }
+	{ return KStdAction::create( ZoomIn, name, recvr, slot, parent ); }
 KAction *zoomOut( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( ZoomOut, name, recvr, slot, parent ); }
+	{ return KStdAction::create( ZoomOut, name, recvr, slot, parent ); }
 KAction *zoom( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Zoom, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Zoom, name, recvr, slot, parent ); }
 KAction *redisplay( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Redisplay, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Redisplay, name, recvr, slot, parent ); }
 KAction *up( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Up, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Up, name, recvr, slot, parent ); }
 KAction *back( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Back, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Back, name, recvr, slot, parent ); }
 KAction *forward( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Forward, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Forward, name, recvr, slot, parent ); }
 KAction *home( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Home, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Home, name, recvr, slot, parent ); }
 KAction *prior( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Prior, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Prior, name, recvr, slot, parent ); }
 KAction *next( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Next, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Next, name, recvr, slot, parent ); }
 KAction *goTo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Goto, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Goto, name, recvr, slot, parent ); }
 KAction *gotoPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( GotoPage, name, recvr, slot, parent ); }
+	{ return KStdAction::create( GotoPage, name, recvr, slot, parent ); }
 KAction *gotoLine( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( GotoLine, name, recvr, slot, parent ); }
+	{ return KStdAction::create( GotoLine, name, recvr, slot, parent ); }
 KAction *firstPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( FirstPage, name, recvr, slot, parent ); }
+	{ return KStdAction::create( FirstPage, name, recvr, slot, parent ); }
 KAction *lastPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( LastPage, name, recvr, slot, parent ); }
+	{ return KStdAction::create( LastPage, name, recvr, slot, parent ); }
 KAction *addBookmark( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( AddBookmark, name, recvr, slot, parent ); }
+	{ return KStdAction::create( AddBookmark, name, recvr, slot, parent ); }
 KAction *editBookmarks( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( EditBookmarks, name, recvr, slot, parent ); }
+	{ return KStdAction::create( EditBookmarks, name, recvr, slot, parent ); }
 KAction *spelling( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Spelling, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Spelling, name, recvr, slot, parent ); }
 
 KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 {
@@ -297,25 +297,25 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
 }
 
 KAction *saveOptions( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( SaveOptions, name, recvr, slot, parent ); }
+	{ return KStdAction::create( SaveOptions, name, recvr, slot, parent ); }
 KAction *keyBindings( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( KeyBindings, name, recvr, slot, parent ); }
+	{ return KStdAction::create( KeyBindings, name, recvr, slot, parent ); }
 KAction *preferences( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Preferences, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Preferences, name, recvr, slot, parent ); }
 KAction *configureToolbars( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( ConfigureToolbars, name, recvr, slot, parent ); }
+	{ return KStdAction::create( ConfigureToolbars, name, recvr, slot, parent ); }
 KAction *help( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( Help, name, recvr, slot, parent ); }
+	{ return KStdAction::create( Help, name, recvr, slot, parent ); }
 KAction *helpContents( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( HelpContents, name, recvr, slot, parent ); }
+	{ return KStdAction::create( HelpContents, name, recvr, slot, parent ); }
 KAction *whatsThis( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( WhatsThis, name, recvr, slot, parent ); }
+	{ return KStdAction::create( WhatsThis, name, recvr, slot, parent ); }
 KAction *reportBug( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( ReportBug, name, recvr, slot, parent ); }
+	{ return KStdAction::create( ReportBug, name, recvr, slot, parent ); }
 KAction *aboutApp( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( AboutApp, name, recvr, slot, parent ); }
+	{ return KStdAction::create( AboutApp, name, recvr, slot, parent ); }
 KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return create( AboutKDE, name, recvr, slot, parent ); }
+	{ return KStdAction::create( AboutKDE, name, recvr, slot, parent ); }
 
 #if 0
 KAction *openNew(const QObject *recvr, const char *slot,
@@ -430,7 +430,7 @@ KAction *cut(const QObject *recvr, const char *slot,
 KAction *copy(const QObject *recvr, const char *slot,
                                                   QObject *parent, const char *name )
 {
-//	return create( Copy, dynamic_cast<KActionCollection*>(parent), recvr, slot, name );
+//	return KStdAction::create( Copy, dynamic_cast<KActionCollection*>(parent), recvr, slot, name );
     return new KAction(i18n("&Copy"), "editcopy",
                        KStdAccel::shortcut(KStdAccel::Copy), recvr, slot, parent,
                        name ? name : stdName(Copy));
@@ -454,7 +454,7 @@ KAction *selectAll(const QObject *recvr, const char *slot,
 
 KAction *deselect(const QObject *recvr, const char *slot, QObject *parent, const char *name )
 {
-    return create(Deselect, dynamic_cast<KActionCollection*>(parent), recvr, slot, name );
+    return KStdAction::create(Deselect, dynamic_cast<KActionCollection*>(parent), recvr, slot, name );
 }
 
 KAction *find(const QObject *recvr, const char *slot,
