@@ -261,6 +261,13 @@ public:
    */
   void showFileSharingPage();
 
+   /**
+    * Call this to make the filename lineedit readonly, to prevent the user
+    * from renaming the file.
+    * @since 3.2
+    */
+  void setFileNameReadOnly( bool ro );
+
 public slots:
   /**
    * Called when the user presses 'Ok'.
@@ -423,6 +430,8 @@ public:
    * Called after all plugins applied their changes
    */
   void postApplyChanges();
+
+  void setFileNameReadOnly( bool ro );
 
 protected slots:
   void slotEditFileType();

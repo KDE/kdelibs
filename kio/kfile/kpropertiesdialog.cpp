@@ -272,6 +272,20 @@ void KPropertiesDialog::showFileSharingPage()
     }
 }
 
+void KPropertiesDialog::setFileNameReadOnly( bool ro )
+{
+    KPropsDlgPlugin *it;
+
+    for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
+    {
+        KFilePropsPlugin* plugin = dynamic_cast<KFilePropsPlugin*>(it);
+        if ( plugin ) {
+            plugin->setFileNameReadOnly( ro );
+            break;
+        }
+    }
+}
+
 void KPropertiesDialog::slotStatResult( KIO::Job * )
 {
 }
@@ -580,6 +594,7 @@ public:
   {
     dirSizeJob = 0L;
     dirSizeUpdateTimer = 0L;
+    m_lined = 0;
   }
   ~KFilePropsPluginPrivate()
   {
@@ -595,6 +610,7 @@ public:
   bool bKDesktopMode;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
+  KLineEdit* m_lined;
 };
 
 KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
@@ -801,11 +817,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     nameArea = lab;
   } else
   {
-    KLineEdit *lined = new KLineEdit( d->m_frame );
-    lined->setText(filename);
-    nameArea = lined;
-    lined->setFocus();
-    connect( lined, SIGNAL( textChanged( const QString & ) ),
+    d->m_lined = new KLineEdit( d->m_frame );
+    d->m_lined->setText(filename);
+    nameArea = d->m_lined;
+    d->m_lined->setFocus();
+    connect( d->m_lined, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( nameFileChanged(const QString & ) ) );
   }
 
@@ -977,6 +993,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 // {
 //   return i18n ("&General");
 // }
+
+void KFilePropsPlugin::setFileNameReadOnly( bool ro )
+{
+  if ( d->m_lined )
+    d->m_lined->setReadOnly( ro );
+}
 
 void KFilePropsPlugin::slotEditFileType()
 {
