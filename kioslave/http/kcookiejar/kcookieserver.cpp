@@ -447,6 +447,9 @@ KCookieServer::findDOMCookies(QString url)
 QString
 KCookieServer::findDOMCookies(QString url, long windowId)
 {
+   // We don't wait for pending cookies because it locks up konqueror 
+   // which can cause a deadlock if it happens to have a popup-menu up.
+#if 0
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
@@ -458,6 +461,7 @@ KCookieServer::findDOMCookies(QString url, long windowId)
       mRequestList->append( request );
       return QString::null; // Talk to you later :-)
    }
+#endif
    return mCookieJar->findCookies(url, true, windowId);
 }
 
