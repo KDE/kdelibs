@@ -31,9 +31,9 @@
 #define YY_NO_UNPUT
 #define YY_NEVER_INTERACTIVE 1
 
-#include <cstdlib>
-#include <cstring>
-#include <cctype>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "core.h"
 
 using namespace std;

@@ -21,7 +21,7 @@
     */
 
 #include "buffer.h"
-#include <cstring>
+#include <string.h>
 #include <assert.h>
 
 using namespace std;
