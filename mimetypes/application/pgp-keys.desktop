@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/pgp-keys
+Icon=lock
+Patterns=*.pgp;*.gpg;*.asc
+Comment=OpenPGP Key Bundle
+X-KDE-AutoEmbed=true
+
