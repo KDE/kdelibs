@@ -3,7 +3,7 @@
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
- *                     2000 Dirk Mueller <mueller@kde.org>
+ *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
  *
  * This library is free software; you can redistribute it and/or
@@ -703,8 +703,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed();
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     if (r && r->isWidget())
@@ -745,9 +743,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     }
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
-
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed();
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     if (r && r->isWidget())
@@ -911,9 +906,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),true,
                            d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
     }
-
-    if (mev.innerNode.handle())
-	mev.innerNode.handle()->setPressed(false);
 
     DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
     if (fn && fn != mev.innerNode.handle() &&
@@ -1141,7 +1133,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Enter:
         case Key_Return:
 	    // ### FIXME:
-	    // move this code to HTMLAnchorElementImpl::setPressed(false),
 	    // or even better to HTMLAnchorElementImpl::event()
             if (m_part->xmlDocImpl()) {
 		NodeImpl *n = m_part->xmlDocImpl()->focusNode();

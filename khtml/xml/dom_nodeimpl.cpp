@@ -53,7 +53,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_tabIndex( 0 ),
       m_hasId( false ),
       m_hasStyle( false ),
-      m_pressed( false ),
       m_attached(false),
       m_changed( false ),
       m_hasChangedChild( false ),
