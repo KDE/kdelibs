@@ -70,6 +70,7 @@ class Screen : public ObjectImp {
 public:
   Screen() : ObjectImp( UndefClass ) { }
   KJSO get(const UString &p) const;
+  virtual Boolean toBoolean() const { return Boolean(true); }
 private:
   KHTMLView *view;
 };
@@ -179,6 +180,11 @@ void Window::put(const UString &p, const KJSO &v)
     }
   } else
     Imp::put(p, v);
+}
+
+Boolean Window::toBoolean() const
+{
+  return Boolean(!part.isNull());
 }
 
 int Window::installTimeout(const UString &handler, int t)

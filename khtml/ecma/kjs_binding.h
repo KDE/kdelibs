@@ -36,6 +36,7 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const { return HostImp::get(p); }
     void put(const UString &p, const KJSO& v);
     virtual void tryPut(const UString &p, const KJSO& v) { HostImp::put(p,v); }
+    virtual String toString() const;
   };
 
   /** Base class for all functions in this binding - get() and execute() run
@@ -47,6 +48,8 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const { return InternalFunctionImp::get(p); }
     Completion execute(const List &);
     virtual Completion tryExecute(const List &args) { return InternalFunctionImp::execute(args); }
+    virtual Boolean toBoolean() const { return Boolean(true); }
+    virtual String toString() const { return UString("[function]"); }
   };
 
   /**

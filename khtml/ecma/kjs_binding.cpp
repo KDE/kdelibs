@@ -63,6 +63,11 @@ void DOMObject::put(const UString &p, const KJSO& v)
   }
 }
 
+String DOMObject::toString() const
+{
+    return UString("[object]");
+}
+
 KJSO DOMFunction::get(const UString &p) const
 {
   KJSO result;

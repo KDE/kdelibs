@@ -1,12 +1,10 @@
 Has to be done
 ==============
-- window.onload (code is there but doesn't work)
-- frame handling (parent, top, frame[])
-- return a window object in window.open()
+- frame[] correct search and sorting order
 - preload pixmap if src property of an Image type is set
 - optional error message output
+- set this.form in event handlers of form elements
 
 Could be done
 =============
-- make navigator.userAgent configurable for those sites that test for Netscape
-  or Explorer explicitly
+- disable window.open() optionally (protection against ads popping up)

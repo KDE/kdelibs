@@ -10,15 +10,19 @@ further details).
 Harri Porten <porten@kde.org>
 
 ========================================================================
-Appendix: Currently supported properties
+Appendix A: Currently supported properties
 
 Non-DOM properties:
 
-window.status, alert(), confirm(), open() [not complete yet]
-navigator.appCodeName, appName, appVersion, userAgent [latter one is set
-  to "Mozilla/4.0 (X11; Konqueror; Unix)" currently]
+window.status, alert(), confirm(), open()
+navigator.appCodeName, appName, appVersion, userAgent
 Image.src
 
 DOM Bindings:
 
 all DOM level 1 core & HTML
+
+========================================================================
+Appendix B: Web sites with useful tests
+
+http://oucsace.cs.ohiou.edu/~ywang/JavaScript

@@ -46,6 +46,7 @@ namespace KJS {
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
+    virtual Boolean toBoolean() const;
     int installTimeout(const UString &handler, int t);
     void clearTimeout(int timerId);
   private:

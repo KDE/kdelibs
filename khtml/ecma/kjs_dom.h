@@ -69,6 +69,7 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
     static const TypeInfo info;
   private:
     DOM::NodeList list;
@@ -145,6 +146,7 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const;
     // no put - all functions
     virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
     static const TypeInfo info;
   private:
     DOM::DOMImplementation implementation;
@@ -176,6 +178,7 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const;
     // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
     static const TypeInfo info;
   private:
     DOM::NamedNodeMap map;
