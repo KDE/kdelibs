@@ -478,7 +478,7 @@ void HTMLGenericFormElementImpl::onBlur()
 
 void HTMLGenericFormElementImpl::onFocus()
 {
-    view->setLinkCursor(this);
+    //view->setLinkCursor(this);
     DOMString script = getAttribute(ATTR_ONFOCUS);
     if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
