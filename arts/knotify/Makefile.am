@@ -7,11 +7,17 @@ INCLUDES= -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/qtmcop \
 ####### Files
 
 bin_PROGRAMS	= knotify
-knotify_SOURCES	= knotify.cpp knotify.skel
-knotify_LDADD	= ../soundserver/libsoundserver_idl.la \
-                  ../qtmcop/libqtmcop.la $(LIB_KDEUI) $(LIB_KDECORE)
-knotify_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
-METASOURCES = AUTO
+lib_LTLIBRARIES = knotify.la
+
+knotify_la_SOURCES	= knotify.cpp knotify.skel
+knotify_la_LIBADD	= ../soundserver/libsoundserver_idl.la \
+                      ../qtmcop/libqtmcop.la $(LIB_KDEUI) $(LIB_KDECORE)
+knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
+knotify_la_METASOURCES = AUTO
+
+knotify_SOURCES = dummy.cpp
+knotify_LDADD = knotify.la
+knotify_LDFLAGS  = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS		= knotifytest
 knotifytest_SOURCES	= knotifytest.cpp
@@ -26,3 +32,5 @@ kdelnk_DATA = knotify.desktop
 messages:
 	$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
 
+dummy.cpp:
+	echo > dummy.cpp
