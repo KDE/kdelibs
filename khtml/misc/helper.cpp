@@ -60,11 +60,12 @@ static HTMLColors *htmlColors = 0L;
 
 static KStaticDeleter<HTMLColors> hcsd;
 
-void khtml::setNamedColor(QColor &color, const QString &name)
+void khtml::setNamedColor(QColor &color, const QString &_name)
 {
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
 
+    QString name = _name.lower(); 
     int len = name.length();
     char ch = name[0].latin1();
 

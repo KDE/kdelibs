@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -1193,7 +1193,7 @@ void KHTMLParser::popOneBlock()
 
 void KHTMLParser::popInlineBlocks()
 {
-    while(current->isInline())
+    while(current->isInline() && current->id() != ID_FONT)
         popOneBlock();
 }
 
