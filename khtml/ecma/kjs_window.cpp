@@ -244,8 +244,8 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
   // variables are used. Returning true here will lead to get() returning
   // 'undefined' in those cases.
   return true;
-  
-#if 0  
+
+#if 0
   if (p == "closed")
     return true;
 
@@ -321,7 +321,7 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
   }
 
   return false;
-#endif  
+#endif
 }
 
 KJSO Window::get(const UString &p) const
@@ -512,6 +512,9 @@ void Window::put(const UString &p, const KJSO &v)
           !(body = m_part->htmlDocument().body()).isNull())
         body.setAttribute("onload",((FunctionImp*)v.imp())->name().string() + "()");
     }
+  } else if (p == "name") {
+    if (isSafeScript())
+      m_part->setName( v.toString().value().qstring().local8Bit().data() );
   } else {
     if (isSafeScript())
       Imp::put(p, v);
