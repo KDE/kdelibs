@@ -115,62 +115,32 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
            emit slaveStatus(pid, protocol, str1, (b != 0));
         }
         break;
+    case MSG_CONNECTED:
+	emit connected();
+	break;
 
+    case INF_TOTAL_ENTRIES:
+	stream >> ul;
+	emit totalEntries( ul );
+	break;
     case INF_TOTAL_SIZE:
 	stream >> ul;
 	emit totalSize( ul );
-	break;
-    case INF_TOTAL_COUNT_OF_FILES:
-	stream >> ul;
-	
-	emit totalFiles( ul );
-	break;
-    case INF_TOTAL_COUNT_OF_DIRS:
-	stream >> ul;
-	
-	emit totalDirs( ul );
 	break;
     case INF_PROCESSED_SIZE:
 	stream >> ul;
 	
 	emit processedSize( ul );
 	break;
-    case INF_PROCESSED_COUNT_OF_FILES:
-	stream >> ul;
-	
-	emit processedFiles( ul );
-	break;
-    case INF_PROCESSED_COUNT_OF_DIRS:
-	stream >> ul;
-	
-	emit processedDirs( ul );
-	break;
-    case MSG_CONNECTED:
-	emit connected();
-	break;
-    case INF_SCANNING_DIR:
-	stream >> str1;
-	emit scanningDir( str1 );
-	break;
     case INF_SPEED:
 	stream >> ul;
 	
 	emit speed( ul );
 	break;
-    case INF_MAKING_DIR:
-	stream >> str1;
-	
-	emit makingDir( str1 );
-	break;
     case INF_GETTING_FILE:
 	stream >> str1;
 	
 	emit gettingFile( str1 );
-	break;
-    case INF_DELETING_FILE:
-	stream >> str1;
-	
-	emit deletingFile( str1 );
 	break;
     case INF_ERROR_PAGE:
 	emit errorPage();

@@ -45,8 +45,8 @@ template class QList<QValueList<UDSAtom> >;
 
 //////////////
 
-SlaveBase::SlaveBase( const QCString &protocol, 
-                      const QCString &pool_socket, 
+SlaveBase::SlaveBase( const QCString &protocol,
+                      const QCString &pool_socket,
                       const QCString &app_socket )
     : mProtocol(protocol), m_pConnection(0),
       mPoolSocket( QFile::decodeName(pool_socket)),
@@ -82,9 +82,9 @@ void SlaveBase::dispatchLoop()
 	retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
 	/* Don't rely on the value of tv now! */
 
-	if (retval > 0) 
+	if (retval > 0)
         {
-	    if (FD_ISSET(appconn->fd_from(), &rfds)) 
+	    if (FD_ISSET(appconn->fd_from(), &rfds))
             { // dispatch application messages
 		int cmd;
 		QByteArray data;
@@ -106,7 +106,7 @@ void SlaveBase::dispatchLoop()
                   {
                      dispatch(cmd, data);
                   }
-                } 
+                }
                 else // some error occured, perhaps no more application
                 {
 // When the app exits, should the slave be put back in the pool ?
@@ -124,7 +124,7 @@ void SlaveBase::dispatchLoop()
                   }
                 }
 	    }
-	} 
+	}
         else if (retval == -1) // error
         {
           kdDebug(7019) << "slavewrapper: select returned error " << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown") << " (" << errno << ")" << endl;
@@ -192,34 +192,22 @@ void SlaveBase::canResume( bool _resume )
     m_pConnection->send( MSG_RESUME, data );
 }
 
+void SlaveBase::totalEntries( unsigned long count )
+{
+    KIO_DATA << count;
+    m_pConnection->send( INF_TOTAL_ENTRIES, data );
+}
+
 void SlaveBase::totalSize( unsigned long _bytes )
 {
     KIO_DATA << _bytes;
     m_pConnection->send( INF_TOTAL_SIZE, data );
 }
 
-void SlaveBase::totalFiles( unsigned int _files )
-{
-    KIO_DATA << _files;
-    m_pConnection->send( INF_TOTAL_COUNT_OF_FILES, data );
-}
-
-void SlaveBase::totalDirs( unsigned int _dirs )
-{
-    KIO_DATA << _dirs;
-    m_pConnection->send( INF_TOTAL_COUNT_OF_DIRS, data );
-}
-
 void SlaveBase::processedSize( unsigned long _bytes )
 {
     KIO_DATA << _bytes;
     m_pConnection->send( INF_PROCESSED_SIZE, data );
-}
-
-void SlaveBase::scanningDir( const KURL&_dir )
-{
-    KIO_DATA << _dir;
-    m_pConnection->send( INF_SCANNING_DIR, data );
 }
 
 void SlaveBase::speed( unsigned long _bytes_per_second )
@@ -245,6 +233,7 @@ void SlaveBase::mimeType( const QString &_type)
     m_pConnection->send( INF_MIME_TYPE, data );
 }
 
+// ?
 void SlaveBase::gettingFile( const QString &file)
 {
     KIO_DATA << file;

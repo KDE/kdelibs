@@ -19,8 +19,8 @@
 #ifndef __kio_observer_h__
 #define __kio_observer_h__
 
-
-#include <qwidget.h>
+#include <kio/global.h>
+#include <qobject.h>
 
 class KURL;
 namespace KIO {
@@ -55,10 +55,14 @@ protected:
 
 public slots:
 
-    // TODO implement them
+  // ListJob
+  virtual void slotTotalEntries( KIO::Job*, unsigned long );
+  virtual void slotEntries( KIO::Job*, const KIO::UDSEntryList& );
+
+  // TODO implement them
 
   virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
-  virtual void slotTotalFiles( KIO::Job*, unsigned long );
+  virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
   virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
 
   virtual void slotProcessedSize( KIO::Job*, unsigned long ) {}
@@ -78,4 +82,5 @@ public slots:
 
 };
 
+// -*- mode: c++; c-basic-offset: 2 -*-
 #endif

@@ -714,7 +714,7 @@ void FileProtocol::listDir( const QString& path )
 	entryNames.append( ep->d_name );
 
     closedir( dp );
-    totalFiles( entryNames.count() );
+    totalEntries( entryNames.count() );
 
     // set the current dir
     char path_buffer[PATH_MAX];
@@ -787,7 +787,7 @@ void FileProtocol::special( const QByteArray &data)
 	unmount( point );
       }
       break;
-      
+
     case 3:
     {
       QString filename;

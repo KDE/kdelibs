@@ -63,6 +63,7 @@
 
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
+#include "kio/observer.h"
 
 using namespace KIO;
 
@@ -759,13 +760,21 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 
 //////////
 
-ListJob::ListJob(const KURL& u, bool _recursive, QString _prefix) :
+ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
     SimpleJob(u, CMD_LISTDIR, QByteArray()),
     recursive(_recursive), prefix(_prefix)
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
     QDataStream stream( m_packedArgs, IO_WriteOnly ); stream << u.path();
+
+    if (showProgressInfo)
+    {
+      connect( this, SIGNAL( entries ( KIO::Job *, const KIO::UDSEntryList & ) ),
+               Observer::self(), SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
+      connect( this, SIGNAL( totalEntries ( KIO::Job *, unsigned long ) ),
+               Observer::self(), SLOT( slotTotalEntries( KIO::Job *, unsigned long ) ) );
+    }
 }
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
@@ -852,15 +861,20 @@ void ListJob::slotResult( KIO::Job * job )
     removeSubjob( job );
 }
 
-ListJob *KIO::listDir( const KURL& url)
+void ListJob::slotTotalEntries( unsigned long count )
 {
-    ListJob * job = new ListJob(url);
+    emit totalEntries( this, count );
+}
+
+ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
+{
+    ListJob * job = new ListJob(url, showProgressInfo);
     return job;
 }
 
-ListJob *KIO::listRecursive( const KURL& url)
+ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo)
 {
-    ListJob * job = new ListJob(url, true);
+    ListJob * job = new ListJob(url, showProgressInfo, true);
     return job;
 }
 
@@ -868,11 +882,8 @@ void ListJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
 	     SLOT( slotListEntries( const KIO::UDSEntryList& )));
-    //// Problem: we aren't going to define dumb slots for each slave's signals ?
-    //// perhaps the observer could use sender() and ask the scheduler which is the job
-    //// for this slave ? Ugly...
-    //connect( slave, SIGNAL( totalFiles( unsigned long ) ),
-              //         SLOT( slotTotalFiles( unsigned long ) ) );
+    connect( slave, SIGNAL( totalEntries( unsigned long ) ),
+             SLOT( slotTotalEntries( unsigned long ) ) );
     SimpleJob::start(slave);
 }
 

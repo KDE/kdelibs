@@ -65,7 +65,7 @@ namespace KIO {
      * Any command that is specific to one slave (protocol)
      * Examples are : HTTP POST, mount and unmount (kio_file)
      *
-     * @param url the url isn't passed to the slave, but is used to know 
+     * @param url the url isn't passed to the slave, but is used to know
      *        which slave to send it to :-)
      * @param data packed data; the meaning is completely dependent on the
      *        slave, but usually starts with an int for the command number.
@@ -169,14 +169,14 @@ namespace KIO {
      * Lists the contents of @p url, which is assumed to be a directory.
      * "." and ".." are returned, filter them out if you don't want them.
      */
-    ListJob *listDir( const KURL& url );
+    ListJob *listDir( const KURL& url, bool showProgressInfo = true );
 
     /**
      * The same, recursive.
      * "." and ".." are returned but only for the toplevel directory.
      * Filter them out if you don't want them.
      */
-    ListJob *listRecursive( const KURL& url );
+    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true );
 
     CopyJob *copy( const KURL& src, const KURL& dest );
     CopyJob *copy( const KURL::List& src, const KURL& dest );

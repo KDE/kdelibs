@@ -116,7 +116,7 @@ namespace KIO {
         void processedData( KIO::Job *, unsigned long data_size );
 
         /**
-         * Progress signals
+         * Progress signals (TO BE MOVED TO RESPECTIVE JOBS)
          */
         void totalSize( KIO::Job *, unsigned long size );
         void totalFiles( KIO::Job *, unsigned long files );
@@ -135,7 +135,6 @@ namespace KIO {
         void copyingFile( KIO::Job *, const KURL& from, const KURL& to );
         void movingFile( KIO::Job *, const KURL& from, const KURL& to );
         void deletingFile( KIO::Job *, const KURL& file );
-        void creatingDir( KIO::Job *, const KURL& dir );
         void renamingFile( KIO::Job *, const KURL& old_name, const KURL& new_name );
         void canResume( KIO::Job *, bool can_resume );
 
@@ -216,6 +215,12 @@ namespace KIO {
          */
         virtual void slotFinished( );
 
+    public slots:
+        /**
+         * @internal
+         * Called on a slave's error
+         * Made public for the scheduler
+         */
         virtual void slotError( int , const QString & );
 
     protected:
@@ -384,17 +389,28 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        ListJob(const KURL& url, bool recursive = false, QString prefix = QString::null);
+        ListJob(const KURL& url, bool showProgressInfo = true,
+                bool recursive = false, QString prefix = QString::null);
 
         virtual void start( Slave *slave );
 
     signals:
+        /**
+         * This signal emits the entry found by the job while listing.
+         */
         void entries( KIO::Job *, const KIO::UDSEntryList& );
+
+        /**
+         * Progress Info signal. Indicates total number of files to be listed,
+         * sent before doing the actual listing.
+         */
+        void totalEntries( KIO::Job * job, unsigned long entries );
 
     protected slots:
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
-        void gotEntries( KIO::Job *, const KIO::UDSEntryList& );
+        void slotTotalEntries( unsigned long count );
+        void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:
         bool recursive;
@@ -419,6 +435,12 @@ namespace KIO {
 
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
+
+    signals:
+        /**
+         * The @p job is creating the directory @dir
+         */
+        void creatingDir( KIO::Job * job, const KURL& dir );
 
     protected:
         void startNextJob();

@@ -28,7 +28,12 @@ Observer::Observer()
 {
 }
 
-void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
+void Observer::slotTotalEntries( KIO::Job* job, unsigned long count )
 {
-  kdDebug() << "Observer::slotTotalFiles " << job << " " << files << endl;
+  kdDebug() << "** Observer::slotTotalEntries " << job << " " << count << endl;
+}
+
+void Observer::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
+{
+  kdDebug() << "** Observer::slotEntries " << job << " " << entries.count() << endl;
 }

@@ -38,7 +38,7 @@ class Connection;
  */
  enum Command {
    CMD_HOST = '0',
-   CMD_CONNECT = '1', //
+   CMD_CONNECT = '1',
    CMD_DISCONNECT = '2',
    CMD_SLAVE_STATUS = '3',
    CMD_SLAVE_CONNECT = '4',
@@ -64,22 +64,15 @@ class Connection;
   * Identifiers for KIO informational messages.
   */
  enum Info {
+   INF_TOTAL_ENTRIES = 9,
    INF_TOTAL_SIZE = 10,
-   INF_TOTAL_COUNT_OF_FILES,
-   INF_TOTAL_COUNT_OF_DIRS,
-   INF_PROCESSED_SIZE,
-   INF_PROCESSED_COUNT_OF_FILES,
-   INF_PROCESSED_COUNT_OF_DIRS,
-   INF_SCANNING_DIR,
+   INF_PROCESSED_SIZE = 11,
    INF_SPEED,
-   INF_COPYING_FILE,
-   INF_MAKING_DIR,
    INF_REDIRECTION = 20,
    INF_MIME_TYPE,
    INF_ERROR_PAGE,
    INF_WARNING,
-   INF_GETTING_FILE,
-   INF_DELETING_FILE,
+   INF_GETTING_FILE, // ?
    INF_NEED_PASSWD
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
@@ -135,8 +128,6 @@ public:
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
 
-    //void isDirectory() ;
-    //void isFile() ;
     // probably obsolete ?
     void renamed( const QString & ) ;
     void canResume( bool ) ;
@@ -145,22 +136,19 @@ public:
     // Info sent by the slave
     //////////
 
-    // TODO : some cleanup
+    // listDir
+    void totalEntries( unsigned long ) ;
+
+    // get (put?)
     void totalSize( unsigned long ) ;
-    void totalFiles( unsigned long ) ;
-    void totalDirs( unsigned long ) ;
     void processedSize( unsigned long ) ;
-    void processedFiles( unsigned long ) ;
-    void processedDirs( unsigned long ) ;
-    void scanningDir( const QString & ) ;
-    void speed( unsigned long ) ;
-    void makingDir( const QString & ) ;
     void redirection( const KURL& ) ;
+
+    void speed( unsigned long ) ;
     void errorPage() ;
     void mimeType( const QString & ) ;
     void warning( const QString & ) ;
-    void gettingFile( const QString & ) ;
-    void deletingFile( const QString & ) ;
+    void gettingFile( const QString & ) ; // ?
     void connectFinished();
 
     /////////////////

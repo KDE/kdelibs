@@ -35,9 +35,9 @@ Scheduler *Scheduler::instance = 0;
 
 class KIO::Scheduler::ProtocolInfo
 {
-  public: 
+  public:
      ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5) { }
-    
+
      int activeSlaves;
      int idleSlaves;
      int maxSlaves;
@@ -58,7 +58,7 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &key)
   if (!info)
   {
      info = new ProtocolInfo;
-     insert(key, info);     
+     insert(key, info);
   }
   return info;
 }
@@ -70,7 +70,7 @@ class KIO::SlaveList: public QList<Slave>
 };
 
 Scheduler::Scheduler()
-    : QObject(0, "scheduler"), 
+    : QObject(0, "scheduler"),
     mytimer(this, "Scheduler::mytimer"),
     cleanupTimer(this, "Scheduler::cleanupTimer")
 {
@@ -178,9 +178,10 @@ void Scheduler::startStep()
              }
              else
              {
-                if (!slave) kdFatal() << "couldn't create slave " << error 
-                                      << error << " "
-                                      << debugString(errortext) << endl;
+                 kdError() << "ERROR " << error << ": couldn't create slave : "
+                           << debugString(errortext) << endl;
+                 job->slotError( error, errortext );
+                 return;
              }
           }
        }
@@ -266,7 +267,7 @@ void Scheduler::slotCleanIdleSlaves()
    kdDebug(7006) << "Clean Idle Slaves" << endl;
    for(Slave *slave = idleSlaves->first();slave;)
    {
-      kdDebug(7006) << "Slave: " << slave->protocol() << " " << slave->host() 
+      kdDebug(7006) << "Slave: " << slave->protocol() << " " << slave->host()
 	            << " Idle for " << slave->idleTime() << "secs" << endl;
       if (slave->idleTime() >= MAX_SLAVE_IDLE)
       {
@@ -293,7 +294,7 @@ void Scheduler::_scheduleCleanup()
    {
       if (!cleanupTimer.isActive())
          cleanupTimer.start( MAX_SLAVE_IDLE*1000, true );
-   }   
+   }
 }
 
 Scheduler* Scheduler::self() {

@@ -113,14 +113,14 @@ public:
     // Info Signals to send to the job (most are OLD)
     ///////////
 
+    // listDir:
+    void totalEntries( unsigned long count );
+
+    // get (put?)
     void totalSize( unsigned long _bytes );
-    void totalFiles( unsigned int _files );
-    void totalDirs( unsigned int _dirs );
     void processedSize( unsigned long _bytes );
-    void scanningDir( const KURL& _dir );
+
     void speed( unsigned long _bytes_per_second );
-    // bool copyingFile( const KURL&_from, const KURL&_to );
-    // bool makingDir( const KURL&_dir );
     void redirection( const KURL &_url );
     void errorPage();
     void mimeType( const QString &_type );

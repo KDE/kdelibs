@@ -218,7 +218,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     stream2 >> pid >> errorStr;
     if (!pid)
     {
-	error_text = i18n("Unable to create io-slave:\n%1").arg(errorStr);
+	error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
 	error = KIO::ERR_INTERNAL;
         delete slave;
 	return 0;
