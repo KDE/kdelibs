@@ -650,7 +650,7 @@ public:
     const QFont & font() { return inherited->font; }
 
     const QColor & color() { return inherited->color; }
-    Length inheritedIndent() { return inherited->indent; }
+    Length textIndent() { return inherited->indent; }
     ETextAlign textAlign() { return _text_align; }
     int textDecoration() { return _text_decoration; }
     const QColor &textDecorationColor() { return inherited->decoration_color; }
