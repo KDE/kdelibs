@@ -448,9 +448,13 @@ void KPropertiesDialog::insertPages()
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 {
   Q_ASSERT( m_items.count() == 1 );
-  kdDebug(250) << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
-  m_singleUrl = _newUrl;
-  m_items.first()->setURL( _newUrl );
+  kdDebug(250) << "KPropertiesDialog::updateUrl (pre)" << _newUrl.url() << endl;
+  KURL newUrl = _newUrl;
+  emit saveAs(m_singleUrl, newUrl);
+  kdDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl.url() << endl;
+
+  m_singleUrl = newUrl;
+  m_items.first()->setURL( newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
@@ -941,29 +945,34 @@ void KFilePropsPlugin::nameFileChanged(const QString &text )
   properties->enableButtonOK(!text.isEmpty());
   emit changed();
 }
+
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
-    m_sRelativePath = "";
     // now let's make it relative
     QStringList dirs;
     if (KBindingPropsPlugin::supports(properties->items()))
-      dirs = KGlobal::dirs()->resourceDirs("mime");
+    {
+       m_sRelativePath =KGlobal::dirs()->relativeLocation("mime", path);
+       if (m_sRelativePath.startsWith("/"))
+          m_sRelativePath = QString::null;
+    }
     else
-      dirs = KGlobal::dirs()->resourceDirs("apps");
-
-    QStringList::ConstIterator it = dirs.begin();
-    for ( ; it != dirs.end() && m_sRelativePath.isEmpty(); ++it ) {
-      // might need canonicalPath() ...
-      if ( path.find( *it ) == 0 ) // path is dirs + relativePath
-        m_sRelativePath = path.mid( (*it).length() ); // skip appsdirs
+    {
+       m_sRelativePath =KGlobal::dirs()->relativeLocation("apps", path);
+       if (m_sRelativePath.startsWith("/"))
+       {
+          m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
+          if (m_sRelativePath.startsWith("/"))
+             m_sRelativePath = QString::null;
+          else
+             m_sRelativePath = path;
+       }
     }
     if ( m_sRelativePath.isEmpty() )
     {
       if (KBindingPropsPlugin::supports(properties->items()))
         kdWarning(250) << "Warning : editing a mimetype file out of the mimetype dirs!" << endl;
-      // for Application desktop files, no problem : we can editing a .desktop file anywhere...
-    } else
-        while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
+    }
 }
 
 void KFilePropsPlugin::slotFoundMountPoint( const QString&,
