@@ -15,7 +15,8 @@
 KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     : QObject( dialog, "KFileBookmarkHandler" ),
       KBookmarkOwner(),
-      m_dialog( dialog )
+      m_dialog( dialog ),
+      m_importStream( 0L )
 {
     m_menu = new KPopupMenu( dialog, "bookmark menu" );
 
@@ -30,9 +31,9 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
             importOldBookmarks( oldFile, file );
     }
 
-    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false );
+    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false);
     manager->setUpdate( true );
-
+    manager->setShowNSBookmarks( false );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu,
                                         dialog->actionCollection(), true );
