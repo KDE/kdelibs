@@ -69,6 +69,15 @@ class UploadDialog : public KDialogBase
     */
     void setPreviewFile( const QString &previewFile );
 
+    /**
+      Sets the payload filename.
+      This is optional, but necessary if the application wants to support
+      reusing previously filled out form data based on the filename.
+
+      @param payloadFile the payload data file
+    */
+    void setPayloadFile( const QString &payloadFile );
+
   protected slots:
     void slotOk();
 
@@ -85,6 +94,7 @@ class UploadDialog : public KDialogBase
     QComboBox *mLicenceCombo;
 
     QPtrList<Entry> mEntryList;
+    KURL mPayloadUrl;
 };
 
 }

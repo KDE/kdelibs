@@ -266,6 +266,7 @@ void Engine::requestMetaInformation( Provider *provider )
     mUploadDialog = new UploadDialog( this, mParentWidget );
   }
   mUploadDialog->setPreviewFile( mPreviewFile );
+  mUploadDialog->setPayloadFile( mUploadFile );
   mUploadDialog->show();
   mUploadDialog->raise();
 }
