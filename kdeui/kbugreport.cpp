@@ -514,16 +514,17 @@ bool KBugReport::sendBugReport()
   outputfile.close();
 
   QString subject = m_subject->text();
-  subject = subject.replace(QRegExp("\""), QString::fromLatin1("\\\""));
-  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").
-             arg(KProcess::quote(subject)).
-             arg(KProcess::quote(recipient)).
-             arg(outputfile.name());
+  command += " --subject ";
+  command += KProcess::quote(subject);
+  command += " --recipient ";
+  command += KProcess::quote(recipient);
+  command += " > ";
+  command += KProcess::quote(outputfile.name());
 
   fflush(stdin);
   fflush(stderr);
 
-  FILE * fd = popen(command.local8Bit(), "w");
+  FILE * fd = popen(QFile::encodeName(command), "w");
   if (!fd)
   {
     kdError() << "Unable to open a pipe to " << command << endl;
