@@ -577,6 +577,12 @@ int main(int argc, char *argv[])
   KURL com2("http://server.com/dir/blubb/", "blah/");
   check("com2.url()", com2.url(), "http://server.com/dir/blubb/blah/");
 
+  KURL utf8_1("audiocd:/By%20Name/15%20Geantra%C3%AE.wav", 106);
+  check("utf8_1.fileName()", utf8_1.fileName(), QString::fromLatin1("15 Geantraî.wav"));
+
+  KURL utf8_2("audiocd:/By%20Name/15%2fGeantra%C3%AE.wav", 106);
+  check("utf8_2.fileName()", utf8_2.fileName(), QString::fromLatin1("15/Geantraî.wav"));
+
   printf("\nTest OK !\n");
 }
 
