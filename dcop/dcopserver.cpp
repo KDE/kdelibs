@@ -795,7 +795,7 @@ int main( int argc, char* argv[] )
     exit(0);
   }
 
-  QApplication a( argc, argv, FALSE ); // FALSE since we do not need X
+  QApplication a( argc, argv );
   
   InstallIOErrorHandler();
   DCOPServer server;
