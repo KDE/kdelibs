@@ -25,6 +25,8 @@ class QBitmap;
 #include <kdelibs_export.h>
 
 /**
+ * @short A widget for selecting two related colors.
+ *
  * KDualColorButton allows the user to select two cascaded colors (usually a
  * foreground and background color). Other features include drag and drop
  * from other KDE color widgets, a reset to black and white control, and a
@@ -41,7 +43,6 @@ class QBitmap;
  *
  * \image html kdualcolorbutton.png "KDE Dual Color Button"
  *
- * @short A widget for selecting two related colors.
  * @author Daniel M. Duley <mosfet@kde.org>
  */
 class KDEUI_EXPORT KDualColorButton : public QWidget
@@ -54,7 +55,7 @@ class KDEUI_EXPORT KDualColorButton : public QWidget
     Q_PROPERTY( DualColor current READ current WRITE setCurrent )
 
 public:
-    
+
     enum DualColor { Foreground, Background };
     /**
      * Constructs a new KDualColorButton using the default black and white

@@ -30,6 +30,8 @@ class QLabel;
 class KAuthIconPrivate;
 
 /**
+ * @short A base class for authorization icon widgets
+ *
  * This is the base class from which different authorization icon widget
  * which actually do something should be derived.  You can use these
  * widgets to show that the user has (or doesn't have) the ability to do
@@ -39,7 +41,6 @@ class KAuthIconPrivate;
  * authChanged(bool) to setEnabled(bool) for a widget to turn it on and
  * off depending on the status of whatever it is you are monitoring.
  *
- * @short ABC for authorization icon widgets
  * @see KRootPermsIcon, KWritePermsIcon
  * @author Preston Brown <pbrown@kde.org>
  */
@@ -95,6 +96,7 @@ private:
 class KRootPermsIconPrivate;
 /**
  * Icon to show whether or not a user has root permissions.
+ *
  * @see KAuthIcon
  * @author Preston Brown <pbrown@kde.org>
  */

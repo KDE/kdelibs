@@ -26,14 +26,14 @@ class KActionCollection;
 class KAction;
 
 /**
+ * @short A proxy class publishing a DCOP interface for actions.
+ *
  * The KDCOPActionProxy class provides an easy way to publish a collection of KAction objects
  * through DCOP. For the DCOP client the exported actions behave like full-fledged DCOP objects,
  * providing full access to the KAction object functionality in the server.
  *
  * This class can generate DCOP object ids for given action objects, which it automatically
  * processes, as being a DCOPObjectProxy .
- *
- * @short A proxy class publishing a DCOP interface for actions.
  */
 class KDCOPActionProxy : public DCOPObjectProxy
 {

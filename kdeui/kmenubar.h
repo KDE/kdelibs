@@ -30,7 +30,7 @@
 #include <kdelibs_export.h>
 
 /**
- * KDE Style-able menubar.
+ * %KDE Style-able menubar.
  *
  * This is required since QMenuBar is currently not handled by
  * QStyle.

@@ -24,6 +24,8 @@
 #include <kdelibs_export.h>
 
 /**
+ * @short A variant of QIconView that honors KDE's system-wide settings.
+ *
  * This Widget extends the functionality of QIconView to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
  * Change Cursor over Link.
@@ -36,7 +38,6 @@
  * If you want to get informed when the user selects something connect to the
  * QIconView::selectionChanged() signal.
  *
- * @short A variant of QIconView that honors KDE's system-wide settings.
  **/
 class KDEUI_EXPORT KIconView : public QIconView
 {
@@ -200,10 +201,11 @@ private:
 
 class KWordWrap;
 /**
+ * @short A variant of QIconViewItem that wraps words better.
+ *
  * KIconViewItem exists to improve the word-wrap functionality of QIconViewItem
  * Use KIconViewItem instead of QIconViewItem for any iconview item you might have :)
  *
- * @short A variant of QIconViewItem that wraps words better.
  * @author David Faure <david@mandrakesoft.com>
  */
 class KDEUI_EXPORT KIconViewItem : public QIconViewItem
@@ -227,7 +229,7 @@ public:
     KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
         : QIconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
-    
+
    /**
     * Using this function, you can specify a custom size for the pixmap. The
     * geometry of the item will be calculated to let a pixmap of the given size

@@ -95,9 +95,10 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
 class KFloatValidatorPrivate;
 
 /**
+ \brief QValidator for floating point entry (Obsolete)
+
   @obsolete Use KDoubleValidator
 
- QValidator for floating point entry.
   Extends the QValidator class to properly validate double numeric data.
   This can be used by QLineEdit or subclass to provide validated
   text entry.
@@ -164,15 +165,15 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
 };
 
 /**
+   @short A locale-aware QDoubleValidator
+
    KDoubleValidator extends QDoubleValidator to be
    locale-aware. That means that - subject to not being disabled -
- KLocale::decimalPoint(), KLocale::thousandsSeparator()
+   KLocale::decimalPoint(), KLocale::thousandsSeparator()
    and KLocale::positiveSign() and KLocale::negativeSign()
    are respected.
 
-   @short A locale-aware QDoubleValidator
    @author Marc Mutz <mutz@kde.org>
-   @version $Id$
    @see KIntValidator
    @since 3.1
 **/

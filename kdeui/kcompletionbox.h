@@ -27,6 +27,8 @@ class QEvent;
 #include <klistbox.h>
 
 /**
+ * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
+ *
  * A little utility class for "completion-widgets", like KLineEdit or
  * KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
  * any window decoration, usually directly under the lineedit or combobox.
@@ -35,7 +37,6 @@ class QEvent;
  *
  * It is used when KGlobalSettings::Completion == CompletionPopup or CompletionPopupAuto.
  *
- * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KDEUI_EXPORT KCompletionBox : public KListBox

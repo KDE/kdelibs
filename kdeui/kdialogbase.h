@@ -48,6 +48,8 @@ class KDialogBaseButton;
 class KDialogBaseTile;
 
 /**
+ * @short A dialog base class with standard buttons and predefined layouts.
+ *
  * Provides basic functionality needed by nearly all dialogs.
  *
  * It offers the standard action buttons you'd expect to find in a
@@ -186,7 +188,6 @@ class KDialogBaseTile;
  * and many of KDE core applications use the KDialogBase so for more
  * inspiration you should study the code for these.
  *
- * @short A dialog base class with standard buttons and predefined layouts.
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
 class KDEUI_EXPORT KDialogBase : public KDialog

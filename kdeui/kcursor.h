@@ -29,6 +29,8 @@
 class QWidget;
 
 /**
+ * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
+ *
  * A wrapper around QCursor that allows for "themed" cursors.
  *
  * Currently, the only themed cursor is a hand shaped cursor.
@@ -38,7 +40,6 @@ class QWidget;
  * setCursor(KCursor::handCursor());
  * \endcode
  *
- * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
  * @author Kurt Granroth <granroth@kde.org>
  */
 class KDEUI_EXPORT KCursor : public Qt

@@ -25,6 +25,8 @@
 #include <kpixmap.h>
 #include <kdelibs_export.h>
 /**
+ * @short KPopupMenu title widget.
+ *
  * Title widget for use in KPopupMenu.
  *
  * You usually don't have to create this manually since
@@ -32,7 +34,6 @@
  * you wish to customize it's look.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
- * @short KPopupMenu title widget.
  */
 class KDEUI_EXPORT KPopupTitle : public QWidget
 {
@@ -102,6 +103,8 @@ private:
 };
 
 /**
+ * @short A menu with title items.
+ *
  * KPopupMenu is a class for menus with standard title items and keyboard
  * accessibility for popups with many options and/or varying options. It acts
  * identically to QPopupMenu, with the addition of insertTitle(),
@@ -114,7 +117,6 @@ private:
  * The keyboard search algorithm is incremental with additional underlining
  * for user feedback.
  *
- * @short A menu with title items.
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
