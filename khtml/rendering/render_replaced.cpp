@@ -166,7 +166,7 @@ RenderWidget::~RenderWidget()
 class QWidgetResizeEvent : public QEvent
 {
 public:
-    enum { Type = 0xfeedabee };
+    enum { Type = QEvent::User + 0xbee };
     QWidgetResizeEvent( int _w,  int _h ) :
 	QEvent( (QEvent::Type)Type ),  w( _w ), h( _h ) {}
     int w;
@@ -190,7 +190,7 @@ void  RenderWidget::resizeWidget( int w, int h )
 
 bool RenderWidget::event( QEvent *e )
 {
-    if ( m_widget && (e->type() == (int)QWidgetResizeEvent::Type) ) {
+    if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
 	QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
 	m_widget->resize( re->w,  re->h );
     }
