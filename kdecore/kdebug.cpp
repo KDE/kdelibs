@@ -270,7 +270,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
 #endif
 }
 
-
+#ifndef NDEBUG
 void kDebugInfo( const char* fmt, ... )
 {
     va_list arguments;
@@ -297,6 +297,7 @@ void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... )
       va_end( arguments );
     }
 }
+#endif
 
 void kDebugWarning( const char* fmt, ... )
 {
