@@ -310,7 +310,6 @@ KDictSpellingHighlighter::~KDictSpellingHighlighter()
 
 void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
     if ( d->globalConfig ) {
         connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
                  this, SLOT( slotDictionaryChanged() ));
@@ -331,7 +330,6 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 
 bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 {
-    kdDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
     // Normally isMisspelled would look up a dictionary and return
     // true or false, but kspell is asynchronous and slow so things
     // get tricky...
@@ -409,7 +407,6 @@ void KDictSpellingHighlighter::dictionaryChanged()
 
 void KDictSpellingHighlighter::restartBackgroundSpellCheck()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
     slotDictionaryChanged();
 }
 
@@ -433,7 +430,6 @@ bool KDictSpellingHighlighter::isActive() const
 
 void KDictSpellingHighlighter::slotRehighlight()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
     rehighlight();
     QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
 }
@@ -452,7 +448,6 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
 
 void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
     // the spell config has been changed, so we have to restart from scratch
     d->mDict->clear();
     slotDictionaryChanged();
