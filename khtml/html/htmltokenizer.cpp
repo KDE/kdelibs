@@ -740,17 +740,17 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #ifdef TOKEN_DEBUG
                         kdDebug( 6036 ) << "found tag id=" << tagID << endl;
 #endif
+
                         if (beginTag)
-                        {
                             currToken->id = tagID;
-                            tag = SearchAttribute;
-                        }
                         else
-                        {
                             currToken->id = tagID + ID_CLOSE_TAG;
-                            tag = SearchEnd;
-                        }
+
+                        // We _need_ to search for attributes even if it is a CLOSE tag!!
+                        // some sites use the closing variant instead of the opening variant
+                        // i.e. </COL>
                         dest = buffer;
+                        tag = SearchAttribute;
                     }
                 }
                 break;
