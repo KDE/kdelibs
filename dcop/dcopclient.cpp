@@ -565,6 +565,11 @@ void DCOPClient::resume()
   d->notifier->setEnabled(true);
 }
 
+bool DCOPClient::isSuspended() const
+{
+  return !d->notifier->isEnabled();
+}
+
 #ifdef SO_PEERCRED
 // Check whether the remote end is owned by the same user.
 static bool peerIsUs(int sockfd)

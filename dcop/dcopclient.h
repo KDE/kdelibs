@@ -200,6 +200,12 @@ class DCOPClient : public QObject
    * See @ref suspend().
    */
   void resume();
+  
+  /**
+   * Returns whether DCOP events are being processed.
+   * See @ref suspend() and resume().
+   */
+  bool isSuspended() const;
 
   /**
    * Sends a data block to the server.
