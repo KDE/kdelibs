@@ -537,7 +537,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         newurl.cd(QString::fromLatin1(".."));
         if ( !isReadable( newurl ) ) {
             KMessageBox::error(viewWidget(),
-                               i18n("The specified directory does not exist\n"
+                               i18n("The specified directory does not exist "
                                     "or was not readable."));
             return;
         }

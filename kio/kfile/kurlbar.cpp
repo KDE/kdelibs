@@ -709,9 +709,9 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         m_appLocal = new QCheckBox(i18n("&Only for this application"), box);
         m_appLocal->setChecked( appLocal );
         QWhatsThis::add( m_appLocal,
-                         i18n("Select this setting if you want the\n"
-                              "entry only for the current application.\n\n"
-                              "Otherwise it will be available in all\n"
+                         i18n("Select this setting if you want the "
+                              "entry only for the current application.\n"
+                              "Otherwise it will be available in all"
                               "applications."));
     }
     else

@@ -159,19 +159,19 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
 
 void HTMLFormElementImpl::i18nData()
 {
-    QString foo1 = i18n( "You're about to send data to the Internet\n"
-                         "via an unencrypted connection.\nIt might be possible "
-                         "for others to see this information.\n\n"
+    QString foo1 = i18n( "You're about to send data to the Internet"
+                         "via an unencrypted connection.  It might be possible "
+                         "for others to see this information.\n"
                          "Do you want to continue?");
     QString foo2 = i18n("KDE Web browser");
-    QString foo3 = i18n("When you send a password unencrypted to the Internet,\n"
-                        "it might be possible for others to capture it as plain text.\n\n"
+    QString foo3 = i18n("When you send a password unencrypted to the Internet, "
+                        "it might be possible for others to capture it as plain text.\n"
                         "Do you want to continue?");
-    QString foo4 = i18n("You're about to transfer the following files from\n"
-                        "your local computer to the Internet.\n\n"
+    QString foo4 = i18n("You're about to transfer the following files from "
+                        "your local computer to the Internet.\n"
                         "Do you really want to continue?");
-    QString foo5 = i18n("Your data submission is redirected to\n"
-                        "an insecure site. The data is sent unencrypted.\n\n"
+    QString foo5 = i18n("Your data submission is redirected to "
+                        "an insecure site. The data is sent unencrypted.\n"
                         "Do you want to continue?");
     QString foo6 = i18n("The page contents expired. You can repost the form"
                         "data by using <a href=\"javascript:go(0);\">Reload</b>");

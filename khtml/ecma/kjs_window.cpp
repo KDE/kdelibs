@@ -908,7 +908,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if ( policy == 1 ) {
       if ( KMessageBox::questionYesNo(widget,
                                       i18n( "This site is trying to open up a new browser "
-                                            "window using Javascript.\n\n"
+                                            "window using Javascript.\n"
                                             "Do you want to allow this?" ),
                                       i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
         policy = 0;

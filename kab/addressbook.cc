@@ -434,20 +434,14 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
      // config does not exist yet
       if(createConfigFile()!=NoError)
 	{
-	  KMessageBox::error(this,
-	     i18n("Your local kab configuration file\n"
-		  "\"%1\"\n"
-		  "could not be created. kab will probably not\n"
+	  KMessageBox::sorry(this,
+	     i18n("Your local kab configuration file "
+		  "\"%1\" "
+		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
-		  "Make sure you have not removed write permission\n"
-		  "from your local KDE directory (Usually ~/.kde).").arg(filename),
-	     i18n("File error"));
+		  "Make sure you have not removed write permission "
+		  "from your local KDE directory (Usually ~/.kde).").arg(filename));
 	  state=PermDenied;
-	} else {
-	  KMessageBox::information
-	    (this,
-	     i18n("kab has created your local configuration file in\n"
-		  "\"%1\"").arg(filename));
 	}
   }
   loadConfigFile();
@@ -464,14 +458,13 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
       filename = locateLocal( "data", STD_USERFILENAME);
       if(createNew(filename)!=NoError) // ...and we cannot create it
 	{
-	  KMessageBox::error(this,
-	     i18n("Your standard kab database file\n"
-		  "\"%1\"\n"
-		  "could not be created. kab will probably not\n"
+	  KMessageBox::sorry(this,
+	     i18n("Your standard kab database file "
+		  "\"%1\" "
+		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
-		  "Make sure you have not removed write permission\n"
-		  "from your local KDE directory (Usually ~/.kde).").arg(filename),
-	     i18n("File error"));
+		  "Make sure you have not removed write permission "
+		  "from your local KDE directory (Usually ~/.kde).").arg(filename));
 	  state=PermDenied;
 	} else {
 	  KMessageBox::information
@@ -581,8 +574,8 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	  switch
 	    (KMessageBox::questionYesNo
 	     (this,
-	      i18n("The currently loaded file\n"
-                   "\"%1\"\n"
+	      i18n("The currently loaded file "
+                   "\"%1\" "
 	           "cannot be reloaded. kab may close or save it.\n"
 	           "Save it if you accidentally deleted your data file.\n"
 	           "Close it if you intended to do so.\n"

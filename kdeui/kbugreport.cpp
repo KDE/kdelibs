@@ -397,9 +397,8 @@ void KBugReport::slotOk( void )
     if( m_lineedit->text().isEmpty() == true ||
         m_subject->text().isEmpty() == true )
     {
-        QString msg = i18n(""
-      "You must specify both a subject and a description\n"
-      "before the report can be sent.");
+        QString msg = i18n("You must specify both a subject and a description "
+                           "before the report can be sent.");
         KMessageBox::error(this,msg);
         return;
     }

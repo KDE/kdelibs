@@ -243,7 +243,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 			QCString	encodedFn = QFile::encodeName(fn);
 			if (!needUpload)
 				KMessageBox::information(parent,
-					i18n("The config file has not been uploaded to the\n"
+					i18n("The config file has not been uploaded to the "
 					     "CUPS server. The daemon will not be restarted."));
 			else if (!cupsPutConf(encodedFn.data()))
 			{

@@ -654,8 +654,8 @@ KPaletteTable::slotShowNamedColorReadError( void )
   if( mNamedColorList->count() == 0 )
   {
     QString msg = i18n(""
-      "Unable to read X11 rgb color strings. The following\n"
-      "file location(s) were examined:\n\n");
+      "Unable to read X11 rgb color strings. The following "
+      "file location(s) were examined:\n");
 
     const char * const *path = namedColorFilePath();
     for( int i=0; path[i] != 0; i++ )

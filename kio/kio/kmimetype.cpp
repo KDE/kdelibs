@@ -609,7 +609,7 @@ pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
   {
-    QString tmp = i18n("The desktop entry file\n%1\n"
+    QString tmp = i18n("The desktop entry file %1 "
 		       "has no Type=... entry.").arg(u.path() );
     KMessageBoxWrapper::error( 0, tmp);
     return 0;

@@ -690,8 +690,8 @@ void KKeyChooser::setShortcut( KShortcut cut )
    }
 
    if( keyCode < 0x1000  && !d->bAllowLetterShortcuts ) {
-	QString s = i18n( 	"In order to use the '%1' key as a shortcut,\n"
-				"it must be combined with the\n"
+	QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
+				"it must be combined with the "
 				"Meta, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
 	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 	return;
@@ -713,8 +713,8 @@ void KKeyChooser::_warning( KShortcut cut, QString sAction, QString sTitle )
 	sAction = sAction.stripWhiteSpace();
 
 	QString s =
-		i18n("The '%1' key combination has already been allocated\n"
-		"to the global \"%2\" action.\n\n"
+		i18n("The '%1' key combination has already been allocated "
+		"to the global \"%2\" action.\n"
 		"Please choose a unique key combination.").
 		arg(cut.toString()).arg(sAction);
 
@@ -731,9 +731,8 @@ bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
 		if( bWarnUser ) {
 			QString s =
 				i18n("The %1 key combination has already "
-				"been allocated\n"
+				"been allocated "
 				"to the action: %2.\n"
-				"\n"
 				"Please choose a unique key combination.").
 				arg(cut.toString()).arg(pAction->desc());
 			KMessageBox::sorry( this, s, i18n("Key Conflict") );
@@ -770,9 +769,8 @@ bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
 
             QString str =
                 i18n("The %1 key combination has already "
-                     "been allocated\n"
+                     "been allocated "
                      "to the standard %2 action.\n"
-                     "\n"
                      "Please choose a unique key combination.").
                 arg(keyName).arg(actionName);
 
@@ -796,9 +794,7 @@ bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
 
             QString str =
                 i18n("The %1 key combination has already "
-                     "been allocated\n"
-                     "to the %2 action.\n"
-                     "\n"
+                     "been allocated to the %2 action.\n"
                      "Please choose a unique key combination.").
                 arg(keyName).arg(actionName);
 
