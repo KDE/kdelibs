@@ -490,6 +490,8 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     _pixmap = 0;
     _clicked = false;
 
+    setBlocking();
+
     w = 0;
     view = 0;
     badPos = true;
@@ -728,8 +730,8 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 
 void HTMLInputElementImpl::layout( bool )
 {
-    width = availableWidth;
-    if(!width) return;
+  //width = availableWidth;
+    //if(!width) return;
 
     printf("inputElement::layout()\n");
     switch(_type)
@@ -776,6 +778,7 @@ void HTMLInputElementImpl::layout( bool )
     }
 
     setLayouted();
+    setBlocking(false);
 }
 
 void HTMLInputElementImpl::setPixmap( QPixmap *p )
@@ -877,10 +880,15 @@ void HTMLInputElementImpl::calcMinMaxWidth()
 
     if(minMaxKnown()) return;
 
+    layout();
+
     if(w)
 	minWidth = w->width();
-    else if (_type != HIDDEN)
+    else if (_type == HIDDEN)
+	minWidth = 0;
+    else
 	printf("InputElement: no Widget!!!\n");
+
     maxWidth = minWidth;
 
     if(availableWidth && minWidth > availableWidth)
@@ -1136,6 +1144,7 @@ void HTMLSelectElementImpl::layout( bool )
     }
 
     setLayouted();
+    setBlocking(false);
 }
 
 void HTMLSelectElementImpl::calcMinMaxWidth()
@@ -1145,6 +1154,8 @@ void HTMLSelectElementImpl::calcMinMaxWidth()
 #endif
 
     if(minMaxKnown()) return;
+
+    layout();
 
     minWidth = 0;
     if(w)
@@ -1407,6 +1418,7 @@ void HTMLTextAreaElementImpl::layout( bool )
     width = size.width();
 
     setLayouted();
+    setBlocking(false);
 }
 
 void HTMLTextAreaElementImpl::calcMinMaxWidth()

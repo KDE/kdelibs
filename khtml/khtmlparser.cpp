@@ -326,8 +326,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	       tmp->nodeName().string().ascii(),
 	       newNode->nodeName().string().ascii());
 #endif
-    	n->attach(HTMLWidget);
-
 	// don't push elements without end tag on the stack
 	if(tagPriority[id] != 0)
 	{
@@ -337,12 +335,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		block = current;
 	    if(current->isInline()) _inline = true;
 	}
-	else
-	    n->calcMinMaxWidth();
 	
-
 	if(n->isElementNode())
 	    static_cast<HTMLElementImpl *>(n)->setStyle(currentStyle);
+
+    	n->attach(HTMLWidget);
+
+	if(tagPriority[id] == 0)
+	    n->calcMinMaxWidth();
 
     }
     catch(DOMException exception)
@@ -440,6 +440,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 							n, 0, 0,
 							parentElem);
 		tableElem->next = Elem;
+		addForbidden(ID_FORM, forbiddenTag);
 		
 		node->deref();
 		return;
