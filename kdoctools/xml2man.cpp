@@ -15,15 +15,12 @@
 #include <kstddirs.h>
 #include <kinstance.h>
 #include <xslt.h>
-#include <iostream>
 #include <qfile.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <stdlib.h>
 #include <kdebug.h>
-
-using namespace std;
 
 extern int xmlLoadExtDtdDefaultValue;
 
