@@ -36,6 +36,7 @@
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
+#include "xml/dom_textimpl.h"
 
 #include "khtmlview.h"
 #include "decoder.h"
@@ -167,12 +168,15 @@ public:
   bool m_bClearing;
   bool m_bCleared;
 
-    DOM::DOMString m_userSheet;
-    DOM::DOMString m_userSheetUrl;
+  DOM::DOMString m_userSheet;
+  DOM::DOMString m_userSheetUrl;
 
   QString m_popupMenuXML;
 
   int m_fontBase;
+
+  int m_findPos;
+  DOM::NodeImpl *m_findNode;
 };
 
 namespace khtml {
@@ -245,6 +249,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   connect( khtml::Cache::loader(), SIGNAL( requestDone() ),
 	   this, SLOT( checkCompleted() ) );
+  
+  findTextBegin(); //reset find variables
 }
 
 KHTMLPart::~KHTMLPart()
@@ -812,44 +818,42 @@ const QCursor &KHTMLPart::urlCursor() const
 
 void KHTMLPart::findTextBegin()
 {
-#if 0
-    findPos = -1;
-    findNode = 0;
-#endif
+  d->m_findPos = -1;
+  d->m_findNode = 0;
 }
 
-bool KHTMLPart::findTextNext( const QRegExp &/*exp*/ )
+bool KHTMLPart::findTextNext( const QRegExp &exp )
 {
-#if 0
-    if(!findNode) findNode = document->body();
+    if(!d->m_findNode) d->m_findNode = d->m_doc->body();
 
-    if(findNode->id() == ID_FRAMESET) return false;
+    if ( !d->m_findNode ||
+	 d->m_findNode->id() == ID_FRAMESET )
+      return false;
 
     while(1)
     {
-	if(findNode->id() == ID_TEXT)
+	if(d->m_findNode->id() == ID_TEXT)
 	{
-	    DOMStringImpl *t = (static_cast<TextImpl *>(findNode))->string();
+	    DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
 	    QConstString s(t->s, t->l);
-	    findPos = s.string().find(exp, findPos+1);
-	    if(findPos != -1)
+	    d->m_findPos = s.string().find(exp, d->m_findPos+1);
+	    if(d->m_findPos != -1)
 	    {
 		int x = 0, y = 0;
-		findNode->renderer()->absolutePosition(x, y);
-		setContentsPos(x-50, y-50);
+		d->m_findNode->renderer()->absolutePosition(x, y);
+		d->m_view->setContentsPos(x-50, y-50);
+		return true;
 	    }
 	}
-	findPos = -1;
-	NodeImpl *next = findNode->firstChild();
-	if(!next) next = findNode->nextSibling();
-	while(findNode && !next) {
-	    findNode = findNode->parentNode();
-	    next = findNode->nextSibling();
+	d->m_findPos = -1;
+	NodeImpl *next = d->m_findNode->firstChild();
+	if(!next) next = d->m_findNode->nextSibling();
+	while(d->m_findNode && !next) {
+	    d->m_findNode = d->m_findNode->parentNode();
+	    next = d->m_findNode->nextSibling();
 	}
-	if(!findNode) return false;
+	if(!d->m_findNode) return false;
     }
-#endif
-    return false;
 }
 
 
