@@ -153,7 +153,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 			if (pid == 0)
 				msg += i18n("The KDE print server (<b>kdeprintd</b>) could not be contacted. Check that this server is running.");
 			else
-				msg += i18n("Check the command syntax:\n%1 <files>").arg(cmd);
+				msg += i18n("1 is the command that <files> is given to", "Check the command syntax:\n%1 <files>").arg(cmd);
 			printer->setErrorMessage(msg);
 			return false;
 		}
