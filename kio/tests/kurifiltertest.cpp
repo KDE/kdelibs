@@ -90,22 +90,26 @@ int main(int argc, char **argv) {
     // URI that should require no filtering
     filter( "http://www.kde.org", "http://www.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "http://www.kde.org/developer//index.html", "http://www.kde.org/developer//index.html", KURIFilterData::NET_PROTOCOL );
+        // URL with reference
     filter( "http://www.kde.org/index.html#q8", "http://www.kde.org/index.html#q8", KURIFilterData::NET_PROTOCOL );
+        // local file with reference
     filter( "file:/etc/passwd#q8", "file:/etc/passwd#q8", KURIFilterData::LOCAL_FILE );
+        // hostnames are lowercased by KURL
     filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
-            "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
+            "http://www.mydomain.commyport/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
     filter( "ftp://ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "ftp://username@ftp.kde.org:500", "ftp://username@ftp.kde.org:500", KURIFilterData::NET_PROTOCOL );
 
     // ShortURI tests
     filter( "linuxtoday.com", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
-    filter( "LINUXTODAY.COM", "http://LINUXTODAY.COM", KURIFilterData::NET_PROTOCOL );
+    filter( "LINUXTODAY.COM", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "kde.org", "http://kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "mosfet.org", "http://mosfet.org", KURIFilterData::NET_PROTOCOL );
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
     filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter", "/tmp" );
+    filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
 
     // SMB share test with a specific filter chosen
     // #### Those fail - I see no specific code for them in kshorturifilter !?
