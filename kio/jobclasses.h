@@ -25,12 +25,9 @@
 #include <kurl.h>
 
 #include <qobject.h>
-//#include <qintdict.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
-//#include <qdatetime.h>
-//#include <time.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -224,8 +221,6 @@ namespace KIO {
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;
-
-    private:
         KURL m_url;
         int m_command;
     };
@@ -300,14 +295,23 @@ namespace KIO {
 
         void dataReq( KIO::Job *, QByteArray &data);
 
+        /**
+         * Signals a redirection
+         * Use to update the URL shown to the user
+         * The redirection itself is handled internally
+         */
+        void redirection( const KURL &url );
+
     protected slots:
         virtual void slotRedirection( const KURL &url);
+        virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
 
     protected:
         bool m_suspended;
         QByteArray staticData;
+        KURL m_redirectionURL;
     };
 
     // Mimetype Job

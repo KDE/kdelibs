@@ -281,6 +281,60 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
+    m_redirectionURL = url;
+    emit redirection( url );
+    // We'll remember that when the job finishes
+}
+
+void TransferJob::slotFinished()
+{
+    if ( m_redirectionURL.isEmpty() || m_error )
+        SimpleJob::slotFinished();
+    else {
+        // Honour the redirection
+        // We take the approach of "redirecting this same job"
+        // Another solution would be to create a subjob, but the same problem
+        // happens (unpacking+repacking)
+        staticData.truncate(0);
+        m_suspended = false;
+        m_url = m_redirectionURL;
+        m_redirectionURL = KURL();
+        // The very tricky part is the packed arguments business
+        QString dummyStr;
+        QDataStream istream( m_packedArgs, IO_ReadOnly );
+        switch( m_command ) {
+            case CMD_GET: {
+                Q_INT8 iReload;
+                istream >> dummyStr >> dummyStr /*do we keep the query?*/ >> iReload;
+                m_packedArgs.truncate(0);
+                QDataStream stream( m_packedArgs, IO_WriteOnly );
+                stream << m_url.path() << m_url.query() << iReload;
+                break;
+            }
+            case CMD_PUT: {
+                int permissions;
+                Q_INT8 iOverwrite, iResume;
+                istream >> iOverwrite >> iResume >> permissions >> dummyStr;
+                m_packedArgs.truncate(0);
+                QDataStream stream( m_packedArgs, IO_WriteOnly );
+                stream << iOverwrite << iResume << permissions << m_url.path();
+                break;
+            }
+            case CMD_SPECIAL: {
+                int specialcmd;
+                istream >> specialcmd;
+                assert(specialcmd == 1); // you have to switch() here if other cmds are added
+                istream >> dummyStr >> dummyStr;
+                m_packedArgs.truncate(0);
+                QDataStream stream( m_packedArgs, IO_WriteOnly );
+                stream << specialcmd << m_url.path() << m_url.query();
+                break;
+            }
+        }
+
+        m_slave = 0L;
+        Scheduler::doJob(this);
+    }
 }
 
 // Slave requests data
