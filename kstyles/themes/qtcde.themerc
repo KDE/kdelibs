@@ -1,6 +1,7 @@
 [Misc]
 Name=Qt CDE
 Name[de]=Qt-CDE
+Name[ro]=CDE Qt
 Comment=Built-in unthemed CDE style
 Comment[ca]=Estil incorporat CDE sense temes
 Comment[cs]=Zabudovaný CDE styl (netémovaný)
@@ -15,5 +16,14 @@ Comment[is]=Innbyggður stíll sem minnir á CDE notendaskilin (án þema)
 Comment[it]=Stile CDE interno (senza tema)
 Comment[ja]=CDEスタイル
 Comment[mk]=Вграден CDE стил (без тема)
+Comment[nl]=Ingebouwde, themaloze CDE-stijl
+Comment[no]=Innebygget CDE-stil uten tema
+Comment[pt]=Estilo embutido CDE
+Comment[ro]=Stil CDE fără temă, intern
+Comment[sl]=Vgrajen običajni stil CDE
+Comment[sr]=UgraÄ�eni, bez teme, CDE stil
+Comment[sv]=Inbyggd otemad CDE-stil
+Comment[ta]=உளஂளைம CDE பாநஂதமஂ
+Comment[tr]=Yerleþik, temasýz CDE stili
 [KDE]
 widgetStyle=CDE
