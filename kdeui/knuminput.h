@@ -246,12 +246,16 @@ public slots:
     /**
      * sets the Suffix
      * @param suffix the suffix that should be used. QString::null to disable
+     * Formatting has to be provided (e.g. a space separator between the 
+     * prepended @param value and the suffix's text has to be provided
+     * as the first character in the suffix)
      */
     void setSuffix(QString suffix);
 
     /**
      * sets the Prefix
      * @param prefix the prefix that should be used. QString::null to disable
+     * Formatting has to be provided (see above)
      */
     void setPrefix(QString prefix);
 
@@ -396,12 +400,16 @@ public slots:
     /**
      * sets the Suffix
      * @param suffix the suffix that should be used. QString::null to disable
+     * Formatting has to be provided (e.g. a space separator between the 
+     * prepended @param value and the suffix's text has to be provided
+     * as the first character in the suffix)
      */
     void setSuffix(QString suffix);
 
     /**
      * sets the Prefix
      * @param prefix the prefix that should be used. QString::null to disable
+     * Formatting has to be provided (see above)
      */
     void setPrefix(QString prefix);
 
