@@ -216,16 +216,19 @@ void KCompletionBox::show()
     resize( sizeHint() );
 
     if ( d->m_parent ) {
-	QRect screenSize = QApplication::desktop()->screenGeometry(d->m_parent);
+        // this is probably better, once kde switches to requiring qt3.1
+        // QRect screenSize = QApplication::desktop()->availableGeometry(d->m_parent);
+        // for now use this since it's qt3.0.x-safe
+        QRect screenSize = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(d->m_parent));
 
-	QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
-       	int x = orig.x();
-	int y = orig.y();
+        QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
+        int x = orig.x();
+        int y = orig.y();
 
-	if ( x + width() > screenSize.right() )
-	    x = screenSize.right() - width();
-	if (y + height() > screenSize.bottom() )
-	    y = y - height() - d->m_parent->height();
+        if ( x + width() > screenSize.right() )
+            x = screenSize.right() - width();
+        if (y + height() > screenSize.bottom() )
+            y = y - height() - d->m_parent->height();
 
         move( x, y);
         qApp->installEventFilter( this );
