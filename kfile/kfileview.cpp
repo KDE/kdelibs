@@ -18,16 +18,17 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kfileview.h"
-#include <qsignal.h>
-#include <kapp.h>
-#include "config-kfile.h"
+#include <assert.h>
 #include <stdlib.h>
+
+#include <kapp.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kstddirs.h>
-#include <kglobal.h>
-#include <assert.h>
+
+#include "config-kfile.h"
+#include "kfileview.h"
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -446,7 +447,7 @@ void KFileView::setCurrentItem(const QString &item,
 	return;
     }
 
-    qWarning("setCurrentItem: no match found.");
+    kdDebug() << "setCurrentItem: no match found." << endl;
 }
 
 const KFileViewItemList * KFileView::items() const
@@ -526,14 +527,21 @@ void KFileView::removeItem( const KFileViewItem *item )
     if ( !item || !myFirstItem )
 	return;
 
+    if ( itemList )
+	itemList->removeRef( item );
+    if ( selectedList )
+	selectedList->removeRef( item );
+    
     KFileViewItem *it = myFirstItem;
     if ( it == item )
 	myFirstItem = it->next();
 
     else {
 	while (it) {
-	    if (it->next() == item)
+	    if (it->next() == item) {
 		it->setNext( it->next()->next() );
+		break;
+	    }
 
 	    it = it->next();
 	}
