@@ -1,3 +1,14 @@
+from Wolfram Diestel:
+
+- add more charsets - need support from users of this charsets
+- rewrite the all the stuff to make it more asynchronous:
+   o one process should send data
+   o one process should read data
+  synchronisation is done only by counting empty output lines from ispell
+
+
+old todo from David Sweet
+-------------------------
 
 properly handle capitalization on "Replace All" (in parseOneResponse())
 

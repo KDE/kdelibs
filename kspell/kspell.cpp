@@ -647,6 +647,7 @@ void KSpell::checkList2 ()
     {
       kdDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
 
+      endOfResponse = FALSE;
       bool put;
       lastpos++; offset=0;
       put = cleanFputsWord (*wlIt);
@@ -671,6 +672,15 @@ void KSpell::checkList2 ()
 void KSpell::checkList3a (KProcIO *)
   // invoked by KProcIO, when data from ispell are read
 {
+  //kdDebug(750) << "start of checkList3a" << endl;
+
+  // don't read more data, when dialog is waiting
+  // for user interaction
+  if (dlgon) {
+    //kdDebug(750) << "dlgon: don't read more data" << endl;
+    return;
+  }
+  
   int e, tempe;
 
   QString word;
@@ -679,39 +689,51 @@ void KSpell::checkList3a (KProcIO *)
     do
       {
 	tempe=proc->fgets (line, TRUE); //get ispell's response
-	if (tempe>0)
-	  {
-	    //kdDebug(750) << "lastpos advance on [" << temp << "]" << endl;
-	    if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
-		e==REPLACE)
-	      {
-		dlgresult=-1;
 
-		if (e==REPLACE)
-		  {
-		    QString old = *(--wlIt); wlIt++;
-		    dlgreplacement=word;   
-		    checkList3();
-		    // inform application  
-		    emit corrected (old, *(--wlIt), lastpos); wlIt++;
-		  }
-		else
-		  {
-		    cwword=word;
-		    dlgon=TRUE;
-		    // show the dialog
-		    dialog (word, &sugg, SLOT (checkList4()));
-		    return;
-		  }
-	      }
+	//kdDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
 
-	  }
+
+	if (tempe == 0) {
+	  endOfResponse = TRUE;
+	  //kdDebug(750) << "checkList3a: end of resp" << endl;
+	} else if (tempe>0) {
+	  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
+	      e==REPLACE)
+	    {
+	      dlgresult=-1;
+	      
+	      if (e==REPLACE)
+		{
+		  QString old = *(--wlIt); wlIt++;
+		  dlgreplacement=word;   
+		  checkList3();
+		  // inform application  
+		  emit corrected (old, *(--wlIt), lastpos); wlIt++;
+		}
+	      else
+		{
+		  cwword=word;
+		  dlgon=TRUE;
+		  // show the dialog
+		  dialog (word, &sugg, SLOT (checkList4()));
+		  return;
+		}
+	    }
+	  
+	}
       	emitProgress (); //maybe
-      } while (tempe>=0);
+	
+	// stop when empty line or no more data
+      } while (tempe > 0);
+ 
+    //kdDebug(750) << "checkList3a: exit loop with [" << tempe << "]" << endl;
 
-    if (!dlgon) //is this condition needed?
-      // send next word
+    // if we got an empty line, t.e. end of ispell/aspell response
+    // and the dialog isn't waiting for user interaction, send next word
+    if (endOfResponse and !dlgon) {
+      //kdDebug(750) << "checkList3a: send next word" << endl;
       checkList2();
+    }
 }
 
 // rename to "checkListReplaceCurrent", when binary compatibility isn't needed
@@ -758,8 +780,11 @@ void KSpell::checkList4 ()
       break;
     };
 
-  // read more if there is more
-  checkList3a(NULL);
+  // read more if there is more, otherwise send next word
+  if (!endOfResponse) {
+    //kdDebug(750) << "checkList4: read more from response" << endl;
+      checkList3a(NULL);
+  } 
 }
 
 bool KSpell::check( const QString &_buffer )

@@ -477,6 +477,8 @@ protected:
 private:
   class KSpellPrivate;
   KSpellPrivate *d;
+
+  bool endOfResponse;
 };
 
 /**
