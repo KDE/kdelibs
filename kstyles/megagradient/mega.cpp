@@ -1548,6 +1548,10 @@ static const int windowsRightBorder     = 12;
         p->drawPixmap(x, y, *((QWidget*)p->device())->backgroundPixmap(),
                       x, y, w, h);
     }
+
+    if (!mi)
+	return;
+
     if ( mi->iconSet() ) {
         QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
         if (!dis)
