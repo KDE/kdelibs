@@ -33,9 +33,9 @@
 #endif      
 
 /**
- * Maximum number of slaves started for certain protocol.
+ * Maximum number of slaves kept around in KIOSlavePool.
  */
-#define MAX_SLAVES( protocol )   6
+#define MAX_SLAVES           6
 
 int KIOJob::s_id = 0;
 KIOJob::jobDict *KIOJob::s_allJobs = 0L;
@@ -72,7 +72,6 @@ KIOJob::KIOJob(const char *name)
 
   m_pDialog = 0L;
   m_pSlave = 0L;
-  m_pNotifier = 0L;
   m_bPreGet = false;
   m_iPreGetBufferSize = 0;
   m_iPreGetBufferMaxSize = 0;
@@ -128,12 +127,6 @@ void KIOJob::clean() {
     assert( s_allJobs->find( m_id ) != 0 );
     s_allJobs->remove( m_id );
     m_id = 0;
-  }
-  
-  if ( m_pNotifier ) {
-    m_pNotifier->setEnabled( false );
-    delete m_pNotifier;
-    m_pNotifier = 0L;
   }
   
   if ( m_pSimpleProgressDlg ) {
@@ -537,8 +530,7 @@ void KIOJob::cont() {
   if ( m_pPreGetBuffer )
     emit sigData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
 
-  if ( m_pNotifier )
-    m_pNotifier->setEnabled( true );
+  m_pSlave->resume();
 
   if ( m_bPreGetFinished )
     slotFinished();  
@@ -589,9 +581,7 @@ void KIOJob::slotData( void *_p, int _len ) {
     m_pPreGetBuffer = p;
     m_iPreGetBufferSize += _len;
     if ( m_iPreGetBufferSize >= m_iPreGetBufferMaxSize ) {
-      if ( m_pNotifier ) {
-	m_pNotifier->setEnabled( false );
-      }
+      m_pSlave->suspend();
       emit sigPreData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
       m_bPreGet = false;
     }
@@ -630,12 +620,7 @@ void KIOJob::slotFinished() {
 
   // Put the slave back to the pool
   if ( m_pSlave ) {  
-    // Delete the notifier NOW. One never know what happens ....
-    if ( m_pNotifier ) {
-      m_pNotifier->setEnabled( false );
-      delete m_pNotifier;
-      m_pNotifier = 0L;
-    }
+    disconnectSlave( m_pSlave );
 
     if ( m_bCacheToPool ) {
       KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.data(),
@@ -687,12 +672,7 @@ void KIOJob::slotError( int _errid, const char *_txt ) {
   // slaves are still in a good shape after reporting an error.
   // Put the slave back to the pool
   if ( m_pSlave ) {  
-    // Delete the notifier NOW. One never know what happens ....
-    if ( m_pNotifier ) {
-      m_pNotifier->setEnabled( false );
-      delete m_pNotifier;
-      m_pNotifier = 0L;
-    }
+    disconnectSlave( m_pSlave );
 
     if ( m_bCacheToPool ) {
       KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.data(),
@@ -858,8 +838,7 @@ void KIOJob::slotMimeType( const char *_type ) {
   if ( m_bPreGet ) {    
     m_strPreGetMimeType = _type;
     m_bPreGet = false;
-    if ( m_pNotifier )
-      m_pNotifier->setEnabled( false );
+    m_pSlave->suspend();
   }
   
   emit sigMimeType( m_id, _type );
@@ -882,11 +861,24 @@ void KIOJob::slotCancel() {
   }
 }
 
+void KIOJob::slotSlaveDied( KProcess *)
+{
+  assert( m_pSlave);
+  kdebug( KDEBUG_INFO, 7007, "Slave died, pid = %ld", m_pSlave->getPid() );
+}
+
 
 void KIOJob::connectSlave( KIOSlave *_s ) {
   setConnection( _s );
-  m_pNotifier = new QSocketNotifier( _s->inFD(), QSocketNotifier::Read, this );
-  connect( m_pNotifier, SIGNAL( activated( int ) ), this, SLOT( slotDispatch( int ) ) );
+  connect(_s, SIGNAL( receivedStdout( int, int &)), this, SLOT( slotDispatch( int, int & )) );
+  connect(_s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
+  _s->resume();
+}
+
+void KIOJob::disconnectSlave( KIOSlave *_s ) {
+  _s->suspend();
+  disconnect(_s, SIGNAL( receivedStdout( int, int &)), this, SLOT( slotDispatch( int, int & )) );
+  disconnect(_s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
 }
 
 
@@ -909,7 +901,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _err
   }
   
   s = new KIOSlave( exec.data() );
-  if ( s->pid() == -1 ) {
+  if ( !s->isRunning() ) {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
     _error_text = exec;
     return 0L;
@@ -954,7 +946,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
   }
   
   s = new KIOSlave( exec.data() );
-  if ( s->pid() == -1 ) {
+  if ( !s->isRunning() ) {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
     _error_text = exec;
     return 0L;
@@ -973,23 +965,20 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
 }
 
 
-void KIOJob::slotDispatch( int ) {
+void KIOJob::slotDispatch( int, int &result ) {
+  result = 1;
   if ( !dispatch() ) {    
-    if ( m_pNotifier ) {
-      m_pNotifier->setEnabled( false );
-      delete m_pNotifier;
-      m_pNotifier = 0L;
+    result = -1;
 
-      // Remove the dead slave now, to avoid that it is
-      // putback in the pool.
-      if ( m_pSlave ) {    
-	delete m_pSlave;
-	m_pSlave = 0L;
-      }
-      
-      slotError( ERR_SLAVE_DIED, m_strSlaveProtocol.data() );
-      slotFinished();
-    }
+    // Get rid of the slave. It's no good any longer.
+    m_pSlave->closeStdout();
+    delete m_pSlave;
+    m_pSlave = 0;
+    bool deleteFlag = m_bAutoDelete;
+    m_bAutoDelete = false;
+    slotError( ERR_SLAVE_DIED, m_strSlaveProtocol.data() );
+    m_bAutoDelete = deleteFlag;
+    slotFinished(); 
   }
 }
 
@@ -1059,72 +1048,75 @@ QString KIOJob::convertSize( unsigned long size )
 KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
 
-KIOSlave* KIOSlavePool::slave( const char *_protocol ) {
-  entryList *slaveList = m_allSlaves.find( _protocol );
-  if (!slaveList)
-     return 0L;
-
-  Entry *entry = slaveList->take();
-
-  // Remove empty lists
-  if (slaveList->count() == 0)
-  {
-      m_allSlaves.remove( _protocol );
-      delete slaveList;
-  }
-
-  assert(entry != 0);
-
-  KIOSlave *s = entry->m_pSlave;
-  delete entry;
-
-  return s;
-}
-
-
-KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
-			       const char *_user, const char *_pass) 
+KIOSlave* KIOSlavePool::slave( const char *_protocol)
 {
-  entryList *slaveList = m_allSlaves.find( _protocol );
-  if (!slaveList)
+  Entry *entry = m_allSlaves.first();
+  for(; entry; entry = m_allSlaves.next())
   {
-     kdebug( KDEBUG_INFO, 7007, "No matching slave - no such protocol (%s)", _protocol );
-     return 0L;
-  }
-  assert( slaveList->count() > 0);
-
-  Entry *entry = slaveList->first();
-  for(; entry; entry = slaveList->next())
-  {
-     if ( (entry->m_host == _host) &&
-          (entry->m_user == _user) &&
-          (entry->m_pass == _pass) )
+     if (entry->m_protocol == _protocol)
      {
-        kdebug( KDEBUG_INFO, 7007, "found matching slave - total match" );
+        kdebug( KDEBUG_INFO, 7007, "Found matching slave - protocol (%s)", _protocol );
         break;
      }
   }
 
   if (!entry)
   {
-     kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
-     entry = slaveList->first();
+     kdebug( KDEBUG_INFO, 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
+     return 0L;
   }
-  assert( entry != 0 );
 
-  slaveList->removeRef( entry );
-
-  // Remove empty lists
-  if (slaveList->count() == 0)
-  {
-      m_allSlaves.remove( _protocol );
-      delete slaveList;
-  }
+  m_allSlaves.removeRef( entry );
 
   assert(entry != 0);
 
   KIOSlave *s = entry->m_pSlave;
   delete entry;
+
+  disconnect( s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
+
+  return s;
+}
+
+KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
+			       const char *_user, const char *_pass) 
+{
+  Entry *entry = m_allSlaves.first();
+  Entry *protEntry = 0;
+  for(; entry; entry = m_allSlaves.next())
+  {
+     if (entry->m_protocol == _protocol)
+     {
+        protEntry = entry;
+        if((entry->m_host == _host) &&
+           (entry->m_user == _user) &&
+           (entry->m_pass == _pass) )
+        {
+           kdebug( KDEBUG_INFO, 7007, "Found matching slave, total match - protocol (%s)", _protocol );
+           break;
+        }
+     }    
+  }
+
+  if (!entry)
+  {
+     if (!protEntry)
+     {
+        kdebug( KDEBUG_INFO, 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
+        return 0L;
+     }
+     kdebug( KDEBUG_INFO, 7007, "Found matching slave, protocol only - protocol (%s)", _protocol );
+     entry = protEntry;
+  }
+
+  m_allSlaves.removeRef( entry );
+
+  assert(entry != 0);
+
+  KIOSlave *s = entry->m_pSlave;
+  delete entry;
+
+  disconnect( s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
 
   return s;
 }
@@ -1136,50 +1128,51 @@ void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char
   Entry *entry = new Entry();
   entry->m_time = time( 0L );
   entry->m_pSlave = _slave;
+  entry->m_protocol = _protocol;
   entry->m_host = _host;
   entry->m_user = _user;
   entry->m_pass = _pass;
   
-  entryList *slaveList = m_allSlaves.find( _protocol );
-  if (!slaveList)
+  if (m_allSlaves.count() >= MAX_SLAVES )
   {
-     slaveList = new entryList();
-     m_allSlaves.insert( _protocol, slaveList);
-  }
-  if (slaveList->count() >= MAX_SLAVES(_protocol) )
-  {
-     Entry *entry = slaveList->first();
+     Entry *entry = m_allSlaves.first();
      Entry *oldest = entry;
-     for(entry = slaveList->next(); entry; entry = slaveList->next())
+     for(entry = m_allSlaves.next(); entry; entry = m_allSlaves.next())
      {
         if (oldest->m_time > entry->m_time)
            oldest = entry;
      }
-     slaveList->removeRef(oldest);
+     m_allSlaves.removeRef(oldest);
      delete oldest->m_pSlave;
      delete oldest;
+     kdebug( KDEBUG_INFO, 7007, "oldest slave removed - protocol = %s", _protocol );
   }
-  assert( slaveList != 0);
-  slaveList->append(entry);
+  m_allSlaves.append(entry);
+  connect( _slave, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
 }
 
 
-void KIOSlavePool::eraseOldest() {
-#if 0
-  assert( m_mapSlaves.count() >= 1 );
-  
-  QMap<QString,Entry>::Iterator oldie = m_mapSlaves.begin();
+void KIOSlavePool::slotSlaveDied(KProcess *proc) {
+   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool" );
 
-  QMap<QString,Entry>::Iterator it = oldie;
-  it++;
-  for( ; it != m_mapSlaves.end(); it++ ) {
-    if ( (*oldie).m_time > (*it).m_time ) {
-      oldie = it;
-    }
-  }
-  
-  m_mapSlaves.remove( oldie );
-#endif
+   Entry *entry = m_allSlaves.first();
+   for(entry = m_allSlaves.next(); entry; entry = m_allSlaves.next())
+   {
+      assert(entry->m_pSlave);
+
+      if (entry->m_pSlave->getPid() == proc->getPid())
+         break;
+   }
+   if (!entry)
+   {
+       kdebug( KDEBUG_ERROR, 7007, "Unknown slave died from KIOSlavePool!" );
+       return;      
+   }
+   m_allSlaves.removeRef(entry);
+   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool - protocol = %s host = %s", 
+		entry->m_protocol.ascii(), entry->m_host.ascii() );
+   delete entry->m_pSlave;
+   delete entry;
 }
 
     

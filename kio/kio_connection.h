@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include <stdio.h>
+#include <kprocess.h>
 
 /**
   * This class provides a simple means for IPC between two applications
@@ -52,18 +53,11 @@ protected:
   size_t m_iBufferSize;
 };
 
-class KIOSlave : public KIOConnection
+class KIOSlave : public KIOConnection, public KProcess
 {
 public:
   KIOSlave( const char *_cmd );
   ~KIOSlave();
- 
-  int pid() { return m_pid; }
-  
-protected:
-  int buildPipe( int *_recv, int *_send );
-
-  int m_pid;
 };
 
 #endif

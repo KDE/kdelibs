@@ -8,7 +8,6 @@
 #include <qobject.h>
 #include <qintdict.h>
 #include <qlist.h>
-#include <qdict.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
@@ -224,7 +223,7 @@ public:
    * @param  quiet  if true - KIOJob will not emit sigCanceled when killed. This is a default value.
    */
   virtual void kill( bool quiet = false );
-  
+
   static KIOJob* find( int id );
 
   static QString findDeviceMountPoint( const char *device, const char *file = "/etc/mtab" );
@@ -413,17 +412,22 @@ signals:
 protected slots:
 
   /**
-   * Connected to the socket notifier
+   * Connected to KProcess
    *
    * @ref #m_pNotifier
    */
-  virtual void slotDispatch( int );
+  virtual void slotDispatch( int, int & );
 
   /**
    * Stops the current action ( that means kills any running servers associated with
    * this KIOJob and deletes itself if auto-delete mode is on.
    */
   virtual void slotCancel();
+
+  /**
+   * Slave has died.
+   */
+  void slotSlaveDied( KProcess *);
   
 protected:
 
@@ -433,6 +437,8 @@ protected:
   void clean();
 
   void connectSlave( KIOSlave *_s );
+
+  void disconnectSlave( KIOSlave *_s );
 
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
@@ -477,7 +483,6 @@ protected:
   QDialog *m_pDialog;
   
   KIOSlave* m_pSlave;
-  QSocketNotifier* m_pNotifier;
   QString m_strSlaveProtocol;
   QString m_strSlaveHost;
   QString m_strSlaveUser;
@@ -522,8 +527,9 @@ protected:
 /**
  * Implements a "last recently used" algorithm.
  */
-class KIOSlavePool {
-
+class KIOSlavePool : public QObject {
+  Q_OBJECT
+  
 public:
 
   KIOSlavePool() { }
@@ -538,22 +544,24 @@ public:
   
   static KIOSlavePool* self();
 
-protected:
+protected slots:
 
-  void eraseOldest();
+  void slotSlaveDied( KProcess *);
+
+protected:
   
   struct Entry
   {
     time_t m_time;
     KIOSlave* m_pSlave;
+    QString m_protocol;
     QString m_host;
     QString m_user;
     QString m_pass;
   };
 
   typedef QList<Entry> entryList;
-  typedef QDict<entryList> entryMap;
-  entryMap m_allSlaves;
+  entryList m_allSlaves;
 
   static KIOSlavePool* s_pSelf;
 };

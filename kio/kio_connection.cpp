@@ -15,13 +15,10 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
-#ifdef HAVE_VFORK_H
-#include <vfork.h>
-#endif
-
-#include <iostream.h>
 
 #include "kio_connection.h"
+
+#include <kdebug.h>
 
 KIOConnection::KIOConnection( int _in_fd, int _out_fd, size_t _buf_len )
 {
@@ -36,7 +33,7 @@ KIOConnection::KIOConnection()
 
 size_t KIOConnection::defaultBufferSize()
 {
-	return 0xFFFF;
+  return 0xFFFF;
 }
 
 void KIOConnection::init( int _in_fd, int _out_fd , size_t _buf_len)
@@ -70,14 +67,14 @@ int KIOConnection::send( int _cmd, const void *_p, int _len )
   int n = fwrite( buffer, 1, 8, m_fout );
 
   if ( n != 8 ) {
-    cerr << "Could not send header\n";
+    kdebug( KDEBUG_ERROR, 7017, "Could not send header");
     return 0;
   }
 
   n = fwrite( _p, 1, _len, m_fout );
 
   if ( n != _len ) {
-    cerr << "Could not write data\n";
+    kdebug( KDEBUG_ERROR, 7017, "Could not write data");
     return 0;
   }
 
@@ -95,18 +92,13 @@ again1:
   if ( n == -1 && errno == EINTR )
     goto again1;
 
-  if ( n == -1) switch (errno) {
-    case EAGAIN: cerr << "read failed, errno=EAGAIN" << endl;
-    case EIO: cerr << "read failed, errno=EIO" << endl;
-    case EISDIR: cerr << "read failed, errno=EISDIR" << endl;
-    case EBADF: cerr << "read failed, errno=EBADF" << endl;
-    case EINVAL: cerr << "read failed, errno=EINVAL" << endl;
-    case EFAULT: cerr << "read failed, errno=EFAULT" << endl;
+  if ( n == -1) {
+    kdebug( KDEBUG_ERROR, 7017, "Header read failed, errno=%d", errno);
   }
   
   if ( n != 8 )
   {
-    cerr << "No header " << n << endl;
+    kdebug( KDEBUG_ERROR, 7017, "Header has invalid size (%d)", n);
     return 0L;
   }
   
@@ -123,24 +115,29 @@ again1:
 
   if ( len > 0L )
   {
-    again2:
-    n = ::read( m_in, m_pBuffer, len );
-    if ( n == -1 && errno == EINTR )
-      goto again2;
-  
-    if ( n == -1 )
+    int bytesToGo = len;
+    int bytesRead = 0;
+    do 
     {
-      cerr << "ERRNO is " << errno << endl;
-      exit(3);
-    }
-  
-    if ( n != len )
-    {
-      cerr << "Not enough data " << n << " instead of " << len << endl;
-      return 0L;
-    }
+       n = ::read(m_in, m_pBuffer+bytesRead, bytesToGo);
+       if (n == -1) 
+       { 
+          if (errno == EINTR)
+             continue;
 
-    m_pBuffer[ n ] = 0;
+          kdebug( KDEBUG_ERROR, 7017, "Data read failed, errno=%d", errno);
+          return 0;
+       }
+       if (n != bytesToGo)
+       {
+          kdebug( KDEBUG_INFO, 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
+       }
+
+       bytesRead += n;
+       bytesToGo -= n;
+    }
+    while(bytesToGo);
+    m_pBuffer[ len ] = 0;
   }
   else
     m_pBuffer[ 0 ] = 0;
@@ -152,54 +149,24 @@ again1:
 }
 
 KIOSlave::KIOSlave( const char *_cmd ) 
-	: KIOConnection()
+	: KIOConnection(), KProcess()
 {
-  // Indicate an error;
-  m_pid = -1;
-  
-  int recv_in, recv_out;
-  int send_in, send_out;
-  
-  if( !buildPipe( &recv_in, &send_in ) ) return;
-  if( !buildPipe( &recv_out, &send_out ) ) return;
-	
-  m_pid = vfork();
-  if( m_pid == 0 ) {
-    dup2( recv_in, 0 );	fcntl(0, F_SETFD, 0);
-    dup2( send_out, 1 ); fcntl(1, F_SETFD, 0);
-    close( recv_in );
-    close( recv_out );
-    close( send_in );
-    close( send_out );
+  *this << _cmd;
 
-    char *argv[4] = { NULL, NULL, NULL, NULL };
-    char *cmd = strdup( _cmd );
-    argv[0] = cmd;
-    execv( argv[0], argv );
-    cerr << "Slave: exec failed for " << _cmd << endl;
-    cerr << "PATH=" << (const char*)getenv("PATH") << endl;
-    _exit( 0 );
+  if ( !start(NotifyOnExit, (Communication) (Stdin | Stdout | NoRead)) )
+  {
+      kdebug( KDEBUG_ERROR, 7016, "Couldn't execute %s.", _cmd);
+      return;
   }
-  close( recv_in );
-  close( send_out );
 
-  init( recv_out, send_in, KIOConnection::defaultBufferSize() );
+  init( out[0], in[1], KIOConnection::defaultBufferSize() );
 }
 
 KIOSlave::~KIOSlave()
 {
-  cerr <<  "KILLING SLAVE xb " << m_pid << endl;
-  kill( m_pid, SIGTERM );
+  if (isRunning())
+  {
+     kdebug( KDEBUG_ERROR, 7016, "Killing running slave pid = %ld", getPid());
+  }
 }
 
-int KIOSlave::buildPipe( int *_recv, int *_send )
-{
-  int pipe_fds[2];
-  if( pipe( pipe_fds ) != -1 )
-  {
-    *_recv = pipe_fds[0];
-    *_send = pipe_fds[1];
-    return 1;
-  }
-  return 0;
-}
