@@ -13,6 +13,7 @@
 
 #include <kaction.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kdebug.h>
@@ -135,7 +136,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
   {
     QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ) );
 
-    QString text = element.namedItem( "text" ).toElement().text();
+    QString text = i18n(element.namedItem( "text" ).toElement().text().latin1());
 
     if ( parent->inherits( "KMenuBar" ) )
       ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
