@@ -25,6 +25,9 @@
 #endif
 
 #include <kparts/part.h>
+#include <qptrlist.h>
+#include <qlistview.h>
+#include <klistview.h>
 
 class KSSLCertBox;
 class QFrame;
@@ -37,6 +40,23 @@ class KSSLCertificate;
 class QTabWidget;
 class QMultiLineEdit;
 class KAboutData;
+class QGridLayout;
+
+
+class KX509Item : public KListViewItem {
+	public:
+		KX509Item(KListViewItem *parent, KSSLCertificate *x);
+		~KX509Item();
+	KSSLCertificate *cert;
+};
+
+
+class KPKCS12Item : public KListViewItem {
+	public:
+		KPKCS12Item(KListViewItem *parent, KSSLPKCS12 *x);
+		~KPKCS12Item();
+	KSSLPKCS12 *cert;
+};
 
 
 class KCertPart : public KParts::ReadWritePart {
@@ -57,6 +77,7 @@ protected slots:
   void slotSave();
   void slotDone();
   void slotLaunch();
+  void slotSelectionChanged(QListViewItem *x);
 
 protected:
 
@@ -65,19 +86,32 @@ protected:
 
   void displayCert(KSSLCertificate *c);
 
-  QFrame *_frame;
-  QLabel *_filenameLabel, *_validFrom, *_validUntil, *_serialNum, *_certState;
-  QLabel *_digest;
-  QMultiLineEdit *_pubkey, *_sig;
-  KSSLCertBox *_subject, *_issuer;
+  KListView *_sideList;
+  KListViewItem *_parentCA, *_parentP12;
+  QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
+
+  // for the PKCS12 widget
+  QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil, 
+         *_p12_serialNum, *_p12_certState;
+  QLabel *_p12_digest;
+  QComboBox *_p12_chain;
+  QMultiLineEdit *_p12_pubkey, *_p12_sig;
+  KSSLCertBox *_p12_subject, *_p12_issuer;
+
+  // for the CA widget
+
+  // The rest
   KInstance *_instance;
-  QComboBox *_chain;
   QButton *_import, *_save, *_done, *_launch;
+  // Store the pointer to the current item
   KSSLPKCS12 *_p12;
+  KSSLCertificate *_ca;
   QTabWidget *_tabs;
+  QGridLayout *_baseGrid;
 
 private:
   KCertPartPrivate *d;
+  void displayPKCS12();
 };
 
 
