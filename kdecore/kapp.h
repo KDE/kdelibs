@@ -481,11 +481,13 @@ protected:
    */
   static QString kdedir();
 
-protected slots:
-  void appHelpActivated();
+public slots:
   void aboutKDE();
   void aboutApp();
   void aboutQt();
+
+protected slots:
+  void appHelpActivated();
 
 private:
   void* pAppData; // don't touch this without Kalles permission
@@ -637,6 +639,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.85  1999/06/14 11:41:15  kulow
+// hmm, -Wwrite-strings gives _lot_ of warnings
+//
 // Revision 1.84  1999/06/14 10:42:42  kulow
 // some more correct const char*ness
 //
