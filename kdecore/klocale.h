@@ -50,7 +50,7 @@ QString i18n(const char *text);
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
   *
-  * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>
+  * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>, Hans Petter Bieker <bieker@kde.org>
   * @short class for supporting locale settings and national language
   */
 class KLocale {
