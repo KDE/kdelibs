@@ -446,9 +446,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		    if(tagPriority[id] != 0)
 		    {
 			pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
-			current = n;
 		    }
-	
 		    n->attach(HTMLWidget);
 		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
 		    if(tagPriority[id] == 0)
