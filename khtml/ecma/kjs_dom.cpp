@@ -24,6 +24,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include <kdebug.h>
+#include <khtml_part.h>
 
 #include "kjs_dom.h"
 #include "kjs_html.h"
@@ -35,6 +36,7 @@
 #include "kjs_window.h"
 #include "dom/dom_exception.h"
 #include "kjs_dom.lut.h"
+#include "khtmlpart_p.h"
 
 using namespace KJS;
 
@@ -677,6 +679,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
   documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
   styleSheets     DOMDocument::StyleSheets                     DontDelete|ReadOnly
+  readyState      DOMDocument::ReadyState                      DontDelete|ReadOnly
 @end
 */
 
@@ -709,6 +712,22 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
   case StyleSheets:
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), doc);
+  case ReadyState:
+    {
+    DOM::DocumentImpl* docimpl = node.handle()->getDocument();
+    if ( docimpl && docimpl->view() )
+    {
+      KHTMLPart* part = docimpl->view()->part();
+      if ( part ) {
+        if (part->d->m_bComplete) return String("complete");
+        if (docimpl->parsing()) return String("loading");
+        return String("loaded");
+        // What does the interactive value mean ?
+        // Missing support for "uninitialized"
+      }
+    }
+    return Undefined();
+    }
   default:
     kdWarning() << "DOMDocument::getValueProperty unhandled token " << token << endl;
     return Value();

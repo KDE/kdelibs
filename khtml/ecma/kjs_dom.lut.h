@@ -159,12 +159,13 @@ namespace KJS {
 const struct HashEntry DOMDocumentTableEntries[] = {
    { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, 0 },
    { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[4] },
-   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, 0 },
+   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[5] },
    { 0, 0, 0, 0, 0 },
-   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, 0 }
+   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, 0 },
+   { "readyState", DOMDocument::ReadyState, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMDocumentTable = { 2, 5, DOMDocumentTableEntries, 4 };
+const struct HashTable DOMDocumentTable = { 2, 6, DOMDocumentTableEntries, 4 };
 
 }; // namespace
 

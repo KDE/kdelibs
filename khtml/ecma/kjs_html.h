@@ -30,7 +30,6 @@
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
 
-class KHTMLPart;
 class HTMLElement;
 
 namespace KJS {

@@ -80,6 +80,7 @@ namespace KJS {
     class Window;
     class WindowFunc;
     class JSEventListener;
+    class DOMDocument;
 };
 
 namespace KParts
@@ -145,6 +146,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::Window;
   friend class KJS::WindowFunc;
   friend class KJS::JSEventListener;
+  friend class KJS::DOMDocument;
   friend class KJSProxy;
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;

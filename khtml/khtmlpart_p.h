@@ -37,8 +37,16 @@
 #include "khtml_events.h"
 #include "khtml_ext.h"
 #include "khtml_iface.h"
+#include "khtml_settings.h"
 #include "misc/decoder.h"
 #include "java/kjavaappletcontext.h"
+#include "ecma/kjs_proxy.h"
+
+namespace KIO
+{
+  class Job;
+  class TransferJob;
+};
 
 namespace khtml
 {
