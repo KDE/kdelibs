@@ -113,15 +113,15 @@ public:
     /**
      * The state of the status bar.
      * @deprecated
-     **/
+     */
     enum BarStatus{Toggle, Show, Hide};
     /**
    * Possible bar positions.
-   **/
+   */
     enum BarPosition{ Unmanaged, Floating, Top, Bottom, Right, Left, Flat};
 
   /**
-   * Constructor.
+   * Normal constructor.
    * This constructor is used by the XML-GUI. If you use it, you need
    * to call QMainWindow::addToolBar to specify the position of the toolbar.
    * So it's simpler to use the other constructor.
@@ -175,6 +175,9 @@ public:
     KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine = false,
               const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
 
+  /**
+   * Destructor
+   */
     virtual ~KToolBar();
 
   /**
@@ -350,20 +353,20 @@ public:
    * @return Item index.
    */
     int insertCombo (const QString& text, int id, bool writable,
-		     const char *signal, QObject *recevier,
+		     const char *signal, QObject *receiver,
 		     const char *slot, bool enabled=true,
 		     const QString& tooltiptext=QString::null,
 		     int size=70, int index=-1,
 		     QComboBox::Policy policy = QComboBox::AtBottom);
 
     /**
-     * Inserts a separator into the toolbar with the given id.
+     * Inserts a separator into the toolbar with the given @p id.
      * @return the separator's index
      */
     int insertSeparator( int index = -1, int id = -1 );
 
     /**
-     * Inserts a line separator into the toolbar with the given id.
+     * Inserts a line separator into the toolbar with the given @p id.
      * @return the separator's index
      */
     int insertLineSeparator( int index = -1, int id = -1 );
@@ -400,8 +403,8 @@ public:
 			     const QString& icons, int index = -1);
 
     /**
-   * This will return a pointer to the given animated widget, if it
-   * exists.
+   * This will return a pointer to the animated widget with the
+   * given @p id, if it exists.
    *
    * @see insertAnimatedWidget
    * @param id The id for the widget you want to get a pointer to
@@ -513,8 +516,8 @@ public:
     void setButton (int id, bool flag);
 
   /**
-   * Returns @p true iff button it's on and its a toggle button, 
-   * @return @p true iff button it's on and its a toggle button, 
+   * Returns @p true iff button is on and is a toggle button 
+   * @return @p true iff button is on and is a toggle button
    * @see setToggle()
    */
     bool isButtonOn (int id) const;
@@ -576,8 +579,8 @@ public:
     QString getComboItem (int id, int index=-1) const;
 
     /**
-   * Returns a pointer to the combobox.
-   * @return a pointer to the combobox.
+   * Returns a pointer to the combobox with @p id.
+   * @return a pointer to the combobox with @p id.
    *
    * Example:
    * <pre>
@@ -589,8 +592,8 @@ public:
     KComboBox * getCombo(int id);
 
     /**
-   * Returns a pointer to KToolBarLined.
-   * @return a pointer to KToolBarLined.
+   * Returns a pointer to KToolBarLined with @p id.
+   * @return a pointer to KToolBarLined with @p id.
    *
    * Example:
    * <pre>
@@ -625,8 +628,8 @@ public:
     void alignItemRight (int id, bool right = true);
 
     /**
-   * Returns a pointer to an inserted widget.
-   * @return a pointer to an inserted widget.
+   * Returns a pointer to the widget corresponding to @p id.
+   * @return a pointer to the widget corresponding to @p id.
    *
    * Wrong ids are not tested.
    * You can do with this whatever you want,
@@ -674,18 +677,18 @@ public:
     void removeItemDelayed (int id);
 
     /**
-   * Hide item.
+   * Hide item @p id.
    */
     void hideItem (int id);
 
     /**
-   * Show item.
+   * Show item @p id.
    */
     void showItem (int id);
 
     /**
-   * Returns the index of the given item.
-   * @return the index of the given item.
+   * Returns the index of the item @p id.
+   * @return the index of the item @p id.
    * @since 3.2
    */
     int itemIndex (int id); // ### KDE4: make this const!
@@ -783,9 +786,9 @@ public:
 
   /**
    * @deprecated
-   * Use enableMoving() instead.
+   * Use setMovingEnabled(bool) instead.
    */
-    void enableFloating (bool arrrrrrgh);
+    void enableFloating (bool flag);
 
   /**
    * Set the kind of painting for buttons.
@@ -896,7 +899,7 @@ public:
   /**
    * Tell the toolbar what XML-GUI resource file it should use to save
    * it's state.  The state of the toolbar (position, size, etc) is
-   * saved in KConfig files if the application does not use XML-GUI..
+   * saved in KConfig files if the application does not use XML-GUI
    * but if the app does, then it's saved the XML file.  This function
    * allows this to happen.
    *
@@ -982,7 +985,7 @@ signals:
     void toggled(int);
 
     /**
-     * This signal is emitted when item id gets highlighted/unhighlighted
+     * This signal is emitted when item @p id gets highlighted/unhighlighted
      * (i.e when mouse enters/exits).
      *
      * Note that this signal is emitted from
@@ -994,7 +997,7 @@ signals:
     void highlighted(int id, bool isHighlighted);
 
     /**
-     * This signal is emitted when item id gets highlighted/unhighlighted
+     * This signal is emitted when item @p id gets highlighted/unhighlighted
      * (i.e when mouse enters/exits).
      *
      * Note that this signal is emitted from
