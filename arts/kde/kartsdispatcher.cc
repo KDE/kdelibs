@@ -21,6 +21,9 @@
 
 #include <qiomanager.h>
 #include <dispatcher.h>
+
+#include <kdebug.h>
+
 #include "kartsdispatcher.moc"
 
 int KArtsDispatcher::m_refCount = 0;
@@ -33,8 +36,13 @@ KArtsDispatcher::KArtsDispatcher(QObject *parent, const char *name)
 	m_refCount++;
 	if(artsDispatcher == 0)
 	{
-		artsQIOManager = new Arts::QIOManager();
-		artsDispatcher = new Arts::Dispatcher(artsQIOManager);
+		if (!Arts::Dispatcher::the()) // only if no Arts::Dispatcher is created yet
+		{
+			artsQIOManager = new Arts::QIOManager();
+			artsDispatcher = new Arts::Dispatcher(artsQIOManager);
+		}
+		else
+			kdWarning(400) << "An Arts::Dispatcher() instance exists already while trying to instantiate KArtsDispatcher!" << endl;
 	}
 }
 
