@@ -51,6 +51,7 @@ public:
     void addClient(KDirWatch*);
     void removeClient(KDirWatch*);
     int clients();
+    bool isValid() { return m_clients.count() || m_entries.count(); }
 
 #ifdef HAVE_FAM
     FAMRequest fr;
@@ -98,6 +99,9 @@ private:
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;
   bool useStat(Entry*);
+
+  bool delayRemove;
+  QPtrList<Entry> removeList;
 
 #ifdef HAVE_FAM
   QSocketNotifier *sn;

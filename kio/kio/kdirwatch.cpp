@@ -127,6 +127,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
   freq = 3600000; // 1 hour as upper bound
   statEntries = 0;
+  delayRemove = false;
 
   KConfigGroup config(KGlobal::config(), QCString("DirWatch"));
   m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
@@ -538,8 +539,14 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   else
     e->removeClient(instance);
 
-  if ( e->m_clients.count() || e->m_entries.count())
+  if (e->m_clients.count() || e->m_entries.count())
     return;
+
+  if (delayRemove) {
+    removeList.append(e);
+    // now e->isValid() is false
+    return;
+  }
 
 #ifdef HAVE_FAM
   if (e->m_mode == FAMMode) {
@@ -842,11 +849,6 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
   }
 }
 
-struct EmitEntry {
-  EmitEntry(QString _path, int _event)
-    : path(_path), event(_event) {};
-  QString path; int event;
-};
 
 /* Scan all entries to be watched for changes. This is done regularly
  * when polling and once after a DNOTIFY signal. This is NOT used by FAM.
@@ -855,10 +857,9 @@ void KDirWatchPrivate::slotRescan()
 {
   EntryMap::Iterator it;
 
-  // Buffer dirty entry paths, so that it won't crash if an app
-  // calls removeDir() in slotDirty().
-  QPtrList<EmitEntry> emitList;
-  emitList.setAutoDelete(true);
+  // We delay deletions of entries this way.
+  // removeDir(), when called in slotDirty(), can cause a crash otherwise
+  delayRemove = true;
 
 #ifdef HAVE_DNOTIFY
   QPtrList<Entry> dList, cList;
@@ -874,6 +875,9 @@ void KDirWatchPrivate::slotRescan()
 
   it = m_mapEntries.begin();
   for( ; it != m_mapEntries.end(); ++it ) {
+    // we don't check invalid entries (i.e. remove delayed)
+    if (!(*it).isValid()) continue;
+
     int ev = scanEntry( &(*it) );
 
 #ifdef HAVE_DNOTIFY
@@ -903,17 +907,13 @@ void KDirWatchPrivate::slotRescan()
 #endif
 
     if ( ev != NoChange )
-      emitList.append(new EmitEntry((*it).path, ev));
+      emitEvent( &(*it), ev);
   }
 
-  for(EmitEntry* e = emitList.first(); e; e = emitList.next() ) {
-    if (m_mapEntries.contains( e->path ))
-      emitEvent( & m_mapEntries[e->path], e->event);
-  }
+  Entry* e;
 
 #ifdef HAVE_DNOTIFY
   // Scan parent of deleted directories for new creation
-  Entry* e;
   for(e=dList.first();e;e=dList.next())
     addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
 
@@ -921,6 +921,12 @@ void KDirWatchPrivate::slotRescan()
   for(e=cList.first();e;e=cList.next())
     removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
 #endif
+
+  // Really remove entries which were marked to be removed
+  delayRemove = false;
+  for(e=removeList.first();e;e=removeList.next())
+    removeEntry(0, e->path, 0);
+  removeList.clear();
 }
 
 #ifdef HAVE_FAM
