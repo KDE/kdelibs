@@ -30,7 +30,7 @@ namespace KJS {
     Math() : ObjectImp(BooleanClass) { }
     virtual KJSO get(const UString &p) const;
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
-	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos,
+	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos, Pow,
 	   Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
   };
 

@@ -118,6 +118,9 @@ Completion MathFunc::execute(const List &args)
   case Math::Min:
     result = ( arg < arg2 ) ? arg : arg2;
     break;
+  case Math::Pow:
+    result = ::pow(arg, arg2);
+    break;
   case Math::Random:
     result = ::rand();
     result = result / RAND_MAX;

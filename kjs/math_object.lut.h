@@ -8,7 +8,7 @@ const struct HashEntry mathTableEntries[] = {
    { 5, "\0\x4c\0\x4f\0\x47\0\x32\0\x45", Math::Log2E, &mathTableEntries[10] },
    { 3, "\0\x63\0\x6f\0\x73", Math::Cos, &mathTableEntries[24] },
    { 3, "\0\x65\0\x78\0\x70", Math::Exp, &mathTableEntries[19] },
-   { 0, 0, 0, 0 },
+   { 3, "\0\x70\0\x6f\0\x77", Math::Pow, 0 },
    { 1, "\0\x45", Math::Euler, &mathTableEntries[7] },
    { 4, "\0\x4c\0\x4e\0\x31\0\x30", Math::Ln10, &mathTableEntries[8] },
    { 2, "\0\x50\0\x49", Math::Pi, &mathTableEntries[9] },
@@ -25,7 +25,7 @@ const struct HashEntry mathTableEntries[] = {
    { 3, "\0\x6d\0\x61\0\x78", Math::Max, &mathTableEntries[21] },
    { 3, "\0\x6d\0\x69\0\x6e", Math::Min, 0 },
    { 6, "\0\x72\0\x61\0\x6e\0\x64\0\x6f\0\x6d", Math::Random, 0 },
-   { 5, "\0\x72\0\x6f\0\x75\0\x6e\0\x64", Math::Round, 0 },
+   { 5, "\0\x72\0\x6f\0\x75\0\x6e\0\x64", Math::Round, &mathTableEntries[5] },
    { 3, "\0\x73\0\x69\0\x6e", Math::Sin, &mathTableEntries[25] },
    { 4, "\0\x73\0\x71\0\x72\0\x74", Math::Sqrt, 0 },
    { 3, "\0\x74\0\x61\0\x6e", Math::Tan, 0 }
