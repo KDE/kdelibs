@@ -217,15 +217,15 @@ protected:
    *                           or "KParts/ReadOnlyPart"). Can be QString::null,
    *                           then the "Application" generic type will be used
    */
-  KServiceTypeProfile( const QString& servicetype,
+  KServiceTypeProfile( const QString& serviceType,
                        const QString& genericServiceType = QString::null );
 
   /**
    * Add a service to this profile.
    * @param _service the name of the service
-   * @param _pref the user's preference value, must be positive,
+   * @param _preference the user's preference value, must be positive,
    *              bigger is better
-   * @param _default true if the service should be used as
+   * @param _allow_as_default true if the service should be used as
    *                 default
    */
   void addService( const QString& _service, int _preference = 1, bool _allow_as_default = true );
