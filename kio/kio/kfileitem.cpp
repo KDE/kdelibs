@@ -590,7 +590,7 @@ QString KFileItem::getToolTipText(int maxcount)
   }
   else
   {
-    QStringList keys = KFileMetaInfoProvider::self()->preferredKeys(info.mimeType());
+    QStringList keys = info.preferredKeys();
 
     // now the rest
     QStringList::Iterator it = keys.begin();
