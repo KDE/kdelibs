@@ -181,10 +181,10 @@
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
-<!ENTITY knewsticker "<application>KNewsTicker</application>"
+<!ENTITY knewsticker "<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
-<!ENTITY kodo 	"<application>KOdometer</application>
+<!ENTITY kodo 	"<application>KOdometer</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
@@ -192,7 +192,7 @@
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY kpackage	"<application>KPackage</application>">
 <!ENTITY kpager "<application>KPager</application>">
-<!ENTITY kpaint "<application>KPaint</applicaiton>">
+<!ENTITY kpaint "<application>KPaint</application>">
 <!ENTITY kpanel	"<application>kpanel</application>">
 <!ENTITY kpat	"<application>KPat</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
