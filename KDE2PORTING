@@ -110,7 +110,7 @@ khtmlw has been replaced with khtml.
    KFM::exec             -> "(void) new KRun (url)" (kdelibs/kio/krun.h)
    KFM::copy, KFM::move  -> KIOJob (async, see kio_job.h)
                             or KIONetAccess (sync, see kio_netaccess.h)
-  DlgLocation removed. Generic dialog boxes should go in kdeui.
+   DlgLocation           -> Use KLineEditDlg (kdeui/klineeditdlg.h) instead
 
 ////////////////////////////////////////////////////////////////////////
 // * KGlobal: access to KDE global objects.
