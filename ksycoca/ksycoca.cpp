@@ -111,7 +111,7 @@ KSycoca::_registerFactory( KSycocaFactoryId id)
    {
       (*str) >> aId;
       kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_registerFactory : found factory %1").arg(aId));
-      if (aId == KST_KSycocaFactory)  // ????? shouldn't that be 0 ??? (David)
+      if (aId == 0)
       {
 fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
          break;

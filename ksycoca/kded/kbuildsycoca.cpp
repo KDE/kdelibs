@@ -170,6 +170,7 @@ KBuildSycoca::save()
    // Write header (#pass 1)
    str->device()->at(0);
 
+   KSycocaFactory * servicetypeFactory = 0L;
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())
@@ -177,12 +178,14 @@ KBuildSycoca::save()
       Q_INT32 aId;
       Q_INT32 aOffset;
       aId = factory->factoryId();
+      if ( aId == KST_KServiceTypeFactory )
+         servicetypeFactory = factory;
       aOffset = factory->offset();
       (*str) << aId;
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
-   (*str) << (Q_INT32) 0; // UserProfile offset
+   (*str) << (Q_INT32) 0; // Servicetype index offset
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -192,10 +195,12 @@ KBuildSycoca::save()
       factory->save(*str);
    }
 
-   // Write user profile
-   Q_INT32 userProfileOffset = str->device()->at();
+   // Write servicetype index
+   Q_INT32 servicetypeIndexOffset = str->device()->at();
 
    // .. TODO
+   // for each entry in servicetypeFactory
+   // export associated services
    
    int endOfData = str->device()->at();
 
@@ -214,7 +219,7 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
-   (*str) << (Q_INT32) userProfileOffset; // UserProfile offset
+   (*str) << servicetypeIndexOffset;
 
    // Jump to end of database
    str->device()->at(endOfData);

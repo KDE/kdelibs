@@ -43,9 +43,8 @@ private:
  * To use it, call the macro K_SYCOCAFACTORY( your_factory_id ) 
  * at the top of your class definition.
  */
-enum KSycocaFactoryId { KST_KSycocaFactory = 0, 
-                      KST_KServiceFactory = 1, 
-                      KST_KServiceTypeFactory = 2 };
+enum KSycocaFactoryId { KST_KServiceFactory = 1, 
+                        KST_KServiceTypeFactory = 2 };
 
 #define K_SYCOCAFACTORY( factory_id ) \
 public: \
