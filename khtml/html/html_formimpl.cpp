@@ -172,7 +172,7 @@ void HTMLFormElementImpl::i18nData()
                         "an insecure site. The data is sent unencrypted.\n"
                         "Do you want to continue?");
     QString foo6 = i18n("The page contents expired. You can repost the form"
-                        "data by using <a href=\"javascript:go(0);\">Reload</b>");
+                        "data by using <a href=\"javascript:go(0);\">Reload</a>");
 }
 
 
