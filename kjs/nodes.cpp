@@ -3009,7 +3009,8 @@ bool FuncDeclNode::deref()
 // ECMA 13
 void FuncDeclNode::processFuncDecl(ExecState *exec)
 {
-  const List sc = exec->context().imp()->scopeChain();
+  ContextImp *ctx = exec->context().imp();
+  const List sc = ctx->scopeChain();
 
   // TODO: let this be an object with [[Class]] property "Function"
   FunctionImp *fimp = new DeclaredFunctionImp(exec, ident, body, sc);
@@ -3026,17 +3027,17 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
   func.put(exec, "length", Number(plen), ReadOnly|DontDelete|DontEnum);
 
-  exec->context().imp()->variableObject().put(exec,ident,func,Internal);
+  ctx->variableObject().put(exec,ident,func,Internal);
 
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope
     // contains the func as well as our current scope
-    Object oldVar = exec->context().imp()->variableObject();
-    exec->context().imp()->setVariableObject(func);
-    exec->context().imp()->pushScope(func);
+    Object oldVar = ctx->variableObject();
+    ctx->setVariableObject(func);
+    ctx->pushScope(func);
     body->processFuncDecl(exec);
-    exec->context().imp()->popScope();
-    exec->context().imp()->setVariableObject(oldVar);
+    ctx->popScope();
+    ctx->setVariableObject(oldVar);
   }
 }
 
