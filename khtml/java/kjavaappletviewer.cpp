@@ -219,12 +219,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
             if (!name.isEmpty()) {
                 QString name_lower = name.lower ();
                 if (name == "__KHTML__PLUGINBASEURL") {
-                    int pos = -1;
-                    KURL url (value);
-                    QString fn = url.fileName (false);
-                    baseurl = 
-                     (fn.isEmpty () || (pos = value.findRev (fn)) == -1) ?
-                        value : value.left (pos);
+                    baseurl = KURL (KURL (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
                     khtml_codebase = value;
                 else if (name_lower == QString::fromLatin1("codebase") ||
