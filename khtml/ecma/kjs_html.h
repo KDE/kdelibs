@@ -24,6 +24,7 @@
 #include <html_base.h>
 #include <html_misc.h>
 #include <html_form.h>
+#include "misc/loader_client.h"
 
 #include <kjs/object.h>
 #include <kjs/function.h>
@@ -143,15 +144,17 @@ namespace KJS {
     DOM::Document doc;
   };
 
-  class Image : public DOMObject {
+  class Image : public DOMObject, public khtml::CachedObjectClient {
   public:
-    Image(const DOM::Document &d) : doc(d) { }
+    Image(const DOM::Document &d) : doc(d), img(0) { }
+    ~Image();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const { return Boolean(true); }
   private:
     UString src;
     DOM::Document doc;
+    khtml::CachedImage* img;
   };
 
   KJSO getHTMLCollection(DOM::HTMLCollection c);
