@@ -54,9 +54,6 @@
                     <property name="text">
                         <string>&amp;Run in terminal</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+R</string>
-                    </property>
                     <property name="whatsThis" stdset="0">
                         <string>Check this option if the application you want to run is a text mode application or if you want the information that is provided by the terminal emulator window.</string>
                     </property>
@@ -78,9 +75,6 @@
                     </property>
                     <property name="text">
                         <string>Do not &amp;close when command exits</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+C</string>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open allows you to retrieve this information.</string>
@@ -110,9 +104,6 @@
                     </property>
                     <property name="text">
                         <string>Ru&amp;n as a different user</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+N</string>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file acess and other permissions. The password of the user is required to use this option.</string>
@@ -176,9 +167,6 @@
                     </property>
                     <property name="text">
                         <string>Enable &amp;launch feedback</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+L</string>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>Check this option if you want to make clear that your application has started. This visual feedback may appear as a busy cursor or in the taskbar.</string>

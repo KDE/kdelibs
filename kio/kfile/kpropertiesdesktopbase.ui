@@ -212,9 +212,6 @@ Following the command, you can have several place holders which will be replaced
             <property name="text">
                 <string>&amp;Browse...</string>
             </property>
-            <property name="accel">
-                <string>Alt+B</string>
-            </property>
             <property name="whatsThis" stdset="0">
                 <string>Click here to browse your file system in order to find the desired executable.</string>
             </property>
@@ -281,9 +278,6 @@ Following the command, you can have several place holders which will be replaced
             </property>
             <property name="text">
                 <string>Ad&amp;vanced Options...</string>
-            </property>
-            <property name="accel">
-                <string>Alt+V</string>
             </property>
             <property name="whatsThis" stdset="0">
                 <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>

@@ -130,9 +130,6 @@
                     <property name="text">
                         <string>Apply to &amp;all applications</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+A</string>
-                    </property>
                 </widget>
                 <spacer row="1" column="0" rowspan="2" colspan="1">
                     <property name="name">
@@ -175,9 +172,6 @@
                     <property name="text">
                         <string>Turn O&amp;ff All</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+F</string>
-                    </property>
                     <property name="toolTip" stdset="0">
                         <string>Allows you to change the behavior for all events at once</string>
                     </property>
@@ -188,9 +182,6 @@
                     </property>
                     <property name="text">
                         <string>Turn O&amp;n All</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+N</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Allows you to change the behavior for all events at once</string>
@@ -226,9 +217,6 @@
                     <property name="text">
                         <string>Print a message to standard &amp;error output</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+E</string>
-                    </property>
                 </widget>
                 <widget class="QCheckBox" row="3" column="0" rowspan="1" colspan="3">
                     <property name="name">
@@ -237,9 +225,6 @@
                     <property name="text">
                         <string>Show a &amp;message in a pop-up window</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+M</string>
-                    </property>
                 </widget>
                 <widget class="QCheckBox" row="2" column="0" rowspan="1" colspan="2">
                     <property name="name">
@@ -247,9 +232,6 @@
                     </property>
                     <property name="text">
                         <string>E&amp;xecute a program:</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+X</string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget" row="0" column="0" rowspan="1" colspan="2">
@@ -288,9 +270,6 @@
                     <property name="text">
                         <string>Mark &amp;taskbar entry</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+T</string>
-                    </property>
                 </widget>
                 <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
                     <property name="name">
@@ -298,9 +277,6 @@
                     </property>
                     <property name="text">
                         <string>&amp;Log to a file:</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+L</string>
                     </property>
                 </widget>
                 <spacer row="4" column="0">
@@ -377,9 +353,6 @@
                     </property>
                     <property name="text">
                         <string>&amp;Use a passive window that does not interrupt other work</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+U</string>
                     </property>
                 </widget>
             </grid>

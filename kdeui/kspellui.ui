@@ -123,9 +123,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
             <property name="text">
                 <string>R&amp;eplace All</string>
             </property>
-            <property name="accel">
-                <string>Alt+E</string>
-            </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
 &lt;p&gt;Click here to replace all occurrences of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
@@ -167,9 +164,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
             <property name="text">
                 <string>&amp;Replace</string>
             </property>
-            <property name="accel">
-                <string>Alt+R</string>
-            </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
 &lt;p&gt;Click here to replace this occurrence of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
@@ -200,9 +194,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
             <property name="text">
                 <string>&amp;Ignore</string>
             </property>
-            <property name="accel">
-                <string>Alt+I</string>
-            </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
 &lt;p&gt;Click here to let this occurrence of the unknown word remain as is.&lt;/p&gt;
@@ -216,9 +207,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="text">
                 <string>I&amp;gnore All</string>
-            </property>
-            <property name="accel">
-                <string>Alt+G</string>
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
@@ -244,9 +232,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="text">
                 <string>S&amp;uggest</string>
-            </property>
-            <property name="accel">
-                <string>Alt+U</string>
             </property>
         </widget>
         <widget class="QComboBox" row="8" column="1" rowspan="1" colspan="4">

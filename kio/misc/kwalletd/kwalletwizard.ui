@@ -108,9 +108,6 @@
                         <property name="text">
                             <string>&amp;Basic setup (recommended)</string>
                         </property>
-                        <property name="accel">
-                            <string>Alt+B</string>
-                        </property>
                         <property name="checked">
                             <bool>true</bool>
                         </property>
@@ -121,9 +118,6 @@
                         </property>
                         <property name="text">
                             <string>&amp;Advanced setup</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+A</string>
                         </property>
                     </widget>
                 </grid>

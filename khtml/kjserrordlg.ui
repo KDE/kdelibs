@@ -30,9 +30,6 @@
             <property name="text">
                 <string>&amp;Close</string>
             </property>
-            <property name="accel">
-                <string>Alt+C</string>
-            </property>
         </widget>
         <widget class="QPushButton" row="4" column="1">
             <property name="name">
@@ -40,9 +37,6 @@
             </property>
             <property name="text">
                 <string>C&amp;lear</string>
-            </property>
-            <property name="accel">
-                <string>Alt+L</string>
             </property>
         </widget>
         <widget class="Line" row="2" column="0" rowspan="1" colspan="3">
