@@ -123,9 +123,7 @@ void KComboBox::makeCompletion( const QString& text )
 	    {
 	        return; // No Completion object or empty completion text allowed!!
 	    }
-	    
-	    debug( "Text to be matched : %s\nText Length : %i", text.latin1(), text.length() );
-		
+ 
 		QString match;
     	int pos = cursorPosition();		
     	KGlobalSettings::Completion mode = completionMode();
@@ -361,7 +359,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
-            debug( "Auto Completion ==> User pressed : %s", keycode.latin1() );
             if( !keycode.isNull() && keycode.unicode()->isPrint() && emitSignals() )
             {
                 QComboBox::keyPressEvent ( e );
@@ -378,8 +375,9 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
                 // Emit completion if the completion mode is completionShell or
-                // CompletionMan and there is a completion object present the current text is not the same as the previous
-                // the cursor is at the end of the string.
+                // CompletionMan and there is a completion object present the
+                // current text is not the same as the previous the cursor is
+                // at the end of the string.
                 if( mode == KGlobalSettings::CompletionMan ||
                     (mode == KGlobalSettings::CompletionShell &&
 	                 m_pEdit->cursorPosition() == (int) currentText().length() ) )

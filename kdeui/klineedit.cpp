@@ -94,7 +94,10 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 	{
 		QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
 		// Skip rotation if previous/next match is null or the same text.
-        if( input.isNull() || input == text() ) return;
+        if( input.isNull() || input == displayText() )
+        {
+            return;
+        }
         bool marked = hasMarkedText(); // Note if current text has been marked
 		int pos = cursorPosition(); // Note the current cursor position
 		setText( input );
@@ -126,11 +129,10 @@ void KLineEdit::makeCompletion( const QString& text )
     else
     {
 	    match = comp->makeCompletion( text );
-	}
-    	
+	}    	
     // If no match or the same match, simply return
     // without completing.
-    if( match.length() == 0 || match == text )
+    if( match.isNull() || match == text )
     {
 	    // Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
@@ -197,7 +199,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             if( !keycode.isNull() && keycode.unicode()->isPrint() && fireSignals )
             {
                 QLineEdit::keyPressEvent ( e );
-                emit completion( text() );
+                emit completion( displayText() );
                 return;
             }
         }
@@ -209,12 +211,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // Emit completion if the completion mode is NOT
             // CompletionAuto and if the mode is CompletionShell,
             // the cursor is at the end of the string.
-            int len = text().length();
+            int len = displayText().length();
             if( (mode == KGlobalSettings::CompletionMan ||
                 (mode == KGlobalSettings::CompletionShell &&
                 cursorPosition() == len && len != 0 ) ) )
             {
-                emit completion( text() );
+                emit completion( displayText() );
                 return;
             }
         }
