@@ -756,7 +756,9 @@ void KDoubleNumInput::setValue(double val)
     }
 
     resetEditBox();
-    if ( prevVal!=m_value) emit valueChanged(m_value);
+
+    if ( fabs(prevVal - m_value) > m_step )
+        emit valueChanged(m_value);
 }
 
 
