@@ -2460,15 +2460,15 @@ void NETWinInfo::update(unsigned long dirty) {
 		long *state = (long *) data_ret;
 
 		switch(*state) {
-		case IconicState:
-		    p->mapping_state = Iconic;
-		    break;
-		case WithdrawnState:
-		    p->mapping_state = Withdrawn;
-		    break;
-		case NormalState:
-		default:
-		    p->mapping_state = Visible;
+		    case IconicState:
+			p->mapping_state = Iconic;
+			break;
+		    case WithdrawnState:
+			p->mapping_state = Withdrawn;
+			break;
+		    case NormalState:
+		    default:
+			p->mapping_state = Visible;
 
 		}
 
@@ -2582,6 +2582,8 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMIconName) {
+
+	char* text_ret = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -2594,9 +2596,19 @@ void NETWinInfo::update(unsigned long dirty) {
 	    if( data_ret )
 		XFree(data_ret);
 	}
+
+	if ( !p->visible_icon_name &&  XGetIconName(p->display, p->window, &text_ret) ) {
+	    if (p->icon_name) delete [] p->icon_name;
+	    p->icon_name = strdup((const char *) text_ret);
+
+	    if( text_ret )
+		XFree(text_ret);
+	}
     }
 
-    if (dirty & WMVisibleIconName) {
+    if (dirty & WMVisibleIconName)
+    {
+	char* text_ret = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_icon_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -2608,6 +2620,15 @@ void NETWinInfo::update(unsigned long dirty) {
 
 	    if( data_ret )
 		XFree(data_ret);
+	}
+
+
+	if ( !p->visible_icon_name && XGetIconName(p->display, p->window, &text_ret) ) {
+	    if (p->visible_icon_name) delete [] p->visible_icon_name;
+	    p->visible_icon_name = strdup((const char *) text_ret);
+
+	    if( text_ret )
+		XFree(text_ret);
 	}
     }
 
