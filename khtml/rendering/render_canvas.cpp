@@ -150,6 +150,20 @@ void RenderCanvas::layout()
         m_width = m_rootWidth;
         m_height = m_rootHeight;
     }
+    
+    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
+    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
+    
+    if (m_view->verticalScrollBar()->isVisible())
+        m_view->setVScrollBarMode(KHTMLView::AlwaysOn);
+    else
+        m_view->setVScrollBarMode(KHTMLView::AlwaysOff);
+
+    if (m_view->horizontalScrollBar()->isVisible())
+        m_view->setHScrollBarMode(KHTMLView::AlwaysOn);
+    else
+        m_view->setHScrollBarMode(KHTMLView::AlwaysOff);
+
 
     RenderBlock::layout();
 
@@ -176,6 +190,8 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
 
+    m_view->setVScrollBarMode(vsmode);
+    m_view->setHScrollBarMode(hsmode);
 
     setLayouted();
 }
