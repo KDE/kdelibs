@@ -287,8 +287,8 @@ class KAboutData
      *
      * For example:
      * <pre>
-     * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names")
-     * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
+     * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\\nYour names")
+     * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\\nYour emails"));
      * </pre>
      *
      * The translator can then translate this dummy text with his name

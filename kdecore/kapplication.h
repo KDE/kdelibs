@@ -83,7 +83,7 @@ class KApplicationPrivate;
 * @li X-DCOP-ServiceType=Unique
 *    Only start the service if it isn't already running,
 *    wait until the service has registered with dcop.
-* 
+*
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 * @version $Id$
@@ -118,6 +118,10 @@ public:
    * @param display Will be passed to Qt as the X display. The display must be valid and already
    * opened.
    *
+   * @param argc command line argument count
+   *
+   * @param argv command line argument value(s)
+   *
    * @param rAppName application name. Will be used for finding the
    * associated message files and icon files, and as the default
    * registration name for DCOP. This is a mandatory parameter.
@@ -141,6 +145,10 @@ public:
    * // KCmdLineArgs::init isn't called
    *
    * Constructor. Parses command-line arguments.
+   *
+   * @param argc command line argument count
+   *
+   * @param argv command line argument value(s)
    *
    * @param rAppName application name. Will be used for finding the
    * associated message files and icon files, and as the default
@@ -472,7 +480,7 @@ public:
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
    *
-   * @param name the name of the service
+   * @param _name the name of the service
    * @param URL if not empty this URL is passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -495,7 +503,7 @@ public:
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
    *
-   * @param name the name of the service
+   * @param _name the name of the service
    * @param URLs if not empty these URLs will be passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -518,7 +526,7 @@ public:
    * Starts a service based on the desktop path of the service.
    * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
    *
-   * @param name the path of the desktop file
+   * @param _name the path of the desktop file
    * @param URL if not empty this URL is passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -541,7 +549,7 @@ public:
    * Starts a service based on the desktop path of the service.
    * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
    *
-   * @param name the path of the desktop file
+   * @param _name the path of the desktop file
    * @param URLs if not empty these URLs will be passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -564,7 +572,7 @@ public:
    * Starts a service based on the desktop name of the service.
    * E.g. "konqueror"
    *
-   * @param name the desktop name of the service
+   * @param _name the desktop name of the service
    * @param URL if not empty this URL is passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -587,7 +595,7 @@ public:
    * Starts a service based on the desktop name of the service.
    * E.g. "konqueror"
    *
-   * @param name the desktop name of the service
+   * @param _name the desktop name of the service
    * @param URLs if not empty these URLs will be passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
@@ -661,7 +669,7 @@ public:
 
   /**
    * Builds a caption that contains the application name along with the
-   * @ref userCaption() using a standard layout.
+   * userCaption using a standard layout.
    *
    * To make a compliant caption
    * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
@@ -761,7 +769,7 @@ public:
   void addKipcEventMask(int id);
 
   /**
-   * Removes a message type from the @ref KIPC event mask. This message will 
+   * Removes a message type from the @ref KIPC event mask. This message will
    * not be handled anymore.
    * @param id The message id.
    * @see KIPC
@@ -771,7 +779,7 @@ public:
   void removeKipcEventMask(int id);
 
   /**
-   * Returns the app startup notification identifier for this running 
+   * Returns the app startup notification identifier for this running
    * application.
    * @return the startup notification identifier
    */
@@ -780,7 +788,7 @@ public:
   /**
    * Sets a new value for the application startup notification window property for newly
    * created toplevel windows.
-   * @param the startup notification identifier
+   * @param startup_id the startup notification identifier
    */
   void setStartupId( const QCString& startup_id );
 
@@ -808,7 +816,7 @@ public:
    * Returns whether a certain KAction is authorized.
    *
    * @param action The name of a KAction action. The name is prepended
-   * with "action/" before being passed to @ref authorize()
+   * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
   bool authorizeKAction(const char *action);
@@ -878,7 +886,7 @@ public slots:
   void ref();
 
   /**
-   * Tells KApplication that one operation such as those described in @ref just finished.
+   * Tells KApplication that one operation such as those described in ref() just finished.
    * The application exits if the counter is back to 0.
    */
   void deref();
@@ -1071,7 +1079,7 @@ signals:
      manipulate the UI in that slot, it is blocked by the session
      manager.
 
-     Use the @ref #sessionConfig() KConfig object to store all your
+     Use the @ref sessionConfig() KConfig object to store all your
      instance specific data.
 
      Do not do any closing at this point! The user may still select
