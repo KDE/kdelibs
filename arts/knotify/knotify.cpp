@@ -364,9 +364,14 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
 
 bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 {
+    // ignore empty messages
+    if ( text.isEmpty() )
+        return true;
+    
     // open file in append mode
     QFile logFile(file);
-    if ( !logFile.open(IO_WriteOnly | IO_Append) ) return false;
+    if ( !logFile.open(IO_WriteOnly | IO_Append) ) 
+        return false;
 
     // append msg
     QTextStream strm( &logFile );
@@ -380,6 +385,10 @@ bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 
 bool KNotify::notifyByStderr(const QString &text)
 {
+    // ignore empty messages
+    if ( text.isEmpty() )
+        return true;
+
     // open stderr for output
     QTextStream strm( stderr, IO_WriteOnly );
 
