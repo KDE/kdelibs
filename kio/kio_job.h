@@ -14,8 +14,7 @@
 
 #include <time.h>
 
-class KIOSimpleProgressDlg;
-class KIOLittleProgressDlg;
+class KIOProgressBase;
 
 class KIOListViewItem;
 class KIOListProgressDlg;
@@ -49,13 +48,29 @@ public:
   
   int id() { return m_id; }
   QTime getRemainingTime() { return m_RemainingTime; }
+
+  /**
+   * Call this, if you want to do a runtime manipulation with progress dialog.
+   * @ref #KIOProgressBase inherits @ref #QWidget, so you can call e.g. show(), hide() methods.
+   *
+   * @return  pointer to a SIMPLE or CUSTOM progress dialog, depends on settings.
+   */
+  KIOProgressBase* progressDlg() { return m_pProgressDlg; }
+
+  /**
+   * Call this, if you want to do a runtime manipulation with list progress dialog.
+   * KIOListProgressDlg inherits @ref #KTMainWindow, so you can call e.g. show(), hide() methods.
+   *
+   * @return  pointer to a list progress dialog.
+   */
+  KIOListProgressDlg* listProgressDlg() { return m_pListProgressDlg; }
   
-  enum GUImode { NONE, SIMPLE, LIST, LITTLE };
+  enum GUImode { NONE, SIMPLE, LIST, CUSTOM };
 
   /**
    * AutoDelete mode is turned on by default. It is not recommended
-   * to turn it off at all. Later versions may not even be able
-   * to turn it off at all.
+   * to turn it off. Later versions may not even be able to turn it
+   * off at all.
    */
   void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
 
@@ -73,67 +88,22 @@ public:
   /**
    * Specify what type of GUI will this KIOJob use.
    * Call this before you call any other operation method ( copy, move, del etc. )
-   * Valid values are NONE, SIMPLE, LIST and LITTLE
+   * Valid values are NONE, SIMPLE and LIST
    *
    * @param  _mode  NONE   - don't show any dialogs.
    *                SIMPLE - show a simple progress dialog. It shows progress for one operation.
    *                LIST   - show a list progress dialog. It shows progress for all operations.
-   *                LITTLE - uses a little progress widget to display progress. This widget has to
-   *                         be created in the caller application and is meant for inclusion in the
-   *                         statusbar
-   *
-   * @see #showSimpleGUI #hideSimpleGUI #showListGUI #hideListGUI
    */
   void setGUImode( GUImode _mode );
 
   /**
-   * Use this to set whether progress dialogs will start iconified or no.
-   * Call this before you call any other command ( like copy etc. )
-   * Default value is false = do not start iconified.
+   * Set a custom progress dialog.
+   * Call this before you call any other operation method ( copy, move, del etc. )
+   * Custom progress dialog must inherit from KIOProgressBase.
    *
-   * @see #iconifySimpleGUI #iconifyListGUI
+   * @param  dlg - custom progress dialog.
    */
-  void startIconified( bool _mode ) { m_bStartIconified = _mode; }
-
-  /**
-   * Show / hide simple progress dialog.
-   *
-   * @param  _mode  if true - show dialog. If it doesn't exist, it will be created.
-   *                if false - hide and destroy dialog.
-   */
-  void showSimpleGUI( bool _mode );
-
-  /**
-   * Iconify / deiconify simple progress dialog.
-   *
-   * @param  _mode  if true - iconify dialog.
-   *                if false - deiconify dialog.
-   */
-  void iconifySimpleGUI( bool _mode );
-
-  /**
-   * Show / hide list progress dialog.
-   *
-   * @param  _mode  if true - show dialog. If it doesn't exist, it will be created.
-   *                if false - hide and destroy dialog.
-   */
-  static void showListGUI( bool _mode );
-
-  /**
-   * Iconify / deiconify list progress dialog.
-   *
-   * @param  _mode  if true - iconify dialog.
-   *                if false - deiconify dialog.
-   */
-  static void iconifyListGUI( bool _mode);
-
-  /**
-   * Connect specified little progress dialog with this KIOJob.
-   *
-   * @param  _dlg   pointer to KIOLittleProgressDlg. This progress dialog is normally created
-   *                in the caller application that also creates this KIOJob.
-   */
-  void connectProgress( KIOLittleProgressDlg *dlg );
+  void setProgressDlg( KIOProgressBase *dlg );
 
   virtual bool copy( QStringList& _source, const char *_dest, bool _move = false );
   virtual bool copy( const char* _source, const char *_dest, bool _move = false );
@@ -228,6 +198,7 @@ public:
    */
   static QString convertSize( unsigned long size );
 
+  friend KIOProgressBase;
   friend KIOListViewItem;
 
 signals:
@@ -463,14 +434,11 @@ protected:
 
   bool m_bAutoDelete;
 
-  bool m_bStartIconified;
-
   bool m_bCacheToPool;
   
   int m_iGUImode;
 
-  KIOSimpleProgressDlg* m_pSimpleProgressDlg;
-  KIOLittleProgressDlg* m_pLittleProgressDlg;
+  KIOProgressBase* m_pProgressDlg;
 
   QDialog *m_pDialog;
   

@@ -3,7 +3,6 @@
 #include "kio_job.h"
 #include "kio_simpleprogress_dlg.h"
 #include "kio_listprogress_dlg.h"
-#include "kio_littleprogress_dlg.h"
 
 #include <qsocketnotifier.h>
 #include <qdialog.h>
@@ -57,8 +56,7 @@ KIOJob::KIOJob(const char *name)
   s_allJobs->insert( m_id, this);
   
   m_bAutoDelete = true;
-  m_iGUImode = SIMPLE; // !!! LIST;  // default is list progress dialog
-  m_bStartIconified = false;
+  m_iGUImode = SIMPLE; // default is a simple progress dialog
   m_bCacheToPool = true;
 
   m_iTotalSize = 0;
@@ -71,8 +69,7 @@ KIOJob::KIOJob(const char *name)
   m_bStalled = false;
   m_iPercent = 0;
 
-  m_pSimpleProgressDlg = 0L;
-  m_pLittleProgressDlg = 0L;
+  m_pProgressDlg = 0L;
 
   m_pDialog = 0L;
   m_pSlave = 0L;
@@ -133,9 +130,13 @@ void KIOJob::clean() {
     m_id = 0;
   }
   
-  if ( m_pSimpleProgressDlg ) {
-    delete m_pSimpleProgressDlg;
-    m_pSimpleProgressDlg = 0L;
+  if ( m_pProgressDlg ) {
+    if ( m_pProgressDlg->onlyClean() ) {
+      m_pProgressDlg->clean();
+    } else {
+      delete m_pProgressDlg;
+      m_pProgressDlg = 0L;
+    }
   }
 
   // Do not putback the slave into the pool because we may have
@@ -150,83 +151,44 @@ void KIOJob::clean() {
 
 
 void KIOJob::createGUI() {
-  if ( m_iGUImode == SIMPLE ) {
-    m_pSimpleProgressDlg = new KIOSimpleProgressDlg( this, m_bStartIconified );
-  } else if ( m_iGUImode == LIST ) {
+  switch ( m_iGUImode ) {
+  case LIST:
     m_pListProgressDlg->addJob( this );
-    showListGUI( true );
+    m_pListProgressDlg->show();
+    break;
+
+  case SIMPLE:
+  case CUSTOM:
+    m_pProgressDlg->setJob( this );
+    // instead of showing immediately, we fire off a one shot timer to
+    // show ourselves after 1.5 seconds.  This avoids massive window creation/
+    // destruction on single file copies or other short operations.
+    QTimer::singleShot(1500, m_pProgressDlg, SLOT(show()));
+
+    break;
   }
 }
 
 
-void KIOJob::connectProgress( KIOLittleProgressDlg *dlg ) {
-  m_pLittleProgressDlg = dlg;
-  m_pLittleProgressDlg->setJob( this );
+void KIOJob::setProgressDlg( KIOProgressBase *dlg ) {
+  m_pProgressDlg = dlg;
+  m_pProgressDlg->setJob( this );
 }
 
 
 void KIOJob::setGUImode( GUImode _mode ) {
+  if ( m_iGUImode == _mode && m_pProgressDlg ) {
+    return;
+  }
+
   m_iGUImode = _mode;
-}
-
-
-void KIOJob::showSimpleGUI( bool _mode ) {
-  if (! m_pSimpleProgressDlg && _mode ) {
-    m_pSimpleProgressDlg = new KIOSimpleProgressDlg( this, m_bStartIconified );
-
-    switch ( m_cmd ) {
-    case CMD_COPY:
-    case CMD_MCOPY:
-      m_pSimpleProgressDlg->slotCopyingFile( m_id, m_strFrom.ascii(), m_strTo.ascii() );
-      m_pSimpleProgressDlg->slotCanResume( m_id, m_bCanResume );
-      break;
-
-    case CMD_DEL:
-    case CMD_MDEL:
-      m_pSimpleProgressDlg->slotDeletingFile( m_id, m_strFrom.ascii() );
-      break;
-
-    case CMD_MKDIR:
-      m_pSimpleProgressDlg->slotMakingDir( m_id, m_strTo.ascii() );
-      break;
-
-    case CMD_GET:
-      m_pSimpleProgressDlg->slotGettingFile( m_id, m_strFrom.ascii() );
-      break;
-    }
-
-    m_pSimpleProgressDlg->slotTotalSize( m_id, m_iTotalSize );
-    m_pSimpleProgressDlg->slotTotalFiles( m_id, m_iTotalFiles );
-    m_pSimpleProgressDlg->slotTotalDirs( m_id, m_iTotalDirs );
-
-    m_pSimpleProgressDlg->slotPercent( m_id, m_iPercent );
-    m_pSimpleProgressDlg->slotProcessedDirs( m_id, m_iProcessedDirs );
-    m_pSimpleProgressDlg->slotProcessedFiles( m_id, m_iProcessedFiles );
-
-    m_pSimpleProgressDlg->slotSpeed( m_id, m_iSpeed );
-
-  } else if ( m_pSimpleProgressDlg && ! _mode ){
-    delete m_pSimpleProgressDlg;
-    m_pSimpleProgressDlg = 0L;
+  if ( m_pProgressDlg ) {
+    delete m_pProgressDlg;
   }
-  
-}
 
-
-void KIOJob::iconifySimpleGUI( bool _mode ) {
-  if ( m_pSimpleProgressDlg ) {
-    KWM::setIconify( m_pSimpleProgressDlg->winId(), _mode );
+  if ( m_iGUImode == SIMPLE ) {  // create a default dialog
+    m_pProgressDlg = new KIOSimpleProgressDlg();
   }
-}
-
-
-void KIOJob::showListGUI( bool _mode ) {
-  m_pListProgressDlg->showGUI( _mode );
-}
-
-
-void KIOJob::iconifyListGUI( bool _mode ) {
-  KWM::setIconify( m_pListProgressDlg->winId(), _mode );
 }
 
 
@@ -768,14 +730,6 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs ) {
 }
 
 
-void KIOJob::slotScanningDir( const char *_dir ) {
-  m_strFrom = _dir;
-
-  emit sigScanningDir( m_id, _dir );
-  kdebug( KDEBUG_INFO, 7007, "ScanningDir %s", _dir );
-}
-
-
 void KIOJob::slotSpeed( unsigned long _bytes_per_second ) {
   m_iSpeed = _bytes_per_second;
 
@@ -796,12 +750,11 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second ) {
 }
 
 
-void KIOJob::slotCopyingFile( const char *_from, const char *_to ) {
-  m_strFrom = _from;
-  m_strTo = _to;
+void KIOJob::slotScanningDir( const char *_dir ) {
+  m_strFrom = _dir;
 
-  emit sigCopying( m_id, _from, _to );
-  kdebug( KDEBUG_INFO, 7007, "CopyingFile %s -> %s", _from,  _to );
+  emit sigScanningDir( m_id, _dir );
+  kdebug( KDEBUG_INFO, 7007, "ScanningDir %s", _dir );
 }
 
 
@@ -810,6 +763,15 @@ void KIOJob::slotMakingDir( const char *_dir ) {
 
   emit sigMakingDir( m_id, _dir );
   kdebug( KDEBUG_INFO, 7007, "MakingDir %s", _dir );
+}
+
+
+void KIOJob::slotCopyingFile( const char *_from, const char *_to ) {
+  m_strFrom = _from;
+  m_strTo = _to;
+
+  emit sigCopying( m_id, _from, _to );
+  kdebug( KDEBUG_INFO, 7007, "CopyingFile %s -> %s", _from,  _to );
 }
 
 
