@@ -364,9 +364,9 @@ void KRun::init()
   
   // It may be a directory
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory() ) );
-  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile() ) );
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished() ) );
+  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
+  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
   connect( job, SIGNAL( sigError( int, int, const char* ) ),
 	   this, SLOT( slotError( int, int, const char* ) ) );
 
@@ -432,12 +432,12 @@ void KRun::slotTimeout()
   }
 }
 
-void KRun::slotIsDirectory()
+void KRun::slotIsDirectory( int /* _id */ )
 {
   m_bIsDirectory = true;
 }
 
-void KRun::slotIsFile()
+void KRun::slotIsFile( int /* _id */ )
 {
   // Ok, when the job is finished we want to scan the file.
   // But we wait until the job is finished => we can reuse the
@@ -445,7 +445,7 @@ void KRun::slotIsFile()
   m_bScanFile = true;
 }
 
-void KRun::slotFinished()
+void KRun::slotFinished( int /* _id */ )
 {
   cerr << "####### FINISHED" << endl;
 

@@ -104,11 +104,11 @@ void KIOJob::clean()
     m_pNotifier = 0L;
   }
   
-  /*  if ( m_pCopyProgressDlg )
+  if ( m_pCopyProgressDlg )
   {
     delete m_pCopyProgressDlg;
     m_pCopyProgressDlg = 0L;
-  } */
+  }
 
   // Do not putback the slave into the pool because we may have
   // died in action. This means that the slave is in an undefined
@@ -159,6 +159,34 @@ bool KIOJob::unmount( const char *_point )
   }
   
   return IOJob::unmount( _point );  
+}
+
+bool KIOJob::copy( const char *_source, const char *_dest )
+{
+  list<K2URL> lst;
+  if ( !K2URL::split( _source, lst ) )
+  {
+    slotError( ERR_MALFORMED_URL, _source );
+    return false;
+  }
+
+  string protocol = lst.back().protocol();
+
+  string error;
+  int errid = 0;
+  if ( !createSlave( protocol.c_str(), errid, error ) )
+  {
+    slotError( errid, error.c_str() );
+    return false;
+  }
+  
+  if ( m_bGUI )
+  {
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this );
+    m_pCopyProgressDlg->show();
+  }
+  
+  return IOJob::copy( _source, _dest );
 }
 
 bool KIOJob::copy( QStrList& _source, const char *_dest )

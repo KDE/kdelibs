@@ -55,6 +55,17 @@ bool IOJob::copy( list<string>& _source, const char *_dest )
   return ConnectionSignals::copy( _source, _dest );
 }
 
+bool IOJob::copy( const char* _source, const char *_dest )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_COPY_SINGLE;
+  
+  m_bIsReady = false;
+  m_bError = false;
+  
+  return ConnectionSignals::copy( _source, _dest );
+}
+
 bool IOJob::listDir( const char *_url )
 {
   assert( m_cmd == CMD_NONE );

@@ -36,6 +36,7 @@ public:
   
   virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool copy( QStrList& _source, const char *_dest );
+  virtual bool copy( const char* _source, const char *_dest );
   virtual bool get( const char *_url );
   virtual bool listDir( const char *_url );
   virtual bool testDir( const char *_url );

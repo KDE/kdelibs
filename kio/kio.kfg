@@ -7,6 +7,15 @@ kioslave 'file'
 	listing<@string> = { 'Name', 'Type', 'Size', 'Date', 'Access', 'Owner', 'Group', 'Link' };
 };
 
+kioslave 'ftp' 
+{
+	exec<string> = 'kio_ftp';
+	protocol<string> = 'ftp';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+	listing<@string> = { 'Name', 'Type', 'Size', 'Access', 'Owner', 'Group', 'Link' };
+};
+
 kioslave 'gzip'
 {
 	exec<string> = 'kio_gzip';

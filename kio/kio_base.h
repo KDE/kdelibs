@@ -16,6 +16,7 @@ public:
   virtual bool get( const char *_url );
   virtual bool mkdir( const char *_url, int _mode );
   virtual bool listDir( const char *_url );
+  virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool testDir( const char *_url );
   virtual bool unmount( const char *_point );

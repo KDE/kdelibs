@@ -18,6 +18,19 @@
 #include <list>
 #include <string>
 
+bool isClipboardEmpty()
+{
+  QStrList urls;
+  if ( KClipboard::self()->urlList( urls ) )
+  {
+    if ( urls.count() == 0 )
+      return true;
+    return false;
+  }
+  
+  return true;
+}
+
 void pasteClipboard( const char *_dest_url )
 {
   list<K2URL> lst;

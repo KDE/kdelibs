@@ -5,5 +5,6 @@
 
 void pasteClipboard( const char *_dest_url );
 void pasteData( const char *_dest_url, QByteArray _data );
+bool isClipboardEmpty();
 
 #endif

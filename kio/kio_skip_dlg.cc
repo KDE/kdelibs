@@ -32,13 +32,20 @@ KIOSkipDlg::KIOSkipDlg(QWidget *parent, const char *_dest, bool _multi, bool _mo
   QVBoxLayout *vlayout = new QVBoxLayout( this, 10, 0 );
   // vlayout->addStrut( 360 );	makes dlg at least that wide
   
-  QLabel *lb = new QLabel( i18n("Can not overwrite"), this );
+  QLabel *lb = new QLabel( i18n("Can not write"), this );
   lb->setFixedHeight( lb->sizeHint().height() );
+  lb->setMinimumWidth( lb->sizeHint().width() );
   vlayout->addWidget( lb );
   vlayout->addSpacing( 5 );
 
   lb = new QLabel( _dest, this );
   lb->setFixedHeight( lb->sizeHint().height() );
+  lb->setMinimumWidth( lb->sizeHint().width() );
+  vlayout->addWidget( lb );
+
+  lb = new QLabel( i18n("Permission denied!"), this );
+  lb->setFixedHeight( lb->sizeHint().height() );
+  lb->setMinimumWidth( lb->sizeHint().width() );
   vlayout->addWidget( lb );
 
   vlayout->addSpacing( 10 );

@@ -6,4 +6,6 @@
 void kioErrorDialog( int _errid, const char *_errortext );
 QString kioErrorString( int _errid, const char *_errortext );
 
+#include "kio_interface.h"
+
 #endif

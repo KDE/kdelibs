@@ -77,6 +77,22 @@ bool ConnectionSignals::copy( list<string>& _source, const char *_dest )
   return true;
 }
 
+bool ConnectionSignals::copy( const char *_from, const char *_to )
+{
+  assert( m_pConnection );
+
+  int l1 = strlen( _from );
+  int l2 = strlen( _to );
+  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
+    return false;
+  
+  memcpy( m_pConnection->buffer(), _from, l1 + 1 );
+  memcpy( m_pConnection->buffer() + l1 + 1, _to, l2 + 1 );
+  
+  m_pConnection->send( CMD_COPY_SINGLE, m_pConnection->buffer(), l1 + 1 + l2 + 1 );
+  return true;
+}
+
 bool ConnectionSignals::source( const char *_url )
 {
   assert( m_pConnection );
@@ -493,6 +509,13 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	const char* arg = (const char*)_p;
 	slotCopy( m_lstSource, arg );
 	m_lstSource.clear();
+      }
+      break;
+    case CMD_COPY_SINGLE:
+      {	
+	const char* arg1 = (const char*)_p;
+	const char* arg2 = (const char*)_p + strlen( arg1 ) + 1;
+	slotCopy( arg1, arg2 );
       }
       break;
     case CMD_PUT:

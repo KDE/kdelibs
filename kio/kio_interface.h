@@ -24,6 +24,7 @@
 // Used to transfer the sources of an upcoming CMD_COPY call
 // This hack is needed, since a parameter can not be as big as it wants to.
 #define CMD_SOURCE 14 
+#define CMD_COPY_SINGLE 15
 
 #define INF_TOTAL_SIZE 50
 #define INF_TOTAL_COUNT_OF_FILES 51
@@ -89,6 +90,7 @@
 #define ERR_COULD_NOT_LOGIN 35
 #define ERR_OUT_OF_MEMORY 36
 #define ERR_COULD_NOT_STAT 37
+#define ERR_COULD_NOT_CLOSEDIR 38
 
 /************
  *
@@ -147,7 +149,9 @@ public:
   /**
    * @param _mode may be -1. In this case no special permission mode is set.
    */
+
   virtual bool put( const char *_url, int _mode, bool _overwrite, bool _resume );
+  virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( list<string>&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
   virtual bool move( list<string>& _source, const char *_dest );
@@ -214,8 +218,8 @@ public:
   ///////////
 
   virtual void slotGet( const char *_url ) { };
-  virtual void slotPut( const char *_url, int _mode, bool _overwrite, bool _resume)
-    { };
+  virtual void slotPut( const char *_url, int _mode, bool _overwrite, bool _resume) { };
+  virtual void slotCopy( const char* _source, const char *_dest ) { };
   virtual void slotCopy( list<string>& _source, const char *_dest ) { };
   virtual void slotMove( const char *_source, const char *_dest ) { };
   virtual void slotMove( list<string>& _source, const char *_dest ) { };
