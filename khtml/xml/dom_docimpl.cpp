@@ -47,6 +47,7 @@
 #include <klocale.h>
 #include <kstaticdeleter.h>
 
+#include "rendering/counter_tree.h"
 #include "rendering/render_canvas.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_arena.h"
