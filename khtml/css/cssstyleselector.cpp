@@ -2713,7 +2713,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    QString face;
             if( val->primitiveType() == CSSPrimitiveValue::CSS_STRING )
 		face = static_cast<FontFamilyValueImpl *>(val)->fontName();
-	    else if ( val->primitiveType() != CSSPrimitiveValue::CSS_IDENT ) {
+	    else if ( val->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
 		switch( val->getIdent() ) {
 		case CSS_VAL_SERIF:
 		    face = settings->serifFontName();
