@@ -34,7 +34,7 @@ StubProcess::StubProcess()
     m_Scheduler = SchedNormal;
     m_Priority = 50;
     m_pCookie = new KCookie;
-    m_bXOnly = false;
+    m_bXOnly = true;
 }
 
 
