@@ -17,10 +17,11 @@ lib_LTLIBRARIES = libkparts.la
 libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp event.cpp
 
 kpartsincludedir = $(includedir)/kparts
-kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h event.h
+kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h event.h \
+	browserextension.h
 
 libkparts_la_METASOURCES = AUTO
 
-servicetype_DATA = kpart.desktop krop.desktop krwp.desktop
+servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop
 servicetypedir = $(kde_servicetypesdir)
 
