@@ -7,9 +7,9 @@ bool check(const QString &txt, const QString &a, const QString &b)
 {
     if ( a != b ) {
         cout << "ERROR: Tested " << txt.latin1() << ", expected" << endl;
-        cout << "'" << b.latin1() << "'" << endl;
+        cout << "'" << b.latin1() << "' (" << b.length() << " chars)" << endl;
         cout << "but got" << endl;
-        cout << "'" << a.latin1() << "'" << endl;
+        cout << "'" << a.latin1() << "' (" << a.length() << " chars)" << endl;
         exit( 1 );
     }
   return true; 
