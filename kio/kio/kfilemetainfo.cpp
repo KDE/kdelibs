@@ -120,20 +120,23 @@ const KFileMetaInfoItem& KFileMetaInfoItem::operator=
 
 bool KFileMetaInfoItem::setValue( const QVariant& value )
 {
-    kdDebug(7033) << "KFileMetaInfoItem::setValue() of item "
-                  << d->mimeTypeInfo->key() << endl;
-
     // We don't call makeNull here since it isn't necassery, see deref()
     if ( d == Data::null ) return false;
-
-    if ( ! (d->mimeTypeInfo->attributes() &
-            KFileMimeTypeInfo::Modifiable ) ||
-         (d->value.isValid() && value.type() != d->value.type()) &&
-                                value.type() != QVariant::Invalid)
+    
+    if ( ! (d->mimeTypeInfo->attributes() & KFileMimeTypeInfo::Modifiable ) ||
+         ! (value.canCast(d->mimeTypeInfo->type())))
+    {
+        kdDebug(7033) << "setting the value of " << key() << "failed\n";
         return false;
+    }
+
+    kdDebug(7033) << key() << ".setValue()\n";
 
     d->dirty = true;
     d->value = value;
+    // If we don't cast (and test for canCast in the above if), QVariant is
+    // very picky about types (e.g. QString vs. QCString or int vs. uint)
+    d->value.cast(d->mimeTypeInfo->type());
 
     return true;
 }
@@ -577,6 +580,11 @@ bool KFileMetaInfo::contains(const QString& key) const
         if (g.contains(key)) return true;
     }
     return false;
+}
+
+bool KFileMetaInfo::containsGroup(const QString& key) const
+{
+    return groups().contains(key);
 }
 
 KFileMetaInfoItem KFileMetaInfo::item( const QString& key) const
@@ -1062,7 +1070,8 @@ QStringList KFileMetaInfoGroup::preferredKeys() const
 QStringList KFileMetaInfoGroup::keys() const
 {
     if (d == Data::makeNull())
-        kdWarning(7033) << "attempt to get the keys of an invalid metainfo object";
+        kdWarning(7033) << "attempt to get the keys of "
+                           "an invalid metainfo group";
 
     QStringList list;
 
@@ -1149,10 +1158,16 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
         return it.data();
     
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
+
+    if ( !ginfo ) {
+        Q_ASSERT( ginfo );
+        return KFileMetaInfoItem();
+    }
+
     const KFileMimeTypeInfo::ItemInfo* info = ginfo->itemInfo(key);
 
-    if ( !info || !ginfo ) {
-        Q_ASSERT( info && ginfo );
+    if ( !info ) {
+        Q_ASSERT( info );
         return KFileMetaInfoItem();
     }
 
@@ -1199,10 +1214,17 @@ static KStaticDeleter<KFileMetaInfoGroup::Data> sd_KFileMetaInfoGroupData;
 KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
 {
     if (!null)
+    {
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoGroupData.setObject( new KFileMetaInfoGroup::Data(QString::null) );
+      
+        // ### fix (small memory leak)
+        KFileMimeTypeInfo* info = new KFileMimeTypeInfo();
+        Data* d = new Data(QString::null);
+        d->mimeTypeInfo = info;
+        null = sd_KFileMetaInfoGroupData.setObject( d );
+    }
     return null;
 }
 

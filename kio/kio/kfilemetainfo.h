@@ -36,6 +36,7 @@ class KFileMimeTypeInfo
     friend class KFileMetaInfoProvider;
 
 public:
+    KFileMimeTypeInfo() {}
     /**
      * This enum is used to specify some other attributes that an item can
      * have.
@@ -757,6 +758,11 @@ public:
      * @return whether an item for this key exists.
      */
     bool contains( const QString& key ) const;
+
+    /**
+     * @return whether a group with this name exists.
+     */
+    bool containsGroup( const QString& key ) const;
 
     const QVariant value( const QString& key ) const
     {
