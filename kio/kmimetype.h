@@ -236,7 +236,7 @@ public:
    * If accuracy is not a null pointer, *accuracy is set to the
    * accuracy of the match (which is in the range 0..100).
    */
-  static Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy=0 );
+  static Ptr findByContent( const QByteArray &data, int *accuracy=0 );
   /**
    * Tries to find out the MIME type of a file by looking for
    * certain magic numbers and characteristic strings in it.
@@ -246,7 +246,7 @@ public:
    * If accuracy is not a null pointer, *accuracy is set to the
    * accuracy of the match (which is in the range 0..100).
    */
-  static Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy=0 );
+  static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
 
   /**
    * Get all the mimetypes.
