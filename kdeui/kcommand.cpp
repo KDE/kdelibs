@@ -65,7 +65,7 @@ public:
 ////////////
 
 KCommandHistory::KCommandHistory() :
-    m_undoLimit(50), m_redoLimit(30), m_first(false)
+    m_undo(0), m_redo(0), m_undoLimit(50), m_redoLimit(30), m_first(false)
 {
     d=new KCommandHistoryPrivate();
     m_commands.setAutoDelete(true);
@@ -110,10 +110,14 @@ KCommandHistory::~KCommandHistory() {
 }
 
 void KCommandHistory::clear() {
-    m_undo->setEnabled(false);
-    m_undo->setText(i18n("Nothing to Undo"));
-    m_redo->setEnabled(false);
-    m_redo->setText(i18n("Nothing to Redo"));
+    if (m_undo != 0) {
+        m_undo->setEnabled(false);
+        m_undo->setText(i18n("Nothing to Undo"));
+    }
+    if (m_redo != 0) {
+        m_redo->setEnabled(false);
+        m_redo->setText(i18n("Nothing to Redo"));
+    }
     d->m_present = 0L;
     d->m_savedAt=-1;
 }
@@ -137,9 +141,11 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
             d->m_savedAt=-1;
         d->m_present=command;
         m_first=false;
-        m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
-        if(m_redo->isEnabled()) {
+        if (m_undo != 0) {
+            m_undo->setEnabled(true);
+            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        }
+        if((m_redo != 0) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
             m_redo->setText(i18n("Nothing to Redo"));
         }
@@ -150,10 +156,14 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         m_commands.clear();
         m_commands.append(command);
         d->m_present=command;
-        m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
-        m_redo->setEnabled(false);
-        m_redo->setText(i18n("Nothing to Redo"));
+        if (m_undo != 0) {
+            m_undo->setEnabled(true);
+            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        }
+        if (m_redo != 0) {
+            m_redo->setEnabled(false);
+            m_redo->setText(i18n("Nothing to Redo"));
+        }
         m_first=false;    // Michael B: yes, that *is* correct :-)
     }
     if ( execute )
@@ -165,22 +175,31 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
 void KCommandHistory::undo() {
 
+    if (m_first || (d->m_present == 0L))
+        return;
+    
     d->m_present->unexecute();
     emit commandExecuted();
-    m_redo->setEnabled(true);
-    m_redo->setText(i18n("Re&do: %1").arg(d->m_present->name()));
+    if (m_redo != 0) {
+        m_redo->setEnabled(true);
+        m_redo->setText(i18n("Re&do: %1").arg(d->m_present->name()));
+    }
     int index;
     if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.prev()!=0) {
         d->m_present=m_commands.current();
-        m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        if (m_undo != 0) {
+            m_undo->setEnabled(true);
+            m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        }
         --index;
         if(index==d->m_savedAt)
             emit documentRestored();
     }
     else {
-        m_undo->setEnabled(false);
-        m_undo->setText(i18n("Nothing to Undo"));
+        if (m_undo != 0) {
+            m_undo->setEnabled(false);
+            m_undo->setText(i18n("Nothing to Undo"));
+        }
         if(d->m_savedAt==-42)
             emit documentRestored();
         m_first=true;
@@ -208,15 +227,19 @@ void KCommandHistory::redo() {
             emit documentRestored();
     }
 
-    m_undo->setEnabled(true);
-    m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+    if (m_undo != 0) {
+        m_undo->setEnabled(true);
+        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+    }
 
     if(m_commands.next()!=0) {
-        m_redo->setEnabled(true);
-        m_redo->setText(i18n("Re&do: %1").arg(m_commands.current()->name()));
+        if (m_redo != 0) {
+            m_redo->setEnabled(true);
+            m_redo->setText(i18n("Re&do: %1").arg(m_commands.current()->name()));
+        }
     }
     else {
-        if(m_redo->isEnabled()) {
+        if((m_redo != 0) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
             m_redo->setText(i18n("Nothing to Redo"));
         }
