@@ -97,7 +97,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   display = getDisplay();
   strcpy(dcop_file_old, dcop_file);
   strncat(dcop_file_old,display, n);
-  while(i = strchr(display, ':'))
+  while((i = strchr(display, ':')))
      *i = '_';
   strncat(dcop_file, display, n);
   free(display);
