@@ -32,7 +32,7 @@
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name, 
 				      bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Ok, Ok, 
+  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close, 
 		 parent, name, modal )
 {
   const KAboutData *aboutData = KGlobal::instance()->aboutData();
