@@ -104,7 +104,19 @@ class KFind :
 
 public:
 
+    /**
+     * Only use this constructor if you don't use KFindDialog, or if
+     * you use it as a modal dialog.
+     */
     KFind(const QString &pattern, long options, QWidget *parent);
+
+    /**
+     * This is the recommended constructor if you also use KFindDialog (non-modal).
+     * You should pass the pointer to it here, so that when a message box
+     * appears it has the right parent. Don't worry about deletion, KFind
+     * will notice if the find dialog is closed.
+     */
+    KFind(const QString &pattern, long options, QWidget *parent, QWidget* findDialog);
     virtual ~KFind();
 
     enum Result { NoMatch, Match };
@@ -286,6 +298,7 @@ signals:
 protected:
 
     QWidget* parentWidget() const { return (QWidget *)parent(); }
+    QWidget* dialogsParent() const;
 
 protected slots:
 
@@ -314,8 +327,8 @@ private:
     bool m_lastResult;
 
     // Binary compatible extensibility.
-    class KFindPrivate;
-    KFindPrivate *d;
+    class Private;
+    Private *d;
 };
 
 #endif

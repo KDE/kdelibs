@@ -25,6 +25,7 @@
 #include <kmessagebox.h>
 #include <qlabel.h>
 #include <qregexp.h>
+#include <qguardedptr.h>
 #include <kdebug.h>
 
 //#define DEBUG_FIND
@@ -51,9 +52,27 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
 
 ////
 
+struct KFind::Private {
+  Private() {
+     findDialog = 0;
+  }
+  QGuardedPtr<QWidget> findDialog;
+};
+////
+
 KFind::KFind( const QString &pattern, long options, QWidget *parent )
     : QObject( parent )
 {
+    d = new KFind::Private;
+    m_options = options;
+    init( pattern );
+}
+
+KFind::KFind( const QString &pattern, long options, QWidget *parent, QWidget *findDialog )
+    : QObject( parent )
+{
+    d = new KFind::Private;
+    d->findDialog = findDialog;
     m_options = options;
     init( pattern );
 }
@@ -76,6 +95,7 @@ void KFind::init( const QString& pattern )
 KFind::~KFind()
 {
     delete m_dialog;
+    delete d;
 }
 
 bool KFind::needData() const
@@ -354,7 +374,7 @@ void KFind::displayFinalDialog() const
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
         message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(m_pattern);
-    KMessageBox::information(parentWidget(), message);
+    KMessageBox::information(dialogsParent(), message);
 }
 
 bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
@@ -390,7 +410,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 
-    int ret = KMessageBox::questionYesNo( parentWidget(), QString("<qt>")+message+QString("</qt>") );
+    int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>") );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
         const_cast<KFind*>(this)->m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
@@ -424,6 +444,14 @@ void KFind::setPattern( const QString& pattern )
 {
     m_pattern = pattern;
     setOptions( options() ); // rebuild m_regExp if necessary
+}
+
+QWidget* KFind::dialogsParent() const
+{
+    // If the find dialog is still up, it should get the focus when closing a message box
+    // Otherwise, maybe the "find next?" dialog is up
+    // Otherwise, the "view" is the parent.
+    return d->findDialog ? (QWidget*)d->findDialog : ( m_dialog ? m_dialog : parentWidget() );
 }
 
 #include "kfind.moc"

@@ -99,8 +99,19 @@ class KReplace :
 
 public:
 
-    /** Will create a prompt dialog and use it as needed. */
+    /**
+     * Only use this constructor if you don't use KFindDialog, or if
+     * you use it as a modal dialog.
+     */
     KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent = 0);
+    /**
+     * This is the recommended constructor if you also use KReplaceDialog (non-modal).
+     * You should pass the pointer to it here, so that when a message box
+     * appears it has the right parent. Don't worry about deletion, KReplace
+     * will notice if the find dialog is closed.
+     */
+    KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent, QWidget* replaceDialog);
+
     virtual ~KReplace();
 
     /**

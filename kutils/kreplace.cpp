@@ -67,6 +67,13 @@ KReplace::KReplace(const QString &pattern, const QString &replacement, long opti
     m_replacement = replacement;
 }
 
+KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent, QWidget *dlg) :
+    KFind( pattern, options, parent, dlg )
+{
+    m_replacements = 0;
+    m_replacement = replacement;
+}
+
 KReplace::~KReplace()
 {
     // KFind::~KFind will delete m_dialog
