@@ -47,6 +47,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <qstring.h>
 #include <qstrlist.h>
 #include <qlist.h>
@@ -455,7 +458,14 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
     // Use fqdn only if the fqdn consists of numbers.
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
     {
-       _domains.append(_fqdn);
+        // Normalize the numerical hostname.  We return
+        // false if the given hostname cannot be normalized
+        // i.e it is not a true numerical representation.
+        struct in_addr in;
+        if( !inet_aton( _fqdn.latin1(), &in ) )
+            return false;
+
+       _domains.append( inet_ntoa( in ) );
        return true;
     }
 
