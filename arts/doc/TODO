@@ -9,6 +9,7 @@ Index:
 1. KDE2.1
 
 - ensure DynamicCast(<some null object>) == Object::null()
+- implement StdFlowSystem::disconnectObject(...) (in synthschedule.cc)
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
 - StereoEffectStack should support reordering (and probably listing) effects
