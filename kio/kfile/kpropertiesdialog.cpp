@@ -2446,8 +2446,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
            this, SIGNAL( changed() ) );
   connect( readonly, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( mountpoint, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
   connect( unmounted, SIGNAL( iconChanged( QString ) ),
            this, SIGNAL( changed() ) );
 }
