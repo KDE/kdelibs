@@ -9,7 +9,7 @@ bin_PROGRAMS = dcopidl2cpp
 dcopidl2cpp_SOURCES = main.cpp
 noinst_HEADERS =
 
-dcopidl2cpp_LDADD = ../kdecore/libkdecore.la
+dcopidl2cpp_LDADD = $(LIB_QT)
 dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
 
 DISTCLEANFILES = $(SRCMETA)
