@@ -65,16 +65,6 @@ template class QArray<LengthType>;
 #define END_FOR_EACH } }
 
 
-inline int MAX(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-inline int MIN(int a, int b)
-{
-    return a < b ? a : b;
-}
-
 RenderTable::RenderTable(RenderStyle *style)
     : RenderBox(style)
 {
@@ -1318,7 +1308,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
      
 //    if(!layouted()) return;
 
-    printBoxDecorations(p, _tx, _ty);
+    printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     if ( tCaption )
     {
@@ -1328,9 +1318,9 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     // draw the cells
     FOR_EACH_CELL(r, c, cell)
     {
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
 	printf("printing cell %d/%d\n", r, c);
-//#endif
+#endif
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
     END_FOR_EACH
@@ -1585,11 +1575,45 @@ void RenderTableCell::setContainingBlock()
     m_containingBlock = table;
 }
 
-// ### hack
-void RenderTableCell::printObject( QPainter *p, int x, int y,
-				   int w, int h, int tx, int ty)
+
+void RenderTableCell::printObject(QPainter *p, int _x, int _y,
+				       int _w, int _h, int _tx, int _ty)
 {
-    RenderFlow::printObject(p,x,y,w,h,tx,ty);
+#ifdef DEBUG_LAYOUT
+    printf("%s(RenderTableCell)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
+#endif
+
+    RenderObject *child;
+
+    // check if we need to do anything at all...
+    if(!isInline() && ((_ty-_topExtra > _y + _h) 
+    	|| (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
+
+    if(m_printSpecial && !isInline())
+	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
+    child = firstChild();
+    while(child != 0)
+    {
+	child->print(p, _x, _y, _w, _h, _tx, _ty);
+	child = child->nextSibling();
+    }
+
+#ifdef BOX_DEBUG
+    outlineBox(p, _tx, _ty);
+#endif
+
+    // because of overhanging floats.
+    if(!specialObjects) return;
+
+    SpecialObject* r;	
+    QListIterator<SpecialObject> it(*specialObjects);
+    for ( ; (r = it.current()); ++it )
+    {
+	RenderObject *o = r->node;
+	o->printObject(p, _x, _y, _w, _h, r->left + o->marginLeft() + _tx , r->startY + o->marginTop() + _ty);
+    }
+
 }
 
 

@@ -27,7 +27,7 @@
 using namespace khtml;
 
 
-void RenderReplaced::print( QPainter *p, int, int _y, int, int _h,
+void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 			    int _tx, int _ty)
 {
    _tx += m_x;
@@ -35,7 +35,7 @@ void RenderReplaced::print( QPainter *p, int, int _y, int, int _h,
 
    if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-   if(m_printSpecial) printBoxDecorations(p, _tx, _ty);
+   if(m_printSpecial) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
    printReplaced(p, _tx, _ty);
 }
 

@@ -182,18 +182,26 @@ void RenderBox::setPixmap(const QPixmap &)
     repaint();	//repaint bg when it gets loaded
 }
 
-void RenderBox::printBoxDecorations(QPainter *p, int _tx, int _ty)
+void RenderBox::printBoxDecorations(QPainter *p,int _x, int _y,
+				       int _w, int _h, int _tx, int _ty)
 {
     //printf("renderBox::printDecorations()\n");
 
     QColor c = m_style->backgroundColor();
 
     int w = width();
-    int h = height() + cellTopExtra() + cellBottomExtra();	
+    int h = height() ;	
     _ty -= cellTopExtra();
-
+    
+    int my = MAX(_ty,_y);
+    int mh; 
+    if (_ty<_y) 
+    	mh=MAX(0,h-(_y-_ty));
+    else 
+    	mh = MIN(_h,h);
+    
     if(c.isValid())
-	p->fillRect(_tx, _ty, w, h, c);
+	p->fillRect(_tx, my, w, mh, c);
     CachedImage *i = m_style->backgroundImage();
     if(i)
     {

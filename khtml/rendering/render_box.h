@@ -29,6 +29,17 @@
 
 namespace khtml {
 
+
+inline int MAX(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+inline int MIN(int a, int b)
+{
+    return a < b ? a : b;
+}
+
 class RenderBox : public RenderObject
 {
 
@@ -96,7 +107,8 @@ public:
     virtual void setPixmap(const QPixmap &);
 
 protected:
-    virtual void printBoxDecorations(QPainter *p, int _tx, int _ty);
+    virtual void printBoxDecorations(QPainter *p,int _x, int _y,
+				       int _w, int _h, int _tx, int _ty);
     void outlineBox(QPainter *p, int _tx, int _ty);
 
     virtual int cellTopExtra() { return 0; }
