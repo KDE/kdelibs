@@ -270,7 +270,6 @@ void KSelector::mouseMoveEvent( QMouseEvent *e )
 void KSelector::wheelEvent( QWheelEvent *e )
 {
 	int val = value() + e->delta()/120;
-	emit valueChanged( val );
 	setValue( val );
 }
 
@@ -288,6 +287,8 @@ void KSelector::valueChange()
 	drawArrow( &painter, TRUE, pos );   
 
 	painter.end();
+
+	emit valueChanged( value() );
 }
 
 void KSelector::moveArrow( const QPoint &pos )
@@ -301,12 +302,6 @@ void KSelector::moveArrow( const QPoint &pos )
 		val = ( maxValue() - minValue() ) * (width()-pos.x()-3)
 				/ (width()-10) + minValue();
 
-	if ( val > maxValue() )
-		val = maxValue();
-	if ( val < minValue() )
-		val = minValue();
-
-	emit valueChanged( val );
 	setValue( val );
 }
 
