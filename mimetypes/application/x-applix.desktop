@@ -1,6 +1,23 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-applix
-Icon=document
+Icon=applix
 Patterns=*.as;*.aw;*.ag
 Comment=Applix office document
+Comment[cs]=Dokument kancelářského balíku Applix
+Comment[de]=Applix-Office-Dokument
+Comment[eo]=Applix-oficeja-dokumento
+Comment[es]=Documento office de applix
+Comment[et]=Applix office'i dokument
+Comment[fi]=Applix-asiakirja
+Comment[fr]=Document Applix Office
+Comment[he]=Applix דרשמ ךמסמ
+Comment[hu]=Applix office dokumentum
+Comment[it]=Documento Applix office
+Comment[nl]=Applix-office-document
+Comment[no]=Applix Office-dokument
+Comment[no_NY]=Applix Office-dokument
+Comment[pt]=Documento do Applix
+Comment[sl]=Dokument pisarniške zbirke Applix
+Comment[sr]=Applix office dokument
+Comment[tr]=Applix ofis belgesi
