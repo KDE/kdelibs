@@ -163,33 +163,35 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     // Cookie domain match check
     if (mDomain.isEmpty())
     {
-        // No domain set, check hostname.
-        if (fqdn != mHost)
-        {
-          // If hostnames do not match, check if the TLD of the
-          // cookie and the request URL match.  If they do send
-          // the cookie.  This means a cookie without a domain=
-          // field is available to every host under the TLD of
-          // its fqdn.
-          if ( domains.isEmpty() )
-            return false;
+       if (fqdn != mHost)
+       {
+          // The following code is added because RFC 2109 is completely
+          // ambigious when it comes what needs to be done when cookies
+          // with empty "domain=" fields are present! The following code
+          // makes such cookies available to all the domains/hosts under
+          // the TLD of the cookie in question!
+          QStringList cookieDomainList;
+          KCookieJar::extractDomains( mHost, cookieDomainList );
 
-          int len = domains.count();
-          if (len < 2)
+          int fqdnCount = domains.count();
+          int cookieDomainCount = cookieDomainList.count();
+             
+          if ((fqdnCount == 1) && (cookieDomainCount == 1))
           {
-              if (domains[0] != mHost)
-                 return false;
+             if (domains[0] != cookieDomainList[0])
+                return false;
+          }
+          else if ((fqdnCount >= 2) && ( cookieDomainCount >= 2))
+          {
+             if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
+                  domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
+                return false;
           }
           else
           {
-              QString fqdnTLD = domains[len-2];
-              int matchpos = mHost.find(fqdnTLD, 0, false);
-
-              if ((matchpos == -1 && domains[len-1] != mHost) ||
-                  (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
-                  return false;
+             return false;
           }
-        }
+       }
     }
     else if (!domains.contains(mDomain))
     {
@@ -292,36 +294,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
-          if (!cookie->match(fqdn, domains, path) && cookie->domain().isEmpty())
-          {
-              // The following code is added because RFC 2109 is completely
-              // ambigious when it comes what needs to be done when cookies
-              // with empty "domain=" fields are present! The following code
-              // makes such cookies available to all the domains/hosts under
-              // the TLD of the cookie in question!
-             QStringList cookieDomainList;
-             extractDomains( cookie->host(), cookieDomainList );
-
-             int fqdnCount = domains.count();
-             int cookieDomainCount = cookieDomainList.count();
-             
-             if ((fqdnCount == 1) && (cookieDomainCount == 1))
-             {
-                if (domains[0] != cookieDomainList[0])
-                   continue;
-             }
-             else if ((fqdnCount >= 2) && ( cookieDomainCount >= 2))
-             {
-                if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
-                     domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
-                   continue;
-             }
-             else
-             {
-                continue;
-             }
-          }
-
+          if (!cookie->match(fqdn, domains, path))
+             continue;
 
           if( cookie->isSecure() && !secureRequest )
              continue;
@@ -374,7 +348,6 @@ static const char * parseNameValue(const char *header,
                                   bool keepQuotes=false)
 {
     const char *s = header;
-
     // Parse 'my_name' part
     for(; (*s != '='); s++)
     {
@@ -618,7 +591,6 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
             Name = Name.lower();
-
             if (Name == "domain")
             {
                 lastCookie->mDomain = Value.lower();
@@ -644,7 +616,8 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             {
                 lastCookie->mProtocolVersion = Value.toInt();
             }
-            else if (Name == "secure")
+            else if ((Name == "secure") || 
+                     (Name.isEmpty() && Value.lower() == "secure"))
             {
                 lastCookie->mSecure = true;
             }
