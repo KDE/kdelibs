@@ -564,34 +564,34 @@ void KFontChooser::displaySample(const QFont& font)
 
 void KFontChooser::setupDisplay()
 {
-  QString aString;
-  int numEntries, i=0;
+  // Calling familyListBox->setCurrentItem() causes the value of selFont
+  // to change, so we save the family, style and size beforehand.
+  QString family = selFont.family().lower();
+  int style = (selFont.bold() ? 2 : 0) + (selFont.italic() ? 1 : 0);
+  int size = selFont.pointSize();
+  QString sizeStr = QString::number(size);
 
-  numEntries =  familyListBox->count();
-  aString = selFont.family();
+  int numEntries, i;
 
+  numEntries = familyListBox->count();
   for (i = 0; i < numEntries; i++) {
-    if (aString.lower() == (familyListBox->text(i).lower())) {
+    if (family == familyListBox->text(i).lower()) {
       familyListBox->setCurrentItem(i);
       break;
     }
   }
 
+  styleListBox->setCurrentItem(style);
 
-  numEntries =  sizeListBox->count();
-  aString.setNum(selFont.pointSize());
-
+  numEntries = sizeListBox->count();
   for (i = 0; i < numEntries; i++){
-    if (aString == sizeListBox->text(i)) {
+    if (sizeStr == sizeListBox->text(i)) {
       sizeListBox->setCurrentItem(i);
       break;
     }
   }
 
-  i = (selFont.bold() ? 2 : 0);
-  i += (selFont.italic() ? 1 : 0);
-
-  styleListBox->setCurrentItem(i);
+  sizeOfFont->setValue(size);
 }
 
 
