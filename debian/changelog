@@ -4,6 +4,7 @@ kdelibs (4:2.1-20010118-1) unstable; urgency=low
      fix mimetype configuration
      fix JS and onmouseovers
    * fix build order for libarts-alsa
+   * Fixing library dependencies for libarts (Closes: #82901)
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Jan 2001 13:00:00 -0700
 
