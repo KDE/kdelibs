@@ -476,7 +476,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode = 0;
-    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
     bool ret = !evt->defaultPrevented();
@@ -487,7 +487,7 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode = 0;
-    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
     DocumentPtr *doc = document;
@@ -583,7 +583,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     bool shiftKey = (_mouse->state() & Qt::ShiftButton);
     bool metaKey = false; // ### qt support?
 
-    EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
+    EventImpl* const evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
                    detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
@@ -602,7 +602,7 @@ void NodeImpl::dispatchUIEvent(int _id, int detail)
         cancelable = true;
 
     int exceptioncode = 0;
-    UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
+    UIEventImpl* const evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
                                        cancelable,getDocument()->defaultView(),detail);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
@@ -613,17 +613,20 @@ void NodeImpl::dispatchSubtreeModifiedEvent()
 {
     childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
-	return;
+        return;
     int exceptioncode = 0;
-    dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
-			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+    MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,true,
+                                                         false,0,DOMString(),DOMString(),DOMString(),0);
+    evt->ref();
+    dispatchEvent(evt,exceptioncode,true);
+    evt->deref();
 }
 
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 {
     int exceptioncode = 0;
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
-    TextEventImpl *keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
+    TextEventImpl* const keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
     keyEventImpl->ref();
     dispatchEvent(keyEventImpl,exceptioncode,true);
     bool r = keyEventImpl->defaultHandled() || keyEventImpl->defaultPrevented();
@@ -1477,8 +1480,10 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
-        child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-                                                   true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+        MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
+        evt->ref();
+        child->dispatchEvent(evt,exceptioncode,true);
+        evt->deref();
         if (exceptioncode)
             return;
     }
@@ -1493,8 +1498,10 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
             c->insertedIntoDocument();
 
             if (hasInsertedListeners) {
-                c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-                                                       false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+                MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
+                evt->ref();
+                c->dispatchEvent(evt,exceptioncode,true);
+                evt->deref();
                 if (exceptioncode)
                     return;
             }
@@ -1507,10 +1514,12 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     // Dispatch pre-removal mutation events
     getDocument()->notifyBeforeNodeRemoval(child); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
-	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return;
+        MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
+        evt->ref();
+        child->dispatchEvent(evt,exceptioncode,true);
+        evt->deref();
+        if (exceptioncode)
+            return;
     }
 
     bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
@@ -1518,16 +1527,18 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     // dispatch the DOMNodeRemovedFromDocument event to all descendants
     NodeImpl *p = this;
     while (p->parentNode())
-	p = p->parentNode();
+        p = p->parentNode();
     if (p->nodeType() == Node::DOCUMENT_NODE) {
-	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
-	    if (hasRemovalListeners) {
-		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-		if (exceptioncode)
-		    return;
-	    }
-	}
+        for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
+            if (hasRemovalListeners) {
+                MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
+                evt->ref();
+                c->dispatchEvent(evt,exceptioncode,true);
+                evt->deref();
+                if (exceptioncode)
+                    return;
+            }
+        }
     }
 }
 

@@ -228,8 +228,10 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
     DOMStringImpl *newValue = str->copy();
     newValue->ref();
     int exceptioncode = 0;
-    dispatchEvent(new MutationEventImpl(EventImpl::DOMCHARACTERDATAMODIFIED_EVENT,
-		  true,false,0,prevValue,newValue,DOMString(),0),exceptioncode);
+    MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMCHARACTERDATAMODIFIED_EVENT,true,false,0,prevValue,newValue,DOMString(),0);
+    evt->ref();
+    dispatchEvent(evt,exceptioncode);
+    evt->deref();
     newValue->deref();
     dispatchSubtreeModifiedEvent();
 }
