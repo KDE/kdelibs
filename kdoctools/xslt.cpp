@@ -26,8 +26,6 @@
 #include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
 
-QString *SRCDIR=0L;
-
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
 #define INFO( x ) if (slave) slave->infoMessage(x);
@@ -268,17 +266,17 @@ QString splitOut(const QString &parsed, int index)
     return filedata;
 }
 
-void fillInstance(KInstance &ins) {
+void fillInstance(KInstance &ins, const QString &srcdir) {
     QString catalogs;
 
-    if ( !SRCDIR || SRCDIR->isEmpty() ) {
+    if ( srcdir.isEmpty() ) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
         catalogs += ':';
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
     } else {
-        catalogs += (*SRCDIR) +"/customization/catalog:" + (*SRCDIR) + "/docbook/xml-dtd-4.2/docbook.cat";
-        ins.dirs()->addResourceDir("dtd", (*SRCDIR));
+        catalogs += srcdir +"/customization/catalog:" + srcdir + "/docbook/xml-dtd-4.2/docbook.cat";
+        ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
     xmlLoadCatalogs(catalogs.latin1());

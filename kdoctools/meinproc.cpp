@@ -27,7 +27,6 @@
 #include <kprocess.h>
 
 extern int xmlLoadExtDtdDefaultValue;
-extern QString *SRCDIR;
 
 class MyPair {
 public:
@@ -100,15 +99,19 @@ int main(int argc, char **argv) {
     KInstance ins("meinproc");
     KGlobal::locale();
 
-    fillInstance(ins);
-
-    SRCDIR=new QString;
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() != 1 ) {
         args->usage();
         return ( 1 );
     }
+
+    // Need to set SRCDIR before calling fillInstance
+    QString srcdir;
+    if ( args->isSet( "srcdir" ) ) {
+        srcdir = args->getOption("srcdir") ;
+    }
+    fillInstance(ins,srcdir);
 
     LIBXML_TEST_VERSION
 
@@ -130,9 +133,6 @@ int main(int argc, char **argv) {
         return ( 2 );
     }
 
-    if ( args->isSet( "srcdir" ) ) {
-        *SRCDIR = args->getOption("srcdir") ;
-    }
     if ( args->isSet( "check" ) ) {
         char pwd_buffer[250];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
