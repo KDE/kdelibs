@@ -22,6 +22,24 @@
 
 // $Id$
 // $Log$
+// Revision 1.70  1999/12/21 18:36:00  granroth
+// By default, toolbars will no longer honor the user-set icon mode (icons
+// only, text under icon, etc).  This is for the benefit of apps that
+// have many many toolbars -- multiple toolbars look very bad in any
+// other mode but "icons only".
+//
+// There *ARE* two ways to force a mode change, though.  The first is a
+// boolean flag in the constructor (honor_mode -- default 'false') that,
+// if set to true, will allow the toolbar to read in the global settings.
+// It is up to the application OR more importantly, the application
+// framework to decide which toolbar should honor the setting.  This is
+// the "main" toolbar, in 99.9% of all apps.  In current apps, this is
+// done with 'toolBar(0)' in KTMainWindow or the "mainToolBar" toolbar in
+// the KParts realm.
+//
+// I also added a sub-menu to the toolbar context menu.  This will allow
+// users to change the style for individual toolbars "on the fly"!
+//
 // Revision 1.69  1999/12/19 00:17:33  shausman
 // - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
 //   *receiver )
@@ -211,6 +229,7 @@ class KToolBoxManager;
   friend class KToolBarRadioGroup;
 
 public:
+  enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
   enum BarStatus{Toggle, Show, Hide};
   enum BarPosition{Top, Left, Bottom, Right, Floating, Flat};
 
@@ -707,7 +726,7 @@ public:
    * and 3 (icons and text, text is under icons).
    */
 
-  void setIconText(int it);
+  void setIconText(IconText it);
 
   /**
    * updateRects() arranges the toolbar items and calculates their
@@ -896,7 +915,7 @@ private:
    QPoint pointerOffset;
    QPoint parentOffset;
    int item_size;  // normal: 26
-   int icon_text;  // 1 = icon+text, 0 icon+tooltip
+   IconText icon_text;
    bool highlight; // yes/no
    QSize szh;      // Size for sizeHint
    bool fixed_size; // do not change the toolbar size

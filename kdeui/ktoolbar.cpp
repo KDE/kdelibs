@@ -23,6 +23,24 @@
 
 // $Id$
 // $Log$
+// Revision 1.140  1999/12/21 18:36:01  granroth
+// By default, toolbars will no longer honor the user-set icon mode (icons
+// only, text under icon, etc).  This is for the benefit of apps that
+// have many many toolbars -- multiple toolbars look very bad in any
+// other mode but "icons only".
+//
+// There *ARE* two ways to force a mode change, though.  The first is a
+// boolean flag in the constructor (honor_mode -- default 'false') that,
+// if set to true, will allow the toolbar to read in the global settings.
+// It is up to the application OR more importantly, the application
+// framework to decide which toolbar should honor the setting.  This is
+// the "main" toolbar, in 99.9% of all apps.  In current apps, this is
+// done with 'toolBar(0)' in KTMainWindow or the "mainToolBar" toolbar in
+// the KParts realm.
+//
+// I also added a sub-menu to the toolbar context menu.  This will allow
+// users to change the style for individual toolbars "on the fly"!
+//
 // Revision 1.139  1999/12/19 00:17:32  shausman
 // - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
 //   *receiver )
@@ -162,7 +180,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size, bool _hono
   honor_mode = _honor_mode;
   fixed_size =  (item_size > 0);
   if (!fixed_size)
-  item_size = 26;
+  item_size = 30;
   maxHorWidth = maxVerHeight = -1;
   init();
   Parent = parent;        // our father
@@ -202,16 +220,16 @@ void KToolBar::ContextCallback( int )
       setFlat (position != Flat);
       break;
     case CONTEXT_ICONS:
-      setIconText( 0 );
+      setIconText( IconOnly );
       break;
     case CONTEXT_TEXTRIGHT:
-      setIconText( 1 );
+      setIconText( IconTextRight );
       break;
     case CONTEXT_TEXT:
-      setIconText( 2 );
+      setIconText( TextOnly );
       break;
     case CONTEXT_TEXTUNDER:
-      setIconText( 3 );
+      setIconText( IconTextBottom );
       break;
     }
 
@@ -244,7 +262,7 @@ void KToolBar::init()
 
   position = Top;
   moving = true;
-  icon_text = 0;
+  icon_text = IconOnly;
   highlight = 0;
   setFrameStyle(NoFrame);
   setLineWidth( 1 );
@@ -268,12 +286,12 @@ void KToolBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   QString group = config->group();
   config->setGroup("Toolbar style");
-  int icontext;
+  IconText icontext;
   if (honor_mode)
-    icontext=config->readNumEntry("IconText", 0);
+    icontext = (IconText)config->readNumEntry("IconText", IconOnly);
   else
-    icontext=0;
-  int tsize=config->readNumEntry("Size", 26);
+    icontext = IconOnly;
+  int tsize=config->readNumEntry("Size", 30);
   int _highlight =config->readNumEntry("Highlighting", 1);
   int _transparent = config->readBoolEntry("TransparentMoving", true);
   config->setGroup(group);
@@ -288,8 +306,8 @@ void KToolBar::slotReadConfig()
 
   if (icontext != icon_text)
   {
-    if (icontext==3)
-      item_size = (item_size<40)?40:item_size;
+    if (icontext == IconTextBottom)
+      item_size = (item_size < 44) ? 44 : item_size;
     icon_text=icontext;
     doUpdate=true;
   }
@@ -1130,7 +1148,6 @@ void KToolBar::paintEvent(QPaintEvent *)
       delete paint;
       return;
   }
-
   if (moving)
   {
     // Handle point
@@ -1963,16 +1980,16 @@ void KToolBar::enableFloating (bool arrrrrrgh)
     context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
 }
 
-void KToolBar::setIconText(int icontext)
+void KToolBar::setIconText(IconText icontext)
 {
     bool doUpdate=false;
 
     if (icontext != icon_text)
     {
-        if (icontext == 3)
-            item_size = (item_size < 40) ? 40 : item_size;
+        if (icontext == IconTextBottom)
+            item_size = (item_size < 44) ? 44 : item_size;
         else
-            item_size = 26;
+            item_size = 30;
         icon_text=icontext;
         doUpdate=true;
     }
