@@ -334,7 +334,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "detailed view" )->plug( toolbar );
     coll->action( "short view" )->plugAccel( accel );
     coll->action( "detailed view" )->plugAccel( accel );
-    
+
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
 
@@ -424,6 +424,11 @@ KFileDialog::~KFileDialog()
     d->boxLayout = 0;    // so we delete the layout before (Qt bug to be fixed)
     delete ops;
     delete d;
+
+    // some apps seem to either do a rollback() (improbable) or not clean up
+    // properly, so this config object is neither deleted nor synced. So we
+    // have to do this ourselves.
+    config->sync();
 }
 
 void KFileDialog::setLocationLabel(const QString& text)
@@ -884,10 +889,10 @@ void KFileDialog::initGUI()
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, AlignTop);
-    
+
     QBoxLayout *horiz = new QHBoxLayout( d->boxLayout );
     horiz->addWidget( d->urlBar );
-    
+
     QVBoxLayout *vbox = new QVBoxLayout( horiz );
 
     vbox->addWidget(ops, 4);
