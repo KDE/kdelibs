@@ -24,6 +24,7 @@
 #include <ctype.h>
 
 #include <unistd.h>
+#include <stdlib.h>
 
 #define INT32 QINT32
 
@@ -35,7 +36,8 @@ extern "C" {
 #include <X11/ICE/ICEproto.h>
 }
 
-#include <qdatastream.h>
+#include <qtextstream.h>
+#include <qfile.h>
 #include <qsocketnotifier.h>
 
 #include <dcopglobal.h>
@@ -52,7 +54,7 @@ public:
   int majorVersion, minorVersion; // protocol versions negotiated w/server
   char *vendor, *release; // information from server
 
-  static char* serverAddr; // location of server in ICE-friendly format.
+  static QCString serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
   bool registered;
 
@@ -68,7 +70,7 @@ struct ReplyStruct
   QByteArray* replyData;
 };
 
-char* DCOPClientPrivate::serverAddr = 0;
+QCString DCOPClientPrivate::serverAddr = 0;
 
 /**
  * Callback for ICE.
@@ -165,7 +167,7 @@ DCOPClient::~DCOPClient()
 
 void DCOPClient::setServerAddress(const QCString &addr)
 {
-  DCOPClientPrivate::serverAddr = qstrdup(addr);
+  DCOPClientPrivate::serverAddr = addr;
 }
 
 bool DCOPClient::attach()
@@ -190,16 +192,23 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 
     // first, check if serverAddr was ever set.
     if (!d->serverAddr) {
-	// here, we will check some environment variable and find the
-	// DCOP server.  Now, we hardcode it.  CHANGE ME
-	char buff[1024];
+      // here, we obtain the list of possible DCOP connections, 
+      // and attach to them.
+      QString fName = ::getenv("HOME");
+      fName += "/.DCOPserver";
+      QFile f(fName);
+      if (!f.open(IO_ReadOnly)) {
+	emit attachFailed("Could not read network connection list.");
+	return false;
+      }
 
-	gethostname(buff, 1023);
-	d->serverAddr = qstrdup( (QCString("local/") + buff + ":/tmp/.ICE-unix/5432").data() );
-	//    serverAddr = "tcp/faui06e:5000";
+      QTextStream t(&f);
+      d->serverAddr = t.readLine().latin1();
+      f.close();
     }
 
-    if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
+    if ((d->iceConn = IceOpenConnection(d->serverAddr.data(), 
+					0, 0, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
 	emit attachFailed(errBuf);
 	d->iceConn = 0;

@@ -19,7 +19,9 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <unistd.h>
 #include <stdlib.h>
+
 #include "dcopserver.moc"
 #include <dcopglobal.h>
 #include <qdatastream.h>
@@ -288,11 +290,13 @@ static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
 
 static void
 CloseListeners ()
-
 {
-    IceFreeListenObjs (numTransports, listenObjs);
-}
+  IceFreeListenObjs (numTransports, listenObjs);
 
+  QCString fName(::getenv("HOME"));
+  fName += "/.DCOPserver";
+  unlink(fName.data());
+}
 
 DCOPServer::DCOPServer()
   : QObject(0,0), appIds(200), clients(200)
@@ -317,19 +321,25 @@ DCOPServer::DCOPServer()
     }
   char errormsg[256];
 
-//   if (!IceListenForConnections (&numTransports, &listenObjs,
-// 				256, errormsg))
-  if (!IceListenForWellKnownConnections ((char *) "5432", 
-					 &numTransports, &listenObjs,
-					 256, errormsg))
+  if (!IceListenForConnections (&numTransports, &listenObjs,
+				256, errormsg))
     {
       fprintf (stderr, "%s\n", errormsg);
       exit (1);
+    } else {
+      // publish available transports.
+      QCString fName(::getenv("HOME"));
+      fName += "/.DCOPserver";
+      FILE *f;
+      f = ::fopen(fName.data(), "w+");
+      fprintf(f, IceComposeNetworkIdList(numTransports, listenObjs));
+      fclose(f);
     }
+      
 
-    atexit(CloseListeners);
+  atexit(CloseListeners);
 
- authDataEntries = new IceAuthDataEntry[ numTransports * 2  ];
+  authDataEntries = new IceAuthDataEntry[ numTransports * 2  ];
 
 
  for ( int i = 0; i < numTransports * 2; i += 2)
@@ -464,7 +474,7 @@ void DCOPServer::removeConnection( void* data )
   delete conn;
 }
 
-bool DCOPServer::receive(const QCString &app, const QCString &obj,
+bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 			 const QCString &fun, const QByteArray& data,
 			 QCString& replyType, QByteArray &replyData,
 			 IceConn iceConn)
@@ -472,19 +482,19 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
   if ( fun == "registerAs(QCString)" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
-      QCString app;
-      args >> app;
+      QCString app2;
+      args >> app2;
       QDataStream reply( replyData, IO_WriteOnly );
       DCOPConnection* conn = clients.find( iceConn );
-      if ( conn && !app.isEmpty() ) {
+      if ( conn && !app2.isEmpty() ) {
 	  if ( !conn->appId.isNull() &&
 	       appIds.find( conn->appId ) == conn ) {
 	      appIds.remove( conn->appId );
 	      qDebug("remove '%s', will be reregistered", conn->appId.data() );
 	  }
 	
-	  conn->appId = app;
-	  if ( appIds.find( app ) != 0 ) {
+	  conn->appId = app2;
+	  if ( appIds.find( app2 ) != 0 ) {
 	      // we already have this application, unify
 	      int n = 1;
 	      QCString tmp;
@@ -492,7 +502,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 		  n++;
 		  tmp.setNum( n );
 		  tmp.prepend("-");
-		  tmp.prepend( app );
+		  tmp.prepend( app2 );
 	      } while ( appIds.find( tmp ) != 0 );
 	      conn->appId = tmp;
 	  }
@@ -557,6 +567,8 @@ int main( int argc, char* argv[] )
   QApplication a( argc, argv );
   InstallIOErrorHandler();
   DCOPServer server;
+
+  daemon(1, 0);
 
   return a.exec();
 }
