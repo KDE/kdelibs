@@ -564,6 +564,7 @@ QString RenderObject::information() const
     if (isPositioned()) ts << "ps ";
     if (overhangingContents()) ts << "oc ";
     if (layouted()) ts << "lt ";
+    if (minMaxKnown()) ts << "mmk ";
     if (m_recalcMinMax) ts << "rmm ";
     if (mouseInside()) ts << "mi ";
     if (style() && style()->zIndex()) ts << "zI: " << style()->zIndex();
