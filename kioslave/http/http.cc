@@ -2489,9 +2489,17 @@ bool HTTPProtocol::readHeader()
 
           if ( dispositionBuf > bufStart )
           {
-            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
-	    if ( disposition[0] == '"' && disposition[disposition.length()-1] == '"' )
-		    disposition = disposition.mid( 1, disposition.length() - 2 );
+            // Skip any leading quotes...
+            while ( *bufStart == '"' )
+              bufStart++;
+
+            // Skip any trailing quotes as well as white spaces...
+            while ( *dispositionBuf == ' ' || *dispositionBuf == '"')
+              dispositionBuf--;
+
+            if ( dispositionBuf > bufStart )
+              disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
+
             break;
           }
         }
