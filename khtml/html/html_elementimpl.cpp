@@ -87,7 +87,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	p = p->parent();
     }
 
-    
+
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() ) {
 	EPosition pos = m_render->style()->position();
 	if ( pos == FIXED || pos == ABSOLUTE ) {
@@ -97,7 +97,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	    _tx += m_render->xPos();
 	    _ty += m_render->yPos();
 	}
-	
+
 	inside = true;
 	if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
@@ -162,7 +162,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(script.length())
 	{
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    view->part()->executeScript( script.string() );
+	    view->part()->executeScript( Node( this ), script.string() );
 	}
     }
 
@@ -187,7 +187,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	{
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	    if( id == ATTR_ONMOUSEOVER )
-		view->part()->scheduleScript( script.string() );
+		view->part()->scheduleScript( Node( this ), script.string() );
 	    else
 		view->part()->executeScript( Node( this ), script.string() );
 	}
