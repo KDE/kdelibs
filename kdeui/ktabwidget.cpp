@@ -128,6 +128,7 @@ void KTabWidget::moveTab( const int from, const int to )
     QIconSet tabiconset = tabIconSet( w );
     QString tabtooltip = tabToolTip( w );
     bool current = ( w == currentPage() );
+    bool enabled = isTabEnabled( w );
     removePage( w );
 
     insertTab( w, tablabel, to );
@@ -137,6 +138,7 @@ void KTabWidget::moveTab( const int from, const int to )
     setTabColor( w, color );
     if ( current )
         showPage( w );
+    setTabEnabled( w, enabled );
 
     emit ( movedTab( from, to ) );
 }
