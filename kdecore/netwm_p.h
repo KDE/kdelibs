@@ -126,7 +126,9 @@ struct NETWinInfoPrivate {
 
     NETRect icon_geom, win_geom;
     unsigned long state;
-    NETStrut strut, frame_strut;
+    NETExtendedStrut extended_strut;
+    NETStrut strut;
+    NETStrut frame_strut; // strut?
     NETRArray<NET::WindowType> types;
     char *name, *visible_name, *icon_name, *visible_icon_name;
     int desktop;

@@ -140,11 +140,54 @@ struct NETIcon {
 
 
 /**
+   Partial strut class for NET classes.
+
+   This class is a convenience class defining a strut with left, right, top and
+   bottom border values, and ranges for them.  The existence of this class is to
+   keep the implementation from being dependant on a separate framework/library.
+   See the _NET_WM_STRUT_PARTIAL property in the NETWM spec.
+**/
+
+struct NETExtendedStrut {
+    /**
+       Constructor to initialize this struct to 0,0,0,0
+    **/
+    NETExtendedStrut() : left_width(0), left_start(0), left_end(0),
+        right_width(0), right_start(0), right_end(0), top_width(0), top_start(0), top_end(0),
+        bottom_width(0), bottom_start(0), bottom_end(0) {}
+
+    /**
+       Left border of the strut, width and range.
+           **/
+    int left_width, left_start, left_end;
+
+    /**
+       Right border of the strut, width and range.
+    **/
+    int right_width, right_start, right_end;
+
+    /**
+       Top border of the strut, width and range.
+           **/
+    int top_width, top_start, top_end;
+
+    /**
+       Bottom border of the strut, width and range.
+           **/
+    int bottom_width, bottom_start, bottom_end;
+    
+};
+
+
+/**
+   @deprecated use NETExtendedStrut
+
    Simple strut class for NET classes.
 
    This class is a convenience class defining a strut with left, right, top and
    bottom border values.  The existence of this class is to keep the implementation
-   from being dependant on a separate framework/library.
+   from being dependant on a separate framework/library. See the _NET_WM_STRUT
+   property in the NETWM spec.
 **/
 
 struct NETStrut {
@@ -431,7 +474,7 @@ public:
        @li WMDesktop
        @li WMWindowType
        @li WMState
-       @li WMStrut
+       @li WMStrut  (obsoleted by WM2ExtendedStrut)
        @li WMIconGeometry
        @li WMIcon
        @li WMPid
@@ -502,6 +545,7 @@ public:
         @li WM2AllowedActions
         @li WM2RestackWindow
         @li WM2MoveResizeWindow
+        @li WM2ExtendedStrut
         
         @since 3.2
 
@@ -513,7 +557,8 @@ public:
         WM2GroupLeader         = 1<<3,
         WM2AllowedActions      = 1<<4,
         WM2RestackWindow       = 1<<5,
-        WM2MoveResizeWindow    = 1<<6
+        WM2MoveResizeWindow    = 1<<6,
+        WM2ExtendedStrut       = 1<<7
     };
 
     /**

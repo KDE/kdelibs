@@ -297,6 +297,32 @@ public:
     static void setOnDesktop( WId win, int desktop);
 
     /**
+     * Sets the strut of window @p win to @p to @p left width
+     * ranging from @p left_start to @p left_end on the left edge,
+     * and simiarly for the other edges. For not reserving a strut, pass 0 as the width.
+     * E.g. to reserve 10x10 square in the topleft corner, use e.g.
+     * setExtendedStrut( w, 10, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0 ).
+     *
+     * @param win the id of the window
+     * @param left_width width of the strut at the left edge
+     * @param left_start starting y coordinate of the strut at the left edge
+     * @param left_end ending y coordinate of the strut at the left edge
+     * @param right_width width of the strut at the right edge
+     * @param right_start starting y coordinate of the strut at the right edge
+     * @param right_end ending y coordinate of the strut at the right edge
+     * @param top_width width of the strut at the top edge
+     * @param top_start starting x coordinate of the strut at the top edge
+     * @param top_end ending x coordinate of the strut at the top edge
+     * @param bottom_width width of the strut at the bottom edge
+     * @param bottom_start starting x coordinate of the strut at the bottom edge
+     * @param bottom_end ending x coordinate of the strut at the bottom edge
+     */
+    static void setExtendedStrut( WId win, int left_width, int left_start, int left_end,
+        int right_width, int right_start, int right_end, int top_width, int top_start, int top_end,
+        int bottom_width, int bottom_start, int bottom_end );
+
+    /**
+     * @deprecated use setExtendedStrut()
      * Sets the strut of window @p win to @p left, @p right, @p top, @p bottom.
      *
      * @param win the id of the window
@@ -306,7 +332,6 @@ public:
      * @param bottom the bottom strut
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
-
     /**
      * Convenience function to access the current desktop.  See NETRootInfo.
      * @return the number of the current desktop
@@ -482,6 +507,12 @@ public:
      */
     NET::MappingState mappingState() const;
     /**
+     * Returns the window extended (partial) strut.
+     * Requires NET::WM2ExtendedStrut passed to KWin::windowInfo().
+     */
+    NETExtendedStrut extendedStrut() const;
+    /**
+     * @deprecated use extendedStrut()
      * Returns the window strut.
      * Requires NET::WMStrut passed to KWin::windowInfo().
      */

@@ -523,6 +523,29 @@ void KWin::setOnDesktop( WId win, int desktop )
 #endif
 }
 
+void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_end,
+    int right_width, int right_start, int right_end, int top_width, int top_start, int top_end,
+    int bottom_width, int bottom_start, int bottom_end )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    NETExtendedStrut strut;
+    strut.left_width = left_width;
+    strut.right_width = right_width;
+    strut.top_width = top_width;
+    strut.bottom_width = bottom_width;
+    strut.left_start = left_start;
+    strut.left_end = left_end;
+    strut.right_start = right_start;
+    strut.right_end = right_end;
+    strut.top_start = top_start;
+    strut.top_end = top_end;
+    strut.bottom_start = bottom_start;
+    strut.bottom_end = bottom_end;
+    info.setExtendedStrut( strut );
+#endif
+}
+
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
@@ -671,6 +694,8 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
 	properties |= NET::WMIconName | NET::WMVisibleName; // force, in case it will be used as a fallback
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
+    if( properties2 & NET::WM2ExtendedStrut )
+        properties |= NET::WMStrut; // will be used as fallback
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
@@ -765,6 +790,44 @@ NET::MappingState KWin::WindowInfo::mappingState() const
     return d->info->mappingState();
 #else
     return 0;
+#endif
+}
+
+NETExtendedStrut KWin::WindowInfo::extendedStrut() const
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ExtendedStrut ) == 0, 176 )
+        << "Pass NET::WM2ExtendedStrut to second argument of KWin::windowInfo()" << endl;
+    NETExtendedStrut ext = d->info->extendedStrut();
+    NETStrut str = d->info->strut();
+    if( ext.left_width == 0 && ext.right_width == 0 && ext.top_width == 0 && ext.bottom_width == 0
+        && ( str.left != 0 || str.right != 0 || str.top != 0 || str.bottom != 0 )) {
+        // build extended from simple
+        if( str.left != 0 ) {
+            ext.left_width = str.left;
+            ext.left_start = 0;
+            ext.left_end = XDisplayHeight( qt_xdisplay(), DefaultScreen( qt_xdisplay()));
+        }
+        if( str.right != 0 ) {
+            ext.right_width = str.right;
+            ext.right_start = 0;
+            ext.right_end = XDisplayHeight( qt_xdisplay(), DefaultScreen( qt_xdisplay()));
+        }
+        if( str.top != 0 ) {
+            ext.top_width = str.top;
+            ext.top_start = 0;
+            ext.top_end = XDisplayWidth( qt_xdisplay(), DefaultScreen( qt_xdisplay()));
+        }
+        if( str.bottom != 0 ) {
+            ext.bottom_width = str.bottom;
+            ext.bottom_start = 0;
+            ext.bottom_end = XDisplayWidth( qt_xdisplay(), DefaultScreen( qt_xdisplay()));
+        }
+    }
+    return ext;
+#else
+    NETExtendedStrut n;
+    return n;
 #endif
 }
 

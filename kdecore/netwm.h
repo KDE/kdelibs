@@ -924,6 +924,13 @@ public:
     unsigned long state() const;
 
     /**
+       Returns the extended (partial) strut specified by this client.
+       See _NET_WM_STRUT_PARTIAL in the spec.
+    **/
+    NETExtendedStrut extendedStrut() const;
+
+    /**
+       @deprecated use strutPartial()
        Returns the strut specified by this client.
 
        @return the strut of the window
@@ -1049,6 +1056,14 @@ public:
     void setIconGeometry(NETRect geometry);
 
     /**
+       Set the extended (partial) strut for the application window.
+
+       @param extended_strut the new strut
+    **/
+    void setExtendedStrut(const NETExtendedStrut& extended_strut );
+
+    /**
+       @deprecated use setExtendedStrut()
        Set the strut for the application window.
 
        @param strut the new strut

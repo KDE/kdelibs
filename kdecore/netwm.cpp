@@ -71,6 +71,7 @@ static Atom net_wm_desktop           = 0;
 static Atom net_wm_window_type       = 0;
 static Atom net_wm_state             = 0;
 static Atom net_wm_strut             = 0;
+static Atom net_wm_extended_strut    = 0; // the atom is called _NET_WM_STRUT_PARTIAL
 static Atom net_wm_icon_geometry     = 0;
 static Atom net_wm_icon              = 0;
 static Atom net_wm_pid               = 0;
@@ -223,7 +224,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 71;
+static const int netAtomCount = 72;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -253,6 +254,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_WINDOW_TYPE",
 	    "_NET_WM_STATE",
 	    "_NET_WM_STRUT",
+            "_NET_WM_STRUT_PARTIAL",
 	    "_NET_WM_ICON_GEOMETRY",
 	    "_NET_WM_ICON",
 	    "_NET_WM_PID",
@@ -335,6 +337,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_window_type,
 	    &net_wm_state,
 	    &net_wm_strut,
+            &net_wm_extended_strut,
 	    &net_wm_icon_geometry,
 	    &net_wm_icon,
 	    &net_wm_pid,
@@ -1175,6 +1178,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & WMStrut)
 	atoms[pnum++] = net_wm_strut;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2ExtendedStrut)
+	atoms[pnum++] = net_wm_extended_strut;
+
     if (p->properties[ PROTOCOLS ] & WMIconGeometry)
 	atoms[pnum++] = net_wm_icon_geometry;
 
@@ -1379,6 +1385,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_wm_strut )
         p->properties[ PROTOCOLS ] |= WMStrut;
+
+    else if( atom == net_wm_extended_strut )
+        p->properties[ PROTOCOLS2 ] |= WM2ExtendedStrut;
 
     else if( atom == net_wm_icon_geometry )
         p->properties[ PROTOCOLS ] |= WMIconGeometry;
@@ -2697,6 +2706,30 @@ void NETWinInfo::setIconGeometry(NETRect geometry) {
 }
 
 
+void NETWinInfo::setExtendedStrut(const NETExtendedStrut& extended_strut ) {
+    if (role != Client) return;
+
+    p->extended_strut = extended_strut;
+
+    long data[12];
+    data[0] = extended_strut.left_width;
+    data[1] = extended_strut.right_width;
+    data[2] = extended_strut.top_width;
+    data[3] = extended_strut.bottom_width;
+    data[4] = extended_strut.left_start;
+    data[5] = extended_strut.left_end;
+    data[6] = extended_strut.right_start;
+    data[7] = extended_strut.right_end;
+    data[8] = extended_strut.top_start;
+    data[9] = extended_strut.top_end;
+    data[10] = extended_strut.bottom_start;
+    data[11] = extended_strut.bottom_end;
+
+    XChangeProperty(p->display, p->window, net_wm_extended_strut, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *) data, 12);
+}
+
+
 void NETWinInfo::setStrut(NETStrut strut) {
     if (role != Client) return;
 
@@ -3369,6 +3402,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMState;
 	    else if (pe.xproperty.atom == net_wm_strut)
 		dirty |= WMStrut;
+	    else if (pe.xproperty.atom == net_wm_extended_strut)
+		dirty2 |= WM2ExtendedStrut;
 	    else if (pe.xproperty.atom == net_wm_icon_geometry)
 		dirty |= WMIconGeometry;
 	    else if (pe.xproperty.atom == net_wm_icon)
@@ -3720,6 +3755,33 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	}
     }
 
+    if (dirty2 & WM2ExtendedStrut) {
+        p->extended_strut = NETExtendedStrut();
+	if (XGetWindowProperty(p->display, p->window, net_wm_extended_strut, 0l, 12l,
+			       False, XA_CARDINAL, &type_ret, &format_ret,
+			       &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 12) {
+		long *d = (long *) data_ret;
+		p->extended_strut.left_width = d[0];
+		p->extended_strut.right_width = d[1];
+		p->extended_strut.top_width = d[2];
+		p->extended_strut.bottom_width = d[3];
+                p->extended_strut.left_start = d[4];
+                p->extended_strut.left_end = d[5];
+                p->extended_strut.right_start = d[6];
+                p->extended_strut.right_end = d[7];
+                p->extended_strut.top_start = d[8];
+                p->extended_strut.top_end = d[9];
+                p->extended_strut.bottom_start = d[10];
+                p->extended_strut.bottom_end = d[11];
+	    }
+	    if ( data_ret )
+		XFree(data_ret);
+	}
+    }
+
     if (dirty & WMIconGeometry) {
         p->icon_geom = NETRect();
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_geometry, 0l, 4l,
@@ -3904,6 +3966,10 @@ unsigned long NETWinInfo::state() const {
 
 NETStrut NETWinInfo::strut() const {
     return p->strut;
+}
+
+NETExtendedStrut NETWinInfo::extendedStrut() const {
+    return p->extended_strut;
 }
 
 NET::WindowType NETWinInfo::windowType( unsigned long supported_types ) const {
