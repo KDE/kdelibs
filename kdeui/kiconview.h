@@ -41,6 +41,7 @@
 class KIconView : public QIconView
 {
   Q_OBJECT
+  Q_ENUMS( Mode )
   Q_PROPERTY( Mode mode READ mode WRITE setMode )
 
 public:
