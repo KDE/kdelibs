@@ -65,7 +65,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
                     dialog should create an engine on its own
       @param parent the parent window
     */
-    DownloadDialog(Engine *engine, QWidget *parent = 0);
+    DownloadDialog(Engine *engine, QWidget *parent = 0, const QString& caption = QString::null);
 
     /**
       Alternative constructor.
@@ -73,7 +73,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param parent the parent window
     */
-    DownloadDialog(QWidget *parent = 0);
+    DownloadDialog(QWidget *parent = 0, const QString& caption = QString::null);
 
     /**
       Destructor.
@@ -85,7 +85,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param type a Hotstuff data type such as "korganizer/calendar"
     */
-    void setType(QString type);
+    void setType(const QString& type);
 
     /**
       Fetches descriptions of all available data, optionally considering
@@ -123,7 +123,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param type a data type such as "korganizer/calendar"
     */
-    static void open(QString type);
+    static void open(const QString& type, const QString& caption = QString::null);
 
   public slots:
     /**

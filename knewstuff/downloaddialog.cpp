@@ -46,15 +46,15 @@
 
 using namespace KNS;
 
-DownloadDialog::DownloadDialog(Engine *engine, QWidget *)
-: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
+DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption)
+: KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
   KDialogBase::Close, KDialogBase::Close)
 {
   init(engine);
 }
 
-DownloadDialog::DownloadDialog(QWidget *)
-: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
+DownloadDialog::DownloadDialog(QWidget *, const QString& caption)
+: KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
   KDialogBase::Close, KDialogBase::Close)
 {
   init(0);
@@ -539,7 +539,7 @@ void DownloadDialog::loadProvider(Provider *p)
     SLOT(slotData(KIO::Job*, const QByteArray&)));
 }
 
-void DownloadDialog::setType(QString type)
+void DownloadDialog::setType(const QString& type)
 {
   m_filter = type;
 }
@@ -552,9 +552,9 @@ void DownloadDialog::slotApply()
 {
 }
 
-void DownloadDialog::open(QString type)
+void DownloadDialog::open(const QString& type, const QString& caption)
 {
-  DownloadDialog d;
+  DownloadDialog d(0, caption);
   d.setType(type);
   d.load();
   d.exec();
