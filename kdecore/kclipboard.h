@@ -31,7 +31,7 @@
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
-class KClipboard : public QObject
+class KClipboardSynchronizer : public QObject
 {
     Q_OBJECT
 
@@ -40,13 +40,13 @@ public:
     friend class KApplication;
 
     /**
-     * Returns the KClipboard singleton object.
-     * @return the KClipboard singleton object.
+     * Returns the KClipboardSynchronizer singleton object.
+     * @return the KClipboardSynchronizer singleton object.
      */
-    static KClipboard *self();
+    static KClipboardSynchronizer *self();
 
     /**
-     * Configures KClipboard to synchronize the Selection to Clipboard whenever
+     * Configures KClipboardSynchronizer to synchronize the Selection to Clipboard whenever
      * it changes.
      *
      * Default is false.
@@ -66,7 +66,7 @@ public:
     }
 
     /**
-     * Configures KClipboard to copy the Clipboard buffer to the Selection
+     * Configures KClipboardSynchronizer to copy the Clipboard buffer to the Selection
      * buffer whenever the Clipboard changes.
      *
      *
@@ -90,19 +90,19 @@ public:
 
 
 protected:
-    ~KClipboard();
+    ~KClipboardSynchronizer();
 
 private slots:
     void slotSelectionChanged();
     void slotClipboardChanged();
 
 private:
-    KClipboard( QObject *parent = 0, const char *name = 0L );
+    KClipboardSynchronizer( QObject *parent = 0, const char *name = 0L );
     void setupSignals();
 
     static void setClipboard( QMimeSource* data, QClipboard::Mode mode );
 
-    static KClipboard *s_self;
+    static KClipboardSynchronizer *s_self;
     static bool s_sync;
     static bool s_reverse_sync;
     static bool s_blocked;

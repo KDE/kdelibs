@@ -35,10 +35,10 @@
  *
  *  Whenever reporting any bug only remotely related to clipboard, first make
  *  sure you can reproduce it when both these two options are turned off,
- *  especially the second one. 
+ *  especially the second one.
  */
- 
-class KClipboard::MimeSource : public QMimeSource
+
+class KClipboardSynchronizer::MimeSource : public QMimeSource
 {
 public:
     MimeSource( const QMimeSource * src )
@@ -95,20 +95,20 @@ private:
 };
 
 
-KClipboard * KClipboard::s_self = 0L;
-bool KClipboard::s_sync = false;
-bool KClipboard::s_reverse_sync = false;
-bool KClipboard::s_blocked = false;
+KClipboardSynchronizer * KClipboardSynchronizer::s_self = 0L;
+bool KClipboardSynchronizer::s_sync = false;
+bool KClipboardSynchronizer::s_reverse_sync = false;
+bool KClipboardSynchronizer::s_blocked = false;
 
-KClipboard * KClipboard::self()
+KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
     if ( !s_self )
-        s_self = new KClipboard( kapp, "KDE Clipboard" );
+        s_self = new KClipboardSynchronizer( kapp, "KDE Clipboard" );
 
     return s_self;
 }
 
-KClipboard::KClipboard( QObject *parent, const char *name )
+KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent, const char *name )
     : QObject( parent, name )
 {
     s_self = this;
@@ -121,13 +121,13 @@ KClipboard::KClipboard( QObject *parent, const char *name )
     setupSignals();
 }
 
-KClipboard::~KClipboard()
+KClipboardSynchronizer::~KClipboardSynchronizer()
 {
     if ( s_self == this )
         s_self = 0L;
 }
 
-void KClipboard::setupSignals()
+void KClipboardSynchronizer::setupSignals()
 {
     QClipboard *clip = QApplication::clipboard();
     disconnect( clip, NULL, this, NULL );
@@ -139,7 +139,7 @@ void KClipboard::setupSignals()
                  SLOT( slotClipboardChanged() ));
 }
 
-void KClipboard::slotSelectionChanged()
+void KClipboardSynchronizer::slotSelectionChanged()
 {
     QClipboard *clip = QApplication::clipboard();
 
@@ -151,7 +151,7 @@ void KClipboard::slotSelectionChanged()
                   QClipboard::Clipboard );
 }
 
-void KClipboard::slotClipboardChanged()
+void KClipboardSynchronizer::slotClipboardChanged()
 {
     QClipboard *clip = QApplication::clipboard();
 
@@ -163,7 +163,7 @@ void KClipboard::slotClipboardChanged()
                   QClipboard::Selection );
 }
 
-void KClipboard::setClipboard( QMimeSource *data, QClipboard::Mode mode )
+void KClipboardSynchronizer::setClipboard( QMimeSource *data, QClipboard::Mode mode )
 {
 //     qDebug("---> setting clipboard: %p", data);
 
@@ -183,20 +183,20 @@ void KClipboard::setClipboard( QMimeSource *data, QClipboard::Mode mode )
     s_blocked = false;
 }
 
-void KClipboard::setSynchronizing( bool sync )
+void KClipboardSynchronizer::setSynchronizing( bool sync )
 {
     s_sync = sync;
     self()->setupSignals();
 }
 
-void KClipboard::setReverseSynchronizing( bool enable )
+void KClipboardSynchronizer::setReverseSynchronizing( bool enable )
 {
     s_reverse_sync = enable;
     self()->setupSignals();
 }
 
 // private, called by KApplication
-void KClipboard::newConfiguration( int config )
+void KClipboardSynchronizer::newConfiguration( int config )
 {
     s_sync = (config & Synchronize);
     self()->setupSignals();

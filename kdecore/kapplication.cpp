@@ -356,7 +356,7 @@ void KApplication::x11FilterDestroyed()
     }
 }
 
-// FIXME: remove this when we've get a better method of 
+// FIXME: remove this when we've get a better method of
 // customizing accelerator handling -- hopefully in Qt.
 // For now, this is set whenever an accelerator is overriden
 // in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
@@ -377,7 +377,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
        else
           kdWarning(125) << "g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
     }
-    
+
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
     {
        static const KShortcut& _selectAll = KStdAccel::selectAll();
@@ -605,7 +605,7 @@ void KApplication::init(bool GUIenabled)
   if( KProcessController::theKProcessController == 0 )
       (void) new KProcessController();
 
-  (void) KClipboard::self();
+  (void) KClipboardSynchronizer::self();
 
   QApplication::setDesktopSettingsAware( false );
 
@@ -1426,7 +1426,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
             (_event->xclient.message_type == kipcCommAtom))
     {
         XClientMessageEvent *cme = (XClientMessageEvent *) _event;
-        
+
         int id = cme->data.l[0];
         int arg = cme->data.l[1];
         if ((id < 32) && (kipcEventMask & (1 << id)))
@@ -1476,7 +1476,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 break;
 
             case KIPC::ClipboardConfigChanged:
-                KClipboard::newConfiguration(arg);
+                KClipboardSynchronizer::newConfiguration(arg);
                 break;
             }
         }
