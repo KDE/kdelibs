@@ -120,3 +120,5 @@ that we would like to make for the next binary incompatible release.
     writeStdin() in Block mode.
   - merge KProcIO into KProcess; add setBuffered() for separate channels.
   - use QByteArray for writeStdin(). better than the buf+len arg, as it is ref-counted.
+
+-To discuss: Migrate the about dialog to use qhtml or khtml rather then the current setup of all of the widgets and sub widgets.  Might be a lot simpler, require a lot less code and be much more flexible for additions/enhancments.  Sidenote: currently the about information seems to be duplicated.
