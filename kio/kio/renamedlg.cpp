@@ -427,7 +427,6 @@ void RenameDlg::b1Pressed()
 
 static QString suggestName(const KURL& baseURL, const QString& oldName)
 {
-	kdDebug() << "suggestName " << baseURL << " oldName=" << oldName << endl;
   QString dotSuffix, suggestedName;
   QString basename = oldName;
 
