@@ -374,7 +374,7 @@ KWallet::Backend *b;
 	if ((b = getWallet(handle))) {
 		b->setFolder(folder);
 		KWallet::Entry *e = b->readEntry(key);
-		if (e && e->type() == KWallet::Wallet::Stream) {
+		if (e) {
 			return e->value();
 		}
 	}
