@@ -30,6 +30,9 @@
 <!ENTITY Rijk.van.Wel      '<othercredit role="translator"><firstname>Rijk</firstname><surname>van Wel</surname><affiliation><address><email>hotmail@ridge.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jonas.Drieghe      '<othercredit role="translator"><firstname>Jonas</firstname><surname>Drieghe</surname><affiliation><address><email>jonas_drieghe@skynet.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Pieter.Hoekstra    '<othercredit role="translator"><firstname>Pieter</firstname><surname>Hoekstra</surname><affiliation><address><email>pieterhoekstra@tiscali.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Niels.Luten        '<othercredit role="translator"><firstname>Niels</firstname><surname>Luten</surname><affiliation><address><email>mail@niels1.tmfweb.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rik.van.Achterberg '<othercredit role="translator"><firstname>Rik</firstname><surname>van Achterberg</surname><affiliation><address><email>rikratva@xs4all.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Daniel.Huisman	'<othercredit role="translator"><firstname>Daniel</firstname><surname>Huisman</surname><affiliation><address><email>phptesten@lycos.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -58,6 +61,10 @@
 <!ENTITY vertaling.rijk    "<para>Dit document is vertaald in het Nederlands door &Rijk.van.Wel;.</para>">
 <!ENTITY vertaling.jonas   "<para>Dit document is vertaald in het Nederlands door &Jonas.Drieghe;.</para>">
 <!ENTITY vertaling.pieter  "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
+<!ENTITY vertaling.niels.luten	"<para>Dit document is vertaald in het Nederlands door &Niels.Luten;.</para>">
+<!ENTITY vertaling.rik	   "<para>Dit document is vertaald in het Nederlands door &Rik.van.Achterberg;.</para>">
+<!ENTITY vertaling.daniel  "<para>Dit document is vertaald in het Nederlands door &Daniel.Huisman;.</para>">
+
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
 <!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
@@ -88,6 +95,7 @@
 <!ENTITY nagelezen.rijk    "<para>De vertaling werd nagelezen door &Rijk.van.Wel;.</para>">
 <!ENTITY nagelezen.jonas   "<para>De vertaling werd nagelezen door &Jonas.Drieghe;.</para>">
 <!ENTITY nagelezen.pieter  "<para>De vertaling werd nagelezen door &Pieter.Hoekstra;.</para>">
+<!ENTITY nagelezen.daniel  "<para>De vertaling werd nagelezen door &Daniel.Huisman;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
@@ -108,9 +116,9 @@
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
-<!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
-<!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
-<!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
+<!ENTITY LMB     "<mousebutton>linker</mousebutton> muisknop">
+<!ENTITY MMB     "<mousebutton>middelste</mousebutton> muisknop">
+<!ENTITY RMB     "<mousebutton>rechter</mousebutton> muisknop">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 <!ENTITY Backspace   "<keycap>Backspace</keycap>">
 <!ENTITY Esc     "<keycap>Escape</keycap>">
