@@ -2495,7 +2495,7 @@ QString KApplication::randomString(int length)
 {
    if (length <=0 ) return QString::null;
 
-   char* str = new char[length + 1];
+   QString str; str.setLength( length + 1 );
    int i = 0;
    while (length--)
    {
@@ -2507,9 +2507,7 @@ QString KApplication::randomString(int length)
       // so what if I work backwards?
    }
    str[i] = 0;
-   QString ret( str );
-   delete [] str;
-   return ret;
+   return str;
 }
 
 bool KApplication::authorize(const QString &genericAction)
