@@ -20,7 +20,6 @@
 */
 
 #include "kdelibs_export.h"
-#include "kde_file.h"
 
 #include <config.h>
 
@@ -33,6 +32,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#ifdef _WIN32
+#include <kde_file_win.h>
+#define KDE_open kdewin32_open
+#else
+#define KDE_open open
+#endif
 
 KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
     int i;
