@@ -958,11 +958,11 @@ void DocumentImpl::determineParseMode( const QString &str )
     //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
     if( pMode == Strict )
-        kdDebug() << " using strict parseMode" << endl;
+        kdDebug(6020) << " using strict parseMode" << endl;
     else if (pMode == Compat )
-        kdDebug() << " using compatibility parseMode" << endl;
+        kdDebug(6020) << " using compatibility parseMode" << endl;
     else
-        kdDebug() << " using transitional parseMode" << endl;
+        kdDebug(6020) << " using transitional parseMode" << endl;
 }
 
 // Please see if there`s a possibility to merge that code
