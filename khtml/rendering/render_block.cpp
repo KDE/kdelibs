@@ -561,7 +561,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     // Update our scrollbars if we're overflow:auto/scroll now that we know if
     // we overflow or not.
-    if (style()->scrollsOverflow() && m_layer)
+    if (style()->hidesOverflow() && m_layer)
         m_layer->checkScrollbarsAfterLayout();
 
     setLayouted();
