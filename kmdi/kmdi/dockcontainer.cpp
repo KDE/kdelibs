@@ -131,6 +131,7 @@ DockContainer::~DockContainer()
 
 void DockContainer::init()
 {
+  bool overlap = isOverlapMode();
   if (m_vertical)
   {
     parentDockWidget()->setForcedFixedWidth(m_tb->width());
@@ -141,6 +142,8 @@ void DockContainer::init()
     parentDockWidget()->setForcedFixedHeight(m_tb->height());
     activateOverlapMode(m_tb->height());
   }
+
+  if (!overlap) deactivateOverlapMode();
 
   // try to restore splitter size
   if ( parentDockWidget() && parentDockWidget()->parent() )
@@ -544,9 +547,9 @@ void DockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   QPtrListIterator<KMultiTabBarTab> it1(*tl);
   m_ws->hide();
   if (m_vertical)
-  parentDockWidget()->setForcedFixedWidth(m_tb->width());
+    parentDockWidget()->setForcedFixedWidth(m_tb->width());
   else
-  parentDockWidget()->setForcedFixedHeight(m_tb->height());
+    parentDockWidget()->setForcedFixedHeight(m_tb->height());
   for (;it1.current()!=0;++it1)
   {
     m_tb->setTab(it1.current()->id(),false);
