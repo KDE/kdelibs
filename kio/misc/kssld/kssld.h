@@ -27,6 +27,9 @@
 #include <ksslcertificatecache.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qvaluelist.h>
+#include <qmap.h>
+#include <qptrvector.h>
 
 
 class KSimpleConfig;
@@ -100,6 +103,10 @@ k_dcop:
 
   bool caSetUse(QString subject, bool ssl, bool email, bool code);
 
+  QStringList getKDEKeyByEmail(const QString &email);
+
+  KSSLCertificate getCertByKDEKey(const QString &key);
+
   //
   //  Certificate Home methods
   //
@@ -116,6 +123,13 @@ private:
 
   // Our pointer to OpenSSL
   KOpenSSLProxy *kossl;
+
+  // 
+  void searchAddCert(KSSLCertificate *cert);
+  void searchRemoveCert(KSSLCertificate *cert);
+
+  QMap<QString, QPtrVector<KSSLCertificate> > skEmail;
+  QMap<QString, KSSLCertificate *> skKDEKey;
 };
 
 
