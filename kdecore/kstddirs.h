@@ -134,6 +134,18 @@ public:
 			      const QString& filename ) const;
 
 	/**
+	 * Tries to find all directories whose name consists of the
+	 * specified type and a relative path.
+	 *
+	 * @param type the type of the base directory.
+	 * @param reldir relative directory.
+	 *
+	 * @return a list of matching directories.
+	 */
+	QStringList findDirs( const QString& type, 
+                              const QString& reldir ) const;
+
+	/**
 	 * Tries to find the directory the file is in.
 	 * It works the same as findResource, but it doesn't
 	 * return the filename but the name of the directory.

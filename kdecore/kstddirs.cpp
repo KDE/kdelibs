@@ -91,6 +91,23 @@ QString KStandardDirs::findResource( const QString& type,
     else return dir + filename;
 }
 
+QStringList KStandardDirs::findDirs( const QString& type, 
+                                     const QString& reldir ) const
+{
+    QStringList list;
+
+    QStringList candidates = getResourceDirs(type);
+    QDir testdir;
+
+    for (QStringList::ConstIterator it = candidates.begin();
+         it != candidates.end(); it++) {
+        testdir.setPath(*it + reldir);
+        if (testdir.exists())
+            list.append(testdir.absPath());
+    }
+    return list;
+}
+
 QString KStandardDirs::findResourceDir( const QString& type,
 					const QString& filename) const
 {
