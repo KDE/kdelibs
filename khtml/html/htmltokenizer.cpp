@@ -265,17 +265,10 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         checkScriptBuffer();
 
         char ch = src[0].latin1();
-
-        if ( escaped ) {
-            scriptCode[ scriptCodeSize++ ] = src[0];
-            ++src;
-            escaped = false;
-        }
-        else if ( script && ch == '\\' ) {
+        if ( script && !escaped && ch == '\\' )
             escaped = true;
-            ++src;
-        }
-        else if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+
+        if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -284,7 +277,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             {
                 if (!scriptSrc.isEmpty()) {
                     // forget what we just got; load from src url instead
-                    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL());
+                    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
                 }
                 else {
 #ifdef TOKEN_DEBUG
@@ -352,11 +345,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             const QChar& cmp = src[0];
             // broken HTML: "--->"
             // be tolerant: skip spaces before the ">", i.e "</script >"
-            if (cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            if (!escaped &&  cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
                 ++src;
             }
-            else if ( searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
+            else if (!escaped && searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
                 ++src;
@@ -382,7 +375,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( ch == '<' || ch == '-' )
+        else if ( !escaped && ( ch == '<' || ch == '-' ) )
         {
             searchCount = 1;
             searchBuffer[ 0 ] = src[0];
@@ -390,22 +383,25 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 	else
         {
-	    if (textarea && ch == '&') {
+	    if (textarea && !escaped && ch == '&') {
 		QChar *scriptCodeDest = scriptCode+scriptCodeSize;
 		++src;
 		parseEntity(src,scriptCodeDest,true);
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
-                if(script && ch == '\"')
-                    tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-                else if(script && ch == '\'')
-                    tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-                else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
-                    tquote = NoQuote;
+                if ( !escaped ) {
+                    if(script && ch == '\"')
+                        tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
+                    else if(script && ch == '\'')
+                        tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
+                    else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
+                        tquote = NoQuote;
+                }
 
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
+                escaped = false;
 	    }
         }
     }
