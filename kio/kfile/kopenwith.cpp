@@ -656,4 +656,5 @@ bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
 #endif
 
 #include "kopenwith.moc"
+#include "kopenwith_p.moc"
 
