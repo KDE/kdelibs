@@ -74,7 +74,7 @@ Background=227,227,227
 Foreground=255,255,255
 Pixmap=riscos/menu_back.png
 Border=0
-Highlight=0
+#Highlight=0
 
 [Splitter]
 Background=227,227,227
