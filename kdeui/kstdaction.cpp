@@ -477,7 +477,7 @@ KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
 KAction *KStdAction::close(const QObject *recvr, const char *slot,
 						   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Close"), "close",
+    return new KAction(i18n("&Close"), "fileclose",
                        KStdAccel::key(KStdAccel::Close), recvr, slot, parent,
                        name ? name : stdName(Close));
 }
