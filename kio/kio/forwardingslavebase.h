@@ -85,7 +85,7 @@ class ForwardingSlaveBasePrivate;
  * @since 3.4
  * @author Kevin Ottens <ervin ipsquad net>
  */
-class ForwardingSlaveBase : public QObject, public SlaveBase
+class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
 {
 Q_OBJECT
 public:
