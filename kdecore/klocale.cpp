@@ -694,7 +694,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 	  QString tmp = QString::fromUtf8( plural );
 #ifndef NDEBUG
 	  if (tmp.find("%n") == -1) {
-			  kdWarning() << "the message for i18n should contain a '%n'! " << plural << endl;
+			  kdDebug() << "the message for i18n should contain a '%n'! " << plural << endl;
 	  }
 #endif
       return put_n_in( tmp,  n );
