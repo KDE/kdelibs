@@ -35,7 +35,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
-		kdualcolortest kpalettetest
+		kdualcolortest kpalettetest kmessageboxtest
 
 noinst_HEADERS = kdatepicktestdlg.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -71,6 +71,7 @@ kledlamptest_SOURCES = kledlamptest.cpp
 kledtest_SOURCES = kledtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
+kmessageboxtest_SOURCES = kmessageboxtest.cpp
 knuminputtest_SOURCES = knuminputtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kopenwithtest_LDADD = $(LIB_KIO)
