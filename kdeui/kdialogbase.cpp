@@ -65,11 +65,11 @@ struct SButton : public Qt
     style = 0;
   }
 
-  QPushButton *append( int key, const QString &text );
+  KPushButton *append( int key, const KGuiItem &item );
 
   void resize( bool sameWidth, int margin, int spacing, int orientation );
 
-  QPushButton *button( int key );
+  KPushButton *button( int key );
 
   QWidget *box;
   int mask;
@@ -182,9 +182,9 @@ KDialogBase::~KDialogBase()
   delete d;
 }
 
-QPushButton *SButton::append( int key, const QString &text )
+KPushButton *SButton::append( int key, const KGuiItem &item )
 {
-  KDialogBaseButton *p = new KDialogBaseButton( text, key, box );
+  KDialogBaseButton *p = new KDialogBaseButton( item, key, box );
   list.append( p );
   return( p );
 }
@@ -230,7 +230,7 @@ void SButton::resize( bool sameWidth, int margin,
   }
 }
 
-QPushButton *SButton::button( int key )
+KPushButton *SButton::button( int key )
 {
   KDialogBaseButton *p;
   for( p = list.first(); p != 0; p = list.next() )
@@ -519,8 +519,6 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 				 const KGuiItem &user1, const KGuiItem &user2,
 				 const KGuiItem &user3 )
 {
-  bool showIcons = KConfigGroup( KGlobal::config(), "KDE" ).readBoolEntry("showIcons", false );  
-  qWarning("%d", showIcons );
   if( buttonMask == 0 )
   {
     d->mButton.box = 0;
@@ -541,35 +539,31 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   d->mButton.mask = buttonMask;
   if( d->mButton.mask & Help )
   {
-    QPushButton *pb = d->mButton.append( Help, i18n("&Help") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("help") );
+    KPushButton *pb = d->mButton.append( Help, KStdGuiItem::help() );
 
     connect( pb, SIGNAL(clicked()), this, SLOT(slotHelp()) );
   }
   if( d->mButton.mask & Default )
   {
-    QPushButton *pb = d->mButton.append( Default, i18n("&Default") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("defaults") );
+    KPushButton *pb = d->mButton.append( Default, KStdGuiItem::defaults() );
 
     connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
   }
   if( d->mButton.mask & Details )
   {
-    QPushButton *pb = d->mButton.append( Details, QString::null );
+    KPushButton *pb = d->mButton.append( Details, QString::null );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotDetails()) );
     setDetails(false);
   }
   if( d->mButton.mask & User3 )
   {
-    QPushButton *pb = d->mButton.append( User3, user3.text() );
+    KPushButton *pb = d->mButton.append( User3, user3.text() );
     pb->setIconSet( user3.iconSet() );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotUser3()) );
   }
   if( d->mButton.mask & User2 )
   {
-    QPushButton *pb = d->mButton.append( User2, user2.text() );
+    KPushButton *pb = d->mButton.append( User2, user2.text() );
     pb->setIconSet( user2.iconSet() );
     if( mMessageBoxMode == true )
     {
@@ -582,7 +576,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( d->mButton.mask & User1 )
   {
-    QPushButton *pb = d->mButton.append( User1, user1.text() );
+    KPushButton *pb = d->mButton.append( User1, user1.text() );
     pb->setIconSet(user1.iconSet() );
     if( mMessageBoxMode == true )
     {
@@ -595,38 +589,29 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( d->mButton.mask & Ok )
   {
-    QPushButton *pb = d->mButton.append( Ok, i18n("&OK") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("ok") );
+    KPushButton *pb = d->mButton.append( Ok, KStdGuiItem::ok() );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotOk()) );
   }
   if( d->mButton.mask & Apply )
   {
-    QPushButton *pb = d->mButton.append( Apply, i18n("&Apply") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("apply") );
+    KPushButton *pb = d->mButton.append( Apply, KStdGuiItem::apply() );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
     connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
   }
   if( d->mButton.mask & Try )
   {
-    QPushButton *pb = d->mButton.append( Try, i18n("&Try") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("try") );
+    KPushButton *pb = d->mButton.append( Try,
+                          KGuiItem( i18n( "&Try" ), "try" ) );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotTry()) );
   }
   if( d->mButton.mask & Cancel )
   {
-    QPushButton *pb = d->mButton.append( Cancel, i18n("&Cancel") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("cancel") );
+    KPushButton *pb = d->mButton.append( Cancel, KStdGuiItem::cancel() );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotCancel()) );
   }
   if( d->mButton.mask & Close )
   {
-    QPushButton *pb = d->mButton.append( Close, i18n("&Close") );
-    if( showIcons )
-      pb->setIconSet( SmallIconSet("fileclose") );
+    KPushButton *pb = d->mButton.append( Close, KStdGuiItem::close() );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
   }
 
@@ -1611,9 +1596,9 @@ void KDialogBase::showTile( bool state )
 
 
 
-KDialogBaseButton::KDialogBaseButton( const QString &text, int key,
+KDialogBaseButton::KDialogBaseButton( const KGuiItem &item, int key,
 				      QWidget *parent,  const char *name )
-  : QPushButton( text, parent, name )
+  : KPushButton( item, parent, name )
 {
   mKey = key;
 }

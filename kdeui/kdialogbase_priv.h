@@ -22,18 +22,18 @@
 #ifndef _KDIALOG_BASE_PRIV_H_
 #define _KDIALOG_BASE_PRIV_H_
 
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 
 /**
  * Used internally by @ref KDialogBase.
  * @internal
  */
-class KDialogBaseButton : public QPushButton
+class KDialogBaseButton : public KPushButton
 {
   Q_OBJECT
 
   public:
-    KDialogBaseButton( const QString &text, int key, QWidget *parent=0,
+    KDialogBaseButton( const KGuiItem &text, int key, QWidget *parent=0,
                        const char *name=0 );
     inline int id();
 
