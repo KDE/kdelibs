@@ -3,7 +3,7 @@
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
    Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -148,10 +148,30 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the given type.
    *
-   * @return An empty property or error.
+   * @return An invalid @ref QVariant if the key was not found.
+   *
+   * Note that only the following @ref QVariant::Type are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool and
+   * Double.
    */
   QVariant readPropertyEntry( const QString& pKey, QVariant::Type ) const;
   QVariant readPropertyEntry( const char *pKey, QVariant::Type ) const;
+
+  /**
+   * Reads the value of an entry specified by @p pKey in the current group.
+   * The value is treated as if it is of the type of the given default value.
+   *
+   * @return The value for this key or the default value if the key was not
+   *         found.
+   *
+   * Note that only the following @ref QVariant::Type are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool and
+   * Double.
+   */
+  QVariant readPropertyEntry( const QString& pKey,
+                              const QVariant &adefault) const;
+  QVariant readPropertyEntry( const char *pKey,
+                              const QVariant &aDefault) const;
 
   /**
    * Reads a list of strings.
@@ -959,13 +979,13 @@ public:
    * @return whether changes may be made to this configuration file.
    */
   bool isImmutable() const;
-  
+
   /**
    * @return whether changes may be made to @p group in this configuration
    * file.
    */
   bool groupIsImmutable(const QString &group) const;
-  
+
   /**
    * @return whether the entry @p key may be changed in the current group
    * in this configuration file.
@@ -1200,11 +1220,11 @@ class KConfigGroup: public KConfigBase
 {
 public:
    KConfigGroup(KConfigBase *master, const QCString &group);
-   
+
    /**
     * Delete all entries in the entire group
-    * @param bGlobal     If @p bGlobal is true, the entries are not removed 
-    *        from the application specific config file, but from the global 
+    * @param bGlobal     If @p bGlobal is true, the entries are not removed
+    *        from the application specific config file, but from the global
     *        KDE config file.
     */
    void deleteGroup(bool bGlobal = false);
@@ -1214,9 +1234,9 @@ public:
    virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
    virtual KEntry lookupData(const KEntryKey &_key) const;
    virtual void sync();
-   
+
 private:
-   // Hide the following members: 
+   // Hide the following members:
    void setGroup() { }
    void setDesktopGroup() { }
    void group() { }
@@ -1226,19 +1246,19 @@ private:
 
    // The following members are not used.
    virtual QStringList groupList() const { return QStringList(); }
-   virtual void rollback(bool) { } 
+   virtual void rollback(bool) { }
    virtual void reparseConfiguration() { }
-   virtual QMap<QString, QString> entryMap(const QString &) const 
+   virtual QMap<QString, QString> entryMap(const QString &) const
     { return QMap<QString,QString>(); }
-   virtual KEntryMap internalEntryMap( const QString&) const 
+   virtual KEntryMap internalEntryMap( const QString&) const
     { return KEntryMap(); }
-   virtual KEntryMap internalEntryMap() const 
+   virtual KEntryMap internalEntryMap() const
     { return KEntryMap(); }
    virtual bool internalHasGroup(const QCString &) const
     { return false; }
 
    void getConfigState() { }
-   
+
    KConfigBase *mMaster;
 };
 

@@ -367,20 +367,35 @@ QVariant KConfigBase::readPropertyEntry( const QString& pKey,
 QVariant KConfigBase::readPropertyEntry( const char *pKey,
                                           QVariant::Type type ) const
 {
+  QVariant va;
+  if ( !hasKey( pKey ) ) return va;
+  (void)va.cast(type);
+  return readPropertyEntry(pKey, va);
+}
+
+QVariant KConfigBase::readPropertyEntry( const QString& pKey,
+                                         const QVariant &aDefault ) const
+{
+  return readPropertyEntry(pKey.utf8().data(), aDefault);
+}
+
+QVariant KConfigBase::readPropertyEntry( const char *pKey,
+                                         const QVariant &aDefault ) const
+{
+  if ( !hasKey( pKey ) ) return aDefault;
+
   QValueList<QVariant> list;
   QStringList strList;
   QStringList::ConstIterator it;
   QStringList::ConstIterator end;
-  QVariant tmp;
+  QVariant tmp = aDefault;
 
-  if ( !hasKey( pKey ) ) return QVariant();
-
-  switch( type )
+  switch( aDefault.type() )
   {
       case QVariant::Invalid:
           return QVariant();
       case QVariant::String:
-          return QVariant( readEntry( pKey ) );
+          return QVariant( readEntry( pKey, aDefault.toString() ) );
       case QVariant::StringList:
           return QVariant( readListEntry( pKey ) );
       case QVariant::List:
@@ -396,23 +411,23 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           return QVariant( list );
 
       case QVariant::Font:
-          return QVariant( readFontEntry( pKey ) );
+          return QVariant( readFontEntry( pKey, &tmp.asFont() ) );
       case QVariant::Point:
-          return QVariant( readPointEntry( pKey ) );
+          return QVariant( readPointEntry( pKey, &tmp.asPoint() ) );
       case QVariant::Rect:
-          return QVariant( readRectEntry( pKey ) );
+          return QVariant( readRectEntry( pKey, &tmp.asRect() ) );
       case QVariant::Size:
-          return QVariant( readSizeEntry( pKey ) );
+          return QVariant( readSizeEntry( pKey, &tmp.asSize() ) );
       case QVariant::Color:
-          return QVariant( readColorEntry( pKey ) );
+          return QVariant( readColorEntry( pKey, &tmp.asColor() ) );
       case QVariant::Int:
-          return QVariant( readNumEntry( pKey ) );
+          return QVariant( readNumEntry( pKey, aDefault.toInt() ) );
       case QVariant::UInt:
-          return QVariant( readUnsignedNumEntry( pKey ) );
+          return QVariant( readUnsignedNumEntry( pKey, aDefault.toUInt() ) );
       case QVariant::Bool:
-          return QVariant( readBoolEntry( pKey ), 0 );
+          return QVariant( readBoolEntry( pKey, aDefault.toBool() ), 0 );
       case QVariant::Double:
-          return QVariant( readDoubleNumEntry( pKey ) );
+          return QVariant( readDoubleNumEntry( pKey, aDefault.toDouble() ) );
 
       case QVariant::Pixmap:
       case QVariant::Image:
