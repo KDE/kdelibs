@@ -142,6 +142,14 @@ public:
    */
   virtual int newInstance();
 
+  /**
+   * Returns whether newInstance() is being called while session
+   * restoration is in progress.
+   *
+   * @since KDE 3.3
+   */
+  bool restoringSession();
+
 private:
   /**
    * Delays the processing of a DCOP request.

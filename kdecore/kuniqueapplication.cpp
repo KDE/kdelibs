@@ -341,6 +341,7 @@ void KUniqueApplication::newInstanceNoFork()
   }
   
   newInstance();
+  d->firstInstance = false;
   KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
   // What to do with the return value ?
 }
@@ -396,6 +397,7 @@ KUniqueApplication::processDelayed()
            setStartupId( asn_id );
        }
        int exitCode = newInstance();
+       d->firstInstance = false;
        KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;
@@ -413,6 +415,11 @@ KUniqueApplication::processDelayed()
 extern Time qt_x_time;
 #endif
 
+bool KUniqueApplication::restoringSession()
+{
+  return d->firstInstance && isRestored();
+}
+
 int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
@@ -429,7 +436,6 @@ int KUniqueApplication::newInstance()
 #endif
     }
   }
-  d->firstInstance = false;
   return 0; // do nothing in default implementation
 }
 
