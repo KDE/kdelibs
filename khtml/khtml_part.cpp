@@ -101,6 +101,8 @@ using namespace DOM;
 #include "rendering/render_form.h"
 #include <kwin.h>
 
+#define HINT_UTF8	106
+
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
@@ -489,7 +491,7 @@ bool KHTMLPart::openURL( const KURL &url )
       int error = mainURL.queryItem( "error" ).toInt();
       // error=0 isn't a valid error code, so 0 means it's missing from the URL
       if ( error == 0 ) error = KIO::ERR_UNKNOWN;
-      QString errorText = mainURL.queryItem( "errText" );
+      QString errorText = mainURL.queryItem( "errText", HINT_UTF8 );
       urls.pop_front();
       d->m_workingURL = KURL::join( urls );
       //kdDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
