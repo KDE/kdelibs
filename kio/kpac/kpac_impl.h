@@ -26,8 +26,11 @@
 #include <kio/kpac.h>
 
 class KURL;
-class KJScript;
 class KPACDownloader;
+
+namespace KJS {
+  class Interpreter;
+};
 
 class KPACImpl : public KPAC
 {
@@ -40,7 +43,7 @@ public:
     virtual void badProxy(const QString &proxy);
 
 private:
-    KJScript *m_kjs;
+    KJS::Interpreter *m_interpreter;
     bool m_configRead;
     bool m_inDiscovery;
     KPACDownloader *m_downloader;

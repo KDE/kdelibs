@@ -23,20 +23,13 @@
 #ifndef _KPROXYBINDINGS_H_
 #define _KPROXYBINDINGS_H_
 
-#include <kjs/function.h>
+#include <kjs/object.h>
 
 struct tm;
 
 namespace KJS
 {
-    class KProxyBindings : public HostImp
-    {
-    public:
-        virtual bool hasProperty(const UString &, bool) const;
-        virtual KJSO get(const UString &) const;
-    };
-
-    class KProxyFunc : public InternalFunctionImp
+    class KProxyFunc : public ObjectImp
     {
     public:
         enum { IsPlainHostName, DNSDomainIs, LocalHostOrDomainIs,
@@ -45,7 +38,14 @@ namespace KJS
                ShExpMatch,
                WeekdayRange, DateRange, TimeRange };
         KProxyFunc(int id);
-        virtual Completion execute(const List &);
+        virtual bool implementsCall() const;
+        virtual Value call(ExecState *exec, Object &thisObj,
+                           const List &args);
+        /**
+         * Initializes the global object with all the necessary
+         * KProxyFunc instances
+         */
+        static void init(ExecState *exec, Object &global);
     protected:
         /**
          *  Helper for all DNS operations
@@ -56,7 +56,7 @@ namespace KJS
          * returns the current time in GMT or local time depending
          * on whether the last argument in args is "GMT"
          **/
-        const struct tm *getTime(const List &args) const;
+        const struct tm *getTime(ExecState *exec, const List &args) const;
         /**
          * Helper for weekday/month name calculations
          * returns the index of the element in list

@@ -28,9 +28,9 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
-#include <kjs/kjs.h>
 #include <kjs/object.h>
 #include <kjs/types.h>
+#include <kjs/interpreter.h>
 
 #include "kproxybindings.h"
 #include "kpac_impl.h"
@@ -40,7 +40,7 @@
 using namespace KJS;
 
 KPACImpl::KPACImpl()
-    : m_kjs(0),
+    : m_interpreter(0),
       m_configRead(false),
       m_inDiscovery(false),
       m_downloader(0)
@@ -49,7 +49,7 @@ KPACImpl::KPACImpl()
 
 KPACImpl::~KPACImpl()
 {
-    delete m_kjs;
+    delete m_interpreter;
 }
 
 QString KPACImpl::proxyForURL(const KURL &url)
@@ -67,16 +67,17 @@ QString KPACImpl::proxyForURL(const KURL &url)
     }
 
     QString code = QString("return FindProxyForURL('%1', '%2');").arg(url.url()).arg(url.host());
-    if (!m_kjs->evaluate(code.local8Bit()))
+    UString ucode = code.local8Bit().data();
+    Completion comp = m_interpreter->evaluate(ucode);
+    if (comp.complType() == Throw)
     {
         kdDebug(7025) << "KPACImpl::proxyForURL(): JS evaluation error, not using a proxy" << endl;
         return QString::null;
     }
-
-    KJS::Imp *retval = m_kjs->returnValue();
-    if (retval)
+    else if (comp.complType() == ReturnValue)
     {
-        QStringList proxies = QStringList::split(';', retval->toString().value().qstring());
+        QString val = comp.value().toString(m_interpreter->globalExec()).value().qstring();
+        QStringList proxies = QStringList::split(';', val);
         if (!proxies.count())
         {
             kdDebug(7025) << "KPACImpl::proxyForULR(): JS returned an empty string, not using a proxy" << endl;
@@ -127,7 +128,8 @@ bool KPACImpl::init(const KURL &url)
     kdDebug(7025) << "KPACImpl::init()" << endl;
     if (m_configRead)
     {
-        m_kjs->clear();
+        delete m_interpreter;
+        m_interpreter = 0;
         m_configRead = false;
     }
 
@@ -137,15 +139,20 @@ bool KPACImpl::init(const KURL &url)
 
     if (m_downloader->download(url))
     {
-        if (!m_kjs)
+        if (!m_interpreter)
         {
-            m_kjs = new KJScript();
-            m_kjs->globalObject()->setPrototype(new KProxyBindings);
+            m_interpreter = new Interpreter();
+            Object global(m_interpreter->globalObject());
+            KProxyFunc::init(m_interpreter->globalExec(),global);
         }
-        if (!(m_configRead = m_kjs->evaluate(m_downloader->data())))
+        UString code = m_downloader->data().data();
+        Completion comp = m_interpreter->evaluate(code);
+        m_configRead = (comp.complType() != Throw);
+        if (!m_configRead)
         {
             kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
-            m_kjs->clear();
+            delete m_interpreter;
+            m_interpreter = 0;
         }
     }
     else
