@@ -364,11 +364,11 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 void KLineEdit::dropEvent(QDropEvent *e)
 {
     KURL::List urlList;
-    if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
+    if( d->handleURLDrops && KURLDrag::decode( e, urlList ) )
     {
         QString dropText;
         KURL::List::ConstIterator it;
-        for( it = urlList.begin() ; it != urlList.end() ; ++it)
+        for( it = urlList.begin() ; it != urlList.end() ; ++it )
         {
             if(!dropText.isEmpty())
                 dropText+=' ';
@@ -376,7 +376,7 @@ void KLineEdit::dropEvent(QDropEvent *e)
             dropText += (*it).prettyURL();
         }
 
-        if(!text().isEmpty())
+        if( !text().isEmpty() )
             dropText=' '+dropText;
 
         end(false);
@@ -393,16 +393,18 @@ void KLineEdit::dropEvent(QDropEvent *e)
 
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
-    if ( o == this )
+    if( o == this )
     {
         KCursor::autoHideEventFilter( this, ev );
-        QKeyEvent *e = dynamic_cast<QKeyEvent *>( ev );
-        if ( e )
+        if( ev && (ev->type() == QEvent::KeyPress ||
+                    ev->type() == QEvent::KeyRelease) )
         {
-            if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+            if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-                emit returnPressed( displayText() );
-                if ( d->grabReturnKeyEvents )
+                if( ev->type() == QEvent::KeyPress )
+                    emit returnPressed( displayText() );
+                if( d->grabReturnKeyEvents )
                 {
                     e->accept();
                     return true;
