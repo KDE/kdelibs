@@ -106,7 +106,7 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
-	-rm -rf debian/build-tmp debian/alsa-tmp
+	-rm -rf debian/build-tmp debian/alsa-tmp debian/kdelibs4
 	-install -d debian/build-tmp
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
@@ -155,7 +155,7 @@ binary-arch:  build install
 	dh_strip -a
 	dh_perl -a
 	dh_link -a
-	dh_compress -a -X.docbook -X.css -X-license -X.dcl
+	dh_compress -a -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -a
 	dh_makeshlibs -V
 	dh_installdeb -a
