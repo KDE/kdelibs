@@ -410,8 +410,8 @@ int KAction::plug( QWidget *w, int index )
     KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
     if (mw)
       plugAccel( mw->accel() );
-    else
-      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
+//    else
+//      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
   }
 
   if ( w->inherits("QPopupMenu") )
