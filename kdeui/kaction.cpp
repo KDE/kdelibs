@@ -97,7 +97,7 @@ public:
   KActionPrivate() : KGuiItem()
   {
     m_kaccel    = 0;
-    m_pAccelAction   = 0;
+    //m_pAccelAction   = 0;
     m_accel     = 0;
   }
   ~KActionPrivate()
