@@ -46,6 +46,8 @@
 #define MYASSERT(x) /* nope */
 #endif
 
+static void kglobal_init();
+
 KStandardDirs *KGlobal::dirs()
 {
     MYASSERT(_instance);
@@ -70,7 +72,6 @@ KIconLoader *KGlobal::iconLoader()
 KInstance *KGlobal::instance()
 {
     MYASSERT(_instance);
-
     return _instance;
 }
 
@@ -79,6 +80,7 @@ KLocale	*KGlobal::locale()
     if( _locale == 0 ) {
 	if (!_instance)
 	   return 0;
+        kglobal_init();
 
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
@@ -91,36 +93,13 @@ KCharsets *KGlobal::charsets()
 {
     if( _charsets == 0 ) {
         _charsets =new KCharsets();
+        kglobal_init();
     }
 
     return _charsets;
 }
 
-/*
-void KGlobal::init()
-{
-    if (_instance)
-        return;
 
-    debug("using unknown");
-    _instance = new KInstance("unknown");
-    qAddPostRoutine( freeAll );
-}
-
-void KGlobal::freeAll()
-{	
-    delete _locale;
-    _locale = 0;
-    delete _charsets;
-    _charsets = 0;
-    delete _generalFont;
-    _generalFont = 0;
-    delete _fixedFont;
-    _fixedFont = 0;
-    delete _instance;
-    _instance = 0;
-}
-*/
 
 /**
  * Create a static QString
@@ -130,8 +109,8 @@ void KGlobal::freeAll()
  */
 const QString &
 KGlobal::staticQString(const char *str)
-{ 
-   return staticQString(QString::fromLatin1(str)); 
+{
+   return staticQString(QString::fromLatin1(str));
 }
 
 class KStringDict : public QDict<QString>
@@ -149,8 +128,10 @@ public:
 const QString &
 KGlobal::staticQString(const QString &str)
 {
-   if (!_stringDict)
+    if (!_stringDict) {
       _stringDict = new KStringDict;
+      kglobal_init();
+    }
    QString *result = _stringDict->find(str);
    if (!result)
    {
@@ -168,3 +149,25 @@ KInstance       *KGlobal::_instance     = 0;
 KInstance       *KGlobal::_activeInstance = 0;
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
+
+static void kglobal_freeAll()
+{	
+    delete KGlobal::_locale;
+    KGlobal::_locale = 0;
+    delete KGlobal::_charsets;
+    KGlobal::_charsets = 0;
+    delete KGlobal::_stringDict;
+    KGlobal::_stringDict = 0;
+}
+
+static bool addedFreeAll = false;
+
+static void kglobal_init()
+{
+    if (addedFreeAll)
+        return;
+
+    addedFreeAll = true;
+
+    qAddPostRoutine( kglobal_freeAll );
+}
