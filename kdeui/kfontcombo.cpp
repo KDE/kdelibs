@@ -91,8 +91,9 @@ KFontListItem::~KFontListItem()
 
 int KFontListItem::width(const QListBox *lb) const
 {
-    QFontMetrics fm(m_font ? *m_font : lb->fontMetrics());
-    return fm.width(text()) + 6;
+    if (m_font)
+       return QFontMetrics(*m_font).width(text()) + 6;
+    return lb->fontMetrics().width(text()) + 6;
 }
 
 int KFontListItem::height(const QListBox *lb) const
