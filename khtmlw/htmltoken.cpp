@@ -359,9 +359,8 @@ void HTMLTokenizer::write( const char *str )
 	        {
 	            int len;
 		    charEntity = false;
-		    // check trailing char (only ";" is good HTML, but
-		    // accept ' ', '&' and EOL too...) (David)
-                    if (strchr("; &\r\n", searchBuffer[searchCount+1])) {
+		    // check trailing char to be ";", but only if in a tag (David)
+                    if ((searchBuffer[searchCount+1] == ';') || (!tag)) {
 	              searchBuffer[ searchCount+1] = '\0';
 	              res = charsets->convertTag(searchBuffer+1, len).copy();
 	              if (len <= 0)
