@@ -71,7 +71,7 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y,
 {
     bool inside = HTMLElementImpl::mouseEvent( _x, _y, _tx, _ty, ev);
 
-    if ( inside && ev->url==0 && (!(m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
+    if ( inside && ev->url==0 && (!(m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
     {
 	//kdDebug() << "HTMLAnchorElementImpl::mouseEvent" << _tx << "/" << _ty <<endl;
 	// set the url

@@ -233,7 +233,7 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
     setStyle(document->styleSelector()->styleForElement(this));
-    //   kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
+//    kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
         // get delay and url
@@ -242,12 +242,12 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         if (pos == -1) // There can be no url (David)
         {
             int delay = str.stripWhiteSpace().toInt();
-//             kdDebug( 6030 ) << "delay = " << delay << endl;
-//             kdDebug( 6030 ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
+//              kdDebug( ) << "delay = " << delay << endl;
+//              kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
             v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
             int delay = str.left(pos).stripWhiteSpace().toInt();
-//            kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
+//            kdDebug( ) << "delay = " << delay << ", separator at " << pos << endl;
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             if(pos < (int)str.length()) str = str.mid(pos);
@@ -255,7 +255,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             {
                 str = str.mid(4).simplifyWhiteSpace();
 		str = parseURL( DOMString(str) ).string();
-                kdDebug( 6030 ) << "====> got redirect to " << str << endl;
+//                kdDebug( ) << "====> got redirect to " << str << endl;
                 v->part()->scheduleRedirection(delay, str);
             }
         }

@@ -70,9 +70,6 @@ void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
     KHTMLView *view = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->view();
     if(!view) return;
 
-    if (m_render->style() && m_render->style()->visiblity() == HIDDEN)
-        return;
-
     int id = 0;
     bool click = false;
 
@@ -177,7 +174,7 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_TABINDEX:
 	indexstring=getAttribute(ATTR_TABINDEX);
-        if (indexstring.length()) 
+        if (indexstring.length())
 	    setTabIndex(indexstring.string().toInt());
 	break;
 // i18n attributes
@@ -301,7 +298,7 @@ DOMString HTMLElementImpl::innerHTML() const
 DOMString HTMLElementImpl::innerText() const
 {
     DOMString text;
-    
+
     NodeImpl *n = firstChild();
     // find the next text/image after the anchor, to get a position
     while(n) {
@@ -339,7 +336,7 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
 	case ID_COLGROUP:
 	case ID_FRAMESET:
 	case ID_HEAD:
-	case ID_HTML: 
+	case ID_HTML:
 	case ID_STYLE:
 	case ID_TABLE:
 	case ID_TBODY:
@@ -353,14 +350,14 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
     }
     if ( !ownerDocument()->isHTMLDocument() )
 	return false;
-    
+
     DocumentFragmentImpl *fragment = new DocumentFragmentImpl( ownerDocument() );
     HTMLTokenizer *tok = new HTMLTokenizer( static_cast<HTMLDocumentImpl *>(ownerDocument()), fragment );
     tok->begin();
     tok->write( html.string() );
     tok->end();
     delete tok;
-    
+
     removeChildren();
     int ec = 0;
     appendChild( fragment, ec );
@@ -382,7 +379,7 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
 	case ID_COLGROUP:
 	case ID_FRAMESET:
 	case ID_HEAD:
-	case ID_HTML: 
+	case ID_HTML:
 	case ID_TABLE:
 	case ID_TBODY:
 	case ID_TFOOT:
@@ -392,9 +389,9 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
 	default:
 	    break;
     }
-    
+
     removeChildren();
-    
+
     TextImpl *t = new TextImpl( ownerDocument(), text );
     int ec = 0;
     appendChild( t, ec );
