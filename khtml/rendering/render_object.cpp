@@ -832,7 +832,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
     bool inside = (style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
-                  (_x >= tx) && (_x < tx + width()))) || isBody();
+                  (_x >= tx) && (_x < tx + width()))) || isBody() || isHtml();
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
