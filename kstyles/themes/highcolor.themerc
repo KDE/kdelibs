@@ -1,6 +1,7 @@
 [Misc]
 Name=HighColor Default
 Name[af]=hoë-kleur verstek
+Name[ara]=مظهر عالي الألوان
 Name[az]=Əsas Yüksək Rəngli
 Name[bg]=HiColor по подразбиране
 Name[br]=LivioÃ¹ uhel dre ziouer
@@ -45,6 +46,7 @@ Name[xxx]=xx
 Name[zh_CN.GB2312]=默认的高色彩
 Comment=Highcolor version of the default style
 Comment[af]=hoë-kleur weergawe van die verstek styl
+Comment[ara]=النسخة عالية الألوان من المظهر الإفتراضي
 Comment[az]=Əsas tərzin yüksək rəngli buraxılışı
 Comment[bg]=Стил по подразбиране с много цветове
 Comment[br]=Stumm livioÃ¹ uhel ar c'hiz dre ziouer
@@ -56,7 +58,6 @@ Comment[de]=64000-Farben-Version des Standardstils
 Comment[eo]=Multkolora varianto de la apriora stilo
 Comment[es]=Versión de alta profundidad del estilo predeterminado
 Comment[et]=Vaikestiili paljuvärviline versioon
-Comment[eu]=Aurremugatutako estiloaren kolore askotako bertsioa
 Comment[fi]=Monivärinen versio oletustyylistä
 Comment[fr]=Style par défaut, version très colorée
 Comment[gl]=Versión para moitas cores do estilo por omisión
