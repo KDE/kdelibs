@@ -97,7 +97,7 @@ struct {
   pid_t my_pid;
   int n;
   lt_dlhandle handle;
-  lt_ptr_t sym;
+  lt_ptr sym;
   char **argv;
   int (*func)(int, char *[]);
   int (*launcher_func)(int);

@@ -1436,18 +1436,18 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             setStyle(pKStyle);
         }
         else{
-            lt_ptr_t alloc_func;
+            lt_ptr alloc_func;
             if (styleStr.find("basicstyle.la",0,false)==-1)
-                alloc_func=lt_dlsym(styleHandle,"allocate");
+                alloc_func=lt_dlsym((lt_dlhandle)styleHandle,"allocate");
             else
-                alloc_func= lt_dlsym(styleHandle,"allocateCustomTheme");
+                alloc_func= lt_dlsym((lt_dlhandle)styleHandle,"allocateCustomTheme");
 
             if(!alloc_func){
 	        kdWarning() << "Unable to init style plugin " << styleStr
 		                      << "(" << lt_dlerror() << ")\n";
                 pKStyle = new KDEStyle;
                 setStyle(pKStyle);
-                lt_dlclose(styleHandle);
+                lt_dlclose((lt_dlhandle)styleHandle);
                 styleHandle = 0;
             }
             else{
@@ -1470,7 +1470,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                     kdWarning() << "Style plugin unable to allocate style.\n";
                     pKStyle = new KDEStyle;
                     setStyle(pKStyle);
-                    lt_dlclose(styleHandle);
+                    lt_dlclose((lt_dlhandle)styleHandle);
                     styleHandle = 0;
                 }
             }
@@ -1483,7 +1483,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     }
 
     if(oldHandle){
-        lt_dlclose((lt_dlhandle*)oldHandle);
+        lt_dlclose((lt_dlhandle)oldHandle);
     }
     if(pKStyle)
         connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
