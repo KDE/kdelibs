@@ -3518,6 +3518,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
                d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, mode_t ) ),
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, mode_t ) ) );
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
@@ -3854,17 +3856,23 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 {
   KURL popupURL;
   KURL linkKURL;
-  if ( linkUrl.isEmpty() ) // click on background
+  QString referrer;
+  if ( linkUrl.isEmpty() ) { // click on background
     popupURL = this->url();
-  else {               // click on link
+    referrer = this->pageReferrer();
+  } else {               // click on link
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;
+    referrer = this->referrer();
   }
 
   KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL,
-                                  QString::fromLatin1( "text/html" ), S_IFREG /*always a file*/ );
+  KParts::URLArgs args;
+  args.serviceType = QString::fromLatin1( "text/html" );
+  args.metaData()["referrer"] = referrer;
+
+  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, S_IFREG /*always a file*/);
 
   delete client;
 

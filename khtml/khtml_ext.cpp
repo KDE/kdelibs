@@ -427,6 +427,7 @@ void KHTMLPopupGUIClient::slotReloadFrame()
 {
   KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
   args.reload = true;
+  args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   // reload document
   d->m_khtml->closeURL();
   d->m_khtml->browserExtension()->setURLArgs( args );
