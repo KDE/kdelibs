@@ -37,7 +37,7 @@
 #include <kdialog.h>
 #include <kdialogbase.h>
 #include <kdirlister.h>
-#include <klineedit.h>
+#include <klineeditdlg.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpopupmenu.h>
@@ -318,45 +318,13 @@ void KDirOperator::slotToggleIgnoreCase()
 
 void KDirOperator::mkdir()
 {
-    // Modal widget asking the user the name of a new directory
-    //
-    KDialogBase *lMakeDir;
-    QLabel *label;
-    KLineEdit *ed;
-    QVBox *vbox;
-
-    // Create widgets, and display using geometry management
-    //
-    lMakeDir = new KDialogBase( viewWidget(),
-                                "MakeDir Dialog", true, i18n("New Directory"),
-                                KDialogBase::Ok | KDialogBase::Cancel );
-    vbox = new QVBox( lMakeDir );
-    vbox->setSpacing( KDialog::spacingHint() );
-    lMakeDir->setMainWidget( vbox );
-    label = new QLabel( vbox );
-    label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(i18n("Create new directory in: ") +
-                   QString::fromLatin1( "\n" ) + /* don't break i18n now*/
-                   url().prettyURL() );
-    ed= new KLineEdit( vbox );
-    ed->setText( i18n("New Directory") );
-    ed->selectAll();
-    connect(ed, SIGNAL(returnPressed()), lMakeDir, SLOT(accept()) );
-
-    connect( lMakeDir->actionButton( KDialogBase::Ok ), SIGNAL(clicked()),
-             lMakeDir, SLOT(accept()) );
-    connect( lMakeDir->actionButton( KDialogBase::Cancel ), SIGNAL(clicked()),
-             lMakeDir, SLOT(reject()) );
-
-
-    // If the users presses enter (not escape) then create the dir
-    // and insert it into the ListBox
-    lMakeDir->setMinimumSize( 300, 120); // default size
-    ed->grabKeyboard();
-    if ( lMakeDir->exec() == QDialog::Accepted && !ed->text().isEmpty() )
-        mkdir( ed->text(), true );
-
-    delete lMakeDir;
+    KLineEditDlg dlg(i18n("Create new directory in:") +
+                     QString::fromLatin1( "\n" ) + /* don't break i18n now*/
+                     url().prettyURL(), i18n("New Directory"), this);
+    dlg.setCaption(i18n("New Directory"));
+    if (dlg.exec()) {
+      mkdir( dlg.text(), true );
+    }
 }
 
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
