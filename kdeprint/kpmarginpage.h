@@ -17,37 +17,30 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef MARGINWIDGET_H
-#define MARGINWIDGET_H
+#ifndef KPMARGINPAGE_H
+#define KPMARGINPAGE_H
 
-#include <knuminput.h>
+#include "kprintdialogpage.h"
 
-class MarginWidget : public KDoubleNumInput
+class DrMain;
+class MarginWidget;
+class KPrinter;
+
+class KPMarginPage : public KPrintDialogPage
 {
-	Q_OBJECT
 public:
-	enum Mode { Pixels = 0, IN, CM };
-	MarginWidget(KNumInput *below, double value = 18.0, QWidget *parent = 0, const char *name = 0);
+	KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent = 0, const char *name = 0);
+	~KPMarginPage();
 
-	int margin();
-	void setMargin(int);
-
-public slots:
-	void setMode(int);
-
-signals:
-	void marginChanged(int);
-
-protected slots:
-	void slotValueChanged(double);
+	void setOptions(const QMap<QString,QString>& opts);
+	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
 protected:
-	int toPixel(double value, int mode);
-	double toValue(int pix, int mode);
+	void initPageSize(const QString&, bool);
 
 private:
-	int		m_mode;
-	double	m_dpi;
+	MarginWidget	*m_margin;
+	KPrinter	*m_printer;
 };
 
 #endif

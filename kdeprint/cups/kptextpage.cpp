@@ -19,25 +19,25 @@
 
 #include "kptextpage.h"
 #include "marginwidget.h"
-#include "marginpreview.h"
 #include "driver.h"
+#include "kprinter.h"
 
 #include <qbuttongroup.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qcombobox.h>
 #include <qradiobutton.h>
-#include <qcheckbox.h>
 #include <knuminput.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kseparator.h>
+#include <kdebug.h>
 
 KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 : KPrintDialogPage(0, driver, parent, name)
 {
 	setTitle(i18n("Text"));
+	m_block = false;
 
 	QGroupBox	*formatbox = new QGroupBox(0, Qt::Vertical, i18n("Text Format"), this);
 	QGroupBox	*prettybox = new QGroupBox(0, Qt::Vertical, i18n("Syntax Highlighting"), this);
@@ -67,42 +67,8 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	connect(m_prettyprint, SIGNAL(clicked(int)), SLOT(slotPrettyChanged(int)));
 	slotPrettyChanged(0);
 
-	m_custom = new QCheckBox(i18n("&Use custom margins"), marginbox);
-	m_top = new MarginWidget(0, 36.0, marginbox);
-	m_bottom = new MarginWidget(m_top, 36.0, marginbox);
-	m_left = new MarginWidget(m_bottom, 18.0, marginbox);
-	m_right = new MarginWidget(m_left, 18.0, marginbox);
-	m_top->setLabel(i18n("&Top:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_bottom->setLabel(i18n("&Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_units = new QComboBox(marginbox);
-	m_units->insertItem(i18n("Pixels"));
-	m_units->insertItem(i18n("Inches (in)"));
-	m_units->insertItem(i18n("Centimeters (cm)"));
-	m_units->setCurrentItem(0);
-	connect(m_units, SIGNAL(activated(int)), m_top, SLOT(setMode(int)));
-	connect(m_units, SIGNAL(activated(int)), m_bottom, SLOT(setMode(int)));
-	connect(m_units, SIGNAL(activated(int)), m_left, SLOT(setMode(int)));
-	connect(m_units, SIGNAL(activated(int)), m_right, SLOT(setMode(int)));
-	m_preview = new MarginPreview(marginbox);
-	m_preview->setPageSize(595, 842);
-	connect(m_top, SIGNAL(marginChanged(int)), SLOT(slotMarginChanged()));
-	connect(m_bottom, SIGNAL(marginChanged(int)), SLOT(slotMarginChanged()));
-	connect(m_left, SIGNAL(marginChanged(int)), SLOT(slotMarginChanged()));
-	connect(m_right, SIGNAL(marginChanged(int)), SLOT(slotMarginChanged()));
-	slotMarginChanged();
-	connect(m_custom, SIGNAL(toggled(bool)), m_top, SLOT(setEnabled(bool)));
-	connect(m_custom, SIGNAL(toggled(bool)), m_bottom, SLOT(setEnabled(bool)));
-	connect(m_custom, SIGNAL(toggled(bool)), m_left, SLOT(setEnabled(bool)));
-	connect(m_custom, SIGNAL(toggled(bool)), m_right, SLOT(setEnabled(bool)));
-	connect(m_custom, SIGNAL(toggled(bool)), m_units, SLOT(setEnabled(bool)));
-	connect(m_custom, SIGNAL(toggled(bool)), SLOT(slotCustomMarginsToggled(bool)));
-	m_top->setEnabled(false);
-	m_bottom->setEnabled(false);
-	m_left->setEnabled(false);
-	m_right->setEnabled(false);
-	m_units->setEnabled(false);
+	m_margin = new MarginWidget(marginbox);
+	m_margin->setPageSize(595, 842);
 
 	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
 	l0->addWidget(formatbox, 0, 0);
@@ -117,15 +83,8 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	l2->addWidget(off, 0, 0);
 	l2->addWidget(on, 1, 0);
 	l2->addMultiCellWidget(m_prettypix, 0, 1, 1, 1);
-	QGridLayout	*l3 = new QGridLayout(marginbox->layout(), 7, 2, 10);
-	l3->addWidget(m_custom, 0, 0);
-	l3->addWidget(m_top, 1, 0);
-	l3->addWidget(m_bottom, 2, 0);
-	l3->addWidget(m_left, 3, 0);
-	l3->addWidget(m_right, 4, 0);
-	l3->addRowSpacing(5, 10);
-	l3->addWidget(m_units, 6, 0);
-	l3->addMultiCellWidget(m_preview, 0, 6, 1, 1);
+	QVBoxLayout	*l3 = new QVBoxLayout(marginbox->layout(), 10);
+	l3->addWidget(m_margin);
 }
 
 KPTextPage::~KPTextPage()
@@ -150,31 +109,32 @@ void KPTextPage::setOptions(const QMap<QString,QString>& opts)
 
 	// get default margins
 	m_currentps = opts["PageSize"];
-	resetPageSize();
+	QString	orient = opts["orientation-requested"];
+	bool	landscape = (orient == "4" || orient == "5");
+	initPageSize(landscape);
 
 	bool	marginset(false);
-	if (!(value=opts["page-top"]).isEmpty() && value.toInt() != m_top->margin())
+	if (!(value=opts["page-top"]).isEmpty() && value.toInt() != m_margin->top())
 	{
 		marginset = true;
-		m_top->setMargin(value.toInt());
+		m_margin->setTop(value.toInt());
 	}
-	if (!(value=opts["page-bottom"]).isEmpty() && value.toInt() != m_bottom->margin())
+	if (!(value=opts["page-bottom"]).isEmpty() && value.toInt() != m_margin->bottom())
 	{
 		marginset = true;
-		m_bottom->setMargin(value.toInt());
+		m_margin->setBottom(value.toInt());
 	}
-	if (!(value=opts["page-left"]).isEmpty() && value.toInt() != m_left->margin())
+	if (!(value=opts["page-left"]).isEmpty() && value.toInt() != m_margin->left())
 	{
 		marginset = true;
-		m_left->setMargin(value.toInt());
+		m_margin->setLeft(value.toInt());
 	}
-	if (!(value=opts["page-right"]).isEmpty() && value.toInt() != m_right->margin())
+	if (!(value=opts["page-right"]).isEmpty() && value.toInt() != m_margin->right())
 	{
 		marginset = true;
-		m_right->setMargin(value.toInt());
+		m_margin->setRight(value.toInt());
 	}
-	m_custom->setChecked(marginset);
-	slotMarginChanged();
+	m_margin->setCustomEnabled(marginset);
 }
 
 void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
@@ -186,12 +146,13 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	if (incldef || m_columns->value() != 1)
 		opts["columns"] = QString::number(m_columns->value());
 
-	if (m_custom->isChecked() || incldef)
+	//if (m_margin->isCustomEnabled() || incldef)
+	if (m_margin->isCustomEnabled())
 	{
-		opts["page-top"] = QString::number(m_top->margin());
-		opts["page-bottom"] = QString::number(m_bottom->margin());
-		opts["page-left"] = QString::number(m_left->margin());
-		opts["page-right"] = QString::number(m_right->margin());
+		opts["page-top"] = QString::number(m_margin->top());
+		opts["page-bottom"] = QString::number(m_margin->bottom());
+		opts["page-left"] = QString::number(m_margin->left());
+		opts["page-right"] = QString::number(m_margin->right());
 	}
 	else
 	{
@@ -209,12 +170,6 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts.remove("prettyprint");
 }
 
-void KPTextPage::slotMarginChanged()
-{
-	int	t(m_top->margin()), b(m_bottom->margin()), l(m_left->margin()), r(m_right->margin());
-	m_preview->setMargins(t, b, l, r);
-}
-
 void KPTextPage::slotPrettyChanged(int ID)
 {
 	QString	iconstr = (ID == 0 ? "kdeprint_nup1" : "kdeprint_prettyprint");
@@ -226,8 +181,9 @@ void KPTextPage::slotColumnsChanged(int c)
 	// TO BE IMPLEMENTED
 }
 
-void KPTextPage::resetPageSize()
+void KPTextPage::initPageSize(bool landscape)
 {
+	QSize	sz(-1, -1), mg(18, 36);
 	if (driver())
 	{
 		if (m_currentps.isEmpty())
@@ -241,28 +197,15 @@ void KPTextPage::resetPageSize()
 			DrPageSize	*ps = driver()->findPageSize(m_currentps);
 			if (ps)
 			{
-				QSize	sz = ps->pageSize();
-				m_preview->setNoPreview(false);
-				m_preview->setPageSize(sz.width(), sz.height());
-				sz = ps->margins();
-				m_top->setMargin(sz.height());
-				m_bottom->setMargin(sz.height());
-				m_left->setMargin(sz.width());
-				m_right->setMargin(sz.width());
-				slotMarginChanged();
+				mg = ps->margins();
+				sz = ps->pageSize();
 			}
-			else
-				m_preview->setNoPreview(true);
 		}
 	}
-	else
-		m_preview->setNoPreview(true);
-}
-
-void KPTextPage::slotCustomMarginsToggled(bool b)
-{
-	if (!b)
-		resetPageSize();
+	m_margin->setPageSize(sz.width(), sz.height());
+	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);
+	m_margin->setDefaultMargins(mg.height(), mg.height(), mg.width(), mg.width());
+	m_margin->setCustomEnabled(false);
 }
 
 #include "kptextpage.moc"

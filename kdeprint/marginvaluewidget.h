@@ -17,31 +17,40 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef	MARGINPREVIEW_H
-#define	MARGINPREVIEW_H
+#ifndef MARGINVALUEWIDGET_H
+#define MARGINVALUEWIDGET_H
 
-#include <qwidget.h>
+#include <knuminput.h>
 
-void draw3DPage(QPainter *p, QRect r);
-
-class MarginPreview : public QWidget
+class MarginValueWidget : public KDoubleNumInput
 {
+	Q_OBJECT
 public:
-	MarginPreview(QWidget *parent = 0, const char *name = 0);
-	~MarginPreview();
-	// note : unit -> points
-	void setPageSize(int w, int h);
-	void setMargins(int t, int b, int l, int r);
-	void setNoPreview(bool on);
+	enum Mode { Pixels = 0, IN, CM };
+	MarginValueWidget(KNumInput *below, double value = 18.0, QWidget *parent = 0, const char *name = 0);
+
+	int margin();
+	int resolution() const;
+	void setResolution(int dpi);
+
+public slots:
+	void setMode(int);
+	void setMargin(int);
+
+signals:
+	void marginChanged(int);
+
+protected slots:
+	void slotValueChanged(double);
+
 protected:
-	void paintEvent(QPaintEvent *);
-	void resizeEvent(QResizeEvent *);
+	int toPixel(double value, int mode);
+	double toValue(int pix, int mode);
+
 private:
-	int	width_, height_;
-	int	top_, bottom_, left_, right_;
-	QRect	box_;
-	float	zoom_;
-	bool nopreview_;
+	int		m_mode;
+	double	m_dpi;
+	bool	m_block;
 };
 
 #endif

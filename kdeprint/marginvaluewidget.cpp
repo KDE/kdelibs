@@ -17,14 +17,15 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "marginwidget.h"
+#include "marginvaluewidget.h"
 
 #include <math.h>
 
-MarginWidget::MarginWidget(KNumInput *below, double value, QWidget *parent, const char *name)
+MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent, const char *name)
 : KDoubleNumInput(below, value, parent, name)
 {
 	m_mode = Pixels;
+	m_block = false;
 	setPrecision(0);
 	m_dpi = 72.0;
 	setMode(m_mode);
@@ -32,18 +33,18 @@ MarginWidget::MarginWidget(KNumInput *below, double value, QWidget *parent, cons
 	connect(this, SIGNAL(valueChanged(double)), SLOT(slotValueChanged(double)));
 }
 
-int MarginWidget::margin()
+int MarginValueWidget::margin()
 {
 	return toPixel(value(), m_mode);
 }
 
-void MarginWidget::setMargin(int m)
+void MarginValueWidget::setMargin(int m)
 {
 	double	v = toValue(m, m_mode);
 	setValue(v);
 }
 
-int MarginWidget::toPixel(double value, int mode)
+int MarginValueWidget::toPixel(double value, int mode)
 {
 	switch (mode)
 	{
@@ -54,7 +55,7 @@ int MarginWidget::toPixel(double value, int mode)
 	}
 }
 
-double MarginWidget::toValue(int pix, int mode)
+double MarginValueWidget::toValue(int pix, int mode)
 {
 	switch (mode)
 	{
@@ -68,15 +69,17 @@ double MarginWidget::toValue(int pix, int mode)
 	}
 }
 
-void MarginWidget::slotValueChanged(double value)
+void MarginValueWidget::slotValueChanged(double value)
 {
-	emit marginChanged(margin());
+	if (!m_block)
+		emit marginChanged(margin());
 }
 
-void MarginWidget::setMode(int m)
+void MarginValueWidget::setMode(int m)
 {
 	if (m != m_mode)
 	{
+		m_block = true;
 		int	p = margin();
 		m_mode = m;
 		double v = toValue(p, m);
@@ -91,7 +94,22 @@ void MarginWidget::setMode(int m)
 			setRange(0.0, 999.0, 0.01, false);
 		}
 		setValue(v);
+		m_block = false;
 	}
 }
 
-#include "marginwidget.moc"
+void MarginValueWidget::setResolution(int dpi)
+{
+	int	value = margin();
+	m_dpi = dpi;
+	m_block = true;
+	setMargin(value);
+	m_block = false;
+}
+
+int MarginValueWidget::resolution() const
+{
+	return (int)(m_dpi+0.5);
+}
+
+#include "marginvaluewidget.moc"

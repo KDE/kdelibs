@@ -20,23 +20,26 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kmthreadjob.cpp kpipeprocess.cpp kpfilterpage.cpp \
 			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp kfilelist.cpp \
 			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp \
-			 util.cpp printerfilter.cpp
+			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
+			 kpmarginpage.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
 libkdeprint_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
-		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
+		 kmuimanager.h kmvirtualmanager.h driveritem.h droptionview.h \
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
 		 kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
 		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h \
 		 kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
 		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h \
-		 util.h driverparse.h printerfilter.h
+		 util.h driverparse.h printerfilter.h marginpreview.h marginwidget.h \
+		 marginvaluewidget.h kpmarginpage.h
 
 include_HEADERS = kprinter.h kprintaction.h
 
-kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h
+kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h \
+		   driver.h
 kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc

@@ -29,6 +29,7 @@
 #include "kmmanager.h"
 #include "kmprinter.h"
 #include "kpdriverpage.h"
+#include "kpmarginpage.h"
 #include "kpqtpage.h"
 #include "kpfilterpage.h"
 #include "kpfileselectpage.h"
@@ -138,6 +139,16 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 			// add pages specific to print system
 			setupPrinterPropertyDialog(dlg);
 		}
+
+		// retrieve the KPrinter object
+		KPrinter	*prt(0);
+		KPrintDialog	*parentDlg = static_cast<KPrintDialog*>(dlg->parent());
+		if (parentDlg)
+			prt = parentDlg->printer();
+
+		// add margin page
+		//if (prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog)
+		//	dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
 
 		// add driver page
 		if (driver)

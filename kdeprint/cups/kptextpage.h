@@ -25,11 +25,8 @@
 class DrMain;
 class KIntNumInput;
 class QButtonGroup;
-class MarginPreview;
-class MarginWidget;
-class QComboBox;
 class QLabel;
-class QCheckBox;
+class MarginWidget;
 
 class KPTextPage : public KPrintDialogPage
 {
@@ -42,23 +39,19 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
 protected slots:
-	void slotMarginChanged();
 	void slotPrettyChanged(int);
 	void slotColumnsChanged(int);
-	void slotCustomMarginsToggled(bool);
 
 protected:
-	void resetPageSize();
+	void initPageSize(bool landscape);
 
 private:
 	KIntNumInput	*m_cpi, *m_lpi, *m_columns;
 	QButtonGroup	*m_prettyprint;
-	MarginPreview	*m_preview;
-	QCheckBox		*m_custom;
-	MarginWidget	*m_top, *m_bottom, *m_left, *m_right;
-	QComboBox		*m_units;
+	MarginWidget	*m_margin;
 	QLabel			*m_prettypix;
 	QString		m_currentps;
+	bool		m_block;
 };
 
 #endif
