@@ -1705,25 +1705,8 @@ void KListView::setFullWidth()
 
 void KListView::setFullWidth(bool fullWidth)
 {
-  if ((d->fullWidth = fullWidth))
-  {
-    connect(header(), SIGNAL(sizeChange(int, int, int)),
-      SLOT(slotHeaderChanged()));
-    // HACK: This is a signal/slot used internally by QListView
-    // it updates the H-scrollbar and interferes with what
-    // we want.
-    disconnect(SIGNAL(sizeChange(int, int, int)), header(),
-      SLOT(handleSizeChange( int, int, int )));
-  }
-  else
-  {
-    disconnect(SIGNAL(sizeChange(int, int, int)), header(),
-      SLOT(slotHeaderChanged()));
-    // HACK: Restore QListView signal/slot.
-    connect(header(), SIGNAL(sizeChange(int, int, int)),
-      SLOT(handleSizeChange( int, int, int )));
-  }
-  slotHeaderChanged();
+  d->fullWidth = fullWidth;
+  header()->setStretchEnabled(fullWidth, columns()-1);
 }
 
 bool KListView::fullWidth() const
@@ -1733,7 +1716,6 @@ bool KListView::fullWidth() const
 
 void KListView::viewportResizeEvent(QResizeEvent* e)
 {
-  slotHeaderChanged();
   QListView::viewportResizeEvent(e);
 }
 
