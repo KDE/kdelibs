@@ -10,12 +10,38 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, arts (>= ${Source-Version})
 Suggests: kdelibs3-crypto
 Conflicts: kdelibs3-nossl
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
+
+Package: arts
+Architecture: any
+Section: libs
+Replaces: kdelibs3 (<= 4:2.1-20001210-0)
+Depends: ${shlibs:Depends}
+Suggests: kdelibs3
+Description: aRts Sound system
+ aRts is a short form for "analog realtime synthesizer". The idea of the whole
+ thing is to create/process sound using small modules which do certain tasks.
+ These may be create a waveform (oscillators), play samples, filter data, add
+ signals, perform effects like delay/flanger/chorus, or output the data to
+ the soundcard.
+ .
+ aRts is the core sound system for KDE (and other systems)
+
+Package: arts-dev
+Architecture: any
+Section: devel
+Replaces: kdelibs3 (<= 4:2.1-20001210-0)
+Depends: arts (>= ${Source-Version}), libc6-dev, libaudiofile-dev
+Suggests: kdelibs3-dev
+Description: aRts Sound system (development files)
+ aRts sound system.
+ .
+ Header files needed to build apps that use the aRts sound daemon
 
 Package: kdelibs3-doc
 Architecture: all
@@ -30,7 +56,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0)
-Depends: kdelibs3 (>= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
+Depends: kdelibs3 (>= ${Source-Version}), arts-dev (>= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev

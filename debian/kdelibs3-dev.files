@@ -1,0 +1,17 @@
+usr/include/kde/*
+usr/lib/libDCOP.so
+usr/lib/libkdecore.so
+usr/lib/libkdeui.so
+usr/lib/libkdesu.so
+usr/lib/libkssl.so
+usr/lib/libkio.so
+usr/lib/libksycoca.so
+usr/lib/libkfile.so
+usr/lib/libkparts.so
+usr/lib/libkjs.so
+usr/lib/libkmid.so
+usr/lib/libktexteditor.so
+usr/lib/libkab.so
+usr/lib/libkjava.so
+usr/lib/libkhtml.so
+usr/lib/libkspell.so

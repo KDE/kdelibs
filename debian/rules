@@ -93,16 +93,14 @@ binary-arch:  build
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
 	dh_installdocs
-# libraries not starting with lib are modules
-	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
-	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
+	dh_undocumented
+	dh_movefiles
 	-rm -rf debian/tmp/usr/share/apps/kssl
 	mv debian/tmp/usr/lib/kde2/kio_https.so debian/tmp/usr/lib/kde2/kio_https-nossl.so
 	mv debian/tmp/usr/lib/kde2/kio_https.la debian/tmp/usr/lib/kde2/kio_https-nossl.la
 	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
 	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
 	dh_installchangelogs ChangeLog
-	dh_undocumented
 	dh_strip
 	for i in `find debian/ -type l -name "common"`; do \
 		rm $$i; \
@@ -113,8 +111,8 @@ binary-arch:  build
 	dh_compress 
 	dh_fixperms 
 	chmod 644 debian/tmp/etc/pam.d/kde debian/tmp/usr/share/lintian/overrides/*
-	chmod 4755 debian/tmp/usr/bin/artswrapper
-	dh_suidregister usr/bin/artswrapper
+	chmod 4755 debian/arts/usr/bin/artswrapper
+	dh_suidregister -parts usr/bin/artswrapper
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps 
@@ -122,6 +120,8 @@ binary-arch:  build
 	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
 	dh_md5sums
+	dh_builddeb -parts-dev
+	dh_builddeb -parts
 	dh_builddeb -pkdelibs3-dev
 	dh_builddeb -pkdelibs3
 

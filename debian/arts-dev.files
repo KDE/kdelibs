@@ -1,0 +1,12 @@
+usr/lib/libmcop.so
+usr/lib/libartsflow_idl.so
+usr/lib/libartsflow.so
+usr/lib/libkmedia2_idl.so
+usr/lib/libsoundserver_idl.so
+usr/lib/libartswavplayobject.so
+usr/lib/libx11globalcomm.so
+usr/lib/libartsc.so
+usr/lib/libartscbackend.so
+usr/lib/libartsdsp.so
+usr/include/kde/arts/*
+usr/include/kde/artsc/*
