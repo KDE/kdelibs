@@ -54,5 +54,6 @@ int main(int argc, char *argv[])
       exit(0);
    }
    KCookieServer server;
+   server.disableSessionManagement();
    return server.exec(); // keep running
 }
