@@ -50,10 +50,11 @@ public:
 	    id = _id;
 	    v = val.implementation();
 	    if(v) v->ref();
+	    n = 0;
 	}
 
     Attribute(int _id, DOMStringImpl *val)
-	{ id = _id, v = val; v->ref(); }
+	{ id = _id, v = val; v->ref(); n = 0; }
     Attribute( const Attribute &other)
 	{
 	    id = other.id;

@@ -33,6 +33,7 @@ using namespace khtml;
 
 Attribute::Attribute(const DOMString &name, const DOMString &val)
 {
+    n = 0;
     setName(name);
     v = val.implementation();
     v->ref();
@@ -40,6 +41,7 @@ Attribute::Attribute(const DOMString &name, const DOMString &val)
 
 Attribute::Attribute(const DOMStringImpl *name, DOMStringImpl *val)
 {
+    n = 0;
     setName(name);
     v = val;
     v->ref();
@@ -57,12 +59,13 @@ DOMString Attribute::name() const
 
 void Attribute::setName(const DOMString &name)
 {
+    if(n) n->deref();
     id = khtml::getAttrID(name.string().ascii(), name.length());
     if(!id) {
 	// no HTML attribute, we store the whole name
 	n = name.implementation();
 	n->ref();
-    }
+    } 
 }
 
 void Attribute::setName(const DOMStringImpl *name)
