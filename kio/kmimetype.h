@@ -80,7 +80,7 @@ public:
   virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
   /**
    * Use this function only if you don't have a special URL
-   * for which you search a pixmap.  This function is useful to fond
+   * for which you search a pixmap.  This function is useful to find
    * out, which icon is usually chosen for a certain mime type. Since
    * no URL is passed, it is impossible to obey icon hints in desktop
    * entries for example.
