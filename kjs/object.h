@@ -73,7 +73,8 @@ namespace KJS {
 	       ObjectClass,
 	       DateClass,
 	       RegExpClass,
-	       ErrorClass };
+	       ErrorClass,
+	       FunctionClass };
 
   /**
    * Completion types.

@@ -17,26 +17,18 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _FUNCTION_OBJECT_H_
-#define _FUNCTION_OBJECT_H_
+#include "function_object.h"
 
-#include "object.h"
-#include "function.h"
+using namespace KJS;
 
-namespace KJS {
+// ECMA 15.3.1 The Function Constructor Called as a Function
+Completion FunctionObject::execute(const List &args)
+{
+  return Completion(Normal, construct(args));
+}
 
-  class FunctionPrototype : public ObjectImp {
-  public:
-    FunctionPrototype() : /* TODO */ ObjectImp(ObjectClass) { }
-  };
-
-  class FunctionObject : public ConstructorImp {
-  public:
-    FunctionObject(const Object& proto) : ConstructorImp(proto, 1) { }
-    Completion execute(const List &);
-    Object construct(const List &);
-  };
-
-}; // namespace
-
-#endif
+// ECMA 15.3.2 The Function Constructor
+Object FunctionObject::construct(const List &)
+{
+  return Object::create(NumberClass, Boolean(true));
+}

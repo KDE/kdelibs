@@ -146,6 +146,7 @@ GlobalImp::GlobalImp()
   put("[[Error.prototype]]", errorProto);
 
   Object objectObj(new ObjectObject(objProto));
+  Object funcObj(new FunctionObject(funcProto));
   Object arrayObj(new ArrayObject(funcProto));
   Object boolObj(new BooleanObject(funcProto));
   Object stringObj(new StringObject(funcProto));
@@ -155,6 +156,7 @@ GlobalImp::GlobalImp()
   Object errObj(new ErrorObject(errorProto));
 
   Imp::put("Object", objectObj, DontEnum);
+  Imp::put("Function", funcObj, DontEnum);
   Imp::put("Array", arrayObj, DontEnum);
   Imp::put("Boolean", boolObj, DontEnum);
   Imp::put("String", stringObj, DontEnum);
@@ -164,6 +166,7 @@ GlobalImp::GlobalImp()
   Imp::put("Error", errObj, DontEnum);
 
   objProto.setConstructor(objectObj);
+  funcProto.setConstructor(funcObj);
   arrayProto.setConstructor(arrayObj);
   booleanProto.setConstructor(boolObj);
   stringProto.setConstructor(stringObj);

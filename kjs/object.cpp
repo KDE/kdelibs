@@ -463,6 +463,9 @@ Object Object::create(Class c, const KJSO& val)
   case ObjectClass:
     p += "Object";
     break;
+  case FunctionClass:
+    p += "Function";
+    break;
   case ArrayClass:
     p += "Array";
     break;
