@@ -149,6 +149,7 @@ public slots:
 
 class RenderRadioButton : public RenderButton
 {
+    Q_OBJECT
 public:
     RenderRadioButton(DOM::HTMLInputElementImpl* node);
 
@@ -160,6 +161,9 @@ public:
     virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
+
+public slots:
+    virtual void slotToggled(bool);
 };
 
 // -------------------------------------------------------------------------
