@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
-LDADD = $(top_builddir)/kio/libksycoca.la
+LDADD = $(top_builddir)/kio/libkio.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
@@ -66,5 +66,5 @@ metatest_SOURCES = metatest.cpp
 #dummymeta_la_LIBADD = $(LIB_KSYCOCA)
 #dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
-services_DATA = dummymeta.desktop
-servicesdir = $(kde_servicesdir)
+#services_DATA = dummymeta.desktop
+#servicesdir = $(kde_servicesdir)
