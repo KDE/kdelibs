@@ -161,6 +161,7 @@ class BrowserExtensionPrivate;
 class BrowserExtension : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY( bool urlDropHandling READ isURLDropHandlingEnabled WRITE setURLDropHandlingEnabled )
 public:
   /**
    * Constructor
@@ -208,6 +209,9 @@ public:
    * but don't forget to call the parent method (probably first).
    */
   virtual void restoreState( QDataStream &stream );
+
+  bool isURLDropHandlingEnabled() const;
+  void setURLDropHandlingEnabled( bool enable );
 
   /**
    * Retrieve a map containing the action names as keys and corresponding

@@ -231,6 +231,7 @@ public:
 
   KURL m_delayedURL;
   KParts::URLArgs m_delayedArgs;
+  bool m_urlDropHandlingEnabled;
 };
 
 };
@@ -240,6 +241,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
 : QObject( parent, name), m_part( parent )
 {
   d = new BrowserExtensionPrivate;
+  d->m_urlDropHandlingEnabled = false;
 
   connect( m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
@@ -290,6 +292,16 @@ void BrowserExtension::restoreState( QDataStream &stream )
   setURLArgs( args );
 
   m_part->openURL( u );
+}
+
+bool BrowserExtension::isURLDropHandlingEnabled() const
+{
+    return d->m_urlDropHandlingEnabled;
+}
+
+void BrowserExtension::setURLDropHandlingEnabled( bool enable )
+{
+    d->m_urlDropHandlingEnabled = enable;
 }
 
 void BrowserExtension::slotCompleted()
