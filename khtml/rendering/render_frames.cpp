@@ -617,22 +617,10 @@ void RenderPartObject::close()
 
 void RenderPartObject::setWidget( QWidget *w )
 {
-  if(w->inherits("QScrollView") && m_obj->id() == ID_IFRAME) {
-      kdDebug(6031) << "iframe is a scrollview!" << endl;
-      QScrollView *view = static_cast<QScrollView *>(w);
-      HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
-      if(!m_frame->frameBorder)
-          view->setFrameStyle(QFrame::NoFrame);
-      view->setVScrollBarMode(m_frame->scrolling);
-      view->setHScrollBarMode(m_frame->scrolling);
-      if(view->inherits("KHTMLView")) {
-          kdDebug(6031) << "frame is a KHTMLview!" << endl;
-          KHTMLView *htmlView = static_cast<KHTMLView *>(view);
-          if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
-          if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
-        }
-  }
-  if ( w && m_width == 0 && m_height == 0 ) {
+    if(w->inherits("KHTMLView"))
+	connect( w, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+
+    if ( w && m_width == 0 && m_height == 0 ) {
       QSize hint = w->sizeHint();
       m_width = hint.width();
       m_height = hint.height();
@@ -662,4 +650,29 @@ void RenderPartObject::layout( )
   calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
           containingBlockWidth());
   RenderPart::layout();
+}
+
+
+void RenderPartObject::slotViewCleared()
+{
+  if(m_widget->inherits("QScrollView") && m_obj->id() == ID_IFRAME) {
+      kdDebug(6031) << "iframe is a scrollview!" << endl;
+      QScrollView *view = static_cast<QScrollView *>(m_widget);
+      HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
+      if(!m_frame->frameBorder)
+          view->setFrameStyle(QFrame::NoFrame);
+      view->setVScrollBarMode(m_frame->scrolling);
+      view->setHScrollBarMode(m_frame->scrolling);
+      if(view->inherits("KHTMLView")) {
+          kdDebug(6031) << "frame is a KHTMLview!" << endl;
+          KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+          if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
+          if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
+        }
+  }
+}
+
+void RenderPartObject::slotWidgetDestructed()
+{
+    RenderWidget::slotWidgetDestructed();
 }

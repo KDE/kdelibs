@@ -120,6 +120,7 @@ private:
 // I can hardly call the class RenderObject ;-)
 class RenderPartObject : public RenderPart
 {
+    Q_OBJECT
 public:
   RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
   virtual ~RenderPartObject();
@@ -137,6 +138,11 @@ public:
   virtual void layout( );
 
   DOM::HTMLElementImpl *m_obj;
+
+public slots:
+    void slotViewCleared();
+    void slotWidgetDestructed();
+
 };
 
 };

@@ -441,8 +441,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
                 document->body()->applyChanges(true,false);
                 explicitBody = true;
-                throw exception;
             }
+	    throw exception;
             break;
         case ID_STYLE:
             if(inBody)
