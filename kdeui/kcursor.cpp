@@ -309,7 +309,7 @@ void KCursorPrivate::slotHideCursor()
 
 bool KCursorPrivate::insideWidget( const QPoint &p, QWidget *w )
 {
-    return w->geometry().contains( w->mapFromGlobal( p ) );
+    return w->rect().contains( w->mapFromGlobal( p ) );
 }
 
 #include "kcursor_private.moc"
