@@ -16,7 +16,7 @@ kapplication.cpp	Waldo Bastian <bastian@kde.org>
 kaudioplayer.cpp
 kbufferedio.cpp
 kcatalogue.cpp		Hans Petter Bieker <bieker@kde.org>
-kcharsets.cpp
+kcharsets.cpp		Lars Knoll <knoll@kde.org>
 kckey.cpp
 kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>
 kcompletion.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
