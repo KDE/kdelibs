@@ -789,6 +789,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     KIconButton *iconButton = new KIconButton( d->m_frame );
     int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconButton->setFixedSize(bsize, bsize);
+    iconButton->setIconSize(48);
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
@@ -814,7 +815,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( DesktopIcon( iconStr ) );
+    iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
