@@ -22,7 +22,8 @@ INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
-	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest
+	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
+	kdebugtest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h 
 
@@ -30,6 +31,8 @@ METASOURCES = AUTO
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE)
+kdebugtest_SOURCES = kdebugtest.cpp
+kdebugtest_LDADD = $(LIB_KDECORE)
 klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
