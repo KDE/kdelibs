@@ -102,13 +102,22 @@ KInstance *KGenericFactoryBase<T>::instance()
  * The args QStringList passed to the constructor is the args string list
  * that the caller passed to KLibFactory's create method.
  *
- *
  * In addition upon instantiation this template provides a central 
  * @ref KInstance object for your component, accessible through the
  * static @ref instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
  *
- * Example of usage:
+ * The creation of the KInstance object can be customized by inheriting
+ * from this template class and re-implementing the virtual createInstance
+ * method. For example it could look like this:
+ * <pre>
+ *     KInstance *MyFactory::createInstance()
+ *     {
+ *         return new KInstance( myAboutData );
+ *     }
+ * </pre>
+ *
+ * Example of usage of the whole template:
  * <pre>
  *     class MyPlugin : public KParts::Plugin
  *     {
@@ -171,7 +180,17 @@ protected:
  * static @ref instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
  *
- * Example of usage:
+ * The creation of the KInstance object can be customized by inheriting
+ * from this template class and re-implementing the virtual createInstance
+ * method. For example it could look like this:
+ * <pre>
+ *     KInstance *MyFactory::createInstance()
+ *     {
+ *         return new KInstance( myAboutData );
+ *     }
+ * </pre>
+ *
+ * Example of usage of the whole template:
  * <pre>
  *     class MyPlugin : public KParts::Plugin
  *     {
