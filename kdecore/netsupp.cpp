@@ -223,7 +223,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 		    struct kde_addrinfo** result)
 {
   struct kde_addrinfo* res;
-  struct addrinfo* p, *last;
+  struct addrinfo* p;
   int err;
 
   // allocate memory for results
@@ -271,6 +271,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 #endif
 
   // Now we have to check whether the user could want a Unix socket
+  struct addrinfo* last = NULL;
 
   if (service == NULL || *service == '\0')
     goto out;			// can't be Unix if no service was requested
@@ -300,8 +301,6 @@ int kde_getaddrinfo(const char *name, const char *service,
 	  // there is an Unix node
 	  goto out;
       }
-  else
-    last = NULL;
 
   // So, give the user a PF_UNIX socket
   p = make_unix(NULL, service);
