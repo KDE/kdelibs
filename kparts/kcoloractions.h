@@ -44,11 +44,23 @@ private:
         
 };
 
+/**
+ *  class KColorBar
+ *
+ *  Simple toolbar with little color buttons. This Bar can be placed like a normal toolbar.
+ *
+ *  @short Toolbar with color buttons.
+ */
 class KColorBar : public QWidget
 {
     Q_OBJECT
     
 public:
+    /**
+     *  Constructor.
+     *
+     *  Initializes the color bar with a list of colors.
+     */
     KColorBar( const QValueList<QColor> &cols, QWidget *parent, const char *name );
 
 protected:
@@ -59,7 +71,13 @@ private:
     QValueList<QColor> colors;
     
 signals:
+    /**
+     *  This signal gets emitted when the left mouse button is clicked on a color button.
+     */
     void leftClicked( const QColor &c );
+    /**
+     *  This signal gets emitted when the right mouse button is clicked on a color button.
+     */
     void rightClicked( const QColor &c );
     
 };

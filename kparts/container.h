@@ -15,11 +15,29 @@ class QPointArray;
 class ContainerHandler;
 class ContainerView;
 
+/**
+ *  class ContainerPart
+ *
+ *  This class contains all data of a part and can paint it into a painter
+ *  device. It also handles children.
+ *
+ *  @short Contains the data and can paint it.
+ */
 class ContainerPart : public Part
 {
     Q_OBJECT
 public:
+
+    /**
+     *  Konstructor.
+     *
+     *  Initializes the Part.
+     */
     ContainerPart( QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  Destructor.
+     */
     ~ContainerPart();
 
     /**
@@ -27,11 +45,13 @@ public:
      * @ref #childChanged signal.
      */
     virtual void insertChild( PartChild* child );
+    
     /**
      * @return the list of all children. Do not modify the
      *         returned list.
      */
     QList<PartChild>& children();
+    
     /**
      * @return the PartChild associated with the given Part, but only if
      *         "part" is a direct child of this part.
@@ -50,6 +70,7 @@ public:
     virtual Part* hitTest( const QPoint& p, const QWMatrix& matrix );
 
 signals:
+
     /**
      * This signal is emitted, if a direct or indirect child part changes
      * and needs to be updated in all views.
@@ -61,15 +82,21 @@ signals:
     void childChanged( PartChild* );
 
 private:
+
     QList<PartChild> m_children;
 };
 
+/**
+ *  class ContainerView
+ */
 class ContainerView : public View
 {
     friend ContainerHandler;
 
     Q_OBJECT
+
 public:
+
     ContainerView( Part* part, QWidget* parent = 0, const char* name = 0 );
     ~ContainerView();
 
@@ -85,6 +112,7 @@ public:
     ViewChild* child( View* view );
 
 signals:
+
     void childSelected( PartChild* );
     void childUnselected( PartChild* );
     void childActivated( PartChild* );
@@ -94,6 +122,7 @@ signals:
     void invalidated();
 
 protected:
+
     void viewSelectEvent( ViewSelectEvent* );
     void viewActivateEvent( ViewActivateEvent* );
 
@@ -111,10 +140,12 @@ protected:
     PartChild* activeChild();
 
 protected slots:
+
     virtual void slotChildChanged( PartChild* );
     virtual void slotChildActivated( bool );
 
 private:
+
     QList<ViewChild> m_children;
 };
 

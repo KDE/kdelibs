@@ -34,10 +34,15 @@ private:
     PartChild* m_child;
 };
 
+/**
+ *  class View
+ */
 class View : public QWidget
 {
     Q_OBJECT
+
 public:
+
     View( Part* part, QWidget* parent = 0, const char* name = 0 );
     ~View();
 
@@ -70,6 +75,7 @@ public:
      * By default this function returns a pointer to the view.
      */
     virtual QWidget* canvas();
+    
     /**
      * Overload this function if the content will be displayed
      * with an offset relative to the upper left corner
@@ -78,6 +84,7 @@ public:
      * By default this function returns 0.
      */
     virtual int canvasXOffset() const;
+    
     /**
      * Overload this function if the content will be displayed
      * with an offset relative to the upper left corner
@@ -99,20 +106,26 @@ public:
     virtual bool doubleClickActivation() const;
 
 signals:
+
     void selected( bool );
     void activated( bool );
 
 protected:
+
     virtual void viewSelectEvent( ViewSelectEvent* );
     virtual void viewActivateEvent( ViewActivateEvent* );
 
 private:
+
     Part* m_part;
     QActionCollection m_collection;
     double m_scaleX;
     double m_scaleY;
 };
 
+/**
+ *  @internal
+ */
 class ViewActivateEvent : public QEvent
 {
 public:
@@ -128,6 +141,9 @@ private:
     Part* m_part;
 };
 
+/**
+ *  @internal
+ */
 class ViewSelectEvent : public QEvent
 {
 public:
