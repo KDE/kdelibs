@@ -26,6 +26,7 @@
 #include "simplesoundserver_impl.h"
 #include "artsflow.h"
 #include "flowsystem.h"
+#include "audiosubsys.h"
 #include "connect.h"
 #include <stdio.h>
 #include <iostream>
@@ -102,6 +103,28 @@ long SimpleSoundServer_impl::play(const string& filename)
 
 	activeWavs.push_back(playwav);
 	return 1;
+}
+
+float SimpleSoundServer_impl::serverBufferTime()
+{
+	float hardwareBuffer = AudioSubSystem::the()->fragmentSize()
+						 * AudioSubSystem::the()->fragmentCount();
+
+	float playSpeed = AudioSubSystem::the()->channels()
+	                * AudioSubSystem::the()->samplingRate()
+					* 2; /* TODO: check bits */
+	
+	return 1000.0 * hardwareBuffer / playSpeed;
+}
+
+float SimpleSoundServer_impl::minStreamBufferTime()
+{
+	/*
+	 * it is sane to assume that client side stream buffers must be >= server
+	 * side hardware buffers (or it can come to dropouts during hardware
+	 * buffer refill)
+	 */
+	return serverBufferTime();
 }
 
 void SimpleSoundServer_impl::attach(ByteSoundProducer bsp)

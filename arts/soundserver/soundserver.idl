@@ -41,6 +41,25 @@ interface SimpleSoundServer
 	//void stop(long ID);
 
 	/**
+	 * specifies the minimum amount of milliseconds that have to be buffered
+	 * to allow safe streaming (without interruptions) from/to external apps
+	 *
+	 * this depends on the realtime parameters the sound server itself uses
+	 * to talk to the hardware
+	 */
+	readonly attribute float minStreamBufferTime;
+
+	/**
+	 * specifies the amount of milliseconds the server itself spends with
+	 * the hardware (buffering latency) - so if you stream into the server,
+	 * you should have a yourStreamBufferTime >= minStreamBufferTime, and
+	 * the total latency is
+	 *
+	 *  totalLatency = yourStreamBufferTime + serverBufferTime
+	 */
+	readonly attribute float serverBufferTime;
+
+	/**
 	 * attaches a byte sound producer (read: a client which produces/mixes
 	 * an audio stream itself and just wants playback via the soundserver)
 	 */

@@ -40,15 +40,27 @@ class Sender :	public ByteSoundProducer_skel,
 protected:
 	FILE *pfile;
 	int pfd;
+	int packets;
 	bool waiting;
 	queue< DataPacket<mcopbyte>* > wqueue;
 public:
-	Sender(FILE *input) : pfile(input), waiting(false)
+	Sender(FILE *input,float minStreamBufferTime) : pfile(input), waiting(false)
 	{
 		pfd = fileno(pfile);
 
 		int rc = fcntl(pfd, F_SETFL, O_NONBLOCK);
 		assert(rc != -1);
+
+		/*
+		 * calculate stream buffer paramters
+		 */
+		float streamBufferTime;
+		packets = 7;
+		do {
+			packets++;
+			streamBufferTime = (float)(packets * packetCapacity * 1000)
+			                 / (float)(samplingRate() * channels() * 2);
+		} while(streamBufferTime < minStreamBufferTime);
 	}
 
 	~Sender()
@@ -66,7 +78,7 @@ public:
 		/*
 		 * start streaming
 		 */
-		outdata.setPull(16, packetCapacity);
+		outdata.setPull(packets, packetCapacity);
 	}
 
 	enum { packetCapacity = 4096 };
@@ -164,7 +176,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ByteSoundProducer sender = new Sender(stdin);
+	ByteSoundProducer sender = new Sender(stdin,server.minStreamBufferTime());
 	server.attach(sender);
 	sender.start();
 	dispatcher.run();

@@ -60,6 +60,8 @@ public:
 	void notifyTime();
 
 	// streaming audio
+	float minStreamBufferTime();
+	float serverBufferTime();
 	void attach(ByteSoundProducer bsp);
 	void detach(ByteSoundProducer bsp);
 
