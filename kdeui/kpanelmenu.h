@@ -101,19 +101,20 @@ public:
     void setInitialized(bool on);
 
     /**
-     * Reinitialize the menu: the menu is first cleared, the initial state is set
-     * to false, and finally @ref initialize() is called. Use this if you want to
-     * refill your menu.
-     */
-    void reinitialize();
-
-    /**
      * Disable the automatic clearing of the menu. Kicker uses a cache system for
      * its menus. After a specific configurable delay, the menu will be cleared.
      * Use this function if you want to disable kicker's cache system, and avoid
      * the clearing of your menu.
      */
     void disableAutoClear();
+    
+public slots:
+    /**
+     * Reinitialize the menu: the menu is first cleared, the initial state is set
+     * to false, and finally @ref initialize() is called. Use this if you want to
+     * refill your menu.
+     */
+    void reinitialize();
 
 protected slots:
     /**
