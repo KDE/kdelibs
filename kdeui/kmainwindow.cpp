@@ -308,8 +308,9 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     guiFactory()->removeClient( this );
 
     // make sure to have an empty GUI
-    if ( internalMenuBar() )
-        internalMenuBar()->clear();
+    QMenuBar* mb = internalMenuBar();
+    if ( mb )
+        mb->clear();
 
     (void)toolBarIterator(); // make sure toolbarList is most-up-to-date
     toolbarList.setAutoDelete( true );
@@ -515,18 +516,20 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     if ( d->autoSaveWindowSize )
         saveWindowSize( config );
 
-    if (internalStatusBar()) {
+    QStatusBar* sb = internalStatusBar();
+    if (sb) {
         entryList.clear();
-        if ( internalStatusBar()->isHidden() )
+        if ( sb->isHidden() )
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
         config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
     }
 
-    if (internalMenuBar()) {
+    QMenuBar* mb = internalMenuBar();
+    if (mb) {
         entryList.clear();
-        if ( internalMenuBar()->isHidden() )
+        if ( mb->isHidden() )
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
@@ -587,24 +590,26 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     restoreWindowSize(config);
 
-    if (internalStatusBar()) {
+    QStatusBar* sb = internalStatusBar();
+    if (sb) {
         entryList.clear();
         i = config->readListEntry (QString::fromLatin1("StatusBar"), entryList, ';');
         entry = entryList.first();
         if (entry == QString::fromLatin1("Disabled"))
-            internalStatusBar()->hide();
+            sb->hide();
         else
-            internalStatusBar()->show();
+            sb->show();
     }
 
-    if (internalMenuBar()) {
+    QMenuBar* mb = internalMenuBar();
+    if (mb) {
         entryList.clear();
         i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
         entry = entryList.first();
         if (entry==QString::fromLatin1("Disabled"))
-            internalMenuBar()->hide();
+            mb->hide();
         else
-            internalMenuBar()->show();
+            mb->show();
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -724,16 +729,18 @@ void KMainWindow::resizeEvent( QResizeEvent * )
 
 KMenuBar *KMainWindow::menuBar()
 {
-    if ( !internalMenuBar() )
-        return new KMenuBar( this );
-    return (KMenuBar*)internalMenuBar();
+    KMenuBar * mb = static_cast<KMenuBar *>(internalMenuBar());
+    if ( !mb )
+        mb = new KMenuBar( this );
+    return mb;
 }
 
 KStatusBar *KMainWindow::statusBar()
 {
-    if ( !internalStatusBar() )
-        return new KStatusBar( this );
-    return (KStatusBar*)internalStatusBar();
+    KStatusBar * sb = static_cast<KStatusBar *>(internalStatusBar());
+    if ( !sb )
+        sb = new KStatusBar( this );
+    return sb;
 }
 
 void KMainWindow::shuttingDown()
