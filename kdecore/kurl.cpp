@@ -125,19 +125,27 @@ KURL::KURL( const QUrl &u )
 
 KURL::KURL( const KURL& _u, const QString& _rel_url )
 {
-  if ( _rel_url[0] == '#' )
+  // WORKAROUND THE RFC 1606 LOOPHOLE THAT ALLOWS
+  // http:/index.html AS A VALID SYNTAX FOR RELATIVE
+  // URLS. ( RFC 2396 section 5.2 item # 3 )
+  QString rUrl = _rel_url;
+  if ( _u.hasHost() && !rUrl.isNull() &&
+       rUrl.find( _u.m_strProtocol, 0 , false ) == 0 )
+  	rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+
+  if ( rUrl[0] == '#' )
   {
     *this = _u;
-    QString tmp = _rel_url.mid(1);
+    QString tmp = rUrl.mid(1);
     decode( tmp );
     setHTMLRef( tmp );
   }
-  else if ( isRelativeURL(_rel_url))
+  else if ( isRelativeURL( rUrl) )
   {
     *this = _u;
     m_strQuery_encoded = QString::null;
     m_strRef_encoded = QString::null;
-    if (_rel_url[0] == '/')
+    if ( rUrl[0] == '/')
     {
         m_strPath = QString::null;
     }
@@ -148,12 +156,12 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
           m_strPath.truncate(pos);
        m_strPath += '/';
     }
-    *this = url() + _rel_url;
+    *this = url() + rUrl;
     cleanPath();
   }
   else
   {
-    *this = _rel_url;
+    *this = rUrl;
   }
 }
 
