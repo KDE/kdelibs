@@ -208,6 +208,13 @@ class BrowserExtensionPrivate;
   * parts to save and restore their data into the back/forward history,
   * allowing parts to control the location bar URL, to requests URLs
   * to be opened by the hosting browser, etc.
+  *
+  * The part developer needs to define its own class derived from BrowserExtension,
+  * to implement the virtual methods [and the standard-actions slots, see below].
+  *
+  * The way to associate the BrowserExtension with the part is to simply
+  * create the BrowserExtension as a child of the part (in QObject's terms).
+  * The hosting application will look for it automatically.
   * 
   * Another aspect of the browser integration is that a set of standard
   * actions are provided by the browser, but implemented by the part
