@@ -1351,16 +1351,6 @@ KApplication::launcher()
       kdDebug(101) << "gethostname(): " << strerror(errno) << "\n";
       return 0;
    }
-   // Try to resolve to FQDN
-   struct hostent *h = gethostbyname(host);
-   if (h == 0L) {
-      kdDebug(101) << "gethostbyname() returned with an error!\n";
-   } else {
-      if (strlen(h->h_name) < 200)
-         strcpy(host, h->h_name);
-      else
-         kdDebug(101) << "host name too long\n";
-   }
    QCString name;
    name.sprintf("klauncher_%s_%d", host, getuid());
    return name;
