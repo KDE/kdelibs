@@ -586,6 +586,45 @@ public:
     */
    int X509_check_purpose(X509 *x, int id, int ca);
 
+   /*
+    *
+    */
+   PKCS7 *PKCS7_new(void);
+
+   /*
+    *
+    */
+   void PKCS7_free(PKCS7 *a);
+
+   /*
+    *
+    */
+   void PKCS7_content_free(PKCS7 *a);
+
+   /*
+    *
+    */
+   int i2d_PKCS7(PKCS7 *a, unsigned char **pp);
+
+   /*
+    *
+    */
+   PKCS7 *d2i_PKCS7(PKCS7 **a, unsigned char **pp,long length);
+
+   /*
+    *
+    */
+   int i2d_PKCS7_fp(FILE *fp,PKCS7 *p7);
+
+   /*
+    * 
+    */
+   PKCS7 *d2i_PKCS7_fp(FILE *fp,PKCS7 **p7);
+
+   /*
+    *
+    */
+   PKCS7 *PKCS7_dup(PKCS7 *p7);
 
 #endif
 

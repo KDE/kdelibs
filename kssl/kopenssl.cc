@@ -120,6 +120,15 @@ static void *(*K_X509_get_ext_d2i)(X509*, int, int*, int*) = NULL;
 static char *(*K_i2s_ASN1_OCTET_STRING)(X509V3_EXT_METHOD*, ASN1_OCTET_STRING*) = NULL;
 static int (*K_ASN1_BIT_STRING_get_bit)(ASN1_BIT_STRING*, int) = NULL;
 static int (*K_X509_check_purpose)(X509*, int, int) = NULL;
+static PKCS7 *(*K_PKCS7_new)() = NULL;
+static void (*K_PKCS7_free)(PKCS7*) = NULL;
+static void (*K_PKCS7_content_free)(PKCS7*) = NULL;
+static int (*K_i2d_PKCS7)(PKCS7*, unsigned char**) = NULL;
+static PKCS7 *(*K_d2i_PKCS7)(PKCS7**, unsigned char**,long) = NULL;
+static int (*K_i2d_PKCS7_fp)(FILE*,PKCS7*) = NULL;
+static PKCS7* (*K_d2i_PKCS7_fp)(FILE*,PKCS7**) = NULL;
+static PKCS7* (*K_PKCS7_dup)(PKCS7*) = NULL;
+
 #endif
 };
 
@@ -316,6 +325,14 @@ KConfig *cfg;
       K_i2s_ASN1_OCTET_STRING = (char *(*)(X509V3_EXT_METHOD*,ASN1_OCTET_STRING*)) _cryptoLib->symbol("i2s_ASN1_OCTET_STRING");
       K_ASN1_BIT_STRING_get_bit = (int (*)(ASN1_BIT_STRING*,int)) _cryptoLib->symbol("ASN1_BIT_STRING_get_bit");
       K_X509_check_purpose = (int (*)(X509*, int, int)) _cryptoLib->symbol("X509_check_purpose");
+      K_PKCS7_new = (PKCS7 *(*)()) _cryptoLib->symbol("PKCS7_new");
+      K_PKCS7_free = (void (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_free");
+      K_PKCS7_content_free = (void (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_content_free");
+      K_i2d_PKCS7 = (int (*)(PKCS7*, unsigned char**)) _cryptoLib->symbol("i2d_PKCS7");
+      K_i2d_PKCS7_fp = (int (*)(FILE*,PKCS7*)) _cryptoLib->symbol("i2d_PKCS7_fp");
+      K_d2i_PKCS7 = (PKCS7* (*)(PKCS7**,unsigned char**,long)) _cryptoLib->symbol("d2i_PKCS7");
+      K_d2i_PKCS7_fp = (PKCS7 *(*)(FILE *,PKCS7**)) _cryptoLib->symbol("d2i_PKCS7_fp");
+      K_PKCS7_dup = (PKCS7* (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_dup");
 #endif
    }
 
@@ -948,6 +965,53 @@ int KOpenSSLProxy::X509_check_purpose(X509 *x, int id, int ca) {
    if (K_X509_check_purpose) return (K_X509_check_purpose)(x,id,ca);
    else return -1;
 }
+
+
+PKCS7 *KOpenSSLProxy::PKCS7_new(void) {
+   if (K_PKCS7_new) return (K_PKCS7_new)();
+   else return NULL;
+}
+
+
+void KOpenSSLProxy::PKCS7_free(PKCS7 *a) {
+   if (K_PKCS7_free) (K_PKCS7_free)(a);
+}
+
+
+void KOpenSSLProxy::PKCS7_content_free(PKCS7 *a) {
+   if (K_PKCS7_content_free) (K_PKCS7_content_free)(a);
+}
+
+
+int KOpenSSLProxy::i2d_PKCS7(PKCS7 *a, unsigned char **pp) {
+   if (K_i2d_PKCS7) return (K_i2d_PKCS7)(a,pp);
+   else return -1;
+}
+
+
+PKCS7 *KOpenSSLProxy::d2i_PKCS7(PKCS7 **a, unsigned char **pp,long length) {
+   if (K_d2i_PKCS7) return (K_d2i_PKCS7)(a,pp,length);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::i2d_PKCS7_fp(FILE *fp,PKCS7 *p7) {
+   if (K_i2d_PKCS7_fp) return (K_i2d_PKCS7_fp)(fp,p7);
+   else return -1;
+}
+ 
+
+PKCS7 *KOpenSSLProxy::d2i_PKCS7_fp(FILE *fp,PKCS7 **p7) {
+   if (K_d2i_PKCS7_fp) return (K_d2i_PKCS7_fp)(fp,p7);
+   else return NULL;
+}
+
+
+PKCS7 *KOpenSSLProxy::PKCS7_dup(PKCS7 *p7) {
+   if (K_PKCS7_dup) return (K_PKCS7_dup)(p7);
+   else return NULL;
+}
+
 
 
 #endif
