@@ -244,11 +244,6 @@ void MainWindow::setupGUIClient ()
   connect(m_guiClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
   connect(m_guiClient,SIGNAL(toggleRight()),this,SIGNAL(toggleRight()));
   connect(m_guiClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
-
-  connect(this,SIGNAL(toggleTop()),m_topContainer->getWidget(),SLOT(toggle()));
-  connect(this,SIGNAL(toggleLeft()),m_leftContainer->getWidget(),SLOT(toggle()));
-  connect(this,SIGNAL(toggleRight()),m_rightContainer->getWidget(),SLOT(toggle()));
-  connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
 }
 
 TabWidget *MainWindow::tabWidget ()
