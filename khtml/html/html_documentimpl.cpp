@@ -94,8 +94,12 @@ DOMString HTMLDocumentImpl::domain() const
     return m_domain;
 }
 
-void HTMLDocumentImpl::setDomain(const DOMString &newDomain)
+void HTMLDocumentImpl::setDomain(const DOMString &newDomain, bool force /*=false*/)
 {
+    if ( force ) {
+        m_domain = newDomain;
+        return;
+    }
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
         m_domain = KURL(URL()).host(); // Initially set to the host
 
