@@ -623,8 +623,10 @@ void RenderText::calcMinMaxWidth()
     m_minWidth = 0;
     m_maxWidth = 0;
 
-    int currMinWidth = 0;
-    int currMaxWidth = 0;
+    int add = (parent()->isInline() && parent()->firstChild()==this) ? paddingLeft() + borderLeft() : 0;
+
+    int currMinWidth = add;
+    int currMaxWidth = add;
     m_hasReturn = false;
     m_hasBreakableChar = false;
 
@@ -680,6 +682,9 @@ void RenderText::calcMinMaxWidth()
         }
         i += wordlen;
     }
+    add = (parent()->isInline() && parent()->lastChild()==this) ? borderRight() + paddingRight() : 0;
+    currMinWidth += add;
+    currMaxWidth += add;
     if ( first ) m_startMin = QMIN( currMinWidth, 0x1ff );
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
@@ -810,7 +815,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #ifdef DEBUG_LAYOUT
     QChar *ch = str->s+from;
     QConstString cstr(ch, len);
-    qDebug("setting slave text to *%s*, len=%d, w)=%d" , cstr.string().latin1(), len, width );//" << y << ")" << " height=" << lineHeight(false) << " fontHeight=" << metrics(false).height() << " ascent =" << metrics(false).ascent() << endl;
+    qDebug("setting slave text to *%s*, len=%d, w=%d" , cstr.string().latin1(), len, width );//" << y << ")" << " height=" << lineHeight(false) << " fontHeight=" << metrics(false).height() << " ascent =" << metrics(false).ascent() << endl;
 #endif
 
     TextSlave *s = new TextSlave(x, y, from, len,
@@ -838,15 +843,23 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
-    if ( f == &style()->htmlFont() && from == 0 && len == str->l )
+    if ( f == &style()->htmlFont() && from == 0 && len == str->l ) {
  	 w = m_maxWidth;
-    else
-	w = f->width(str->s, str->l, from, len );
+	 // m_maxWidth already contains borders and paddings.
+	 if(parent()->isInline()) {
+	     if( parent()->firstChild() == static_cast<const RenderObject*>(this) )
+		 w += marginLeft();
+	     if( parent()->lastChild() == static_cast<const RenderObject*>(this) )
+		 w += marginRight();
+	 }
+	 return w;
+    }
+
+    w = f->width(str->s, str->l, from, len );
 
     // ### add margins and support for RTL
 
-    if(parent()->isInline())
-    {
+    if(parent()->isInline()) {
         if(from == 0 && parent()->firstChild() == static_cast<const RenderObject*>(this))
             w += borderLeft() + paddingLeft() + marginLeft();
         if(from + len == str->l &&
