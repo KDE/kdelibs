@@ -978,7 +978,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // prepare arguments
       KURL url;
       if (!str.isEmpty())
-        url = part->htmlDocument().completeURL(str).string();
+      {
+        //#36296 shows that it's not the "thisObject"'s URL that's used, but the one from the interpreter
+        //url = part->htmlDocument().completeURL(str).string();
+        KHTMLPart *callingPart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
+        url = callingPart->htmlDocument().completeURL(str).string();
+      }
 
       KParts::URLArgs uargs;
       uargs.frameName = !args[1].isNull() ?
@@ -1136,7 +1141,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
        special case for one-off windows that need to open other windows and
        then dispose of themselves.
     */
-    if (!window->m_part->openedByJS())
+    if (!part->openedByJS())
     {
       // To conform to the SPEC, we only ask if the window
       // has more than one entry in the history (NS does that too).
