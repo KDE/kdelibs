@@ -972,18 +972,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   bool createNew = true;
 
   struct stat buf;
-  if (lstat(QFile::encodeName(filename), &buf) == 0)
+  if (stat(QFile::encodeName(filename), &buf) == 0)
   {
-     if (S_ISLNK(buf.st_mode))
-     {
-        // File is a symlink:
-        if (stat(QFile::encodeName(filename), &buf) == 0)
-        {
-           // Don't create new file but write to existing file instead.
-           createNew = false;
-        }
-     }
-     else if (buf.st_uid == getuid())
+     if (buf.st_uid == getuid())
      {
         // Preserve file mode if file exists and is owned by user.
         fileMode = buf.st_mode & 0777;
