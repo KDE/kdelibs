@@ -415,6 +415,15 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
   QString q = p.qstring();
   if (m_part->findFrame(p.qstring()))
     return true;
+  // allow window[1] or parent[1] etc. (#56983)
+  bool ok;
+  unsigned int i = p.toArrayIndex(&ok);
+  if (ok) {
+    QPtrList<KParts::ReadOnlyPart> frames = m_part->frames();
+    unsigned int len = frames.count();
+    if (i < len)
+      return true;
+  }
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (m_part->document().isHTMLDocument()) { // might be XML
@@ -694,6 +703,21 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   KHTMLPart *kp = m_part->findFrame( p.qstring() );
   if (kp)
     return retrieve(kp);
+
+  // allow window[1] or parent[1] etc. (#56983)
+  bool ok;
+  unsigned int i = p.toArrayIndex(&ok);
+  if (ok) {
+    QPtrList<KParts::ReadOnlyPart> frames = m_part->frames();
+    unsigned int len = frames.count();
+    if (i < len) {
+      KParts::ReadOnlyPart* frame = frames.at(i);
+      if (frame && ::qt_cast<KHTMLPart*>(frame)) {
+        KHTMLPart *khtml = static_cast<KHTMLPart*>(frame);
+        return Window::retrieve(khtml);
+      }
+    }
+  }
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript(exec) &&
@@ -1777,7 +1801,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
     return Undefined();
 
   QPtrList<KParts::ReadOnlyPart> frames = part->frames();
-  int len = frames.count();
+  unsigned int len = frames.count();
   if (p == lengthPropertyName)
     return Number(len);
   else if (p== "location") // non-standard property, but works in NS and IE
@@ -1791,8 +1815,9 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   // check for the name or number
   KParts::ReadOnlyPart *frame = part->findFrame(p.qstring());
   if (!frame) {
-    int i = (int)p.toDouble();
-    if (i >= 0 && i < len)
+    bool ok;
+    unsigned int i = p.toArrayIndex(&ok);
+    if (ok && i < len)
       frame = frames.at(i);
   }
 

@@ -1,3 +1,8 @@
+2003-11-25  David Faure  <faure@kde.org>
+
+	* ecma/kjs_window.cpp: Implement hasProperty and get for frames by number in Window,
+	to fix window[0] and parent[1] etc. (#56983)
+
 2003-11-25  Germain Garand  <germain@ebooksfrance.org>
 
         * khtml_part.cpp (checkCompleted): prepend "Automatic Detection" entry to 
