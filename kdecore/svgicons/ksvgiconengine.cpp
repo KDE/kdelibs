@@ -267,6 +267,9 @@ public:
 		m_engine->painter()->setFillColor("black");
 		m_engine->painter()->setStrokeColor("none");
 		m_engine->painter()->setStrokeDashArray("");
+		m_engine->painter()->setStrokeWidth(1);
+		m_engine->painter()->setJoinStyle("");
+		m_engine->painter()->setCapStyle("");
 	//	m_engine->painter()->setFillOpacity(255, true);
 	//	m_engine->painter()->setStrokeOpacity(255, true);
 
