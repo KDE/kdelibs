@@ -50,6 +50,10 @@ static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;
 extern Atom qt_wm_state;
 
+// Fix for --enable-final. This gets undefined at the end of this file.
+#ifndef None
+#define	None	0L
+#endif
 
 Atom net_wm_context_help;
 static Atom kde_wm_change_state;
@@ -410,3 +414,5 @@ void KWin::appStarted()
   kapp->dcopClient()->send("kicker", "TaskbarApplet", "clientMapped(pid_t)", params);
 }
 
+// Fix for --enable-final. This gets defined at the top of this file.
+#undef	None
