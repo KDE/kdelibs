@@ -46,8 +46,8 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	qstr.setLength( slen );
 	QChar *uc = (QChar *)qstr.unicode();
 	for( int i = 0; i < slen; i++ )
-	    if ( (uc+i)->unicode() == 0xa0 )
-		*(uc+i) = ' ';
+	    if ( uc[i].unicode() == 0xa0 )
+		uc[i] = ' ';
     }
 
     // ### fixme for RTL
