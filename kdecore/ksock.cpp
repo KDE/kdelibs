@@ -615,6 +615,7 @@ void KServerSocket::slotAccept( int )
 
 KServerSocket::~KServerSocket()
 {
+  delete d;
   delete notifier;
   ::close( sock );
 }
