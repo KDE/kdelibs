@@ -321,7 +321,7 @@ signals:
   void setIconURL( const KURL &url );
 
   /**
-   * Ask the hosting browser to open a new window for the given @url.
+   * Ask the hosting browser to open a new window for the given @p url.
    *
    * The @p args argument is optional additionnal information for the
    * browser,
@@ -330,7 +330,7 @@ signals:
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * Ask the hosting browser to open a new window for the given @url
+   * Ask the hosting browser to open a new window for the given @p url
    * and return a reference to the content part.
    * The request for a reference to the part is only fullfilled/processed
    * if the serviceType is set in the @p args . (otherwise the request cannot be
