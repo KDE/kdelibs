@@ -634,8 +634,6 @@ void AudioIOOSSThreaded::ReaderThread::run()
 
 void AudioIOOSSThreaded::startThread()
 {
-	struct sched_param sp;
-
 	fprintf(stderr, "AudioIOOSSThreaded::startThread(): entering\n");
 
 	if (param(direction) & directionWrite) {
