@@ -1,5 +1,5 @@
 
-zh_CNentdir = $(zh_CNdir)/dtd
+zh_CNentdir = $(catdir)/zh-CN/entities
 
 zh_CNent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

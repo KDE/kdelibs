@@ -1,5 +1,5 @@
 
-roentdir = $(rodir)/dtd
+roentdir = $(catdir)/ro/entities
 
 roent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

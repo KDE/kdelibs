@@ -1,5 +1,5 @@
 
-pt_BRentdir = $(pt_BRdir)/dtd
+pt_BRentdir = $(catdir)/pt-BR/entities
 
 pt_BRent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

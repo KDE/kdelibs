@@ -1,5 +1,5 @@
 
-nlentdir = $(nldir)/dtd
+nlentdir = $(catdir)/nl/entities
 
 nlent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

@@ -1,5 +1,5 @@
 
-daentdir = $(dadir)/dtd
+daentdir = $(catdir)/da/entities
 
 daent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

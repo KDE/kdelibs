@@ -1,5 +1,5 @@
 
-sventdir = $(svdir)/dtd
+sventdir = $(catdir)/sv/entities
 
 svent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

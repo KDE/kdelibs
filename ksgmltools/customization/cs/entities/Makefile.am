@@ -1,5 +1,5 @@
 
-csentdir = $(csdir)/dtd
+csentdir = $(catdir)/cs/entities
 
 csent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

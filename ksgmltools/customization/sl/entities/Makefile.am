@@ -1,5 +1,5 @@
 
-slentdir = $(sldir)/dtd
+slentdir = $(catdir)/sl/entities
 
 slent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

@@ -1,5 +1,5 @@
 
-etentdir = $(etdir)/dtd
+etentdir = $(catdir)/et/entities
 
 etent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \

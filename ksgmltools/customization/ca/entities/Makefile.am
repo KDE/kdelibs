@@ -1,5 +1,5 @@
 
-caentdir = $(cadir)/dtd
+caentdir = $(catdir)/ca/entities
 
 caent_DATA = fdl-notice.docbook gpl-notice.docbook lgpl-notice.docbook \
              help-menu.docbook report-bugs.docbook \
