@@ -220,53 +220,79 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         if ( isHtml() && firstChild() && !style()->backgroundImage() )
             sptr = firstChild()->style();
 
-	int cw,ch;
+	    int cw,ch;
         int cx,cy;
 
         // CSS2 chapter 14.2.1
-        int pw = m_width - sptr->borderRightWidth() - sptr->borderLeftWidth();
-        int ph = m_height - sptr->borderTopWidth() - sptr->borderBottomWidth();
-        int pixw = bg->pixmap_size().width();
-        int pixh = bg->pixmap_size().height();
-        EBackgroundRepeat bgr = sptr->backgroundRepeat();
-        if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
-            cw = pixw;
-            cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
-        } else {
-            cw = w;
-            cx = _tx;
-            sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+        
+        if (sptr->backgroundAttachment())
+        {
+            //scroll
+            int pw = m_width - sptr->borderRightWidth() - sptr->borderLeftWidth();
+            int ph = m_height - sptr->borderTopWidth() - sptr->borderBottomWidth();
+            
+            int pixw = bg->pixmap_size().width();
+            int pixh = bg->pixmap_size().height();
+            EBackgroundRepeat bgr = sptr->backgroundRepeat();
+            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
+                cw = pixw;
+                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
+            } else {
+                cw = w;
+                cx = _tx;
+                sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+            }
+
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
+                ch = pixh;
+                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
+            } else {
+                ch = h;
+                cy = _ty;
+                sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
+            }            
+        } 
+        else
+        {
+            //fixed
+            QRect vr = viewRect();
+            int pw = vr.width();   
+            int ph = vr.height();
+            
+            int pixw = bg->pixmap_size().width();
+            int pixh = bg->pixmap_size().height();
+            EBackgroundRepeat bgr = sptr->backgroundRepeat();
+            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
+                cw = pixw;
+                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw);
+            } else {
+                cw = pw;
+                cx = vr.x();
+                sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+            }
+
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
+                ch = pixh;
+                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh);
+            } else {
+                ch = ph;
+                cy = vr.y();
+                sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
+            }              
+
+            QRect fix(cx,cy,cw,ch);
+            QRect ele(_tx,_ty,w,h);            
+            QRect b = fix.intersect(ele);
+            sx+=b.x()-cx;
+            sy+=b.y()-cy;
+            cx=b.x();cy=b.y();cw=b.width();ch=b.height();        
         }
 
-        if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
-            ch = pixh;
-            cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
-        } else {
-            ch = h;
-            cy = _ty;
-            sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
-        }
 
-
-
-        if( !sptr->backgroundAttachment() ) {
-            QRect r = viewRect();
-            //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
-	    if( isHtml() ) {
-		cy += r.y();
-		cx += r.x();
-	    }
-            sx = cx - r.x();
-            sy = cy - r.y();
-        }
-        //else
-            // make sure that the pixmap is tiled correctly
-            // because we clip the tiling to the visible area (for speed reasons)
-        //    if(bg->pixmap_size().height() && sptr->backgroundAttachment());
-
-        //        sy = (clipy - _ty) % bg->pixmap_size().height();
-
-	p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
+//        kdDebug() << "cx="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
+        
+        if (cw>0 && ch>0)
+            p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
 }
 
@@ -497,6 +523,7 @@ void RenderBox::calcWidth()
 
             if (isFloating()) {
                 calcMinMaxWidth();
+                if(m_width < m_minWidth) m_width = m_minWidth;
                 if(m_width > m_maxWidth) m_width = m_maxWidth;
             }
         }
