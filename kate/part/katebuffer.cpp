@@ -446,7 +446,7 @@ bool KateBuffer::openFile(const QString &m_file, QTextCodec *codec)
   // here we feed the loader with info
   m_loader = new KateBufFileLoader (m_file);
   
-  if ( !m_loader->file.open( IO_ReadOnly ) )
+  if ( !m_loader->file.open( IO_ReadOnly ) || !m_loader->file.isDirectAccess() )
   {
     clear();
     return false; // Error
