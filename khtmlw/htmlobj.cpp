@@ -1304,8 +1304,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     url = _url;
     target = _target;
     
-    cached = TRUE;
-
     predefinedWidth = ( _width < 0 && !_percent ) ? false : true;
     predefinedHeight = _height < 0 ? false : true;
 
@@ -1431,7 +1429,6 @@ void HTMLImage::changeImage( const char *_url )
     else
     {
       pixmap->load( u.path() );
-      cached = false;
     }
 
     bComplete = true;
@@ -1487,7 +1484,6 @@ bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
   {
     pixmap = new QPixmap();
     pixmap->loadFromData( _buffer.buffer() );	    
-    cached = false;
 
     if ( pixmap == 0 || pixmap->isNull() )
       return false;
@@ -1556,7 +1552,6 @@ void HTMLImage::fileLoaded( const char *_filename )
     {
 	pixmap = new QPixmap();
 	pixmap->load( _filename );	    
-	cached = false;
 
 	if ( pixmap == 0 || pixmap->isNull() )
 	    return;
@@ -1816,8 +1811,10 @@ HTMLImage::~HTMLImage()
     // if ( !imageURL.isEmpty() && !pixmap )
     // htmlWidget->cancelRequestFile( this );
 
-    if ( pixmap && !cached )
+    if ( pixmap )
 	delete pixmap;
+    if ( movieCache )
+        delete movieCache;
 #ifdef USE_QMOVIE
     if ( movie )
     {
