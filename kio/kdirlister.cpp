@@ -25,6 +25,7 @@
 
 #include <qdir.h>
 #include <qmap.h>
+#include <qdict.h>
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -462,6 +463,7 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
 
   const KURL& url = job->url();
 
+  QDict<KFileItem> fileItems( 9973 );
   KFileItemList lstNewItems, lstFilteredItems;
   KFileItemList lstRefreshItems;
 
@@ -476,6 +478,8 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
       (*kit)->unmark();
     } else
       (*kit)->mark(); // keep the other items
+
+    fileItems.insert( (*kit)->url().prettyURL(), *kit );
   }
 
   static const QString& dot = KGlobal::staticQString(".");
@@ -490,7 +494,10 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
     KIO::UDSEntry::Iterator it2 = (*it).begin();
     for( ; it2 != (*it).end(); it2++ )
       if ( (*it2).m_uds == KIO::UDS_NAME )
+      {
         name = (*it2).m_str;
+        break;
+      }
 
     ASSERT( !name.isEmpty() );
 
@@ -508,30 +515,24 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
 
       // Find this item
       bool found = false;
-      kit.toFirst();
-      for( ; kit.current(); ++kit )
+      KFileItem *tmp;
+      if ( (tmp = fileItems[u.prettyURL()]) )
       {
-        if ( u == (*kit)->url() )
-        {
-          //kdDebug(7003) << "slotUpdateFinished : keeping " << name << endl;
-          (*kit)->mark();
-          found = true;
-          break;
-        }
+        tmp->mark();
+        found = true;
       }
 
       KFileItem* item = createFileItem( *it, url, m_bDelayedMimeTypes );
 
       if ( found )
       {
-          assert(kit.current());
+          assert(tmp);
           // Check if something changed for this file
-          if ( ! (*kit)->cmp( *item ) )
+          if ( !tmp->cmp( *item ) )
           {
-              (*kit)->assign( *item );
-              (*kit)->mark(); // just in case
-              lstRefreshItems.append( (*kit) );
-              kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
+              tmp->assign( *item );
+              lstRefreshItems.append( tmp );
+              kdDebug(7003) << "slotUpdateFinished : This file has changed : " << tmp->name() << endl;
           }
           delete item;
       }
