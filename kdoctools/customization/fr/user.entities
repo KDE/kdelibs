@@ -163,3 +163,13 @@
 <!ENTITY pex            	"par exemple">                                            <!-- English: &eg; -->
 <!ENTITY Maj            	'<keycap>Maj</keycap>'>                                   <!-- English: &Shift; -->
 <!ENTITY SE             	"système d'exploitation">                                <!-- English: &OS; -->
+
+<!ENTITY iconek	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>Icône K de &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
+<!ENTITY menuk  "menu <guimenu>K</guimenu>">
