@@ -426,6 +426,12 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         ::exit(255);
     }
 
+    if ( fd == -1 ) // we got nothing to write out, so we never opened the file
+    {
+        finished();
+        return;
+    }
+
     if ( close(fd) )
     {
         kdWarning(7101) << "Error when closing file descriptor:" << strerror(errno) << endl;
