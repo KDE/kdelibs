@@ -3,6 +3,7 @@
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 static KCmdLineOptions options[] =
 {
@@ -17,6 +18,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 			I18N_NOOP("Start the add printer wizard"),
 			"0.1");
 	KCmdLineArgs::addCmdLineOptions(options);
+	
+	KGlobal::locale()->setMainCatalogue("kdelibs");
 
 	KApplication app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
