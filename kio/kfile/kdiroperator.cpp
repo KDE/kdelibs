@@ -1087,8 +1087,11 @@ void KDirOperator::selectDir(const KFileItem *item)
 void KDirOperator::itemDeleted(KFileItem *item)
 {
     pendingMimeTypes.removeRef( item );
-    m_fileView->removeItem( static_cast<KFileItem *>( item ));
-    emit updateInformation(m_fileView->numDirs(), m_fileView->numFiles());
+    if ( m_fileView )
+    {
+        m_fileView->removeItem( static_cast<KFileItem *>( item ));
+        emit updateInformation(m_fileView->numDirs(), m_fileView->numFiles());
+    }
 }
 
 void KDirOperator::selectFile(const KFileItem *item)
