@@ -287,6 +287,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
 
   // now load in our toolbar combo box
   loadToolbarCombo();
+  setMinimumSize(sizeHint());
 }
 
 KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
