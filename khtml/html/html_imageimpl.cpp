@@ -171,7 +171,9 @@ void HTMLImageElementImpl::attach()
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() && 
+        _style->display() != NONE) 
+    {
         m_render = new (getDocument()->renderArena()) RenderImage(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());

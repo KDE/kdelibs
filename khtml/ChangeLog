@@ -1,3 +1,9 @@
+
+2003-11-23  Germain Garand <germain@ebooksfrance.org>
+
+        * html/html_imageimpl.cpp (attach): don't create a renderer if our parent doesn't
+        allow childs. e.g: a RenderPartObject (#66793)
+
 2003-11-23  Stephan Kulow  <coolo@kde.org>
 
 	* css/cssstyleselector.cpp (applyRule): fixing my fix for #60556, which 
