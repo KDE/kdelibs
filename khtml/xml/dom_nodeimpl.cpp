@@ -714,7 +714,7 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 
 }
 
-void NodeImpl::defaultEventHandler(EventImpl *evt)
+void NodeImpl::defaultEventHandler(EventImpl *)
 {
 }
 
