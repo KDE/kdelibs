@@ -541,7 +541,6 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
       return image;
     }
 
-    int i, tmp, r, g, b;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     unsigned char *segTbl = new unsigned char[segColors];
     int pixels = image.depth() > 8 ? image.width()*image.height() :
@@ -554,16 +553,16 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
         percent = -percent;
 
     if(brighten){ // keep overflow check out of loops
-        for(i=0; i < segColors; ++i){
-            tmp = (int)(i*percent);
+        for(int i=0; i < segColors; ++i){
+            int tmp = (int)(i*percent);
             if(tmp > 255)
                 tmp = 255;
             segTbl[i] = tmp;
         }
     }
     else{
-        for(i=0; i < segColors; ++i){
-            tmp = (int)(i*percent);
+        for(int i=0; i < segColors; ++i){
+            int tmp = (int)(i*percent);
             if(tmp < 0)
                 tmp = 0;
             segTbl[i] = tmp;
@@ -571,25 +570,27 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     }
 
     if(brighten){ // same here
-        for(i=0; i < pixels; ++i){
-            r = qRed(data[i]);
-            g = qGreen(data[i]);
-            b = qBlue(data[i]);
+        for(int i=0; i < pixels; ++i){
+            int r = qRed(data[i]);
+            int g = qGreen(data[i]);
+            int b = qBlue(data[i]);
+            int a = qAlpha(data[i]);
             r = r + segTbl[r] > 255 ? 255 : r + segTbl[r];
             g = g + segTbl[g] > 255 ? 255 : g + segTbl[g];
             b = b + segTbl[b] > 255 ? 255 : b + segTbl[b];
-            data[i] = qRgb(r, g, b);
+            data[i] = qRgba(r, g, b,a);
         }
     }
     else{
-        for(i=0; i < pixels; ++i){
-            r = qRed(data[i]);
-            g = qGreen(data[i]);
-            b = qBlue(data[i]);
+        for(int i=0; i < pixels; ++i){
+            int r = qRed(data[i]);
+            int g = qGreen(data[i]);
+            int b = qBlue(data[i]);
+            int a = qAlpha(data[i]);
             r = r - segTbl[r] < 0 ? 0 : r - segTbl[r];
             g = g - segTbl[g] < 0 ? 0 : g - segTbl[g];
             b = b - segTbl[b] < 0 ? 0 : b - segTbl[b];
-            data[i] = qRgb(r, g, b);
+            data[i] = qRgba(r, g, b, a);
         }
     }
     delete [] segTbl;
@@ -605,7 +606,6 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
       return image;
     }
 
-    int i, tmp, c;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     unsigned char *segTbl = new unsigned char[segColors];
     int pixels = image.depth() > 8 ? image.width()*image.height() :
@@ -617,16 +617,16 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
         percent = -percent;
 
     if(brighten){ // keep overflow check out of loops
-        for(i=0; i < segColors; ++i){
-            tmp = (int)(i*percent);
+        for(int i=0; i < segColors; ++i){
+            int tmp = (int)(i*percent);
             if(tmp > 255)
                 tmp = 255;
             segTbl[i] = tmp;
         }
     }
     else{
-        for(i=0; i < segColors; ++i){
-            tmp = (int)(i*percent);
+        for(int i=0; i < segColors; ++i){
+            int tmp = (int)(i*percent);
             if(tmp < 0)
                 tmp = 0;
             segTbl[i] = tmp;
@@ -635,48 +635,48 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
 
     if(brighten){ // same here
         if(channel == Red){ // and here ;-)
-            for(i=0; i < pixels; ++i){
-                c = qRed(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qRed(data[i]);
                 c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
-                data[i] = qRgb(c, qGreen(data[i]), qBlue(data[i]));
+                data[i] = qRgba(c, qGreen(data[i]), qBlue(data[i]), qAlpha(data[i]));
             }
         }
         if(channel == Green){
-            for(i=0; i < pixels; ++i){
-                c = qGreen(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qGreen(data[i]);
                 c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
-                data[i] = qRgb(qRed(data[i]), c, qBlue(data[i]));
+                data[i] = qRgba(qRed(data[i]), c, qBlue(data[i]), qAlpha(data[i]));
             }
         }
         else{
-            for(i=0; i < pixels; ++i){
-                c = qBlue(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qBlue(data[i]);
                 c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
-                data[i] = qRgb(qRed(data[i]), qGreen(data[i]), c);
+                data[i] = qRgba(qRed(data[i]), qGreen(data[i]), c, qAlpha(data[i]));
             }
         }
 
     }
     else{
         if(channel == Red){
-            for(i=0; i < pixels; ++i){
-                c = qRed(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qRed(data[i]);
                 c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
-                data[i] = qRgb(c, qGreen(data[i]), qBlue(data[i]));
+                data[i] = qRgba(c, qGreen(data[i]), qBlue(data[i]), qAlpha(data[i]));
             }
         }
         if(channel == Green){
-            for(i=0; i < pixels; ++i){
-                c = qGreen(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qGreen(data[i]);
                 c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
-                data[i] = qRgb(qRed(data[i]), c, qBlue(data[i]));
+                data[i] = qRgba(qRed(data[i]), c, qBlue(data[i]), qAlpha(data[i]));
             }
         }
         else{
-            for(i=0; i < pixels; ++i){
-                c = qBlue(data[i]);
+            for(int i=0; i < pixels; ++i){
+                int c = qBlue(data[i]);
                 c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
-                data[i] = qRgb(qRed(data[i]), qGreen(data[i]), c);
+                data[i] = qRgba(qRed(data[i]), qGreen(data[i]), c, qAlpha(data[i]));
             }
         }
     }
@@ -1226,15 +1226,14 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     int b1 = ca.blue(); int b2 = cb.blue();
     int min = 0, max = 255;
 
-    int mean;
     QRgb col;
-
+    
     // Get minimum and maximum greylevel.
     if (img.numColors()) {
 	// pseudocolor
 	for (int i = 0; i < img.numColors(); i++) {
 	    col = img.color(i);
-	    mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
+	    int mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
 	    min = QMIN(min, mean);
 	    max = QMAX(max, mean);
 	}
@@ -1250,7 +1249,6 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     }
 
     // Conversion factors
-    int r, g, b;
     float sr = ((float) r2 - r1) / (max - min);
     float sg = ((float) g2 - g1) / (max - min);
     float sb = ((float) b2 - b1) / (max - min);
@@ -1260,21 +1258,21 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     if (img.numColors()) {
 	for (int i=0; i < img.numColors(); i++) {
 	    col = img.color(i);
-	    mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
-	    r = (int) (sr * (mean - min) + r1 + 0.5);
-	    g = (int) (sg * (mean - min) + g1 + 0.5);
-	    b = (int) (sb * (mean - min) + b1 + 0.5);
-	    img.setColor(i, qRgb(r, g, b));
+	    int mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
+	    int r = (int) (sr * (mean - min) + r1 + 0.5);
+	    int g = (int) (sg * (mean - min) + g1 + 0.5);
+	    int b = (int) (sb * (mean - min) + b1 + 0.5);
+	    img.setColor(i, qRgba(r, g, b, qAlpha(col)));
 	}
     } else {
 	for (int y=0; y < img.height(); y++)
 	    for (int x=0; x < img.width(); x++) {
 		col = img.pixel(x, y);
-		mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
-		r = (int) (sr * (mean - min) + r1 + 0.5);
-		g = (int) (sg * (mean - min) + g1 + 0.5);
-		b = (int) (sb * (mean - min) + b1 + 0.5);
-		img.setPixel(x, y, qRgb(r, g, b));
+		int mean = (qRed(col) + qGreen(col) + qBlue(col)) / 3;
+		int r = (int) (sr * (mean - min) + r1 + 0.5);
+		int g = (int) (sg * (mean - min) + g1 + 0.5);
+		int b = (int) (sb * (mean - min) + b1 + 0.5);
+		img.setPixel(x, y, qRgba(r, g, b, qAlpha(col)));
 	    }
     }
 
@@ -1344,7 +1342,7 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
 		b = cb - tbl[cb - blue];
 	    else
 		b = cb + tbl[blue - cb];
-	    img.setColor(i, qRgb(r, g, b));
+	    img.setColor(i, qRgba(r, g, b, qAlpha(col)));
 	}
 
     } else {
@@ -1366,7 +1364,7 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
                     b = cb - tbl[cb - blue];
                 else
                     b = cb + tbl[blue - cb];
-                *data++ = qRgb(r, g, b);
+                *data++ = qRgba(r, g, b, qAlpha(col));
             }
         }
     }
@@ -1420,7 +1418,7 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
                 register uint b = qBlue(img.color(i));
 
                 register uint gray = (((r + g) >> 1) + b) >> 1;
-                img.setColor(i, qRgb(gray, gray, gray));
+                img.setColor(i, qRgba(gray, gray, gray, qAlpha(img.color(i))));
             }
         }
     }
@@ -1432,7 +1430,7 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
         int val, i;
         for(i=0; i < pixels; ++i){
             val = qGray(data[i]);
-            data[i] = qRgb(val, val, val);
+            data[i] = qRgba(val, val, val, qAlpha(data[i]));
         }
     }
     return img;
@@ -1496,7 +1494,7 @@ QImage& KImageEffect::contrast(QImage &img, int c)
             if(b + c <= 255)
                 b += c;
         }
-        data[i] = qRgb(r, g, b);
+        data[i] = qRgba(r, g, b, qAlpha(data[i]));
     }
     return(img);
 }
