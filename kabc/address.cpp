@@ -432,7 +432,7 @@ bool Address::parseAddressTemplateSection( const QString &tsection,
   // The following macro needs QString for R_FIELD
   // It substitutes !_P_! for empty fields so conditional tags work later
 #define REPLTAG(R_TAG,R_FIELD) \
-  if ( result.contains(R_TAG, false) ) { \
+  if ( result.find(R_TAG, false) != -1 ) { \
     QString rpl = R_FIELD.isEmpty() ? QString("!_P_!") : R_FIELD; \
     result.replace( R_TAG, rpl ); \
     if ( !R_FIELD.isEmpty() ) { \

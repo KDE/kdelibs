@@ -223,13 +223,13 @@ void AddressLineEdit::insert(const QString &t)
     newText.replace( QRegExp("\r?\n"), " " );
     if ( newText.startsWith( "mailto:" ) )
         newText.remove( 0, 7 );
-    else if (newText.contains(" at "))
+    else if (newText.find(" at ") != -1)
     {
        // Anti-spam stuff
        newText.replace( " at ", "@" );
        newText.replace( " dot ", "." );
     }
-    else if (newText.contains("(at)"))
+    else if (newText.find("(at)") != -1)
     {
       newText.replace( QRegExp("\\s*\\(at\\)\\s*"), "@" );
     }
@@ -344,7 +344,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             items += s_completion->substringCompletion( '<' + s );
             uint beforeDollarCompletionCount = items.count();
 
-            if( !s.contains( ' ' )) // one word, possibly given name
+            if( s.find( ' ' ) == -1 ) // one word, possibly given name
                 items += s_completion->allMatches( "$$" + s );
 
             if ( items.isEmpty() )

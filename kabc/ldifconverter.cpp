@@ -385,7 +385,7 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
   }
   if ( fieldname == QString::fromLatin1( "mail" ) ||
        fieldname == QString::fromLatin1( "mozillasecondemail" ) ) { // mozilla
-    if (!a.emails().contains(value))
+    if ( a.emails().find( value ) == a.emails().end() )
       a.insertEmail( value );
     return true;
   }
