@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+Comment=FLAC Audio
+MimeType=audio/x-flac
+Icon=sound
+Patterns=*.flac;*.FLAC;
