@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>
+#include <knotifyclient.h>
 
 #include "kcombobox.h"
 #include "kcombobox.moc"
@@ -501,7 +502,7 @@ void KComboBox::makeCompletionBox()
 {
     if ( d->completionBox )
 	return;
-    
+
     d->completionBox = new KCompletionBox( this, "completion box" );
     connect( d->completionBox, SIGNAL( activated( const QString& )),
 	     SLOT( setEditText( const QString& )));
@@ -688,7 +689,12 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 		myIterateIndex = count() - 1;
 		setEditText( text(myIterateIndex) );
 	    }
-	    else {
+	    else { // bottom of history
+		if ( myIterateIndex == -2 ) {
+		    KNotifyClient::event( KNotifyClient::notification,
+				      i18n("No further item in the history."));
+		}
+		
 		myIterateIndex = -1;
 		setEditText( myText );
 	    }
