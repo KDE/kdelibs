@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
+ * Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and
  * Espen Sand (espen@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -139,63 +139,5 @@ class KAboutContainerBase : public QWidget
     KAboutContainerBasePrivate *d;
 };
 
-class KAboutContributorPrivate;
-
-/**
- * Used internally by @ref KAboutWidget
- * @internal
- */
-class KAboutContributor : public QFrame
-{
-  Q_OBJECT
-
-  public:
-    KAboutContributor( QWidget *parent=0, const char *name=0,
-		       const QString &username=QString::null,
-		       const QString &email=QString::null,
-		       const QString &url=QString::null,
-		       const QString &work=QString::null,
-		       bool showHeader=false, bool showFrame=true,
-		       bool showBold=false );
-
-    void setName( const QString &text, const QString &header=QString::null,
-		  bool update = true );
-    void setEmail( const QString &text, const QString &header=QString::null,
-		   bool update = true );
-    void setURL( const QString &text, const QString &header=QString::null,
-		 bool update = true );
-    void setWork( const QString &text, const QString &header=QString::null,
-		  bool update = true );
-    QString getName( void );
-    QString getEmail( void );
-    QString getURL( void );
-    QString getWork( void );
-
-    virtual QSize sizeHint( void ) const;
-
-  protected:
-    virtual void fontChange( const QFont &oldFont );
-
-  protected slots:
-    void urlClickedSlot( const QString& );
-    void emailClickedSlot( const QString& emailaddress );
-
-  private:
-    void updateLayout( void );
-
-  signals:
-    void sendEmail(const QString& name, const QString& email);
-    void openURL(const QString& url);
-
-  private:
-    QLabel *mLabel[4];
-    QLabel *mText[4];
-    bool mShowHeader;
-    bool mShowBold;
-
-    KAboutContributorPrivate *d;
-
-	virtual void setName(const char *_name) { QFrame::setName(_name); }
-};
 
 #endif
