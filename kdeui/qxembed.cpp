@@ -730,14 +730,8 @@ static int get_parent(WId winid, Window *out_parent)
     Window root, *children=0;
     unsigned int nchildren;
     int st = XQueryTree(qt_xdisplay(), winid, &root, out_parent, &children, &nchildren);
-    if (st) {
-        if (children) {
-            XFree(children);
-        }
-        return st;
-    } else {
-        // kdDebug() << QString("**** FAILED **** XQueryTree returns status %1").arg(st) << endl;
-    }
+    if (st && children) 
+        XFree(children);
     return st;
 }
 #include <unistd.h>
@@ -865,7 +859,7 @@ bool QXEmbed::x11Event( XEvent* e)
         }
         break;
     case ButtonPress:
-        if (d->xplain) {
+        if (d->xplain && d->xgrab) {
             QFocusEvent::setReason( QFocusEvent::Mouse );
             setFocus();
             QFocusEvent::resetReason();
@@ -874,8 +868,10 @@ bool QXEmbed::x11Event( XEvent* e)
         }
         break;
     case ButtonRelease:
-        if (d->xplain) 
+        if (d->xplain && d->xgrab) {
             XAllowEvents(qt_xdisplay(), SyncPointer, CurrentTime);
+            return true;
+        }
         break;
     case MapRequest:
         if ( window && e->xmaprequest.window == window )
