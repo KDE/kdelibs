@@ -1,5 +1,8 @@
 Here's what's still missing (roughly in order of importance):
 
+* Add a select(...) function to HTMLTextSlave so that "select all"
+  works.
+
 * check the remaining ascii() calls
 
 * move the attribute parsing into the objects
@@ -9,6 +12,13 @@ Here's what's still missing (roughly in order of importance):
 
 * use KURL instead of QString url everywhere for URL's. This
   would avoid quite some QString<-->KURL conversions
+  WABA: But for the time being, a QString is much cheaper to
+        store than a KURL, especially since we use HTMLStrings
+        for this. The only extra time spend is in the KURL.url()
+        call which isn't too much of an overhead. Most of the
+        time we don't convert a QString to a KURL a second time,
+        because most URLs on a page aren't used.
+        (You usually only click on one link/URL)
 
 * many functions using QString now could be changed to use references,
   to avoid copying of the string
