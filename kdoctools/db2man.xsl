@@ -3,7 +3,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version='1.0'>
 
-<xsl:include href="/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/common/common.xsl"/>
+<xsl:include href="docbook/xsl/common/common.xsl"/>
 
 <xsl:include href="synop.xsl"/>
 <xsl:include href="lists.xsl"/>
