@@ -201,7 +201,8 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
 
         QRect rect(p->itemRect(i));
         setText(item->text(c));
-
+        home( true );
+        
         int fieldX = rect.x() - 1;
         int fieldW = p->columnWidth(col) + 2;
 
