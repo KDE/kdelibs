@@ -185,7 +185,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 		if ( beforeChild && !beforeChild->isTableSection() )
 		    beforeChild = 0;
   		//kdDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
-		o = new (renderArena()) RenderTableSection(0 /* anonymous */);
+		o = new (renderArena()) RenderTableSection(document() /* anonymous */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
                 newStyle->setDisplay(TABLE_ROW_GROUP);
@@ -770,7 +770,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		return;
 	    } else {
 		//kdDebug( 6040 ) << "creating anonymous table row" << endl;
-		row = new (renderArena()) RenderTableRow(0 /* anonymous table */);
+		row = new (renderArena()) RenderTableRow(document() /* anonymous table */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
 		newStyle->setDisplay( TABLE_ROW );
@@ -1486,7 +1486,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if( last && last->isAnonymous() && last->isTableCell() )
             cell = static_cast<RenderTableCell *>(last);
         else {
-	    cell = new (renderArena()) RenderTableCell(element()->getDocument() /* anonymous object */);
+	    cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE_CELL );

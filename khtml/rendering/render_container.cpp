@@ -118,7 +118,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             table = static_cast<RenderTable *>(last);
         } else {
 	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
-            table = new (renderArena()) RenderTable(element()->getDocument() /* is anonymous */);
+            table = new (renderArena()) RenderTable(document() /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE );

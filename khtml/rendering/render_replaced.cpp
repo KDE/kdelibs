@@ -122,8 +122,8 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
         : RenderReplaced(node)
 {
     m_widget = 0;
-    // a replaced element doesn't support being anonymous
-    assert(node);
+    // a widget doesn't support being anonymous
+    assert(!isAnonymous());
     m_view = node->getDocument()->view();
 
     // this is no real reference counting, its just there
@@ -165,7 +165,7 @@ class QWidgetResizeEvent : public QEvent
 public:
     enum { Type = QEvent::User + 0xbee };
     QWidgetResizeEvent( int _w,  int _h ) :
-	QEvent( ( QEvent::Type ) Type ),  w( _w ), h( _h ) {}
+        QEvent( ( QEvent::Type ) Type ),  w( _w ), h( _h ) {}
     int w;
     int h;
 };
@@ -173,14 +173,14 @@ public:
 void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
-	 // its bigger )
+         // its bigger )
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
         ref();
         element()->ref();
-	QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
+        QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
         element()->deref();
         deref();
     }
@@ -189,8 +189,8 @@ void  RenderWidget::resizeWidget( int w, int h )
 bool RenderWidget::event( QEvent *e )
 {
     if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
-	QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
-	m_widget->resize( re->w,  re->h );
+        QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
+        m_widget->resize( re->w,  re->h );
     }
     return true;
 }
@@ -211,16 +211,16 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-	    if (!::qt_cast<QScrollView *>(m_widget))
-		m_widget->setBackgroundMode(QWidget::NoBackground);
+            if (!::qt_cast<QScrollView *>(m_widget))
+                m_widget->setBackgroundMode(QWidget::NoBackground);
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
             // widget immediately
             if (layouted()) {
-		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
-		resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-			      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
+                // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+                resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                              m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
             }
             else
                 setPos(xPos(), -500000);
@@ -235,8 +235,8 @@ void RenderWidget::layout( )
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
     if ( m_widget )
-	resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-		      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
+        resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
 
     setLayouted();
 }
@@ -263,7 +263,7 @@ void RenderWidget::updateFromElement()
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Midlight, backgroundColor.light(110) );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Button, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Base, backgroundColor );
-	    }
+            }
             }
             if ( color.isValid() ) {
                 struct ColorSet {
@@ -331,19 +331,20 @@ void RenderWidget::setStyle(RenderStyle *_style)
 }
 
 void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx, int _ty,
-			       PaintAction paintPhase)
+                               PaintAction paintPhase)
 {
     if (!m_widget || !m_view || paintPhase != PaintActionForeground)
-	return;
+        return;
 
-    if (style()->visibility() != VISIBLE) {
-	m_widget->hide();
-	return;
+    // not visible or not even once layouted
+    if (style()->visibility() != VISIBLE || m_y <=  -500000) {
+        m_widget->hide();
+        return;
     }
 
     // add offset for relative positioning
     if(isRelPositioned())
-	relativePositionOffset(_tx, _ty);
+        relativePositionOffset(_tx, _ty);
 
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
@@ -351,35 +352,35 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
-	KHTMLView *vw = static_cast<KHTMLView *>(m_widget);
-	int cy = m_view->contentsY();
-	int ch = m_view->visibleHeight();
+        KHTMLView *vw = static_cast<KHTMLView *>(m_widget);
+        int cy = m_view->contentsY();
+        int ch = m_view->visibleHeight();
 
 
-	int childx = m_view->childX( m_widget );
-	int childy = m_view->childY( m_widget );
+        int childx = m_view->childX( m_widget );
+        int childy = m_view->childY( m_widget );
 
-	int xNew = xPos;
-	int yNew = childy;
+        int xNew = xPos;
+        int yNew = childy;
 
-	// 	qDebug("cy=%d, ch=%d, childy=%d, childh=%d", cy, ch, childy, childh );
-	if ( childh == 3072 ) {
-	    if ( cy + ch > childy + childh ) {
-		yNew = cy + ( ch - childh )/2;
-	    } else if ( cy < childy ) {
-		yNew = cy + ( ch - childh )/2;
-	    }
-// 	    qDebug("calculated yNew=%d", yNew);
-	}
-	yNew = QMIN( yNew, yPos + m_height - childh );
-	yNew = QMAX( yNew, yPos );
-	if ( yNew != childy || xNew != childx ) {
-	    if ( vw->contentsHeight() < yNew - yPos + childh )
-		vw->resizeContents( vw->contentsWidth(), yNew - yPos + childh );
-	    vw->setContentsPos( xNew - xPos, yNew - yPos );
-	}
-	xPos = xNew;
-	yPos = yNew;
+        //         qDebug("cy=%d, ch=%d, childy=%d, childh=%d", cy, ch, childy, childh );
+        if ( childh == 3072 ) {
+            if ( cy + ch > childy + childh ) {
+                yNew = cy + ( ch - childh )/2;
+            } else if ( cy < childy ) {
+                yNew = cy + ( ch - childh )/2;
+            }
+//             qDebug("calculated yNew=%d", yNew);
+        }
+        yNew = QMIN( yNew, yPos + m_height - childh );
+        yNew = QMAX( yNew, yPos );
+        if ( yNew != childy || xNew != childx ) {
+            if ( vw->contentsHeight() < yNew - yPos + childh )
+                vw->resizeContents( vw->contentsWidth(), yNew - yPos + childh );
+            vw->setContentsPos( xNew - xPos, yNew - yPos );
+        }
+        xPos = xNew;
+        yPos = yNew;
     }
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
@@ -398,36 +399,36 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 
     QPixmap pm;
     if (!widget->inherits("QScrollView")) {
-	bool dsbld = QSharedDoubleBuffer::isDisabled();
-	QSharedDoubleBuffer::setDisabled(true);
-	pm = QPixmap(widget->width(), widget->height());
-	if (p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget)) {
-	    // even hackier!
-	    pm.fill(widget, QPoint(0, 0));
-	} else {
-	    QPoint pt(tx, ty);
-	    pt = p->xForm(pt);
-	    bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
-	}
-	QPainter::redirect(widget, &pm);
-	QPaintEvent e( widget->rect(), false );
-	QApplication::sendEvent( widget, &e );
-	QPainter::redirect(widget, 0);
-	QSharedDoubleBuffer::setDisabled(dsbld);
+        bool dsbld = QSharedDoubleBuffer::isDisabled();
+        QSharedDoubleBuffer::setDisabled(true);
+        pm = QPixmap(widget->width(), widget->height());
+        if (p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget)) {
+            // even hackier!
+            pm.fill(widget, QPoint(0, 0));
+        } else {
+            QPoint pt(tx, ty);
+            pt = p->xForm(pt);
+            bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
+        }
+        QPainter::redirect(widget, &pm);
+        QPaintEvent e( widget->rect(), false );
+        QApplication::sendEvent( widget, &e );
+        QPainter::redirect(widget, 0);
+        QSharedDoubleBuffer::setDisabled(dsbld);
         p->drawPixmap(tx, ty, pm);
     } else {
-	// QScrollview is difficult and I currently know of no way to get
-	// the stuff on screen without flicker.
-	//
-	// This still doesn't work nicely for textareas. Probably need
-	// to fix qtextedit for that.
-	// KHTMLView::eventFilter()
+        // QScrollview is difficult and I currently know of no way to get
+        // the stuff on screen without flicker.
+        //
+        // This still doesn't work nicely for textareas. Probably need
+        // to fix qtextedit for that.
+        // KHTMLView::eventFilter()
 #if 0
-	QPaintEvent e( widget->rect(), false );
-	QApplication::sendEvent( widget, &e );
-	QScrollView *sv = static_cast<QScrollView *>(widget);
-	sv->repaint(true);
-	pm = QPixmap::grabWindow(widget->winId());
+        QPaintEvent e( widget->rect(), false );
+        QApplication::sendEvent( widget, &e );
+        QScrollView *sv = static_cast<QScrollView *>(widget);
+        sv->repaint(true);
+        pm = QPixmap::grabWindow(widget->winId());
 #endif
     }
 
@@ -465,7 +466,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
             filtered = true;
         break;
     default:
-	break;
+        break;
     };
 
     element()->deref();
@@ -481,28 +482,28 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 class EventPropagator : public QWidget {
 public:
     void sendEvent(QEvent *e) {
-	switch(e->type()) {
-	case QEvent::MouseButtonPress:
-	    mousePressEvent(static_cast<QMouseEvent *>(e));
-	    break;
-	case QEvent::MouseButtonRelease:
-	    mouseReleaseEvent(static_cast<QMouseEvent *>(e));
-	    break;
-	case QEvent::MouseButtonDblClick:
-	    mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
-	    break;
-	case QEvent::MouseMove:
-	    mouseMoveEvent(static_cast<QMouseEvent *>(e));
-	    break;
-	case QEvent::KeyPress:
-	    keyPressEvent(static_cast<QKeyEvent *>(e));
-	    break;
-	case QEvent::KeyRelease:
-	    keyReleaseEvent(static_cast<QKeyEvent *>(e));
-	    break;
-	default:
-	    break;
-	}
+        switch(e->type()) {
+        case QEvent::MouseButtonPress:
+            mousePressEvent(static_cast<QMouseEvent *>(e));
+            break;
+        case QEvent::MouseButtonRelease:
+            mouseReleaseEvent(static_cast<QMouseEvent *>(e));
+            break;
+        case QEvent::MouseButtonDblClick:
+            mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
+            break;
+        case QEvent::MouseMove:
+            mouseMoveEvent(static_cast<QMouseEvent *>(e));
+            break;
+        case QEvent::KeyPress:
+            keyPressEvent(static_cast<QKeyEvent *>(e));
+            break;
+        case QEvent::KeyRelease:
+            keyReleaseEvent(static_cast<QKeyEvent *>(e));
+            break;
+        default:
+            break;
+        }
     }
 };
 
@@ -512,76 +513,76 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEDOWN_EVENT:
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
-	const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
-	QMouseEvent *qme = me.qEvent();
+        const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
+        QMouseEvent *qme = me.qEvent();
 
-	int absx = 0;
-	int absy = 0;
+        int absx = 0;
+        int absy = 0;
 
-	absolutePosition(absx, absy);
+        absolutePosition(absx, absy);
 
-	QPoint p(me.clientX() - absx + m_view->contentsX(),
-		 me.clientY() - absy + m_view->contentsY());
-	QMouseEvent::Type type;
-	int button = 0;
-	int state = 0;
+        QPoint p(me.clientX() - absx + m_view->contentsX(),
+                 me.clientY() - absy + m_view->contentsY());
+        QMouseEvent::Type type;
+        int button = 0;
+        int state = 0;
 
-	if (qme) {
-	    button = qme->button();
-	    state = qme->state();
-	    type = qme->type();
-	} else {
-	    switch(me.id())  {
-	    case EventImpl::MOUSEDOWN_EVENT:
-		type = QMouseEvent::MouseButtonPress;
-		break;
-	    case EventImpl::MOUSEUP_EVENT:
-		type = QMouseEvent::MouseButtonRelease;
-		break;
-	    case EventImpl::MOUSEMOVE_EVENT:
-	    default:
-		type = QMouseEvent::MouseMove;
-		break;
-	    }
-	    switch (me.button()) {
-	    case 0:
-		button = LeftButton;
-		break;
-	    case 1:
-		button = MidButton;
-		break;
-	    case 2:
-		button = RightButton;
-		break;
-	    default:
-		break;
-	    }
-	    if (me.ctrlKey())
-		state |= ControlButton;
-	    if (me.altKey())
-		state |= AltButton;
-	    if (me.shiftKey())
-		state |= ShiftButton;
-	    if (me.metaKey())
-		state |= MetaButton;
-	}
+        if (qme) {
+            button = qme->button();
+            state = qme->state();
+            type = qme->type();
+        } else {
+            switch(me.id())  {
+            case EventImpl::MOUSEDOWN_EVENT:
+                type = QMouseEvent::MouseButtonPress;
+                break;
+            case EventImpl::MOUSEUP_EVENT:
+                type = QMouseEvent::MouseButtonRelease;
+                break;
+            case EventImpl::MOUSEMOVE_EVENT:
+            default:
+                type = QMouseEvent::MouseMove;
+                break;
+            }
+            switch (me.button()) {
+            case 0:
+                button = LeftButton;
+                break;
+            case 1:
+                button = MidButton;
+                break;
+            case 2:
+                button = RightButton;
+                break;
+            default:
+                break;
+            }
+            if (me.ctrlKey())
+                state |= ControlButton;
+            if (me.altKey())
+                state |= AltButton;
+            if (me.shiftKey())
+                state |= ShiftButton;
+            if (me.metaKey())
+                state |= MetaButton;
+        }
 
 //     kdDebug(6000) << "sending event to widget "
-// 		  << " pos=" << p << " type=" << type
-// 		  << " button=" << button << " state=" << state << endl;
-	QMouseEvent e(type, p, button, state);
-	static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
-	break;
+//                   << " pos=" << p << " type=" << type
+//                   << " button=" << button << " state=" << state << endl;
+        QMouseEvent e(type, p, button, state);
+        static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+        break;
     }
     case EventImpl::KHTML_KEYDOWN_EVENT:
     case EventImpl::KHTML_KEYUP_EVENT:
     case EventImpl::KHTML_KEYPRESS_EVENT: {
-	QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
-	if (ke)
-	    static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        if (ke)
+            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
     }
     default:
-	break;
+        break;
     }
     return true;
 }
@@ -659,8 +660,8 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
 {
 #if 0
     kdDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
-    		<< "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
-		<< "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
+                    << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
+                << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
 #endif
     node = element();
     offset = 0;
@@ -675,15 +676,15 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
         return SelectionPointAfter;
     }
     if ( _x > _tx + xPos() + width() ) {
-	// to the right
-	// ### how to regard bidi in replaced elements? (LS)
+        // to the right
+        // ### how to regard bidi in replaced elements? (LS)
         offset = 1;
-	return SelectionPointAfterInLine;
+        return SelectionPointAfterInLine;
     }
 
     // The Y matches, check if we're on the left
     if ( _x < _tx + xPos() ) {
-	// ### how to regard bidi in replaced elements? (LS)
+        // ### how to regard bidi in replaced elements? (LS)
         return SelectionPointBeforeInLine;
     }
 

@@ -1505,14 +1505,14 @@ void RenderFlow::splitFlow(RenderObject* beforeChild, RenderFlow* newBlockBox,
     RenderStyle* newStyle = new RenderStyle();
     newStyle->inheritFrom(block->style());
     newStyle->setDisplay(BLOCK);
-    pre = new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+    pre = new (renderArena()) RenderFlow(document() /* anonymous box */);
     pre->setStyle(newStyle);
     pre->setChildrenInline(true);
 
     newStyle = new RenderStyle();
     newStyle->inheritFrom(block->style());
     newStyle->setDisplay(BLOCK);
-    post = new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+    post = new (renderArena()) RenderFlow(document() /* anonymous box */);
     post->setStyle(newStyle);
     post->setChildrenInline(true);
 
@@ -1620,7 +1620,7 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
             //kdDebug( 6040 ) << "first letter" << endl;
 
             RenderFlow* firstLetter = 
-               new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+               new (renderArena()) RenderFlow(document() /* anonymous box */);
             pseudoStyle->setDisplay( INLINE );
             firstLetter->setStyle(pseudoStyle);
             firstLetter->setIsAnonymous(true);
@@ -1701,7 +1701,7 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *newBox = new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+            RenderFlow *newBox = new (renderArena()) RenderFlow(document() /* anonymous box */);
             newBox->setStyle(newStyle);
             RenderFlow* oldContinuation = continuation();
             setContinuation(newBox);
@@ -1751,7 +1751,7 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *newBox = new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+            RenderFlow *newBox = new (renderArena()) RenderFlow(document() /* anonymous box */);
             newBox->setStyle(newStyle);
 
             RenderBox::addChild(newBox,beforeChild);
@@ -1811,7 +1811,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *box = new (renderArena()) RenderFlow(element()->getDocument() /* anonymous box */);
+            RenderFlow *box = new (renderArena()) RenderFlow(document() /* anonymous box */);
             box->setStyle(newStyle);
             box->setIsAnonymous(true);
             // ### the children have a wrong style!!!
