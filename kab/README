@@ -1,3 +1,11 @@
+Note: libkab is now obsolete. Please use libkabc in kdelibs/kabc. libkab is no
+longer installed. It's only needed for the conversion tool converting libkab
+data to libkabc data.
+
+Cornelius Schumacher, February 2002.
+
+
+
 The KDE addressbook
 ===================
 
