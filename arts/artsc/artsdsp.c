@@ -171,6 +171,14 @@ static void mmapemu_flush()
   }
 }
 
+/* returns 1 if the filename points to a sound device */
+static int is_sound_device(const char *pathname)
+{
+  if(strcmp(pathname,"/dev/dsp") == 0) return 1;
+  if(strcmp(pathname,"/dev/sound/dsp0") == 0) return 1;
+  return 0;
+}
+
 int open (const char *pathname, int flags, ...)
 {
   va_list args;
@@ -188,7 +196,7 @@ int open (const char *pathname, int flags, ...)
   if(flags & O_CREAT) mode = va_arg(args, mode_t);
   va_end(args);
 
-  if (strcmp(pathname,"/dev/dsp"))    /* original open for anything but sound */
+  if (!is_sound_device(pathname))    /* original open for anything but sound */
     return orig_open (pathname, flags, mode);
 
   settings = 0;
@@ -590,7 +598,7 @@ FILE* fopen(const char *path, const char *mode)
 {
   CHECK_INIT();
 
-  if (strcmp(path,"/dev/dsp"))    /* original open for anything but sound */
+  if (!is_sound_device(path))    /* original open for anything but sound */
     return orig_fopen (path, mode);
 
   artsdspdebug ("aRts: hijacking /dev/dsp fopen...\n");
