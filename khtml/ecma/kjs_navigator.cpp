@@ -175,9 +175,24 @@ Value Navigator::getValue(ExecState *exec, int token) const
     }
     //kdDebug() << "appName -> Konqueror" << endl;
     return String("Konqueror");
-  case AppVersion:
+  case AppVersion: {
     // We assume the string is something like Mozilla/version (properties)
-    return String(userAgent.mid(userAgent.find('/') + 1));
+    // For MSIE it's the number after MSIE that counts, it's always Mozilla/4.0
+    int pos = userAgent.find("MSIE ");
+    QString str;
+    if ( pos != -1 ) // MSIE case
+      str = userAgent.mid(pos+5);
+    else // other case
+      str = userAgent.mid(userAgent.find('/') + 1);
+    // Keep only digits and '.'
+    for ( int pos = 0 ; pos < str.length() ; ++pos )
+      if ( !str[pos].isDigit() && str[pos] != '.' ) {
+        str = str.left(pos);
+        break;
+      }
+    //kdDebug() << "navigator.appVersion: " << str << endl;
+    return String(str);
+  }
   case Product:
     return String("Konqueror/khtml");
   case Vendor:
