@@ -199,7 +199,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
     {
         checkBuffer();
 
-        if (skipLF && ( list[0] != '\n' ))
+        if (skipLF && ( *list != '\n' ))
         {
             skipLF = false;
         }
@@ -209,7 +209,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
             skipLF = false;
             ++list;
         }
-        else if (( list[0] == '\n' ) || ( list[0] == '\r' ))
+        else if (( *list == '\n' ) || ( *list == '\r' ))
         {
             if (discard == LFDiscard)
             {
@@ -224,17 +224,17 @@ void HTMLTokenizer::addListing(DOMStringIt list)
                 pending = LFPending;
             }
             /* Check for MS-DOS CRLF sequence */
-            if (list[0] == '\r')
+            if (*list == '\r')
             {
                 skipLF = true;
             }
             ++list;
         }
-        else if (( list[0] == ' ' ) || ( list[0] == '\t'))
+        else if (( *list == ' ' ) || ( *list == '\t'))
         {
             if (pending)
                 addPending();
-            if (list[0] == ' ')
+            if (*list == ' ')
                 pending = SpacePending;
             else
                 pending = TabPending;
@@ -247,7 +247,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
                 addPending();
 
             prePos++;
-            *dest++ = list[0];
+            *dest++ = *list;
             ++list;
         }
 
@@ -267,16 +267,12 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
+    // Famous last words: I'm 99.9% sure.
+    assert( !Entity );
+
     // We are inside a <script>, <style>, <textarea> . Look for the end tag
     // which is either </script>, </style> , </textarea> or -->
     // otherwise print out every received character
-    if (Entity) {
-        checkScriptBuffer();
-        QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-        parseEntity(src,scriptCodeDest);
-        scriptCodeSize = scriptCodeDest-scriptCode;
-    }
-
 
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
@@ -292,7 +288,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         // 10 characers.
         checkScriptBuffer();
 
-        char ch = src[0].latin1();
+        char ch = src->latin1();
 
         if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
@@ -371,7 +367,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         // may still be on their way thru the web!
         else if ( searchCount > 0 )
         {
-            const QChar& cmp = src[0];
+            const QChar& cmp = *src;
             // be tolerant: skip spaces before the ">", i.e "</script >"
             if (!escaped &&  cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
@@ -388,14 +384,14 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 searchBuffer[ searchCount ] = 0;
                 DOMStringIt pit(searchBuffer,searchCount);
                 while (pit.length()) {
-                    if (textarea && pit[0] == '&') {
+                    if (textarea && *pit == '&') {
                         QChar *scriptCodeDest = scriptCode+scriptCodeSize;
                         ++pit;
                         parseEntity(pit,scriptCodeDest,true);
                         scriptCodeSize = scriptCodeDest-scriptCode;
                     }
                     else {
-                        scriptCode[ scriptCodeSize++ ] = pit[0];
+                        scriptCode[ scriptCodeSize++ ] = *pit;
                         ++pit;
                     }
                 }
@@ -406,7 +402,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( !escaped && ( ch == '<' || ch == '-' ) )
         {
             searchCount = 1;
-            searchBuffer[ 0 ] = src[0];
+            searchBuffer[ 0 ] = *src;
             ++src;
         }
         else
@@ -427,7 +423,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                         tquote = NoQuote;
                 }
 
-                scriptCode[ scriptCodeSize++ ] = src[0];
+                scriptCode[ scriptCodeSize++ ] = *src;
                 if ( script && !escaped && ch == '\\' )
                     escaped = true;
                 else
@@ -478,7 +474,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
             return; // Finished parsing comment
         }
 
-        scriptCode[ scriptCodeSize++ ] = src[0];
+        scriptCode[ scriptCodeSize++ ] = *src;
         ++src;
     }
 }
@@ -487,7 +483,7 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
 {
     while ( src.length() )
     {
-        char chbegin = src[0].latin1();
+        char chbegin = src->latin1();
         if(chbegin == '\'') {
             tquote = tquote == SingleQuote ? NoQuote : SingleQuote;
         }
@@ -517,7 +513,7 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
         checkBuffer();
 
         // ascii is okay because we only do ascii comparisons
-        char chbegin = src[0].latin1();
+        char chbegin = src->latin1();
 
         if (skipLF && ( chbegin != '\n' ))
         {
@@ -542,7 +538,7 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
         }
         else
         {
-            *dest++ = src[0];
+            *dest++ = *src;
             ++src;
         }
     }
@@ -559,7 +555,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
     while( src.length() )
     {
-        ushort cc = src[0].unicode();
+        ushort cc = src->unicode();
         switch(Entity) {
         case NoEntity:
             return;
@@ -594,7 +590,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             int uc = EntityChar.unicode();
             int ll = kMin(src.length(), 9-cBufferPos);
             while(ll--) {
-                QChar csrc(src[0].lower());
+                QChar csrc(src->lower());
                 cc = csrc.cell();
 
                 if(csrc.row() || !((cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'f'))) {
@@ -614,9 +610,9 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             int uc = EntityChar.unicode();
             int ll = kMin(src.length(), 9-cBufferPos);
             while(ll--) {
-                cc = src[0].cell();
+                cc = src->cell();
 
-                if(src[0].row() || !(cc >= '0' && cc <= '9')) {
+                if(src->row() || !(cc >= '0' && cc <= '9')) {
                     Entity = SearchSemicolon;
                     break;
                 }
@@ -625,6 +621,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 cBuffer[cBufferPos++] = cc;
                 ++src;
             }
+            qDebug( "Decimal: %02x, %d", uc, uc );
+
             EntityChar = QChar(uc);
             if(cBufferPos == 9)  Entity = SearchSemicolon;
             break;
@@ -633,7 +631,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
         {
             int ll = kMin(src.length(), 9-cBufferPos);
             while(ll--) {
-                QChar csrc = src[0];
+                QChar csrc = *src;
                 cc = csrc.cell();
 
                 if(csrc.row() || !((cc >= 'a' && cc <= 'z') ||
@@ -653,7 +651,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                         EntityChar = e->code;
 
                     // be IE compatible
-                    if(tag && EntityChar.unicode() > 255 && src[0] != ';')
+                    if(tag && EntityChar.unicode() > 255 && *src != ';')
                         EntityChar = QChar::null;
                 }
             }
@@ -669,11 +667,10 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             if ( EntityChar != QChar::null ) {
                 checkBuffer();
                 // Just insert it
-                *dest++ = EntityChar;
-                if (pre)
-                    prePos++;
-                if (src[0] == ';')
+                if (*src == ';')
                     ++src;
+
+                src.push( EntityChar );
             } else {
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "unknown entity!" << endl;
@@ -699,13 +696,12 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
-    if (Entity)
-        parseEntity(src,dest);
+    assert(!Entity );
 
     while ( src.length() )
     {
         checkBuffer();
-        char curchar = src[0].latin1();
+        char curchar = src->latin1();
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         int l = 0;
         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
@@ -725,7 +721,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif
             if (searchCount > 0)
             {
-                if (src[0] == commentStart[searchCount])
+                if (*src == commentStart[searchCount])
                 {
                     searchCount++;
                     if (searchCount == 4)
@@ -983,7 +979,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         break;
                     }
                 }
-                *dest++ = src[0];
+                *dest++ = *src;
                 ++src;
             }
             break;
@@ -1023,7 +1019,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     }
                 }
 
-                *dest++ = src[0];
+                *dest++ = *src;
                 ++src;
             }
             break;
@@ -1155,12 +1151,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 select = beginTag;
             }
-
-            if ( pending && !pre ) {
-                if ( !parser->noSpaces() ) addPending();
-                discard = AllDiscard;
-                pending = NonePending;
-            }
             return; // Finished parsing tag!
         }
         } // end switch
@@ -1269,6 +1259,9 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
     src = DOMStringIt(_src);
 
+    if (Entity)
+        parseEntity(src, dest);
+
     if (plaintext)
         parseText(src);
     else if (comment)
@@ -1283,20 +1276,13 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         parseProcessingInstruction(src);
     else if (tag)
         parseTag(src);
-    else if (Entity)
-        parseEntity(src, dest);
 
     while ( src.length() )
     {
         // do we need to enlarge the buffer?
         checkBuffer();
 
-        ushort cc = src[0].unicode();
-
-//         if(!startTag && cc != '<') {
-//             ++src;
-//             continue;
-//         }
+        ushort cc = src->unicode();
 
         if (skipLF && (cc != '\n'))
             skipLF = false;
@@ -1352,8 +1338,21 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             }
             }; // end case
 
-            if ( pre && pending )
-                addPending();
+            if ( pending ) {
+                // pre context always gets its spaces/linefeeds
+                if ( pre )
+                    addPending();
+                // only add in existing inline context or if
+                // we just started one, i.e. we're about to insert real text
+                else if ( !parser->selectMode() &&
+                          ( !parser->noSpaces() || dest > buffer )) {
+                    addPending();
+                    discard = AllDiscard;
+                }
+                // just forget it
+                else
+                    pending = NonePending;
+            }
 
             processToken();
 
@@ -1449,10 +1448,10 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             {
                 prePos++;
             }
-            unsigned char row = src[0].row();
+            unsigned char row = src->row();
             if ( row > 0x05 && row < 0x10 || row > 0xfd )
                     currToken.complexText = true;
-            *dest = src[0];
+            *dest = *src;
             fixUpChar( *dest );
             ++dest;
             ++src;

@@ -87,6 +87,7 @@ public:
 
     bool skipMode() const { return (discard_until != 0); }
     bool noSpaces() const { return (!_inline  || !inBody); }
+    bool selectMode() const { return inSelect; }
 
     DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document->document()); }
     DOM::DocumentPtr *docPtr() const { return document; }
@@ -160,6 +161,7 @@ protected:
     bool end;
     bool flat;
     bool haveKonqBlock;
+    bool inSelect;
     
     /*
      * tells the parser to discard all tags, until it reaches the one specified

@@ -48,22 +48,24 @@ public:
 
     DOMStringIt *operator++()
     {
-	if(l > 0 )
+        if(!pushedChar.isNull())
+            pushedChar=0;
+        else if(l > 0 )
 	    s++, l--;
 	return this;
     }
+public:
+    void push(const QChar& c) { /* assert(pushedChar.isNull());*/  pushedChar = c; }
+    
+    const QChar& operator*() const  { return pushedChar.isNull() ? *s : pushedChar; }
+    const QChar* operator->() const { return pushedChar.isNull() ? s : &pushedChar; }
 
-    const QChar &operator [] (int i) const {
-	return *(s+i);
-    }
-    const QChar& operator*() const  { return *s; }
-    const QChar* operator->() const { return s; }
+    uint length() const { return l+(!pushedChar.isNull()); }
 
-    uint length() const { return l; }
-
-    const QChar *current() const { return s; }
+    const QChar *current() const { return pushedChar.isNull() ? s : &pushedChar; }
 
 protected:
+    QChar pushedChar;
     const QChar *s;
     int l;
 };

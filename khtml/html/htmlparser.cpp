@@ -262,6 +262,7 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
     reset();
     current = i;
     inBody = true;
+    inSelect = false;
 }
 
 KHTMLParser::~KHTMLParser()
@@ -290,6 +291,7 @@ void KHTMLParser::reset()
     inBody = false;
     noRealBody = true;
     haveFrameSet = false;
+    inSelect = false;
     _inline = false;
 
     form = 0;
@@ -299,7 +301,6 @@ void KHTMLParser::reset()
     isindex = 0;
     flat = false;
     haveKonqBlock = false;
-
 
     discard_until = 0;
 }
@@ -342,18 +343,7 @@ void KHTMLParser::parseToken(Token *t)
             kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
 
-#if 1
-        if (!_inline  || !inBody || current->id() == ID_OPTION)  {
-            if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ') {
-                return;
-            }
-
-        } else if ( inBody ) {
-            noRealBody = false;
-        }
-#else
         if ( inBody ) noRealBody = false;
-#endif
     }
 
     NodeImpl *n = getElement(t);
@@ -915,6 +905,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLOptionElementImpl(document, form);
         break;
     case ID_SELECT:
+        inSelect = true;
         n = new HTMLSelectElementImpl(document, form);
         break;
     case ID_TEXTAREA:
@@ -1175,6 +1166,9 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_TITLE+ID_CLOSE_TAG:
         if ( current->id() == ID_TITLE )
           static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+        break;
+    case ID_SELECT+ID_CLOSE_TAG:
+        inSelect = false;
         break;
     default:
         break;
