@@ -26,6 +26,10 @@
 #include <qgroupbox.h>
 #include <qlayout.h>
 
+#include <kglobalsettings.h>
+#include <kiconloader.h>
+#include <qpushbutton.h>
+
 #include "resource.h"
 #include "addressbook.h"
 
@@ -54,8 +58,12 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
   KButtonBox *buttonBox = new KButtonBox( this );
 
   buttonBox->addStretch();
-  buttonBox->addButton(  KStdGuiItem::ok().text(), this, SLOT( accept() ) );
-  buttonBox->addButton(  KStdGuiItem::cancel().text(), this, SLOT( reject() ) );
+  QPushButton* ok = buttonBox->addButton(  KStdGuiItem::ok().text(), this, SLOT( accept() ) );
+  QPushButton* cancel = buttonBox->addButton(  KStdGuiItem::cancel().text(), this, SLOT( reject() ) );
+  if (KGlobalSettings::showIconsOnPushButtons()) {
+    ok->setIconSet( SmallIconSet("button_ok") );
+    cancel->setIconSet( SmallIconSet("button_cancel") );
+  }
   buttonBox->layout();
 
   mainLayout->addWidget( buttonBox );

@@ -199,7 +199,7 @@ void KHelpMenu::aboutApplication()
       mAboutApp = new KDialogBase( QString::null, // Caption is defined below
 				   KDialogBase::Yes, KDialogBase::Yes,
 				   KDialogBase::Yes, mParent, "about",
-				   false, true, i18n("&OK") );
+				   false, true, KStdGuiItem::ok() );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
       QHBox *hbox = new QHBox( mAboutApp );

@@ -22,12 +22,15 @@
 */
 
 #include <kbuttonbox.h>
+#include <kglobalsettings.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kiconloader.h>
 
 #include <qgroupbox.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 #include "resource.h"
 
@@ -57,8 +60,12 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
   KButtonBox *buttonBox = new KButtonBox( this );
 
   buttonBox->addStretch();    
-  buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  QPushButton* ok = buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
+  QPushButton* cancel = buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  if (KGlobalSettings::showIconsOnPushButtons()) {
+    ok->setIconSet( SmallIconSet("button_ok") );
+    cancel->setIconSet( SmallIconSet("button_cancel") );
+  }
   buttonBox->layout();
 
   mainLayout->addWidget( buttonBox );

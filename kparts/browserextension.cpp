@@ -457,8 +457,8 @@ void BrowserExtension::pasteRequest()
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( QStyleSheet::escape(url) ),
-		    i18n( "Internet Search" ), i18n( "&Search" ),
-		    i18n( "&Cancel" ), "MiddleClickSearch" ) == KMessageBox::Yes)
+		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "find"),
+		    KStdGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
           slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
     }
 }
