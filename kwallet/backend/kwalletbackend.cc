@@ -74,11 +74,11 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
 		if (devrand.open(IO_ReadOnly)) {
+			unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
 
-		unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
-
-			if (rc != randBlock.size())
+			if (rc != randBlock.size()) {
 				return -3;		// not enough data read
+			}
 
 			return 0;
 		}
@@ -89,22 +89,21 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
 		if (devrand.open(IO_ReadOnly)) {
-
 		unsigned int rc = 0;
 		unsigned int cnt = 0;
 
 			do {
-				int rc2 =
-				       devrand.readBlock(randBlock.data() + rc,
-							 randBlock.size());
+				int rc2 = devrand.readBlock(randBlock.data() + rc, randBlock.size());
 
-				if (rc2 < 0)
+				if (rc2 < 0) {
 					return -3;	// read error
+				}
 
 				rc += rc2;
 				cnt++;
-				if (cnt > randBlock.size())
+				if (cnt > randBlock.size()) {
 					return -4;	// reading forever?!
+				}
 			} while(rc < randBlock.size());
 
 			return 0;
@@ -112,7 +111,6 @@ static int getRandomBlock(QByteArray& randBlock) {
 	}
 
 	// EGD method?
-
 
 	// Couldn't get any random data!!
 
