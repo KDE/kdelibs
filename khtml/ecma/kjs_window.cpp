@@ -1650,6 +1650,8 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
       break;
     }
     case Hash:
+      // when the hash is already the same ignore it
+      if (str == url.ref()) return;
       url.setRef(str);
       break;
     case Host: {
