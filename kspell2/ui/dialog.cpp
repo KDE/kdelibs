@@ -101,6 +101,11 @@ void Dialog::initConnections()
     connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotFinished() ) );
     connect( this, SIGNAL( cancelClicked() ),this, SLOT( slotCancel() ) );
     connect( d->ui->m_replacement ,  SIGNAL( returnPressed () ), this, SLOT( slotReplaceWord()) );
+    connect( d->ui->m_autoCorrect, SIGNAL( clicked()),
+             SLOT(slotAutocorrect()) );
+    // button use by kword/kpresenter
+    // hide by default
+    d->ui->m_autoCorrect->hide();
 }
 
 void Dialog::initGui()
@@ -116,6 +121,21 @@ void Dialog::initGui()
             break;
         }
     }
+}
+
+void Dialog::activeAutoCorrect( bool _active )
+{
+    if ( _active )
+        d->ui->m_autoCorrect->show();
+    else
+        d->ui->m_autoCorrect->hide();
+}
+
+void Dialog::slotAutocorrect()
+{
+    kdDebug()<<"void Dialog::slotAutocorrect()\n";
+    emit autoCorrect(d->currentWord.word, d->ui->m_replacement->text() );
+    slotReplaceWord();
 }
 
 void Dialog::slotFinished()

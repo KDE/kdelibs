@@ -39,6 +39,7 @@ namespace KSpell2
         QString buffer() const;
 
         void show();
+        void activeAutoCorrect( bool _active );
 
     public slots:
         void setBuffer( const QString& );
@@ -52,6 +53,7 @@ namespace KSpell2
 
         void stop();
         void cancel();
+        void autoCorrect( const QString & currentWord, const QString & replaceWord );
     private slots:
         void slotMisspelling(const QString& word, int start );
         void slotDone();
@@ -67,6 +69,7 @@ namespace KSpell2
         void slotSuggest();
         void slotChangeLanguage( const QString& );
         void slotSelectionChanged( QListViewItem * );
+        void slotAutocorrect();
 
     private:
         void updateDialog( const QString& word );
