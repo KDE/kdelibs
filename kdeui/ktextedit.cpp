@@ -156,7 +156,7 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
     if ( checkSpellingEnabled() && !isReadOnly() ) {
 
         menu->insertSeparator();
-        int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling..." ),
+        int id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
                                    this, SLOT( checkSpelling() ) );
 
         if( text().isEmpty() )
