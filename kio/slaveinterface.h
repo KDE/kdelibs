@@ -45,25 +45,25 @@ class SlaveInterfacePrivate;
    CMD_DISCONNECT = '2',
    CMD_SLAVE_STATUS = '3',
    CMD_SLAVE_CONNECT = '4',
-   CMD_NONE = 'A',
-   CMD_TESTDIR = 'B',
-   CMD_GET = 'C',
-   CMD_PUT = 'D',
-   CMD_STAT = 'E',
-   CMD_MIMETYPE = 'F',
-   CMD_LISTDIR = 'G',
-   CMD_MKDIR = 'H',
-   CMD_RENAME = 'I',
-   CMD_COPY = 'J',
-   CMD_DEL = 'K',
-   CMD_CHMOD = 'L',
-   CMD_SPECIAL = 'M',
-   CMD_USERPASS = 'N',
-   CMD_REPARSECONFIGURATION = 'O',
-   CMD_META_DATA = 'P',
-   CMD_SYMLINK = 'Q',
-   CMD_SUBURL = 'R',	// Inform the slave about the url it is streaming on.
-   CMD_MESSAGEBOXANSWER = 'S'
+   CMD_NONE = 'A', // 65
+   CMD_TESTDIR = 'B', // 66
+   CMD_GET = 'C', // 67
+   CMD_PUT = 'D', // 68
+   CMD_STAT = 'E', // 69
+   CMD_MIMETYPE = 'F', // 70
+   CMD_LISTDIR = 'G', // 71
+   CMD_MKDIR = 'H', // 72
+   CMD_RENAME = 'I', // 73
+   CMD_COPY = 'J', // 74
+   CMD_DEL = 'K', // 75
+   CMD_CHMOD = 'L', // 76
+   CMD_SPECIAL = 'M', // 77
+   CMD_USERPASS = 'N', // 78
+   CMD_REPARSECONFIGURATION = 'O', // 79
+   CMD_META_DATA = 'P', // 80
+   CMD_SYMLINK = 'Q', // 81
+   CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
+   CMD_MESSAGEBOXANSWER = 'S' // 83
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
