@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.20  1999/06/17 18:44:14  mkoch
+ * kde_configdir() -> locate()
+ *
  * Revision 1.19  1999/06/07 19:05:13  rikkus
  * I hope this is right. Seemed to be deleting objects that would be autodeleted.
  *
@@ -157,7 +160,7 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
     static QPixmap icons[4];
 
     if( !icons_initialized ) {
-    	QString ipath = locate( "data", "kde/pics/";
+    	QString ipath = locate( "data", "kde/pics/" );
         QString ifile = ipath + "info.xpm";
         icons[0].load( ifile );
         icons[1].load( ipath + "exclamation.xpm" );
