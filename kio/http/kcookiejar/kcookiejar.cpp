@@ -383,6 +383,7 @@ static const char * parseNameValue(const char *header,
         // End of Name
         Value = header;
         Value.truncate( s - header );
+        Value = Value.stripWhiteSpace();
     }
     return (s);
 
