@@ -263,7 +263,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 	    continue; // Couldn't stat (Why not?)
 	}
 	if ( S_ISDIR( buff.st_mode ))
-	    lookupPrefix(fn + '/', rfn + '/', rest, regexp, list, relList, recursive, uniq);
+	    lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, uniq);
     }
     
     closedir( dp );
@@ -276,6 +276,8 @@ KStandardDirs::findAllResources( const QString& type,
 			         bool uniq,
                                  QStringList &relList) const
 {    
+printf("findAllResources( %s, %s )\n", type.ascii(), filter.ascii());
+
     QStringList list;
     if (filter.at(0) == '/') // absolute paths we return
     {
@@ -305,7 +307,18 @@ KStandardDirs::findAllResources( const QString& type,
     
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) 
-      lookupPrefix(*it, "", filterPath, regExp, list, relList, recursive, uniq);
+      lookupPrefix(*it, filterPath, "", regExp, list, relList, recursive, uniq);
+
+printf("List:\n");
+    for (QStringList::ConstIterator it = list.begin();
+	 it != list.end(); it++)
+      printf("%s\n", (*it).ascii());
+printf("relList:\n");
+    for (QStringList::ConstIterator it = relList.begin();
+	 it != relList.end(); it++)
+      printf("%s\n", (*it).ascii());
+printf("Done\n");
+
     return list;
 }
 
