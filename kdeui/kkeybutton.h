@@ -53,7 +53,7 @@ class KKeyButton: public QPushButton
 	*/
 	virtual ~KKeyButton();
 
-	/** @deprecated */
+	/** @deprecated Use setShortcut( cut, false ) instead */
 	void setShortcut( const KShortcut& cut ) KDE_DEPRECATED;
 	/// @since 3.1
 	void setShortcut( const KShortcut& cut, bool bQtShortcut );
