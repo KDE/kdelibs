@@ -207,7 +207,7 @@ public:
 		{
 			strokeColor = (qRed(m_strokeColor.rgb()) << 24) | (qGreen(m_strokeColor.rgb()) << 16) | (qBlue(m_strokeColor.rgb()) << 8) | (qAlpha(m_strokeColor.rgb()));
 
-			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2);
+			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2.0);
 			double strokeWidth = m_strokeWidth * ratio;
 
 		    ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
@@ -1332,8 +1332,8 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 	art_affine_scale(affine, rx * 10.0, ry * 10.0);
 
 	temp[i].code = ART_MOVETO;
-	temp[i].x3 = cos(0);
-	temp[i].y3 = sin(0);
+	temp[i].x3 = cos(0.0);
+	temp[i].y3 = sin(0.0);
 
 	i++;
 	
@@ -1519,7 +1519,7 @@ const char *getCoord(const char *ptr, double &number)
     }
 	
 	number = integer + decimal;
-	number *= sign * pow(10, expsign * exponent);
+	number *= sign * pow(10.0, expsign * exponent);
 
 	// skip the following space
 	if(*ptr == ' ')
