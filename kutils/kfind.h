@@ -288,6 +288,7 @@ private:
     int m_index;
     int m_matchedLength;
     bool m_dialogClosed;
+    bool m_lastResult;
 
     // Binary compatible extensibility.
     class KFindPrivate;
