@@ -55,6 +55,9 @@ class Kded;
 class KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
+// For inclusion in KDE4 (since it's BIC) long-needed fix for allowing
+// DCOP-based kdedmodules -- Gav <gav@kde.org>.
+//  K_DCOP
   friend class Kded;
 public:
   
