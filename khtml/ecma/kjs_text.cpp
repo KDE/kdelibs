@@ -27,42 +27,42 @@
 
 using namespace KJS;
 
-const TypeInfo DOMCharacterData::info = { "CharacterData", HostType,
+const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
 					  &DOMNode::info, 0, 0 };
 
-KJSO *DOMCharacterData::get(const UString &p)
+KJSO DOMCharacterData::get(const UString &p) const
 {
   if (p == "data")
-    return newString(data.data());
+    return String(data.data());
   else if (p == "length")
-    return newNumber(data.length());
+    return Number(data.length());
   else {
-    Ptr tmp = new DOMNode(data);
-    return tmp->get(p);
+    KJSO tmp(new DOMNode(data));
+    return tmp.get(p);
   }
 }
 
-void DOMCharacterData::put(const UString &p, KJSO *v)
+void DOMCharacterData::put(const UString &p, const KJSO& v)
 {
   if (p == "data") {
-    Ptr s = toString(v);
-    data.setData(s->stringVal().string());
+    String s = v.toString();
+    data.setData(s.value().string());
   } else {
-    Ptr tmp = new DOMNode(data);
-    tmp->put(p, v);
+    KJSO tmp(new DOMNode(data));
+    tmp.put(p, v);
   }
 }
 
 const TypeInfo DOMText::info = { "Text", HostType,
 				 &DOMCharacterData::info, 0, 0 };
 
-KJSO *DOMText::get(const UString &p)
+KJSO DOMText::get(const UString &p) const
 {
   if (p == "")
-    return newUndefined(); // TODO
+    return Undefined(); // TODO
   else {
     DOM::Node n = text;
-    Ptr tmp = new DOMCharacterData(n);
-    return tmp->get(p);
+    KJSO tmp(new DOMCharacterData(n));
+    return tmp.get(p);
   }
 }

@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-
 #include <kjs/operations.h>
 #include <dom_string.h>
 #include <dom_xml.h>
@@ -30,16 +28,16 @@ using namespace KJS;
 
 const TypeInfo DOMNode::info = { "Node", HostType, 0, 0, 0 };
 
-KJSO *DOMNode::get(const UString &p)
+KJSO DOMNode::get(const UString &p) const
 {
-  KJSO *result;
+  KJSO result;
 
   if (p == "nodeName")
-    result = newString(node.nodeName());
+    result = String(node.nodeName());
   else if (p == "nodeValue")
-    result = newString(node.nodeValue());
+    result = String(node.nodeValue());
   else if (p == "nodeType")
-    result = newNumber(node.nodeType());
+    result = Number(node.nodeType());
   else if (p == "parentNode")
     result = new DOMNode(node.parentNode());
   else if (p == "childNodes")
@@ -69,92 +67,89 @@ KJSO *DOMNode::get(const UString &p)
   else if (p == "cloneNode")
     result = new DOMNodeFunc(node, DOMNodeFunc::CloneNode);
   else
-    result = newUndefined();
+    result = Undefined();
 
   return result;
 }
 
-KJSO *DOMNodeFunc::execute(const List &args)
+Completion DOMNodeFunc::execute(const List &args)
 {
-  KJSO *result;
+  KJSO result;
 
   if (id == HasChildNodes)
-    result = newBoolean(node.hasChildNodes());
+    result = Boolean(node.hasChildNodes());
   else if (id == CloneNode) {
-    Ptr arg = args[0];
-    Ptr b = toBoolean(arg);
-    result = new DOMNode(node.cloneNode(b->boolVal()));
+    Boolean b = args[0].toBoolean();
+    result = new DOMNode(node.cloneNode(b.value()));
   } else {
-    Ptr arg1 = args[0];
-    DOM::Node n1 = toNode(arg1);
+    DOM::Node n1 = toNode(args[0]);
     if (id == AppendChild) {
       result = new DOMNode(node.appendChild(n1));
     } else if (id == RemoveChild) {
       result = new DOMNode(node.removeChild(n1));
     } else {
-      Ptr arg2 = args[1];
-      DOM::Node n2 = toNode(arg2);
+      DOM::Node n2 = toNode(args[1]);
       if (id == InsertBefore)
 	result = new DOMNode(node.insertBefore(n1, n2));
       else
 	result = new DOMNode(node.replaceChild(n1, n2));
     }
   }
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }
 
-KJSO *DOMNodeList::get(const UString &p)
+KJSO DOMNodeList::get(const UString &p) const
 {
-  KJSO *result;
+  KJSO result;
 
   if (p == "length")
-    result = newNumber(list.length());
+    result = Number(list.length());
   else
-    result = newUndefined();
+    result = Undefined();
 
   return result;
 }
 
 const TypeInfo DOMAttr::info = { "Attr", HostType, &DOMNode::info, 0, 0 };
 
-KJSO *DOMAttr::get(const UString &p)
+KJSO DOMAttr::get(const UString &p) const
 {
-  KJSO *result;
+  KJSO result;
   if (p == "name") {
-    result = newString(attr.name()); }
+    result = String(attr.name()); }
   else if (p == "specified")
-    result = newBoolean(attr.specified());
+    result = Boolean(attr.specified());
   else if (p == "value")
-    result = newString(attr.value());
+    result = String(attr.value());
   else {
-    Ptr tmp = new DOMNode(attr);
-    result = tmp->get(p);
+    KJSO tmp(new DOMNode(attr));
+    result = tmp.get(p);
   }
   return result;
 }
 
-void DOMAttr::put(const UString &p, KJSO *v)
+void DOMAttr::put(const UString &p, const KJSO& v)
 {
   if (p == "value") {
-    Ptr s = toString(v);
-    attr.setValue(s->stringVal().string());
+    String s = v.toString();
+    attr.setValue(s.value().string());
   } else {
-    Ptr tmp = new DOMNode(attr);
-    tmp->put(p, v);
+    KJSO tmp(new DOMNode(attr));
+    tmp.put(p, v);
   }
 }
 
 const TypeInfo DOMDocument::info = { "Document", HostType,
 				     &DOMNode::info, 0, 0 };
 
-KJSO *DOMDocument::get(const UString &p)
+KJSO DOMDocument::get(const UString &p) const
 {
-  KJSO *result;
+  KJSO result;
 
   if (p == "doctype")
-    return newUndefined(); /* TODO */
+    return Undefined(); /* TODO */
   else if (p == "implementation")
-    return newUndefined(); /* TODO */
+    return Undefined(); /* TODO */
   else if (p == "documentElement")
     return new DOMElement(doc.documentElement());
   else if (p == "createElement")
@@ -177,8 +172,8 @@ KJSO *DOMDocument::get(const UString &p)
     return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagName);
 
   // look in base class (Document)
-  Ptr tmp = new DOMNode(doc);
-  result = tmp->get(p);
+  KJSO tmp(new DOMNode(doc));
+  result = tmp.get(p);
 
   return result;
 }
@@ -188,14 +183,22 @@ DOMDocFunction::DOMDocFunction(DOM::Document d, int i)
 {
 }
 
-KJSO *DOMDocFunction::execute(const List &args)
+#include <html_document.h>
+
+Completion DOMDocFunction::execute(const List &args)
 {
-  KJSO *result;
-  Ptr arg = args[0];
-  Ptr str = toString(arg);
-  DOM::DOMString s = str->stringVal().string();
+  KJSO result;
+  String str = args[0].toString();
+  DOM::DOMString s = str.value().string();
+
+  DOM::Element e;
+
+  DOM::HTMLDocument d = DOM::HTMLDocument();
+  DOM::Element e2 = d.createElement(DOM::DOMString("br"));
+
   switch(id) {
   case CreateElement:
+    e = doc.createElement(s);
     result = new DOMElement(doc.createElement(s));
     break;
   case CreateTextNode:
@@ -215,24 +218,25 @@ KJSO *DOMDocFunction::execute(const List &args)
     break;
     /* TODO */
   default:
-    result = newUndefined();
+    result = Undefined();
   }
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }
 
 const TypeInfo DOMElement::info = { "Element", HostType,
 				    &DOMNode::info, 0, 0 };
 
-KJSO *DOMElement::get(const UString &p)
+KJSO DOMElement::get(const UString &p) const
 {
-  KJSO *result;
+  KJSO result;
 
-  if (p == "tagName")
-    result = newString(element.tagName());
-  else {
-    Ptr tmp = new DOMNode(element);
-    return tmp->get(p);
+  if (p == "tagName") {
+    DOM::DOMString str = element.tagName();
+    result = String(element.tagName());
+  } else {
+    KJSO tmp(new DOMNode(element));
+    return tmp.get(p);
   }
 
   return result;

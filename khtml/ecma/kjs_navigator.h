@@ -26,10 +26,10 @@ class KHTMLView;
 
 namespace KJS {
 
-  class Navigator : public HostObject {
+  class Navigator : public HostImp {
   public:
     Navigator() { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
   };
 }; // namespace
 

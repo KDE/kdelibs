@@ -32,8 +32,8 @@ namespace KJS {
   class DOMCharacterData : public NodeObject {
   public:
     DOMCharacterData(DOM::CharacterData d) : data(d) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return data; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -44,7 +44,7 @@ namespace KJS {
   class DOMText : public NodeObject {
   public:
     DOMText(DOM::Text t) : text(t) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
     virtual DOM::Node toNode() const { return text; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;

@@ -43,13 +43,13 @@ extern "C" {
     KJScript *script = new KJScript();
     script->enableDebug();
 
-    KJS::Global *global = script->global();
+    KJS::Global global(Global::current());
     DOM::HTMLDocument doc;
     doc = khtml->htmlDocument();
-    global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
-    global->put("window", zeroRef(new KJS::Window(khtml->view())));
-    global->put("navigator", zeroRef(new Navigator()));
-    global->put("Image", zeroRef(new ImageObject(global)));
+    global.put("document", KJSO(new KJS::HTMLDocument(doc)));
+    global.put("window", KJSO(new KJS::Window(khtml->view())));
+    global.put("navigator", KJSO(new Navigator()));
+    global.put("Image", KJSO(new ImageObject(global)));
 
     // this is somewhat ugly. But the only way I found to control the
     // dlopen'ed interpreter (*no* linking!) were callback functions.
@@ -96,12 +96,20 @@ QString UString::qstring() const
   return QString((QChar*) data(), size());
 }
 
-DOM::Node KJS::toNode(KJSO *obj)
+QConstString UString::qconststring() const
 {
-  if (!obj->derivedFrom("Node"))
-    return DOM::Node();
+  return QConstString((QChar*) data(), size());
+}
 
-  const NodeObject *dobj = static_cast<const NodeObject*>(obj);
+DOM::Node KJS::toNode(const KJSO& obj)
+{
+  if (!obj.derivedFrom("Node")) {
+    //    printf("Can't convert %s to Node.\n", obj.imp()->typeInfo()->name);
+    return DOM::Node();
+  }
+
+  //  printf("Converting %s to Node.\n", obj.imp()->typeInfo()->name);
+  const NodeObject *dobj = static_cast<const NodeObject*>(obj.imp());
   DOM::Node n = dobj->toNode();
 
   return n;

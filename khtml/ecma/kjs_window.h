@@ -27,19 +27,19 @@ class KHTMLView;
 
 namespace KJS {
 
-  class Window : public HostObject {
+  class Window : public HostImp {
   public:
     Window(KHTMLView *w) : widget(w) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v, int);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
   private:
     KHTMLView *widget;
   };
 
-  class WindowFunc : public InternalFunction {
+  class WindowFunc : public InternalFunctionImp {
   public:
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
-    KJSO *execute(const List &);
+    Completion execute(const List &);
     enum { Alert, Confirm, Open };
   private:
     KHTMLView *widget;

@@ -34,11 +34,11 @@ class HTMLCollection;
 
 namespace KJS {
 
-  class HTMLDocFunction : public InternalFunction {
+  class HTMLDocFunction : public InternalFunctionImp {
   public:
     HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
-    virtual KJSO *get(const UString &p);
-    KJSO *execute(const List &);
+    virtual KJSO get(const UString &p) const;
+    Completion execute(const List &);
     enum { Images, Applets, Links, Forms, Anchors, Open, Close,
 	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
@@ -49,8 +49,8 @@ namespace KJS {
   class HTMLDocument : public NodeObject {
   public:
     HTMLDocument(DOM::HTMLDocument d) : doc(d) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return doc; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -61,8 +61,8 @@ namespace KJS {
   class HTMLElement : public NodeObject {
   public:
     HTMLElement(DOM::HTMLElement e) : element(e) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -70,18 +70,18 @@ namespace KJS {
     DOM::HTMLElement element;
   };
 
-  class HTMLCollection : public HostObject {
+  class HTMLCollection : public HostImp {
   public:
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
   private:
     DOM::HTMLCollection collection;
   };
 
-  class HTMLCollectionFunc : public InternalFunction {
+  class HTMLCollectionFunc : public InternalFunctionImp {
   public:
     HTMLCollectionFunc(DOM::HTMLCollection c, int i) : coll(c), id(i) { };
-    KJSO *execute(const List &);
+    Completion execute(const List &);
     enum { Item, NamedItem };
   private:
     DOM::HTMLCollection coll;
@@ -90,26 +90,26 @@ namespace KJS {
 
   ////////////////////// Image Object ////////////////////////
 
-  class ImageObject : public InternalFunction {
+  class ImageObject : public InternalFunctionImp {
   public:
-    ImageObject(Global *global);
-    KJSO* execute(const List &);
+    ImageObject(const Global &global);
+    Completion execute(const List &);
   private:
     UString src;
   };
 
-  class ImageConstructor : public Constructor {
+  class ImageConstructor : public ConstructorImp {
   public:
-    ImageConstructor(Global *global);
-    Object* construct(const List &);
+    ImageConstructor(const Global& global);
+    Object construct(const List &);
   private:
-    Global *global;
+    Global global;
   };
 
-  class Image : public HostObject {
+  class Image : public HostImp {
   public:
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
   private:
     UString src;
   };

@@ -30,7 +30,7 @@ namespace KJS {
    * Derived classes must implement the toNode() method to allow
    * dynamic type casting.
    */
-  class NodeObject : public HostObject {
+  class NodeObject : public HostImp {
   public:
     virtual DOM::Node toNode() const = 0L;
   };
@@ -38,7 +38,7 @@ namespace KJS {
   /**
    * Convert an object to a Node. Returns a null Node if not possible.
    */
-  DOM::Node toNode(KJSO *);
+  DOM::Node toNode(const KJSO&);
 
 }; // namespace
 

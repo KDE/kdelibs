@@ -36,6 +36,8 @@
 #include <dom_doc.h>
 #include "kjs_dom.h"
 
+#include <dom_string.h>
+
 using namespace KJS;
 
 int main(int, char **)
@@ -43,8 +45,9 @@ int main(int, char **)
   KJScript kjs;
   kjs.enableDebug();
   DOM::Document doc;
+
   DOMDocument dd(&doc);
-  kjs.global()->put("document", &dd);
+  Global::current().put("document", &dd);
 
   printf("Entering interactive mode.\n"
 	 "You may access the DOM via the 'document' property.\n"

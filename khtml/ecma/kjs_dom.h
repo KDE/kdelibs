@@ -34,7 +34,7 @@ namespace KJS {
   class DOMNode : public NodeObject {
   public:
     DOMNode(DOM::Node n) : node(n) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
     virtual DOM::Node toNode() const { return node; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -42,11 +42,11 @@ namespace KJS {
     DOM::Node node;
   };
 
-  class DOMNodeFunc : public InternalFunction {
+  class DOMNodeFunc : public InternalFunctionImp {
     friend DOMNode;
   public:
     DOMNodeFunc(DOM::Node n, int i) : node(n), id(i) { }
-    KJSO *execute(const List &);
+    Completion execute(const List &);
     enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
 	   HasChildNodes, CloneNode };
   private:
@@ -54,10 +54,10 @@ namespace KJS {
     int id;
   };
 
-  class DOMNodeList : public HostObject {
+  class DOMNodeList : public HostImp {
   public:
     DOMNodeList(DOM::NodeList l) : list(l) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
   private:
     DOM::NodeList list;
   };
@@ -65,7 +65,7 @@ namespace KJS {
   class DOMDocument : public NodeObject {
   public:
     DOMDocument(DOM::Document d) : doc(d) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
     virtual DOM::Node toNode() const { return doc; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -73,10 +73,10 @@ namespace KJS {
     DOM::Document doc;
   };
 
-  class DOMDocFunction : public InternalFunction {
+  class DOMDocFunction : public InternalFunctionImp {
   public:
     DOMDocFunction(DOM::Document d, int i);
-    KJSO *execute(const List &);
+    Completion execute(const List &);
     enum { CreateElement, CreateDocumentFragment, CreateTextNode,
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
 	   CreateAttribute, CreateEntityReference, GetElementsByTagName };
@@ -88,8 +88,8 @@ namespace KJS {
   class DOMAttr : public NodeObject {
   public:
     DOMAttr(DOM::Attr a) : attr(a) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return attr; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -100,7 +100,7 @@ namespace KJS {
   class DOMElement : public NodeObject {
   public:
     DOMElement(DOM::Element e) : element(e) { }
-    virtual KJSO *get(const UString &p);
+    virtual KJSO get(const UString &p) const;
     virtual DOM::Node toNode() const { return element; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;

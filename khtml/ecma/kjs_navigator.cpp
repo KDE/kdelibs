@@ -17,18 +17,17 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-
 #include <dom_string.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 
+#include <kjs/types.h>
 #include <kjs/operations.h>
 #include "kjs_navigator.h"
 
 using namespace KJS;
 
-KJSO *Navigator::get(const UString &p)
+KJSO Navigator::get(const UString &p) const
 {
   UString str;
 
@@ -41,7 +40,7 @@ KJSO *Navigator::get(const UString &p)
   else if (p == "userAgent")
     str = "Mozilla/4.0 (X11; Konqueror; Unix)";
   else
-    return newUndefined();
+    return Undefined();
 
-  return newString(str);
+  return String(str);
 }

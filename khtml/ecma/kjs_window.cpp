@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-
 #include <dom_string.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -32,53 +30,52 @@
 
 using namespace KJS;
 
-KJSO *Window::get(const UString &p)
+KJSO Window::get(const UString &p) const
 {
   if (p == "alert")
-    return new WindowFunc(widget, WindowFunc::Alert);
+    return Function(new WindowFunc(widget, WindowFunc::Alert));
   else if (p == "confirm")
-    return new WindowFunc(widget, WindowFunc::Confirm);
+    return Function(new WindowFunc(widget, WindowFunc::Confirm));
   else if (p == "open")
-    return new WindowFunc(widget, WindowFunc::Open);
+    return Function(new WindowFunc(widget, WindowFunc::Open));
 
-  return newUndefined();
+  return Undefined();
 }
 
-void Window::put(const UString &, KJSO *, int)
+void Window::put(const UString &, const KJSO&)
 {
 }
 
-KJSO *WindowFunc::execute(const List &args)
+Completion WindowFunc::execute(const List &args)
 {
-  Ptr result;
-  Ptr v, s;
+  KJSO result;
   QString str;
   int i;
 
-  v = args[0];
-  s = toString(v);
-  str = s->stringVal().qstring();
+  KJSO v = args[0];
+  String s = v.toString();
+  str = s.value().qstring();
 
   switch (id) {
   case Alert:
     KMessageBox::error((QWidget*)widget, str, "JavaScript");
-    result = newUndefined();
+    result = Undefined();
     break;
   case Confirm:
     i = KMessageBox::warningYesNo((QWidget*)widget, str, "JavaScript",
 				  i18n("OK"), i18n("Cancel"));
-    result = newBoolean((i == KMessageBox::Yes));
+    result = Boolean((i == KMessageBox::Yes));
     break;
   case Open:
   {
-      v = args[1];
-      s = toString(v);
-      QString target = s->stringVal().qstring();
-      widget->part()->urlSelected( str, 0, 0, target );
+    v = args[1];
+    s = v.toString();
+    QString target = s.value().qstring();
+    widget->part()->urlSelected( str, 0, 0, target );
       // ### add size and other parameters defined in the third argument.
       // see http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/open_0.asp
-      result = newUndefined();
+    result = Undefined();
   }
   }
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }
