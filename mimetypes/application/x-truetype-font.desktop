@@ -33,6 +33,7 @@ Comment[ta]=Truetype ±ØòÐÅ¨¸
 Comment[tr]=Truetype Yazıtipi
 Comment[uk]=Шрифт Truetype
 Comment[zh_CN.GB2312]=Truetype 字体
+Comment[zh_TW.Big5]=Truetype 字型
 Icon=font_truetype
 Type=MimeType
 MimeType=application/x-truetype-font

@@ -32,6 +32,7 @@ Comment[ta]=¦¾¡¼§Ã¡Ê MPEG «ÎìÌ  3 ´Ä¢ÔÉ÷
 Comment[tr]=Duraksız MPEG layer 3 sesi
 Comment[uk]=MPEG Layer-3-аудіо
 Comment[zh_CN.GB2312]=流式 MP3 音频文件
+Comment[zh_TW.Big5]=Streaming MPEG layer 3 音效
 MimeType=audio/x-mpegurl
 Icon=sound
 Patterns=*.m3u;*.M3U;
