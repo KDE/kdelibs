@@ -1,4 +1,4 @@
-/*
+/**
  * @libdoc A network-enabled file management system in a library.
  *
  * This library implements almost all the file management functions you
