@@ -22,6 +22,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kglobalsettings.h>
+#include <ksycoca.h>
 
 int
 main(int argc, char *argv[])
@@ -31,9 +32,7 @@ main(int argc, char *argv[])
 
    KApplication a;
 
-   printf("Running.\n");
-   printf("singleClick? %s\n", KGlobalSettings::singleClick() ? "yes" : "no");
-   printf("completionMode: %d\n", (int) KGlobalSettings::completionMode());
-   //kapp->exec();   
-   printf("Terminating.\n");
+   KSycoca *s = KSycoca::self();
+  
+   qWarning("s->language() %s", s->language().latin1());
 }

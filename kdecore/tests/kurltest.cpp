@@ -287,6 +287,16 @@ int main(int argc, char *argv[])
   check("http: URL with empty reference string", waba1.url(),
         "http://www.kde.org/cgi/test.cgi");
 
+  // URLs who forgot to encoded spaces in the query. 
+  waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
+  check("http: URL with incorrect encoded query", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
+
+  // URLs who forgot to encoded spaces in the query. 
+  waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
+  check("http: URL with incorrect encoded query", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi?hello=My%20Value+20");
+
   // Urls without path (BR21387)
   waba1 = "http://meine.db24.de?link=home_c_login_login";
   check("http: URL with empty path string", waba1.url(),
@@ -393,7 +403,8 @@ int main(int argc, char *argv[])
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("locale8bit",uloc.url(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
-  check("UTF8",uloc.url(0, QFont::Unicode),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
+  // 106 is MIB for UTF-8
+  check("UTF8",uloc.url(0, 106),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
