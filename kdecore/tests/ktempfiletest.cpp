@@ -38,7 +38,7 @@ main(int argc, char *argv[])
    printf("Filename = %s\n", f2.name().ascii());
 
    printf("Making tempfile in home directory.\n");
-   KTempFile f3(QString((const char *)getenv("HOME"))+"/test", ".myext", 0666);
+   KTempFile f3(QString((const char *)getenv("HOME"))+"/testXXX", ".myext", 0666);
    printf("Filename = %s\n", f3.name().ascii());
 
    QString name = locateLocal("socket", "test");
