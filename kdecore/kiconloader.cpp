@@ -1023,6 +1023,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
 	    name = *it;
 	else
 	    name = (*it).mid(n+1);
+	name = removeIconExtension(name);
 	if (!entries.contains(name))
 	{
 	    entries += name;
@@ -1062,6 +1063,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
 	    name = *it;
 	else
 	    name = (*it).mid(n+1);
+	name = removeIconExtension(name);
 	if (!entries.contains(name))
 	{
 	    entries += name;
