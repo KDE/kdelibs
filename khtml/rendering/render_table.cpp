@@ -122,6 +122,7 @@ RenderTable::RenderTable()
         cells[r] = new RenderTableCell * [totalCols];
         memset( cells[r], 0, totalCols * sizeof( RenderTableCell * ));
     }
+    needsCellsRecalc = false;
 }
 
 RenderTable::~RenderTable()
@@ -1324,6 +1325,7 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout()
 {
+    recalcCells();
 //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
     if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
         return;
@@ -1546,6 +1548,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
 void RenderTable::calcMinMaxWidth()
 {
+    recalcCells();
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
@@ -1586,6 +1589,90 @@ int RenderTable::borderBottomExtra()
         return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
     else
         return 0;
+}
+
+void RenderTable::setNeedsCellsRecalc()
+{
+    needsCellsRecalc = true;
+    setMinMaxKnown(false);
+    setLayouted(false);
+}
+
+void RenderTable::recalcCells()
+{
+    if (!needsCellsRecalc)
+	return;
+    needsCellsRecalc = false;
+
+    _oldColElem = 0;
+    m_maxWidth = 0;
+
+    row = 0;
+    col = 0;
+
+    maxColSpan = 0;
+    totalColInfos = 0;
+
+    _currentCol=0;
+
+    _lastParentWidth = 0;
+
+    columnPos.resize( 0 );
+    columnPos.resize( 1 );
+    colMaxWidth.resize( 0 );
+    colMaxWidth.resize( 1 );
+    colMinWidth.resize( 0 );
+    colMinWidth.resize( 1 );
+    colValue.resize(0);
+    colValue.resize(1);
+    colType.resize(0);
+    colType.resize(1);
+    actColWidth.resize(0);
+    actColWidth.resize(1);
+    columnPos.fill( 0 );
+    colMaxWidth.fill( 0 );
+    colMinWidth.fill( 0 );
+    colValue.fill(0);
+    colType.fill(Variable);
+    actColWidth.fill(0);
+
+    columnPos[0] = spacing;
+
+    for (unsigned int r = 0; r < allocRows; r++)
+    {
+	delete[] cells[r];
+    }
+    delete[] cells;
+
+    totalCols = 0;   // this should be expanded to the maximum number of cols
+                     // by the first row parsed
+    totalRows = 1;
+    allocRows = 5;   // allocate five rows initially
+
+    cells = new RenderTableCell ** [allocRows];
+
+    for ( unsigned int r = 0; r < allocRows; r++ )
+    {
+        cells[r] = new RenderTableCell * [totalCols];
+        memset( cells[r], 0, totalCols * sizeof( RenderTableCell * ));
+    }
+
+    for (RenderObject *s = m_first; s; s = s->nextSibling()) {
+	if (s->isTableSection()) {
+	    for (RenderObject *r = static_cast<RenderTableSection*>(s)->firstChild(); r; r = r->nextSibling()) {
+		if (r->isTableRow()) {
+		    startRow();
+		    for (RenderObject *c = static_cast<RenderTableRow*>(r)->firstChild(); c; c = c->nextSibling()) {
+			if (c->isTableCell())
+			    addCell(static_cast<RenderTableCell*>(c));
+		    }
+		    closeRow();
+		}
+	    }
+	}
+    }
+
+    recalcColInfos();
 }
 
 
@@ -1632,6 +1719,9 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         return;
     }
 
+    if (beforeChild)
+	table->setNeedsCellsRecalc();
+
     table->startRow();
     child->setTable(table);
     RenderContainer::addChild(child,beforeChild);
@@ -1667,6 +1757,7 @@ void RenderTableRow::setRowIndex( long  )
 void RenderTableRow::close()
 {
     table->closeRow();
+    RenderContainer::close();
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -1703,6 +1794,10 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     table->addCell(cell);  // ### may not work for beforeChild != 0
 
     RenderContainer::addChild(cell,beforeChild);
+
+    if (beforeChild || nextSibling())
+	table->setNeedsCellsRecalc();
+
 }
 
 // -------------------------------------------------------------------------

@@ -126,6 +126,8 @@ public:
     virtual int borderBottomExtra();
 
     void closeRow();
+    void setNeedsCellsRecalc();
+    void recalcCells();
 
 public:
     /*
@@ -246,6 +248,7 @@ protected:
     short _lastParentWidth;
     bool incremental;
     bool collapseBorders;
+    bool needsCellsRecalc;
 };
 
 // -------------------------------------------------------------------------

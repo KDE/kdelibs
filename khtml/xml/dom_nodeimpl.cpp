@@ -743,6 +743,9 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     if(!refChild)
         return appendChild(newChild, exceptioncode);
 
+    if (newChild == refChild) // ### HIERARCHY_REUEST_ERR ?
+	return;
+
     if( checkSameDocument(newChild, exceptioncode) )
         return 0;
     if( checkNoOwner(newChild, exceptioncode) )
@@ -1099,7 +1102,7 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
     // calc min and max widths starting from leafs
     // might belong to renderer, but this is simple to do here
     if (force || changed())
-        m_render->calcMinMaxWidth();
+	m_render->calcMinMaxWidth();
 
     if(top) {
         if (force)
