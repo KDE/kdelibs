@@ -19,8 +19,8 @@
     Boston, MA 02111-1307, USA.
 *****************************************************************************/
 
-#ifndef QXEMBED_H
-#define QXEMBED_H
+#ifndef KJAVAEMBED_H
+#define KJAVAEMBED_H
 
 #include <qwidget.h>
 
