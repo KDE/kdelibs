@@ -48,11 +48,12 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Reset    : return reset();
   case Delete   : return del();
   case Insert   : return insert();
-  case Find	: return find();
-  case Stop	: return stop();
-  case Add	: return add();
-  case Remove	: return remove();
-  case Test	: return test();
+  case Find     : return find();
+  case Stop     : return stop();
+  case Add      : return add();
+  case Remove   : return remove();
+  case Test     : return test();
+  case Properties : return properties();
   default       : return KGuiItem();
   };
 }
@@ -81,11 +82,12 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case AdminMode: return QString::fromLatin1("adminMode");
   case Delete   : return QString::fromLatin1("delete");
   case Insert   : return QString::fromLatin1("insert");
-  case Find	: return QString::fromLatin1("find");
-  case Stop	: return QString::fromLatin1("stop");
-  case Add	: return QString::fromLatin1("add");
-  case Remove	: return QString::fromLatin1("remove");
-  case Test	: return QString::fromLatin1("test");
+  case Find     : return QString::fromLatin1("find");
+  case Stop     : return QString::fromLatin1("stop");
+  case Add      : return QString::fromLatin1("add");
+  case Remove   : return QString::fromLatin1("remove");
+  case Test     : return QString::fromLatin1("test");
+  case Properties : return QString::fromLatin1("properties");
   default       : return QString::null;
   };
 }
@@ -268,6 +270,11 @@ KGuiItem KStdGuiItem::remove()
 KGuiItem KStdGuiItem::test()
 {
   return KGuiItem(i18n("Test"));
+}
+
+KGuiItem KStdGuiItem::properties()
+{
+  return KGuiItem(i18n("Properties"), "" );
 }
 
 // vim: set ts=2 sts=2 sw=2 et:
