@@ -504,7 +504,7 @@ protected:
                 EVisibility _visibility : 2;
                 ETextAlign _text_align : 3;
                 ETextTransform _text_transform : 2;
-                int _text_decoration : 4;
+                unsigned _text_decoration : 4;
                 ECursor _cursor_style : 5;
 
                 EDirection _direction : 1;
@@ -705,7 +705,7 @@ public:
     Length textIndent() const { return inherited->indent; }
     ETextAlign textAlign() const { return inherited_flags.f._text_align; }
     ETextTransform textTransform() const { return inherited_flags.f._text_transform; }
-    int textDecoration() const { return inherited_flags.f._text_decoration; }
+    unsigned textDecoration() const { return inherited_flags.f._text_decoration; }
     const QColor &textDecorationColor() const { return inherited->decoration_color; }
     int wordSpacing() const { return inherited->font.wordSpacing; }
     int letterSpacing() const { return inherited->font.letterSpacing; }
@@ -812,7 +812,7 @@ public:
     void setTextIndent(Length v) { SET_VAR(inherited,indent,v) }
     void setTextAlign(ETextAlign v) { inherited_flags.f._text_align = v; }
     void setTextTransform(ETextTransform v) { inherited_flags.f._text_transform = v; }
-    void setTextDecoration(int v) { inherited_flags.f._text_decoration = v; }
+    void setTextDecoration(unsigned v) { inherited_flags.f._text_decoration = v; }
     void setTextDecorationColor(const QColor &v) { SET_VAR(inherited,decoration_color,v) }
     void setDirection(EDirection v) { inherited_flags.f._direction = v; }
     void setLineHeight(Length v) { SET_VAR(inherited,line_height,v) }

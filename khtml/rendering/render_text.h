@@ -45,7 +45,7 @@ class TextSlave
 public:
     TextSlave(int x, int y, int start, int len,
 	      int baseline, int width,
-              bool reversed = false, int toAdd = 0, bool firstLine = false)
+              bool reversed = false, unsigned toAdd = 0, bool firstLine = false)
     {
         m_x = x;
         m_y = y;
@@ -97,7 +97,7 @@ public:
 
     bool m_reversed : 1;
     bool m_firstLine : 1;
-    int m_toAdd : 14; // for justified text
+    unsigned m_toAdd : 14; // for justified text
 private:
     // this is just for QVector::bsearch. Don't use it otherwise
     TextSlave(int _x, int _y)

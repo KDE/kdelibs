@@ -404,7 +404,7 @@ private:
 protected:
     mutable QMemArray<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
-    short m_size : 15;
+    signed short m_size : 15;
     bool m_multiple : 1;
     bool m_recalcListItems;
 };
