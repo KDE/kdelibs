@@ -170,7 +170,7 @@ void KFileTreeView::contentsDropEvent( QDropEvent * /*ev*/ )
 
     m_autoOpenTimer->stop();
 
-    kdDebug(1201) << "contentsDropEvent !" << endl;
+    kdDebug(250) << "contentsDropEvent !" << endl;
     if ( !selectedItem() )
     {
        // KonqOperations::doDrop( 0L, m_dirtreeDir, ev, this );
@@ -286,7 +286,7 @@ void KFileTreeView::slotCollapsed( QListViewItem *item )
 
 void KFileTreeView::slotExpanded( QListViewItem *item )
 {
-   kdDebug(1201) << "slotExpanded here !" << endl;
+   kdDebug(250) << "slotExpanded here !" << endl;
 
    KFileTreeViewItem *it = static_cast<KFileTreeViewItem*>(item);
    KFileTreeBranch *branch = it->branch();
@@ -294,7 +294,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    /* Start the animation for the branch object */
    if( branch )
    {
-      kdDebug(1201 ) << "starting to open " << it->url().prettyURL() << endl;
+      kdDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;
       startAnimation( it );
       branch->populate( it->url(), it );
    }
@@ -302,7 +302,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    /* set a pixmap 'open folder' */
    if( it->isDir() && isOpen( item ) )
    {
-      kdDebug(28000)<< "Setting open Pixmap" << endl;
+      kdDebug(250)<< "Setting open Pixmap" << endl;
       item->setPixmap( 0, itemIcon( it )); // 0, m_openFolderPixmap );
    }
 }
@@ -363,23 +363,23 @@ void KFileTreeView::slotSelectionChanged()
 #if 0
 void KFileTreeView::FilesAdded( const KURL & dir )
 {
-    kdDebug(1201) << "KFileTreeView::FilesAdded " << dir.url() << endl;
+    kdDebug(250) << "KFileTreeView::FilesAdded " << dir.url() << endl;
     /* TODO */
 }
 
 void KFileTreeView::FilesRemoved( const KURL::List & urls )
 {
-    //kdDebug(1201) << "KFileTreeView::FilesRemoved " << urls.count() << endl;
+    //kdDebug(250) << "KFileTreeView::FilesRemoved " << urls.count() << endl;
     for ( KURL::List::ConstIterator it = urls.begin() ; it != urls.end() ; ++it )
     {
-        //kdDebug(1201) <<  "KFileTreeView::FilesRemoved " << (*it).prettyURL() << endl;
+        //kdDebug(250) <<  "KFileTreeView::FilesRemoved " << (*it).prettyURL() << endl;
        // TODO
     }
 }
 
 void KFileTreeView::FilesChanged( const KURL::List & urls )
 {
-    //kdDebug(1201) << "KFileTreeView::FilesChanged" << endl;
+    //kdDebug(250) << "KFileTreeView::FilesChanged" << endl;
     // not same signal, but same implementation
     FilesRemoved( urls );
 }
@@ -396,7 +396,7 @@ KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name
 KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
                               const QPixmap& pix, bool showHidden )
 {
-   kdDebug(1201) << "adding another root " << path.prettyURL() << endl;
+   kdDebug(250) << "adding another root " << path.prettyURL() << endl;
 
    /* Open a new branch */
    KFileTreeBranch *newBranch = new KFileTreeBranch( this, path, name, pix,
@@ -423,10 +423,10 @@ KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
    while ( (branch = it.current()) != 0 ) {
       ++it;
       QString bname = branch->name();
-      kdDebug(1201) << "This is the branches name: " << bname << endl;
+      kdDebug(250) << "This is the branches name: " << bname << endl;
       if( bname == searchName )
       {
-	 kdDebug(1201) << "Found branch " << bname << " and return ptr" << endl;
+	 kdDebug(250) << "Found branch " << bname << " and return ptr" << endl;
 	 return( branch );
       }
    }
@@ -471,7 +471,7 @@ void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
 void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTreeViewItemList& itemList )
 {
    if( ! branch ) return;
-   kdDebug(28000) << "hitting slotNewTreeViewItems" << endl;
+   kdDebug(250) << "hitting slotNewTreeViewItems" << endl;
    
    /* Sometimes it happens that new items should become selected, i.e. if the user
     * creates a new dir, he probably wants it to be selected. This can not be done
@@ -514,7 +514,7 @@ void KFileTreeView::slotCanceled( )
  */
 bool KFileTreeView::checkOnFilter( QString& fi )
 {
-   kdDebug(1201) << "Checking on Filter: " << fi << endl;
+   kdDebug(250) << "Checking on Filter: " << fi << endl;
    // dummy
    return( true );
 }
@@ -522,7 +522,7 @@ bool KFileTreeView::checkOnFilter( QString& fi )
 QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 {
    QPixmap pix;
-   kdDebug(1201) << "Setting icon for column " << gap << endl;
+   kdDebug(250) << "Setting icon for column " << gap << endl;
    
    if( item )
    {
@@ -584,7 +584,7 @@ void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
     {
        if( item->isDir() && isOpen(static_cast<QListViewItem*>(item)))
        {
-	  kdDebug(28000) << "Setting folder open pixmap !" << endl;
+	  kdDebug(250) << "Setting folder open pixmap !" << endl;
 	  item->setPixmap( 0, itemIcon( item ));
        }
        else
@@ -626,6 +626,8 @@ void KFileTreeView::slotOnItem( QListViewItem *item )
 
 void KFileTreeView::slotItemRenamed(QListViewItem* item, const QString &name, int col)
 {
+   (void) item;
+   kdDebug(250) << "Do not bother: " << name << col << endl;
 }
 
 KFileTreeViewItem *KFileTreeView::findItem( const QString& branchName, const QString& relUrl )
@@ -650,13 +652,13 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
 	 url.addPath( partUrl );
 
-	 kdDebug(1201) << "assembled complete dir string " << url.prettyURL() << endl;
+	 kdDebug(250) << "assembled complete dir string " << url.prettyURL() << endl;
 
 	 KFileItem *fi = brnch->find( url );
 	 if( fi )
 	 {
 	    ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));
-	    kdDebug(1201) << "Found item !" <<ret << endl;
+	    kdDebug(250) << "Found item !" <<ret << endl;
 	 }
       }
       else
