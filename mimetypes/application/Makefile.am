@@ -70,6 +70,5 @@ install-data-local: uninstall.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-applix.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-oowriter.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-ooimpress.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-ogg.desktop
 
 EXTRA_DIST = $(mimetypeapplicationdata_DATA)
