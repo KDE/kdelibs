@@ -1,7 +1,6 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003 Benjamin C Meyer (ben+kdelibs at meyerhome dot net)
- *  Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,8 +21,6 @@
 #include "kautoconfigdialog.moc"
 #include "kautoconfig.h"
 
-#include <kconfigskeleton.h>
-#include <kconfigdialogmanager.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -36,51 +33,12 @@ QAsciiDict<QObject> KAutoConfigDialog::openDialogs;
 class KAutoConfigDialog::KAutoConfigDialogPrivate {
 
 public:
-  KAutoConfigDialogPrivate(KDialogBase::DialogType t) 
-  : track(true), shown(false), type(t), mgr(0) { }
+  KAutoConfigDialogPrivate(KDialogBase::DialogType t) : track(true), shown(false), type(t){ }
 
   bool track;
   bool shown;
   KDialogBase::DialogType type;
-  KConfigDialogManager *mgr;
 };
-
-KAutoConfigDialog::KAutoConfigDialog( QWidget *parent, const char *name,
-		  KDialogBase::DialogType dialogType,
-		  KConfigSkeleton *config,
-		  KDialogBase::ButtonCode dialogButtons,
-		  bool modal ) :
-    QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) 
-{		  
-  openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name,
-  modal, Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
-
-  kautoconfig = 0;
-
-  connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-  connect(kdialogbase, SIGNAL(okClicked()), this, SIGNAL(okClicked()));
-  connect(kdialogbase, SIGNAL(applyClicked()), this, SIGNAL(applyClicked()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SIGNAL(defaultClicked()));
-
-  d->mgr = new KConfigDialogManager(kdialogbase, config);
-
-  // TODO: Emit settingsChanged signal from slot to guarantee sequence
-  connect(d->mgr, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
-  connect(d->mgr, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(d->mgr, SIGNAL(widgetModified()), this, SLOT(settingModified()));
-
-  connect(kdialogbase, SIGNAL(okClicked()), this, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(okClicked()), d->mgr, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), d->mgr, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
-
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(settingModified()));
-
-  kdialogbase->enableButton(KDialogBase::Apply, false);
-}
 
 KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
     KDialogBase::DialogType dialogType, KConfig *kconfig,
@@ -161,10 +119,8 @@ void KAutoConfigDialog::addPage(QWidget *page,
     default:
       kdDebug(240) << "KAutoConfigDialog::addWidget" << " unknown type.";
   }
-  if(manage && kautoconfig)
+  if(manage)
     kautoconfig->addWidget(page, groupName);
-  if(manage && d->mgr)
-    d->mgr->addWidget(page);
 }
 
 KAutoConfigDialog* KAutoConfigDialog::exists(const char* name){
@@ -180,16 +136,8 @@ bool KAutoConfigDialog::showDialog(const char* name){
 
 void KAutoConfigDialog::settingModified(){
   if(d->track){
-    if (kautoconfig)
-    {
-      kdialogbase->enableButton(KDialogBase::Apply, kautoconfig->hasChanged() || hasChanged());
-      kdialogbase->enableButton(KDialogBase::Default, !(kautoconfig->isDefault() && isDefault()));
-    }
-    else
-    {
-      kdialogbase->enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-      kdialogbase->enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
-    }
+    kdialogbase->enableButton(KDialogBase::Apply, kautoconfig->hasChanged());
+    kdialogbase->enableButton(KDialogBase::Default, !kautoconfig->isDefault());
   }
 }
 
@@ -205,17 +153,7 @@ void KAutoConfigDialog::setCaption(const QString &caption){
 
 void KAutoConfigDialog::show(bool track){
   if(!d->shown){
-    updateWidgets();
-    if (kautoconfig)
-    {
-       kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track) || !isDefault());
-    }
-    else
-    {
-       d->mgr->updateWidgets();
-       kdialogbase->enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-       kdialogbase->enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
-    }
+    kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track));
     d->shown = true;
     if(!track){
       kdialogbase->enableButton(KDialogBase::Apply, true);
@@ -226,14 +164,3 @@ void KAutoConfigDialog::show(bool track){
   kdialogbase->show();
 }
 
-void KAutoConfigDialog::updateSettings()
-{
-}
-
-void KAutoConfigDialog::updateWidgets()
-{
-}
-
-void KAutoConfigDialog::updateWidgetsDefault()
-{
-}

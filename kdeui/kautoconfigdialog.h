@@ -1,7 +1,6 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003 Benjamin C Meyer (ben+kdelibs at meyerhome dot net)
- *  Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +22,6 @@
 
 class KAutoConfig;
 class KConfig;
-class KConfigSkeleton;
 #include <kdialogbase.h>
 #include <qasciidict.h>
 
@@ -31,29 +29,14 @@ class KConfigSkeleton;
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  *
  * The KAutoConfigDialog class provides an easy and uniform means of displaying
- * a settings dialog using KDialogBase and KConfigDialogManager / KAutoConfig.
+ * a settings dialog using KDialogBase and KAutoConfig.
  *
  * KAutoConfigDialog handles the enabling and disabling of buttons, creation
- * of the dialog, and deletion of the widgets.  Because of 
- * KConfigDialogManager / KAutoConfig, this class also manages: restoring 
- * the settings, reseting them to the default values, and saving them.
+ * of the dialog, and deletion of the widgets.  Because of KAutoConfig, this
+ * class also manages: restoring the settings, reseting them to the default
+ * values, and saving them.
  *
  * Here is an example usage of KAutoConfigDialog:
- *
- * \code
- * void KCoolApp::showSettings(){
- *   if(KAutoConfigDialog::showDialog("settings"))
- *     return;
- *   KAutoConfigDialog *dialog = new KAutoConfigDialog(this, "settings", KDialogBase::IconList, MySettings::self());
- *   dialog->addPage(new General(0, "General"), i18n("General") );
- *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance") );
- *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(loadSettings()));
- *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
- *   dialog->show();
- * }
- * \endcode
- *
- * And here is another example:
  *
  * \code
  * void KCoolApp::showSettings(){
@@ -122,7 +105,7 @@ public:
    * @param dialogType - Type used in creating the dialog.  @see KDialogBase
    *
    * @param kconfig - Specify specific config to use or NULL for the
-   * standard KGlobal::config(); Not used in combination with KConfigSkeleton.
+   * standard KGlobal::config();
    *
    * @param dialogButtons - Buttons that should show up on the dialog.
    *
@@ -133,41 +116,11 @@ public:
    * a new KAutoConfigDialog object.
    */
   KAutoConfigDialog( QWidget *parent=0, const char *name=0,
-                  KDialogBase::DialogType dialogType = KDialogBase::IconList,
-                  KConfig *kconfig=NULL,
+		  KDialogBase::DialogType dialogType = KDialogBase::IconList,
+		  KConfig *kconfig=NULL,
 		  KDialogBase::ButtonCode dialogButtons =
 		    (KDialogBase::ButtonCode) (KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help),
 		  bool modal=false );
-
-  /**
-   * @param parent - The parent object of this object.  Even though the class
-   * deletes itself the parent should be set so the dialog can be centered
-   * with the application on the screen.
-   *
-   * @param name - The name of this object.  The name is used in determining if
-   * there can be more then one dialog at a time.  Use names such as:
-   * "Font Settings" or "Color Settings" and not just "Settings" in
-   * applications where there are more then one dialog.
-   *
-   * @param dialogType - Type used in creating the dialog.  @see KDialogBase
-   *
-   * @param config - Config object containing settings.
-   *
-   * @param dialogButtons - Buttons that should show up on the dialog.
-   *
-   * @param modal - Because of the features of KAutoConfig,
-   * KAutoConfigDialog does not have to be modal.  To prevent more then one
-   * settings dialog from showing the static function showDialog() can be
-   * used in determining if the settings dialog already exists before creating
-   * a new KAutoConfigDialog object.
-   */
-  KAutoConfigDialog( QWidget *parent, const char *name,
-		  KDialogBase::DialogType dialogType,
-		  KConfigSkeleton *config,
-		  KDialogBase::ButtonCode dialogButtons =
-		    (KDialogBase::ButtonCode) (KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help),
-		  bool modal=false );
-
   /**
    * Deconstructor, removes name from the list of open dialogs.
    * Deletes private class.
@@ -240,48 +193,6 @@ public:
    * "Configure Audio Plugin"
    **/
   virtual void setCaption( const QString &caption );
-
-protected slots:
-  /**
-   * Update the settings from the dialog.
-   * Virtual function for custom additions.
-   *
-   * Example use: User clicks Ok or Apply button in a configure dialog.
-   */ 
-  virtual void updateSettings();
-
-  /**
-   * Update the dialog based on the settings.
-   * Virtual function for custom additions.
-   *
-   * Example use: Initialisation of dialog.
-   * Example use: User clicks Reset button in a configure dialog.
-   */
-  virtual void updateWidgets();
-
-  /**
-   * Update the dialog based on the default settings.
-   * Virtual function for custom additions.
-   *
-   * Example use: User clicks Defaults button in a configure dialog.
-   */
-  virtual void updateWidgetsDefault();
-
-protected:
-
-  /**
-   * Returns whether the current state of the dialog is
-   * different from the current configutation.
-   * Virtual function for custom additions.
-   */
-  virtual bool hasChanged() { return false; }
-
-  /**
-   * Returns whether the current state of the dialog is
-   * the same as the default configuration.
-   */
-  virtual bool isDefault() { return true; }
-  
 
 protected slots:
   /**
