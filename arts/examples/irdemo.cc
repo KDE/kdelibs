@@ -32,22 +32,22 @@
 
 using namespace Arts;
 
-static void printInterface(InterfaceDef *id)
+static void printInterface(InterfaceDef id)
 {
-	vector<MethodDef *>::iterator mi;
-	printf("interface %s {\n",id->name.c_str());
-	for(mi = id->methods.begin();mi != id->methods.end(); mi++)
+	vector<MethodDef>::iterator mi;
+	printf("interface %s {\n",id.name.c_str());
+	for(mi = id.methods.begin();mi != id.methods.end(); mi++)
 	{
-		MethodDef *md = *mi;
-		printf("  %s %s(",md->type.c_str(),md->name.c_str());
+		MethodDef& md = *mi;
+		printf("  %s %s(",md.type.c_str(),md.name.c_str());
 
 		bool first = true;
-		vector<ParamDef *>::iterator pi;
-		for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+		vector<ParamDef>::iterator pi;
+		for(pi = md.signature.begin(); pi != md.signature.end(); pi++)
 		{
-			ParamDef *pd = *pi;
+			ParamDef& pd = *pi;
 			if(!first) printf(", ");
-			printf("%s %s",pd->type.c_str(),pd->name.c_str());
+			printf("%s %s",pd.type.c_str(),pd.name.c_str());
 			first = false;
 		}
 		printf(");\n");
@@ -95,9 +95,8 @@ int main(int argc, char **argv)
 	}
 
 	string iname = o._interfaceName();
-	InterfaceDef *idef = o._queryInterface(iname);
+	InterfaceDef idef = o._queryInterface(iname);
 	printInterface(idef);
-	delete idef;
 
 	return 0;
 }
