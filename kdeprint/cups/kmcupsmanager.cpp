@@ -128,7 +128,11 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	else
 	{
 		req.setOperation(CUPS_ADD_PRINTER);
-		req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
+		// only set the device-uri if needed, otherwise you may loose authentification
+		// data (login/password in URI's like smb or ipp).
+		KMPrinter	*otherP = findPrinter(p->printerName());
+		if (!otherP || otherP->device() != p->device())
+			req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
 		if (!p->option("kde-banners").isEmpty())
 		{
 			QStringList	bans = QStringList::split(',',p->option("kde-banners"),false);
