@@ -1055,6 +1055,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     const char *tmp = tmpFileC.data();
     QCString dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
     QCString point = QFile::encodeName( KProcess::quote(_point) );
+    bool fstype_empty = !_fstype || !*_fstype;
     QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
     QCString readonly = _ro ? "-r" : "";
     QString epath = QString::fromLatin1(getenv("PATH"));
@@ -1069,15 +1070,15 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     for ( int step = 0 ; step <= 1 ; step++ )
     {
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
-        if ( !_dev.isEmpty() && _point.isEmpty() && fstype.isEmpty() )
+        if ( !_dev.isEmpty() && _point.isEmpty() && fstype_empty )
             buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), dev.data(), tmp );
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
-          if ( !_point.isEmpty() && _dev.isEmpty() && fstype.isEmpty() )
+          if ( !_point.isEmpty() && _dev.isEmpty() && fstype_empty )
             buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), point.data(), tmp );
           else
             // mount giving device + mountpoint but no fstype
-            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype.isEmpty() )
+            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype_empty )
               buffer.sprintf( "%s %s %s %s 2>%s", mountProg.latin1(), readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
@@ -1124,6 +1125,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
                     kdDebug(7101) << err << endl;
                     kdDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
                     fstype = "";
+                    fstype_empty = true;
                     dev = "";
                     // The reason for trying with only mountpoint (instead of
                     // only device) is that some people (hi Malte!) have the
