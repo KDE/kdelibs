@@ -116,8 +116,8 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
     applet->setBaseURL(view->url());
     QString tmp;
     if(base)
-	tmp = QString(base->s, base->l);
-    tmp += '/' + QString(code->s, code->l);
+	tmp = QString(base->s, base->l) + '/';
+    tmp += QString(code->s, code->l);
     printf("setting applet to %s\n", tmp.ascii());
     applet->setAppletClass(tmp);
     if(name)
