@@ -8,8 +8,9 @@
 
 class KXMLGUIBuilder;
 
-// Serves actions and xml to the GUI factory
-
+/**
+ * Abstract interface for serving actions and xml to the GUI factory
+ */
 class KXMLGUIServant
 {
  public:
@@ -20,6 +21,10 @@ class KXMLGUIServant
 
 };
 
+/**
+ * Implementation of the servant interface that serves nothing.
+ * Used when no part is active.
+ */
 class KNullGUIServant : public KXMLGUIServant
 {
  public:
@@ -29,6 +34,22 @@ class KNullGUIServant : public KXMLGUIServant
   virtual QString xml() { return QString::null; }
 };
 
+/**
+ * In order to make the GUI-merging very flexible, it is a bit "abstract".
+ * Let's try to explain a bit the servants/factory/builder concept :
+ *
+ * The usual case for GUI merging is merging actions for a "shell" (main
+ * window) with actions for a "part" (embedded component)
+ * In this case we have :
+ *  shell servant + part servant => factory (who merges) => builder (who creates)
+ *
+ * "servants" are objects that serve actions to the factory, upon request
+ * the "factory" is responsible for the actual merging
+ * the "builder" is the class that creates the elements
+ *
+ * Servants and Buidler are interfaces, so that the factory can be 'plugged'
+ * to a lot of different inputs and outputs.
+ */
 class KXMLGUIFactory
 {
  public:
