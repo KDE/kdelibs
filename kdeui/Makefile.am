@@ -4,7 +4,7 @@
 ## (C) 1997 Stephan Kulow
 
 MOC = @MOC@
-INCLUDES= -I@qt_includes@ -I@x_includes@ -I../kdecore
+INCLUDES= @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 CLEANFILES = *.moc
 SUFFIXES = .moc

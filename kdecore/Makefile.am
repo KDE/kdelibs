@@ -4,7 +4,7 @@
 ## (C) 1997 Stephan Kulow
 
 MOC = @MOC@ 
-INCLUDES=-I@qt_includes@ -I@x_includes@
+INCLUDES=@QT_INCLUDES@ @X_INCLUDES@
 CLEANFILES = *.moc
 VERSION = @VERSION@
 EXTRA_DIST = convert_key.c

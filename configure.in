@@ -41,13 +41,9 @@ AC_AIX
 AC_MINIX
 
 dnl Checks for libraries.
-dnl Checks for the QT environment.  Set QTDIR if it's not in a standard place.
-dnl sets @qt_includes@ @qt_libraries@
-AC_PATH_QT
 AC_PATH_KDE
 
 dnl Checks for libraries. 
-AC_CHECK_LIB(qt, main)
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 
@@ -75,8 +71,6 @@ AC_ARG_PROGRAM
 
 dnl output files
 topdir=`pwd`
-AC_SUBST(all_includes)
-AC_SUBST(all_libraries)
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_SUBST(topdir)

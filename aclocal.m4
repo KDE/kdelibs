@@ -32,29 +32,65 @@ AC_PATH_PROG(MOC, moc, /usr/bin/moc,
  $PATH:/usr/bin:/usr/X11R6/bin:$QTDIR/bin:/usr/lib/qt/bin:/usr/local/qt/bin)
 ])
 
+AC_DEFUN(K_PATH_X,
+[
+AC_REQUIRE([AC_PATH_X])
+
+if test -z $x_includes; then
+  X_INCLUDES=""
+  x_includes="." dnl better than nothing :-)
+ else
+  X_INCLUDES="-I$x_includes"
+fi
+
+if test -z $x_libraries; then
+  X_LDFLAGS=""
+  x_libraries="." dnl better than nothing :-)
+ else
+  X_LDFLAGS="-I$x_libraries"
+fi
+
+AC_SUBST(X_INCLUDES)
+AC_SUBST(X_LDFLAGS)
+all_includes=$X_INCLUDES
+all_libraries=$X_LDFLAGS
+])
 AC_DEFUN(AC_PATH_QT,
 [
-AC_REQUIRE([AC_PATH_X])dnl
+AC_REQUIRE([K_PATH_X])
+
 AC_MSG_CHECKING([for QT])
 ac_qt_includes=NO ac_qt_libraries=NO
 qt_libraries=""
 qt_includes=""
 AC_CACHE_VAL(ac_cv_have_qt,
+AC_PATH_QT_DIRECT
 [#try to guess qt locations
 
-qt_incdirs="/usr/lib/qt/include /usr/local/qt/include /usr/include/qt /usr/include"
+qt_incdirs="/usr/lib/qt/include /usr/local/qt/include /usr/include/qt /usr/include /usr/X11R6/include/X11/qt $x_includes"
 test -n "$QTDIR" && qt_incdirs="$QTDIR/include $QTDIR $qt_incdirs"
 AC_FIND_FILE(qtstream.h, $qt_incdirs, qt_incdir)
 ac_qt_includes=$qt_incdir
 
-qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib"
+qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
 AC_FIND_FILE(libqt.so libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries=$qt_libdir
 
 if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"
-  AC_MSG_ERROR("QT not found. Please check your installation!")
+  ac_qt_notfound=""
+  if test "$ac_qt_includes" = NO; then
+    if test "$ac_qt_libraries" = NO; then
+      ac_qt_notfound="(headers and libraries)"
+    else 
+      ac_qt_notfound="(headers)";
+    fi
+  else
+    ac_qt_notfound="(libraries)";
+  fi
+  
+  AC_MSG_ERROR([QT $ac_qt_notfound not found. Please check your installation! ])
 else
   ac_cv_have_qt="have_qt=yes \
   ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
@@ -74,12 +110,29 @@ else
 fi
 AC_SUBST(qt_libraries)
 AC_SUBST(qt_includes)
+
+if test "$qt_includes" = "$x_includes"; then
+ QT_INCLUDES=""
+else
+ QT_INCLUDES="-I$qt_includes"
+ all_includes="$all_includes $QT_INCLUDES"
+fi
+
+if test "$qt_libraries" = "$x_libraries"; then
+ QT_LDFLAGS=""
+else
+ QT_LDLFLAGS="-I$qt_libraries"
+ all_libraries="$all_libraries $QT_LDLFLAGS"
+fi
+
+AC_SUBST(QT_INCLUDES)
+AC_SUBST(QT_LDLFLAGS)
 AC_PATH_QT_MOC
 ])
 
 AC_DEFUN(AC_PATH_KDE,
 [
-AC_REQUIRE([AC_PATH_X])dnl
+AC_REQUIRE([AC_PATH_QT])dnl
 AC_MSG_CHECKING([for KDE])
 if test "${prefix}" != NONE; then
   kde_libraries=${prefix}/lib
@@ -87,12 +140,13 @@ if test "${prefix}" != NONE; then
   AC_MSG_RESULT(["will be installed in" $prefix])
 else
 ac_kde_includes=NO ac_kde_libraries=NO
-KDE_LDFLAGS=""
-KDE_DEFS=""
+kde_libraries=""
+kde_includes=""
 AC_CACHE_VAL(ac_cv_have_kde,
 [#try to guess kde locations
 
-kde_incdirs="/usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /usr/X11R6/include /usr/X11R6/kde/include"
+kde_incdirs="/usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include $x_includes $qt_includes"
+
 test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
 ac_kde_includes=$kde_incdir
@@ -133,6 +187,26 @@ fi
 fi
 AC_SUBST(kde_libraries)
 AC_SUBST(kde_includes)
+
+if test "$kde_includes" = "$x_includes" || test "$kde_includes" = "$qt_includes" ; then
+ KDE_INCLUDES=""
+else
+ KDE_INCLUDES="-I$kde_includes"
+ all_includes="$all_includes $KDE_INCLUDES"
+fi
+
+if test "$kde_libraries" = "$x_libraries" || test "$kde_libraries" = "$qt_libraries" ; then
+ KDE_LDFLAGS=""
+else
+ KDE_LDFLAGS="-I$kde_libraries"
+ all_libraries="$all_libraries $KDE_LDFLAGS"
+fi
+
+AC_SUBST(KDE_LDFLAGS)
+AC_SUBST(KDE_INCLUDES)
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+
 ])
 
 

@@ -57,13 +57,19 @@ target_alias = @target_alias@
 target_triplet = @target@
 CC = @CC@
 CXX = @CXX@
+KDE_INCLUDES = @KDE_INCLUDES@
+KDE_LDFLAGS = @KDE_LDFLAGS@
 LIBCOMPAT = @LIBCOMPAT@
 LIBSOCKET = @LIBSOCKET@
 LIBTOOL = @LIBTOOL@
 MISCOBJS = @MISCOBJS@
 PACKAGE = @PACKAGE@
+QT_INCLUDES = @QT_INCLUDES@
+QT_LDLFLAGS = @QT_LDLFLAGS@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+X_INCLUDES = @X_INCLUDES@
+X_LDFLAGS = @X_LDFLAGS@
 all_includes = @all_includes@
 all_libraries = @all_libraries@
 kde_includes = @kde_includes@
@@ -76,15 +82,15 @@ x_libraries = @x_libraries@
 
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp
-libkhtmlw_la_LIBADD = -lgif -ljpeg -L@kde_libraries@
+libkhtmlw_la_LIBADD = -lkdecore -lqt -lX11 -lgif -ljpeg -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs
 
 BUILT_SOURCES = html.moc htmlform.moc
 CLEANFILES = $(BUILT_SOURCES)
 include_HEADERS = html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h
-libkhtmlw_la_LDFLAGS = -version-info 0:5
+libkhtmlw_la_LDFLAGS = -version-info 0:5 -rpath $(libdir)
 
 MOC = @MOC@
-INCLUDES = -I@qt_includes@ -I@kde_includes@ -I@x_includes@ -I.. -I
+INCLUDES = -I../kdecore -I../kdeui @X_INCLUDES@ @QT_INCLUDES@
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -333,8 +339,6 @@ clean-depend maintainer-clean-depend info dvi installcheck install-exec \
 install-data install uninstall all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
-
-CXXFLAGS += -DSTDC_HEADERS -DHAVE_UNISTD_H 
 
 ########## Meta objects ##########
 
