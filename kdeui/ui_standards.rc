@@ -134,6 +134,7 @@
   <Action name="go_home"/>
   <Separator/>
   <MergeLocal/>
+  <Action name="help"/>
 </ToolBar>
 <StatusBar/>
 </kpartgui>
