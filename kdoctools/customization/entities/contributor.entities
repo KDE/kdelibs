@@ -385,8 +385,8 @@
 
 <!ENTITY Mathias.Waack '<personname><firstname>Mathias</firstname><surname>Waack</surname></personname>'>
 <!ENTITY Mathias.Waack.mail '<email>mathias@atoll-net.de</email>'>
+<!ENTITY Joerg.Walter '<personname><firstname>J&ouml;rg</firstname><surname>Walter</surname></personname>'>
 <!ENTITY Joerg.Walter.mail '<email>trouble@garni.ch</email>'>
-<!ENTITY Joerg.Walter.mail '<personname><firstname>J&ouml;rg</firstname><surname>Walter</surname></personname>'>
 <!ENTITY Lauri.Watts '<personname><firstname>Lauri</firstname><surname>Watts</surname></personname>'>
 <!ENTITY Lauri.Watts.mail '<email>lauri@kde.org</email>'>
 <!ENTITY Josef.Weidendorfer '<personname><firstname>Josef</firstname><surname>Weidendorfer</surname></personname>'>
