@@ -122,6 +122,8 @@ public:
     bool changeCursor() const;
     bool underlineLink() const;
     bool hoverLink() const;
+    bool allowTabulation() const;
+    bool autoSpellCheck() const;
     KAnimationAdvice showAnimations() const;
 
     // Font settings

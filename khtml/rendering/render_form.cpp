@@ -1213,9 +1213,6 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
-    setCheckSpellingEnabled( true );
-    setTabChangesFocus( true );
-
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
@@ -1551,6 +1548,9 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
 
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
+    const KHTMLSettings *settings = view()->part()->settings();
+    edit->setCheckSpellingEnabled( settings->autoSpellCheck() );
+    edit->setTabChangesFocus( ! settings->allowTabulation() );
 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 }

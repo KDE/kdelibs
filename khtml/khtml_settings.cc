@@ -76,6 +76,8 @@ public:
     bool m_autoDelayedActionsEnabled : 1;
     bool m_jsErrorsEnabled : 1;
     bool m_follow_system_colors : 1;
+    bool m_allowTabulation : 1;
+    bool m_autoSpellCheck : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -342,6 +344,12 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         if ( ( d->m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
             d->m_underlineLink = false;
     }
+
+    if ( reset || config->hasKey( "AllowTabulation" ) )
+        d->m_allowTabulation = config->readBoolEntry( "AllowTabulation", false );
+
+    if ( reset || config->hasKey( "AutoSpellCheck" ) )
+        d->m_autoSpellCheck = config->readBoolEntry( "AutoSpellCheck", true );
 
     // Other
     if ( reset || config->hasKey( "AutoLoadImages" ) )
@@ -871,3 +879,12 @@ void KHTMLSettings::setJSErrorsEnabled(bool enabled)
   config->sync();
 }
 
+bool KHTMLSettings::allowTabulation() const
+{
+    return d->m_allowTabulation;
+}
+
+bool KHTMLSettings::autoSpellCheck() const
+{
+    return d->m_autoSpellCheck;
+}
