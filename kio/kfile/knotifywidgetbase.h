@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Sam Aug 3 12:14:06 2002
+** Created: Mon Aug 12 11:05:42 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -49,6 +49,7 @@ public:
     KComboBox* m_comboEnable;
     KComboBox* m_comboDisable;
     QPushButton* m_extension;
+    QPushButton* m_playerButton;
 
 
 protected:
@@ -62,6 +63,7 @@ protected:
     QVBoxLayout* m_controlsBoxLayout;
     QHBoxLayout* Layout12;
     QGridLayout* Layout4;
+    QHBoxLayout* Layout8;
 };
 
 #endif // KNOTIFYWIDGETBASE_H
