@@ -454,11 +454,10 @@ uint Sym::getModsRequired() const
 			;
 		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 1 ) )
 			mod = KKey::SHIFT;
-		// TODO: document the 0x2000 mask which indicates mode_switch.
 		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 2 ) )
-			mod = 0x2000;
+			mod = KKeyServer::MODE_SWITCH;
 		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 3 ) )
-			mod = KKey::SHIFT | 0x2000;
+			mod = KKey::SHIFT | KKeyServer::MODE_SWITCH;
 	}
 
 	return mod;
