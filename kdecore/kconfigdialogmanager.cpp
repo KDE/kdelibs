@@ -72,6 +72,8 @@ void KConfigDialogManager::init(bool trackChanges)
     changedMap.insert("QCheckBox", SIGNAL(stateChanged(int)));
     changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QRadioButton", SIGNAL(stateChanged(int)));
+    // We can only store one thing, so you can't have
+    // a ButtonGroup that is checkable.
     changedMap.insert("QButtonGroup", SIGNAL(clicked(int)));
     changedMap.insert("QGroupBox", SIGNAL(toggled(bool)));
     changedMap.insert("QComboBox", SIGNAL(activated (int)));
