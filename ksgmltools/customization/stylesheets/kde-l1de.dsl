@@ -29,7 +29,7 @@
     <STYLE-SPECIFICATION-BODY>
 
 (define %kde-gentext-de-home-url% "http://www.kde.org/international/germany/")
-(define %kde-gentext-de-logo-alt% "Die K Desktopumgebung")
+(define %kde-gentext-de-logo-alt% "Das K Desktop Environment")
 (define %kde-gentext-de-encoding% "iso-8859-1")
 (define %kde-gentext-de-html-header-tags% '())
 (define %kde-gentext-de-default% "&Default;")
