@@ -49,6 +49,7 @@
 
 #include <qtooltip.h>
 #include <qpainter.h>
+#include <qstylesheet.h>
 #include <qpaintdevicemetrics.h>
 #include <qobjectlist.h>
 #include <kapplication.h>
@@ -232,7 +233,7 @@ public:
 
 #ifndef QT_NO_TOOLTIP
 
-void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
+void KHTMLToolTip::maybeTip(const QPoint& p)
 {
     DOM::NodeImpl *node = m_viewprivate->underMouse;
     QRect region;
@@ -241,7 +242,10 @@ void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
             region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
             if ( !s.isEmpty() ) {
-                tip( region,  s );
+                QRect r(m_view->rect());
+                r.moveTopLeft(p + QPoint(2, 16));
+                r.setWidth(-1);
+                tip( region, s, r );
                 break;
             }
         }
@@ -264,6 +268,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
     enableClipper(true);
+    setResizePolicy(Manual);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
 
@@ -314,10 +319,6 @@ void KHTMLView::init()
 
 void KHTMLView::clear()
 {
-
-
-//    viewport()->erase();
-
     setStaticBackground(true);
 
     d->reset();
@@ -329,19 +330,15 @@ void KHTMLView::clear()
         QScrollView::setVScrollBarMode(d->prevScrollbarVisible?AlwaysOn:Auto);
     else
         QScrollView::setVScrollBarMode(d->vmode);
-
-    resizeContents(visibleWidth(), visibleHeight());
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
 {
-//    viewport()->setBackgroundMode(PaletteBase);
     QScrollView::hideEvent(e);
 }
 
 void KHTMLView::showEvent(QShowEvent* e)
 {
-//    viewport()->setBackgroundMode(NoBackground);
     QScrollView::showEvent(e);
 }
 
