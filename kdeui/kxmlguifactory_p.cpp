@@ -3,6 +3,20 @@
 
 using namespace KXMLGUI;
 
+void ActionList::plug( QWidget *container, int index )
+{
+    ActionListIt it( *this );
+    for (; it.current(); ++it )
+        it.current()->plug( container, index++ );
+}
+
+void ActionList::unplug( QWidget *container )
+{
+    ActionListIt it( *this );
+    for (; it.current(); ++it )
+        it.current()->unplug( container );
+}
+
 ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
                               const QString &_name, ContainerNode *_parent,
                               KXMLGUIClient *_client, KXMLGUIBuilder *_builder,

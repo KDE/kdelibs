@@ -13,7 +13,20 @@ class KXMLGUIBuilder;
 namespace KXMLGUI
 {
 
-typedef QPtrList<KAction> ActionList;
+class ActionList : public QPtrList<KAction>
+{
+public:
+    ActionList() {}
+    ActionList( const QPtrList<KAction> &rhs )
+        : QPtrList<KAction>( rhs )
+    {}
+    ActionList &operator=( const QPtrList<KAction> &rhs )
+    { QPtrList<KAction>::operator=( rhs ); return *this; }
+
+    void plug( QWidget *container, int index );
+    void unplug( QWidget *container );
+};
+
 typedef QPtrListIterator<KAction> ActionListIt;
 typedef QMap< QString, ActionList > ActionListMap;
 

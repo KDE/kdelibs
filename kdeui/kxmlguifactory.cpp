@@ -1006,15 +1006,11 @@ void KXMLGUIFactory::plugActionListRecursive( KXMLGUI::ContainerNode *node )
         if ( k != d->m_actionListName )
             continue;
 
-        int idx = (*mIt).value;
-
         ContainerClient *client = node->findChildContainerClient( m_client, QString::null, node->mergingIndices.end() );
 
         client->actionLists.insert( k, d->m_actionList );
 
-        ActionListIt aIt( d->m_actionList );
-        for (; aIt.current(); ++aIt )
-            aIt.current()->plug( node->container, idx++ );
+        d->m_actionList.plug( node->container, (*mIt).value );
 
         node->adjustMergingIndices( d->m_actionList.count(), mIt );
     }
@@ -1049,9 +1045,7 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUI::ContainerNode *node )
         if ( lIt == client->actionLists.end() )
             continue;
 
-        ActionListIt aIt( lIt.data() );
-        for (; aIt.current(); ++aIt )
-            aIt.current()->unplug( node->container );
+        lIt.data().unplug( node->container );
 
         node->adjustMergingIndices( -lIt.data().count(), mIt );
 
