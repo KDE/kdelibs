@@ -8,6 +8,8 @@ class kndbgstream;
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
 typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
+#define k_lineinfo "[" << __FILE__ << ":" << __LINE__ << "] "
+
 class kdbgstream {
  public:
     kdbgstream(unsigned int _area, unsigned int _level, bool _print = true) :area(_area), level(_level),  print(_print) {}

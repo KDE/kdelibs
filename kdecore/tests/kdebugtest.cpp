@@ -2,11 +2,10 @@
 #include <kdebug2.h>
 #include <kapp.h>
 
-int main(int argc, char **argv)
+int main()
 {
-    KApplication a(argc, argv, "kdebugtest");
     kdDebug(150) << 17 << endl;
-    kdDebug() << 18 << endl;
+    kdDebug() << k_lineinfo << 18 << endl;
     kdDebug(2 == 2) << "this is right " << perror << endl;
     kdDebug() << "Before instance creation" << endl;
     kDebugInfo(1202,"Before instance creation");
