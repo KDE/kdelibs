@@ -216,15 +216,16 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
   QIconViewItem* item = findItem( e->pos() );
 
-  if( item )
+  if( item ) {
     emit doubleClicked( item, e->globalPos() );
 
-  if( (e->button() == LeftButton) && !m_bUseSingle )
-    emitExecute( item, e->globalPos() );
+    if( (e->button() == LeftButton) && !m_bUseSingle )
+      emitExecute( item, e->globalPos() );
+  }
 }
 
 void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos )
 {
-  if( btn == LeftButton )
+  if( (btn == LeftButton) && item )
     emitExecute( item, pos );
 }

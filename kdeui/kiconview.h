@@ -71,8 +71,7 @@ signals:
   /**
    * This signal gets emitted whenever the user double clicks into the 
    * iconview. 
-   * @param item is the pointer to the clicked iconview item or NULL, 
-   * if the user didn't click on an item. 
+   * @param item is the pointer to the clicked iconview item. 
    * @param pos is the position where the user has clicked, and 
    *
    * Note that you may not delete any @ref QIconViewItem objects in slots 
