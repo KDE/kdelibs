@@ -696,7 +696,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         r->height = r->obj->lineHeight();
 	r->baseline = r->obj->baselinePosition();
         r->vertical = r->obj->verticalPositionHint();
-        kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
+        //kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
         if(r->vertical == PositionTop || r->vertical == PositionBottom ) {
             if(maxHeight < r->height) maxHeight = r->height;
         } else {
@@ -718,7 +718,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
             r->vertical = m_height + maxHeight - r->height;
         else
             r->vertical += m_height + maxAscent - r->baseline;
-	kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
+	//kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
         if(r->obj->isText())
             r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
         else {
@@ -728,7 +728,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         totWidth += r->width;
         r = runs.next();
     }
-    kdDebug(6040) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
+    //kdDebug(6040) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
 
     // now construct the reordered string out of the runs...
 
@@ -752,7 +752,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         break;
     }
     while ( r ) {
-        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->vertical << endl;
+        //kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->vertical << endl;
         r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine);
         x += r->width;
         r = runs.next();
