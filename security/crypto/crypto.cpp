@@ -316,7 +316,7 @@ QString whatstr;
   //
   QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards"), tabSSL);
   mCWcompatible = new QPushButton(i18n("&Most Compatible"), cwbg);
-  mCWus = new QPushButton(i18n("&US Ciphers Only"), cwbg);
+  mCWus = new QPushButton(i18n("U&S Ciphers Only"), cwbg);
   mCWexp = new QPushButton(i18n("E&xport Ciphers Only"), cwbg);
   mCWall = new QPushButton(i18n("E&nable All"), cwbg);
   connect(mCWcompatible, SIGNAL(clicked()), SLOT(slotCWcompatible()));
@@ -469,7 +469,7 @@ QString whatstr;
   connect(yourSSLVerify, SIGNAL(clicked()), SLOT(slotYourVerify()));
   grid->addWidget(yourSSLVerify, 4, 5);
 
-  yourSSLPass = new QPushButton(i18n("&Change Password..."), tabYourSSLCert);
+  yourSSLPass = new QPushButton(i18n("Chan&ge Password..."), tabYourSSLCert);
   yourSSLPass->setEnabled(false);
   connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
   grid->addWidget(yourSSLPass, 5, 5);
@@ -522,7 +522,7 @@ QString whatstr;
   defCertBG = new QVButtonGroup(i18n("Default Action"), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
-  defDont = new QRadioButton(i18n("D&on't send"), defCertBG);
+  defDont = new QRadioButton(i18n("Do&n't send"), defCertBG);
   grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
   grid->addMultiCellWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 1, 3, 5);
   defCertBox = new KComboBox(false, tabAuth);
@@ -668,7 +668,7 @@ QString whatstr;
   QWhatsThis::add(untilDate, whatstr);
 
   policyGroup = new QVButtonGroup(i18n("Policy"), tabOtherSSLCert);
-  policyAccept = new QRadioButton(i18n("A&ccept"), policyGroup);
+  policyAccept = new QRadioButton(i18n("Accep&t"), policyGroup);
   policyReject = new QRadioButton(i18n("Re&ject"), policyGroup);
   policyPrompt = new QRadioButton(i18n("&Prompt"), policyGroup);
   policyGroup->setEnabled(false);
