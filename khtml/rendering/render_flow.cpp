@@ -255,11 +255,6 @@ void RenderFlow::layout()
             m_height = floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
-        else if( m_next)
-        {
-            assert(!m_next->isInline());
-            m_next->setLayouted(false);
-        }
     }    
     else if (isTableCell() && m_last && m_last->hasOverhangingFloats()) 
     {
@@ -320,9 +315,11 @@ void RenderFlow::layoutBlockChildren()
     }
 
     RenderObject *child = firstChild();
+    RenderFlow *prevFlow = 0;
+    
     int prevMargin = 0;
-    if(isTableCell())
-        prevMargin = -firstChild()->marginTop();
+    if(isTableCell() && child)
+        prevMargin = -child->marginTop();
 
     //QTime t;
     //t.start();
@@ -353,8 +350,16 @@ void RenderFlow::layoutBlockChildren()
 
         //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
 
+        if(prevFlow)
+        {
+            if (prevFlow->yPos()+prevFlow->floatBottom() > m_height)
+                child->setLayouted(false);
+            else
+                prevFlow=0;
+        }          
+        
         child->setYPos(m_height);
-        child->layout();
+        child->layout();                                                     
 
         int chPos = xPos + child->marginLeft();
 
@@ -375,6 +380,10 @@ void RenderFlow::layoutBlockChildren()
         m_height += child->height();
 
         prevMargin = child->marginBottom();
+        
+        if (child->isFlow())
+            prevFlow = static_cast<RenderFlow*>(child);
+                
         child = child->nextSibling();
     }
 
