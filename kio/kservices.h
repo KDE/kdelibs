@@ -149,13 +149,6 @@ public:
   /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
-   *
-   * @deprecated Use @ref #service instead
-   */
-  static KService* find( const QString& _name ) { return service( _name ); }
-  /**
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
    */
   static KService* service( const QString& _name );
   
