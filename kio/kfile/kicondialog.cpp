@@ -11,6 +11,22 @@
  * exact licensing terms.
  */
 
+#include "kicondialog.h"
+
+#include <config.h>
+
+#include <kiconviewsearchline.h>
+
+#include <kapplication.h>
+#include <klocale.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
+#include <kiconloader.h>
+#include <kprogress.h>
+#include <kiconview.h>
+#include <kfiledialog.h>
+#include <kimagefilepreview.h>
+
 #include <qlayout.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -23,24 +39,13 @@
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 #include <qfileinfo.h>
+#include <qtoolbutton.h>
+#include <qwhatsthis.h>
 
-#include <kapplication.h>
-#include <klocale.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
-#include <kiconloader.h>
-#include <kprogress.h>
-#include <kiconview.h>
-#include <kfiledialog.h>
-#include <kimagefilepreview.h>
-
-#include <config.h>
 #ifdef HAVE_LIBART
 #include <svgicons/ksvgiconengine.h>
 #include <svgicons/ksvgiconpainter.h>
 #endif
-
-#include "kicondialog.h"
 
 class KIconCanvas::KIconCanvasPrivate
 {
@@ -106,7 +111,7 @@ void KIconCanvas::loadFiles(const QStringList& files)
     clear();
     mFiles = files;
     emit startLoading(mFiles.count());
-    mpTimer->start(0, true);
+    mpTimer->start(10, true); // #86680
     d->m_bLoading = false;
 }
 
@@ -121,7 +126,7 @@ void KIconCanvas::slotLoadFiles()
 #ifdef HAVE_LIBART
     KSVGIconEngine *svgEngine = new KSVGIconEngine();
 #endif
-    
+
     d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
@@ -143,7 +148,7 @@ void KIconCanvas::slotLoadFiles()
         if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
             break;
 	QImage img;
-	
+
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString path= *it;
 	QString ext = path.right(3).upper();
@@ -155,8 +160,8 @@ void KIconCanvas::slotLoadFiles()
 	    if (svgEngine->load(60, 60, *it))
 		img = *svgEngine->painter()->image();
 #endif
-	
-	if (img.isNull()) 
+
+	if (img.isNull())
 	    continue;
 	if (img.width() > 60 || img.height() > 60)
 	{
@@ -273,10 +278,38 @@ void KIconDialog::init()
     mpBrowseBut = new QPushButton(i18n("&Browse..."), bgroup);
     grid->addWidget(mpBrowseBut, 2, 1);
 
+    //
+    // ADD SEARCHLINE
+    //
+    QHBoxLayout *searchLayout = new QHBoxLayout(0, 0, KDialog::spacingHint());
+    top->addLayout(searchLayout);
+
+    QToolButton *clearSearch = new QToolButton(main);
+    clearSearch->setTextLabel(i18n("Clear Search"), true);
+    clearSearch->setIconSet(SmallIconSet("locationbar_erase"));
+    searchLayout->addWidget(clearSearch);
+
+    QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
+    searchLayout->addWidget(searchLabel);
+
+    searchLine = new KIconViewSearchLine(main, "searchLine");
+    searchLayout->addWidget(searchLine);
+    searchLabel->setBuddy(searchLine);
+
+
+    // signals and slots connections
+    connect(clearSearch, SIGNAL(clicked()), searchLine, SLOT(clear()));
+
+    QString wtstr = i18n("Search interactively for icon names (e.g. folder).");
+    QWhatsThis::add(searchLabel, wtstr);
+    QWhatsThis::add(searchLine, wtstr);
+
+
     mpCanvas = new KIconCanvas(main);
     connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
+    searchLine->setIconView(mpCanvas);
 
     mpProgress = new KProgress(main);
     top->addWidget(mpProgress);
@@ -331,13 +364,14 @@ void KIconDialog::showIcons()
     QStringList::Iterator it;
     for( it = filelist.begin(); it != filelist.end(); ++it )
        iconlist.append(new IconPath(*it));
-       
+
     iconlist.sort();
     filelist.clear();
 
     for ( IconPath *ip=iconlist.first(); ip != 0; ip=iconlist.next() )
        filelist.append(*ip);
 
+    searchLine->clear();
     mpCanvas->loadFiles(filelist);
 }
 
