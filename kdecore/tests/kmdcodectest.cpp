@@ -33,6 +33,8 @@
 
 #include <kmdcodec.h>
 
+using namespace std;
+
 #define TEST_BLOCK_LEN 1000             // Length of test blocks.
 #define TEST_BLOCK_COUNT 10000          // Number of test blocks.
 #define MAX_READ_BUF_SIZE 8192
