@@ -407,8 +407,10 @@ private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
   BrowserExtensionPrivate *d;
+public:
   typedef QMap<QCString,int> ActionNumberMap;
 
+private:
   static ActionNumberMap * s_actionNumberMap;
   static ActionSlotMap * s_actionSlotMap;
   static void createActionSlotMap();
