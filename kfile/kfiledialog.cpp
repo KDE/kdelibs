@@ -115,7 +115,8 @@ struct KFileDialogPrivate
     QLabel *locationLabel;
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
-
+    QPushButton *okButton, *cancelButton;
+    
     QList<KIO::StatJob> statJobs;
 
     // an indicator that we're currently in a completion operation
@@ -129,14 +130,21 @@ KURL *KFileDialog::lastDirectory; // to set the start path
 
 KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 			 QWidget *parent, const char* name, bool modal)
-    : KDialogBase( parent, name, modal, QString::null,
-		   KDialogBase::Ok | KDialogBase::Cancel,
-		   KDialogBase::Ok )
+    : KDialogBase( parent, name, modal, QString::null, 0 )
+    //		   KDialogBase::Ok | KDialogBase::Cancel,
+    //		   KDialogBase::Ok )
 {
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
+    d->okButton = new QPushButton( i18n("&OK"), d->mainWidget );
+    //    d->okButton->setAutoDefault( false );
+    d->okButton->setDefault( true );
+    d->cancelButton = new QPushButton( i18n("&Cancel"), d->mainWidget );
+    //    d->cancelButton->setAutoDefault( false );
+    connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
+    connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
 
     d->completionLock = false;
     d->myStatusLine = 0;
@@ -255,7 +263,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
-    locationEdit->adjustSize();
+    //    locationEdit->adjustSize();
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
     connect( locationEdit, SIGNAL( completion( const QString& )),
@@ -278,10 +286,10 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
 				  d->mainWidget);
-    d->locationLabel->adjustSize();
-    d->locationLabel->setMinimumSize(d->locationLabel->width(),
-				     locationEdit->height());
-    locationEdit->setFixedHeight(d->locationLabel->height());
+    //    d->locationLabel->adjustSize();
+    //    d->locationLabel->setMinimumSize(d->locationLabel->width(),
+    //				     locationEdit->height());
+    //    locationEdit->setFixedHeight(d->locationLabel->height());
 
     connect( locationEdit, SIGNAL( returnPressed() ),
     	     SLOT( slotOk()));
@@ -289,15 +297,15 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	    this,  SLOT( locationActivated( const QString& ) ));
 
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    d->filterLabel->adjustSize();
-    d->filterLabel->setMinimumWidth(d->filterLabel->width());
+    //    d->filterLabel->adjustSize();
+    //    d->filterLabel->setMinimumWidth(d->filterLabel->width());
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
     filterWidget->setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
-    filterWidget->adjustSize();
-    filterWidget->setMinimumWidth(100);
-    filterWidget->setFixedHeight(filterWidget->height());
+    //    filterWidget->adjustSize();
+    //    filterWidget->setMinimumWidth(100);
+    //    filterWidget->setFixedHeight(filterWidget->height());
     connect(filterWidget, SIGNAL(filterChanged()),
 	    SLOT(slotFilterChanged()));
     ops->setNameFilter(filterWidget->currentFilter());
@@ -564,23 +572,25 @@ void KFileDialog::initGUI()
     if (d->boxLayout)
 	delete d->boxLayout; // deletes all sub layouts
 
-    d->boxLayout = new QVBoxLayout( d->mainWidget, 0, 2);
+    d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, AlignTop);
     d->boxLayout->addWidget(ops, 4);
     d->boxLayout->addSpacing(3);
 
-    d->lafBox= new QGridLayout(2, 2, 7);
+    d->lafBox= new QGridLayout(2, 3, KDialog::spacingHint());
     d->boxLayout->addLayout(d->lafBox, 0);
-    d->lafBox->addWidget(d->locationLabel, 0, 0);
-    d->lafBox->addWidget(locationEdit, 0, 1);
+    d->lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
+    d->lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
+    d->lafBox->addWidget(d->okButton, 0, 2, AlignVCenter | AlignRight);
+    
+    d->lafBox->addWidget(d->filterLabel, 1, 0, AlignVCenter);
+    d->lafBox->addWidget(filterWidget, 1, 1, AlignVCenter);
+    d->lafBox->addWidget(d->cancelButton, 1, 2, AlignVCenter);
 
-    d->lafBox->addWidget(d->filterLabel, 1, 0);
-    d->lafBox->addWidget(filterWidget, 1, 1);
-
-    d->lafBox->setColStretch(0, 1);
+    //    d->lafBox->setColStretch(0, 0);
     d->lafBox->setColStretch(1, 4);
-    d->lafBox->setColStretch(2, 1);
-
+    //    d->lafBox->setColStretch(2, 1);
+    
     delete d->myStatusLine;
     d->myStatusLine = 0L;
 
