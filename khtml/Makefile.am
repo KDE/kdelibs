@@ -38,13 +38,13 @@ SUBDIRS = misc dom css xml html rendering java . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
-		      khtml_events.cpp khtml_find.cpp
+		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h
 
-noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h
+noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la

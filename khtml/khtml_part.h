@@ -104,7 +104,7 @@ namespace KParts
  *
  * You can do as many calls to write as you want. But there are two
  * @ref write() methods, one accepting a @ref QString one accepting a
- * @p char @p * argument. You should use one or the other 
+ * @p char @p * argument. You should use one or the other
  * (but not both) since the method using
  * the @p char @p * argument does an additional decoding step to convert the
  * written data to Unicode.
@@ -143,17 +143,12 @@ public:
    * @ref KHTMLPart, one parent for the @ref KHTMLPart document and on parent
    * for the @ref KHTMLView. If the second @p parent argument is 0L, then
    * @p parentWidget is used as parent for both objects, the part and
-   * the view.  
+   * the view.
    */
   KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0,
-             QObject *parent = 0, const char *name = 0 );
+             QObject *parent = 0, const char *name = 0, GUIProfile prof = DefaultGUI );
 
-  KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0 );
-
-  KHTMLPart( QWidget *parentWidget, const char *widgetname,
-             QObject *parent, const char *name, GUIProfile prof ); // BCI: merge with prof = DefaultGUI
-
-  KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof ); // BCI: merge with prof = DefaultGUI
+  KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0, GUIProfile prof = DefaultGUI );
 
   /**
    * Destructor.
@@ -180,7 +175,7 @@ public:
   /**
    * Retrieve a pointer to the @ref KParts::BrowserExtension
    */
-  KHTMLPartBrowserExtension *browserExtension() const;
+  KParts::BrowserExtension *browserExtension() const;
 
   /**
    * Retrieve a pointer to the HTML document's view.
@@ -247,12 +242,12 @@ public:
    * you don't want to use this.
    *
    * All child frames and the old document are removed if you call
-   * this method.  
+   * this method.
    */
   virtual void begin( const KURL &url = KURL(), int xOffset = 0, int yOffset = 0 );
 
   /**
-   * Write another part of the HTML code to the widget. 
+   * Write another part of the HTML code to the widget.
    *
    * You may call
    * this function many times in sequence. But remember: The fewer calls
@@ -269,12 +264,12 @@ public:
    * Attention: Don't mix calls to @ref write( const char *) with calls
    * to @ref write( const QString & ).
    *
-   * The result might not be what you want.  
+   * The result might not be what you want.
    */
   virtual void write( const char *str, int len = -1 );
 
   /**
-   * Write another part of the HTML code to the widget. 
+   * Write another part of the HTML code to the widget.
    *
    * You may call
    * this function many times in sequence. But remember: The fewer calls
@@ -304,13 +299,13 @@ public:
   /**
    * Retrieve the base URL of this document
    *
-   * The base URL is ususally set by a <base url=...> 
+   * The base URL is ususally set by a <base url=...>
    * tag in the document head.
    */
   KURL baseURL() const;
 
   /**
-   * Mainly used internally. 
+   * Mainly used internally.
    *
    *Sets the document's base target.
    */
@@ -503,7 +498,7 @@ public:
    *
    * @see saveState()
    *
-   * This is called from the @ref restoreState() method of the 
+   * This is called from the @ref restoreState() method of the
    * @ref browserExtension() .
    **/
   virtual void restoreState( QDataStream &stream );
@@ -725,70 +720,5 @@ private:
   KHTMLPartPrivate *d;
 };
 
-/**
- * This is the BrowserExtension for a @ref KHTMLPart document. Please see the KParts documentation for
- * more information about the BrowserExtension.
- */
-class KHTMLPartBrowserExtension : public KParts::BrowserExtension
-{
-  Q_OBJECT
-  friend class KHTMLPart;
-  friend class KHTMLView;
-public:
-  KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name = 0L );
-
-  virtual int xOffset();
-  virtual int yOffset();
-
-  virtual void saveState( QDataStream &stream );
-  virtual void restoreState( QDataStream &stream );
-
-public slots:
-  void copy();
-  void reparseConfiguration();
-  void print();
-
-private:
-  KHTMLPart *m_part;
-};
-
-class KHTMLPartBrowserHostExtension : public KParts::BrowserHostExtension
-{
-public:
-  KHTMLPartBrowserHostExtension( KHTMLPart *part );
-  virtual ~KHTMLPartBrowserHostExtension();
-
-  virtual QStringList frameNames() const;
-
-  virtual const QList<KParts::ReadOnlyPart> frames() const;
-
-  virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
-private:
-  KHTMLPart *m_part;
-};
-
-/**
- * @internal
- * INTERNAL class. *NOT* part of the public API.
- */
-class KHTMLPopupGUIClient : public QObject, public KXMLGUIClient
-{
-  Q_OBJECT
-public:
-  KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
-  virtual ~KHTMLPopupGUIClient();
-
-  static void saveURL( QWidget *parent, const QString &caption, const KURL &url );
-
-private slots:
-  void slotSaveLinkAs();
-  void slotSaveImageAs();
-  void slotCopyLinkLocation();
-  void slotCopyImageLocation();
-  void slotReloadFrame();
-private:
-  class KHTMLPopupGUIClientPrivate;
-  KHTMLPopupGUIClientPrivate *d;
-};
 
 #endif
