@@ -210,7 +210,12 @@ QString KProtocolManager::noProxyFor()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( "NoProxyFor" );
+
+  QString noProxy = cfg->readEntry( "NoProxyFor" );
+  if (proxyType() == EnvVarProxy)
+    noProxy = QString::fromLocal8Bit(getenv(noProxy.local8Bit()));
+
+  return noProxy;
 }
 
 QString KProtocolManager::proxyFor( const QString& protocol )
@@ -331,11 +336,10 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      proxy = proxyForURL(url);
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
-        QString noProxy = noProxyFor();
-        ProxyType type = proxyType();
-        bool useRevProxy = ( (type == ManualProxy || type == EnvVarProxy) &&
-                            useReverseProxy() );
         bool isRevMatch = false;
+        bool useRevProxy = ((proxyType() == ManualProxy) && useReverseProxy());
+
+        QString noProxy = noProxyFor();
 
         if (!noProxy.isEmpty())
         {
