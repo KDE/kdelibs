@@ -204,9 +204,9 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if( m_part->docImpl() )
 	body = m_part->docImpl()->body();
 
-    if(!body) 
+    if(!body)
 	return;
-        
+
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     int pbHeight;

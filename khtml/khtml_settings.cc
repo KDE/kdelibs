@@ -218,6 +218,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
 	
+	// The global setting for JavaScript
+    if ( reset || config->hasKey( "EnableCSS" ) )
+      m_bEnableJavaScript = config->readBoolEntry( "EnableCSS", true );
+	
 	// The domain-specific settings.
 	if( reset || config->hasKey( "JavaScriptDomainAdvice" ) ) {
 	  QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
@@ -268,6 +272,23 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
   return m_bEnableJavaScript;
 }
 
+bool KHTMLSettings::isCSSEnabled( const QString& hostname = QString::null )
+{
+#if 0
+      // First check whether there is a Domain-specific entry.
+  if( cssDomainPolicy.contains( hostname ) ) {
+	// yes, use it (unless dunno)
+	KJavaScriptAdvice adv = cssDomainPolicy[ hostname ];
+	if( adv == KJavaScriptReject )
+	  return false;
+	else if( adv == KJavaScriptAccept )
+	  return true;
+  }
+
+#endif
+  // No domain-specific entry, or was dunno: use global setting
+  return m_bEnableCSS;
+}
 
 
 void KHTMLSettings::resetFontSizes()

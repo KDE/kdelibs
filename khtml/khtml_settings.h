@@ -97,10 +97,11 @@ public:
   // Java and JavaScript
   bool isJavaEnabled( const QString& hostname = QString::null );
   bool isJavaScriptEnabled( const QString& hostname = QString::null );
+  bool isCSSEnabled( const QString& hostname = QString::null );
 
   // helpers for parsing domain-specific configuration, used in KControl module as well
   static KJavaScriptAdvice strToAdvice(const QString& _str);
-  static void splitDomainAdvice(const QString& configStr, QString &domain, 
+  static void splitDomainAdvice(const QString& configStr, QString &domain,
 								KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice);
   static const char* adviceToStr(KJavaScriptAdvice _advice);
 
@@ -131,7 +132,8 @@ private:
   bool m_bAutoLoadImages;
   bool m_bEnableJava;
   bool m_bEnableJavaScript;
-  QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
+    bool m_bEnableCSS;
+    QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
   QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
 
   //  static KonqHTMLSettings * s_HTMLSettings;
