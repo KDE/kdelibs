@@ -35,12 +35,11 @@ K_DCOP
 public:
 	KNotify();
 //	~KNotify();
-	typedef KNotifyClient::Presentation Presentation;
 
 protected:
 	void processNotification(const QString &event, const QString &fromApp,
 	                         const QString &text, QString sound, QString file,
-	                         Presentation present);
+	                         int present);
 
 	bool notifyBySound(const QString &sound);
 	bool notifyByMessagebox(const QString &text);

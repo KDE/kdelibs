@@ -79,7 +79,7 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 bool KNotify::process(const QCString &fun, const QByteArray &data,
                       QCString& /*replyType*/, QByteArray& /*replyData*/ )
 {
-	if (fun == "notify(QString,QString,QString,QString,QString, Presentation)")
+	if (fun == "notify(QString,QString,QString,QString,QString,Presentation)")
 	{
 		QDataStream dataStream( data, IO_ReadOnly );
 		QString event;
@@ -89,7 +89,7 @@ bool KNotify::process(const QCString &fun, const QByteArray &data,
 		QString file;
 	 	int present;
 		dataStream >> event >>fromApp >> text >> sound >> file>> present;
-		processNotification(event, fromApp, text, sound, file, (Presentation)present);
+		processNotification(event, fromApp, text, sound, file, present);
  
 		return true;
 	}
@@ -98,7 +98,7 @@ bool KNotify::process(const QCString &fun, const QByteArray &data,
 
 void KNotify::processNotification(const QString &event, const QString &fromApp,
                                   const QString &text, QString sound, QString file,
-                                  Presentation present)
+                                  int present)
 {
 	static bool eventRunning=true;
 	
@@ -108,9 +108,9 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 		eventsfile.setGroup(event);
 	
 		if (present==-1)
-			present=(Presentation)eventsfile.readNumEntry("presentation", -1);
+			present=eventsfile.readNumEntry("presentation", -1);
 		if (present==-1)
-			present=(Presentation)eventsfile.readNumEntry("default_presentation", 0);
+			present=eventsfile.readNumEntry("default_presentation", 0);
 		sound=eventsfile.readEntry("sound", 0);
 		if (sound.isNull())
 			sound=eventsfile.readEntry("default_logfile", "");
@@ -125,9 +125,8 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-#warning Logfile doesn t exist in knotifyclient.h
-	//if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
-		//notifyByLogfile(text, file);
+	if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
+		notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);
 	eventRunning=false;
