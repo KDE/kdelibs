@@ -599,10 +599,10 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 			return;
 		}
 		if( !d->bAllowLetterShortcuts && key.modFlags() == 0
-		    && key.key() < 0x3000 && QChar(key.key()).isLetterOrNumber() ) {
+		    && key.sym() < 0x3000 && QChar(key.sym()).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
-						"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(key.key()));
+						"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(key.sym()));
 			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 			return;
 		}
