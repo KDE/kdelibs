@@ -204,7 +204,7 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
     case QVariant::Int:
       return QVariant( readNumEntry( aKey ) );
     case QVariant::Bool:
-      return QVariant( readBoolEntry( aKey ) );
+      return QVariant( static_cast<int>(readBoolEntry( aKey )) );
     case QVariant::Double:
       return QVariant( readDoubleNumEntry( aKey ) );
     default:
