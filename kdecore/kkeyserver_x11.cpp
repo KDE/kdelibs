@@ -267,7 +267,8 @@ bool Sym::initQt( int keyQt )
 	}
 
 	m_sym = 0;
-	kdWarning(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
+	if( symQt != 1020 && symQt != 1021 && symQt != 1023 )
+		kdWarning(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
 }
 
