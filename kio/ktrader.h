@@ -144,9 +144,9 @@ public:
      *
      * Typically, this is used for getting the list of embeddable components
      * that can handle a given mimetype.
-     * In that case, @p servicetype is the mimetype and @p servicetype2 is "KParts/ReadOnlyPart".
+     * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
      */
-    OfferList query( const QString& servicetype, const QString& servicetype2,
+    OfferList query( const QString& servicetype, const QString& genericServiceType,
                      const QString& constraint /*= QString::null*/,
                      const QString& preferences /*= QString::null*/) const;
 

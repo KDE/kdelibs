@@ -104,7 +104,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     return query( _servicetype, QString::null, _constraint, _preferences );
 }
 
-KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _servicetype2,
+KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _genericServiceType,
                                    const QString& _constraint,
                                    const QString& _preferences ) const
 {
@@ -122,7 +122,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
   KTrader::OfferList ret;
 
   // Get all services of this service type.
-  lst = KServiceTypeProfile::offers( _servicetype, _servicetype2 );
+  lst = KServiceTypeProfile::offers( _servicetype, _genericServiceType );
   if ( lst.count() == 0 )
     return ret;
 
