@@ -1088,13 +1088,17 @@ static QString translatePath( QString path )
    if (startsWithFile)
         path.remove(0,5); // strip leading "file:/" off the string
 
-   if (path == QString::fromLatin1(getenv("HOME"))) {
-      path = QString::fromLatin1("$HOME");
-   } else {
-      path = KGlobal::dirs()->relativeLocation("home", path);
-      if (path[0] != '/')   // replace by $HOME if necessary
-        path.prepend( "$HOME/" );
+   // we can not use KGlobal::dirs()->relativeLocation("home", path)
+   // here, since it would not recognize paths without a trailing '/' 
+   QString homeDir = QFile::decodeName(getenv("HOME"));
+   if (path.startsWith(homeDir)) {
+	unsigned int len = homeDir.length();
+        // replace by $HOME if possible
+        if (path.length() == len || path[len] == '/') {
+             path = path.replace(0, len, QString::fromLatin1("$HOME"));
+	}
    }
+
    if (startsWithFile)
       path.prepend( "file:" );
 
