@@ -115,11 +115,27 @@ void RenderFrameSet::layout( )
     int rowsPercent = 0;
     int colsPercent = 0;
     int remainingRelativeWidth = 0;
-    // fixed rows first, then percent and then relative
-
+    
     if(m_rows)
     {
-         for(i = 0; i< m_frameset->totalRows(); i++)
+	// another one for bad html. If all rows have a fixed width, convert the numbers to percentages.
+	bool allFixed = true;
+	int totalFixed = 0;
+	for(i = 0; i< m_frameset->totalRows(); i++) {
+	    if(m_rows->at(i)->type != Fixed)
+		allFixed = false;
+	    else
+		totalFixed += m_rows->at(i)->value;
+	}
+	if ( allFixed ) {
+	    for(i = 0; i< m_frameset->totalRows(); i++) {
+		m_rows->at(i)->type = Percent;
+		m_rows->at(i)->value = m_rows->at(i)->value *100 / totalFixed;
+	    }
+	}	    
+    
+	    // fixed rows first, then percent and then relative
+        for(i = 0; i< m_frameset->totalRows(); i++)
         {
              if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
             {
@@ -179,6 +195,23 @@ void RenderFrameSet::layout( )
 
     if(m_cols)
     {
+	// another one for bad html. If all cols have a fixed width, convert the numbers to percentages.
+	// also reproduces IE and NS behaviour.
+	bool allFixed = true;
+	int totalFixed = 0;
+	for(i = 0; i< m_frameset->totalCols(); i++) {
+	    if(m_cols->at(i)->type != Fixed)
+		allFixed = false;
+	    else
+		totalFixed += m_cols->at(i)->value;
+	}
+	if ( allFixed ) {
+	    for(i = 0; i< m_frameset->totalCols(); i++) {
+		m_cols->at(i)->type = Percent;
+		m_cols->at(i)->value = m_cols->at(i)->value * 100 / totalFixed;
+	    }
+	}	    
+
         totalRelative = 0;
         remainingRelativeWidth = 0;
 
@@ -247,7 +280,9 @@ void RenderFrameSet::layout( )
 
     if(!m_hSplitVar && !m_vSplitVar)
     {
+#ifdef DEBUG_LAYOUT
         kdDebug( 6031 ) << "calculationg fixed Splitters" << endl;
+#endif
         if(!m_vSplitVar && m_frameset->totalCols() > 1)
         {
             m_vSplitVar = new bool[m_frameset->totalCols()];
@@ -279,7 +314,9 @@ void RenderFrameSet::layout( )
 
                 if(fixed)
                 {
+#ifdef DEBUG_LAYOUT
                     kdDebug( 6031 ) << "found fixed cell " << r << "/" << c << "!" << endl;
+#endif
                     if( m_frameset->totalCols() > 1)
                     {
                         if(c>0) m_vSplitVar[c-1] = false;
@@ -293,8 +330,10 @@ void RenderFrameSet::layout( )
                     child = child->nextSibling();
                     if(!child) goto end2;
                 }
+#ifdef DEBUG_LAYOUT
                 else
                     kdDebug( 6031 ) << "not fixed: " << r << "/" << c << "!" << endl;
+#endif
             }
         }
 
@@ -324,7 +363,9 @@ void RenderFrameSet::positionFrames()
     {
     //      HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
       child->setPos( xPos, yPos );
+#ifdef DEBUG_LAYOUT
       kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
+#endif
       child->setSize( m_colWidth[c], m_rowHeight[r] );
 
       child->layout( );
@@ -355,8 +396,10 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 
   if ( !m_resizing && type == DOM::NodeImpl::MouseMove || type == DOM::NodeImpl::MousePress )
   {
+#ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << "mouseEvent:check" << endl;
-
+#endif
+    
     m_hSplit = -1;
     m_vSplit = -1;
     //bool resizePossible = true;
@@ -368,7 +411,9 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       if(_x >= pos && _x <= pos+m_frameset->border())
       {
         if(m_vSplitVar && m_vSplitVar[c-1] == true) m_vSplit = c-1;
+#ifdef DEBUG_LAYOUT
         kdDebug( 6031 ) << "vsplit!" << endl;
+#endif
         res = true;
         break;
       }
@@ -381,15 +426,19 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       if( _y >= pos && _y <= pos+m_frameset->border())
       {
         if(m_hSplitVar && m_hSplitVar[r-1] == true) m_hSplit = r-1;
+#ifdef DEBUG_LAYOUT
         kdDebug( 6031 ) << "hsplitvar = " << m_hSplitVar << endl;
         kdDebug( 6031 ) << "hsplit!" << endl;
+#endif
         res = true;
         break;
       }
       pos += m_rowHeight[r] + m_frameset->border();
     }
+#ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
-
+#endif
+    
     QCursor cursor;
     if(m_hSplit != -1 && m_vSplit != -1)
     {
@@ -425,14 +474,18 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 
     if(m_vSplit != -1 )
     {
+#ifdef DEBUG_LAYOUT
       kdDebug( 6031 ) << "split xpos=" << _x << endl;
+#endif
       int delta = m_vSplitPos - _x;
       m_colWidth[m_vSplit] -= delta;
       m_colWidth[m_vSplit+1] += delta;
     }
     if(m_hSplit != -1 )
     {
+#ifdef DEBUG_LAYOUT
       kdDebug( 6031 ) << "split ypos=" << _y << endl;
+#endif
       int delta = m_hSplitPos - _y;
       m_rowHeight[m_hSplit] -= delta;
       m_rowHeight[m_hSplit+1] += delta;
@@ -492,7 +545,9 @@ RenderFrame::~RenderFrame()
 
 void RenderFrame::setWidget( QWidget *widget )
 {
+#ifdef DEBUG_LAYOUT
     kdDebug(6031) << "RenderFrame::setWidget()" << endl;
+#endif
     RenderPart::setWidget(widget);
     slotViewCleared();
 
@@ -503,14 +558,18 @@ void RenderFrame::setWidget( QWidget *widget )
 void RenderFrame::slotViewCleared()
 {
     if(m_widget->inherits("QScrollView")) {
+#ifdef DEBUG_LAYOUT
         kdDebug(6031) << "frame is a scrollview!" << endl;
+#endif
         QScrollView *view = static_cast<QScrollView *>(m_widget);
         if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
         view->setVScrollBarMode(m_frame->scrolling);
         view->setHScrollBarMode(m_frame->scrolling);
         if(view->inherits("KHTMLView")) {
+#ifdef DEBUG_LAYOUT
             kdDebug(6031) << "frame is a KHTMLview!" << endl;
+#endif
             KHTMLView *htmlView = static_cast<KHTMLView *>(view);
             if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
             if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
@@ -603,7 +662,9 @@ void RenderPartObject::close()
         }
 
         if ( url.isEmpty() && serviceType.isEmpty() ) {
+#ifdef DEBUG_LAYOUT
             kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+#endif
             return;
         }
 
@@ -620,7 +681,9 @@ void RenderPartObject::close()
         serviceType = embed->serviceType;
 
         if ( url.isEmpty() && serviceType.isEmpty() ) {
+#ifdef DEBUG_LAYOUT
             kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+#endif
             return;
         }
 
@@ -638,7 +701,9 @@ void RenderPartObject::close()
      serviceType = o->serviceType;
 
      if ( url.isEmpty() && serviceType.isEmpty() ) {
+#ifdef DEBUG_LAYOUT
          kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+#endif
          return;
      }
 
@@ -729,7 +794,9 @@ void RenderPartObject::layout( )
 void RenderPartObject::slotViewCleared()
 {
   if(m_widget->inherits("QScrollView") ) {
+#ifdef DEBUG_LAYOUT
       kdDebug(6031) << "iframe is a scrollview!" << endl;
+#endif
       QScrollView *view = static_cast<QScrollView *>(m_widget);
       int frameStyle = QFrame::NoFrame;
       QScrollView::ScrollBarMode scroll = QScrollView::Auto;
@@ -747,7 +814,9 @@ void RenderPartObject::slotViewCleared()
       view->setVScrollBarMode(scroll);
       view->setHScrollBarMode(scroll);
       if(view->inherits("KHTMLView")) {
+#ifdef DEBUG_LAYOUT
           kdDebug(6031) << "frame is a KHTMLview!" << endl;
+#endif
           KHTMLView *htmlView = static_cast<KHTMLView *>(view);
           if(marginw != -1) htmlView->setMarginWidth(marginw);
           if(marginh != -1) htmlView->setMarginHeight(marginh);
