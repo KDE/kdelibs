@@ -159,7 +159,14 @@ protected:
     bool tag;
 
     // are we in quotes within a html tag
-    bool tquote;
+    typedef enum
+    {
+        NoQuote = 0,
+        SingleQuote,
+        DoubleQuote
+    } HTMLQuote;
+        
+    HTMLQuote tquote;
     
 	typedef enum 
 	{ 

@@ -128,7 +128,7 @@ void HTMLTokenizer::begin()
     comment = false;
     textarea = false;
     startTag = false;
-    tquote = false;
+    tquote = NoQuote;
     searchCount = 0;
     title = false;
     charEntity = false;
@@ -560,24 +560,32 @@ printf("Unknown tag: \"%s\"\n", tagStr);
 	else if ( *src == '\"' || *src == '\'')
 	{ // we treat " & ' the same in tags
     	    discard = NoneDiscard;
-            src++;
 	    if ( *(dest-1) == '=' && !tquote )
 	    {
                 // according to HTML4 DTD, we can simplify
 		// strings like "  my \nstring " to "my string"
 		discard = SpaceDiscard; // ignore leading spaces
 		pending = NonePending;
- 		tquote = true;
+		if (*src == '\'')
+		    tquote = SingleQuote;
+		else
+		    tquote = DoubleQuote;
 	    }
-	    else if ( tquote )
+	    else if ( (( tquote == SingleQuote ) && ( *src == '\'')) ||
+                      (( tquote == DoubleQuote ) && ( *src == '\"')))
 	    {
-                tquote = false;
+                tquote = NoQuote;
 		pending = SpacePending; // Add space automatically
+	    }
+	    else if (tquote)
+	    {
+	        *dest++ = *src;
 	    }
 	    else
 	    {
 	        // Ignore stray "\'"
 	    }
+            src++;
 	}
 	else if ( *src == '=' )
 	{
