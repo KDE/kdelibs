@@ -104,6 +104,7 @@ public:
      * A list of services.
      */
     typedef QValueList<KService::Ptr> OfferList;
+    typedef QValueListIterator<KService::Ptr> OfferListIterator;
 
     /**
      * Standard destructor
