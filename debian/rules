@@ -19,9 +19,9 @@ $(BUILDDIR)/build-stamp:
 	INSTALL_DATA='install -p -c -m 644' \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
-	../configure --enable-debug --with-micodir=/usr \
-	--with-pythondir=/usr --disable-rpath 
-	
+	../configure --enable-debug --disable-rpath \
+	--libdir=$$libdir --includedir=$$includedir
+
 	make -C $(BUILDDIR)
 
 	touch $(BUILDDIR)/build-stamp
@@ -50,8 +50,8 @@ binary-arch:  build
 	dh_installdirs
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp install
 
-	eval `perl -w ../debian/kderules echodirs`
 	perl -w debian/kderules kdelibs3-cvs
+	eval `perl -w debian/kderules echodirs`; \
 	dh_movefiles -pkdelibs3-cvs-dev $$includedir $$libdir/lib*.so $$libdir/lib*.la
 	dh_installdocs 
 	dh_installchangelogs

@@ -94,6 +94,8 @@ if (@ARGV && $ARGV[0] eq 'echodirs') {
   print STDOUT "export QTINC=/usr/lib/qt2beta/include\n";
   print STDOUT "export QTLIB=/usr/lib/qt2beta/lib\n";
   print STDOUT "export MOC=/usr/lib/qt2beta/bin/moc\n";
+  print STDOUT "export MICODIR=/usr\n";
+  print STDOUT "export PYTHONDIR=/usr\n";
 
   exit
 }
