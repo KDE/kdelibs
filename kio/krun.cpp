@@ -420,6 +420,7 @@ void KRun::init()
 
 KRun::~KRun()
 {
+  kDebugInfo( 7010, "KRun::~KRun()" );
   m_timer.stop();
   killJob();
 }
@@ -472,6 +473,7 @@ void KRun::slotTimeout()
 
 void KRun::slotStatResult( KIO::Job * job )
 {
+  m_job = 0L;
   if (job->error())
   {
     kDebugError( 7010,"ERROR %d %s", job->error(), job->errorText().ascii() );
