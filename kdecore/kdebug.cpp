@@ -359,7 +359,19 @@ kdbgstream& kdbgstream::operator << (char ch)
 {
   if (!print) return *this;
   if (!isprint(ch))
-    output += "\\x" + QString::number( static_cast<uint>( ch ) + 0x100, 16 ).right(2);
+    output += "\\x" + QString::number( static_cast<uint>( ch ), 16 ).rightJustify(2, '0');
+  else {
+    output += ch;
+    if (ch == '\n') flush();
+  }
+  return *this;
+}
+
+kdbgstream& kdbgstream::operator << (QChar ch)
+{
+  if (!print) return *this;
+  if (!ch.isPrint())
+    output += "\\x" + QString::number( ch.unicode(), 16 ).rightJustify(2, '0');
   else {
     output += ch;
     if (ch == '\n') flush();
@@ -507,6 +519,17 @@ kdbgstream& kdbgstream::operator<<( const QBrush& b) {
     if ( b.pixmap() )
         *this <<" has a pixmap";
     *this <<" ]";
+    return *this;
+}
+
+kdbgstream& kdbgstream::operator<<( const QVariant& v) {
+    *this << "[variant: ";
+    *this << v.typeName();
+    // For now we just attempt a conversion to string.
+    // Feel free to switch(v.type()) and improve the output.
+    *this << " toString=";
+    *this << v.toString();
+    *this << "]";
     return *this;
 }
 

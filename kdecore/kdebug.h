@@ -37,6 +37,7 @@ class QStringList;
 class QColor;
 class QPen;
 class QBrush;
+class QVariant;
 template <class T>
 class QValueList;
 
@@ -122,17 +123,17 @@ class kdbgstream {
     }
     /**
      * Prints the given value.
-     * @param i the char to print
+     * @param ch the char to print
      * @return this stream
      */
-    kdbgstream &operator<<(char i);
+    kdbgstream &operator<<(char ch);
     /**
      * Prints the given value.
-     * @param i the unsigned char to print
+     * @param ch the unsigned char to print
      * @return this stream
      */
-    kdbgstream &operator<<(unsigned char i) {
-        return operator<<( static_cast<char>( i ) );
+    kdbgstream &operator<<(unsigned char ch) {
+        return operator<<( static_cast<char>( ch ) );
     }
     /**
      * Prints the given value.
@@ -200,6 +201,13 @@ class kdbgstream {
      */
     void flush(); //AB: maybe this should be virtual! would save some trouble for some 3rd party projects
 
+    /**
+     * Prints the given value.
+     * @param ch the char to print
+     * @return this stream
+     * @since 3.3
+     */
+    kdbgstream &operator<<(QChar ch);
     /**
      * Prints the given value.
      * @param string the string to print
@@ -367,6 +375,14 @@ class kdbgstream {
     kdbgstream& operator << ( const QBrush& brush );
 
     /**
+     * Prints the given value.
+     * @param brush the brush to print
+     * @return this stream
+     * @since 3.3
+     */
+    kdbgstream& operator << ( const QVariant& variant );
+
+    /**
      * Prints the given value
      * @param list the list to print
      * @return this stream
@@ -464,6 +480,11 @@ class kndbgstream {
      * Does nothing.
      * @return this stream
      */
+    kndbgstream &operator<<(QChar)  { return *this; }
+    /**
+     * Does nothing.
+     * @return this stream
+     */
     kndbgstream &operator<<(const QString& ) { return *this; }
     /**
      * Does nothing.
@@ -539,6 +560,7 @@ class kndbgstream {
     kndbgstream& operator<<( const QColor & ) { return *this; }
     kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
+    kndbgstream& operator<<( const QVariant & ) { return *this; }
 
     template <class T>
     kndbgstream& operator<<( const QValueList<T> & ) { return *this; }
