@@ -65,6 +65,7 @@ public:
     // DOM methods & attributes for Attr
     bool specified() const { return m_specified; }
     ElementImpl* ownerElement() const { return m_element; }
+    void setOwnerElement( ElementImpl* impl ) { m_element = impl; }
     NodeImpl::Id attrId() const { return m_attrId; }
     DOMString name() const;
 

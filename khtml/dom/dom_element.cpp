@@ -297,6 +297,7 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
     Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), false, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
+    static_cast<AttrImpl *>(newAttr.handle())->setOwnerElement( static_cast<ElementImpl*>(impl) );
     return r;
 }
 
