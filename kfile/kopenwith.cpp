@@ -49,6 +49,7 @@
 #include <kmimetype.h>
 #include <kservicegroup.h>
 #include <klistview.h>
+#include <ksycoca.h>
 
 #include "kopenwith.h"
 #include <kdebug.h>
@@ -533,6 +534,7 @@ void KOpenWithDlg::slotOK()
 
   // get the new service pointer
   kdDebug() << pathName << endl;
+  KSycoca::self()->notifyDatabaseChanged();
   m_pService = KService::serviceByDesktopPath( pathName );
   QApplication::restoreOverrideCursor();
 
