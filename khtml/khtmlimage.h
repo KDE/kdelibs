@@ -58,6 +58,8 @@ public:
 
     virtual bool closeURL();
 
+    KHTMLPart *doc() const { return m_khtml; }
+
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
 
@@ -66,9 +68,22 @@ private slots:
     void slotImageJobFinished( KIO::Job *job );
 
 private:
-    KHTMLPart *m_khtml;
+    QGuardedPtr<KHTMLPart> m_khtml;
     KParts::BrowserExtension *m_ext;
     QString m_mimeType;
+};
+
+class KHTMLImageBrowserExtension : public KParts::BrowserExtension
+{
+    Q_OBJECT
+public:
+    KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name = 0 );
+
+    virtual int xOffset();
+    virtual int yOffset();
+
+private:
+    KHTMLImage *m_imgPart;
 };
 
 #endif

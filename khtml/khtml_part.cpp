@@ -1290,10 +1290,6 @@ void KHTMLPart::slotFinishedParsing()
 
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
-  else if (d->m_view->contentsY()==0) // check that the view has not been moved by the use
-  {
-    d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-  }
 
 #if 0
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
@@ -1403,6 +1399,9 @@ void KHTMLPart::checkCompleted()
               }
           }
   }
+
+  if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
+      d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
   emit completed();
   emit setStatusBarText( i18n("Loading complete") );

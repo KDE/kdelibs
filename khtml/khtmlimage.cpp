@@ -19,6 +19,7 @@
 
 #include "khtmlimage.h"
 #include "khtml_part.h"
+#include "khtmlview.h"
 #include "xml/dom_docimpl.h"
 #include "misc/loader.h"
 
@@ -71,7 +72,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     setXMLFile( m_khtml->xmlFile() );
 
-    m_ext = new KParts::BrowserExtension( this, "be" );
+    m_ext = new KHTMLImageBrowserExtension( this, "be" );
 
     connect( KParts::BrowserExtension::childObject( m_khtml ), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
              this, SLOT( slotPopupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
@@ -85,7 +86,11 @@ KHTMLImage::~KHTMLImage()
     // we now delete the htmlpart which deletes the part's widget which makes
     // _OUR_ m_widget 0 which in turn avoids our part destructor to delete the
     // widget ;-)
-    delete m_khtml;
+    // ### additional note: it _can_ be that the part has been deleted before:
+    // when we're in a html frameset and the view dies first, then it will also
+    // kill the htmlpart
+    if ( m_khtml )
+        delete static_cast<KHTMLPart *>( m_khtml );
 }
 
 bool KHTMLImage::openURL( const KURL &url )
@@ -96,9 +101,10 @@ bool KHTMLImage::openURL( const KURL &url )
 
     emit started( 0 );
 
-    m_mimeType = m_ext->urlArgs().serviceType;
+    KParts::URLArgs args = m_ext->urlArgs();
+    m_mimeType = args.serviceType;
 
-    m_khtml->begin( m_url );
+    m_khtml->begin( m_url, args.xOffset, args.yOffset );
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if ( impl && m_ext->urlArgs().reload )
@@ -154,6 +160,22 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
     }
     else
         emit completed();
+}
+
+KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
+    : KParts::BrowserExtension( parent, name )
+{
+    m_imgPart = parent;
+}
+
+int KHTMLImageBrowserExtension::xOffset()
+{
+    return m_imgPart->doc()->view()->contentsX();
+}
+
+int KHTMLImageBrowserExtension::yOffset()
+{
+    return m_imgPart->doc()->view()->contentsY();
 }
 
 #include "khtmlimage.moc"
