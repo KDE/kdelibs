@@ -262,11 +262,14 @@ struct TypeDef {
 
 /**
  * One item of an enum value
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct EnumComponent {
 	string name;
 
 	long value;
+	sequence<string> hints;
 };
 
 /**

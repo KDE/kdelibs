@@ -163,13 +163,13 @@ enumbody:
       T_IDENTIFIER
 	  {
 	  	$$ = new vector<EnumComponent>;
-		$$->push_back(EnumComponent($1,0));
+		$$->push_back(EnumComponent($1,0,g->noHints));
 		free($1);
 	  }
 	| T_IDENTIFIER T_EQUAL T_INTEGER_LITERAL
 	  {
 	  	$$ = new vector<EnumComponent>;
-		$$->push_back(EnumComponent($1,$3));
+		$$->push_back(EnumComponent($1,$3,g->noHints));
 		free($1);
 	  }
 	| enumbody T_COMMA T_IDENTIFIER
@@ -177,13 +177,13 @@ enumbody:
 	  	EnumComponent& last = (*$1)[$1->size()-1];
 
 		$$ = $1;
-		$$->push_back(EnumComponent($3,last.value+1));
+		$$->push_back(EnumComponent($3,last.value+1,g->noHints));
 		free($3);
 	  }
 	| enumbody T_COMMA T_IDENTIFIER T_EQUAL T_INTEGER_LITERAL
 	  {
 		$$ = $1;
-		$$->push_back(EnumComponent($3,$5));
+		$$->push_back(EnumComponent($3,$5,g->noHints));
 		free($3);
 	  };
 

@@ -919,7 +919,7 @@ case 16:
 #line 164 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent>;
-		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[0]._str,0));
+		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[0]._str,0,g->noHints));
 		free(yyvsp[0]._str);
 	  ;
     break;}
@@ -927,7 +927,7 @@ case 17:
 #line 170 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent>;
-		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
+		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[-2]._str,yyvsp[0]._int,g->noHints));
 		free(yyvsp[-2]._str);
 	  ;
     break;}
@@ -937,7 +937,7 @@ case 18:
 	  	EnumComponent& last = (*yyvsp[-2]._enumComponentSeq)[yyvsp[-2]._enumComponentSeq->size()-1];
 
 		yyval._enumComponentSeq = yyvsp[-2]._enumComponentSeq;
-		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[0]._str,last.value+1));
+		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[0]._str,last.value+1,g->noHints));
 		free(yyvsp[0]._str);
 	  ;
     break;}
@@ -945,7 +945,7 @@ case 19:
 #line 184 "yacc.yy"
 {
 		yyval._enumComponentSeq = yyvsp[-4]._enumComponentSeq;
-		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
+		yyval._enumComponentSeq->push_back(EnumComponent(yyvsp[-2]._str,yyvsp[0]._int,g->noHints));
 		free(yyvsp[-2]._str);
 	  ;
     break;}

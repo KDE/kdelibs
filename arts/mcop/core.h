@@ -227,12 +227,13 @@ public:
 class EnumComponent : public Arts::Type {
 public:
 	EnumComponent();
-	EnumComponent(const std::string& name, long value);
+	EnumComponent(const std::string& name, long value, const std::vector<std::string>& hints);
 	EnumComponent(Arts::Buffer& stream);
 	EnumComponent(const EnumComponent& copyType);
 	EnumComponent& operator=(const EnumComponent& assignType);
 	std::string name;
 	long value;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
