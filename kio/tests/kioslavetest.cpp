@@ -210,8 +210,8 @@ void KioslaveTest::startJob() {
     break;
 
   case ProgressLittle:
-    job->setGUImode( KIOJob::LITTLE );
-    job->connectProgress( littleProgress );
+    job->setGUImode( KIOJob::CUSTOM );
+    job->setProgressDlg( littleProgress );
     break;
 
   default:
@@ -264,7 +264,6 @@ void KioslaveTest::slotError( int, int errid, const char* errortext ) {
 void KioslaveTest::slotFinished() {
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
-  littleProgress->clean();
 }
 
 
