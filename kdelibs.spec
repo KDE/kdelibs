@@ -1,0 +1,68 @@
+%define	version Beta3
+%define name kdelibs
+Name: %{name}
+Summary: K Desktop Environment - Libraries
+Version: %{version}
+Release: 1
+Source: ftp.kde.org:/pub/kde/unstable/CVS/snapshots/current/%{name}-%{version}.tar.gz
+Group: X11/KDE/Base
+Copyright: GPL/LGPL
+BuildRoot: /tmp/realhot_%{name}
+Requires: qt >= 1.31
+Distribution: KDE
+Packager: Magnus Pfeffer <pfeffer@unix-ag.uni-kl.de>
+Vendor: The KDE Team
+
+%description
+Libraries for the K Desktop Environment.
+
+Included with this package are:
+
+jscript: KDE javascript library
+kdecore: KDE core library 
+kdeui: KDE user interface library
+kfmlib: KDE file manager library
+khtmlw: KDE HTML widget
+mediatool: KDE mediatool library
+
+%prep
+rm -rf $RPM_BUILD_ROOT
+
+%setup -n kdelibs
+
+%build
+export KDEDIR=/opt/kde
+./configure --prefix=$KDEDIR --with-install-root=$RPM_BUILD_ROOT --disable-path-check
+make KDEDIR=$KDEDIR
+
+%install
+export KDEDIR=/opt/kde
+make prefix=$RPM_BUILD_ROOT$KDEDIR install
+
+cd $RPM_BUILD_ROOT
+find . -type d | sed '1,2d;s,^\.,\%attr(-\,root\,root) \%dir ,' > $RPM_BUILD_DIR/file.list.%{name}
+find . -type f | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}
+find . -type l | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+
+
+if [ -f /opt/kde/lib/libgdbm.so ]
+ then
+  grep -q '/opt/kde/lib' /etc/ld.so.conf || echo "/opt/kde/lib" >> /etc/ld.so.conf
+  /sbin/ldconfig
+ else
+  echo "You used a different prefix than /opt. You must add <prefix>/kde/lib to the file /etc/ld.so.conf manually and run /sbin/ldconfig afterwards"
+fi
+
+%postun
+mv /etc/ld.so.conf /etc/ld.so.conf.orig
+grep -v '^/opt/kde/lib$' /etc/ld.so.conf.orig > /etc/ld.so.conf
+rm /etc/ld.so.conf.orig
+
+/sbin/ldconfig
+
+%files -f ../file.list.%{name}
