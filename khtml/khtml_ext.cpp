@@ -363,6 +363,10 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
   KURL::List lst;
   lst.append( d->m_url );
 #ifndef QT_NO_MIMECLIPBOARD
+  // Set it in both the mouse selection and in the clipboard
+  QApplication::clipboard()->setSelectionMode(true);
+  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
 #else
   QApplication::clipboard()->setText( d->m_url.url() ); //FIXME(E): Handle multiple entries
@@ -379,6 +383,10 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
   KURL::List lst;
   lst.append( d->m_imageURL );
 #ifndef QT_NO_MIMECLIPBOARD
+  // Set it in both the mouse selection and in the clipboard
+  QApplication::clipboard()->setSelectionMode(true);
+  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
 #else
   QApplication::clipboard()->setText(d->m_imageURL.url()); //FIXME(E): Handle multiple entries
