@@ -898,7 +898,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 // returns true if event should be swallowed
 bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
 {
-    Q_ASSERT (m_part->xmlDocImpl());
     if (!m_part->xmlDocImpl())
         return false;
     // Pressing and releasing a key should generate keydown, keypress and keyup events
