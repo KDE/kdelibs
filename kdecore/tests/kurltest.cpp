@@ -127,6 +127,13 @@ int main(int argc, char *argv[])
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
   printf("\n* URL is %s\n",ftpUrl.url().latin1());
   check("KURL::path()", ftpUrl.path(), QString::null);
+  ftpUrl = "ftp://ftp/host/subdir/";
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/") ? "yes" : "no", "yes");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdi") ? "yes" : "no", "no");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/blah/") ? "yes" : "no", "yes");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/blah/subdir") ? "yes" : "no", "no");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "file://ftp/host/subdir/") ? "yes" : "no", "no");
+  check("KURL::isParentOf()", ftpUrl.isParentOf( "ftp://ftp/host/subdir/subsub") ? "yes" : "no", "yes");
 
   // WABA: The following tests are to test the handling of relative URLs as
   //       found on web-pages.
