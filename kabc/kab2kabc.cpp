@@ -19,6 +19,7 @@
 */
 
 #include <qfile.h>
+#include <qtextstream.h>
 
 #include <kaboutdata.h>
 #include <kapp.h>
@@ -42,6 +43,83 @@ static const KCmdLineOptions options[] =
   {"override", I18N_NOOP("Override existing entries."),"1"},
   {0,0,0}
 };
+
+void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
+{
+  kdDebug() << "KMAILENTRY: " << kmailEntry << endl;
+
+  QString entry = kmailEntry.simplifyWhiteSpace();
+
+  QString email;
+  QString name;
+
+  int posSpace = entry.findRev( ' ' );
+  if ( posSpace < 0 ) email = entry;
+  else {
+    email = entry.mid( posSpace + 1 );
+    name = entry.left( posSpace );
+  }
+
+  if ( email.at( 0 ) == '<' && email.at( email.length() - 1) == '>' ) {
+    email = email.mid( 1, email.length() - 2 );
+  }
+  if ( name.at( 0 ) == '"' && name.at( name.length() - 1) == '"' ) {
+    name = name.mid( 1, name.length() - 2 );
+  }
+
+  kdDebug() << "  EMAIL: " << email << endl;
+  kdDebug() << "  NAME : " << name << endl;
+
+  KABC::Addressee::List al = ab->findByEmail( email );
+  if ( al.isEmpty() ) {
+    KABC::Addressee a;
+    a.setNameFromString( name );
+    a.insertEmail( email );
+
+    ab->insertAddressee( a );
+    
+    kdDebug() << "--INSERTED: " << a.realName() << endl;
+  }
+}
+
+void importKMailAddressBook( KABC::AddressBook *ab )
+{
+  QString fileName = locateLocal( "data", "kmail/addressbook" );
+  QString kmailConfigName = locate( "config", "kmailrc" );
+  if ( !kmailConfigName.isEmpty() ) {
+    KConfig cfg( kmailConfigName );
+    cfg.setGroup( "Addressbook" );
+    fileName = cfg.readEntry( "default", fileName );
+  }
+  if ( !KStandardDirs::exists( fileName ) ) {
+    kdDebug(5700) << "Couldn't find KMail addressbook." << endl;
+    return;
+  }
+
+  QFile f( fileName );
+  if ( !f.open(IO_ReadOnly) ) {
+    kdDebug(5700) << "Couldn't open file '" << fileName << "'" << endl;
+    return;
+  }
+
+  QStringList kmailEntries;
+
+  QTextStream t( &f );
+  while ( !t.eof() ) {
+      kmailEntries.append( t.readLine() );
+  }
+  f.close();
+
+  QStringList::ConstIterator it;
+  for( it = kmailEntries.begin(); it != kmailEntries.end(); ++it ) {
+    if ( (*it).at( 0 ) == '#' ) continue;
+    QStringList addresses = QStringList::split( ",", *it );
+    QStringList::ConstIterator it2;
+    for( it2 = addresses.begin(); it2 != addresses.end(); ++it2 ) {
+      readKMailEntry( *it2, ab );
+    }
+  }
+}
 
 void readKAddressBookEntries( const QString &dataString, Addressee &a )
 {
@@ -329,6 +407,8 @@ int main(int argc,char **argv)
   }
 
   kab.save( true );
+
+  importKMailAddressBook( kabcBook );
 
   StdAddressBook::save();
   

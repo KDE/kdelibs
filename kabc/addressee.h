@@ -284,6 +284,13 @@ class Addressee
     KURL url() const;
 
     /**
+      Set name fields by parsing the given string and trying to associate the
+      parts of the string with according fields. This function should probably
+      be a bit more clever.
+    */
+    void setNameFromString( const QString & );
+
+    /**
       Return the name of the addressee. This is calculated from all the name
       fields.
     */

@@ -72,6 +72,31 @@ bool Addressee::isEmpty() const
 
 --DEFINITIONS--
 
+void Addressee::setNameFromString( const QString &str )
+{
+  setFormattedName( str );
+  setName( str );
+
+  QStringList nameParts = QStringList::split( " ", str );
+  switch( nameParts.count() ) {
+    case 1:
+      setFamilyName( nameParts[ 0 ] );
+      break;
+    case 2:
+      setGivenName( nameParts[ 0 ] );
+      setFamilyName( nameParts[ 1 ] );
+      break;
+    case 3:
+      setGivenName( nameParts[ 0 ] );
+      setAdditionalName( nameParts[ 1 ] );
+      setFamilyName( nameParts[ 2 ] );
+      break;
+    default:
+      setFamilyName( str );
+      break;
+  }
+}
+
 QString Addressee::realName() const
 {
   if ( !formattedName().isEmpty() ) return formattedName();
