@@ -26,6 +26,7 @@
 #endif
 
 #include <qvaluelist.h>
+#include <qregexp.h>
 
 #include <kshred.h>
 #include <kdebug.h>

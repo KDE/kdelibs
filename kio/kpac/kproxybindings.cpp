@@ -204,7 +204,7 @@ Completion KProxyFunc::execute(const List &args)
             if (args.size() == 2)
             {
                 QRegExp rex(args[1].toString().value().qstring(), true, true);
-                result = Boolean(rex.find(args[0].toString().value().qstring(), 0) != -1);
+                result = Boolean(rex.match(args[0].toString().value().qstring(), 0) != -1);
             }
             break;
         case WeekdayRange:

@@ -82,7 +82,11 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     QHBox* hBox = new QHBox( this );
     hBox->setSpacing( KDialog::spacingHint() );
     QLabel* icon = new QLabel( hBox );
+#if QT_VERSION < 300
     icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()) );
+#else
+    icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning) );
+#endif
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 
