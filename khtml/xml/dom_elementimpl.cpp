@@ -644,18 +644,33 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
     if(inside) kdDebug( 6030 ) << nodeName().string() << "    --> inside" << endl;
 #endif
 
+#if 0 
+    // #############
     if(inside || mouseInside())
         if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
         {
             // dynamic HTML...
             // ### mouseEventHandler(ev, inside);
         }
-
+#endif
+    
     bool oldinside=mouseInside();
 
     setMouseInside(inside);
 
-    if ( oldinside != inside && m_style->hasHover() )
+    bool oldactive = active();
+    if ( inside ) {
+	if ( ev->type == MousePress )
+	    m_active = true;
+	else if ( ev->type == MouseRelease )
+	    m_active = false;
+    } else if ( m_active ) {
+	m_active = false;
+    }
+	    
+    
+    if ( (oldinside != inside && m_style->hasHover()) ||
+	 ( oldactive != m_active && m_style->hasActive() ) )
         applyChanges(true,false);
 
     // reset previous z index

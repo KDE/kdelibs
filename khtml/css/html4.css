@@ -445,7 +445,8 @@ acronym {
 }
 
 :focus          { outline: 1px dotted invert }
-:active          { outline: solid red }
+a:link:active          { color: red }
+a:visited:active          { color: red }
 
 /* ### :before is not supported at the moment
       BR:before       { content: "\n" }
