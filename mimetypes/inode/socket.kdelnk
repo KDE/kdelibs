@@ -1,20 +1,14 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Socket
-Comment[is_IS]=Sökkull
-Comment[cs]=Socket (komunikaèní kanál)
-Comment[es]=Socket
-Comment[de]=Socket
-Comment[no]=Socket
-Comment[pl]=Gniazdko
-Comment[fi]=Pistoke
 Comment[fr]=Socket (canal de communication)
-Comment[pt]=Socket
-Comment[pt_BR]=Socket
-Comment[it]=Socket
-Comment[sk]=Socket (kanál pre komunikáciu)
-Comment[ro]=Canal de comunicaşie de tip SOCKET
+Comment[cs]=Socket (komunikaèní kanál)
 Comment[ru]=Socket (ËÁÎÁÌ ÄÌÑ ËÏÍÍÕÎÉËÁÃÉÉ)
+Comment[fi]=Pistoke
+Comment[pl]=Gniazdko
+Comment[ro]=Canal de comunicaşie de tip SOCKET
+Comment[sk]=Socket (kanál pre komunikáciu)
+Comment[is]=Sökkull
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

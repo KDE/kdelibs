@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX file
-Comment[is_IS]=TeX skjal
+Comment[de]=TeX Dokument
+Comment[fr]=Document TeX
 Comment[cs]=Dokument s·zecÌho systÈmu TeX
 Comment[es]=Documento TeX
-Comment[de]=TeX Dokument
-Comment[no]=TeX-fil
-Comment[nl]=TeX document
-Comment[pl]=Dokument TeX
-Comment[fi]=TeX -dokumentti
-Comment[fr]=Document TeX
-Comment[it]=Documento TeX
-Comment[sk]=Dokument s·dzacieho systÈmu TeX
-Comment[pt]=Documento TeX
-Comment[pt_BR]=Documento TeX
-Comment[ro]=Document Ón format TeX
 Comment[ru]=‰œÀ’Õ≈Œ‘ TeX
+Comment[nl]=TeX document
+Comment[fi]=TeX -dokumentti
+Comment[it]=Documento TeX
+Comment[pt]=Documento TeX
+Comment[pl]=Dokument TeX
+Comment[ro]=Document Ón format TeX
+Comment[no]=TeX-fil
+Comment[sk]=Dokument s·dzacieho systÈmu TeX
+Comment[pt_BR]=Documento TeX
+Comment[is]=TeX skjal
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

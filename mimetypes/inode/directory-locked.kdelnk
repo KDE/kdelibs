@@ -1,20 +1,20 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Locked Directory
-Comment[is_IS]=Læst mappa
+Comment[de]=Gesperrter Ordner
+Comment[fr]=Répertoire verrouillé
 Comment[cs]=Uzamknutı adresáø
 Comment[es]=Directorio inaccesible
-Comment[de]=Gesperrter Ordner
-Comment[no]=Låst mappe
-Comment[pl]=Zablokowany katalog
-Comment[fi]=Lukittu hakemisto
-Comment[fr]=Répertoire verrouillé
-Comment[pt]=Directoria inacessivel
-Comment[pt_BR]=Diretório inacessível
-Comment[it]=Cartella Bloccata
-Comment[sk]=Uzamknutı prieèinok
-Comment[ro]=Director inaccesibil
 Comment[ru]=úÁËÒÙÔÙÊ ËÁÔÁÌÏÇ
+Comment[fi]=Lukittu hakemisto
+Comment[it]=Cartella Bloccata
+Comment[pt]=Directoria inacessivel
+Comment[pl]=Zablokowany katalog
+Comment[ro]=Director inaccesibil
+Comment[no]=Låst mappe
+Comment[sk]=Uzamknutı prieèinok
+Comment[pt_BR]=Diretório inacessível
+Comment[is]=Læst mappa
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

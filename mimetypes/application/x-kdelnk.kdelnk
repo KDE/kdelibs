@@ -1,20 +1,20 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=KDE config file
-Comment[is_IS]=KDE stillingaskrá
-Comment[cs]=Konfiguraèní soubor KDE
 Comment[de]=KDE Konfigurationsdatei
-Comment[no]=KDE-konfigurasjonfil
-Comment[pl]=Plik konfiguracyjny KDE
-Comment[fi]=KDE -asetustiedosto
-Comment[es]=Archivo de configuración de KDE
 Comment[fr]=Fichier de configuration de KDE
-Comment[pt]=Ficheiro de configuração KDE
-Comment[pt_BR]=Arquivo de configuração KDE
-Comment[it]=File di configurazione KDE
-Comment[sk]=Konfiguraèný súbor KDE
-Comment[ro]=Fiºier de configurare KDE
+Comment[cs]=Konfiguraèní soubor KDE
+Comment[es]=Archivo de configuración de KDE
 Comment[ru]=ëÏÎÆÉÇÕÒÁÃÉÏÎÎÙÊ ÆÁÊÌ KDE
+Comment[fi]=KDE -asetustiedosto
+Comment[it]=File di configurazione KDE
+Comment[pt]=Ficheiro de configuração KDE
+Comment[pl]=Plik konfiguracyjny KDE
+Comment[ro]=Fiºier de configurare KDE
+Comment[no]=KDE-konfigurasjonfil
+Comment[sk]=Konfiguraèný súbor KDE
+Comment[pt_BR]=Arquivo de configuração KDE
+Comment[is]=KDE stillingaskrá
 Icon=kmailion.xpm
 Type=MimeType
 MimeType=application/x-kdelnk

@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=shell script
-Comment[is_IS]=Skeljaforrit
-Commnet[cs]=Shellový skript
 Comment[de]=Shellskript
-Comment[no]=Skallskript
-Comment[nl]=Shellscript 
-Comment[pl]=Skrypt pow³oki
-Comment[es]=Script de Shell
-Comment[fi]=Komentotulkin skripti
 Comment[fr]=Script shell
-Comment[pt]=Shell script
-Comment[pt_BR]=Shell script
-Comment[it]=Script per la Shell
-Comment[sk]=Shellovský skript
-Comment[ro]=Script de shell
+Comment[es]=Script de Shell
 Comment[ru]=Shell ÓËÒÉÐÔ
+Comment[nl]=Shellscript
+Comment[fi]=Komentotulkin skripti
+Comment[it]=Script per la Shell
+Comment[pt]=Shell script
+Comment[pl]=Skrypt pow³oki
+Comment[ro]=Script de shell
+Comment[no]=Skallskript
+Comment[sk]=Shellovský skript
+Comment[pt_BR]=Shell script
+Comment[is]=Skeljaforrit
+Commnet[cs]=Shellový skript
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript

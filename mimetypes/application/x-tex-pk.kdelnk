@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Packed Font file
-Comment[is_IS]=Şjöppuğ leturskrá
+Comment[de]=Komprimierte Fontdatei
+Comment[fr]=Fichier de police de caractères pour TeX (compressé)
 Comment[cs]=Sbalené znakové sady pro TeX
 Comment[es]=Fuente comprimida
-Comment[de]=Komprimierte Fontdatei
-Comment[no]=Komprimiert skrifttypefil
-Comment[nl]=Gecomprimeerd lettertypebestand
-Comment[pl]=Spakowana czcionka Tex'a
-Comment[fi]=Pakattu kirjasin
-Comment[fr]=Fichier de police de caractères pour TeX (compressé)
-Comment[pt]=Fonte comprimida
-Comment[pt_BR]=Fonte comprimida
-Comment[it]=Set di Caratteri compresso
-Comment[sk]=Skomprimované znakové sady
-Comment[ro]=Fiºier de font împachetat
 Comment[ru]=õĞÁËÏ×ÁÎÎÙÅ ÛÒÉÆÔÙ
+Comment[nl]=Gecomprimeerd lettertypebestand
+Comment[fi]=Pakattu kirjasin
+Comment[it]=Set di Caratteri compresso
+Comment[pt]=Fonte comprimida
+Comment[pl]=Spakowana czcionka Tex'a
+Comment[ro]=Fiºier de font împachetat
+Comment[no]=Komprimiert skrifttypefil
+Comment[sk]=Skomprimované znakové sady
+Comment[pt_BR]=Fonte comprimida
+Comment[is]=Şjöppuğ leturskrá
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk

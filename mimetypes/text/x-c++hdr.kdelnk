@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C++ headers
-Comment[is_IS]=C++ skilgreiningar
+Comment[de]=C++ Header
+Comment[fr]=Fichier d'entête C++
 Comment[cs]=Hlavièkový soubor C++
 Comment[es]=Cabecera C++
-Comment[de]=C++ Header
-Comment[no]=C++-hodefil
-Comment[nl]=C++ header
-Comment[pl]=Nag³ówek C++
-Comment[fi]=C++ -otsikot
-Comment[fr]=Fichier d'entête C++
-Comment[it]=Header C++
-Comment[sk]=Hlavièka C++
-Comment[pt]=Header C++
-Comment[pt_BR]=Header C++
-Comment[ro]=Fiºier de Header C++
 Comment[ru]=úÁÇÏÌÏ×ÏË C++
+Comment[nl]=C++ header
+Comment[fi]=C++ -otsikot
+Comment[it]=Header C++
+Comment[pt]=Header C++
+Comment[pl]=Nag³ówek C++
+Comment[ro]=Fiºier de Header C++
+Comment[no]=C++-hodefil
+Comment[sk]=Hlavièka C++
+Comment[pt_BR]=Header C++
+Comment[is]=C++ skilgreiningar
 DefaultApp=
 Icon=h_src.xpm
 Type=MimeType

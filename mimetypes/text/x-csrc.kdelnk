@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C sources
-Comment[is_IS]=C forritstexti
-Commnet[cs]=Zdrojový kód v jazyku C
-Comment[es]=Código C
 Comment[de]=C Quelldatei
-Comment[no]=C-kildekode
-Comment[nl]=C bronbestand
-Comment[pl]=¬ród³o C
-Comment[fi]=C -lähdekoodi
 Comment[fr]=Fichier source C
-Comment[it]=Sorgenti C
-Comment[sk]=Zdrojový kód v jazyku C
-Comment[pt]=Programa C
-Comment[pt_BR]=Programa C
-Comment[ro]=Sursã C
+Comment[es]=Código C
 Comment[ru]=ðÒÏÇÒÁÍÍÁ ÎÁ ÑÚÙËÅ C
+Comment[nl]=C bronbestand
+Comment[fi]=C -lähdekoodi
+Comment[it]=Sorgenti C
+Comment[pt]=Programa C
+Comment[pl]=¬ród³o C
+Comment[ro]=Sursã C
+Comment[no]=C-kildekode
+Comment[sk]=Zdrojový kód v jazyku C
+Comment[pt_BR]=Programa C
+Comment[is]=C forritstexti
+Commnet[cs]=Zdrojový kód v jazyku C
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-csrc
