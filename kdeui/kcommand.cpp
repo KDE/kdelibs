@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kpopupmenu.h>
 
-KMacroCommand::KMacroCommand( const QString & name ) : KCommand(name)
+KMacroCommand::KMacroCommand( const QString & name ) : KNamedCommand(name)
 {
     m_commands.setAutoDelete(true);
 }

@@ -38,10 +38,8 @@ class KCommand
 protected:
     /**
      * Creates a command.
-     * @param name the name of this command, translated, since it will appear
-     * in the menus.
      */
-    KCommand(const QString &name) : m_name(name) {}
+    KCommand() {}
 
 public:
     virtual ~KCommand() {}
@@ -63,9 +61,32 @@ public:
     virtual void unexecute() = 0;
 
     /**
+     * @return the name of this command, translated, since it will appear
+     * in the menus.
+     */
+    virtual QString name() const = 0;
+};
+
+/**
+ * A command which stores its name.
+ * This class mostly exists for compatibility with KDE-2.x
+ * It is more memory-efficient to use KCommand and to implement the name() method.
+ */
+class KNamedCommand : public KCommand
+{
+protected:
+    /**
+     * Creates a command.
+     * @param name the name of this command, translated, since it will appear
+     * in the menus.
+     */
+    KNamedCommand(const QString &name) : KCommand(), m_name(name) {}
+
+public:
+    /**
      * @return the name of this command
      */
-    QString name() const { return m_name; }
+    virtual QString name() const { return m_name; }
     /**
      * Updates the name of this command.
      * Rarely necessary.
@@ -81,7 +102,7 @@ private:
  * It will appear as one to the user and in the command history,
  * but it can use the implementation of multiple commands internally.
  */
-class KMacroCommand : public KCommand
+class KMacroCommand : public KNamedCommand
 {
 public:
     /**
