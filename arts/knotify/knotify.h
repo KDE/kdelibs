@@ -58,6 +58,7 @@ public:
     
 private:
     KNotifyPrivate* d;
+    void loadConfig();
 };
 
 

@@ -34,6 +34,7 @@
 #include <dcopclient.h>
 #include <soundserver.h>
 #include <dispatcher.h>
+#include <qiomanager.h>
 
 #include "knotify.h"
 #include "knotify.moc"
@@ -41,7 +42,7 @@
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
-#include <qiomanager.h>
+#include <qstringlist.h>
 #include <iostream.h>
 #include <qtextstream.h>
 
@@ -50,6 +51,8 @@ class KNotifyPrivate
 public:
     KConfig* globalEvents;
     QMap<QString, KConfig*> events;
+    QString externalPlayer;
+    bool useExternal;
 };
 
 /*
@@ -63,20 +66,25 @@ Arts::SimpleSoundServer g_soundServer;
 
 bool connectSoundServer()
 {
+    static bool firstTime = true;
+
     /*
      * obtain an object reference to the soundserver - retry sometimes, so
      * it will work during the startup sequence, even if artsd is started
      * some time after the first process requests knotify to do some
      * notifications
      */
-    for( int tries=0; tries<8; tries++ )
-    {
-        g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
-        if( !g_soundServer.isNull() ) return true;
-        sleep( 1 );
-    }
+    g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
+    if ( firstTime && g_soundServer.isNull() )
+        for( int tries=0; tries<7; tries++ )
+        {
+            sleep( 1 );
+            g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
+            if( !g_soundServer.isNull() ) break;
+        }
 
-    return false;
+    firstTime = false;
+    return !g_soundServer.isNull();
 }
 
 
@@ -104,9 +112,7 @@ int main(int argc, char **argv)
     // setup mcop communication
     Arts::QIOManager qiomanager;
     Arts::Dispatcher dispatcher(&qiomanager);
-
-    if( !connectSoundServer() )
-        kdDebug() << "artsd is not running, there will be no sound notifications." << endl;
+    g_soundServer = Arts::SimpleSoundServer::null();
 
     // start notify service
     KNotify notify;
@@ -120,6 +126,7 @@ KNotify::KNotify()
 {
     d = new KNotifyPrivate;
     d->globalEvents = new KConfig(locate("config", "eventsrc"), true, false);
+    loadConfig();
 }
 
 KNotify::~KNotify()
@@ -129,13 +136,39 @@ KNotify::~KNotify()
     delete d;
 }
 
+
+void KNotify::loadConfig() {
+    // load external player settings
+    KConfig *kc = kapp->config();
+    kc->setGroup("Misc");
+    d->useExternal = kc->readBoolEntry( "Use external player", false );
+    d->externalPlayer = kc->readEntry("External player");
+
+    // try to locate a suitable player if none is configured
+    if ( d->externalPlayer.isEmpty() ) {
+	QStringList players;
+	players << "wavplay" << "aplay" << "auplay";
+	QStringList::Iterator it = players.begin();
+	while ( d->externalPlayer.isEmpty() && it != players.end() ) {
+	    d->externalPlayer = KStandardDirs::findExe( *it );
+	    ++it;
+	}
+    }
+}
+
+
 void KNotify::reconfigure()
 {
+    kapp->config()->reparseConfiguration();
+    loadConfig();
+
+    // clear loaded config files
     d->globalEvents->reparseConfiguration();
     for ( QMapIterator<QString,KConfig*> it = d->events.begin(); it != d->events.end(); ++it )
-	delete it.data();
+        delete it.data();
     d->events.clear();
 }
+
 
 void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
@@ -153,13 +186,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
             eventsFile =  d->globalEvents;
         else {
             if ( d->events.contains( fromApp ) ) {
-        	eventsFile = d->events[fromApp];
+                eventsFile = d->events[fromApp];
             } else {
-        	eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
-        	d->events.insert( fromApp, eventsFile );
+                eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
+                d->events.insert( fromApp, eventsFile );
             }
         }
-	
+
         eventsFile->setGroup( event );
 
         // get event presentation
@@ -199,25 +232,28 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
 bool KNotify::notifyBySound( const QString &sound )
 {
+    bool external = d->useExternal && !d->externalPlayer.isEmpty();
+    // get file name
+    QString soundFile(sound);
+    if ( QFileInfo(sound).isRelative() )
+	soundFile = locate( "sound", sound );
+
     // Oh dear! we seem to have lost our connection to artsd!
-    if( g_soundServer.isNull() || g_soundServer.error() )
+    if( !external && (g_soundServer.isNull() || g_soundServer.error()) )
         connectSoundServer();
 
-    if ( !g_soundServer.isNull() && !g_soundServer.error() ) {
-
-        // get file name
-        QString soundFile(sound);
-        if ( QFileInfo(sound).isRelative() )
-            soundFile = locate( "sound", sound );
-
+    kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
+    
+    if (!external && !g_soundServer.isNull() && !g_soundServer.error()) {
         // play sound finally
-        kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
         g_soundServer.play( QFile::encodeName(soundFile).data() );
 
         return true;
-    } else {
-        kdDebug() << "KNotify::notifyBySound - can't connect to aRts daemon" << endl;
-        return false;
+
+    } else { // use an external player to play the sound
+        system( QFile::encodeName( d->externalPlayer ) + " " +
+                QFile::encodeName( soundFile ));
+        return true;
     }
 }
 
