@@ -463,6 +463,17 @@ public:
   /**
    * Convenience function
    *
+   * Convert unicoded string to local encoding and use %-style
+   * encoding for all common delimiters / non-ascii characters 
+   * as well as the slash '/'.
+   * @param str String to encode
+   * @param encoding_hint Reserved, should be 0.
+   **/
+  static QString encode_string_no_slash(const QString &str, int encoding_hint = 0);
+
+  /**
+   * Convenience function
+   *
    * Decode %-style encoding and convert from local encoding to unicode.
    *
    * Revers of encode_string()

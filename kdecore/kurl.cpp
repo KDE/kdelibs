@@ -31,8 +31,9 @@
 #include <qstringlist.h>
 
 static
-QString encode( const QString& segment )
+QString encode( const QString& segment, bool encode_slash )
 {
+  char encode_extra = encode_slash ? '/' : 0;
   QCString local = segment.local8Bit();
 
   int old_length = local.length();
@@ -52,7 +53,8 @@ QString encode( const QString& segment )
     // WABA: Added non-ascii
     unsigned char character = local[i];
     if ( (character <= 32) || (character >= 127) ||
-         strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", character) )
+         strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", character) ||
+         (character == encode_extra) )
     {
       new_segment[ new_length++ ] = '%';
 
@@ -217,10 +219,9 @@ bool KURL::isRelativeURL(const QString &_url)
      char c = str[i].latin1(); // Note: non-latin1 chars return 0!
      if (c == ':')
      {
-        // URL starts with "xxx:" -> absolute URL
-        // Check for "xxx::yyy" -> not an absolute URL!!
+        // URL starts with "xxx:/" -> absolute URL
         i++;
-        if ((i < len) && (str[i].latin1() != ':'))
+        if ((i < len) && (str[i].latin1() == '/'))
            return false; 
         return true; // "xxx:" or "xxx::yyy"
      }
@@ -858,7 +859,7 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int ) con
      tmp = path( _trailing );
      if ( _no_empty_path && tmp.isEmpty() )
         tmp = "/";
-     tmp = encode( tmp );
+     tmp = encode( tmp, false );
   }
 
   tmp += m_strQuery_encoded;
@@ -924,15 +925,15 @@ QString KURL::url( int _trailing ) const
     u += "://";
     if ( hasUser() )
     {
-      u += encode(m_strUser);
+      u += encode(m_strUser, true);
       if ( hasPass() )
       {
         u += ":";
-        u += encode(m_strPass);
+        u += encode(m_strPass, true);
       }
       u += "@";
     }
-    u += encode(m_strHost);
+    u += encode(m_strHost, true);
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );
@@ -1260,13 +1261,13 @@ void KURL::setHTMLRef( const QString& _ref )
 {
   if ( !hasSubURL() )
   {
-    m_strRef_encoded = encode( _ref );
+    m_strRef_encoded = encode( _ref, true );
     return;
   }
 
   List lst = split( *this );
 
-  (*lst.begin()).setRef( encode( _ref) );
+  (*lst.begin()).setRef( encode( _ref, true) );
 
   *this = join( lst );
 }
@@ -1338,7 +1339,12 @@ QString KURL::decode_string(const QString &str, int)
 
 QString KURL::encode_string(const QString &str, int)
 {
-   return encode(str);
+   return encode(str, false);
+}
+
+QString KURL::encode_string_no_slash(const QString &str, int)
+{
+   return encode(str, true);
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )
