@@ -26,7 +26,6 @@ public:
   bool supportsMoving( const char *_protocol );
 
   int getReadTimeout();
-  int getReadTimeoutNoResume();
   bool getMarkPartial();
   int getMinimumKeepSize();
   bool getAutoResume();
@@ -40,16 +39,6 @@ public:
    *
    */
   void setReadTimeout( int _time );
-
-  /**
-   * Sets timeout for read operations. This applies to ftp and http connections.
-   * If after this timeout read doesn't finish reading packet, read operation is
-   * stopped with alarm command and starts reading again.
-   * This value is used if remote server does not support resuming.
-   * For opposite case see @ref #setReadTimeout
-   *
-   */
-  void setReadTimeoutNoResume( int _time );
 
   /**
    * Set this flag if you want slaves to add extension .PART to all files during transfer.

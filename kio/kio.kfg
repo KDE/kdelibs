@@ -1,7 +1,6 @@
 kioslave 'common' 
 {
-	readTimeout<long> = 5;
-	readTimeoutNoResume<long> = 15;
+	readTimeout<long> = 15;
 	markPartial<bool> = true;
 	automaticResume<bool> = false;
 	minimumKeepSize<long> = 5000;

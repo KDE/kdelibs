@@ -226,26 +226,13 @@ int
 ProtocolManager::getReadTimeout() {
   K2Config *g = findIntern( "common" );
 
-  int read_timeout = 5; // 5 minutes
+  int read_timeout = 15; // 15 seconds
 
   if ( g )
     g->readLong( "readTimeout", read_timeout );
 
 
   return read_timeout;
-}
-
-
-int
-ProtocolManager::getReadTimeoutNoResume() {
-  K2Config *g = findIntern( "common" );
-
-  int read_timeout_no_resume = 15;  // 15 minutes
-
-  if ( g )
-    g->readLong( "readTimeoutNoResume", read_timeout_no_resume );
-
-  return read_timeout_no_resume;
 }
 
 
@@ -293,16 +280,6 @@ void ProtocolManager::setReadTimeout( int _timeout ) {
 
   if ( g )
     g->writeLong( "readTimeout", _timeout );
-
-  m_pConfig->save();
-}
-
-
-void ProtocolManager::setReadTimeoutNoResume( int _timeout ) {
-  K2Config *g = findIntern( "common" );
-
-  if ( g )
-    g->writeLong( "readTimeoutNoResume", _timeout );
 
   m_pConfig->save();
 }
