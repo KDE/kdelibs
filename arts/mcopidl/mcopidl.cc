@@ -541,7 +541,9 @@ string createTypeCode(string type, const string& name, long model,
 			result = "Arts::readTypeSeq(stream,"+name+")";
 		if(model==MODEL_REQ_READ)
 			result = indent + type+" "+name+"(*request);\n";
-		//if(model==MODEL_REQ_READ_SEQ) TODO
+		if(model==MODEL_REQ_READ_SEQ)
+			result = indent + "std::vector<"+type+"> "+name+";\n"
+				   + indent + "Arts::readTypeSeq(*request,"+name+");\n";
 
 		if(model==MODEL_WRITE)
 			result = name+".writeType(stream)";
