@@ -41,7 +41,7 @@
 <!ENTITY relecteurRomainQuidet       '<othercredit role=\"relecteur\"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurGillesThioliere    '<othercredit role=\"translator\"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurGillesThioliere    '<othercredit role=\"reviewer\"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'
+<!ENTITY relecteurGillesThioliere    '<othercredit role=\"reviewer\"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 
 <!-- CREDITS FOR TRANSLATORS -->
