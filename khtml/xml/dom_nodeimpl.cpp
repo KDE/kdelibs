@@ -475,7 +475,6 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
     removeEventListener(id,listener,useCapture);
 
     m_regdListeners->append(rl);
-    listener->ref();
 }
 
 void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
@@ -495,7 +494,6 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_regdListeners->removeRef(it.current());
-            listener->deref();
             return;
         }
 }
@@ -523,14 +521,20 @@ void NodeImpl::removeHTMLEventListener(int id)
 
 void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
+    // in case we already have it, we don't want removeHTMLEventListener to destroy it
+    if (listener)
+        listener->ref();
     removeHTMLEventListener(id);
     if (listener)
-	addEventListener(id,listener,false);
+    {
+        addEventListener(id,listener,false);
+        listener->deref();
+    }
 }
 
 EventListener *NodeImpl::getHTMLEventListener(int id)
 {
-    if (!m_regdListeners) // nothing to remove
+    if (!m_regdListeners)
         return 0;
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);

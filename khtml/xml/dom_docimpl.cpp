@@ -433,6 +433,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
         }
     }
 
+    //kdDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
     return 0;
 }
 
@@ -1505,10 +1506,13 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
 
 void DocumentImpl::setWindowEventListener(int id, EventListener *listener)
 {
+    // If we already have it we don't want removeWindowEventListener to delete it
+    listener->ref();
     removeWindowEventListener(id);
     if (listener) {
 	RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
 	m_windowEventListeners.append(rl);
+	listener->deref();
     }
 }
 
