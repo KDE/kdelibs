@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1997/05/02 19:33:49  kulow
+ * Coolo: corrected some CVS related problems with Kalle's last commit
+ * updated khtmlw to 0.5.4
+ *
  * Revision 1.3  1997/05/02 16:46:40  kalle
  * Kalle: You may now override how KApplication reacts to external changes
  * KButton uses the widget default palette
@@ -77,7 +81,6 @@ KPanner::~KPanner() {
 void KPanner::resizeEvent(QResizeEvent*)
 {
     int abs_coord = pos;
-    int max_value, old_max = 0;
 
     if((u_flags & P_UNITS) == U_PERCENT)
         abs_coord = (int)(pos / 100.0 * getMaxValue());

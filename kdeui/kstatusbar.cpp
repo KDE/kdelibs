@@ -6,7 +6,7 @@
 #define StatusBarWidth 25
 
 KStatusBarItem::KStatusBarItem( char *text, int ID,
-		QWidget *parent, char *name) : QLabel( parent ) 
+		QWidget *parent, char *name) : QLabel( parent, name ) 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
     id = ID;
     

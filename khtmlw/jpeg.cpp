@@ -84,7 +84,7 @@ void read_jpeg_jfif(QImageIO * iio)
 
 	// Read colourmap
 
-	for (col = 0; col < cinfo.actual_number_of_colors; col++) {
+	for (col = 0; col < (unsigned int) cinfo.actual_number_of_colors; col++) {
 	    image.setColor(col, qRgb(cinfo.colormap[0][col],
 				     cinfo.colormap[1][col],
 				     cinfo.colormap[2][col]));

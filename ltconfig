@@ -541,6 +541,20 @@ else
     hardcode_minus_L=yes
     ;;
 
+  *-*-freebsd3*)
+    archive_cmds='$cc -shared -o $lib$libobjs$deplibs'
+    hardcode_direct=yes
+    hardcode_minus_L=yes
+    hardcode_shlibpath_var=no
+    ;;
+
+  *-*-freebsd2.2)
+    archive_cmds='$LD -Bshareable -o $lib$libobjs$deplibs /usr/lib/c++rt0.o'
+    hardcode_direct=yes
+    hardcode_minus_L=yes
+    hardcode_shlibpath_var=no
+    ;;
+
   *-*-freebsd*)
     archive_cmds='$LD -Bshareable -o $lib$libobjs$deplibs'
     hardcode_direct=yes

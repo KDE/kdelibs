@@ -1,6 +1,16 @@
 /*
  * $Id$
  * $Log$
+ *
+ * Revision 1.7  1997/08/30 08:32:54  kdecvs
+ * Coolo: changed the location of the include files to get rid of the
+ * hardcoded HAVE_STDC_HEADERS
+ *
+ * Revision 1.6  1997/07/27 13:43:58  kalle
+ * Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
+ *
+ * Revision 1.5  1997/07/17 18:43:18  kalle
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
  * Source imported
  *
@@ -80,7 +90,7 @@ KSocket::KSocket( const char *_host, unsigned short int _port ) :
 	writeNotifier->setEnabled( FALSE );
 }
 
-void KSocket::slotRead( int _sock )
+void KSocket::enableRead( bool _state )
 {
   if ( _state )
     {
@@ -91,7 +101,7 @@ void KSocket::slotRead( int _sock )
 		}
 	  else
 	    readNotifier->setEnabled( true );
-void KSocket::slotWrite( int _sock )
+    }
   else if ( readNotifier )
 	readNotifier->setEnabled( false );
 }
@@ -212,7 +222,7 @@ long KServerSocket::getAddr()
   name.sin_port = htons( _port );
   name.sin_addr.s_addr = htonl(INADDR_ANY);
     
-void KServerSocket::slotAccept( int _sock )
+  if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
     {
 	  warning("Could not bind to socket\n");
 	  ::close( sock );

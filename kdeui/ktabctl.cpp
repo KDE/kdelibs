@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * kdoctoolbar removed
+ *
+ * Revision 1.5  1997/10/09 11:46:29  kalle
  * Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
  *
  * Revision 1.4  1997/05/30 20:04:41  kalle
@@ -148,7 +151,7 @@ void KTabCtl::setSizes()
 	if (pages[i]->maximumSize().width() < max.width())
 	    max.setWidth( pages[i]->maximumSize().width());
 	if ( pages[i]->minimumSize().height() > min.height())
-    for( i=0; i<(int)pages.size(); i++ ) {
+	    min.setHeight( pages[i]->minimumSize().height());
 	if ( pages[i]->minimumSize().width() > min.width())
 	    min.setWidth( pages[i]->minimumSize().width());
     }
@@ -163,7 +166,7 @@ void KTabCtl::setSizes()
     
     for( i=0; i<(uint)pages.size(); i++ ) {
 	pages[i]->setMinimumSize(min);
-void KTabCtl::paintEvent(QPaintEvent *pev)
+	pages[i]->setMaximumSize(max);
     }
 
 

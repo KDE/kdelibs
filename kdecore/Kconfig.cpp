@@ -1,6 +1,10 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.6  1997/04/23 16:45:14  kulow
+ * fixed a bug in acinclude.m4 (Thanks to Paul)
+ * solved some little problems with some gcc versions (no new code)
+ *
  * Revision 1.5  1997/04/21 22:37:22  kalle
  * Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
  * kcolordlg und kapp abgedated (von Martin Jones)
@@ -227,7 +231,7 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
 	  continue;
 	};
       
-      uint nEqualsPos = aCurrentLine.find( '=' );
+      int nEqualsPos = aCurrentLine.find( '=' );
       if( nEqualsPos == -1 )
 		// no equals sign: incorrect or empty line, skip it
 		continue;
@@ -245,7 +249,7 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
 	  // there is at least one $
 	  if( (pEntry->aValue)[nDollarPos+1] != '$' )
 	    {
-	      int nEndPos = nDollarPos;
+	      uint nEndPos = nDollarPos;
 	      // the next character is no $
 	      do
 		{

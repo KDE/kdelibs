@@ -23,16 +23,6 @@ KURL::detach()
   passwd_part.detach();
 }
 
-static void split1(QString _in, char* sep, QString* _out1, QString* _out2)
-  /* <_in> -> [<_out1><sep>]<out2> */
-{
-}
-
-static void split2(QString _in, char* sep, QString* _out1, QString* _out2)
-  /* <_in> -> <_out1>[<sep><out2>] */
-{
-}
-
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
   malformed = _base_url.malformed;

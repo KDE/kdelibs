@@ -3,6 +3,9 @@
  * 
  * $Log$
  *
+ * Revision 1.9  1997/08/31 08:03:47  kdecvs
+ * Heureka: Fritz fixed the dragging of icons on the root window (Kalle)
+ *
  * Revision 1.8  1997/07/31 19:52:31  kalle
  * Root-drop bug hopefully fixed (courtesy of Fritz Elfert of ISDN4Linux fame)
  *
@@ -228,7 +231,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
   dndIcon->move( -200, -200 );
   
   printf("************************************************************\n");
-  printf("*** win = %i **** dndLastWindow = %i ****\n", win, dndLastWindow );
+  printf("*** id = %i ****\n", dndIcon->winId());
   printf("************************************************************\n");
   debugWin = dndIcon->winId();
   
@@ -380,10 +383,10 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 }
   Window parent;
   Window *children;
-  for ( int i = 0; i < cchildren; i++ )
+  unsigned int cchildren;
     
   printf("Root Window\n");
-	  printf("******************** root id = %i *********************\n",children[i] );
+  root = DefaultRootWindow( kapp->getDisplay() );
   printf("Query root tree\n");
 
   // Switch to "friendly" error handler.
@@ -435,7 +438,7 @@ KDNDWidget::~KDNDWidget()
 {
   if ( dndData != 0L )
      delete [] dndData;
-void KDNDIcon::paintEvent( QPaintEvent *_event ) 
+}
 
 KDNDIcon::KDNDIcon( QPixmap &_pixmap, int _x, int _y ) :
   QWidget( 0L, 0L, WStyle_Customize | WStyle_Tool | WStyle_NoBorder )
