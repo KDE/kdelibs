@@ -37,10 +37,10 @@
 //  values ( 1, 2 , ... etc.  but probably smaller than 7)
 
 // If you want to use a midi map you have to change the next definition :
-#define MAP_PATH NULL
+//#define MAP_PATH NULL
 // For example to something like :
 //#define MAP_PATH "/home/antonio/prg/kmid1/kmid/maps/yamaha790.map"
-//#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
+#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
 
 
 PlayerController pctl;
@@ -86,6 +86,13 @@ devman->setMidiMap(map);
 pctl.message=0;
 pctl.gm=1;
 pctl.error=0;
+pctl.volumepercentage=100;
+for (int i=0;i<16;i++)
+{
+	pctl.forcepgm[i]=0;
+	pctl.pgm[i]=0;
+};
+
 int nmid=1;
 while ((nmid<argc)&&(pctl.error!=1))
     {
