@@ -173,14 +173,22 @@ void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
         QLineEdit::keyPressEvent(e);
 
         if(e->key() == Qt::Key_Return)
-                terminate();
+                terminate(true);
+        else if(e->key() == Qt::Key_Escape)
+                terminate(false);
 }
 
 void KListViewLineEdit::terminate()
 {
+    terminate(true);
+}
+
+void KListViewLineEdit::terminate(bool commit)
+{
     if ( item )
     {
-        item->setText(col, text());
+        if (commit)
+            item->setText(col, text());
         int c=col;
         QListViewItem *i=item;
         col=0;
@@ -193,7 +201,7 @@ void KListViewLineEdit::terminate()
 
 void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 {
-    terminate();
+    terminate(true);
 }
 
 KListView::KListView( QWidget *parent, const char *name )

@@ -31,10 +31,10 @@ Q_OBJECT
 public:
 	KListViewLineEdit(KListView *parent);
 	~KListViewLineEdit();
-	
+
 signals:
 	void done(QListViewItem*, int);
-	
+
 public slots:
 	void terminate();
 	void load(QListViewItem *i, int c);
@@ -42,6 +42,7 @@ public slots:
 protected:
 	virtual void focusOutEvent(QFocusEvent *);
 	virtual void keyPressEvent(QKeyEvent *e);
+        void terminate(bool commit);
 	QListViewItem *item;
 	int col;
 	KListView *p;
