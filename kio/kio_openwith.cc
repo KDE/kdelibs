@@ -21,6 +21,7 @@
 
 // $Id$
 
+#include <qapplication.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>
@@ -299,7 +300,11 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
+#if QT_VERSION == 210
+    setColumnWidth(0, width()-QApplication::style().scrollBarExtend());
+#else
     setColumnWidth(0, width()-20);
+#endif
     QListView::resizeEvent(e);
 }
 
