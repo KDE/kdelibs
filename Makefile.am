@@ -18,8 +18,8 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = qk dcop kdecore kimgio kdeui kformula mimetypes \
-	mediatool kspell kio kfile kab khtml kstyles \
+SUBDIRS = qk dcop kdecore kdeui kformula mimetypes \
+	mediatool kspell kio kimgio kfile kab khtml kstyles \
 	kparts doc toolbar interfaces kdetest pics
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl.m4
