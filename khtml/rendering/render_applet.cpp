@@ -53,7 +53,7 @@ RenderApplet::RenderApplet(QScrollView *view,
     }
 
     if ( context ) {
-        kdDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
+        //kdDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
         setQWidget( new KJavaAppletWidget(context, view->viewport()) );
         processArguments(args);
         static_cast<KJavaAppletWidget*>(m_widget)->create();
@@ -71,7 +71,7 @@ short RenderApplet::intrinsicWidth() const
     if( m_widget )
         rval = ((KJavaAppletWidget*)(m_widget))->sizeHint().width();
 
-    kdDebug(6100) << "RenderApplet::intrinsicWidth(), returning " << rval << endl;
+    //kdDebug(6100) << "RenderApplet::intrinsicWidth(), returning " << rval << endl;
     return rval;
 }
 
@@ -82,7 +82,7 @@ int RenderApplet::intrinsicHeight() const
     if( m_widget )
         rval = m_widget->sizeHint().height();
 
-    kdDebug(6100) << "RenderApplet::intrinsicHeight(), returning " << rval << endl;
+    //kdDebug(6100) << "RenderApplet::intrinsicHeight(), returning " << rval << endl;
     return rval;
 }
 
@@ -99,7 +99,7 @@ void RenderApplet::calcMinMaxWidth()
 
 void RenderApplet::layout()
 {
-    kdDebug(6100) << "RenderApplet::layout" << endl;
+    //kdDebug(6100) << "RenderApplet::layout" << endl;
 
     if(layouted())
         return;
@@ -121,8 +121,9 @@ void RenderApplet::layout()
             }
             child = child->nextSibling();
         }
-        kdDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
-        m_widget->resize(m_width, m_height);
+        //kdDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
+        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
+                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
         tmp->showApplet();
     }
 
@@ -163,11 +164,11 @@ RenderEmptyApplet::RenderEmptyApplet(QScrollView *view)
 
 short RenderEmptyApplet::intrinsicWidth() const
 {
-    kdDebug(6100) << "RenderEmptyApplet::intrinsicWidth()" << endl;
+    //kdDebug(6100) << "RenderEmptyApplet::intrinsicWidth()" << endl;
 
     if( m_widget )
     {
-        kdDebug(6100) << "intrinsicWidth, applet width = " << m_widget->width() << endl;
+        //kdDebug(6100) << "intrinsicWidth, applet width = " << m_widget->width() << endl;
     }
 
     return (m_widget ? m_widget->sizeHint().width() : 150);
@@ -175,11 +176,11 @@ short RenderEmptyApplet::intrinsicWidth() const
 
 int RenderEmptyApplet::intrinsicHeight() const
 {
-    kdDebug(6100) << "RenderEmptyApplet::intrinsicHeight()" << endl;
+    //kdDebug(6100) << "RenderEmptyApplet::intrinsicHeight()" << endl;
 
     if( m_widget )
     {
-        kdDebug(6100) << "intrinsicHeight, applet height = " << m_widget->height() << endl;
+        //kdDebug(6100) << "intrinsicHeight, applet height = " << m_widget->height() << endl;
     }
 
     return (m_widget ? m_widget->sizeHint().height() : 150);
@@ -208,8 +209,9 @@ void RenderEmptyApplet::layout()
 
     if(m_widget)
     {
-        kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
-        m_widget->resize(m_width, m_height);
+        //kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
+        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
+                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
     }
 
     setLayouted();
