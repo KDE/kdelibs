@@ -361,10 +361,10 @@ void HTMLDocumentImpl::applyChanges()
     if(m_styleSelector) delete m_styleSelector;
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
-    
+
     m_render->setStyle(m_style);
 
-    // a style change can influence the children, so we just go 
+    // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
@@ -373,7 +373,7 @@ void HTMLDocumentImpl::applyChanges()
     }
 
     // force a relayout of this part of the document
-    m_render->updateSize();
+    m_render->layout(true);
     // force a repaint of this part.
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
