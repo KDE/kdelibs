@@ -253,6 +253,18 @@ public:
   QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
+   * Reads a list of strings, but returns a default if the key 
+   * did not exist.
+   * @param pKey The key to search for.
+   * @param aDefault The default value to use if the key does not exist.
+   * @param sep The list separator (default is ",").
+   * @return The list. Contains @p aDefault if the Key does not exist.
+   * @since 3.3
+   */
+  QStringList readListEntry( const QString& pKey, const QStringList& aDefault, 
+		  char sep = ',' ) const;
+
+  /**
    * Reads a list of strings.
    *
    * @param pKey The key to search for.
@@ -260,6 +272,18 @@ public:
    * @return The list. Empty if the entry does not exist.
    */
   QStringList readListEntry( const char *pKey, char sep = ',' ) const;
+
+  /**
+   * Reads a list of strings, but returns a default if the key 
+   * did not exist.
+   * @param pKey The key to search for.
+   * @param aDefault The default value to use if the key does not exist.
+   * @param sep The list separator (default is ",").
+   * @return The list. Contains @p aDefault if the Key does not exist.
+   * @since 3.3
+   */
+  QStringList readListEntry( const char* pKey, const QStringList& aDefault, 
+		  char sep = ',' ) const;
 
   /**
    * Reads a list of Integers.
