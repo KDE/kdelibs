@@ -5,31 +5,31 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-<!ENTITY ie     "<abbrev>es decir</abbrev>" ><!-- ie -->
-<!ENTITY pej     "<abbrev>p. ej.</abbrev>" ><!-- pej -->
-<!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
-<!ENTITY kcc "<application>Centro de control de KDE</application>" ><!-- kcc -->
-<!ENTITY khelpcenter "<application>Centro de ayuda</application>" >
-<!ENTITY kde "KDE" ><!-- kde -->
-<!ENTITY kcontrolcenter "<application>Centro de control de &kde;</application>">
-<!ENTITY dpi    '<acronym>ppp</acronym>'>
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY Ctrl "<keycap>Ctrl</keycap>">
+
 <!ENTITY Alt "<keycap>Alt</keycap>">
-<!ENTITY Shift "<keycap>Mayúsculas</keycap>">
-<!ENTITY Esc "<keycap>Esc</keycap>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
-<!ENTITY OS "<keycap>Sistema operativo</keycap>">
-<!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
-<!ENTITY FAQ    '<acronym>PFs</acronym>'>
-<!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
-<!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
-<!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
-<!ENTITY kmenu  "menú <guimenu>K</guimenu>">
-<!ENTITY kicon  "<guiicon>
+<!ENTITY Ctrl "<keycap>Ctrl</keycap>">
+<!ENTITY dpi    "<acronym>ppp</acronym>">
+<!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
+<!ENTITY Esc "<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY FAQ    "<acronym>PFs</acronym>">
+<!ENTITY ie     "es decir" ><!-- ie -->
+<!ENTITY kcc "<application>Centro de control de KDE</application>" ><!-- kcc -->
+<!ENTITY kcontrolcenter "<application>Centro de control de &kde;</application>">
+<!ENTITY khelpcenter "<application>Centro de ayuda</application>" >
+<!ENTITY kicon  '<guiicon>
 <inlinemediaobject>
  <objectinfo><title>El icono K de &kde;</title></objectinfo>
- <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <imageobject><imagedata fileref="common/kmenu.png" format="PNG"/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-   </guiicon> icon"><!-- if image is localised, then entityref should be used instead of fileref -->
+   </guiicon> icon'><!-- if image is localised, then entityref should be used instead of fileref -->
+<!ENTITY kmenu  "menú <guimenu>K</guimenu>">
+<!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
+<!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
+<!ENTITY OS "Sistema operativo">
+<!ENTITY pej     "<abbrev>p. ej.</abbrev>" ><!-- pej -->
+<!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
+<!ENTITY Shift "<keycap>Mayúsculas</keycap>">
+<!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
