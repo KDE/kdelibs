@@ -537,6 +537,9 @@ public:
     EventImpl::EventId id;
     EventListener *listener;
     bool useCapture;
+private:
+    RegisteredEventListener( const RegisteredEventListener & );
+    RegisteredEventListener & operator=( const RegisteredEventListener & );
 };
 
 }; //namespace
