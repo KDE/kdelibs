@@ -557,11 +557,16 @@ protected:
  * @libdoc A network-enabled file management system in a library.
  *
  * This library implements almost all the file management functions you
- * will ever need. In fact, the KDE file manager, Konqueuror also uses
+ * will ever need. In fact, the KDE file manager, Konqueror also uses
  * this to provide its network-enabled file management.
  *
  * The easiest way to use this library from a KDE application is via the
- * @ref KIOJob class.
+ * @ref KIONetAccess class (for easy synchronous access) or via the
+ * @ref KIOJob class (for more complex asynchronous jobs).
+ *
+ * This library also implements the System Configuration Cache, whose API is
+ * KServiceType, KMimeType and KService. Use this for determining the mimetype
+ * of a file, the icon for it, and even the services associated with it.
  */
 
 #endif
