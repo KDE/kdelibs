@@ -5,15 +5,10 @@
 #endif
 
 #include <stdio.h>
+
 #include "kprocio.moc"
 
-//#define __KPIODEBUG
-
-#ifdef __KPIODEBUG
-#define dsdebug printf
-#else
-inline void dsdebug (const char *, ...)  {}
-#endif
+#include <kdebug.h>
 
 KProcIO::KProcIO (void)
 {
@@ -62,35 +57,34 @@ bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
 
   qlist.append (qs);
 
-  dsdebug ("KPIO::write [%s],[%s]\n",buffer,qlist.current());
+  kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
 
   if (writeready)
     {
-      dsdebug ("really writing\n");
+      kdebug(KDEBUG_INFO, 750, "really writing");
       writeready=FALSE;
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
-  dsdebug ("NOT really writing\n");
+  kdebug(KDEBUG_INFO, 750, "NOT really writing");
   return TRUE;
 }
 
 void KProcIO::sent (KProcess *)
 {
-  dsdebug ("KP::sent  [%s]\n",qlist.first());
+  kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
 
   qlist.removeFirst();
 
   if (qlist.count()==0)
     {
-      dsdebug ("Empty\n");
+      kdebug(KDEBUG_INFO, 750, "Empty");
       writeready=TRUE;
     }
   else
     {
-      dsdebug ("Sending [%s]\n",qlist.first());
-	      KProcess::writeStdin (qlist.first(),
-				    strlen (qlist.first()));
+      kdebug(KDEBUG_INFO, 750, "Sending [%s]", qlist.first());
+	      KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
     }
 
 }
@@ -101,7 +95,7 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 
   buffer [buflen]='\0';
 
-  dsdebug ("KPIO: recv'd [%s]\n",buffer);
+  kdebug(KDEBUG_INFO, 750, "KPIO: recv'd [%s]",buffer);
 
   for (i=0;i<buflen;i++)
     recvbuffer+=buffer [i];
@@ -148,7 +142,7 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  dsdebug ("KPIO::readln\n");
+  kdebug(KDEBUG_INFO, 750, "KPIO::readln\n");
 
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned)rbi<recvbuffer.length())

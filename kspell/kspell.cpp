@@ -18,9 +18,6 @@
 //#define KSDEBUG
 
 #ifdef KSDEBUG
-#define dsdebug printf
-#else
-inline void dsdebug (const char *, ...)  {}
 #endif
 
 #define MAXLINELENGTH 150
@@ -67,7 +64,7 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
   else
     ksconfig = new KSpellConfig;
 
-  dsdebug ("now here %s/%d\n", __FILE__, __LINE__);
+  kdebug(KDEBUG_INFO, 750, "now here %s/%d", __FILE__, __LINE__);
 
   ok=texmode=dlgon=FALSE;
   progres=10;
@@ -103,7 +100,7 @@ KSpell::startIspell(void)
   //trystart = {0,1,2}
 {
 
-  dsdebug ("Try #%d\n",trystart);
+  kdebug(KDEBUG_INFO, 750, "Try #%d",trystart);
 
   if (trystart>0)
     proc->resetAll();
@@ -126,7 +123,7 @@ KSpell::startIspell(void)
     {
       if (ksconfig->dictionary()[0]!='\0')
 	{
-	  dsdebug ("using dictionary [%s]\n",ksconfig->dictionary());
+	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary());
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}
@@ -135,7 +132,7 @@ KSpell::startIspell(void)
   if (trystart<1)
     if (ksconfig->encoding()==KS_E_LATIN1)
       {
-	dsdebug ("Using Latin1\n");
+	kdebug(KDEBUG_INFO, 750, "Using Latin1\n");
 	*proc << "-Tlatin1";
       }
 
@@ -143,7 +140,7 @@ KSpell::startIspell(void)
   /*
   if (ksconfig->personalDict()[0]!='\0')
     {
-      dsdebug ("personal dictionary [%s]\n",ksconfig->personalDict());
+      kdebug(KDEBUG_INFO, 750, "personal dictionary [%s]",ksconfig->personalDict());
       *proc << "-p";
       *proc << ksconfig->personalDict();
     }
@@ -167,7 +164,7 @@ KSpell::startIspell(void)
 void KSpell::KSpell2 (KProcIO *)
 
 {
-  dsdebug ("KSpell2\n");
+  kdebug(KDEBUG_INFO, 750, "KSpell::KSpell2");
 
   if (proc->fgets (temp, TEMPsz, TRUE)==-1)
     {
@@ -187,7 +184,7 @@ void KSpell::KSpell2 (KProcIO *)
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
     {
-      dsdebug ("@KDE was FALSE\n");
+      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
       emit ready(this);
       return;
     }
@@ -461,7 +458,9 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
     }
       
       
-  dsdebug ("HERE?: [%s]\nPlease report this to dsweet@physics.umd.edu\nThank you!",buffer);
+  kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer);
+  kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@physics.umd.edu");
+  kdebug(KDEBUG_ERROR, 750, "Thank you!");
   emit done(FALSE);
   emit done (KSpell::buffer.data());
   return MISTAKE;
@@ -532,8 +531,7 @@ void KSpell::checkList3 ()
 	if (tempe>0)
 	  {
 	    lastpos++;
-	    dsdebug ("lastpos advance on [%s]\n",
-		     temp);
+	    kdebug(KDEBUG_INFO, 750, "lastpos advance on [%s]", temp);
 	    if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 		e==REPLACE)
 	      {
@@ -575,7 +573,7 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      dsdebug ("cklist4: lastpos=(%d)\n",lastpos);
+      kdebug(KDEBUG_INFO, 750, "cklist4: lastpos==(%d)", lastpos);
       wordlist->remove (lastpos-1);
       wordlist->insert (lastpos-1, replacement());
       wordlist->next();
@@ -600,7 +598,7 @@ bool KSpell::check (char *_buffer)
   //set the dialog signal handler
   dialog3slot = SLOT (check3 ());
 
-  dsdebug ("KS: check\n");
+  kdebug(KDEBUG_INFO, 750, "KS: check");
   buffer=_buffer;
   if ((totalpos=buffer.length())==0)
     {
@@ -643,11 +641,11 @@ void KSpell::check2 (KProcIO *)
   do
     {
       tempe=proc->fgets (temp, TEMPsz); //get ispell's response      
-	  dsdebug ("2:(%d)\n",tempe);
+	  kdebug(KDEBUG_INFO, 750, "2:(%d)", tempe);
       
       if (tempe>0)
 	{
-	  dsdebug ("2:[%s]\n",temp);
+	  kdebug(KDEBUG_INFO, 750, "2:[%s]", temp);
 	  
 	  if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 	      e==REPLACE)
@@ -691,7 +689,7 @@ void KSpell::check2 (KProcIO *)
       int i;
       QString qs;
       
-      dsdebug ("[EOL](%d)[%s]\n",tempe,temp);
+      kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
       //      getchar();
       
       lastpos=(lastlastline=lastline)+offset;
@@ -714,8 +712,7 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  dsdebug ("check3 %s %s %d\n",cwword.data(),replacement(),
-	  dlgresult);
+  kdebug(KDEBUG_INFO, 750, "check3 %s %s %d", cwword.data(), replacement(), dlgresult);
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -747,7 +744,7 @@ KSpell::slotStopCancel (int result)
   if (dialogwillprocess)
     return;
 
-  dsdebug ("slotStopCancel [%d]\n",result);
+  kdebug(KDEBUG_INFO, 750, "KSpell::slotStopCancel [%d]", result);
 
   if (result==KS_STOP || result==KS_CANCEL)
     if (!dialog3slot.isEmpty())
@@ -831,7 +828,7 @@ KSpellConfig KSpell::ksConfig (void) const
 
 void KSpell::ispellExit (KProcess *)
 {
-  dsdebug ("ISpell died\n");
+  kdebug(KDEBUG_WARN, 750, "KSpell::ispellExit: ISpell died");
   if (trystart<maxtrystart)
     {
       trystart++;
@@ -841,10 +838,10 @@ void KSpell::ispellExit (KProcess *)
 
   if (!ok)
     {
-      dsdebug ("NOT OK\n");
+      kdebug(KDEBUG_WARN, 750, "NOT OK");
       emit ready(this);
     }
-  dsdebug ("Death\n");
+  kdebug(KDEBUG_ERROR, 750, "Death");
   emit death(this);
 }
 
@@ -855,12 +852,12 @@ void KSpell::setProgressResolution (unsigned int res)
 
 void KSpell::emitProgress (void)
 {
-  dsdebug ("emitprogress (%f) (%d)",
+  kdebug(KDEBUG_INFO, 750, "KSpell::emitProgress (%f) (%d)",
 	   100.*lastpos/totalpos,curprog);
   if (100.*lastpos/totalpos>=curprog)
     {
       curprog+=progres;
-      dsdebug ("emitprogress (yes)(%f) (%d)",
+      kdebug(KDEBUG_INFO, 750, "KSpell::emitProgress (yes)(%f) (%d)",
 	       100.*lastpos/totalpos,curprog);
       emit progress (curprog-progres);
     }
@@ -872,4 +869,3 @@ void KSpell::moveDlg (int x, int y)
   pt2=parent->mapToGlobal (pt);
   ksdlg->move (pt2.x(),pt2.y());
 }
-

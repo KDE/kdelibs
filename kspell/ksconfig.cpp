@@ -8,16 +8,7 @@
 
 #include "ksconfig.moc"
 
-//#define KSDEBUG
-
-#ifdef KSDEBUG
-#define dsdebug printf
-#else
-inline void dsdebug (...)  {}
-#endif
-
 #define NLS(s) i18n(s)
-
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 {  
@@ -265,7 +256,7 @@ bool KSpellConfig::writeGlobalSettings (void)
   kc->writeEntry ("KSpell_Dictionary", dictionary (), TRUE, TRUE);
   kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), TRUE, TRUE);
   //  kc->writeEntry ("KSpell_PersonalDict", personalDict (), TRUE,  TRUE);
-  dsdebug ("Encoding=(%d)\n",encoding());
+  kdebug(KDEBUG_INFO, 750, "Encoding=(%d)", encoding());
   kc->writeEntry ("KSpell_Encoding", (int) encoding(),
 		  TRUE, TRUE);
   kc->sync();
@@ -275,7 +266,7 @@ bool KSpellConfig::writeGlobalSettings (void)
 void
 KSpellConfig::sChangeEncoding(int i)
 {
-  dsdebug ("ChangeEncoding to (%d)\n",i);
+  kdebug(KDEBUG_INFO, 750, "KSpellConfig::sChangeEncoding(%d)", i);
   setEncoding (i);
 }
 
@@ -291,7 +282,7 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-  dsdebug ("[%s]\n",(const char *)fname);
+  kdebug(KDEBUG_INFO, 750, "KSpellConfig::interpert [%s]", (const char *)fname);
 
   //These are mostly the ispell-langpack defaults
   if (fname=="english")
@@ -339,8 +330,7 @@ void KSpellConfig::fillInDialog (void)
   if (nodialog)
     return;
 
-  dsdebug ("fillinDialog\n");
-
+  kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillinDialog");
 
   cb1->setChecked (noRootAffix());
   cb2->setChecked (runTogether());
@@ -362,13 +352,12 @@ void KSpellConfig::fillInDialog (void)
       if (!dir.exists() || !dir.isDir())
 	return;
 
-      dsdebug ("KS: %s %s\n",dir.filePath(),dir.dirPath().data());
+      kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillInDialog %s %s", dir.filePath(), dir.dirPath().data());
 
       QDir thedir (dir.filePath(),"*.aff");
-      dsdebug ("%s\n",thedir.path());
+      kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path());
 
-
-      dsdebug ("entryList().count()=%d\n",thedir.entryList()->count());
+      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList()->count());
 
       for (unsigned i=0;i<thedir.entryList()->count();i++)
 	{
