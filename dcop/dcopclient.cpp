@@ -42,6 +42,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <pwd.h>
+
 
 #ifndef QT_CLEAN_NAMESPACE
 #define QT_CLEAN_NAMESPACE
@@ -182,7 +184,16 @@ struct ReplyStruct
 
 static QCString dcopServerFile(const QCString &hostname, bool old)
 {
-   QCString fName = ::getenv("HOME");
+   QCString fName;
+   if (getuid())
+   {
+      fName = ::getenv("HOME");
+   }
+   else
+   {
+      struct passwd *pw = getpwuid(0);
+      fName = (pw && pw->pw_dir) ? pw->pw_dir : "/root";
+   }
    if (fName.isEmpty())
    {
       fprintf(stderr, "Aborting. $HOME is not set.\n");
