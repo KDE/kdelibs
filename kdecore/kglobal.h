@@ -34,7 +34,11 @@ class KStaticDeleterList;
 
 /**
  * Access to the KDE global objects.
+ * KGlobal provides you with pointers of many central 
+ * objects that exist only once in the process. It is also
+ * responsible for managing instances of @ref KStaticDeleterBase.
  *
+ * @see KStaticDeleterBase
  * @author Sirtaj Singh Kang (taj@kde.org)
  * @version $Id$
  */
@@ -46,25 +50,38 @@ public:
      * Returns the global instance.  There is always at least
      * one instance of a component in one application (in most
      * cases the application itself).
+     * @return the global instance
      */
     static KInstance            *instance();
 
     /**
      *  Returns the application standard dirs object.
+     * @return the global standard dir object
      */
     static KStandardDirs	*dirs();
 
     /**
      *  Returns the general config object.
+     * @return the global configuration object.
      */
     static KConfig		*config();
 
     /**
      *  Returns an iconloader object.
+     * @return the global iconloader object
      */
     static KIconLoader	        *iconLoader();
 
+    /**
+     * Returns the global locale object.
+     * @return the global locale object
+     */
     static KLocale              *locale();
+
+    /**
+     * The global charset manager.
+     * @return the global charset manager
+     */
     static KCharsets	        *charsets();
 
     /**
@@ -77,8 +94,10 @@ public:
      * static QString myString = KGlobal::staticQString("myText");
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
+     * @param str the string to create
+     * @return the static string
      */
-    static const QString        &staticQString(const char *);
+    static const QString        &staticQString(const char *str);
 
     /**
      * Creates a static QString.
@@ -90,12 +109,33 @@ public:
      * static QString myString = KGlobal::staticQString(i18n("myText"));
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
+     * @param str the string to create
+     * @return the static string
      */
-    static const QString        &staticQString(const QString &);
+    static const QString        &staticQString(const QString &str);
 
-    static void registerStaticDeleter(KStaticDeleterBase *);
-    static void unregisterStaticDeleter(KStaticDeleterBase *);
+    /**
+     * Registers a static deleter.
+     * @param d the static deleter to register
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
+    static void registerStaticDeleter(KStaticDeleterBase *d);
 
+    /**
+     * Unregisters a static deleter.
+     * @param d the static deleter to unregister
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
+    static void unregisterStaticDeleter(KStaticDeleterBase *d);
+
+    /**
+     * Calls KStaticDeleterBase::destructObject() on all
+     * registered static deleters and unregisters them all.
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
     static void deleteStaticDeleters();
 
     //private:
@@ -109,6 +149,7 @@ public:
      * The instance currently active (useful in a multi-instance
      * application, such as a KParts application).
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
+     * @internal
      */
     static void setActiveInstance(KInstance *d);
     static KInstance *activeInstance() { return _activeInstance; }
