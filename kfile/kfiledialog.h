@@ -318,6 +318,7 @@ protected:
       **/
     void init();
 
+    virtual void saveRecentDesktopFile(const QString &openStr, bool isUrl);
 protected slots:
     void pathChanged();
     void comboActivated(int);
@@ -377,10 +378,12 @@ protected:
     QLabel *locationLabel;
     QLabel *filterLabel;
     bool _multi;
+    int maxEntries;
 
 private:
 
     QString filterString;
+    bool useRecent;
 };
 
 /**
