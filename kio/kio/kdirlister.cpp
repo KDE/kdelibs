@@ -881,11 +881,10 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     }
     else if ( name != dotdot )
     {
-      //kdDebug(7004)<< "Adding " << url.prettyURL() << endl;
-
       KFileItem* item = new KFileItem( *it, url, delayedMimeTypes, true );
       Q_ASSERT( item );
 
+      //kdDebug(7004)<< "Adding item: " << item->url() << endl;
       dir->lstItems->append( item );
 
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
@@ -914,6 +913,12 @@ void KDirListerCache::slotResult( KIO::Job* j )
 
   QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( jobUrlStr );
   Q_ASSERT( listers );
+
+  // move the directory to the held directories, do it before emitting
+  // the signals to make sure it exists in KDirListerCache in case someone 
+  // calls listDir during the signal emission
+  Q_ASSERT( !urlsCurrentlyHeld[jobUrlStr] );
+  urlsCurrentlyHeld.insert( jobUrlStr, listers );
 
   KDirLister *kdl;
 
@@ -946,10 +951,6 @@ void KDirListerCache::slotResult( KIO::Job* j )
       }
     }
   }
-
-  // move the directory to the held directories
-  Q_ASSERT( !urlsCurrentlyHeld[jobUrlStr] );
-  urlsCurrentlyHeld.insert( jobUrlStr, listers );
 
   // TODO: hmm, if there was an error and job is a parent of one or more
   // of the pending urls we should cancel it/them as well
