@@ -31,6 +31,8 @@
 // ### HACK
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_objectimpl.h"
+#include "java/kjavaappletcontext.h"
 
 #include "khtml_part.h"
 #include "khtmlview.h"
@@ -957,6 +959,75 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 */
 
+class JavaMember : public ObjectImp {
+public:
+    JavaMember(DOM::HTMLElement elm, UString n, JType t) 
+        : element (elm), name(n), type(t) {}
+    JavaMember(const JavaMember & jm) 
+        : element(jm.element), name(jm.name), type(jm.type) {}
+    static Value getValue(const DOM::HTMLElement elm, const QString & name, 
+                          const JType type, const QString & value) {
+        switch(type) {
+            case JBoolean:
+                return Boolean(!strcmp(value.latin1(), "true"));
+            case JFunction:
+                return Value(new JavaMember(elm, name, JFunction));
+            case JNumber: {
+                bool ok;
+                double d = value.toDouble(&ok);
+                if (ok)
+                    return Number(d);
+                else
+                    return Number(value.toInt(&ok));
+            }
+            case JObject:
+                return Value(new JavaMember(elm, name, JObject));
+            case JString:
+                return String(value);
+            case JVoid:
+                return Undefined();
+            default:
+                return Undefined();
+        }
+    } 
+    virtual Value get(ExecState *exec, const UString &propertyName) const {
+      DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+      JType rettype;
+      QString retvalue;
+      if (elm->getMember(propertyName.qstring(), rettype, retvalue)) {
+          QString newname = name.qstring() + "." + propertyName.qstring();
+          return getValue(element, newname, rettype, retvalue);
+      }
+      return Undefined();
+    } 
+    virtual bool implementsCall() const { 
+        return type == JFunction; 
+    }
+    virtual Value call(ExecState * exec, Object &, const List &args) {
+      DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+      QStringList qargs;
+      for (ListIterator i = args.begin(); i != args.end(); i++)
+          qargs.append((*i).toString(exec).qstring());
+      JType rettype;
+      QString retvalue;
+      if (elm->callMember(name.qstring(), qargs, rettype, retvalue))
+          return getValue(element, name.qstring(), rettype, retvalue);
+      return Undefined();
+    } 
+
+    virtual bool toBoolean(ExecState *) const { return true; }
+    virtual Value toPrimitive(ExecState *exec, Type) const { 
+        return String(toString(exec)); 
+    }
+    virtual UString toString(ExecState *) const { 
+        return UString(type == JFunction ? "[function]" : "[Object]");
+    }
+private:
+    DOM::HTMLElement element;
+    UString name;
+    JType type;
+};
+
 Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
@@ -999,6 +1070,15 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
             return globalObject.get( exec, propertyName );
         }
       }
+  }
+  case ID_APPLET: {
+      DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+      QString retvalue;
+      JType rettype;
+      if (elm->getMember(propertyName.qstring(), rettype, retvalue))
+          return JavaMember::getValue(element, propertyName.qstring(), rettype, retvalue);
+      kdDebug(6070) << "tryGet " << propertyName.qstring() << retvalue << "failed" << endl;
+      break;
   }
   default:
     break;
@@ -1888,8 +1968,8 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         tableRow.deleteCell(args[0].toInteger(exec));
         return Undefined();
       }
+      break;
     }
-    break;
   }
 
   return Undefined();

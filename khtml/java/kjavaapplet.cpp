@@ -174,4 +174,14 @@ void KJavaApplet::setAppletId( int _id )
     id = _id;
 }
 
+bool KJavaApplet::getMember(const QString & name, JType & type, QString & value)
+{
+    return context->getMember(this, name, type, value);
+}
+
+bool KJavaApplet::callMember(const QString & name, const QStringList & args, JType & type, QString & value)
+{
+    return context->callMember(this, name, args, type, value);
+}
+
 #include "kjavaapplet.moc"

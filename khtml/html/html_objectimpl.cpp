@@ -39,6 +39,11 @@
 #include "rendering/render_frames.h"
 #include "xml/dom2_eventsimpl.h"
 
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
+#include "java/kjavaappletwidget.h"
+#include "java/kjavaappletcontext.h"
+#endif
+
 using namespace DOM;
 using namespace khtml;
 
@@ -127,6 +132,27 @@ void HTMLAppletElementImpl::attach()
     NodeBaseImpl::attach();
 }
 
+bool HTMLAppletElementImpl::getMember(const QString & name, JType & type, QString & val) {
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
+    if (!m_render)
+        return false;
+    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
+    return (w && w->applet() && w->applet()->getMember(name, type, val));
+#else
+    return false;
+#endif
+}
+
+bool HTMLAppletElementImpl::callMember(const QString & name, const QStringList & args, JType & type, QString & val) {
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
+    if (!m_render)
+        return false;
+    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
+    return (w && w->applet() && w->applet()->callMember(name, args, type, val));
+#else
+    return false;
+#endif
+}
 // -------------------------------------------------------------------------
 
 HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
