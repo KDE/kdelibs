@@ -1510,9 +1510,12 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         SpecialObject* o;
         QPtrListIterator<SpecialObject> it(*specialObjects);
         for (it.toLast(); (o = it.current()); --it)
-            if ( (o->node->isPositioned() && o->node->containingBlock() == this) ||
-                 (o->node->isFloating() && !o->noPaint) )
+            if ( o->node->isPositioned() && o->node->containingBlock() == this)
                 inBox |= o->node->nodeAtPoint(info, _x, _y, stx, sty);
+            else if ( o->node->isFloating() && !o->noPaint )
+                inBox |= o->node->nodeAtPoint( info, _x, _y,
+                                               stx + o->left + o->node->marginLeft() - o->node->xPos(),
+                                               sty + o->startY + o->node->marginTop() - o->node->yPos() );
     }
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
