@@ -28,24 +28,38 @@ using namespace std;
 
 string AnyRefBase::type() const
 {
+/*
+   keep common types here, so that the string constructor doesn't need
+   to get called each and every time
+ */
+	static const string tVoid("void");
+	static const string tByte("byte");
+	static const string tsByte("*byte");
+	static const string tLong("long");
+	static const string tsLong("*long");
+	static const string tFloat("float");
+	static const string tsFloat("*float");
+	static const string tString("string");
+	static const string tsString("*string");
+
 	switch(rep)
 	{
-		case repVoid:		return "void";
+		case repVoid:		return tVoid;
 
 		// primitive types
-		case repByte:		return "byte";
+		case repByte:		return tByte;
 		case repInt:
-		case repLong:		return "long";
+		case repLong:		return tLong;
 		case repFloat:
-		case repDouble:		return "float";
+		case repDouble:		return tFloat;
 		case repString:
-		case repCString:	return "string";
+		case repCString:	return tString;
 
 		// sequences of primitive types
-		case repByteSeq:	return "*byte";
-		case repLongSeq:	return "*long";
-		case repFloatSeq:	return "*float";
-		case repStringSeq:	return "*string";
+		case repByteSeq:	return tsByte;
+		case repLongSeq:	return tsLong;
+		case repFloatSeq:	return tsFloat;
+		case repStringSeq:	return tsString;
 	}
 	assert(false);
 }

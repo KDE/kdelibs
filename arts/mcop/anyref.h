@@ -64,7 +64,9 @@ protected:
 	void _write(Buffer *b) const;
 	void _read(Buffer *b) const;
 
-	AnyRefBase(const void *data, Representation rep, const char *type = "")
+	AnyRefBase(const void *data, Representation rep)
+		: data(const_cast<void *>(data)), rep(rep) { };
+	AnyRefBase(const void *data, Representation rep, const char *type)
 		: data(const_cast<void *>(data)), _type(type), rep(rep) { };
 	AnyRefBase(const AnyRefBase &copy)
 		: data(copy.data), _type(copy._type), rep(copy.rep) { }
