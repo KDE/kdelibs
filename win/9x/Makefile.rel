@@ -1,0 +1,19 @@
+
+all: Makefile.rel
+	cd .. && qmake KW_CONFIG=release CONFIG+=WIN9x -o Makefile.win9x.release && nmake -nologo -f Makefile.win9x.release
+
+clean:
+	del obj_rel\*.obj
+
+FORCE:
+
+distclean: clean
+
+####### Compile
+
+####### Install
+
+install:  
+
+uninstall:  
+
