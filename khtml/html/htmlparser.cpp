@@ -26,6 +26,7 @@
 // $Id$
 
 //#define PARSER_DEBUG
+//#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
 
@@ -994,10 +995,11 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_TEXT:
 	n = new TextImpl(document, t->text);
 	break;
+#ifdef COMMENTS_IN_DOM
     case ID_COMMENT:
 	n = new CommentImpl(document, t->text);
 	break;
-	
+#endif
     default:
 	kdDebug( 6035 ) << "Unknown tag " << t->id << "!" << endl;
     }
