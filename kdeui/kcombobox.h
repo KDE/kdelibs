@@ -554,15 +554,19 @@ public slots:
      * If @ref maxCount() is reached, the first item of the list will be
      * removed.
      *
+     * If the last inserted item is the same as @p item, it will not be
+     * inserted again.
+     *
+     * If @ref duplicatesEnabled() is true, any equal existing item will be
+     * removed before @p item is added.
+     *
      * Note: By using this method and not the Q and KComboBox insertItem()
      * methods, you make sure that the combobox stays in sync with the
      * completion. It would be annoying if completion would give an item
      * not in the combobox, and vice versa.
      *
-     * If an items is added twice without any other item in between, it will
-     * only show up once in the combobox.
-     *
      * @see #removeFromHistory
+     * @see QComboBox::setDuplicatesEnabled
      */
     void addToHistory( const QString& item );
 
@@ -580,6 +584,8 @@ protected:
     /**
      * Inserts @p items into the combo, honouring @ref pixmapProvider()
      * Does not update the completionObject.
+     *
+     * Note: @ref duplicatesEnabled() is not honored here.
      *
      * Called from @ref setHistoryItems() and @ref setPixmapProvider()
      */

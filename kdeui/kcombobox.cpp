@@ -50,10 +50,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     if ( rw )
     {
         m_pEdit = QComboBox::lineEdit();
-	// Qt-bug, QComboBox installs exactly the same event-filter and there
-	// is no check for this, so we would end up with two event-filters and
-	// eventFilter() being called twice for every event.
-	//  m_pEdit->installEventFilter( this );
+	m_pEdit->installEventFilter( this );
     }
     init();
 }
@@ -469,6 +466,14 @@ void KHistoryCombo::addToHistory( const QString& item )
 	    completionObject()->removeItem( item );
     }
 
+    // remove all existing items before adding
+    if ( !duplicatesEnabled() ) {
+	for ( int i = 0; i < count(); i++ ) {
+	    if ( text( i ) == item )
+		removeItem( i );
+	}
+    }
+    
     // now add the item
     if ( myPixProvider )
 	insertItem( myPixProvider->pixmapFor( item, KIcon::SizeSmall), item, 0 );
