@@ -900,14 +900,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     KActionCollection *coll = ops->actionCollection();
 
     // plug nav items into the toolbar
-    coll->action( "back" )->plug( toolbar );
-    coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
-    coll->action( "forward" )->plug( toolbar );
-    coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
     coll->action( "up" )->plug( toolbar );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>").arg( KUser().loginName() ));
+    coll->action( "back" )->plug( toolbar );
+    coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
+    coll->action( "forward" )->plug( toolbar );
+    coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
     coll->action( "reload" )->plug( toolbar );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut(Key_F10);
