@@ -76,21 +76,21 @@ void KIconView::slotSettingsChanged(int category)
 						  const QPoint & ) ),
 		this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
 						    const QPoint & ) ) );
-//         disconnect( this, SIGNAL( doubleClicked( QIconViewItem *, 
+//         disconnect( this, SIGNAL( doubleClicked( QIconViewItem *,
 // 						 const QPoint & ) ),
-// 		    this, SLOT( slotExecute( QIconViewItem *, 
+// 		    this, SLOT( slotExecute( QIconViewItem *,
 // 					     const QPoint & ) ) );
 
     if( m_bUseSingle ) {
-      connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *, 
+      connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
 						 const QPoint & ) ),
 	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
 						   const QPoint & ) ) );
     }
     else {
-//         connect( this, SIGNAL( doubleClicked( QIconViewItem *, 
+//         connect( this, SIGNAL( doubleClicked( QIconViewItem *,
 // 					      const QPoint & ) ),
-//                  this, SLOT( slotExecute( QIconViewItem *, 
+//                  this, SLOT( slotExecute( QIconViewItem *,
 // 					  const QPoint & ) ) );
     }
 
@@ -189,9 +189,9 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
-    
+
   m_pAutoSelect->stop();
-  
+
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
     setSelected( item, false );
@@ -207,7 +207,7 @@ void KIconView::focusOutEvent( QFocusEvent *fe )
   QIconView::focusOutEvent( fe );
 }
 
-void KIconView::leaveEvent( QEvent *e ) 
+void KIconView::leaveEvent( QEvent *e )
 {
   m_pAutoSelect->stop();
 
@@ -235,10 +235,10 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
   QIconViewItem* item = findItem( e->pos() );
 
   if( item ) {
-    emit doubleClicked( item, e->globalPos() );
-
     if( (e->button() == LeftButton) && !m_bUseSingle )
       emitExecute( item, e->globalPos() );
+
+    emit doubleClicked( item, e->globalPos() );
   }
 }
 
