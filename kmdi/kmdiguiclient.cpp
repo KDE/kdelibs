@@ -137,7 +137,7 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
 		actionCollection(),"kmdi_activate_bottom"));
     m_gotoToolDockMenu->insert(new KActionSeparator(actionCollection(),"kmdi_goto_menu_separator"));
     m_gotoToolDockMenu->insert(new KAction(i18n("Previous Tool View"),ALT+CTRL+Key_Left,m_mdiMainFrm,SLOT(prevToolViewInDock()),
-		actionCollection(),"kmdi_next_toolview"));
+		actionCollection(),"kmdi_prev_toolview"));
     m_gotoToolDockMenu->insert(new KAction(i18n("Next Tool View"),ALT+CTRL+Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
 		actionCollection(),"kmdi_next_toolview"));
     
@@ -217,6 +217,7 @@ void KMDIGUIClient::setupActions()
 }
 
 void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva) {
+	kdDebug()<<"*****void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva)*****"<<endl;
 	KAction *a=new ToggleToolViewAction(i18n("Show %1").arg(mtva->wrappedWidget()->caption()),
 		QString::null,dynamic_cast<KDockWidget*>(mtva->wrapperWidget()),m_mdiMainFrm,actionCollection(),"nothing");
 	m_toolViewActions.append(a);

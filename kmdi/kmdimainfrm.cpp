@@ -388,6 +388,8 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
    QObject::connect( pWnd, SIGNAL(attachWindow(KMdiChildView*,bool)), this, SLOT(attachWindow(KMdiChildView*,bool)) );
    QObject::connect( pWnd, SIGNAL(detachWindow(KMdiChildView*,bool)), this, SLOT(detachWindow(KMdiChildView*,bool)) );
    QObject::connect( pWnd, SIGNAL(clickedInDockMenu(int)), this, SLOT(dockMenuItemActivated(int)) );
+   connect(pWnd,SIGNAL(activated(KMdiChildView*)),this,SIGNAL(viewActivated(KMdiChildView*)));
+   connect(pWnd,SIGNAL(deactivated(KMdiChildView*)),this,SIGNAL(viewDeactivated(KMdiChildView*)));
    m_pDocumentViews->append(pWnd);
    if (m_pTaskBar) {
       KMdiTaskBarButton* but = m_pTaskBar->addWinButton(pWnd);

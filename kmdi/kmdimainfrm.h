@@ -689,6 +689,9 @@ signals:
 
    void mdiModeHasBeenChangedTo(KMdi::MdiMode);
 
+   void viewActivated(KMdiChildView*);
+   void viewDeactivated(KMdiChildView*);
+
 public slots:
    void prevToolViewInDock();
    void nextToolViewInDock();
