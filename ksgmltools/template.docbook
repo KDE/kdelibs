@@ -1,12 +1,11 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
-  <!ENTITY kapp "<application>Kapp</application>" -- replace kapp and Kapp here -->
-  <!-- nothing below must be removed -->
   <!ENTITY kappname "&kapp;" -- replace kapp here. This only *seems* redundant -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE" -- change language only here -->
   <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN">
   %ents;
-  <!-- Put here document-specific entities, if any -->
+  <!-- Do not define any other entities; instead, use the entities
+       from kde-genent.entities and <lg>/user.entities. -->
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
      Minor update to "Credits and Licenses" section on August 24, 2000   -->
@@ -263,8 +262,6 @@ Also include any keys that have a special function but have no equivalent in the
 menus or toolbars. This may not be necessary for small apps or apps with no tool
 or menu bars. -->
 
-<para></para>
-
 <sect1 id="kapp-mainwindow">
 <title>The main Kapp window</title>
 <para></para>
@@ -307,6 +304,10 @@ or menu bars. -->
 </para>
 
 </sect2>
+
+<!-- fixed text for the help menu -->
+&help.menu;
+
 </sect1>
 </chapter>
 
@@ -465,7 +466,8 @@ This is also a great place to provide pointers to other FAQ's if your users
 must do some complicated configuration on other programs in order for your
 application work. -->
 
-<para></para>
+&reporting.bugs;
+&updating.documentation;
 
 <qandaset id="faqlist">
 <qandaentry>
@@ -541,7 +543,7 @@ Translations done by:
 
 </chapter>
 
-&kdedocindex;
+&documentation.index;
 </book>
 <!--
 Local Variables:
