@@ -152,7 +152,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "DefaultEncoding" ) )
     {
-        setCharset(KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") ));
+        m_defaultCharset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") );
+        internalSetCharset( m_defaultCharset );
     };
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
@@ -393,8 +394,25 @@ void KHTMLSettings::setFixedFontName(const QString &n)
     setFont(m_charset, 1, n);
 }
 
-void KHTMLSettings::setCharset( QFont::CharSet c)
-{
-    if(!enforceCharset) m_charset = c;
+void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce ) 
+{ 
+    m_defaultCharset = c;
+    enforceCharset = enforce;
+}
+
+void KHTMLSettings::resetCharset() 
+{ 
+    internalSetCharset(m_defaultCharset);
+}
+
+void KHTMLSettings::setCharset( QFont::CharSet c) 
+{ 
+    if (!enforceCharset)
+       internalSetCharset(c);
+}
+
+void KHTMLSettings::internalSetCharset( QFont::CharSet c ) 
+{ 
+    m_charset = c; 
     availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
 }

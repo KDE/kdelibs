@@ -84,7 +84,10 @@ public:
 
     // the charset used to display the current document.
     QFont::CharSet charset() const { return m_charset; }
-    void setCharset( QFont::CharSet c);
+    void setCharset( QFont::CharSet c );
+    void resetCharset( );
+
+    void setDefaultCharset( QFont::CharSet c, bool b );
 
     const QString &encoding() const { return m_encoding; }
 
@@ -113,6 +116,8 @@ public:
 private:
     void setFont(const QFont::CharSet &charset, int i, const QString &n);
     QString lookupFont(const QFont::CharSet &charset, int i) const;
+
+    void internalSetCharset( QFont::CharSet c );
     
 private:
     bool m_bChangeCursor;
@@ -123,6 +128,7 @@ private:
     int m_minFontSize;
 
     QFont::CharSet m_charset;
+    QFont::CharSet m_defaultCharset;
     bool enforceCharset;
     QString m_encoding;
 

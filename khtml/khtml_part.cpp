@@ -150,7 +150,6 @@ public:
     m_totalImageCount = 0;
     m_haveEncoding = false;
     m_activeFrame = 0L;
-    keepCharset = false;
     m_findDialog = 0;
     m_ssl_in_use = false;
     m_javaContext = 0;
@@ -196,6 +195,7 @@ public:
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
+  QFont::CharSet m_charset;
   long m_cacheId;
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
@@ -210,8 +210,6 @@ public:
   bool m_bJavaOverride;
   int m_frameNameId;
   KJavaAppletContext *m_javaContext;
-
-  bool keepCharset;
 
   KHTMLSettings *m_settings;
 
@@ -235,6 +233,7 @@ public:
   bool m_bParsing;
   bool m_bReloading;
   bool m_haveEncoding;
+  bool m_haveCharset;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -488,6 +487,9 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::restoreURL( const KURL &url )
 {
+  // Save charset setting (it was already restored!)
+  QFont::CharSet charset = d->m_charset;
+
   kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
@@ -501,6 +503,9 @@ bool KHTMLPart::restoreURL( const KURL &url )
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_haveCharset = true;
+  d->m_charset = charset;
+  d->m_settings->setCharset( d->m_charset );
 
   m_url = url;
 
@@ -579,6 +584,9 @@ bool KHTMLPart::openURL( const KURL &url )
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_settings->resetCharset();
+  d->m_haveCharset = false;
+  d->m_charset = d->m_settings->charset();
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -998,7 +1006,13 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     //
     QString charset = d->m_job->queryMetaData("charset");
     if ( !charset.isEmpty() )
-        setCharset( charset, true );
+    {
+       QFont f(settings()->stdFontName());
+       KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(charset) );
+       d->m_charset = f.charSet();
+       d->m_settings->setCharset( d->m_charset );
+       d->m_haveCharset = true;
+    }
 
   }
 
@@ -1136,11 +1150,13 @@ void KHTMLPart::write( const char *str, int len )
   if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-      const QTextCodec *c = d->m_decoder->codec();
-      if( !d->keepCharset ) {
-          //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
-          d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
-          //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
+      if (!d->m_haveCharset)
+      {
+         const QTextCodec *c = d->m_decoder->codec();
+         //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+         d->m_charset = KGlobal::charsets()->charsetForEncoding(c->name());
+         d->m_settings->setCharset( d->m_charset );
+         //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
@@ -1360,8 +1376,7 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
 
   //kdDebug(6005) << "setting to charset " << (int)QFontInfo(f).charSet() <<" " << override << " should be " << name << endl;
 
-  d->m_settings->setCharset( f.charSet() );
-  d->keepCharset = override;
+  d->m_settings->setDefaultCharset( f.charSet(), override );
   return true;
 }
 
@@ -1372,7 +1387,10 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
     // ### hack!!!!
     if(!d->m_settings->charset() == QFont::Unicode)
-        d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(name) );
+    {
+        d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
+        d->m_settings->setCharset( d->m_charset );
+    }
 
     if( !m_url.isEmpty() ) {
         // reload document
@@ -2529,7 +2547,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
      docState = d->m_doc->state();
   }
-  stream << docState;
+  stream << (Q_UINT32) d->m_settings->charset() << docState;
 
   // Save font data
   stream << fontSizes() << d->m_fontBase;
@@ -2577,13 +2595,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
   KURL::List visitedLinks;
+  Q_INT32 charset;
   long old_cacheId = d->m_cacheId;
 
   stream >> u >> xOffset >> yOffset;
 
   stream >> d->m_cacheId;
 
-  stream >> docState;
+  stream >> charset >> docState;
+  d->m_charset = (QFont::CharSet) charset;
 
   stream >> fSizes >> d->m_fontBase;
   setFontSizes( fSizes );
