@@ -58,7 +58,7 @@ typedef QValueList<QCString> QCStringList;
  *   QByteArray data;
  *   QDataStream arg(data, IO_WriteOnly);
  *   arg << QString("This is text I am serializing");
- *   client->send("someApp", "someObject", "someFunction", arg);
+ *   client->send("someApp", "someObject", "someFunction(QString)", arg);
  * </pre>
  *
  * @see KApplication::dcopClient()
