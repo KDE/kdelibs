@@ -915,8 +915,10 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
                   "pics[1].src = '%2';\n"
                   "var doflicker = 1;\n"
                   "var t = 1;\n"
-                  "var lastb=0;\n"
-                  "function toggleVisible(visible) {\n"
+                  "var lastb=0;\n" )
+          .arg( relpath+"/baseline/"+test+"-dump.png" )
+          .arg( relpath+"/output/"+test+"-dump.png" );
+    cl += QString( "function toggleVisible(visible) {\n"
                   "     document.getElementById('render').style.visibility= visible == 'render' ? 'visible' : 'hidden';\n"
                   "     document.getElementById('image').style.visibility= visible == 'image' ? 'visible' : 'hidden';\n"
                   "     document.getElementById('dom').style.visibility= visible == 'dom' ? 'visible' : 'hidden';\n"
@@ -924,8 +926,8 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
                   "function show() { document.getElementById('image').src = pics[t].src; "
                   "document.getElementById('image').style.borderColor = t && !doflicker ? 'red' : 'gray';\n"
                   "toggleVisible('image');\n"
-                  "}"
-                  "function runSlideShow(){\n"
+                   "}" );
+    cl += QString ( "function runSlideShow(){\n"
                   "   document.getElementById('image').src = pics[t].src;\n"
                   "   if (doflicker)\n"
                   "       t = 1 - t;\n"
@@ -940,20 +942,25 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
                   "}\n"
                   "function showDom() { doflicker=0;toggleVisible('dom')\n"
                   "}\n"
-                  "</script>\n")
-         .arg( relpath+"/baseline/"+test+"-dump.png" )
-         .arg( relpath+"/output/"+test+"-dump.png" );
+                   "</script>\n");
+
     cl += QString ("<style>\n"
                    ".buttondown { cursor: pointer; padding: 0px 20px; color: white; background-color: blue; border: inset blue 2px;}\n"
                    ".button { cursor: pointer; padding: 0px 20px; color: black; background-color: white; border: outset blue 2px;}\n"
                    ".diff { position: absolute; left: 10px; top: 100px; visibility: hidden; border: 1px black solid; background-color: white; color: black; /* width: 800; height: 600; overflow: scroll; */ }\n"
                    "</style>\n" );
 
-    cl += QString( "<body onload=\"m(1); show(); runSlideShow();\" text=black bgcolor=gray>"
-                   "<h1>%3</h1>\n" ).arg( test );
-    cl += QString ( "<span id='b1' class='buttondown' onclick=\"doflicker=1;show();m(1)\">FLICKER</span>&nbsp;\n"
-                    "<span id='b2' class='button' onclick=\"doflicker=0;t=0;show();m(2)\">BASE</span>&nbsp;\n"
-                    "<span id='b3' class='button' onclick=\"doflicker=0;t=1;show();m(3)\">OUT</span>&nbsp;\n" );
+    if ( failures & PaintFailure )
+        cl += QString( "<body onload=\"m(1); show(); runSlideShow();\"" );
+    else if ( failures & RenderFailure )
+        cl += QString( "<body onload=\"m(4); toggleVisible('render');\"" );
+    else
+        cl += QString( "<body onload=\"m(5); toggleVisible('dom');\"" );
+    cl += QString(" text=black bgcolor=gray>\n<h1>%3</h1>\n" ).arg( test );
+    if ( failures & PaintFailure )
+        cl += QString ( "<span id='b1' class='buttondown' onclick=\"doflicker=1;show();m(1)\">FLICKER</span>&nbsp;\n"
+                        "<span id='b2' class='button' onclick=\"doflicker=0;t=0;show();m(2)\">BASE</span>&nbsp;\n"
+                        "<span id='b3' class='button' onclick=\"doflicker=0;t=1;show();m(3)\">OUT</span>&nbsp;\n" );
     if ( renderDiff.length() )
         cl += "<span id='b4' class='button' onclick='showRender();m(4)'>R-DIFF</span>&nbsp;\n";
     if ( domDiff.length() )

@@ -133,7 +133,7 @@ bool QFakeFontEngine::canRender( const QChar *, int )
 
 static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
 {
-    if ( italic )
+    if ( italic ) // if we're on baseline again, remove this
         return "-adobe-courier-medium-i-normal--0-0-0-0-m-0-iso8859-1";
 
     if ( pixelsize >= 24 )
@@ -145,7 +145,7 @@ static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
     else
         pixelsize = 10;
 
-    return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "i" : "r" ).arg( pixelsize );
+    return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 }
 
 static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
