@@ -85,7 +85,7 @@
 6070	khtml (jscript)
 6080	khtml (css)
 6090	khtml (memory)
-6100    kjas
+6100	kjas
 # libkio
 7001	kio (KDirWatch)
 7002	kio (Slave)
@@ -126,13 +126,6 @@
 7114	kio_nntp
 7115	kio_thumbnail
 
-# old stuff
-8000	corba
-8001	parts (corba)
-8002	partsui (corba)
-8003	kom (corba)
-8004	kded (corba)
-
 # kdevelop
 9000	kdevelop (core)
 9001	kdevelop (grep view)
@@ -147,13 +140,13 @@
 9020	kdevelop (kdeprojectspace)
 
 # toys and games
-10000   amor
+10000	amor
 
-20000   KDB (core)
-20001   KDB (ui)
-20010   KDB (DBEngine)
-20011   KDB (Connection)
-20012   KDB (plugin)
+20000	KDB (core)
+20001	KDB (ui)
+20010	KDB (DBEngine)
+20011	KDB (Connection)
+20012	KDB (plugin)
 
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
@@ -184,4 +177,4 @@
 37001	graphite
 38000	killustrator
 39001	kformula
-40000   kformula
+40000	kformula
