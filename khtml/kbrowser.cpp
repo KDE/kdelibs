@@ -107,6 +107,14 @@ void KBrowser::slotStop()
   }
   
   m_bComplete = true;  
+
+  if ( m_jobId )
+  {
+    KIOJob *job = KIOJob::find( m_jobId );
+    if ( job )
+      job->kill();
+  }
+  
   m_jobId = 0;
 
   cancelAllRequests();
