@@ -74,10 +74,8 @@ void KServiceTypeEntry::save( QDataStream& _str ) const
 
 KServiceTypeFactory::KServiceTypeFactory()
 {
-  m_pathList.append( kapp->kde_mimedir() );
-  QString tmp = kapp->localkdedir();
-  tmp += "/share/mimelnk";
-  m_pathList.append( tmp );
+  m_pathList += KGlobal::dirs()->getResourceDirs( "mime" );
+  m_pathList += KGlobal::dirs()->getResourceDirs( "servicetypes" );
 }
 
 KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )

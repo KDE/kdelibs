@@ -25,6 +25,9 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
   // some servicetype are not mimetypes, if I got it correctly (any example, Torben ? ;) )
   m_strName = _cfg.readEntry( "MimeType" );
 
+  if ( m_strName.isEmpty() )
+    m_strName = _cfg.readEntry( "X-KDE-ServiceType" );
+
   m_strComment = _cfg.readEntry( "Comment" );
   m_strIcon = _cfg.readEntry( "Icon" );
   // TODO: Properties
