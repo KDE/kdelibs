@@ -149,6 +149,16 @@
     virtual QVariant property() const = 0;
 
     /**
+     * Return minimum value of item or invalid if not specified
+     */
+    virtual QVariant minValue() const { return QVariant(); }
+
+    /**
+     * Return maximum value of item or invalid if not specified
+     */
+    virtual QVariant maxValue() const { return QVariant(); }
+
+    /**
       Sets the current value to the default value.
     */
     virtual void setDefault() = 0;
@@ -332,6 +342,28 @@ public:
     Type mType;
   };
 
+  /**
+   * Class for handling a password preferences item.
+   */
+  class ItemPassword:public ItemString
+  {
+  public:
+    ItemPassword(const QString & group, const QString & name,
+               QString & reference,
+               const QString & defaultValue = QString::null);
+  };
+
+  /**
+   * Class for handling a path preferences item.
+   */
+  class ItemPath:public ItemString
+  {
+  public:
+    ItemPath(const QString & group, const QString & name,
+             QString & reference,
+             const QString & defaultValue = QString::null);
+  };
+
 
   /**
    * Class for handling a QVariant preferences item.
@@ -375,6 +407,17 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(int);
+    void setMaxValue(int);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    int mMin;
+    int mMax;
   };
 
   /**
@@ -389,6 +432,18 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(Q_INT64);
+    void setMaxValue(Q_INT64);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    Q_INT64 mMin;
+    Q_INT64 mMax;
   };
 
   /**
@@ -429,6 +484,17 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(unsigned int);
+    void setMaxValue(unsigned int);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    unsigned int mMin;
+    unsigned int mMax;
   };
 
 
@@ -444,6 +510,17 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(long);
+    void setMaxValue(long);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    long mMin;
+    long mMax;
   };
 
 
@@ -459,6 +536,17 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(unsigned long);
+    void setMaxValue(unsigned long);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    unsigned long mMin;
+    unsigned long mMax;
   };
 
   /**
@@ -473,6 +561,18 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(Q_UINT64);
+    void setMaxValue(Q_UINT64);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    Q_UINT64 mMin;
+    Q_UINT64 mMax;
   };
 
   /**
@@ -487,6 +587,17 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+    QVariant minValue() const;
+    QVariant maxValue() const;
+
+    void setMinValue(double);
+    void setMaxValue(double);
+    
+  private:  
+    bool mHasMin : 1;
+    bool mHasMax : 1;
+    double mMin;
+    double mMax;
   };
 
 
@@ -693,7 +804,7 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemString *addItemPassword(const QString & name, QString & reference,
+  ItemPassword *addItemPassword(const QString & name, QString & reference,
                               const QString & defaultValue = "",
                               const QString & key = QString::null);
 
@@ -710,7 +821,7 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemString *addItemPath(const QString & name, QString & reference,
+  ItemPath *addItemPath(const QString & name, QString & reference,
                           const QString & defaultValue = "",
                           const QString & key = QString::null);
 
