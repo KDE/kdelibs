@@ -1062,6 +1062,7 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     DOM::NodeImpl* oldHoverNode = doc->hoverNode();
     DOM::NodeImpl* newHoverNode = info.innerNode();
 
+    
     if (oldHoverNode == newHoverNode && (!oldHoverNode || oldHoverNode->active() == info.active()))
         return;
 
@@ -1078,11 +1079,11 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     // The old hover path only needs to be cleared up to (and not including) the common ancestor;
     for (RenderObject* curr = oldHoverObj; curr && curr != ancestor; curr = hoverAncestor(curr)) {
         curr->setMouseInside(false);
-        if (curr->element() && !curr->isText()) {
+        if (curr->element()) {
             bool oldActive = curr->element()->active();
-            curr->element()->setActive(false);
-            if (curr->style()->affectedByHoverRules() ||
-                (curr->style()->affectedByActiveRules() && oldActive))
+            curr->element()->NodeImpl::setActive(false);
+            if (!curr->isText() && (curr->style()->affectedByHoverRules() ||
+                 (curr->style()->affectedByActiveRules() && oldActive)))
                 curr->element()->setChanged();
         }
     }
@@ -1091,12 +1092,13 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     for (RenderObject* curr = newHoverObj; curr; curr = hoverAncestor(curr)) {
         bool oldInside = curr->mouseInside();
         curr->setMouseInside(true);
-        if (curr->element() && !curr->isText()) {
+        if (curr->element()) {
             bool oldActive = curr->element()->active();
-            curr->element()->setActive(info.active());
-            if ((curr->style()->affectedByHoverRules() && !oldInside) ||
-                (curr->style()->affectedByActiveRules() && oldActive != info.active()))
+            curr->element()->NodeImpl::setActive(info.active());
+            if (!curr->isText() && (curr->style()->affectedByHoverRules() && !oldInside) ||
+                 (curr->style()->affectedByActiveRules() && oldActive != info.active())) {
                 curr->element()->setChanged();
+            }
         }
     }
 }

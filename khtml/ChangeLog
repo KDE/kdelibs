@@ -1,3 +1,9 @@
+2005-02-18  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_layer.cpp (updateHoverActiveState): Also mark
+	textnodes as being active. Use NodeImpl's implementation of setActive
+	for efficiency reasons, the style is updated anyway afterwards.
+
 2005-02-16  Leo Savernik  <l.savernik@aon.at>
 
 	* khtmlview.cpp (dispatchMouseEvent): Walk upwards the parent chain
