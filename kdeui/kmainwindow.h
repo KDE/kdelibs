@@ -41,7 +41,6 @@ class KMainWindowPrivate;
 class KAccel;
 class KToolBarMenuAction;
 
-
 #define KDE_DEFAULT_WINDOWFLAGS WType_TopLevel | WDestructiveClose
 
 

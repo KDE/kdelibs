@@ -65,11 +65,7 @@ public:
     KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
     QTimer* settingsTimer;
-
-    // Default values used in determining to save || !.
-    bool isStatusBarShown;
-    bool isMenuBarShown;
-    QRect size;
+    QRect defaultWindowSize;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -621,9 +617,11 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
-        if(d->isStatusBarShown ==  sb->isHidden())
+        
+	if(sb->isHidden())
 	  config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
-	else config->deleteEntry("StatusBar");
+	else
+	  config->deleteEntry(QString::fromLatin1("StatusBar"));
     }
 
     QMenuBar* mb = internalMenuBar();
@@ -633,10 +631,12 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
-        // By default we don't hide.
-	if(d->isStatusBarShown ==  sb->isHidden())
+        
+	// By default we don't hide.
+	if(mb->isHidden())
 	  config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
-	else config->deleteEntry("MenuBar");
+	else
+	  config->deleteEntry(QString::fromLatin1("MenuBar"));
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -728,10 +728,12 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         entryList.clear();
         i = config->readListEntry (QString::fromLatin1("StatusBar"), entryList, ';');
         entry = entryList.first();
-        if (entry == QString::fromLatin1("Disabled"))
-            sb->hide();
-        else
+        if (entry == QString::fromLatin1("Disabled")){
+          sb->hide();
+        }
+        else{
             sb->show();
+	}
     }
 
     QMenuBar* mb = internalMenuBar();
@@ -789,7 +791,7 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
   QRect size( desk.width(), width(), desk.height(), height() );
-  if(size != d->size){
+  if(size != d->defaultWindowSize){
     config->writeEntry(QString::fromLatin1("Width %1").arg(desk.width()), width() );
     config->writeEntry(QString::fromLatin1("Height %1").arg(desk.height()), height() );
   }
@@ -873,15 +875,7 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     // Get default values
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);
-    d->size = QRect(desk.width(), width(), desk.height(), height());
-    if( internalStatusBar() && !internalStatusBar()->isHidden())
-      d->isStatusBarShown = true;
-    else
-      d->isStatusBarShown = false;
-    if( internalMenuBar() && !internalMenuBar()->isHidden())
-      d->isMenuBarShown = true;
-    else
-      d->isMenuBarShown = false;
+    d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height());
     // Now read the previously saved settings
     applyMainWindowSettings( KGlobal::config(), groupName );
 }
