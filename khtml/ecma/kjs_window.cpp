@@ -180,7 +180,9 @@ Window *Window::retrieveWindow(KHTMLPart *p)
 {
   ValueImp *imp = retrieve( p ).imp();
   assert( imp );
+#ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
+#endif
   return static_cast<KJS::Window*>(imp);
 }
 
@@ -188,7 +190,9 @@ Window *Window::retrieveActive(ExecState *exec)
 {
   ValueImp *imp = exec->interpreter()->globalObject().imp();
   assert( imp );
+#ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
+#endif
   return static_cast<KJS::Window*>(imp);
 }
 
