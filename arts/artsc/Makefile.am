@@ -1,4 +1,4 @@
-AM_CFLAGS = -DARTSC_BACKEND='"$(kde_libraries)/libartscbackend.la"'
+AM_CFLAGS = -DARTSC_BACKEND='"$(libdir)/libartscbackend.la"'
 lib_LTLIBRARIES = libartsc.la libartscbackend.la
 FLOWLIBS = $(top_builddir)/arts/flow/libartsflow.la
 

@@ -13,16 +13,21 @@ EOH
 	exit 1;
 }
 
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
 flags=""
 
 while test $# -gt 0
 do
   case $1 in
     --libs)
-	  flags="$flags -L@kde_libraries@ -ldl -lartsc"
+	  flags="$flags -L$libdir -ldl -lartsc"
 	  ;;
     --cflags)
-	  flags="$flags -I@kde_includes@/artsc"
+	  flags="$flags -I$includedir/artsc"
 	  ;;
     --version)
 	  echo 0.9.5
