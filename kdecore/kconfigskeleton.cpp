@@ -161,7 +161,7 @@ void KConfigSkeleton::ItemBool::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemBool::property() const
 {
-  return QVariant(mReference);
+  return QVariant( mReference, 42 /* dummy */ );
 }
 
 
