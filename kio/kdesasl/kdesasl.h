@@ -51,6 +51,10 @@ public:
    * what arguments it accepts.
    */
   KDESasl(const QString &aUser, const QString &aPass);
+  /*
+   * You need to have a virtual destructor!
+   */
+  ~KDESasl();
   /**
    * @returns the most secure method from the given methods and use it for
    * further operations.
