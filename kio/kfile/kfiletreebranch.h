@@ -201,7 +201,7 @@ private slots:
 
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
-   void                 deleteChildrenOf( QListViewItem *parent );
+   static void           deleteChildrenOf( QListViewItem *parent );
 
    KFileTreeViewItem 	*m_root;
    KURL 		m_startURL;

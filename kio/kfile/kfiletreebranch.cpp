@@ -310,6 +310,7 @@ void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
         deleteChildrenOf( ftvi );
     }
 }
+
 void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
 {
     // for some strange reason, slotDirlisterClearURL() sometimes calls us
@@ -317,15 +318,8 @@ void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
     if ( !parent )
         return;
     
-    QListViewItem *child = parent->firstChild();
-    QListViewItem *next = child;
-
-    while( child )
-    {
-        next = child->nextSibling();
-        delete child;
-        child  = next;
-    }
+    while ( parent->firstChild() )
+        delete parent->firstChild();
 }
 
 void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
