@@ -60,22 +60,25 @@ void Decoder::setEncoding(const char *_encoding, bool force)
     enc = _encoding;
     haveEncoding = force;
 
+    QTextCodec *old = m_codec;
+    kdDebug() << "old encoding is:" << m_codec->name() << endl;
+    
     enc = enc.lower();
+    kdDebug() << "requesting:" << enc << endl;
     if(enc.isNull() || enc.isEmpty())
-        enc = "iso8859-1";
+        return;
     if(enc == "visual") // hebrew visually ordered
         enc = "iso8859-8";
-    m_codec = KGlobal::charsets()->codecForName(enc);
-
+    bool b;
+    m_codec = KGlobal::charsets()->codecForName(enc, b);
     if(m_codec->mibEnum() == 11)  {
         // iso8859-8 (visually ordered)
         m_codec = QTextCodec::codecForName("iso8859-8-i");
         visualRTL = true;
     }
 
-    // just to be safe
-    if( !m_codec )
-	m_codec = QTextCodec::codecForName("ISO 8859-1");
+    if( !b ) // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
+	m_codec = old;
 	
     kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
 }
