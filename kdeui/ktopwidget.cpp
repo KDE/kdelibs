@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.38  1998/04/16 16:06:48  ettrich
+ // Matthias: kfm session management showstopper hopefully fixed
+ //
  // Revision 1.37  1998/04/05 18:18:44  radej
  // Reverted to old interface (before Matthias' changes)
  //
@@ -105,7 +108,7 @@ KTopLevelWidget::~KTopLevelWidget()
 	  if (kapp && kapp->topWidget() == this)
 	    kapp->setTopWidget( 0 );
         }
-        debug ("KTW destructor: dead as a dodo (exiting)");
+        //debug ("KTW destructor: dead as a dodo (exiting)");
 }
 
 void KTopLevelWidget::closeEvent ( QCloseEvent *e)
