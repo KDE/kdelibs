@@ -1,5 +1,12 @@
 [Misc]
 Name=Qt SGI
+Name[eo]=Qt-SGI
+Name[nl]=QT-SGI
 Comment=Built-in SGI style
+Comment[eo]=Enkonstruita SGI-stilo
+Comment[hu]=Beépített SGI kinézet
+Comment[nl]=Ingebouwde SGI-stijl
+Comment[no]=Innebygget SGI-stil
+Comment[no_NY]=Innebygget SGI-stil
 [KDE]
 widgetStyle=Qt SGI
