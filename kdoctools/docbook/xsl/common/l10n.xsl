@@ -15,7 +15,7 @@
 
 <xsl:param name="l10n.xml" select="document('../common/l10n.xml')"/>
 
-<xsl:param name="l10n.gentext.language" select="'en'"/>
+<xsl:param name="l10n.gentext.language" select="''"/>
 <xsl:param name="l10n.gentext.default.language" select="'en'"/>
 <xsl:param name="l10n.gentext.use.xref.language" select="false()"/>
 
@@ -79,7 +79,7 @@
   </xsl:param>
 
   <xsl:variable name="l10n.text">
-    <xsl:value-of select="$element.name"/>
+    <xsl:value-of select="($l10n.xml/internationalization/localization[@language=$lang]/xref[@element=$element.name])[1]/@text"/>
   </xsl:variable>
 
   <xsl:choose>
@@ -112,13 +112,28 @@
   </xsl:param>
 
   <xsl:variable name="l10n.gentext"
-                select="$key"/>
+                select="($l10n.xml/internationalization/localization[@language=$lang]/gentext[@key=$key])[1]"/>
 
   <xsl:variable name="l10n.name">
-    <xsl:value-of select="$l10n.gentext"/>
+    <xsl:value-of select="$l10n.gentext/@text"/>
   </xsl:variable>
 
-   <xsl:value-of select="$l10n.name"/>
+  <xsl:choose>
+    <xsl:when test="count($l10n.gentext)=0">
+      <xsl:message>
+        <xsl:text>No "</xsl:text>
+        <xsl:value-of select="$lang"/>
+        <xsl:text>" localization of "</xsl:text>
+        <xsl:value-of select="$key"/>
+        <xsl:text>" exists; using "en".</xsl:text>
+      </xsl:message>
+
+      <xsl:value-of select="($l10n.xml/internationalization/localization[@language='en']/gentext[@key=$key])[1]/@text"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$l10n.name"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template name="gentext.element.name">
@@ -156,7 +171,7 @@
   </xsl:param>
 
   <xsl:variable name="l10n.dingbat">
-    <xsl:value-of select="$dingbat"/>
+    <xsl:value-of select="($l10n.xml/internationalization/localization[@language=$lang]/dingbat[@key=$dingbat])[1]/@text"/>
   </xsl:variable>
 
   <xsl:choose>
@@ -169,7 +184,7 @@
         <xsl:text> exists; using "en".</xsl:text>
       </xsl:message>
 
-      <xsl:value-of select="$dingbat"/>
+      <xsl:value-of select="($l10n.xml/internationalization/localization[@language='en']/dingbat[@key=$dingbat])[1]/@text"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:value-of select="$l10n.dingbat"/>

@@ -1,3 +1,59 @@
+2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+
+	* autotoc.xsl: Support articles in TOCs
+
+	* chunk-common.xsl, param.xsl: Support ID as filename; fix bug in generation of filenames for articles in sets
+
+2001-03-16  Norman Walsh  <ndw@nwalsh.com>
+
+	* autoidx.xsl: Perform case folding on section names
+
+	* chunk.xsl, chunker.xsl, xtchunk.xsl, xtchunker.xsl: Reworked chunking
+
+	* graphics.xsl: Process callout lists in imageobjectco
+
+2001-03-11  Norman Walsh  <ndw@nwalsh.com>
+
+	* autoidx.xsl, index.xsl, xtdocbook.xsl, xtindex.xsl: Make automatic indexing an explicit option so that XT doesn't break
+
+	* chunk.xsl: Use choose instead of fallback; support chunking with Saxon 6.2.1
+
+	* table.xsl: Removed add-empty-entries because it does the wrong thing in the presence of morerows on preceding rows
+
+2001-03-09  Norman Walsh  <ndw@nwalsh.com>
+
+	* chunk.xsl: Remove Xalan1 workaround because it crashes Xalan2
+
+	* xtdocbook.xsl, xtindex.xsl: New file.
+
+2001-02-27  Norman Walsh  <ndw@nwalsh.com>
+
+	* callout.xsl, graphics.xsl, table.xsl, verbatim.xsl: Extension function changes
+
+	* param.xsl: Extension function changes and added Unicode callout support
+
+	* titlepage.xsl: Whitespace changes
+
+2001-02-26  Norman Walsh  <ndw@nwalsh.com>
+
+	* autotoc.xsl: Add articles in divisions to the division TOC
+
+2001-02-19  Norman Walsh  <ndw@nwalsh.com>
+
+	* autotoc.xsl: Put articles, bibliographys, glossarys, and appendixes in component TOCs
+
+	* callout.xsl, graphics.xsl, table.xsl, verbatim.xsl: Integrate all Saxon extensions into one namespace
+
+	* index.xsl: Fix typo and whitespace
+
+	* inline.xsl: Make sgmltag attributes monospace
+
+	* lists.xsl: Support compact itemizedlists; output anchors for callout lists
+
+	* param.xsl: Parameters for implementation-neutral extensions; just the beginnings of support...
+
+	* titlepage.xsl: Support conference stuff on titlepages; make releaseinfo a para instead of an inline.
+
 2001-01-30  Norman Walsh  <ndw@nwalsh.com>
 
 	* autotoc.xsl: Added support for section TOCs and refentrys in components

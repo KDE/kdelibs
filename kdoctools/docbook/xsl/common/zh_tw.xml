@@ -62,6 +62,7 @@
 <gentext key="nonexistantelement"
          text="&#x4E0D;&#x5B58;&#x5728;&#x7684;&#x5143;&#x7D20;"/>
 <gentext key="Pgs"            text="&#x9801;"/>
+<gentext key="page.citation"  text="&#x9801;"/>
 <gentext key="unsupported"    text="&#x672A;&#x652F;&#x63F4;"/>
 <gentext key="xrefto"         text="&#x53C3;&#x7167;"/>
 <gentext key="unexpectedelementname"
@@ -85,7 +86,7 @@
 <dingbat key="endquote"       text="&quot;"/>
 <dingbat key="nestedstartquote" text="'"/>
 <dingbat key="nestedendquote"   text="'"/>
-<dingbat key="bullet"         text="&#2022;"/>
+<dingbat key="bullet"         text="&#x2022;"/>
 
 <xref element="appendix"      text="%g %n"/>
 <xref element="chapter"       text="%g %n"/>

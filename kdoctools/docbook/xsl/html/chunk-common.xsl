@@ -87,10 +87,31 @@ is system dependent.)</para>
   <xsl:param name="recursive" select="false()"/>
 
   <!-- returns the filename of a chunk -->
-  <xsl:variable name="ischunk"><xsl:call-template name="chunk"/></xsl:variable>
-  <xsl:variable name="filename">
+  <xsl:variable name="ischunk">
+    <xsl:call-template name="chunk"/>
+  </xsl:variable>
+
+  <xsl:variable name="dbhtml-filename">
     <xsl:call-template name="dbhtml-filename"/>
   </xsl:variable>
+
+  <xsl:variable name="filename">
+    <xsl:choose>
+      <xsl:when test="$dbhtml-filename != ''">
+        <xsl:value-of select="$dbhtml-filename"/>
+      </xsl:when>
+      <!-- if there's no dbhtml filename, and if we're to use IDs as -->
+      <!-- filenames, *and* this isn't the root node, then use the ID -->
+      <!-- to generate the filename. -->
+      <xsl:when test="@id and $use.id.as.filename != 0
+                      and . != /*">
+        <xsl:value-of select="@id"/>
+        <xsl:value-of select="$html.ext"/>
+      </xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
   <xsl:variable name="dir">
     <xsl:call-template name="dbhtml-dir"/>
   </xsl:variable>
@@ -141,13 +162,13 @@ is system dependent.)</para>
     </xsl:when>
 
     <xsl:when test="name(.)='article'">
+      <xsl:if test="/set">
+        <!-- in a set, make sure we inherit the right book info... -->
+        <xsl:apply-templates mode="chunk-filename" select="parent::*">
+          <xsl:with-param name="recursive" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:if>
       <xsl:choose>
-        <xsl:when test="/set">
-          <!-- in a set, make sure we inherit the right book info... -->
-          <xsl:apply-templates mode="chunk-filename" select="parent::*">
-            <xsl:with-param name="recursive" select="true()"/>
-          </xsl:apply-templates>
-        </xsl:when>
         <xsl:when test="count(parent::*)>0">
           <!-- if we aren't the root, name them numerically ... -->
           <xsl:text>ar</xsl:text>

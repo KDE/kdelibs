@@ -863,6 +863,11 @@ is false.
 	<xsl:with-param name="allow-anchors" select="$allow-anchors"/>
       </xsl:apply-templates>
     </xsl:when>
+    <xsl:when test="local-name(.) = 'partintro'">
+      <!-- partintro's don't have titles, use the parent (part or reference)
+           title instead. -->
+      <xsl:apply-templates select="parent::*" mode="title.content"/>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:message>
 	<xsl:text>Request for title of unexpected element: </xsl:text>
@@ -1879,6 +1884,12 @@ the ID is not unique.</para>
 	<xsl:value-of select="$linkend"/>
 	<xsl:text>.</xsl:text>
       </xsl:message>
+      <!--
+      <xsl:message>
+	<xsl:text>If the ID exists in your document, did your </xsl:text>
+        <xsl:text>XSLT Processor load the DTD?</xsl:text>
+      </xsl:message>
+      -->
     </xsl:if>
 
     <xsl:if test="count($targets)>1">

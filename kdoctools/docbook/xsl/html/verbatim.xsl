@@ -1,8 +1,9 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:verb5="http://nwalsh.com/com.nwalsh.saxon.Verbatim"
-                xmlns:verb6="http://nwalsh.com/com.nwalsh.saxon6.Verbatim"
-                exclude-result-prefixes="verb5 verb6"
+                xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim"
+                xmlns:xverb="com.nwalsh.xalan.Verbatim"
+                xmlns:lxslt="http://xml.apache.org/xslt"
+                exclude-result-prefixes="sverb xverb lxslt"
                 version='1.0'>
 
 <!-- ********************************************************************
@@ -15,49 +16,46 @@
 
      ******************************************************************** -->
 
+<lxslt:component prefix="xverb"
+                 functions="numberLines"/>
+
 <xsl:template match="programlisting|screen|synopsis">
   <xsl:param name="suppress-numbers" select="'0'"/>
   <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
   <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
 
   <!-- Obey the <?dbhtml linenumbering.everyNth="x"?> PI -->
-  <xsl:variable name="default.linenumbering.everyNth"
-                select="$linenumbering.everyNth"/>
-
   <xsl:variable name="pi.linenumbering.everyNth">
     <xsl:call-template name="dbhtml-attribute">
       <xsl:with-param name="attribute" select="'everyNth'"/>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:variable name="linenumbering.everyNth">
+  <xsl:variable name="everyNth">
     <xsl:choose>
       <xsl:when test="$pi.linenumbering.everyNth != ''">
         <xsl:value-of select="$pi.linenumbering.everyNth"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$default.linenumbering.everyNth"/>
+        <xsl:value-of select="$linenumbering.everyNth"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
   <!-- Obey the <?dbhtml linenumbering.separator="x"?> PI -->
-  <xsl:variable name="default.linenumbering.separator"
-                select="$linenumbering.separator"/>
-
   <xsl:variable name="pi.linenumbering.separator">
     <xsl:call-template name="dbhtml-attribute">
       <xsl:with-param name="attribute" select="'linenumbering.separator'"/>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:variable name="linenumbering.separator">
+  <xsl:variable name="separator">
     <xsl:choose>
       <xsl:when test="$pi.linenumbering.separator != ''">
         <xsl:value-of select="$pi.linenumbering.separator"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$default.linenumbering.separator"/>
+        <xsl:value-of select="$linenumbering.separator"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -69,25 +67,24 @@
   <xsl:choose>
     <xsl:when test="$suppress-numbers = '0'
                     and @linenumbering = 'numbered'
-                    and $saxon.extensions != '0'
-                    and $saxon.linenumbering != '0'">
+                    and $use.extensions != '0'
+                    and $linenumbering.extension != '0'">
       <xsl:variable name="rtf">
         <xsl:apply-templates/>
       </xsl:variable>
       <pre class="{name(.)}">
-        <xsl:choose>
-          <xsl:when test="contains($vendor, 'SAXON 6')">
-            <xsl:copy-of select="verb6:numberLines($rtf)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:copy-of select="verb5:numberLines($rtf,
-                                 $linenumbering.everyNth,
-                                 $linenumbering.width,
-                                 $linenumbering.separator)"/>
-          </xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="number.rtf.lines">
+          <xsl:with-param name="rtf" select="$rtf"/>
+          <xsl:with-param name="linenumbering.everyNth"
+                          select="$everyNth"/>
+          <xsl:with-param name="linenumbering.width"
+                          select="$linenumbering.width"/>
+          <xsl:with-param name="linenumbering.separator"
+                          select="$separator"/>
+        </xsl:call-template>
       </pre>
     </xsl:when>
+
     <xsl:otherwise>
       <pre class="{name(.)}">
         <xsl:apply-templates/>
@@ -107,41 +104,38 @@
   <xsl:choose>
     <xsl:when test="$suppress-numbers = '0'
                     and @linenumbering = 'numbered'
-                    and $saxon.extensions != '0'
-                    and $saxon.linenumbering != '0'">
+                    and $use.extensions != '0'
+                    and $linenumbering.extension != '0'">
       <xsl:choose>
         <xsl:when test="@class='monospaced'">
           <pre class="{name(.)}">
-            <xsl:choose>
-              <xsl:when test="contains($vendor, 'SAXON 6')">
-                <xsl:copy-of select="verb6:numberLines($rtf)"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:copy-of select="verb5:numberLines($rtf,
-                                     $linenumbering.everyNth,
-                                     $linenumbering.width,
-                                     $linenumbering.separator)"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="number.rtf.lines">
+              <xsl:with-param name="rtf" select="$rtf"/>
+              <xsl:with-param name="linenumbering.everyNth"
+                              select="$linenumbering.everyNth"/>
+              <xsl:with-param name="linenumbering.width"
+                              select="$linenumbering.width"/>
+              <xsl:with-param name="linenumbering.separator"
+                              select="$linenumbering.separator"/>
+            </xsl:call-template>
           </pre>
         </xsl:when>
         <xsl:otherwise>
           <div class="{name(.)}">
-            <xsl:choose>
-              <xsl:when test="contains($vendor, 'SAXON 6')">
-                <xsl:copy-of select="verb6:numberLines($rtf)"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:copy-of select="verb5:numberLines($rtf,
-                                     $linenumbering.everyNth,
-                                     $linenumbering.width,
-                                     $linenumbering.separator)"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="number.rtf.lines">
+              <xsl:with-param name="rtf" select="$rtf"/>
+              <xsl:with-param name="linenumbering.everyNth"
+                              select="$linenumbering.everyNth"/>
+              <xsl:with-param name="linenumbering.width"
+                              select="$linenumbering.width"/>
+              <xsl:with-param name="linenumbering.separator"
+                              select="$linenumbering.separator"/>
+            </xsl:call-template>
           </div>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
+
     <xsl:otherwise>
       <xsl:choose>
         <xsl:when test="@class='monospaced'">
@@ -177,26 +171,50 @@
   <xsl:choose>
     <xsl:when test="$suppress-numbers = '0'
                     and @linenumbering = 'numbered'
-                    and $saxon.extensions != '0'
-                    and $saxon.linenumbering != '0'">
+                    and $use.extensions != '0'
+                    and $linenumbering.extension != '0'">
       <div class="{name(.)}">
-        <xsl:choose>
-          <xsl:when test="contains($vendor, 'SAXON 6')">
-            <xsl:copy-of select="verb6:numberLines($rtf)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:copy-of select="verb5:numberLines($rtf,
-                                 $linenumbering.everyNth,
-                                 $linenumbering.width,
-                                 $linenumbering.separator)"/>
-          </xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="number.rtf.lines">
+          <xsl:with-param name="rtf" select="$rtf"/>
+          <xsl:with-param name="linenumbering.everyNth"
+                          select="$linenumbering.everyNth"/>
+          <xsl:with-param name="linenumbering.width"
+                          select="$linenumbering.width"/>
+          <xsl:with-param name="linenumbering.separator"
+                          select="$linenumbering.separator"/>
+        </xsl:call-template>
       </div>
     </xsl:when>
+
     <xsl:otherwise>
       <div class="{name(.)}">
         <xsl:apply-templates/>
       </div>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="number.rtf.lines">
+  <xsl:param name="rtf" select="''"/>
+  <!-- the following parameters must have these names ... -->
+  <xsl:param name="linenumbering.everyNth" select="1"/>
+  <xsl:param name="linenumbering.width" select="3"/>
+  <xsl:param name="linenumbering.separator" select="' |'"/>
+
+  <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
+
+  <xsl:choose>
+    <xsl:when test="contains($vendor, 'SAXON ')">
+      <xsl:copy-of select="sverb:numberLines($rtf)"/>
+    </xsl:when>
+    <xsl:when test="contains($vendor, 'Apache Software Foundation')">
+      <xsl:copy-of select="xverb:numberLines($rtf)"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:message terminate="yes">
+        <xsl:text>Don't know how to do line numbering with </xsl:text>
+        <xsl:value-of select="$vendor"/>
+      </xsl:message>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

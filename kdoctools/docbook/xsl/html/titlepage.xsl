@@ -124,10 +124,7 @@
 </xsl:template>
 
 <xsl:template match="address" mode="titlepage.mode">
-<!-- this won't do quite what's desired... -->
-  <pre class="{name(.)}">
-  <xsl:apply-templates mode="titlepage.mode"/>
-  </pre>
+  <xsl:apply-templates select="."/>
 </xsl:template>
 
 <xsl:template match="affiliation" mode="titlepage.mode">
@@ -152,7 +149,7 @@
   <div class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
   </div>
-</xsl:template>  
+</xsl:template>
 
 <xsl:template match="authorgroup" mode="titlepage.mode">
   <xsl:apply-templates mode="titlepage.mode"/>
@@ -181,10 +178,27 @@
 </xsl:template>
 
 <xsl:template match="confgroup" mode="titlepage.mode">
+  <div class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="confdates" mode="titlepage.mode">
   <span class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
     <br/>
   </span>
+</xsl:template>
+
+<xsl:template match="conftitle" mode="titlepage.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+    <br/>
+  </span>
+</xsl:template>
+
+<xsl:template match="confnum" mode="titlepage.mode">
+  <!-- suppress -->
 </xsl:template>
 
 <xsl:template match="contractnum" mode="titlepage.mode">
@@ -221,8 +235,10 @@
     <xsl:call-template name="gentext.space"/>
     <xsl:apply-templates select="$years" mode="titlepage.mode"/>
     <xsl:call-template name="gentext.space"/>
+<!--
     <xsl:call-template name="gentext.by"/>
     <xsl:call-template name="gentext.space"/>
+-->
     <xsl:apply-templates select="$holders" mode="titlepage.mode"/>
   </p>
 </xsl:template>
@@ -431,10 +447,9 @@
 </xsl:template>
 
 <xsl:template match="releaseinfo" mode="titlepage.mode">
-  <span class="{name(.)}">
+  <p class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
-    <br/>
-  </span>
+  </p>
 </xsl:template>
 
 <xsl:template match="revhistory" mode="titlepage.mode">

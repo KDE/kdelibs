@@ -680,23 +680,23 @@ be used.
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="saxon.extensions" select="'0'" doc:type='boolean'/>
+<xsl:param name="use.extensions" select="'1'" doc:type='boolean'/>
 
-<doc:param name="saxon.extensions" xmlns="">
-<refpurpose>Enable Saxon extensions</refpurpose>
+<doc:param name="use.extensions" xmlns="">
+<refpurpose>Enable extensions</refpurpose>
 <refdescription>
-<para>If non-zero, saxon extensions may be used. Each extension is
+<para>If non-zero, extensions may be used. Each extension is
 further controlled by its own parameter. But if
-<parameter>saxon.extensions</parameter> is zero, no extensions will
+<parameter>use.extensions</parameter> is zero, no extensions will
 be used.
 </para>
 </refdescription>
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="saxon.textinsert" select="'1'" doc:type='boolean'/>
+<xsl:param name="textinsert.extension" select="'1'" doc:type='boolean'/>
 
-<doc:param name="saxon.textinsert" xmlns="">
+<doc:param name="textinsert.extension" xmlns="">
 <refpurpose>Enable the textinsert extension element</refpurpose>
 <refdescription>
 <para>The textinsert extension element inserts the contents of a
@@ -707,6 +707,20 @@ a file into the result tree (as text).
 
 <!-- ==================================================================== -->
 <xsl:param name="saxon.linenumbering" select="'1'" doc:type='boolean'/>
+
+<doc:param name="saxon.linenumbering" xmlns="">
+<refpurpose>Enable the line numbering extension</refpurpose>
+<refdescription>
+<para>If true, verbatim environments (elements that have the
+format='linespecific' notation attribute: address, literallayout,
+programlisting, screen, synopsis) that specify line numbering will
+have, surprise, line numbers.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="linenumbering.extension" select="'1'" doc:type='boolean'/>
 
 <doc:param name="saxon.linenumbering" xmlns="">
 <refpurpose>Enable the line numbering extension</refpurpose>
@@ -758,6 +772,19 @@ the verbatim environment.
 <xsl:param name="saxon.callouts" select="'1'" doc:type='boolean'/>
 
 <doc:param name="saxon.callouts" xmlns="">
+<refpurpose>Enable the callout extension</refpurpose>
+<refdescription>
+<para>The callouts extension processes <sgmltag>areaset</sgmltag>
+elements in <sgmltag>ProgramListingCO</sgmltag> and other text-based
+callout elements.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="callouts.extension" select="'1'" doc:type='boolean'/>
+
+<doc:param name="callouts.extension" xmlns="">
 <refpurpose>Enable the callout extension</refpurpose>
 <refdescription>
 <para>The callouts extension processes <sgmltag>areaset</sgmltag>
@@ -821,6 +848,19 @@ instruction).</para>
 
 <!-- ==================================================================== -->
 <xsl:param name="saxon.tablecolumns" select="'1'" doc:type='boolean'/>
+
+<doc:param name="saxon.tablecolumns" xmlns="">
+<refpurpose>Enable the table columns extension function</refpurpose>
+<refdescription>
+<para>The table columns extension function adjusts the widths of table
+columns in the HTML result to more accurately reflect the specifications
+in the CALS table.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="tablecolumns.extension" select="'1'" doc:type='boolean'/>
 
 <doc:param name="saxon.tablecolumns" xmlns="">
 <refpurpose>Enable the table columns extension function</refpurpose>
@@ -943,5 +983,65 @@ in the CALS table.
 </doc:param>
 
 <!-- ==================================================================== -->
+<xsl:param name="callout.unicode" select="0" doc:type='boolean'/>
+
+<doc:param name="callout.unicode" xmlns="">
+<refpurpose>FIXME:</refpurpose>
+<refdescription>
+<para>FIXME:
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="callout.unicode.start.character" select="10102"
+           doc:type='integer'/>
+
+<doc:param name="callout.graphics.number.limit" xmlns="">
+<refpurpose>Number of the largest callout graphic</refpurpose>
+<refdescription>
+<para>If <parameter>callout.graphics</parameter>
+is non-zero, graphics are used to represent
+callout numbers. The value of
+<parameter>callout.graphics.number.limit</parameter>
+is
+the largest number for which a graphic exists. If the callout number
+exceeds this limit, the default presentation "(nnn)" will always
+be used.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="callout.unicode.number.limit" select="'10'"
+           doc:type='integer'/>
+
+<doc:param name="callout.graphics.number.limit" xmlns="">
+<refpurpose>Number of the largest callout graphic</refpurpose>
+<refdescription>
+<para>If <parameter>callout.graphics</parameter>
+is non-zero, graphics are used to represent
+callout numbers. The value of
+<parameter>callout.graphics.number.limit</parameter>
+is
+the largest number for which a graphic exists. If the callout number
+exceeds this limit, the default presentation "(nnn)" will always
+be used.
+</para>
+</refdescription>
+</doc:param>
+
+<!-- ==================================================================== -->
+<xsl:param name="use.id.as.filename" select="'0'" doc:type='boolean'/>
+
+<doc:param name="use.id.as.filename" xmlns="">
+<refpurpose>Use ID value of chunk elements as the filename?</refpurpose>
+<refdescription>
+<para>If <parameter>use.id.as.filename</parameter>
+is non-zero, the filename of chunk elements that have IDs will be
+derived from the ID value.
+</para>
+</refdescription>
+</doc:param>
 
 </xsl:stylesheet>

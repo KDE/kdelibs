@@ -1,0 +1,28 @@
+Changes since version 1.33 (2001-03-16)
+
+Changes to docbook/*
+
+  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* RELEASE-NOTES: Updated
+  | 
+  | 	* VERSION: Version 1.34 released.
+  | 
+
+Changes to docbook/fo/*
+
+  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* autotoc.xsl: Support articles in TOCs
+  | 
+
+Changes to docbook/html/*
+
+  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* autotoc.xsl: Support articles in TOCs
+  | 
+  | 	* chunk-common.xsl, param.xsl: Support ID as filename; fix bug
+  | 	  in generation of filenames for articles in sets
+  | 
+

@@ -41,8 +41,8 @@
     <div class="toc">
       <p>
         <b>
-          <xsl:call-template name="gentext.element.name">
-            <xsl:with-param name="element.name">TableofContents</xsl:with-param>
+          <xsl:call-template name="gentext">
+            <xsl:with-param name="key">TableofContents</xsl:with-param>
           </xsl:call-template>
         </b>
       </p>
@@ -57,14 +57,15 @@
   <xsl:if test="$generate.division.toc != 0">
     <xsl:variable name="nodes" select="part|reference
                                        |preface|chapter|appendix
+                                       |article
                                        |bibliography|glossary|index
                                        |refentry"/>
     <xsl:if test="$nodes">
       <div class="toc">
         <p>
           <b>
-           <xsl:call-template name="gentext.element.name">
-             <xsl:with-param name="element.name">TableofContents</xsl:with-param>
+           <xsl:call-template name="gentext">
+             <xsl:with-param name="key">TableofContents</xsl:with-param>
            </xsl:call-template>
           </b>
         </p>
@@ -78,13 +79,15 @@
 
 <xsl:template name="component.toc">
   <xsl:if test="$generate.component.toc != 0">
-    <xsl:variable name="nodes" select="section|sect1|refentry"/>
+    <xsl:variable name="nodes" select="section|sect1|refentry
+                                       |article|bibliography|glossary
+                                       |appendix"/>
     <xsl:if test="$nodes">
       <div class="toc">
         <p>
           <b>
-           <xsl:call-template name="gentext.element.name">
-             <xsl:with-param name="element.name">TableofContents</xsl:with-param>
+           <xsl:call-template name="gentext">
+             <xsl:with-param name="key">TableofContents</xsl:with-param>
            </xsl:call-template>
           </b>
         </p>
@@ -102,8 +105,8 @@
     <div class="toc">
       <p>
         <b>
-          <xsl:call-template name="gentext.element.name">
-            <xsl:with-param name="element.name">TableofContents</xsl:with-param>
+          <xsl:call-template name="gentext">
+            <xsl:with-param name="key">TableofContents</xsl:with-param>
           </xsl:call-template>
         </b>
       </p>
@@ -119,6 +122,7 @@
 <xsl:template match="book|setindex" mode="toc">
   <xsl:variable name="nodes" select="part|reference
                                      |preface|chapter|appendix
+                                     |article
                                      |bibliography|glossary|index
                                      |refentry"/>
 
@@ -161,7 +165,7 @@
   </xsl:if>
 </xsl:template>
 
-<xsl:template match="part|reference|preface|chapter|appendix"
+<xsl:template match="part|reference|preface|chapter|appendix|article"
               mode="toc">
   <xsl:variable name="subtoc">
     <xsl:element name="{$toc.list.type}">

@@ -20,7 +20,12 @@
       <xsl:apply-templates select="title"/>
     </xsl:if>
     <ul>
-    <xsl:apply-templates select="listitem"/>
+      <xsl:if test="@spacing='compact'">
+        <xsl:attribute name="compact">
+          <xsl:value-of select="compact"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates select="listitem"/>
     </ul>
   </div>
 </xsl:template>
@@ -475,7 +480,11 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="calloutlist">
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
   <div class="{name(.)}">
+    <a name="{$id}"/>
     <xsl:if test="./title">
       <p>
         <b>
@@ -504,10 +513,14 @@
 </xsl:template>
 
 <xsl:template match="callout">
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
   <xsl:choose>
     <xsl:when test="$callout.list.table != 0">
       <tr>
         <td width="5%" valign="top" align="left">
+          <a name="{$id}"/>
           <xsl:call-template name="callout.arearefs">
             <xsl:with-param name="arearefs" select="@arearefs"/>
           </xsl:call-template>
@@ -519,6 +532,7 @@
     </xsl:when>
     <xsl:otherwise>
       <dt>
+        <a name="{$id}"/>
         <xsl:call-template name="callout.arearefs">
           <xsl:with-param name="arearefs" select="@arearefs"/>
         </xsl:call-template>
@@ -556,10 +570,13 @@
   <xsl:variable name="targets" select="id($arearef)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
+  <xsl:call-template name="check.id.unique">
+    <xsl:with-param name="linkend" select="$arearef"/>
+  </xsl:call-template>
+
   <xsl:choose>
     <xsl:when test="count($target)=0">
-      <xsl:value-of select="$arearef"/>
-      <xsl:text>: ???</xsl:text>
+      <xsl:text>???</xsl:text>
     </xsl:when>
     <xsl:when test="local-name($target)='co'">
       <a>

@@ -463,7 +463,7 @@
 
   <xsl:choose>
     <xsl:when test="$class='attribute'">
-      <xsl:call-template name="inline.charseq"/>
+      <xsl:call-template name="inline.monoseq"/>
     </xsl:when>
     <xsl:when test="$class='attvalue'">
       <xsl:call-template name="inline.monoseq"/>

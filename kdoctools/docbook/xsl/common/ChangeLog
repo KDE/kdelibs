@@ -1,26 +1,65 @@
+2001-03-16  Norman Walsh  <ndw@nwalsh.com>
+
+	* ca.xml, cs.xml, da.xml, de.xml, el.xml, en.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, iso-cyr1.ent, iso-lat1.ent, iso-lat2.ent, it.xml, ja.xml, ko.xml, l10n.xml, nl.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml, zh_cn.xml: 
+	Updated and reworked to be the source for both XSL and DSSSL
+
+	* cs.xml: Updated
+
+2001-03-11  Norman Walsh  <ndw@nwalsh.com>
+
+	* ca.xml, cs.xml, da.xml, de.xml, el.xml, en.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, it.xml, ja.xml, ko.xml, nl.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml, zh_cn.xml, zh_tw.xml: 
+	RenderX patches
+
+	* it.xml, pl.xml: Fixed typos
+
+2001-03-09  Norman Walsh  <ndw@nwalsh.com>
+
+	* ca.xml, cs.xml, da.xml, de.xml, el.xml, en.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, it.xml, ja.xml, ko.xml, nl.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml, zh_cn.xml, zh_tw.xml: 
+	New file.
+
+2001-02-19  Norman Walsh  <ndw@nwalsh.com>
+
+	* common.xsl: Handle title-content reqest for partintro by grabbing title of parent
+
+2001-02-17  Norman Walsh  <ndw@nwalsh.com>
+
+	* common.xsl: Commented out the DTD question
+
 2001-01-30  Norman Walsh  <ndw@nwalsh.com>
 
-	* en.xml: Added index symbols entry
+	* en.xml: branches:  1.3.2;
+	Added index symbols entry
 
 2001-01-28  Norman Walsh  <ndw@nwalsh.com>
 
 	* common.xsl: Support suppressing anchors in referenced titles; support imageobjectco
 
-	* hu.xml: Tweak chapter title xref template
+	* hu.xml: branches:  1.5.2;
+	Tweak chapter title xref template
 
 2001-01-07  Norman Walsh  <ndw@nwalsh.com>
 
 	* common.xsl: Added 'Chapter' and 'Appendix' to the gentext for chapter and appendix titles
 
-	* et.xml, hu.xml, id.xml, ko.xml, sl.xml: Added dingbats
+	* et.xml, id.xml, sl.xml: branches:  1.3.2;
+	Added dingbats
 
-	* l10n.xml, zh_tw.xml: Added traditional Chinese
+	* hu.xml: Added dingbats
+
+	* ko.xml: branches:  1.2.2;
+	Added dingbats
+
+	* l10n.xml: Added traditional Chinese
 
 	* l10n.xsl: Generalized 'gentext.element.name' to 'gentext' with key parameter
 
+	* zh_tw.xml: branches:  1.1.2;
+	Added traditional Chinese
+
 2000-12-14  Norman Walsh  <ndw@nwalsh.com>
 
-	* it.xml: Updated
+	* it.xml: branches:  1.3.2;
+	Updated
 
 2000-11-29  Norman Walsh  <ndw@nwalsh.com>
 
@@ -28,7 +67,8 @@
 
 2000-11-05  Norman Walsh  <ndw@nwalsh.com>
 
-	* nl.xml: Updates
+	* nl.xml: branches:  1.2.2;
+	Updates
 
 2000-11-03  Norman Walsh  <ndw@nwalsh.com>
 
@@ -50,7 +90,8 @@
 
 2000-10-27  Norman Walsh  <ndw@nwalsh.com>
 
-	* cs.xml: Updates
+	* cs.xml: branches:  1.4.2;
+	Updates
 
 2000-10-26  Norman Walsh  <ndw@nwalsh.com>
 
@@ -58,7 +99,7 @@
 
 	* hu.xml: Updated
 
-	* ko.xml: New file.
+	* ko.xml: Added
 
 	* l10n.xml: Added Korean
 
@@ -68,8 +109,11 @@
 
 2000-10-23  Norman Walsh  <ndw@nwalsh.com>
 
-	* ca.xml, cs.xml, da.xml, de.xml, el.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, it.xml, ja.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml: 
+	* ca.xml, da.xml, de.xml, el.xml, es.xml, fi.xml, fr.xml, ja.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sv.xml: 
+	branches:  1.2.2;
 	Fixed localization key errors and missing xrefs (thanks to Eva a Pavel ZAMPACHOVI)
+
+	* cs.xml, et.xml, hu.xml, id.xml, it.xml, sl.xml: Fixed localization key errors and missing xrefs (thanks to Eva a Pavel ZAMPACHOVI)
 
 2000-10-19  Norman Walsh  <ndw@nwalsh.com>
 
@@ -91,8 +135,11 @@
 
 2000-10-09  Norman Walsh  <ndw@nwalsh.com>
 
-	* LostLog, ca.xml, common.xsl, cs.xml, da.xml, de.xml, el.xml, en.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, it.xml, ja.xml, l10n.dtd, l10n.xml, l10n.xsl, nl.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml, zh_cn.xml: 
-	New file.
+	* LostLog, ca.xml, common.xsl, cs.xml, da.xml, de.xml, el.xml, en.xml, es.xml, et.xml, fi.xml, fr.xml, hu.xml, id.xml, it.xml, ja.xml, l10n.dtd, l10n.xml, l10n.xsl, nl.xml, no.xml, pl.xml, pt.xml, pt_br.xml, ro.xml, ru.xml, sk.xml, sl.xml, sv.xml: 
+	Recovered V1.18 after loss of repository
 
 	* common.xsl: Output '.' between section numbers
+
+	* zh_cn.xml: branches:  1.1.2;
+	Recovered V1.18 after loss of repository
 
