@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,36 +17,18 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmlpdunixfactory.h"
-#include "kmlpdunixmanager.h"
-#include "kmlpdunixuimanager.h"
-#include "klpdunixprinterimpl.h"
+#ifndef KMLPDUNIXUIMANAGER_H
+#define KMLPDUNIXUIMANAGER_H
 
-extern "C"
+#include "kmuimanager.h"
+
+class KMLpdUnixUiManager : public KMUiManager
 {
-	void* init_kdeprint_lpdunix()
-	{
-		return new KLpdUnixFactory;
-	}
+public:
+	KMLpdUnixUiManager(QObject *parent = 0, const char *name = 0);
+	~KMLpdUnixUiManager();
+
+	int pluginPageCap();
 };
 
-KLpdUnixFactory::KLpdUnixFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
-
-KLpdUnixFactory::~KLpdUnixFactory()
-{
-}
-
-QObject* KLpdUnixFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLpdUnixManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLpdUnixPrinterImpl(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMLpdUnixUiManager(parent,name);
-	else
-		return NULL;
-}
+#endif

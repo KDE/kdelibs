@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
+#include <kmacroexpander.h>
 
 KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name)
 : KPrinterImpl(parent,name)
@@ -56,17 +57,29 @@ QString KLpdUnixPrinterImpl::executable()
 
 bool KLpdUnixPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	QString		exe = executable();
-	if (!exe.isEmpty())
+	QString exe = printer->option( "kde-printcommand" );
+	if ( exe.isEmpty() || exe == "<automatic>" )
 	{
-		cmd = exe;
-		if (exe.right(3) == "lpr")
-			initLprPrint(cmd,printer);
+		exe = executable();
+		if (!exe.isEmpty())
+		{
+			cmd = exe;
+			if (exe.right(3) == "lpr")
+				initLprPrint(cmd,printer);
+			else
+				initLpPrint(cmd,printer);
+			return true;
+		}
 		else
-			initLpPrint(cmd,printer);
-		return true;
+			printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));
+		return false;
 	}
 	else
-		printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));
-	return false;
+	{
+		QMap<QString,QString> map;
+		map.insert( "printer", printer->printerName() );
+		map.insert( "copies", QString::number( printer->numCopies() ) );
+		cmd = KMacroExpander::expandMacrosShellQuote( exe, map );
+		return true;
+	}
 }
