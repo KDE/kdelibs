@@ -272,6 +272,12 @@ super_class_name
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	  }
+	| Identifier T_LESS type_list T_GREATER
+	  {
+		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
+		*tmp = tmp->arg( *($1) + "&lt" + *($3) + "&gt;" );
+		$$ = tmp;
+	  }
 
 super_class
 	: virtual_qualifier T_PUBLIC super_class_name

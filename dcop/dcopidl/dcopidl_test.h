@@ -17,7 +17,8 @@ class Test2;
 typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 class Test3;
 
-class Test : public MyNamespace::MyParentClass, virtual public DCOPObject
+class Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
+             public QValueList<QString>
 {
     K_DCOP
 
