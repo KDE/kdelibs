@@ -1178,6 +1178,11 @@ public slots:
                         const QString& boundary = QString::null );
 
 private slots:
+  /**
+   * @internal
+   * Jump to the anchor as defined in the url. Typically connected to KHTMLView::finishedLayout().
+   */
+  void gotoAnchor();
 
   /**
    * @internal

@@ -534,24 +534,37 @@ bool KHTMLPart::openURL( const KURL &url )
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
+  
   if ( !isFrameSet && !args.redirectedRequest() &&
-       urlcmp( url.url(), m_url.url(), true, true ) &&
-       url.hasRef() && !args.doPost() && !args.reload )
+        url.hasRef() && !args.doPost() && !args.reload )
   {
-    kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
-    m_url = url;
-    emit started( 0L );
 
-    if ( !gotoAnchor( url.encodedHtmlRef()) )
-       gotoAnchor( url.htmlRef() );
-
-    d->m_bComplete = true;
-    if (d->m_doc)
-       d->m_doc->setParsing(false);
-
-    kdDebug( 6050 ) << "completed..." << endl;
-    emit completed();
-    return true;
+    //if new url == old url, jump to anchor straight away, no need to reload  
+    if (urlcmp( url.url(), m_url.url(), true, true ))
+    {
+        kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
+        m_url = url;
+        emit started( 0L );
+        
+        if ( !gotoAnchor( url.encodedHtmlRef()) )
+          gotoAnchor( url.htmlRef() );
+        
+        d->m_bComplete = true;
+        if (d->m_doc)
+        d->m_doc->setParsing(false);
+        
+        kdDebug( 6050 ) << "completed..." << endl;
+        emit completed();
+        return true;
+    }
+    //jump to the anchor AFTER layouting is done, otherwise the position of the
+    //anchor is not known and we have no clue to which coordinates to jump
+    else
+    {
+        disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+        if ( !url.encodedHtmlRef().isEmpty() )
+          connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+    }
   }
 
   if (!d->m_restored)
@@ -2037,10 +2050,6 @@ void KHTMLPart::checkCompleted()
 
   setJSDefaultStatusBarText(QString::null);
 
-  if ( !m_url.encodedHtmlRef().isEmpty() )
-    if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-       gotoAnchor( m_url.htmlRef() );
-
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
@@ -2219,6 +2228,13 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
   if ( d->m_doc )
     d->m_doc->setUserStyleSheet( styleSheet );
+}
+
+void KHTMLPart::gotoAnchor()
+{
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  if ( !gotoAnchor( m_url.encodedHtmlRef()) )
+      gotoAnchor( m_url.htmlRef() );
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )

@@ -162,6 +162,7 @@ public:
     void layout(); // KDE 4.0: make private
 
 signals:
+    void finishedLayout();
     void cleared();
     void zoomView( int );
 

@@ -655,6 +655,8 @@ void KHTMLView::layout()
     killTimer(d->layoutTimerId);
     d->layoutTimerId = 0;
     d->layoutSchedulingEnabled=true;
+    
+    emit finishedLayout();
 }
 
 void KHTMLView::closeChildDialogs()
