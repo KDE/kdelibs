@@ -293,7 +293,7 @@ public:
   bool readBoolEntry( const char *pKey, const bool bDefault = false ) const;
 
   /**
-   * Reads a @QRect entry.
+   * Reads a @ref QRect entry.
    *
    * Read the value of an entry specified by pKey in the current group
    * and interpret it as a @ref QRect object.
