@@ -163,7 +163,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    }
 
    // Now try the "other" Pattern table
-   if ( m_patterns.size() == 0 ) {
+   if ( m_patterns.isEmpty() ) {
       str->device()->at( m_otherPatternOffset );
 
       QString pattern;

@@ -1173,8 +1173,8 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 	for( QValueList< int >::ConstIterator it = overriden_ports->begin();
 	     it != overriden_ports->end();
 	     ++it )
-	if( overriden_ports->contains( url.port()))
-	    valid = true;
+	    if( overriden_ports->contains( url.port()))
+		valid = true;
     }
 
     // if request is not valid, return an invalid transfer job
