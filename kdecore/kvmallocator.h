@@ -71,7 +71,7 @@ public:
      * @param src the source block
      * @param _offset the offset in the source block
      * @param length the length of the data to copy
-     * @return true on success, error on failure, see errno for details
+     * @return true on success, false on failure, see errno for details
      * @since 3.2
      */
     bool copyBlock(void *dest, Block *src, int _offset = 0, size_t length = 0);
@@ -89,7 +89,7 @@ public:
      * @param src the source location of the data
      * @param _offset the offset in the destination block
      * @param length the length of the data to copy
-     * @return true on success, error on failure, see errno for details
+     * @return true on success, false on failure, see errno for details
      * @since 3.2
      */
     bool copyBlock(Block *dest, void *src, int _offset = 0, size_t length = 0);
