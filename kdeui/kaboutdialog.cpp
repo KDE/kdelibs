@@ -634,9 +634,11 @@ void KAboutContainerBase::setProduct( const QString &appName,
 
   mIconLabel->setPixmap( kapp->icon() );
 
-  QString msg1 = i18n("Version: %1 %2 (KDE %3)").arg(appName).arg(version).
-    arg(QString::fromLatin1(KDE_VERSION_STRING));
-  QString msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
+  QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).arg(QString::fromLatin1(KDE_VERSION_STRING));
+  QString msg2;
+
+  if (!year.isEmpty())
+     msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
 
   mVersionLabel->setText( msg1 );
   mAuthorLabel->setText( msg2 );
