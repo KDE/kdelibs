@@ -205,7 +205,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
            r->node->print(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
-	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(), 
+	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
 			   ty + r->startY - r->node->yPos() + r->node->marginTop() );
  	}
 #ifdef FLOAT_DEBUG
@@ -408,7 +408,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
         // if oldHeight+prevMargin < newHeight
-		
+
         int margin = child->marginTop();
         //kdDebug(0) << "margin = " << margin << " prevMargin = " << prevMargin << endl;
         margin = collapseMargins(margin, prevMargin);
@@ -808,7 +808,7 @@ RenderFlow::lowestPosition() const
                 bottom = lp;
         }
     }
-    
+
     if ( overhangingContents() ) {
         RenderObject *child = firstChild();
         while( child ) {
@@ -818,8 +818,8 @@ RenderFlow::lowestPosition() const
 	    }
 	    child = child->nextSibling();
 	}
-    }	
-    
+    }
+
     //kdDebug(0) << renderName() << "      bottom final = " << bottom << endl;
     return bottom;
 }
@@ -861,8 +861,8 @@ int RenderFlow::rightmostPosition() const
 	    }
 	    child = child->nextSibling();
 	}
-    }	
-    
+    }
+
     return right;
 }
 
@@ -1512,11 +1512,18 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
     bool inBox = false;
     if (specialObjects) {
+        int stx = _tx;
+        int sty = _ty;
+        // special case - special objects in root are relative to viewport
+        if (isRoot()) {
+            stx += static_cast<RenderRoot*>(this)->view()->contentsX();
+            sty += static_cast<RenderRoot*>(this)->view()->contentsY();
+        }
         SpecialObject* o;
         QPtrListIterator<SpecialObject> it(*specialObjects);
         for (it.toLast(); (o = it.current()); --it)
             if (o->node->containingBlock() == this)
-                inBox |= o->node->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos());
+                inBox |= o->node->nodeAtPoint(info, _x, _y, stx+xPos(), sty+yPos());
     }
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
