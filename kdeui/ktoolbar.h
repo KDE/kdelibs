@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.50  1999/03/06 18:03:37  ettrich
+// the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
+// It has its own menu entry and reacts on simple LMP clicks.
+//
 // Revision 1.49  1999/03/01 23:35:26  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -86,6 +90,7 @@
 #include <qfont.h>
 #include <qsize.h>
 #include <qintdict.h>
+#include <qstringlist.h>
 
 //#include <qiconset.h>
 
@@ -352,6 +357,23 @@ public:
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
                    KCombo::Policy policy = KCombo::AtBottom);
+		   
+  /**
+   * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
+   * default inserting policy is AtBottom, i.e. typed items are placed at the bottom
+   * of the list. Can be autosized
+   * KCombo is almost the same thing as QComboBox.
+   * @see #setFullWidth
+   * @see #setItemAutoSized
+   * @see KCombo
+   * @return Returns item index
+   */
+  int insertCombo (const QStringList &list, int id, bool writable,
+                   const char *signal, QObject *recevier,
+                   const char *slot, bool enabled=true,
+                   const QString& tooltiptext=QString::null,
+                   int size=70, int index=-1,
+                   KCombo::Policy policy = KCombo::AtBottom);
 
   /**
    * Inserts KCombo with text. The rest is the same as above.
@@ -496,6 +518,11 @@ public:
    * Inserts list in combo id at position index
    */
   void insertComboList (int id, QStrList *list, int index);
+
+  /**
+   * Inserts list in combo id at position index
+   */
+  void insertComboList (int id, const QStringList &list, int index);
 
   /**
    * Removes item index from Combo id.

@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.107  1999/04/23 13:56:21  mosfet
+// KDE theme style classes and some KStyle additions to the bars.
+//
 // Revision 1.106  1999/04/22 15:59:42  shausman
 // - support QStringList for combos
 //
@@ -1899,6 +1903,39 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   return items.at();
 }
 
+/// Inserts comboBox with QStringList
+
+int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
+                           const char *signal, QObject *receiver,
+                           const char *slot, bool enabled,
+                           const QString& tooltiptext,
+                           int size, int index,
+                           KCombo::Policy policy)
+{
+  KCombo *combo = new KCombo (writable, this);
+  KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
+                                        true);
+  if (tooltiptext)
+  if (index == -1)
+    items.append (item);
+  else
+    items.insert (index, item);
+  combo->insertStringList (list);
+  combo->setInsertionPolicy(policy);
+  if (!tooltiptext.isNull())
+    QToolTip::add( combo, tooltiptext );
+  connect ( combo, signal, receiver, slot );
+  combo->setAutoResize(false);
+  item->resize(size, item_size-2);
+  item->setEnabled(enabled);
+  item->show();
+  if (position == Floating)
+    updateRects( true );
+  else if (isVisible())
+    emit (moved(position));
+  return items.at();
+}
+
 
 /// Inserts combo with text
 
@@ -2119,6 +2156,13 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
       ((KCombo *) b->getItem())->insertItem(text, index);
       ((KCombo *) b->getItem())->cursorAtEnd();
     }
+}
+
+void KToolBar::insertComboList (int id, QStrList *list, int index)
+{
+  for (KToolBarItem *b = items.first(); b; b=items.next())
+    if (b->ID() == id )
+	((KCombo *) b->getItem())->insertStrList(list, index);
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
