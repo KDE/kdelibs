@@ -360,9 +360,15 @@ Value KJS::getEventExceptionConstructor(ExecState *exec)
 
 const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTable, 0 };
 /*
-@begin DOMUIEventTable 2
+@begin DOMUIEventTable 7
   view		DOMUIEvent::View	DontDelete|ReadOnly
   detail	DOMUIEvent::Detail	DontDelete|ReadOnly
+  keyCode	DOMUIEvent::KeyCode	DontDelete|ReadOnly
+  layerX	DOMUIEvent::LayerX	DontDelete|ReadOnly
+  layerY	DOMUIEvent::LayerY	DontDelete|ReadOnly
+  pageX		DOMUIEvent::PageX	DontDelete|ReadOnly
+  pageY		DOMUIEvent::PageY	DontDelete|ReadOnly
+  which		DOMUIEvent::Which	DontDelete|ReadOnly
 @end
 @begin DOMUIEventProtoTable 1
   initUIEvent	DOMUIEvent::InitUIEvent	DontDelete|Function 5
@@ -388,9 +394,31 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     return getDOMAbstractView(exec,static_cast<DOM::UIEvent>(event).view());
   case Detail:
     return Number(static_cast<DOM::UIEvent>(event).detail());
+  case KeyCode:
+    // NS-compatibility
+    return Number(static_cast<DOM::UIEvent>(event).keyCode());
+  case LayerX:
+    // NS-compatibility
+    return Number(static_cast<DOM::UIEvent>(event).layerX());
+  case LayerY:
+    // NS-compatibility
+    return Number(static_cast<DOM::UIEvent>(event).layerY());
+  case PageX:
+    // NS-compatibility
+    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
+      return Number(static_cast<DOM::MouseEvent>(event).clientX());
+    return Number(0);
+  case PageY:
+    // NS-compatibility
+    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
+      return Number(static_cast<DOM::MouseEvent>(event).clientY());
+    return Number(0);
+  case Which:
+    // NS-compatibility
+    return Number(static_cast<DOM::UIEvent>(event).which());
   default:
     kdWarning() << "Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
-    return Value();
+    return Undefined();
   }
 }
 
@@ -424,13 +452,9 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
   clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
   ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
   fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
-  layerX        DOMMouseEvent::LayerX   DontDelete|ReadOnly
-  layerY        DOMMouseEvent::LayerY   DontDelete|ReadOnly
   metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
   offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
   offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
-  pageX         DOMMouseEvent::PageX    DontDelete|ReadOnly
-  pageY         DOMMouseEvent::PageY    DontDelete|ReadOnly
   relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
   screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
   screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
@@ -463,17 +487,13 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ScreenX:
-  case PageX:
     return Number(static_cast<DOM::MouseEvent>(event).screenX());
   case ScreenY:
-  case PageY:
     return Number(static_cast<DOM::MouseEvent>(event).screenY());
   case ClientX:
-  case LayerX:
   case X:
     return Number(static_cast<DOM::MouseEvent>(event).clientX());
   case ClientY:
-  case LayerY:
   case Y:
     return Number(static_cast<DOM::MouseEvent>(event).clientY());
   case OffsetX:

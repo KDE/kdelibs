@@ -166,16 +166,17 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry DOMDocumentTableEntries[] = {
-   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[6] },
+   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[7] },
    { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[4] },
-   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[5] },
-   { 0, 0, 0, 0, 0 },
-   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, 0 },
+   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[6] },
+   { "selectedStylesheetSet", DOMDocument::SelectedStylesheetSet, DontDelete, 0, 0 },
+   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[5] },
+   { "preferredStylesheetSet", DOMDocument::PreferredStylesheetSet, DontDelete|ReadOnly, 0, 0 },
    { "readyState", DOMDocument::ReadyState, DontDelete|ReadOnly, 0, 0 },
    { "defaultView", DOMDocument::DefaultView, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMDocumentTable = { 2, 7, DOMDocumentTableEntries, 4 };
+const struct HashTable DOMDocumentTable = { 2, 8, DOMDocumentTableEntries, 4 };
 
 }; // namespace
 

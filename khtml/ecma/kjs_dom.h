@@ -107,6 +107,8 @@ namespace KJS {
     virtual ~DOMDocument();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { DocType, Implementation, DocumentElement,
@@ -116,7 +118,8 @@ namespace KJS {
            CreateEntityReference, GetElementsByTagName, ImportNode, CreateElementNS,
            CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
-           CreateEvent, StyleSheets, GetOverrideStyle, ReadyState };
+           CreateEvent, StyleSheets, GetOverrideStyle, PreferredStylesheetSet,
+           SelectedStylesheetSet, ReadyState };
   };
 
   class DOMAttr : public DOMNode {
