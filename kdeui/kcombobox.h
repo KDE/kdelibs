@@ -222,8 +222,8 @@ public:
 
     /**
      * By default, KComboBox recognizes Key_Return and Key_Enter and emits
-     * the @ref returnPressed() signals, but it also passes the events further,
-     * i.e. it doesn't call event->accept().
+     * the @ref returnPressed() signals, but it also lets the event passr,
+     * for example causing a dialog's default-button to be called.
      *
      * Call this method with @p grab = true to make KComboBox stop these
      * events. The signals will still be emitted of course.
