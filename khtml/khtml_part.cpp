@@ -6420,6 +6420,14 @@ KURL KHTMLPart::toplevelURL()
   return part->url();
 }
 
+bool KHTMLPart::isModified() const
+{
+  if ( !d->m_doc )
+    return false;
+
+  return d->m_doc->unsubmittedFormChanges();
+}
+
 void KHTMLPart::setDebugScript( bool enable )
 {
   unplugActionList( "debugScriptList" );

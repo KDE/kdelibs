@@ -554,6 +554,7 @@ void RenderLineEdit::slotTextChanged(const QString &string)
 {
     // don't use setValue here!
     element()->m_value = string;
+    element()->m_unsubmittedFormChange = true;
 }
 
 void RenderLineEdit::select()
@@ -1549,7 +1550,7 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
     scrollbarsStyled = false;
-
+    
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
 
@@ -1596,12 +1597,16 @@ void RenderTextArea::calcMinMaxWidth()
 
 void RenderTextArea::setStyle(RenderStyle* _style)
 {
+    bool unsubmittedFormChange = element()->m_unsubmittedFormChange;
+    
     RenderFormElement::setStyle(_style);
 
     widget()->setAlignment( _style->direction() == RTL ?
                             Qt::AlignRight : Qt::AlignLeft );
 
     scrollbarsStyled = false;
+    
+    element()->m_unsubmittedFormChange = unsubmittedFormChange;
 }
 
 void RenderTextArea::layout()
@@ -1686,6 +1691,8 @@ void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 void RenderTextArea::slotTextChanged()
 {
     element()->m_dirtyvalue = true;
+    if (element()->m_value != text())
+        element()->m_unsubmittedFormChange = true;
 }
 
 void RenderTextArea::select()

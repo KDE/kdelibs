@@ -224,7 +224,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
   Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
-
+  Q_PROPERTY( bool modified READ isModified )
+  
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
@@ -947,11 +948,18 @@ public:
    * Returns the toplevel (origin) URL of this document, even if this
    * part is a frame or an iframe.
    *
-   * @return the actual orginal url.
+   * @return the actual original url.
    * @since 3.2
    */
   KURL toplevelURL();
 
+  /**
+   * Checks whether the page contains unsubmitted form changes.
+   *
+   * @return true if form changes exist 
+   * @since 3.3
+   */
+  bool isModified() const;
 
 signals:
   /**

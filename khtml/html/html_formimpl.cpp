@@ -1071,7 +1071,8 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_activeSubmit = false;
     m_autocomplete = true;
     m_inited = false;
-
+    m_unsubmittedFormChange = false;
+    
     xPos = 0;
     yPos = 0;
 
@@ -1125,7 +1126,7 @@ QString HTMLInputElementImpl::state( )
             getDocument()->view()->addFormCompletionItem(name().string(), value().string());
         /* nobreak */
     default:
-        return value().string()+'.'; // Make sure the string is not empty!
+        return value().string() + (m_unsubmittedFormChange ? 'X' : '.');
     }
 }
 
@@ -1142,6 +1143,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         break;
     default:
         setValue(DOMString(state.left(state.length()-1)));
+        m_unsubmittedFormChange = (state.right(1)=="X");
         break;
     }
 }
@@ -2203,6 +2205,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
+    m_unsubmittedFormChange = false;
 }
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
@@ -2222,13 +2225,13 @@ DOMString HTMLTextAreaElementImpl::type() const
 
 QString HTMLTextAreaElementImpl::state( )
 {
-    // Make sure the string is not empty!
-    return value().string()+'.';
+    return value().string() + (m_unsubmittedFormChange ? 'X' : '.');
 }
 
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
     setDefaultValue(state.left(state.length()-1));
+    m_unsubmittedFormChange = (state.right(1)=="X");
     // the close() in the rendertree will take care of transferring defaultvalue to 'value'
 }
 

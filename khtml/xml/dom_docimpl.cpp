@@ -885,6 +885,15 @@ QStringList DocumentImpl::docState()
     return s;
 }
 
+bool DocumentImpl::unsubmittedFormChanges()
+{
+    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+        if (it.current()->state().right(1)=="X")
+            return true;
+
+    return false;
+}
+
 RangeImpl *DocumentImpl::createRange()
 {
     return new RangeImpl( docPtr() );

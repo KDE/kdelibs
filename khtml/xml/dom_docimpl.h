@@ -213,6 +213,7 @@ public:
 
     // Query all registered elements for their state
     QStringList docState();
+    bool unsubmittedFormChanges();
     void registerMaintainsState(NodeImpl* e) { m_maintainsState.append(e); }
     void deregisterMaintainsState(NodeImpl* e) { m_maintainsState.removeRef(e); }
 

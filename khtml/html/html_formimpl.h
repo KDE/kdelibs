@@ -309,6 +309,7 @@ protected:
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
     bool m_inited : 1;
+    bool m_unsubmittedFormChange : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -536,6 +537,7 @@ protected:
     WrapMethod m_wrap;
     QString m_value;
     bool m_dirtyvalue;
+    bool m_unsubmittedFormChange;
 };
 
 // -------------------------------------------------------------------------
