@@ -761,6 +761,7 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent)
 {
     setAutoMask(true);
+    if (listBox()) listBox()->installEventFilter(this);
 }
 
 void ComboBoxWidget::focusInEvent(QFocusEvent* e)
@@ -775,6 +776,49 @@ void ComboBoxWidget::focusOutEvent(QFocusEvent* e)
     emit blurred();
 }
 
+bool ComboBoxWidget::event(QEvent *e)
+{
+    if (e->type()==QEvent::KeyPress)
+    {
+	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
+	switch(ke->key())
+	{
+	case Key_Return:
+	case Key_Enter:
+	    popup();
+	    ke->accept();
+	    return true;
+	default:
+	    return KComboBox::event(e);
+	}
+    }
+    return KComboBox::event(e);
+}
+
+bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
+{
+    if (dest==listBox() &&  e->type()==QEvent::KeyPress)
+    {
+	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
+	bool forward = false;
+	switch(ke->key())
+	{
+	case Key_Tab:
+	    forward=true;
+	case Key_BackTab:
+	    // ugly hack. emulate popdownlistbox() (private in QComboBox)
+	    // we re-use ke here to store the reference to the generated event.
+	    ke = new QKeyEvent(QEvent::KeyPress, Key_Escape, 0, 0);
+	    QApplication::sendEvent(dest,ke);
+	    focusNextPrevChild(forward);
+	    delete ke;
+	    return true;
+	default:
+	    return KComboBox::eventFilter(dest, e);
+	}
+    }
+    return KComboBox::eventFilter(dest, e);
+}
 
 // -------------------------------------------------------------------------
 

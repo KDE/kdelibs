@@ -414,6 +414,8 @@ public:
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual bool event(QEvent *);
+    virtual bool eventFilter(QObject *dest, QEvent *e);
 
 signals:
     virtual void focused();
