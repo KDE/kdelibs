@@ -327,8 +327,6 @@ public:
      *
      * @param groupName a name that identifies this "type of window".
      * You can have several types of window in the same application.
-     * If you have only one type of main window, it is recommended to pass
-     * an empty group, so that the settings are the app-global ones.
      *
      * @param saveWindowSize set it to true to include the window size
      * when saving.
@@ -337,7 +335,8 @@ public:
      * KMainWindow-inherited class constructor, and it will take care
      * of restoring and saving automatically.
      */
-    void setAutoSaveSettings( const QString & groupName = QString::null, bool saveWindowSize = true );
+    void setAutoSaveSettings( const QString & groupName = QString::fromLatin1("MainWindow"),
+                              bool saveWindowSize = true );
 
     /**
      * Disable the auto-save-settings feature.
