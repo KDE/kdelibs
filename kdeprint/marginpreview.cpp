@@ -279,35 +279,37 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 		p.setRasterOp(Qt::XorROP);
 		p.setPen(gray);
 		if (oldpos_ >= 0)
-			drawTempLine(&p);
-		if (e)
 		{
-			int	val, st(state_);
-			if (symetric_ && (st == BMoving || st == RMoving))
-				st--;
-			switch (st)
+			drawTempLine(&p);
+			if (e)
 			{
-				case TMoving:
-					val = top_ = UNSCALE(oldpos_-box_.top(), zoom_);
-					if (symetric_)
-						bottom_ = height_-top_;
-					break;
-				case BMoving:
-					bottom_ = UNSCALE(oldpos_-box_.top(), zoom_);
-					val = UNSCALE(box_.bottom()-oldpos_, zoom_);
-					break;
-				case LMoving:
-					val = left_ = UNSCALE(oldpos_-box_.left(), zoom_);
-					if (symetric_)
-						right_ = width_-left_;
-					break;
-				case RMoving:
-					right_ = UNSCALE(oldpos_-box_.left(), zoom_);
-					val = UNSCALE(box_.right()-oldpos_, zoom_);
-					break;
+				int	val, st(state_);
+				if (symetric_ && (st == BMoving || st == RMoving))
+					st--;
+				switch (st)
+				{
+					case TMoving:
+						val = top_ = UNSCALE(oldpos_-box_.top(), zoom_);
+						if (symetric_)
+							bottom_ = height_-top_;
+						break;
+					case BMoving:
+						bottom_ = UNSCALE(oldpos_-box_.top(), zoom_);
+						val = UNSCALE(box_.bottom()-oldpos_, zoom_);
+						break;
+					case LMoving:
+						val = left_ = UNSCALE(oldpos_-box_.left(), zoom_);
+						if (symetric_)
+							right_ = width_-left_;
+						break;
+					case RMoving:
+						right_ = UNSCALE(oldpos_-box_.left(), zoom_);
+						val = UNSCALE(box_.right()-oldpos_, zoom_);
+						break;
+				}
+				update();
+				emit marginChanged(st, val);
 			}
-			update();
-			emit marginChanged(st, val);
 		}
 		state_ = 0;
 		oldpos_ = -1;
