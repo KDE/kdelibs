@@ -40,7 +40,7 @@
 #include <kseparator.h>
 #include <qmultilineedit.h>
 
-KDE_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
+K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 
 
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
