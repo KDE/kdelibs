@@ -1,0 +1,70 @@
+/*
+   This file is part of the KDE libraries
+   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
+#ifndef _KDELIBS_H
+#define _KDELIBS_H
+
+/* needed, because e.g. Q_OS_UNIX is so frequently used */
+#include <qglobal.h>
+
+#ifdef Q_WS_WIN
+#include <kdelibs_win.h>
+#else //Q_OS_UNIX
+
+/* export statements are not required for unix */
+#define _KDE_EXPORT_
+#define _KDE_IMPORT_
+#define KDECORE_EXPORT 
+#define KDEUI_EXPORT 
+#define KDEFX_EXPORT 
+#define KDEPRINT_EXPORT
+#define KIO_EXPORT
+#define KFILE_EXPORT
+#define DCOP_EXPORT
+#define KSSL_EXPORT
+#define KPARTS_EXPORT
+#define KSTORE_EXPORT
+#define KTEXTEDITOR_EXPORT
+#define KABC_EXPORT
+#define KDERESOURCES_EXPORT
+#define KSTYLE_EXPORT
+#define KMDI_EXPORT
+#define KUTILS_EXPORT
+#define KATEPARTINTERFACES_EXPORT
+#define KATEPART_EXPORT
+
+#define KPATH_SEPARATOR ':'
+
+#ifndef O_BINARY
+#define O_BINARY 0 /* for open() */
+#endif
+
+#endif
+
+#endif /*_KDELIBS_H*/
+
+/* workaround for kdecore: stupid moc's grammar doesn't accept two macros 
+   between 'class' keyword and <classname>: */
+#if defined(KDE_DEPRECATED) && !defined(KDECORE_EXPORT_DEPRECATED)
+#define KDECORE_EXPORT_DEPRECATED KDE_DEPRECATED KDECORE_EXPORT
+#endif
+#if defined(KDE_DEPRECATED) && !defined(KIO_EXPORT_DEPRECATED)
+#define KIO_EXPORT_DEPRECATED KDE_DEPRECATED //KIO_EXPORT
+#endif
+/* (let's add KDE****_EXPORT_DEPRECATED for other libraries if it's needed) */
