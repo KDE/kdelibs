@@ -2321,7 +2321,7 @@ void KToolBar::setIconSize(int size)
 
 void KToolBar::setIconSize(int size, bool update)
 {
-  kdDebug() << "KToolBar::setIconSize ( " << size << " ) " << endl;
+  //kdDebug() << "KToolBar::setIconSize ( " << size << " ) " << endl;
 
   bool doUpdate=false;
 
