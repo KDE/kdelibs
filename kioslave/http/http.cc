@@ -797,6 +797,7 @@ bool HTTPProtocol::readHeader()
   char buffer[4097];
   bool unauthorized = false;
   bool cont = false;
+  bool noRedirect = false; // No automatic redirection
 
   gets(buffer, sizeof(buffer)-1);
   if (eof())
@@ -912,6 +913,25 @@ bool HTTPProtocol::readHeader()
 	// We got 'Continue' - ignore it
 	cont = true;
       }
+      else if ((strncmp(buffer + 9, "301", 3) == 0) ||
+               (strncmp(buffer + 9, "307", 3) == 0)) 
+      {
+	// 301 Moved permanently
+        // 307 Temporary Redirect
+        if (m_state.postDataSize)
+        {
+           errorPage();	
+           noRedirect = true;
+        }
+      }
+      else if ((strncmp(buffer + 9, "302", 3) == 0) ||
+               (strncmp(buffer + 9, "303", 3) == 0))
+      {
+	// 302 Found 
+        // 303 See Other
+        m_state.postDataSize = 0; // Force a GET!
+        m_bCachedWrite = false; // Don't put in cache
+      }
     }
 
     // In fact we should do redirection only if we got redirection code
@@ -1012,7 +1032,7 @@ bool HTTPProtocol::readHeader()
     return readHeader();
   }
   // We need to do a redirect 
-  else if (!locationStr.isEmpty())
+  else if (!locationStr.isEmpty() && !noRedirect)
   {
     // WABA:
     // We either need to close the connection or read the rest of the contents!
