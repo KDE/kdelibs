@@ -1,3 +1,7 @@
+2004-01-22  Lubos Lunak <l.lunak@kde.org>
+
+        * khtmlview.cpp: make Ctrl only temporary suspend Shift+Down scrolling
+
 2004-01-22  David Faure  <faure@kde.org>
 
 	* dom/dom_element.cpp (removeAttributeNode): Fixed logic for NOT_FOUND_ERR.

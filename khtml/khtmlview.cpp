@@ -174,6 +174,7 @@ public:
 	layoutTimerId = 0;
         repaintTimerId = 0;
         scrollTimerId = 0;
+        scrollSuspended = false;
         complete = false;
         firstRelayout = true;
         dirtyLayout = false;
@@ -192,6 +193,7 @@ public:
         //kdDebug(6000) << "newScrollTimer timer " << tid << endl;
         view->killTimer(scrollTimerId);
         scrollTimerId = tid;
+        scrollSuspended = false;
     }
     enum ScrollDirection { ScrollLeft, ScrollRight, ScrollUp, ScrollDown };
 
@@ -209,7 +211,7 @@ public:
             scrollDirection = direction;
             newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
         } else if (scrollDirection == direction &&
-                   timings[scrollTiming+1].msec) {
+                   timings[scrollTiming+1].msec && !scrollSuspended) {
             scrollBy = timings[++scrollTiming].pixels;
             newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
         } else if (scrollDirection == oppositedir) {
@@ -218,6 +220,7 @@ public:
                 newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
             }
         }
+        scrollSuspended = false;
     }
 
 #ifndef KHTML_NO_CARET
@@ -269,6 +272,7 @@ public:
 
     int repaintTimerId;
     int scrollTimerId;
+    bool scrollSuspended;
     int scrollTiming;
     int scrollBy;
     ScrollDirection scrollDirection;
@@ -1006,8 +1010,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Space:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, -clipper()->height() - offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
 
         case Key_Down:
@@ -1049,8 +1056,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Next:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, clipper()->height() - offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
 
         case Key_Up:
@@ -1068,8 +1078,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Prior:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 scrollBy( 0, -clipper()->height() + offs );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_Right:
         case Key_L:
@@ -1108,19 +1121,29 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_Home:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 setContentsPos( 0, 0 );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_End:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else {
                 setContentsPos( 0, contentsHeight() - visibleHeight() );
+                if(d->scrollSuspended)
+                    d->newScrollTimer(this, 0);
+            }
             break;
         case Key_Shift:
             // what are you doing here?
 	    _ke->ignore();
             return;
+        case Key_Control:
+            if (d->scrollTimerId)
+                d->scrollSuspended = !d->scrollSuspended;
+            break;
         default:
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
@@ -2126,6 +2149,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if ( e->timerId() == d->scrollTimerId ) {
+        if( d->scrollSuspended )
+            return;
         switch (d->scrollDirection) {
             case KHTMLViewPrivate::ScrollDown:
                 if (contentsY() + visibleHeight () >= contentsHeight())
