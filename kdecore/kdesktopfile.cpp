@@ -135,3 +135,15 @@ bool KDesktopFile::tryExec()
   }
   return true;
 }
+
+/**
+ * @return the filename as passed to the constructor.
+ */
+QString 
+KDesktopFile::filename() const { return backEnd->filename(); }
+  
+/**
+ * @return the resource type as passed to the constructor.
+ */
+QString 
+KDesktopFile::resource() const { return backEnd->resource(); }

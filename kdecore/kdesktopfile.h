@@ -123,6 +123,16 @@ public:
    */
   bool tryExec();
 
+  /**
+   * @return the filename as passed to the constructor.
+   */
+  QString filename() const;
+  
+  /**
+   * @return the resource type as passed to the constructor.
+   */
+  QString resource() const;
+
 private:
 
   // copy-construction and assignment are not allowed
