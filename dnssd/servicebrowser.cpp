@@ -104,7 +104,7 @@ void ServiceBrowser::serviceResolved(bool success)
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
 	QValueList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
 	QValueList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
-	while ( it!= itEnd && svr!= (*it)) ++it;
+	while ( it!= itEnd && (*it)!= svr) ++it;
 	if (it != itEnd) {
 		if (success) {
 		  	d->m_services+=(*it);
