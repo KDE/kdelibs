@@ -4630,7 +4630,7 @@ bool HTTPProtocol::getAuthorization()
      if (m_request.bErrorPage)
         errorPage();
      else
-        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %s but authentication is disabled.").arg(m_request.hostname));
+        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.hostname));
      return false;
   }
   
