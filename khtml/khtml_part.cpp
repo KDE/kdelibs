@@ -944,6 +944,9 @@ void KHTMLPart::clear()
   d->m_frames.clear();
   d->m_objects.clear();
 
+  delete d->m_javaContext;
+  d->m_javaContext = 0;
+  
   d->m_baseURL = KURL();
   d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
