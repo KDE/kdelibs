@@ -40,9 +40,10 @@
 class KFileItem::KFileItemPrivate
 {
 public:
-  KFileItemPrivate() {}
+  KFileItemPrivate() { bMimeTypeKnown = false; }
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
+  bool bMimeTypeKnown;
 };
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
@@ -187,8 +188,15 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   }
 
   // determine the mimetype
-  if (!m_pMimeType && !_determineMimeTypeOnDemand )
-      m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
+  if (!m_pMimeType )
+  {
+      m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL,
+                                          // use fast mode if not mimetype on demand
+                                          _determineMimeTypeOnDemand );
+      // if we didn't use fast mode, or if we got a result, then this is the mimetype
+      // otherwise, determineMimeType will be able to do better.
+      d->bMimeTypeKnown = (!_determineMimeTypeOnDemand) || (m_pMimeType->name() != KMimeType::defaultMimeType());
+  }
 
 }
 
@@ -308,13 +316,19 @@ QString KFileItem::mimetype() const
 
 KMimeType::Ptr KFileItem::determineMimeType()
 {
-  if ( !m_pMimeType )
+  if ( !m_pMimeType || !d->bMimeTypeKnown )
   {
     //kdDebug(1203) << "finding mimetype for " << m_url.url() << endl;
     m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
+    d->bMimeTypeKnown = true;
   }
 
   return m_pMimeType;
+}
+
+bool KFileItem::isMimeTypeKnown() const
+{
+  return d->bMimeTypeKnown;
 }
 
 QString KFileItem::mimeComment()

@@ -206,8 +206,9 @@ public:
    * @return the currently-known mimetype of the file item
    * This will not try to determine the mimetype if unknown.
    */
-  //KMimeType::Ptr mimeTypePtr();
-  bool isMimeTypeKnown() const { return m_pMimeType != 0L; }
+  KMimeType::Ptr mimeTypePtr() { return m_pMimeType; }
+
+  bool isMimeTypeKnown() const;
 
   /**
    * @return the descriptive comment for this mime type, or
