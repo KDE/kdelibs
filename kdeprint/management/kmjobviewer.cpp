@@ -556,6 +556,10 @@ void KMJobViewer::reload()
 	for (int c=m_view->columns()-1; c>5; c--)
 		m_view->removeColumn(c);
 	KMFactory::self()->uiManager()->setupJobViewer(m_view);
+
+	// update the "History" action state
+	actionCollection()->action("view_completed")->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
+	static_cast<KToggleAction*>(actionCollection()->action("view_completed"))->setChecked(false);
 }
 
 void KMJobViewer::closeEvent(QCloseEvent *e)
