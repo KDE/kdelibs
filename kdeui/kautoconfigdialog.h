@@ -82,11 +82,13 @@ public:
    * "Font Settings" or "Color Settings" and not just "Settings" in
    * applications where there are more then one dialog.
    * 
-   * @param type - Type used in creating the dialog.  @see KDialogBase
+   * @param dialogType - Type used in creating the dialog.  @see KDialogBase
    *
    * @param kconfig - Specify specific config to use or NULL for the
    * standard KGlobal::config(); 
-   * 
+   *
+   * @param dialogButtons - Buttons that should show up on the dialog.
+   *
    * @param model - Because of the features of @ref KAutoConfig,
    * KAutoConfigDialog does not have to be modal.  To prevent more then one
    * settings dialog from showing the static function @ref showDialog() can be
@@ -95,7 +97,10 @@ public:
    */ 
   KAutoConfigDialog( QWidget *parent=0, const char *name=0,
 		  KDialogBase::DialogType dialogType = KDialogBase::IconList,
-		  KConfig *kconfig=NULL, bool modal=false );
+		  KConfig *kconfig=NULL, 
+		  KDialogBase::ButtonCode dialogButtons = 
+		    KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help,
+		  bool modal=false );
   /**
    * Deconstructor, removes name from the list of open dialogs.
    * Deletes private class.
