@@ -59,7 +59,7 @@ int main( int argc, char** argv )
 #define SIZE1 100
   // Now a medium file : 100 null bytes
   char medium[ SIZE1 ];
-  bzero( medium, SIZE1 );
+  memset( medium, 0, SIZE1 );
   tar.writeFile( "mediumfile", "user", "group", SIZE1, medium );
   // Another one, with an absolute path
   tar.writeFile( "/dir/subdir/mediumfile2", "user", "group", SIZE1, medium );
@@ -67,7 +67,7 @@ int main( int argc, char** argv )
   // Now a huge file : 20000 null bytes
   int n = 20000;
   char * huge = new char[ n ];
-  bzero( huge, n );
+  memset( huge, 0, n );
   tar.writeFile( "hugefile", "user", "group", n, huge );
   delete [] huge;
 
