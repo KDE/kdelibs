@@ -53,6 +53,7 @@
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kparts/partmanager.h>
+#include <kcharsets.h>
 
 #include <qtextcodec.h>
 
@@ -114,6 +115,7 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   DOM::HTMLDocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
+  QString m_encoding;
   KJSProxy *m_jscript;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
@@ -137,6 +139,7 @@ public:
   KAction *m_paSaveBackground;
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
+  KSelectAction *m_paSetEncoding;
 
   KParts::PartManager *m_manager;
 
@@ -190,6 +193,12 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_paSaveDocument = new KAction( i18n( "&Save As.." ), 0, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As.." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
 
+  d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding.." ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
+  QStringList encodings = KGlobal::charsets()->availableCharsetNames();
+  encodings.prepend( i18n( "Auto" ) );
+  d->m_paSetEncoding->setItems( encodings );
+  d->m_paSetEncoding->setCurrentItem(0);
+  
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -496,8 +505,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 void KHTMLPart::write( const char *str, int len )
 {
   if ( !d->m_decoder )
+  {
     d->m_decoder = new khtml::Decoder();
-
+    if(d->m_encoding != QString::null)
+	d->m_decoder->setEncoding(d->m_encoding.latin1());
+  }
   if ( len == 0 )
     return;
 
@@ -637,14 +649,18 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   QFontInfo fi(f);
   printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
 
-  d->m_settings->charset = QFont::ISO_8859_8;//f.charSet();
+  d->m_settings->charset = f.charSet();
   return true;
 }
 
 bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
-    return false;
-    // ###
+    printf("setting the encoding to %s\n",name.latin1());
+    d->m_encoding = name;
+        
+    // reload document
+    closeURL();
+    openURL(m_url);
 }
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
@@ -983,6 +999,16 @@ void KHTMLPart::slotSaveFrame()
 {
   // ### frames
 }
+
+void KHTMLPart::slotSetEncoding()
+{
+    // first Item is always auto
+    if(d->m_paSetEncoding->currentItem() == 0)
+	setEncoding(QString::null);
+    else
+	setEncoding(d->m_paSetEncoding->currentText());
+}
+
 
 void KHTMLPart::updateActions()
 {

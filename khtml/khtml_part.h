@@ -393,7 +393,8 @@ protected slots:
   virtual void slotSaveBackground();
   virtual void slotSaveDocument();
   virtual void slotSaveFrame();
-
+  virtual void slotSetEncoding();
+    
 private slots:
   void updateActions();
   void slotChildStarted( KIO::Job *job );
