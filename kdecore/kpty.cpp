@@ -127,6 +127,10 @@ extern "C" {
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
 
+#ifndef CTRL
+# define CTRL(x) ((x) & 037)
+#endif
+
 #define TTY_GROUP "tty"
 
 ///////////////////////
