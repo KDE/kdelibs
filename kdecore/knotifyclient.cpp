@@ -27,6 +27,7 @@ KNotifyClient::KNotifyClient(const QString &message, const QString &text,
                              Presentation present, const QString &soundfile,
                              DCOPClient* client)
 {
+	if (!client) client=KApplication::kApplication()->dcopClient();
 	levent=new Event;
 	levent->message=message;
 	levent->text=text;
@@ -58,22 +59,19 @@ bool KNotifyClient::send()
 bool KNotifyClient::event(const QString &message, const QString &text)
 {
 	KNotifyClient *c=new KNotifyClient(message, text);
-	bool t=c->send();
-	delete c;
-	return t;
+	return c->send();
 }
 
 bool KNotifyClient::userEvent(const QString &text, Presentation present,
                               const QString &soundfile)
 {
 	KNotifyClient *c=new KNotifyClient(0, text, present, soundfile);
-	bool t=c->send();
-	delete c;
-	return t;
+	return c->send();
 }
 
 QString KNotifyClient::soundFileByName(const QString &eventname)
 {
+	(void)eventname;
 	return "";
 }
 

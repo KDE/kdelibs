@@ -60,7 +60,7 @@ public:
 	KNotifyClient(const QString &message, const QString &text=0,
 	             Presentation present=Default,
 	             const QString &soundfile=0,
-	             DCOPClient* client=KApplication::kApplication()->dcopClient());
+	             DCOPClient* client=0);
 
 	virtual ~KNotifyClient();
 	
@@ -96,6 +96,7 @@ public: //static methods
 	 * Gets the sound file associated with a certain event name
 	 * The control panel module will list all the event names
 	 * This has the potential for being slow
+	 * [Not Yet Implemented!]
 	 */
 	static QString soundFileByName(const QString &eventname);
 
