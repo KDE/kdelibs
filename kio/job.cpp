@@ -2381,6 +2381,7 @@ void DeleteJob::slotResult( Job *job )
 
                 emit deleting( this, url );
                 m_totalSize = size;
+                m_totalFilesDirs = 1;
                 emit totalSize( this, size );
                 state = STATE_DELETING_FILES;
                 SimpleJob *newjob;
