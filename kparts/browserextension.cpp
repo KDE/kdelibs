@@ -73,10 +73,10 @@ struct URLArgsPrivate
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
-    bool doPost : 1;
-    bool redirectedRequest : 1;
-    bool lockHistory : 1;
-    bool newTab : 1;
+    bool doPost;
+    bool redirectedRequest;
+    bool lockHistory;
+    bool newTab;
 };
 
 }
