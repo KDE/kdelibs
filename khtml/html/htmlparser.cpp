@@ -929,10 +929,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLTableCellElementImpl(document, t->id);
         break;
     case ID_TBODY:
-        popBlock( ID_THEAD );
-        // fall through!
     case ID_THEAD:
     case ID_TFOOT:
+        popBlock( ID_THEAD );
+        popBlock( ID_TBODY );
+        popBlock( ID_TFOOT );
         n = new HTMLTableSectionElementImpl(document, t->id);
         break;
 
