@@ -242,6 +242,7 @@ if (ok==0)
 
 #ifdef DEVICEMANDEBUG
 printf("Devices opened\n");
+printf("rate: %d\n",rate);
 #endif
 };
 
@@ -333,6 +334,8 @@ SEQ_WAIT_TIME(((int)(ticks/convertrate)));
 void DeviceManager::tmrSetTempo(int v)
 {
 //device[default_dev]->tmrSetTempo(v);
+SEQ_SET_TEMPO(v);
+SEQ_DUMPBUF();
 };
 
 void DeviceManager::tmrStart(void)

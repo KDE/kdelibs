@@ -52,4 +52,5 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok);
 
 void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm);
 
+int fsearch(FILE *fh,const char *text,long *ptr=NULL);
 #endif

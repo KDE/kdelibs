@@ -81,12 +81,11 @@ while (n>0)
 pclose(infile);
 
 //if (pclose(infile) != 0) fprintf(stderr,"Error : pclose failed\n");
-// Is it a right that pclose always fail ?
+// Is it right for pclose to always fail ?
 
 fclose(outfile);
 return 0;
 };
-
 
 track **readMidiFile(char *name,midifileinfo *info,int &ok)
 {
@@ -116,12 +115,20 @@ if ((strncmp(text,"MThd",4)!=0)&&(strcmp(&name[strlen(name)-3],".gz")==0))
 	fread(text,1,4,fh);
 	unlink(tempname);
 	};
+
 if (strncmp(text,"MThd",4)!=0)
 	{
-	fclose(fh);
-	printf("ERROR: %s is not a midi file\n",name);
-	ok=-2;
-	return NULL;
+	fseek(fh,0,SEEK_SET);
+	long pos;
+	if (fsearch(fh,"MThd",&pos)==0)
+	    {	
+	    fclose(fh);
+	    printf("ERROR: %s is not a midi file.\n",name);
+	    ok=-2;
+	    return NULL;
+	    };
+	fseek(fh,pos,SEEK_SET);
+	fread(text,1,4,fh);
 	};
 long header_size=readLong(fh);
 info->format=readShort(fh);
@@ -130,6 +137,7 @@ info->ticksPerCuarterNote=readShort(fh);
 if (info->ticksPerCuarterNote<0)
 	{
 	printf("ERROR: Ticks per cuarter note is negative !\n");
+	printf("Please report this error to : antlarr@arrakis.es\n");
 	fclose(fh);
 	ok=-3;
 	return NULL;
@@ -291,7 +299,6 @@ double minTime=0;
 double maxTime;
 ulong tmp;
 Midi_event *ev=new Midi_event;
-int pgm;
 int pgminchannel[16];
 for (i=0;i<16;i++)
    {
@@ -369,4 +376,44 @@ for (i=0;i<info->ntracks;i++)
 
 };
 
-
+int fsearch(FILE *fh,const char *text,long *ptr)
+// Search for "text" throught the fh file and then returns :
+// text MUST BE smaller than 256 characters
+//   0 if not was found 
+//   1 if it was found and in ptr (if !=NULL) the position where text begins.
+{
+if ((text==NULL)||(text[0]==0)) return 0;
+char buf[1024];
+char tmp[256];
+long pos;
+int l=strlen(text);
+int i,k,r;
+while (!feof(fh))
+    {
+    pos=ftell(fh);
+    k=fread(buf,1,1024,fh);
+    i=0;
+    while (i<k)
+	{
+	if (buf[i]==text[0])
+	    {
+	    if (k-i>=l)
+		r=strncmp(text,&buf[i],l);
+	      else
+		{
+		fseek(fh,pos+i,SEEK_SET);
+		if (fread(tmp,1,l,fh)<(uint)l) return 0;
+		fseek(fh,pos+k,SEEK_SET);
+		r=strncmp(text,tmp,l);
+		};
+	    if (r==0)
+		{
+		if (ptr!=NULL) *ptr=pos+i;
+		return 1;
+		};
+	    };
+	i++;
+	};
+    };
+return 0;
+};

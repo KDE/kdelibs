@@ -200,7 +200,6 @@ printf("Playing...\n");
 midi->openDev();
 if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
 midi->initDev();
-
 parsePatchesUsed(tracks,info,ctl->gm);
 midi->setPatchesToUse(info->patchesUsed);
 
