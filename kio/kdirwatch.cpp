@@ -185,6 +185,7 @@ KDirWatch::KDirWatch (int _freq)
 #endif
   if (d->supports_dnotify)
   {
+     kdDebug(7001) << "KDirWatch: Will use Linux Directory Notifications when available." << endl;
      if (kdirwatch_dnotify_handler == 0)
          kdirwatch_dnotify_handler = new KDirWatchNotifyHandler();
 
@@ -329,6 +330,7 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
             fcntl(fd, F_NOTIFY, DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT) < 0)
        {
           if(fd >= 0) {
+             kdDebug(7001) << "KDirWatch: Not using Linux Directory Notifications." << endl;
              d->supports_dnotify = false;
              ::close(fd);
           }
@@ -339,9 +341,11 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
           e->dn_fd = fd;
        }
     }
-    if (path != "/")
-    {
-       addDir(QDir::cleanDirPath(path+"/.."), e);
+    if(d->supports_dnotify) {
+      if (path != "/")
+      {
+         addDir(QDir::cleanDirPath(path+"/.."), e);
+      }
     }
   }
 #endif
@@ -358,6 +362,7 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
   {
     d->timer->start(d->freq);      // then start the timer
   }
+
 }
 
 time_t KDirWatch::ctime( const QString &_path )
@@ -376,6 +381,7 @@ time_t KDirWatch::ctime( const QString &_path )
 
   return (*it).m_ctime;
 }
+
 void KDirWatch::removeDir( const QString& _path )
 {
   removeDir(_path, 0);
@@ -415,16 +421,19 @@ void KDirWatch::removeDir( const QString& _path, void *_entry )
 #endif
 
 #ifdef HAVE_DNOTIFY
-  // must close the FD.
-  if ((*it).dn_fd)
+  if (d->supports_dnotify)
   {
-    ::close((*it).dn_fd);
-    kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
-    (*it).dn_fd = 0;
-  }
-  if (path != "/")
-  {
-     removeDir(QDir::cleanDirPath(path+"/.."), &(*it));
+    // must close the FD.
+    if ((*it).dn_fd)
+    {
+      ::close((*it).dn_fd);
+      kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
+      (*it).dn_fd = 0;
+    }
+    if (path != "/")
+    {
+      removeDir(QDir::cleanDirPath(path+"/.."), &(*it));
+    }
   }
 #endif
 
@@ -553,11 +562,14 @@ void KDirWatch::slotRescan()
   KDirWatchPrivate::EntryMap::Iterator it;
 
 #ifdef HAVE_DNOTIFY
-  it = d->m_mapDirs.begin();
-  for( ; it != d->m_mapDirs.end(); ++it )
+  if (d->supports_dnotify)
   {
-    if((*it).dn_dirty)
-      propagate_dirty(&(*it));
+    it = d->m_mapDirs.begin();
+    for( ; it != d->m_mapDirs.end(); ++it )
+    {
+      if((*it).dn_dirty)
+        propagate_dirty(&(*it));
+    }
   }
 #endif
 
@@ -566,10 +578,13 @@ void KDirWatch::slotRescan()
   {
     const QString &path = it.key();
 #ifdef HAVE_DNOTIFY
-    // we know nothing has changed, no need to stat
-    if(!(*it).dn_dirty)
-      continue;
-    (*it).dn_dirty = false;
+    if (d->supports_dnotify)
+    { 
+      // we know nothing has changed, no need to stat
+      if(!(*it).dn_dirty)
+        continue;
+      (*it).dn_dirty = false;
+    }
 #endif
 
     struct stat statbuff;
@@ -584,12 +599,15 @@ void KDirWatch::slotRescan()
          }
          del.append( path );
 #ifdef HAVE_DNOTIFY
-         // must close the FD.
-         if ((*it).dn_fd)
+         if (d->supports_dnotify)
          {
-           ::close((*it).dn_fd);
-           kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
-           (*it).dn_fd = 0;
+           // must close the FD.
+           if ((*it).dn_fd)
+           {
+             ::close((*it).dn_fd);
+             kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
+             (*it).dn_fd = 0;
+           }
          }
 #endif
       }
