@@ -1541,6 +1541,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 
 	  // Did we have an error ?
 	  if ( job.hasError() ) {
+            http_closeConnection(); 
 	    int currentError = job.errorId();
 	    
 	    kdebug( KDEBUG_INFO, 7103, "kio_http : ################# COULD NOT PUT %d",currentError);
@@ -1555,7 +1556,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	      SkipDlg_Result r;
 	      r = open_SkipDlg( tmp2, ( _source.count() > 1 ) );
 	      if ( r == S_CANCEL ) {
-		http_close();
 		error( ERR_USER_CANCELED, "" );
 		m_cmd = CMD_NONE;
 		return;
@@ -1609,7 +1609,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 		r = open_RenameDlg( *fit, tmp2, m, n );
 	      }
 	      if ( r == R_CANCEL ) {
-		http_close();
 		error( ERR_USER_CANCELED, "" );
 		m_cmd = CMD_NONE;
 		return;
@@ -1657,7 +1656,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	    }
 	    // No need to ask the user, so raise an error and finish
 	    else {    
-	      http_closeConnection();
 	      error( currentError, job.errorText() );
 	      m_cmd = CMD_NONE;
 	      return;
