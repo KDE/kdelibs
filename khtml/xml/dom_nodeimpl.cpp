@@ -188,14 +188,14 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
   return 0;
 }
 
-QString NodeImpl::toHTML()
+QString NodeImpl::toHTML() const
 {
     long offset = 0;
     const int stdInc = 10000;
     long currentLength = stdInc;
     QChar *htmlText = QT_ALLOC_QCHAR_VEC(stdInc);
 
-    recursive( htmlText, currentLength, offset, stdInc );
+    const_cast<NodeImpl *>(this)->recursive( htmlText, currentLength, offset, stdInc );
     QString finishedHtmlText( htmlText, offset );
     return finishedHtmlText;
 }
@@ -659,6 +659,26 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     return oldChild;
 }
 
+void NodeBaseImpl::removeChildren()
+{
+    NodeImpl *n, *next;
+    for( n = _first; n != 0; n = next )
+    {
+	next = n->nextSibling();
+        n->setPreviousSibling(0);
+        n->setNextSibling(0);
+	n->setParent(0);
+	if (n->renderer() && n->renderer()->parent())
+	    n->renderer()->parent()->removeChild(n->renderer());
+	if(n->deleteMe())
+	    delete n;
+	else
+	    n->setOwnerDocument(0);
+    }
+    _first = _last = 0;
+}
+
+
 NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
 //    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
@@ -692,9 +712,9 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 	}
 
 	// if already in the tree, remove it first!
-	NodeImpl *newParent = child->parentNode();
-	if(newParent)
-	    newParent->removeChild( child, exceptioncode );
+	NodeImpl *oldParent = child->parentNode();
+	if(oldParent)
+	    oldParent->removeChild( child, exceptioncode );
 	if ( exceptioncode )
 	    return 0;
 

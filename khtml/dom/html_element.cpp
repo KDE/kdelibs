@@ -23,6 +23,7 @@
 #include "dom_string.h"
 #include "html_element.h"
 #include "html_elementimpl.h"
+#include "dom_exception.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -144,3 +145,32 @@ DOMString HTMLElement::getCSSProperty( const DOM::DOMString &prop )
     return ((HTMLElementImpl *)impl)->getCSSProperty( prop );
 }
 
+DOMString HTMLElement::innerHTML() const
+{
+    if ( !impl ) return 0;
+    return ((HTMLElementImpl *)impl)->innerHTML();
+}
+
+void HTMLElement::setInnerHTML( const DOMString &html )
+{
+    bool ok = false;
+    if( impl )
+	ok = ((HTMLElementImpl *)impl)->setInnerHTML( html );
+    if ( !ok )
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+}
+    
+DOMString HTMLElement::innerText() const
+{
+    if ( !impl ) return 0;
+    return ((HTMLElementImpl *)impl)->innerText();
+}
+
+void HTMLElement::setInnerText( const DOMString &text )
+{
+    bool ok = false;
+    if( impl )
+	ok = ((HTMLElementImpl *)impl)->setInnerText( text );
+    if ( !ok )
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+}

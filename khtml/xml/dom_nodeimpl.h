@@ -210,7 +210,7 @@ public:
     // ### check if this function is still needed at all...
     virtual bool isInline() { return true; }
     virtual void printTree(int indent=0) const;
-    virtual QString toHTML();
+    virtual QString toHTML() const;
     virtual void recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc );
     virtual bool increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc );
 
@@ -299,6 +299,7 @@ public:
     virtual bool hasChildNodes (  );
 
     // not part of the DOM
+    void removeChildren();
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
     virtual NodeImpl *addChild(NodeImpl *newChild);

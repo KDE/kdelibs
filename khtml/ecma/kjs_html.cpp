@@ -805,6 +805,10 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     return getString(element.dir());
   else if (p == "className") // ### isn't this "class" in the HTML spec?
     return getString(element.className());
+  else if ( p == "innerHTML")
+      return getString(element.innerHTML());
+  else if ( p == "innerText")
+      return getString(element.innerText());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
     return DOMElement::tryGet(p);
@@ -1470,6 +1474,10 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     element.setDir(str);
   else if (p == "className")
     element.setClassName(str);
+  else if ( p == "innerHTML")
+      element.setInnerHTML(str);
+  else if ( p == "innerText")
+      element.setInnerText(str);
   else
     DOMElement::tryPut(p,v);
 }

@@ -72,6 +72,11 @@ public:
     virtual void blur(){};
     virtual void focus(){};
 
+    DOMString innerHTML() const;
+    DOMString innerText() const;
+    bool setInnerHTML( const DOMString &html );
+    bool setInnerText( const DOMString &text );
+    
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
 

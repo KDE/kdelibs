@@ -39,6 +39,7 @@
 #include "css/css_valueimpl.h"
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
+#include "xml/dom_textimpl.h"
 
 #include <kdebug.h>
 
@@ -381,6 +382,63 @@ void HTMLElementImpl::getAnchorBounds(int &xPos, int &yPos)
 	    return;
 	}
     }
+}
+
+DOMString HTMLElementImpl::innerHTML() const
+{
+    return toHTML();
+}
+
+DOMString HTMLElementImpl::innerText() const
+{
+    DOMString text;
+    
+    NodeImpl *n = firstChild();
+    // find the next text/image after the anchor, to get a position
+    while(n) {
+	if(n->firstChild())
+	    n = n->firstChild();
+	else if(n->nextSibling())
+	    n = n->nextSibling();
+	else {
+	    NodeImpl *next = 0;
+	    while(!next) {
+		n = n->parentNode();
+		if(!n || n == (NodeImpl *)this ) goto end;
+		next = n->nextSibling();
+	    }
+	    n = next;
+	}
+	if(n->isTextNode() ) {
+	    text += static_cast<TextImpl *>(n)->data();
+	}
+    }
+ end:
+    return text;
+}
+
+bool HTMLElementImpl::setInnerHTML( const DOMString &html )
+{
+    if( endTag() == FORBIDDEN )
+	return false;
+    
+    kdDebug() << "HTMLElementImpl::setInnerHTML " << html.string() << endl; 
+    return true;
+}
+
+bool HTMLElementImpl::setInnerText( const DOMString &text )
+{
+    if( endTag() == FORBIDDEN )
+	return false;
+    
+    removeChildren();
+    
+    TextImpl *t = new TextImpl( ownerDocument(), text );
+    int ec = 0;
+    appendChild( t, ec );
+    if ( !ec )
+	return true;
+    return false;
 }
 
 // -------------------------------------------------------------------------

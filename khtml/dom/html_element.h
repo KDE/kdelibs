@@ -154,6 +154,36 @@ public:
      */
     void setClassName( const DOMString & );
 
+    /**
+     * The HTML code contained in this element.
+     * This function is not part of the DOM specifications as defined by the w3c.
+     */
+    DOMString innerHTML() const;
+
+    /**
+     * Set the HTML content of this node.
+     *
+     * @exception DOMException
+     * NO_MODIFICATION_ALLOWED_ERR: Raised if there is the element does not allow
+     * children.
+     */
+    void setInnerHTML( const DOMString &html );
+    
+    /**
+     * The text contained in this element.
+     * This function is not part of the DOM specifications as defined by the w3c.
+     */
+    DOMString innerText() const;
+
+    /**
+     * Set the text content of this node. 
+     *
+     * @exception DOMException
+     * NO_MODIFICATION_ALLOWED_ERR: Raised if there is the element does not allow
+     * children.
+     */
+    void setInnerText( const DOMString &text );
+    
     /*
      * @internal
      */
