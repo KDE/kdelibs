@@ -958,7 +958,10 @@ public:
 #ifdef KDE_NO_COMPAT
 private:
 #endif
-  QString filename( bool _ignore_trailing_slash_in_path = true ) const
+  /**
+   * @depreciated change code to call fileName()
+   */
+	QString filename( bool _ignore_trailing_slash_in_path = true ) const
   {
     return fileName(_ignore_trailing_slash_in_path);
   }
