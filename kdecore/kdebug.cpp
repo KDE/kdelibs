@@ -34,7 +34,7 @@
 #endif
 
 // Other includes needed by kDebug* functions.
-
+#include "kapp.h"
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstandarddirs.h"
@@ -211,7 +211,10 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
     nOutput = debug_Config ? debug_Config->readNumEntry(key, 2) : 2;
   }
 
-
+  // If the application doesn't have a QApplication object it can't use
+  // a messagebox.
+  if (!kapp && (nOutput == 1))
+    nOutput = 2;
 
   // Output
   switch( nOutput )
