@@ -820,7 +820,7 @@ void KFileIconView::slotAutoOpen()
 bool KFileIconView::acceptDrag(QDropEvent* e) const
 {
    return KURLDrag::canDecode( e ) &&
-       (e->source()!=this) &&
+       (e->source()!=const_cast<KFileIconView*>(this)) &&
        ( e->action() == QDropEvent::Copy
       || e->action() == QDropEvent::Move
       || e->action() == QDropEvent::Link );
