@@ -1,0 +1,29 @@
+dnl CUPS stuffs (to be changed)
+ac_use_cups="yes"
+CUPSSUBDIR=
+LIB_KDEPRINT_CUPS=
+LIB_CUPS=
+AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=enabled]],[ac_use_cups="no"])
+if test "$ac_use_cups" = "yes"; then
+  ac_cups_libs=0
+  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$LIBDL)
+  if test "$ac_cups_libs" = "0"; then
+    AC_MSG_WARN(CUPS library not found. CUPS support disabled)
+    ac_use_cups="no"
+  fi
+  ac_cups_headers=0
+  AC_CHECK_HEADER(cups/cups.h,[ac_cups_headers=1])
+  if test "$ac_cups_headers" = "0"; then
+    AC_MSG_WARN(CUPS headers not found. CUPS support disabled)
+    ac_use_cups="no"
+  fi
+fi
+if test "$ac_use_cups" = "yes"; then
+  CUPSSUBDIR="cups"
+  LIB_KDEPRINT_CUPS="./cups/libkdeprint_cups.la"
+  LIB_CUPS="-lcups"
+  AC_DEFINE(HAVE_CUPS, 1, [Defines if you have CUPS (Common UNIX Printing System)])
+fi
+AC_SUBST(CUPSSUBDIR)
+AC_SUBST(LIB_KDEPRINT_CUPS)
+AC_SUBST(LIB_CUPS)
