@@ -147,6 +147,10 @@ static bool process_flags(int flags, int& socktype, int& familyMask, int& outfla
   outflags = (flags & KExtendedSocket::passiveSocket ? QResolver::Passive : 0) |
     (flags & KExtendedSocket::canonName ? QResolver::CanonName : 0) |
     (flags & KExtendedSocket::noResolve ? QResolver::NoResolve : 0);
+
+  if (getenv("KDE_NO_IPV6"))
+    familyMask &= ~QResolver::IPv6Family;
+
   return true;
 }
 
