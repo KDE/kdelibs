@@ -47,7 +47,7 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
     for ( ; it.current() ; ++it )
         if ( it.current()->path() == bookmarksFile )
             return it.current();
-    
+
     KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, bImportDesktopFiles );
     s_pSelf->append( mgr );
     return mgr;
@@ -385,6 +385,11 @@ bool KBookmarkManager::showNSBookmarks() const
 {
     // The attr name is HIDE, so that the default is to show them
     return root().internalElement().attribute("hide_nsbk") != "yes";
+}
+
+void KBookmarkManager::setShowNSBookmarks( bool show )
+{
+    root().internalElement().setAttribute("hide_nsbk", show ? "no" : "yes");
 }
 
 void KBookmarkManager::slotEditBookmarks()

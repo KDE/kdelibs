@@ -134,6 +134,12 @@ public:
     bool showNSBookmarks() const;
 
     /**
+     * Shows an extra menu for NS bookmarks. Set this to false, if you don't
+     * want this.
+     */
+    void setShowNSBookmarks( bool show );
+    
+    /**
      * This static function will return an instance of the
      * KBookmarkManager, responsible for the given @p bookmarksFile.
      * If you do not instantiate this class either
