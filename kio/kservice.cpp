@@ -142,7 +142,7 @@ KService::init( KDesktopFile *config )
   if (pos != -1)
      name = name.left(pos);
 
-  m_strDesktopEntryName = name;
+  m_strDesktopEntryName = name.lower();
   
   if ( m_strType == "Application" )
     // Specify AllowDefault = false to explicitely forbid it.
