@@ -216,7 +216,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 {
     //kdDebug(7043) << "KBookmarkManager::save " << filename << endl;
 
-    // Save the bookmark toolbar folder for quick loading
+    // Save the bookmark toolbar folder for quick loading 
     // but only when it will actually make things quicker
     const QString cacheFilename = filename + QString::fromLatin1(".tbcache");
     if(toolbarCache && !root().isToolbarGroup())
@@ -437,7 +437,7 @@ KBookmarkMap::KBookmarkMap(KBookmarkManager *manager) {
 
 void KBookmarkMap::update()
 {
-    kdDebug(7043) << "KBookmarkMap::update() - started ..." << endl;
+    //kdDebug(7043) << "KBookmarkMap::update() - started ..." << endl;
 
     m_bk_map.clear();
 
@@ -469,7 +469,7 @@ void KBookmarkMap::update()
         {
             if (stack.isEmpty()) 
             {
-                kdDebug(7043) << "KBookmarkMap::update() - ... all done" << endl;
+                //kdDebug(7043) << "KBookmarkMap::update() - ... all done" << endl;
                 // an empty stack and no next 
                 // indicates the end of the road
                 return;
@@ -493,8 +493,8 @@ static bool s_dirty = true;
 
 QValueList<KBookmark> KBookmarkMap::find(const KURL &url)
 {
-    kdDebug(7043) << " KBookmarkMap::find(" << url.url() << ")"
-                  << " size( " << m_bk_map.count() << ")" << endl;
+    //kdDebug(7043) << " KBookmarkMap::find(" << url.url() << ")"
+    //              << " size( " << m_bk_map.count() << ")" << endl;
 
     if (1 || s_dirty) 
     {
@@ -510,7 +510,7 @@ static KBookmarkMap *s_bk_map = 0;
 
 void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
-    kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
+    //kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
    
     if (!s_bk_map) 
     {
