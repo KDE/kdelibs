@@ -981,11 +981,13 @@ class KFileMetaInfoGroup::Data : public QShared
 public:
     Data(const QString& _name)
         : QShared(),
-          name(_name)
+          name(_name),
+          mimeTypeInfo(0L)
     {}
 
-    // wee use this one for the streaming operators
-    Data() {
+    // we use this one for the streaming operators
+    Data() : mimeTypeInfo(0L) {}
+    ~Data() {
         if ( this == null )
             delete mimeTypeInfo;
     };
