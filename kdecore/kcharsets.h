@@ -68,11 +68,13 @@ public:
      */
     QTextCodec *codecForName(const QString &n, bool &ok) const;
 
+#if QT_VERSION < 300
     /**
      * overloaded member function. Usually you don't mind getting unicode charsets, so
      * this method should rarely be needed.
      */
     QFont::CharSet charsetForEncoding(const QString &encoding, bool noUnicode = false ) const;
+#endif
 
     /**
      * converts an entity to a character. The string must contain only the
@@ -96,6 +98,7 @@ public:
      */
     QString toEntity(const QChar &ch) const;
 
+#if QT_VERSION < 300
     /**
      * lists all available charsets for a given family.
      * if family is omitted, it will return all charsets available.
@@ -108,6 +111,7 @@ public:
      * as above, but returns the names of the charsets
      */
     QStringList availableCharsetNames(QString family = QString::null);
+#endif
 
         /**
          * Lists all available encodings as names.
@@ -129,6 +133,7 @@ public:
      */
     QString encodingForName( const QString &descriptiveName );
 	    
+#if QT_VERSION < 300
     /**
      * @returns a QFont, which can print the character given, and is closest
      * to the font given. if no mathing font could be found, the returned font
@@ -211,6 +216,7 @@ public:
     QString xCharsetName(QFont::CharSet) const;
     QFont::CharSet nameToID(QString name) const;
     QFont::CharSet xNameToID(QString name) const;
+#endif
 
 private:
     KCharsetsPrivate *d;

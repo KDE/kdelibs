@@ -222,6 +222,7 @@ QFont KRootProp::readFontEntry( const QString& rKey,
       return aRetFont;
   }
 
+#if QT_VERSION < 300
   QString chStr=aValue.mid( nOldIndex+1,
 			    nIndex-nOldIndex-1 );
   bool chOldEntry;			
@@ -236,6 +237,7 @@ QFont KRootProp::readFontEntry( const QString& rKey,
 	  else chStr = "iso-8859-1";
       KGlobal::charsets()->setQFont(aRetFont,chStr);
   }
+#endif
   // find fifth part (weight)
   nOldIndex = nIndex;
   nIndex = aValue.find( ',', nOldIndex+1 );
@@ -342,8 +344,10 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
     nFontBits = nFontBits | 0x20;
 
   QString aCharset = "default";
+#if QT_VERSION < 300
   if( rFont.charSet() != QFont::AnyCharSet )
       aCharset.setNum( static_cast<int>(rFont.charSet()) );
+#endif
   
   QTextIStream ts( &aValue );
   ts << rFont.family() << "," << rFont.pointSize() << "," 

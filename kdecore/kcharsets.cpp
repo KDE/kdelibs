@@ -35,7 +35,9 @@
 #include <qmap.h>
 #include <qcstring.h>
 
+#if QT_VERSION < 300
 template class QList<QFont::CharSet>;
+#endif
 
 #if QT_VERSION >= 224
 #define CHARSETS_COUNT 32
@@ -120,6 +122,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
         // adjust xNameToId if you remove this
 };
 
+#if QT_VERSION < 300
 static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Unicode,
     QFont::ISO_8859_1,
@@ -156,6 +159,7 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::ISO_8859_11,
     QFont::AnyCharSet
 };
+#endif // QT_VERSION < 300
 
 static const char * const languages[] = {
     I18N_NOOP( "other" ),
@@ -184,27 +188,36 @@ public:
         : codecForNameDict(43, false) // case insensitive
     {
         db = 0;
+#if QT_VERSION < 300
         availableCharsets = 0;
+#endif
         kc = _kc;
         conf = new KConfig( "charsets", true, false );
     }
     ~KCharsetsPrivate()
     {
         delete db;
+#if QT_VERSION < 300
         delete availableCharsets;
+#endif
         delete conf;
     }
     QFontDatabase *db;
+#if QT_VERSION < 300
     QMap<QFont::CharSet, QStrList> *availableCharsets;
     QMap<QCString, QFont::CharSet> charsetForEncodingMap;
     QMap<QString, QFont::CharSet> nameToIDMap;
+#endif
     QAsciiDict<QTextCodec> codecForNameDict;
     KCharsets* kc;
     KConfig* conf;
 
+#if QT_VERSION < 300
     void getAvailableCharsets();
+#endif
 };
 
+#if QT_VERSION < 300
 void KCharsetsPrivate::getAvailableCharsets()
 {
     if(availableCharsets)
@@ -264,6 +277,7 @@ void KCharsetsPrivate::getAvailableCharsets()
 #endif
 }
 
+#endif
 
 
 // --------------------------------------------------------------------------
@@ -337,6 +351,7 @@ QString KCharsets::toEntity(const QChar &ch) const
     return ent;
 }
 
+#if QT_VERSION < 300
 QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
 {
     if(!d->db)
@@ -369,7 +384,7 @@ QStringList KCharsets::availableCharsetNames(QString family)
     }
     return chsetNames;
 }
-
+#endif
 
 QStringList KCharsets::availableEncodingNames()
 {
@@ -388,7 +403,12 @@ QStringList KCharsets::availableEncodingNames()
         // iterate thorugh the list and find the first charset that is available
         for ( QStringList::ConstIterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
             //kdDebug(0) << "checking for " << *sit << endl;
+#if QT_VERSION < 300	
             if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
+#else
+#warning FIXME?
+            if( true ) {
+#endif
                 //kdDebug(0) << *sit << " available" << endl;
                 available.append(it.key());
                 break;
@@ -424,6 +444,8 @@ QStringList KCharsets::descriptiveEncodingNames()
   encodings.sort();
   return encodings;
 }
+
+#if QT_VERSION < 300
 
 QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
@@ -700,6 +722,7 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     return QFont::AnyCharSet;
 }
 
+#endif
 
 QTextCodec *KCharsets::codecForName(const QString &n) const
 {
@@ -789,6 +812,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     return QTextCodec::codecForName("iso8859-1");
 }
 
+#if QT_VERSION < 300
 QFont::CharSet KCharsets::charsetForEncoding(const QString &e, bool noUnicode) const
 {
     QCString encoding = e.lower().latin1();
@@ -896,3 +920,5 @@ bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
 
     return QFontMetrics(f).inFont( ch );
 }
+
+#endif

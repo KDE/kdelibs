@@ -275,12 +275,20 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 	if (w > 0 && h > 0){
 	    QPixmap pm(w, h, depth);
 	    XCopyArea(qt_xdisplay(), p, pm.handle(),
+#if QT_VERSION < 300
 		      qt_xget_temp_gc(depth==1),
+#else
+		      qt_xget_temp_gc(qt_xscreen(), depth==1),
+#endif
 		      0, 0, w, h, 0, 0);
 	    if (p_mask != None){
 		QBitmap bm(w, h);
 		XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
+#if QT_VERSION < 300
 			  qt_xget_temp_gc(true),
+#else
+			  qt_xget_temp_gc(qt_xscreen(), true),
+#endif
 			  0, 0, w, h, 0, 0);
 		pm.setMask(bm);
 	    }

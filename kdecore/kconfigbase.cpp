@@ -669,6 +669,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       QString chStr=aValue.mid( nOldIndex+1,
                                 nIndex-nOldIndex-1 );
+#if QT_VERSION < 300
       bool chOldEntry;
       QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1,
                                                       nIndex-nOldIndex-1 ).toUInt(&chOldEntry);
@@ -681,6 +682,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
           else chStr = "iso-8859-1";
         KGlobal::charsets()->setQFont(aRetFont,chStr);
       }
+#endif
 
       // find fifth part (weight)
       nOldIndex = nIndex;
@@ -1318,8 +1320,10 @@ void KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
     nFontBits = nFontBits | 0x20;
 
   QString aCharset = QString::fromLatin1("default");
+#if QT_VERSION < 300
   if( rFont.charSet() != QFont::AnyCharSet )
       aCharset.setNum( static_cast<int>(rFont.charSet()) );
+#endif
 
   QTextOStream ts( &aValue );
   ts << rFont.family() << "," << rFont.pointSize() << ","
