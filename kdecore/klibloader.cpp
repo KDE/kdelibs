@@ -46,6 +46,11 @@ KLibFactory::~KLibFactory()
 
 // -----------------------------------------------
 
+class KLibraryPrivate {
+public:
+    bool do_not_unload;
+};
+
 KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle handle )
 {
     m_libname = libname;
@@ -53,6 +58,12 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle
     m_handle = handle;
     m_factory = 0;
     m_timer = 0;
+    d = new KLibraryPrivate;
+    d->do_not_unload = false;
+    if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
+        kdDebug(150) << "Will not unload " << libname << endl;
+	d->do_not_unload = true;
+    }
 }
 
 KLibrary::~KLibrary()
@@ -90,7 +101,8 @@ KLibrary::~KLibrary()
     // to text. That should be safe as it only uses objects defined by Qt.
     kapp->clipboard()->setText(kapp->clipboard()->text());
 
-    lt_dlclose( m_handle );
+    if (!d->do_not_unload)
+        lt_dlclose( m_handle );
 }
 
 QString KLibrary::name() const
