@@ -23,6 +23,8 @@
  */
 // -------------------------------------------------------------------------
 
+//#define BUTTON_DEBUG
+
 #include <stdio.h>
 
 #include <klocale.h>
@@ -486,7 +488,11 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
 {
     view = _view;
 
+#ifdef BUTTON_DEBUG
+    QPushButton *b = new QPushButton(0);
+#else
     QPushButton *b = new QPushButton(view->viewport());
+#endif
     w = b;
 
     switch(_type)
@@ -498,7 +504,6 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
 	else
 	    b->setText(i18n("Submit Query"));
 	QObject::connect(b, SIGNAL(clicked()), this, SLOT(slotSubmit()));
-	view->addChild(w, 0, 0);
 	break;
     }
     case RESET:
@@ -507,7 +512,6 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
 	    b->setText( _value.string() );
 	else
 	    b->setText( i18n("Reset") );
-	view->addChild(w, 0, 0);
 	QObject::connect(b, SIGNAL(clicked()), form(), SLOT(slotReset()));
 	break;
     }
@@ -517,7 +521,6 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
 	    b->setText( _value.string() );
 	else
 	    b->setText( "" );
-	view->addChild(w, 0, 0);
 	break;
     }
     }
@@ -542,6 +545,12 @@ void HTMLButtonElementImpl::layout( bool deep )
 	p.eraseRect(0, 0, width, getHeight());
 	dirty = true;
     }
+
+    int h = getHeight();
+    // accounts for the buttons border
+    descent = 5;
+    ascent = h;
+    width += 5;
     setLayouted();
     setBlocking(false);
 }
@@ -575,13 +584,25 @@ void HTMLButtonElementImpl::slotSubmit()
     if(form()) _form->slotSubmit();
 }
 
-void HTMLButtonElementImpl::print(QPainter *, int _x, int _y, int _w, int _h, int tx, int ty)
+void HTMLButtonElementImpl::print(QPainter *painter, int _x, int _y, int _w, int _h, int tx, int ty)
 {
+  // hack!!!
+  int oldascent = ascent;
+  int olddescent = descent;
+
+  ascent = 0;
+  descent = oldascent + olddescent;
+
+#ifdef BUTTON_DEBUG
+    HTMLBlockElementImpl::print(painter, _x, _y - oldascent, _w, _h, tx, ty);
+    printf("button: ascent=%d descent=%d width=%d\n", ascent, descent, width);
+    printf("x=%d y=%d\n", x, y);
+#endif
     if(!w) return;
     QPainter *p = new QPainter;
     p->begin(&pixmap);
-    p->translate(-tx-x, -ty-y);
-    HTMLBlockElementImpl::print(p, tx+x, ty+y, width, getHeight(), tx, ty);
+    p->translate(-x, -y);
+    HTMLBlockElementImpl::print(p, x, y, width, getHeight(), 0, 0);
     p->end();
     delete p;
     static_cast<QPushButton *>(w)->setPixmap(pixmap);
@@ -590,12 +611,16 @@ void HTMLButtonElementImpl::print(QPainter *, int _x, int _y, int _w, int _h, in
     {
 	tx += x;
 	ty += y - ascent;
-	view->addChild(w, tx, ty);
+#ifndef BUTTON_DEBUG
+	view->addChild(w, tx, ty - oldascent);
+#endif
 	// ### we have to set the background somehow...
 	w->show();
 	badPos = false;
     }
     dirty = false;
+    ascent = oldascent;
+    descent = olddescent;
 }
 
 // -------------------------------------------------------------------------

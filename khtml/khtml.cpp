@@ -1008,6 +1008,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
     {
 	QPainter p(viewport());
 
+	// ### use kapp->palette().normal().brush(QColorGroup::Background)
 	if(_settings) 
 	    p.fillRect(r.x(), r.y(), ew, eh, _settings->bgColor);
 	else if(defaultSettings)

@@ -160,6 +160,8 @@ public:
 	RESET,
 	BUTTON
     };
+    virtual bool isInline() { return true; }
+    virtual bool childrenRendered() { return false; }
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
