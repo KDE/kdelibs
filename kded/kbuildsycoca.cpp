@@ -36,7 +36,7 @@
 #include <qtimer.h>
 
 #include <assert.h>
-#include <kinstance.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
@@ -485,7 +485,9 @@ int main(int argc, char **argv)
    KCmdLineArgs::addCmdLineOptions(options);
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-   KInstance k(&d);
+   KApplication::disableAutoDcopRegistration();
+   KApplication k(false, false);
+   k.disableSessionManagement();
 
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(NULL);
