@@ -1257,6 +1257,22 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
         }
     }
 
+    // we must return *some* encoding, so let it be the first if
+    // necessary
+    if (!successful && (m_listItems[0]->id() == ID_OPTION) ) {
+        HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[0]);
+        if (option->value().isNull() || option->value() == "") {
+            // HACK HACK
+            // sometimes, the text label has an extra space after it.
+            // this should really be fixed somewhere else...
+            QString str(option->text().string());
+            encoded_values += str.simplifyWhiteSpace().local8Bit();
+        }
+        else
+            encoded_values += option->value().string().local8Bit();
+        successful = true;
+    }
+
     return successful;
 
 }
