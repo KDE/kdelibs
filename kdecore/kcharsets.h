@@ -25,8 +25,6 @@
 #include <qstringlist.h>
 #include <qlist.h>
 
-struct KFontStruct;
-class KFontStructList;
 class KGlobal;
 class KCharsetsPrivate;
 
@@ -49,14 +47,14 @@ class KCharsets
 
 protected:
     /** protected constructor. If you need the kcharsets object, use
-	@ref KGlobal::charsets() instead.
+        @ref KGlobal::charsets() instead.
     */
     KCharsets();
 
 public:
 
     /** destructor */
-    virtual ~KCharsets(){}
+    virtual ~KCharsets();
 
     /**
      * tries to find a QTextCodec to convert the given encoding from and to
@@ -69,11 +67,11 @@ public:
      * file in the given encoding)
      */
     QFont::CharSet charsetForEncoding(const QString &encoding) const;
-    
+
     /**
      * converts an entity to a character. The string must contain only the
      * entity without the trailing ';'.
-     *	@returns QChar::null if the entity could not be decoded.
+     *  @returns QChar::null if the entity could not be decoded.
      */
     QChar fromEntity(const QString &str) const;
     /**
@@ -103,10 +101,10 @@ public:
      */
     QStringList availableCharsetNames(QString family = QString::null);
 
-	/**
-	 * Lists all available encodings as names.
-	 */
-	QStringList availableEncodingNames();
+        /**
+         * Lists all available encodings as names.
+         */
+        QStringList availableEncodingNames();
 
     /**
      * @returns a QFont, which can print the character given, and is closest
@@ -170,9 +168,6 @@ public:
     enum WeightType { WeightUnknown, Medium, Bold };
     enum SlantType { SlantUnknown, Normal, Italic };
 
-protected:
-    void getFontList(KFontStruct mask, KFontStructList& lst) const;
-
 public:
     QString xCharsetName(QFont::CharSet) const;
     QFont::CharSet nameToID(QString name) const;
@@ -180,36 +175,6 @@ public:
 
 private:
     KCharsetsPrivate *d;
-};
-
-/**
- * Information about a font.
- * @internal
- * @deprecated
- */
-struct KFontStruct {
-    KFontStruct();
-    KFontStruct & operator = (const QFont &f);
-    KFontStruct & operator = (const KFontStruct &fs);
-    operator QFont();
-
-    QString family;
-    QFont::CharSet charset;
-    KCharsets::FixedType fixed;
-    KCharsets::WeightType weight;
-    KCharsets::SlantType slant;
-    bool scalable;
-};
-
-/**
- * List of @ref KFontStruct objects.
- * @internal
- * @deprecated
- */
-class KFontStructList : public QList<KFontStruct>
-{
-public:
-    KFontStructList() { } //setAutoDelete(true); }
 };
 
 #endif
