@@ -86,7 +86,7 @@ void kimgio_krl_read_old( QImageIO *io )
 			col++;
 		};
 	};
- 
+
 	io->setImage( img );
 	io->setStatus( 0 );
 	
@@ -165,10 +165,25 @@ void kimgio_krl_read( QImageIO *iio )
 	return;
 }
 
-void kimgio_krl_write( QImageIO * )
+void kimgio_krl_write( QImageIO * imageio )
 {
-        // TODO: implement this
-        warning("kimgio_krl_write: not (yet?) implemented");
+   QIODevice& f = *( imageio->ioDevice() );
+   const QImage& image = imageio->image();
+   char tmp[1024];
+   int w=image.width();
+   int h=image.height();
+   *(short *)&tmp[34]=w;
+   *(short *)&tmp[36]=h;
+
+   f.writeBlock( tmp, 512 );
+   Q_INT16 c;
+   for (int j=0;j<h;j++)
+     for (int i=0;i<w;i++)
+     {
+	 c=(Q_INT16)qGray(image.pixel(i,j));
+         f.writeBlock((char *)&c,2);
+     }
+
 }
 
 extern "C" void kimgio_init_krl() {
