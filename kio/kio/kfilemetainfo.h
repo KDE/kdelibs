@@ -717,7 +717,7 @@ public:
     // I'd like to keep those for lookup without group, at least the hint
     // version
     KFileMetaInfoItem item(const QString& key) const;
-    KFileMetaInfoItem item(KFileMetaInfoItem::Hint hint) const;
+    KFileMetaInfoItem item(const KFileMetaInfoItem::Hint hint) const;
     KFileMetaInfoItem saveItem( const QString& key,
                                 const QString& preferredGroup = QString::null,
                                 bool createGroup = true );
