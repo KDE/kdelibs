@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.9  1999/11/12 04:25:52  ettrich
+    less badwindow errors
+
     Revision 1.8  1999/11/11 01:22:08  ettrich
     support for docking windows
 
@@ -375,6 +378,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	case XA_WM_ICON_NAME:
 	case XA_WM_NAME:
 	case XA_WM_NORMAL_HINTS:
+	case XA_WM_HINTS:
 	    doit = TRUE;
 	default:
 	    if ( doit || a == qt_wm_state ) {
@@ -388,7 +392,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	    break;
 	}
     }
-    
+
 
     // old stuff below
 
