@@ -146,6 +146,7 @@ public:
     void setDisabled(bool _disabled) { m_disabled = _disabled; }
 
     virtual bool isSelectable() const;
+    virtual bool isEnumeratable() const { return false; }
 
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
@@ -259,6 +260,8 @@ public:
 
     virtual tagStatus startTag() const { return INPUTStartTag; }
     virtual tagStatus endTag() const { return INPUTEndTag; }
+
+    virtual bool isEnumeratable() const { return inputType() != IMAGE; }
 
     bool checked() const { return m_checked; }
     void setChecked(bool);
@@ -374,6 +377,8 @@ public:
 
     long selectedIndex() const;
     void setSelectedIndex( long index );
+    
+    virtual bool isEnumeratable() const { return true; }
 
     long length() const;
 
@@ -502,6 +507,8 @@ public:
     long rows() const { return m_rows; }
 
     WrapMethod wrap() const { return m_wrap; }
+
+    virtual bool isEnumeratable() const { return true; }
 
     DOMString type() const;
 
