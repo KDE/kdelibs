@@ -257,9 +257,10 @@ QString ResourceFile::format() const
 
 void ResourceFile::fileChanged()
 {
-  Q_ASSERT(addressBook());
+  // There is a small theoretical chance that KDirWatch calls us before
+  // we are fully constructed
   if (!addressBook())
-	return;
+    return;
   load();
   addressBook()->emitAddressBookChanged();
 }
