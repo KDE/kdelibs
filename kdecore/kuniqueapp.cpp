@@ -53,7 +53,7 @@ KUniqueApplication::start(int& argc, char** argv,
   if (nofork)
   {
      s_DCOPClient = new DCOPClient();
-     s_DCOPClient->registerAs(rAppName);
+     s_DCOPClient->registerAs(rAppName, false);
      return true;
   }     
   DCOPClient *dc;
@@ -74,7 +74,7 @@ KUniqueApplication::start(int& argc, char** argv,
      ::close(fd[0]);
      dc = new DCOPClient();
      {
-        QCString regName = dc->registerAs(rAppName);
+        QCString regName = dc->registerAs(rAppName, false);
         if (regName.isEmpty())
         {
            qDebug("KUniqueApplication: Child can't attach to DCOP.\n");
