@@ -109,7 +109,7 @@ public:
    *
    * @param pixmap The pixmap to use as the default (normal) one
    */
-  virtual void setDefaultPixmap(const QPixmap& pixmap);
+  void setDefaultPixmap(const QPixmap& pixmap);
 
   /**
    * @deprecated
@@ -118,7 +118,7 @@ public:
    *
    * @param pixmap The pixmap to use when disabled
    */
-  virtual void setDisabledPixmap(const QPixmap& pixmap);
+  void setDisabledPixmap(const QPixmap& pixmap);
 #endif
 
   /**
@@ -130,14 +130,20 @@ public:
   virtual void setText(const QString &text);
 
   /**
-   * Set the icon for this button.  This icon should be the active
-   * one... the dimmed and disabled icons are constructed based on
-   * this one.  The actual pixmap will be loaded internally.  This
-   * function is preferred over @ref setPixmap
+   * Set the icon for this button. The icon will be loaded internally
+   * with the correct size. This function is preferred over @ref setIconSet
    *
-   * @param icon The name of the active pixmap
+   * @param icon The name of the icon
    */
   virtual void setIcon(const QString &icon);
+
+  /**
+   * Set the pixmaps for this toolbar button from a QIconSet.
+   * If you call this you don't need to call any of the other methods
+   * that set icons or pixmaps.
+   * @param iconset  The iconset to use
+   */
+  virtual void setIconSet( const QIconSet &iconset );
 
 #ifndef KDE_NO_COMPAT
   /**
@@ -160,7 +166,7 @@ public:
    *
    * @param icon The icon to use as the default (normal) one
    */
-  virtual void setDefaultIcon(const QString& icon);
+  void setDefaultIcon(const QString& icon);
 
   /**
    * @deprecated
@@ -169,16 +175,7 @@ public:
    *
    * @param icon The icon to use when disabled
    */
-  virtual void setDisabledIcon(const QString& icon);
-
-  /**
-   * @deprecated
-   * Set the pixmaps for this toolbar button from a QIconSet.
-   * If you call this you don't need to call any of the other methods
-   * that set icons or pixmaps.
-   * @param iconset  The iconset to use
-   */
-  virtual void setIconSet( const QIconSet &iconset );
+  void setDisabledIcon(const QString& icon);
 #endif
 
   /**
