@@ -643,8 +643,10 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 //            kdDebug( 6040 ) << "delta=" << delta << endl;
 
             colMinWidth[c]+=delta;
-            if (mlim)
+            if (mlim) {
                 colType[c]=distType;
+		colValue[c]=0;
+	    }
             tdis-=delta;
         }
         if (++c==start+span)
@@ -734,6 +736,29 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 //      kdDebug( 6040 ) << "spreading span " << spreadmin  << endl;
         spreadSpanMinMax
             (c, span, spreadmin, 0 , col->type);
+
+	if (col->type == Percent || col->type == Relative) {
+	    int tmax=0;
+	    int tdis=0;
+	    int cval=col->value;
+
+	    for (int o=c; o < c+span; ++o) {
+		if (colType[o] == col->type && colValue[o] > 0)
+		    cval = kMax(0, (cval - colValue[o]));
+		else
+		    tmax += colMaxWidth[o];
+	    }
+
+	    for (int o=c; o < c+span; ++o) {
+		if (colType[o] != col->type || colValue[o] == 0) {
+		    int n=tdis;
+		    tdis += (cval * colMaxWidth[o]);
+		    if (colType[o] == col->type) {
+			colValue[o] = (tdis/tmax - n/tmax);
+		    }
+		}
+	    }
+	}
     }
 
 }
@@ -1148,11 +1173,14 @@ int RenderTable::distributePercentWidth(int distrib)
 
     distrib = (m_width - borderLeft() - borderRight() - ((int)totalCols + 1) * spacing);
 
+    for (int c=0; c < totalCols; ++c)
+	if (colType[c] == Percent) {
+	    totPercent += colValue[c];
+	}
+
     for (int c = 0; c < totalCols; ++c)
         if (colType[c]==Percent) {
             int percent = colValue[c];
-            if (totPercent + colValue[c] > 100)
-                percent = KMAX(0, 100-int(totPercent));
 
             if (percent) {
                 totPercent += percent;
