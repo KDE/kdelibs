@@ -48,6 +48,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     head = 0;
     foot = 0;
     firstBody = 0;
+    _currentCol = 0;
 
     rules = None;
     frame = Void;
