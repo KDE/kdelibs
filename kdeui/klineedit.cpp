@@ -1046,8 +1046,6 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
         {
             return true;
         }
-
-        kdDebug() << "Key: " << key << ", State: " << state << endl;
     }
 
 
