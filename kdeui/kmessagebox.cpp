@@ -21,6 +21,7 @@
  *
  */
 #include <qcheckbox.h>
+#include <qguardedptr.h>
 #include <qhbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -142,7 +143,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
        topcontents->setStretchFactor(listbox, 1);
     }
 
-    QCheckBox *checkbox = 0;
+    QGuardedPtr<QCheckBox> checkbox = 0;
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
@@ -166,11 +167,16 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
        KDialogQueue::queueDialog(dialog);
        return KMessageBox::Cancel; // We have to return something.
     }
+    
+    // We use a QGuardedPtr because the dialog may get deleted
+    // during exec() if the parent of the dialog gets deleted.
+    // In that case the guarded ptr will reset to 0.
+    QGuardedPtr<KDialogBase> guardedDialog = dialog; 
 
-    int result = dialog->exec();
+    int result = guardedDialog->exec();
     if (checkbox && checkboxReturn)
        *checkboxReturn = checkbox->isChecked();
-    delete dialog;
+    delete (KDialogBase *) guardedDialog;
     return result;
 }
 
