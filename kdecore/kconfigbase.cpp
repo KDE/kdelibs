@@ -600,9 +600,10 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
             value += str_list[i];
           continue;
         }
-      list.append( value );
-      value = emptyString;
-      value.reserve( len - i );
+      QString finalvalue( value );
+      finalvalue.squeeze();
+      list.append( finalvalue );
+      value.truncate( 0 );
     }
   if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
     list.append( value );
