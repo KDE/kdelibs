@@ -200,9 +200,12 @@ void KListViewLineEdit::terminate(bool commit)
     }
 }
 
-void KListViewLineEdit::focusOutEvent(QFocusEvent *)
+void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
 {
-    terminate(true);
+    QFocusEvent * focusEv = static_cast<QFocusEvent*>(ev);
+    // Don't let a RMB close the editor
+    if (focusEv->reason() != QFocusEvent::Popup)
+        terminate(true);
 }
 
 KListView::KListView( QWidget *parent, const char *name )
