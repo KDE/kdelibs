@@ -242,3 +242,8 @@ QString KURLDrag::urlToString(const KURL &url)
     return url.url(0, 106); // 106 is mib enum for utf8 codec
 }
 
+// deprecated ctor
+KURLDrag::KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
+                    QWidget * dragSource, const char* name ) :
+QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ) {}
+

@@ -136,8 +136,7 @@ protected:
    * @deprecated Use a KURLDrag constructor with a KURL::List
    */
   KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
-            QWidget * dragSource, const char* name ) KDE_DEPRECATED :
-      QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ) {}
+            QWidget * dragSource, const char* name ) KDE_DEPRECATED;
 
   virtual const char * format( int i ) const;
   virtual QByteArray encodedData( const char* mime ) const;
