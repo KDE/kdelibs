@@ -1657,7 +1657,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 
-	if ( !root->layouted() ) {
+	if ( root && !root->layouted() ) {
 	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
 	    scheduleRelayout(false);
