@@ -21,8 +21,8 @@
  *
  * $Id$
  */
-#include <table_layout.h>
-#include <render_table.h>
+#include "table_layout.h"
+#include "render_table.h"
 
 #include <kglobal.h>
 
