@@ -2619,6 +2619,10 @@ void DeleteJob::slotResult( Job *job )
             emit totalSize( this, m_totalSize );
             emit totalFiles( this, files.count()+symlinks.count() );
             emit totalDirs( this, dirs.count() );
+            // This is just in case we are job number two (several source URLs)
+            // Remove this when we do all in one operation
+            emit processedFiles( this, 0 );
+            emit processedDirs( this, 0 );
             m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
 
             state = STATE_DELETING_FILES;
