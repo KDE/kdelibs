@@ -30,13 +30,13 @@
 
 #include "kurl.h"
 
-kdbgstream operator<<( kdbgstream str, const QPoint & p )  { str << "(" << p.x() << ", " << p.y() << ")"; return str; }
-kdbgstream operator<<( kdbgstream str, const QSize & s )  { str << "[" << s.width() << "x" << s.height() << "]"; return str; }
-kdbgstream operator<<( kdbgstream str, const QRect & r )  { str << "[" << r.left() << ", " << r.top() << " - " << r.right() << ", " << r.bottom() << "]"; return str; }
+inline kdbgstream operator<<( kdbgstream str, const QPoint & p )  { str << "(" << p.x() << ", " << p.y() << ")"; return str; }
+inline kdbgstream operator<<( kdbgstream str, const QSize & s )  { str << "[" << s.width() << "x" << s.height() << "]"; return str; }
+inline kdbgstream operator<<( kdbgstream str, const QRect & r )  { str << "[" << r.left() << ", " << r.top() << " - " << r.right() << ", " << r.bottom() << "]"; return str; }
 
-kdbgstream operator<<( kdbgstream str, const KURL & u )  { str << u.prettyUrl(); return str; }
+inline kdbgstream operator<<( kdbgstream str, const KURL & u )  { str << u.prettyURL(); return str; }
 
-kdbgstream operator<<( kdbgstream str, const QStringList & l )  { 
+inline kdbgstream operator<<( kdbgstream str, const QStringList & l )  { 
   str = str.operator<<("("); 
   for (QStringList::ConstIterator it = l.begin(); it != l.end(); ++it) { 
     str = str.operator<<( *it); 
@@ -47,11 +47,11 @@ kdbgstream operator<<( kdbgstream str, const QStringList & l )  {
   return str;
 }
 
-kndbgstream operator<<( kndbgstream str, const QPoint & )  { return str; }
-kndbgstream operator<<( kndbgstream str, const QSize & )  { return str; }
-kndbgstream operator<<( kndbgstream str, const QRect & )  { return str; }
-kndbgstream operator<<( kndbgstream str, const KURL & )  { return str; }
-kndbgstream operator<<( kndbgstrea str, const QStringList & ) { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QPoint & )  { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QSize & )  { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QRect & )  { return str; }
+inline kndbgstream operator<<( kndbgstream str, const KURL & )  { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QStringList & ) { return str; }
 
 #endif
 
