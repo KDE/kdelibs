@@ -68,9 +68,6 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     }
     kdWarning() << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
 
-    // For compat reasons: default to gzip-or-uncompressed
-    if ( mimeType != "application/x-gzip" )
-        return findFilterByMimeType( "application/x-gzip" );
     return 0L;
 }
 
