@@ -1112,6 +1112,13 @@ private:
   /**
    * @internal
    */
+  // ### KDE4 FIXME:
+  //          It is desirable to be able to filter form submissions as well.
+  //          For instance, forms can have a target and an inheriting class
+  //          might want to filter based on the target.  Make this protected
+  //          and virtual, or provide a better solution.
+  //          See the web_module for the sidebar for an example where this is
+  //          necessary.
   void submitForm( const char *action, const QString &url, const QByteArray &formData,
                    const QString &target, const QString& contentType = QString::null,
                    const QString& boundary = QString::null );
