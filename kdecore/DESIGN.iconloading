@@ -1,0 +1,187 @@
+Discussion of Icon Loading for KDE 3
+====================================================
+
+This document describes the design ideas for improving icon loading
+in KDE 3.
+
+
+On Wednesday 08 August 2001 04:15 pm, Waldo Bastian wrote:
+> On Wednesday 08 August 2001 03:52 pm, Dirk Mueller wrote:
+> > On Mit, 08 Aug 2001, Waldo Bastian wrote:
+> > > I'm not really sure how to do it... the idea is this:
+> > > 
+> > > A list of shared icons is published somewhere.
+> > > Applications load this list
+> > > For all icons the application wants to use:
+> > >    It checks whether a shared version is available, 
+> > >       if so it uses that one.
+> > >       If not, it loads the icon.
+> > > When it has loaded most icons, it somehow (*) adds the icons that it loaded 
+> > > to the list of published icons.
+> > > 
+> > > I think that the somehow (*) part can be done most reliable by a
+> > > central service, e.g. a KDED module. That might also be able to keep
+> > > track of usage so that it can throw icons out that aren't used any
+> > > more. I think it will be difficult / slow if we need to do ref-counting
+> > > for each and every shared icon using some mechanism that involves X.
+> >
+> > True. but things become a bit complicated if an application reregisters
+> > with a different name. or do we handle that already ?
+> >
+> > what do you do if the DCOP-connection lifetime is crossing the
+> > pixmap-lifetime somehow, i.e. the pixmap is still referenced after
+> > closing the dcop connection on shutdown ?
+
+Ok, I have looked into this a bit more and it seems to be rather easy to 
+create one or more pixmaps in a server process containing icons, a client can 
+then create a pixmap of the right size itself and with a simple XCopyArea 
+call, it can copy the icon from the server pixmap to its own pixmap.
+
+That way the application's pixmap always remain valid.
+
+Some example code to get the idea:
+
+Server can publish an icon (test.png) like this:
+   QImage i("test.png");
+   QPixmap p;
+   p.convertFromImage(i);
+   qWarning("Handle = %08x", p.handle());
+
+Now, if Handle is e.g. 0x06c0000b, the following code (in another process) 
+can copy this pixmap:
+ 
+   QPixmap p(35,35);
+   Drawable src = 0x06c0000b;
+   XGCValues values;
+   GC gc = XCreateGC(qt_xdisplay(), src, 0, &values);
+   XCopyArea(qt_xdisplay(), src, p.handle(), gc, 0, 0, 30, 30, 0, 0);
+   // p contains now 30x30 pixels of test.png.
+
+The only hard part is then to publish the icons in a way that applications 
+know what to copy. I'm thinking about a ksycoca-sort-of index that 
+applications can map and can use to do fast lookups with. This has no major 
+problems except for the race-condition that might exist when an icon is 
+removed. In that case you will remove it from the index first and then later 
+you will remove the actual image data from the pixmap, however, you must make 
+sure that none of the client apps will be using the outdated index informatin 
+any more before you can remove the actual image data.
+
+For practical purposes that might be solved by removing the entry from the 
+index, informing the applications via DCOP to flush their outdated index 
+information and then waiting for a sufficient long period, e.. 5 minutes, 
+before actually removing the image data.
+
+I can also imagine a scenario where the index information is only used very 
+temporarily, e.g. during the creation of a KMainWindow (mmap the file in the 
+constructor, unmap it from the next event loop) that way icons can be removed 
+from the index and after e.g. a timeout of 5 minutes one can be relatively 
+sure that the index will no longer be used.
+
+I think the best way to distribute the index information is through the file 
+system but the update mechanism for this file should probably more complex 
+than the one used in ksycoca. Since ksycoca updates only happen once in a 
+while, we can afford it to write out a whole new file. For icons this will 
+probably be more difficult since updates will be part of normal operation, if 
+the index file is rather large (no idea about that.. how much icons are in 
+use on an average desktop? 50? 200? 500? 500*80bytes = 40Kb, not too bad) we 
+might want to write out only the updates, that would probably mean that we 
+need to have some sort of extensible on-disk hash-table.
+Would that be worth the hassle? If we need to access hash-buckets throughout 
+this 40Kb the OS probably ends up writing all of this file to disk ayway.
+
+Better keep it simple to start with then...
+
+Cheers,
+Waldo
+-- 
+KDE 2.2: We deliver.
+
+<Zogje> do you have any idea how many Kb of pixmaps are stored in the X-server on average?
+<Zogje> e.g. with a standard desktop with 5 konsole's and konqueror or os
+<Zogje> cause I was wondering... if we copy pixmaps on the X-server with XCopyArea like I proposed in my mail
+<Zogje> then the next step could be to use shared pixmaps on the X-server... if the X-server could refcount pixmaps
+<Zogje> i don't think it supports that at the moment
+<antlarr> I'm not sure, but Konqueror seems to open around 500 icons (some of them repeated), and konsole... 40 ? (I made the experiments with my other computer and it's down at the moment)
+<Zogje> and those icons are 22x22? 32x32?
+<Zogje> 4 bytes per pixel?
+<antlarr> I can have a look to see the sizes (my original experiments counted them in separate counters)
+<antlarr> yes, 4 bytes per pixel
+<Zogje> that's about 1.5Kb to 4Kb per pixmap
+<Zogje> cause I think pixmap space on the X_server is a limited resource
+<Zogje> it prolly can cache them in video-memory
+<antlarr> Zogje: what worries me most is how to know when to delete a pixmap from X
+<Zogje> but if we have the same pixmap 20 times in the X-server
+<Zogje> then we are wasting such caching in a terrible way.. and that would cost us performance
+<Zogje> antlarr: yes, that's why I say, we would need refcounting in the X-server itself
+<Zogje> antlarr: should talk with Keith about that
+<antlarr> Zogje: but if you unload the icon after all apps stop using it, then there's no benefit after you start konqueror again, because they'll have to be loaded again
+<Zogje> antlarr: but it will be easier to make the point if we have some solid data behind it
+<Zogje> antlarr: well.. there are two issues
+<antlarr> you'll just stop loading repeated icons that way
+<Zogje> 1) you want to have the benefit of caching, and for that you want to have the icon in the cache, you can throw it away after some time if you think it will not be needed any longer
+<Zogje> 2) If you actually _share_ the pixmap, you must 100% guarante that the pixmap remains available as long as it is in use
+<Zogje> so for the 1)-case there is no hard requirement, it just affects your cache-efficiency
+<Zogje> the 2)-case is a hard requirement, in that if you don't meet it, you will have incorrect operation
+<antlarr> Zogje: yes
+<Zogje> we can meet 2) by coying the pixmap with e.g. XCopyArea
+<Zogje> but a better way would be to have refcounting in the server
+<Zogje> that's independent from 1)
+<antlarr> Yes, that would be much better
+<Zogje> antlarr: so if you can provide staticstic on the icons in use on a typical KDE desktop, including total size and number of icons shared, etc.
+<antlarr> Zogje: ok, I'll try it tomorrow morning (I think I'll have some time, but little as I'm trying to study for exams)
+<antlarr> Btw, do you plan to use a kind of "icon server" ?
+<Zogje> antlarr: then we can take that to the XFree guys and say, if you gives us refcounting we can save XXX Kb of pixmap data on the x-server and we think that will give us better performance
+<antlarr> Yes, you're right, that would be the best thing to do
+<Zogje> in the mean time we might want to implement such an icon-server then, so that when they actually make ref-counting we can hook it in and get the results directly
+<antlarr> So you think the apps should load the icon, apply the effects, convert it to a X pixmap and use it. But how do you plan to know if an icon is already in the XServer ? via atoms ?
+<antlarr> s/an icon/an icon with the respective effects applied/
+<antlarr> pmax: that's precisely where I want to get to.
+<Zogje> antlarr: I would like to publish an index of the icons and their handles through the filesystem
+<Zogje> the app loads the icon, applies the effects, when it has finished starting up it
+<Zogje> can make a DCOP call to the icon-server and tell it, here, I'm using these icons
+<Zogje> then the icon-server can copy (or refcount++) them and update the file with the
+<Zogje> published icons
+<antlarr> Ok, so there'll be an icon server
+<Zogje> yes
+<antlarr> Zogje: you can never know when the app has finished starting up, as it can load some icons later than that
+<Zogje> you could basically publish the icons via properties on the X server itself as well
+<Zogje> but I think that will be slow
+<antlarr> Zogje: yes, I think that too
+<antlarr> But I'm not sure about the file with published icons
+<Zogje> well, when it loads icons later on, it can tell the icon-server about them later on
+<Zogje> or just ignore it
+<Zogje> whatever works
+<antlarr> what happens with remote connections of apps running on different hosts ?
+<Zogje> they are on their own
+<pmax> over a slow link
+<pmax> icon server becomes n times slower, right?
+<Zogje> pmax: when?
+<pmax> remote X connections
+<antlarr> pmax: it doesn't matter if it's a slow or fast link, I'm talking about the problem with loaded icons that are available on one of the computers, but not on another and about the file with the published icons
+<Zogje> pmax: if you use X properties you have X-server round-trips, so that will be an issue on slow-links
+<pmax> antlarr: true
+<Zogje> pmax: you don't have that if you use the file-system
+<pmax> you can always send icons back and forth with dcop too though
+<Zogje> antlarr: we have a DCOP communication space that is limited to a certain host and X-Display
+<pmax> I send x.509's pem encoded through dcop
+<Zogje> antlarr: icon caching should happen within that space
+<Zogje> antlarr: you can combine multiple spaces in various ways... but they don't communicate with each other
+<Zogje> pmax: no, i don't plan too
+<Zogje> pmax: it is faster to load the icon from disk than to use dcop, probably
+<antlarr> Zogje: ok
+<pmax> Zogje: certainly, but if there is a case where the icon doesn't exist on a remote machine, it could easily be transferred like that
+<Zogje> pmax: if the icons doesn't exist you haven't instaled KDE correctly
+<pmax> (I was referring to antlarr's comment)
+<antlarr> pmax: why do that if you can just store it in the X server and tell the icon server what icon is yours?
+<pmax> what about an app that is only on one machine but not the other?  then it's icons won't be there
+<Zogje> pmax??
+<pmax> antlarr: I'm not saying that's the best way.. I was just saying it's a possibility
+<Zogje> pmax: how does that work now?
+<antlarr> pmax: Zogje is right, there's no problem with remote apps, it will just not use the icon cache, nothing more
+<vod> just found it
+<pmax> oh I see
+<Zogje> to answer you rfirst question: "won't the ipc be a bottleneck?" no, because you don't use ipc in the critical part (the icon loading)
+<pmax> yup I understand how it works now I think
+<Zogje> instead you access an index from disk which is quite fast (as fast as ksycoca)
+<pmax> I think this will definitely speed things up on my machine since I have a relatively fast box with slow disks
+<Zogje> that's why I want to use the file-system instaed of X-properties
