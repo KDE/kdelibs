@@ -29,7 +29,6 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qfileinfo.h>
-#include <qregexp.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kmessagebox.h>
@@ -238,7 +237,7 @@ void KMDriverDB::loadDbFile()
 			else if (words[0] == "RECOMMANDED" && entry && words[1].lower() == "yes")
 				entry->recommanded = true;
 			else if (words[0] == "DRIVERCOMMENT" && entry)
-				entry->drivercomment = ("<qt>"+words[1].replace(QRegExp("&lt;"), "<").replace(QRegExp("&gt;"), ">")+"</qt>");
+				entry->drivercomment = ("<qt>"+words[1].replace("&lt;", "<").replace("&gt;", ">")+"</qt>");
 		}
 		if (entry)
 			insertEntry(entry);

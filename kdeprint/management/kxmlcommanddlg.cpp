@@ -28,6 +28,7 @@
 #include <qcombobox.h>
 #include <qgroupbox.h>
 #include <qwidgetstack.h>
+#include <qtoolbutton.h>
 #include <kpushbutton.h>
 #include <qtooltip.h>
 #include <ktextedit.h>
@@ -83,18 +84,18 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_view->addColumn("");
 	m_view->header()->hide();
 	m_view->setSorting(-1);
-	m_apply = new QPushButton(this);
-	m_apply->setPixmap(SmallIcon("back"));
-	m_addgrp = new QPushButton(this);
-	m_addgrp->setPixmap(SmallIcon("folder"));
-	m_addopt = new QPushButton(this);
-	m_addopt->setPixmap(SmallIcon("document"));
-	m_delopt = new QPushButton(this);
-	m_delopt->setPixmap(SmallIcon("editdelete"));
-	m_up = new QPushButton(this);
-	m_up->setPixmap(SmallIcon("up"));
-	m_down = new QPushButton(this);
-	m_down->setPixmap(SmallIcon("down"));
+	m_apply = new QToolButton(this);
+	m_apply->setIconSet(SmallIconSet("back"));
+	m_addgrp = new QToolButton(this);
+	m_addgrp->setIconSet(SmallIconSet("folder"));
+	m_addopt = new QToolButton(this);
+	m_addopt->setIconSet(SmallIconSet("document"));
+	m_delopt = new QToolButton(this);
+	m_delopt->setIconSet(SmallIconSet("editdelete"));
+	m_up = new QToolButton(this);
+	m_up->setIconSet(SmallIconSet("up"));
+	m_down = new QToolButton(this);
+	m_down->setIconSet(SmallIconSet("down"));
 	m_dummy = new QWidget(this);
 	m_desc = new QLineEdit(m_dummy);
 	m_name = new QLineEdit(m_dummy);
@@ -137,10 +138,10 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_values->setAllColumnsShowFocus(true);
 	m_values->setSorting(-1);
 	m_values->setMaximumHeight(110);
-	m_addval = new QPushButton(w2);
-	m_addval->setPixmap(SmallIcon("editcopy"));
-	m_delval = new QPushButton(w2);
-	m_delval->setPixmap(SmallIcon("editdelete"));
+	m_addval = new QToolButton(w2);
+	m_addval->setIconSet(SmallIconSet("editcopy"));
+	m_delval = new QToolButton(w2);
+	m_delval->setIconSet(SmallIconSet("editdelete"));
 	QToolTip::add(m_addval, i18n("Add value"));
 	QToolTip::add(m_delval, i18n("Delete value"));
 
@@ -168,14 +169,14 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_comment->setTextFormat( Qt::PlainText );
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
-	QVBoxLayout	*l2 = new QVBoxLayout(this, 10, 10);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
+	QVBoxLayout	*l2 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
 	QVBoxLayout	*l7 = new QVBoxLayout(0, 0, 0);
 	l2->addLayout(l3, 0);
 	l3->addWidget(m_commandlab);
 	l3->addWidget(m_command);
-	QHBoxLayout	*l0 = new QHBoxLayout(0, 0, 10);
-	QGridLayout	*l10 = new QGridLayout(0, 2, 2, 0, 10);
+	QHBoxLayout	*l0 = new QHBoxLayout(0, 0, KDialog::spacingHint());
+	QGridLayout	*l10 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
 	l2->addLayout(l0, 1);
 	l0->addLayout(l10);
 	l10->addMultiCellWidget(m_view, 0, 0, 0, 1);
@@ -193,7 +194,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	l7->addWidget(m_down);
 	l7->addStretch(1);
 	l0->addWidget(m_dummy, 1);
-	QGridLayout	*l1 = new QGridLayout(m_dummy, 8, 2, 0, 10);
+	QGridLayout	*l1 = new QGridLayout(m_dummy, 8, 2, 0, KDialog::spacingHint());
 	l1->addWidget(m_desclab, 0, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_desc, 0, 1);
 	l1->addMultiCellWidget(sep1, 1, 1, 0, 1);
@@ -208,22 +209,24 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	l1->addMultiCellWidget(gb, 6, 6, 0, 1);
 	l1->setRowStretch(7, 1);
 
-	QHBoxLayout	*l4 = new QHBoxLayout(w2, 0, 5);
+	QHBoxLayout	*l4 = new QHBoxLayout(w2, 0, KDialog::spacingHint());
 	l4->addWidget(m_values);
 	QVBoxLayout	*l6 = new QVBoxLayout(0, 0, 0);
 	l4->addLayout(l6);
 	l6->addWidget(m_addval);
 	l6->addWidget(m_delval);
 	l6->addStretch(1);
-	QGridLayout	*l5 = new QGridLayout(w1, 3, 2, 0, 10);
+	QGridLayout	*l5 = new QGridLayout(w1, 3, 2, 0, KDialog::spacingHint());
 	l5->setRowStretch(2, 1);
 	l5->addWidget(m_editlab1, 0, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l5->addWidget(m_editlab2, 1, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l5->addWidget(m_edit1, 0, 1);
 	l5->addWidget(m_edit2, 1, 1);
 
-	QGridLayout	*l8 = new QGridLayout(gb_input->layout(), 2, 2, 5);
-	QGridLayout	*l9 = new QGridLayout(gb_output->layout(), 2, 2, 5);
+	QGridLayout	*l8 = new QGridLayout(gb_input->layout(), 2, 2, 
+		KDialog::spacingHint());
+	QGridLayout	*l9 = new QGridLayout(gb_output->layout(), 2, 2, 
+		KDialog::spacingHint());
 	l8->addWidget(m_inputfilelab, 0, 0);
 	l8->addWidget(m_inputpipelab, 1, 0);
 	l8->addWidget(m_inputfile, 0, 1);
@@ -766,18 +769,18 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_requirements = new KListView(m_gb2);
 	m_requirements->addColumn("");
 	m_requirements->header()->hide();
-	m_addreq = new QPushButton(m_gb2);
-	m_addreq->setPixmap(SmallIcon("filenew"));
-	m_removereq = new QPushButton(m_gb2);
-	m_removereq->setPixmap(SmallIcon("editdelete"));
+	m_addreq = new QToolButton(m_gb2);
+	m_addreq->setIconSet(SmallIconSet("filenew"));
+	m_removereq = new QToolButton(m_gb2);
+	m_removereq->setIconSet(SmallIconSet("editdelete"));
 	QPushButton	*m_edit = new KPushButton(KGuiItem(i18n("&Edit Command..."), "edit"), topmain);
 	m_mimetype = new QComboBox(dummy);
 	m_availablemime = new KListBox(m_gb1);
 	m_selectedmime = new KListBox(m_gb1);
-	m_addmime = new QPushButton(m_gb1);
-	m_addmime->setPixmap(SmallIcon("back"));
-	m_removemime = new QPushButton(m_gb1);
-	m_removemime->setPixmap(SmallIcon("forward"));
+	m_addmime = new QToolButton(m_gb1);
+	m_addmime->setIconSet(SmallIconSet("back"));
+	m_removemime = new QToolButton(m_gb1);
+	m_removemime->setIconSet(SmallIconSet("forward"));
 	m_gb2->setMinimumWidth(380);
 	m_gb1->setMinimumHeight(180);
 	m_requirements->setMaximumHeight(80);

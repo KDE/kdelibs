@@ -31,6 +31,7 @@
 #include <kcursor.h>
 #include <klocale.h>
 #include <kseparator.h>
+#include <kdialog.h>
 
 class KRadioButton : public QRadioButton
 {
@@ -55,7 +56,7 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_buttons = new QButtonGroup(this);
 	m_buttons->hide();
 
-	m_layout = new QVBoxLayout(this, 10, 10);
+	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	m_layout->addStretch(1);
 	m_count = 0;
 }

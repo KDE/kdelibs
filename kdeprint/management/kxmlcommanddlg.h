@@ -30,7 +30,7 @@ class QListViewItem;
 class QLineEdit;
 class QComboBox;
 class QWidgetStack;
-class QPushButton;
+class QToolButton;
 class KListBox;
 class QListBoxItem;
 class QTextEdit;
@@ -80,9 +80,9 @@ private:
 	KListView	*m_values;
 	QLineEdit	*m_edit1, *m_edit2;
 	QWidgetStack	*m_stack;
-	QPushButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
+	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
-	QPushButton	*m_addval, *m_delval;
+	QToolButton	*m_addval, *m_delval;
 	QTextEdit *m_comment;
 
 	KXmlCommand	*m_xmlcmd;
@@ -114,9 +114,9 @@ private:
 	QLabel		*m_idname;
 	QComboBox	*m_mimetype;
 	KListBox	*m_availablemime, *m_selectedmime;
-	QPushButton	*m_addmime, *m_removemime;
+	QToolButton	*m_addmime, *m_removemime;
 	KListView	*m_requirements;
-	QPushButton	*m_removereq, *m_addreq;
+	QToolButton	*m_removereq, *m_addreq;
 
 	QStringList	m_mimelist;
 	KXmlCommand	*m_cmd;

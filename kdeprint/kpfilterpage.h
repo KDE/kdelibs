@@ -28,7 +28,7 @@
 class KListView;
 class KXmlCommand;
 class QListViewItem;
-class QPushButton;
+class QToolButton;
 class QTextBrowser;
 
 class KPFilterPage : public KPrintDialogPage
@@ -60,7 +60,7 @@ private:
 	KListView		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
 	QDict<KXmlCommand>	m_activefilters;
-	QPushButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
+	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
 	QTextBrowser		*m_info;
 };

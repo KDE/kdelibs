@@ -21,7 +21,7 @@
 #include "kmfactory.h"
 #include "kxmlcommand.h"
 
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qheader.h>
 #include <qtooltip.h>
 #include <qlayout.h>
@@ -32,6 +32,7 @@
 #include <kactivelabel.h>
 #include <kdebug.h>
 #include <kapplication.h>
+#include <kdialog.h>
 
 KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
@@ -48,20 +49,20 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	m_view->header()->hide();
 	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotItemSelected(QListViewItem*)));
 
-	m_add = new QPushButton(QString::null, this);
-	m_add->setPixmap(BarIcon("filter"));
+	m_add = new QToolButton(this);
+	m_add->setIconSet(BarIconSet("filter"));
 	QToolTip::add(m_add, i18n("Add filter"));
-	m_remove = new QPushButton(QString::null, this);
-	m_remove->setPixmap(BarIcon("remove"));
+	m_remove = new QToolButton(this);
+	m_remove->setIconSet(BarIconSet("remove"));
 	QToolTip::add(m_remove, i18n("Remove filter"));
-	m_up = new QPushButton(QString::null, this);
-	m_up->setPixmap(BarIcon("up"));
+	m_up = new QToolButton(this);
+	m_up->setIconSet(BarIconSet("up"));
 	QToolTip::add(m_up, i18n("Move filter up"));
-	m_down = new QPushButton(QString::null, this);
-	m_down->setPixmap(BarIcon("down"));
+	m_down = new QToolButton(this);
+	m_down->setIconSet(BarIconSet("down"));
 	QToolTip::add(m_down, i18n("Move filter down"));
-	m_configure = new QPushButton(QString::null, this);
-	m_configure->setPixmap(BarIcon("configure"));
+	m_configure = new QToolButton(this);
+	m_configure->setIconSet(BarIconSet("configure"));
 	QToolTip::add(m_configure, i18n("Configure filter"));
 	connect(m_add,SIGNAL(clicked()),SLOT(slotAddClicked()));
 	connect(m_remove,SIGNAL(clicked()),SLOT(slotRemoveClicked()));
@@ -76,9 +77,9 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
-	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 10);
+	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, KDialog::spacingHint());
 	l1->setColStretch(0, 1);
-	QVBoxLayout	*l2 = new QVBoxLayout(0, 0, 0);
+	QVBoxLayout	*l2 = new QVBoxLayout(0, 0, 1);
 	l1->addWidget(m_view, 0, 0);
 	l1->addLayout(l2, 0, 1);
 	l2->addWidget(m_add);
