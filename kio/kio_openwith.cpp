@@ -343,15 +343,18 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
   topLayout->addWidget(label);
   
   QBoxLayout* l = new QHBoxLayout(topLayout);
-  edit = new KLineEdit( this, 0L );
+  edit = new KLineEdit( this );
   edit->setMinimumWidth(200);
   l->addWidget(edit);
   
   completion = new KURLCompletion();
-  connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
-  connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
-  connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
-  connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT (setText (const QString&)));
+  // Enables the brand spanking new completion & rotation feature.
+  // See how easy it is now.  Not like it was before.  Less work Ypeeee!!!
+  edit->enableCompletion();
+  // connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
+  // connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
+  // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
+  // connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT (setText (const QString&)));
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   
   terminal = new QCheckBox( i18n("Run in terminal"), this );
@@ -395,7 +398,7 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
 
 KOpenWithDlg::~KOpenWithDlg()
 {
-    delete completion;
+    // delete completion; not needed anymore as KLineEdit takes care this now!!
 }
 
 // ----------------------------------------------------------------------

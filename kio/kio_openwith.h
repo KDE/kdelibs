@@ -3,13 +3,13 @@
 #ifndef __open_with_h__
 #define __open_with_h__
 
-#include <qlineedit.h>
 #include <qwidget.h>
 #include <qfileinfo.h>
 #include <qlistview.h>
 #include <qdialog.h>
 
 #include <kapp.h>
+#include <klineedit.h>
 #include <kurlcompletion.h>
 #include "kservice.h"
 
@@ -57,7 +57,7 @@ public slots:
     void slotOK();
     
 protected:
-    QLineEdit *edit;
+    KLineEdit *edit;
     KURLCompletion * completion;
 
     KApplicationTree* m_pTree;
