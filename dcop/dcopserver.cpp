@@ -584,7 +584,8 @@ static void sighandler(int sig)
     }
 
     delete the_server;
-    exit(0);
+    qApp->quit();
+    //exit(0);
 }
 
 DCOPServer::DCOPServer()
@@ -627,7 +628,11 @@ DCOPServer::DCOPServer()
 	    fName += "/.DCOPserver";
 	    FILE *f;
 	    f = ::fopen(fName.data(), "w+");
-	    fprintf(f, IceComposeNetworkIdList(numTransports, listenObjs));
+	    char *idlist = IceComposeNetworkIdList(numTransports, listenObjs);
+	    if (idlist != 0) {
+	        fprintf(f, idlist);
+		free(idlist);
+	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
 	}
