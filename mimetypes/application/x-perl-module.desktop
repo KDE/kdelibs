@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=PERL Module
+Icon=source_pl
+Type=MimeType
+MimeType=application/x-perl-module
+Patterns=*.pm;*.PM;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -20,6 +20,7 @@ Comment[fr]=Programme PERL
 Comment[ga]=Clár PERL
 Comment[he]=תוכנית PERL
 Comment[hu]=PERL program
+Comment[is]=Perl-forrit
 Comment[it]=Programma PERL
 Comment[ja]=PERL プログラム
 Comment[ko]=펄 프로그램
@@ -38,6 +39,7 @@ Comment[ru]=Программа на Perl
 Comment[se]=PERL-prográmma
 Comment[sk]=PERL program
 Comment[sl]=Program v perlu
+Comment[sr]=PERL program
 Comment[ss]=Luhlelo lwe PERL 
 Comment[sv]=Perl-program
 Comment[ta]=§À÷ø ¿¢Ãø
@@ -51,7 +53,7 @@ Comment[zu]=Uhlelo lwemisebenzi lwe-PERL
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl
-Patterns=*.pl;*.perl;
+Patterns=*.pl;*.PL;*.perl;*.PERL
 
 [Property::X-KDE-text]
 Type=bool
