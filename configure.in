@@ -222,6 +222,8 @@ AC_OUTPUT(Makefile \
 	kstyles/pics/Makefile \
 	kparts/Makefile \
 	interfaces/Makefile \
+	pics/Makefile \
+	pics/mimetypes/Makefile \
 	dcop/Makefile \
 	dcop/dcopidl/Makefile \
 	dcop/dcopidl2cpp/Makefile \
