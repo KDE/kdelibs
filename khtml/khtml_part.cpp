@@ -1133,12 +1133,13 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
     d->m_statusBarIconLabel->setUseCursor( false );
     d->m_statusBarExtension->addStatusBarItem( d->m_statusBarIconLabel, 0, false );
     connect( d->m_statusBarIconLabel, SIGNAL( leftClickedURL() ), SLOT( slotSecurity() ) );
+  } else {
+    QToolTip::remove(d->m_statusBarIconLabel);
   }
 
-  QToolTip::remove(d->m_statusBarIconLabel);
   if (d->m_ssl_in_use)
-    QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is in use, %1 bit %2.").arg(d->m_ssl_cipher_bits).arg(d->m_ssl_cipher));
-  else QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is not in use."));
+    QToolTip::add(d->m_statusBarIconLabel, i18n("Session is secured with %1 bit %2.").arg(d->m_ssl_cipher_used_bits).arg(d->m_ssl_cipher));
+  else QToolTip::add(d->m_statusBarIconLabel, i18n("Session is not secured."));
 
   QString iconName;
   switch (sec)  {
@@ -1218,9 +1219,9 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (d->m_statusBarIconLabel) {
       QToolTip::remove(d->m_statusBarIconLabel);
       if (d->m_ssl_in_use) {
-        QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is in use, %1 bit %2.").arg(d->m_ssl_cipher_bits).arg(d->m_ssl_cipher));
+        QToolTip::add(d->m_statusBarIconLabel, i18n("Session is secured with %1 bit %2.").arg(d->m_ssl_cipher_used_bits).arg(d->m_ssl_cipher));
       } else {
-        QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is not in use."));
+        QToolTip::add(d->m_statusBarIconLabel, i18n("Session is not secured."));
       }
     }
 
