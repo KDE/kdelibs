@@ -109,43 +109,39 @@ void NetAccess::removeTempFile(const QString& name)
 
 bool NetAccess::copyInternal(const KURL& src, const KURL& target)
 {
-  bDownloadOk = true; // success unless further error occurs
+  bJobOK = true; // success unless further error occurs
 
   KIO::Job * job = KIO::file_copy( src, target );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
   qApp->enter_loop();
-  return bDownloadOk;
+  return bJobOK;
 }
 
 bool NetAccess::existsInternal( const KURL & url )
 {
-  bDownloadOk = true; // success unless further error occurs
+  bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::stat( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
   qApp->enter_loop();
-  return bDownloadOk;
+  return bJobOK;
 }
 
 bool NetAccess::delInternal( const KURL & url )
 {
-  bDownloadOk = true; // success unless further error occurs
-  bDisplayErrors = true;
+  bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::del( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
   qApp->enter_loop();
-  return bDownloadOk;
+  return bJobOK;
 }
 
 void NetAccess::slotResult( KIO::Job * job )
 {
-  bDownloadOk = !job->error();
-  if ( job->error() && bDisplayErrors )
-    job->showErrorDialog();
-
+  bJobOK = !job->error();
   qApp->exit_loop();
 }
 

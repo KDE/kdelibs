@@ -137,7 +137,6 @@ public:
      * Delete a file or a directory in an synchronous way
      * This is a convenience function for KIO::del
      * (it saves creating a slot and testing for the job result)
-     * This version also displays an error dialog box in case of errors.
      * @param src the file or directory to delete
      * @return true on success, false on failure
      */
@@ -145,7 +144,7 @@ public:
 
 protected:
     /** Private constructor */
-    NetAccess() { bDisplayErrors=false; }
+    NetAccess() {}
     /** Private destructor */
     ~NetAccess() {}
     /** Internal methods */
@@ -155,9 +154,7 @@ protected:
     /** List of temporary files */
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */
-    bool bDownloadOk;
-    /** Whether to display an error box on error */
-    bool bDisplayErrors;
+    bool bJobOK;
 
 protected slots:
     virtual void slotResult( KIO::Job * job );
