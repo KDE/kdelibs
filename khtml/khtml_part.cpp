@@ -364,16 +364,19 @@ namespace khtml {
     public:
         PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader *docLoader)
         {
-	    m_part = part;
+            m_part = part;
             m_priv = priv;
             // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
-            m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"), QString::null);
+            if ( docLoader )
+              m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"), QString::null);
+            else
+              m_cachedSheet = Cache::requestStyleSheet(0, url, DOMString("foo") );
             m_cachedSheet->ref( this );
         }
-	virtual ~PartStyleSheetLoader()
-	{
-	    if ( m_cachedSheet ) m_cachedSheet->deref(this);
-	}
+        virtual ~PartStyleSheetLoader()
+        {
+            if ( m_cachedSheet ) m_cachedSheet->deref(this);
+        }
         virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
         {
             if ( m_part )
@@ -381,14 +384,14 @@ namespace khtml {
                 m_priv->m_userSheet = sheet;
                 m_priv->m_userSheetUrl = url;
             }
-	    khtml::CSSStyleSelector::setUserStyle( sheet );
-	    if ( m_part && m_priv->m_doc )
-		m_priv->m_doc->applyChanges();
+            khtml::CSSStyleSelector::setUserStyle( sheet );
+            if ( m_part && m_priv->m_doc )
+                m_priv->m_doc->applyChanges();
             delete this;
         }
         QGuardedPtr<KHTMLPart> m_part;
         KHTMLPartPrivate *m_priv;
-	khtml::CachedCSSStyleSheet *m_cachedSheet;
+        khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
 };
 
@@ -1499,18 +1502,18 @@ void KHTMLPart::checkCompleted()
       int focusNodeNumber;
       if ((focusNodeNumber = d->m_focusNodeNumber))
       {
-	  DOM::ElementImpl *focusNode = 0;
-	  while(focusNodeNumber--)
-	  {
-	      if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
-		  break;
-	  }
-	  if (focusNode)
-	  {
-	      //QRect focusRect = focusNode->getRect();
-	      //d->m_view->ensureVisible(focusRect.x(), focusRect.y());
-	      d->m_doc->setFocusNode(focusNode);
-	  }
+          DOM::ElementImpl *focusNode = 0;
+          while(focusNodeNumber--)
+          {
+              if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
+                  break;
+          }
+          if (focusNode)
+          {
+              //QRect focusRect = focusNode->getRect();
+              //d->m_view->ensureVisible(focusRect.x(), focusRect.y());
+              d->m_doc->setFocusNode(focusNode);
+          }
       }
       d->m_focusNodeRestored = true;
   }
@@ -1606,7 +1609,7 @@ void KHTMLPart::setBaseURL( const KURL &url )
 KURL KHTMLPart::baseURL() const
 {
     if ( d->m_baseURL.isEmpty() )
-	return m_url;
+        return m_url;
   return d->m_baseURL;
 }
 
@@ -1957,32 +1960,32 @@ QString KHTMLPart::selectedText() const
       else {
         // This is our simple HTML -> ASCII transformation:
         unsigned short id = n.elementId();
-	switch(id) {
-	  case ID_TD:
-	  case ID_TH:
-	  case ID_BR:
-	  case ID_HR:
-	  case ID_OL:
-	  case ID_UL:
-	  case ID_LI:
-	  case ID_DD:
-	  case ID_DL:
-	  case ID_DT:
-	  case ID_PRE:
-	  case ID_BLOCKQUOTE:
+        switch(id) {
+          case ID_TD:
+          case ID_TH:
+          case ID_BR:
+          case ID_HR:
+          case ID_OL:
+          case ID_UL:
+          case ID_LI:
+          case ID_DD:
+          case ID_DL:
+          case ID_DT:
+          case ID_PRE:
+          case ID_BLOCKQUOTE:
             text += "\n";
-	    break;
-	  case ID_P:
-	  case ID_TR:
-	  case ID_H1:
-	  case ID_H2:
-	  case ID_H3:
-	  case ID_H4:
-	  case ID_H5:
-	  case ID_H6:
+            break;
+          case ID_P:
+          case ID_TR:
+          case ID_H1:
+          case ID_H2:
+          case ID_H3:
+          case ID_H4:
+          case ID_H5:
+          case ID_H6:
             text += "\n\n";
-	    break;
-	}
+            break;
+        }
       }
       if(n == d->m_selectionEnd) break;
       DOM::Node next = n.firstChild();
@@ -2019,7 +2022,7 @@ void KHTMLPart::setSelection( const DOM::Range &r )
     d->m_selectionEnd = r.endContainer();
     d->m_endOffset = r.endOffset();
     d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-			   d->m_selectionEnd.handle(),d->m_endOffset);
+                           d->m_selectionEnd.handle(),d->m_endOffset);
 }
 
 // TODO merge with other overURL (BCI)
@@ -2154,7 +2157,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
           if ((*it).startsWith("cc="))
             mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
           else
-    	    if ((*it).startsWith("bcc="))
+            if ((*it).startsWith("bcc="))
               mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
       mailtoMsg = "<img src=" + locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")) + "> " + mailtoMsg;
       emit setStatusBarText(mailtoMsg);
@@ -2230,7 +2233,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( d->m_bHTTPRefresh )
   {
     d->m_bHTTPRefresh = false;
-	args.metaData()["cache"]="reload"; //"verify";
+        args.metaData()["cache"]="reload"; //"verify";
   }
 
   if ( hasTarget )
@@ -2365,9 +2368,9 @@ void KHTMLPart::slotSetEncoding()
     if(d->m_paSetEncoding->currentItem() == 0)
         setEncoding(QString::null, false);
     else {
-	// strip of the language to get the raw encoding again.
-	QString enc = KGlobal::charsets()->encodingForName(d->m_paSetEncoding->currentText());
-	setEncoding(enc, true);
+        // strip of the language to get the raw encoding again.
+        QString enc = KGlobal::charsets()->encodingForName(d->m_paSetEncoding->currentText());
+        setEncoding(enc, true);
     }
 }
 
@@ -2762,7 +2765,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if ( d->m_bParsing ) {
     if( d->m_submitForm ) {
         kdWarning( 6070 ) << "Submit() while parsing, but another submit (while parsing) was going on before... Please report this as a bug!" << endl;
-	return;
+        return;
     }
     kdWarning( 6070 ) << "Submit() while parsing, will try to submit again in 3 seconds" << endl;
     d->m_submitForm = new KHTMLPartPrivate::SubmitForm;
@@ -2998,12 +3001,12 @@ void KHTMLPart::saveState( QDataStream &stream )
       focusNodeNumber = 0;
       if (d->m_doc)
       {
-	  DOM::ElementImpl *focusNode = d->m_doc->focusNode();
-	  while( focusNode )
-	  {
-	      focusNodeNumber++;
-	      focusNode = d->m_doc->findNextLink(focusNode, false);
-	  }
+          DOM::ElementImpl *focusNode = d->m_doc->focusNode();
+          while( focusNode )
+          {
+              focusNodeNumber++;
+              focusNode = d->m_doc->findNextLink(focusNode, false);
+          }
       }
   }
   stream << focusNodeNumber;
@@ -3477,11 +3480,11 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     {
       if ( !innerNode.isNull() )
       {
-	  int offset;
-	  DOM::Node node;
-	  innerNode.handle()->findSelectionNode( event->x(), event->y(),
-					    event->nodeAbsX(), event->nodeAbsY(),
-						 node, offset );
+          int offset;
+          DOM::Node node;
+          innerNode.handle()->findSelectionNode( event->x(), event->y(),
+                                            event->nodeAbsX(), event->nodeAbsY(),
+                                                 node, offset );
 
         if ( node.isNull() || !node.handle() )
         {
@@ -4088,7 +4091,7 @@ void KHTMLPart::setActiveNode(const DOM::Node &node)
     // at the moment, only element nodes can receive focus.
     DOM::ElementImpl *e = static_cast<DOM::ElementImpl *>(node.handle());
     if (node.isNull() || e->isElementNode())
-	d->m_doc->setFocusNode(e);
+        d->m_doc->setFocusNode(e);
     if (!d->m_view || !e || e->ownerDocument()!=d->m_doc)
         return;
     QRect rect  = e->getRect();
@@ -4107,7 +4110,7 @@ QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &funct
     KJSProxy *proxy = jScript();
 
     if (!proxy)
-	return QVariant();
+        return QVariant();
 
     return proxy->executeFunctionCall(thisVal,functionObj,args);
 }
