@@ -1399,6 +1399,11 @@ KJSO SourceElementsNode::evaluate()
   KJSO res1 = elements->evaluate();
   if (KJScriptImp::hadException())
     return Completion(Throw, KJScriptImp::exception());
+  if (res1.isA(CompletionType)) {
+      Completion *com = static_cast<Completion*>(&res1);
+      if (com->complType() != Normal)
+	  return res1;
+  }
 
   KJSO res2 = element->evaluate();
   if (KJScriptImp::hadException())
