@@ -20,6 +20,7 @@
 *****************************************************************************/
 
 #include <qapplication.h>
+#include <qmetaobject.h>
 #include <qptrlist.h>
 #include <qptrdict.h>
 #include <qguardedptr.h>
@@ -205,6 +206,20 @@ static int qxembed_x11_event_filter( XEvent* e)
     //kdDebug() << "qxembed_x11_event_filter " << KXEventUtil::getX11EventInfo(e) << endl;
 
     switch ( e->type ) {
+    case LeaveNotify: {
+        QWidget* w = QWidget::find( e->xkey.window );
+        if (w && w->metaObject()->inherits("QXEmbed"))
+            XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, e->xany.window );
+        break;
+    }
+    case EnterNotify: {
+        QWidget* w = QWidget::find( e->xkey.window );
+        if (w && w->metaObject()->inherits("QXEmbed") && !w->hasFocus())
+            XGrabButton(qt_xdisplay(), AnyButton, AnyModifier, e->xany.window,
+                    FALSE, ButtonPressMask, GrabModeSync, GrabModeAsync,
+                    None, None );
+        break;
+    }
     case XKeyPress: {
         int kc = XKeycodeToKeysym(qt_xdisplay(), e->xkey.keycode, 0);
         if ( kc == XK_Tab || kc == XK_ISO_Left_Tab ) {
@@ -572,6 +587,7 @@ void QXEmbed::keyReleaseEvent( QKeyEvent *)
 void QXEmbed::focusInEvent( QFocusEvent * e ){
     if (!window)
         return;
+    XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, window );
     int detail = XEMBED_FOCUS_CURRENT;
     if ( e->reason() == QFocusEvent::Tab )
         detail = tabForward?XEMBED_FOCUS_FIRST:XEMBED_FOCUS_LAST;
@@ -728,6 +744,15 @@ bool QXEmbed::x11Event( XEvent* e)
             window = e->xreparent.window;
             embed( window );
         }
+        break;
+    case ButtonPress:
+        QFocusEvent::setReason( QFocusEvent::Mouse );
+        setFocus();
+        QFocusEvent::resetReason();
+        XAllowEvents(qt_xdisplay(), ReplayPointer, CurrentTime);
+        return TRUE;
+    case ButtonRelease:
+        XAllowEvents(qt_xdisplay(), SyncPointer, CurrentTime);
         break;
     case MapRequest:
         if ( window && e->xmaprequest.window == window )
