@@ -14,16 +14,15 @@
 #include <drag.h>
 
 /**
- * @short Widget that can display HTML.
+ * @short Widget for displaying HTML.  Manages srcollbars and frames.
  *
- * This widget makes displaying HTML text very easy. It cares about scrollbars
- * and stuff. It is able to handle almost HTML 3.x 8 with tables.
- * Frames are supported, too. In order of filling the widget with
- * content you should do the follwing:
+ * This widget makes displaying HTML text very easy. It handles scrollbars
+ * and stuff. It is able to handle most HTML 3.x including tables and frames.
+ * To fill the widget with content you should do the follwing:
  * <PRE>
  * view->begin( "file:/tmp/test.html" );
  * view->parse();
- * view->write( "<HTML><TITLE>...." );
+ * view->write( "&lt;HTML&gt;&lt;TITLE&gt;...." );
  * .....
  * view->end();
  * view->show();
@@ -414,7 +413,8 @@ public:
     void selectByURL( QPainter * _painter, const char *_url, bool _select );
   
     /**
-     * For internal use only.
+     * @return a pointer to the low-level KHTMLWidget.  You may use this
+     * to set default colours, etc. supported by the widget.
      *
      * @see #view
      */

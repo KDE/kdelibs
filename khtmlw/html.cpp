@@ -149,18 +149,32 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     parsing = false;
     defaultFontBase = 3;
     overURL = "";
-	granularity = 500;
+    granularity = 500;
     linkCursor = arrowCursor;
     waitingFileList.setAutoDelete( false );
     bParseAfterLastImage = false;
     bPaintAfterParsing = false;
-	bIsTextSelected = false;
+    bIsTextSelected = false;
     formList.setAutoDelete( true );
-	listStack.setAutoDelete( true );
-	mapList.setAutoDelete( true );
+    listStack.setAutoDelete( true );
+    mapList.setAutoDelete( true );
 
     standardFont = "times";
     fixedFont = "courier";
+
+    QPalette pal = palette().copy();
+    QColorGroup cg = pal.normal();
+    QColorGroup newGroup( cg.foreground(), lightGray, cg.light(),
+	    cg.dark(), cg.mid(), cg.text(), lightGray );
+    pal.setNormal( newGroup );
+    setPalette( pal );
+
+    setBackgroundColor( lightGray );
+    defaultBGColor = lightGray;
+
+    defTextColor = black;
+    defLinkColor = blue;
+    defVLinkColor = magenta;
     
     QString f = kapp->kdedir();
     f.detach();
@@ -1136,9 +1150,9 @@ void KHTMLWidget::parse()
     underline = false;
     strikeOut = false;
     weight = QFont::Normal;
-    textColor = black;
-    linkColor = blue;
-    vLinkColor = magenta;
+    textColor = defTextColor;
+    linkColor = defLinkColor;
+    vLinkColor = defVLinkColor;
     fontBase = defaultFontBase;
     
     font_stack.clear();
@@ -1713,12 +1727,12 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	{
 	    QPalette pal = palette().copy();
 	    QColorGroup cg = pal.normal();
-	    QColorGroup newGroup( cg.foreground(), lightGray, cg.light(),
-		    cg.dark(), cg.mid(), cg.text(), lightGray );
+	    QColorGroup newGroup( cg.foreground(), defaultBGColor, cg.light(),
+		    cg.dark(), cg.mid(), cg.text(), defaultBGColor );
 	    pal.setNormal( newGroup );
 	    setPalette( pal );
 
-	    setBackgroundColor( lightGray );
+	    setBackgroundColor( defaultBGColor );
 	}
 	else if ( bgColorSet && !bgPixmapSet )
 	{

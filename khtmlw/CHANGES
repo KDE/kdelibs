@@ -1,7 +1,16 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 9 August 1997 - Martin Jones.
+Last Change: 14 August 1997 - Martin Jones.
+
+
+Version 0.8.8 - Martin
+----------------------
+
+ Added setDefaultBGColor( const QColor &col );
+ Added setDefaultTextColors( const QColor &text, const QColor &link,
+                             const QColor &vlink );
+
 
 Version 0.8.7 - Martin
 ----------------------

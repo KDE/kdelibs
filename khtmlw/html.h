@@ -46,7 +46,7 @@ void debugM( const char *msg , ...);
 typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
 
 /**
- * @short Basic HTML Widget
+ * @short Basic HTML Widget.  Does not handle scrollbars or frames.
  *
  * This widget is good for use in your custom application which does not
  * necessarily want to handle frames, or want custom control of scrollbars.
@@ -54,7 +54,7 @@ typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
  * <PRE>
  * view->begin( "file:/tmp/test.html" );
  * view->parse();
- * view->write( "<HTML><TITLE>...." );
+ * view->write( "&lt;HTML&gt;&lt;TITLE&gt;...." );
  * .....
  * view->end();
  * view->show();
@@ -394,6 +394,24 @@ public:
 	{	fixedFont = name; }
 
     /**
+     * Sets the default background color to use when one isn't specified
+     * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
+     */
+    void setDefaultBGColor( const QColor &col )
+	{	defaultBGColor = col; }
+
+    /**
+     * Sets the default text colors.
+     */
+    void setDefaultTextColors( const QColor &normal, const QColor &link,
+	const QColor &vlink )
+    {
+	defTextColor = normal;
+	defLinkColor = link;
+	defVLinkColor = vlink;
+    }
+
+    /**
      * Sets the cursor to use when the cursor is on a link.
      */
     void setURLCursor( const QCursor &c )
@@ -488,7 +506,7 @@ signals:
 
     /**
      * Tells the parent, that the widget wants to scroll. This may happen if
-     * the user selects an <a href="#anchor">.
+     * the user selects an &lt;a href="#anchor"&gt;.
      */
     void scrollHorz( int _x );
 
@@ -662,7 +680,7 @@ protected:
 
     /*
      * This function emits the 'doubleClick' signal when the user
-     * double clicks a <a href=...> tag.
+     * double clicks a &lt;a href=...&gt; tag.
      */
     virtual void mouseDoubleClickEvent( QMouseEvent * );
 
@@ -673,7 +691,7 @@ protected:
 
     /*
      * This function emits the 'URLSelected' signal when the user
-     * pressed a <a href=...> tag.
+     * pressed a &lt;a href=...&gt; tag.
      */
     virtual void dndMouseReleaseEvent( QMouseEvent * );
 
@@ -693,22 +711,22 @@ protected:
     virtual void focusOutEvent( QFocusEvent * ) { }
 
     /*
-     * This function is called after <body> usually. You can
+     * This function is called after &lt;body&gt; usually. You can
      * call it for every rectangular area: For example a tables cell
      * or for a menus <li> tag. ht gives you one token after another.
      * _clue points to a VBox. All HTMLObjects created by this
      * function become direct or indirect children of _clue.
      * The last two parameters define which token signals the end
-     * of the section this function should parse, for example </body>.
-     * You can specify two tokens, for example </li> and </menu>. You
-     * may even set the second one to "" if you dont need it.
+     * of the section this function should parse, for example &lt;/body&gt;.
+     * You can specify two tokens, for example &lt;/li&gt; and &lt;/menu&gt;.
+     * You may even set the second one to "" if you dont need it.
      */
     const char* parseBody( HTMLClueV *_clue, const char *[], bool toplevel = FALSE );
 
     /*
      * Parse marks starting with character, e.g.
-     * <img ...  is processed by KHTMLWidget::parseI()
-     * </ul>     is processed by KHTMLWidget::parseU()
+     * &lt;img ...  is processed by KHTMLWidget::parseI()
+     * &lt;/ul&gt;     is processed by KHTMLWidget::parseU()
      */
 	void parseA( HTMLClueV *_clue, const char *str );
 	void parseB( HTMLClueV *_clue, const char *str );
@@ -970,6 +988,13 @@ protected:
     QColor vLinkColor;
 
     /*
+     * Default text colors
+     */
+    QColor defTextColor;
+    QColor defLinkColor;
+    QColor defVLinkColor;
+
+    /*
      * Timer to parse html in background
      */
     QTimer timer;
@@ -1041,6 +1066,11 @@ protected:
     QStrList tempStrings;
 
     QPixmap bgPixmap;
+
+    /*
+     * Default background color to use if one isn't specified.
+     */
+    QColor defaultBGColor;
 
     /*
      * This is the cusor to use when over a link
