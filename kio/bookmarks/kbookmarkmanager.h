@@ -209,6 +209,7 @@ private:
     mutable bool m_docIsLoaded;
     bool m_update;
     static QPtrList<KBookmarkManager>* s_pSelf;
+    bool m_showNSBookmarks;
 };
 
 /**
