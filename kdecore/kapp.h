@@ -532,10 +532,6 @@ private:
   KConfig* pSessionConfig; //instance specific application config object
   DCOPClient *pDCOPClient; // instance specific application communication client
   QString aCaption; // the name for the window title
-  QString aAppAboutString; // The text for the about box
-  QString aDummyString2; // do not touch
-  QString aDummyString3; // do not touch
-  QString aDummyString4; // do not touch
   bool bSessionManagement;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
@@ -737,6 +733,12 @@ public:
 #endif
 
 // $Log$
+// Revision 1.165  2000/06/21 11:05:13  putzer
+//
+// - moved KApplication::mimeSourceFactory to KInstance
+// - cleanup in kapp.*: I removed the old (#if 0) helpmenu stuff and renamed
+//   pAppData to d, as this name is used everywhere else.
+//
 // Revision 1.164  2000/06/15 08:54:53  putzer
 // - added KMimeSourceFactory
 // - automatically set KMimeSourceFactory as the defaultFactory in KApplication

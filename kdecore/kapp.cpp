@@ -580,7 +580,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
     enum parameter_code { unknown = 0, caption, icon, miniicon, dcopserver };
     const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-dcopserver", 0 };
 
-    aDummyString2 = " ";
+    QString parsingString = " ";
     int i = 1;
     parameter_code parameter;
     while( i < argc ) {
@@ -600,10 +600,10 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	switch (parameter) {
 	case caption:
 	    aCaption = argv[i+1];
-	    aDummyString2 += parameter_strings[caption-1];
-	    aDummyString2 += " \"";
-	    aDummyString2 += argv[i+1];
-	    aDummyString2 += "\" ";
+	    parsingString += parameter_strings[caption-1];
+	    parsingString += " \"";
+	    parsingString += argv[i+1];
+	    parsingString += "\" ";
 	    break;
 	case icon:
 	    if (argv[i+1][0] == '/')
@@ -612,17 +612,17 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		aIconPixmap = DesktopIcon(argv[i+1]);
 	    if (aMiniIconPixmap.isNull())
 		aMiniIconPixmap = SmallIcon(argv[i+1]);
-	    aDummyString2 += parameter_strings[icon-1];
-	    aDummyString2 += " ";
-	    aDummyString2 += argv[i+1];
-	    aDummyString2 += " ";
+	    parsingString += parameter_strings[icon-1];
+	    parsingString += " ";
+	    parsingString += argv[i+1];
+	    parsingString += " ";
 	    break;
 	case miniicon:
 	    aMiniIconPixmap = SmallIcon(argv[i+1]);
-	    aDummyString2 += parameter_strings[miniicon-1];
-	    aDummyString2 += " ";
-	    aDummyString2 += argv[i+1];
-	    aDummyString2 += " ";
+	    parsingString += parameter_strings[miniicon-1];
+	    parsingString += " ";
+	    parsingString += argv[i+1];
+	    parsingString += " ";
 	    break;
 	case dcopserver:
 	    dcopClient()->setServerAddress(argv[i+1]);
