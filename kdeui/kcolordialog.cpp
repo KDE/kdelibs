@@ -1199,10 +1199,15 @@ KColorDialog::slotWriteSettings()
   KConfig* config = KGlobal::config();
   config->setGroup("Colors");
   QString palette = d->table->palette();
-  (!config->hasDefault("CurrentPalette") &&
-   d->table->palette() == d->originalPalette) ?
-    config->revertToDefault("CurrentPalette") :
-    config->writeEntry("CurrentPalette", d->table->palette());
+  if (!config->hasDefault("CurrentPalette") &&
+      (d->table->palette() == d->originalPalette)) 
+  {
+     config->revertToDefault("CurrentPalette");
+  }
+  else
+  {
+     config->writeEntry("CurrentPalette", d->table->palette());
+  }
 }
 
 QColor

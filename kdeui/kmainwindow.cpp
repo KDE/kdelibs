@@ -722,7 +722,10 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     QStatusBar* sb = internalStatusBar();
     if (sb) {
         QString entry = config->readEntry("StatusBar", "Enabled");
-        ( entry == "Disabled" ) ?  sb->hide() :sb->show();
+        if ( entry == "Disabled" )
+           sb->hide();
+        else
+           sb->show();
         if(d->showStatusBarAction)
             d->showStatusBarAction->setChecked(!sb->isHidden());
     }
@@ -730,7 +733,10 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     QMenuBar* mb = internalMenuBar();
     if (mb) {
         QString entry = config->readEntry ("MenuBar", "Enabled");
-        ( entry == "Disabled" ) ?  mb->hide() : mb->show();
+        if ( entry == "Disabled" )
+           mb->hide();
+        else
+           mb->show();
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -780,13 +786,15 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
-  (!config->hasDefault(widthString) && defaultSize) ?
-    config->revertToDefault(widthString) :
-    config->writeEntry(widthString, width() );
+  if (!config->hasDefault(widthString) && defaultSize)
+     config->revertToDefault(widthString);
+  else
+     config->writeEntry(widthString, width() );
   
-  (!config->hasDefault(heightString) && defaultSize) ?
-    config->revertToDefault(heightString) :
-    config->writeEntry(heightString, height() );
+  if (!config->hasDefault(heightString) && defaultSize)
+     config->revertToDefault(heightString);
+  else
+     config->writeEntry(heightString, height() );
 }
 
 void KMainWindow::restoreWindowSize( KConfig * config )
