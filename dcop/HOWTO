@@ -138,8 +138,8 @@ or not.
 
 QByteArray params;
 QDataStream stream(params, IO_WriteOnly);
-params << 5;
-if (!client->send("someAppId", "fooObject/barObject", "QString doIt(int)",
+stream << 5;
+if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
 	          params))
   qDebug("there was some error using DCOP.");
 
@@ -152,7 +152,7 @@ communication was successful.
 QByteArray params, reply;
 QCString replyType;
 QDataStream stream(params, IO_WriteOnly);
-params << 5;
+stream << 5;
 if (!client->call("someAppId", "fooObject/barObject", "doIt(int)",
                   params, replyType, reply))
   qDebug("there was some error using DCOP.");
