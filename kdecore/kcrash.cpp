@@ -125,10 +125,9 @@ KCrash::defaultCrashHandler (int signal)
 
       // we have already tested this
       argv[i++] = qstrdup("--appname");
-      if (!KApplication::loadedByKdeinit)
-        argv[i++] = qstrdup(appName->latin1());
-      else
-        argv[i++] = qstrdup("kdeinit");
+      argv[i++] = qstrdup(appName->latin1());
+      if (KApplication::loadedByKdeinit)
+        argv[i++] = qstrdup("--kdeinit");
 
       // only add apppath if it's not NULL
       if (appPath) {
