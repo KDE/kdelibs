@@ -68,11 +68,12 @@ class MousePressEvent : public MouseEvent
 public:
   MousePressEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
 		   const DOM::Node &innerNode )
-  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode ), m_innerNode( innerNode )
+  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode )
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMousePressEvent ); }
 
+  // return the offset of innerNode
   int offset();
 
 private:
