@@ -1694,11 +1694,11 @@ void KHTMLPart::write( const char *str, int len )
   if ( !d->m_decoder )
     d->m_decoder = createDecoder();
 
-  if ( len == 0 )
-    return;
-
   if ( len == -1 )
     len = strlen( str );
+
+  if ( len == 0 )
+    return;
 
   QString decoded = d->m_decoder->decode( str, len );
 
