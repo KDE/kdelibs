@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Jacek Konieczny (jajcus@zeus.polsl.gliwice.pl)
+    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,26 +18,6 @@
     Boston, MA 02111-1307, USA.
 	*/
 
-// $Id$
-// $Log$
-// Revision 1.2  1997/12/09 12:10:26  kulow
-// this time I don't wait for the ALPHA patches and include stdio.h now ;)
-//
-// Revision 1.1  1997/12/08 17:13:22  jacek
-// *** empty log message ***
-//
-// Revision 1.7  1997/12/08 15:25:39  jacek
-// *** empty log message ***
-//
-// Revision 1.6  1997/12/08 11:22:22  jacek
-// *** empty log message ***
-//
-// Revision 1.5  1997/12/06 10:25:53  jacek
-// Copyright information added
-//
-// Revision 1.5  1997/12/06 10:22:05  jacek
-// kcharsets.h docified
-//
 #include "kcharsetsdata.h"
 #include "kcharsets.h"
 #include "qstrlist.h"
@@ -167,26 +148,26 @@ bool KCharsets::isAvailable(const char* charset){
 
 bool KCharsets::isDisplayable(const char* charset,const char *face){
 
-  printf("Testing if %s is displayable\n",charset);
+  kchdebug("Testing if %s is displayable\n",charset);
   if ( stricmp(charset,"any")==0 ) return TRUE;
 
   KCharsetEntry *ce=data->charsetEntry(charset);
   if (!ce){
-    printf("there is no %s charset!\n",charset);
+    kchdebug("there is no %s charset!\n",charset);
     return FALSE;
   }  
 
   if (data->charsetOfFace(charset,face)) return TRUE;
   
   QFont::CharSet qcharset=ce->qtCharset;
-  printf("qtcharset=%i\n",qcharset);
+  kchdebug("qtcharset=%i\n",qcharset);
   
   if ( qcharset==QFont::AnyCharSet ) return FALSE;
   else{
     QFont f(face);
     f.setCharSet(qcharset);
     QFontInfo fi(f);
-    printf("fi.charset()=%i\n",fi.charSet());
+    kchdebug("fi.charset()=%i\n",fi.charSet());
     if (fi.charSet()!=qcharset) return FALSE;
     else return TRUE;
   }  
@@ -236,12 +217,12 @@ QFont &KCharsets::setQFont(QFont &fnt,const char *charset){
 
   if ( (stricmp(name(fnt),charset) == 0)
      || data->charsetOfFace(charset,fnt.family())) return fnt;
-  printf("Setting font to: \"%s\"\n",charset);
+  kchdebug("Setting font to: \"%s\"\n",charset);
   QString faceStr=data->faceForCharset(charset);
-  printf("Face for font: \"%s\"\n",(const char *)faceStr);
+  kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
   if (faceStr){
      faceStr.replace("\\*",fnt.family());
-     printf("New face for font: \"%s\"\n",(const char *)faceStr);
+     kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
      fnt.setFamily(faceStr);
      fnt.setCharSet(QFont::AnyCharSet);
   }
@@ -250,9 +231,9 @@ QFont &KCharsets::setQFont(QFont &fnt,const char *charset){
     QString family=fnt.family();
     if (family=="roman") fnt.setFamily("courier");	//  workaround for bug	
     else fnt.setFamily("roman");			//  in Qt
-    fnt.setFamily("courier");
+    fnt.setFamily(family);
   }  
-  printf("New charset: \"%s\"\n",name(fnt.charSet()));
+  kchdebug("New charset: \"%s\"\n",name(fnt));
   return fnt;
 }
 
@@ -265,6 +246,7 @@ const char * KCharsets::name(const QFont& font){
 
   if (font.charSet()!=QFont::AnyCharSet) return name(font.charSet());
   KCharsetEntry * ce=data->charsetOfFace(font.family());
+  kchdebug("ce=%p ce->name=%s\n",ce,ce?ce->name:0);
   if (ce) return ce->name;
   else return "unknown";
 } 

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Jacek Konieczny (jajcus@zeus.polsl.gliwice.pl)
+    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,18 +17,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 	*/
-
-// $Id$
-// $Log$
-// Revision 1.1  1997/12/08 17:13:23  jacek
-// *** empty log message ***
-//
-// Revision 1.6  1997/12/08 11:22:23  jacek
-// *** empty log message ***
-//
-// Revision 1.5  1997/12/06 10:22:05  jacek
-// kcharsets.h docified
-//
 
 #ifndef _CHARSETS_H
 #define _CHARSETS_H

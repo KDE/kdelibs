@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Jacek Konieczny (jajcus@zeus.polsl.gliwice.pl)
+    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,26 +17,11 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 	*/
-
-// $Id$
-// $Log$
-// Revision 1.1  1997/12/08 17:13:24  jacek
-// *** empty log message ***
-//
-// Revision 1.5  1997/12/08 15:25:40  jacek
-// *** empty log message ***
-//
-// Revision 1.4  1997/12/08 11:22:24  jacek
-// *** empty log message ***
-//
-// Revision 1.3  1997/12/06 10:25:54  jacek
-// Copyright information added
-//
-// Revision 1.5  1997/12/06 10:22:05  jacek
-// kcharsets.h docified
-//
+	
 #ifndef _CHARSETSDATA_H
 #define _CHARSETSDATA_H
+
+// #define KCH_DEBUG
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -47,7 +33,7 @@
 #include <qintdict.h>
 
 struct KCharsetEntry{
-  const char *name;
+  char *name;
   QFont::CharSet qtCharset;
   const unsigned *toUnicode;
   bool registered;
@@ -136,5 +122,18 @@ public:
   const unsigned *getToUnicodeTable(const char *charset);
   QIntDict<unsigned> *getToUnicodeDict(const char *charset);
 };
+
+#ifdef KCH_DEBUG
+#include <stdio.h>
+#include <stdarg.h>
+inline void kchdebug(const char *msg,...){
+    va_list ap;
+    va_start( ap, msg );                // use variable arg list
+    vfprintf( stdout, msg, ap );
+    va_end( ap );                    
+}    
+#else /* KCH_DEBUG */
+inline void kchdebug(const char *,...){}
+#endif /* KCH_DEBUG */
 
 #endif

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Jacek Konieczny (jajcus@zeus.polsl.gliwice.pl)
+    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,28 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 	*/
-
-// $Id$
-// $Log$
-// Revision 1.2  1997/12/09 17:14:24  denis
-// Some modifications to compile more strict compilers that gcc
-// Guys!!! If you want to delete a static member ... Think before...
-//
-// Revision 1.1  1997/12/08 17:13:23  jacek
-// *** empty log message ***
-//
-// Revision 1.8  1997/12/08 15:25:40  jacek
-// *** empty log message ***
-//
-// Revision 1.7  1997/12/08 11:22:24  jacek
-// *** empty log message ***
-//
-// Revision 1.6  1997/12/06 10:25:54  jacek
-// Copyright information added
-//
-// Revision 1.5  1997/12/06 10:22:05  jacek
-// kcharsets.h docified
-//
+	
 #include "kcharsetsdata.h"
 #include "kcharsets.h"
 #include <qdir.h>
@@ -63,12 +43,12 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
   
   input=kcharsetsData->charsetEntry(inputCharset);
   if (!input) {
-    printf("Couldn't set input charset to %s\n",inputCharset);
+    kchdebug("Couldn't set input charset to %s\n",inputCharset);
     return;
   }  
   output=kcharsetsData->charsetEntry(outputCharset);
   if (!output) {
-    printf("Couldn't set output charset to %s\n",outputCharset);
+    kchdebug("Couldn't set output charset to %s\n",outputCharset);
     return;
   }
   
@@ -104,7 +84,7 @@ bool KCharsetConverterData::getToUnicodeTable(){
   if (!convTable){
     convToUniDict=kcharsetsData->getToUnicodeDict(input->name);
     if (!convToUniDict){
-      printf("Couldn't get conversion table nor dictionary\n");
+      kchdebug("Couldn't get conversion table nor dictionary\n");
       return FALSE;
     }
   }
@@ -123,12 +103,12 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
   outAmps=oamps;
   input=kcharsetsData->charsetEntry(inputCharset);
   if (!input) {
-    printf("Couldn't set output charset to %s\n",output->name);
+    kchdebug("Couldn't set output charset to %s\n",output->name);
     return;
   }
   output=kcharsetsData->charsetEntry("iso-8859-1");
   if (!output) {
-    printf("Couldn't set output charset to iso-8859-1\n");
+    kchdebug("Couldn't set output charset to iso-8859-1\n");
     return;
   }
   setInputSettings();
@@ -141,11 +121,13 @@ void KCharsetConverterData::setInputSettings(){
   const char *name=input->name;
   
   if ( ! stricmp(name,"utf7") ){
+    warning("Sorry, UTF7 encoding is not supported yet\n");
     inputEnc=UTF7;
     inBits=0;
     unicodeIn=TRUE;
   }  
   else if ( ! stricmp(name,"utf8") ){
+    warning("Sorry, UTF8 encoding is not supported yet\n");
     inputEnc=UTF8;
     inBits=0;
     unicodeIn=TRUE;
@@ -172,11 +154,13 @@ void KCharsetConverterData::setOutputSettings(){
   const char *name=output->name;
   
   if ( ! stricmp(name,"utf7") ){
+    warning("Sorry, UTF7 encoding is not supported yet\n");
     outputEnc=UTF7;
     outBits=0;
     unicodeOut=TRUE;
   }  
   else if ( ! stricmp(name,"utf8") ){
+    warning("Sorry, UTF8 encoding is not supported yet\n");
     outputEnc=UTF8;
     outBits=0;
     unicodeOut=TRUE;
@@ -228,12 +212,7 @@ void KCharsetConverterData::convert(const QString &str
   unsigned index2=0;
   unsigned chr=0;
   
-  for(i=0;inBits?str[i]:(str[i]&&str[i+1]);){
-    if (inBits)
-      i++;
-    else
-      i+=2;
-
+  for(i=0;(inBits<=8)?str[i]:(str[i]&&str[i+1]);){
     switch(inputEnc){
        case UTF7:
          if (decodeUTF7(str+i,index,tmp)) i+=tmp;
@@ -248,7 +227,7 @@ void KCharsetConverterData::convert(const QString &str
 	 else if (inBits==16) index=(unsigned char)str[i++]+(unsigned char)str[i]<<8;
 	 break;
     }
-    printf("Got index: %x\n",index);
+    kchdebug("Got index: %x\n",index);
     switch(conversionType){
        case ToUnicode:
          if (convTable)
@@ -275,7 +254,7 @@ void KCharsetConverterData::convert(const QString &str
  	   if (ptr) index2=*ptr;
 	   else index2=0;
 	 }  
-         printf("Converted to unicode: %x\n",index);
+         kchdebug("Converted to unicode: %x\n",index);
 	 if (index2){
             ptr=(*convFromUniDict)[index2];
   	    if (ptr) chr=*ptr;
@@ -284,7 +263,7 @@ void KCharsetConverterData::convert(const QString &str
 	 else chr=0;
          break;
     }
-    printf("Converted to: %x\n",chr);
+    kchdebug("Converted to: %x\n",chr);
     if (chr==0)
       if (outAmps){
         if (conversionType!=FromUnicode){
@@ -307,6 +286,11 @@ void KCharsetConverterData::convert(const QString &str
 	result.text+=(char)(chr>>8);
       }
       else result.text+=(char)chr;
+      
+    if (inBits<=8)
+      i++;
+    else
+      i+=2;
   }
 }
 
@@ -321,7 +305,7 @@ bool KCharsetConverterData::createFromUnicodeDict(){
   else{
     QIntDict<unsigned> * dict2=kcharsetsData->getToUnicodeDict(output->name);
     if (!dict2){
-      printf("Couldn't get to unicode table for %s\n",output->name);
+      kchdebug("Couldn't get to unicode table for %s\n",output->name);
       delete dict;
       return FALSE;
     }
@@ -349,7 +333,7 @@ KCharsetsData::KCharsetsData(){
 
 void KCharsetsData::scanDirectory(const char *path){
 
-  printf("Scanning directory: %s\n",path);
+  kchdebug("Scanning directory: %s\n",path);
   QDir d(path);
   d.setFilter(QDir::Files);
   d.setSorting(QDir::Name);
@@ -381,12 +365,12 @@ void KCharsetsData::scanDirectory(const char *path){
 void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
 
 
-  printf("Creating unicode dict for %s\n",e->name);
+  kchdebug("Creating unicode dict for %s\n",e->name);
   config->setGroup("general");
   QString dir=config->readEntry("i18ndir");
-  printf("Dir: %s\n",(const char *)dir);
+  kchdebug("Dir: %s\n",(const char *)dir);
   QString filename=dir+'/'+e->name;
-  printf("Trying to open file %s\n",(const char *)filename);
+  kchdebug("Trying to open file %s\n",(const char *)filename);
   QFile f(filename);
   if (!f.open(IO_ReadOnly)) return;
   QTextStream t(&f);
@@ -415,7 +399,7 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
     code=0;
     if ( sscanf(codeBuf,"/x%X",&code) < 1 )
       code=codeBuf[0];
-    printf("(%s %s) %x->%x\n",codeBuf,unicodeBuf,code,unicode);
+    kchdebug("(%s %s) %x->%x\n",codeBuf,unicodeBuf,code,unicode);
     dict->insert(code,new unsigned(unicode));	
   }
   e->toUnicodeDict=dict;
@@ -483,34 +467,34 @@ QString KCharsetsData::charsetFace(const char *name,const QString &face){
 
 bool KCharsetsData::charsetOfFace(const char * charset,const QString &face){
 
-  printf("Testing if face %s is of charset %s...",(const char *)face,charset);
+  kchdebug("Testing if face %s is of charset %s...",(const char *)face,charset);
   config->setGroup("faces");
   const char *faceStr=config->readEntry(charset);
-  printf("%s...",faceStr);
+  kchdebug("%s...",faceStr);
   QRegExp rexp(faceStr,FALSE,TRUE);
   if (face.contains(rexp)){
-    printf("Yes, it is\n");
+    kchdebug("Yes, it is\n");
     return TRUE;
   }  
-  printf("No, it isn't\n");
+  kchdebug("No, it isn't\n");
   return FALSE;
 }
 
 KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
 
-  printf("Searching for charset for face %s...\n",(const char *)face);
+  kchdebug("Searching for charset for face %s...\n",(const char *)face);
   KEntryIterator * it=config->entryIterator("faces");
   if (!it) return 0;
   while( it->current() ){
-    QString faceStr=it->current()->aValue;
-    printf("testing if it is %s (%s)...",(const char *)it->currentKey()
-                                             ,(const char *)faceStr);
+    const char * faceStr=it->current()->aValue;
+    kchdebug("testing if it is %s (%s)...",(const char *)it->currentKey(),faceStr);
     QRegExp rexp(faceStr,FALSE,TRUE);
+    kchdebug("regexp: %s face: %s\n",rexp.pattern(),(const char *)face);
     if (face.contains(rexp)){
-      printf("Yes, it is\n");
+      kchdebug("Yes, it is\n");
       return charsetEntry(it->currentKey());
     }  
-    printf("No, it isn't\n");
+    kchdebug("No, it isn't\n");
     ++(*it);
   }
   return 0;
