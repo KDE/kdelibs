@@ -86,9 +86,9 @@ namespace khtml
 	    NotCached,    // this URL is not cached
 	    Unknown,      // let imagecache decide what to do with it
 	    New,          // inserting new image
+            Pending,      // only partially loaded
 	    Persistent,   // never delete this pixmap
 	    Cached,       // regular case
-	    Pending,      // only partially loaded
 	    Uncacheable   // to big to be cached,
 	};  	          // will be destroyed as soon as possible
 

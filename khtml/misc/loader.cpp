@@ -420,8 +420,7 @@ void CachedImage::ref( CachedObjectClient *c )
     }
 
     // for mouseovers, dynamic changes
-    if ( ( m_status == Persistent || m_status == Cached ) &&
-         !valid_rect().isNull() )
+    if ( m_status >= Persistent && !valid_rect().isNull() )
         c->setPixmap( pixmap(), valid_rect(), this, 0L);
 }
 
@@ -618,7 +617,6 @@ void CachedImage::movieStatus(int status)
 
 void CachedImage::movieResize(const QSize& /*s*/)
 {
-// ### doesn't work fixme
 //    do_notify(m->framePixmap(), QRect());
 }
 
