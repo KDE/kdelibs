@@ -303,6 +303,11 @@ Element Element::form() const
 {
     if (!impl || !impl->isGenericFormElement()) return 0;
     return static_cast<HTMLGenericFormElementImpl*>(impl)->form();
+    ElementImpl* f = static_cast<HTMLGenericFormElementImpl*>( impl )->form();
+
+    if( f && f->implicitNode() )
+        return 0;
+    return f;
 }
 
 CSSStyleDeclaration Element::style()

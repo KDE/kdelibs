@@ -65,9 +65,10 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
+HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     : HTMLElementImpl(doc)
 {
+    m_implicit = implicit;
     m_post = false;
     m_multipart = false;
     m_autocomplete = true;

@@ -60,7 +60,7 @@ class HTMLOptionElementImpl;
 class HTMLFormElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFormElementImpl(DocumentPtr *doc);
+    HTMLFormElementImpl(DocumentPtr *doc, bool implicit);
     virtual ~HTMLFormElementImpl();
 
     virtual Id id() const;

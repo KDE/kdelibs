@@ -800,7 +800,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_FORM:
         // thou shall not nest <form> - NS/IE quirk
         if (form) break;
-        n = form = new HTMLFormElementImpl(document);
+        n = form = new HTMLFormElementImpl(document, false);
         break;
     case ID_BUTTON:
         n = new HTMLButtonElementImpl(document, form);
@@ -1242,7 +1242,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     NodeImpl *n;
     HTMLFormElementImpl *myform = form;
     if ( !myform ) {
-        myform = new HTMLFormElementImpl(document);
+        myform = new HTMLFormElementImpl(document, true);
         n = myform;
     } else
         n = new HTMLDivElementImpl( document );
