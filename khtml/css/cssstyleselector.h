@@ -158,6 +158,8 @@ namespace khtml
 	void buildLists();
 	void clearLists();
 
+        void adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e);
+
         unsigned int addInlineDeclarations(DOM::ElementImpl* e, DOM::CSSStyleDeclarationImpl *decl,
 				   unsigned int numProps);
 

@@ -428,8 +428,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 	        checkForGenericFamilyChange(style, parentStyle);
 #endif
 		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+            }
         }
-        }
+
+        // Clean up our style object's display and text decorations (among other fixups).
+        adjustRenderStyle(style, e);
 
         if ( numPseudoProps ) {
 	    fontDirty = false;
@@ -475,31 +478,82 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
         }
     }
 
-    // Mutate the display to BLOCK or TABLE for certain cases, e.g., if someone attempts to
-    // position or float an inline, compact, or run-in.
-    if (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE) {
-        if (style->display() == INLINE || style->display() == COMPACT ||
-            style->display() == RUN_IN || style->display() == INLINE_BLOCK)
-            style->setDisplay(BLOCK);
-        else if (style->display() == INLINE_TABLE)
-            style->setDisplay(TABLE);
-    }
-
-    // Finally update our text decorations in effect, but don't allow text-decoration to percolate through
-    // tables, inline blocks, inline tables, or run-ins.
-    switch( style->display() ) {
-    case TABLE:
-    case INLINE_TABLE:
-    case RUN_IN:
-    case INLINE_BLOCK:
-        style->setTextDecorationsInEffect(style->textDecoration());
-        break;
-    default:
-        style->addToTextDecorationsInEffect(style->textDecoration());
+    // Now adjust all our pseudo-styles.
+    RenderStyle *pseudoStyle = style->pseudoStyle;
+    while (pseudoStyle) {
+        adjustRenderStyle(pseudoStyle, 0);
+        pseudoStyle = pseudoStyle->pseudoStyle;
     }
 
     // Now return the style.
     return style;
+}
+
+void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e)
+{
+#ifdef APPLE_CHANGES
+     // Cache our original display.
+     style->setOriginalDisplay(style->display());
+#endif
+
+    if (style->display() != NONE && e) {
+        // If we have a <td> that specifies a float property, in quirks mode we just drop the float
+        // property.
+        // Sites also commonly use display:inline/block on <td>s and <table>s.  In quirks mode we force
+        // these tags to retain their display types.
+        if (!strictParsing) {
+            if (e->id() == ID_TD) {
+                style->setDisplay(TABLE_CELL);
+                style->setFloating(FNONE);
+            }
+//             else if (e->id() == ID_TABLE)
+//                 style->setDisplay(style->isDisplayInlineType() ? INLINE_TABLE : TABLE);
+        }
+
+        // Mutate the display to BLOCK or TABLE for certain cases, e.g., if someone attempts to
+        // position or float an inline, compact, or run-in.  Cache the original display, since it
+        // may be needed for positioned elements that have to compute their static normal flow
+        // positions.  We also force inline-level roots to be block-level.
+        // FIXME: For now we do not mutate pseudo styles.  This is because we do not yet support the
+        // ability to position and float generated content.  This is per the CSS 2 spec, but it's changing
+        // in CSS2.1.  For now, we will just support CSS2.
+        if (style->display() != BLOCK && style->display() != TABLE /*&& style->display() != BOX*/ &&
+            (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE ||
+             e->getDocument()->documentElement() == e)) {
+             if (style->display() == INLINE_TABLE)
+                 style->setDisplay(TABLE);
+//             else if (style->display() == INLINE_BOX)
+//                 style->setDisplay(BOX);
+            else if (style->display() == LIST_ITEM) {
+                // It is a WinIE bug that floated list items lose their bullets, so we'll emulate the quirk,
+                // but only in quirks mode.
+                if (!strictParsing && style->floating() != FNONE)
+                    style->setDisplay(BLOCK);
+            }
+            else
+                style->setDisplay(BLOCK);
+        }
+    }
+
+    // Frames and framesets never honor position:relative or position:absolute.  This is necessary to
+    // fix a crash where a site tries to position these objects.
+    if ( e ) {
+        if ( e->id() == ID_FRAME ) {
+            style->setPosition( STATIC );
+            style->setDisplay( BLOCK );
+        }
+        else if ( e->id() == ID_FRAMESET ) {
+            style->setPosition( STATIC );
+        }
+    }
+
+    // Finally update our text decorations in effect, but don't allow text-decoration to percolate through
+    // tables, inline blocks, inline tables, or run-ins.
+    if (style->display() == TABLE || style->display() == INLINE_TABLE || style->display() == RUN_IN
+        || style->display() == INLINE_BLOCK /*|| style->display() == INLINE_BOX*/)
+        style->setTextDecorationsInEffect(style->textDecoration());
+    else
+        style->addToTextDecorationsInEffect(style->textDecoration());
 }
 
 unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
@@ -1515,7 +1569,7 @@ static QColor colorForCSSValue( int css_value )
 	    // Desktop background.
 	    return bckgrConfig.readColorEntry("Color1", &qApp->palette().disabled().background());
 	}
-	return khtml::invalidColor;
+	return QColor();
     }
 #endif
 

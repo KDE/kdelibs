@@ -1,3 +1,12 @@
+2003-11-19  Dirk Mueller  <mueller@kde.org>
+
+	* css/cssparser.cpp (parseColor): remove use of invalidColor. use a boolean
+	return instead. invalidColor was confusing as it was actually a valid color. 
+	Also add rgba() parsing. 
+
+	* css/cssstyleselector.cpp (adjustRenderStyle): add check to avoid that
+	<FRAME> gets a display != BLOCK assigned (#63640). 
+
 2003-11-18  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_html.cpp: limit collection length to >= 0 (Maciej)
