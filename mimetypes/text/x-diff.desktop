@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=text/x-diff
+Comment=Summary differences between two files
+Icon=txt
+Type=MimeType
+Patterns=*.diff;*.patch
