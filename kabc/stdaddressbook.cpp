@@ -158,9 +158,12 @@ void StdAddressBook::init( bool )
   Resource *res = manager.standardResource();
   if ( !res ) {
     res = manager.createResource( "file" );
-    if ( res )
+    if ( res ) {
+      manager.add( res );
+      manager.setStandardResource( res );
+      manager.sync(); // write default resource to config file
       addResource( res );
-    else
+    } else
       kdDebug(5700) << "No resource available!!!" << endl;
   }
 
