@@ -92,8 +92,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
 
     viewport()->setMouseTracking(true);
-    viewport()->setBackgroundMode(PaletteBase);
-    //viewport()->setBackgroundMode(NoBackground);
+    //viewport()->setBackgroundMode(PaletteBase);
+    viewport()->setBackgroundMode(NoBackground);
 
     KImageIO::registerFormats();
 
@@ -172,7 +172,7 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     //kdDebug() << "KHTMLView::resizeEvent" << endl;
     int oldWidth = visibleWidth();
-    
+
     QScrollView::resizeEvent(e);
 
     int w = visibleWidth();
@@ -180,9 +180,9 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
     // only relayout if the width has changed
     if(w != oldWidth)
-	layout();
+        layout();
 
-    //  this is to make sure we get the right width even if the scrolbar has dissappeared 
+    //  this is to make sure we get the right width even if the scrolbar has dissappeared
     // due to the size change.
     if(visibleHeight() != h || visibleWidth() != w)
         layout();
@@ -255,10 +255,10 @@ void KHTMLView::layout(bool)
         _height = visibleHeight();
         _width = visibleWidth();
 
-	//QTime qt;
-	//qt.start();
+        //QTime qt;
+        //qt.start();
             root->layout();
-	    //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+            //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
     }
@@ -353,7 +353,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
-    
+
     d->underMouse = innerNode;
 
     QCursor c = KCursor::arrowCursor();
@@ -529,9 +529,9 @@ bool KHTMLView::gotoLink()
     //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
 
     if (d->linkPressed)
-	n->setKeyboardFocus(DOM::ActivationActive);
+        n->setKeyboardFocus(DOM::ActivationActive);
     else
-	n->setKeyboardFocus(DOM::ActivationPassive);
+        n->setKeyboardFocus(DOM::ActivationPassive);
 
 //calculate x- and ypos
     int x = 0, y = 0;
@@ -540,9 +540,9 @@ bool KHTMLView::gotoLink()
     ensureVisible(x-30, y+30);
     if (!n->isInline())
     {
-	x+=n->renderer()->width();
-	y+=n->renderer()->height();
-	ensureVisible(x, y);
+        x+=n->renderer()->width();
+        y+=n->renderer()->height();
+        ensureVisible(x, y);
     }
     return true;
 }
@@ -551,7 +551,7 @@ bool KHTMLView::gotoNextLink()
 {
     if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
     if (!m_part->docImpl())
-	return false;
+        return false;
 
     // find next link
     NodeImpl *n = d->currentNode;
@@ -563,10 +563,10 @@ bool KHTMLView::gotoNextLink()
     {
         d->tabIndex++;
         if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-	{
+        {
             d->tabIndex=-1;
             n=0;
-	}
+        }
     }
 
     //kdDebug( 6000 ) << "gotoNextLink: current tabindex: "<< d->tabIndex << "\n";
@@ -579,58 +579,58 @@ bool KHTMLView::gotoNextLink()
         else if (n->nextSibling())
             n = n->nextSibling();
         else {
-	    NodeImpl *next = n->parentNode();
-	    bool wrap=true;
-	    while(next)
+            NodeImpl *next = n->parentNode();
+            bool wrap=true;
+            while(next)
             {
-		n=next;
-		if (n->nextSibling())
+                n=next;
+                if (n->nextSibling())
                 {
-		    n=n->nextSibling();
-		    next=0;
-		    wrap=false;
+                    n=n->nextSibling();
+                    next=0;
+                    wrap=false;
                 }
-		else
+                else
                 {
-		    next=n->parentNode();
+                    next=n->parentNode();
                 }
             }
-	    if (wrap)
+            if (wrap)
             {
-		//        kdDebug(6000)<<"wrapped around document border.\n";
-		if (d->tabIndex==-1)
-		    d->tabIndex++;
-		else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
-		    return false;
+                //        kdDebug(6000)<<"wrapped around document border.\n";
+                if (d->tabIndex==-1)
+                    d->tabIndex++;
+                else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
+                    return false;
             }
         }
         //kdDebug( 6000 ) << "gotoPrevLink: in-between tabindex: "<< d->tabIndex << "\n";
 
         if(n->id() == ID_A && ((static_cast<HTMLElementImpl *>(n))->getAttribute(ATTR_HREF).length()))
-	{
+        {
             //here, additional constraints for the previous link are checked.
             HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
             if ((a->tabIndex()==d->tabIndex))
-	    {
+            {
                 d->currentNode = n;
                 //kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
 
                 return gotoLink();
-	    }
+            }
             else if (!begin)
-	    {
+            {
                 begin=n;
-	    }
+            }
             else if (begin==n)
-	    {
+            {
                 if (d->tabIndex<=m_part->docImpl()->findHighestTabIndex())
-		    d->tabIndex++;
+                    d->tabIndex++;
                 if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-		{
+                {
                     //kdDebug(6000) << "\n gotoNextLink: last tabindex "<<d->tabIndex<<" reached. now processing non-tabindex-elements\n";
                     d->tabIndex=-1;
-		}
-	    }
+                }
+            }
         }
     }
     return false;
@@ -656,10 +656,10 @@ bool KHTMLView::gotoPrevLink()
     {
         d->tabIndex--;
         if (d->tabIndex==-1)
-	{
+        {
             n=0;
             //kdDebug(6000)<< "tabindex wrapped backwards\n";
-	}
+        }
     }
 
     //    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
@@ -679,57 +679,57 @@ bool KHTMLView::gotoPrevLink()
             while(prev) {
                 n=prev;
                 if (n->previousSibling())
-		{
+                {
                     n=n->previousSibling();
                     prev=0;
                     wrap=false;
-		}
+                }
                 else
-		    prev=n->parentNode();
+                    prev=n->parentNode();
             }
             if (wrap)
-	    {
+            {
                 //              kdDebug(6000)<<"wrapped from "<< d->tabIndex <<endl;
                 if (d->tabIndex==-1)
-		{
+                {
                     d->tabIndex=m_part->docImpl()->findHighestTabIndex();
                     //              kdDebug"to "<< d->tabIndex<<endl;
                     if (d->tabIndex!=-1)
-			begin=0L;
-		}
-	    }
+                        begin=0L;
+                }
+            }
         }
         // ### add handling of form elements here!
         if((n->id() == ID_A)&&((static_cast<HTMLElementImpl *>(n)->getAttribute(ATTR_HREF).length()))) {
             //here, additional constraints for the previous link are checked.
             HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
             if (a->tabIndex()==d->tabIndex)
-	    {
+            {
                 d->currentNode = n;
                 //kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
 
                 return gotoLink();
-	    }
+            }
         }
         if (!begin)
-	{
+        {
             begin=n;
             //    kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
-	}
+        }
         else if (begin==n)
-	{
+        {
             if (d->tabIndex>=0)
-	    {
+            {
                 d->tabIndex--;
-	    }
+            }
             else
-	    {
+            {
                 d->tabIndex=m_part->docImpl()->findHighestTabIndex();
                 //      kdDebug(6000)<<"end of non-tabindex-link-mode. restarting search\n";
                 if (d->tabIndex==-1)
-		    return false;
-	    }
-	}
+                    return false;
+            }
+        }
     }
     return false;
 }
@@ -798,7 +798,7 @@ void KHTMLView::print()
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
-		
+
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
             p->translate(0,-(pageHeight-overlap));
             top += (pageHeight-overlap);
@@ -819,29 +819,29 @@ void KHTMLView::toggleActLink(bool actState)
 {
     if ( d->currentNode )
     {
-	//retrieve url
-	HTMLAnchorElementImpl *n = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
-	if (!actState) // inactive->active
+        //retrieve url
+        HTMLAnchorElementImpl *n = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+        if (!actState) // inactive->active
         {
-	    int x,y;
-	    d->currentNode->setKeyboardFocus(DOM::ActivationActive);
-	    d->originalNode=d->currentNode;
-	    d->linkPressed=true;
-	    n->getAnchorPosition(x,y);
-	    ensureVisible(x,y);
+            int x,y;
+            d->currentNode->setKeyboardFocus(DOM::ActivationActive);
+            d->originalNode=d->currentNode;
+            d->linkPressed=true;
+            n->getAnchorPosition(x,y);
+            ensureVisible(x,y);
         }
-	else //active->inactive
+        else //active->inactive
         {
-	    n->setKeyboardFocus(DOM::ActivationOff);
-	    d->linkPressed=false;
-	    if (d->currentNode==d->originalNode)
+            n->setKeyboardFocus(DOM::ActivationOff);
+            d->linkPressed=false;
+            if (d->currentNode==d->originalNode)
             {
-		d->currentNode=0;
-		m_part->urlSelected( n->areaHref().string(),
-				     LeftButton, 0,
-				     n->targetRef().string() );
+                d->currentNode=0;
+                m_part->urlSelected( n->areaHref().string(),
+                                     LeftButton, 0,
+                                     n->targetRef().string() );
             }
-	    d->originalNode=0;
+            d->originalNode=0;
         }
     }
 }
