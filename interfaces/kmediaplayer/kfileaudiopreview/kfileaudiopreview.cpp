@@ -5,6 +5,7 @@
 #include <qlayout.h>
 #include <qvgroupbox.h>
 
+#include <kglobal.h>
 #include <kconfig.h>
 #include <klibloader.h>
 #include <klocale.h>
@@ -53,6 +54,8 @@ public:
 KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
     : KPreviewWidgetBase( parent, name )
 {
+    KGlobal::locale()->insertCatalogue("kfileaudiopreview");    
+
     QStringList formats = KDE::PlayObjectFactory::mimeTypes();
     // ###
     QStringList::ConstIterator it = formats.begin();
