@@ -48,23 +48,23 @@ KTabWidget::~KTabWidget()
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
-    ( (KTabBar*)tabBar() )->setTabColor( t->identifier(), color );
+    static_cast<KTabBar*>(tabBar())->setTabColor( t->identifier(), color );
 }
 
 const QColor &KTabWidget::tabColor( QWidget *w ) const
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
-    return ( (KTabBar*)tabBar() )->tabColor( t->identifier() );
+    return static_cast<KTabBar*>(tabBar())->tabColor( t->identifier() );
 }
 
 void KTabWidget::setTabReorderingEnabled( bool on)
 {
-    ( (KTabBar*)tabBar() )->setTabReorderingEnabled( on );
+    static_cast<KTabBar*>(tabBar())->setTabReorderingEnabled( on );
 }
 
 bool KTabWidget::isTabReorderingEnabled() const
 {
-    return ( (KTabBar*)tabBar() )->isTabReorderingEnabled();
+    return static_cast<KTabBar*>(tabBar())->isTabReorderingEnabled();
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
@@ -171,12 +171,12 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
 
 void KTabWidget::setHoverCloseButton( bool button )
 {
-    ( (KTabBar*)tabBar() )->setHoverCloseButton( button );
+    static_cast<KTabBar*>(tabBar())->setHoverCloseButton( button );
 }
 
 bool KTabWidget::hoverCloseButton() const
 {
-    return ( (KTabBar*)tabBar() )->hoverCloseButton();
+    return static_cast<KTabBar*>(tabBar())->hoverCloseButton();
 }
 
 void KTabWidget::closeRequest( int index )
