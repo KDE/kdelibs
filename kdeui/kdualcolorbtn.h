@@ -28,10 +28,10 @@
  * from other KDE color widgets, a reset to black and white control, and a
  * swap colors control.
  *
- * When the user clicks on the the foreground or background rectangle the
- * rectangle is first sunken and the currentChanged() signal is emitted.
- * Further clicks will present a color dialog and emit either the fgChanged()
- * or bgChanged() if a new color is selected.
+ * When the user clicks on the foreground or background rectangle the
+ * rectangle is first sunken and the @ref currentChanged() signal is emitted.
+ * Further clicks will present a color dialog and emit either the @ref fgChanged()
+ * or @ref bgChanged() if a new color is selected.
  *
  * Note: With drag and drop when dropping a color the current selected color
  * will be set, while when dragging a color it will use whatever color
@@ -43,8 +43,15 @@
 class KDualColorButton : public QWidget
 {
     Q_OBJECT
+    Q_ENUMS( DualColor )
+    Q_PROPERTY( QColor foreground READ foreground WRITE setForeground )
+    Q_PROPERTY( QColor background READ background WRITE setBackground )
+    Q_PROPERTY( QColor currentColor READ currentColor WRITE setCurrentColor STORED false DESIGNABLE false )
+    Q_PROPERTY( DualColor current READ current WRITE setCurrent )
+
 public:
-    enum DualColor{Foreground, Background};
+    
+    enum DualColor { Foreground, Background };
     /**
      * Constructs a new KDualColorButton using the default black and white
      * colors.
@@ -61,21 +68,21 @@ public:
     /**
      * Returns the current foreground color.
      */
-    QColor foreground();
+    QColor foreground() const;
     /**
      * Returns the current background color.
      */
-    QColor background();
+    QColor background() const;
     /**
      * Returns the current color item selected by the user.
      */
-    KDualColorButton::DualColor current();
+    DualColor current() const;
     /**
      * Returns the color of the selected item.
      */
-    QColor currentColor();
+    QColor currentColor() const;
     /**
-     * Returns the minimum size needed to display the widget and all it's
+     * Returns the minimum size needed to display the widget and all its
      * controls.
      */
     virtual QSize sizeHint() const;
@@ -83,19 +90,19 @@ public slots:
     /**
      * Sets the foreground color.
      */
-    void slotSetForeground(const QColor &c);
+    void setForeground(const QColor &c);
     /**
      * Sets the background color.
      */
-    void slotSetBackground(const QColor &c);
+    void setBackground(const QColor &c);
     /**
      * Sets the current selected color item.
      */
-    void slotSetCurrent(KDualColorButton::DualColor s);
+    void setCurrent(DualColor s);
     /**
      * Sets the color of the selected item.
      */
-    void slotSetCurrentColor(const QColor &c);
+    void setCurrentColor(const QColor &c);
 signals:
     /**
      * Emitted when the foreground color is changed.

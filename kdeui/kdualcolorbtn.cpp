@@ -66,22 +66,22 @@ KDualColorButton::~KDualColorButton()
     delete resetPixmap;
 }
 
-QColor KDualColorButton::foreground()
+QColor KDualColorButton::foreground() const
 {
     return(fg.color());
 }
 
-QColor KDualColorButton::background()
+QColor KDualColorButton::background() const
 {
     return(bg.color());
 }
 
-KDualColorButton::DualColor KDualColorButton::current()
+KDualColorButton::DualColor KDualColorButton::current() const
 {
     return(curColor);
 }
 
-QColor KDualColorButton::currentColor()
+QColor KDualColorButton::currentColor() const
 {
     return(curColor == Background ? bg.color() : fg.color());
 }
@@ -91,19 +91,19 @@ QSize KDualColorButton::sizeHint() const
     return(QSize(34, 34));
 }
 
-void KDualColorButton::slotSetForeground(const QColor &c)
+void KDualColorButton::setForeground(const QColor &c)
 {
     fg = QBrush(c, SolidPattern);
     repaint(false);
 }
 
-void KDualColorButton::slotSetBackground(const QColor &c)
+void KDualColorButton::setBackground(const QColor &c)
 {
     bg = QBrush(c, SolidPattern);
     repaint(false);
 }
 
-void KDualColorButton::slotSetCurrentColor(const QColor &c)
+void KDualColorButton::setCurrentColor(const QColor &c)
 {
     if(curColor == Background)
         bg = QBrush(c, SolidPattern);
@@ -112,7 +112,7 @@ void KDualColorButton::slotSetCurrentColor(const QColor &c)
     repaint(false);
 }
 
-void KDualColorButton::slotSetCurrent(DualColor s)
+void KDualColorButton::setCurrent(DualColor s)
 {
     curColor = s;
     repaint(false);
