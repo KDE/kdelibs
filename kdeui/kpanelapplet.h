@@ -1,59 +1,129 @@
-/*
-  This file is part of the KDE libraries
+/*****************************************************************
 
-  Copyright (c) 2000 Matthias Elter   <elter@kde.org>
-  base on code written 1999 by Matthias Ettrich <ettrich@kde.org>
-                 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License version 2 as published by the Free Software Foundation.
+Copyright (c) 2000 Matthias Elter
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
-*/
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+******************************************************************/
 
 #ifndef __kpanelapplet_h__
 #define __kpanelapplet_h__
 
-#include <qwidget.h>
-#include <dcopobject.h>
+class KConfig;
 
-class KPanelAppletData;
+#include <qframe.h>
 
 /**
-* KDE Panel Applet class
-*
-* This class implements panel applets.
-*
-* @author Matthias Elter <elter@kde.org>
-* @short KDE Panel Applet class
-*/
-class KPanelApplet : public QWidget, DCOPObject
+ * KDE Panel Applet class
+ * ----------------------
+ *
+ * This class implements panel applets.
+ *
+ * Panel applets
+ *   ...are small applications living in the KDE panel.
+ *   ...are implemented as DSOs (Dynamic Shared Objects).
+ *
+ * Note: For security and stability reasons the panel wont load untrusted third
+ *       party applets directly into its namespace but via a external wrapper
+ *       process.
+ *
+ * The panel locates available applets by searching for applet desktop
+ * files in (ALL_KDEDIRS)/share/apps/kicker/applets. Every panel applet should
+ * install a desktop file there to be recognised by the panel.
+ *
+ * Besides standard keys like "Name", "Comment" and "Icon" there are
+ * two panel applet specific keys:
+ *
+ * X-KDE-Library:
+ * --------------
+ * Used by the panel to locate the applet DSO (Dynamic Shared Object)
+ * Example: X-KDE-Library=libexampleapplet
+ *
+ * X-KDE-UniqueApplet:
+ * -------------------
+ * Similar to KApplication and KUniqueApplication there are two types of panel
+ * appelts. Use unique applets when it makes no sence to run more than one instance
+ * of a applet in the panel. A good example for unique applets is the taskbar applet.
+ * Use normal applets when you need instance specific configuration. An example
+ * is the koolclock applet where you might want to run two instances in your panel, one
+ * configured as analog clock, the other one as digital clock. X-KDE-UniqueApplet is a
+ * boolean key which defaults to "false".
+ * Example: X-KDE-UniqueApplet=true
+ *
+ * Back to panel applet DSOs, the following conventions are used for KDE:
+ * Name:    lib<appletname>applet.la
+ * LDFLAGS: -module -no-undefined
+ *
+ * To implement a panel applet it is not enough to write a class inheriting from
+ * KPanelApplet but you also have to provide a factory function in your DSO.
+ * A sample factory function could look like this:
+ *
+ * <pre>
+ *
+ * extern "C"
+ * {
+ *     KPanelApplet* init(QWidget *parent, const QString& configFile)
+ *     {
+ *         KGlobal::locale()->insertCatalogue("exampleapplet");
+ *         return new ExampleApplet(configFile, KPanelApplet::Normal,
+ *                       KPanelApplet::About | KPanelApplet::Help | KPanelApplet::Preferences,
+ *                       parent, "exampleapplet");
+ *     }
+ * }
+ *
+ * </pre>
+ *
+ * Note: Don't change the factory function signature or the panel will fail to load your applet.
+ *
+ * @author Matthias Elter <elter@kde.org>
+ * @short KDE Panel Applet class
+ **/
+class KPanelApplet : public QFrame
 {
   Q_OBJECT;
-  
- public:
 
-  enum Actions { About = 1, Help = 2, Preferences = 4 };
-  enum Flags { Stretch = 1, TopLevel = 2 };
-  enum Position { Left = 0, Right, Top, Bottom };
+public:
+
+  enum Type { Normal = 0, Stretch, TopLevel };
+  enum Action { About = 1, Help = 2, Preferences = 4 };
+  enum Direction { Up = 0, Down, Left, Right };
 
   /**
-   * Construct a KApplet widget just like any other widget.
+   * Construct a KPanelApplet justlike any other widget.
+   * 
+   * @param configFile the configFile handed over in the factory function.
+   * @param Type the applet Type. @ref Type
+   * @param actions standard RMB menu actions supported by the applet. @ref Action
+   * @param parent the pointer to the parent widget handed over in the factory function.
+   * @param name a Qt object name for your applet.
    **/
-  KPanelApplet( QWidget* parent = 0, const char* name = 0 );
+  KPanelApplet(const QString& configFile, Type t = Normal,
+               int actions = 0, QWidget *parent = 0, const char *name = 0);
 
   /**
-   * @returns A suggested width for a given height.
+   * Destructor
+   **/
+  ~KPanelApplet();
+
+  /**
+   * @return a suggested width for a given height.
    *
-   * Applets should reimplement this function.
+   * Every applet should reimplement this function.
    *
    * Depending on the panel orientation the height (horizontal panel) or the
    * width (vertical panel) of the applets is fixed.
@@ -66,14 +136,14 @@ class KPanelApplet : public QWidget, DCOPObject
    * The applet can now choose the other size component (width)
    * based on the given height.
    *
-   * The width you return is guaranteed.
+   * The width you return is granted.
    **/
-  virtual int widthForHeight(int height);
+  virtual int widthForHeight(int height) { return height; }
 
   /**
-   * @returns A suggested height for a given width.
+   * @return a suggested height for a given width.
    *
-   * Applets should reimplement this function.
+   * Every applet should reimplement this function.
    *
    * Depending on the panel orientation the height (horizontal panel) or the
    * width (vertical panel) of the applets is fixed.
@@ -86,50 +156,63 @@ class KPanelApplet : public QWidget, DCOPObject
    * The applet can now choose the other size component (height)
    * based on the given width.
    *
-   * The height you return is guaranteed.
+   * The height you return is granted.
    **/
-  virtual int heightForWidth(int width);
-
-  bool dock( const QCString appletId );
+  virtual int heightForWidth(int width) { return width; }
 
   /**
-   * Is called when 'About' is selcted from the applets RMB menu.
+   * Is called when the user selects "About" from the applets RMB menu.
+   * Overload this function to launch a about dialog.
    *
-   * There is no default implementation.
-   * Reimplement this to launch a about dialog in for your applet.
+   * Note that this is called only when your applet supports the About action.
+   * See @ref Action and @ref KPanelApplet().
    **/
   virtual void about() {}
 
   /**
-   * Is called when 'Help' is selcted from the applets RMB menu.
+   * Is called when the user selects "Help" from the applets RMB menu.
+   * Overload this function to launch a manual or help page.
    *
-   * There is no default implementation.
-   * Reimplement this to launch the applet-manual / help for your applet.
+   * Note that this is called only when your applet supports the Help action.
+   * See @ref Action and @ref KPanelApplet().
    **/
   virtual void help() {}
 
   /**
-   * Is called when 'Preferences' is selcted from the applets RMB menu.
+   * Is called when the user selects "Preferences" from the applets RMB menu.
+   * Overload this function to launch a preferences dialog or kcontrol module.
    *
-   * There is no default implementation.
-   * Reimplement this to launch a preferences dialog for your applet.
+   * Note that this is called only when your applet supports the preferences action.
+   * See @ref Action and @ref KPanelApplet().
    **/
   virtual void preferences() {}
 
   /**
-   * @returns int indicating the applet flags.
-   **/
-  int flags() { return _flags; }
-
-  /**
-   * @returns a int indicating the supported RMB menu actions.
-   **/
-  int actions() { return _actions; }
-
-  /**
-   * Notify the panel about a new applet layout.
+   * Always use this KConfig object to save/load your applets configuration.
+   * 
+   * For unique applets this config object will write to a config file called
+   * <appletname>rc in the users local KDE directory.
    *
-   * Call this to make the panel relayout all applets, when
+   * For normal applets this config object will write to a instance specific config file
+   * called <appletmame><instanceid>rc in the users local KDE directory.
+   **/
+  KConfig* config() { return _config; }
+
+  /**
+   * @return Type indicating the applet's type.
+   * @ref Type
+   **/
+  Type type() { return _type; }
+
+  /**
+   * @return int indicating the supported RMB menu actions.
+   * @ref Action
+   **/
+  int actions(){ return _actions; }
+
+ signals:
+  /**
+   * Emit this signal to make the panel relayout all applets, when
    * you want to change your width (horizontal panel) or
    * height (vertical panel).
    *
@@ -144,69 +227,34 @@ class KPanelApplet : public QWidget, DCOPObject
    **/
   void updateLayout();
 
+ public slots:
   /**
-   * @returns The panel orientation. You may need this if you want to popup menus at the
-   * right position.
+   * Don't reimplement, this is used internally
+   **/
+  void slotSetOrientation(Orientation o);
+
+  /**
+   * Don't reimplement, this is used internally
+   **/
+  void slotSetPopupDirection(Direction d);
+
+ protected:
+  /**
+   * @return the applet's orientation. (horizontal or vertical)
    **/
   Orientation orientation() const { return _orient; }
 
   /**
-   * @returns The panel position. You may need this if you want to popup menus at the
-   * right position.
+   * You may need this if you want to popup menus at the right position.
    **/
-  Position position() const { return _pos; }
-
-  // dcop internal
-  bool process(const QCString &fun, const QByteArray &data,
-               QCString& replyType, QByteArray &replyData);
-
- protected:
-  /**
-   * Set the applet flags.
-   *
-   * Supported flags:
-   *
-   * Stretch:
-   * --------
-   * Most applets might want to have a fixed size.
-   * Applets like a taskbar however can set the stretch flag to get
-   * all space available on the panel between the two surrounding applets
-   * and/or the panel borders.
-   *
-   * TopLevel:
-   * ---------
-   * Some applets do not want to dock into the panel but map toplevel windows only.
-   * A example is the kasbar applet.
-   *
-   * @see KPanelApplet::flags
-   **/
-  void setFlags(int f);
-
-  /**
-   * Set the RMB menu actions supported by the applet
-   *
-   * The panel supports 3 default actions besides 'Move' and 'Remove' in the
-   * applets RMB menu:
-   *
-   * About - Launch about dialog.
-   * Help - Show applet manual/help.
-   * Preferences - Launch preferences dialog.
-   *
-   * Not all of these make sense/are supported by all applets, so you
-   * can use this method to enable the actions supported by your applet.
-   *
-   * Example: setActions( About | Help | Preferences );
-   *
-   * @see KPanelApplet::actions
-   */
-  void setActions( int a);
+  Direction popupDirection() const { return _dir; }
 
  private:
-  KPanelAppletData *d;
-  int _actions, _flags;
-  Orientation _orient;
-  Position _pos;
-
+  Type         _type;
+  Orientation  _orient;
+  Direction    _dir;
+  KConfig*     _config;
+  int          _actions;
 };
 
 #endif
