@@ -47,7 +47,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	int numSpaces = 0;
 	if ( toAdd ) {
 	    for( int i = 0; i < len; i++ )
-		if ( str[i].direction() == QChar::DirWS )
+		if ( str[i+pos].direction() == QChar::DirWS )
 		    numSpaces++;
 	}
 
@@ -60,7 +60,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    int chw = fm.charWidth( s, pos+i );
 	    if ( letterSpacing )
 		chw += letterSpacing;
-	    if ( (wordSpacing || toAdd) && str[i].isSpace() ) {
+	    if ( (wordSpacing || toAdd) && str[i+pos].isSpace() ) {
 		chw += wordSpacing;
 		if ( numSpaces ) {
 		    int a = toAdd/numSpaces;
@@ -96,7 +96,7 @@ int Font::width( QChar *chs, int slen, int pos, int len ) const
     if ( wordSpacing ) {
 	// add amount
 	for( int i = 0; i < len; i++ ) {
-	    if( chs[i].isSpace() )
+	    if( chs[i+pos].isSpace() )
 		w += wordSpacing;
 	}
     }
