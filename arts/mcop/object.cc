@@ -1301,9 +1301,9 @@ long *Object_stub::_lookupMethodCache = 0;
 
 long Object_stub::_lookupMethodFast(const char *method)
 {
-	long c1 = (long)this;
-	long c2 = (long)method;
-	long pos = 3*((c1 ^ c2 ^ _lookupCacheRandom)%_lookupMethodCacheSize);
+	unsigned long c1 = (unsigned long)this;
+	unsigned long c2 = (unsigned long)method;
+	unsigned long pos = 3*((c1^c2^_lookupCacheRandom)%_lookupMethodCacheSize);
 
 	if(!_lookupMethodCache)
 	  _lookupMethodCache=(long *)calloc(_lookupMethodCacheSize,3*sizeof(long));
