@@ -838,15 +838,17 @@ void KFileDialog::setSelection(const QString& url)
 	return;
     }
 
-    KURL u(url);
-    if (u.isMalformed()) // perhaps we have a relative path!?
-	u = KURL(ops->url(),  url);
+    KURL u;
+    if ( KURL::isRelativeURL( url ) ) // perhaps we have a relative path!?
+      u = KURL( ops->url(), url );
+    else
+      u = KURL( url );
 
     if (u.isMalformed()) { // if it still is
         qWarning("%s is not a correct argument for setSelection!", url.latin1());
 	return;
     }
-    
+
     /** hmm, this would prevent using remote urls, right?
     if (!u.isLocalFile()) { // no way to detect, if we have a directory!?
 	d->url = u;
@@ -859,7 +861,13 @@ void KFileDialog::setSelection(const QString& url)
      */
     KFileViewItem i(-1, -1, u, true );
     //    KFileViewItem i(u.path());
-    if (i.isDir())
+    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) // trust isDir() only if the file is
+                                                                     // local (we cannot stat non-local urls)
+                                                                     // and if it exists!
+                                                                     // (as KFileItem does not check if the
+                                                                     // file exists or not -> the statbuffer
+                                                                     // is undefined -> isDir() is
+                                                                     // unreliable) (Simon)
 	setURL(u, true);
     else {
 	QString filename = u.url();
