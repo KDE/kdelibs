@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.39  1997/10/04 20:03:02  kalle
+// You can turn of debugging output completely.
+//
 // Revision 1.38  1997/10/04 19:42:44  kalle
 // new KConfig
 //
@@ -486,37 +489,54 @@ KLocale* KApplication::getLocale()
     pLocale = new KLocale();
 
   return pLocale;
-  //  for( int i = 0; i < argc; i++ )
+  enum parameter_code { unknown = 0, caption, icon, miniicon };
+  char *parameter_strings[3] = { "-caption", "-icon", "-miniicon" };
+  int parameter_count = 3;
+bool KApplication::eventFilter ( QObject*, QEvent* e )
   int i = 0;
-  while( i < argc )
-	{
-	  // this code duplication is bad style, I'll clean this up some day...
-	  if( !strcmp( argv[i], "-caption" ) )
+	{    
+	  QKeyEvent *k = (QKeyEvent*)e;  
+	  if( ( k->key() == Key_F12 ) &&
+		  ( k->state() & ControlButton ) &&
+		  ( k->state() & ShiftButton ) )
 		{
-		  aCaption = argv[i+1];
-		  
-		  for( int j = i;  j < argc-2; j++ )
-			strcpy( argv[j], argv[j+2] );
+		  KDebugDialog* pDialog = new KDebugDialog();
+		  /* Fill dialog fields with values from config data */
+		  KConfig* pConfig = getConfig();
+		  QString aOldGroup = pConfig->getGroup();
+		  pConfig->setGroup( "KDebug" );
+		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 4 ) );
+		  pDialog->setInfoFile( pConfig->readEntry( "InfoFilename", 
+													"kdebug.dbg" ) );
+		  pDialog->setInfoShow( pConfig->readEntry( "InfoShow", "" ) );
+		  pDialog->setWarnOutput( pConfig->readNumEntry( "WarnOutput", 4 ) );
+		  pDialog->setWarnFile( pConfig->readEntry( "WarnFilename", 
+													"kdebug.dbg" ) );
+		  pDialog->setErrorShow( pConfig->readEntry( "ErrorShow", "" ) );
+		  pDialog->setFatalOutput( pConfig->readNumEntry( "FatalOutput", 4 ) );
+		  pDialog->setFatalFile( pConfig->readEntry( "FatalFilename", 
+													 "kdebug.dbg" ) );
+		  pDialog->setFatalShow( pConfig->readEntry( "FatalShow", "" ) );
+		  pDialog->setAbortFatal( pConfig->readNumEntry( "AbortFatal", 0 ) );
+			  pConfig->writeEntry( "WarnOutput", pDialog->warnOutput() );
+			  pConfig->writeEntry( "WarnFilename", pDialog->warnFile() );
+			  pConfig->writeEntry( "WarnShow", pDialog->warnShow() );
+			  pConfig->writeEntry( "ErrorOutput", pDialog->errorOutput() );
+			  pConfig->writeEntry( "ErrorFilename", pDialog->errorFile() );
+			  pConfig->writeEntry( "ErrorShow", pDialog->errorShow() );
+  int parameter_count = 4;
+	  aSessionConfigName += argv[i+1];
+	}
+	if (QFile::exists(aSessionConfigName)){
+	  QFile aConfigFile(aSessionConfigName);
+	  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
+	  if( bSuccess ){
+	    aConfigFile.close();
+	    pSessionConfig = new KConfig(0L, aSessionConfigName);
+	    if (pSessionConfig){
+	      bIsRestored = True;
+	    }
 	  }
-		  argc -=2 ;
-		}
-	  if( !strcmp( argv[i], "-icon" ) )
-		{
-		  aIconPixmap = getIconLoader()->loadIcon( argv[i+1] );
-		  for( int j = i;  j < argc-2; j++ )
-			strcpy( argv[j], argv[j+2] );
-
-		  argc -=2 ;
-		}
-	  if( !strcmp( argv[i], "-miniicon" ) )
-		{
-		  aMiniIconPixmap = getIconLoader()->loadMiniIcon( argv[i+1] );
-		  for( int j = i;  j < argc-2; j++ )
-			strcpy( argv[j], argv[j+2] );
-
-		  argc -=2 ;
-		}
-	  i++;
 	}
     case caption:
       aCaption = argv[i+1];
@@ -525,8 +545,8 @@ KLocale* KApplication::getLocale()
       aDummyString2 += argv[i+1];
       aDummyString2 += "\" ";
       break;
+    case icon:
       if (argv[i+1][0] == '/')
-
         aIconPixmap = QPixmap(argv[i+1]);
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
