@@ -555,7 +555,7 @@ public:
   /**
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
-  KDockTabGroup* parentDockTabGroup() const { return parentTabGroup(); };
+  KDockTabGroup* parentDockTabGroup() const;
 
 #ifndef NO_KDE2
 
@@ -593,12 +593,6 @@ public slots:
   void undock();
 
 protected:
-
-  /**
-   * @return the parent widget of this if it inherits class KDockTabGroup
-   * Warning: This will be removed in KDE-3.0. Use parentDockTabGroup instead.
-   */
-  KDockTabGroup* parentTabGroup() const;
 
   /**
    * Check some conditions and show or hide the dockwidget header (drag panel).

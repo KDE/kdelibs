@@ -510,9 +510,9 @@ bool KDockWidget::event( QEvent *event )
         if ( parent()->inherits("KDockSplitter") ){
           ((KDockSplitter*)(parent()))->updateName();
         }
-        if ( parentTabGroup() ){
-          setDockTabName( parentTabGroup() );
-          parentTabGroup()->setTabLabel( this, tabPageLabel() );
+        if ( parentDockTabGroup() ){
+          setDockTabName( parentDockTabGroup() );
+          parentDockTabGroup()->setTabLabel( this, tabPageLabel() );
         }
       }
       break;
@@ -542,7 +542,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     succes = false;
   }
 
-  if ( parent() && !parent()->inherits("KDockSplitter") && !parentTabGroup() ){
+  if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() ){
     succes = false;
   }
 
@@ -575,7 +575,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     return this;
   }
 
-  KDockTabGroup* parentTab = target->parentTabGroup();
+  KDockTabGroup* parentTab = target->parentDockTabGroup();
   if ( parentTab ){
     // add to existing TabGroup
     applyToWidget( parentTab );
@@ -705,7 +705,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   return newDock;
 }
 
-KDockTabGroup* KDockWidget::parentTabGroup() const
+KDockTabGroup* KDockWidget::parentDockTabGroup() const
 {
   if ( !parent() ) return 0L;
   QWidget* candidate = parentWidget()->parentWidget();
@@ -731,7 +731,7 @@ void KDockWidget::undock()
 
   bool isV = parentW->isVisibleToTLW();
 
-  KDockTabGroup* parentTab = parentTabGroup();
+  KDockTabGroup* parentTab = parentDockTabGroup();
   if ( parentTab ){
     d->index = parentTab->indexOf( this); // memorize the page position in the tab widget
     parentTab->removePage( this );
@@ -913,8 +913,8 @@ void KDockWidget::changeHideShowState()
 
 void KDockWidget::makeDockVisible()
 {
-  if ( parentTabGroup() ){
-    parentTabGroup()->showPage( this );
+  if ( parentDockTabGroup() ){
+    parentDockTabGroup()->showPage( this );
   }
   if ( isVisible() ) return;
 
@@ -1073,7 +1073,7 @@ void KDockManager::activate()
   while ( (obj=(KDockWidget*)it.current()) ) {
     ++it;
     if ( obj->widget ) obj->widget->show();
-    if ( !obj->parentTabGroup() ){
+    if ( !obj->parentDockTabGroup() ){
         obj->show();
     }
   }
@@ -1231,7 +1231,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   if ( qt_find_obj_child( w, "KDockTabGroup", "_dock_tab" ) ) return 0L;
   if (!childDockWidgetList) return 0L;
   if ( childDockWidgetList->find(w) != -1 ) return 0L;
-  if ( currentDragWidget->isGroup && ((KDockWidget*)w)->parentTabGroup() ) return 0L;
+  if ( currentDragWidget->isGroup && ((KDockWidget*)w)->parentDockTabGroup() ) return 0L;
 
   KDockWidget* www = (KDockWidget*)w;
   if ( www->sDocking == (int)KDockWidget::DockNone ) return 0L;
@@ -1329,7 +1329,7 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
   KDockWidget::DockPosition oldPos = curPos;
 
   QSize r = dw->widget->size();
-  if ( dw->parentTabGroup() ){
+  if ( dw->parentDockTabGroup() ){
     curPos = KDockWidget::DockCenter;
     if ( oldPos != curPos ) {
       d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
