@@ -1,20 +1,20 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Block Device
-Comment[de]=Block-Orientiertes Gerät
-Comment[fr]=Périphérique de type Bloc
 Comment[cs]=Blokové zaøízení
+Comment[de]=Block-Orientiertes Gerät
 Comment[es]=Dispositivo de Bloques
-Comment[ru]=âÌÏŞÎÏÅ ÕÓÔÒÏÊÓÔ×Ï
 Comment[fi]=Blokkilaite
-Comment[it]=Dispositivo Blocco
-Comment[pt]=Dispositivo Bloco
-Comment[pl]=Urz±dzenie blokowe
-Comment[ro]=Dispozitiv de tip bloc
-Comment[no]=Blokkenhet
-Comment[sk]=Blokové zariadenie
-Comment[pt_BR]=Dispositivo Bloco
+Comment[fr]=Périphérique de type Bloc
 Comment[is]=Blokkatæki
+Comment[it]=Dispositivo Blocco
+Comment[no]=Blokkenhet
+Comment[pl]=Urz±dzenie blokowe
+Comment[pt]=Dispositivo Bloco
+Comment[pt_BR]=Dispositivo Bloco
+Comment[ro]=Dispozitiv de tip bloc
+Comment[ru]=âÌÏŞÎÏÅ ÕÓÔÒÏÊÓÔ×Ï
+Comment[sk]=Blokové zariadenie
 Icon=blockdevice.xpm
 Type=MimeType
 MimeType=inode/blockdevice

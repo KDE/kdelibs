@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Tcl file
-Comment[de]=TcL Programm
-Comment[fr]=Application TCL
 Comment[cs]=Program v jazyce TCL
+Comment[de]=TcL Programm
 Comment[es]=Programa TCL
-Comment[ru]=Программа на языке TCL
-Comment[nl]=Tcl bestand
 Comment[fi]=Tcl -ohjelma
-Comment[it]=File Tcl
-Comment[pt]=Programa TCL
-Comment[pl]=Program Tcl
-Comment[ro]=Fi╨ier de program TCL
-Comment[no]=TcL-program
-Comment[sk]=Tcl sЗbor
-Comment[pt_BR]=Programa TCL
+Comment[fr]=Application TCL
 Comment[is]=Tcl skrА
+Comment[it]=File Tcl
+Comment[nl]=Tcl bestand
+Comment[no]=TcL-program
+Comment[pl]=Program Tcl
+Comment[pt]=Programa TCL
+Comment[pt_BR]=Programa TCL
+Comment[ro]=Fi╨ier de program TCL
+Comment[ru]=Программа на языке TCL
+Comment[sk]=Tcl sЗbor
 Icon=unknown.xpm
 Type=MimeType
 MimeType=text/x-tcl

@@ -1,20 +1,20 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Directory
-Comment[de]=Ordner
-Comment[fr]=RÈpertoire
 Comment[cs]=Adres·¯
+Comment[de]=Ordner
 Comment[es]=Directorio
-Comment[ru]=Î¡‘¡Ãœ«
 Comment[fi]=Hakemisto
-Comment[it]=Cartella (Directory)
-Comment[pt]=Directoria
-Comment[pl]=Katalog
-Comment[ro]=Director
-Comment[no]=Mappe
-Comment[sk]=PrieËinok
-Comment[pt_BR]=DiretÛrio
+Comment[fr]=RÈpertoire
 Comment[is]=Mappa
+Comment[it]=Cartella (Directory)
+Comment[no]=Mappe
+Comment[pl]=Katalog
+Comment[pt]=Directoria
+Comment[pt_BR]=DiretÛrio
+Comment[ro]=Director
+Comment[ru]=Î¡‘¡Ãœ«
+Comment[sk]=PrieËinok
 Icon=folder.xpm
 Type=MimeType
 MimeType=inode/directory

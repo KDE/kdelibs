@@ -1,20 +1,20 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=HTML Page
-Comment[fr]=Page HTML
 Comment[cs]=HTML dokument
 Comment[es]=P·gina HTML
-Comment[ru]=Û‘“¡Œ…√¡ HTML
-Comment[nl]=HTML pagina
 Comment[fi]=HTML -sivu
-Comment[it]=Pagina HTML
-Comment[pt]=P·gina HTML
-Comment[pl]=Strona HTML
-Comment[ro]=Pagin„ HTML
-Comment[no]=HTML-side
-Comment[sk]=HTML str·nka
-Comment[pt_BR]=P·gina HTML
+Comment[fr]=Page HTML
 Comment[is]=HTML sÌa
+Comment[it]=Pagina HTML
+Comment[nl]=HTML pagina
+Comment[no]=HTML-side
+Comment[pl]=Strona HTML
+Comment[pt]=P·gina HTML
+Comment[pt_BR]=P·gina HTML
+Comment[ro]=Pagin„ HTML
+Comment[ru]=Û‘“¡Œ…√¡ HTML
+Comment[sk]=HTML str·nka
 DefaultApp=KDE Browser
 Icon=html.xpm
 Type=MimeType

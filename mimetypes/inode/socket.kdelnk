@@ -1,14 +1,14 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Socket
-Comment[fr]=Socket (canal de communication)
 Comment[cs]=Socket (komunikaХnМ kanАl)
-Comment[ru]=Socket (канал для коммуникации)
 Comment[fi]=Pistoke
+Comment[fr]=Socket (canal de communication)
+Comment[is]=SЖkkull
 Comment[pl]=Gniazdko
 Comment[ro]=Canal de comunicaЧie de tip SOCKET
+Comment[ru]=Socket (канал для коммуникации)
 Comment[sk]=Socket (kanАl pre komunikАciu)
-Comment[is]=SЖkkull
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

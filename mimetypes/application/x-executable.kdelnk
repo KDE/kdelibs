@@ -1,21 +1,21 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Executable
-Comment[de]=Programm
-Comment[fr]=Application
 Comment[cs]=Spustitelnı soubor
+Comment[de]=Programm
 Comment[es]=Ejecutable
-Comment[ru]=ğÒÉÌÏÖÅÎÉÅ
-Comment[nl]=Programma
 Comment[fi]=Ohjelma
-Comment[it]=Eseguibile
-Comment[pt]=Executavel
-Comment[pl]=Program
-Comment[ro]=Fiºier Executabil
-Comment[no]=Program
-Comment[sk]=Spustiteµnı súbor
-Comment[pt_BR]=Executável
+Comment[fr]=Application
 Comment[is]=Forrit
+Comment[it]=Eseguibile
+Comment[nl]=Programma
+Comment[no]=Program
+Comment[pl]=Program
+Comment[pt]=Executavel
+Comment[pt_BR]=Executável
+Comment[ro]=Fiºier Executabil
+Comment[ru]=ğÒÉÌÏÖÅÎÉÅ
+Comment[sk]=Spustiteµnı súbor
 Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-executable
