@@ -81,7 +81,7 @@ void* RenderArena::allocate(size_t size)
     void* result = 0;
 
     // Ensure we have correct alignment for pointers.  Important for Tru64
-    size = ROUNDUP(size, sizeof(void*));
+    size = KHTML_ROUNDUP(size, sizeof(void*));
 
     // Check recyclers first
     if (size < gMaxRecycledSize) {
@@ -115,7 +115,7 @@ void RenderArena::free(size_t size, void* ptr)
     ::free(header);
 #else
     // Ensure we have correct alignment for pointers.  Important for Tru64
-    size = ROUNDUP(size, sizeof(void*));
+    size = KHTML_ROUNDUP(size, sizeof(void*));
 
     // See if it's a size that we recycle
     if (size < gMaxRecycledSize) {
