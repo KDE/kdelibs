@@ -32,6 +32,9 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/ICEutil.h"
 #include "KDE-ICE/globals.h"
+#ifdef _AIX
+#include <sys/access.h>
+#endif
 
 static Bool auth_valid (const char *auth_name, int num_auth_names, const char **auth_names, int *index_ret);
 

@@ -48,6 +48,10 @@ from The Open Group.
  */
 
 #include <ctype.h>
+#ifdef _AIX
+extern char *strpbrk(const char *, const char *);
+extern char *strchr(const char *, int);
+#endif
 
 /*
  * The transport table contains a definition for every transport (protocol)

@@ -1064,7 +1064,11 @@ TRANS(SocketINETAccept) (XtransConnInfo ciptr, int *status)
 {
     XtransConnInfo	newciptr;
     struct sockaddr_in	sockname;
-    int			namelen = sizeof(sockname);
+#if defined(SVR4) || defined(SCO325)
+    size_t namelen = sizeof sockname;
+#else
+    int namelen = sizeof(sockname);
+#endif
 
     PRMSG (2, "SocketINETAccept(%x,%d)\n", ciptr, ciptr->fd, 0);
 
