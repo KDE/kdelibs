@@ -179,7 +179,7 @@ Table::removeField(const QString &name)
             return false;
     }
     
-    m_fields.remove(f);
+    m_fields.removeRef(f);
     emit fieldRemoved(f);
     emit changed();
     return true;
