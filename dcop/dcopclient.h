@@ -204,6 +204,19 @@ class DCOPClient : public QObject
 	       const QCString &fun, const QByteArray& data,
 	       QByteArray &replyData);
 
+    
+signals:
+  /**
+   * Indicates that the application @param appId has been registered with
+   * the server we are attached to.
+   */
+  void applicationRegistered( const QCString& appId );
+  /**
+   * Indicates that the formerly registered application @param appId has 
+   * been removed.
+   */
+  void applicationRemoved( const QCString& appId );
+    
  public slots:
 
  protected slots:

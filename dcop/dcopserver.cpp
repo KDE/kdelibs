@@ -46,12 +46,12 @@ class DCOPConnection : public QSocketNotifier
     : QSocketNotifier( IceConnectionNumber( conn ),
 		       QSocketNotifier::Read, 0, 0 )
     {
-      ice_conn = conn;
+      iceConn = conn;
       status = IceConnectPending;
     }
 
   QCString appId;
-  IceConn ice_conn;
+  IceConn iceConn;
   IceConnectStatus status;
   QStack< _IceConn> waitingForReply;
 };
@@ -68,11 +68,11 @@ int numTransports = 0;
 static IceIOErrorHandler prev_handler;
 
 void
-MyIoErrorHandler ( IceConn ice_conn )
+MyIoErrorHandler ( IceConn iceConn )
 
 {
     if (prev_handler)
-	(*prev_handler) (ice_conn);
+	(*prev_handler) (iceConn);
 }
 
 void
@@ -88,12 +88,12 @@ InstallIOErrorHandler ()
 }
 
 
-void DCOPWatchProc ( IceConn ice_conn, IcePointer client_data, Bool opening, IcePointer* watch_data)
+void DCOPWatchProc ( IceConn iceConn, IcePointer client_data, Bool opening, IcePointer* watch_data)
 {
   DCOPServer* ds = ( DCOPServer*) client_data;
 
   if (opening) {
-    *watch_data = (IcePointer) ds->watchConnection( ice_conn );
+    *watch_data = (IcePointer) ds->watchConnection( iceConn );
   }
   else  {
     ds->removeConnection( (void*) *watch_data );
@@ -119,12 +119,12 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       ds >> app;
       DCOPConnection* target = appIds.find( app );
       if ( target ) {
-	IceGetHeader( target->ice_conn, majorOpcode, DCOPSend,
+	IceGetHeader( target->iceConn, majorOpcode, DCOPSend,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	int datalen = ba.size();
 	pMsg->length += datalen;
-	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
-	IceFlush( target->ice_conn );
+	IceWriteData( target->iceConn, datalen, (char *) ba.data());
+	IceFlush( target->iceConn );
       } else if ( app == "DCOPServer" ) {
 	QCString obj, fun;
 	QByteArray data;
@@ -147,11 +147,11 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       int datalen = ba.size();
       if ( target ) {
 	target->waitingForReply.push( iceConn );
-	IceGetHeader( target->ice_conn, majorOpcode, DCOPCall,
+	IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
-	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
-	IceFlush( target->ice_conn );
+	IceWriteData( target->iceConn, datalen, (char *) ba.data());
+	IceFlush( target->iceConn );
       } else {
 	QByteArray replyData;
 	bool b = FALSE;
@@ -181,12 +181,12 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       if ( conn ) {
 	DCOPConnection* connreply = clients.find( conn->waitingForReply.pop() );
 	if ( connreply ) {
-	  IceGetHeader( connreply->ice_conn, majorOpcode, opcode,
+	  IceGetHeader( connreply->iceConn, majorOpcode, opcode,
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
-	  IceWriteData( connreply->ice_conn, datalen, (char *) ba.data());
-	  IceFlush( connreply->ice_conn );
+	  IceWriteData( connreply->iceConn, datalen, (char *) ba.data());
+	  IceFlush( connreply->iceConn );
 	}
       }
     }
@@ -367,46 +367,46 @@ DCOPServer::~DCOPServer()
 void DCOPServer::processData( int socket )
 {
   DCOPConnection* conn = (DCOPConnection*)sender();
-  IceProcessMessagesStatus s =  IceProcessMessages( conn->ice_conn, 0, 0 );
+  IceProcessMessagesStatus s =  IceProcessMessages( conn->iceConn, 0, 0 );
 
 
   if (s == IceProcessMessagesIOError) {
-    IceCloseConnection( conn->ice_conn );
+    IceCloseConnection( conn->iceConn );
     return;
   }
-  conn->status = IceConnectionStatus(  conn->ice_conn );
+  conn->status = IceConnectionStatus(  conn->iceConn );
 }
 
 void DCOPServer::newClient( int socket )
 {
   IceAcceptStatus status;
-  IceConn ice_conn = IceAcceptConnection( ((DCOPListener*)sender())->listenObj, &status);
-  IceSetShutdownNegotiation( ice_conn, False );
+  IceConn iceConn = IceAcceptConnection( ((DCOPListener*)sender())->listenObj, &status);
+  IceSetShutdownNegotiation( iceConn, False );
 
 
   IceConnectStatus cstatus;
-  while ((cstatus = IceConnectionStatus (ice_conn))==IceConnectPending) {
+  while ((cstatus = IceConnectionStatus (iceConn))==IceConnectPending) {
     qApp->processOneEvent();
   }
   if (cstatus == IceConnectAccepted) {
-    char* connstr = IceConnectionString (ice_conn);
+    char* connstr = IceConnectionString (iceConn);
     free (connstr);
   } else {
     if (cstatus == IceConnectIOError)
       qDebug ("IO error opening ICE Connection!\n");
     else
       qDebug ("ICE Connection rejected!\n");
-    IceCloseConnection (ice_conn);
+    IceCloseConnection (iceConn);
   }
 }
 
-void* DCOPServer::watchConnection( IceConn ice_conn )
+void* DCOPServer::watchConnection( IceConn iceConn )
 {
   qDebug("new connection (count=%d)", clients.count() );
-  DCOPConnection* con = new DCOPConnection( ice_conn );
+  DCOPConnection* con = new DCOPConnection( iceConn );
   connect( con, SIGNAL( activated(int) ), this, SLOT( processData(int) ) );
 
-  clients.insert(ice_conn, con );
+  clients.insert(iceConn, con );
 
   return (void*) con;
 }
@@ -414,10 +414,31 @@ void* DCOPServer::watchConnection( IceConn ice_conn )
 void DCOPServer::removeConnection( void* data )
 {
   DCOPConnection* conn = (DCOPConnection*)data;
-  clients.remove(conn->ice_conn );
+  clients.remove(conn->iceConn );
   appIds.remove( conn->appId );
-  if ( conn->appId.data() )
+  if ( conn->appId.data() ) {
       qDebug("remove connection '%s' (count=%d)", conn->appId.data(), clients.count() );
+      QPtrDictIterator<DCOPConnection> it( clients );
+      QByteArray data;
+      QDataStream datas( data, IO_WriteOnly );
+      datas << conn->appId;
+      QByteArray ba;
+      QDataStream ds( ba, IO_WriteOnly );
+      ds << QCString("") << QCString("") << QCString("applicationRemoved") << data;
+      int datalen = ba.size();
+      DCOPMsg *pMsg = 0;
+      while ( it.current() ) {
+	  DCOPConnection* c = it.current();
+	  ++it;
+	  if ( c != conn ) {
+	      IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
+			    sizeof(DCOPMsg), DCOPMsg, pMsg );
+	      pMsg->length += datalen;
+	      IceWriteData( c->iceConn, datalen, (char *) ba.data());
+	      IceFlush( c->iceConn );
+	  }
+      }
+  } 
   else
       qDebug("remove unregistered connection (count=%d)", clients.count() );
   delete conn;
@@ -454,6 +475,26 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 	  }
 	  qDebug("register '%s'", conn->appId.data() );
 	  appIds.insert( conn->appId, conn );
+	  QPtrDictIterator<DCOPConnection> it( clients );
+	  QByteArray data;
+	  QDataStream datas( data, IO_WriteOnly );
+	  datas << conn->appId;
+	  QByteArray ba;
+	  QDataStream ds( ba, IO_WriteOnly );
+	  ds << QCString("") << QCString("") << QCString("applicationRegistered") << data;
+	  int datalen = ba.size();
+	  DCOPMsg *pMsg = 0;
+	  while ( it.current() ) {
+	      DCOPConnection* c = it.current();
+	      ++it;
+	      if ( c != conn ) {
+		  IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
+				sizeof(DCOPMsg), DCOPMsg, pMsg );
+		  pMsg->length += datalen;
+		  IceWriteData( c->iceConn, datalen, (char *) ba.data());
+		  IceFlush( c->iceConn );
+	      }
+	  }
       }
       reply << conn->appId;
       return TRUE;

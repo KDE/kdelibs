@@ -2,22 +2,22 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <dcopclient.moc>
 #include <dcopclient.h>
@@ -146,12 +146,12 @@ void DCOPClient::setServerAddress(const QCString &addr)
   DCOPClientPrivate::serverAddr = qstrdup(addr);
 }
 
-bool DCOPClient::attach() 
+bool DCOPClient::attach()
 {
   char errBuf[1024];
 
   if ( isAttached() )
-      detach(); 
+      detach();
 
   if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
 						    DCOPReleaseString, 1, DCOPVersions,
@@ -227,7 +227,7 @@ bool DCOPClient::detach()
     status = IceCloseConnection(d->iceConn);
     if (status != IceClosedNow)
       return false;
-  } 
+  }
   delete d->notifier;
   d->notifier = 0L;
   d->registered = false;
@@ -269,7 +269,7 @@ bool DCOPClient::isRegistered() const
 {
     return d->registered;
 }
-    
+
 
 QCString DCOPClient::appId() const
 {
@@ -291,7 +291,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 {
   if ( !isAttached() )
       return false;
-  
+
   DCOPMsg *pMsg;
 
   QByteArray ba;
@@ -358,13 +358,26 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QByteArray &replyData)
 {
-  if (app != d->appId) {
-    qDebug("WEIRD! we somehow received a DCOP message w/a different appId");
+  if ( !app.isEmpty() && app != d->appId) {
+      qDebug("WEIRD! we somehow received a DCOP message w/a different appId");
     return false;
   }
 
   if ( objId.isEmpty() ) {
-    return process( fun, data, replyData );
+      if ( fun == "applicationRegistered" ) {
+	  QDataStream ds( data, IO_ReadOnly );
+	  QCString r;
+	  ds >> r;
+	  emit applicationRegistered( r );
+	  return TRUE;
+      } else if ( fun == "applicationRemoved" ) {
+	  QDataStream ds( data, IO_ReadOnly );
+	  QCString r;
+	  ds >> r;
+	  emit applicationRemoved( r );
+	  return TRUE;
+      }
+      return process( fun, data, replyData );
   }
   if (!DCOPObject::hasObject(objId)) {
     qDebug("we received a DCOP message for an object we don't know about!");
@@ -387,7 +400,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 {
   if ( !isAttached() )
       return false;
-  
+
   DCOPMsg *pMsg;
 
   QByteArray ba;
