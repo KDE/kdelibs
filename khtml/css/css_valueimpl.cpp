@@ -361,15 +361,31 @@ CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const
 
 DOM::DOMString CSSStyleDeclarationImpl::cssText() const
 {
-    kdDebug() << "WARNING: CSSStyleDeclarationImpl::cssText, unimplemented, was called" << endl;
-    return DOM::DOMString();
-    // ###
+    DOMString result;
+
+    if ( m_lstValues) {
+	QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+	CSSProperty *current;
+	for ( lstValuesIt.toFirst(); (current = lstValuesIt.current()); ++lstValuesIt ) {
+	    result += current->cssText();
+	}
+    }
+
+    return result;
 }
 
-void CSSStyleDeclarationImpl::setCssText(DOM::DOMString /*str*/)
+void CSSStyleDeclarationImpl::setCssText(DOM::DOMString text)
 {
-    kdDebug() << "WARNING: CSSStyleDeclarationImpl::setCssText, unimplemented, was called" << endl;
-    // ###
+    if (m_lstValues) {
+	m_lstValues->clear();
+    } else {
+	m_lstValues = new QPtrList<CSSProperty>;
+	m_lstValues->setAutoDelete( true );
+    }
+
+    CSSParser parser( strictParsing );
+    parser.parseDeclaration( this, text, false );
+    setChanged();
 }
 
 bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
@@ -381,18 +397,6 @@ bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 
 
 // --------------------------------------------------------------------------------------
-
-DOM::DOMString CSSValueImpl::cssText() const
-{
-    kdDebug() << "WARNING: CSSValueImpl::cssText, unimplemented, was called" << endl;
-    return DOM::DOMString();
-}
-
-void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
-{
-    // ###
-    kdDebug() << "WARNING: CSSValueImpl::setCssText, unimplemented, was called" << endl;
-}
 
 DOM::DOMString CSSInheritedValueImpl::cssText() const
 {
@@ -422,9 +426,13 @@ void CSSValueListImpl::append(CSSValueImpl *val)
 
 DOM::DOMString CSSValueListImpl::cssText() const
 {
-    // ###
-    kdDebug() << "WARNING: CSSValueListImpl::cssText, unimplemented, was called" << endl;
-    return DOM::DOMString();
+    DOMString result = "";
+
+    for (QPtrListIterator<CSSValueImpl> iterator(m_values); iterator.current(); ++iterator) {
+	result += iterator.current()->cssText();
+    }
+
+    return result;
 }
 
 // -------------------------------------------------------------------------------------
@@ -866,4 +874,53 @@ FontValueImpl::~FontValueImpl()
     delete size;
     delete lineHeight;
     delete family;
+}
+
+DOMString FontValueImpl::cssText() const
+{
+    // font variant weight size / line-height family
+
+    DOMString result("");
+
+    if (style) {
+	result += style->cssText();
+    }
+    if (variant) {
+	if (result.length() > 0) {
+	    result += " ";
+	}
+	result += variant->cssText();
+    }
+    if (weight) {
+	if (result.length() > 0) {
+	    result += " ";
+	}
+	result += weight->cssText();
+    }
+    if (size) {
+	if (result.length() > 0) {
+	    result += " ";
+	}
+	result += size->cssText();
+    }
+    if (lineHeight) {
+	if (!size) {
+	    result += " ";
+	}
+	result += "/";
+	result += lineHeight->cssText();
+    }
+    if (family) {
+	if (result.length() > 0) {
+	    result += " ";
+	}
+	result += family->cssText();
+    }
+
+    return result;
+}
+
+DOMString CSSProperty::cssText() const
+{
+    return getPropertyName(m_id) + DOMString(": ") + m_value->cssText() + (m_bImportant ? DOMString(" !important") : DOMString()) + DOMString("; ");
 }

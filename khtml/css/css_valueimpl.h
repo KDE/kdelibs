@@ -103,8 +103,7 @@ public:
 
     virtual unsigned short cssValueType() const = 0;
 
-    virtual DOM::DOMString cssText() const;
-    void setCssText(DOM::DOMString str);
+    virtual DOM::DOMString cssText() const = 0;
 
     virtual bool isValue() const { return true; }
     virtual bool isFontValue() const { return false; }
@@ -304,6 +303,8 @@ public:
 
     virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
 
+    virtual DOM::DOMString cssText() const;
+
     virtual bool isFontValue() const { return true; }
 
     CSSPrimitiveValueImpl *style;
@@ -348,6 +349,8 @@ public:
     }
 
     CSSValueImpl *value() const { return m_value; }
+
+    DOM::DOMString cssText() const;
 
     // make sure the following fits in 4 bytes.
     signed int  m_id 	: 29;
