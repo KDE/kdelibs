@@ -7,6 +7,35 @@ Lubos Lunak <l.lunak@kde.org>
 after this thing stabilizes a bit, I'll put a real description here
 
 
+.desktop files :
+-----------------
+X-KDE-StartupNotify=<bool>
+    - if true, this app/service will get app startup notify
+    - if false, this app/service will _not_ get app startup notify
+    - if not set
+        - if it's service, it will _not_ get app startup notify
+        - if it's app, it will get app startup notify, but
+            X-KDE-WMClass will be assumed to be "0" ( non-compliant )
+X-KDE-WMClass=<string>
+    - if set, and it's different from "0" ( without quotes ), this
+        is the WMClass value for startup notification
+    - if it's "0" ( without quotes ), such app is considered non-compliant,
+        and the startup notification will stop
+            - either if its windows is correctly detected using the default
+                WMClass value ( the name of the binary )
+            - or if a window is mapped that is not recognized ( doesn't have
+                neither KDE_STARTUP_ID nor NETWM_PID property  /*CHECKME*/ ),
+                it's assumed this window belongs to the started app;
+                the start-on-desktop feature won't work then too
+    - if not set, it defaults to the binary name of the app ( ok for most apps,
+        including KDE ones )
+    - to get the WMCLASS value for any app, run 'xprop' and click on the app's
+        window, WMCLASS value for this app should be any of the strings listed
+        in the WM_CLASS property ( it's usually the same as the name of the
+        app's binary file, in such case it doesn't need to be explicitly set )
+
+---
+
 
 
 grrr, NET::Dock windows don't have _NET_WM_PID ... ah, Qt-2.3.0 actually happily ignores

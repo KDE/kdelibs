@@ -208,7 +208,7 @@ KUniqueApplication::start()
                {
                KStartupInfoData data;
                data.addPid( getpid());
-               KStartupInfo::sendStartupX( disp, id, data );
+               KStartupInfo::sendChangeX( disp, id, data );
                XCloseDisplay( disp );
                }
          }

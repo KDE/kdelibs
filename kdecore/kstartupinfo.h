@@ -50,8 +50,14 @@ class KStartupInfo
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
         static bool sendStartupX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
+        static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
+        static bool sendChangeX( Display* dpy, const KStartupInfoId& id,
+            const KStartupInfoData& data );
         static bool sendFinish( const KStartupInfoId& id );
+        static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
+        static bool sendFinishX( Display* dpy, const KStartupInfoId& id,
+            const KStartupInfoData& data );
         static KStartupInfoId currentStartupIdEnv();
         static void resetStartupEnv();
         enum startup_t { NoMatch, Match, CantDetect };
@@ -74,18 +80,20 @@ class KStartupInfo
         void window_added( WId w );
     private:
         friend class KStartupInfoPrivate;
-        void got_new_startup_info( const QString& msg_P );
+        void got_startup_info( const QString& msg_P, bool update_only_P );
         void got_remove_startup_info( const QString& msg_P );
-        void new_startup_info_internal( const KStartupInfoId& id_P, Data& data_P );
+        void new_startup_info_internal( const KStartupInfoId& id_P,
+            Data& data_P, bool update_only_P );
         void remove_startup_info_internal( const KStartupInfoId& id_P );
-        void remove_startup_pids( const QValueList< pid_t >& pids, const QCString& hostname );
+        void remove_startup_pids( const KStartupInfoId& id, const KStartupInfoData& data );
+        void remove_startup_pids( const KStartupInfoData& data );
         startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data,
             bool remove );
         bool find_id( const QCString& id_P, KStartupInfoId* id_O,
             KStartupInfoData* data_O, bool remove );
         bool find_pid( pid_t pid_P, const QCString& hostname, KStartupInfoId* id_O,
             KStartupInfoData* data_O, bool remove );
-        bool find_wclass( const QString& res_name_P, const QString& res_class_P,
+        bool find_wclass( QCString res_name_P, QCString res_class_P,
             KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove );
         static QCString get_window_startup_id( WId w_P );
         static QCString get_window_hostname( WId w_P );
@@ -133,10 +141,11 @@ class KStartupInfoData
         const QString& icon() const;
         void setDesktop( int desktop );
         int desktop() const;
-        void setCompliant( bool compliant );
-        bool compliant() const;
+        void setWMClass( const QCString& wmclass );
+        const QCString findWMClass() const;
+        const QCString& WMClass() const;
         void addPid( pid_t pid );
-        QValueList< pid_t > pids() const;
+        const QValueList< pid_t >& pids() const;
         bool is_pid( pid_t pid ) const;
         void setHostname( const QCString& hostname = QCString()); // adds current if null
         const QCString& hostname() const;
