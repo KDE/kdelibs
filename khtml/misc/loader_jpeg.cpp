@@ -298,8 +298,12 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
     if(state == Init)
     {
-        if(jpeg_read_header(&cinfo, TRUE) != JPEG_SUSPENDED)
+        if(jpeg_read_header(&cinfo, TRUE) != JPEG_SUSPENDED) {
+            if ( consumer )
+                consumer->setSize(cinfo.output_width, cinfo.output_height);
+
             state = startDecompress;
+        }
     }
 
     if(state == startDecompress)
@@ -318,9 +322,6 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
                 for (int i=0; i<256; i++)
                     image.setColor(i, qRgb(i,i,i));
             }
-
-            if(consumer)
-                consumer->setSize(cinfo.output_width, cinfo.output_height);
 
 #ifdef JPEG_DEBUG
             qDebug("will create a picture %d/%d in size", cinfo.output_width, cinfo.output_height);
