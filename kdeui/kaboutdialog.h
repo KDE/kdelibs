@@ -40,7 +40,6 @@ class KImageTrackLabel : public QLabel
   Q_OBJECT
 
   public:
-  /**
     enum MouseMode
     {
       MousePress = 1,
@@ -353,7 +352,7 @@ class KAboutDialog : public KDialogBase
      * The standard Qt constructor (Constructor I).
      *
      * Add components with the methods:
-     *  @ref setLogo(), @ref setAuthor(), @ref setMaintainer(), 
+     *  @ref setLogo(), @ref setAuthor(), @ref setMaintainer(),
      *   @ref addContributor(), or @ref setVersion().
      * The dialog will be laid out automatically.
      */
@@ -363,8 +362,8 @@ class KAboutDialog : public KDialogBase
     * The extended constructor. (Constructor II).
     *
     * Add components with the methods:
-    *  @ref setTitle(), @ref setImage(), @ref setImageBackgroundColor(), 
-    *  @ref setImageFrame(), @ref setProduct(), @ref addTextPage(), 
+    *  @ref setTitle(), @ref setImage(), @ref setImageBackgroundColor(),
+    *  @ref setImageFrame(), @ref setProduct(), @ref addTextPage(),
     *  @ref addContainerPage(), @ref addContainer(), or @ref addPage().
     *
     * @param dialogLayout Use a mask of @ref LayoutType flags.
@@ -385,14 +384,14 @@ class KAboutDialog : public KDialogBase
     *
     */
     KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
-		  ButtonCode defaultButton, QWidget *parent=0, 
+		  ButtonCode defaultButton, QWidget *parent=0,
 		  const char *name=0, bool modal=false, bool separator = false,
 		  const QString &user1 = QString::null,
 		  const QString &user2 = QString::null,
 		  const QString &user3 = QString::null );
 
   /**
-   * Adjust the dialog. 
+   * Adjust the dialog.
    *
    * You can call this method after you have set up all
    * the contents but it is not required. It is done automatically when
