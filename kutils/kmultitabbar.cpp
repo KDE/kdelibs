@@ -176,7 +176,7 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 					diff=0; \
 					for (uint i2=i;i2<tabCount;i2++) {\
 						uint l1=m_tabs.at(i2)->neededSize();\
-						if (int(ulen+l1)>space){\
+						if ((ulen+l1)>space){\
 							if (ulen==0) diff=0;\
 							else diff=((float)(space-ulen))/(i2-i);\
 							break;\
