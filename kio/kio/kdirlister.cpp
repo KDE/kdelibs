@@ -1476,7 +1476,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
     return;
 
   d->isShowingDotFiles = _showDotFiles;
-  d->changes |= DOT_FILES;
+  d->changes ^= DOT_FILES;
 }
 
 bool KDirLister::dirOnlyMode() const
@@ -1490,7 +1490,7 @@ void KDirLister::setDirOnlyMode( bool _dirsOnly )
     return;
 
   d->dirOnlyMode = _dirsOnly;
-  d->changes |= DIR_ONLY_MODE;
+  d->changes ^= DIR_ONLY_MODE;
 }
 
 bool KDirLister::autoErrorHandlingEnabled() const
@@ -1521,46 +1521,76 @@ void KDirLister::emitChanges()
         it != d->lstDirs.end(); ++it )
   {
     KFileItemListIterator kit( *s_pCache->itemsForDir( *it ) );
-
-    if ( d->changes & DIR_ONLY_MODE )
+    for ( ; kit.current(); ++kit )
     {
-      // the lister switched to dirOnlyMode
-      if ( d->dirOnlyMode )
+      if ( (*kit)->text() == dot || (*kit)->text() == dotdot )
+        continue;
+
+      bool oldMime, newMime;
+
+      if ( d->changes & MIME_FILTER )
       {
-        for ( ; kit.current(); ++kit )
+        oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter );
+        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter );
+
+        if ( oldMime && !newMime )
+        {
+          emit deleteItem( *kit );
+          continue;
+        }
+      }
+
+      if ( d->changes & DIR_ONLY_MODE )
+      {
+        // the lister switched to dirOnlyMode
+        if ( d->dirOnlyMode )
+        {
           if ( !(*kit)->isDir() )
             emit deleteItem( *kit );
+        }
+        else if ( !(*kit)->isDir() )
+          addNewItem( *kit );
+
+        continue;
       }
-      else
+
+      if ( (*kit)->text()[0] == dot )
       {
-        for ( ; kit.current(); ++kit )
-          if ( !(*kit)->isDir() )
+        if ( d->changes & DOT_FILES )
+        {
+          // the lister switched to dot files mode
+          if ( d->isShowingDotFiles )
             addNewItem( *kit );
-
-        emitItems();
-      }
-      continue;
-    }
-
-    if ( d->changes & DOT_FILES )
-    {
-      // the lister switched to dot files mode
-      if ( d->isShowingDotFiles )
-      {
-        KFileItemList items;
-        for ( ; kit.current(); ++kit )
-          if ( (*kit)->text()[0] == dot && (*kit)->text() != dotdot )
-            items.append( *kit );
-
-        emit newItems( items );
-      }
-      else
-      {
-        for ( ; kit.current(); ++kit )
-          if ( (*kit)->text()[0] == dot && (*kit)->text() != dotdot )
+          else
             emit deleteItem( *kit );
+
+          continue;
+        }
       }
+      else if ( d->changes & NAME_FILTER )
+      {
+        bool oldName = (*kit)->isDir() ||
+                       d->oldFilters.isEmpty() ||
+                       doNameFilter( (*kit)->text(), d->oldFilters );
+
+        bool newName = (*kit)->isDir() ||
+                       d->lstFilters.isEmpty() ||
+                       doNameFilter( (*kit)->text(), d->lstFilters );
+
+        if ( oldName && !newName )
+        {
+          emit deleteItem( *kit );
+          continue;
+        }
+        else if ( !oldName && newName )
+          addNewItem( *kit );
+      }
+
+      if ( (d->changes & MIME_FILTER) && !oldMime && newMime )
+        addNewItem( *kit );
     }
+
+    emitItems();
   }
 
   d->changes = NONE;
@@ -1599,12 +1629,13 @@ KFileItem* KDirLister::find( const KURL& _url ) const
 #endif
 
 
-// ================ filter methods ================ //
+// ================ public filter methods ================ //
 
-// public
 void KDirLister::setNameFilter( const QString& nameFilter )
 {
-  d->oldFilters = d->lstFilters;
+  if ( !(d->changes & NAME_FILTER) )
+    d->oldFilters = d->lstFilters;
+
   d->lstFilters.clear();
   d->nameFilter = nameFilter;
 
@@ -1623,14 +1654,20 @@ const QString& KDirLister::nameFilter() const
 
 void KDirLister::setMimeFilter( const QStringList& mimeFilter )
 {
-  d->oldMimeFilter = d->mimeFilter;
+  if ( !(d->changes & MIME_FILTER) )
+    d->oldMimeFilter = d->mimeFilter;
+
   d->mimeFilter = mimeFilter;
   d->changes |= MIME_FILTER;
 }
 
 void KDirLister::clearMimeFilter()
 {
+  if ( !(d->changes & MIME_FILTER) )
+    d->oldMimeFilter = d->mimeFilter;
+
   d->mimeFilter.clear();
+  d->changes |= MIME_FILTER;
 }
 
 const QStringList& KDirLister::mimeFilters() const
@@ -1640,27 +1677,16 @@ const QStringList& KDirLister::mimeFilters() const
 
 bool KDirLister::matchesFilter( const QString& name ) const
 {
-  for ( QPtrListIterator<QRegExp> it( d->lstFilters ); it.current(); ++it )
-    if ( it.current()->search( name ) != -1 )
-      return true;
-
-  return false;
+  return doNameFilter( name, d->lstFilters );
 }
 
 bool KDirLister::matchesMimeFilter( const QString& mime ) const
 {
-  if ( d->mimeFilter.isEmpty() )
-    return true;
-
-  QStringList::Iterator it = d->mimeFilter.begin();
-  for ( ; it != d->mimeFilter.end(); ++it )
-    if ( (*it) == mime )
-      return true;
-
-  return false;
+  return doMimeFilter( mime, d->mimeFilter );
 }
 
-// protected
+// ================ protected methods ================ //
+
 bool KDirLister::matchesFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
@@ -1684,8 +1710,27 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
   return matchesMimeFilter( item->mimetype() );
 }
 
+bool KDirLister::doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const
+{
+  for ( QPtrListIterator<QRegExp> it( filters ); it.current(); ++it )
+    if ( it.current()->search( name ) != -1 )
+      return true;
 
-// ================ protected methods ================ //
+  return false;
+}
+
+bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters ) const
+{
+  if ( filters.isEmpty() )
+    return true;
+
+  QStringList::ConstIterator it = filters.begin();
+  for ( ; it != filters.end(); ++it )
+    if ( (*it) == mime )
+      return true;
+
+  return false;
+}
 
 bool KDirLister::validURL( const KURL& _url ) const
 {
@@ -1703,6 +1748,13 @@ bool KDirLister::validURL( const KURL& _url ) const
 
   return true;
 }
+
+void KDirLister::handleError( KIO::Job *job )
+{
+  if ( d->autoErrorHandling )
+    job->showErrorDialog( d->errorParent );
+}
+
 
 // ================= private methods ================= //
 
@@ -1785,12 +1837,6 @@ void KDirLister::emitDeleteItem( KFileItem *item )
 
   if ( !isNameFilterMatch && !isMimeFilterMatch )
     emit deleteItem( item );
-}
-
-void KDirLister::handleError( KIO::Job *job )
-{
-  if ( d->autoErrorHandling )
-    job->showErrorDialog( d->errorParent );
 }
 
 

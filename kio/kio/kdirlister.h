@@ -257,6 +257,7 @@ public:
    * otherwise false.
    * @see #setNameFilter
    */
+  // remove this virtual
   virtual bool matchesFilter( const QString& name ) const;
 
   /**
@@ -266,6 +267,7 @@ public:
    *
    * @param mime the mimetype to find in the filter list.
    */
+  // remove this virtual
   virtual bool matchesMimeFilter( const QString& mime ) const;
 
 signals:
@@ -401,11 +403,22 @@ protected:
   virtual bool matchesMimeFilter( const KFileItem * ) const;
 
   /**
-   * Checks if an url is malformed or not and displays an error message 
-   * if it is and autoErrorHandling is set to true. 
+   * Called by the public matchesFilter/matchesMimeFilter to do the
+   * actual filtering. Those methods may be reimplemented to customize
+   * filtering.
+   */
+  /*virtual*/ bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
+  /*virtual*/ bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
+
+  /**
+   * Checks if an url is malformed or not and displays an error message
+   * if it is and autoErrorHandling is set to true.
    * @return true if url is valid, otherwise false.
    */
   virtual bool validURL( const KURL& ) const;
+
+  /** Reimplement to customize error handling */
+  virtual void handleError( KIO::Job* );
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -426,9 +439,6 @@ private:
   virtual void addRefreshItem( const KFileItem *item );
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
-
-  /** Reimplement to customize error handling */
-  virtual void handleError( KIO::Job* );
 
   enum Changes {
     NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8
