@@ -155,6 +155,9 @@ particular, you will find information about programmng the KSpell C++ class.</pa
 
 <para>You mail email the author/maintainer with questions and/or comments at
 <ulink url="mailto:dsweet@kde.org">dsweet@kde.org</ulink>.</para>
+
+<!-- TRANS:CREDIT_FOR_TRANSLATORS -->
+
 </chapter>
 <![ %addindex; [ &documentation.index; ]]>
 </book>
