@@ -2466,16 +2466,29 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
       //kdDebug(6050) << k_funcinfo << "whole doc" << endl;
       if ( !fromCursor )
       {
-        d->m_findNode = reverse ? 0 : firstNode;
+        d->m_findNode = firstNode;
         d->m_findPos = reverse ? -1 : 0;
       }
       d->m_findNodeEnd = reverse ? firstNode : 0;
       d->m_findPosEnd = reverse ? 0 : -1;
-      if ( d->m_findNode == 0 ) {
-        d->m_findNode = firstNode; // body or doc
+      if ( reverse )
+      {
         // Need to find out the really last object, to start from it
-        while ( d->m_findNode->lastChild() )
-          d->m_findNode = d->m_findNode->lastChild();
+        khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
+        if ( obj )
+        {
+          // find the last object in the render tree
+          while ( obj->lastChild() )
+          {
+              obj = obj->lastChild();
+          }
+          // now get the last object with a NodeImpl associated
+          while ( !obj->element() )
+          {
+             obj = obj->objectAbove();
+          }
+          d->m_findNode = obj->element();
+        }
       }
     }
     return true;
@@ -2631,6 +2644,8 @@ void KHTMLPart::findText()
   d->m_findDialog->setFindHistory( d->m_lastFindState.history );
   d->m_findDialog->setOptions( d->m_lastFindState.options );
 
+  d->m_lastFindState.options = -1; // force update in findTextNext
+
   d->m_findDialog->show();
   connect( d->m_findDialog, SIGNAL(okClicked()), this, SLOT(slotFindNext()) );
   connect( d->m_findDialog, SIGNAL(finished()), this, SLOT(slotFindDialogDestroyed()) );
@@ -2644,8 +2659,6 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
   if ( !d->m_doc )
     return;
 
-  d->m_lastFindState.options = options;
-
 #ifndef QT_NO_CLIPBOARD
   connect( kapp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
 #endif
@@ -2653,18 +2666,19 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
   // Create the KFind object
   delete d->m_find;
   d->m_find = new KFind( str, options, parent, findDialog );
-  if(findDialog == 0)
-  {
-    d->m_find->setPattern( str );
-    d->m_find->setOptions( options );
-  }
-  d->m_find->closeFindNextDialog(); // we don't use KFindDialog, so we don't want other dlg popping up
-  connect(d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
-          this, SLOT( slotHighlight( const QString &, int, int ) ) );
+  d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want other dlg popping up
+  connect( d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
+           this, SLOT( slotHighlight( const QString &, int, int ) ) );
   //connect(d->m_find, SIGNAL( findNext() ),
   //        this, SLOT( slotFindNext() ) );
 
-  initFindNode( false, options & KFindDialog::FindBackwards, false );
+  if ( !findDialog )
+  {
+    d->m_lastFindState.options = options;
+    initFindNode( options & KFindDialog::SelectedText,
+                  options & KFindDialog::FindBackwards,
+                  options & KFindDialog::FromCursor );
+  }
 }
 
 // New method
@@ -2681,8 +2695,8 @@ bool KHTMLPart::findTextNext()
   if ( d->m_findDialog ) // 0 when we close the dialog
   {
     if ( d->m_find->pattern() != d->m_findDialog->pattern() ) {
-	    d->m_find->setPattern( d->m_findDialog->pattern() );
-	    d->m_find->resetCounts();
+      d->m_find->setPattern( d->m_findDialog->pattern() );
+      d->m_find->resetCounts();
     }
     options = d->m_findDialog->options();
     if ( d->m_lastFindState.options != options )
@@ -2779,6 +2793,7 @@ bool KHTMLPart::findTextNext()
           s = '\n';
         else if ( !obj->isInline() && !str.isEmpty() )
           s = '\n';
+
         if ( lastNode == d->m_findNodeEnd )
           s.truncate( d->m_findPosEnd );
         if ( !s.isEmpty() )
