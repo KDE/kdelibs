@@ -851,7 +851,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_mimelist.sort();
 	m_mimetype->insertStringList(m_mimelist);
 	m_availablemime->insertStringList(m_mimelist);
-	
+
 	setMainWidget(topmain);
 	setDetailsWidget(dummy);
 }
@@ -861,7 +861,7 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 	setCaption(i18n("Command Edit for %1").arg(xmlCmd->name()));
 
 	m_cmd = xmlCmd;
-	m_description->setText(xmlCmd->description());
+	m_description->setText(i18n(xmlCmd->description().utf8()));
 	m_idname->setText(xmlCmd->name());
 
 	m_requirements->clear();
