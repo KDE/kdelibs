@@ -45,6 +45,10 @@ export LD_LIBRARY_PATH=$KDEDIR/lib:$QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
+See http://www.kde.org/kde1-and-kde2.html for tips about setting up
+KDE 2.0 next to KDE 1.x.
+
+
 Compiling
 =========
 
@@ -89,7 +93,7 @@ a 'q', you probably have not setup your QTDIR correct or have the wrong
 version of Qt.
 
 If you encounter compile errors after updating from CVS, check whether you 
-need to update kdelibs as well. If the problems persist, wait a few hours,
+need to update kdelibs as well. If the problems persists, wait a few hours,
 usually compile errors are fixed shortly after they have been introduced.
 
 If you still have problems read the kde-devel@kde.org mailinglist and/or
