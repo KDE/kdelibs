@@ -36,6 +36,11 @@ class KHTMLPageCache : public QObject
 {
   Q_OBJECT
 public:
+  /**
+   * static "constructor".
+   * @return returns a pointer to the cache, if it exists.
+   * creates a new cache otherwise.
+   */
   static KHTMLPageCache *self();
   ~KHTMLPageCache();
   
