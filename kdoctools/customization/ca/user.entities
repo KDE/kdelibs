@@ -6,17 +6,17 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
-<!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace -->
+<!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace; -->
 <!ENTITY cdrom	'<hardware>unitat lectora de CD-ROM</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY ppp	'<acronym>ppp</acronym>'><!-- English: dpi -->
+<!ENTITY ppp	'<acronym>ppp</acronym>'><!-- English: &dpi; -->
 <!ENTITY pex    "<abbrev>p.ex.</abbrev>"><!-- English: &eg; -->
 <!ENTITY Intro	"<keycap>Intro</keycap>"><!-- English: &Enter; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ead    "<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
-<!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: infocenter -->
+<!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: &infocenter; -->
 <!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
 <!ENTITY BER    "botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
 <!ENTITY BMR    "botó <mousebutton>mitg</mousebutton> del ratolí"><!-- English: &MMB; -->
