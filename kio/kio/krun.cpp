@@ -126,7 +126,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   {
     KMessageBox::sorry( 0L, 
         i18n("<qt>The file <b>%1</b> is an executable program. "
-             "Out of safety concerns it will not be started.</qt>").arg(u.htmlURL()));
+             "For safety it will not be started.</qt>").arg(u.htmlURL()));
     return 0;
   }
   if ( noAuth )
