@@ -36,7 +36,6 @@ class KCMKResources : public KCModule
     void load();
     void save();
     void defaults();
-    const KAboutData* aboutData() const;
 
   private:
     KRES::ConfigPage *mConfigPage;
