@@ -4253,7 +4253,7 @@ bool HTTPProtocol::retryPrompt()
     default:
       break;
   }
-  prompt += i18n("  Do you want to retry ?");
+  prompt += i18n("  Do you want to retry?");
   return (messageBox(QuestionYesNo, prompt, i18n("Authentication")) == 3);
 }
 

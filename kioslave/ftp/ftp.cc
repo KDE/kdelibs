@@ -432,7 +432,7 @@ bool Ftp::ftpLogin()
           info.caption = i18n("Login Failure");
           info.prompt = i18n("I said:\nLogin using username: %1 and "
                              "password: [hidden]\n\nServer replied:\n%2\n\n"
-                             "What do you want to do ?").arg(user).arg(rspbuf);
+                             "What do you want to do?").arg(user).arg(rspbuf);
           if( messageBox( WarningContinueCancel, info.prompt,info.caption,
                           i18n("Retry...") ) != 5 )
           {
@@ -445,7 +445,7 @@ bool Ftp::ftpLogin()
         if ( user != FTP_LOGIN && pass != FTP_PASSWD )
             info.username = m_user;
 
-        kdDebug(7102) << "Is FTP URL valid ? " << info.url.isValid() << endl;
+        kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
         kdDebug(7102) << "Username: " << info.username << endl;
         if ( failedAuth < 3 && checkCachedAuthentication( info ) )
         {
@@ -1495,7 +1495,7 @@ void Ftp::stat( const KURL &url)
             // Damn, the dir we're trying to list is in fact a symlink
             // Follow it and try again
             if ( e->link.isEmpty() )
-                kdWarning(7102) << "Got " << listarg << " as answer, but empty link !" << endl;
+                kdWarning(7102) << "Got " << listarg << " as answer, but empty link!" << endl;
             else
             {
                 linkURL = url;

@@ -107,7 +107,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     txt = i18n("<b>%1</b>").arg( cookie->host() );
     lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
-    lbl = new QLabel( i18n("Do you want to accept or reject ?"), vBox );
+    lbl = new QLabel( i18n("Do you want to accept or reject?"), vBox );
     lbl->setAlignment( Qt::AlignCenter );
     vlayout->addWidget( hBox, 0, Qt::AlignLeft );
 
