@@ -54,7 +54,7 @@ void ResourceSql::init( const QString &user, const QString &password,
 Ticket *ResourceSql::requestSaveTicket()
 {
     if ( !addressBook() ) {
-	kdDebug() << "no addressbook" << endl;
+	kdDebug(5700) << "no addressbook" << endl;
 	return 0;
     }
 
@@ -65,13 +65,13 @@ bool ResourceSql::open()
 {
     QStringList drivers = QSqlDatabase::drivers();
     for ( QStringList::Iterator it = drivers.begin(); it != drivers.end(); ++it ) {
-	kdDebug() << "Driver: " << (*it) << endl;
+	kdDebug(5700) << "Driver: " << (*it) << endl;
     }
 
     mDb = QSqlDatabase::addDatabase( "QMYSQL3" );
 
     if ( !mDb ) {
-	kdDebug() << "Error. Can't connect to database." << endl;
+	kdDebug(5700) << "Error. Can't connect to database." << endl;
 	return false;
     }
 
@@ -81,7 +81,7 @@ bool ResourceSql::open()
     mDb->setHostName( mHost );
 
     if ( !mDb->open() ) {
-	kdDebug() << "Error. Can't open database '" << mDbName << "'." << endl;
+	kdDebug(5700) << "Error. Can't open database '" << mDbName << "'." << endl;
 	return false;
     }
 

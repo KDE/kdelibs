@@ -8,8 +8,8 @@ Resource::Resource( AddressBook *ab ) :
   mAddressBook( ab )
 {
     mAddressBook->addResource( this );
-	mReadOnly = true;
-	mFastResource = true;
+    mReadOnly = true;
+    mFastResource = true;
 }
 
 Resource::~Resource()

@@ -29,7 +29,6 @@ ResourceFactory::ResourceFactory()
     QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/*.plugin", true, true );
     for ( QStringList::iterator it = list.begin(); it != list.end(); ++it )
     {
-	kdDebug() << "found it" << endl;
 	KSimpleConfig config( *it, true );
 
 	if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )

@@ -157,7 +157,7 @@ bool DistributionListManager::load()
 
   QMap<QString,QString> entryMap = cfg.entryMap( mAddressBook->identifier() );
   if ( entryMap.isEmpty() ) {
-    kdDebug() << "No distlists for '" << mAddressBook->identifier() << "'" << endl;
+    kdDebug(5700) << "No distlists for '" << mAddressBook->identifier() << "'" << endl;
     return false;
   }
 
@@ -168,7 +168,7 @@ bool DistributionListManager::load()
     QString name = it.key();
     QStringList value = cfg.readListEntry( name );
 
-    kdDebug() << "DLM::load(): " << name << ": " << value.join(",") << endl;
+    kdDebug(5700) << "DLM::load(): " << name << ": " << value.join(",") << endl;
 
     DistributionList *list = new DistributionList( this, name );
 
@@ -177,7 +177,7 @@ bool DistributionListManager::load()
       QString id = *it2++;
       QString email = *it2;
 
-      kdDebug() << "----- Entry " << id << endl; 
+      kdDebug(5700) << "----- Entry " << id << endl; 
       
       Addressee a = mAddressBook->findByUid( id );
       if ( !a.isEmpty() ) {
@@ -194,7 +194,7 @@ bool DistributionListManager::load()
 
 bool DistributionListManager::save()
 {
-  kdDebug() << "DistListManager::save()" << endl;
+  kdDebug(5700) << "DistListManager::save()" << endl;
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
@@ -203,7 +203,7 @@ bool DistributionListManager::save()
   
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {
-    kdDebug() << "  Saving '" << list->name() << "'" << endl;
+    kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
     QStringList value;
     DistributionList::Entry::List entries = list->entries();
     DistributionList::Entry::List::ConstIterator it;

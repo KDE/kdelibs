@@ -200,10 +200,8 @@ bool AddressBook::load()
   clear();
 
   Resource *r;
-  for( r = mResources.first(); r; r = mResources.next() ) {
-      // kdDebug() << " Tick" << endl;
+  for( r = mResources.first(); r; r = mResources.next() )
     if ( !r->load() ) return false;
-  }
 
   return true;
 }

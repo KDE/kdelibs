@@ -194,8 +194,6 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
   ContentLine cl;
   QString value;
 
-    kdDebug() << "overjump" << endl;
-
   AddressBook::Iterator it;
   for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
     if ( (*it).resource() != resource && (*it).resource() != 0 )
