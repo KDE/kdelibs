@@ -346,11 +346,12 @@ void KCharSelectTable::setToolTips()
     {
 	for( int j=0; j< numCols(); j++ )
 	{
-	    QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
+	    const QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
 	    QToolTip::remove(this,r);
+	    const ushort uni = vTableNum * 256 + numCols()*i + j;
 	    QString s;
-	    s.sprintf("%04X", vTableNum * 256 + numCols()*i + j);
-	    QToolTip::add(this, r, i18n("Character code","Unicode code: U+%1").arg(s));
+	    s.sprintf( "%04X", uint( uni ) );
+	    QToolTip::add(this, r, i18n( "Character","<qt>Unicode code point: U+%1<br>(In decimal: %2)<br>(Character: %3)</qt>" ).arg( s ).arg( uni ).arg( QChar( uni ) ) );
 	}
     }
 }
@@ -389,7 +390,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
-    QLabel *lUnicode = new QLabel( i18n( "&Unicode code:" ), bar );
+    QLabel *lUnicode = new QLabel( i18n( "&Unicode code point:" ), bar );
     lUnicode->resize( lUnicode->sizeHint() );
     lUnicode->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lUnicode->setMaximumWidth( lUnicode->sizeHint().width() );
