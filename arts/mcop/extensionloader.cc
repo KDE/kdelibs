@@ -24,6 +24,7 @@
 #include "extensionloader.h"
 #include "startupmanager.h"
 #include "mcoputils.h"
+#include "debug.h"
 #include <unistd.h>
 #include <assert.h>
 
@@ -68,6 +69,11 @@ ExtensionLoader::ExtensionLoader(const string& filename) :handle(0)
 		for(i = startupClasses.begin(); i != startupClasses.end(); i++)
 			(*i)->startup();
 		needShutdown = true;
+	}
+	else
+	{
+		arts_warning("loading extension from '%s' failed: %s",
+						dlfilename.c_str(), lt_dlerror());
 	}
 }
 
