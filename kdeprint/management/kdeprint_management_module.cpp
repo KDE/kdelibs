@@ -32,18 +32,18 @@
 
 extern "C"
 {
-	int add_printer_wizard(QWidget *parent)
+	KDEPRINT_EXPORT int add_printer_wizard(QWidget *parent)
 	{
                 return kdeprint_management_add_printer_wizard( parent );
 	}
 
-	bool config_dialog(QWidget *parent)
+	KDEPRINT_EXPORT bool config_dialog(QWidget *parent)
 	{
 		KMConfigDialog	dlg(parent);
 		return dlg.exec();
 	}
 
-	QString select_command( QWidget* parent )
+	KDEPRINT_EXPORT QString select_command( QWidget* parent )
 	{
 		KDialogBase dlg( parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
 		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, "CommandSelector", &dlg );

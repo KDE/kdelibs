@@ -54,11 +54,11 @@ static QString	pass_string;
 extern "C"
 {
 #include "cups-util.h"
-	bool restartServer(QString& msg)
+	KDEPRINT_EXPORT bool restartServer(QString& msg)
 	{
 		return CupsdDialog::restartServer(msg);
 	}
-	bool configureServer(QWidget *parent, QString& msg)
+	KDEPRINT_EXPORT bool configureServer(QWidget *parent, QString& msg)
 	{
 		dynamically_loaded = true;
 		bool result = CupsdDialog::configure(QString::null, parent, &msg);
