@@ -25,14 +25,14 @@ INCLUDES= -I$(top_srcdir)/interfaces $(all_includes)
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 4:0
 # we should get this to work when libtool 1.3 is released
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
 
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopupmenu.h \
-		ktabctl.h kstatusbar.h kimageeffect.h \
+		ktabctl.h kstatusbar.h \
 		kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
 		krestrictedline.h kcolorbutton.h kcolorbtn.h \
@@ -43,12 +43,12 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		klineeditdlg.h \
 		kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
-		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
+		kjanuswidget.h kaboutdialog.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
 		kdualcolorbtn.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
 		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
-		kstdaction.h kdrawutil.h kcombobox.h \
+		kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
 		kpixmapio.h \
@@ -68,7 +68,7 @@ libkdeui_la_SOURCES = \
 		qxembed.cpp ksharedpixmap.cpp \
 		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
-		kimageeffect.cpp kcolordialog.cpp kselect.cpp kdatepik.cpp \
+		kcolordialog.cpp kselect.cpp kdatepik.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
 		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
@@ -80,11 +80,11 @@ libkdeui_la_SOURCES = \
 		kaccelmenu.cpp klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
-		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
+		kjanuswidget.cpp kaboutdialog.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
-		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp kdrawutil.cpp \
+		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp \
 		kiconview.cpp klistbox.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguibuilder.cpp kedittoolbar.cpp kpanelappmenu.cpp \
