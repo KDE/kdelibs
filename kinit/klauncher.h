@@ -23,10 +23,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
+
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qsocketnotifier.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>

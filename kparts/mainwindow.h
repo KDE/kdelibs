@@ -20,9 +20,9 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <qlist.h>
-#include <kaction.h>
+#include <qptrlist.h>
 
+#include <kaction.h>
 #include <kmainwindow.h>
 
 #include <kparts/part.h>
