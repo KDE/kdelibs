@@ -156,7 +156,8 @@ IdleSlave::age(time_t now)
 }
 
 KLauncher::KLauncher(int _kdeinitSocket)
-  : KUniqueApplication( false, false ), // No Styles, No GUI
+  : KApplication( false, false ), // No Styles, No GUI
+    DCOPObject("klauncher"), 
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
 #ifdef Q_WS_X11
@@ -198,6 +199,10 @@ KLauncher::KLauncher(int _kdeinitSocket)
    {
       qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", mSlaveDebug.data());
    }
+   klauncher_header request_header;
+   request_header.cmd = LAUNCHER_OK;
+   request_header.arg_length = 0;
+   write(kdeinitSocket, &request_header, sizeof(request_header));
 }
 
 KLauncher::~KLauncher()
@@ -397,7 +402,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       return true;
    }
 
-   if (KUniqueApplication::process(fun, data, replyType, replyData))
+   if (DCOPObject::process(fun, data, replyType, replyData))
    {
       return true;
    }
@@ -408,7 +413,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
 QCStringList
 KLauncher::interfaces()
 {
-    QCStringList ifaces = KUniqueApplication::interfaces();
+    QCStringList ifaces = DCOPObject::interfaces();
     ifaces += "KLauncher";
     return ifaces;
 }
@@ -416,7 +421,7 @@ KLauncher::interfaces()
 QCStringList
 KLauncher::functions()
 {
-    QCStringList funcs = KUniqueApplication::functions();
+    QCStringList funcs = DCOPObject::functions();
     funcs << "void exec_blind(QCString,QValueList<QCString>)";
     funcs << "void exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)";
     funcs << "serviceResult start_service_by_name(QString,QStringList)";

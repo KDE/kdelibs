@@ -105,7 +105,7 @@ struct serviceResult
   pid_t pid;
 };
 
-class KLauncher : public KUniqueApplication
+class KLauncher : public KApplication, public DCOPObject
 {
    Q_OBJECT
 

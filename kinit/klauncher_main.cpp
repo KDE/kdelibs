@@ -75,6 +75,7 @@ start_launcher(int socket)
       }
    }
 
+   KApplication::dcopClient()->registerAs(name, false);
    KLauncher *launcher = new KLauncher(socket);
    launcher->dcopClient()->setDefaultObject( name );
    launcher->dcopClient()->setDaemonMode( true );

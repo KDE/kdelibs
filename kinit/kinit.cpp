@@ -131,6 +131,7 @@ struct {
   bool debug_wait;
   int lt_dlopen_flag;
   QCString errorMsg;
+  bool launcher_ok;
 } d;
 
 extern "C" {
@@ -893,10 +894,33 @@ static void WaitPid( pid_t waitForPid)
 
 static void launcher_died()
 {
-   /* This is bad. */
-   fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
-   ::exit(255);
-   return;
+   if (!d.launcher_ok)
+   {
+      /* This is bad. */
+      fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
+      ::exit(255);
+      return;
+   }
+
+   // KLauncher died... restart
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: KLauncher died unexpectedly.\n");
+#endif
+   // Make sure it's really dead.
+   if (d.launcher_pid)
+   {
+      kill(d.launcher_pid, SIGKILL);
+      sleep(1); // Give it some time
+   }
+
+   d.launcher_pid = 0;
+   close(d.launcher[0]);
+   d.launcher[0] = -1;
+
+   pid_t pid = launch( 1, "klauncher", 0 );
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: Relaunching KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
 }
 
 static void handle_launcher_request(int sock = -1)
@@ -931,8 +955,12 @@ static void handle_launcher_request(int sock = -1)
            return;
        }
    }
-
-   if ((request_header.cmd == LAUNCHER_EXEC) ||
+   
+   if (request_header.cmd == LAUNCHER_OK)
+   {
+      d.launcher_ok = true;
+   }
+   else if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
        (request_header.cmd == LAUNCHER_SHELL ) ||
        (request_header.cmd == LAUNCHER_KWRAPPER) ||
@@ -1148,6 +1176,7 @@ static void handle_requests(pid_t waitForPid)
 #endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
+              
            if (d.launcher_pid)
            {
            // TODO send process died message
@@ -1202,6 +1231,8 @@ static void handle_requests(pid_t waitForPid)
       if ((result > 0) && (d.launcher_pid) && (FD_ISSET(d.launcher[0], &rd_set)))
       {
          handle_launcher_request();
+         if (waitForPid == d.launcher_pid)
+            return;
       }
 
 #ifdef Q_WS_X11
@@ -1460,6 +1491,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    d.debug_wait = false;
+   d.launcher_ok = false;
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
@@ -1503,7 +1535,7 @@ int main(int argc, char **argv, char **envp)
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
-      WaitPid(pid);
+      handle_requests(pid); // Wait for klauncher to be ready
    }
 
    if (launch_kded)
