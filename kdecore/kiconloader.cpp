@@ -562,13 +562,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 
         iconType = icon.type;
 
-        d->lastImage = *img;
+        d->lastImage = img->copy();
         d->lastImageKey = noEffectKey;
         d->lastIconType = iconType;
     }
     else
     {
-        img = new QImage( d->lastImage );
+        img = new QImage( d->lastImage.copy() );
         iconType = d->lastIconType;
     }
 
