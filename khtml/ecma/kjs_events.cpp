@@ -25,6 +25,7 @@
 #include "kjs_proxy.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
 
 #include <kdebug.h>
@@ -460,15 +461,19 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
     return Number( (unsigned int)button );
   }
-  case RelatedTarget:
-    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
-  case FromElement:
-    // MSIE extension - "object from which activation or the mouse pointer is exiting during the event" (huh?)
-    // ### TODO: meaning of currentTarget differs between mouseover and mouseout, need to pick the right one
-    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   case ToElement:
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
-    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).currentTarget());
+    if (event.handle()->id() == DOM::EventImpl::MOUSEOUT_EVENT)
+      return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
+    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).target());
+  case FromElement:
+    // MSIE extension - "object from which activation
+    // or the mouse pointer is exiting during the event" (huh?)
+    if (event.handle()->id() == DOM::EventImpl::MOUSEOUT_EVENT)
+      return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).target());
+    /* fall through */
+  case RelatedTarget:
+    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   default:
     kdWarning() << "Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
     return Value();
