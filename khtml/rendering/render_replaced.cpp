@@ -32,6 +32,7 @@
 #include <qpainter.h>
 #include <qevent.h>
 #include <qapplication.h>
+#include <qlineedit.h>
 #include <kglobalsettings.h>
 
 #include "khtml_ext.h"
