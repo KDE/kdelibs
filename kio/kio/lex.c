@@ -1723,15 +1723,18 @@ char* KTraderParse_putString( char *_str )
      else
      {
         s++;
-        if ( *s == '\\' )
-          *d++ = '\\';
-        else if ( *s == 'n' )
-          *d++ = '\n';
-        else if ( *s == 'r' )
-          *d++ = '\r';
-        else if ( *s == 't' )
-          *d++ = '\t';
-        s++;
+        if ( s != _str + l - 1 )
+        {
+          if ( *s == '\\' )
+             *d++ = '\\';
+           else if ( *s == 'n' )
+             *d++ = '\n';
+           else if ( *s == 'r' )
+             *d++ = '\r';
+           else if ( *s == 't' )
+             *d++ = '\t';
+           s++;
+        }
      }
   }
   *d = 0;
