@@ -503,7 +503,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 		    // attr was created via createElement()
 		    DOMString name = otherDoc->attrNames()->getName(otherAttr->attrId());
 		    NodeImpl::Id id = m_attrNames->getId(name.implementation(),false);
-		    tempElementImpl->setAttribute(id,0,0,otherAttr->nodeName().implementation(),
+		    tempElementImpl->setAttribute(id,0,0,otherAttr->nodeValue().implementation(),
 						  exceptioncode);
 		}
 
