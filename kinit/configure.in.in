@@ -39,4 +39,7 @@ fi
 if test -n "$KDEINIT_USE_XFT"; then
     AC_DEFINE(KDEINIT_USE_XFT,1,[Use Xft preinitialization in kdeinit])
 fi
+if test -n "$KDEINIT_FONTCONFIG"; then
+    AC_DEFINE(KDEINIT_USE_FONTCONFIG,1,[Use FontConfig in kdeinit])
+fi
 AC_SUBST(KDEINIT_XFT_INCLUDES)

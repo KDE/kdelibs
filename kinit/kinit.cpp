@@ -89,7 +89,7 @@
 # endif
 #endif
 
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
 #include <X11/Xft/Xft.h>
 extern "C" FcBool XftInitFtLibrary (void);
 #include <fontconfig/fontconfig.h>
@@ -1324,7 +1324,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
             if( !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
@@ -1344,7 +1344,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
             if( !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
@@ -1759,7 +1759,7 @@ int main(int argc, char **argv, char **envp)
 #endif
 
    {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
       XftInit(0);
       XftInitFtLibrary();
 #endif
