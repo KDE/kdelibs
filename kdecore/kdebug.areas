@@ -171,6 +171,8 @@
 9018        kdevelop (php support)
 9019        kdevelop (fortran support)
 9020        kdevelop (auto project)
+9021        kdevelop (pgi options)
+9022        kdevelop (ctags)
 
 # toys and games
 10000        amor
