@@ -94,8 +94,11 @@ KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
     return Undefined(); // ###
   else {
     DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
-    return getString(styleDecl2.getPropertyValue(DOM::DOMString(jsNameToProp(p))));
+    DOM::DOMString v = styleDecl2.getPropertyValue(DOM::DOMString(jsNameToProp(p)));
+    if (!v.isNull())
+	return getString(v);
   }
+  return DOMObject::tryGet(p);
 }
 
 
