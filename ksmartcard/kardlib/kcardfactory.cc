@@ -20,16 +20,20 @@
  */  
  
 #include "kcardfactory.h" 
-#include "kpcsc.h" 
-
+#include "kpcsc.h"
+#include "kcarddb.h" 
+#include "kcardimplementation.h"
  
 #include <qfile.h> 
 #include <qvariant.h> 
 #include <qstring.h> 
 #include <qstringlist.h> 
+
+#include <dcopclient.h>
 #include <klibloader.h> 
 #include <kservicetype.h> 
 #include <klocale.h>
+#include <kapplication.h>
  
 #include <kdebug.h> 
  
@@ -42,26 +46,26 @@ KCardFactory::KCardFactory() {
 
   
   
-for (_modulesMap::Iterator x=_modules.begin(); x!=_modules.end();++x) {
+// for (_modulesMap::Iterator x=_modules.begin(); x!=_modules.end();++x) {
 
   
-  for (QMap< QString,QMap< QString,void*> >::Iterator y = x.data().begin();
-       y!=x.data().end();
-       ++y){
+//   for (QMap< QString,QMap< QString,void*> >::Iterator y = x.data().begin();
+//        y!=x.data().end();
+//        ++y){
 
     
-    for(QMap< QString,void*> ::Iterator z=y.data().begin();
-	z!=y.data().end();
-	++z){
+//     for(QMap< QString,void*> ::Iterator z=y.data().begin();
+// 	z!=y.data().end();
+// 	++z){
       
-      //      kdDebug()<<"MAIN-> " << "_type " << x.key() << "  _subType:"<< y.key() << "  _subSubType" << z.key() << endl;
+//       //      kdDebug()<<"MAIN-> " << "_type " << x.key() << "  _subType:"<< y.key() << "  _subSubType" << z.key() << endl;
       
 	   
-    }
+//     }
     
     
-  }
-}
+//   }
+// }
  
 
 
@@ -82,31 +86,61 @@ KCardFactory *KCardFactory::self() {
 	return _self; 
 } 
  
- 
-KCardImplementation * KCardFactory::getCard (KCardReader * /*selReader*/,  
-					     KCardType selcardType,  
-					     KCardATR atr){ 
- 
-  switch (selcardType){ 
- 
- 
-  case KCardGSMType: 
-    
-    break; 
- 
- 
-  case KCardProcessorType: 
- 
-    break; 
- 
-  default: 
-    break; 
-  } 
- 
- 
-return NULL; 
+
+
+KCardImplementation * KCardFactory::getCard (const QString & slot,  
+					     const QString & atr)
+{ 
+
+  KCardDB cardBase;
+  KCardImplementation * impl=NULL;
+  QString handler = cardBase.getModuleName(atr);
+  if (handler==QString::null) {
+   return NULL;
+  }
+  QStringList types = QStringList::split(",",handler);
+  
+  KService::Ptr serv = _modules[types[0]][types[1]][types[2]];
+  
+  impl= (KCardImplementation *)loadModule(serv);
+  if (impl==NULL) return NULL;
+
+  KPCSC pcscInt(TRUE);
+  KCardReader * KReader = pcscInt.getReader(slot);
+  if (KReader==NULL) return NULL;
+  if (impl->init(KReader)) return NULL;
+  return impl;
+  
 } 
- 
+
+KCardImplementation * KCardFactory::getCard (const QString & slot)
+{ 
+  
+  QByteArray retval;
+  QCString   rettype;
+  
+  QByteArray dataATR;
+  QDataStream argATR(dataATR,IO_WriteOnly);
+  argATR << slot;
+  
+  kapp->dcopClient()->call("kded", "kardsvc", "getCardATR(QString)", 
+			   dataATR, rettype, retval);
+  
+  
+  QString cardATR;
+  QDataStream _retReaderATR(retval, IO_ReadOnly);
+  _retReaderATR>>cardATR;
+  
+  if (cardATR.isNull()){
+    
+    return NULL;
+  }
+
+  return getCard(slot,cardATR);
+  
+  
+}
+
 QStringList & KCardFactory::getImplentationList()const{
 
      return _implementationList;
@@ -173,13 +207,13 @@ int KCardFactory::loadModules() {
 		// A better solution is to put them all in the property as 
 		// a list though. 
  
-		void *f = loadModule(service); 
+		//void *f = loadModule(service); 
 		
 		
 		for (QStringList::Iterator j = _subSubType.begin(); 
 					    j != _subSubType.end(); 
 								++j) { 
-		  _modules[_type][_subType][*j] = f;
+		  _modules[_type][_subType][*j] = service;
 		  QString tp= _type +",";
 		  tp+=_subType + ",";
 		  tp+=_subSubType.join("-");

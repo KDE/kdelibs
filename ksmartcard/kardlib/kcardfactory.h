@@ -23,7 +23,6 @@
 #ifndef _KCARDFACTORY_H
 #define _KCARDFACTORY_H
 
-#include "kcardstatus.h"
 
 #include <kservice.h>
 #include <qmap.h>
@@ -35,14 +34,18 @@ class QStringList;
 
 // FIXME: Change this to use the strings instead.  Makes it easier to extend
 // later.
-typedef  enum {KCardGSMType, KCardProcessorType} KCardType;
+
+
+//typedef  enum {KCardGSMType, KCardProcessorType} KCardType;
 
 
 class KCardFactory {
 
  public:
 
-  static KCardImplementation * getCard ( KCardReader *, KCardType, KCardATR );
+  KCardImplementation * getCard ( const QString & slot,
+				  const QString & cardATR);
+  KCardImplementation * getCard ( const QString & slot );
   static KCardFactory *self();
   QStringList & getImplentationList() const ;
  
@@ -56,7 +59,7 @@ class KCardFactory {
   static KCardFactory *_self;
  
   
- typedef QMap< QString, QMap< QString, QMap< QString,void*> > > _modulesMap;
+ typedef QMap< QString, QMap< QString, QMap< QString, KService::Ptr > > > _modulesMap;
   
  _modulesMap _modules;
  
