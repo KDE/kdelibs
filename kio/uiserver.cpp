@@ -772,7 +772,7 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
             QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
             kdDebug(7024) << "Key check resulted in " << u.utf8() << endl;
             // Re-request the password if the user is supplied and is different!!
-            if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isNull() ) )
+            if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isEmpty() ) )
             {
                 isCached = true;
                 kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
