@@ -223,7 +223,8 @@ void KMDIGUIClient::setupActions()
 
 void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva) {
 	kdDebug(760)<<"*****void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva)*****"<<endl;
-	QString aname = "kmdi_toolview_" + mtva->wrappedWidget()->caption().replace(" ", "");
+//	kdDebug()<<"name: "<<mtva->wrappedWidget()->name()<<endl;
+	QString aname = QString("kmdi_toolview_") + mtva->wrappedWidget()->name();
 
 	// try to read the action shortcut
 	KShortcut sc;
