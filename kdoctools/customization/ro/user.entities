@@ -21,6 +21,7 @@
 <!ENTITY cdrom                  '<hardware>unitate CD-ROM</hardware>'>
 <!ENTITY Alt                    "<keycap>Alt</keycap>">
 <!ENTITY Ctrl                   "<keycap>Ctrl</keycap>">                                 <!-- English: &Ctrl; -->
+<!ENTITY Shift                  "<keycap>Shift</keycap>">
 <!ENTITY dpi                    '<acronym>dpi</acronym>'>
 <!ENTITY Escape                 '<keycap>Escape</keycap>'>                               <!-- English: &Esc; -->
 <!ENTITY Enter                  '<keycap>Enter</keycap>'>
@@ -29,7 +30,8 @@
 <!ENTITY FAQ                    '<acronym>R.I.F.</acronym>'>
 <!ENTITY kcontrol               '<application>Centrul de Control &kde;</application>'>
 <!ENTITY kcontrolcenter         '<application>Centrul de Control &kde;</application>'>
-<!ENTITY khelpcenter            '<application>Sistemul de Ajutor &kde;</application>'>
+<!ENTITY kinfocenter            '<application>Centrul de Informaţii &kde;</application>'>
+<!ENTITY khelpcenter            '<application>Centrul de Ajutor &kde;</application>'>
 <!ENTITY ex                     "exemplu">                                               <!-- English: &eg; -->
 <!ENTITY eg                     "de exemplu">                                            <!-- English: &eg; -->
 <!ENTITY ie                     "de exemplu">                                            <!-- English: &eg; -->
