@@ -391,21 +391,23 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
     return user_agent;
 
   // Now, we need to do our pattern matching on the host name.
-  QString sep = "::";
   QStringList::ConstIterator it(list.begin());
   for( ; it != list.end(); ++it)
   {
     QStringList split;
-    int pos = (*it).find(sep); 
+    int pos = (*it).find("::"); 
     if ( pos == -1 )
     {
-      sep = ':';
-      split.append((*it).left(pos));
-      split.append((*it).mid(pos+1));
+      pos = (*it).find(':');
+      if ( pos != -1 )
+      {
+        split.append((*it).left(pos));
+        split.append((*it).mid(pos+1));
+      }
     }
     else
     {
-       split = QStringList::split( sep, (*it) );
+       split = QStringList::split("::", (*it));
     }
 
     // if our user agent is null, we go to the next one
