@@ -22,7 +22,7 @@
 #ifndef _KCARDREADER_H
 #define _KCARDREADER_H
 
-class KPCSC;
+#include <kpcsc.h>
 #include <qstring.h>
 
 class KCardReader {
@@ -38,6 +38,7 @@ public:
 	bool inTransaction();
 	
 	int doCommand(QString command, QString& response);
+	int doCommand(KCardCommand command, KCardCommand& response);
 
 private:
 	class KCardReaderPrivate;

@@ -20,7 +20,6 @@
 
 
 #include "kcardreader.h"
-#include "kpcsc.h"
 #include <winscard.h>
 #include <stdlib.h>
 
@@ -107,7 +106,41 @@ return 0;
 
 
 int KCardReader::doCommand(QString command, QString& response) {
+int rc;
+KCardCommand resp;
 
+	rc = doCommand(KPCSC::encodeCommand(command), resp);
+	response = KPCSC::decodeCommand(resp);
+
+return rc;
+}
+
+
+int KCardReader::doCommand(KCardCommand command, KCardCommand& response) {
+long rc = 0;
+unsigned long resSize = MAX_BUFFER_SIZE*sizeof(unsigned char);
+unsigned char res[MAX_BUFFER_SIZE];
+SCARD_IO_REQUEST _out;        // hmm what to do with this
+
+	if (command.size() == 0)
+		return -2;
+
+	rc = SCardTransmit(_card, 
+			   SCARD_PCI_T0,
+			   command.data(),
+			   command.size(),
+			   &_out,
+			   res,
+			   &resSize);
+
+	if (rc != SCARD_S_SUCCESS) {
+		response.resize(0);
+		return -1;
+	}
+
+	response.duplicate(res, resSize);
+	
+return 0;
 }
 
 
