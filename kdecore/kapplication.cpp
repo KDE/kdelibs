@@ -325,9 +325,7 @@ public:
   };
   QPtrList<URLActionRule> urlActionRestrictions;
 
-#if QT_VERSION < 0x030100
     QString sessionKey;
-#endif
     QString pSessionConfigFile;
 };
 
@@ -443,7 +441,10 @@ QString KApplication::sessionConfigName() const
 #if QT_VERSION < 0x030100
     return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(d->sessionKey);
 #else
-    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(sessionKey());
+    QString sessKey = sessionKey();
+    if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
+        sessKey = d->sessionKey;
+    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(sessKey);
 #endif
 }
 
@@ -1158,7 +1159,9 @@ static const KCmdLineOptions kde_options[] =
 #if QT_VERSION < 0x030100
    { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
 #else
-   { "smkey <sessionKey>", I18N_NOOP("This option is unused and exists for backwards compatibility reason only"), 0},
+   { "smkey <sessionKey>", 0, 0}, // this option is obsolete and exists only to allow smooth upgrades from sessions
+                                  // saved under Qt 3.0.x -- Qt 3.1.x includes the session key now automatically in
+				  // the session id (Simon)
 #endif
    { 0, 0, 0 }
 };
@@ -1258,12 +1261,10 @@ void KApplication::parseCommandLine( )
         d->geometry_arg = args->getOption("geometry");
     }
 
-#if QT_VERSION < 0x030100
     if (args->isSet("smkey"))
     {
         d->sessionKey = args->getOption("smkey");
     }
-#endif
 
 }
 
