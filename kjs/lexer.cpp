@@ -214,7 +214,7 @@ int Lexer::lex()
         state = InDecimal;
 #ifndef KJS_PURE_ECMA
         // <!-- marks the beginning of a line comment (for www usage)
-      } else if (bol && current == '<' && next1 == '!' &&
+      } else if (current == '<' && next1 == '!' &&
                  next2 == '-' && next3 == '-') {
         shift(3);
         state = InSingleLineComment;
