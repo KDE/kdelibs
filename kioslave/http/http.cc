@@ -3313,7 +3313,9 @@ bool HTTPProtocol::readHeader()
   // We need to try to login again if we failed earlier
   if ( m_bUnauthorized )
   {
-    if ( m_responseCode == 401 || m_responseCode == 407 )
+    if ( (m_responseCode == 401) || 
+         (m_bUseProxy && (m_responseCode == 407))
+       )
     {
         if ( getAuthorization() )
         {
@@ -5016,6 +5018,8 @@ void HTTPProtocol::saveAuthorization()
   AuthInfo info;
   if ( m_prevResponseCode == 407 )
   {
+    if (!m_bUseProxy)
+       return;
     m_bProxyAuthValid = true;
     info.url = m_proxyURL;
     info.username = m_proxyURL.user();
