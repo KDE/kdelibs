@@ -88,7 +88,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                     deep = false;
                 break;
             case TR_CELLS:
-                if(e->id() == ID_TD)
+                if(e->id() == ID_TD || e->id() == ID_TH)
                     len++;
                 else if(e->id() == ID_TABLE)
                     deep = false;
@@ -173,7 +173,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                     deep = false;
                 break;
             case TR_CELLS:
-                if(e->id() == ID_TD)
+                if(e->id() == ID_TD || e->id() == ID_TH)
                     len++;
                 else if(e->id() == ID_TABLE)
                     deep = false;
@@ -298,7 +298,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                     deep = false;
                 break;
             case TR_CELLS:
-                if(e->id() == ID_TD)
+                if(e->id() == ID_TD || e->id() == ID_TH)
                     check = true;
                 else if(e->id() == ID_TABLE)
                     deep = false;

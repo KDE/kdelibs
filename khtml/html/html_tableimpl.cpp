@@ -214,12 +214,11 @@ void HTMLTableElementImpl::deleteCaption(  )
 
 HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode )
 {
-    // Let's make sure we have at least one section
-    // The DOM requires it (cf DOM2TS HTMLTableElement31 test)
-    // but since we currently allow <TABLE><TR> in the DOM, the new row might
-    // not be created in that body element. Huh. The fact that we don't create
-    // a tbody when parsing <TABLE><TR> looks like a bug to me (DF).
-    if(!firstBody && !head && !foot)
+    // The DOM requires that we create a tbody if the table is empty
+    // (cf DOM2TS HTMLTableElement31 test)
+    // (note: this is different from "if the table has no sections", since we can have
+    // <TABLE><TR>)
+    if(!firstBody && !head && !foot && !hasChildNodes())
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY) );
 
     //kdDebug(6030) << k_funcinfo << index << endl;
