@@ -129,6 +129,7 @@ void yyerror( const char *s )
 %type <_str> param
 %type <_str> type
 %type <_str> type_name
+%type <_str> type_name_list
 %type <_str> type_list
 %type <_str> params
 %type <_str> int_type
@@ -409,20 +410,29 @@ type_name
 	| Identifier { $$ = $1; }
 	| T_STRUCT Identifier { $$ = $2; }
 	| T_CLASS Identifier { $$ = $2; }
-	| Identifier T_LESS type_list T_GREATER {
-		QString *tmp = new QString("%1<%2>");
-		tmp->arg(*($1));
-		tmp->arg(*($3));
+	| Identifier T_LESS type_name_list T_GREATER {
+		QString *tmp = new QString("%1&lt;%2&gt;");
+		*tmp = tmp->arg(*($1));
+		*tmp = tmp->arg(*($3));
 		$$ = tmp;
 	 }
-	| Identifier T_LESS type_list T_GREATER T_SCOPE Identifier{
-		QString *tmp = new QString("%1<%2>::%3");
-		tmp->arg(*($1));
-		tmp->arg(*($3));
-		tmp->arg(*($6));
+	| Identifier T_LESS type_name_list T_GREATER T_SCOPE Identifier{
+		QString *tmp = new QString("%1&lt;%2&gt;::%3");
+		*tmp = tmp->arg(*($1));
+		*tmp = tmp->arg(*($3));
+		*tmp = tmp->arg(*($6));
 		$$ = tmp;
 	 }
 
+type_name_list
+	: type_name T_COMMA type_name_list
+	  {
+	    $$ = new QString(*($1) + "," + *($3));
+	  }
+	| type_name
+  	  {
+ 	    $$ = $1;
+	  }
 type
 	: T_CONST type_name asterisks
   	  {
