@@ -252,10 +252,14 @@ void KHTMLParser::reset()
     _inline = false;
 
     form = 0;
+    end = false;
 }
 
 void KHTMLParser::parseToken(Token *t)
 {
+    // ignore stuff after </html>
+    if(end) return;
+
     if (t->id > 2*ID_CLOSE_TAG)
     {
       printf("Unknown tag!! tagID = %d\n", t->id);
@@ -272,7 +276,7 @@ void KHTMLParser::parseToken(Token *t)
     {
 	if(t->text.length() == 1 && t->text[0] == QChar(' '))
 	{
-	    printf("discarding space!\n");
+	    //printf("discarding space!\n");
 	    return;
 	}
     }
@@ -406,6 +410,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		    parent->insertBefore(n, node);
 		    n->attach(HTMLWidget);
 		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
+		    n->close();
 		}
 		catch(DOMException e)
 		{
@@ -414,6 +419,53 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		}
 		return;
 	    }
+	    break;
+	}
+	case ID_INPUT:
+	{
+	    // another one for hidden inputs elements...
+
+	    printf("--> badly placed input element!!!\n");
+
+	    ElementImpl *e = static_cast<ElementImpl *>(n);
+	    DOMString type = e->getAttribute(ATTR_TYPE);
+
+	    if ( strcasecmp( type, "hidden" ) == 0 )
+	    {
+
+		NodeImpl *node = current;
+
+		if(node->id() == ID_TR)
+		    node = node->parentNode();
+		if(node->id() == ID_THEAD)
+		    node = node->parentNode();
+		if(node->id() == ID_TBODY)
+		    node = node->parentNode();
+		if(node->id() == ID_TFOOT)
+		    node = node->parentNode();
+		
+		if(node->id() == ID_TABLE)
+		{
+		    CSSStyle *newStyle = styleSheet->newStyle(currentStyle);
+		    
+		    NodeImpl *parent = node->parentNode();
+		    printf("trying to add form to %d\n", parent->id());
+		    try
+		    {
+			parent->insertBefore(n, node);
+			n->attach(HTMLWidget);
+			static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
+			n->close();
+		    }
+		    catch(DOMException e)
+		    {
+			printf("adding form before of table failed!!!!\n");
+			throw e;
+		    }
+		    return;
+		}
+	    }
+	    break;
 	}
 	case ID_TEXT:
 	    // ignore text inside the following elements.
@@ -847,6 +899,9 @@ void KHTMLParser::processCloseTag(Token *t)
 #ifdef PARSER_DEBUG
     printf("closeTag --> current = %s\n", current->nodeName().string().ascii());
 #endif
+    // trigger self distruction...
+    if(t->id == ID_HTML+ID_CLOSE_TAG)
+        end = true;
 }
 
 

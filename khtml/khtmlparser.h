@@ -135,6 +135,7 @@ protected:
 
     bool inBody;
     bool _inline;
+    bool end;
 };
 
 #endif // HTMLPARSER_H

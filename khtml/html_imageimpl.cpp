@@ -91,7 +91,7 @@ void HTMLImageElementImpl::setIsMap( bool b)
 bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url)
 {
-    printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
+  //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
     if (usemap.length()>0)
     {
     	cout << "usemap: " << usemap.string() << endl;
@@ -184,7 +184,7 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
     if (!minMaxKnown())
     {
         // Image dimensions have been changed, recalculate layout
-	printf("Image: recalculating layout\n");
+      //printf("Image: recalculating layout\n");
 	calcMinMaxWidth();
 	if(_parent) _parent->updateSize();	
     }
@@ -254,9 +254,9 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 	    getHeight() - border != pixmap->height() ) &&
 	    pixmap->width() != 0 && pixmap->height() != 0 )
 	{
-	    printf("have to scale: width:%d<-->%d height %d<-->%d\n",
-		   width - border*2, pixmap->width(),
-		   getHeight() - border, pixmap->height() );
+	  //printf("have to scale: width:%d<-->%d height %d<-->%d\n",
+	  //   width - border*2, pixmap->width(),
+	  //   getHeight() - border, pixmap->height() );
 	    QWMatrix matrix;
 	    matrix.scale( (float)(width-border*2)/pixmap->width(),
 		    (float)(getHeight()-border)/pixmap->height() );
@@ -313,7 +313,7 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	    // NO! Images don't scale unless told to. Ever.  -AKo
 	    //if(availableWidth < width) width = availableWidth;
 	    minWidth = width;
-	    printf("IMG Width changed, width=%d\n",width);
+	    //printf("IMG Width changed, width=%d\n",width);
 	}
     }
     maxWidth = minWidth;

@@ -342,6 +342,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     if(!_settings) _settings = new HTMLSettings( *defaultSettings);
 
+    
     document = new HTMLDocumentImpl(this, cache);
     document->ref();
     document->setURL(m_strURL);
@@ -356,6 +357,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
 void KHTMLWidget::slotStop()
 {
+  printf("----> KHTMLWidget::slotStop()\n");
+
   if ( m_jobId )
   {
     KIOJob* job = KIOJob::find( m_jobId );

@@ -27,7 +27,7 @@
 // $Id$
 
 // #define TOKEN_DEBUG
-
+//#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -1196,6 +1196,14 @@ void HTMLTokenizer::processToken()
     }
     dest = buffer;
 
+#ifdef TOKEN_PRINT
+    QString name = getTagName(currToken->id).string();
+    QString text = currToken->text.string();
+
+    printf("Token --> %s   id = %d\n", name.ascii(), currToken->id);
+    if(currToken->text != 0)
+	printf("text: \"%s\"\n", text.ascii());
+#else
 #ifdef TOKEN_DEBUG
     QString name = getTagName(currToken->id).string();
     QString text = currToken->text.string();
@@ -1203,7 +1211,6 @@ void HTMLTokenizer::processToken()
     printf("Token --> %s   id = %d\n", name.ascii(), currToken->id);
     if(currToken->text != 0)
 	printf("text: \"%s\"\n", text.ascii());
-
     int l = currToken->attrs.length();
     if(l>0)
     {
@@ -1219,6 +1226,7 @@ void HTMLTokenizer::processToken()
 	}
     }
     printf("\n");
+#endif
 #endif
     // pass the token over to the parser
     parser->parseToken(currToken);
