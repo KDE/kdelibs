@@ -593,7 +593,7 @@ QStringList KBuildSycoca::existingResourceDirs()
 
 static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
-   { "incremental", I18N_NOOP("Incremental update."), 0 },
+   { "noincremental", I18N_NOOP("Incremental update."), 0 },
    { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
    { 0, 0, 0 }
 };
