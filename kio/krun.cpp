@@ -302,7 +302,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = e.find( "%u" )) != -1 )
       e.replace( pos, 2, u );
 
-    pid_t pid = run(exec);
+    pid_t pid = run(e);
 
     if (pid != -1) {
 
