@@ -118,16 +118,25 @@ done:
 #undef I
 #undef X
 
+class KConfigBase::KConfigBasePrivate
+{
+public:
+     KConfigBasePrivate() : readDefaults(false) { };
+
+public:
+     bool readDefaults;
+};
 
 KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
-    bReadOnly(false), bExpand(false)
+    bReadOnly(false), bExpand(false), d(0)
 {
     setGroup(QString::null);
 }
 
 KConfigBase::~KConfigBase()
 {
+    delete d;
 }
 
 void KConfigBase::setLocale()
@@ -186,6 +195,7 @@ bool KConfigBase::hasKey(const char *pKey) const
 {
   KEntryKey aEntryKey(mGroup, 0);
   aEntryKey.c_key = pKey;
+  aEntryKey.bDefault = readDefaults();
 
   if (!locale().isNull()) {
     // try the localized key first
@@ -297,6 +307,7 @@ QString KConfigBase::readEntry( const char *pKey,
   KEntry aEntryData;
   KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
+  entryKey.bDefault = readDefaults();
   entryKey.bLocal = true;
   aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
@@ -404,6 +415,7 @@ QCString KConfigBase::readEntryUtf8( const char *pKey) const
 {
   // We don't try the localized key
   KEntryKey entryKey(mGroup, 0);
+  entryKey.bDefault = readDefaults();
   entryKey.c_key = pKey;
   KEntry aEntryData = lookupData(entryKey);
   if (aEntryData.bExpand)
@@ -1669,6 +1681,51 @@ void KConfigBase::rollback( bool /*bDeep = true*/ )
   bDirty = false;
 }
 
+
+void KConfigBase::setReadDefaults(bool b)
+{
+  if (!d)
+  {
+     if (!b) return;
+     d = new KConfigBasePrivate();
+  }   
+     
+  d->readDefaults = b;
+}
+  
+bool KConfigBase::readDefaults() const
+{
+  return (d && d->readDefaults);
+}
+
+void KConfigBase::revertToDefault(const QString &key)
+{
+  setDirty(true);
+
+  KEntryKey aEntryKey(mGroup, key.utf8());
+  aEntryKey.bDefault = true;
+
+  if (!locale().isNull()) {
+    // try the localized key first
+    aEntryKey.bLocal = true;
+    KEntry entry = lookupData(aEntryKey);
+    if (entry.mValue.isNull())
+        entry.bDeleted = true;
+
+    entry.bDirty = true;
+    putData(aEntryKey, entry, true); // Revert
+    aEntryKey.bLocal = false;
+  }
+
+  // try the non-localized version
+  KEntry entry = lookupData(aEntryKey);
+  if (entry.mValue.isNull())
+     entry.bDeleted = true;
+  entry.bDirty = true;
+  putData(aEntryKey, entry, true); // Revert
+}
+
+
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
 {
   mMaster = master;
@@ -1679,6 +1736,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
   bDirty = false; // Not used
   mGroup = group.utf8();
   aLocaleString = mMaster->aLocaleString;
+  setReadDefaults(mMaster->readDefaults());
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
@@ -1691,6 +1749,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
   bDirty = false; // Not used
   mGroup = group;
   aLocaleString = mMaster->aLocaleString;
+  setReadDefaults(mMaster->readDefaults());
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char * group)
@@ -1703,6 +1762,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * group)
   bDirty = false; // Not used
   mGroup = group;
   aLocaleString = mMaster->aLocaleString;
+  setReadDefaults(mMaster->readDefaults());
 }
 
 void KConfigGroup::deleteGroup(bool bGlobal)

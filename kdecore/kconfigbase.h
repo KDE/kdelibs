@@ -1682,6 +1682,33 @@ public:
    */
   bool checkConfigFilesWritable(bool warnUser);
 
+  /**
+   * When set, all readEntry and readXXXEntry calls return the system
+   * wide (default) values instead of the user's preference.
+   * This is off by default.
+   * @since 3.2
+   */
+  void setReadDefaults(bool b);
+  
+  /**
+   * @returns true if all readEntry and readXXXEntry calls return the system
+   * wide (default) values instead of the user's preference.
+   * @since 3.2
+   */
+  bool readDefaults() const;
+
+  /**
+   * Reverts the entry with key @p key in the current group in the 
+   * application specific config file to either the system wide (default) 
+   * value or the value specified in the global KDE config file.
+   *
+   * To revert entries in the global KDE config file, the global KDE config
+   * file should be opened explicitly in a seperate config object.
+   *
+   * @param key The key of the entry to revert.
+   */
+  void revertToDefault(const QString &key);
+
 protected:
   /**
    * Reads the locale and put in the configuration data struct.
@@ -1806,6 +1833,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  class KConfigBasePrivate;
   KConfigBasePrivate *d;
 };
 

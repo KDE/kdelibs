@@ -227,7 +227,12 @@ int main( int argc, char **argv )
 
 if (argc == 2)
 {
+qWarning("Adding entries.");
   KConfig sc( "kconfigtest" );
+
+  sc.setGroup("AAA");
+  sc.writeEntry("stringEntry1", STRINGENTRY1, true, true);
+  sc.deleteEntry("stringEntry2", false, true);
 
   sc.setGroup("Hello");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
@@ -256,7 +261,32 @@ if (argc == 2)
   sc.sync();
 }
 
+if (argc == 3)
+{
+qWarning("Reverting entries");
+  KConfig sc( "kconfigtest" );
+
+  sc.setGroup("Hello");
+  sc.revertToDefault( "boolEntry1");
+  sc.revertToDefault( "boolEntry2");
+
+  sc.revertToDefault( "Test" );
+  sc.revertToDefault( "Test2" );
+  sc.revertToDefault( "stringEntry1" );
+  sc.revertToDefault( "stringEntry2" );
+  sc.revertToDefault( "stringEntry3" );
+  sc.revertToDefault( "stringEntry4" );
+  sc.revertToDefault( "stringEntry5" );
+  sc.sync();
+}
+
   KConfig sc2( "kconfigtest" );
+  sc2.setGroup("AAA");
+  test( "hasKey() 1", sc2.hasKey( "stringEntry1" ) == true);
+  test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
+  test( "hasKey() 2", sc2.hasKey( "stringEntry2" ) == false);
+  test( "readEntry() 2", sc2.readEntry( "stringEntry2", "bla" ) == "bla" );
+
   sc2.setGroup("Hello");
   test( "readEntry()", sc2.readEntry( "Test" ) == LOCAL8BITENTRY );
   test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel").isEmpty() );
@@ -264,7 +294,9 @@ if (argc == 2)
   test( "readEntry() 2", sc2.readEntry( "stringEntry2" ) == STRINGENTRY2 );
   test( "readEntry() 3", sc2.readEntry( "stringEntry3" ) == STRINGENTRY3 );
   test( "readEntry() 4", sc2.readEntry( "stringEntry4" ) == STRINGENTRY4 );
+  test( "hasKey() 5", sc2.hasKey( "stringEntry5" ) == false);
   test( "readEntry() 5", sc2.readEntry( "stringEntry5", "test" ) == "test" );
+  test( "hasKey() 6", sc2.hasKey( "stringEntry6" ) == false);
   test( "readEntry() 6", sc2.readEntry( "stringEntry6", "foo" ) == "foo" );
   test( "readBoolEntry() 1", sc2.readBoolEntry( "boolEntry1" ) == BOOLENTRY1 );
   test( "readBoolEntry() 2", sc2.readBoolEntry( "boolEntry2" ) == BOOLENTRY2 );
