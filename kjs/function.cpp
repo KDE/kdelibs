@@ -94,7 +94,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   Object globalObj = exec->interpreter()->globalObject();
 
   // enter a new execution context
-  ContextImp ctx(globalObj, exec, thisObj, codeType(),
+  ContextImp ctx(globalObj, exec, thisObj, sid, codeType(),
                  exec->context().imp(), this, args);
   ExecState newExec(exec->interpreter(), &ctx);
   newExec.rep->exception = exec->exception(); // could be null
@@ -115,11 +115,10 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   // add variable declarations (initialized to undefined)
   processVarDecls(&newExec);
 
+  ctx.setLines(line0,line0);
   Debugger *dbg = exec->interpreter()->imp()->debugger();
   if (dbg) {
-    Object func(this);
-    Object var(ctx.variableObject());
-    if (!dbg->enterContext(&newExec,Debugger::FunctionCode,sid,line0,thisObj,var,func,ident,args)) {
+    if (!dbg->enterContext(&newExec)) {
       // debugger requested we stop execution
       dbg->imp()->abort();
       return Undefined();
@@ -128,11 +127,12 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   Completion comp = execute(&newExec);
 
+  ctx.setLines(line1,line1);
   if (dbg) {
     Object func(this);
     // ### lineno is inaccurate - we really want the end of the function _body_ here
     // line1 is suppoed to be the end of the function start, just before the body
-    if (!dbg->exitContext(comp,line1)) {
+    if (!dbg->exitContext(&newExec,comp)) {
       // debugger requested we stop execution
       dbg->imp()->abort();
       return Undefined();
@@ -411,17 +411,13 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
       // enter a new execution context
       Object glob(exec->interpreter()->globalObject());
-      ContextImp ctx(glob, exec, thisObj, EvalCode, exec->context().imp());
+      ContextImp ctx(glob, exec, thisObj, sid, EvalCode, exec->context().imp());
       ExecState newExec(exec->interpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 
+      ctx.setLines(progNode->firstLine(),progNode->firstLine());
       if (dbg) {
-	Object var(ctx.variableObject());
-	Object thisValue(ctx.thisValue());
-	Object func;
-	List args;
-	if (!dbg->enterContext(&newExec,Debugger::EvalCode,sid,progNode->firstLine(),
-			       thisValue,var,func,UString(),args)) {
+	if (!dbg->enterContext(&newExec)) {
 	  // debugger requested we stop execution
 	  dbg->imp()->abort();
 
@@ -438,7 +434,8 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       if (progNode->deref())
 	delete progNode;
 
-      if (dbg && !dbg->exitContext(c,lastLine)) {
+      ctx.setLines(lastLine,lastLine);
+      if (dbg && !dbg->exitContext(&newExec,c)) {
 	// debugger requested we stop execution
 	dbg->imp()->abort();
 	return Undefined();
@@ -446,7 +443,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
       // if an exception occured, propogate it back to the previous execution object
       if (newExec.hadException()) {
-	exec->setException(newExec.exception());
+	exec->rep->exception = newExec.exception();
 	return Undefined();
       }
       if (c.complType() == Throw) {

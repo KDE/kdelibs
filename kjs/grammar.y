@@ -555,13 +555,13 @@ CaseClause:
 ;
 
 DefaultClause:
-    DEFAULT ':'                    { $$ = new CaseClauseNode(0L, 0L);; }
+    DEFAULT ':'                    { $$ = new CaseClauseNode(0L, 0L); }
   | DEFAULT ':' StatementList      { $$ = new CaseClauseNode(0L, $3); }
 ;
 
 LabelledStatement:
     IDENT ':' Statement            { $3->pushLabel(*$1);
-                                     $$ = new LabelNode(*$1, $3);
+                                     $$ = new LabelNode(*$1, $3); DBG($$,@1,@2);
                                      delete $1; }
 ;
 

@@ -116,21 +116,17 @@ bool Debugger::exception(ExecState */*exec*/, const Value &/*value*/,
   return true;
 }
 
-bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLine*/,
-                           int /*lastLine*/)
+bool Debugger::atStatement(ExecState */*exec*/)
 {
   return true;
 }
 
-bool Debugger::enterContext(ExecState */*exec*/, CodeType /*codeType*/, int /*sourceId*/,
-			    int /*lineno*/, Object &/*thisVal*/, Object &/*variable*/,
-			    Object &/*function*/, const UString &/*name*/,
-			    const List &/*args*/)
+bool Debugger::enterContext(ExecState */*exec*/)
 {
   return true;
 }
 
-bool Debugger::exitContext(const Completion &/*completion*/, int /*lineno*/)
+bool Debugger::exitContext(ExecState */*exec*/, const Completion &/*completion*/)
 {
   return true;
 }

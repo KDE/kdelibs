@@ -172,9 +172,11 @@ void StatementNode::setLoc(int line0, int line1, int sourceId)
 // return true if the debugger wants us to stop at this point
 bool StatementNode::hitStatement(ExecState *exec)
 {
+  assert(exec->imp()->context->sourceId == sid);
+  exec->imp()->context->setLines(l0,l1);
   Debugger *dbg = exec->interpreter()->imp()->debugger();
   if (dbg)
-    return dbg->atStatement(exec,sid,l0,l1);
+    return dbg->atStatement(exec);
   else
     return true; // continue
 }

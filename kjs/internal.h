@@ -323,19 +323,16 @@ namespace KJS {
   //                            Parsing & evaluateion
   // ---------------------------------------------------------------------------
 
-  enum CodeType { GlobalCode,
-		  EvalCode,
-		  FunctionCode,
-		  AnonymousCode };
-
   /**
    * @short Execution context.
    */
   class ContextImp {
+    friend class Context;
+    friend class StatementNode;
   public:
     // TODO: remove glob parameter. deducable from exec.
-    ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType type = GlobalCode,
-               ContextImp *_callingContext = 0L, FunctionImp *func = 0L, const List &args = List());
+    ContextImp(Object &glob, ExecState *exec, Object &thisV, int _sourceId, CodeType type = GlobalCode,
+               ContextImp *_callingContext = 0L, FunctionImp *func = 0L, const List &_args = List());
     virtual ~ContextImp();
 
     const List scopeChain() const { return scope; }
@@ -353,6 +350,8 @@ namespace KJS {
     void popTryCatch() { tryCatch--; };
     bool inTryCatch() const;
 
+    void setLines(int l0, int l1) { line0 = l0; line1 = l1; }
+
   private:
 
     List scope;
@@ -365,6 +364,13 @@ namespace KJS {
     LabelStack ls;
     CodeType codeType;
     int tryCatch;
+
+    int sourceId;
+    int line0;
+    int line1;
+    Object function;
+    UString functionName;
+    List args;
   };
 
   /**

@@ -35,6 +35,24 @@ namespace KJS {
   class InterpreterImp;
 
   /**
+   * The three different types of code that can be executed in a Context.
+   * These are:
+   * <ul>
+   *   <li>GlobalCode - code executed as a result of a call to
+   *   Interpreter::evaluate().</li>
+   *   <li>EvalCode - executed by a call to the builtin eval() function</li>
+   *   <li>FunctionCode - inside a function call (ECMAScript functions only;
+   *   does not include builtin native functions or funcitons supplied by the
+   *   host environment</li>
+   * </ul>
+   */
+  enum CodeType {
+    GlobalCode   = 0,
+    EvalCode     = 1,
+    FunctionCode = 2
+  };
+
+  /**
    * Represents an execution context, as specified by section 10 of the ECMA
    * spec.
    *
@@ -54,6 +72,7 @@ namespace KJS {
    */
   class Context {
   public:
+    Context() : rep(0) { }
     Context(ContextImp *i) : rep(i) { }
     Context(const Context &c);
     Context& operator=(const Context &c);
@@ -104,9 +123,50 @@ namespace KJS {
      * @return The calling execution context
      */
     const Context callingContext() const;
+
+    /**
+     * The type of code being executed in this context. One of GlobalCode,
+     * EvalCode or FunctionCode
+     */
+    CodeType codeType() const;
+
+    /**
+     * The identifier of the source code fragment containing the code being
+     * executed
+     */
+    int sourceId() const;
+
+    /**
+     * The line number on which the current statement begins
+     */
+    int curStmtFirstLine() const;
+
+    /**
+     * The line number on which the current statement ends
+     */
+    int curStmtLastLine() const;
+
+    /**
+     * In the case of FunctionCode, the function objects being called
+     */
+    Object function() const;
+
+    /**
+     * In the case of FunctionCode, the name of the function being called
+     */
+    UString functionName() const;
+
+    /**
+     * In the case of FunctionCode, the arguments passed to the function
+     */
+    List args() const;
+
   private:
     ContextImp *rep;
   };
+
+  bool operator==(const Context &c1, const Context &c2);
+  bool operator!=(const Context &c1, const Context &c2);
 
   /**
    * Interpreter objects can be used to evaluate ECMAScript code. Each
@@ -373,6 +433,8 @@ namespace KJS {
     friend class GlobalFuncImp;
   public:
     virtual ~ExecState();
+
+    ExecStateImp *imp() const { return rep; }
 
     /**
      * Returns the interpreter associated with this execution state

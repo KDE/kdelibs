@@ -23,6 +23,8 @@
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
+#include "interpreter.h"
+
 namespace KJS {
 
   class DebuggerImp;
@@ -49,12 +51,6 @@ namespace KJS {
    */
   class Debugger {
   public:
-
-    enum CodeType {
-      GlobalCode   = 0,
-      EvalCode     = 1,
-      FunctionCode = 2
-    };
 
     /**
      * Creates a new debugger
@@ -153,20 +149,17 @@ namespace KJS {
     /**
      * Called when a line of the script is reached (before it is executed)
      *
+     * The exec pointer's Context object can be inspected to determine
+     * the line number and sourceId of the statement.
+     *
      * The default implementation does nothing. Override this method if
      * you want to process this event.
      *
      * @param exec The current execution state
-     * @param sourceId The ID of the source code being executed
-     * @param firstLine The starting line of the statement  that is about to be
-     * executed
-     * @param firstLine The ending line of the statement  that is about to be
-     * executed (usually the same as firstLine)
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool atStatement(ExecState *exec, int sourceId, int firstLine,
-                             int lastLine);
+    virtual bool atStatement(ExecState *exec);
 
     /**
      * Called when the interpreter enters a new execution context (stack
@@ -194,35 +187,19 @@ namespace KJS {
      * 
      * @param exec The current execution state (corresponding to the new stack
      * frame)
-     * @param codeType The type of code being executed (GlobalCode, EvalCode or
-     * FunctionCode)
-     * @param sourceId The ID of the source code at which execution in this
-     * context begins (for functions, the location of the function declaration)
-     * @param lineno The line within the specified source at which the code
-     * begins or the function declaration starts
-     * @param thisVal The "this" value of the execution context
-     * @param variable The object holding declared variables in this context
-     * @param function The function object itself. This is only supplied for
-     * FunctionCode.
-     * @param name The function name (if known). This is only supplied for
-     * FunctionCode.
-     * @param args Arguments passed to the function. This is only supplied for
-     * FunctionCode.
      */
-    virtual bool enterContext(ExecState *exec, CodeType codeType, int sourceId,
-			      int lineno, Object &thisVal, Object &variable,
-			      Object &function, const UString &name,
-			      const List &args);
+    virtual bool enterContext(ExecState *exec);
 
     /**
      * Called when the inteprreter exits an execution context. This always
      * corresponds to a previous call to enterContext()
      *
+     * @param exec The current execution state (corresponding to the stack frame
+     * being exited from)
      * @param completion The result of execution of the context. Can be used to
      * inspect exceptions and return values
-     * @param lineno The location of the end of the code being executed
      */
-    virtual bool exitContext(const Completion &completion, int lineno);
+    virtual bool exitContext(ExecState *exec, const Completion &completion);
 
   private:
     DebuggerImp *rep;

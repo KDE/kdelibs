@@ -77,6 +77,51 @@ const Context Context::callingContext() const
   return rep->callingContext();
 }
 
+CodeType Context::codeType() const
+{
+  return rep->codeType;
+}
+
+int Context::sourceId() const
+{
+  return rep->sourceId;
+}
+
+int Context::curStmtFirstLine() const
+{
+  return rep->line0;
+}
+
+int Context::curStmtLastLine() const
+{
+  return rep->line1;
+}
+
+Object Context::function() const
+{
+  return rep->function;
+}
+
+UString Context::functionName() const
+{
+  return rep->functionName;
+}
+
+List Context::args() const
+{
+  return rep->args;
+}
+
+bool KJS::operator==(const Context &c1, const Context &c2)
+{
+  return (c1.imp() == c2.imp());
+}
+
+bool KJS::operator!=(const Context &c1, const Context &c2)
+{
+  return (c1.imp() != c2.imp());
+}
+
 // ------------------------------ Interpreter ---------------------------------
 
 Interpreter::Interpreter(const Object &global)

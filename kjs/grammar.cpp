@@ -1920,7 +1920,7 @@ case 172:
     break;}
 case 173:
 #line 558 "grammar.y"
-{ yyval.ccl = new CaseClauseNode(0L, 0L);; ;
+{ yyval.ccl = new CaseClauseNode(0L, 0L); ;
     break;}
 case 174:
 #line 559 "grammar.y"
@@ -1929,7 +1929,7 @@ case 174:
 case 175:
 #line 563 "grammar.y"
 { yyvsp[0].stat->pushLabel(*yyvsp[-2].ustr);
-                                     yyval.stat = new LabelNode(*yyvsp[-2].ustr, yyvsp[0].stat);
+                                     yyval.stat = new LabelNode(*yyvsp[-2].ustr, yyvsp[0].stat); DBG(yyval.stat,yylsp[-2],yylsp[-1]);
                                      delete yyvsp[-2].ustr; ;
     break;}
 case 176:

@@ -679,16 +679,27 @@ ListImp *ListImp::empty()
 
 
 // ECMA 10.2
-ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType type,
-                       ContextImp *_callingContext, FunctionImp *func, const List &args)
+ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _sourceId, CodeType type,
+                       ContextImp *_callingContext, FunctionImp *func, const List &_args)
 {
   codeType = type;
   callingCon = _callingContext;
   tryCatch = 0;
 
+  sourceId = _sourceId;
+  line0 = 1;
+  line1 = 1;
+  function = Object(func);
+
+  if (func && func->inherits(&DeclaredFunctionImp::info))
+    functionName = static_cast<DeclaredFunctionImp*>(func)->name();
+  else
+    functionName = UString();
+  args = _args;
+
   // create and initialize activation object (ECMA 10.1.6)
-  if (type == FunctionCode || type == AnonymousCode ) {
-    activation = Object(new ActivationImp(exec,func,args));
+  if (type == FunctionCode) {
+    activation = Object(new ActivationImp(exec,func,_args));
     variable = activation;
   } else {
     activation = Object();
@@ -719,15 +730,8 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
           thisVal = glob;
       break;
     case FunctionCode:
-    case AnonymousCode:
-      if (type == FunctionCode) {
-	scope = func->scope().copy();
-	scope.prepend(activation);
-      } else {
-	scope = List();
-	scope.append(activation);
-	scope.append(glob);
-      }
+      scope = func->scope().copy();
+      scope.prepend(activation);
       variable = activation; // TODO: DontDelete ? (ECMA 10.2.3)
       thisVal = thisV;
       break;
@@ -1092,21 +1096,17 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   else {
     // execute the code
     ExecState *exec1 = 0;
-    ContextImp *ctx = new ContextImp(globalObj, exec1, thisObj);
-    ExecState *newExec = new ExecState(m_interpreter,ctx);
+    ContextImp ctx(globalObj, exec1, thisObj, sid);
+    ExecState newExec(m_interpreter,&ctx);
 
     // create variables (initialized to undefined until var statements
     // with optional initializers are executed)
-    progNode->processVarDecls(newExec);
+    progNode->processVarDecls(&newExec);
 
+    ctx.setLines(progNode->firstLine(),progNode->firstLine());
     bool abort = false;
     if (dbg) {
-      Object thisValue(ctx->thisValue());
-      Object var(ctx->variableObject());
-      Object func;
-      List args;
-      if (!dbg->enterContext(newExec,Debugger::GlobalCode,sid,progNode->firstLine(),
-			     thisValue,var,func,UString(),args)) {
+      if (!dbg->enterContext(&newExec)) {
 	// debugger requested we stop execution
 	dbg->imp()->abort();
 	abort = true;
@@ -1114,16 +1114,14 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     }
 
     if (!abort) {
-      res = progNode->execute(newExec);
-      if (dbg && !dbg->exitContext(res,progNode->lastLine())) {
+      ctx.setLines(progNode->lastLine(),progNode->lastLine());
+      res = progNode->execute(&newExec);
+      if (dbg && !dbg->exitContext(&newExec,res)) {
 	// debugger requested we stop execution
 	dbg->imp()->abort();
 	res = Completion(ReturnValue,Undefined());
       }
     }
-
-    delete newExec;
-    delete ctx;
   }
 
   if (progNode->deref())
