@@ -25,12 +25,12 @@ public:
   ~KSharedPtr() { if ( ptr->deref() ) delete ptr; }
 
   KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
-    if ( ptr->deref() ) delete ptr;
+    if ( ptr && ptr->deref() ) delete ptr;
     ptr = p.ptr; ptr->ref();
     return *this;
   }
   KSharedPtr<T>& operator= ( T* p ) { 
-    if ( ptr->deref() ) delete ptr;
+    if ( ptr && ptr->deref() ) delete ptr;
     ptr = p; ptr->ref();
     return *this;
   }
