@@ -130,7 +130,7 @@ class KAccel : public QAccel
 
 	/**
 	 * Checks whether the KAccel is active.
-	 * @return true if the QAccel enabled
+	 * @return true if the QAccel is enabled
 	 */
 	bool isEnabled();
 
