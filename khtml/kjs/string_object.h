@@ -48,7 +48,8 @@ namespace KJS {
     StringProtoFunc(int i, KJSGlobal *global);
     KJSO *execute(KJSContext *);
 
-    enum { ToString, ValueOf, CharAt };
+    enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
+	   Substr, Substring };
   private:
     int id;
   };

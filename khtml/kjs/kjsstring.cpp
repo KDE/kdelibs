@@ -336,6 +336,51 @@ double UString::toDouble() const
   return d;
 }
 
+int UString::find(const UString &f, int pos) const
+{
+  long fsize = f.l * sizeof(UnicodeChar);
+  if (pos < 0)
+    pos = 0;
+  UnicodeChar *end = s + l - f.l;
+  for (UnicodeChar *c = s + pos; c <= end; c++)
+    if (!memcmp((void*)c, (void*)f.s, fsize))
+      return (c-s);
+
+  return -1;
+}
+
+int UString::rfind(const UString &f, int pos) const
+{
+  if (pos + f.l >= l)
+    pos = l - f.l;
+  long fsize = f.l * sizeof(UnicodeChar);
+  for (UnicodeChar *c = s + pos; c >= s; c--) {
+    if (!memcmp((void*)c, (void*)f.s, fsize))
+      return (c-s);
+  }
+
+  return -1;
+}
+
+UString UString::substr(int pos, int len) const
+{
+  if (pos < 0)
+    pos = 0;
+  else if (pos >= (int) l)
+    pos = l;
+  if (len < 0)
+    len = l;
+  if (pos + len >= (int) l)
+    len = l - pos;
+
+  UnicodeChar *tmp = new UnicodeChar[len];
+  memcpy(tmp, s+pos, len * sizeof(UnicodeChar));
+  UString result(tmp, len);
+  delete [] tmp;
+
+  return result;
+}
+
 bool KJS::operator==(const UString& s1, const UString& s2)
 {
   if (s1.length() != s2.length())

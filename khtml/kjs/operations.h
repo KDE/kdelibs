@@ -39,6 +39,8 @@ KJSO *toString(KJSO *obj);
 KJSO *toObject(KJSO *obj);
 
 bool equal(KJSO *v1, KJSO *v2);
+double max(double d1, double d2);
+double min(double d1, double d2);
 
 };
 

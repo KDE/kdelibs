@@ -84,6 +84,9 @@ namespace KJS {
     UnicodeChar operator[](unsigned int pos) const;
 
     double toDouble() const;
+    int find(const UString &f, int pos = 0) const;
+    int rfind(const UString &f, int pos) const;
+    UString substr(int pos = 0, int len = -1) const;
   private:
     UnicodeChar *s;
     unsigned int l;

@@ -98,6 +98,16 @@ StringPrototype::StringPrototype(KJSGlobal *global)
       zeroRef(new StringProtoFunc(StringProtoFunc::ValueOf, global)), attr);
   put("charAt",
       zeroRef(new StringProtoFunc(StringProtoFunc::CharAt, global)), attr);
+  put("charCodeAt",
+      zeroRef(new StringProtoFunc(StringProtoFunc::CharCodeAt, global)), attr);
+  put("indexOf",
+      zeroRef(new StringProtoFunc(StringProtoFunc::IndexOf, global)), attr);
+  put("lastIndexOf",
+      zeroRef(new StringProtoFunc(StringProtoFunc::LastIndexOf, global)), attr);
+  put("substr",
+      zeroRef(new StringProtoFunc(StringProtoFunc::Substr, global)), attr);
+  put("substring",
+      zeroRef(new StringProtoFunc(StringProtoFunc::Substring, global)), attr);
 }
 
 StringProtoFunc::StringProtoFunc(int i, KJSGlobal *global)
@@ -122,26 +132,83 @@ KJSO *StringProtoFunc::execute(KJSContext *context)
     }
   }
 
+  Ptr n, m, s2;
+  UString u;
+  int pos;
+  double d, d2;
   Ptr v = thisObj->internalValue();
   Ptr s = toString(v);
-  Ptr a, n;
+  int len = (int) s->sVal().length();
+  Ptr a0 = context->activation->get("0");
+  Ptr a1 = context->activation->get("1");
+
   switch (id) {
   case ToString:
   case ValueOf:
     result = v->ref();
     break;
   case CharAt:
-    a = context->activation->get("0");
-    n = toInteger(a);
-    int pos = (int) n->dVal();
-    UString u;
-    if (pos < 0 || pos >= s->sVal().length())
+    n = toInteger(a0);
+    pos = (int) n->dVal();
+    if (pos < 0 || pos >= len)
       u = "";
     else {
       UnicodeChar c = s->sVal()[pos];
       u  = UString(&c, 1);
     }
     result = new KJSString(u);
+    break;
+  case CharCodeAt:
+    n = toInteger(a0);
+    pos = (int) n->dVal();
+    if (pos < 0 || pos >= len)
+      d = NaN;
+    else {
+      UnicodeChar c = s->sVal()[pos];
+      d = (c.hi >> 8) + c.lo;
+    }
+    result = new KJSNumber(d);
+    break;
+  case IndexOf:
+    s2 = toString(a0);
+    n = toInteger(a1);
+    if (n->isA(Undefined))
+      pos = 0;
+    else
+      pos = (int) n->dVal();
+    d = s->sVal().find(s2->sVal(), pos);
+    result = new KJSNumber(d);
+    break;
+  case LastIndexOf:
+    s2 = toString(a0);
+    n = toInteger(a1);
+    if (n->isA(Undefined))
+      pos = len;
+    else
+      pos = (int) n->dVal();
+    d = s->sVal().rfind(s2->sVal(), pos);
+    result = new KJSNumber(d);
+    break;
+  case Substr:
+    n = toInteger(a0);
+    m = toInteger(a1);
+    if (n->dVal() >= 0)
+      d = n->dVal();
+    else
+      d = max(len + n->dVal(), 0);
+    if (a1->isA(Undefined))
+      d2 = len - d;
+    else
+      d2 = min(max(m->dVal(), 0), len - d);
+    result = new KJSString(s->sVal().substr((int)d, (int)d2));
+    break;
+  case Substring:
+    n = toInteger(a0);
+    m = toInteger(a1);
+    d = min(max(n->dVal(), 0), len);
+    d2 = min(max(m->dVal(), 0), len);
+    d2 = max(d2-d, 0);
+    result = new KJSString(s->sVal().substr((int)d, len - (int)d2 - 1));
     break;
   }
 

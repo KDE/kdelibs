@@ -119,7 +119,7 @@ bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   return true;
 }
 
-bool KJScript::useModule(const char *module, void *arg)
+bool KJScript::useModule(const char * /* module */, void * /* arg */)
 {
 #if 0
   if (!module) {

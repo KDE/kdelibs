@@ -30,7 +30,7 @@
 using namespace KJS;
 
 // ECMA 9.1
-KJSO *KJS::toPrimitive(KJSO *obj, Type preferred)
+KJSO *KJS::toPrimitive(KJSO *obj, Type /* preferred */)
 {
   if (!obj->isObject()) {
     return obj->ref();
@@ -286,4 +286,16 @@ bool KJS::equal(KJSO *v1, KJSO *v2)
   }
 
   return false;
+}
+
+double KJS::max(double d1, double d2)
+{
+  /* TODO: check for NaN */
+  return (d1 > d2) ? d1 : d2;
+}
+
+double KJS::min(double d1, double d2)
+{
+  /* TODO: check for NaN */
+  return (d1 < d2) ? d1 : d2;
 }
