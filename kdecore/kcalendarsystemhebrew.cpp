@@ -243,15 +243,15 @@ int KCalendarSystemHebrew::weeksInYear(int year) const
   int nWeekNumber = weekNumber(temp);
   if(nWeekNumber == 1)  // last week belongs to next year
   {
-    temp.addDays(-7);
+    temp = temp.addDays(-7);
     nWeekNumber = weekNumber(temp);
   }
 	
-
   return nWeekNumber;
 }
 
-// Ok
+// ### CFM many dates have 1 week less than might (eg. 22/12/5765 must be
+//         week 55, not 54
 int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
 {
   QDate firstDayWeek1, lastDayOfYear;
