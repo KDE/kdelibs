@@ -21,6 +21,8 @@
  *
  * $Id$
  */
+#undef FORMS_DEBUG
+
 #include "html_formimpl.h"
 
 #include "khtmlview.h"
@@ -115,8 +117,10 @@ QCString HTMLFormElementImpl::encodeByteArray(const QByteArray& e)
 
 QByteArray HTMLFormElementImpl::formData()
 {
+#ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "form: formData()" << endl;
-
+#endif
+    
     QByteArray form_data(0);
     bool first = true;
     QCString enc_string = ""; // used for non-multipart data
@@ -126,18 +130,24 @@ QByteArray HTMLFormElementImpl::formData()
     {
         khtml::encodingList lst;
 
+#ifdef FORMS_DEBUG
         kdDebug(6030) << "checking " << current->name().string() << endl;
+#endif
 
         if (!current->disabled() && current->encoding(lst)) {
 
+#ifdef FORMS_DEBUG
             kdDebug(6030) << "adding name " << current->name().string() << endl;
-
+#endif
+	    
             khtml::encodingList::Iterator it;
             for( it = lst.begin(); it != lst.end(); ++it )
             {
                 QByteArray enc(*it);
+#ifdef FORMS_DEBUG
                 kdDebug(6030) << "found data!" << endl;
-
+#endif
+		
                 if (!m_multipart)
                 {
                     if(!first)
@@ -248,7 +258,9 @@ void HTMLFormElementImpl::prepareSubmit()
 
 void HTMLFormElementImpl::submit(  )
 {
+#ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submit pressed!" << endl;
+#endif
     if(!view) return;
 
     QByteArray form_data = formData();
@@ -270,8 +282,10 @@ void HTMLFormElementImpl::submit(  )
 
 void HTMLFormElementImpl::reset(  )
 {
+#ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "reset pressed!" << endl;
-
+#endif
+    
     DOMString script = getAttribute(ATTR_ONRESET);
     if (!script.isNull() && view->part()->jScriptEnabled())
         if(!view->part()->executeScript(Node(this), script.string()))
@@ -436,7 +450,9 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
             return static_cast<HTMLFormElementImpl *>(p);
         p = p->parentNode();
     }
+#ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "couldn't find form!" << endl;
+#endif
     return 0;
 }
 
@@ -718,7 +734,9 @@ void HTMLInputElementImpl::select(  )
 void HTMLInputElementImpl::click(  )
 {
     // ###
+#ifdef FORMS_DEBUG
     kdDebug( 6030 ) << " HTMLInputElementImpl::click(  )" << endl;
+#endif
 }
 
 void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
@@ -847,12 +865,16 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
         if (m_render)
         {
             m_render->setStyle(m_style);
+#ifdef FORMS_DEBUG
             kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
+#endif
             QString state = document->registerElement(this);
             if ( !state.isEmpty())
             {
+#ifdef FORMS_DEBUG
                 kdDebug( 6030 ) << "Restoring InputElem name=" << _name.string() <<
                     " state=" << state << endl;
+#endif
                 restoreState( state );
             }
 

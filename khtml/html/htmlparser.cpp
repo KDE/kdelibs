@@ -335,15 +335,21 @@ void KHTMLParser::parseToken(Token *t)
     catch(DOMException)
     {
         // we couldn't insert the node...
+#ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
+#endif
         if (map == n)
         {
+#ifdef PARSER_DEBUG
             kdDebug( 6035 ) << "  --> resetting map!" << endl;
+#endif
             map = 0;
         }
         if (form == n)
         {
+#ifdef PARSER_DEBUG
             kdDebug( 6035 ) << "   --> resetting form!" << endl;
+#endif
             form = 0;
         }
         delete n;
@@ -433,7 +439,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     current = n;
                     n->attach(HTMLWidget);
                 } catch(DOMException e) {
+#ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
+#endif
                     discard_until = ID_STYLE + ID_CLOSE_TAG;
                     throw e;
                 }
@@ -481,7 +489,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_FORM:
         case ID_SCRIPT:
         {
+#ifdef PARSER_DEBUG
             kdDebug( 6035 ) << "--> badly placed element!!!" << endl;
+#endif
             NodeImpl *node = current;
             // in case the form is opened inside the table (<table><form ...><tr> or similar)
             // we need to move it outside the table.
@@ -513,7 +523,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 }
                 catch(DOMException e)
                 {
+#ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+#endif
                     throw e;
                 }
                 return;
@@ -985,10 +997,13 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLTableColElementImpl(document, t->id);
         break;
     case ID_TR:
+	popBlock(ID_TR);
         n = new HTMLTableRowElementImpl(document);
         break;
     case ID_TD:
     case ID_TH:
+	popBlock(ID_TH);
+	popBlock(ID_TD);
         n = new HTMLTableCellElementImpl(document, t->id);
         break;
     case ID_THEAD:
@@ -1216,7 +1231,9 @@ void KHTMLParser::createHead()
     }
     catch(DOMException e)
     {
+#ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+#endif
         delete head;
         head = 0;
     }
