@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -625,8 +626,15 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
   QFont aRetFont;
 
   QString aValue = readEntry( pKey );
-  if( !aValue.isNull() )
-    {
+  if( !aValue.isNull() ) {
+    if ( aValue.contains( ',' ) != 5 ) {
+      // KDE3 and upwards entry
+      if ( !aRetFont.fromString( aValue ) && pDefault )
+        aRetFont = *pDefault;
+    }
+    else {
+      // backward compatibility with older font formats
+      // ### remove KDE 3.1 ?
       // find first part (font family)
       int nIndex = aValue.find( ',' );
       if( nIndex == -1 ){
@@ -727,6 +735,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
       else
         aRetFont.setRawMode( false );
     }
+  }
   else
     {
       if( pDefault )
@@ -1333,33 +1342,7 @@ void KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  QString aValue;
-  Q_UINT8 nFontBits = 0;
-  // this mimics get_font_bits() from qfont.cpp
-  if( rFont.italic() )
-    nFontBits = nFontBits | 0x01;
-  if( rFont.underline() )
-    nFontBits = nFontBits | 0x02;
-  if( rFont.strikeOut() )
-    nFontBits = nFontBits | 0x04;
-  if( rFont.fixedPitch() )
-    nFontBits = nFontBits | 0x08;
-  if( rFont.rawMode() )
-    nFontBits = nFontBits | 0x20;
-
-  QString aCharset = QString::fromLatin1("default");
-#if QT_VERSION < 300
-  if( rFont.charSet() != QFont::AnyCharSet )
-      aCharset.setNum( static_cast<int>(rFont.charSet()) );
-#endif
-
-  QTextOStream ts( &aValue );
-  ts << rFont.family() << "," << rFont.pointSize() << ","
-     << static_cast<int>(rFont.styleHint()) << ","
-     << aCharset << "," << rFont.weight() << ","
-     << static_cast<int>(nFontBits);
-
-  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, rFont.toString(), bPersistent, bGlobal, bNLS );
 }
 
 
