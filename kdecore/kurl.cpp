@@ -186,8 +186,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
        bKeepEncoded = false;
     if (character == '%' )
     {
-      char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
-      char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      signed char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
+      signed char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
       if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
          // Contains stray %, make sure to re-encode!
