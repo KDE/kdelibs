@@ -349,30 +349,25 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
   if ( _allow_multiple )
   {
     kdDebug(7010) << "Allow Multiple" << endl;
-    argvSize = _urls.count() + 3;
-    argv = new char*[ argvSize ];
-    argv[ 0 ] = qstrdup(kfmexec.latin1());
 
-    int i = 1;
-    argv[ i++ ] = qstrdup(app.latin1());
-    KURL::List::ConstIterator it = _urls.begin();
-    for( ; it != _urls.end(); ++it )
-      argv[ i++ ] = qstrdup((*it).url().latin1());
-    argv[ i ] = 0;
-	
     QApplication::flushX();
     int pid;
     if ( ( pid = fork() ) == 0 )
     {
-      execvp( argv[0], argv );
-      _exit(0);
-    }
+	argvSize = _urls.count() + 3;
+	argv = new char*[ argvSize ];
+	argv[ 0 ] = qstrdup(kfmexec.latin1());
 	
-    for (int i = 0; i < argvSize; i++) {
-        delete [] argv[i];
-    }
-    delete [] argv;
-
+	int i = 1;
+	argv[ i++ ] = qstrdup(app.latin1());
+	KURL::List::ConstIterator it = _urls.begin();
+	for( ; it != _urls.end(); ++it )
+	    argv[ i++ ] = qstrdup((*it).url().latin1());
+	argv[ i ] = 0;
+	
+	execvp( argv[0], argv );
+	_exit(0);
+    }	
   }
   else
   {
@@ -380,26 +375,20 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
     KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
     {
-      argvSize = 3;
-      argv = new char*[ argvSize ];
-      argv[ 0 ] = qstrdup(kfmexec.latin1());
-      argv[ 1 ] = qstrdup(app.latin1());
-      argv[ 2 ] = qstrdup((*it).url().latin1());
-      argv[ 3 ] = 0;
-
       QApplication::flushX();
       int pid;
       if ( ( pid = fork() ) == 0 )
       {
-	execvp( argv[0], argv );
-	_exit(1);
+	  argvSize = 3;
+	  argv = new char*[ argvSize ];
+	  argv[ 0 ] = qstrdup(kfmexec.latin1());
+	  argv[ 1 ] = qstrdup(app.latin1());
+	  argv[ 2 ] = qstrdup((*it).url().latin1());
+	  argv[ 3 ] = 0;
+	  
+	  execvp( argv[0], argv );
+	  _exit(1);
       }
-
-      for (int i = 0; i < argvSize; i++) {
-          delete [] argv[i];
-      }
-      delete [] argv;
-
     }
   }
 
