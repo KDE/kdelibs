@@ -16,6 +16,15 @@ case "$1" in
       else
         echo "Looks ok"
       fi
+      echo -n "Verifying config link is configured properly:  "
+      if [ -e /usr/share/config -a ! -L /usr/share/config ]; then
+        mv /usr/share/config/* /etc/kde2/ >/dev/null 2>&1
+        rm -rf /usr/share/config > /dev/null 2>&1
+        ln -s /etc/kde2 /usr/share/config > /dev/null 2>&1
+        echo "It wasn't, I fixed it"
+      else
+        echo "Looks ok" 
+      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
