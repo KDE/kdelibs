@@ -890,7 +890,7 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 	bool ret = false;
 	if ( edit->cursorPosition() == (int) edit->text().length() ) {
 	    if ( e->key() == Qt::Key_End || e->key() == Qt::Key_Right ) {
-	        if ( KGlobal::completionMode() == KGlobal::CompletionEOL ) {
+	        if ( KGlobal::completionMode() == KGlobal::CompletionShell ) {
 		    edit->deselect();
 		    emit completion();
 		    ret = true; // don't pass the event any further
