@@ -75,7 +75,7 @@ namespace DOM {
     class NodeImpl;
     class ElementImpl;
     class EventImpl;
-};
+}
 
 namespace khtml {
     class RenderFlow;
@@ -93,6 +93,8 @@ namespace khtml {
  */
 class RenderObject : public CachedObjectClient
 {
+    RenderObject(const RenderObject&);
+    RenderObject& operator=(const RenderObject&);
 public:
 
     RenderObject(DOM::NodeImpl* node);
@@ -563,5 +565,5 @@ enum VerticalPositionHint {
     PositionUndefined = 0x3fff
 };
 
-}; //namespace
+} //namespace
 #endif

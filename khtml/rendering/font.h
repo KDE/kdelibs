@@ -97,7 +97,6 @@ private:
     short wordSpacing;
 };
 
-};
-
+} // namespace
 
 #endif

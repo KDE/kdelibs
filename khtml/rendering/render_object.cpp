@@ -1144,7 +1144,6 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     bool checkPoint = style()->visibility() != HIDDEN && (_y >= ty) && (_y < ty + height());
     bool inside = (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isHtml();
-    bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
     if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
