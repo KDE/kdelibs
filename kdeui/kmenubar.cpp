@@ -164,6 +164,10 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 
   hide();
 
+  QString title(d->m_parent->caption());
+  title.append(" [menu]");
+  setCaption( title );
+
   recreate(0, 0, mapToGlobal(QPoint(0,0)), false);
   XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->
                         topLevelWidget()->winId());
@@ -176,9 +180,6 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
               heightForWidth(r.width()) - 9);
   setFixedWidth(r.width());
 
-  QString title(d->m_parent->caption());
-  title.append(" [menu]");
-  setCaption( title );
 
   setFrameStyle( NoFrame );
 
