@@ -8,8 +8,5 @@ datadir = $(kde_datadir)/kstyle/themes
 
 EXTRA_DIST = $(data_DATA)
 
-kthemestylerc: $(srcdir)/kthemestylerc.in
-	sed s#KDEPATH#$(prefix)# $(srcdir)/kthemestylerc.in > kthemestylerc
+kde_conf_DATA = kthemestylerc
 
-install-data-local: kthemestylerc
-	$(INSTALL) kthemestylerc $(kde_confdir)/
