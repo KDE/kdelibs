@@ -16,7 +16,7 @@ Comment[et]=SGI laadne stiil
 Comment[fi]=Sgi:n kaltainen tyyli
 Comment[fr]=Style similaire à Sgi
 Comment[he]=SGI-ל המוד ןונגס
-Comment[hu]=Sgi szerű kinézet
+Comment[hu]=Sgi-szerű kinézet
 Comment[it]=Stile Sgi
 Comment[ja]=Sgi的スタイル
 Comment[nl]=Sgi-achtige stijl
@@ -27,6 +27,6 @@ Comment[pt]=Estilo tipo Sgi
 Comment[ru]=Похожий на SGI стиль
 Comment[sl]=Slog, podoben Sgi
 Comment[tr]=Sgi benzeri stil
-Comment[uk]=Птиль як-у-Sgi
+Comment[uk]=Стиль як-у-Sgi
 [KDE]
 widgetStyle=ksgistyle.la
