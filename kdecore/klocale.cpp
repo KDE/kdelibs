@@ -1398,7 +1398,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
           error = true;
 	  j = 1;
 	  while (error && (j < 8)) {
-	    QString s = weekDayName(j, c == 'a').lower();
+	    QString s = calendar()->weekDayName(j, c == 'a').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s)
             {
