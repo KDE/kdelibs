@@ -115,6 +115,10 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
 		Length w = col->style()->width();
 		if ( w.isVariable() )
 		    w = grpWidth;
+		if ( w.value > 32760 )
+		    w.value = 32760;
+		if ( w.value < 0 )
+		    w.value = 0;
 		int effWidth = -1;
 		if ( w.type == Fixed && w.value > 0 )
                     effWidth = w.value;
@@ -380,6 +384,10 @@ void AutoTableLayout::recalcColumn( int effCol )
 		    }
 
 		    Length w = cell->style()->width();
+		    if ( w.value > 32760 )
+			w.value = 32760;
+		    if ( w.value < 0 )
+			w.value = 0;
 		    switch( w.type ) {
 		    case Fixed:
 			// ignore width=0
