@@ -86,12 +86,12 @@ protected:
     }
     void calcPercentages() const;
     int calcEffectiveWidth();
-    void orderedSpanCells( int effCol, QMemArray<RenderTableCell *>& spans ) const;
+    void insertSpanCell( RenderTableCell *cell );
 
     struct Layout {
 	Layout() : minWidth( 1 ), maxWidth( 1 ),
 		   effMinWidth( 0 ), effMaxWidth( 0 ),
-		   calcWidth( 0 ), hasOriginatingSpan( false ) {}
+		   calcWidth( 0 ) {}
 	Length width;
 	Length effWidth;
 	short minWidth;
@@ -99,10 +99,10 @@ protected:
 	short effMinWidth;
 	short effMaxWidth;
 	short calcWidth;
-	bool hasOriginatingSpan;
     };
 
     QMemArray<Layout> layoutStruct;
+    QMemArray<RenderTableCell *>spanCells;
     bool hasPercent : 1;
     mutable bool percentagesDirty : 1;
     mutable bool effWidthDirty : 1;
