@@ -25,7 +25,7 @@
 #ifndef NDEBUG
 #include "kdebug.h"
 #endif
-#include <kconfigbase.h>
+#include <kconfig.h>
 #include <kapplication.h>
 
 class KAutoConfig::KAutoConfigPrivate {
@@ -76,17 +76,12 @@ public:
 };
 
 KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent,
-	const char *name) : QObject(parent, name), config((KConfigBase*)kconfig) {
-  d = new KAutoConfigPrivate();
-}
-
-KAutoConfig::KAutoConfig(KConfigBase *configbase, QObject *parent,
-	const char *name) : QObject(parent, name), config(configbase) {
+	const char *name) : QObject(parent, name), config(kconfig) {
   d = new KAutoConfigPrivate();
 }
 
 KAutoConfig::KAutoConfig(QObject *parent, const char *name) :
-	QObject(parent, name), config(((KConfigBase*)KGlobal::config())) {
+	QObject(parent, name), config(KGlobal::config()) {
   d = new KAutoConfigPrivate();
 }
 
