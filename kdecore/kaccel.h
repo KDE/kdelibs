@@ -505,7 +505,7 @@ class KAccel : public QAccel
 	  * which is empty if
 	 * @p keyCode is not recognized or zero.
 	 */
-	static QString keyToString( int keyCode, bool i18_n );
+	static QString keyToString( int keyCode, bool i18_n = FALSE);
 
  signals:
 	void keycodeChanged();
