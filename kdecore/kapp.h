@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.43  1998/02/24 15:24:57  kulow
+// the comment for kde_appsdir was wrong. I corrected it to:
+// Returns the directory where KDE applications store their .kdelnk file
+//
 // Revision 1.42  1998/01/19 12:15:06  ssk
 // Cleaned up some documentation.
 //
@@ -413,10 +417,13 @@ public:
   static const QString& kde_cgidir();
 
   /**
-	* Returns the directory where mini icons are stored
+	* Returns the directory where sound data are stored.
+	* This directory is for KDE specific sounds. Sound data of 
+	* Applications should go into kde_datadir()
+	*
 	* @return the name of the directory
 	*/
-  static const QString& kde_minidir();
+  static const QString& kde_sounddir();
 
   /**
 	* Returns the directory where toolbar icons are stored

@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.92  1998/02/24 20:07:45  kalle
+// Added F1 accelerator to standard help menu
+//
 // Revision 1.91  1998/02/24 15:54:29  kulow
 // replaced some hard coded paths with the kapp->kde_ methodes.
 // I'm not sure, if kde_datadir() is optimal for /share/apps ;)
@@ -1386,11 +1389,11 @@ const QString& KApplication::kde_cgidir()
   return dir;
 }
 
-const QString& KApplication::kde_minidir()
+const QString& KApplication::kde_sounddir()
 {
   static QString dir;
   if (dir.isNull()) {
-      dir = KDE_MINIDIR;
+      dir = KDE_SOUNDDIR;
       if (!strncmp(dir.data(), "KDEDIR", 6)) 
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
