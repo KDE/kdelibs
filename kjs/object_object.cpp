@@ -32,7 +32,7 @@
 
 using namespace KJS;
 
-// ------------------------------ MathObjectImp --------------------------------
+// ------------------------------ ObjectPrototypeImp --------------------------------
 
 ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
                                        FunctionPrototypeImp *funcProto)
@@ -44,7 +44,7 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
 }
 
 
-// ------------------------------ MathObjectImp --------------------------------
+// ------------------------------ ObjectProtoFuncImp --------------------------------
 
 ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState *exec,
                                        FunctionPrototypeImp *funcProto,
@@ -71,7 +71,7 @@ Value ObjectProtoFuncImp::call(ExecState */*exec*/, Object &thisObj, const List 
     return String("[object "+thisObj.getClass()+"]");
 }
 
-// ------------------------------ MathObjectImp --------------------------------
+// ------------------------------ ObjectObjectImp --------------------------------
 
 ObjectObjectImp::ObjectObjectImp(ExecState *exec,
                                  ObjectPrototypeImp *objProto,

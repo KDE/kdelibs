@@ -13,6 +13,8 @@ my $size;
 my $hashsize;
 my $banner = 0;
 sub calcTable();
+sub output();
+sub hashValue($);
 
 while (<IN>) {
   chop; 
@@ -74,7 +76,7 @@ sub calcTable() {
 #  }
 }
 
-sub hashValue {
+sub hashValue($) {
   @chars = split(/ */, $_[0]);
   my $val = 0;
   foreach $c (@chars) {
@@ -83,7 +85,7 @@ sub hashValue {
   return $val;
 }
 
-sub output {
+sub output() {
   if (!$banner) {
     $banner = 1;
     print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
