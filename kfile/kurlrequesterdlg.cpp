@@ -36,10 +36,10 @@
 #include <kurl.h>
 #include <kurlrequester.h>
 
-#include "ksimplefiledialog.h"
+#include "kurlrequesterdlg.h"
 
 
-KSimpleFileDialog::KSimpleFileDialog( const QString& urlName, QWidget *parent, 
+KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent, 
         const char *name, bool modal )
     :   KDialogBase( Plain, QString::null, Ok|Cancel, Ok, parent, name, 
                 modal, true )
@@ -62,12 +62,12 @@ KSimpleFileDialog::KSimpleFileDialog( const QString& urlName, QWidget *parent,
 }
 
 
-KSimpleFileDialog::~KSimpleFileDialog()
+KURLRequesterDlg::~KURLRequesterDlg()
 {
 }
 
 
-KURL KSimpleFileDialog::selectedURL() const
+KURL KURLRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
 	return urlRequester_->url();
@@ -76,10 +76,10 @@ KURL KSimpleFileDialog::selectedURL() const
 }
 
 
-KURL KSimpleFileDialog::getOpenURL(const QString& dir, QWidget *parent, 
+KURL KURLRequesterDlg::getOpenURL(const QString& dir, QWidget *parent, 
         const QString& caption)
 {
-    KSimpleFileDialog dlg(dir, parent, "filedialog", true);
+    KURLRequesterDlg dlg(dir, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
@@ -93,6 +93,6 @@ KURL KSimpleFileDialog::getOpenURL(const QString& dir, QWidget *parent,
 }
 
 
-#include "ksimplefiledialog.moc"
+#include "kurlrequesterdlg.moc"
 
 // vim:ts=4:sw=4:tw=78

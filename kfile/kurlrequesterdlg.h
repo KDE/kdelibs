@@ -18,8 +18,8 @@
 */
 
 
-#ifndef KSIMPLEFILEDIALOG_H
-#define KSIMPLEFILEDIALOG_H
+#ifndef KURLREQUESTERDIALOG_H
+#define KURLREQUESTERDIALOG_H
 
 #include <kdialogbase.h>
 #include <kurl.h>
@@ -29,19 +29,19 @@ class KURLRequester;
 
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog 
- * encapsulating @ref KURLRequester. The API is derived from its big brother
+ * encapsulating @ref KURLRequester. The API is derived from 
  * @ref KFileDialog. 
  *
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <j.w.greven@student.utwente.nl>
  */
-class KSimpleFileDialog : public KDialogBase
+class KURLRequesterDlg : public KDialogBase
 {
     Q_OBJECT
 
 public:
     /**
-     * Constructs a KSimpleFileDialog
+     * Constructs a KURLRequesterDlg
      * 
      * @param urlName   The url of the directory to start in. Use QString::null
      *                  to start in the current working directory, or the last
@@ -49,13 +49,13 @@ public:
      * @param modal     Specifies whether the dialog should be opened as modal
      *                  or not.
      */
-    KSimpleFileDialog( const QString& urlName, QWidget *parent, 
+    KURLRequesterDlg( const QString& urlName, QWidget *parent, 
             const char *name, bool modal = true );
     
     /**
      * Destructs the dialog
      */
-    ~KSimpleFileDialog();
+    ~KURLRequesterDlg();
 
     /**
      * Retrieve the fully qualified filename.
@@ -78,6 +78,6 @@ protected:
 
 };
 
-#endif // KSIMPLEFILEDIALOG_H
+#endif // KURLREQUESTERDIALOG_H
 
 // vim:ts=4:sw=4:tw=78
