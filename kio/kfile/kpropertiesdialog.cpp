@@ -49,10 +49,6 @@ extern "C" {
 #include <errno.h>
 #include <assert.h>
 
-#ifdef HAVE_MNTENT_H
-#include <mntent.h>
-#endif
-
 #include <qfile.h>
 #include <qdir.h>
 #include <qlabel.h>
@@ -87,6 +83,7 @@ extern "C" {
 #include <kio/renamedlg.h>
 #include <kfiledialog.h>
 #include <kmimetype.h>
+#include <kmountpoint.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kservice.h>
@@ -2502,82 +2499,22 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_frame = properties->dialog()->addPage(i18n("De&vice"));
 
   QStringList devices;
-  QCString fstabFile;
-  indexDevice = 0;  // device on first column
-  indexMountPoint = 1; // mount point on second column
-  if ( QFile::exists(QString::fromLatin1("/etc/fstab")) ) // Linux, ...
+  QPtrList<KMountPoint> mountPoints = KMountPoint::possibleMountPoints();
+	
+  for(KMountPoint *mp = mountPoints.first();
+      mp; mp = mountPoints.next())
   {
-    fstabFile = "/etc/fstab";
+     QString mountPoint = mp->mountPoint();
+     QString device = mp->mountedFrom();
+     if (device.startsWith("/") && (mountPoint != "-") &&
+         (mountPoint != "none") && !mountPoint.isEmpty())
+     {
+        devices.append( device + QString::fromLatin1(" (")
+                        + mountPoint + QString::fromLatin1(")") );
+        m_devicelist.append(device);
+        d->mountpointlist.append(mountPoint);
+     } 
   }
-  else if ( QFile::exists(QString::fromLatin1("/etc/vfstab")) ) // Solaris
-  {
-    fstabFile = "/etc/vfstab";
-    indexMountPoint++;
-  }
-
-  // insert your favorite location for fstab here
-  if ( !fstabFile.isEmpty() )
-  {
-#ifdef HAVE_SETMNTENT
-
-#define SETMNTENT setmntent
-#define ENDMNTENT endmntent
-#define STRUCT_MNTENT struct mntent *
-#define STRUCT_SETMNTENT FILE *
-#define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
-#define MOUNTPOINT(var) var->mnt_dir
-#define MOUNTTYPE(var) var->mnt_type
-#define MOUNTOPTIONS(var) var->mnt_opts
-#define HASMNTOPT(var, opt) hasmntopt(var, opt)
-#define FSNAME(var) var->mnt_fsname
-
-  STRUCT_SETMNTENT fstab = SETMNTENT(fstabFile, "r");
-  if (fstab)
-  {
-    STRUCT_MNTENT fe;
-    while (GETMNTENT(fstab, fe))
-    {
-       QString mountPoint = QFile::decodeName(MOUNTPOINT(fe));
-       QString device = QFile::decodeName(FSNAME(fe));
-       if (device.startsWith("/") && (mountPoint != "-") &&
-           (mountPoint != "none") && !mountPoint.isEmpty())
-       {
-          devices.append( device + QString::fromLatin1(" (")
-                          + mountPoint + QString::fromLatin1(")") );
-          m_devicelist.append(device);
-          d->mountpointlist.append(mountPoint);
-       } 
-    }
-  }
-#else
-
-    QFile f( fstabFile );
-    if ( f.open( IO_ReadOnly ) )
-    {
-      QTextStream stream( &f );
-      while ( !stream.eof() )
-      {
-        QString line = stream.readLine();
-        line = line.simplifyWhiteSpace();
-        if (!line.isEmpty() && line[0] == '/') // skip comments but also
-        {
-          QStringList lst = QStringList::split( ' ', line );
-          if ( lst.count() > 2 && lst[indexDevice] != QString::fromLatin1("/proc")
-              && lst[indexMountPoint] != QString::fromLatin1("none")
-              && lst[indexMountPoint] != QString::fromLatin1("-") )
-          {
-            devices.append( lst[indexDevice]+QString::fromLatin1(" (")
-                             +lst[indexMountPoint]+QString::fromLatin1(")") );
-            m_devicelist.append( lst[indexDevice] );
-            d->mountpointlist.append( lst[indexMountPoint] );
-          }
-        }
-      }
-      f.close();
-    }
-#endif
-  }
-
 
   QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, KDialog::marginHint(),
                                         KDialog::spacingHint());
