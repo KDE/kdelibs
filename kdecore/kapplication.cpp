@@ -1957,7 +1957,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 
    for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); ++it)
    {
-     *it = KMacroExpander::expandMacrosShellQuote(*it, keyMap);
+     *it = KMacroExpander::expandMacros(*it, keyMap);
 
      if ((*it).find("%A") >= 0)
      {
