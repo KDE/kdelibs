@@ -90,6 +90,23 @@ public:
    *        The top-level widget of the app that invoked this object.
    *        It is used to make sure private information like passwords
    *        are properly handled per application.
+   * @param url the URL of the file or directory to 'run'
+   *
+   * @param mode The @p st_mode field of <tt>struct stat</tt>. If
+   *        you don't know this set it to 0.
+   *
+   * @param isLocalFile
+   *        If this parameter is set to @p false then @p url is
+   *        examined to find out whether it is a local URL or
+   *        not. This flag is just used to improve speed, since the
+   *        function KURL::isLocalFile is a bit slow.
+   *
+   * @param showProgressInfo
+   *        Whether to show progress information when determining the
+   *        type of the file (i.e. when using KIO::stat and KIO::mimetype)
+   *        Before you set this to false to avoid a dialog box, think about
+   *        a very slow FTP server...
+   *        It is always better to provide progress info in such cases.
    */
   KRun( const KURL& url, QWidget* window, mode_t mode = 0,
 	bool isLocalFile = false, bool showProgressInfo = true );
@@ -154,6 +171,7 @@ public:
   /**
    * Sets whether executables, .desktop files or shell scripts should
    * be run by KRun. This is enabled by default.
+   * @param b whether to run executable files or not.
    * @see isExecutable()
    * @since 3.2
    */
@@ -163,6 +181,7 @@ public:
    * Sets whether the external webbrowser setting should be honoured.
    * This is enabled by default.
    * This should only be disabled in webbrowser applications.
+   * @param b whether to enable the external browser or not.
    * @since 3.4
    */
   void setEnableExternalBrowser(bool b);
@@ -177,8 +196,8 @@ public:
    *        when the application exits.
    * @return the process id, or 0 on error
    */
+  // BIC merge second overload with first one, using tempFiles=false
   static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles );
-  // BIC merge with method above, using tempFiles=false
   static pid_t run( const KService& _service, const KURL::List& _urls );
 
   /**
@@ -214,10 +233,11 @@ public:
    *        See also isExecutable().
    * @return the process id, or 0 on error
    */
+  // BIC Merge second overload with first one using runExecutables=true, and
+  // merge third overload with first one as well using tempFiles=false and
+  // runExecutables=true
   static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables);
-  // BIC merge with method above, using runExecutables=true
   static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile);
-  // BIC merge with method above, using tempFiles=false
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
   /**
@@ -256,8 +276,8 @@ public:
    *        when the application exits.
    * @return false if the dialog was canceled
    */
+  // BIC merge second overload with first one, using tempFiles=false
   static bool displayOpenWithDialog( const KURL::List& lst, bool tempFiles );
-  // BIC merge with method above, using tempFiles=false
   static bool displayOpenWithDialog( const KURL::List& lst );
 
   /**
@@ -280,8 +300,8 @@ public:
    *        when the application exits.
    * @return a list of arguments suitable for either system() or exec().
    */
+  // BIC merge second overload with first one, using tempFiles=false
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell, bool tempFiles);
-  // BIC merge with method above, using tempFiles=false
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
 
   /**

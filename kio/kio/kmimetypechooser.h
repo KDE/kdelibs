@@ -56,6 +56,8 @@ class KIO_EXPORT KMimeTypeChooser : public QVBox
      *        is provided and defaultGroup is not a member of that, it is ignored.
      * @param groupsToShow a list of mimetype groups to show. If empty, all
      *        groups are shown.
+     * @param parent The parent widget to use
+     * @param name The internal name of this object
      */
     KMimeTypeChooser( const QString& text=QString::null,
                       const QStringList &selectedMimeTypes=0,
@@ -132,7 +134,7 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
     /**
      * Create a KMimeTypeChooser dialog.
      *
-     * @param title The title of the dialog
+     * @param caption The title of the dialog
      * @param text A Text to display above the list
      * @param selectedMimeTypes A list of mimetype names, theese will be
      *        checked in the list if they exist.
@@ -144,6 +146,8 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
      *        is provided and defaultGroup is not a member of that, it is ignored.
      * @param groupsToShow a list of mimetype groups to show. If empty, all
      *        groups are shown.
+     * @param parent The parent widget to use
+     * @param name The internal name of this object
      */
     KMimeTypeChooserDialog( const QString &caption=QString::null,
                          const QString& text=QString::null,

@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
  * Copyright (C) 2001 Frerich Raabe <raabe@kde.org>
- *               20003 Carsten Pfeiffer <pfeiffer@kde.org>
+ *               2003 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -52,6 +52,7 @@ public:
      * the parent.
      *
      * @param parent The KFileDialog this preview widget is going to be used in
+     * @param name The internal name of this object
      */
     KPreviewWidgetBase(QWidget *parent, const char *name=0);
     ~KPreviewWidgetBase();

@@ -569,6 +569,7 @@ public:
 
   /**
    * @param _path is the path of the desktop entry.
+   * @param service the service to execute
    * @deprecated, see the other executeService
    */
   static void executeService( const QString& _path, KDEDesktopMimeType::Service& _service ) KDE_DEPRECATED;
