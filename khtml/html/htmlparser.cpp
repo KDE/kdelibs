@@ -361,6 +361,16 @@ void KHTMLParser::processOneToken(Token *t)
     {
 	// we couldn't insert the node...
 	kdDebug(300) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
+        if (map == n)
+        {
+            kdDebug(300) << "  --> resetting map!" << endl;
+            map = 0;
+        }
+        if (form == n)
+        {
+            kdDebug(300) << "   --> resetting form!" << endl;
+            form = 0;
+        }
 	delete n;
     }
 
