@@ -125,7 +125,7 @@ kmailservice_SOURCES = kmailservice.cpp
 kmailservice_LDADD = $(LIB_KDECORE)
 kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kmailprotocol_DATA = kmailservice.protocol
+kmailprotocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
 kmailprotocoldir = $(kde_servicesdir)
 
 parser: $(parserfiles)
