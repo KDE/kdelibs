@@ -258,7 +258,7 @@ KeramikStyle::~KeramikStyle()
 
 void KeramikStyle::polish(QApplication* app)
 {
-	if (QString(app->argv()[0]) == "kicker")
+	if (!qstrcmp(app->argv()[0], "kicker"))
 		kickerMode = true;
 }
 
