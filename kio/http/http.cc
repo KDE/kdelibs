@@ -1495,18 +1495,18 @@ bool HTTPProtocol::readHeader()
         }
 
       }
-    }
-    // what kind of encoding do we have?  transfer?
-    else if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
-      // If multiple encodings have been applied to an entity, the
-      // transfer-codings MUST be listed in the order in which they
-      // were applied.
-      addEncoding(trimLead(buf + 18), m_qTransferEncodings);
-    }
+      // what kind of encoding do we have?  transfer?
+      else if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
+        // If multiple encodings have been applied to an entity, the
+        // transfer-codings MUST be listed in the order in which they
+        // were applied.
+        addEncoding(trimLead(buf + 18), m_qTransferEncodings);
+      }
 
-    // md5 signature
-    else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
-      m_sContentMD5 = strdup(trimLead(buf + 12));
+      // md5 signature
+      else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
+        m_sContentMD5 = strdup(trimLead(buf + 12));
+      }
     }
     // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
     else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
@@ -1522,19 +1522,16 @@ bool HTTPProtocol::readHeader()
       if ( pos >= 0 )
       {
         pos += 8; // skip "filename"
-        kdDebug(7113) << "pos=" << pos << endl;
         int len = disposition.length();
         while( disposition[pos] == ' ' || disposition[pos] == '=' ||
                disposition[pos] == '"' )
             pos++;
-        kdDebug(7113) << "pos now " << pos << " len=" << len << endl;
         if( pos < len )
         {
           int start = pos;
           while ( pos < len &&
                  (disposition[pos] != '"' && disposition[pos] != ';') )
               pos++;
-          kdDebug(7113) << "pos finally " << pos << " start=" << start << endl;
           disposition = disposition.mid(start, pos-start);
         }
         else
