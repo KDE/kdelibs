@@ -1,3 +1,8 @@
+2004-10-04  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (processObjectRequest): 
+        Fixed showing of iframe hidden with display=none (#84332).
+
 2004-09-16  Leo Savernik  <l.savernik@aon.at>
 
  * rendering/render_inline.{cpp,h} (paintOutline): removed.
