@@ -430,7 +430,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 
     if ( m_useGlobal ) { // read global items
         KConfig *globalConfig = KGlobal::config();
-        KConfigGroupSaver cs( globalConfig, itemGroup + " (Global)");
+        KConfigGroupSaver cs( globalConfig, (QString)(itemGroup +" (Global)"));
         int num = globalConfig->readNumEntry( "Number of Entries" );
         for ( int i = 0; i < num; i++ ) {
             readItem( i, globalConfig, false );

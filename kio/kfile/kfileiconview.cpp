@@ -169,7 +169,7 @@ KFileIconView::~KFileIconView()
 
 void KFileIconView::readConfig( KConfig *kc, const QString& group )
 {
-    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
@@ -186,7 +186,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 
 void KFileIconView::writeConfig( KConfig *kc, const QString& group )
 {
-    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
     kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
 		    QString::fromLatin1("SmallColumns") :

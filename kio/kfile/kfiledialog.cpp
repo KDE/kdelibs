@@ -199,7 +199,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                                    KProtocolInfo::icon( "floppy" ) );
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
         u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
+        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
         d->urlBar->insertItem( u, i18n("Temporary Files"), false,
                                "file_temporary" );
         u = "lan:/";
