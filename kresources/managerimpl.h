@@ -74,7 +74,7 @@ public:
   // Get only active or passive resources
   QPtrList<Resource> resources( bool active );
 
-  QStringList resourceNames();
+  QStringList resourceNames() const;
 
   void setListener( ManagerImplListener* listener ) {
     mListener = listener;

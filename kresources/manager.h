@@ -124,7 +124,7 @@ public:
    * Returns a list of the names of the reources managed by the
    * ResourceManager for this family.
    */
-  QStringList resourceNames() { return manager->resourceNames(); }
+  QStringList resourceNames() const { return manager->resourceNames(); }
 
 
   ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 ) { return factory->resourceConfigWidget( type, parent ); }

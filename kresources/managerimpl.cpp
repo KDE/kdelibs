@@ -229,7 +229,7 @@ void ResourceManagerImpl::dcopResourceDeleted( QString identifier )
 
 }
 
-QStringList ResourceManagerImpl::resourceNames()
+QStringList ResourceManagerImpl::resourceNames() const
 {
   QStringList result;
 
