@@ -62,7 +62,7 @@ QString AnonymousAuthModule::auth_method ()
 	return QString::fromLatin1("ANONYMOUS");
 }
 
-QString AnonymousAuthModule::auth_response (const QString &, const KURL &auth_url)
+QString AnonymousAuthModule::auth_response (const QString &, const KURL &)
 {
 	return QString::fromLatin1("KDE SASL Implementation $Revision$");
 }
