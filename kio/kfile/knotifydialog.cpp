@@ -263,7 +263,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     d->toolTip = new KNotifyToolTip( header );
 
-    m_playButton->setPixmap( SmallIcon( "player_play" ) );
+    m_playButton->setIconSet( SmallIconSet( "player_play" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
     connect( m_listview, SIGNAL( currentChanged( QListViewItem * ) ),
