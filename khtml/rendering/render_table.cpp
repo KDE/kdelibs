@@ -1127,10 +1127,10 @@ void RenderTable::calcColWidth(void)
      * Reverse order, variable->relative->percent
      */
 
-    toAdd = distributeRest(toAdd,Variable,maxVar-minVar);
-    toAdd = distributeRest(toAdd,Relative,maxRel-minRel);
-    toAdd = distributeRest(toAdd,Percent,maxPercent-minPercent);
-    toAdd = distributeRest(toAdd,Fixed,maxFixed-minFixed);
+    if ( numVar ) toAdd = distributeRest(toAdd,Variable,maxVar);
+    if ( numRel ) toAdd = distributeRest(toAdd,Relative,maxRel);
+    if ( numPercent ) toAdd = distributeRest(toAdd,Percent,maxPercent);
+    if ( numFixed ) toAdd = distributeRest(toAdd,Fixed,maxFixed);
 
 #ifdef TABLE_DEBUG
     for(int i = 0; i < (int)totalCols; i++)
@@ -1158,7 +1158,7 @@ void RenderTable::calcColWidth(void)
     }
 
 #ifdef TABLE_DEBUG
-    if(m_width != columnPos[totalCols] )
+    if(m_width - borderLeft() - borderLeft() != columnPos[totalCols] )
         kdDebug( 6040 ) << "========> table layout error!!! <===============================" << endl;
     kdDebug( 6040 ) << "total width = " << m_width << " colpos = " << columnPos[totalCols] << endl;
 #endif
@@ -1201,8 +1201,8 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
 
 int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 {
-    if (!divider)
-        return distrib;
+    if ( !divider )
+	return distrib;
 
 #ifdef TABLE_DEBUG
     kdDebug( 6040 ) << "DISTRIBUTING rest, " << distrib << " pixels to type " << type << " cols" << endl;
@@ -1217,10 +1217,8 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
     {
         if (colType[c]==type)
         {
-            int delta = (colMaxWidth[c]-colMinWidth[c]) * distrib / divider;
+            int delta = colMaxWidth[c] * distrib / divider;
             delta=KMIN(delta,tdis);
-            if (delta==0 && tdis)
-                delta=1;
             actColWidth[c] += delta;
             tdis -= delta;
         }
