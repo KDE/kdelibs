@@ -485,10 +485,10 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	wList->update();
 	
 	globalDict = new QDict<int> ( 100, false );
-	//globalDict->setAutoDelete( true );
+	globalDict->setAutoDelete( true );
 	readGlobalKeys();
 	stdDict = new QDict<int> ( 100, false );
-	//stdDict->setAutoDelete( true );
+	stdDict->setAutoDelete( true );
 	if (check_against_std_keys)
 	  readStdKeys();
 	topLayout->activate();

@@ -50,8 +50,8 @@ struct KKeyEntry {
 	bool bEnabled;
 	int aAccelId;
 	const QObject *receiver;
-	const char* member;
-	const char* descr;	
+	QString member;
+	QString descr;	
 };
 
 /**
@@ -134,7 +134,7 @@ class KAccel
 {
  public:
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
-		Paste, Undo, Find, Replace, Insert, Home, End, Prior, 
+		Paste, Undo, Find, Replace, Insert, Home, End, Prior,
 		Next, Help };
 	/**
 	 * Creates a KAccel object with a parent widget and a name.

@@ -418,6 +418,7 @@ bool KGlobalAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->aAccelId = pE->aAccelId;
 		pEntry->receiver = pE->receiver;
 		pEntry->member = pE->member;
+		pEntry->descr = pE->descr; // tanghus
 		pEntry->bEnabled = pE->bEnabled;
 		
 		if ( pEntry->bEnabled ) {
@@ -429,7 +430,7 @@ bool KGlobalAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		++*aKeyIt;
 	}
 #undef pE
-		
+	delete aKeyIt;
 	return true;
 }
 
