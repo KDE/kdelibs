@@ -1312,14 +1312,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->setBaseURL( baseurl.url() );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
 
-  // Inherit domain from parent
-  KHTMLPart* parent = parentPart();
-  if (d->m_doc->isHTMLDocument() && parent && parent->d->m_doc && parent->d->m_doc->isHTMLDocument()) {
-    DOMString domain = static_cast<HTMLDocumentImpl*>(parent->d->m_doc)->domain();
-    kdDebug() << "KHTMLPart::begin setting frame domain to " << domain.string() << endl;
-    static_cast<HTMLDocumentImpl*>(d->m_doc)->setDomain( domain, true );
-  }
-
   d->m_paUseStylesheet->setItems(QStringList());
   d->m_paUseStylesheet->setEnabled( false );
 
@@ -1590,6 +1582,30 @@ void KHTMLPart::checkEmitLoadEvent()
   for (; it != end; ++it )
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
+
+
+  // All frames completed -> set their domain to the frameset's domain
+  // This must only be done when loading the frameset initially (#22039),
+  // not when following a link in a frame (#44162).
+  if ( d->m_doc && d->m_doc->isHTMLDocument() )
+  {
+    DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
+    ConstFrameIt it = d->m_frames.begin();
+    ConstFrameIt end = d->m_frames.end();
+    for (; it != end; ++it )
+    {
+      KParts::ReadOnlyPart *p = (*it).m_part;
+      if ( p && p->inherits( "KHTMLPart" ))
+      {
+        KHTMLPart* htmlFrame = static_cast<KHTMLPart *>(p);
+        if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
+        {
+          kdDebug() << "KHTMLPart::checkCompleted setting frame domain to " << domain.string() << endl;
+          static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain, true );
+        }
+      }
+    }
+  }
 
   d->m_bLoadEventEmitted = true;
   if (d->m_doc)
