@@ -451,6 +451,8 @@ void KCryptoConfig::load()
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
+
+  config->setGroup("EGD");
   mUseEGD->setChecked(config->readBoolEntry("UseEGD", false));
   mEGDLabel->setEnabled(mUseEGD->isChecked());
   mChooseEGD->setEnabled(mUseEGD->isChecked());
@@ -515,6 +517,7 @@ void KCryptoConfig::save()
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
 
+  config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("EGDPath", mEGDPath->text());
 
