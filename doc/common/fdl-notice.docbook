@@ -6,7 +6,7 @@
       <!ENTITY FDLFCTTitles "title 4, title 5, title 6">
       <!ENTITY % FDLBCT "INCLUDE">
       <!ENTITY FDLBCTTitles "title 7, title 7b">
-      %FDLSlots;
+      %FDLNotice;
       ...
      ]>
     ...

@@ -89,20 +89,18 @@
   "-//GNU//DOCUMENT GNU General Public License V2//EN"
   CDATA SGML		   -- http://www.gnu.org/copyleft/gpl.html -->
 <!ENTITY GPLNotice	    PUBLIC
-  "-//GNU//DOCUMENT GNU General Public License Notice//EN"
+  "-//KDE//DOCUMENT GNU General Public License Notice//EN"
   CDATA SGML							     >
 <!ENTITY LGPL		    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN" 
   CDATA SGML		-- http://www.gnu.org/copyleft/lesser.html -->
 <!ENTITY LGPLNotice	    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License Notice//EN"
+  "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
   CDATA SGML							     >
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
   CDATA SGML               -- http://www.gnu.org/copyleft/fdl.html -->
-<!ENTITY FDLNotice          PUBLIC
-  "-//GNU//DOCUMENT GNU Free Documentation Notice//EN"
-  CDATA SGML                                                         >
 <!-- Use in a document prologue only -->
-<!ENTITY % FDLSlots         PUBLIC
-  "-//KDE//ENTITIES KDE FDL 1.1 Slot Filler Entities//EN"            >
+<!ENTITY % FDLNotice        PUBLIC
+  "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN"
+                                           -- contains &FDLNotice; -->
