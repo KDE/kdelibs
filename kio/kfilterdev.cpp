@@ -119,10 +119,10 @@ void KFilterDev::close()
     kdDebug() << "KFilterDev::close" << endl;
     if ( filter->mode() == IO_WriteOnly )
         writeBlock( 0L, 0 ); // finish writing
-    kdDebug() << "KFilterDev::close. Calling terminate()." << endl;
+    //kdDebug() << "KFilterDev::close. Calling terminate()." << endl;
 
     filter->terminate();
-    kdDebug() << "KFilterDev::close. Terminate() done. Closing device." << endl;
+    //kdDebug() << "KFilterDev::close. Terminate() done. Closing device." << endl;
     filter->device()->close();
 }
 
@@ -179,7 +179,7 @@ bool KFilterDev::at( int pos )
             return false;
     }
 
-    kdDebug() << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
+    //kdDebug() << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
     // #### Slow, and allocate a huge block of memory (potentially)
     // Maybe we could have a flag in the class to know we don't care about the
     // actual data
@@ -213,7 +213,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
             int size = filter->device()->readBlock( d->buffer.data(),
                                                     d->buffer.size() );
             filter->setInBuffer( d->buffer.data(), size );
-            kdDebug() << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
+            //kdDebug() << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)
         {
@@ -238,8 +238,9 @@ int KFilterDev::readBlock( char *data, uint maxlen )
         {
             // We got that much data since the last time we went here
             uint outReceived = availOut - filter->outBufferAvailable();
-
             //kdDebug() << "avail_out = " << filter->outBufferAvailable() << " result=" << result << " outReceived=" << outReceived << endl;
+            if( availOut < filter->outBufferAvailable() );
+                kdWarning() << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
             // Move on in the output buffer
             data += outReceived;
@@ -303,14 +304,14 @@ int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
             ioIndex += wrote;
 
             availIn = len - dataWritten;
-            kdDebug() << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
+            //kdDebug() << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
             if ( availIn > 0 ) // Not sure this will ever happen
                 filter->setInBuffer( data, availIn );
         }
 
         if (filter->outBufferFull() || (d->result == KFilterBase::END))
         {
-            kdDebug() << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
+            //kdDebug() << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
             int towrite = d->buffer.size() - filter->outBufferAvailable();
             if ( towrite > 0 )
             {
