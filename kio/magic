@@ -934,3 +934,14 @@
 # KWallet file
 0	string		KWALLET\012\015\000\015\012	application/x-kde-wallet
 
+#------------------------------------------------------------------------------
+# ICA Client configuration files
+0	string		[WFClient]		application/x-ica
+1	string		[WFClient]		application/x-ica
+0	string		[ApplicationServers]	application/x-ica
+1	string		[ApplicationServers]	application/x-ica
+0	string		[ICA			application/x-ica
+1	string		[ICA			application/x-ica
+0	string		[Program\ Neighborhood	application/x-ica
+1	string		[Program\ Neighborhood	application/x-ica
+
