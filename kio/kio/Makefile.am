@@ -41,7 +41,7 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
-	dataslave.cpp dataprotocol.cpp kremoteencoding.cpp
+	dataslave.cpp dataprotocol.cpp
 libksycoca_la_COMPILE_FIRST = kdirnotify_stub.h
 
 include_HEADERS = \
@@ -75,7 +75,7 @@ libkiocore_la_SOURCES = authinfo.cpp \
 	observer.cpp uiserver.stub observer.skel \
 	kemailsettings.cpp  \
 	kprotocolinfo.cpp \
-	renamedlg.cpp skipdlg.cpp
+	renamedlg.cpp skipdlg.cpp kremoteencoding.cpp
 
 uiserver_DIR = $(top_srcdir)/kio/misc
 
