@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.18  1997/08/29 15:56:55  kdecvs
+// Torben: added some needed functions and bugfixes for kfm-0.9
+//
 // Revision 1.17  1997/08/07 08:50:35  ettrich
 // Matthias: replaced $KDEDIR with kdedir() in the searchpath
 //
@@ -271,7 +274,10 @@ void KApplication::init()
 	  pConfig->parseOneConfigFile( &pConfigStream );
 	}
 	// parse the application file again to preserve priority
-	pConfig->parseOneConfigFile(pConfigStream);
+	if( eConfigState != APPCONFIG_NONE )
+	  {
+		pConfig->parseOneConfigFile(pConfigStream);
+	  }
       }
     pConfigFile.close();
   }
