@@ -608,7 +608,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, action->name(), action->statusText());
         act->setText(1, action->plainText());
-        if (!action->icon().isEmpty())
+        if (action->hasIcon())
           act->setPixmap(0, BarIcon(action->icon(), 16));
 
         active_list.insert(action->name(), true);
@@ -862,7 +862,7 @@ void KEditToolbarWidget::slotUpButton()
 
       // make clone visible
       m_activeList->ensureItemVisible(clone);
-      
+
       // and do the real move in the DOM
       d->m_currentToolbarElem.insertBefore(elem, elem.previousSibling());
 
