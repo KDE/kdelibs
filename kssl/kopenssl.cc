@@ -90,6 +90,7 @@ static int (*K_PEM_ASN1_write_bio) (int (*)(),const char *,BIO *,char *,
 static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
 static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
 static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
+static int (*K_X509_print_fp)  (FILE *, X509*) = NULL;
 };
 #endif
 
@@ -178,7 +179,7 @@ KConfig *cfg;
       K_X509_asn1_meth = (ASN1_METHOD* (*)(void)) _cryptoLib->symbol("X509_asn1_meth");
       K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) _cryptoLib->symbol("ASN1_i2d_fp");
       K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) _cryptoLib->symbol("i2d_ASN1_HEADER");
-
+      K_X509_print_fp = (int (*)(FILE*, X509*)) _cryptoLib->symbol("X509_print_fp");
 #endif
    }
 
@@ -556,6 +557,11 @@ int KOpenSSLProxy::ASN1_i2d_fp(FILE *out,unsigned char *x) {
    else return -1;
 }
 
+
+int KOpenSSLProxy::X509_print(FILE *fp, X509 *x) {
+   if (K_X509_print_fp) return (K_X509_print_fp)(fp, x);
+   return -1;
+}
 
 #endif
 

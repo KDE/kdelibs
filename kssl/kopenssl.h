@@ -335,6 +335,11 @@ public:
    int ASN1_i2d_fp(FILE *out, unsigned char *x);
 
 
+   /*
+    *   X509_print - print the text form of an X509
+    */
+   int X509_print(FILE *fp, X509 *x);
+
 
 #endif
 

@@ -81,6 +81,7 @@ public:
   QByteArray toDer();
   QByteArray toPem();
   QByteArray toNetscape();
+  QString    toText();
 
   // getSerialNumber() const;
   // getSignatureType() const;

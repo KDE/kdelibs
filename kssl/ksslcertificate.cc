@@ -422,30 +422,8 @@ KSSLCertificate *KSSLCertificate::replicate() {
 }
 
 
-// FIXME: call toDer() and just encode it to base64 instead of duplicating
-//        code here.
 QString KSSLCertificate::toString() {
-#ifdef HAVE_SSL
-      unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
-      // These should technically be unsigned char * but it doesn't matter
-      // for our purposes
-      QString certEncoded;
-      char *cert = new char[certlen];
-      char *p = cert;
-        {
-        QByteArray qba;
- 
-        d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
- 
-        // encode it into a QString
-        qba.setRawData(cert, certlen);
-        certEncoded = KCodecs::base64Encode(qba);
-        qba.resetRawData(cert, certlen);
-      }
-      delete[] cert;
-return certEncoded;
-#endif
-return QString::null;
+return KCodecs::base64Encode(toDer());
 }
 
 
@@ -551,5 +529,25 @@ return qba;
 }
 
 
+
+QString KSSLCertificate::toText() {
+QString text;
+#ifdef HAVE_SSL
+KTempFile ktf;
+
+   d->kossl->X509_print(ktf.fstream(), getCert());
+   ktf.close();
+   QFile qf(ktf.name());
+   qf.open(IO_ReadOnly);
+   char *buf = new char[qf.size()+1];
+   qf.readBlock(buf, qf.size());
+   buf[qf.size()] = 0;
+   text = buf;
+   delete[] buf;
+   qf.close();
+   ktf.unlink();
+#endif
+return text;
+}
 
 
