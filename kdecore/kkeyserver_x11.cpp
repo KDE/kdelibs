@@ -247,7 +247,7 @@ bool Sym::initQt( int keyQt )
 	int symQt = keyQt & 0xffff;
 
 	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
-		m_sym = QChar(m_sym).lower();
+		m_sym = QChar(symQt).lower();
 		return true;
 	}
 
