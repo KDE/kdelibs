@@ -69,7 +69,7 @@ fi
 case "$with_gssapi" in
 no) AC_MSG_RESULT(no) ;;
 framework)
-  GSSAPI_LIBS="-Xlinker -framework -Xlinker GSSAPI"
+  GSSAPI_LIBS="-Xlinker -framework -Xlinker Kerberos"
   AC_DEFINE_UNQUOTED(HAVE_LIBGSSAPI, 1, [Define if you have GSSAPI libraries])
   GSSAPI_SUBDIR="gssapi"
   AC_MSG_RESULT(Apple framework)
