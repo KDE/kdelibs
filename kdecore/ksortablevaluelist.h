@@ -53,8 +53,8 @@ public:
      * Assignment operator, just copies the item.
      */
     KSortableItem<T, Key> &operator=( const KSortableItem<T, Key>& i ) {
-        first  = i.first;
-        second = i.second;
+        this->first  = i.first;
+        this->second = i.second;
         return *this;
     }
 
@@ -64,66 +64,60 @@ public:
      * the first value.
      */
     bool operator> ( const KSortableItem<T, Key>& i2 ) const {
-        return (i2.first < first);
+        return (i2.first < this->first);
     }
     /**
      * Compares the two items. This implementation only compares
      * the first value.
      */
     bool operator< ( const KSortableItem<T, Key>& i2 ) const {
-        return (first < i2.first);
+        return (this->first < i2.first);
     }
     /**
      * Compares the two items. This implementation only compares
      * the first value.
      */
     bool operator>= ( const KSortableItem<T, Key>& i2 ) const {
-        return (first >= i2.first);
+        return (this->first >= i2.first);
     }
     /**
      * Compares the two items. This implementation only compares
      * the first value.
      */
     bool operator<= ( const KSortableItem<T, Key>& i2 ) const {
-        return !(i2.first < first);
+        return !(i2.first < this->first);
     }
     /**
      * Compares the two items. This implementation only compares
      * the first value.
      */
     bool operator== ( const KSortableItem<T, Key>& i2 ) const {
-        return (first == i2.first);
+        return (this->first == i2.first);
     }
     /**
      * Compares the two items. This implementation only compares
      * the first value.
      */
     bool operator!= ( const KSortableItem<T, Key>& i2 ) const {
-        return (first != i2.first);
+        return (this->first != i2.first);
     }
 
     /**
      * Returns the second value.
      * @return the second value
      */
-    T& value() {
-        return second;
-    }
+    T& value() { return this->second; }
 
     /**
      * Returns the second value.
      */
-    const T& value() const {
-        return second;
-    }
+    const T& value() const { return this->second; }
 
     /**
      * Returns the first value.
      * @param the first value
      */
-    Key index() const {
-        return first;
-    }
+    Key index() const { return this->first; }
 };
 
 
