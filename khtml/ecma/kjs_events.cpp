@@ -280,6 +280,7 @@ Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &
   switch (id) {
     case DOMEvent::StopPropagation:
       event.stopPropagation();
+      return Undefined();
     case DOMEvent::PreventDefault:
       event.preventDefault();
       return Undefined();
