@@ -5,7 +5,7 @@
 **
 ** Created : 990707
 **
-** Copyright (C) 1992-2000 Troll Tech AS.  All rights reserved.
+** Copyright (C) 1992-1999 Troll Tech AS.  All rights reserved.
 **
 ** This file is part of the Qt GUI Toolkit.
 **
@@ -57,8 +57,6 @@ struct QIconViewItemPrivate;
 class QIconViewItem;
 class QIconViewItemLineEdit;
 
-class QStringList;
-
 /*****************************************************************************
  *
  * Class QIconDragItem
@@ -69,18 +67,26 @@ class Q_EXPORT QIconDragItem
 {
 public:
     QIconDragItem();
+    QIconDragItem( const QRect &ir, const QRect &tr );
     virtual ~QIconDragItem();
-    virtual QByteArray data() const;
-    virtual void setData( const QByteArray &d );
-#if defined(Q_FULL_TEMPLATE_INSTANTIATION)
-    bool operator== ( const QIconDragItem& ) const;
-#endif
 
-private:
-    QByteArray ba;
+    virtual bool operator<( const QIconDragItem &icon )  const;
+    virtual bool operator==( const QIconDragItem &icon ) const;
+
+    virtual QRect pixmapRect() const;
+    virtual QRect textRect() const;
+    virtual QString key() const;
+
+    virtual void setPixmapRect( const QRect &r );
+    virtual void setTextRect( const QRect &r );
+
+protected:
+    virtual void makeKey();
+
+    QRect iconRect_, textRect_;
+    QString key_;
 
 };
-
 
 /*****************************************************************************
  *
@@ -88,58 +94,37 @@ private:
  *
  *****************************************************************************/
 
+#if defined(Q_TEMPLATEDLL)
+// MOC_SKIP_BEGIN
+template class Q_EXPORT QValueList<QIconDragItem>;
+// MOC_SKIP_END
+#endif
+
+typedef QValueList<QIconDragItem> QIconList;
+
 class Q_EXPORT QIconDrag : public QDragObject
 {
     Q_OBJECT
-    friend class QIconView;
-    friend class QIconViewPrivate;
-
-private:
-    struct IconDragItem
-    {
-	IconDragItem();
-	IconDragItem( const QRect &ir, const QRect &tr );
-
-	QRect pixmapRect() const;
-	QRect textRect() const;
-
-	void setPixmapRect( const QRect &r );
-	void setTextRect( const QRect &r );
-
-    	QRect iconRect_, textRect_;
-	QString key_;
-
-    };
-
-    struct Item
-    {
-	Item() {}
-	Item( const QIconDragItem &i1, const IconDragItem &i2 ) : data( i1 ), item( i2 ) {}
-	QIconDragItem data;
-	IconDragItem item;
-#if defined(Q_FULL_TEMPLATE_INSTANTIATION)
-	bool operator== ( const QIconDrag::Item& ) const;
-#endif
-    };
 
 public:
+    QIconDrag( const QIconList &icons_, QWidget * dragSource, const char* name = 0 );
     QIconDrag( QWidget * dragSource, const char* name = 0 );
     virtual ~QIconDrag();
 
-    void append( const QIconDragItem &item, const QRect &pr, const QRect &tr );
+    void setIcons( const QIconList &list_ );
+    void append( const QIconDragItem &icon_ );
 
     virtual const char* format( int i ) const;
-    static bool canDecode( QMimeSource* e );
     virtual QByteArray encodedData( const char* mime ) const;
 
-private:
-    static bool decode( QMimeSource* e, QValueList<Item> &lst );
+    static bool canDecode( QMimeSource* e );
 
-    QValueList<Item> items;
-    QChar endMark;
+    static bool decode( QMimeSource* e, QIconList &list_ );
+
+protected:
+    QIconList icons;
 
 };
-
 
 /*****************************************************************************
  *
@@ -153,7 +138,7 @@ class Q_EXPORT QIconViewItem : public QObject
     friend class QIconViewItemLineEdit;
 
     Q_OBJECT
-	
+
 public:
     QIconViewItem( QIconView *parent );
     QIconViewItem( QIconView *parent, QIconViewItem *after );
@@ -181,8 +166,7 @@ public:
 
     int index() const;
 
-    virtual void setSelected( bool s, bool cb );
-    virtual void setSelected( bool s );
+    virtual void setSelected( bool s, bool cb = FALSE );
     virtual void setSelectable( bool s );
 
     bool isSelected() const;
@@ -231,9 +215,9 @@ protected slots:
 protected:
     virtual void removeRenameBox();
     virtual void calcRect( const QString &text_ = QString::null );
-    virtual void paintItem( QPainter *p, const QColorGroup &cg );
+    virtual void paintItem( QPainter *p, const QColorGroup &cg, const QFont &font );
     virtual void paintFocus( QPainter *p, const QColorGroup &cg );
-    virtual void dropped( QDropEvent *e, const QValueList<QIconDragItem> &lst );
+    virtual void dropped( QDropEvent *e );
     virtual void dragEntered();
     virtual void dragLeft();
     virtual void init( QIconViewItem *after = 0 );
@@ -309,7 +293,7 @@ public:
     virtual void setCurrentItem( QIconViewItem *item );
     virtual void setSelected( QIconViewItem *item, bool s, bool cb = FALSE );
 
-    uint count() const;
+    unsigned int count() const;
 
 public:
     virtual void showEvent( QShowEvent * );
@@ -356,8 +340,8 @@ public:
     bool sorting() const;
     bool sortDirection() const;
 
-    virtual void setItemsMovable( bool b );
-    bool itemsMovable() const;
+    virtual void setEnableMoveItems( bool b );
+    bool enableMoveItems() const;
     virtual void setWordWrapIconText( bool b );
     bool wordWrapIconText() const;
 
@@ -395,7 +379,7 @@ signals:
     void mouseButtonPressed( int button, QIconViewItem* item, const QPoint& pos );
     void mouseButtonClicked( int button, QIconViewItem* item, const QPoint& pos );
 
-    void dropped( QDropEvent *e, const QValueList<QIconDragItem> &lst );
+    void dropped( QDropEvent *e );
     void moved();
     void onItem( QIconViewItem *item );
     void onViewport();
@@ -431,20 +415,21 @@ protected:
     virtual QDragObject *dragObject();
     virtual void startDrag();
     virtual void insertInGrid( QIconViewItem *item );
+    virtual void drawDragShapes( const QPoint &pnt );
+    virtual void initDragEnter( QDropEvent *e );
     virtual void drawBackground( QPainter *p, const QRect &r );
 
     void emitSelectionChanged( QIconViewItem * i = 0 );
     void emitRenamed( QIconViewItem *item );
 
+    void setDragObjectIsKnown( QDropEvent *e );
+    void setNumDragItems( int num );
     QIconViewItem *makeRowLayout( QIconViewItem *begin, int &y );
 
     void styleChange( QStyle& );
 
 private:
-    virtual void drawDragShapes( const QPoint &pnt );
-    virtual void initDragEnter( QDropEvent *e );
     void findItemByName( const QString &text );
-
     int calcGridNum( int w, int x ) const;
     QIconViewItem *rowBegin( QIconViewItem *item ) const;
     void updateItemContainer( QIconViewItem *item );
