@@ -37,7 +37,7 @@
 #include "kcmdlineargs.h"
 #include <kaboutdata.h>
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <kstringhandler.h>
 #include <kstaticdeleter.h>

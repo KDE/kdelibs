@@ -26,7 +26,7 @@
 #include "kwinmodule.h"
 #include "kwin.h"
 #include <X11/Xatom.h>
-#include "kapp.h"
+#include "kapplication.h"
 #include "kdebug.h"
 #include <qtl.h>
 #include <qlist.h>

@@ -49,10 +49,10 @@
 #include <qtextstream.h>
 
 #include "kglobal.h"
-#include "kapp.h"
+#include "kapplication.h"
 #include "kinstance.h"
 #include "ktempfile.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 
 
 KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)

@@ -22,7 +22,7 @@
 #include "kcharsets.h"
 #include "kiconloader.h"
 #include "kaboutdata.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #include "kdebug.h"
 #include "kglobal.h"
 #include "kmimesourcefactory.h"

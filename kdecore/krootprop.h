@@ -26,7 +26,7 @@ typedef unsigned long Atom;
 #include <qstring.h>
 #include <qmap.h>
 #include <qstringlist.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 class KRootPropPrivate;
 

@@ -36,7 +36,7 @@
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kurl.h>
 

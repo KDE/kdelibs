@@ -36,7 +36,7 @@
 
 #include <qmenudata.h>
 #include "kdestyle.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>

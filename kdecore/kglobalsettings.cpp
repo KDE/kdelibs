@@ -21,11 +21,11 @@
 #include <qdir.h>
 #include <qpixmap.h>
 #include <kconfig.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kipc.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <kaccel.h>
 #include <klocale.h>

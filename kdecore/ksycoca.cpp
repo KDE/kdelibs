@@ -26,12 +26,12 @@
 #include <qfile.h>
 #include <qbuffer.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kprocess.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>

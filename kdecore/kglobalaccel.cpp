@@ -31,7 +31,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kglobal.h>

@@ -34,7 +34,7 @@
 
 #ifndef Q_WS_QWS
 #include "kwin.h"
-#include "kapp.h"
+#include "kapplication.h"
 
 #include <kglobal.h>
 #include <kiconloader.h>

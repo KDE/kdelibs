@@ -18,7 +18,7 @@
 #ifndef _KNOTIFY_CLIENT
 #define _KNOTIFY_CLIENT
 #include <qobject.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 #undef None // X11 headers...

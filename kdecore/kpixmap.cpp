@@ -28,7 +28,7 @@
 #include <qcolor.h>
 
 #include <stdlib.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include "kpixmap.h"
 
 // Fast diffuse dither to 3x3x3 color cube

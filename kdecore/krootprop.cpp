@@ -23,7 +23,7 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "kcharsets.h"
-#include "kapp.h"
+#include "kapplication.h"
 #include <qtextstream.h>
 
 #include <X11/Xlib.h>

@@ -31,7 +31,7 @@
 #include <qfileinfo.h>
 
 #include "kglobal.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #include "kconfigbackend.h"
 
 #include "ksimpleconfig.h"

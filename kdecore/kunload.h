@@ -24,7 +24,7 @@
 #if QT_VERSION < 300
 
 #include <qobjectdict.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #define _UNLOAD(p) \
 static void unload_##p (const char **list) \

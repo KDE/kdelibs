@@ -50,10 +50,10 @@
 #include <qstylefactory.h>
 
 #undef QT_NO_TRANSLATION
-#include <kapp.h>
+#include <kapplication.h>
 #define QT_NO_TRANSLATION
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>

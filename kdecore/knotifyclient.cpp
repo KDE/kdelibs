@@ -23,7 +23,7 @@
 #include <qdatastream.h>
 #include <qptrstack.h>
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kconfig.h>
 #include <dcopclient.h>
 #include <kdebug.h>

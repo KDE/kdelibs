@@ -27,13 +27,13 @@
 #include <qlist.h>
 #include "kglobal.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kiconloader.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kinstance.h>
 #include "kstaticdeleter.h"
 

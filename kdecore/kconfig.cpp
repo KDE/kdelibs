@@ -32,12 +32,12 @@
 
 #include <qfileinfo.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include "kconfigbackend.h"
 
 #include "kconfig.h"
 #include "kglobal.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #include <qtimer.h>
 
 KConfig::KConfig( const QString& fileName,

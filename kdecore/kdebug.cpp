@@ -37,7 +37,7 @@
 
 #include "kglobal.h"
 #include "kinstance.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>

@@ -40,7 +40,7 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 #ifdef Q_WS_X11

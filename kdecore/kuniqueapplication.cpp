@@ -35,7 +35,7 @@
 
 #include <dcopclient.h>
 #include <kcmdlineargs.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kwin.h>
 #include <kstartupinfo.h>

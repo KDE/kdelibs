@@ -35,7 +35,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 
-#include "kapp.h"
+#include "kapplication.h"
 #include "ksavefile.h"
 
 KSaveFile::KSaveFile(const QString &filename, int mode)

@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
@@ -31,7 +31,7 @@
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
 #include "kdebug.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #undef Bool
 
 static bool isUtf8(const char *buf) {

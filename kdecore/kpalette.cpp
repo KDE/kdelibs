@@ -23,7 +23,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
 #include <ksavefile.h>
 #include <kstringhandler.h>

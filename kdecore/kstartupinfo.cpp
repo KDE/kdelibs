@@ -49,7 +49,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qtimer.h>
 #include <netwm.h>
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <signal.h>
 #include <kwinmodule.h>
 #include <kxmessages.h>

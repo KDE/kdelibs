@@ -28,7 +28,7 @@
 
 #include <kaccel.h>
 #include <kconfig.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>

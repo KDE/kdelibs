@@ -21,7 +21,7 @@
 #ifndef _KUNIQUEAPP_H
 #define _KUNIQUEAPP_H
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopobject.h>
 
 class KUniqueApplicationPrivate;

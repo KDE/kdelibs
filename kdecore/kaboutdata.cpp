@@ -22,7 +22,7 @@
 
 #include <kaboutdata.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
