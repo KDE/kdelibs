@@ -287,7 +287,7 @@ public:
     unsigned short len;
     unsigned char level;
     unsigned short width;
-    short yOffset;
+    int yOffset;
 };
 
 

@@ -129,7 +129,7 @@ void RenderRoot::updateSize()
     setMinMaxKnown(false);
     calcMinMaxWidth();
     if(m_width < m_minWidth) m_width = m_minWidth;
-    
+
     updateHeight();
 }
 
@@ -166,7 +166,7 @@ void RenderRoot::close()
     setParsing(false);
     updateSize();
     m_view->repaintContents(0,0,1000000,1000000);
-//    printTree();
+    //printTree();
 }
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
