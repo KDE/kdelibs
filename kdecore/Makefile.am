@@ -21,7 +21,6 @@ INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
 DISTCLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
-DEFS += -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h\

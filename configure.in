@@ -44,6 +44,34 @@ AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 AC_FIND_GIF
 AC_FIND_JPEG
 
+# configure would do this very late. Too late for us!
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+# Let make expand exec_prefix.
+test "x$exec_prefix" = xNONE && exec_prefix='$(prefix)' 
+
+AC_DEFINE_UNQUOTED(KDEDIR, "$prefix")
+
+AC_DEFUN(AC_DEFINE_PATH,
+[
+  eval "tempdir=`echo "$2" | sed -e 's/\$(exec_prefix)/\$exec_prefix/' -e 's/\$(prefix)/\$prefix/'`"
+  dnl I have to do this twice, since exec_prefix may be "$(prefix)"
+  eval "tempdir=`echo "$tempdir" | sed -e 's/\$(prefix)/\$prefix/'`"
+  AC_DEFINE_UNQUOTED($1, "$tempdir")
+])
+
+AC_DEFINE_PATH(KDE_HTMLDIR, $kde_htmldir)
+AC_DEFINE_PATH(KDE_APPSDIR, $kde_appsdir)
+AC_DEFINE_PATH(KDE_ICONDIR, $kde_icondir)
+AC_DEFINE_PATH(KDE_MINIDIR, $kde_minidir)
+AC_DEFINE_PATH(KDE_DATADIR, $kde_datadir)
+AC_DEFINE_PATH(KDE_LOCALE, $kde_locale)
+AC_DEFINE_PATH(KDE_CGIDIR, $kde_cgidir)
+AC_DEFINE_PATH(KDE_MIMEDIR, $kde_minidir)
+AC_DEFINE_PATH(KDE_TOOLBARDIR, $kde_toolbardir)
+AC_DEFINE_PATH(KDE_WALLPAPERDIR, $kde_wallpaperdir)
+AC_DEFINE_PATH(KDE_BINDIR, $kde_bindir)
+AC_DEFINE_PATH(KDE_PARTSDIR, $kde_partsdir)
+
 ac_cpp_safe=$ac_cpp
 ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
 AC_CHECK_HEADERS(X11/extensions/shape.h)
@@ -73,11 +101,5 @@ AC_SUBST(x_libraries)
 AC_SUBST(topdir)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
-if test "${prefix}" = NONE; then
-  KDEDIR=$ac_default_prefix
- else
-  KDEDIR=$prefix
-fi
-AC_SUBST(KDEDIR)
 
 AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile jscript/Makefile kfmlib/Makefile mediatool/Makefile po/Makefile doc/Makefile)
