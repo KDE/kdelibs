@@ -81,6 +81,11 @@ public:
 	 * call this only once to make the request really return
 	 */
 	void doReturn(const AnyConstRef& value);
+
+	/**
+	 * return without value (for void functions)
+	 */
+	void doReturn();
 };
 
 };

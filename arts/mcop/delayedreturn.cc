@@ -58,3 +58,14 @@ void DelayedReturn::doReturn(const AnyConstRef& value)
 
 	delete this;
 }
+
+void DelayedReturn::doReturn()
+{
+	assert(connection);
+	assert(buffer);
+
+	buffer->patchLength();
+	connection->qSendBuffer(buffer);
+
+	delete this;
+}
