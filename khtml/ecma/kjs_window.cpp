@@ -35,6 +35,7 @@
 #include <kconfig.h>
 
 #include <kjs/operations.h>
+#include <kjs/lookup.h>
 #include "kjs_window.h"
 #include "kjs_navigator.h"
 #include "kjs_html.h"
@@ -97,36 +98,61 @@ private:
   QGuardedPtr<KHTMLPart> part;
 };
 
-class Screen : public ObjectImp {
-public:
-  Screen() : ObjectImp( UndefClass ) { }
-  KJSO get(const UString &p) const;
-private:
-  KHTMLView *view;
+// table for screen object
+/*
+@begin ecmaScreenTable Screen 8
+height        DontEnum|ReadOnly
+width         DontEnum|ReadOnly
+colorDepth    DontEnum|ReadOnly
+pixelDepth    DontEnum|ReadOnly
+availLeft     DontEnum|ReadOnly
+availTop      DontEnum|ReadOnly
+availHeight   DontEnum|ReadOnly
+availWidth    DontEnum|ReadOnly
+@end
+*/
+
+static const struct HashEntry2 ecmaScreenTableEntries[] = {
+   { "availLeft", Screen::availLeft, DontEnum|ReadOnly, 0 },
+   { 0, 0, 0, 0 },
+   { "availTop", Screen::availTop, DontEnum|ReadOnly, 0 },
+   { "height", Screen::height, DontEnum|ReadOnly, 0 },
+   { "width", Screen::width, DontEnum|ReadOnly, &ecmaScreenTableEntries[8] },
+   { 0, 0, 0, 0 },
+   { "availHeight", Screen::availHeight, DontEnum|ReadOnly, 0 },
+   { "pixelDepth", Screen::pixelDepth, DontEnum|ReadOnly, &ecmaScreenTableEntries[9] },
+   { "colorDepth", Screen::colorDepth, DontEnum|ReadOnly, 0 },
+   { "availWidth", Screen::availWidth, DontEnum|ReadOnly, 0 }
 };
+
+static const struct HashTable2 ecmaScreenTable = { 2, 10, ecmaScreenTableEntries, 10 };
 
 KJSO Screen::get(const UString &p) const
 {
+  int token = Lookup::find(&ecmaScreenTable, p);
 
   KWinModule info;
   QPaintDeviceMetrics m(QApplication::desktop());
 
-  if (p == "height")
+  switch( token ) {
+  case height:
     return Number(QApplication::desktop()->height());
-  else if (p == "width")
+  case width:
     return Number(QApplication::desktop()->width());
-  else if (p == "colorDepth" || p == "pixelDepth")
+  case colorDepth:
+  case pixelDepth:
     return Number(m.depth());
-  else if (p == "availLeft")
+  case availLeft:
     return Number(info.workArea().left());
-  else if (p == "availTop")
+  case availTop:
     return Number(info.workArea().top());
-  else if (p == "availHeight")
+  case availHeight:
     return Number(info.workArea().height());
-  else if (p == "availWidth")
+  case availWidth:
     return Number(info.workArea().width());
-  else
+  default:
     return Undefined();
+  }
 }
 
 Window::Window(KHTMLPart *p)
@@ -859,7 +885,7 @@ void Location::put(const UString &p, const KJSO &v)
   QString str = v.toString().value().qstring();
   KURL url;
 
-  if (p == "href") 
+  if (p == "href")
        url = getInstance()->completeURL(str);
   else {
     url = part->url();

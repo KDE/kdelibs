@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -37,6 +38,19 @@ namespace KJS {
   class WindowQObject;
   class Location;
 
+  class Screen : public ObjectImp {
+  public:
+    enum {
+      height, width, colorDepth, pixelDepth, availLeft, availTop, availHeight,
+      availWidth
+    };
+
+    Screen() : ObjectImp( UndefClass ) { }
+    KJSO get(const UString &p) const;
+  private:
+    KHTMLView *view;
+  };
+  
   class Window : public HostImp {
     friend QGuardedPtr<KHTMLPart> getInstance();
     friend class Location;
