@@ -145,7 +145,7 @@ CachedWav::~CachedWav()
 
 class Synth_PLAY_WAV_impl : public Synth_PLAY_WAV_skel, StdSynthModule {
 protected:
-	float flpos;
+	double flpos;
 
 	float _speed;
 	string _filename;
@@ -210,13 +210,13 @@ void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 
 	if(cachedwav)
 	{
-		float speed = cachedwav->samplingRate / samplingRateFloat * _speed;
+		double speed = cachedwav->samplingRate / samplingRateFloat * _speed;
 
 		haveSamples = uni_convert_stereo_2float(samples, cachedwav->buffer,
 		   cachedwav->bufferSize,cachedwav->channelCount,cachedwav->sampleWidth,
 		   left,right,speed,flpos);
 
-		flpos += (float)haveSamples * speed;
+		flpos += (double)haveSamples * speed;
 	}
 
 	if(haveSamples != samples)

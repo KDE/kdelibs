@@ -15,7 +15,7 @@ using namespace Arts;
 class WavPlayObject_impl :public WavPlayObject_skel, public StdSynthModule {
 protected:
 	CachedWav *wav;
-	float flpos;
+	double flpos;
 	poState _state;
 
 	int sampleCount()
@@ -137,13 +137,13 @@ public:
 
 		if(wav && _state == posPlaying)
 		{
-			float speed = wav->samplingRate / samplingRateFloat;
+			double speed = wav->samplingRate / samplingRateFloat;
 
 			haveSamples = uni_convert_stereo_2float(samples, wav->buffer,
 		   		wav->bufferSize,wav->channelCount,wav->sampleWidth,
 		   		left,right,speed,flpos);
 
-			flpos += (float)haveSamples * speed;
+			flpos += (double)haveSamples * speed;
 		}
 
 		if(haveSamples != samples)

@@ -67,14 +67,14 @@ void convert_mono_ ## from_format ## _ ## to_format (unsigned long samples, \
 	} \
 } \
 void interpolate_mono_ ## from_format ## _ ## to_format (unsigned long samples,\
-									float startpos, float speed, \
+									double startpos, double speed, \
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *to) \
 { \
-	float flpos = startpos; \
+	double flpos = startpos; \
 	while(samples) { \
 		long position = ((long)(flpos)) * (datasize_ ## from_format); \
-		float error = flpos - floor(flpos); \
+		double error = flpos - floor(flpos); \
 		*to =	(convert_ ## from_format ## _ ## to_format(from[position])) * \
 				(1.0-error) + (convert_ ## from_format ## _ ## \
 				to_format(from[position + datasize_ ## from_format])) * error; \
@@ -99,15 +99,15 @@ void convert_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
 	} \
 } \
 void interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
-									float startpos, float speed, \
+									double startpos, double speed, \
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *left, \
                                     datatype_ ## to_format *right) \
 { \
-	float flpos = startpos; \
+	double flpos = startpos; \
 	while(samples) { \
 		long position = ((long)(flpos)) * (datasize_ ## from_format) * 2; \
-		float error = flpos - floor(flpos); \
+		double error = flpos - floor(flpos); \
 		*left =	(convert_ ## from_format ## _ ## to_format(from[position])) * \
 				(1.0-error) + (convert_ ## from_format ## _ ## \
 				to_format(from[position + 2*datasize_ ## from_format]))*error; \
@@ -215,18 +215,18 @@ unsigned long uni_convert_stereo_2float(
 	    unsigned int fromChannels,  // channels stored in the buffer
 		unsigned int fromBits,		// number of bits per sample
 	    float *left, float *right,	// output buffers for left and right channel
-		float speed,				// speed (2.0 means twice as fast)
-		float startposition			// startposition
+		double speed,				// speed (2.0 means twice as fast)
+		double startposition		// startposition
 	)
 {
 	unsigned long doSamples = 0;
 
 	// how many samples does the from-buffer contain?
-	float allSamples = (fromLen*8) / (fromChannels * fromBits);
+	double allSamples = (fromLen*8) / (fromChannels * fromBits);
 
 	// how many samples are remaining?
 	//    subtract one due to interpolation and another against rounding errors
-	float fHaveSamples = allSamples - startposition - 2.0;
+	double fHaveSamples = allSamples - startposition - 2.0;
 	fHaveSamples /= speed;
 
 	// convert do "how many samples to do"?

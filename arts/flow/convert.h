@@ -45,28 +45,28 @@ void convert_mono_8_float(unsigned long samples,
 			unsigned char *from, float *to);
 
 void interpolate_mono_8_float(unsigned long samples,
-		    float startpos, float speed,
+		    double startpos, double speed,
 			unsigned char *from, float *to);
 
 void convert_mono_16le_float(unsigned long samples,
 			unsigned char *from, float *to);
 
 void interpolate_mono_16le_float(unsigned long samples,
-		    float startpos, float speed,
+		    double startpos, double speed,
 			unsigned char *from, float *to);
 
 void convert_stereo_i8_2float(unsigned long samples,
 			unsigned char *from, float *left, float *right);
 
 void interpolate_stereo_i8_2float(unsigned long samples,
-		    float startpos, float speed,
+		    double startpos, double speed,
 			unsigned char *from, float *left, float *right);
 
 void convert_stereo_i16le_2float(unsigned long samples,
 			unsigned char *from, float *left, float *right);
 
 void interpolate_stereo_i16le_2float(unsigned long samples,
-		    float startpos, float speed,
+		    double startpos, double speed,
 			unsigned char *from, float *left, float *right);
 
 // downconversions from float to integer
@@ -90,6 +90,6 @@ unsigned long uni_convert_stereo_2float(
 	    unsigned int fromChannels,  // channels stored in the buffer
 		unsigned int fromBits,		// number of bits per sample
 	    float *left, float *right,	// output buffers for left and right channel
-		float speed,				// speed (2.0 means twice as fast)
-		float startposition			// startposition
+		double speed,				// speed (2.0 means twice as fast)
+		double startposition		// startposition
 	);
