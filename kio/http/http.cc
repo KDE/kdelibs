@@ -69,7 +69,6 @@
 #include <kssl.h>
 #endif
 
-#include <kmdcodec.h>
 #include <kio/http_slave_defaults.h>
 #include <kio/ioslave_defaults.h>
 
