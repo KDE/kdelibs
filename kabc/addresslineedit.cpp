@@ -170,9 +170,8 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
                 stopLDAPLookup();
 	    *s_LDAPText = text();
 	    s_LDAPLineEdit = this;
-	    s_LDAPTimer->start( 1000, true );
+	    s_LDAPTimer->start( 500, true );
 	}
-	m_typedText = text();
     }
 }
 
@@ -275,7 +274,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( !m_useCompletion )
         return;
 
-    QString s(m_typedText);
+    QString s(text());
     QString prevAddr;
     int n = s.findRev(',');
     if (n>= 0)
@@ -302,8 +301,6 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( mode != KGlobalSettings::CompletionNone )
     {
         match = s_completion->makeCompletion( s );
-        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
-          match = s_completion->makeCompletion( "\"" + s );
         if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
           match = s_completion->makeCompletion( "$$" + s );
     }
@@ -344,7 +341,6 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             {
                 m_previousAddresses = prevAddr;
 		QStringList items = s_completion->allMatches( s );
-                items += s_completion->allMatches( "\"" + s );
 		items += s_completion->substringCompletion( '<' + s );
 		if( !s.contains( ' ' )) // one word, possibly given name
 		    items += s_completion->allMatches( "$$" + s );
@@ -418,6 +414,14 @@ void AddressLineEdit::loadAddresses()
 void AddressLineEdit::addAddress( const QString& adr )
 {
     s_completion->addItem( adr );
+    int pos = adr.find( '<' );
+    if( pos >= 0 )
+    {
+        ++pos;
+        int pos2 = adr.find( pos, '>' );
+        if( pos2 >= 0 )
+            s_completion->addItem( adr.mid( pos, pos2 - pos ));
+    }
 }
 
 void AddressLineEdit::slotStartLDAPLookup()
@@ -458,7 +462,16 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
 	 it != adrs.end();
 	 ++it )
 	addAddress( *it );
-    doCompletion( false );
+    if( hasFocus() || completionBox()->hasFocus())
+    {
+        // avoid ShellCompletion too, as it would set the first
+        // match as the edited text, not only offer it
+        if( completionMode() != KGlobalSettings::CompletionShell
+            && completionMode() != KGlobalSettings::CompletionNone )
+        {
+            doCompletion( false );
+        }
+    }
 }
 
 void AddressLineEdit::slotSetTextAsEdited( const QString& text )
