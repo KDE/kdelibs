@@ -30,14 +30,9 @@
 
 class KeyValueMap;
 class QConfigDB; 
-// class QImage;
 class Section;
-// class QStringLess;
 class StringKabKeyMap; /* The type of the mirror map. */
 class QStringList;
-// class QComboBox;
-// class KURLLabel;
-// class KDataNavigator;
 
 #include <list>
 #include <qframe.h>
@@ -196,7 +191,10 @@ public:
     Fixed,
     Mobile,
     Fax,
-    Modem
+    Modem,
+    User1,
+    User2,
+    User3
   };
   /** Each entry in a loaded database has its own ::Entry object.
    *
@@ -331,7 +329,6 @@ public:
     AddressBook::ErrorCode getAddress(int index, Address& address);
     /** Returns the number of addresses of this entry. */
     int noOfAddresses() const;
-    // const QConfigDB *getFile(); /**< Returns a pointer to the database. */
     // members:
     // this parts are assumed to be unique for every entry:
     QString title; /**< The title of the person. */
@@ -347,10 +344,8 @@ public:
     QStringList emails; /**< The email addresses. */
     QStringList keywords; /**< The user defined keywords for searching. */
     /** Telephon numbers and types. This list contains combinations of telephone
-     *  numbers and the types of the phones, in this order. Types are (in 
-     *  literal strings) 
-     *  "mobil", "fix", "beeper", "answer machine", "fax", "dial in". 
-     *  Send your comments for more types, please! */
+     *  numbers and the types of the phones, in this order. See enum
+     *  Telephone above. */
     QStringList telephone; 
     QStringList URLs; /**< The home or related web pages of this person. */
     QString user1; /**< The first user-declared field. */
@@ -424,15 +419,6 @@ public:
   /** Get the index of this key in the selector. This is the reverse
       functionality to getKey(). */
   ErrorCode getIndex(const KabKey&, int&);
-  /** Display this entry. If the entry has more than one address, the address
-   *  at index \a index is displayed. */
-  // ErrorCode displayEntry(const AddressBook::Entry&, int index=0);
-  /** Display the entry at the index \e position in the current file.
-   *  The index is the position of the entries description in the string
-   *  list return by ::getListOfName, or the position of the entry in the
-   *  mirror map.
-   *  If the index is out of range, NoSuchEntry is returned. */
-  // ErrorCode displayEntry(int position, int address=0);
   /** Fill the string list with name lines. If your application shows a combobox 
    *  containing an overview over the currently loaded KabAPI database, then 
    *  call this method when receiving the signal ::changed and display the list
@@ -482,18 +468,8 @@ public:
 protected:
   QConfigDB *config; /**< The configuration database. */
   QConfigDB *data; /**< The currently open data files. */
-  // QImage *background; /**< The background pattern, a null image by default. */
-  // bool backgroundEnabled; /**< If true, the background image is displayed. */
   StringKabKeyMap *entries; /**< The mirror map. */
   ErrorCode state; /**< The internal state of the object. */
-  // Entry current; /**< The entry that is displayed now. */
-  // int currentAddress; /**< The address of the entry that has been selected. */
-  // KURLLabel *urlEmail; /**< The interactive email line. */
-  // KURLLabel *urlHomepage; /**< The interactive URL line. */
-  // bool urlsEnabled; /**< Wether the interactive mode is enabled or not. */
-  // QComboBox *addressCombo; /**< The navigator for selecting the address. */
-  // void paintEvent(QPaintEvent*); /**< The paint event. */
-  // void resizeEvent(QResizeEvent*); /**< The resize event. */
   /** Get the next available entry key for this file. For internal use only. */
   KabKey nextAvailEntryKey();
   /** Returns true if both pathes point to the same file.
@@ -552,10 +528,6 @@ protected slots:
   void dataFileChanged();
   /** Called when the \e file assigned to ::config has changed on disk. */
   void configFileChanged();
-  // void appearanceChanged(); /**< Called on kapp->appearanceChanged. */
-  // void mailURLClicked(const char*); /**< \internal */
-  // void homeURLClicked(const char*); /**< \internal */
-  // void addressSelected(int); /**< \internal */
   // ----------------------------------------------------------------------------
 public slots:
   /** This slot is called when an external object changed the database through
@@ -564,9 +536,6 @@ public slots:
   // ----------------------------------------------------------------------------
 signals:
   void changed(); /**< The entries have changed, update the selector. */
-  // void browse(const char*); /**< The user clicked on the homepage URL. */
-  // void mail(const char*); /**< The user clicked on the email address. */
-  // void edit(); /**< The user double-clicked the address display. */
   void setStatus(const QString&); /**< This is kab radio with the news... */
   void newFile(const char*); /**< Notifies changes of the file name. */
   // ############################################################################

@@ -140,27 +140,6 @@ public:
     */
   AddressBook::ErrorCode add(const AddressBook::Entry& entry, KabKey& key,
 			     bool update=true);
-  /** This method can be used to edit an Entry object used by your program.
-    * The "entry" does not need to be in the database and is NOT added to 
-    * it. Shortly, the database is not changed. Thus, you may call this 
-    * method even if your database object is read only. 
-    * @short Opens the kab edit dialog to edit the entry.
-    * @param entry The entry to be edited.
-    * @return NoError if the user accepted the dialog or Rejected if she rejected it.
-    * ATTENTION: edit() is likely to stay removed from the KabAPI.
-    */
-  // AddressBook::ErrorCode edit(AddressBook::Entry& entry);
-  /** In difference to the other edit method, this one will edit an entry 
-    * in the database. A dialog will pop up where the user can edit it,
-    * if the dialog is finished with "OK", the entry will be changed.
-    * If called for a read only database, the method will return 
-    * PermDenied.
-    * @short Edit the database entry with this key.
-    * @param key The key of the entry to be edited.
-    * @return Rejected if the user cancelled the dialog, NoError if the entry has been changed or another ErrorCode.
-    * ATTENTION: edit() is likely to stay removed from the KabAPI.
-    */
-  // AddressBook::ErrorCode edit(const QCString& key);
   /** If the preferences of kab say to query before deleting, the user has
     * to click "yes" on a message box that appeares.
     * If called for a read only database, the method will return 
@@ -194,11 +173,6 @@ public:
   AddressBook::ErrorCode getEntryByName(const AddressBook::Entry& pattern,
 			   std::list<AddressBook::Entry>& entries,
 			   const int max=5);
-  /** This method uses kab's configuration to call the (KDE ?) mailer or
-   *  whatever is configured to send an email in kab.
-   */
-  AddressBook::ErrorCode sendEmail(const QString& address,
-				   const QString& subject="");
   /** Execute this dialog. This overloads QDialog::exec to fill the list box
    *  before showing. */
   int exec();

@@ -38,7 +38,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <knana.h>
 
 extern "C" {
 #include <sys/stat.h>
@@ -65,7 +64,9 @@ extern "C" {
 #ifdef KAB_LOCALDIR
 #undef KAB_LOCALDIR
 #endif
-#define KAB_LOCALDIR "kab" // change to "kab" after hot states
+/* Change this to another subdirectory of ~/.kde/share/apps in states that treaten
+   user data. */
+#define KAB_LOCALDIR "kab" 
 #ifdef ENTRY_SECTION
 #undef ENTRY_SECTION
 #endif
@@ -127,16 +128,6 @@ KabKey::getKey() const
   // ###########################################################################
 }
 
-/*
-  const QConfigDB*
-  AddressBook::Entry::getFile()
-  {
-  // ###########################################################################
-  return file;
-  // ###########################################################################
-  }
-*/
-
 AddressBook::ErrorCode
 AddressBook::Entry::getAddress(int index, Address& address)
 {
@@ -164,20 +155,14 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
   : QFrame(parent, name),
     config(new QConfigDB(this)),
     data(new QConfigDB(this)),
-    // background(new QImage),
-    // backgroundEnabled(true),
     entries(new StringKabKeyMap),
     state(NoFile)
-    // currentAddress(0),
-    // addressCombo(new QComboBox(this))
 {
   register bool GUARD; GUARD=true;
   // ###########################################################################
   QString dir, filename;
   // ----- do memory checks (do not rely on exception handling):
-  if(config==0 || data==0 || entries==0
-     /* || urlEmail==0 || urlHomepage==0
-	|| addressCombo==0 || background==0 */ )
+  if(config==0 || data==0 || entries==0)
     {
       KMessageBox::error(this,
 	 i18n("Cannot initialize local variables."),
@@ -189,25 +174,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	  SLOT(reloaded(QConfigDB*)));
   connect(config, SIGNAL(fileChanged()), SLOT(configFileChanged()));
   // ----- set style:
-  setLineWidth(1);
-  setFrameStyle(QFrame::Box | QFrame::Sunken);
-  // urlEmail->setAutoResize(true);
-  // urlEmail->setTransparentMode(false);
-  // urlEmail->setLineWidth(0);
-  // urlEmail->setMidLineWidth(0);
-  // urlHomepage->setAutoResize(true);
-  // urlHomepage->setTransparentMode(false);
-  // urlHomepage->setLineWidth(0);
-  // urlHomepage->setMidLineWidth(0);
-  // setInteractiveMode(false);
-  // -----
-  // connect(addressCombo, SIGNAL(highlighted(int)), SLOT(addressSelected(int)));
-  // -----
-  // connect(urlEmail, SIGNAL(leftClickedURL(const char*)), SLOT(mailURLClicked(const char*)));
-  // connect(urlHomepage, SIGNAL(leftClickedURL(const char*)), SLOT(homeURLClicked(const char*)));
-  // ----- check and possibly create kab's local directory:
   dir=baseDir();
-  CHECK(dir!=QString::null);
   // ----- open or create the configuration file and load it:
   filename=dir+"/"+STD_CONFIGFILENAME;
   if(::access(filename.ascii(), F_OK)!=0) // if it does not exist
@@ -302,32 +269,27 @@ AddressBook::~AddressBook()
   // ###########################################################################
   delete data;
   delete config;
-  // delete background;
   delete entries;
   // ###########################################################################
 }
 
-QConfigDB*
-AddressBook::getConfig()
+QConfigDB* AddressBook::getConfig()
 {
   // ###########################################################################
   return config;
   // ###########################################################################
 }
 
-AddressBook::ErrorCode
-AddressBook::getState()
+AddressBook::ErrorCode AddressBook::getState()
 {
   // ###########################################################################
   return state;
   // ###########################################################################
 }
 
-AddressBook::ErrorCode
-AddressBook::load(QString filename)
+AddressBook::ErrorCode AddressBook::load(QString filename)
 {
   // ----- Remark: Close the file if it could not be loaded!
-  REQUIRE(access(baseDir().ascii(), X_OK | F_OK)==0);
   // ###########################################################################
   const QString dir=baseDir();
   ErrorCode rc=NoError;
@@ -453,7 +415,6 @@ AddressBook::getListOfNames(QStringList* strings, bool reverse, bool initials)
       strings->append(desc);
     }
   // ----- any problems?
-  ENSURE((unsigned)strings->count()==entries->size());
   kdDebug(GUARD, KAB_KDEBUG_AREA)
       << "AddressBook::getListOfNames: done, "
       << strings->count()
@@ -626,58 +587,6 @@ AddressBook::reloaded(QConfigDB* db)
   // ###########################################################################
 }
 
-/*
-  AddressBook::ErrorCode
-  AddressBook::displayEntry(const AddressBook::Entry& entry, int index)
-  {
-  // ###########################################################################
-  QStrList strings;
-  list<AddressBook::Entry::Address>::iterator pos;
-  // -----
-  current=entry;
-  currentAddress=index;
-  for(pos=current.addresses.begin(); pos!=current.addresses.end(); ++pos)
-  {
-  strings.append((*pos).headline);
-  }
-  addressCombo->clear();
-  addressCombo->insertStrList(&strings);
-  repaint(false);
-  return NoError;
-  // ###########################################################################
-  }
-
-  AddressBook::ErrorCode
-  AddressBook::displayEntry(int position, int index)
-  {
-  // ###########################################################################
-  KabKey key;
-  QStrList strings;
-  list<AddressBook::Entry::Address>::iterator pos;
-  // -----
-  if(getKey(position, key)!=NoError)
-  {
-  return NoSuchEntry;
-  }
-  if(getEntry(key, current)!=NoError)
-  {
-  CHECK(false);
-  return InternError;
-  }
-  currentAddress=index;
-  for(pos=current.addresses.begin(); pos!=current.addresses.end(); ++pos)
-  {
-  strings.append((*pos).headline);
-  }
-  addressCombo->clear();
-  addressCombo->insertStrList(&strings);
-  repaint(false);
-  return NoError;
-  // ###########################################################################
-  }
-*/
-
-
 AddressBook::ErrorCode
 AddressBook::save(const QString& filename, bool force)
 {
@@ -782,7 +691,6 @@ AddressBook::getEntry(const KabKey& key, Section*& section)
 		"AddressBook::getEntry: done." << endl;
 	  return NoError;
 	} else {
-	  CHECK(false); // Inconsistency between mirror map and database!
 	  return InternError;
 	}
     }
@@ -797,14 +705,14 @@ AddressBook::getEntries(list<Entry>& thelist)
   Entry entry;
   // -----
   thelist.erase(thelist.begin(), thelist.end());
-  CHECK(thelist.empty());
+  kdDebug(!thelist.empty(), KAB_KDEBUG_AREA)
+    << "AddressBook::getEntries: warning - non-empty value list!" << endl;
   for(pos=entries->begin(); pos!=entries->end(); ++pos)
     {
       if(getEntry((*pos).second, entry))
 	{
 	  thelist.push_back(entry);
 	} else {
-	  CHECK(false); // Inconsistency between mirror map and database!
 	  return InternError;
 	}
     }
@@ -933,7 +841,8 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
     }
   if(locked!=Locked)
     { // ----- unlock the file here:
-      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "AddressBook::add: dropped writing permissions." << endl;
+      kdDebug(GUARD, KAB_KDEBUG_AREA)
+	<<  "AddressBook::add: dropped writing permissions." << endl;
       locked=unlock();
     }
   // -----
@@ -975,7 +884,6 @@ AddressBook::change(const KabKey& key, const Entry& entry)
       rc=NoSuchEntry;
     } else {
       oldEntry->clear();
-      CHECK(oldEntry->empty());
       rc=makeSectionFromEntry(entry, *oldEntry);
     }
   // -----
@@ -1063,277 +971,6 @@ AddressBook::unlock()
   // ###########################################################################
 }
 
-/*
-  void
-  AddressBook::resizeEvent(QResizeEvent*)
-  {
-  // ###########################################################################
-  const int Grid=3;
-  const int FW=frameWidth();
-  // -----
-  addressCombo->setGeometry
-  (Grid+FW,
-  3*Grid+FW+2*fontMetrics().height(),
-  width()-2*Grid-2*FW,
-  addressCombo->sizeHint().height());
-  // ###########################################################################
-  }
-*/
-
-/* The view of this widget is partened into four parts. On top the name of the
-   person is displayed, including titles and ranks. Two lines of text are
-   reserved for this.
-   Below this two lines the address is shown, below a KDataNavigator that allows
-   to select an address. This part needs the height of the KDataNavigator and
-   four lines of text. A line is drawn below it.
-   The comment is printed below the address. The comment field stretches to the
-   space available, since it may be a long text.
-   On the bottom contact information is displayed, the telephone numbers, email
-   addresses and the URLs. */
-// WORK_TO_DO: the comment is not displayed by now.
-/*
-  void
-  AddressBook::paintEvent(QPaintEvent* e)
-  {
-  REQUIRE(background!=0);
-  // ###########################################################################
-  const int Grid=3;
-  const int FW=frameWidth();
-  QFont original, font;
-  QFrame::paintEvent(e);
-  bool useBackground=false;
-  bool drawSeparator=false;
-  QPixmap pm(contentsRect().width(), contentsRect().height());
-  QPainter p;
-  QString temp;
-  int posSeparator=0, cy, addressHeight, contactHeight;
-  Entry::Address address;
-  int nameHeight, bottomHeight, noOfBottomLines=0;
-  bool showName, showAddress, showBottom;
-  // ----- begin painting:
-  p.begin(&pm);
-  // ----- decide some style rules, get fonts, get the address:
-  if(!background->isNull() && backgroundEnabled==true)
-  {
-  useBackground=true;
-  } else {
-  useBackground=false;
-  }
-  if(current.getAddress(currentAddress, address)!=NoError)
-  {
-  // kDebugInfo("AddressBook::paintEvent: address index out of range!\n");
-  }
-  // ----- draw the background:
-  if(useBackground)
-  {
-  CHECK(background!=0 && !background->isNull());
-  QPixmap pm;
-  pm=*background;
-  p.drawTiledPixmap(0, 0, width(), height(), pm);
-  } else {
-  p.setPen(kapp->backgroundColor);
-  p.setBrush(kapp->backgroundColor);
-  p.drawRect(0, 0, width(), height());
-  p.setPen(black);
-  }
-  // ----- now draw on the background:
-  original=p.font();
-  font.setFamily(original.family());
-  font.setPointSize(10);
-  p.setFont(font);
-  // ----- calculate sizes and decide display contents:
-  nameHeight=2*Grid+FW+2*p.fontMetrics().height();
-  if(!current.telephone.empty()) noOfBottomLines+=1;
-  if(!current.URLs.empty()) noOfBottomLines+=1;
-  if(!current.emails.empty()) noOfBottomLines+=1;
-  bottomHeight=3*Grid+FW+noOfBottomLines*p.fontMetrics().height();
-  addressHeight=height()-nameHeight-bottomHeight;
-  showAddress=height()-nameHeight-bottomHeight
-  >addressCombo->sizeHint().height()+4*QFontMetrics(original).height();
-showBottom=height()-nameHeight>=bottomHeight;
-showName=height()>=nameHeight;
-//   kDebugInfo("AddressBook::paintEvent: %sshow name,\n"
-//     "                         %sshow address,\n"
-//     "                         %sshow bottom.\n",
-//     showName ? "" : "do not ",
-//     showAddress ? "" : "do not ",
-//     showBottom ? "" : "do not ");
-// ----- now draw the contact lines and labels:
-if(showBottom)
-{
-cy=pm.height()-Grid;
-if(!current.URLs.empty())
-{
-temp=(QString)"URL: "+current.URLs.front();
-if(current.URLs.size()>1)
-{
-temp+=" [..]";
-}
-urlHomepage->setFont(font);
-urlHomepage->setText(temp);
-urlHomepage->move(Grid+frameWidth(),
-  cy+3+frameWidth()-urlHomepage->height());
-urlHomepage->show();
-cy-=urlHomepage->height();
-drawSeparator=true;
-temp="";
-} else {
-urlHomepage->hide();
-}
-if(!current.emails.empty())
-{
-temp=(QString)"email: "+current.emails.front();
-if(current.emails.size()>1)
-{
-temp+=" [..]";
-}
-urlEmail->setFont(font);
-urlEmail->setText(temp);
-urlEmail->move(Grid+frameWidth(), cy-urlEmail->height()+5);
-urlEmail->show();
-cy-=urlEmail->height();
-drawSeparator=true;
-temp="";
-} else {
-urlEmail->hide();
-}
-if(!current.telephone.empty())
-{
-temp+=QString("tel: ")+current.telephone.front();
-if(current.telephone.size()>1)
-{
-temp+=" [..]";
-}
-p.drawText(Grid, cy, temp);
-cy-=p.fontMetrics().height();
-drawSeparator=true;
-temp="";
-}
-if(drawSeparator)
-{
-  posSeparator=cy;
-  cy-=Grid;
-}
-contactHeight=height()-cy;
-CHECK(contactHeight>0);
-if(drawSeparator)
-{
-  p.drawLine(Grid, posSeparator, pm.width()-Grid, posSeparator);
-}
-} else {
-  urlHomepage->hide();
-urlEmail->hide();
-}
-// (now contactHeight is the actual number of pixels needed)
-if(showName)
-{
-// ----- print the birthday in the upper right corner if it is valid:
-if(current.birthday.isValid())
-  { //       by now I do not take care if there is enough space left
-    p.drawText
-      (pm.width()-Grid-p.fontMetrics().width(current.birthday.toString()),
-       Grid+p.fontMetrics().ascent(), current.birthday.toString());
-  }
-// ----- draw the address, begin on top
- cy=Grid;
- font.setPointSize(12);
- p.setFont(font);
- if(!current.fn.isEmpty())
-   {
-     temp=current.fn;
-   } else {
-     if(!current.rank.isEmpty())
-       {
-	 if(!temp.isEmpty()) temp+=" ";
-	 temp+=current.rank;
-       }
-     if(!current.nameprefix.isEmpty())
-       {
-	 if(!temp.isEmpty()) temp+=" ";
-	 temp+=current.nameprefix;
-       }
-if(!current.firstname.isEmpty())
-{
-  if(!temp.isEmpty()) temp+=" ";
-  temp+=current.firstname;
-}
-if(!current.middlename.isEmpty())
-{
-  if(!temp.isEmpty()) temp+=" ";
-  temp+=current.middlename;
-}
-if(!current.lastname.isEmpty())
-{
-  if(!temp.isEmpty()) temp+=" ";
-  temp+=current.lastname;
-}
-}
-if(!temp.isEmpty())
-{
-  font.setItalic(true);
-  p.setFont(font);
-  p.setPen(blue);
-  p.drawText(2*Grid, cy+p.fontMetrics().height(), temp);
-  font.setItalic(false);
-  p.setFont(font);
-  p.setPen(black);
-  cy+=p.fontMetrics().height();
-}
-if(!current.title.isEmpty())
-{
-  p.drawText(2*Grid, cy+p.fontMetrics().height(), current.title);
-  cy+=p.fontMetrics().height();
-}
-}
-// ----- now draw the address:
-if(showAddress)
-{
-  // find starting point:
-  cy=addressCombo->y()+addressCombo->height();
-  if(!address.role.isEmpty())
-    {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.role);
-      cy+=p.fontMetrics().height();
-    }
-  if(!address.address.isEmpty())
-    {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.address);
-      cy+=p.fontMetrics().height();
-    }
-  temp = "";
-  if(!address.town.isEmpty())
-    {
-      temp+=address.town;
-    }
-  if(!address.state.isEmpty())
-    {
-      if (!temp.isEmpty()) temp += " ";
-      temp+=address.state;
-    }
-  if(!address.zip.isEmpty())
-    {
-      if (!temp.isEmpty()) temp += " ";
-      temp += address.zip;
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp);
-      cy+=p.fontMetrics().height();
-    }
-  if(!address.country.isEmpty())
-    {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.country);
-      cy+=p.fontMetrics().height();
-    }
-  addressHeight=cy+Grid;
-  addressCombo->show();
-} else {
-  addressCombo->hide();
-}
-// ----- finish painting:
-p.end();
-bitBlt(this, contentsRect().left(), contentsRect().top(), &pm);
-// ###########################################################################
-}
-*/
-
 KabKey
 AddressBook::nextAvailEntryKey()
 {
@@ -1356,7 +993,6 @@ AddressBook::nextAvailEntryKey()
 	    {
 	      kDebugInfo("AddressBook::nextAvailEntryKey: non-integer entry "
 			 "key.");
-	      CHECK(false);
 	    }
 	  if(temp>max)
 	    {
@@ -1367,7 +1003,7 @@ AddressBook::nextAvailEntryKey()
   // -----
   dummy.setNum(++max);
   key.setKey(dummy);
-  CHECK(key.getKey().toInt(&good)==max);
+  // CHECK(key.getKey().toInt(&good)==max);
   return key;
   // ###########################################################################
 }
@@ -1387,7 +1023,6 @@ AddressBook::updateMirrorMap()
   Section::StringSectionMap::iterator pos;
   // -----
   entries->erase(entries->begin(), entries->end());
-  CHECK(entries->empty());
   if(section==0)
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "AddressBook::updateMirrorMap: done, "
@@ -1398,7 +1033,6 @@ AddressBook::updateMirrorMap()
     {
       if(makeEntryFromSection((*pos).second, entry)!=NoError)
 	{
-	  CHECK(false);
 	  // return InternError; // it is saver to continue without a key
 	}
       key="";
@@ -1412,8 +1046,8 @@ AddressBook::updateMirrorMap()
       entries->insert(StringKabKeyMap::value_type(key, kk));
     }
   // -----
-  ENSURE(entries->size()==section->noOfSections());
-  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "AddressBook::updateMirrorMap: done." << endl;
+  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "AddressBook::updateMirrorMap: done."
+				  << endl;
   return NoError;
   // ###########################################################################
 }
@@ -1421,7 +1055,6 @@ AddressBook::updateMirrorMap()
 AddressBook::ErrorCode
 AddressBook::makeEntryFromSection(Section* section, Entry& entry)
 {
-  REQUIRE(section!=0);
   // ###########################################################################
   // -----
   Section *addresses;
@@ -1462,7 +1095,6 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
     &temp.user4
   };
   const int StringKeySize=sizeof(StringKeys)/sizeof(StringKeys[0]);
-  CHECK(StringKeySize==sizeof(StringValues)/sizeof(StringValues[0]));
   const QCString StringListKeys[]= {
     "talk",
     "emails",
@@ -1478,63 +1110,55 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
     &temp.URLs
   };
   const int StringListKeySize=sizeof(StringListKeys)/sizeof(StringListKeys[0]);
-  CHECK(StringListKeySize==
-	sizeof(StringListValues)/sizeof(StringListValues[0]));
   // ----- first parse "addresses" subsection:
   if(!section->find(ADDRESS_SUBSECTION, addresses))
     {
-      CHECK(false); // currently we are very critical here in the debug version
       return InternError; // no subsection called "addresses"
     }
-  CHECK(addresses!=0);
   for(pos=addresses->sectionsBegin(); pos!=addresses->sectionsEnd(); ++pos)
     {
       if(!addresses->find((*pos).first, addressSection))
 	{
-	  CHECK(false); // currently we are very critical ...
 	  return InternError; // no section we have an iterator for?
 	}
       keys=addressSection->getKeys();
-      CHECK(keys!=0);
       address=addressDummy; // clean it up
       if(makeAddressFromMap(keys, address)==AddressBook::NoError)
 	{
 	  // ----- add the address to the list of addresses:
 	  temp.addresses.push_back(address);
 	} else {
-	  debug("AddressBook::makeEntryFromSection: cannot find all fields "
-		"in an address subsection.");
-	  CHECK(false); // meanwhile, not in release
+	  kdDebug(KAB_KDEBUG_AREA)
+	    << "AddressBook::makeEntryFromSection: cannot find all fields "
+	    << "in an address subsection." << endl;
 	}
     }
-  CHECK(temp.addresses.size()==addresses->noOfSections());
   // ----- now parse all other fields directly:
   keys=section->getKeys();
-  CHECK(keys!=0);
   for(count=0; count<StringKeySize; ++count)
     {
       if(!keys->get(StringKeys[count], *StringValues[count]))
 	{
-	  debug("AddressBook::makeEntryFromSection: error: could not get "
-		"value for key %s.", (const char*)StringKeys[count]);
-	  CHECK(false); // kill in debug version
+	  kdDebug(KAB_KDEBUG_AREA)
+	    << "AddressBook::makeEntryFromSection: error: could not get "
+	    << "value for key " << (const char*)StringKeys[count]
+	    << "." << endl;
 	}
     }
   for(count=0; count<StringListKeySize; ++count)
     {
       if(!keys->get(StringListKeys[count], *StringListValues[count]))
 	{
-	  debug("AddressBook::makeEntryFromSection: error: could not get "
-		"value for key %s.", (const char*)StringListKeys[count]);
-	  CHECK(false); // kill in debug version
+	  kdDebug(KAB_KDEBUG_AREA)
+	    << "AddressBook::makeEntryFromSection: error: could not get "
+	    << "value for key " << (const char*)StringListKeys[count]
+	    << "." << endl;
 	}
     }
-  CHECK(temp.telephone.count()%2==0); // must be an even number
   // ----- finally get the birthday:
   keys->get("birthday", temp.birthday); // this may return false (no date)
   // -----
   entry=temp;
-  CHECK(entry.addresses.size()==temp.addresses.size());
   return NoError;
   // ###########################################################################
 }
@@ -1542,7 +1166,6 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
 AddressBook::ErrorCode
 AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
 {
-  REQUIRE(keys!=0);
   // ###########################################################################
   const QCString Keys[]= {
     "headline",
@@ -1573,7 +1196,6 @@ AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
     &address.state
   };
   const int Size=sizeof(Keys)/sizeof(Keys[0]);
-  CHECK(Size==sizeof(strings)/sizeof(strings[0]));
   int count;
   // -----
   for(count=0; count<Size; ++count)
@@ -1600,19 +1222,16 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
   KeyValueMap *keys;
   // ----- prepare the section object:
   section.clear();
-  CHECK(section.empty());
   // ----- first create "addresses" subsection:
   if(!section.add(ADDRESS_SUBSECTION))
     {
       kDebugInfo("AddressBook::makeSectionFromEntry: cannot create %s "
 		 "subsection.", ADDRESS_SUBSECTION);
-      CHECK(false); // currently we are very critical here in the debug version
       return InternError;
     }
   if(!section.find(ADDRESS_SUBSECTION, addresses))
     {
       kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new section.");
-      CHECK(false); // currently we are very critical here in the debug version
       return InternError;
     }
   // ----- now insert addresses:
@@ -1620,24 +1239,19 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
     {
       ++count;
       key.setNum(count);
-      CHECK(key.toInt(0)==count);
       if(!addresses->add(key))
 	{
 	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot create address "
 		     "subsection %s.", (const char*)key);
-	  CHECK(false); // currently we are very critical...
 	  return InternError;
 	}
       if(!addresses->find(key, address))
 	{
 	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new "
 		     "subsection.");
-	  CHECK(false); // currently we are very critical...
 	  return InternError;
 	}
-      CHECK(address!=0);
       keys=address->getKeys();
-      CHECK(keys->empty()); // semantical check
       // ----- now insert keys into address:
       if(!keys->insert("headline", (*addPos).headline) ||
 	 !keys->insert("position", (*addPos).position) ||
@@ -1654,7 +1268,6 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
 	{
 	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot completely "
 		     "create address subsection.");
-	  CHECK(false); // meanwhile, not in release
 	  return InternError;
 	}
     }
@@ -1681,7 +1294,6 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
     {
       kDebugInfo("AddressBook::makeEntryFromSection: cannot insert all fields of the "
 	"entry into its section!");
-      CHECK(false); // currently we are very critical here in the debug version
       return InternError;
     }
   // -----
@@ -1693,12 +1305,9 @@ AddressBook::ErrorCode
 AddressBook::createNew(const QString& filename)
 {
   // ###########################################################################
-  // const QString KabPublicDir=KApplication::kde_datadir()+"/kab/";
-  // const QString KabPublicDir="./"; // WORK_TO_DO: remove this line!
   const QString KabTemplateFile=locate("data", "kab/template.kab");
   debug("AddressBook::createNew: template file is \"%s\".",
 	(const char*)KabTemplateFile.utf8());
-  // KabPublicDir+KAB_TEMPLATEFILE;
   QConfigDB db;
   // -----
   if(KabTemplateFile.isEmpty()
@@ -1742,95 +1351,10 @@ AddressBook::createNew(const QString& filename)
   // ###########################################################################
 }
 
-/*
-  AddressBook::ErrorCode
-  AddressBook::configureFile()
-  {
-  // ###########################################################################
-  DialogBase base(this);
-  KabFileConfigWidget conf(data, &base, 0);
-  // -----
-  base.setCaption(i18n("kab: Configure this file"));
-  base.enableButtonApply(false);
-  base.setMainWidget(&conf);
-  base.resize(base.minimumSize());
-  if(base.exec())
-    { // ----- first "save" settings into the QConfigDB object:
-    if(conf.saveSettings()==NoError)
-    { // ----- ...then save it to the file:
-    return save();
-    } else {
-    return PermDenied;
-    }
-    } else {
-    emit(setStatus(i18n("Rejected.")));
-    return Rejected;
-    }
-    // ###########################################################################
-    }
-
-bool
-AddressBook::getBackgroundEnabled()
-{
-  // ###########################################################################
-  return backgroundEnabled;
-  // ###########################################################################
-}
-
-void
-AddressBook::setBackgroundEnabled(bool state)
-{
-  // ###########################################################################
-  backgroundEnabled=state;
-  // ###########################################################################
-}
-
-void
-AddressBook::setBackground(const QImage& image)
-{
-  // ###########################################################################
-  *background=image;
-  // ###########################################################################
-}
-
-bool
-AddressBook::getInteractiveMode()
-{
-  // ###########################################################################
-  return urlsEnabled;
-  // ###########################################################################
-}
-
-void
-AddressBook::setInteractiveMode(bool state)
-{
-  // ###########################################################################
-  urlsEnabled=state;
-  urlEmail->setFloat(state);
-  urlEmail->setUnderline(state);
-  // urlEmail->setEnabled(state;
-  urlHomepage->setFloat(state);
-  urlHomepage->setUnderline(state);
-  // urlHomepage->setEnabled(state);
-  // ###########################################################################
-}
-
-void
-AddressBook::appearanceChanged()
-{
-  // ###########################################################################
-  repaint(false);
-  // ###########################################################################
-}
-*/
-
 AddressBook::ErrorCode
 AddressBook::createConfigFile()
 {
   // ###########################################################################
-  // const QString KabPublicDir=KApplication::kde_datadir()+"/kab/";
-  // const QString KabPublicDir=globalDir(); // WORK_TO_DO: remove this line!
-  // KabPublicDir+"/"+KAB_CONFIGTEMPLATE;
   const QString ConfigTemplateFile=locate("data", "kab/template.config");
   debug("AddressBook::createConfigFile: config template file is \"%s\".",
 	(const char*)ConfigTemplateFile.utf8());
@@ -1908,34 +1432,6 @@ AddressBook::loadConfigFile()
   // ###########################################################################
 }
 
-/*
-  void
-  AddressBook::mailURLClicked(const char* c)
-  {
-  // ###########################################################################
-  emit(mail(c));
-  // ###########################################################################
-  }
-
-  void
-  AddressBook::homeURLClicked(const char* c)
-  {
-  // ###########################################################################
-  emit(browse(c));
-  // ###########################################################################
-  }
-
-  void
-  AddressBook::addressSelected(int index)
-  {
-  // ###########################################################################
-  CHECK(index>=0 && (unsigned)index<current.addresses.size());
-  currentAddress=index;
-  repaint(false);
-  // ###########################################################################
-  }
-*/
-
 AddressBook::ErrorCode
 AddressBook::makeVCardFromEntry(const Entry&, QString)
 {
@@ -1995,7 +1491,6 @@ AddressBook::baseDir()
 	  state=PermDenied;
 	  return QString::null;
 	} else { // ----- just for interactivity:
-	  CHECK(access(dir.ascii(), X_OK | F_OK)==0);
 	  KMessageBox::information(this,
 		i18n("The directory has been created."),
 		i18n("Directory created"));

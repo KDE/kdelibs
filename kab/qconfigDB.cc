@@ -44,7 +44,6 @@ extern "C" {
 
 #include "qconfigDB.moc"
 #include <kdebug.h>
-#include <knana.h>
 
 #ifdef KAB_KDEBUG_AREA
 #undef KAB_KDEBUG_AREA
@@ -154,13 +153,11 @@ void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict)
       if(zwei!=-1)
 	{
 	  teil=text.mid(eins, zwei-eins);
-	  CHECK(teil.length()==(unsigned)zwei-eins);
 	  res.push_back(teil);
 	} else { // last element
 	  if(!strict) // nur wenn dazwischen Zeichen sind
 	    {
 	      teil=text.mid(eins, text.length()-eins);
-	      CHECK(teil.length()==text.length()-eins);
 	      res.push_back(teil);
 	    }
 	}
@@ -182,8 +179,6 @@ KeyValueMap::KeyValueMap()
   : data(new StringStringMap)
 {
   // ###########################################################################
-  REQUIRE(data!=0);
-  ENSURE(data->empty());
   // ###########################################################################
 }
 
@@ -191,15 +186,12 @@ KeyValueMap::KeyValueMap(const KeyValueMap& orig)
   : data(new StringStringMap(*orig.data))
 {
   // ###########################################################################
-  REQUIRE(data!=0);
-  ENSURE(size()==orig.size());
   // ###########################################################################
 }
 
 KeyValueMap::~KeyValueMap()
 {
   // ###########################################################################
-  REQUIRE(data!=0);
   delete data;
   // ###########################################################################
 }
@@ -213,7 +205,6 @@ unsigned int
 KeyValueMap::size() const
 {
   // ###########################################################################
-  CHECK(data!=0);
   return data->size();
   // ###########################################################################
 }
@@ -232,14 +223,12 @@ KeyValueMap::clear()
     }
   // -----
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "done." << endl;
-  ENSURE(data->empty());
   // ###########################################################################
 }
 
 bool
 KeyValueMap::fill(const QString& filename, bool force, bool relax)
 {
-  REQUIRE(!filename.isEmpty());
   register bool GUARD; GUARD=false;
   // ###########################################################################
   QFile file(filename);
@@ -278,7 +267,6 @@ bool
 KeyValueMap::save(const QString& filename, bool force)
 {
   register bool GUARD; GUARD=false;
-  REQUIRE(!filename.isEmpty());
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
       "KeyValueMap::save: saving data to -->" <<
@@ -318,7 +306,6 @@ bool
 KeyValueMap::save(QTextStream& file, int count)
 {
   register bool GUARD; GUARD=false;
-  CHECK(count>=0);
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	     "KeyValueMap::save: saving data to given output stream." << endl;
@@ -327,7 +314,6 @@ KeyValueMap::save(QTextStream& file, int count)
   char* prefix=new char[count+1];
   memset(prefix, ' ', count);
   prefix[count]=0;
-  CHECK(prefix!=0);
   // -----
   for(pos=data->begin(); pos!=data->end(); pos++)
     {
@@ -345,7 +331,6 @@ KeyValueMap::erase(const QCString& key)
 {
   // ###########################################################################
   bool rc=(data->erase(key)>0);
-  ENSURE(data->find(key)==data->end());
   return rc;
   // ###########################################################################
 }
@@ -355,7 +340,6 @@ bool
 KeyValueMap::empty()
 {
   // ###########################################################################
-  REQUIRE(data!=0);
   return data->empty();
   // ###########################################################################
 }
@@ -557,7 +541,6 @@ KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
   if(force) // entry will be replaced
     {
       n=data->erase(key);
-      CHECK(data->find(key)==data->end());
     }
   if(data->insert(StringStringMap::value_type(key, value)).second)
     {
@@ -617,7 +600,6 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
   QCString value;
   // ----- is the line empty or does it contain only whitespaces?
   for(index=0; isspace(line[index]) && (unsigned)index<line.length(); ++index);
-  CHECK((unsigned)index<=line.length());
   if(line.isEmpty() || (unsigned)index==line.length())
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -1073,7 +1055,6 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 	  //       character in a complex string:
 	  if(second!=-1)
 	    { // ----- check for string end:
-	      CHECK((unsigned)first<raw.length()-2);
 	      // we use "\e" as token for the string-delimiter
 	      if(raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
@@ -1137,7 +1118,6 @@ KeyValueMap::insert(const QCString& key, const list<QCString>& values, bool forc
       pos++)
     { // create strings like "abc\efgh\eijk":
       temp=makeComplexString(*pos);
-      CHECK(temp.length()>=2); // at least "\\"\\""
       temp.remove(0, 1); // remove the leading "\""
       temp.remove(temp.length()-1, 1); // the trailing "\""
       value+=temp;
@@ -1184,7 +1164,6 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
 	  //       character in a complex string:
 	  if(second!=-1)
 	    { // ----- check for string end:
-	      CHECK((unsigned)first<raw.length()-2);
 	      // we use "\e" as token for the string-delimiter
 	      if(raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
@@ -1245,7 +1224,6 @@ KeyValueMap::insert(const QCString& key, const QStrList& values, bool force)
   for(count=0; count<values.count(); ++count)
     { // create strings like "abc\efgh\eijk":
       temp=makeComplexString(((QStrList)values).at(count));
-      CHECK(temp.length()>=2); // at least "\\"\\""
       temp.remove(0, 1); // remove the leading "\""
       temp.remove(temp.length()-1, 1); // the trailing "\""
       value+=temp;
@@ -1409,7 +1387,6 @@ KeyValueMap::insert(const QCString& key, const QDate& value, bool force)
       values.push_back(value.month());
       values.push_back(value.day());
     }
-  CHECK(values.size()==3);
   // -----
   return insert(key, values, force);
   // ###########################################################################
@@ -1440,7 +1417,7 @@ KeyValueMap::get(const QCString& key, QDate& date) const
     }
   y=values.front(); values.pop_front();
   m=values.front(); values.pop_front();
-  d=values.front(); CHECK(values.size()==1);
+  d=values.front(); 
   // -----
   if(y!=0 || m!=0 || d!=0) temp.setYMD(y, m, d); // avoid QDate messages
   if(!temp.isValid() && !temp.isNull())
@@ -1472,7 +1449,6 @@ Section::Section(const KeyValueMap& contents)
 {
   // ###########################################################################
   keys=contents;
-  CHECK(keys.size()==contents.size());
   // ###########################################################################
 }
 
@@ -1562,7 +1538,6 @@ Section::remove(const QCString& name)
       return false; // no such section
     } else {
       sections.erase(pos);
-      ENSURE(!find(name, pos));
       return true;
     }
   // ###########################################################################
@@ -1595,7 +1570,6 @@ Section::getKeys()
 void
 Section::insertIndentSpace(QTextStream& file, int level)
 {
-  CHECK(level>=0);
   // ###########################################################################
   int i, j;
   // -----
@@ -1611,7 +1585,6 @@ bool
 Section::save(QTextStream& stream, int level)
 {
   register bool GUARD; GUARD=false;
-  CHECK(level>=0);
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
@@ -1701,8 +1674,6 @@ Section::readSection(QTextStream& file, bool finish)
 	  name=nameOfSection(line);
 	  add(name);
 	  find(name, temp);
-	  // errors may not happen here:
-	  CHECK(find(name, temp));
 	  if(!temp->readSection(file))
 	    {
 		kdDebug() << "Section::readSection: unable to read "
@@ -1720,8 +1691,6 @@ Section::readSection(QTextStream& file, bool finish)
 	    }
 	}
     }
-  // -----
-  CHECK(false); // unreachable!
   // ###########################################################################
 }
 
@@ -1778,7 +1747,6 @@ Section::isEndOfSection(QCString line)
   // ----- find the word inside the brackets:
   for(first=1; line[first]==' '; ++first); // find first non-whitespace character
   for(second=first; line[second]!=' ' && line[second]!=']'; ++second);
-  CHECK(first<=second && (unsigned)second<line.length());
   temp=line.mid(first, second-first);
   if(temp=="END")
     {
@@ -1815,7 +1783,6 @@ Section::nameOfSection(const QCString& line)
   // ----- find the word inside the brackets:
   for(first=1; temp[first]==' '; ++first); // find first non-whitespace character
   for(second=first; temp[second]!=' ' && temp[second]!=']'; ++second);
-  CHECK(first<=second && (unsigned)second<temp.length());
   temp=temp.mid(first, second-first);
   if(temp=="END")
     {
@@ -1840,9 +1807,7 @@ Section::clear()
   // sections.clear(); // seems to be not implemented
   sections.erase(sections.begin(), sections.end());
   keys.clear();
-  CHECK(sections.empty());
   // -----
-  ENSURE(keys.empty());
   return true;
   // ###########################################################################
 }
@@ -1905,7 +1870,6 @@ QConfigDB::~QConfigDB()
     {
       kDebugInfo("QConfigDB destructor: cannot remove me.");
     }
-  CHECK(empty());
   if(locked)
     {
       unlock();
@@ -1963,7 +1927,7 @@ QConfigDB::get()
 
 bool
 QConfigDB::createSection(const list<QCString>& key)
-{ REQUIRE(!key.empty());
+{ 
   // ############################################################################
   Section* section=&top;
   unsigned int index;
@@ -1981,7 +1945,6 @@ QConfigDB::createSection(const list<QCString>& key)
 	    {
 	      section=temp;
 	    } else {
-	      CHECK(false); // this may not happen
 	      delete temp;
 	      return false;
 	    }
@@ -1992,8 +1955,6 @@ QConfigDB::createSection(const list<QCString>& key)
   // section to the parent of the section that will be inserted
   thenewone=new Section;
   rc=section->add(*pos, thenewone);
-  // this overrides section (!!):
-  CHECK(section->find(*pos, section)); // now it must be there in every case
   return rc; // missing error report! WORK_TO_DO
   // ############################################################################
 }
@@ -2162,7 +2123,6 @@ bool
 QConfigDB::lock()
 {
   register bool GUARD; GUARD=false;
-  REQUIRE(!filename.isEmpty());
   // ############################################################################
   if(locked)
     {
@@ -2218,7 +2178,6 @@ bool
 QConfigDB::unlock()
 {
   register bool GUARD; GUARD=false;
-  REQUIRE(!filename.isEmpty());
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::unlock: unlocking the file "
 				  << filename << endl;
@@ -2386,7 +2345,6 @@ bool
 QConfigDB::storeFileAge()
 {
   register bool GUARD; GUARD=false;
-  REQUIRE(!filename.isEmpty());
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::storeFileAge: called." << endl;
   QFileInfo file(filename);
@@ -2455,7 +2413,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	    }
 	  readonly=readonly_;
 	  filename=filename_;
-	  storeFileAge(); CHECK(storeFileAge());
+	  storeFileAge(); 
 	  return true;
 	} else {
 	  kDebugInfo("QConfigDB::setFileName: permission denied, "
@@ -2484,7 +2442,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 		}
 	      readonly=readonly_;
 	      filename=filename_;
-	      storeFileAge(); CHECK(storeFileAge());	
+	      storeFileAge(); 
 	      return true;
 	    } else {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::setFileName: "
@@ -2524,7 +2482,6 @@ bool
 QConfigDB::save(const char* header, bool force)
 {
   register bool GUARD; GUARD=true;
-  REQUIRE(!filename.isEmpty());
   // ############################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
       "QConfigDB::save: saving database -->" << filename << "<--.\n";
@@ -2542,7 +2499,6 @@ QConfigDB::save(const char* header, bool force)
       if(setFileName(fileName(), true, false))
 	{
 	  wasRO=true;
-	  CHECK(!isRO());
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::save: switched to (forced) r/w mode." << endl;
 	} else {
@@ -2570,7 +2526,7 @@ QConfigDB::save(const char* header, bool force)
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			 "QConfigDB::save: error saving subsections." << endl;
 	    }
-	  storeFileAge(); CHECK(storeFileAge());
+	  storeFileAge(); 
 	  file.close();
 	  rc=true;
 	} else {
@@ -2604,7 +2560,6 @@ bool
 QConfigDB::load()
 {
   register bool GUARD; GUARD=false ;
-  REQUIRE(!filename.isEmpty());
   // ############################################################################
   QFile file(filename);
   QCString line;
@@ -2615,9 +2570,8 @@ QConfigDB::load()
       QTextStream stream(&file);
       // -----
       clear();
-      CHECK(empty());
       bool rc=top.readSection(stream, false);
-      storeFileAge(); CHECK(storeFileAge());
+      storeFileAge(); 
       file.close();
       emit(changed(this));
       kdDebug(GUARD, KAB_KDEBUG_AREA) << "QConfigDB::load: done." << endl;

@@ -21,12 +21,12 @@ PS: I am still looking for volunteers who try writing the import filters.
   - Corel 8 - Suite address book 
   - Time & Chaos
   - what else?
-° enhance the telephone numbers section, using home/work/..., 
+° [done, even more flexible] 
+  enhance the telephone numbers section, using home/work/..., 
   fixed/mobile, and so on
 ° [done] better dialog to enter the birthday, especially directly
 ° [done] some functions in the main display, like clickable parts 
   (email/talk addresses, possibly telephony support?),
-  possibly using KURLLabel
 ° configurable sorting order (already prepared)
 ° create and add Max Berger's Qoutlook importer tool
 ° add telephony support where the telephone number is automatically dialed
