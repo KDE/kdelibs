@@ -168,8 +168,10 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 	m_bAutoUpdate = true;
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
 
+#ifdef Q_WS_X11 //only makes sense if KAccelEventHandler is working
 	if( m_pWatch )
 		m_pWatch->installEventFilter( this );
+#endif
 	KAccelEventHandler::self();
 }
 
