@@ -433,16 +433,16 @@ int KMainWindow::configureToolbars()
 
 void KMainWindow::saveNewToolbarConfig()
 {
-    createGUI();
+    createGUI(xmlFile());
     applyMainWindowSettings( KGlobal::config() );
 }
 
-void KMainWindow::setupGUI( int options ) {
+void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
     if( options & Keys ){
         KStdAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());
     }
-    
+
     if( (options & StatusBar) && internalStatusBar() ){
         createStandardStatusBarAction();
     }
@@ -454,7 +454,7 @@ void KMainWindow::setupGUI( int options ) {
     }
 
     if( options & Create ){
-        createGUI();
+        createGUI(xmlfile);
     }
 
     if( options & Save ){
@@ -529,7 +529,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
            !n.isNull(); n = n.nextSibling())
       {
           QDomElement e = n.toElement();
-      
+
           if ( e.tagName().lower() == "toolbar" )
               factory_->resetContainer( e.attribute( "name" ) );
           else if ( e.tagName().lower() == "menubar" )

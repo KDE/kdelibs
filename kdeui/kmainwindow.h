@@ -536,20 +536,20 @@ public:
          * statusbar exists.  @see createStandardStatusBarAction
          */
         StatusBar = 4,
-        
+
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
          * window size using the default name.  @see setAutoSaveSettings
          */
         Save = 8,
-        
+
         /**
          * calls createGUI() once ToolBar, Keys and Statusbar have been
          * taken care of.  @see createGUI
          */
         Create = 16,
     };
-    
+
     /**
      * Configures the current windows and its actions in the typical KDE
      * fashion.  The options are all enabled by default but can be turned
@@ -561,7 +561,7 @@ public:
      *
      * @since 3.3
      */
-    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create );
+    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create,const QString & xmlfile="" );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
