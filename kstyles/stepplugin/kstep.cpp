@@ -29,7 +29,7 @@ static unsigned char uparrow_bits[] = {
 KStepStyle::KStepStyle()
     :KStyle()
 {
-    ;
+
 }
 
 KStepStyle::~KStepStyle()
@@ -39,14 +39,32 @@ KStepStyle::~KStepStyle()
 
 void KStepStyle::polish(QApplication *app)
 {
-    nextGrp = app->palette().normal();
-    nextGrp.setColor(QColorGroup::Dark, Qt::black);
     setScrollBarExtent(18);
+}
+
+void KStepStyle::polish(QPalette &p)
+{
+    nextGrp = p.normal();
+    nextGrp.setColor(QColorGroup::Dark, Qt::black);
 }
 
 void KStepStyle::unPolish(QApplication *)
 {
     setScrollBarExtent(16);
+}
+
+void KStepStyle::polish(QWidget *w)
+{
+    if(w->inherits("QPopupMenu")){ // force to our colorgroup
+        oldPopupPal = w->palette();
+        w->setPalette(QPalette(nextGrp, nextGrp, nextGrp));
+    }
+}
+
+void KStepStyle::unPolish(QWidget *w)
+{
+    if(w->inherits("QPopupMenu"))
+        w->setPalette(oldPopupPal);
 }
 
 void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,

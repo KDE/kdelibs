@@ -48,7 +48,7 @@ public:
 
     /// @internal
     // to make it possible for derived classes to overload this function
-    virtual void polish(QPalette& pal) { KThemeBase::polish(pal); }
+    virtual void polish(QPalette& pal);
 
     /**
      * This is a convenience method for drawing widgets with

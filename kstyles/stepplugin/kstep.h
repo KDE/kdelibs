@@ -54,6 +54,9 @@ public:
                     const QColorGroup &g, Orientation orient,
                     bool tickAbove, bool tickBelow);
     void polish( QApplication*);
+    void unPolish(QWidget *w);
+    void polish(QWidget *w);
+    void polish( QPalette &);
     void unPolish( QApplication*);
     virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, bool floating = false);
@@ -90,6 +93,7 @@ protected:
                            const QColorGroup &g);
 private:
     QColorGroup nextGrp;
+    QPalette oldPopupPal;
 };
 
 #endif

@@ -17,13 +17,18 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-void KThemeStyle::polish(QApplication *app)
+void KThemeStyle::polish(QApplication */*app*/)
 {
-    oldPalette = app->palette();
+    setScrollBarExtent(getSBExtent());
+}
+
+void KThemeStyle::polish(QPalette &p)
+{
+    oldPalette = p;
     if(isPixmap(Background) || isColor(Background)){
-        QPalette newPalette = oldPalette;
+        //QPalette newPalette = p;
         if(isColor(Background)){
-            newPalette.setColor(QColorGroup::Background,
+            p.setColor(QColorGroup::Background,
                                 colorGroup(oldPalette.normal(), Background)
                                 ->background());
         }
@@ -31,12 +36,12 @@ void KThemeStyle::polish(QApplication *app)
             QBrush bgBrush(oldPalette.color(QPalette::Normal,
                                             QColorGroup::Background),
                            *uncached(Background));
-            newPalette.setBrush(QColorGroup::Background, bgBrush);
+            p.setBrush(QColorGroup::Background, bgBrush);
         }
-        app->setPalette(newPalette);
+        //kapp->setPalette(newPalette);
     }
-    setScrollBarExtent(getSBExtent());
 }
+
 
 void KThemeStyle::unPolish(QApplication *app)
 {
