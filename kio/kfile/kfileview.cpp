@@ -54,7 +54,7 @@ public:
         }
     }
 
-    KActionCollection *actions;
+    QGuardedPtr<KActionCollection> actions;
 };
 
 
