@@ -22,7 +22,9 @@
 #ifndef KUSER_H
 #define KUSER_H
 
-#include <qstring.h>
+#include "ksharedptr.h"
+
+class QString;
 
 class KUserPrivate;
 struct passwd;
@@ -32,7 +34,8 @@ struct passwd;
  *
  * This class represents a user on your system. You can either get
  * information about the current user, of fetch information about
- * a user on the system.
+ * a user on the system. Instances of this class will be explicitely shared,
+ * so copying objects is very cheap and you can safely pass objects by value.
  *
  * @author Tim Jansen <tim@tjansen.de>
  * @short Represents a user on your system
@@ -75,22 +78,16 @@ public:
   KUser(const QString& name);
 
   /**
-   * Copy constructor.
-   * Makes a deep copy.
-   */
-  KUser(const KUser &user);
-
-  /**
-   * Assignment operator.
-   * Makes a deep copy.
-   */
-  KUser& operator =(const KUser& user);
-
-  /**
    * Two KUser objects are equal if @ref isValid() and the uid() are
    * identical.
    */
-  bool operator ==(const KUser& user);
+  bool operator ==(const KUser& user) const;
+
+  /**
+   * Two KUser objects are not equal if either @ref isValid() or
+   * @ref uid() is not identical.
+   */
+  bool operator !=(const KUser &user) const;
 
   /**
    * Returns true if the user is valid. A KUser object can be invalid if 
@@ -168,10 +165,10 @@ public:
   /**
    * Destructor.
    */
-  ~KUser();
+  virtual ~KUser();
 
 private:
-  KUserPrivate* d;
+  KSharedPtr<KUserPrivate> d;
   void fillPasswd(struct passwd* p);
 };
 

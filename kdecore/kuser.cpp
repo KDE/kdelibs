@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <qstringlist.h>
 
-class KUserPrivate
+class KUserPrivate : public KShared
 {
 public:
 	bool valid;
@@ -75,42 +75,17 @@ KUser::KUser(const QString& name) {
 	fillPasswd(getpwnam((const char*)name.local8Bit()));
 }
 
-KUser::KUser(const KUser &user) {
-	d = new KUserPrivate(user.uid(),
-			     user.gid(),
-			     user.loginName(),
-			     user.fullName(), 
-			     user.roomNumber(),
-			     user.workPhone(),
-			     user.homePhone(),
-			     user.homeDir(),
-			     user.shell());
-}
-
-KUser& KUser::operator =(const KUser& user) {
-	if ( this == &user ) 
-		return *this;
-	
-	delete d;
-	d = new KUserPrivate(user.uid(),
-			     user.gid(),
-			     user.loginName(),
-			     user.fullName(), 
-			     user.roomNumber(),
-			     user.workPhone(),
-			     user.homePhone(),
-			     user.homeDir(),
-			     user.shell());
-	return *this;
-}
-
-bool KUser::operator ==(const KUser& user) {
+bool KUser::operator ==(const KUser& user) const {
     if (isValid() != user.isValid())
 	return false;
     if (isValid())
 	return uid() == user.uid();
     else
 	return true;
+}
+
+bool KUser::operator !=(const KUser& user) const {
+	return !operator ==(user);
 }
 
 void KUser::fillPasswd(struct passwd *p) {
