@@ -65,6 +65,7 @@ public:
 	void *read(long l);
 	void *peek(long l);
 	void skip(long l);
+	void rewind();
 
 	void write(void *data, long l);
 

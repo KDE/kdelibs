@@ -128,6 +128,10 @@ void Buffer::skip(long l) {
 	}
 }
 
+void Buffer::rewind() {
+	rpos = 0;
+}
+
 bool Buffer::readBool()
 {
 	long result = false;
