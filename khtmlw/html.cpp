@@ -4335,9 +4335,9 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	const char *attr )
 {
-    static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
-    static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
-    static const char *endall[] = { "</caption>", "</table>", "<tr", "<td", "<th"," </th", "</td", "</tr", 0 };  
+    static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", "</body", 0 };
+    static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", "</body", 0 };    
+    static const char *endall[] = { "</caption>", "</table>", "<tr", "<td", "<th"," </th", "</td", "</tr", "</body", 0 };  
     const char* str = 0;
     bool firstRow = true;
     bool tableTag = true;
