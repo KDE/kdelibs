@@ -57,6 +57,8 @@ public:
 
     void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
     void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
+    
+    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
 private:
     short m_intrinsicWidth;

@@ -145,6 +145,13 @@ void RenderTable::setStyle(RenderStyle *_style)
     collapseBorders = style()->borderCollapse();
 }
 
+void RenderTable::position(int x, int y, int, int, int, bool, bool)
+{
+    //for inline tables only
+    m_x = x + marginLeft();
+    m_y = y + marginTop();
+}
+
 inline void
 RenderTable::ColInfo::update()
 {

@@ -119,6 +119,8 @@ public:
     virtual void setCellWidths( );
 
     int getBaseline(int row) {return rowBaselines[row];}
+    
+    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
     virtual void calcWidth();
 

@@ -171,6 +171,12 @@ short RenderReplaced::baselinePosition( bool ) const
     return height()+marginTop()+marginBottom();
 }
 
+void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
+{
+    m_x = x + marginLeft();
+    m_y = y + marginTop();
+}
+
 // -----------------------------------------------------------------------------
 
 RenderWidget::RenderWidget(QScrollView *view)
