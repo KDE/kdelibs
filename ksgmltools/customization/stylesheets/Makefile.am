@@ -1,3 +1,4 @@
+dsldir = $(catdir)/stylesheets
 
 dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl kde-ttlpg.dsl \
 	   kde-l10n.entities kde-l10n.dsl \
