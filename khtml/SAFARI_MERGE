@@ -12,6 +12,14 @@ in the khtml sourcecode.
 # css
 ===========================================================================
 
+- the font changes (except for the konq-body property) are still not merged.
+ They are partly not easily portable and I don't understand some parts of them.
+ a small part is merged but still unused (seperate font sizes for fixed fonts)
+
+- The Apple specific parts with their DPI settings.
+
+- most of the html4.css changes are not in. I have already added the
+  @konq-quirks part
 
 ===========================================================================
 # dom
@@ -24,7 +32,7 @@ in the khtml sourcecode.
   changes xml / html
 
 - dom_doc.cpp / .h: preferred Stylesheet stuff. how does this correlate
-  to the changes in css_stylesheet.h / cpp ?
+  to the changes in css_stylesheet.h / cpp ? <- It's independent (lars).
   requires merging of the impl in xml/html first
 
 - weird change in dom_doc.cpp: doctype()
@@ -70,3 +78,7 @@ in the khtml sourcecode.
 # xml
 ===========================================================================
 
+- dom_docimpl.cpp: currently only merged the following trivial changes: 
+   the addition to DOMImplementationImpl::hasFeature()
+   the recalcStyle() reentrency protection
+   double parsing for redirect timeouts.
