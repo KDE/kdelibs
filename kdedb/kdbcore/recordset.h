@@ -38,6 +38,7 @@ namespace KDB {
 class Connector;
 
 class Recordset;
+class RecordsetPrivate;
 
 typedef KSharedPtr<Recordset> RecordsetPtr;
 
@@ -114,7 +115,7 @@ class Recordset : public DataObject {
  private:
 
     Connector *connector;
-    Recordset(Connector * conn, const QString &baseQuery, QObject *parent = 0);
+    Recordset(Connector * conn, const QString &baseQuery, QObject *parent = 0, bool updatable = true);
 
     Row fromRecord(Record *);
         
@@ -123,6 +124,9 @@ class Recordset : public DataObject {
 
     HandlerPtr m_handle;
     bool m_changed;
+    bool m_updatable;
+    
+    RecordsetPrivate *d;
     
 };
  

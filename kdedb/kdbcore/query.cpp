@@ -321,8 +321,10 @@ Query::openRecordset()
         pushError(new InvalidRequest(this,"not a select query"));
         return 0L;
     }
+
+    bool upd = d->tables.count() == 1;
     //kdDebug(20000) << "Query::openRecordset" << endl;
-    RecordsetPtr r = new Recordset(connector, SQL(), this);
+    RecordsetPtr r = new Recordset(connector, SQL(), this, upd);
     if (error())
         return 0L;
     else

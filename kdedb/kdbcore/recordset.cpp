@@ -29,8 +29,8 @@
 
 using namespace KDB;
 
-Recordset::Recordset(Connector *conn, const QString &baseQuery, QObject *parent)
-    : DataObject(parent, 0L), connector(conn->clone()), m_sql(baseQuery)
+Recordset::Recordset(Connector *conn, const QString &baseQuery, QObject *parent, bool upd)
+    : DataObject(parent, 0L), connector(conn->clone()), m_sql(baseQuery), m_updatable(upd)
 {
     m_fields.setAutoDelete(true);
     requery();
@@ -66,8 +66,11 @@ Recordset::updatable()
 RecordPtr
 Recordset::addRecord()
 {
-    // TOOD: test if updatable
-    // TODO: notification of update from the Record added
+    if (!m_updatable) {
+        pushError(new InvalidRequest(this, "Recordset is not updatable"));
+        return 0L;
+    }
+    
     Row r;
     Record * record = new Record(this, m_fields, r, 0);
     connect(record, SIGNAL(updated(KDB::Record *, bool)),this, SLOT(slotRecordUpdated(KDB::Record *, bool)));
@@ -107,6 +110,11 @@ Recordset::count()
 void
 Recordset::slotRecordUpdated(Record *rec, bool isNew)
 {
+    if (!m_updatable) {
+        pushError(new InvalidRequest(this, "Recordset is not updatable"));
+        return 0L;
+    }
+
     kdDebug(20000) << k_funcinfo << endl;
     Row row = fromRecord(rec);
     
@@ -130,6 +138,11 @@ Recordset::slotRecordUpdated(Record *rec, bool isNew)
 void
 Recordset::slotRecordDeleted(Record *rec)
 {
+    if (!m_updatable) {
+        pushError(new InvalidRequest(this, "Recordset is not updatable"));
+        return 0L;
+    }
+
     Row row = fromRecord(rec);
     if (!m_handle->remove(rec->absolutePosition(), row)) {
         pushError(new DataException(this, "unable to update recordset"));
@@ -152,3 +165,8 @@ Recordset::fromRecord(Record *rec)
     }
     return row;
 }
+
+
+
+
+

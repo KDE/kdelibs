@@ -66,13 +66,13 @@ typedef QList<qryCond>         CondList;
 typedef QListIterator<qryCond> CondIterator;
  
 /**
- * representation of a stored query.
+ * Representation of a stored query.
  *
  * Through this object we access the fields and
  * parameters of the query, if any.
  *
  * Each query is stored in the database as an XML definition. This definition
- * will contain the list of fields, calculated fields, tables, filter and join
+ * will contain the list of fields, calculated fields (not implemented yet), tables, filters - join
  * expressions and parameters. One exception to that is done when the query is built
  * using an SQL expression in @ref Database::newQuery . In this case, the SQL is stored.
  *
@@ -86,7 +86,7 @@ typedef QListIterator<qryCond> CondIterator;
  * the user can use the special construct %name, and provide a
  * corresponding value using the @ref setParameter call. Before the execution (through
  * @ref openRecordset or @ref execute ), a parameter substitution is done. When there is no
- * corresponding parameter value, the %xxx keyword is removed. this can lead to incorrect
+ * corresponding parameter value, the %xxx keyword is removed. This can lead to incorrect
  * SQL. Parameter substitution is done on the complete SQL statement, allowing creation
  * of queries that access data with similar definition in different tables with only one
  * query definition.
@@ -103,13 +103,13 @@ class Query :public DataObject{
  public:
 
     /**
-     * the type of query. Select queries can be executed using @ref openRecordset, while
+     * The type of query. Select queries can be executed using @ref openRecordset, while
      * command queries through @ref execute. the opposite will generate an error.
      */
     enum QueryType { Select, Insert, Update, Delete };
 
     /**
-     * type of conditional expression.
+     * Type of conditional expression.
      */
     enum ConditionType { And, Or };
  public:
@@ -157,13 +157,13 @@ class Query :public DataObject{
     void removeField( const QString & table, const QString &name );
 
     /**
-     * returns the list of fields
+     * Returns the list of fields
      */
     FldList fields() const;
 
     /**
      * Add a table to the existing list of tables. For insert, update and delete queries
-     * only the first table is taken into consideration. all others will be discarded
+     * only the first table is taken into consideration. All others will be discarded
      * silently
      */
     void addTable(const QString &name) ;
@@ -260,7 +260,7 @@ class Query :public DataObject{
     void definitionChanged();
 
     /**
-     * this signal is emitted once when the query is saved the first time into
+     * This signal is emitted once when the query is saved the first time into
      * the database. It is used by Database to add the query name to the list of
      * database queries
      */
