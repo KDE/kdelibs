@@ -132,6 +132,8 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
   KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
 
   m_country = config->readEntry( "Country" );
+  if ( m_country.isEmpty() )
+    m_country = internalCountry();
 
   // Reset the list and add the new languages
   d->languageList.clear();
@@ -1669,6 +1671,11 @@ void KLocale::setCurrencySymbol(const QString & symbol)
 }
 
 QString KLocale::internalLanguage()
+{
+  return QString::fromLatin1("C");
+}
+
+QString KLocale::internalCountry()
 {
   return QString::fromLatin1("C");
 }

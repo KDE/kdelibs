@@ -810,6 +810,11 @@ private:
    */
   static QString internalLanguage();
 
+  /**
+   * @internal Retrieves the name of the internal country
+   */
+  static QString internalCountry();
+
 private:
   // #### HPB: remove for KDE 3?
   QString m_charset;
