@@ -84,13 +84,20 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     window->setCurrentEvent( &evt );
 
     Value retval = listener.call(exec, thisObj, args);
-    QVariant ret = ValueToVariant(exec, retval);
+
     if ( !scope.isEmpty() ) {
       listener.setScope( oldScope );
     }
-    window->setCurrentEvent( 0 );
-    if (ret.type() == QVariant::Bool && ret.toBool() == false)
-        evt.preventDefault();
+
+    if ( exec->hadException() )
+        exec->clearException();
+    else
+    {
+        QVariant ret = ValueToVariant(exec, retval);
+        window->setCurrentEvent( 0 );
+        if (ret.type() == QVariant::Bool && ret.toBool() == false)
+            evt.preventDefault();
+    }
   }
 }
 
