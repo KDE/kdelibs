@@ -354,23 +354,24 @@ QWidget* KClipboard::makeOwner()
   return m_pOwner;
 }            
 
-void KClipboard::setURLList( QStrList& _urls )
+void KClipboard::setURLList( QStringList& _urls )
 {
   open( IO_WriteOnly | IO_Truncate, "url/url" );
   
   const char* s;
-  for( s = _urls.first(); s != 0L; s = _urls.next() )
+  QStringList::Iterator iterator = _urls.begin();
+  for( ; iterator != _urls.end(); iterator++ )
   {
-    if ( s == _urls.getLast() )
+    if ( (*iterator) == _urls.getLast() )
       writeBlock( s, strlen( s ) );
     else
       writeBlock( s, strlen( s ) + 1 );
   }
-  
+
   close();
 }
 
-bool KClipboard::urlList( QStrList& _urls)
+bool KClipboard::urlList( QStringList& _urls)
 {
   if ( !isOwner() )
     fetchData();
