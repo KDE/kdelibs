@@ -1028,7 +1028,7 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
     KURL tmp ( dir->url() );
     tmp.cd(item->fileName());
-    kdebug(KDEBUG_INFO, 250, "dirActivated %s", (char *)tmp.path().local8Bit());
+    kdebug(KDEBUG_INFO, 250, "dirActivated %s", (const char *)tmp.path().local8Bit());
     setDir(tmp.path(), true);
 }
 
