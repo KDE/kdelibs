@@ -548,30 +548,39 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
 
   // TODO: this code could be improved :)
 
-  if ( !lister || lister->d->lstDirs.contains( _url ) )
+  if ( lister )
   {
-    DirItem *item = itemsInUse[_url.url()];
-    if ( item )
+    for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
+          it != lister->d->lstDirs.end(); ++it )
     {
-      KFileItemListIterator kit( *item->lstItems );
-      for ( ; kit.current(); ++kit )
-      {
-        if ( (*kit)->url() == _url )
-          return (*kit);
-      }
-    }
-    else if ( !lister )
-    {
-      item = itemsCached[_url.url()];
+      DirItem *item = itemsInUse[(*it).url()];
       if ( item )
       {
         KFileItemListIterator kit( *item->lstItems );
         for ( ; kit.current(); ++kit )
-        {
           if ( (*kit)->url() == _url )
             return (*kit);
-        }
       }
+    }
+  }
+  else
+  {
+    QDictIterator< DirItem > itu( itemsInUse );
+    for ( ; itu.current(); ++itu )
+    {
+      KFileItemListIterator kit( *itu.current()->lstItems );
+      for ( ; kit.current(); ++kit )
+        if ( (*kit)->url() == _url )
+          return (*kit);
+    }
+    
+    QCacheIterator< DirItem > itc( itemsCached );
+    for ( ; itc.current(); ++itc )
+    {
+      KFileItemListIterator kit( *itc.current()->lstItems );
+      for ( ; kit.current(); ++kit )
+        if ( (*kit)->url() == _url )
+          return (*kit);
     }
   }
 
