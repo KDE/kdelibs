@@ -287,7 +287,7 @@ void MdConnectNew(MediaCon *mcon)
 
 
   num=MediatypesInit();
-//  fprintf(stderr,"There are %i known media types.\n", num);
+/*  fprintf(stderr,"There are %i known media types.\n", num); */
 
   /* Only if everything went well, I will fill out the MediaCon structure */
   mcon->shm_adr  = tmpadr;
