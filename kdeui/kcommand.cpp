@@ -125,6 +125,8 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
     int index;
     if(d->m_present!=0L && (index=m_commands.findRef(d->m_present))!=-1) {
+        if (m_first)
+            --index;
         m_commands.insert(index+1, command);
         // truncate history
         unsigned int count=m_commands.count();
@@ -152,7 +154,7 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
         m_redo->setEnabled(false);
         m_redo->setText(i18n("Nothing to Redo"));
-        m_first=true;
+        m_first=false;    // Michael B: yes, that *is* correct :-)
     }
     if ( execute )
     {
