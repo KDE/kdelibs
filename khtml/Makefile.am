@@ -112,7 +112,7 @@ testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp
 testkhtml_static_LDADD = libkhtml.la
 testkhtml_static_LDFLAGS = -static
 test_regression_SOURCES = test_regression.cpp test_regression_fontoverload.cpp
-test_regression_LDADD = libkhtml.la ecma/libkjs_html.la $(top_builddir)/kjs/libkjs.la
+test_regression_LDADD = libkhtml.la
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
 DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test
