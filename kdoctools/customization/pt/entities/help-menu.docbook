@@ -5,12 +5,11 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Conteúdo...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Invoca a ajuda do KDE</action>, aberta na documentação do &kappname;. (este documento).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,8 +17,8 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>O que é Isto?</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Changes the mouse cursor to a combination arrow and
@@ -31,8 +30,8 @@ function.</para></listitem>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Comunicar Erro...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Opens the Bug report dialog</action> where you can
 report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
@@ -40,8 +39,8 @@ report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Acerca do &kappname;</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>This will display version and author
 information.</action></para></listitem>
@@ -49,8 +48,8 @@ information.</action></para></listitem>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Acerca do KDE</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>This displays the KDE version and other basic
 information.</action></para></listitem>
