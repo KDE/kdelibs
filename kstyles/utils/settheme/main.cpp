@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv); // needed now because of properties.
+    KApplication app(argc, argv, "settheme"); // needed now because of properties.
     puts("settheme: (C)1999 KDE Artisic License - D.M. Duley (mosfet@kde.org)");
     if(argc < 2){
         puts("settheme: You must specify an input file!");

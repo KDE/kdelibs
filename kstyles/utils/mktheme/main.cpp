@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv);
+    KApplication app(argc, argv, "mktheme");
 
     puts("mktheme: (C)1999 KDE Artisic License - D.M. Duley (mosfet@kde.org)");
     if(argc < 2){
