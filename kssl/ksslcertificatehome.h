@@ -49,15 +49,15 @@ public:
   /*
    *   These set the default certificate for hosts without a policy.
    */
-  static void setDefaultCertificate(QString name);
-  static void setDefaultCertificate(KSSLPKCS12 *cert);
+  static void setDefaultCertificate(QString name, bool send = true, bool prompt = false);
+  static void setDefaultCertificate(KSSLPKCS12 *cert, bool send = true, bool prompt = false);
 
 
   /*
    *   These set the default certificate for a host.
    */
-  static void setDefaultCertificate(QString name, QString host);
-  static void setDefaultCertificate(KSSLPKCS12 *cert, QString host);
+  static void setDefaultCertificate(QString name, QString host, bool send = true, bool prompt = false);
+  static void setDefaultCertificate(KSSLPKCS12 *cert, QString host, bool send = true, bool prompt = false);
 
   /*
    *   These add a certificate to the repository.
