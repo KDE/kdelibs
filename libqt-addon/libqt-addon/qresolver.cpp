@@ -656,7 +656,7 @@ QStrList QResolver::protocolName(int protonum)
   return lst;
 }
 
-QStrList protocolName(const char *protoname)
+QStrList QResolver::protocolName(const char *protoname)
 {
   struct protoent *pe;
 #ifndef HAVE_GETPROTOBYNAME_R
@@ -774,7 +774,7 @@ int QResolver::servicePort(const char *servname, const char *protoname)
   return servport;
 }
 
-QStrList serviceName(const char* servname, const char *protoname)
+QStrList QResolver::serviceName(const char* servname, const char *protoname)
 {
   struct servent *se;
 #ifndef HAVE_GETSERVBYNAME_R
