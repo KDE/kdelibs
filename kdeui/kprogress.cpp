@@ -119,6 +119,8 @@ int KProgress::value() const
 
 bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
 {
+    if (!totalSteps)
+        return false;
     QString newString(mFormat);
     newString.replace(QRegExp(QString::fromLatin1("%p")),
                       QString::number((progress * 100) / totalSteps));
