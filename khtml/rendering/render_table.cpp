@@ -296,9 +296,9 @@ int RenderTable::realSpan( unsigned int r, unsigned int c)
 void RenderTable::setCells( unsigned int r, unsigned int c,
                                      RenderTableCell *cell )
 {
-//#ifdef TABLE_DEBUG
+#ifdef TABLE_DEBUG
     kdDebug( 6040 ) << "span = " << cell->rowSpan() << "d/" << cell->colSpan() << "d" << endl;
-//#endif
+#endif
     cell->setRow(r);
     cell->setCol(c);
 

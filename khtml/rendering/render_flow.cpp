@@ -803,13 +803,16 @@ RenderFlow::clearFloats()
 
 //    kdDebug( 6040 ) << "clearFloats" << endl;
     if (specialObjects) {
-	SpecialObject* r = specialObjects->first();
-	while ( r ) {
-	    SpecialObject *next = specialObjects->next();
-	    if ( r->type != SpecialObject::Positioned ) 
-		specialObjects->remove( r );
-	    r = next;
-	}	
+	if( containsPositioned() ) {
+	    SpecialObject* r = specialObjects->first();
+	    while ( r ) {
+		SpecialObject *next = specialObjects->next();
+		if ( r->type != SpecialObject::Positioned ) 
+		    specialObjects->remove( r );
+		r = next;
+	    }	
+	} else
+	    specialObjects->clear();
     }
 
     if (isFloating()) return;
