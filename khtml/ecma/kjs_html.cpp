@@ -1270,10 +1270,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_META: {
     DOM::HTMLMetaElement meta = element;
     switch (token) {
-    case MetaContent:         return getString(meta.content());
-    case MetaHttpEquiv:       return getString(meta.httpEquiv());
-    case MetaName:            return getString(meta.name());
-    case MetaScheme:          return getString(meta.scheme());
+    case MetaContent:         return String(meta.content());
+    case MetaHttpEquiv:       return String(meta.httpEquiv());
+    case MetaName:            return String(meta.name());
+    case MetaScheme:          return String(meta.scheme());
     }
   }
   break;
