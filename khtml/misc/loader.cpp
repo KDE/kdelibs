@@ -873,6 +873,9 @@ void DocLoader::setExpireDate(time_t _expireDate, bool relative)
        m_expireDate = _expireDate + m_creationDate; // Relative date
     else
        m_expireDate = _expireDate; // Absolute date
+#ifdef CACHE_DEBUG
+    kdDebug(6061) << "docLoader: " << m_expireDate - time(0) << " seconds left until reload required.\n";
+#endif
 }
 
 bool DocLoader::needReload(const KURL &fullURL)
@@ -1266,7 +1269,7 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
 
     o->setExpireDate(_expireDate, true);
 
-    if(o->type() != CachedObject::Image)
+    if(!(o->type() == CachedObject::Image))
     {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
@@ -1325,7 +1328,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
 
     o->setExpireDate(_expireDate, true);
 
-    if(o->type() != CachedObject::CSSStyleSheet)
+    if(!(o->type() == CachedObject::CSSStyleSheet))
     {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
@@ -1394,7 +1397,7 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
 
     o->setExpireDate(_expireDate, true);
 
-    if(o->type() != CachedObject::Script)
+    if(!(o->type() == CachedObject::Script))
     {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
