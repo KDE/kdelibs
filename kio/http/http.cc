@@ -3136,7 +3136,7 @@ void HTTPProtocol::cleanCache()
 void HTTPProtocol::retrieveContent( bool check_ssl )
 {
   if ( retrieveHeader(false) )
-    if ( check_ssl && checkSSL() )
+    if ( !check_ssl || checkSSL() )
       (void) readBody();
 
   http_close();
