@@ -51,9 +51,9 @@
 
 #include <X11/Xlib.h>
 
-#ifdef HAVE_LIBJPEG
-#include "jpeg.h"
-#endif
+//#ifdef HAVE_LIBJPEG
+//#include "jpeg.h"
+//#endif
 
 #define PRINTING_MARGIN		36	// printed margin in 1/72in units
 #define INDENT_SIZE		30

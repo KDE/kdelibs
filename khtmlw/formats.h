@@ -32,14 +32,7 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBJPEG 
-#include <sys/types.h>
-#include "jpeg.h"
-#endif
-
-#ifdef HAVE_LIBPNG
-#include "kpng.h"
-#endif
+#include "kimgio.h"
 
 // Include declaration headers for format handlers here (should 
 // only need 2 per format; I've got only one, since no writers yet).

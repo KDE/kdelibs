@@ -28,8 +28,6 @@
 #include<string.h>
 #include<stdlib.h>
 
-#include<qimage.h>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif  
@@ -39,15 +37,8 @@
 
 void KHTMLWidget::registerFormats()
 {
-#ifdef HAVE_LIBJPEG
-        QImageIO::defineIOHandler("JFIF","^\377\330\377\340..JFIF", 0,
-                read_jpeg_jfif, 0L);
-#endif
-
-#ifdef HAVE_LIBPNG
-	QImageIO::defineIOHandler("PNG","^\211PNG\015\012\32\012", 0,
-		read_png_file, 0L);	
-#endif
+        // all formats kimgio has. This includes jpeg and png...
+	kimgioRegister();
 
 //
 // Add new format handlers here

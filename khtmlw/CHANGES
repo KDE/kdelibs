@@ -1,6 +1,14 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.3  - 29 Oct 1998 (Lars Knoll <knoll@mpi-hd.mpg.de>)
+--------------
+
+khtmlw now uses kimgio. This gives the html widget automatic access
+to all image formats kimgio can use.
+Attention: all apps using the html widget will now also have to link
+           against kimgio.
+
 Version 0.13.3  - 26 Oct 1998 (Waldo Bastian)
 -------------- 
 

@@ -19,7 +19,7 @@
 
 
 lib_LTLIBRARIES = libkhtmlw.la
-libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp jpeg.cpp formats.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp htmltable.cpp htmliter.cpp htmlchain.cpp
+libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp formats.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp htmltable.cpp htmliter.cpp htmlchain.cpp
 
 SRC_META = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
@@ -30,7 +30,7 @@ htmlview.cpp: htmlview.moc
 
 DISTCLEANFILES = $(SRC_META)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h htmltable.h htmliter.h
-noinst_HEADERS = htmlchain.h formats.h jpeg.h jpeginc.h
+noinst_HEADERS = htmlchain.h formats.h
 libkhtmlw_la_LDFLAGS = -version-info 2:0
 
 data_DATA = khtmlw_dnd.xpm
@@ -38,7 +38,7 @@ datadir = $(kde_datadir)/khtmlw/pics
 
 EXTRA_DIST = khtmlw_dnd.xpm
 
-INCLUDES = -I../kdecore -I../kdeui -I../jscript $(all_includes)
+INCLUDES = -I../kdecore -I../kdeui -I../jscript -I../kimgio $(all_includes)
 
 html.moc: html.h
 	$(MOC) -o html.moc html.h 
