@@ -210,11 +210,13 @@ void RenderListMarker::setStyle(RenderStyle *s)
 {
     RenderBox::setStyle(s);
 
-    if(listImage)
-        listImage->deref(this);
-    listImage = m_style->listStyleImage();
-    if(listImage)
-        listImage->ref(this);
+    if ( listImage != m_style->listStyleImage() ) {
+	if(listImage)
+	    listImage->deref(this);
+	listImage = m_style->listStyleImage();
+	if(listImage)
+	    listImage->ref(this);
+    }
 }
 
 

@@ -450,10 +450,12 @@ void RenderObject::setStyle(RenderStyle *style)
     // deletion of styles is handled by the DOM elements
     m_style = style;
 
-    if(m_bgImage) m_bgImage->deref(this);
-    m_bgImage = m_style->backgroundImage();
-    if(m_bgImage) m_bgImage->ref(this);
-
+    if( m_bgImage != m_style->backgroundImage() ) {
+	if(m_bgImage) m_bgImage->deref(this);
+	m_bgImage = m_style->backgroundImage();
+	if(m_bgImage) m_bgImage->ref(this);
+    }
+    
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
         m_printSpecial = true;
     else
