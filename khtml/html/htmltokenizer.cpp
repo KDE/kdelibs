@@ -889,8 +889,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("SearchEqual");
 #endif
+            ushort curchar;
             while(src.length()) {
-                if(curchar >= ' ') {
+                curchar = src->unicode();
+                if(curchar > ' ') {
                     if(curchar == '=') {
 #ifdef TOKEN_DEBUG
                         kdDebug(6036) << "found equal" << endl;
@@ -914,13 +916,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     break;
                 }
                 ++src;
-                curchar = src->unicode();
             }
             break;
         }
         case SearchValue:
         {
+            ushort curchar;
             while(src.length()) {
+                curchar = src->unicode();
                 if(curchar > ' ') {
                     if(curchar == '\'' || curchar == '\"') {
                         tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
@@ -932,7 +935,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     break;
                 }
                 ++src;
-                curchar = src->unicode();
             }
             break;
         }
@@ -995,9 +997,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
             qDebug("Value");
 #endif
+            ushort curchar;
             while(src.length()) {
                 checkBuffer();
-
+                curchar = src->unicode();
                 if(curchar <= '>') {
                     // parse Entities
                     if ( curchar == '&' )
@@ -1026,7 +1029,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                 *dest++ = src[0];
                 ++src;
-                curchar = src->unicode();
             }
             break;
         }
@@ -1036,11 +1038,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 qDebug("SearchEnd");
 #endif
             while(src.length()) {
+                curchar = src->unicode();
                 if(curchar == '>')
                     break;
 
                 ++src;
-                curchar = src->unicode();
             }
             if(curchar != '>') break;
 
