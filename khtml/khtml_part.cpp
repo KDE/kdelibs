@@ -62,6 +62,7 @@ using namespace DOM;
 
 #include <kstandarddirs.h>
 #include <kio/job.h>
+#include <kio/global.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -1418,6 +1419,10 @@ void KHTMLPart::showError( KIO::Job* job )
 {
   kdDebug() << "KHTMLPart::showError d->m_bParsing=" << (d->m_doc && d->m_doc->parsing()) << " d->m_bComplete=" << d->m_bComplete
             << " d->m_bCleared=" << d->m_bCleared << endl;
+
+  if (job->error() == KIO::ERR_NO_CONTENT)
+	return;
+
   if ( (d->m_doc && d->m_doc->parsing()) || d->m_workingURL.isEmpty() ) // if we got any data already
     job->showErrorDialog( /*d->m_view*/ );
   else
