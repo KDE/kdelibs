@@ -996,12 +996,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // When the first data arrives, the metadata has just been made available
     d->m_httpHeaders = d->m_job->queryMetaData("HTTP-Headers");
     time_t cacheCreationDate =  d->m_job->queryMetaData("cache-creation-date").toLong();
-    if (!cacheCreationDate)
-	{
-	    // kdDebug(6061) << "cache-creation-date not found! (needed for expire date calculation)\n";
-	    // assume that cache entry is fresh.
-	    cacheCreationDate = time(0);
-	}
     d->m_doc->docLoader()->setCacheCreationDate(cacheCreationDate);
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
