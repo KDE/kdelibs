@@ -1498,7 +1498,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             int delay = 0;
 	    delay = content.implementation()->toInt(&ok);
             if(ok)
-                v->part()->scheduleRedirection(delay, v->part()->url().url(), delay < 2 );
+                v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
             int delay = 0;
             int fract = pos;
@@ -1519,8 +1519,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                   (str[str.length()-1] == ';' || str[str.length()-1] == ','))
                 str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
-            if ( ok  || !fract)
-                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2);
+            QString newURL = getDocument()->completeURL( str );
+            if ( ok || !fract)
+                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL());
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)
