@@ -20,7 +20,7 @@ KPart* KPart::parentPart()
 {
     if ( parent() && parent()->inherits( "KPart" ) )
 	return (KPart*)parent();
-    
+
     return 0;
 }
 
@@ -62,7 +62,7 @@ QActionCollection* KPart::actionCollection()
 
 Plugin* KPart::plugin( const char* libname )
 {
-    QObject* ch = child( libname, "Plugin" );
+    QObject* ch = child( libname, "KPlugin" );
     if ( ch )
 	return (Plugin*)ch;
 
@@ -72,14 +72,14 @@ Plugin* KPart::plugin( const char* libname )
 	qDebug("KPart: No library loader installed");
 	return 0;
     }
-    
+
     KLibFactory* f = loader->factory( libname );
     if ( !f )
     {
 	qDebug("KPart: Could not initialize library");
 	return 0;
     }
-    QObject* obj = f->create( this, libname, "Plugin" );
+    QObject* obj = f->create( this, libname, "KPlugin" );
     if ( !obj->inherits("Plugin" ) )
     {
 	qDebug("The library does not feature an object of class Plugin");
