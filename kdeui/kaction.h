@@ -2,11 +2,11 @@
     Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
+              (C) 2000 Kurt Granroth <granroth@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -527,6 +527,77 @@ signals:
 private:
 
     bool m_lock;
+};
+
+class KListAction : public KSelectAction
+{
+    Q_OBJECT
+public:
+    /**
+     * Construct a list action with text and potential keyboard
+     * accelerator but nothing else. Use this only if you really
+     * know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KListAction( const QString& text, int accel = 0, QObject* parent = 0,
+                  const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( const QString& text, int accel, const QObject* receiver,
+                  const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( const QString& text, const QIconSet& pix, int accel = 0,
+	              QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( const QString& text, const QIconSet& pix, int accel,
+		          const QObject* receiver, const char* slot, QObject* parent,
+                  const char* name = 0 );
+
+    /**
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  Sets the currently checked item.
+     *
+     *  @param index Index of the item (remember the first item is zero).
+     */
+    virtual void setCurrentItem( int index );
+
+    QString currentText();
+    int currentItem();
+
+private:
+    int m_current;
 };
 
 class KFontAction : public KSelectAction

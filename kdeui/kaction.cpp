@@ -2,11 +2,11 @@
     Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
+              (C) 2000 Kurt Granroth <granroth@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -603,6 +603,68 @@ void KSelectAction::slotActivated( const QString &text )
 
   setCurrentItem( items().findIndex( text ) );
   m_lock = false;
+}
+
+KListAction::KListAction( const QString& text, int accel, QObject* parent,
+                            const char* name )
+    : KSelectAction( text, accel, parent, name )
+{
+    m_current = 0;
+}
+
+KListAction::KListAction( const QString& text, int accel,
+                            const QObject* receiver, const char* slot,
+                            QObject* parent, const char* name )
+    : KSelectAction( text, accel, parent, name )
+{
+    connect( this, SIGNAL(activate()), receiver, slot );
+    m_current = 0;
+}
+
+KListAction::KListAction( const QString& text, const QIconSet& pix,
+                            int accel, QObject* parent, const char* name )
+    : KSelectAction( text, pix, accel, parent, name )
+{
+    m_current = 0;
+}
+
+KListAction::KListAction( const QString& text, const QIconSet& pix,
+                            int accel, const QObject* receiver,
+                            const char* slot, QObject* parent,
+			                const char* name )
+    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    connect( this, SIGNAL(activate()), receiver, slot );
+    m_current = 0;
+}
+
+KListAction::KListAction( QObject* parent, const char* name )
+    : KSelectAction( parent, name )
+{
+    m_current = 0;
+}
+
+void KListAction::setCurrentItem( int index )
+{
+    m_current = index;
+
+    emit QAction::activated();
+    emit activated( currentItem() );
+    emit activated( currentText() );
+    emit activate();
+}
+
+QString KListAction::currentText()
+{
+    if ( currentItem() < 0 )
+        return QString::null;
+
+    return items()[ currentItem() ];
+}
+
+int KListAction::currentItem()
+{
+    return m_current;
 }
 
 KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
