@@ -17,6 +17,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+AM_CXXFLAGS = $(USE_EXCEPTIONS)
 
 #AM_CXXFLAGS += -DTABLE_DEBUG
 #AM_CXXFLAGS += -DDEBUG_LAYOUT
