@@ -2246,7 +2246,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
     	fnd[i] = false;
 
 #ifdef CSS_DEBUG
-    kdDebug(6080) << "PSH: parsing \"" << QString(curP, endP - curP) << "\"" << endl;
+    kdDebug(6080) << "PSH: parsing \"" << QString(curP, endP - curP) << "\" num=" << num << endl;
 #endif
 
     for (int j = 0; j < num; ++j) {
@@ -2256,6 +2256,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
         for (int propIndex = 0; propIndex < num; ++propIndex) {
             if (!fnd[propIndex]) {
 		// We have to tread this seperately
+		//kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
 		bool found = false;
 		if (!isLast && properties[propIndex] == CSS_PROP_BACKGROUND_POSITION)
 		    found = parseBackgroundPosition(curP, nextP, endP);
@@ -2315,7 +2316,7 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
 	// We have not found a pair of Background-Positions, see if we have a single value
 
     	//kdDebug(6080) << "BKCGR: Single: \"" << QString(curP, nextP - curP) << "\"" << endl;
-    	found = parseValue(curP, bckgrNextP, CSS_PROP_BACKGROUND_POSITION);
+    	found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION);
     } else {
 	// Moving on
 	nextP = bckgrNextP;
