@@ -292,7 +292,7 @@ public:
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
-  void setProgressResolution (unsigned res);
+  void setProgressResolution (unsigned int res);
 
   /**
    * The destructor instructs ISpell/ASpell to write out the personal
