@@ -89,6 +89,10 @@ enum JapaneseCode::Type JapaneseCode::guess_jp(const char *buf, int buflen)
         }
     }
 
+    /* ascii code check */
+    if (eucj->score == 1.0 && sjis->score == 1.0 && utf8->score == 1.0)
+        return JapaneseCode::ASCII;
+
     /* Now, we have ambigous code.  Pick the highest score.  If more than
        one candidate tie, pick the default encoding. */
     if (DFA_ALIVE(eucj)) top = eucj;

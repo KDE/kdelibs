@@ -48,7 +48,9 @@ namespace khtml {
 
 using namespace khtml;
 
-static const signed char guess_eucj_st[4][256] = {
+typedef signed char dfa_table[256];
+
+static const dfa_table guess_eucj_st[] = {
  { /* state init */
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -133,7 +135,7 @@ static guess_arc guess_eucj_ar[7] = {
  {  0, 1.0   }, /* jis0213_2 -> init */
 };
 
-static const signed char guess_sjis_st[2][256] = {
+static const dfa_table guess_sjis_st[] = {
  { /* state init */
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -181,7 +183,7 @@ static guess_arc guess_sjis_ar[6] = {
  {  0, 1.0   }, /* jis0213 -> init */
 };
 
-static const signed char guess_utf8_st[6][256] = {
+static const dfa_table guess_utf8_st[] = {
  { /* state init */
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -310,43 +312,16 @@ namespace khtml {
 
     class guess_dfa {
     public:
-        guess_arc *arcs;
+        const dfa_table *states;
+        const guess_arc *arcs;
         int state;
         double score;
 
-        guess_dfa () {
+        guess_dfa (const dfa_table stable[], const guess_arc *atable) :
+            states(stable), arcs(atable)
+        {
             state = 0;
             score = 1.0;
-        }
-    };
-
-    class guess_dfa_euc : public guess_dfa {
-    public:
-        const signed char (*states)[4][256];
-
-        guess_dfa_euc () {
-            states = &guess_eucj_st;
-            arcs = guess_eucj_ar;
-        }
-    };
-
-    class guess_dfa_sjis : public guess_dfa {
-    public:
-        const signed char (*states)[2][256];
-
-        guess_dfa_sjis() {
-            states = &guess_sjis_st;
-            arcs = guess_sjis_ar;
-        }
-    };
-
-    class guess_dfa_utf8 : public guess_dfa {
-    public:
-        const signed char (*states)[6][256];
-
-        guess_dfa_utf8() {
-            states = &guess_utf8_st;
-            arcs = guess_utf8_ar;
         }
     };
 
@@ -357,9 +332,9 @@ namespace khtml {
         enum Type guess_jp(const char* buf, int buflen);
 
         JapaneseCode () {
-            eucj = new guess_dfa_euc();
-            sjis = new guess_dfa_sjis();
-            utf8 = new guess_dfa_utf8();
+            eucj = new guess_dfa(guess_eucj_st, guess_eucj_ar);
+            sjis = new guess_dfa(guess_sjis_st, guess_sjis_ar);
+            utf8 = new guess_dfa(guess_utf8_st, guess_utf8_ar);
             last_JIS_escape = false;
         }
 
@@ -370,9 +345,9 @@ namespace khtml {
         }
 
     protected:
-        guess_dfa_euc  *eucj;
-        guess_dfa_sjis *sjis;
-        guess_dfa_utf8 *utf8;
+        guess_dfa *eucj;
+        guess_dfa *sjis;
+        guess_dfa *utf8;
 
         bool last_JIS_escape;
     };
@@ -382,7 +357,7 @@ namespace khtml {
     do {                                                \
         int arc__;                                      \
         if (dfa->state >= 0) {                          \
-            arc__ = (*dfa->states)[dfa->state][ch];     \
+            arc__ = dfa->states[dfa->state][ch];        \
             if (arc__ < 0) {                            \
                 dfa->state = -1;                        \
             } else {                                    \
