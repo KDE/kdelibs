@@ -1320,10 +1320,11 @@ void WindowQObject::timerEvent(QTimerEvent *e)
   QMapIterator<int,ScheduledAction*> it = scheduledActions.find(e->timerId());
   if (it != scheduledActions.end()) {
     ScheduledAction *action = *it;
-    //kdDebug(6070) << "WindowQObject::timerEvent " << this << " action=" << action << " singleShot:" << action->singleShot << endl;
+    bool singleShot = action->singleShot;
+    //kdDebug(6070) << "WindowQObject::timerEvent " << this << " action=" << action << " singleShot:" << singleShot << endl;
 
     // remove single shots installed by setTimeout()
-    if (action->singleShot)
+    if (singleShot)
     {
       clearTimeout(e->timerId(),false);
       scheduledActions.remove(it);
@@ -1331,7 +1332,10 @@ void WindowQObject::timerEvent(QTimerEvent *e)
     if (!parent->part().isNull())
       action->execute(parent);
 
-    if (action->singleShot)
+    // It is important to test singleShot and not action->singleShot here - the
+    // action could have been deleted already if not single shot and if the
+    // JS code called by execute() calls clearTimeout().
+    if (singleShot)
       delete action;
   } else
     kdWarning(6070) << "WindowQObject::timerEvent this=" << this << " timer " << e->timerId()
@@ -1342,7 +1346,7 @@ void WindowQObject::timeoutClose()
 {
   if (!parent->part().isNull())
   {
-    kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
+    //kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
     delete parent->m_part;
   }
 }
