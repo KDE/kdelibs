@@ -76,6 +76,7 @@ void Shell::embedEditor()
   delete m_part2;
   m_part2 = 0L;
   m_editorpart = new NotepadPart( this, m_splitter );
+  m_editorpart->setReadWrite(); // read-write mode
   ////// m_manager->addPart( m_editorpart );
   m_editorpart->widget()->show(); //// we need to do this in a normal KTM....
   m_paEditFile->setEnabled(false);

@@ -61,6 +61,8 @@ bool NotepadPart::openFile()
 
 bool NotepadPart::save()
 {
+  if ( !isReadWrite() )
+    return false;
   QFile f(m_file);
   QString s;
   if ( f.open(IO_WriteOnly) ) {
