@@ -121,7 +121,7 @@ namespace KJS {
 
   // helper functions
   Value parseDate(const String &s);
-  time_t KRFCDate_parseDate(const UString &_date); 
+  double KRFCDate_parseDate(const UString &_date);
   Value timeClip(const Value &t);
   static int local_timeoffset();
 

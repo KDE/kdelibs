@@ -181,6 +181,33 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
+  // As long as we're using time_t we need to 'truncate' to avoid 'wrapping'.
+  // Real long term solutions include: writing our own 64-bit-based date/time class,
+  // using wxWindow's datetime.cpp (in wxBase), using QDateTime... or shifting
+  // to a time_t range by substracting a big enough number of years....
+  if (sizeof(time_t) == 4)
+  {
+    // If time_t is signed, the bigger it can be is 2^31-1
+    if ( (time_t)-1 < 0 ) {
+      if ( floor(milli / 1000.0) > ((double)((uint)1<<31)-1) ) {
+#ifdef KJS_VERBOSE
+        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
+#endif
+        tv = ((uint)1<<31)-1;
+        ms = 0;
+      }
+    }
+    else
+      // time_t is unsigned, the bigger it can be is 2^32-1, aka (uint)-1
+      if ( floor(milli / 1000.0) > ((double)(uint)-1) ) {
+#ifdef KJS_VERBOSE
+        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
+#endif
+        tv = (uint)-1;
+        ms = 0;
+      }
+  }
+
   struct tm *t;
   if (utc)
     t = gmtime(&tv);
@@ -457,56 +484,37 @@ Value KJS::parseDate(const String &s)
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS::parseDate %s\n",u.ascii());
 #endif
-  int firstSlash = u.find('/');
-  if ( firstSlash == -1 )
-  {
-    time_t seconds = KRFCDate_parseDate( u );
+  double /*time_t*/ seconds = KRFCDate_parseDate( u );
 #ifdef KJS_VERBOSE
-    fprintf(stderr,"KRFCDate_parseDate returned seconds=%d\n",seconds);
-    fprintf(stderr, "this is: %s\n", ctime(&seconds));
+  fprintf(stderr,"KRFCDate_parseDate returned seconds=%g\n",seconds);
+  bool withinLimits = true;
+  if ( sizeof(time_t) == 4 )
+  {
+    int limit = ((time_t)-1 < 0) ? 2038 : 2115;
+    if ( seconds > (limit-1970) * 365.25 * 86400 ) {
+      fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(seconds/(365.25*86400)+1970));
+      withinLimits = false;
+    }
+  }
+  if ( withinLimits ) {
+    time_t lsec = (time_t)seconds;
+    fprintf(stderr, "this is: %s\n", ctime(&lsec));
+  }
 #endif
 
-    if ( seconds == -1 )
-      return Undefined();
-    else
-      return Number(seconds * 1000.0);
-  }
+  if ( seconds == -1 )
+    return Undefined();
   else
-  {
-    // Found 12/31/2099 on some website -> obviously MM/DD/YYYY
-    int month = u.substr(0,firstSlash).toULong();
-    int secondSlash = u.find('/',firstSlash+1);
-    //fprintf(stdout,"KJS::parseDate firstSlash=%d, secondSlash=%d\n", firstSlash, secondSlash);
-    if ( secondSlash == -1 )
-    {
-      fprintf(stderr,"KJS::parseDate parsing for this format isn't implemented\n%s", u.ascii());
-      return Number(0);
-    }
-    int day = u.substr(firstSlash+1,secondSlash-firstSlash-1).toULong();
-    int year = u.substr(secondSlash+1).toULong();
-    //fprintf(stdout,"KJS::parseDate day=%d, month=%d, year=%d\n", day, month, year);
-    struct tm t;
-    memset( &t, 0, sizeof(t) );
-    year = (year > 2037) ? 2037 : year; // mktime is limited to 2037 !!!
-    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-    t.tm_mon = month-1; // mktime wants 0-11 for some reason
-    t.tm_mday = day;
-    time_t seconds = mktime(&t);
-    if ( seconds == -1 )
-    {
-      fprintf(stderr,"KJS::parseDate mktime returned -1.\n%s", u.ascii());
-      return Undefined();
-    }
-    else
-      return Number(seconds * 1000.0);
-  }
+    return Number(seconds * 1000.0);
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
 
-static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
+static double ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {
-    unsigned int ret = (day - 32075)       /* days */
+    //printf("year=%d month=%d day=%d hour=%d minute=%d second=%d\n", year, mon, day, hour, minute, second);
+
+    double ret = (day - 32075)       /* days */
             + 1461L * (year + 4800L + (mon - 14) / 12) / 4
             + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
             - 3 * ((year + 4900L + (mon - 14) / 12) / 100) / 4
@@ -539,7 +547,7 @@ static const struct {
     { 0, 0 }
 };
 
-static int KJS::local_timeoffset()
+int KJS::local_timeoffset()
 {
      static int local_offset = -1;
 
@@ -554,7 +562,7 @@ static int KJS::local_timeoffset()
      return local_offset;
 }
 
-time_t KJS::KRFCDate_parseDate(const UString &_date)
+double KJS::KRFCDate_parseDate(const UString &_date)
 {
      // This parse a date in the form:
      //     Wednesday, 09-Nov-99 23:12:40 GMT
@@ -569,7 +577,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      //
      // We ignore the weekday
      //
-     time_t result = 0;
+     double result = 0;
      int offset = 0;
      bool have_tz = false;
      char *newPosStr;
@@ -581,6 +589,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      int hour = 0;
      int minute = 0;
      int second = 0;
+     bool have_time = false;
 
      // Skip leading space
      while(*dateString && isspace(*dateString))
@@ -623,49 +632,65 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      if (!*dateString)
      	return result;  // Invalid date
 
-     if (*dateString == '-')
-     	dateString++;
-
-     while(*dateString && isspace(*dateString))
-     	dateString++;
-
-     if (*dateString == ',')
-     	dateString++;
-
-     if ( month == -1 ) // not found yet
+     if (*dateString == '/' && day <= 12 && month == -1)
      {
-        for(int i=0; i < 3;i++)
-        {
+     	dateString++;
+        // This looks like a MM/DD/YYYY date, not an RFC date.....
+        month = day - 1; // 0-based
+        day = strtol(dateString, &newPosStr, 10);
+        dateString = newPosStr;
+        if (*dateString == '/')
+          dateString++;
+        if (!*dateString)
+          return result;  // Invalid date
+        //printf("month=%d day=%d dateString=%s\n", month, day, dateString);
+     }
+     else
+     {
+       if (*dateString == '-')
+         dateString++;
+
+       while(*dateString && isspace(*dateString))
+         dateString++;
+
+       if (*dateString == ',')
+         dateString++;
+
+       if ( month == -1 ) // not found yet
+       {
+         for(int i=0; i < 3;i++)
+         {
            if (!*dateString || (*dateString == '-') || isspace(*dateString))
-              return result;  // Invalid date
+             return result;  // Invalid date
            monthStr[i] = tolower(*dateString++);
-        }
-        monthStr[3] = '\0';
+         }
+         monthStr[3] = '\0';
 
-        newPosStr = (char*)strstr(haystack, monthStr);
+         newPosStr = (char*)strstr(haystack, monthStr);
 
-        if (!newPosStr)
+         if (!newPosStr)
            return result;  // Invalid date
 
-        month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
+         month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
 
-        if ((month < 0) || (month > 11))
+         if ((month < 0) || (month > 11))
            return result;  // Invalid date
 
-        while(*dateString && (*dateString != '-') && !isspace(*dateString))
+         while(*dateString && (*dateString != '-') && !isspace(*dateString))
            dateString++;
 
-        if (!*dateString)
+         if (!*dateString)
            return result;  // Invalid date
 
-        // '-99 23:12:40 GMT'
-        if ((*dateString != '-') && !isspace(*dateString))
+         // '-99 23:12:40 GMT'
+         if ((*dateString != '-') && (*dateString != '/') && !isspace(*dateString))
            return result;  // Invalid date
-        dateString++;
+         dateString++;
+       }
+
+       if ((month < 0) || (month > 11))
+         return result;  // Invalid date
      }
-
-     if ((month < 0) || (month > 11))
-     	return result;  // Invalid date
 
      // '99 23:12:40 GMT'
      year = strtol(dateString, &newPosStr, 10);
@@ -686,8 +711,9 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      {
         // ' 23:12:40 GMT'
         if (!isspace(*dateString++))
-           return result;  // Invalid date
+           return false;  // Invalid date
 
+        have_time = true;
         hour = strtol(dateString, &newPosStr, 10);
         dateString = newPosStr;
 
@@ -730,10 +756,12 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      // broken mail-/news-clients omit the time zone
      if (*dateString) {
 
-       if (dateString[0] == 'G' && dateString[1] == 'M' && dateString[2] == 'T')
+       if ( (dateString[0] == 'G' && dateString[1] == 'M' && dateString[2] == 'T')
+            || (dateString[0] == 'U' && dateString[1] == 'T' && dateString[2] == 'C') )
+       {
          dateString += 3;
-       else if (dateString[0] == 'U' && dateString[1] == 'T' && dateString[2] == 'C')
-         dateString += 3;
+         have_tz = true;
+       }
 
        while (*dateString && isspace(*dateString))
          ++dateString;
@@ -759,6 +787,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
        }
      }
 
+#if 0
      if (sizeof(time_t) == 4)
      {
          if ((time_t)-1 < 0)
@@ -786,6 +815,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
             }
          }
      }
+#endif
 
      if(!have_tz)
        offset = local_timeoffset();
@@ -798,7 +828,8 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      if ((offset > 0) && (offset > result))
         offset = 0;
 
-     result -= offset;
+     if ( have_time ) // don't apply offset if no time was specified, it might change the date!
+       result -= offset;
 
      // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
      // This is so that parse error and valid epoch 0 return values won't
