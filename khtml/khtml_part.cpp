@@ -885,6 +885,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
 	    d->m_findNode = d->m_findNode->parentNode();
 	    next = d->m_findNode->nextSibling();
 	}
+	d->m_findNode = next;
 	if(!d->m_findNode) return false;
     }
 }
