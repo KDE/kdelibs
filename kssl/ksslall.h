@@ -1,0 +1,17 @@
+#ifndef __INC_KSSL_ALL_H
+#define __INC_KSSL_ALL_H
+#include <kopenssl.h>
+#include <ksslcertificatefactory.h>
+#include <ksslinfodlg.h>
+#include <ksslx509map.h>
+#include <kssl.h>
+#include <ksslcertificatehome.h>
+#include <ksslpeerinfo.h>
+#include <ksslcertificate.h>
+#include <ksslconnectioninfo.h>
+#include <ksslsettings.h>
+#include <ksslcertificatecache.h>
+#include <kssldefs.h>
+#include <ksslutils.h>
+#endif
+

@@ -210,7 +210,6 @@ KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certNam
 KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f) 
 :            QScrollView(parent, name, f)
 {
-    viewport()->setBackgroundMode(QWidget::PaletteButton);
     _frame = NULL;
 }
 
@@ -218,7 +217,13 @@ KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f)
 void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
     KSSLX509Map cert(certName);
     QString tmp;
-    if (_frame) delete _frame;
+
+    if (_frame) {
+       removeChild(_frame);
+       delete _frame;
+    }
+
+    viewport()->setBackgroundMode(QWidget::PaletteButton);
     _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
@@ -264,6 +269,8 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         }
     }
     addChild(_frame);
+    _frame->show();
+    show();
 }
 
 
