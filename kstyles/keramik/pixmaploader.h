@@ -75,7 +75,7 @@ namespace Keramik
 			QPixmap* m_pixmap;
 
 			KeramikCacheEntry(int id, const QColor& color, const QColor& bg, bool disabled,
-											bool blended, int width = -1 , int height = -1, QPixmap* pixmap = 0 ):
+											bool blended, int width, int height, QPixmap* pixmap = 0 ):
 				m_id(id), m_width(width), m_height(height), m_colorCode(color.rgb()),m_bgCode(bg.rgb()),
 				m_disabled(disabled),  m_blended(blended), m_pixmap(pixmap)
 			{}
