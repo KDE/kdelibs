@@ -195,6 +195,11 @@ public:
     bool gotoAnchor( const char *_name );
 
     /**
+     * Scrolls to the position (_x, _y). Returns TRUE if succeeded.
+     */
+    bool gotoXY( int _x, int _y );
+
+    /**
      * Sets the width of the border. This is used to implement the tag
      * &lt;frame frameborder=... &gt; tag. FOR INTERNAL USE ONLY.
      * 

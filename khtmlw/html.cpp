@@ -1146,26 +1146,28 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     
     stopParser();
     
+    reference = NULL;
+    
     if ( _url != 0L )
     {
       actualURL = _url;
       KURL u( actualURL );
+      reference = u.reference();
+      u.setReference( "" );
+
       QString p = u.path();
       if ( p.length() == 0 )
       {
-	u.setReference( "" );
 	QString base( u.url() );
 	base += "/";
 	baseURL = base;
       }
       else if ( p.right(1) == "/" )
       {
-	u.setReference( "" );
 	baseURL = u.url();
       }
       else
       {
-	u.setReference( "" );
 	QString base( u.url() );
 	int pos = base.findRev( '/' );
 	if ( pos > 0 )
@@ -1483,12 +1485,21 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     debugM("document changed\n");
     emit documentChanged();
 
+    if (!reference.isNull())
+    {
+    	if (gotoAnchor())
+    	{
+    	    reference = NULL;
+    	}
+    }
+
     debugM("Parsin is over?\n");
     // Parsing is over ?
     if ( !parsing )
     {
         debugM("Yes\n");
 	debug( "Parsing done" );
+
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
 	{
@@ -1508,7 +1519,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	}	    
 	// Adjust the scrollbar
 	emit scrollHorz( x_offset );
-	
+
 	painter->end();
 	delete painter;
 	painter = 0;
@@ -4300,16 +4311,24 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 	painter->setClipping( FALSE );
 }
 
-bool KHTMLWidget::gotoAnchor( const char *_name )
+bool KHTMLWidget::gotoAnchor( )
 {
     if ( clue == 0L )
 	return FALSE;
 
     QPoint p( 0, 0 );
     
-    HTMLAnchor *anchor = clue->findAnchor( _name, &p );
+    HTMLAnchor *anchor = clue->findAnchor( reference.data(), &p );
     if ( anchor == 0L )
 	return FALSE;
+
+    // Is there more HTML to be expected?
+    if (parsing)	
+    {
+	// Check if the reference can be located at the top of the screen 
+        if (p.y() > docHeight() - height()  - 1)
+             return FALSE;
+    }
 
     emit scrollVert( p.y() );
 
@@ -4318,6 +4337,31 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
 //    emit scrollHorz( p.x() );
 
     return TRUE;
+}
+
+bool KHTMLWidget::gotoXY( int _x_offset, int _y_offset )
+{
+    if ( clue == 0L )
+	return FALSE;
+
+    emit scrollVert( _y_offset );
+
+    emit scrollHorz( _x_offset );
+
+    return TRUE;
+}
+
+
+bool KHTMLWidget::gotoAnchor( const char *_name )
+{
+    reference = _name;
+    
+    if (gotoAnchor())
+    {
+       reference = NULL;
+       return TRUE;
+    }
+    return FALSE;
 }
 
 void KHTMLWidget::autoScrollY( int _delay, int _dy )

@@ -42,6 +42,7 @@ class KHTMLWidget;
 #include "htmldata.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
+#include "htmltable.h"
 #include "htmlform.h"
 #include "htmltoken.h"
 #include "htmlframe.h"
@@ -272,11 +273,25 @@ public:
     int yOffset() const { return y_offset; }
 
     /**
+     * Find the default anchor. If the anchor is found, the widget
+     * scrolls to the closest position. Returns TRUE if the anchor has
+     * been found. 
+     */ 
+    bool gotoAnchor();
+
+    /**
      * Find the anchor named '_name'. If the anchor is found, the widget
      * scrolls to the closest position. Returns TRUE if the anchor has
-     * been found.
+     * been found. If the anchor could not be found it is retried when a
+     * new part of the document arrives.
      */
     bool gotoAnchor( const char *_name );
+
+    /**
+     * Jumps to position _x_offset, _y_offset.
+     * Returns TRUE if the position was available
+     */
+    bool gotoXY( int _x_offset, int _y_offset );
 
     /**
      * Causes the widget contents to scroll automatically.  Call
@@ -930,6 +945,11 @@ protected:
      * This is the URL that the cursor is currently over
      */
     QString overURL;
+    
+    /*
+     * Reference (anchor) to jump to once it becomes available
+     */
+    QString reference;
 
     /*
      * This painter is created at need, for example to draw
