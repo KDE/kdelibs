@@ -1184,7 +1184,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     break;
     case ID_LINK: {
       DOM::HTMLLinkElement link = element;
-      if      (p == "disabled")        { link.setDisabled(v.toBoolean(exec).value()); return; }
+      if      (p == "disabled")        { link.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "charset")         { link.setCharset(str); return; }
       else if (p == "href")            { link.setHref(str); return; }
       else if (p == "hreflang")        { link.setHreflang(str); return; }
@@ -1222,7 +1222,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     break;
     case ID_STYLE: {
       DOM::HTMLStyleElement style = element;
-      if      (p == "disabled")        { style.setDisabled(v.toBoolean(exec).value()); return; }
+      if      (p == "disabled")        { style.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "media")           { style.setMedia(str); return; }
       else if (p == "type")            { style.setType(str); return; }
     }
@@ -1265,8 +1265,8 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
                                        }
       // read-only: form
       // read-only: options
-      else if (p == "disabled")        { select.setDisabled(v.toBoolean(exec).value()); return; }
-      else if (p == "multiple")        { select.setMultiple(v.toBoolean(exec).value()); return; }
+      else if (p == "disabled")        { select.setDisabled(v.toBoolean(exec)); return; }
+      else if (p == "multiple")        { select.setMultiple(v.toBoolean(exec)); return; }
       else if (p == "name")            { select.setName(str); return; }
       else if (p == "size")            { select.setSize(v.toNumber(exec).intValue()); return; }
       else if (p == "tabIndex")        { select.setTabIndex(v.toNumber(exec).intValue()); return; }
@@ -1274,14 +1274,14 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     break;
     case ID_OPTGROUP: {
       DOM::HTMLOptGroupElement optgroup = element;
-      if      (p == "disabled")        { optgroup.setDisabled(v.toBoolean(exec).value()); return; }
+      if      (p == "disabled")        { optgroup.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "label")           { optgroup.setLabel(str); return; }
     }
     break;
     case ID_OPTION: {
       DOM::HTMLOptionElement option = element;
       // read-only: form
-      if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean(exec).value()); return; }
+      if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean(exec)); return; }
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
       else if (p == "text")            { DOM::NodeList nl(option.childNodes());
@@ -1295,26 +1295,26 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
                                          return;
       }
       // read-only: index
-      else if (p == "disabled")        { option.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "disabled")        { option.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "label")           { option.setLabel(str); return; }
-      else if (p == "selected")        { option.setSelected(v.toBoolean(exec).value()); return; }
+      else if (p == "selected")        { option.setSelected(v.toBoolean(exec)); return; }
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElement input = element;
       if      (p == "defaultValue")    { input.setDefaultValue(str); return; }
-      else if (p == "defaultChecked")  { input.setDefaultChecked(v.toBoolean(exec).value()); return; }
+      else if (p == "defaultChecked")  { input.setDefaultChecked(v.toBoolean(exec)); return; }
       // read-only: form
       else if (p == "accept")          { input.setAccept(str); return; }
       else if (p == "accessKey")       { input.setAccessKey(str); return; }
       else if (p == "align")           { input.setAlign(str); return; }
       else if (p == "alt")             { input.setAlt(str); return; }
-      else if (p == "checked")         { input.setChecked(v.toBoolean(exec).value()); return; }
-      else if (p == "disabled")        { input.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "checked")         { input.setChecked(v.toBoolean(exec)); return; }
+      else if (p == "disabled")        { input.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "maxLength")       { input.setMaxLength(v.toNumber(exec).intValue()); return; }
       else if (p == "name")            { input.setName(str); return; }
-      else if (p == "readOnly")        { input.setReadOnly(v.toBoolean(exec).value()); return; }
+      else if (p == "readOnly")        { input.setReadOnly(v.toBoolean(exec)); return; }
       else if (p == "size")            { input.setSize(str); return; }
       else if (p == "src")             { input.setSrc(str); return; }
       else if (p == "tabIndex")        { input.setTabIndex(v.toNumber(exec).intValue()); return; }
@@ -1329,9 +1329,9 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       // read-only: form
       else if (p == "accessKey")       { textarea.setAccessKey(str); return; }
       else if (p == "cols")            { textarea.setCols(v.toNumber(exec).intValue()); return; }
-      else if (p == "disabled")        { textarea.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "disabled")        { textarea.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "name")            { textarea.setName(str); return; }
-      else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean(exec).value()); return; }
+      else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean(exec)); return; }
       else if (p == "rows")            { textarea.setRows(v.toNumber(exec).intValue()); return; }
       else if (p == "tabIndex")        { textarea.setTabIndex(v.toNumber(exec).intValue()); return; }
       // read-only: type
@@ -1342,7 +1342,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       DOM::HTMLButtonElement button = element;
       // read-only: form
       if (p == "accessKey")            { button.setAccessKey(str); return; }
-      else if (p == "disabled")        { button.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "disabled")        { button.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "name")            { button.setName(str); return; }
       else if (p == "tabIndex")        { button.setTabIndex(v.toNumber(exec).intValue()); return; }
       // read-only: type
@@ -1370,30 +1370,30 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     break;
     case ID_UL: {
       DOM::HTMLUListElement uList = element;
-      if      (p == "compact")         { uList.setCompact(v.toBoolean(exec).value()); return; }
+      if      (p == "compact")         { uList.setCompact(v.toBoolean(exec)); return; }
       else if (p == "type")            { uList.setType(str); return; }
     }
     break;
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
-      if      (p == "compact")         { oList.setCompact(v.toBoolean(exec).value()); return; }
+      if      (p == "compact")         { oList.setCompact(v.toBoolean(exec)); return; }
       else if (p == "start")           { oList.setStart(v.toNumber(exec).intValue()); return; }
       else if (p == "type")            { oList.setType(str); return; }
     }
     break;
     case ID_DL: {
       DOM::HTMLDListElement dList = element;
-      if      (p == "compact")         { dList.setCompact(v.toBoolean(exec).value()); return; }
+      if      (p == "compact")         { dList.setCompact(v.toBoolean(exec)); return; }
     }
     break;
     case ID_DIR: {
       DOM::HTMLDirectoryElement directory = element;
-      if      (p == "compact")         { directory.setCompact(v.toBoolean(exec).value()); return; }
+      if      (p == "compact")         { directory.setCompact(v.toBoolean(exec)); return; }
     }
     break;
     case ID_MENU: {
       DOM::HTMLMenuElement menu = element;
-      if      (p == "compact")         { menu.setCompact(v.toBoolean(exec).value()); return; }
+      if      (p == "compact")         { menu.setCompact(v.toBoolean(exec)); return; }
     }
     break;
     case ID_LI: {
@@ -1458,7 +1458,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     case ID_HR: {
       DOM::HTMLHRElement hr = element;
       if      (p == "align")           { hr.setAlign(str); return; }
-      else if (p == "noShade")         { hr.setNoShade(v.toBoolean(exec).value()); return; }
+      else if (p == "noShade")         { hr.setNoShade(v.toBoolean(exec)); return; }
       else if (p == "size")            { hr.setSize(str); return; }
       else if (p == "width")           { hr.setWidth(str); return; }
     }
@@ -1495,7 +1495,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "border")          { image.setBorder(str); return; }
       else if (p == "height")          { image.setHeight(str); return; }
       else if (p == "hspace")          { image.setHspace(str); return; }
-      else if (p == "isMap")           { image.setIsMap(v.toBoolean(exec).value()); return; }
+      else if (p == "isMap")           { image.setIsMap(v.toBoolean(exec)); return; }
       else if (p == "longDesc")        { image.setLongDesc(str); return; }
       else if (p == "src")             { image.setSrc(str); return; }
       else if (p == "useMap")          { image.setUseMap(str); return; }
@@ -1513,7 +1513,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "codeBase")        { object.setCodeBase(str); return; }
       else if (p == "codeType")        { object.setCodeType(str); return; }
       else if (p == "data")            { object.setData(str); return; }
-      else if (p == "declare")         { object.setDeclare(v.toBoolean(exec).value()); return; }
+      else if (p == "declare")         { object.setDeclare(v.toBoolean(exec)); return; }
       else if (p == "height")          { object.setHeight(str); return; }
       else if (p == "hspace")          { object.setHspace(str); return; }
       else if (p == "name")            { object.setName(str); return; }
@@ -1562,7 +1562,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "alt")             { area.setAlt(str); return; }
       else if (p == "coords")          { area.setCoords(str); return; }
       else if (p == "href")            { area.setHref(str); return; }
-      else if (p == "noHref")          { area.setNoHref(v.toBoolean(exec).value()); return; }
+      else if (p == "noHref")          { area.setNoHref(v.toBoolean(exec)); return; }
       else if (p == "shape")           { area.setShape(str); return; }
       else if (p == "tabIndex")        { area.setTabIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "target")          { area.setTarget(str); return; }
@@ -1574,7 +1574,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "htmlFor")         { script.setHtmlFor(str); return; }
       else if (p == "event")           { script.setEvent(str); return; }
       else if (p == "charset")         { script.setCharset(str); return; }
-      else if (p == "defer")           { script.setDefer(v.toBoolean(exec).value()); return; }
+      else if (p == "defer")           { script.setDefer(v.toBoolean(exec)); return; }
       else if (p == "src")             { script.setSrc(str); return; }
       else if (p == "type")            { script.setType(str); return; }
     }
@@ -1648,7 +1648,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "colSpan")         { tableCell.setColSpan(v.toNumber(exec).intValue()); return; }
       else if (p == "headers")         { tableCell.setHeaders(str); return; }
       else if (p == "height")          { tableCell.setHeight(str); return; }
-      else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean(exec).value()); return; }
+      else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean(exec)); return; }
       else if (p == "rowSpan")         { tableCell.setRowSpan(v.toNumber(exec).intValue()); return; }
       else if (p == "scope")           { tableCell.setScope(str); return; }
       else if (p == "vAlign")          { tableCell.setVAlign(str); return; }
@@ -1668,7 +1668,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "marginHeight")    { frameElement.setMarginHeight(str); return; }
       else if (p == "marginWidth")     { frameElement.setMarginWidth(str); return; }
       else if (p == "name")            { frameElement.setName(str); return; }
-      else if (p == "noResize")        { frameElement.setNoResize(v.toBoolean(exec).value()); return; }
+      else if (p == "noResize")        { frameElement.setNoResize(v.toBoolean(exec)); return; }
       else if (p == "scrolling")       { frameElement.setScrolling(str); return; }
       else if (p == "src")             { frameElement.setSrc(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
@@ -1906,9 +1906,9 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
   if (sz > 1)
     opt.setValue(args[1].toString(exec).value().string());
   if (sz > 2)
-    opt.setDefaultSelected( args[2].toBoolean(exec).value() );
+    opt.setDefaultSelected(args[2].toBoolean(exec));
   if (sz > 3)
-    opt.setSelected( args[3].toBoolean(exec).value() );
+    opt.setSelected(args[3].toBoolean(exec));
 
   return Object::dynamicCast(getDOMNode(exec,opt));
 }

@@ -94,7 +94,7 @@ Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*
   if (id == ToString)
     return v.toString(exec);
   else
-    return v.toBoolean(exec);
+    return Boolean(v.toBoolean(exec)); /* TODO: optimize for bool case */
 }
 
 // ------------------------------ BooleanObjectImp -----------------------------
@@ -145,6 +145,6 @@ Value BooleanObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &a
   if (args.isEmpty())
     return Boolean(false);
   else
-    return args[0].toBoolean(exec);
+    return Boolean(args[0].toBoolean(exec)); /* TODO: optimize for bool case */
 }
 

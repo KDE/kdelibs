@@ -548,7 +548,7 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec,
                       Type preferredType = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     Number toInteger(ExecState *exec) const;
     int toInt32(ExecState *exec) const;

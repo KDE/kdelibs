@@ -113,7 +113,7 @@ bool KJS::equal(ExecState *exec, const Value& v1, const Value& v2)
     if (t1 == StringType)
       return (v1.toString(exec).value() == v2.toString(exec).value());
     if (t1 == BooleanType)
-      return (v1.toBoolean(exec).value() == v2.toBoolean(exec).value());
+      return (v1.toBoolean(exec) == v2.toBoolean(exec));
 
     // types are Object
     return (v1.imp() == v2.imp());
@@ -167,7 +167,7 @@ bool KJS::strictEqual(ExecState *exec, const Value &v1, const Value &v2)
   } else if (t1 == StringType) {
     return v1.toString(exec).value() == v2.toString(exec).value();
   } else if (t2 == BooleanType) {
-    return v1.toBoolean(exec).value() == v2.toBoolean(exec).value();
+    return v1.toBoolean(exec) == v2.toBoolean(exec);
   }
   if (v1.imp() == v2.imp())
     return true;

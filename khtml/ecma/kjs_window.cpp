@@ -805,9 +805,9 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
   }
 }
 
-Boolean Window::toBoolean(ExecState *) const
+bool Window::toBoolean(ExecState *) const
 {
-  return Boolean(!m_part.isNull());
+  return !m_part.isNull();
 }
 
 int Window::installTimeout(const UString &handler, int t, bool singleShot)

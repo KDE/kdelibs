@@ -65,7 +65,7 @@ namespace KJS {
     virtual ~DOMStyleSheet();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   protected:
@@ -81,7 +81,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual Boolean toBoolean() const { return Boolean(true); }
+    virtual bool toBoolean() const { return true; }
     static const ClassInfo info;
   private:
     DOM::StyleSheetList styleSheetList;
@@ -108,7 +108,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual Boolean toBoolean() const { return Boolean(true); }
+    virtual bool toBoolean() const { return true; }
     static const ClassInfo info;
   private:
     DOM::MediaList mediaList;

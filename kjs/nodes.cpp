@@ -590,7 +590,7 @@ List ArgumentListNode::evaluateList(ExecState *exec)
     l = list->evaluateList(exec);
     KJS_CHECKEXCEPTIONLIST
   }
-    
+
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONLIST
   Value v = e.getValue(exec);
@@ -1095,9 +1095,9 @@ Value LogicalNotNode::evaluate(ExecState *exec)
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   Value v = e.getValue(exec);
-  Boolean b = v.toBoolean(exec);
+  bool b = v.toBoolean(exec);
 
-  return Boolean(!b.value());
+  return Boolean(!b);
 }
 
 // ------------------------------ MultNode -------------------------------------
@@ -1429,8 +1429,8 @@ Value BinaryLogicalNode::evaluate(ExecState *exec)
   Value e1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   Value v1 = e1.getValue(exec);
-  Boolean b1 = v1.toBoolean(exec);
-  if ((!b1.value() && oper == OpAnd) || (b1.value() && oper == OpOr))
+  bool b1 = v1.toBoolean(exec);
+  if ((!b1 && oper == OpAnd) || (b1 && oper == OpOr))
     return v1;
 
   Value e2 = expr2->evaluate(exec);
@@ -1474,9 +1474,9 @@ Value ConditionalNode::evaluate(ExecState *exec)
   Value e = logical->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   Value v = e.getValue(exec);
-  Boolean b = v.toBoolean(exec);
+  bool b = v.toBoolean(exec);
 
-  if (b.value())
+  if (b)
     e = expr1->evaluate(exec);
   else
     e = expr2->evaluate(exec);
@@ -1949,10 +1949,10 @@ Completion IfNode::execute(ExecState *exec)
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
   Value v = e.getValue(exec);
-  Boolean b = v.toBoolean(exec);
+  bool b = v.toBoolean(exec);
 
   // if ... then
-  if (b.value())
+  if (b)
     return statement1->execute(exec);
 
   // no else
@@ -2018,7 +2018,7 @@ Completion DoWhileNode::execute(ExecState *exec)
     be = expr->evaluate(exec);
     KJS_CHECKEXCEPTION
     bv = be.getValue(exec);
-  } while (bv.toBoolean(exec).value());
+  } while (bv.toBoolean(exec));
 
   return Completion(Normal, value);
 }
@@ -2059,7 +2059,7 @@ Completion WhileNode::execute(ExecState *exec)
 
   Value be, bv;
   Completion c;
-  Boolean b(false);
+  bool b(false);
   Value value;
 
   while (1) {
@@ -2071,7 +2071,7 @@ Completion WhileNode::execute(ExecState *exec)
     // bail out on error
     KJS_CHECKEXCEPTION
 
-    if (!b.value())
+    if (!b)
       return Completion(Normal, value);
 
     c = statement->execute(exec);
@@ -2128,7 +2128,7 @@ bool ForNode::deref()
 Completion ForNode::execute(ExecState *exec)
 {
   Value e, v, cval;
-  Boolean b;
+  bool b;
 
   if (expr1) {
     e = expr1->evaluate(exec);
@@ -2141,7 +2141,7 @@ Completion ForNode::execute(ExecState *exec)
       KJS_CHECKEXCEPTION
       v = e.getValue(exec);
       b = v.toBoolean(exec);
-      if (b.value() == false)
+      if (b == false)
 	return Completion(Normal, cval);
     }
     // bail out on error

@@ -87,9 +87,9 @@ DOMNode::~DOMNode()
   nodes.remove(node.handle());
 }
 
-Boolean DOMNode::toBoolean(ExecState *) const
+bool DOMNode::toBoolean(ExecState *) const
 {
-    return Boolean(!node.isNull());
+    return !node.isNull();
 }
 
 /* Source for DOMNodeTable. Use "make hashtables" to regenerate.
@@ -420,18 +420,18 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
       result = Boolean(node.hasChildNodes());
       break;
     case DOMNode::CloneNode:
-      result = getDOMNode(exec,node.cloneNode(args[0].toBoolean(exec).value()));
+      result = getDOMNode(exec,node.cloneNode(args[0].toBoolean(exec)));
       break;
     case DOMNode::AddEventListener: {
 //        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        node.addEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec).value());
+        node.addEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec));
         result = Undefined();
       }
       break;
     case DOMNode::RemoveEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        node.removeEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec).value());
+        node.removeEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec));
         result = Undefined();
       }
       break;
@@ -723,7 +723,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     if (args[2].isA(NullType)) {
         DOM::NodeFilter filter;
 	result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec).value()),
-				    filter,args[3].toBoolean(exec).value()));
+				    filter,args[3].toBoolean(exec)));
     }
     else {
       Object obj = Object::dynamicCast(args[2]);
@@ -734,13 +734,13 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 	result = getDOMNodeIterator(
           doc.createNodeIterator(
             toNode(args[0]),(long unsigned int)(args[1].toNumber(exec).value()),
-            filter,args[3].toBoolean(exec).value()));
+            filter,args[3].toBoolean(exec)));
       }// else?
     }
     break;
   case DOMDocument::CreateTreeWalker:
     result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec).value()),
-             toNodeFilter(args[2]),args[3].toBoolean(exec).value()));
+             toNodeFilter(args[2]),args[3].toBoolean(exec)));
     break;
   case DOMDocument::CreateEvent:
     result = getDOMEvent(doc.createEvent(s));

@@ -212,7 +212,7 @@ QVariant KJS::ValueToVariant(ExecState* exec, const Value &val) {
   QVariant res;
   switch (val.type()) {
   case BooleanType:
-    res = QVariant(val.toBoolean(exec).value(), 0);
+    res = QVariant(val.toBoolean(exec), 0);
     break;
   case NumberType:
     res = QVariant(val.toNumber(exec).value());

@@ -547,7 +547,7 @@ Value ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
   return defaultValue(exec,preferredType);
 }
 
-Boolean ObjectImp::toBoolean(ExecState */*exec*/) const
+bool ObjectImp::toBoolean(ExecState */*exec*/) const
 {
   return true;
 }

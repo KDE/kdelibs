@@ -125,7 +125,7 @@ Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       result = Undefined();
       break;
     case Collapse:
-      range.collapse(args[0].toBoolean(exec).value());
+      range.collapse(args[0].toBoolean(exec));
       result = Undefined();
       break;
     case SelectNode:

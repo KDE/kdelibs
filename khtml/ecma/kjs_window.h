@@ -85,7 +85,7 @@ namespace KJS {
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive = true) const;
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
-    virtual Boolean toBoolean(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
     void scheduleClose();

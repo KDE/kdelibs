@@ -91,7 +91,7 @@ namespace KJS {
     HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     enum { Item, NamedItem, Tags };
     DOM::HTMLCollection toCollection() const { return collection; }
@@ -139,7 +139,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValue(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Src, Complete };

@@ -78,9 +78,9 @@ Value UndefinedImp::toPrimitive(ExecState */*exec*/, Type) const
   return (ValueImp*)this;
 }
 
-Boolean UndefinedImp::toBoolean(ExecState */*exec*/) const
+bool UndefinedImp::toBoolean(ExecState */*exec*/) const
 {
-  return Boolean(false);
+  return false;
 }
 
 Number UndefinedImp::toNumber(ExecState */*exec*/) const
@@ -109,9 +109,9 @@ Value NullImp::toPrimitive(ExecState */*exec*/, Type) const
   return (ValueImp*)this;
 }
 
-Boolean NullImp::toBoolean(ExecState */*exec*/) const
+bool NullImp::toBoolean(ExecState */*exec*/) const
 {
-  return Boolean(false);
+  return false;
 }
 
 Number NullImp::toNumber(ExecState */*exec*/) const
@@ -141,9 +141,9 @@ Value BooleanImp::toPrimitive(ExecState */*exec*/, Type) const
   return (ValueImp*)this;
 }
 
-Boolean BooleanImp::toBoolean(ExecState */*exec*/) const
+bool BooleanImp::toBoolean(ExecState */*exec*/) const
 {
-  return Boolean(val);
+  return val;
 }
 
 Number BooleanImp::toNumber(ExecState */*exec*/) const
@@ -175,9 +175,9 @@ Value StringImp::toPrimitive(ExecState */*exec*/, Type) const
   return (ValueImp*)this;
 }
 
-Boolean StringImp::toBoolean(ExecState */*exec*/) const
+bool StringImp::toBoolean(ExecState */*exec*/) const
 {
-  return Boolean(val.size() > 0);
+  return (val.size() > 0);
 }
 
 Number StringImp::toNumber(ExecState */*exec*/) const
@@ -209,11 +209,9 @@ Value NumberImp::toPrimitive(ExecState *, Type) const
   return (ValueImp*)this;
 }
 
-Boolean NumberImp::toBoolean(ExecState *) const
+bool NumberImp::toBoolean(ExecState *) const
 {
-  bool b = !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
-
-  return Boolean(b);
+  return !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
 }
 
 Number NumberImp::toNumber(ExecState *) const
@@ -254,7 +252,7 @@ Value ReferenceImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) con
   return 0;
 }
 
-Boolean ReferenceImp::toBoolean(ExecState */*exec*/) const
+bool ReferenceImp::toBoolean(ExecState */*exec*/) const
 {
   // invalid for Reference
   assert(false);
@@ -385,7 +383,7 @@ Value CompletionImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) co
   return 0;
 }
 
-Boolean CompletionImp::toBoolean(ExecState */*exec*/) const
+bool CompletionImp::toBoolean(ExecState */*exec*/) const
 {
   // invalid for Completion
   assert(false);
@@ -426,7 +424,7 @@ Value ListImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
   return 0;
 }
 
-Boolean ListImp::toBoolean(ExecState */*exec*/) const
+bool ListImp::toBoolean(ExecState */*exec*/) const
 {
   // invalid for List
   assert(false);

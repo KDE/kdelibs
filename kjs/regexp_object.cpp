@@ -91,7 +91,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     lastIndex = thisObj.get(exec,"lastIndex");
     i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
     tmp = thisObj.get(exec,"global");
-    if (tmp.toBoolean(exec).value() == false)
+    if (tmp.toBoolean(exec) == false)
       i = 0;
     if (i < 0 || i > length) {
       thisObj.put(exec,"lastIndex", 0);

@@ -270,7 +270,7 @@ Value Value::toPrimitive(ExecState *exec, Type preferredType) const
   return rep->toPrimitive(exec,preferredType);
 }
 
-Boolean Value::toBoolean(ExecState *exec) const
+bool Value::toBoolean(ExecState *exec) const
 {
   return rep->toBoolean(exec);
 }

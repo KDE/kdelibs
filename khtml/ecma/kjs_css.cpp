@@ -232,7 +232,7 @@ Value DOMStyleSheet::tryGet(ExecState *exec, const UString &p) const
 void DOMStyleSheet::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
   if (propertyName == "disabled") {
-    styleSheet.setDisabled(value.toBoolean(exec).value());
+    styleSheet.setDisabled(value.toBoolean(exec));
   }
   else
     DOMObject::tryPut(exec, propertyName, value, attr);

@@ -66,7 +66,7 @@ namespace KJS {
 
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
       { return ObjectImp::call(exec, thisObj, args); }
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     virtual String toString(ExecState *) const { return UString("[function]"); }
   };
 

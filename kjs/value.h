@@ -115,7 +115,7 @@ namespace KJS {
 
     virtual Value toPrimitive(ExecState *exec,
                               Type preferredType = UnspecifiedType) const = 0;
-    virtual Boolean toBoolean(ExecState *exec) const = 0;
+    virtual bool toBoolean(ExecState *exec) const = 0;
     virtual Number toNumber(ExecState *exec) const = 0;
     virtual Number toInteger(ExecState *exec) const;
     virtual int toInt32(ExecState *exec) const;
@@ -195,7 +195,7 @@ namespace KJS {
     /**
      * Performs the ToBoolean type conversion operation on this value (ECMA 9.2)
      */
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
 
     /**
      * Performs the ToNumber type conversion operation on this value (ECMA 9.3)

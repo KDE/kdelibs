@@ -56,7 +56,7 @@ namespace KJS {
     Type type() const { return UndefinedType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -72,7 +72,7 @@ namespace KJS {
     Type type() const { return NullType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -89,7 +89,7 @@ namespace KJS {
     Type type() const { return BooleanType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -109,7 +109,7 @@ namespace KJS {
     Type type() const { return StringType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -127,7 +127,7 @@ namespace KJS {
     Type type() const { return NumberType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -148,7 +148,7 @@ namespace KJS {
     virtual void mark();
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -172,7 +172,7 @@ namespace KJS {
     virtual void mark();
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
@@ -213,7 +213,7 @@ namespace KJS {
     virtual void mark();
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    Boolean toBoolean(ExecState *exec) const;
+    bool toBoolean(ExecState *exec) const;
     Number toNumber(ExecState *exec) const;
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;

@@ -37,7 +37,7 @@ namespace KJS {
     // Constructor for inherited classes
     DOMNode(Object proto, DOM::Node n);
     ~DOMNode();
-    virtual Boolean toBoolean(ExecState *) const;
+    virtual bool toBoolean(ExecState *) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValue(ExecState *exec, int token) const;
 
@@ -78,7 +78,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     DOM::NodeList nodeList() const { return list; }
   private:
@@ -152,7 +152,7 @@ namespace KJS {
     ~DOMDOMImplementation();
     // no put - all functions
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet };
     DOM::DOMImplementation toImplementation() const { return implementation; }
@@ -180,7 +180,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item,
            GetNamedItemNS, SetNamedItemNS, RemoveNamedItemNS };
