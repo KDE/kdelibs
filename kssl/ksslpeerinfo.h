@@ -41,7 +41,9 @@ public:
   ~KSSLPeerInfo();
 
   const KSSLCertificate& getPeerCertificate() const;
-  
+  // peer IP address
+  // peer port
+ 
 protected:
   KSSLPeerInfo();
 

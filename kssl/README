@@ -1,3 +1,6 @@
+WARNING:
+  DO NOT USE THIS LIBRARY YET.  IT IS UNDER HEAVY DEVELOPMENT AND MAY
+  CHANGE WITHOUT NOTICE.
 
 This set of classes is designed to make SSL easier to integrate in KDE
 applications.  It currently uses OpenSSL and if it is not successfully
