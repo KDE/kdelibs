@@ -35,7 +35,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
-	itemcontainertest kpanelmenutest kedittest
+	itemcontainertest kpanelmenutest kedittest kalphaicontest
 
 noinst_HEADERS = \
 		ktabctltest.h kwindowtest.h kstatusbartest.h \
@@ -44,7 +44,7 @@ noinst_HEADERS = \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h knuminputtest.h \
 		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
-		itemcontainertest.h kpanelmenutest.h
+		itemcontainertest.h kpanelmenutest.h kalphaicontest.h
 
 METASOURCES = AUTO
 
@@ -87,3 +87,4 @@ kpanelmenutest_SOURCES = kpanelmenutest.cpp
 kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
 kdocktabctltest_SOURCES = kdocktabctltest.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
+kalphaicontest_SOURCES = kalphaicontest.cpp

@@ -124,6 +124,9 @@ public:
     /**
      * Blend an image into another one, using alpha in the expected way and
      * over coordinates @p x and @p y with respect to the lower image.
+     * The output is a QImage which is the @p upper image already blended
+     * with the @p lower one, so its size will be the same than @p upper instead
+     * of the same size than @p lower like the method above.
      */
     static bool blend(int x, int y, const QImage & upper, const QImage & lower, QImage & output);
 

@@ -1711,7 +1711,7 @@ bool KImageEffect::blend(
     return false;
 // XXX clipping !!!
 
-  output = lower.copy();
+  output = lower.copy(x,y,upper.width(),upper.height());
 
   register uchar *i, *o;
   register int a;
@@ -1722,38 +1722,33 @@ bool KImageEffect::blend(
   do {
 
     i = upper.scanLine(row);
-    o = output.scanLine(row+y);
+    o = output.scanLine(row);
 
-    coli = w << 2;
-    col = (w+x) << 2;
-    --col; --coli;
+    col = w << 2;
+    --col;
 
     do {
 
-      while (!(a = i[coli]) && (coli != 3)) {
-        --coli; --coli; --coli; --coli;
+      while (!(a = i[col]) && (col != 3)) {
         --col; --col; --col; --col;
       }
 
       --col; 
-      --coli; 
-      o[col] += ((i[coli] - o[col]) * a) >> 8;
+      o[col] += ((i[col] - o[col]) * a) >> 8;
 
       --col;
-      --coli; 
-      o[col] += ((i[coli] - o[col]) * a) >> 8;
+      o[col] += ((i[col] - o[col]) * a) >> 8;
 
       --col;
-      --coli; 
-      o[col] += ((i[coli] - o[col]) * a) >> 8;
+      o[col] += ((i[col] - o[col]) * a) >> 8;
 
-      --col;
-    } while (coli--);
+    } while (col--);
 
   } while (row--);
 
   return true;
 }
+
 /*bool KImageEffect::blend(const QPixmap & upper, const QPixmap & lower, QPixmap & output)
 {
    QImage outputImage;

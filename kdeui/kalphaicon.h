@@ -36,15 +36,30 @@ class KAlphaIcon
    * (note that @p background contains the whole picture, and doesn't have to
    * be of the same size than @p icon).
    *
-   * @p x and @p y specifies the point on p (and on @p bg) over which  @p icon will be
-   * painted.
+   * @p x and @p y specify the point on @p p (and on @p bg) over which  @p icon
+   * will be painted.
+   *
+   * If @p copyOnBg is false (the default), the image will be drawn only on the
+   * PaintDevice which @p p is using. If @p copyOnBg is true, the icon will
+   * also be painted over the @p background image, so that next calls to this
+   * method for overlapped icons result in a correct image.
    *
    * @return true if ok, and false if something went wrong.
    */
-  static bool draw(QPainter *p, const QImage &icon, const QImage &background, int x, int y);
+  static bool draw(QPainter *p, const QImage &icon, QImage &background,
+			int x, int y, bool copyOnBg=false);
 
   /**
-   * Method provided by convenience which takes the background as a QPixmap object.
+   * Method provided by convenience which takes the background as a QPixmap
+   * object. Note that in this case, copyOnBg is still not implemented.
    */
-  static bool draw(QPainter *p, const QImage &icon, const QPixmap &background, int x, int y);
+  static bool draw(QPainter *p, const QImage &icon, const QPixmap &background,
+			int x, int y, bool copyOnBg=false);
+
+  /**
+   * Method provided by convenience which takes the background as a QPixmap
+   * object.
+   */
+  static bool draw(QPainter *p, const QPixmap &icon, QImage &background,
+			int x, int y, bool copyOnBg=false);
 };
