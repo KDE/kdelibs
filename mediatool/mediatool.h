@@ -167,6 +167,7 @@ typedef struct
    * counter with the pause key. The key is simply pressed or unpressed.
    */
   int8    	pause;		/* Status: Pause key			*/
+  int8		sync_id;	/* This is for helping with KAudio->snyc() */
 } MdCh_KEYS;
 
 
@@ -180,6 +181,7 @@ typedef struct
   uint32	pos_current;	/* Curr. play position (eg: event num) 	*/
   uint32	pos_max;	/* Max. play position (eg: num events)	*/
   char		songname[LEN_NAME+1];
+  int8		sync_id;	/* This is for helping with KAudio->snyc() */
 } MdCh_STAT;
 
 
