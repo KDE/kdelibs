@@ -31,6 +31,9 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/soundcard.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <artsc.h>
 #include <dlfcn.h>
@@ -39,17 +42,9 @@
 /*
  * original C library functions
  */
-static int (*orig_open)(const char *pathname, int flags, mode_t mode);
+static int (*orig_open)(const char *pathname, int flags, ...);
 static int (*orig_close)(int fd);
-#ifdef HAVE_IOCTL_INT_INT_DOTS
-static int (*orig_ioctl)(int fd, int request, ...);
-#else
-#ifdef HAVE_IOCTL_INT_ULONG_DOTS
 static int (*orig_ioctl)(int fd, unsigned long request, ...);
-#else
-#error Unknown ioctl type
-#endif
-#endif
 static ssize_t (*orig_write)(int fd, const void *buf, size_t count);
 static int orig_init = 0;
 
@@ -107,9 +102,22 @@ void artsdspdebug(const char *fmt,...)
 	}
 }
 
-int open (const char *pathname, int flags, mode_t mode)
+int open (const char *pathname, int flags, ...)
 {
+  va_list args;
+  mode_t mode = 0;
+
   CHECK_INIT();
+
+  /*
+   * After the documentation, va_arg is not safe if there is no argument to
+   * get "random errors will occur", so only get it in case O_CREAT is set,
+   * and hope that passing 0 to the orig_open function in all other cases
+   * will work.
+   */
+  va_start(args,flags);
+  if(flags & O_CREAT) mode = va_arg(args, mode_t);
+  va_end(args);
 
   if (strcmp(pathname,"/dev/dsp"))    /* original open for anything but sound */
     return orig_open (pathname, flags, mode);
@@ -135,11 +143,7 @@ int open (const char *pathname, int flags, mode_t mode)
   return sndfd;
 }
 
-#ifdef HAVE_IOCTL_INT_INT_DOTS
-int ioctl (int fd, int request, ...)
-#else /* HAVE_IOCTL_INT_ULONG_DOTS */
 int ioctl (int fd, unsigned long request, ...)
-#endif
 {
   static int channels;
   static int bits;
