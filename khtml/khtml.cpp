@@ -46,6 +46,7 @@
 #include "html_miscimpl.h"
 #include "html_inlineimpl.h"
 #include "dom_elementimpl.h"
+#include "dom_textimpl.h"
 
 #include "kjs.h"
 
@@ -140,6 +141,9 @@ void KHTMLWidget::init()
   _marginWidth = 5;
   _marginHeight = 5;
   _width = width()- SCROLLBARWIDTH - 2*marginWidth();
+
+  findPos = -1;
+  findNode = 0;
 }
 
 void KHTMLWidget::clear()
@@ -169,6 +173,9 @@ void KHTMLWidget::clear()
 
     _baseURL = QString::null;
     _baseTarget = QString::null;
+
+    findPos = -1;
+    findNode = 0;
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
@@ -1403,12 +1410,35 @@ KHTMLWidget::gotoAnchor( const QString &_name )
 
 void KHTMLWidget::findTextBegin()
 {
-    // ###
+    findPos = -1;
+    findNode = 0;
 }
 
-bool KHTMLWidget::findTextNext( const QRegExp &/*exp*/ )
+bool KHTMLWidget::findTextNext( const QRegExp &exp )
 {
-    // ###
+    if(!findNode) findNode = document->body();
+
+    if(findNode->id() == ID_FRAMESET) return false;
+
+    while(1)
+    {
+	if(findNode->id() == ID_TEXT)
+	{
+	    DOMStringImpl *t = (static_cast<TextImpl *>(findNode))->string();
+	    QConstString s(t->s, t->l);
+	    findPos = s.string().find(exp, findPos+1);
+	    if(findPos != -1)
+	    {
+		int x = 0, y = 0;
+		findNode->getAbsolutePosition(x, y);
+		setContentsPos(x-50, y-50);
+	    }
+	}
+	findPos = -1;
+	NodeImpl *next = findNode->firstChild();
+	if(!next) next = findNode->nextSibling();
+	if(!next) next = findNode->parentNode();
+    }
     return false;
 }
 

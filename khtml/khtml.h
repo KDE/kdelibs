@@ -47,6 +47,7 @@ namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
+    class NodeImpl;
 };
 
 class KHTMLCache;
@@ -754,6 +755,9 @@ private:
 
     int _marginWidth;
     int _marginHeight;
+
+    int findPos;
+    DOM::NodeImpl *findNode;
 };
 
 #endif
