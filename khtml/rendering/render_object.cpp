@@ -831,7 +831,7 @@ QString RenderObject::information() const
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element() && element()->focused()) ts << "focus ";
-    if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
+    if (element()) ts << " <" <<  getTagName(element()->id()) << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
        << " [" << minWidth() << "-" << maxWidth() << "]"
        << " { mT: " << marginTop() << " qT: " << isTopMarginQuirk()
@@ -888,7 +888,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     }
 
     if (element()) {
-        QString tagName(getTagName(element()->id()).string());
+        QString tagName(getTagName(element()->id()));
         if (!tagName.isEmpty()) {
             ts << " {" << tagName << "}";
         }
