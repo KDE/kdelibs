@@ -51,6 +51,7 @@ public:
         previewIconSize = 60;
         job = 0L;
 
+        noArrangement = false;
 	smallColumns = new KRadioAction( i18n("Small Icons"), 0, parent,
 					 SLOT( slotSmallColumns() ),
 					 parent->actionCollection(),
@@ -87,6 +88,7 @@ public:
     QTimer *previewTimer;
     QStringList previewMimeTypes;
     int previewIconSize;
+    bool noArrangement :1;
 };
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -390,25 +392,26 @@ bool KFileIconView::isSelected( const KFileItem *i ) const
 
 void KFileIconView::updateView( bool b )
 {
-    if ( b ) {
-	KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
-	if ( item ) {
-            if ( d->previews->isChecked() ) {
-                do {
-                    int size = canPreview( item->fileInfo() ) ?
-                               d->previewIconSize : myIconSize;
-                    item ->setPixmap( (item->fileInfo())->pixmap( size ) );
-                    item = static_cast<KFileIconViewItem *>(item->nextItem());
-                } while ( item != 0L );
-            }
+    if ( !b )
+        return; // eh?
+        
+    KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
+    if ( item ) {
+        if ( d->previews->isChecked() ) {
+            do {
+                int size = canPreview( item->fileInfo() ) ?
+                           d->previewIconSize : myIconSize;
+                item ->setPixmap( (item->fileInfo())->pixmap( size ) );
+                item = static_cast<KFileIconViewItem *>(item->nextItem());
+            } while ( item != 0L );
+        }
 
-            else {
-                do {
-                    item ->setPixmap( (item->fileInfo())->pixmap( myIconSize));
-                    item = static_cast<KFileIconViewItem *>(item->nextItem());
-                } while ( item != 0L );
-            }
-	}
+        else {
+            do {
+                item ->setPixmap( (item->fileInfo())->pixmap( myIconSize));
+                item = static_cast<KFileIconViewItem *>(item->nextItem());
+            } while ( item != 0L );
+        }
     }
 }
 
@@ -464,30 +467,38 @@ void KFileIconView::slotSelectionChanged()
 
 void KFileIconView::slotSmallColumns()
 {
+    // setItemTextPos(), setArrangement(), setWordWrapIconText() and 
+    // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
+    d->noArrangement = true; // stop arrangeItemsInGrid()!
+    
     // Make sure to uncheck previews if selected
     if ( d->previews->isChecked() )
     {
         stopPreview();
         d->previews->setChecked( false );
     }
+    setGridX( 160 );
     setItemTextPos( Right );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
-    setGridX( 160 );
+    
+    d->noArrangement = false; // now we can arrange
     setIconSize( KIcon::SizeSmall );
-
-    arrangeItemsInGrid();
 }
 
 void KFileIconView::slotLargeRows()
 {
+    // setItemTextPos(), setArrangement(), setWordWrapIconText() and 
+    // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
+    d->noArrangement = true; // stop arrangeItemsInGrid()!
+    
+    setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );
-    setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
+    
+    d->noArrangement = false; // now we can arrange
     setIconSize( KIcon::SizeMedium );
-
-    arrangeItemsInGrid();
 }
 
 void KFileIconView::stopPreview()
@@ -520,8 +531,9 @@ void KFileIconView::showPreviews()
         d->largeRows->setChecked( true );
         slotLargeRows(); // also sets the icon size and updates the grid
     }
-    else
+    else {
         updateIcons();
+    }
 
     d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
 
@@ -704,6 +716,14 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i )
 
     if ( d->previews->isChecked() )
         d->previewTimer->start( 10, true );
+}
+
+void KFileIconView::arrangeItemsInGrid( bool update )
+{
+    if ( d->noArrangement )
+        return;
+    
+    KIconView::arrangeItemsInGrid( update );
 }
 
 void KFileIconView::virtual_hook( int id, void* data )

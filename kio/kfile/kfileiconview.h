@@ -142,6 +142,11 @@ public slots:
      * into 'large rows' mode, if that isn't the current mode yet.
      */
     void showPreviews();
+    
+    /**
+     * Reimplemented for performance reasons.
+     */
+    virtual void arrangeItemsInGrid( bool updated = true );
 
 protected:
     /**

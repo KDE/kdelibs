@@ -2,7 +2,7 @@
 /****************************************************************************
 ** Form implementation generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Fre Jul 12 00:07:19 2002
+** Created: Sam Aug 3 12:14:07 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -30,7 +30,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 {
     if ( !name )
 	setName( "KNotifyWidgetBase" );
-    resize( 618, 599 ); 
+    resize( 618, 512 ); 
     setCaption( tr2i18n( "Form2" ) );
     KNotifyWidgetBaseLayout = new QVBoxLayout( this, 11, 6, "KNotifyWidgetBaseLayout"); 
 
@@ -96,7 +96,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_messageBox = new QCheckBox( m_actionsBox, "m_messageBox" );
     m_messageBox->setText( tr2i18n( "Show a &message in a pop-up window" ) );
     Layout27->addWidget( m_messageBox );
-    QSpacerItem* spacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout27->addItem( spacer );
     m_actionsBoxLayout->addLayout( Layout27 );
 
@@ -106,9 +106,9 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     m_passivePopup = new QCheckBox( m_actionsBox, "m_passivePopup" );
     m_passivePopup->setEnabled( FALSE );
-    m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interrupt other work" ) );
+    m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interupt other work" ) );
     Layout28->addWidget( m_passivePopup );
-    QSpacerItem* spacer_3 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_3 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout28->addItem( spacer_3 );
     m_actionsBoxLayout->addLayout( Layout28 );
 
@@ -117,15 +117,9 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_stderr = new QCheckBox( m_actionsBox, "m_stderr" );
     m_stderr->setText( tr2i18n( "Print a message to standard &error output" ) );
     Layout29->addWidget( m_stderr );
-    QSpacerItem* spacer_4 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_4 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout29->addItem( spacer_4 );
     m_actionsBoxLayout->addLayout( Layout29 );
-
-    m_extension = new QPushButton( m_actionsBox, "m_extension" );
-    m_extension->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)4, (QSizePolicy::SizeType)0, 0, 0, m_extension->sizePolicy().hasHeightForWidth() ) );
-    m_extension->setText( tr2i18n( "Less Options" ) );
-    m_extension->setToggleButton( FALSE );
-    m_actionsBoxLayout->addWidget( m_extension );
     KNotifyWidgetBaseLayout->addWidget( m_actionsBox );
 
     m_controlsBox = new QGroupBox( this, "m_controlsBox" );
@@ -166,10 +160,16 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     Layout4->addWidget( m_comboDisable, 1, 1 );
     Layout12->addLayout( Layout4 );
-    QSpacerItem* spacer_6 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_6 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout12->addItem( spacer_6 );
     m_controlsBoxLayout->addLayout( Layout12 );
     KNotifyWidgetBaseLayout->addWidget( m_controlsBox );
+
+    m_extension = new QPushButton( this, "m_extension" );
+    m_extension->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)4, (QSizePolicy::SizeType)0, 0, 0, m_extension->sizePolicy().hasHeightForWidth() ) );
+    m_extension->setText( tr2i18n( "Less Options" ) );
+    m_extension->setToggleButton( FALSE );
+    KNotifyWidgetBaseLayout->addWidget( m_extension );
 
     // signals and slots connections
     connect( m_messageBox, SIGNAL( toggled(bool) ), m_passivePopup, SLOT( setEnabled(bool) ) );

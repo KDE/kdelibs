@@ -1222,9 +1222,9 @@ void KFileDialog::setSelection(const QString& url)
             locationEdit->setCurrentItem( 0 );
             locationEdit->setEditText( filename );
 
-            // tell the line edit that it has beenedited 
+            // tell the line edit that it has been edited 
             // otherwise we won't know this was set by the user 
-            // and it will be ignoreg if there has been an
+            // and it will be ignored if there has been an
             // auto completion. this caused bugs where automcompletion
             // would start, the user would pick something from the
             // history and then hit Ok only to get the autocompleted

@@ -105,7 +105,7 @@ int KNotifyDialog::configure( QWidget *parent, const char *name,
 KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
                               const KAboutData *aboutData )
     : KDialogBase(parent, name, modal, i18n("Notification Settings"),
-                  Ok | Apply | Cancel | Default, Ok, false )
+                  Ok | Apply | Cancel | Default, Ok, true )
 {
     QVBox *box = makeVBoxMainWidget();
 
@@ -360,7 +360,7 @@ void KNotifyWidget::setCurrentApplication( Application *app )
 {
     if ( !app )
         return;
-    
+
     m_listview->clear();
     addToView( app->eventList() );
 }

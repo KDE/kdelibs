@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Fre Jul 12 00:07:03 2002
+** Created: Sam Aug 3 12:14:06 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -42,13 +42,13 @@ public:
     QCheckBox* m_messageBox;
     QCheckBox* m_passivePopup;
     QCheckBox* m_stderr;
-    QPushButton* m_extension;
     QGroupBox* m_controlsBox;
     QCheckBox* m_affectAllApps;
     QPushButton* m_buttonDisable;
     QPushButton* m_buttonEnable;
     KComboBox* m_comboEnable;
     KComboBox* m_comboDisable;
+    QPushButton* m_extension;
 
 
 protected:
