@@ -250,7 +250,8 @@ class KDialogBase : public KDialog
      *                    representation of the contents on the right side.
      *  @li @p Tabbed -   A dialog using a QTabWidget.
      *  @li @p Plain -    A normal dialog. Use plainPage() as parent for widgets.
-     *  @li @p Swallow
+     *  @li @p Swallow -  Simplifes the usage of existing widgets. You specify
+     *                    the widget to be displayed by setMainWidget().
      *  @li @p IconList - A dialog with an iconlist on the left side and a
      *                    representation of the contents on the right side.
      */
