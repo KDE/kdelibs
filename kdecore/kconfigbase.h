@@ -60,7 +60,7 @@ class KConfigBasePrivate;
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
- * @see  KApplication::getConfig()  KConfig  KSimpleConfig
+ * @see  KGlobal::config()  KConfig  KSimpleConfig
  * @short KDE Configuration Management abstract base class
  */
 class KConfigBase : public QObject
