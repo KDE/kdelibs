@@ -32,7 +32,7 @@ namespace KJS {
   class Collector {
     CollectorBlock* root;
     CollectorBlock* currentBlock;
-    int count;
+    int filled;
     enum { BlockSize = 1000 };
     /**
      * Pointer to the current collector instance.
@@ -87,7 +87,7 @@ namespace KJS {
      * 
      */
     static void collect();
-    int size() const { return count; }
+    int size() const { return filled; }
 
 #ifdef KJS_DEBUG_MEM
     /**
@@ -96,6 +96,7 @@ namespace KJS {
     bool collecting;
 #endif
   private:
+    static int count;
     void privateCollect();
   };
 

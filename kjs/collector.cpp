@@ -56,12 +56,13 @@ CollectorBlock::~CollectorBlock()
 }
 
 Collector* Collector::curr = 0L;
-
+int Collector::count = 0;
 
 Collector::Collector()
   : root(0L),
-    count(0)
+    filled(0)
 {
+  count++;
 #ifdef KJS_DEBUG_MEM
   collecting = false;
 #endif
@@ -71,13 +72,14 @@ Collector::~Collector()
 {
   privateCollect();
 #ifdef KJS_DEBUG_MEM
-  assert(count == 0);
+  assert(filled == 0);
 #endif
   
   delete root;
 
   if (curr == this)
     curr = 0L;
+  count--;
 }
 
 Collector* Collector::init()
@@ -112,7 +114,7 @@ void* Collector::allocate(size_t s)
   void *m = malloc(s);
   void **r = block->mem + block->filled;
   *r = m;
-  curr->count++;
+  curr->filled++;
   block->filled++;
 
   return m;
@@ -129,7 +131,7 @@ void Collector::collect()
 void Collector::privateCollect()
 {
 #ifdef KJS_DEBUG_MEM
-  printf("collecting %d objects total\n", Imp::count);
+  printf("collecting %d objects total\n", Imp::filled);
   collecting = true;
 #endif
 
@@ -145,7 +147,7 @@ void Collector::privateCollect()
 	(*r)->~Imp();
 	free(*r);
 	*r = 0L;
-	count--;
+	filled--;
       }
     block = block->next;
   }
