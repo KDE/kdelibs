@@ -1118,8 +1118,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_grid->addWidget(label, 1, 1, AlignLeft);
 
   d->htmlName = new QLineEdit( page );
-  d->htmlName->setMaxLength( 7 );
-  d->htmlName->setText("#FFFFFF");
+  d->htmlName->setMaxLength( 13 ); // Qt's QColor allows 12 hexa-digits
+  d->htmlName->setText("#FFFFFF"); // But HTML uses only 6, so do not worry about the size
   w = d->htmlName->fontMetrics().width(QString::fromLatin1("#DDDDDDD"));
   d->htmlName->setFixedWidth(w);
   l_grid->addWidget(d->htmlName, 1, 2, AlignLeft);
@@ -1329,20 +1329,20 @@ void KColorDialog::slotHtmlChanged( void )
 {
   if (d->bRecursion || d->htmlName->text().isEmpty()) return;
 
-  unsigned int red = 256;
-  unsigned int grn = 256;
-  unsigned int blu = 256;
+  QString strColor( d->htmlName->text() );
+  // Assume that a user does not want to type the # all the time
+  if ( strColor[0] != '#' )
+    strColor.prepend("#");
 
-  if (sscanf(d->htmlName->text().latin1(), "#%02x%02x%02x", &red, &grn, &blu)!=3)
-      return;
+  const QColor color( strColor );
 
-  if ( red > 255 || grn > 255 || blu > 255) return;
-
-  KColor col;
-  col.setRgb( red, grn, blu );
-  d->bEditHtml = true;
-  _setColor( col );
-  d->bEditHtml = false;
+  if ( color.isValid() )
+  {
+    KColor col( color );
+    d->bEditHtml = true;
+    _setColor( col );
+    d->bEditHtml = false;
+  }
 }
 
 void KColorDialog::slotHSVChanged( void )
