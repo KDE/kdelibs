@@ -72,6 +72,8 @@ public:
 
     bool hasQueued() { return !tokenQueue.isEmpty(); }
 
+    bool parsingBody() { return inBody; }
+
 protected:
     void processOneToken(Token *t);
 

@@ -93,6 +93,7 @@ HTMLElementImpl *HTMLDocumentImpl::body()
     if(!test) return 0;
     while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
 	test = test->nextSibling();
+    if(!test) return 0;
     bodyElement = static_cast<HTMLElementImpl *>(test);
     return bodyElement;
 }
@@ -320,6 +321,7 @@ void HTMLDocumentImpl::createSelector()
 bool HTMLDocumentImpl::headLoaded()
 {
     printf("checking for headLoaded()\n");
+    if(parser && !parser->parsingBody()) return false;
 
     NodeImpl *test = _first;
     if(!test) return true;

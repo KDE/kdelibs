@@ -168,10 +168,10 @@ void HTMLLinkElementImpl::attach(KHTMLView *)
 	// no need to load style sheets which aren't for the screen output
 	if(m_media.isNull() || str.contains("screen") || str.contains("all"))
 	{
+	    m_loading = true;
 	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
 	    m_cachedSheet = Cache::requestStyleSheet(m_url, doc->URL());
 	    m_cachedSheet->ref(this);
-	    m_loading = true;
 	}
     }
 }
@@ -206,6 +206,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 
 bool HTMLLinkElementImpl::isLoading()
 {
+    printf("link: checking if loading!\n");
     if(m_loading) return true;
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;
@@ -369,7 +370,7 @@ NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 
 bool HTMLStyleElementImpl::isLoading()
 {
-    if(!m_sheet) return true;
+    if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;
     return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
 }

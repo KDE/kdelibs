@@ -323,7 +323,7 @@ short RenderBox::verticalPositionHint() const
     case TEXT_TOP:
 	return QFontMetrics(m_style->font()).ascent();
     case MIDDLE:
-	return -QFontMetrics(m_style->font()).width('x')/2;
+	return contentHeight()/2;
     case BOTTOM:
 	return PositionBottom;
     case TEXT_BOTTOM:
