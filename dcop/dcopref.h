@@ -42,7 +42,7 @@ public:
      * Create a null reference.
      */
     DCOPRef();
-    
+
     /**
      * Copy constructor.
      */
@@ -57,6 +57,15 @@ public:
     DCOPRef( const QCString& app, const QCString& obj );
 
     /**
+     * Create a reference to a certain object in a
+     * certain application.
+     *
+     * @param app The name of an application as registered
+     *            by the dcopserver.
+     */
+    DCOPRef( const QCString& app, const QCString& obj, const QCString& type );
+    
+    /**
      * Test wether it is a null reference.
      */
     bool isNull() const;
@@ -65,18 +74,31 @@ public:
      * Name of the application in which the object resides.
      */
     QCString app() const;
+    
     /**
      * Object ID of the referenced object.
      */
     QCString object() const;
 
+    /**
+     * type of the referenced object. May be null (i.e. unknown).
+     */
+    QCString type() const;
+
+    
     DCOPRef& operator=( const DCOPRef& );
 
     /**
-     * Change the referenced object.
+     * Change the referenced object. Resets the type to unknown (null).
      */
     void setRef( const QCString& app, const QCString& obj );
+    
+    /**
+     * Change the referenced object
+     */
+    void setRef( const QCString& app, const QCString& obj, const QCString& type );
 
+    
     /**
      * Make it a null reference.
      */
@@ -85,6 +107,7 @@ public:
 private:
     QCString m_app;
     QCString m_obj;
+    QCString m_type;
 
     class DCOPRefPrivate;
     DCOPRefPrivate *d;

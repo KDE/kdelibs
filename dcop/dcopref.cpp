@@ -43,6 +43,11 @@ DCOPRef::DCOPRef( const QCString& app, const QCString& obj )
 {
 }
 
+DCOPRef::DCOPRef( const QCString& app, const QCString& obj. const QCString& type )
+    : m_app( app ), m_obj( obj ), m_type( type )
+{
+}
+
 bool DCOPRef::isNull() const
 {
     return ( m_app.isEmpty() || m_obj.isEmpty() );
@@ -58,6 +63,12 @@ QCString DCOPRef::object() const
     return m_obj;
 }
 
+QCString DCOPRef::type() const
+{
+    return m_type;
+}
+
+
 DCOPRef& DCOPRef::operator=( const DCOPRef& ref )
 {
     m_app = ref.app();
@@ -70,28 +81,38 @@ void DCOPRef::setRef( const QCString& app, const QCString& obj )
 {
     m_app = app;
     m_obj = obj;
+    m_type = 0;
+}
+
+void DCOPRef::setRef( const QCString& app, const QCString& obj, const QCString& type )
+{
+    m_app = app;
+    m_obj = obj;
+    m_type = type;
 }
 
 void DCOPRef::clear()
 {
-    m_app = "";
-    m_obj = "";
+    m_app = 0;
+    m_obj = 0;
+    m_type = 0;
 }
 
 QDataStream& operator<<( QDataStream& str, const DCOPRef& ref )
 {
     str << ref.app();
     str << ref.object();
+    str << ref.type();
 
     return str;
 }
 
 QDataStream& operator>>( QDataStream& str, DCOPRef& ref )
 {
-    QCString a, o;
-    str >> a >> o;
+    QCString a, o, t;
+    str >> a >> o >> t;
 
-    ref.setRef( a, o );
+    ref.setRef( a, o, t );
 
     return str;
 }
