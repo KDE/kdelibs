@@ -112,7 +112,7 @@ public:
     RenderArena *ref() { _ref++; /*qDebug( "ref(%p): width get count is %d", this, _ref);*/ return renderArena(); }
     void deref(RenderArena *arena);
 
-    static void paintWidget(QPainter *p, QWidget *w, int x, int y, int w, int h, int tx, int ty);
+    static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
 
 public slots:

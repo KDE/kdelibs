@@ -111,7 +111,7 @@ public:
     int getWordSpacing() const { return wordSpacing; }
 
 private:
-    FontDef fontDef;
+    mutable FontDef fontDef;
     mutable QFont f;
     mutable QFontMetrics fm;
     mutable QFont *scFont;

@@ -206,7 +206,6 @@ public:
   }
   ~KHTMLPartPrivate()
   {
-    delete m_jsedlg;
     delete m_dcopobject;
     delete m_statusBarExtension;
     delete m_extension;

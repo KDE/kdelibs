@@ -435,6 +435,11 @@ KHTMLPart::~KHTMLPart()
     d->m_view->m_part = 0;
   }
 
+  // Have to delete this here since we forward declare it in khtmlpart_p and
+  // at least some compilers won't call the destructor in this case.
+  delete d->m_jsedlg;
+  d->m_jsedlg = 0;
+
   delete d; d = 0;
   KHTMLFactory::deregisterPart( this );
 }
@@ -5211,7 +5216,7 @@ bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   }
   // Now we iterator through the parent's children until we find start_sp or end_sp
   // ### parentNode is sometimes 0?? (LS)
-  n = start_sp.parentNode().isNull() ? 0 : start_sp.parentNode().firstChild();
+  n = start_sp.parentNode().isNull() ? DOM::Node(0) : start_sp.parentNode().firstChild();
   while( !n.isNull() ){
     if( n == start_sp ){
       result=true;

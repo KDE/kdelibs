@@ -59,7 +59,7 @@ namespace DOM {
 	    double fValue;
 	    int iValue;
 	    ParseString string;
-	    Function *function;
+	    struct Function *function;
 	};
 	enum {
 	    Operator = 0x100000,

@@ -27,6 +27,11 @@
 #endif
 
 #ifdef HAVE_LIBJPEG
+// on some systems, libjpeg installs its config.h file which causes a conflict
+// and makes the compiler barf with "XXX already defined".
+#ifdef HAVE_STDLIB_H
+#undef HAVE_STDLIB_H
+#endif
 #include "loader_jpeg.h"
 
 #include <stdio.h>
