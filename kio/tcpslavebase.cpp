@@ -588,6 +588,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
+   kdDebug(7029) << "SSL HTTP frame is child? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -691,7 +692,6 @@ int TCPSlaveBase::verifyCertificate()
       d->cc->saveToDisk();    // So that other slaves can get at it.
       // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
-      kdDebug(7029) << "SSL HTTP child frame" << endl;
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
@@ -734,6 +734,7 @@ int TCPSlaveBase::verifyCertificate()
    //                 - transmitting any data unencrypted?  In the app??
    //                         singleton in write()?
 
+   kdDebug(7029) << "In the slave, ssl_activate_warnings = " << metaData("ssl_activate_warnings") << endl;
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
    if (!isChild && metaData("ssl_was_in_use") == "FALSE" &&
@@ -760,6 +761,8 @@ int TCPSlaveBase::verifyCertificate()
       }
    }
 
+   // This is in the wrong place!!!   FIXME
+#if 0
    //  - leaving SSL
    if (!isChild && metaData("ssl_was_in_use") == "TRUE" &&
                                          d->kssl->settings()->warnOnLeave()) {
@@ -777,6 +780,7 @@ int TCPSlaveBase::verifyCertificate()
          return -1;
       }
    }
+#endif
 
    //  - mixed SSL/nonSSL
         // I assert that if any two portions of a loaded document are of
@@ -903,6 +907,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         return false;
     }
     setMetaData("ssl_in_use", "TRUE");
+kdDebug() << "SSL_IN_USE set to TRUE in the slave!" << endl;
     int rc = verifyCertificate();
     if ( rc != 1 ) {
         d->status = -1;
