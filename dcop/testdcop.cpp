@@ -50,5 +50,13 @@ int main(int argc, char **argv)
   if (!client->call(app.name(), "object1", "aFunction", data, reply))
     qDebug("I couldn't call myself");
 
+  if ( !client->isApplicationAttached("gubel") ) //app.name()) )
+    qDebug("not attached");
+  else
+    qDebug("attached");
+
+  int n = client->attachedApplications().count();
+  qDebug("number of attached applications = %d", n );
+
   return app.exec();
 }
