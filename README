@@ -23,8 +23,8 @@ are:
     The main collection of misc. user interface classes (widgets).
 
 * kimgio
-    An all purpose extension to the qimgio class that supports PNG and
-    other image formats.
+    An all purpose extension to the qimgio class that supports some obscure
+    image formats.
 
 * kfile
     This library contains the KFileDialog in all its glory.  A reasonably
