@@ -24,7 +24,6 @@
 #include <qapplication.h>
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qlineedit.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qpopupmenu.h>
@@ -36,6 +35,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kdialogbase.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kprogress.h>
@@ -273,7 +273,7 @@ void KDirOperator::mkdir()
     //
     KDialogBase *lMakeDir;
     QLabel *label;
-    QLineEdit *ed;
+    KLineEdit *ed;
     QVBox *vbox;
 
     // Create widgets, and display using geometry management
@@ -289,7 +289,7 @@ void KDirOperator::mkdir()
     label->setText(i18n("Create new directory in: ") +
 		   QString::fromLatin1( "\n" ) + /* don't break i18n now*/
 		   url().prettyURL() );
-    ed= new QLineEdit( vbox );
+    ed= new KLineEdit( vbox );
     ed->setText( i18n("New Directory") );
     ed->selectAll();
     connect(ed, SIGNAL(returnPressed()), lMakeDir, SLOT(accept()) );

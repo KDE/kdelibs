@@ -60,6 +60,7 @@
 #include <kmessagebox.h>
 #include <kmimetype.h>
 #include <kprocess.h>
+#include <kprotocolinfo.h>
 #include <kstddirs.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
@@ -699,6 +700,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
 
     // don't mess with malformed urls or remote urls without directory or host
     if ( url.isMalformed() ||
+	 !KProtocolInfo::supportsListing( url.protocol() ) ||
          ( !url.url().startsWith( localRoot ) &&
            ( url.directory().isNull() || url.host().isNull()) )) {
         d->completionHack = newText;
