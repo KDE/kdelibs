@@ -395,15 +395,15 @@ void KIconDialog::slotStartLoading(int steps)
 	mpProgress->hide();
     else
     {
-        mpProgress->setRange(0, steps);
-        mpProgress->setValue(0);
+        mpProgress->setTotalSteps(steps);
+        mpProgress->setProgress(0);
         mpProgress->show();
     }
 }
 
 void KIconDialog::slotProgress(int p)
 {
-    mpProgress->setValue(p);
+    mpProgress->setProgress(p);
     mpProgress->repaint();
 }
 

@@ -98,7 +98,7 @@ KSpellDlg::KSpellDlg(
       new QVBoxLayout(w, KDialog::marginHint(), KDialog::spacingHint());
 
     layout = new QHBoxLayout(topLayout);
-    progbar = new KProgress (0, 100, 0, KProgress::Horizontal, w);
+    progbar = new KProgress (w);
     topLayout->addWidget(progbar);
 
   } else {

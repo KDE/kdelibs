@@ -17,103 +17,52 @@
 */
 /*****************************************************************************
 *                                                                            *
-*  KProgress -- progress indicator widget for KDE by Martynas Kunigelis      *
+*  KProgress -- progress indicator widget for KDE                            *
+*  Original QRangeControl-based version written by Martynas Kunigelis        *
+*  Current QProgressBar based version by Aaron Seigo                         *
 *                                                                            *
 *****************************************************************************/
 
-#ifndef _KPROGRES_H
-#define _KPROGRES_H "$Id$"
+#ifndef _KPROGRESS_H
+#define _KPROGRESS_H "$Id$"
 
-#include <qframe.h>
-#include <qrangecontrol.h>
+#include <qprogressbar.h>
+#include <kdialogbase.h>
 
 /**
  * A stylized progress bar.
  *
- * KProgress is derived from @ref QFrame and @ref QRangeControl, so
- * you can use all the methods from those classes. The only difference
- * is that @ref setValue() is now made a slot, so you can connect
- * stuff to it.
+ * KProgress is derived from @ref QProgressBar, so
+ * you can use all the methods from that class. The only real difference
+ * is that a signal is emitted on changes to the value and you do not need
+ * to subclass KProgress just to change the format of the indicator text. 
  *
  * @sect Details
  *
- * None of the constructors take line step and page step as arguments,
- * so by default they're set to 1 and 10 respectively.
- *
- * The Blocked style ignores the @ref textEnabled() setting and displays
- * no text, since it looks truly ugly (and for other reasons). Signal
- * @ref percentageChanged() is emitted whenever the value changes so you
- * can set up a different widget to display the current percentage complete
- * and connect the signal to it.
- *
  * @short A progress indicator widget.
- * @author Martynas Kunigelis
+ * @author Aaron Seigo
  * @version $Id$
  */
-class KProgress : public QFrame, public QRangeControl
+class KProgress : public QProgressBar
 {
   Q_OBJECT
-  Q_ENUMS( BarStyle )
-  Q_PROPERTY( int value READ value WRITE setValue)
-  Q_PROPERTY( BarStyle barStyle READ barStyle WRITE setBarStyle )
-  Q_PROPERTY( QColor barColor READ barColor WRITE setBarColor )
-  Q_PROPERTY( QPixmap barPixmap READ barPixmap WRITE setBarPixmap )
-  Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
-  Q_PROPERTY( bool textEnabled READ textEnabled WRITE setTextEnabled )
 
 public:
   /**
-   * Possible values for bar style.
-   *
-   * @p Solid means one continuous progress bar, @p Blocked means a
-   * progress bar made up of several blocks.
+   * Construct a progress bar.
    */
-  enum BarStyle { Solid, Blocked };
-
-  /**
-   * Construct a horizontal progress bar.
-   */
-  KProgress(QWidget *parent=0, const char *name=0);
-
-  /**
-   * Construct a progress bar with orientation @p orient.
-   */
-  KProgress(Orientation orient, QWidget *parent=0, const char *name=0);
+  KProgress(QWidget *parent=0, const char *name=0, WFlags f = 0);
 
   /**
    * Construct a progress bar with minimum, maximum and initial values.
    */
-  KProgress(int minValue, int maxValue, int value, Orientation,
-            QWidget *parent=0, const char *name=0);
+  KProgress(int totalSteps, const QString& format = "%p%",
+              QWidget *parent=0, const char *name=0, WFlags f = 0);
 
   /**
    * Destruct the progress bar.
    */
   ~KProgress();
-
-  /**
-   * Set the progress bar style.
-   *
-   * Allowed values are @p Solid and @p Blocked.
-   */
-  void setBarStyle(BarStyle style);
-
-  /**
-   * Set the color of the progress bar.
-   */
-  void setBarColor(const QColor &);
-
-  /**
-   * Set a pixmap to be shown in the progress bar.
-   */
-  void setBarPixmap(const QPixmap &);
-
-  /**
-   * Set the orientation of the progress bar.
-   *
-   * Allowed values are @p Horizontal and @p Vertical.
-   */
-  void setOrientation(Orientation);
 
   /**
    * If this is set to @p true, the progress text will be displayed.
@@ -122,37 +71,11 @@ public:
   void setTextEnabled(bool);
 
   /**
-   * Retrieve the bar style.
-   *
-   * @see setBarStyle()
-   */
-  BarStyle barStyle() const;
-
-  /**
-   * Retrieve the bar color.
-   * @see setBarColor()
-   */
-  const QColor &barColor() const;
-
-  /**
-   * Retrieve the bar pixmap.
-   *
-   * @see setBarPixmap()
-   */
-  const QPixmap *barPixmap() const;
-
-  /**
-   * Retrive the current status
+   * @depricated Retrieves the current status, use progress() instead
    *
    * @see setValue()
    */
-  int value() const { return QRangeControl::value(); }
-  /**
-   * Retrive the orientation of the progress bar.
-   *
-   * @see setOrientation()
-   */
-  Orientation orientation() const;
+  int value() const;
 
   /**
    * Returns @p true if progress text will be displayed,
@@ -163,25 +86,21 @@ public:
   bool textEnabled() const;
 
   /**
-   * @reimplemented
-   */
-  virtual QSize sizeHint() const;
-
-  /**
-   * @reimplemented
-   */
-  virtual QSize minimumSizeHint() const;
-
-  /**
-   * @reimplemented
-   */
-  virtual QSizePolicy sizePolicy() const;
-
-  /**
    * Retrieve the current format for printing status text.
    * @see setFormat()
    */
   QString format() const;
+
+  /**
+   * @depricated but kept for source compatibility with KDE2's KProgress.
+   * Use @ref setTotalSteps() instead
+   */
+  void setRange(int min, int max);
+
+  /**
+   * @depricated used @ref totalSteps() instead
+   */
+  int maxValue();
 
 public slots:
 
@@ -196,11 +115,21 @@ public slots:
   void setFormat(const QString & format);
 
   /**
-   * Set the current value of the progress bar to @p value.
-   *
-   * This must be a number in the range 0..100.
-   */
-  void setValue(int value);
+    * Set the current total number of steps in the action tat the progress bar
+    * is representing.
+    */
+  void setTotalSteps(int totalSteps);
+
+  /**
+    * Set the current value of the progress bar to @p value.
+    * @reimplemented
+    */
+  virtual void setProgress(int progress);
+
+  /**
+    * @depricated. Use @ref setProgress(int) instead
+    */
+  void setValue(int progress);
 
   /**
    * Advance the progress bar by @p prog.
@@ -209,7 +138,7 @@ public slots:
    * provided for convenience and is equivalent with
    * @ref setValue(value()+prog).
    */
-  void advance(int prog);
+  virtual void advance(int offset);
 
 signals:
   /**
@@ -221,46 +150,61 @@ protected:
   /**
    * @reimplemented
    */
-  void valueChange();
-  /**
-   * @reimplemented
-   */
-  void rangeChange();
-  /**
-   * @reimplemented
-   */
-  void styleChange( QStyle& );
-  /**
-   * @reimplemented
-   */
-  void paletteChange( const QPalette & );
-  /**
-   * @reimplemented
-   */
-  void drawContents( QPainter * );
-
-private slots:
-  void paletteChange();
+  virtual bool setIndicator(QString & indicator, int progress, int totalSteps);
 
 private:
-  QPixmap  *bar_pixmap;
-  bool      use_supplied_bar_color;
-  QColor    bar_color;
-  QColor    bar_text_color;
-  QColor    text_color;
-  QRect     fr;
-  BarStyle  bar_style;
-  Orientation orient;
-  bool      text_enabled;
-  QString   format_;
-  void      initialize();
-  int       recalcValue(int);
-  void      drawText(QPainter *);
-  void      adjustStyle();
+  QString   mFormat;
 
   class KProgressPrivate;
   KProgressPrivate *d;
 };
 
+
+class KProgressDialog : public KDialogBase
+{
+    Q_OBJECT
+
+    public:
+        KProgressDialog(QWidget* parent = 0, const char* name = 0,
+                        const QString& caption = QString::null,
+                        const QString& text = QString::null,
+                        bool modal = false);
+        ~KProgressDialog();
+
+        KProgress* progressBar();
+
+        void    setLabel(const QString&);
+        QString labelText();
+
+        void setAllowCancel(bool allowCancel);
+        bool allowCancel();
+
+        void showCancelButton(bool show);
+        bool autoClose();
+
+        void setAutoClose(bool close);
+        bool autoReset();
+
+        void setAutoReset(bool autoReset);
+        bool wasCancelled();
+
+        void setButtonText(const QString&);
+        QString buttonText();
+
+    protected slots:
+        void autoActions(int percentage);
+        void slotCancel();
+
+    private:
+        bool       mAutoClose;
+        bool       mAutoReset;
+        bool       mCancelled;
+        bool       mAllowCancel;
+        QString    mCancelText;
+        QLabel*    mLabel;
+        KProgress* mProgressBar;
+        class KProgressPrivate;
+        KProgressPrivate *d;
+};
 
 #endif

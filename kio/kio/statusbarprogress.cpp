@@ -48,11 +48,10 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   box->addWidget( stack );
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
-  m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
+  m_pProgressBar = new KProgress( this );
   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
   m_pProgressBar->setLineWidth( 1 );
   m_pProgressBar->setBackgroundMode( QWidget::PaletteBackground );
-  m_pProgressBar->setBarColor( Qt::blue );
   m_pProgressBar->installEventFilter( this );
   m_pProgressBar->setMinimumWidth( w );
   stack->addWidget( m_pProgressBar, 1 );

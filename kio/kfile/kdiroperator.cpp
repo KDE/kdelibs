@@ -122,7 +122,6 @@ KDirOperator::KDirOperator(const KURL& url,
 
     progress = new KProgress(this, "progress");
     progress->adjustSize();
-    progress->setRange(0, 100);
     progress->move(2, height() - progress->height() -2);
 
     d->progressDelayTimer = new QTimer( this, "progress delay timer" );
@@ -1375,7 +1374,7 @@ void KDirOperator::slotStarted()
 
     dir->job()->disconnect( this );
 
-    progress->setValue( 0 );
+    progress->setProgress( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );
 
@@ -1395,7 +1394,7 @@ void KDirOperator::slotProgress( KIO::Job * job, unsigned long percent )
     if ( dir->job() != job )
 	return;
 
-    progress->setValue( percent );
+    progress->setProgress( percent );
     // we have to redraw this in as fast as possible
     if ( progress->isVisible() )
 	QApplication::flushX();

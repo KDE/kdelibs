@@ -19,8 +19,13 @@
  * KProgress -- a progress indicator widget for KDE.
  */
 
+#include <stdlib.h>
+
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
 #include <qstring.h>
 #include <qregexp.h>
 #include <qstyle.h>
@@ -29,29 +34,19 @@
 
 #include <kapplication.h>
 
-KProgress::KProgress(QWidget *parent, const char *name)
-	: QFrame(parent, name),
-	QRangeControl(0, 100, 1, 10, 0),
-	orient(Horizontal)
+KProgress::KProgress(QWidget *parent, const char *name, WFlags f)
+  : QProgressBar(parent, name, f),
+    mFormat("%p%")
 {
-	initialize();
+    setProgress(0);
 }
 
-KProgress::KProgress(Orientation orientation, QWidget *parent, const char *name)
-	: QFrame(parent, name),
-	QRangeControl(0, 100, 1, 10, 0),
-	orient(orientation)
+KProgress::KProgress(int totalSteps, const QString& format,
+                         QWidget *parent, const char *name, WFlags f)
+  : QProgressBar(totalSteps, parent, name, f),
+    mFormat(format)
 {
-	initialize();
-}
-
-KProgress::KProgress(int minValue, int maxValue, int value,
-                     Orientation orientation, QWidget *parent, const char *name)
-	: QFrame(parent, name),
-	QRangeControl(minValue, maxValue, 1, 10, value),
-	orient(orientation)
-{
-	initialize();
+    setProgress(0);
 }
 
 KProgress::~KProgress()
@@ -60,289 +55,222 @@ KProgress::~KProgress()
 
 void KProgress::advance(int offset)
 {
-	setValue(value() + offset);
+    setProgress(progress() + offset);
 }
 
-void KProgress::initialize()
+void KProgress::setTotalSteps(int totalSteps)
 {
-	format_ = "%p%";
-	use_supplied_bar_color = false;
-	bar_pixmap = 0;
-	bar_style = Solid;
-	text_enabled = TRUE;
-	setBackgroundMode( PaletteBackground );
-	connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(paletteChange()));
-	paletteChange();
+    QProgressBar::setTotalSteps(totalSteps);
+
+    if (totalSteps)
+    {
+        emit percentageChanged((progress() * 100) / totalSteps);
+    }
 }
 
-void KProgress::paletteChange()
+void KProgress::setProgress(int progress)
 {
-	QPalette p = kapp->palette();
-	const QColorGroup &colorGroup = p.active();
-	if (!use_supplied_bar_color)
-		bar_color = colorGroup.highlight();
-	bar_text_color = colorGroup.highlightedText();
-	text_color = colorGroup.text();
-	setPalette(p);
+    QProgressBar::setProgress(progress);
 
-	adjustStyle();
+    if (totalSteps())
+    {
+        emit percentageChanged((progress * 100) / totalSteps());
+    }
 }
 
-
-void KProgress::setBarPixmap(const QPixmap &pixmap)
+void KProgress::setValue(int progress)
 {
-	if (pixmap.isNull())
-		return;
-	if (bar_pixmap)
-		delete bar_pixmap;
-
-	bar_pixmap = new QPixmap(pixmap);
+    setProgress(progress); 
 }
 
-void KProgress::setBarColor(const QColor &color)
+void KProgress::setRange(int min, int max)
 {
-	bar_color = color;
-	use_supplied_bar_color = true;
-	if (bar_pixmap) {
-		delete bar_pixmap;
-		bar_pixmap = 0;
-	}
+    setTotalSteps(max);
 }
 
-void KProgress::setBarStyle(BarStyle style)
+int KProgress::maxValue()
 {
-	if (bar_style != style) {
-		bar_style = style;
-		update();
-	}
-}
-
-void KProgress::setOrientation(Orientation orientation)
-{
-	if (orient != orientation) {
-		orient = orientation;
-		update();
-	}
-}
-
-void KProgress::setValue(int value)
-{
-	QRangeControl::setValue(value);
+    return totalSteps();
 }
 
 void KProgress::setTextEnabled(bool enable)
 {
-	text_enabled = enable;
-}
-
-const QColor & KProgress::barColor() const
-{
-	return bar_color;
-}
-
-const QPixmap * KProgress::barPixmap() const
-{
-	return bar_pixmap;
+    setPercentageVisible(enable);
 }
 
 bool KProgress::textEnabled() const
 {
-	return text_enabled;
-}
-
-QSize KProgress::sizeHint() const
-{
-	QSize s( size() );
-
-	if(orientation() == KProgress::Vertical) {
-		s.setWidth(24);
-	} else {
-		s.setHeight(24);
-	}
-
-	return s;
-}
-
-QSize KProgress::minimumSizeHint() const
-{
-	return sizeHint();
-}
-
-QSizePolicy KProgress::sizePolicy() const
-{
-	if ( orientation()==KProgress::Vertical )
-		return QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
-	else
-		return QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-}
-
-KProgress::Orientation KProgress::orientation() const
-{
-	return orient;
-}
-
-KProgress::BarStyle KProgress::barStyle() const
-{
-	return bar_style;
-}
-
-int KProgress::recalcValue(int range)
-{
-	int abs_value = value() - minValue();
-	int abs_range = maxValue() - minValue();
-	return abs_range ? range * abs_value / abs_range : 0;
-}
-
-void KProgress::valueChange()
-{
-	repaint(contentsRect(), FALSE);
-	emit percentageChanged(recalcValue(100));
-}
-
-void KProgress::rangeChange()
-{
-	repaint(contentsRect(), FALSE);
-	emit percentageChanged(recalcValue(100));
-}
-
-void KProgress::styleChange(QStyle&)
-{
-	adjustStyle();
-}
-
-void KProgress::adjustStyle()
-{
-#if QT_VERSION < 300
-	switch (style().guiStyle()) {
-#else
-	switch (style().styleHint(QStyle::SH_GUIStyle)) {
-#endif
-		case WindowsStyle:
-			setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-			break;
-		case MotifStyle:
-		default:
-			setFrameStyle(QFrame::Panel | QFrame::Sunken);
-			setLineWidth( 2 );
-			break;
-	}
-	update();
-}
-
-void KProgress::paletteChange( const QPalette &p )
-{
-	// This never gets called for global color changes 
-	// because we call setPalette() ourselves.
-	QFrame::paletteChange(p);
-}
-
-void KProgress::drawText(QPainter *p)
-{
-	QRect r(contentsRect());
-	//QColor c(bar_color.rgb() ^ backgroundColor().rgb());
-
-	// Rik: Replace the tags '%p', '%v' and '%m' with the current percentage,
-	// the current value and the maximum value respectively.
-	QString s(format_);
-
-	s.replace(QRegExp(QString::fromLatin1("%p")), QString::number(recalcValue(100)));
-	s.replace(QRegExp(QString::fromLatin1("%v")), QString::number(value()));
-	s.replace(QRegExp(QString::fromLatin1("%m")), QString::number(maxValue()));
-
-	p->setPen(text_color);
-	QFont font = p->font();
-	font.setBold(true);
-	p->setFont(font);
-	//p->setRasterOp(XorROP);
-	p->drawText(r, AlignCenter, s);
-	p->setClipRegion( fr );
-	p->setPen(bar_text_color);
-	p->drawText(r, AlignCenter, s);
-}
-
-void KProgress::drawContents(QPainter *p)
-{
-	QRect cr = contentsRect(), er = cr;
-	fr = cr;
-	QBrush fb(bar_color), eb(backgroundColor());
-
-	if (bar_pixmap)
-		fb.setPixmap(*bar_pixmap);
-
-	if (backgroundPixmap())
-		eb.setPixmap(*backgroundPixmap());
-
-	switch (bar_style) {
-		case Solid:
-			if (orient == Horizontal) {
-				fr.setWidth(recalcValue(cr.width()));
-				er.setLeft(fr.right() + 1);
-			} else {
-				fr.setTop(cr.bottom() - recalcValue(cr.height()));
-				er.setBottom(fr.top() - 1);
-			}
-
-			p->setBrushOrigin(cr.topLeft());
-			p->fillRect(fr, fb);
-
-			p->fillRect(er, eb);
-
-			break;
-
-		case Blocked:
-			const int margin = 2;
-			int max, num, dx, dy;
-			if (orient == Horizontal) {
-				fr.setHeight(cr.height() - 2 * margin);
-				fr.setWidth((int)(0.67 * fr.height()));
-				fr.moveTopLeft(QPoint(cr.left() + margin, cr.top() + margin));
-				dx = fr.width() + margin;
-				dy = 0;
-				max = (cr.width() - margin) / (fr.width() + margin) + 1;
-				num = recalcValue(max);
-			} else {
-				fr.setWidth(cr.width() - 2 * margin);
-				fr.setHeight((int)(0.67 * fr.width()));
-				fr.moveBottomLeft(QPoint(cr.left() + margin, cr.bottom() - margin));
-				dx = 0;
-				dy = - (fr.height() + margin);
-				max = (cr.height() - margin) / (fr.height() + margin) + 1;
-				num = recalcValue(max);
-			}
-			p->setClipRect(cr.x() + margin, cr.y() + margin,
-			               cr.width() - margin, cr.height() - margin);
-			for (int i = 0; i < num; i++) {
-				p->setBrushOrigin(fr.topLeft());
-				p->fillRect(fr, fb);
-				fr.moveBy(dx, dy);
-			}
-			
-			if (num != max) {
-				if (orient == Horizontal)
-					er.setLeft(fr.right() + 1);
-				else
-					er.setBottom(fr.bottom() + 1);
-				if (!er.isNull()) {
-					p->setBrushOrigin(cr.topLeft());
-					p->fillRect(er, eb);
-				}
-			}
-
-			break;
-	}
-
-	if (text_enabled && bar_style != Blocked)
-		drawText(p);
+    return percentageVisible();
 }
 
 void KProgress::setFormat(const QString & format)
 {
-	format_ = format;
+    mFormat = format;
 }
 
 QString KProgress::format() const
 {
-	return format_;
+    return mFormat;
+}
+
+int KProgress::value() const
+{
+    return progress();
+}
+
+bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
+{
+    QString newString(mFormat);
+    newString.replace(QRegExp(QString::fromLatin1("%p")),
+                      QString::number((progress * 100) / totalSteps));
+    newString.replace(QRegExp(QString::fromLatin1("%v")),
+                      QString::number(progress));
+    newString.replace(QRegExp(QString::fromLatin1("%m")),
+                      QString::number(totalSteps));
+
+    if (newString != indicator)
+    {
+        indicator = newString;
+        return true;
+    }
+
+    return false;
+}
+
+
+/*
+ * KProgressDialog implementation
+ */
+KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
+                                 const QString& caption, const QString& text,
+                                 bool modal)
+    : KDialogBase(KDialogBase::Plain, caption, KDialogBase::Cancel,
+                  KDialogBase::Cancel, parent, name, modal),
+      mAutoClose(true),
+      mAutoReset(false),
+      mCancelled(false),
+      mAllowCancel(true)
+{
+    showButton(KDialogBase::Close, false);
+    mCancelText = actionButton(KDialogBase::Cancel)->text();
+
+    QFrame* mainWidget = plainPage();
+    QVBoxLayout* layout = new QVBoxLayout(mainWidget, 10);
+
+    mLabel = new QLabel(text, mainWidget);
+    layout->addWidget(mLabel);
+
+    mProgressBar = new KProgress(mainWidget);
+    layout->addWidget(mProgressBar);
+
+    connect(mProgressBar, SIGNAL(percentageChanged(int)),
+            this, SLOT(autoActions(int)));
+}
+
+KProgressDialog::~KProgressDialog()
+{
+}
+
+void KProgressDialog::slotCancel()
+{
+    mCancelled = true;
+
+    if (mAllowCancel)
+    {
+        KDialogBase::slotCancel();
+    }
+}
+
+bool KProgressDialog::wasCancelled()
+{
+    return mCancelled;
+}
+
+void KProgressDialog::setAllowCancel(bool allowCancel)
+{
+    mAllowCancel = allowCancel;
+    showCancelButton(allowCancel);
+}
+
+bool KProgressDialog::allowCancel()
+{
+    return mAllowCancel;
+}
+
+KProgress* KProgressDialog::progressBar()
+{
+    return mProgressBar;
+}
+
+void KProgressDialog::setLabel(const QString& text)
+{
+    mLabel->setText(text);
+}
+
+QString KProgressDialog::labelText()
+{
+    return mLabel->text();
+}
+
+void KProgressDialog::showCancelButton(bool show)
+{
+    showButtonCancel(show);
+}
+
+bool KProgressDialog::autoClose()
+{
+    return mAutoClose;
+}
+
+void KProgressDialog::setAutoClose(bool autoClose)
+{
+    mAutoClose = autoClose;
+}
+
+bool KProgressDialog::autoReset()
+{
+    return mAutoReset;
+}
+
+void KProgressDialog::setAutoReset(bool autoReset)
+{
+    mAutoReset = autoReset;
+}
+
+void KProgressDialog::setButtonText(const QString& text)
+{
+    mCancelText = text;
+    setButtonCancelText(mCancelText);
+}
+
+QString KProgressDialog::buttonText()
+{
+    return mCancelText;
+}
+
+void KProgressDialog::autoActions(int percentage)
+{
+    if (percentage < 100)
+    {
+        setButtonCancelText(mCancelText);
+    }
+    else
+    {
+        if (mAutoReset)
+        {
+            mProgressBar->setProgress(0);
+        }
+        else
+        {
+            setAllowCancel(true);
+            setButtonCancelText("&Close");
+        }
+
+        if (mAutoClose)
+        {
+            hide();
+        }
+    }
 }
 
 #include "kprogress.moc"

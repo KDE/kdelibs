@@ -75,7 +75,7 @@ DefaultProgress::DefaultProgress( bool showNow )
   destLabel = new KSqueezedTextLabel(this);
   grid->addWidget(destLabel, 1, 2);
 
-  m_pProgressBar = new KProgress(0, 100, 0, KProgress::Horizontal, this);
+  m_pProgressBar = new KProgress(this);
   topLayout->addWidget( m_pProgressBar );
 
   // processed info
