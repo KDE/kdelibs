@@ -7,10 +7,14 @@
 #include <qcstring.h>
 #include <qstringlist.h>
 
+class KLibGlobal;
+
 class Factory : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     */
     Factory( QObject* parent = 0, const char* name = 0 );
     ~Factory();
 

@@ -78,7 +78,7 @@ Factory* Loader::factory( const char* name, int major, int minor, const QStringL
 	    return 0;
 	}	
     }
-    
+
     void* handel = dlopen( libname, RTLD_GLOBAL | RTLD_LAZY /* | RTLD_NOW */);
     if ( !handel )
     {
