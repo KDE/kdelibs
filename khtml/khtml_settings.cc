@@ -447,7 +447,6 @@ QString KHTMLSettings::settingsToCSS() const
     if(m_hoverLink)
         str += "a:link:hover { text-decoration: underline; }\n";
 
-    kdDebug()<<"KHTMLSettings::settingsToCSS() returning:"<<str<<endl;
     return str;
 }
 
