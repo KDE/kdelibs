@@ -1504,7 +1504,7 @@ void RenderTableCol::updateFromElement()
       DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
       _span = tc->span();
   } else {
-      if ( style()->display() == TABLE_COLUMN_GROUP )
+      if ( style() && style()->display() == TABLE_COLUMN_GROUP )
 	  _span = 0;
       else
 	  _span = 1;

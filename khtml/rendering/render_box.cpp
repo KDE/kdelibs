@@ -642,8 +642,10 @@ int RenderBox::calcReplacedHeight() const
             if (!doIEHack)
                 cb = cb->containingBlock();
 
-            if ( cb->style()->height().isFixed() )
-                height = h.minWidth( cb->style()->height().value );
+	    Length h = cb->style()->height();
+	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
+            if ( h.isFixed() )
+                height = h.minWidth( h.value );
             else
                 height = intrinsicHeight();
         }
