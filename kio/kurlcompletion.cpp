@@ -789,9 +789,15 @@ QString KURLCompletion::listDirectories()
                                 delete m_current_url;
 
                         m_current_url = new KURL( m_dirs.first() );
+						
+						// List the url only if it supports listing
+						bool listURL = KProtocolInfo::supportsListing( m_current_url->protocol() );
+						// Remote URLs are not listed in auto completion
+						if ( !local &&
+							completionMode() == KGlobalSettings::CompletionAuto )
+							listURL = false;
 
-                        if ( KProtocolInfo::supportsListing( m_current_url->protocol() ) )
-                        {
+                        if ( listURL ) {
                             //kdDebug() "listDirectories() -- dir = " << m_current_url->url() << endl;
 
                             m_list_job = KIO::listDir( (*m_current_url) );
@@ -807,6 +813,11 @@ QString KURLCompletion::listDirectories()
 
                             m_dirs.remove( m_dirs.begin() );
                         }
+						else {
+							m_dirs.remove( m_dirs.begin() );
+							return listDirectories();
+						}
+							
                 }
         }
 
