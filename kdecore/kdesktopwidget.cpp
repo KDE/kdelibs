@@ -22,7 +22,6 @@
 #include "kdesktopwidget.h"
 
 #include <X11/Xlib.h>
-#include <X11/Xdefs.h>
 #ifdef HAVE_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif
