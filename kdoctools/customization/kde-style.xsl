@@ -64,5 +64,13 @@
   </div>
 </xsl:template>
 
+<xsl:template match="honorific|firstname|surname|lineage|othername">
+  <xsl:call-template name="inline.charseq"/>
+</xsl:template>
+
+<xsl:template match="personname">
+  <xsl:call-template name="anchor"/>
+  <xsl:call-template name="person.name"/>
+</xsl:template>
 
 </xsl:stylesheet>
