@@ -252,7 +252,6 @@ protected:
     int spacing;
     short _lastParentWidth 	: 16;
     bool incremental 		: 1;
-    bool collapseBorders 	: 1;
     bool colWidthKnown 		: 1;
     bool needsCellsRecalc 	: 1;
     bool hasPercent 		: 1;
