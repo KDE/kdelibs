@@ -34,7 +34,7 @@ AM_CPPFLAGS = -DQT_NO_COMPAT
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html rendering java . ecma
+SUBDIRS = misc dom css xml html rendering pics java . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
