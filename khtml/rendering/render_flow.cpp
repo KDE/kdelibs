@@ -399,8 +399,9 @@ void RenderFlow::layoutBlockChildren()
         child = child->nextSibling();
     }
 
-    if(!isTableCell() && toAdd != 0 )
-	m_height += prevMargin + toAdd;
+    if( !isTableCell() && toAdd != 0 )
+	m_height += prevMargin;
+    m_height += toAdd;
 
     setLayouted(_layouted);
 
