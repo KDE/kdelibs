@@ -224,7 +224,7 @@ int KLocale::pluralType( const KCatalogue& catalog )
       return 1;
     else if ( pf == "French" )
       return 2;
-    else if ( pf == "OneTwoRest" || pf == "Gaeilge" ) // Gaelige is the old name
+    else if ( pf == "OneTwoRest" )
       return 3;
     else if ( pf == "Russian" )
       return 4;
@@ -246,6 +246,8 @@ int KLocale::pluralType( const KCatalogue& catalog )
       return 12;
     else if ( pf == "Macedonian" )
       return 13;
+    else if ( pf == "Gaeilge" )
+        return 14;
     else {
       kdWarning(173) << "Definition of PluralForm is none of "
 		       << "NoPlural/"
@@ -260,7 +262,8 @@ int KLocale::pluralType( const KCatalogue& catalog )
 		       << "Slovak/"
 		       << "Arabic/"
 		       << "Balcan/"
-		       << "Macedonian/"
+               << "Macedonian/"
+               << "Gaeilge/"
 		       << "Maltese: " << pf << endl;
       exit(1);
     }
@@ -829,7 +832,7 @@ QString KLocale::translate( const char *singular, const char *plural,
       return put_n_in( forms[0], n);
     else
       return put_n_in( forms[1], n);
-  case 3: // Gaeilge
+  case 3: // OneTwoRest
     EXPECT_LENGTH( 3 );
     if ( n == 1 )
       return put_n_in( forms[0], n);
@@ -923,6 +926,18 @@ QString KLocale::translate( const char *singular, const char *plural,
 	return put_n_in(forms[1], n);
      else
 	return put_n_in(forms[2], n);
+  case 14: // Gaeilge
+      EXPECT_LENGTH(5);
+      if (n == 1)                       // "ceann amhain"
+          return put_n_in(forms[0], n);
+      else if (n == 2)                  // "dha cheann"
+          return put_n_in(forms[1], n);
+      else if (n < 7)                   // "%n cinn"
+          return put_n_in(forms[2], n);
+      else if (n < 11)                  // "%n gcinn"
+          return put_n_in(forms[3], n);
+      else                              // "%n ceann"
+          return put_n_in(forms[4], n);
   }
   kdFatal() << "The function should have been returned in another way\n";
 
