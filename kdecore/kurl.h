@@ -217,7 +217,7 @@ public:
   /**
    * Resolves "." and ".." components in path.
    *
-   * @param cleanDirSeparator if true, occurances of consecutive
+   * @param cleanDirSeparator if true, occurrances of consecutive
    * directory separators (e.g. /foo//bar) are cleaned up as well.
    *
    * Some servers seem not to like the removal of extra '/'
