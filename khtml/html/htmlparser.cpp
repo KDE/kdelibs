@@ -110,8 +110,8 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser
-( KHTMLView *_parent, DocumentPtr *doc)
+
+KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
