@@ -71,6 +71,13 @@ MainWindow::MainWindow( const char *name, WFlags f )
   PartBase::setPartObject( this );
 }
 
+MainWindow::MainWindow( int cflags, QWidget* parent,  const char *name, WFlags f )
+    : KMainWindow( cflags, parent, name, f )
+{
+  d = new MainWindowPrivate();
+  PartBase::setPartObject( this );
+}
+
 MainWindow::~MainWindow()
 {
   delete d;
