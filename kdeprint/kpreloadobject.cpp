@@ -27,5 +27,6 @@ KPReloadObject::KPReloadObject(bool priority)
 
 KPReloadObject::~KPReloadObject()
 {
-	KMFactory::self()->unregisterObject(this);
+	if ( KMFactory::exists() )
+		KMFactory::self()->unregisterObject(this);
 }

@@ -59,6 +59,7 @@ public:
 	};
 
 	static KMFactory* self();
+        static bool exists();
 	static void release();
 
 	KMFactory();

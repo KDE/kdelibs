@@ -60,12 +60,18 @@ KMFactory* KMFactory::self()
 	return m_self;
 }
 
+bool KMFactory::exists()
+{
+    return m_self != 0L;
+}
+
 void KMFactory::release()
 {
 	if (m_self)
 	{
-		delete m_self;
-		m_self = 0;
+		KMFactory* p = m_self;
+		m_self = 0; // so that exists() says false
+		delete p;
 	}
 }
 
