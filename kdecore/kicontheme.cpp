@@ -167,7 +167,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
 	        if (!dir->isValid())
 	        {
-	            kdDebug(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
+	            kdWarning(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
 	            delete dir;
 	        }
 	        else
