@@ -334,8 +334,7 @@ public:
 };
 
 #include "reference.h"
-
-class InterfaceRepo : public SmartWrapper {
+class InterfaceRepo : public Object {
 private:
 	static Object_base* _Creator();
 	InterfaceRepo_base *_cache;
@@ -348,15 +347,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline InterfaceRepo(InterfaceRepo_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline InterfaceRepo() : SmartWrapper(_Creator), _cache(0) {}
+	inline InterfaceRepo() : Object(_Creator), _cache(0) {}
 	inline InterfaceRepo(const SubClass& s) :
-		SmartWrapper(InterfaceRepo_base::_create(s.string())), _cache(0) {}
+		Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
 	inline InterfaceRepo(const Reference &r) :
-		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), _cache(0) {}
-	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline InterfaceRepo(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline InterfaceRepo(const DynamicCast& c) : _cache(0) {
+		InterfaceRepo_base * ptr = (InterfaceRepo_base *)c.object()._base()->_cast(InterfaceRepo_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline InterfaceRepo(const InterfaceRepo& target) : Object(target._pool), _cache(target._cache) {}
+	inline InterfaceRepo(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static InterfaceRepo null() {return InterfaceRepo((InterfaceRepo_base*)0);}
+	inline static InterfaceRepo _from_base(InterfaceRepo_base* b) {return InterfaceRepo(b);}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -365,7 +378,6 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator Object() const { return Object(*_pool); }
 	inline InterfaceRepo_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long insertModule(const ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
@@ -417,8 +429,7 @@ public:
 };
 
 #include "reference.h"
-
-class FlowSystemSender : public SmartWrapper {
+class FlowSystemSender : public Object {
 private:
 	static Object_base* _Creator();
 	FlowSystemSender_base *_cache;
@@ -431,15 +442,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline FlowSystemSender(FlowSystemSender_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline FlowSystemSender() : SmartWrapper(_Creator), _cache(0) {}
+	inline FlowSystemSender() : Object(_Creator), _cache(0) {}
 	inline FlowSystemSender(const SubClass& s) :
-		SmartWrapper(FlowSystemSender_base::_create(s.string())), _cache(0) {}
+		Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemSender(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), _cache(0) {}
-	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystemSender(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemSender(const DynamicCast& c) : _cache(0) {
+		FlowSystemSender_base * ptr = (FlowSystemSender_base *)c.object()._base()->_cast(FlowSystemSender_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline FlowSystemSender(const FlowSystemSender& target) : Object(target._pool), _cache(target._cache) {}
+	inline FlowSystemSender(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static FlowSystemSender null() {return FlowSystemSender((FlowSystemSender_base*)0);}
+	inline static FlowSystemSender _from_base(FlowSystemSender_base* b) {return FlowSystemSender(b);}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -448,7 +473,6 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator Object() const { return Object(*_pool); }
 	inline FlowSystemSender_base* _base() {return _cache?_cache:_method_call();}
 
 	inline void processed() {return _cache?_cache->processed():_method_call()->processed();}
@@ -497,8 +521,7 @@ public:
 };
 
 #include "reference.h"
-
-class FlowSystemReceiver : public SmartWrapper {
+class FlowSystemReceiver : public Object {
 private:
 	static Object_base* _Creator();
 	FlowSystemReceiver_base *_cache;
@@ -511,15 +534,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline FlowSystemReceiver() : SmartWrapper(_Creator), _cache(0) {}
+	inline FlowSystemReceiver() : Object(_Creator), _cache(0) {}
 	inline FlowSystemReceiver(const SubClass& s) :
-		SmartWrapper(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
+		Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemReceiver(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), _cache(0) {}
-	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystemReceiver(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemReceiver(const DynamicCast& c) : _cache(0) {
+		FlowSystemReceiver_base * ptr = (FlowSystemReceiver_base *)c.object()._base()->_cast(FlowSystemReceiver_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) : Object(target._pool), _cache(target._cache) {}
+	inline FlowSystemReceiver(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static FlowSystemReceiver null() {return FlowSystemReceiver((FlowSystemReceiver_base*)0);}
+	inline static FlowSystemReceiver _from_base(FlowSystemReceiver_base* b) {return FlowSystemReceiver(b);}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -528,7 +565,6 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator Object() const { return Object(*_pool); }
 	inline FlowSystemReceiver_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long receiveHandlerID() {return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();}
@@ -587,8 +623,7 @@ public:
 };
 
 #include "reference.h"
-
-class FlowSystem : public SmartWrapper {
+class FlowSystem : public Object {
 private:
 	static Object_base* _Creator();
 	FlowSystem_base *_cache;
@@ -601,15 +636,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline FlowSystem(FlowSystem_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline FlowSystem() : SmartWrapper(_Creator), _cache(0) {}
+	inline FlowSystem() : Object(_Creator), _cache(0) {}
 	inline FlowSystem(const SubClass& s) :
-		SmartWrapper(FlowSystem_base::_create(s.string())), _cache(0) {}
+		Object(FlowSystem_base::_create(s.string())), _cache(0) {}
 	inline FlowSystem(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), _cache(0) {}
-	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystem(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystem(const DynamicCast& c) : _cache(0) {
+		FlowSystem_base * ptr = (FlowSystem_base *)c.object()._base()->_cast(FlowSystem_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline FlowSystem(const FlowSystem& target) : Object(target._pool), _cache(target._cache) {}
+	inline FlowSystem(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static FlowSystem null() {return FlowSystem((FlowSystem_base*)0);}
+	inline static FlowSystem _from_base(FlowSystem_base* b) {return FlowSystem(b);}
 	inline FlowSystem& operator=(const FlowSystem& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -618,7 +667,6 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator Object() const { return Object(*_pool); }
 	inline FlowSystem_base* _base() {return _cache?_cache:_method_call();}
 
 	inline void startObject(Object node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
@@ -676,8 +724,7 @@ public:
 };
 
 #include "reference.h"
-
-class GlobalComm : public SmartWrapper {
+class GlobalComm : public Object {
 private:
 	static Object_base* _Creator();
 	GlobalComm_base *_cache;
@@ -690,15 +737,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline GlobalComm(GlobalComm_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline GlobalComm() : SmartWrapper(_Creator), _cache(0) {}
+	inline GlobalComm() : Object(_Creator), _cache(0) {}
 	inline GlobalComm(const SubClass& s) :
-		SmartWrapper(GlobalComm_base::_create(s.string())), _cache(0) {}
+		Object(GlobalComm_base::_create(s.string())), _cache(0) {}
 	inline GlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
-	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline GlobalComm(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline GlobalComm(const DynamicCast& c) : _cache(0) {
+		GlobalComm_base * ptr = (GlobalComm_base *)c.object()._base()->_cast(GlobalComm_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline GlobalComm(const GlobalComm& target) : Object(target._pool), _cache(target._cache) {}
+	inline GlobalComm(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static GlobalComm null() {return GlobalComm((GlobalComm_base*)0);}
+	inline static GlobalComm _from_base(GlobalComm_base* b) {return GlobalComm(b);}
 	inline GlobalComm& operator=(const GlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -707,7 +768,6 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator Object() const { return Object(*_pool); }
 	inline GlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
@@ -756,8 +816,7 @@ public:
 };
 
 #include "reference.h"
-
-class TmpGlobalComm : public SmartWrapper {
+class TmpGlobalComm : public Object {
 private:
 	static Object_base* _Creator();
 	TmpGlobalComm_base *_cache;
@@ -770,15 +829,29 @@ private:
 		return _cache;
 	}
 
+protected:
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : Object(b), _cache(0) {}
+
+
 public:
-	inline TmpGlobalComm() : SmartWrapper(_Creator), _cache(0) {}
+	inline TmpGlobalComm() : Object(_Creator), _cache(0) {}
 	inline TmpGlobalComm(const SubClass& s) :
-		SmartWrapper(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
+		Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
 	inline TmpGlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
-	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline TmpGlobalComm(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
+		Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline TmpGlobalComm(const DynamicCast& c) : _cache(0) {
+		TmpGlobalComm_base * ptr = (TmpGlobalComm_base *)c.object()._base()->_cast(TmpGlobalComm_base::_IID);
+		if (ptr) {
+			_pool->Dec();
+			_pool = c.object()._get_pool();
+			_pool->Inc();
+			_cache = ptr;
+		}
+	}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : Object(target._pool), _cache(target._cache) {}
+	inline TmpGlobalComm(Object::Pool& p) : Object(p), _cache(0) {}
+	inline static TmpGlobalComm null() {return TmpGlobalComm((TmpGlobalComm_base*)0);}
+	inline static TmpGlobalComm _from_base(TmpGlobalComm_base* b) {return TmpGlobalComm(b);}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -788,7 +861,6 @@ public:
 		return *this;
 	}
 	inline operator GlobalComm() const { return GlobalComm(*_pool); }
-	inline operator Object() const { return Object(*_pool); }
 	inline TmpGlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}

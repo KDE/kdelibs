@@ -174,7 +174,7 @@ public:
 		serverBufferTime = server.serverBufferTime();
 		stream_set(ARTS_P_BUFFER_SIZE,64*1024);
 		stream_set(ARTS_P_BLOCKING,1);
-		bsWrapper = this;
+		bsWrapper = ByteSoundProducer::_from_base(this);
 	}
 	~Sender()
 	{
@@ -275,7 +275,8 @@ public:
 			}
 			server.detach(bsWrapper);
 		}
-		bsWrapper = 0;		// similar effect like "delete this;"
+		// similar effect like "delete this;"		
+		bsWrapper = ByteSoundProducer::null();
 	}
 
 	int write(mcopbyte *data, int size)

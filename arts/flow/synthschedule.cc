@@ -853,7 +853,7 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 
 		FlowSystem remoteFs = destObject._flowSystem();
 		FlowSystemReceiver receiver;
-		receiver = remoteFs.createReceiver(destObject, destPort, netsend);
+		receiver = remoteFs.createReceiver(destObject, destPort, FlowSystemSender::_from_base(netsend));
 
 		netsend->setReceiver(receiver);
 		cout << "connected an asyncnetsend" << endl;		
@@ -894,9 +894,9 @@ FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
 		 * really disconnected on connection drop, which is also bad (but
 		 * not as ugly as a crash)
 		 */
-		return (new ASyncNetReceive(ap, sender))->_copy();
+		return FlowSystemReceiver::_from_base((new ASyncNetReceive(ap, sender))->_copy());
 	}
-	return 0;
+	return FlowSystemReceiver::null();
 }
 
 // hacked initialization of Dispatcher::the()->flowSystem ;)

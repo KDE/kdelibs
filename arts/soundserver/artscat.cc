@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ByteSoundProducer sender = new Sender(stdin,server.minStreamBufferTime());
+	ByteSoundProducer sender = ByteSoundProducer::_from_base(new Sender(stdin,server.minStreamBufferTime()));
 	server.attach(sender);
 	sender.start();
 	dispatcher.run();

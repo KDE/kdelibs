@@ -58,8 +58,8 @@ class StereoEffectStack_impl : public StereoEffectStack_skel,
 		if(fx.empty())
 		{
 			/* no effects - forward input through to output */
-			xvirtualize(c,"outleft",this->_copy(),"inleft");
-			xvirtualize(c,"outright",this->_copy(),"inright");
+			xvirtualize(c,"outleft",Object::_from_base(this->_copy()),"inleft");
+			xvirtualize(c,"outright",Object::_from_base(this->_copy()),"inright");
 		}
 		else
 		{

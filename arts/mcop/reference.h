@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef MCOP_COMPONENT_REFERENCE_H
-#define MCOP_COMPONENT_REFERENCE_H
+#ifndef MCOP_REFERENCE_H
+#define MCOP_REFERENCE_H
 
 #include "common.h"
 #include <string>
@@ -33,17 +33,17 @@ private:
 	bool strMode;
 public:
 	
-	inline Reference(const ObjectReference& ref) {
+	inline explicit Reference(const ObjectReference& ref) {
 		myref=ref;
 		strMode=false;
 	}
 
-	inline Reference(const std::string& s) {
+	inline explicit Reference(const std::string& s) {
 		mys=s;
 		strMode=true;
 	}
 	
-	inline Reference(const char* c) {
+	inline explicit Reference(const char* c) {
 		mys=c;
 		strMode=true;
 	}
@@ -62,27 +62,28 @@ private:
 	std::string mys;
 public:
 
-	inline SubClass(const std::string& s) : mys(s) {}
-	inline SubClass(const char* c) : mys(c) {}
+	inline explicit SubClass(const std::string& s) : mys(s) {}
+	inline explicit SubClass(const char* c) : mys(c) {}
 	inline SubClass& operator=(const std::string& s) {mys=s; return *this;}
 	inline SubClass& operator=(const char*c) {mys=c; return *this;}
 //	inline operator const std::string() const {return mys;}
 	inline const std::string& string() const {return mys;}
 };
 
-class ScheduleNode;
 
-// SmartWrapper has _no_ virtual, and must not have. That way, all the
+class ScheduleNode;
+class FlowSystem;
+
+// Object has _no_ virtual, and must not have. That way, all the
 // wrappers can be passed as argument or return type, and there is also
 // no virtual table bloat.
 // Moreover, the virtual mechanism still works correctly thanks to the
 // _pool->base redirection.
-// No check is done here, only what's necessary in the child classes
-// To inforce this, the constructors are protected
-class SmartWrapper {
+class Object {
 protected:
 	// Pool of common variables for a bunch a wrappers
 	class Pool {
+		friend class Object;
 		Object_base* (*creator)();
 		bool created;
 		int count;
@@ -104,21 +105,54 @@ protected:
 		}
 	} *_pool;
 
-	inline SmartWrapper(Object_base* (*cor)()) {
+	inline Object(Object_base* (*cor)()) {
 		_pool = new Pool(cor);
 	}
-	inline SmartWrapper(Object_base* b) {
+	inline Object(Pool* p) : _pool(p) {
+		_pool->Inc();
+	}
+	inline Object(Pool& p) : _pool(&p) {
+		_pool->Inc();
+	}
+	inline Object(Object_base* b) {
 		_pool = new Pool(b);
 	}
-	inline SmartWrapper(Pool* p) : _pool(p) {
-		_pool->Inc();
-	}
-	inline SmartWrapper(Pool& p) : _pool(&p) {
-		_pool->Inc();
-	}
 public:
-	inline ~SmartWrapper() {
+	// Dynamic cast constructor of inherited classes needs to access the _pool
+	// of a generic object if casting successful. But it could not without this
+	inline Pool* _get_pool() const {return _pool;}
+	
+	inline ~Object() {
 		_pool->Dec();
+	}
+	
+	// Those constructors are public, since we don't need an actual creator.
+	// They enable generic object creation (like from a subclass defined at
+	// run-time!)
+	inline Object(const SubClass& s) {
+		_pool = new Pool(Object_base::_create(s.string()));
+	}
+	inline Object(const Reference &r) {
+		_pool = new Pool(r.isString()?(Object_base::_fromString(r.string())):(Object_base::_fromReference(r.reference(),true)));
+	}
+	inline Object(const Object& target) : _pool(target._pool) {
+		_pool->Inc();
+	}
+	inline Object() { // creates a null object
+		_pool = new Pool((Object_base*)0);
+	}
+	inline Object& operator=(const Object& target) {
+		if (_pool == target._pool) return *this;
+		_pool->Dec();
+		_pool = target._pool;
+		_pool->Inc();
+		return *this;
+	}
+	// No problem for the creator, this class has protected constructors.
+	// So creator should give back an actual implementation
+	inline Object_base* _base() const {
+		_pool->checkcreate();
+		return _pool->base;
 	}
 
 	// null, error?
@@ -131,35 +165,8 @@ public:
     	return _pool->base && _pool->base->_error();
 	}
 	
-	// Default I/O info
-	inline vector<std::string> defaultPortsIn() const {
-		_pool->checkcreate();
-		assert(_pool->base);
-		return _pool->base->_defaultPortsIn();
-	}
-	inline vector<std::string> defaultPortsOut() const {
-		_pool->checkcreate();
-		assert(_pool->base);
-		return _pool->base->_defaultPortsOut();
-	}
-
-	// Node info
-	inline ScheduleNode *_node() const {
-		_pool->checkcreate();
-		assert(_pool->base);
-		return _pool->base->_node();
-	}
-	inline ScheduleNode *node() const { return _node(); }
-
-	// Stringification
-	inline std::string toString() const {
-		_pool->checkcreate();
-		assert(_pool->base);
-		return _pool->base->_toString();
-	}
-
 	// Comparision
-	inline bool _isEqual(SmartWrapper& other) {
+	inline bool _isEqual(const Object& other) {
 		if(isNull() != other.isNull()) return false;
 
 		// we can assume that things are created here, as we've
@@ -170,6 +177,9 @@ public:
 		// both null references
 		return true;
 	}
+
+
+// Object_base wrappers
 
 	// Custom messaging - see Object_base for comments
 	inline Buffer *_allocCustomMessage(long handlerID) const {
@@ -183,7 +193,107 @@ public:
 		assert(_pool->base);
 		return _pool->base->_sendCustomMessage(data);
 	}
+	
+	// generic capabilities, which allow find out what you can do with an
+	// object even if you don't know it's interface
+	inline long _lookupMethod(const MethodDef& methodDef) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_lookupMethod(methodDef);
+	}
+	inline std::string _interfaceName() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_interfaceName();
+	}
+	inline InterfaceDef* _queryInterface(const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_queryInterface(name);
+	}
+	inline TypeDef* _queryType(const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_queryType(name);
+	}
+	// Stringification
+	inline std::string _toString() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_toString();
+	}
+	inline std::string toString() const {return _toString();}
+
+	// stuff for streaming (put in a seperate interface?)
+	inline void calculateBlock(unsigned long cycles) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->calculateBlock(cycles);
+	}
+	// Node info
+	inline ScheduleNode *_node() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_node();
+	}
+	
+	// Ah! Flowsystem is not defined yet, so cannot be returned inline.
+	FlowSystem _flowSystem() const;
+	
+	inline void _copyRemote() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_copyRemote();
+	}
+	inline void _useRemote() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_useRemote();
+	}
+	inline void _releaseRemote() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_releaseRemote();
+	}
+	
+	// Default I/O info
+	inline vector<std::string> _defaultPortsIn() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_defaultPortsIn();
+	}
+	inline vector<std::string> _defaultPortsOut() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_defaultPortsOut();
+	}
+	
+	// Do we really need those in the Wrapper?
+	// And would it really be sensible to make _cast wrappers?
+/*	inline void _release() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_release();
+	}
+	inline Object_base *_copy() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_copy();
+	}
+*/
+
+	// Object::null() returns a null object (and not just a reference to one)
+	inline static Object null() {return Object((Object_base*)0);}
+	inline static Object _from_base(Object_base* b) {return Object(b);}
 };
 
-#include "objectwrapper.h"
+// Enables a different constructor, that should do the cast
+class DynamicCast {
+private:
+	const Object& obj;
+public:
+	inline explicit DynamicCast(const Object& o) : obj(o) {}
+	inline const Object& object() const {return obj;}
+};
+
 #endif

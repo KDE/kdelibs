@@ -302,7 +302,7 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 		cout << "can't play this" << endl;
 	}
 
-	return 0;
+	return PlayObject::null();
 }
 
 REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);

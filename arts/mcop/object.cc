@@ -246,9 +246,9 @@ FlowSystem Object_skel::_flowSystem()
 {
 	FlowSystem_base *fs = Dispatcher::the()->flowSystem();
 	if(fs)
-		return fs->_copy();
+		return FlowSystem::_from_base(fs->_copy());
 	else
-		return 0;
+		return FlowSystem::null();
 }
 
 // reference counting
@@ -827,11 +827,11 @@ FlowSystem Object_stub::_flowSystem()
 	_connection->qSendBuffer(request);
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return (FlowSystem_base *)0; // error occured
+	if(!result) return FlowSystem::null(); // error occured
 	FlowSystem_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
-	return FlowSystem(returnCode);
+	return FlowSystem::_from_base(returnCode);
 }
 
 /*

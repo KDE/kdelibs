@@ -97,7 +97,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	}
 	else tcpServer = 0;
 
-	d->interfaceRepo = new InterfaceRepo_impl();
+	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
 	_flowSystem = 0;
 	referenceClean = new ReferenceClean(objectPool);
 
@@ -176,8 +176,8 @@ Dispatcher::~Dispatcher()
 
 	delete referenceClean;
 
-	d->interfaceRepo = 0;
-	d->globalComm = 0;
+	d->interfaceRepo = InterfaceRepo::null();
+	d->globalComm = GlobalComm::null();
 
 	if(unixServer)
 	{

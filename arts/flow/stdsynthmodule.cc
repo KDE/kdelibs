@@ -22,6 +22,7 @@
 
 #include "stdsynthmodule.h"
 #include "audiosubsys.h"
+#include "flowsystem.h"
 
 StdSynthModule::StdSynthModule()
 {

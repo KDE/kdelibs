@@ -37,7 +37,7 @@ ScheduleNode::~ScheduleNode()
 Object ScheduleNode::nodeObject()
 {
 	assert(_nodeObject);
-	return _nodeObject->_copy();
+	return Object::_from_base(_nodeObject->_copy());
 }
 
 RemoteScheduleNode *ScheduleNode::remoteScheduleNode()

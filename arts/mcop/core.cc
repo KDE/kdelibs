@@ -882,21 +882,21 @@ std::string InterfaceRepo_skel::_interfaceNameSkel()
 }
 
 // insertModule
-static void _dispatch_InterfaceRepo_00(void *object, Buffer *request, Buffer *result)
+static void _dispatch__InterfaceRepo_00(void *object, Buffer *request, Buffer *result)
 {
 	ModuleDef newModule(*request);
 	result->writeLong(((InterfaceRepo_skel *)object)->insertModule(newModule));
 }
 
 // removeModule
-static void _dispatch_InterfaceRepo_01(void *object, Buffer *request, Buffer *)
+static void _dispatch__InterfaceRepo_01(void *object, Buffer *request, Buffer *)
 {
 	long moduleID = request->readLong();
 	((InterfaceRepo_skel *)object)->removeModule(moduleID);
 }
 
 // queryInterface
-static void _dispatch_InterfaceRepo_02(void *object, Buffer *request, Buffer *result)
+static void _dispatch__InterfaceRepo_02(void *object, Buffer *request, Buffer *result)
 {
 	std::string name;
 	request->readString(name);
@@ -906,7 +906,7 @@ static void _dispatch_InterfaceRepo_02(void *object, Buffer *request, Buffer *re
 }
 
 // queryType
-static void _dispatch_InterfaceRepo_03(void *object, Buffer *request, Buffer *result)
+static void _dispatch__InterfaceRepo_03(void *object, Buffer *request, Buffer *result)
 {
 	std::string name;
 	request->readString(name);
@@ -929,10 +929,10 @@ void InterfaceRepo_skel::_buildMethodTable()
         "6700050000006e616d6500",
 		"MethodTable"
 	);
-	_addMethod(_dispatch_InterfaceRepo_00,this,MethodDef(m));
-	_addMethod(_dispatch_InterfaceRepo_01,this,MethodDef(m));
-	_addMethod(_dispatch_InterfaceRepo_02,this,MethodDef(m));
-	_addMethod(_dispatch_InterfaceRepo_03,this,MethodDef(m));
+	_addMethod(_dispatch__InterfaceRepo_00,this,MethodDef(m));
+	_addMethod(_dispatch__InterfaceRepo_01,this,MethodDef(m));
+	_addMethod(_dispatch__InterfaceRepo_02,this,MethodDef(m));
+	_addMethod(_dispatch__InterfaceRepo_03,this,MethodDef(m));
 }
 
 InterfaceRepo_skel::InterfaceRepo_skel()
@@ -1027,7 +1027,7 @@ std::string FlowSystemSender_skel::_interfaceNameSkel()
 }
 
 // processed
-static void _dispatch_FlowSystemSender_00(void *object, Buffer *)
+static void _dispatch__FlowSystemSender_00(void *object, Buffer *)
 {
 	((FlowSystemSender_skel *)object)->processed();
 }
@@ -1040,7 +1040,7 @@ void FlowSystemSender_skel::_buildMethodTable()
         "00000000",
 		"MethodTable"
 	);
-	_addMethod(_dispatch_FlowSystemSender_00,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystemSender_00,this,MethodDef(m));
 }
 
 FlowSystemSender_skel::FlowSystemSender_skel()
@@ -1142,7 +1142,7 @@ std::string FlowSystemReceiver_skel::_interfaceNameSkel()
 }
 
 // _get_receiveHandlerID
-static void _dispatch_FlowSystemReceiver_00(void *object, Buffer *, Buffer *result)
+static void _dispatch__FlowSystemReceiver_00(void *object, Buffer *, Buffer *result)
 {
 	result->writeLong(((FlowSystemReceiver_skel *)object)->receiveHandlerID());
 }
@@ -1155,7 +1155,7 @@ void FlowSystemReceiver_skel::_buildMethodTable()
         "0000006c6f6e67000200000000000000",
 		"MethodTable"
 	);
-	_addMethod(_dispatch_FlowSystemReceiver_00,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystemReceiver_00,this,MethodDef(m));
 }
 
 FlowSystemReceiver_skel::FlowSystemReceiver_skel()
@@ -1323,11 +1323,11 @@ FlowSystemReceiver FlowSystem_stub::createReceiver(Object destObject, const std:
 	_connection->qSendBuffer(request);
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return 0; // error occured
+	if (!result) return FlowSystemReceiver::null();
 	FlowSystemReceiver_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
-	return FlowSystemReceiver(returnCode);
+	return FlowSystemReceiver::_from_base(returnCode);
 }
 
 std::string FlowSystem_skel::_interfaceName()
@@ -1341,77 +1341,77 @@ std::string FlowSystem_skel::_interfaceNameSkel()
 }
 
 // startObject
-static void _dispatch_FlowSystem_00(void *object, Buffer *request, Buffer *)
+static void _dispatch__FlowSystem_00(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object node = _temp_node;
+	Object node = Object::_from_base(_temp_node);
 	((FlowSystem_skel *)object)->startObject(node);
 }
 
 // stopObject
-static void _dispatch_FlowSystem_01(void *object, Buffer *request, Buffer *)
+static void _dispatch__FlowSystem_01(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object node = _temp_node;
+	Object node = Object::_from_base(_temp_node);
 	((FlowSystem_skel *)object)->stopObject(node);
 }
 
 // connectObject
-static void _dispatch_FlowSystem_02(void *object, Buffer *request, Buffer *)
+static void _dispatch__FlowSystem_02(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
-	Object sourceObject = _temp_sourceObject;
+	Object sourceObject = Object::_from_base(_temp_sourceObject);
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object destObject = _temp_destObject;
+	Object destObject = Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
 	((FlowSystem_skel *)object)->connectObject(sourceObject,sourcePort,destObject,destPort);
 }
 
 // disconnectObject
-static void _dispatch_FlowSystem_03(void *object, Buffer *request, Buffer *)
+static void _dispatch__FlowSystem_03(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
-	Object sourceObject = _temp_sourceObject;
+	Object sourceObject = Object::_from_base(_temp_sourceObject);
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object destObject = _temp_destObject;
+	Object destObject = Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
 	((FlowSystem_skel *)object)->disconnectObject(sourceObject,sourcePort,destObject,destPort);
 }
 
 // queryFlags
-static void _dispatch_FlowSystem_04(void *object, Buffer *request, Buffer *result)
+static void _dispatch__FlowSystem_04(void *object, Buffer *request, Buffer *result)
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object node = _temp_node;
+	Object node = Object::_from_base(_temp_node);
 	std::string port;
 	request->readString(port);
 	result->writeLong(((FlowSystem_skel *)object)->queryFlags(node,port));
 }
 
 // createReceiver
-static void _dispatch_FlowSystem_05(void *object, Buffer *request, Buffer *result)
+static void _dispatch__FlowSystem_05(void *object, Buffer *request, Buffer *result)
 {
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object destObject = _temp_destObject;
+	Object destObject = Object::_from_base(_temp_destObject);
 	std::string destPort;
 	request->readString(destPort);
 	FlowSystemSender_base* _temp_sender;
 	readObject(*request,_temp_sender);
-	FlowSystemSender sender = _temp_sender;
+	FlowSystemSender sender = FlowSystemSender::_from_base(_temp_sender);
 	FlowSystemReceiver returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
 	writeObject(*result,returnCode._base());
 }
@@ -1441,12 +1441,12 @@ void FlowSystem_skel::_buildMethodTable()
         "0700000073656e64657200",
 		"MethodTable"
 	);
-	_addMethod(_dispatch_FlowSystem_00,this,MethodDef(m));
-	_addMethod(_dispatch_FlowSystem_01,this,MethodDef(m));
-	_addMethod(_dispatch_FlowSystem_02,this,MethodDef(m));
-	_addMethod(_dispatch_FlowSystem_03,this,MethodDef(m));
-	_addMethod(_dispatch_FlowSystem_04,this,MethodDef(m));
-	_addMethod(_dispatch_FlowSystem_05,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_00,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_01,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_02,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_03,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_04,this,MethodDef(m));
+	_addMethod(_dispatch__FlowSystem_05,this,MethodDef(m));
 }
 
 FlowSystem_skel::FlowSystem_skel()
@@ -1582,7 +1582,7 @@ std::string GlobalComm_skel::_interfaceNameSkel()
 }
 
 // put
-static void _dispatch_GlobalComm_00(void *object, Buffer *request, Buffer *result)
+static void _dispatch__GlobalComm_00(void *object, Buffer *request, Buffer *result)
 {
 	std::string variable;
 	request->readString(variable);
@@ -1592,7 +1592,7 @@ static void _dispatch_GlobalComm_00(void *object, Buffer *request, Buffer *resul
 }
 
 // get
-static void _dispatch_GlobalComm_01(void *object, Buffer *request, Buffer *result)
+static void _dispatch__GlobalComm_01(void *object, Buffer *request, Buffer *result)
 {
 	std::string variable;
 	request->readString(variable);
@@ -1600,7 +1600,7 @@ static void _dispatch_GlobalComm_01(void *object, Buffer *request, Buffer *resul
 }
 
 // erase
-static void _dispatch_GlobalComm_02(void *object, Buffer *request, Buffer *)
+static void _dispatch__GlobalComm_02(void *object, Buffer *request, Buffer *)
 {
 	std::string variable;
 	request->readString(variable);
@@ -1619,9 +1619,9 @@ void GlobalComm_skel::_buildMethodTable()
         "6e6700090000007661726961626c6500",
 		"MethodTable"
 	);
-	_addMethod(_dispatch_GlobalComm_00,this,MethodDef(m));
-	_addMethod(_dispatch_GlobalComm_01,this,MethodDef(m));
-	_addMethod(_dispatch_GlobalComm_02,this,MethodDef(m));
+	_addMethod(_dispatch__GlobalComm_00,this,MethodDef(m));
+	_addMethod(_dispatch__GlobalComm_01,this,MethodDef(m));
+	_addMethod(_dispatch__GlobalComm_02,this,MethodDef(m));
 }
 
 GlobalComm_skel::GlobalComm_skel()

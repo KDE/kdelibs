@@ -530,17 +530,18 @@ string createTypeCode(string type, const string& name, long model,
 		//	result = "stream.readLongSeq("+name+")";		// TODO
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "if(!result) return 0; // error occured\n";
+// 			result = indent + "if(!result) return "+type+"(("+type+"_base*)0);\n"; // error occured\n";
+ 			result = indent + "if (!result) return "+type+"::null();\n"; // error occured\n";
 			result += indent + type+"_base* returnCode;\n";
 			result += indent + "readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
-			result += indent + "return "+type+"(returnCode);\n";
+			result += indent + "return "+type+"::_from_base(returnCode);\n";
 		}
 		if(model==MODEL_REQ_READ)
 		{
 			result = indent + type +"_base* _temp_"+name+";\n";
 			result += indent + "readObject(*request,_temp_"+name+");\n";
-			result += indent + type+" "+name+" = _temp_"+name+";\n";
+			result += indent + type+" "+name+" = "+type+"::_from_base(_temp_"+name+");\n";
 		}
 		if(model==MODEL_WRITE)
 			result = "writeObject(stream,"+name+"._base())";
@@ -1351,14 +1352,14 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"#include \"reference.h\"\n");
 		
 		// Allow connect facility only if there is something to connect to!
-		if (haveStreams(d)) {
+/*		if (haveStreams(d)) {
 			fprintf(header,"#include \"flowsystem.h\"\n");
 		}
 		fprintf(header,"\n");
-
+*/
 		nspace.setFromSymbol(d->name);
 
-		inherits = ": public SmartWrapper";
+		inherits = ": public Object";
 
 		fprintf(header,"class %s %s {\n",iname.c_str(),inherits.c_str());
 		fprintf(header,"private:\n");
@@ -1374,31 +1375,54 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t\t}\n");
 		fprintf(header,"\t\treturn _cache;\n");
 		fprintf(header,"\t}\n");
-
+		
+		// This constructor is now protected. use ::null() and ::_from_base()
+		// if necessary. It is protected, though there should be noinherited
+		// class
+		fprintf(header,"\nprotected:\n");
+		fprintf(header,"\tinline %s(%s_base* b) : Object(b), _cache(0) {}\n\n",
+			iname.c_str(),iname.c_str());
+		
 		fprintf(header,"\npublic:\n");
 
 		// empty constructor: specify creator for create-on-demand
-		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), _cache(0) {}\n",iname.c_str());
+		fprintf(header,"\tinline %s() : Object(_Creator), _cache(0) {}\n",iname.c_str());
 		
 		// constructors from reference and for subclass
 		fprintf(header,"\tinline %s(const SubClass& s) :\n"
-			"\t\tSmartWrapper(%s_base::_create(s.string())), _cache(0) {}\n",
+			"\t\tObject(%s_base::_create(s.string())), _cache(0) {}\n",
 			iname.c_str(),iname.c_str());
 		fprintf(header,"\tinline %s(const Reference &r) :\n"
-			"\t\tSmartWrapper("
+			"\t\tObject("
 			"r.isString()?(%s_base::_fromString(r.string())):"
 			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
 			iname.c_str(),iname.c_str(), iname.c_str());
+		fprintf(header,"\tinline %s(const DynamicCast& c) : _cache(0) {\n",
+			iname.c_str());
+		fprintf(header,"\t\t%s_base * ptr = (%s_base *)c.object()._base()->_cast(%s_base::_IID);\n",
+			iname.c_str(),iname.c_str(),iname.c_str());
+		fprintf(header,"\t\tif (ptr) {\n");
+		fprintf(header,"\t\t\t_pool->Dec();\n");
+		fprintf(header,"\t\t\t_pool = c.object()._get_pool();\n");
+		fprintf(header,"\t\t\t_pool->Inc();\n");
+		fprintf(header,"\t\t\t_cache = ptr;\n");
+		fprintf(header,"\t\t}\n");
+		fprintf(header,"\t}\n");
 
 		// copy constructors
-		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b), _cache(0) {}\n",
+		fprintf(header,"\tinline %s(const %s& target) : Object(target._pool), _cache(target._cache) {}\n",
 			iname.c_str(),iname.c_str());
-		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), _cache(target._cache) {}\n",
-			iname.c_str(),iname.c_str());
-		fprintf(header,"\tinline %s(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}\n",
+		fprintf(header,"\tinline %s(Object::Pool& p) : Object(p), _cache(0) {}\n",
 			iname.c_str());
+			
+		// null object
+		// %s::null() returns a null object (and not just a reference to one)
+		fprintf(header,"\tinline static %s null() {return %s((%s_base*)0);}\n",
+			iname.c_str(),iname.c_str(),iname.c_str());
+		fprintf(header,"\tinline static %s _from_base(%s_base* b) {return %s(b);}\n",
+			iname.c_str(),iname.c_str(),iname.c_str());
 
-		// copy operator. copy from _base* extraneous (uses implicit const object)
+		// copy operator.
 		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
 			iname.c_str(),iname.c_str());
 		// test for equality
@@ -1434,7 +1458,6 @@ void doInterfacesHeader(FILE *header)
 			fprintf(header,"\tinline operator %s() const { return %s(*_pool); }\n",
 									s.c_str(), s.c_str());
 		}
-		fprintf(header,"\tinline operator Object() const { return Object(*_pool); }\n");
 		//if(parents.empty()) /* no parents -> need to free pool self */
 		//{
 		//	fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
@@ -1483,16 +1506,16 @@ void doInterfacesHeader(FILE *header)
 			// map constructor methods to the real things
 			if (md->name == "constructor") {
 				fprintf(header,"\tinline %s(%s) : "
-					"SmartWrapper(%s_base::_create()) {\n"
+					"Object(%s_base::_create()) {\n"
 					"\t\t_cache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
 					"\t\tassert(_cache);\n"
 					"\t\t_cache->constructor(%s);\n\t}\n",
 					iname.c_str(), params.c_str(), iname.c_str(),
 					iname.c_str(), iname.c_str(), callparams.c_str());
 			} else {
-				fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
-					rc.c_str(),	md->name.c_str(), params.c_str(),
-					md->name.c_str(), callparams.c_str(), md->name.c_str(), callparams.c_str());
+					fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
+						rc.c_str(),	md->name.c_str(), params.c_str(),
+						md->name.c_str(), callparams.c_str(), md->name.c_str(), callparams.c_str());
 			}
 		}
 		fprintf(header,"};\n\n");
