@@ -27,6 +27,7 @@
 
 #include <kdebug.h>
 
+#include <kurl.h>
 #include <klocale.h>
 #include <klistbox.h>
 
@@ -70,7 +71,7 @@ QString RenderFormElement::encodeString( QString e )
     static const char *safe = "$-._!*(),"; /* RFC 1738 */
     unsigned pos = 0;
     QString encoded;
-    char buffer[5];
+    //char buffer[5];
 
     while ( pos < e.length() )
     {
@@ -94,8 +95,13 @@ QString RenderFormElement::encodeString( QString e )
         }
         else if ( c != '\r' )
         {
-            sprintf( buffer, "%%%02X", (int)c );
-            encoded += buffer;
+            // HACK! sprintf( buffer, "%%%02X", (int)c );
+            //       encoded += buffer;
+
+            // Instead of this hack, use KURL's method.
+            // For non-latin1 characters, the (int) cast can lead to wrong values.
+            // (even negative ones!) (David)
+            encoded += KURL::encode_string( QString(c) );
         }
         pos++;
     }
