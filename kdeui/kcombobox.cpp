@@ -197,7 +197,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
     if ( o == edit )
     {
-        KCursor::autoHideEventFilter( edit, ev );
+        if ( editable() )
+            KCursor::autoHideEventFilter( edit, ev );
 
         if ( type == QEvent::KeyPress )
         {
