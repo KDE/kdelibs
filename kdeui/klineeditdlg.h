@@ -41,11 +41,13 @@ public:
    * Create a dialog that asks for a single line of text. _value is the initial
    * value of the line. _text appears as label on top of the entry box.
    * 
+   * @param _text      Text of the label
+   * @param _value     Initial value of the inputline
    * @param _file_mode if set to TRUE, the editor widget will provide command
    *                   completion ( Ctrl-S and Ctrl-D ), and a browse button
    *                   for the local file system.
    */
-  KLineEditDlg( const QString&_text, const QString&_value, 
+  KLineEditDlg( const QString& _text, const QString& _value, 
 		QWidget *parent, bool _file_mode = FALSE );
   virtual ~KLineEditDlg();
 
