@@ -26,7 +26,7 @@
 
 class KURLCompletion;
 class KURLRequester;
-
+class KFileDialog;
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog
  * encapsulating @ref KURLRequester. The API is derived from
@@ -81,6 +81,8 @@ public:
      */
     static KURL getURL(const QString& url = QString::null,
             QWidget *parent= 0, const QString& caption = QString::null);
+    
+    KFileDialog * fileDialog();
 
 protected slots:
       void slotClear();

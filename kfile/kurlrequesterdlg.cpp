@@ -110,6 +110,10 @@ KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
     return url;
 }
 
+KFileDialog * KURLRequesterDlg::fileDialog()
+{
+    return urlRequester_->fileDialog();
+}
 
 #include "kurlrequesterdlg.moc"
 
