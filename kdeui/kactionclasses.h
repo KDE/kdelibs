@@ -1165,16 +1165,28 @@ public:
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
+     *  @param window the window that will switch to/from full screen mode
      *  @param name An internal name for this action.
      */
     KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
-                             QObject* parent, const char* name );
+                             QObject* parent, QWidget* window,
+                             const char* name );
     virtual ~KToggleFullScreenAction();
 
+    /**
+     * Sets the window that will be related to this action.
+     */
+    void setWindow( QWidget* window );
 public slots:
     virtual void setChecked( bool );
-
+protected:
+    /**
+     * @internal
+     */
+    virtual bool eventFilter( QObject* o, QEvent* e );
+private:
+    QWidget* window;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

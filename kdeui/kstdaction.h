@@ -20,6 +20,7 @@
 #define KSTDACTION_H
 
 class QObject;
+class QWidget;
 class KAction;
 class KActionCollection;
 class KRecentFilesAction;
@@ -511,7 +512,7 @@ namespace KStdAction
 	* @since 3.2
 	*/
 	KToggleAction *fullScreen(const QObject *recvr, const char *slot,
-					KActionCollection* parent, const char *name = 0 );
+					KActionCollection* parent, QWidget* window, const char *name = 0 );
 
 	/**
 	* Display the save options dialog.

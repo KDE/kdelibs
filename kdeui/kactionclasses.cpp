@@ -1899,13 +1899,25 @@ void KToggleToolBarAction::setChecked( bool c )
 
 KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut, 
                              const QObject* receiver, const char* slot,
-                             QObject* parent, const char* name )
-  : KToggleAction( QString::null, cut, receiver, slot, parent, name )
+                             QObject* parent, QWidget* window,
+                             const char* name )
+  : KToggleAction( QString::null, cut, receiver, slot, parent, name ),
+    window( NULL )
 {
+  setWindow( window );
 }
 
 KToggleFullScreenAction::~KToggleFullScreenAction()
 {
+}
+
+void KToggleFullScreenAction::setWindow( QWidget* w )
+{
+  if( window )
+    window->removeEventFilter( this );
+  window = w;
+  if( window )
+    window->installEventFilter( this );
 }
 
 void KToggleFullScreenAction::setChecked( bool c )
@@ -1921,6 +1933,15 @@ void KToggleFullScreenAction::setChecked( bool c )
      setIcon("window_fullscreen");
   }
   KToggleAction::setChecked( c );
+}
+
+bool KToggleFullScreenAction::eventFilter( QObject* o, QEvent* e )
+{
+    if( o == window )
+        if( e->type() == QEvent::ShowFullScreen || e->type() == QEvent::ShowNormal )
+            if( window->isFullScreen() != isChecked())
+                slotActivated(); // setChecked( window->isFullScreen()) wouldn't emit signals
+    return false;
 }
 
 ////////

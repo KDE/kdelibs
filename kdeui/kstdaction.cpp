@@ -100,7 +100,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 {
 			KToggleFullScreenAction *ret;
 			ret = new KToggleFullScreenAction( cut, recvr, slot,
-					parent, (name) ? name : pInfo->psName );
+					parent, NULL, (name) ? name : pInfo->psName );
 			ret->setChecked( false );
 			pAction = ret;
 			break;
@@ -260,8 +260,15 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
     return ret;
 }
 
-KToggleAction *fullScreen( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return static_cast<KToggleAction*>(KStdAction::create( FullScreen, name, recvr, slot, parent )); }
+KToggleAction *fullScreen( const QObject *recvr, const char *slot, KActionCollection* parent,
+    QWidget* window, const char *name )
+{
+    KToggleFullScreenAction *ret;
+    ret = static_cast< KToggleFullScreenAction* >( KStdAction::create( FullScreen, name, recvr, slot, parent ));
+    ret->setWindow( window );
+    return ret;
+}
+
 KAction *saveOptions( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( SaveOptions, name, recvr, slot, parent ); }
 KAction *keyBindings( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
