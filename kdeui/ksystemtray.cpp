@@ -75,11 +75,13 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     menu = new KPopupMenu( this );
     menu->insertTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
-    KAction* quitAction = KStdAction::quit(this, SIGNAL(quitSelected()), d->actionCollection);
+    KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 
     if (parentWidget())
     {
-        connect(quitAction, SIGNAL(activated()), parentWidget(), SLOT(close()));
+        // KDE4: stop closing the parent widget? it results in complex application code
+        //       instead make applications connect to the quitSelected() signal
+        connect(this, SIGNAL(quitSelected()), parentWidget(), SLOT(close()));
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
@@ -92,7 +94,6 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     }
     else
     {
-        connect(quitAction, SIGNAL(activated()), SLOT(confirmQuit()));
         d->on_all_desktops = false;
     }
     setCaption( KGlobal::instance()->aboutData()->programName());
@@ -186,21 +187,26 @@ void KSystemTray::minimizeRestoreAction()
     }
 }
 
-bool KSystemTray::confirmQuit()
+void KSystemTray::maybeQuit()
 {
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>")
                         .arg(kapp->caption());
-    return KMessageBox::warningContinueCancel(this, query,
+    if (KMessageBox::warningContinueCancel(this, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStdGuiItem::quit(),
                                      QString("systemtrayquit%1")
-                                            .arg(kapp->caption())) ==
-           KMessageBox::Continue;
-}
+                                            .arg(kapp->caption())) !=
+        KMessageBox::Continue)
+    {
+        return;
+    }
 
-void KSystemTray::maybeQuit()
-{
-    if (confirmQuit())
+    if (parentWidget())
+    {
+        emit quitSelected();
+        parentWidget()->close();
+    }
+    else
     {
         qApp->closeAllWindows();
     }

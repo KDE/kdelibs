@@ -119,34 +119,6 @@ public:
      */
     static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
-    /**
-       A convenience function to use when a quit is launched from the system tray. Provides
-       a consistent set of verbage for the user and should be used by all system tray using
-       apps for this consistency.
-
-       If your application doesn't have a quit confirmation (e.g. it isn't an editor with a
-       "Save this file?" confirmation), you should use this confirmQuit() whenever the 
-       quit option is requested via the system tray icon, as shown below:
-       \code
-       connect(m_systemTray, SIGNAL(quitSelected()), SLOT(systemTrayQuit()));
-       \endcode
-       then implement your systemTrayQuit() function as shown below:
-       \code
-       void MyCoolApp::systemTrayQuit()
-       {
-           if (m_systemTray->confirmQuit())
-	   {
-	       kapp->closeAllWindows(); // or however your app closes
-	   }
-       }
-       \endcode
-
-       @return returns true if the user confirms the quit, or false if they cancel it
-
-       @since 3.4
-     */
-    bool confirmQuit();
-
 signals:
     /**
       Emitted when quit is selected in the menu. If you want to perform any other
