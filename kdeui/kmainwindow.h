@@ -453,7 +453,10 @@ public:
      * @param config Config file to read the settings from.
      * @param groupName Group name to use. If not specified, the last used
      * group name is used.
+     * @param force if set, even default settings are re-applied
      */
+    void applyMainWindowSettings(KConfig *config, const QString &groupName, bool force);
+    // KDE4 merge with force=false
     void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
 
     /**

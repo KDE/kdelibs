@@ -762,6 +762,11 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup)
 {
+    return applyMainWindowSettings(config,configGroup,false);
+}
+
+void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup,bool force)
+{
     kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
     if (!configGroup.isEmpty())
        config->setGroup(configGroup);
@@ -803,7 +808,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        toolbar->applySettings(config, group);
+        toolbar->applySettings(config, group, force);
         n++;
     }
 

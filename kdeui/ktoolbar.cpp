@@ -1604,6 +1604,11 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 {
+    return applySettings(config,_configGroup,false);
+}
+
+void KToolBar::applySettings(KConfig *config, const QString &_configGroup,bool force)
+{
     //kdDebug(220) << name() << " applySettings group=" << _configGroup << endl;
 
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
@@ -1626,7 +1631,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     applyAppearanceSettings( config, configGroup );
 
     // ...and now the position stuff
-    if ( config->hasGroup(configGroup) )
+    if ( config->hasGroup(configGroup) || force )
     {
         KConfigGroupSaver cgs(config, configGroup);
 

@@ -901,8 +901,10 @@ public:
 
   /**
    * Read the toolbar settings from group @p configGroup in @p config
-   * and apply them.
+   * and apply them. Even default settings are re-applied if @p force is set.
    */
+    void applySettings(KConfig *config, const QString &configGroup,bool force);
+    // KDE4 merge with force=false
     void applySettings(KConfig *config, const QString &configGroup);
 
   /*
