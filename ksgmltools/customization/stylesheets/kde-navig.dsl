@@ -2,6 +2,13 @@
 ;; For licensing, documentation etc, refer to that application
 ;; This file should not be distributed outside ksgmltools
 
+; The model is the following:
+; html-body-start
+; user-header-navigation
+; html-body-content-start
+; and vice versa for footers
+; predefined navigation can be switched off with %header-navigation%
+
 ; Redefined from html/dbnavig.dsl
 ; What: more things in header table (only table+ and ff-)
 ; Why: extra table would? not work, since we don't want whitespace in between them
@@ -21,7 +28,7 @@
 				(make empty-element gi: "IMG"
 				      attributes: (list
 						   (list "SRC" (string-append %kde-doc-common-path% "doctop1.png"))
-						   (list "ALT" "Light bulb")
+						   (list "ALT" "")
 						   (list "WIDTH" "150")
 						   (list "HEIGHT" navbar-height))))
 			  (make element gi: "TD"
@@ -81,7 +88,7 @@
 				      attributes: (list
 						   (list "WIDTH" "100%")
 						   (list "SRC" (string-append %kde-doc-common-path% "shadow.png"))
-						   (list "ALT" "Shadow")
+						   (list "ALT" "")
 						   (list "HEIGHT" "14"))))))))
     (if (or r1? r2?)
 	(make element gi: "TABLE"
@@ -183,7 +190,7 @@
 					(make empty-element gi: "IMG"
 					      attributes: (list 
 							   (list "SRC" (string-append %kde-doc-common-path% "bottom1.png"))
-							   (list "ALT" "Lines")
+							   (list "ALT" "")
 							   (list "HEIGHT" navbar-height))))
 				  (make element gi: "TD"
 					(make element gi: "A"
@@ -192,7 +199,7 @@
 					      (make empty-element gi: "IMG"
 						    attributes: (list
 								 (list "SRC" (string-append %kde-doc-common-path% "bottom2.png"))
-								 (list "ALT" "Bottom decoration")
+								 (list "ALT" "KDE Logo")
 								 (list "WIDTH" "227")
 								 (list "BORDER" "0")
 								 (list "HEIGHT" navbar-height))))))
