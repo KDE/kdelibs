@@ -56,7 +56,7 @@ namespace khtml
     class RenderStyle;
 
     /*
-     * to remember the source where a rule came from. Differntiates between
+     * to remember the source where a rule came from. Differentiates between
      * important and not important rules. This is ordered in the order they have to be applied
      * to the RenderStyle.
      */
@@ -73,7 +73,7 @@ namespace khtml
 
     /**
      * this class selects a RenderStyle for a given Element based on the
-     * collection of styleshets it contains. This is just a vrtual base class
+     * collection of stylesheets it contains. This is just a virtual base class
      * for specific implementations of the Selector. At the moment only CSSStyleSelector
      * exists, but someone may wish to implement XSL...
      */
@@ -237,7 +237,7 @@ public:
     /*
      * List of properties that get applied to the Element. We need to collect them first
      * and then apply them one by one, because we have to change the apply order.
-     * Some properties depend on other one already being applied (for example all properties spezifying
+     * Some properties depend on other one already being applied (for example all properties specifying
      * some length need to have already the correct font size. Same applies to color
      *
      * While sorting them, we have to take care not to mix up the original order.
