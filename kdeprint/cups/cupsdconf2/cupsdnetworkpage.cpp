@@ -64,7 +64,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	hostnamelookup_->insertItem(i18n("On"));
 	hostnamelookup_->insertItem(i18n("Double"));
 
-	QLabel *l1 = new QLabel(i18n("Hostname lookups:"), this);
+	QLabel *l1 = new QLabel(i18n("Host name lookups:"), this);
 	QLabel *l2 = new QLabel(i18n("Keep-alive timeout:"), this);
 	QLabel *l3 = new QLabel(i18n("Max clients:"), this);
 	QLabel *l4 = new QLabel(i18n("Max request size:"), this);

@@ -57,8 +57,8 @@
                 <cstring>listView</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>&lt;qt&gt;&lt;p&gt;Select one or more types of file that your application can handle here. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt; 
-&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;</string>
+                <string>&lt;qt&gt;&lt;p&gt;Select one or more types of file that your application can handle here. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on file name extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;</string>
             </property>
         </widget>
     </vbox>

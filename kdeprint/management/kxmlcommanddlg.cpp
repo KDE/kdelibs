@@ -320,11 +320,11 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	QWhatsThis::add( m_commandlab, QWhatsThis::textFor( m_command ) );
 	QWhatsThis::add( m_inputfile, i18n(
 				"Input specification when the underlying utility reads input data from a file. Use "
-				"the tag <b>%in</b> to represent the input filename." ) );
+				"the tag <b>%in</b> to represent the input file name." ) );
 	QWhatsThis::add( m_inputfilelab, QWhatsThis::textFor( m_inputfile ) );
 	QWhatsThis::add( m_outputfile, i18n(
 				"Output specification when the underlying utility writes output data to a file. Use "
-				"the tag <b>%out</b> to represent the output filename." ) );
+				"the tag <b>%out</b> to represent the output file name." ) );
 	QWhatsThis::add( m_outputfilelab, QWhatsThis::textFor( m_outputfile ) );
 	QWhatsThis::add( m_inputpipe, i18n(
 				"Input specification when the underlying utility reads input data from its "

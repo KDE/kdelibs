@@ -4878,7 +4878,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
     if ( !m_state.user.isEmpty() )
       info.username = m_state.user;
     info.readOnly = !m_request.url.user().isEmpty();
-    info.prompt = i18n( "You need to supply a username and a "
+    info.prompt = i18n( "You need to supply a user name and a "
                         "password to access this site." );
     info.keepPassword = true; // Prompt the user for persistence as well.
     if ( !m_strRealm.isEmpty() )
@@ -4894,7 +4894,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
   {
     info.url = m_proxyURL;
     info.username = m_proxyURL.user();
-    info.prompt = i18n( "You need to supply a username and a password for "
+    info.prompt = i18n( "You need to supply a user name and a password for "
                         "the proxy server listed below before you are allowed "
                         "to access any sites." );
     info.keepPassword = true;

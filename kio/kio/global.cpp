@@ -1047,7 +1047,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "An unknown host error indicates that the requested name could not be "
         "located on the Internet." ).arg( errorText );
       causes << i18n( "There may have been a problem with your network "
-        "configuration, specifically your proxy's hostname. If you have been "
+        "configuration, specifically your proxy's host name. If you have been "
         "accessing the Internet with no problems recently, this is unlikely." )
         << cNetwork;
       solutions << i18n( "Double-check your proxy settings and try again." )
@@ -1189,7 +1189,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Source and Destination Files Identical" );
       description = i18n( "The operation could not be completed because the "
         "source and destination files are the same file." );
-      solutions << i18n( "Choose a different filename for the destination file." );
+      solutions << i18n( "Choose a different file name for the destination file." );
       break;
 
     // We assume that the slave has all the details

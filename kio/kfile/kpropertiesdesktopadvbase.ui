@@ -131,7 +131,7 @@
                         <cstring>suidEditLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>&amp;Username:</string>
+                        <string>&amp;User name:</string>
                     </property>
                     <property name="buddy" stdset="0">
                         <cstring>suidEdit</cstring>

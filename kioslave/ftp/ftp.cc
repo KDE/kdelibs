@@ -592,7 +592,7 @@ bool Ftp::ftpLogin()
       if ( user != FTP_LOGIN )
         info.username = user;
 
-      info.prompt = i18n("You need to supply a username and a password "
+      info.prompt = i18n("You need to supply a user name and a password "
                           "to access this site.");
       info.commentLabel = i18n( "Site:" );
       info.comment = i18n("<b>%1</b>").arg( m_host );
@@ -661,7 +661,7 @@ bool Ftp::ftpLogin()
   infoMessage( i18n("Login OK") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
-  // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
+  // Thanks to jk@soegaard.net (Jens Kristian Sgaard) for this hint
   if( ftpSendCmd("syst") && (m_iRespType == 2) )
   {
     if( !strncmp( ftpResponse(0), "215 Windows_NT", 14 ) ) // should do for any version

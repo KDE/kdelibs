@@ -329,7 +329,7 @@ void HelpProtocol::emitFile( const KURL& url )
             return;
         }
 
-        unicodeError( i18n("Could not find filename %1 in %2.").arg(filename).arg( url.url() ) );
+        unicodeError( i18n("Could not find file name %1 in %2.").arg(filename).arg( url.url() ) );
         return;
     }
 

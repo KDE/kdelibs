@@ -48,7 +48,7 @@
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
-&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on file name extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
@@ -91,7 +91,7 @@
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt;
-&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
+&lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on file name extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>

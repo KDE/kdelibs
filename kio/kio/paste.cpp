@@ -41,7 +41,7 @@ static KURL getNewFileName( const KURL &u, const QString& text )
   bool ok;
   QString dialogText( text );
   if ( dialogText.isEmpty() )
-    dialogText = i18n( "Filename for clipboard content:" );
+    dialogText = i18n( "File name for clipboard content:" );
   QString file = KInputDialog::getText( QString::null, dialogText, QString::null, &ok );
   if ( !ok ) 
      return KURL();

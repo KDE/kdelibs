@@ -85,7 +85,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 	m_extension = new QLineEdit(m_outfile_gb);
 
-	QLabel	*m_extensionlabel = new QLabel(i18n("Filename e&xtension:"), m_outfile_gb);
+	QLabel	*m_extensionlabel = new QLabel(i18n("File name e&xtension:"), m_outfile_gb);
 	m_extensionlabel->setBuddy(m_extension);
 
 	m_icon = new KIconButton(dummy);

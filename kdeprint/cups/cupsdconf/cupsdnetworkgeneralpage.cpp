@@ -40,7 +40,7 @@ CupsdNetworkGeneralPage::CupsdNetworkGeneralPage(QWidget *parent, const char *na
 		opt_[i] = new CupsdOption(this);
 
 	port_ = new CupsListBox(opt_[0]);
-	hostnamelookups_ = new QCheckBox(i18n("Look for hostname on IP addresses"), opt_[1]);
+	hostnamelookups_ = new QCheckBox(i18n("Look for host name on IP addresses"), opt_[1]);
 	maxrequestsize_ = new QLineEdit(opt_[2]);
 	timeout_ = new QLineEdit(opt_[3]);
 
