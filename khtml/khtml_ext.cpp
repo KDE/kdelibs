@@ -141,7 +141,7 @@ void KHTMLPartBrowserExtension::cut()
     }
 
     if ( !m_editableFormWidget )
-        return; // shouldn't happen
+        return;
 
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->cut();
@@ -185,7 +185,7 @@ void KHTMLPartBrowserExtension::paste()
     }
 
     if ( !m_editableFormWidget )
-        return; // shouldn't happen
+        return;
 
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
