@@ -38,7 +38,7 @@
 #include <qmessagebox.h>
         
 KCookieWin::KCookieWin(QWidget *parent, KCookie *_cookie) :
-    KDialogBase( "Cookie Alert", KDialogBase::Yes | KDialogBase::No,
+    KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
 		 KDialogBase::Yes, KDialogBase::No, 
 		 parent, 
 		 "cookiealert", true, true,

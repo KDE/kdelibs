@@ -42,6 +42,7 @@ static const KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
+   KLocale::setMainCatalogue("kdelibs");
    KCmdLineArgs::init(argc, argv, "kcookiejar", description, version);
 
    KCmdLineArgs::addCmdLineOptions( options );
