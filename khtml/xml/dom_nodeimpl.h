@@ -151,11 +151,11 @@ public:
     struct MouseEvent
     {
         MouseEvent( int _button, MouseEventType _type,
-                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _urlHandling = true, bool _noHref = false )
+                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _noHref = false )
             {
                 button = _button; type = _type;
                 url = _url;
-                innerNode = _innerNode; urlHandling = _urlHandling;
+                innerNode = _innerNode; 
                 currentZIndex = -1;
                 zIndex = -1;
                 noHref = _noHref;
@@ -167,7 +167,6 @@ public:
         Node innerNode;
         int zIndex; // used to select the one most on top
         int currentZIndex; // temporary variable to avoid passing a param around
-        bool urlHandling; // specify whether the part should handle the url or not
         bool noHref; // whether anchor should be blocked by a map element
         int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
     };
