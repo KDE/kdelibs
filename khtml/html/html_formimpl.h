@@ -441,6 +441,8 @@ public:
 
 class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
 {
+    friend class khtml::RenderSelect;
+    
 public:
     HTMLOptionElementImpl(DocumentPtr *doc);
     HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
