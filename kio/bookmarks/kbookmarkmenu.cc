@@ -827,7 +827,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   if ( !folder )
     m_fields->setLocation(url);
 
-  if ( !folder )
+  if ( editType == InsertionMode )
   {
     m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
     connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ),
