@@ -297,6 +297,13 @@ int main()
 	}
     }
 
+    /* Don't do session management with kdesu apps. I think this is the
+     * best thing to do. I would be potentially insecure, it is unclear to
+     * me how the app can ever know its restart command and it would require 
+     * the user to enter passwords at startup of a session. */
+
+     xsetenv("SESSION_MANAGER", "none");
+
     /* Rebuild ksycoca */
 
     if (strcmp(params[P_SYCOCA].value, "no") && system("kded --check"))
