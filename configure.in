@@ -38,7 +38,7 @@ dnl Checks for header files.
 KDE_CHECK_STL
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h socketbits.h sigaction.h paths.h malloc.h monetary.h sys/param.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h socketbits.h sigaction.h paths.h malloc.h monetary.h sys/param.h limits.h sys/mnttab.h mntent.h)
 
 dnl Checks for libraries.
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
@@ -79,7 +79,7 @@ AC_CHECK_BOOL
 dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp)
+AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp setmntent)
 AC_FUNC_VFORK
 AC_CHECK_USLEEP
 AC_CHECK_SETENV
@@ -88,6 +88,29 @@ AC_CHECK_GETHOSTNAME
 AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
+
+AC_MSG_CHECKING([for mount tab file])
+AC_CACHE_VAL(kde_cv_mtab_file,
+[
+    kde_cv_mtab_file=no
+
+    for ac_file in    \
+                      \
+        /etc/mtab \
+        /etc/mnttab \
+     ; \
+    do
+    if test -r "$ac_file"; then
+       kde_cv_mtab_file=$ac_file
+       break
+    fi
+    done
+])
+
+AC_MSG_RESULT($kde_cv_mtab_file)
+if test "$kde_cv_mtab_file" != "no"; then
+    AC_DEFINE_UNQUOTED(MTAB_FILE, "$kde_cv_mtab_file", [Define the file for mount entries])
+fi
 
 if test -n "$qt_includes"; then
   QNAMESPACE_H="$qt_includes/qnamespace.h"
