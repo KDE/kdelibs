@@ -887,7 +887,10 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 
 QString KMCupsManager::stateInformation()
 {
-	return i18n("Connected to %1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+	return QString("%1: %2:%3")
+		.arg(i18n("Server"))
+		.arg(CupsInfos::self()->host())
+		.arg(CupsInfos::self()->port());
 }
 
 void KMCupsManager::checkUpdatePossibleInternal()

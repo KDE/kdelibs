@@ -58,6 +58,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>
+#include <kmessagebox.h>
 
 KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMUiManager(parent,name)
@@ -162,6 +163,11 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 		backend->enableBackend(KMWizard::Class, true);
 		backend->enableBackend(KMWizard::Custom+5, true);
 	}
+	else
+		KMessageBox::error(wizard,
+			"<qt><nobr>" +
+			i18n("An error occured while retrieving the list of available backends:") +
+			"</nobr><br><br>" + req.statusMessage() + "</qt>");
 
 	// banners page
 	wizard->addPage(new KMWBanners(wizard));
