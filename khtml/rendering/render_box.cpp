@@ -284,23 +284,25 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
 {
     int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
     int clipw = m_width-bl-br;
-
-    int clipleft = 0;
-    int clipright = 0;
-    int cliptop = 0;
-    int clipbottom = 0;
+    int cliph = m_height-bt-bb;
 
     bool rtl = (style()->direction() == RTL);
 
+    int clipleft = rtl ? clipw : 0;
+    int clipright = rtl ? 0 : clipw;
+    int cliptop = 0;
+    int clipbottom = m_height-bt-bb;
+
+
     if (!style()->clipLeft().isVariable()) {
-        int c = style()->clipLeft().width(m_width-bl-br);
+        int c = style()->clipLeft().width(clipw);
 	if ( rtl )
 	    clipleft = clipw - c;
 	else
 	    clipleft = c;
     }
     if (!style()->clipRight().isVariable()) {
-	int w = style()->clipRight().width(m_width-bl-br);
+	int w = style()->clipRight().width(clipw);
 	if ( rtl ) {
 	    clipright = clipw - w;
 	} else {
@@ -308,16 +310,15 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
 	}
     }
     if (!style()->clipTop().isVariable())
-        cliptop = style()->clipTop().width(m_height-bt-bb);
+        cliptop = style()->clipTop().width(cliph);
     if (!style()->clipBottom().isVariable())
-	clipbottom = style()->clipBottom().width(m_height-bt-bb);
+	clipbottom = style()->clipBottom().width(cliph);
 
     int clipx = tx+bl + clipleft;
     int clipy = ty+bt + cliptop;
     clipw = clipright-clipleft;
-    int cliph = clipbottom-cliptop;
+    cliph = clipbottom-cliptop;
 
-//     kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
 
     QRect cr(clipx,clipy,clipw,cliph);
     cr = p->xForm(cr);
@@ -325,6 +326,13 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     QRegion old = p->clipRegion();
     if (!old.isNull())
         creg = old.intersect(creg);
+
+#ifdef CLIP_DEBUG
+    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
+    p->setPen(QPen(Qt::red, 1, Qt::DotLine));
+    p->setBrush( Qt::NoBrush );
+    p->drawRect(clipx, clipy, clipw, cliph);
+#endif
 
     p->save();
     p->setClipRegion(creg);
