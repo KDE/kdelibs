@@ -342,7 +342,7 @@ Z &RArray<Z>::operator[](int index) {
 	sz = index + 1;
 
 	// delete old data and reassign
-	delete d;
+	delete [] d;
 	d = newdata;
     }
 
