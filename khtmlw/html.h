@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1204		// 00.12.04
+#define KHTMLW_VERSION  1205		// 00.12.05
 
 #include <qpainter.h>
 #include <qstrlist.h>

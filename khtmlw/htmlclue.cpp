@@ -1871,7 +1871,10 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     HTMLClue::calcSize( this );
     
     HTMLObject *obj;
-    int lmargin = parent->getLeftMargin( getYPos() );
+    int lmargin = 0;
+    
+    if ( parent )
+	lmargin = parent->getLeftMargin( getYPos() );
 
     width = lmargin + indent;
     descent = 0;
@@ -2007,7 +2010,7 @@ void HTMLClueFlow::getSelectedText( QString &_str )
 // 
 void HTMLClueFlow::calcSize( HTMLClue *parent )
 {
-    HTMLClue::calcSize( this );
+//    HTMLClue::calcSize( this );
 
     HTMLObject *obj = head;
     HTMLObject *line = head;
@@ -2065,6 +2068,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	// taken into account in subsequent get*Margin() calls.
 	else if ( obj->isAligned() )
 	{
+	    obj->calcSize();
 	    HTMLClueAligned *c = (HTMLClueAligned *)obj;
 	    if ( c->getHAlign() == Left )
 		    parent->appendLeftAligned( c );
@@ -2098,6 +2102,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    while ( run && !run->isSeparator() && !run->isNewline() &&
 		    !run->isAligned() )
 	    {
+		run->setMaxWidth( rmargin - lmargin );
+		run->calcSize();
 		runWidth += run->getWidth();
 		run = run->next();
 	    }

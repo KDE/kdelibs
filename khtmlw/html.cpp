@@ -2713,9 +2713,11 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 	    listLevel = listStack.count();
 	    indentSize = indent;
 	}
+	HTMLClueFlow *f = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	_clue->append( f );
 	HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 	c->setVAlign( HTMLClue::Top );
-	_clue->append( c );
+	f->append( c );
 
 	// fixed width spacer
 	HTMLClueV *vc = new HTMLClueV( 0, 0, indentSize, 0 );
@@ -2819,7 +2821,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
                 QString name;
 		QString content;
 		debugM("Parsing <META>: %s\n",str);
-		stringTok->tokenize( str + 4, " >" );
+		stringTok->tokenize( str + 5, " >" );
 		while ( stringTok->hasMoreTokens() )
 	   	{
 			const char* token = stringTok->nextToken();
@@ -2834,7 +2836,8 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		}
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
-		if ( strcasecmp(httpequiv,"content-type") == 0)
+		if ( !httpequiv.isEmpty() &&
+		    strcasecmp(httpequiv,"content-type") == 0)
 		{
 			stringTok->tokenize( content, " >;" );
 			while ( stringTok->hasMoreTokens() )

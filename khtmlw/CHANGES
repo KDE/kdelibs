@@ -1,7 +1,16 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 01 December 1997 - Martin Jones.
+Last Change: 03 December 1997 - Martin Jones.
+
+
+Version 0.12.05
+---------------
+
+Fix <meta
+Make HTMLClueFlow::calcSize() call setMaxWidth for each object in case aligned
+ objects have changed the margins.
+ 
 
 Version 0.12.04
 ---------------
