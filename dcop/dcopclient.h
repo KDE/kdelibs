@@ -515,6 +515,15 @@ class DCOPClient : public QObject
   static void emergencyClose();
 
   /**
+    * @internal Do not use.
+    *
+    * Provides information about the last DCOP call for debugging purposes.
+    */ 
+  static const char *postMortemSender();
+  static const char *postMortemObject();
+  static const char *postMortemFunction();
+
+  /**
     * File with information how to reach the dcopserver.
     * @param hostname Hostname to use, if empty current hostname of
     * the system is used.

@@ -142,6 +142,8 @@ public:
     bool registered;
 
     QCString senderId;
+    QCString objId;
+    QCString function;
 
     QCString defaultObject;
     QPtrList<DCOPClientTransaction> *transactionList;
@@ -368,6 +370,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     QByteArray data;
     ds >> fromApp >> app >> objId >> fun >> data;
     d->senderId = fromApp;
+    d->objId = objId;
+    d->function = fun;
 
     if ( canPost && d->currentKey && key != d->currentKey ) {
 	DCOPClientMessage* msg = new DCOPClientMessage;
@@ -379,6 +383,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 	return;
     }
 
+    d->objId = objId;
+    d->function = fun;
 
     QCString replyType;
     QByteArray replyData;
@@ -1719,6 +1725,28 @@ DCOPClient::emergencyClose()
     }
 }
 
+const char *
+DCOPClient::postMortemSender()
+{
+   if (!dcop_main_client)
+      return "";
+   return dcop_main_client->d->senderId.data();
+}
+
+const char *
+DCOPClient::postMortemObject()
+{
+   if (!dcop_main_client)
+      return "";
+   return dcop_main_client->d->objId.data();
+}
+const char *
+DCOPClient::postMortemFunction()
+{
+   if (!dcop_main_client)
+      return "";
+   return dcop_main_client->d->function.data();
+}
 
 #include <dcopclient.moc>
 
