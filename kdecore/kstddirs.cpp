@@ -24,6 +24,12 @@
 
 #include "kstddirs.h"
 #include "kglobal.h"
+#include <kconfig.h>
+
+static const char* types[] = {"html", "icon", "mini", "apps", "sound",
+			      "data", "locale", "services", "mime",
+			      "servicetypes", "cgi", "config", "exe",
+			      "toolbar", "wallpaper", "lib", 0};
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -434,10 +440,6 @@ void KStandardDirs::addKDEDefaults()
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
 
-    const char* types[] = {"html", "icon", "mini", "apps", "sound",
-			   "data", "locale", "services", "mime",
-			   "servicetypes", "cgi", "config", "exe",
-			   "toolbar", "wallpaper", "lib", 0};
 
     uint index = 0;
     while (types[index] != 0) {
@@ -445,6 +447,25 @@ void KStandardDirs::addKDEDefaults()
 	index++;
     }
     
+}
+
+void KStandardDirs::addCustomized(KConfig *config)
+{
+    KConfigGroupSaver(config, "Directories");
+    QStringList list;
+    QStringList::ConstIterator it;
+    list = config->readListEntry("prefixes");
+    for (it = list.begin(); it != list.end(); it++)
+	addPrefix(*it);
+    QMap<QString, QString> entries = config->entryMap("Directories");
+    QMap<QString, QString>::ConstIterator it2;
+    for (it2 = entries.begin(); it2 != entries.end(); it2++) {
+	QString key = it2.key();
+	if (key.left(4) == "dir_") {
+	    addResourceDir(key.mid(5, key.length()), it2.data());
+	    debug("adding custom dir %s", it2.data().ascii());
+	}
+    }
 }
 
 QString KStandardDirs::localkdedir() const

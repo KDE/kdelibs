@@ -10,6 +10,8 @@
 #include <qdict.h>
 #include <qstringlist.h>
 
+class KConfig;
+
 /**
 * Site-independent access to standard KDE directories.
 *
@@ -213,6 +215,11 @@ public:
 	 */
 	void addKDEDefaults();
 
+	/**
+	 * Reads customized entries out of the given config object and adds
+	 * them via addResourceDirs
+	 **/
+	void addCustomized(KConfig *config);
 
 	/**
 	 * returns the list of possible directories for the type 

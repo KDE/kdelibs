@@ -71,6 +71,8 @@ protected:
 	static void freeAll();
 
 	static bool newAppConfig();
+	static bool addedConfig;
+
 };
 
 #endif // SSK_KGLOBAL_H
