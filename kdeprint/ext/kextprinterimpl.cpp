@@ -42,23 +42,15 @@ void KExtPrinterImpl::preparePrinting(KPrinter *printer)
 
 bool KExtPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 {
-	QStringList	args = QStringList::split(QRegExp("\\s"),printer->option("kde-printcommand"),false);
-	if (args.count() == 0)
+	QString	cmd = printer->option("kde-printcommand").stripWhiteSpace();
+	if (cmd.isEmpty())
 	{
 		printer->setErrorMessage(i18n("Empty print command."));
 		return false;
 	}
-	QString	exe = KStandardDirs::findExe(args[0]);
-	if (exe.isEmpty())
-	{
-		printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.").arg(args[0]));
-		return false;
-	}
-	args[0] = exe;
 
-	KPrintProcess	*proc = new KPrintProcess;
+	KPrintProcess	*proc = new KPrintProcess(true);
 	// add command line
-	for (QStringList::ConstIterator it=args.begin(); it!=args.end(); ++it)
-		*proc << *it;
+	*proc << cmd;
 	return startPrinting(proc,printer,files);
 }

@@ -22,11 +22,11 @@
 
 #include <kprocess.h>
 
-class KPrintProcess : public KProcess
+class KPrintProcess : public KShellProcess
 {
 	Q_OBJECT
 public:
-	KPrintProcess();
+	KPrintProcess(bool useShell = false);
 	~KPrintProcess();
 
 	bool print();
@@ -37,6 +37,7 @@ protected slots:
 
 private:
 	QString	m_buffer;
+	bool	m_shell;
 };
 
 #endif
