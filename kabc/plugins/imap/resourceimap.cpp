@@ -81,7 +81,7 @@ Ticket * ResourceIMAP::requestSaveTicket()
   if ( !dcopClient->call( "kmail", "KMailIface",
                           "lockContactsFolder()", QByteArray(),
                           returnType, returnData, true ) ) {
-    return false;
+    return 0;
   }
   Q_ASSERT( returnType == "bool" );
   QDataStream argIn( returnData, IO_ReadOnly );
