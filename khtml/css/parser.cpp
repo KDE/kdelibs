@@ -101,7 +101,7 @@ using namespace DOM;
 #include "cssproperties.c"
 #include "cssvalues.c"
 
-inline int DOM::getPropertyID(const char *tagStr, int len)
+int DOM::getPropertyID(const char *tagStr, int len)
 {
     const struct props *propsPtr = findProp(tagStr, len);
     if (!propsPtr)
