@@ -1,0 +1,2 @@
+dnl don't remove
+dnl AC_OUTPUT(dcop/dcop-path.h)

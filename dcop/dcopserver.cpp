@@ -56,6 +56,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopsignals.h>
 #include <dcopglobal.h>
 #include <dcopclient.h>
+#include "dcop-path.h"
 
 // We don't do tcp in the first place.
 // #define HAVE_KDE_ICETRANSNOLISTEN 1
@@ -74,6 +75,26 @@ template class QPtrList<DCOPListener>;
    fcntl(fd, F_SETFL, fd_fl);		
 
 static bool only_local = false;
+
+static QCString findDcopserverShutdown()
+{
+   QCString path = getenv("PATH");
+   char *dir = strtok(path.data(), ":");
+   while (dir)
+   {
+      QCString file = dir;
+      file += "/dcopserver_shutdown";
+      if (access(file.data(), X_OK) == 0)
+         return file;
+      dir = strtok(NULL, ":");
+   }
+   QCString file = DCOP_PATH;
+   file += "/dcopserver_shutdown";
+   if (access(file.data(), X_OK) == 0)
+      return file;
+
+   return QCString("dcopserver_shutdown");
+}
 
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
@@ -1025,7 +1046,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 
 DCOPServer::~DCOPServer()
 {
-    system("dcopserver_shutdown --nokill");
+    system(findDcopserverShutdown()+" --nokill");
     IceFreeListenObjs(numTransports, listenObjs);
     FreeAuthenticationData(numTransports, authDataEntries);
     delete dcopSignals;
@@ -1576,7 +1597,7 @@ int main( int argc, char* argv[] )
                }
             }
             qWarning("DCOPServer self-test failed.");
-            system("dcopserver_shutdown --kill");
+            system(findDcopserverShutdown()+" --kill");
             return 1;
 	}
 	close(ready[0]);

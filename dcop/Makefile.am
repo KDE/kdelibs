@@ -34,7 +34,7 @@ libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 5:0:1 -no-undefined $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h kdatastream.h
-noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h
+noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h dcop-path.h
 
 # we don't use AUTO here, because dcop-doc.h would be mocified (it contains
 # Q_OBJECT), and this would give an ugly warning
