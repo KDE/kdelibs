@@ -146,6 +146,14 @@ public:
   static void getFontList( QStringList &list, const char *pattern );
 
   /**
+   * Create a list of font strings.
+   * 
+   * @param list The list is returned here.
+   * @param fixed Flag, when true only fixed fonts are returned.
+   */
+  static void getFontList( QStringList &list, bool fixed );
+
+  /**
    * Reimplemented for internal reasons.
    */
   virtual QSize sizeHint( void ) const;
@@ -167,7 +175,6 @@ signals:
 private:
   void fillFamilyListBox(bool onlyFixedFonts = false);
   void fillCharsetsCombo();
-  void getFontList( QStringList &list, bool fixed );
   // This one must be static since getFontList( QStringList, char*) is so
   static void addFont( QStringList &list, const char *xfont );
 
