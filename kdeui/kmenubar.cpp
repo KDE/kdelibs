@@ -106,6 +106,12 @@ bool KMenuBar::isTopLevelMenu() const
   return d->topLevel;
 }
 
+void KMenuBar::show()
+{
+    if ( !isVisible() )
+	QMenuBar::show();
+}
+
 void KMenuBar::slotReadConfig()
 {
   static const QString &grpKDE = KGlobal::staticQString("KDE");
