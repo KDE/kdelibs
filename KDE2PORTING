@@ -348,32 +348,14 @@ Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
 /////////////////////////////////////////////////////////////////////////
 // * KMsgBox
 
-KMsgBox has been superceded by QMessageBox.  Most of the original
-concerns with QMessageBox which lead to KMsgBox's creation have been
-resolved in Qt 2.0.  Here are the things you need to be concerned with
-when porting:
+KMsgBox has been superceded by QMessageBox. Which has been superceded
+by KMessageBox.
 
 - KMsgBox had return codes starting with 1 for the first button, 2 for
-  the second, and so on.  QMessageBox is 0-based, and thus the first
-  button will have a return code of 0.
-- Do not use QMessageBox::message.  It is deprecated.  Use
-  QMessageBox::information for bits of information, QMessageBox::warning when
-  something has failed but the program will continue to work fine, and
-  as a last resort, use QMessageBox::critical when very bad errors have
-  occurred.
-- You cannot rely on QMessageBox to i18n text for the buttons.  Therefore,
-  a simple information text box with an OK button should be coded as
-  follows:
-
-  QMessageBox::information(this, i18n("Information"),
-	 	i18n("This is the text that will appear"
-		     " in the message box."), i18n("&OK"));
-- Please note too that it's recommended to use kapp->getCaption as second
-  argument
-
-NEW: you should now also use KMessageBox as a replacement for KMsgBox
-directly.  It is a thin wrapper on top of QMessageBox that provides
-default i18n'ed text and some other convenience features.
+  the second, and so on.  KMessageBox defines an enum which you should
+  use instead.
+- Please note that you shouldn't add the name of your applicarion
+  to the caption argument. It is already added automatically.
 
 ////////////////////////////////////////////////////////////////////////
 // * KCombo
