@@ -123,8 +123,61 @@ Some explanation for those keys:
 4. The Pluginselector
 ---------------------
 
+There are two ways to use the KPluginSelector widget. One is to use the class
+directly and the second to use KSettings::PluginPage as baseclass for a config
+page that shows the KPluginSelector widget.
+
+I'll cover the second usage here and the calls to addPlugins are just the same
+for the first.
+
+To create a plugin page you need the following code:
+
+typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
+K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
+
+MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
+    : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
+{
+    pluginSelector()->addPlugins( ... );
+    pluginSelector()->addPlugins( ... );
+    .
+    .
+    .
+}
+
+pluginSelector() returns a pointer to the KPluginSelector widget of the page.
+There are three addPlugins methods available, two for adding KParts plugins and
+one for the rest.
+
 
 5. The .desktop files of plugin config pages
 --------------------------------------------
+
+this is the entry for the Makefile.am:
+
+myappconfigpagedir = $(kde_services)/ksettings
+myappconfigpage_DATA = myappconfigpage.desktop
+
+
+And this is what the .desktop file looks like:
+
+[Desktop Entry]
+.
+.
+.
+
+
+6. The .setdlg file for hierarchical (TreeList) page layouts
+------------------------------------------------------------
+
+The file should be installed in apps/<appname>/<appname>.setdlg. If third party
+plugins need to merge in they will install the file to
+apps/<appname>/ksettingsdialog/<pluginname>.setdlg.
+
+[id]
+Name=
+Comment=
+Weight=
+Parent=
 
 # vim: tw=80

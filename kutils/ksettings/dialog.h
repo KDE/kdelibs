@@ -169,7 +169,9 @@ class Dialog : public QObject
     private:
         bool isPluginForKCMEnabled( KCModuleInfo * ) const;
         QValueList<KService::Ptr> instanceServices() const;
-        QValueList<KService::Ptr> parentComponentsServices( const QStringList & ) const;
+        QValueList<KService::Ptr> parentComponentsServices(
+                const QStringList & ) const;
+        void parseGroupFile( const QString & );
         void createDialogFromServices();
         class DialogPrivate;
         DialogPrivate * d;

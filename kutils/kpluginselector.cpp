@@ -212,7 +212,10 @@ QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
     }
     // add the KCM to the list so that we can call load/save/defaults on it
     d->modulelist.append( module );
-    d->moduleParentComponents.insert( module, new QStringList( moduleinfo.parentComponents() ) );
+    QStringList * parentComponents = new QStringList(
+            moduleinfo.service()->property(
+                "X-KDE-ParentComponents" ).toStringList() );
+    d->moduleParentComponents.insert( module, parentComponents );
     connect( module, SIGNAL( changed( bool ) ), SLOT( clientChanged( bool ) ) );
     return module;
 }
@@ -429,6 +432,7 @@ class KPluginSelector::KPluginSelectorPrivate
             : frame( 0 )
             , tabwidget( 0 )
             , widgetstack( 0 )
+            , hideconfigpage( false )
             {
             }
 
@@ -436,6 +440,7 @@ class KPluginSelector::KPluginSelectorPrivate
         KTabWidget * tabwidget;
         QWidgetStack * widgetstack;
         QValueList<KPluginSelectionWidget *> pswidgets;
+        bool hideconfigpage;
 };
 
     KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
@@ -457,7 +462,7 @@ class KPluginSelector::KPluginSelectorPrivate
 
     splitter->setOpaqueResize( true );
 
-    QLabel * label = new QLabel( i18n( "Select a plugin to configure it" ),
+    QLabel * label = new QLabel( i18n( "this plugin is not configurable" ),
             d->widgetstack );
     label->setAlignment( Qt::AlignCenter );
     d->widgetstack->addWidget( label, 1 );
@@ -548,12 +553,22 @@ QWidgetStack * KPluginSelector::widgetStack()
 inline void KPluginSelector::configPage( int id )
 {
     if( id == 1 )
+    {
         // no config page
-        d->widgetstack->hide();
+        if( d->hideconfigpage )
+            d->widgetstack->hide();
+        //else
+            //d->widgetstack->
+    }
     else
         d->widgetstack->show();
 
     d->widgetstack->raiseWidget( id );
+}
+
+void KPluginSelector::setShowEmptyConfigPage( bool show )
+{
+    d->hideconfigpage = !show;
 }
 
 void KPluginSelector::load()

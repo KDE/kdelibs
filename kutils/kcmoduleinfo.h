@@ -69,11 +69,6 @@ public:
   QString fileName() const { return _fileName; };
 
   /**
-   * @return the list of groups this KCM belongs to.
-   */
-  const QStringList &groups() const { return _groups; };
-
-  /**
    * @return the keywords associated with this KCM.
    */
   const QStringList &keywords() const { return _keywords; };
@@ -83,12 +78,6 @@ public:
    * @return the module's (translated) name
    */
   QString moduleName() const { return _name; };
-
-  /**
-   * @return The module's (translated) path names. This gives you the path in a
-   * TreeView in KDialogBase where the module belongs to.
-   */
-  QStringList moduleNames() const;
 
   /**
    * @return a KSharedPtr to KService created from the modules .desktop file
@@ -127,11 +116,6 @@ public:
   int weight() const;
 
   /**
-   * @return the KCD parent
-   */
-  const QStringList & parentComponents() const;
-
-  /**
    * @return whether the module might require root permissions
    */
   bool needsRootPrivileges() const;
@@ -142,19 +126,14 @@ public:
    */
   bool isHiddenByDefault() const KDE_DEPRECATED;
 
-  QCString moduleId() const;
-
 protected:
 
-  void setGroups(const QStringList &groups) { _groups = groups; };
   void setKeywords(const QStringList &k) { _keywords = k; };
   void setName(const QString &name) { _name = name; };
   void setComment(const QString &comment) { _comment = comment; };
   void setIcon(const QString &icon) { _icon = icon; };
   void setLibrary(const QString &lib) { _lib = lib; };
   void setHandle(const QString &handle) { _handle = handle; };
-  void setParentComponents(const QStringList &parentcomponents)
-  { _parentcomponents = parentcomponents; }
   void setWeight(int weight) { _weight = weight; };
   void setNeedsRootPrivileges(bool needsRootPrivileges)
   { _needsRootPrivileges = needsRootPrivileges; };
@@ -170,7 +149,7 @@ private:
 
   // when adding members, don't forget to take care about them in the assignment
   // operator
-  QStringList _groups, _keywords, _parentcomponents;
+  QStringList _keywords;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
   bool        _needsRootPrivileges : 1; 
   bool        _isHiddenByDefault : 1;

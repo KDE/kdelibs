@@ -95,6 +95,7 @@ void KCMultiDialog::apply()
         if( m->changed() )
         {
             m->save();
+            // ### KDE4 remove setChanged workaround
             if( m->changed() )
             {
                 kdWarning( 710 ) << "The KCModule says it is changed right "
@@ -167,19 +168,23 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
     }
 
     KCModuleInfo info(s);
-    addModule(info, withfallback);
+    addModule(info, QStringList(), withfallback);
 }
 
-void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
+void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
+        QStringList parentmodulenames, bool withfallback)
 {
     kdDebug(710) << "KCMultiDialog::addModule " << moduleinfo.moduleName() <<
-        " for ParentComponents=" << moduleinfo.parentComponents() << endl;
+        endl;
 
     QHBox* page = 0;
     if (!moduleinfo.service()->noDisplay())
         if( createTreeList )
-            page = addHBoxPage(moduleinfo.moduleNames(), moduleinfo.comment(),
+        {
+            parentmodulenames += moduleinfo.moduleName();;
+            page = addHBoxPage(parentmodulenames, moduleinfo.comment(),
                     KGlobal::iconLoader()->loadIcon(moduleinfo.icon(), KIcon::Small));
+        }
         else
             page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
                     KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
@@ -190,10 +195,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
     }
     moduleDict.insert(page, new LoadInfo(moduleinfo, withfallback));
     if (modules.isEmpty())
-    {
-        kdDebug(710) << k_funcinfo << moduleinfo.parentComponents() << endl;
         slotAboutToShow(page);
-    }
 }
 
 void KCMultiDialog::removeModule( const KCModuleInfo& moduleinfo )
@@ -216,19 +218,18 @@ void KCMultiDialog::removeModule( const KCModuleInfo& moduleinfo )
 
 void KCMultiDialog::slotAboutToShow(QWidget *page)
 {
+    // TODO: honor KCModule::buttons
     LoadInfo *loadInfo = moduleDict[page];
     if (!loadInfo)
        return;
 
-    kdDebug(710) << k_funcinfo << loadInfo->info.parentComponents() << endl;
+    kdDebug(710) << k_funcinfo << endl;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     moduleDict.remove(page);
 
     KCModule *module = KCModuleLoader::loadModule(loadInfo->info, loadInfo->withfallback);
-
-    kdDebug(710) << k_funcinfo << loadInfo->info.parentComponents() << endl;
 
     if (!module)
     {
@@ -238,8 +239,12 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
         return;
     }
 
-    kdDebug(710) << k_funcinfo << "ParentComponents=" << loadInfo->info.parentComponents() << endl;
-    moduleParentComponents.insert( module, new QStringList( loadInfo->info.parentComponents() ) );
+    QStringList parentComponents = loadInfo->info.service()->property(
+            "X-KDE-ParentComponents" ).toStringList();
+    kdDebug(710) << k_funcinfo << "ParentComponents=" << parentComponents
+        << endl;
+    moduleParentComponents.insert( module,
+            new QStringList( parentComponents ) );
     module->reparent(page,0,QPoint(0,0),true);
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
     if( module->changed() )

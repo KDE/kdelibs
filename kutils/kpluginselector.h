@@ -137,6 +137,15 @@ class KPluginSelector : public QWidget
                 KConfig * config = 0 );
 
         /**
+         * Set whether the area for showing the KCMs of the plugins should be
+         * hidden if the plugin doesn't have a KCM or whether the layout should
+         * rather stay static and only an message should be shown.
+         *
+         * By default the config page is not hidden.
+         */
+        void setShowEmptyConfigPage( bool );
+
+        /**
          * Load the state of the plugins (selected or not) from the KPluginInfo
          * objects. For KParts plugins everything should work automatically. For
          * your own type of plugins you might need to reimplement the

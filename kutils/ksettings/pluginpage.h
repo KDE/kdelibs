@@ -36,7 +36,7 @@ namespace KSettings
  * This is done using the pluginSelector() method:
  * \code
  * typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
- * K_EXPORT_COMPONENT_FACTORY(  kcm_myapppluginconfig, MyAppPluginConfigFactory(  "kcm_myapppluginconfig" ) );
+ * K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
  *
  * MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
  *     : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )

@@ -32,6 +32,8 @@
 #include <kplugininfo.h>
 #include "ksettings/dispatcher.h"
 #include "ksettings/componentsdialog.h"
+#include <ksimpleconfig.h>
+#include <kstandarddirs.h>
 
 namespace KSettings
 {
@@ -51,19 +53,9 @@ class KCMISortedList : public QPtrList<KCModuleInfo>
 			KCModuleInfo * info1 = static_cast<KCModuleInfo *>( item1 );
 			KCModuleInfo * info2 = static_cast<KCModuleInfo *>( item2 );
 
-			int size1 = info1->groups().size();
-			int size2 = info2->groups().size();
-
-			if( size1 == size2 )
-			{
-				if( info1->weight() == info2->weight() )
-					return 0;
-				else if( info1->weight() < info2->weight() )
-					return -1;
-				else
-					return 1;
-			}
-			else if( size1 < size2 )
+			if( info1->weight() == info2->weight() )
+				return 0;
+			else if( info1->weight() < info2->weight() )
 				return -1;
 			else
 				return 1;
@@ -85,6 +77,17 @@ class Dialog::DialogPrivate
 		QValueList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
 		QWidget * parentwidget;
+
+		struct GroupInfo
+		{
+			QString name;
+			QString comment;
+			int weight;
+			QString parent;
+		};
+
+		QMap<QString, GroupInfo> groupmap;
+		QMap<KCModuleInfo *, QStringList> parentmodulenames;
 };
 
 Dialog::Dialog( QWidget * parent, const char * name )
@@ -198,8 +201,10 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	bool enabled = false;
 	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
 	// for all parent components
-	for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
-			pcit != moduleinfo->parentComponents().end(); ++pcit )
+	QStringList parentComponents = moduleinfo->service()->property(
+			"X-KDE-ParentComponents" ).toStringList();
+	for( QStringList::ConstIterator pcit = parentComponents.begin();
+			pcit != parentComponents.end(); ++pcit )
 	{
 		// we check if the parent component is a plugin
 		if( ! d->plugininfomap.contains( *pcit ) )
@@ -223,71 +228,101 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	return enabled;
 }
 
+void Dialog::parseGroupFile( const QString & filename )
+{
+	KSimpleConfig file( filename );
+	QStringList groups = file.groupList();
+	for( QStringList::ConstIterator it = groups.begin(); it != groups.end();
+			++it )
+	{
+		DialogPrivate::GroupInfo group;
+		QString id = *it;
+		file.setGroup( id.utf8() );
+		group.name = file.readEntry( "Name" );
+		group.comment = file.readEntry( "Comment" );
+		group.weight = file.readNumEntry( "Weight", -1 );
+		group.parent = file.readEntry( "Parent" );
+		d->groupmap[ id ] = group;
+	}
+}
+
 void Dialog::createDialogFromServices()
 {
-	QStringList groupnames;
+	QString setdlgpath = locate( "appdata",
+			KGlobal::instance()->instanceName() + ".setdlg" );
+	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
+			"ksettingsdialog/*.setdlg" );
+	if( ! setdlgpath.isNull() )
+		parseGroupFile( setdlgpath );
+	if( setdlgaddon.size() > 0 )
+		for( QStringList::ConstIterator it = setdlgaddon.begin();
+				it != setdlgaddon.end(); ++it )
+			parseGroupFile( *it );
+
 	// for all services
 	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin(); it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
-		if( ! d->staticlistview )
+		if( ! d->staticlistview && ! isPluginForKCMEnabled( moduleinfo ) )
 		{
-			if( ! isPluginForKCMEnabled( moduleinfo ) )
-			{
-				// it's not enabled so the KCModuleInfo is not needed anymore
-				delete moduleinfo;
-				continue;
-			}
+			// it's not enabled so the KCModuleInfo is not needed anymore
+			delete moduleinfo;
+			continue;
 		}
 		d->moduleinfos.append( moduleinfo );
-		for( QStringList::ConstIterator it2 = moduleinfo->groups().begin();
-				it2 != moduleinfo->groups().end(); ++it2 )
-			if( ! groupnames.contains( *it2 ) )
-				groupnames.append( *it2 );
 	}
+
 	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
-	if( groupnames.size() > 1 )
+	if( d->groupmap.size() > 1 )
 	{
 		// we need a treelist dialog
-		d->dlg = new KCMultiDialog( KJanusWidget::TreeList, i18n( "Preferences" ) );
+		d->dlg = new KCMultiDialog( KJanusWidget::TreeList,
+				i18n( "Preferences" ) );
 		d->dlg->setShowIconsInTreeList( true );
-		// Problem i18n:
-		//
-		// The X-KDE-Group entry is a not i18ned name of the entries above.
-		// We need to find the .desktop files for all group names (those where
-		// Name=<group name>)
-
-		// sort the services after their depth: toplevel first
-		//X 		d->moduleinfos.sort();
-		//X 		KCModuleInfo * info;
-		//X 		for( info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
-		//X 		{
-		//X 			if( info->groups().size() == 0 );
-		//X 		}
-		/*for( QStringList::ConstIterator it = groupnames.begin();
-		  it != groupnames.end(); ++it )
-		  {
-		  if( ( *it )->
-		  }*/
+		for( KCModuleInfo * info = d->moduleinfos.first(); info;
+				info = d->moduleinfos.next() )
+		{
+			QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy", QVariant::String );
+			if( ! tmp.isValid() )
+				continue;
+			QString id = tmp.toString();
+			if( ! d->groupmap.contains( id ) )
+				continue;
+			DialogPrivate::GroupInfo gi = d->groupmap[ id ];
+			QStringList parentnames;
+			parentnames.prepend( gi.name );
+			while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
+			{
+				gi = d->groupmap[ gi.parent ];
+				parentnames.prepend( gi.name );
+			}
+			d->parentmodulenames[ info ] = parentnames;
+		}
 	}
 	else
-		d->dlg = new KCMultiDialog( KJanusWidget::IconList, i18n( "Preferences" ), d->parentwidget );
+		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
+			i18n( "Preferences" ), d->parentwidget );
 
 	if( ! d->staticlistview )
-		d->dlg->addButtonBelowList( i18n( "Configure..." ), this, SLOT( configureTree() ) );
+		d->dlg->addButtonBelowList( i18n( "Configure..." ), this,
+			SLOT( configureTree() ) );
 
-	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
+	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(),
+		SLOT( syncConfiguration() ) );
+	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(),
+		SLOT( syncConfiguration() ) );
+	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ),
+		Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 	d->moduleinfos.sort();
-	for( KCModuleInfo * info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
+	for( KCModuleInfo * info = d->moduleinfos.first(); info;
+		info = d->moduleinfos.next() )
 	{
-		kdDebug( 700 ) << "add module: " << info->fileName() << " with ParentComponents=" << info->parentComponents() << endl;
-		d->dlg->addModule( *info );
+		kdDebug( 700 ) << "add module: " << info->fileName() << endl;
+		d->dlg->addModule( *info, d->parentmodulenames[ info ] );
 	}
 
-	if( groupnames.size() > 1 )
+	if( d->groupmap.size() > 1 )
 		d->dlg->unfoldTreeList( true );
 }
 

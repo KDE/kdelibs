@@ -95,10 +95,16 @@ public:
      *                   used for creating the module. It will be added
      *                   to the list of modules the dialog will show.
      *
+     * @param parentmodulenames The names of the modules that should appear as
+     *                          parents in the TreeList. Look at the
+     *                          KDialogBase::addPage documentation for more info
+     *                          on this.
+     *
      * @param withfallback Try harder to load the module. Might result
      *                     in the module appearing outside the dialog.
      **/
-    void addModule(const KCModuleInfo& moduleinfo, bool withfallback=false);
+    void addModule(const KCModuleInfo& moduleinfo, QStringList
+            parentmodulenames = QStringList(), bool withfallback=false);
 
     /**
      * Remove a module from the dialog.
@@ -171,3 +177,5 @@ private:
 };
 
 #endif //KCMULTIDIALOG_H
+
+// vim: sw=4 sts=4 et
