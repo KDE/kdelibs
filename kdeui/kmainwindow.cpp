@@ -272,9 +272,9 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
       QDomElement e = doc.documentElement().firstChild().toElement();
       for (; !e.isNull(); e = e.nextSibling().toElement() ) {
-	  if ( e.tagName().lower().latin1() == "toolbar" )
+	  if ( e.tagName().lower() == "toolbar" )
 	      factory_->resetContainer( e.attribute( "name" ) );
-	  else if ( e.tagName().lower().latin1() == "menubar" )
+	  else if ( e.tagName().lower() == "menubar" )
 	      factory_->resetContainer( e.tagName(), true );
       }
 
