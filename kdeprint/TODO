@@ -56,3 +56,19 @@ WISHES
 - allow to set the job title in kprinter
 
 - preview multi files sequentially
+
+- support for ICC (have a look at GS-7.05 that support ICC)
+	http://www.macup.ru/reviews/3_2002/HP_1ab.html
+	http://www.macup.ru/reviews/3_2002/HP_2ab.html
+	http://www.macup.ru/reviews/3_2002/HP_3.html
+	http://www.macup.ru/reviews/3_2002/HP_4ab.html
+
+- accessing Fax settings from "Fax" printer configuration dialog??
+
+- allow extracting PPD files from exe (like those from Adobe) using
+  the cabextract utility http://www.kyz.uklinux.net/cabextract.php3
+
+- cupsaddsmb: allow downloading/extracting the Adobe PS driver package
+  using cabextract utility. Note: in cups-1.1.16, a free Windows
+  driver should be included, such that Adobe drivers won't be needed
+  anymore.
