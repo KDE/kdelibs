@@ -54,6 +54,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
     str << "#include <" << header  << ">" << endl;
     str << "#include <dcopclient.h>" << endl << endl;
     str << "#include <kapp.h>" << endl << endl;
+    str << "#include <kdatastream.h>" << endl << endl;
 
     QDomElement e = de.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
