@@ -77,8 +77,10 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 {
 protected:
 	Synth_PLAY playSound;
+	Synth_RECORD recordSound;
 	Synth_MULTI_ADD addLeft, addRight;
 	Synth_BUS_DOWNLINK soundcardBus;
+	Synth_BUS_UPLINK recordBus;
 	std::list<SoundServerJob *> jobs;
 	StereoEffectStack _outstack;
 	long asCount;

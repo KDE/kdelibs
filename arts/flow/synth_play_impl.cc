@@ -83,14 +83,14 @@ public:
 		haveSubSys = as->attachProducer(this);
 		if(!haveSubSys)
 		{
-			printf("SynthGenericPlay: audio subsystem is already used\n");
+			printf("Synth_PLAY: audio subsystem is already used\n");
 			return;
 		}
 
-		audiofd = as->open(false);
+		audiofd = as->open();
 		if(audiofd < 0)
 		{
-			printf("SynthGenericPlay: audio subsystem init failed\n");
+			printf("Synth_PLAY: audio subsystem init failed\n");
 			printf("ASError = %s\n",as->error());
 			return;
 		}
@@ -161,7 +161,7 @@ public:
 	{
 		if(!as->running())
 		{
-			printf("SynthGenericPlay: got notifyIO while audio subsystem"
+			printf("Synth_PLAY: got notifyIO while audio subsystem"
 				 	"is down\n");
 			return;
 		}

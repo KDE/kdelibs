@@ -124,6 +124,15 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 	connect(addRight,_outstack,"inright");
 	connect(_outstack,playSound);
 
+	if(AudioSubSystem::the()->fullDuplex())
+	{
+		recordBus.busname("in_soundcard");
+		connect(recordSound,recordBus);
+
+		recordBus.start();
+		recordSound.start();
+	}
+
 	soundcardBus.start();
 	addLeft.start();
 	addRight.start();

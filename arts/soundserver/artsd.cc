@@ -53,6 +53,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-n                  enable network transparency\n");
+	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	exit(1);	
@@ -62,11 +63,12 @@ static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
 static int  					cfgSamplingRate	= 0;
 static int  					cfgFragmentCount= 0;
 static int  					cfgFragmentSize	= 0;
+static bool  					cfgFullDuplex	= 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:nF:S:h")) > 0)
+	while((optch = getopt(argc,argv,"r:nF:S:hd")) > 0)
 	{
 		switch(optch)
 		{
@@ -77,6 +79,8 @@ static void handleArgs(int argc, char **argv)
 			case 'F': cfgFragmentCount = atoi(optarg);
 				break;
 			case 'S': cfgFragmentSize = atoi(optarg);
+				break;
+			case 'd': cfgFullDuplex = true;
 				break;
 			case 'h':
 			default: 
@@ -152,6 +156,7 @@ int main(int argc, char **argv)
 	if(cfgSamplingRate)  AudioSubSystem::the()->samplingRate(cfgSamplingRate);
 	if(cfgFragmentCount) AudioSubSystem::the()->fragmentCount(cfgFragmentCount);
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
+	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
 
 	/* start sound server implementation */
 	SimpleSoundServer server;

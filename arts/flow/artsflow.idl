@@ -128,6 +128,14 @@ interface Synth_PLAY : SynthModule {
 };
 
 /**
+ * Records a stream of audio data from the soundcard
+ */
+interface Synth_RECORD : SynthModule {
+	// attribute string channels;
+	default out audio stream left,right;
+};
+
+/**
  * A frequency generator
  *
  * This kind of object is used to create frequencies. Oscillators are connected

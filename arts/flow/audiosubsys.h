@@ -49,6 +49,9 @@ public:
 };
 
 class AudioSubSystem {
+	// unused, added just in case
+	class AudioSubSystemPrivate *d;
+
 	std::string _error;
 	int audio_fd;
 	char *fragment_buffer;
@@ -60,7 +63,7 @@ class AudioSubSystem {
 	int _channels;
 
 	bool _running;
-	bool fullDuplex;
+	bool _fullDuplex;
 	PipeBuffer wBuffer, rBuffer;
 	ASConsumer *consumer;
 	ASProducer *producer;
@@ -111,7 +114,10 @@ public:
 	void channels(int channels);
 	int channels();
 
-	int open(bool wantfullduplex);
+	void fullDuplex(bool newFullDuplex);
+	bool fullDuplex();
+
+	int open();
 	const char *error();
 
 	/*

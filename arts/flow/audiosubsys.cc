@@ -79,7 +79,8 @@ const char *AudioSubSystem::error()
 }
 
 AudioSubSystem::AudioSubSystem() :_fragmentCount(7), _fragmentSize(1024),
-                                  _samplingRate(44100), _channels(2)
+                                  _samplingRate(44100), _channels(2),
+								  _fullDuplex(false)
 {
 	_running = false;
 	usageCount = 0;
@@ -162,12 +163,23 @@ int AudioSubSystem::channels()
 	return _channels;
 }
 
-int AudioSubSystem::open(bool wantfullduplex)
+void AudioSubSystem::fullDuplex(bool fullDuplex)
+{
+	_fullDuplex = fullDuplex;
+}
+
+bool AudioSubSystem::fullDuplex()
+{
+	return _fullDuplex;
+}
+
+
+int AudioSubSystem::open()
 {
 #ifdef HAVE_SYS_SOUNDCARD_H
 	int mode;
 
-	if(wantfullduplex)
+	if(_fullDuplex)
 		mode = O_RDWR|O_NDELAY;
 	else
 		mode = O_WRONLY|O_NDELAY;
@@ -292,7 +304,7 @@ int AudioSubSystem::open(bool wantfullduplex)
 	// FIXME: check here if frag_arg changed
 
 	int enable_bits = ~(PCM_ENABLE_OUTPUT|PCM_ENABLE_INPUT);
-	if(wantfullduplex)
+	if(_fullDuplex)
 	{
 		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
 		{
@@ -305,7 +317,7 @@ int AudioSubSystem::open(bool wantfullduplex)
 
 	/*
 	 * Workaround for broken kernel drivers: usually filling up the audio
-	 * buffer is _only_ required if wantfullduplex is true. However, there
+	 * buffer is _only_ required if _fullDuplex is true. However, there
 	 * are kernel drivers around (especially everything related to ES1370/1371)
 	 * which will not trigger select()ing the file descriptor unless we have
 	 * written something first.
@@ -315,7 +327,7 @@ int AudioSubSystem::open(bool wantfullduplex)
 		/* fills up the audio buffer */;
 	free(zbuffer);
 
-	if(wantfullduplex)
+	if(_fullDuplex)
 	{
 		/*
 	 	 * Go now, and hope! that the application does the select trick
@@ -331,7 +343,6 @@ int AudioSubSystem::open(bool wantfullduplex)
 		}
 	}
 
-	fullDuplex = wantfullduplex;
 	return audio_fd;
 #else
 	cerr << "Sorry: arts doesn't support sound I/O on non Voxware-esque systems, yet";
