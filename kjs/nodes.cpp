@@ -505,14 +505,10 @@ Value PropertyValueNode::evaluate(ExecState *exec) const
 // ECMA 11.1.5
 Value PropertyNode::evaluate(ExecState */*exec*/) const
 {
-  Value s;
-
   if (str.isNull()) {
-    s = String(UString::from(numeric));
+    return String(UString::from(numeric));
   } else
-    s = String(str);
-
-  return s;
+    return String(str);
 }
 
 // ----------------------------- AccessorNode1 --------------------------------
@@ -839,9 +835,8 @@ Value PostfixNode::value(ExecState *exec) const
   Number n = v.toNumber(exec);
 
   double newValue = (oper == OpPlusPlus) ? n.value() + 1 : n.value() - 1;
-  Value n2 = Number(newValue);
 
-  e.putValue(exec,n2);
+  e.putValue(exec, Number(newValue));
 
   return n;
 }
