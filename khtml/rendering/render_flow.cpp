@@ -209,7 +209,7 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
 //            << m_width << ","<< layouted() << "," << isAnonymousBox() << endl;
 
-    if ( (!specialObjects || (isListItem() && specialObjects->count() == 1) ) && oldWidth == m_width && layouted() && !isAnonymousBox()
+    if ( !containsSpecial() && oldWidth == m_width && layouted() && !isAnonymousBox()
             && !containsPositioned() && !isPositioned()) return;
 
 #ifdef DEBUG_LAYOUT
@@ -284,7 +284,7 @@ void RenderFlow::layoutSpecialObjects()
 void RenderFlow::layoutBlockChildren()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << " layoutBlockChildren( )" << endl;
+    kdDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" )" << endl;
 #endif
 
     bool _layouted = true;

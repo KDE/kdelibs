@@ -278,7 +278,9 @@ RenderText::RenderText(DOMStringImpl *_str)
     if(str) str->ref();
 
     m_selectionState = SelectionNone;
-
+    hasFirstLine = false;
+    fm = 0;
+    
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
@@ -289,12 +291,16 @@ void RenderText::setStyle(RenderStyle *_style)
 {
     RenderObject::setStyle(_style);
     m_contentHeight = style()->lineHeight().width(metrics().height());
+    hasFirstLine = (style()->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
+    if ( fm ) delete fm;
+    fm = new QFontMetrics( style()->font() );
 }
 
 RenderText::~RenderText()
 {
     deleteSlaves();
     if(str) str->deref();
+    delete fm;
 }
 
 void RenderText::deleteSlaves()
@@ -359,8 +365,13 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         TextSlave* s = m_lines[si];
         if ( s->m_reversed )
             return SelectionPointBefore; // abort if RTL (TODO)
-	QFontMetrics fm = metrics();
-        int result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset);
+        int result;
+	if ( khtml::printpainter ) {
+	    QFontMetrics _fm = metrics();
+	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, &_fm, offset);
+	} else {
+	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset);
+	}
         //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
         if ( result == SelectionPointInside ) // x,y is inside the textslave
         {
@@ -609,7 +620,7 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
 
-    QFontMetrics fm = metrics();
+    QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
     for(int i = 0; i < len; i++)
     {
@@ -619,7 +630,7 @@ void RenderText::calcMinMaxWidth()
         } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
-            int w = fm.width(QConstString(str->s+i, wordlen).string());
+            int w = _fm.width(QConstString(str->s+i, wordlen).string());
             currMinWidth += w;
             currMaxWidth += w;
         }
@@ -636,7 +647,7 @@ void RenderText::calcMinMaxWidth()
             {
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
-                currMaxWidth += fm.width( *(str->s+i+wordlen) );
+                currMaxWidth += _fm.width( *(str->s+i+wordlen) );
             }
             /* else if( c == '-')
             {
@@ -722,14 +733,20 @@ int RenderText::bidiHeight() const
 
 short RenderText::baselineOffset() const
 {
-    QFontMetrics fm = metrics();
-    return (m_contentHeight - fm.height())/2 + fm.ascent();
+    if ( printpainter ) {
+	QFontMetrics _fm = metrics();
+	return (m_contentHeight - _fm.height())/2 + _fm.ascent();
+    }
+    return (m_contentHeight - fm->height())/2 + fm->ascent();
 }
 
 short RenderText::verticalPositionHint() const
 {
-    QFontMetrics fm = metrics();
-    return (m_contentHeight - fm.height())/2 + fm.ascent();
+    if ( printpainter ) {
+	QFontMetrics _fm = metrics();
+	return (m_contentHeight - _fm.height())/2 + _fm.ascent();
+    }
+    return (m_contentHeight - fm->height())/2 + fm->ascent();
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -791,17 +808,25 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
 
     if ( from + len > str->l ) len = str->l - from;
 
-    QFontMetrics fm = metrics();
-    //qDebug("font is %d, metrics %d", style()->font().pointSize(), fm.height());
-    RenderStyle *pseudoStyle;
-    if ( firstLine && (pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE) ) )
-	fm = fontMetrics ( pseudoStyle->font() );
+    if ( khtml::printpainter || firstLine ) {
+	QFontMetrics _fm = metrics( firstLine );
+	return width( from, len, &_fm );
+    }
+
+    return width( from, len, fm );
+}
+
+unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *fm) const
+{
+    if(!str->s || from > str->l ) return 0;
+
+    if ( from + len > str->l ) len = str->l - from;
 
     int w;
     if( len == 1)
-        w = fm.width( *(str->s+from) );
+        w = fm->width( *(str->s+from) );
     else
-        w = fm.width(QConstString(str->s+from, len).string());
+        w = fm->width(QConstString(str->s+from, len).string());
 
     // ### add margins and support for RTL
 
@@ -857,8 +882,13 @@ bool RenderText::isFixedWidthFont() const
     return QFontInfo(style()->font()).fixedPitch();
 }
 
-QFontMetrics RenderText::metrics() const
+QFontMetrics RenderText::metrics(bool firstLine) const
 {
+    if( firstLine && hasFirstLine ) {
+	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+	if ( pseudoStyle )
+	    return fontMetrics ( pseudoStyle->font() );
+    }
     return fontMetrics(style()->font());
 }
 

@@ -88,14 +88,25 @@ void RenderRoot::layout()
     if (printingMode)
        m_minWidth = m_width;
 
+#ifdef SPEED_DEBUG
+    QTime qt;
+    qt.start();
+#endif
     calcMinMaxWidth();
-
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderRoot::calcMinMax time used=" << qt.elapsed() << endl;
     // this fixes frameset resizing
+    qt.start();
+#endif
+    
     if(firstChild()) {
         firstChild()->setLayouted(false);
     }
     RenderFlow::layout();
-
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderRoot::layout time used=" << qt.elapsed() << endl;
+    qt.start();
+#endif
     // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
     m_view->resizeContents(docWidth(), docHeight());
 
@@ -106,7 +117,10 @@ void RenderRoot::layout()
     }
 
     layoutSpecialObjects();
-
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
+#endif
+    
     //kdDebug(0) << "root: height = " << m_height << endl;
 }
 

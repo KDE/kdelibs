@@ -148,6 +148,7 @@ public:
     inline QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
+    unsigned int width(unsigned int from, unsigned int len, QFontMetrics *fm) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
     virtual short width() const;
     virtual int height() const;
@@ -172,7 +173,7 @@ public:
     virtual short verticalPositionHint() const;
 
     virtual const QFont &font();
-    QFontMetrics metrics() const;
+    QFontMetrics metrics(bool firstLine = false) const;
 
     bool isFixedWidthFont() const;
 
@@ -199,6 +200,10 @@ protected:
     short m_maxWidth;
 
     SelectionState m_selectionState : 3 ;
+    bool hasFirstLine : 1;
+private:
+    QFontMetrics *fm;
+    // the one for the first line
 };
 
 

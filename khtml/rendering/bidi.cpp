@@ -27,6 +27,8 @@
 using namespace khtml;
 
 #include "kdebug.h"
+#include "qdatetime.h"
+#include "qfontmetrics.h"
 
 #define BIDI_DEBUG 0
 //#define DEBUG_LINEBREAKS
@@ -103,7 +105,7 @@ BidiIterator &BidiIterator::operator = (const BidiIterator &it)
     return *this;
 }
 
-void BidiIterator::operator ++ ()
+inline void BidiIterator::operator ++ ()
 {
     if(!obj) return;
     if(obj->isText()) {
@@ -118,7 +120,7 @@ void BidiIterator::operator ++ ()
     }
 }
 
-bool BidiIterator::atEnd()
+inline bool BidiIterator::atEnd()
 {
     if(!obj) return true;
     return false;
@@ -648,6 +650,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     uchar levelLow = 128;
     uchar levelHigh = 0;
     BidiRun *r = runs.first();
+
     while ( r ) {
         //printf("level = %d\n", r->level);
         if ( r->level > levelHigh )
@@ -790,7 +793,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 void RenderFlow::layoutInlineChildren()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "layoutInlineChildren" << endl;
+    QTime qt;
+    qt.start();
+    kdDebug( 6040 ) << renderName() << " layoutInlineChildren( " << this <<" )" << endl;
 #endif
     int toAdd = 0;
     m_height = 0;
@@ -868,6 +873,8 @@ void RenderFlow::layoutInlineChildren()
     }
     m_height += toAdd;
 
+    
+    //kdDebug() << "RenderFlow::layoutInlineChildren time used " << qt.elapsed() << endl; 
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
@@ -918,6 +925,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             tmpW += o->width();
         } else if ( o->isText() ) {
             RenderText *t = static_cast<RenderText *>(o);
+	    QFontMetrics fm = t->metrics( firstLine );
             QChar *str = t->text();
 	    int strlen = t->length();
             int len = strlen - pos;
@@ -925,7 +933,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    int lastSpace = pos;
 	    while(len) {
 		if( isBreakable( str, pos, strlen ) ) {
-		    tmpW += t->width(lastSpace, pos - lastSpace, firstLine);
+		    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
 #ifdef DEBUG_LINEBREAKS
 		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, pos - lastSpace).string() << "'" << endl;
 #endif
@@ -947,7 +955,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		pos++;
 		len--;
 	    }
-	    tmpW += t->width(lastSpace, pos - lastSpace, firstLine);
+	    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
         } else
             assert( false );
 
