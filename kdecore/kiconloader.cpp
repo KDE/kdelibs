@@ -985,6 +985,69 @@ QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int s
     return loadIconSet( name, group, size, false );
 }
 
+#if QT_VERSION >= 0x030100 && 0
+/*** class for delayed icon loading for QIconSet ***/
+
+class KIconFactory
+    : public QIconFactory
+    {
+    public:
+        KIconFactory( const QString& iconName_P, KIcon::Group group_P,
+            int size_P, KIconLoader* loader_P );
+        virtual QPixmap* createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode, QIconSet::State );
+    private:
+        QString iconName;
+        KIcon::Group group;
+        int size;
+        KIconLoader* loader;
+    };
+
+
+QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group group, int size,
+    bool canReturnNull)
+{
+    if(canReturnNull)
+    { // we need to find out if the icon actually exists
+        QPixmap pm = loadIcon( name, group, size, KIcon::DefaultState, NULL, true );
+        if( pm.isNull())
+            return QIconSet();
+        QIconSet ret( pm );
+        ret.installIconFactory( new KIconFactory( name, group, size, this ));
+        return ret;
+    }
+    QIconSet ret;
+    ret.installIconFactory( new KIconFactory( name, group, size, this ));
+    return ret;
+}
+
+KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
+    int size_P, KIconLoader* loader_P )
+    : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
+{
+    setAutoDelete( true );
+};
+
+QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode mode_P, QIconSet::State )
+    {
+    // QIconSet::Mode to KIcon::State conversion
+    static const KIcon::States tbl[] = { KIcon::DefaultState, KIcon::DisabledState, KIcon::ActiveState };
+    int state = KIcon::DefaultState;
+    if( mode_P <= QIconSet::Active )
+        state = tbl[ mode_P ];
+    if( group >= 0 && state == KIcon::ActiveState )
+    { // active and normal icon are usually the same
+	if( loader->iconEffect()->fingerprint(group, KIcon::ActiveState )
+            == loader->iconEffect()->fingerprint(group, KIcon::DefaultState ))
+            return NULL; // so let QIconSet simply duplicate it
+    }
+    // ignore passed size
+    // ignore passed state (i.e. on/off)
+    QPixmap pm = loader->loadIcon( iconName, group, size, state );
+    return new QPixmap( pm );
+    }
+
+#else
+
 QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size,
     bool canReturnNull)
 {
@@ -1001,6 +1064,8 @@ QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int s
     iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Normal );
     return iconset;
 }
+
+#endif
 
 // Easy access functions
 
