@@ -58,7 +58,7 @@ static void runBuildSycoca()
 Kded::Kded()
   : KSycoca( true )
 {
-  QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
+  QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
   QCString cPath = QFile::encodeName(path);
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
