@@ -247,8 +247,9 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
             int size;
             switch (num)
             {
-            case -1:
+            case -2:
             case  1: size = CSS_VAL_X_SMALL;  break;
+            case -1:
             case  2: size = CSS_VAL_SMALL;    break;
             case  0: // treat 0 the same as 3, because people
                      // expect it to be between -1 and +1

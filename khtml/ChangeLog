@@ -1,3 +1,8 @@
+2004-01-29  Dirk Mueller  <mueller@kde.org>
+
+	* html/html_inlineimpl.cpp (parseAttribute): restore KDE 3.1 behavior
+	of <font size=-1> (#73500).
+
 2004-01-26  David Faure  <faure@kde.org>
 
 	* ecma/kjs_window.cpp (get/hasProperty): Reduce window.<name> to
