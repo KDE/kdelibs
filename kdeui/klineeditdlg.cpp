@@ -24,6 +24,7 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#undef Unsorted // Required for --enable-final (qdir.h)
 #include <qfiledialog.h>
 
 #include <kbuttonbox.h>
