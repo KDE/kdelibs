@@ -252,7 +252,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         }
     }
     if ( !found && foot )
-	section = static_cast<HTMLTableSectionElementImpl *>(foot);
+        section = static_cast<HTMLTableSectionElementImpl *>(foot);
 
     // Index == 0 means "insert before first row in current section"
     // or "append after last row" (if there's no current section anymore)
@@ -261,7 +261,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         section = lastSection;
         index = section ? section->numRows() : 0;
     }
-    if ( section && index >= 0 ) {
+    if ( section && (index >= 0 || append) ) {
         kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
@@ -289,7 +289,7 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
             {
                 if ( rows > index ) {
                     found = true;
-		    break;
+                    break;
                 } else
                     index -= rows;
             }
@@ -297,10 +297,10 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
         section = 0L;
     }
     if ( !found && foot )
-	section = static_cast<HTMLTableSectionElementImpl *>(foot);
+        section = static_cast<HTMLTableSectionElementImpl *>(foot);
 
     if ( lastRow )
-        lastSection->deleteRow( lastSection->numRows(), exceptioncode );
+        lastSection->deleteRow( -1, exceptioncode );
     else if ( section && index >= 0 && index < section->numRows() )
         section->deleteRow( index, exceptioncode );
     else
