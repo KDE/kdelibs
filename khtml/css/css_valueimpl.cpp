@@ -195,6 +195,9 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 						bool important, bool nonCSSHint)
 {
+    if(!value.unicode() || value.length() == 0)
+	return;
+    
     if(!m_lstValues)
     {
 	m_lstValues = new QList<CSSProperty>;
