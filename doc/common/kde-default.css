@@ -27,6 +27,32 @@
    Any updates should be validated, e.g. http://jigsaw.w3.org/css-validator/
 */
 
-BODY { background-color: white; }
+BODY { background-color: rgb(255,255,255);
+       font-family: Helvetica, Arial, sans-serif; /* or just generic font? */
+       color: rgb(0,0,0);
+}
 
-P { font-family: sans-serif; }
+:link { color: rgb(170,0,0); 
+        background-color: white; /* should be inherited */ }
+/* :visited { color: rgb(170,0,0); } what is KDE value?*/
+
+TABLE.programlisting
+TABLE.screen { border-style: none;
+               background-color: rgb(224,224,224);
+               table-layout: auto; /* 100%? */
+               color: rgb(0,0,0); /* should be inherited */
+               }
+
+/* Same as previous block, but more general (previous is HTML only)
+   Not all browsers understand this yet.
+TABLE[class~=programlisting]
+TABLE[class~=screen] { border-style: none;
+                       background-color: rgb(224,224,224);
+                       table-layout: auto;
+                       color: inherited;
+                       }
+*/
+
+/* Temporary patch: browsers break on bad HTML */
+P { font-family: Helvetica, Arial, sans-serif; 
+    }
