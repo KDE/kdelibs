@@ -92,7 +92,9 @@ public:
    */
   static bool start();
 
-  /** Destructor */
+  /**
+   * Destructor
+   */
   virtual ~KUniqueApplication();
 
   /**

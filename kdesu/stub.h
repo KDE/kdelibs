@@ -33,14 +33,20 @@ public:
     StubProcess();
     ~StubProcess();
 
-    /** Specify dcop transport **/
+    /**
+     * Specify dcop transport
+     */
     void setDcopTransport(const QCString &dcopTransport) 
        { m_pCookie->setDcopTransport(dcopTransport); }
 
-    /** Set the command. */
+    /**
+     * Set the command.
+     */
     void setCommand(const QCString &command) { m_Command = command; }
 
-    /** Set the target user.  */
+    /**
+     * Set the target user.
+     */
     void setUser(const QCString &user) { m_User = user; }
 
     /**
@@ -73,10 +79,14 @@ public:
 
 protected:
 
-    /** Exchange all parameters with kdesu_stub. */
+    /**
+     * Exchange all parameters with kdesu_stub.
+     */
     int ConverseStub(int check);
 
-    /** Notify the taskbar that a new application has been started. */
+    /**
+     * Notify the taskbar that a new application has been started.
+     */
     void notifyTaskbar(const QString &suffix);
 
     /** 
@@ -85,14 +95,22 @@ protected:
      */
     virtual QCString display() { return m_pCookie->display(); }
 #ifdef Q_WS_X11
-    /** See @ref #display. */
+    /**
+     * See @ref #display.
+     */
     virtual QCString displayAuth() { return m_pCookie->displayAuth(); }
 #endif
-    /** See @ref #display. */
+    /**
+     * See @ref #display.
+     */
     virtual QCString dcopServer() { return m_pCookie->dcopServer(); }
-    /** See @ref #display. */
+    /**
+     * See @ref #display.
+     */
     virtual QCString dcopAuth() { return m_pCookie->dcopAuth(); }
-    /** See @ref #display. */
+    /**
+     * See @ref #display.
+     */
     virtual QCString iceAuth() { return m_pCookie->iceAuth(); }
 
     bool m_bXOnly;

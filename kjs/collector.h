@@ -80,7 +80,9 @@ namespace KJS {
     static bool outOfMemory() { return memLimitReached; }
 
 #ifdef KJS_DEBUG_MEM
-    /** Check that nothing is left when the last interpreter gets deleted */
+    /**
+     * Check that nothing is left when the last interpreter gets deleted
+     */
     static void finalCheck();
     /**
      * @internal

@@ -32,9 +32,11 @@ class KHTMLPart;
 
 namespace KJS {
 
-  /** Base class for all objects in this binding - get() and put() run
-      tryGet() and tryPut() respectively, and catch exceptions if they
-      occur. */
+  /**
+   * Base class for all objects in this binding - get() and put() run
+   * tryGet() and tryPut() respectively, and catch exceptions if they
+   * occur.
+   */
   class DOMObject : public ObjectImp {
   public:
     DOMObject(const Object &proto) : ObjectImp(proto) {}
@@ -52,9 +54,11 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const;
   };
 
-  /** Base class for all functions in this binding - get() and call() run
-      tryGet() and tryCall() respectively, and catch exceptions if they
-      occur. */
+  /**
+   * Base class for all functions in this binding - get() and call() run
+   * tryGet() and tryCall() respectively, and catch exceptions if they
+   * occur.
+   */
   class DOMFunction : public ObjectImp {
   public:
     DOMFunction() : ObjectImp( /* proto? */ ) {}
@@ -92,19 +96,27 @@ namespace KJS {
     bool deleteDOMObject( void* objectHandle ) {
       return m_domObjects.remove( objectHandle );
     }
-    /** Static method. Makes all interpreters forget about the object */
+    /**
+     * Static method. Makes all interpreters forget about the object
+     */
     static void forgetDOMObject( void* objectHandle );
 
-    /** Mark objects in the DOMObject cache. */
+    /**
+     * Mark objects in the DOMObject cache.
+     */
     virtual void mark();
     KHTMLPart* part() const { return m_part; }
 
     virtual int rtti() { return 1; }
 
-    /** Set the event that is triggering the execution of a script, if any */
+    /**
+     * Set the event that is triggering the execution of a script, if any
+     */
     void setCurrentEvent( DOM::Event *evt ) { m_evt = evt; }
     void setInlineCode( bool inlineCode ) { m_inlineCode = inlineCode; }
-    /** "Smart" window.open policy */
+    /**
+     * "Smart" window.open policy
+     */
     bool isWindowOpenAllowed() const;
 
   private:
@@ -113,7 +125,9 @@ namespace KJS {
     DOM::Event *m_evt;
     bool m_inlineCode;
   };
-  /** Retrieve from cache, or create, a KJS object around a DOM object */
+  /**
+   * Retrieve from cache, or create, a KJS object around a DOM object
+   */
   template<class DOMObj, class KJSDOMObj>
   inline Value cacheDOMObject(ExecState *exec, DOMObj domObj)
   {

@@ -77,7 +77,9 @@ namespace KAccelGen
 
 // HELPERS
 
-/** Static dereference class, for use as a template parameter. */
+/**
+ * Static dereference class, for use as a template parameter.
+ */
 template <class Iter>
 class Deref
 {
@@ -85,8 +87,10 @@ public:
     static QString deref(Iter i) { return *i; }
 };
 
-/** Static dereference class that calls the key() method on its
-    target; for use as a template parameter. */
+/**
+ * Static dereference class that calls the key() method on its
+ * target; for use as a template parameter.
+ */
 template <class Iter>
 class Deref_Key
 {

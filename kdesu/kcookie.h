@@ -29,18 +29,26 @@ class KCookie
 public:
     KCookie();
 
-    /** Returns the X11 display. */
+    /**
+     * Returns the X11 display.
+     */
     QCString display() { return m_Display; }
 
 #ifdef Q_WS_X11
-    /** Returns the X11 magic cookie, if available. */
+    /**
+     * Returns the X11 magic cookie, if available.
+     */
     QCString displayAuth() { return m_DisplayAuth; }
 #endif
 
-    /** Select the DCOP transport to look for. Default: "local" **/
+    /**
+     * Select the DCOP transport to look for. Default: "local"
+     */
     void setDcopTransport(const QCString &dcopTransport);
 
-    /** Returns the netid where the dcopserver is running */
+    /**
+     * Returns the netid where the dcopserver is running
+     */
     QCString dcopServer();
 
     /** 
@@ -49,7 +57,9 @@ public:
      */
     QCString dcopAuth();
 
-    /** Returns a list of magic cookies for the ICE protocol. */
+    /**
+     * Returns a list of magic cookies for the ICE protocol.
+     */
     QCString iceAuth();
 
 private:

@@ -53,7 +53,9 @@ protected:
 
 public:
 
-    /** destructor */
+    /**
+     * destructor
+     */
     virtual ~KCharsets();
 
     /**

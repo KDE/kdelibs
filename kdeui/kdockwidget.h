@@ -112,14 +112,20 @@ public:
    */
   virtual ~KDockWidgetAbstractHeader(){};
 
-  /** Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class. */
+  /**
+   * Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class.
+   */
   virtual void setTopLevel( bool ){};
 
 #ifndef NO_KDE2
-  /** Provides saving the current configuration. Must be overridden by an inheriting class. */
+  /**
+   * Provides saving the current configuration. Must be overridden by an inheriting class.
+   */
   virtual void saveConfig( KConfig* ){};
 
-  /** Provides loading the current configuration.  Must be overridden by an inheriting class */
+  /**
+   * Provides loading the current configuration.  Must be overridden by an inheriting class
+   */
   virtual void loadConfig( KConfig* ){};
 #endif
 
@@ -163,7 +169,9 @@ public:
   KDockWidget* dockWidget() const { return dw; }
 
 private:
-  /** the dockwidget where this belongs to */
+  /**
+   * the dockwidget where this belongs to
+   */
   KDockWidget* dw;
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -280,19 +288,29 @@ protected slots:
 
 protected:
 
-  /** A layout manager for placing the embedded buttons (close and stay) */
+  /**
+   * A layout manager for placing the embedded buttons (close and stay)
+   */
   QHBoxLayout* layout;
 
-  /** a little button for closing (undocking and hiding) the dockwidget */
+  /**
+   * a little button for closing (undocking and hiding) the dockwidget
+   */
   KDockButton_Private* closeButton;
 
-  /** a little button for enabling/disabling dragging the dockwidget with the mouse */
+  /**
+   * a little button for enabling/disabling dragging the dockwidget with the mouse
+   */
   KDockButton_Private* stayButton;
 
-  /** a little button for dock back the dockwidget to it's previous dockwidget */
+  /**
+   * a little button for dock back the dockwidget to it's previous dockwidget
+   */
   KDockButton_Private* dockbackButton;
 
-  /** the drag panel (double line) */
+  /**
+   * the drag panel (double line)
+   */
   KDockWidgetHeaderDrag* drag;
 
 protected:
@@ -658,15 +676,25 @@ protected slots:
   void loseFormerBrotherDockWidget();
 
 protected:
-  /** earlier closest neighbor widget, so it's possible to dock back to it. */
+  /**
+   * earlier closest neighbor widget, so it's possible to dock back to it.
+   */
   KDockWidget* formerBrotherDockWidget;
-  /** the current dock position. */
+  /**
+   * the current dock position.
+   */
   DockPosition currentDockPos;
-  /** the former dock position when it really was at another position before. */
+  /**
+   * the former dock position when it really was at another position before.
+   */
   DockPosition formerDockPos;
-  /** a string used as tooltip for the tab page header when in dock-centered mode. */
+  /**
+   * a string used as tooltip for the tab page header when in dock-centered mode.
+   */
   QString toolTipStr;
-  /** a string used as title of the tab page when in tab page mode */
+  /**
+   * a string used as title of the tab page when in tab page mode
+   */
   QString tabPageTitle;
 
 private:
@@ -686,19 +714,29 @@ private:
    */
   void applyToWidget( QWidget* s, const QPoint& p  = QPoint(0,0) );
 
-  /** A base class pointer to the header of this dockwidget */
+  /**
+   * A base class pointer to the header of this dockwidget
+   */
   KDockWidgetAbstractHeader* header;
 
-  /** the embedded widget */
+  /**
+   * the embedded widget
+   */
   QWidget* widget;
 
-  /** the layout manager that takes care about proper resizing and moving the embedded widget and the header */
+  /**
+   * the layout manager that takes care about proper resizing and moving the embedded widget and the header
+   */
   QVBoxLayout* layout;
 
-  /** the responsible dockmanager */
+  /**
+   * the responsible dockmanager
+   */
   KDockManager* manager;
 
-  /** an icon for the tab widget header */
+  /**
+   * an icon for the tab widget header
+   */
   QPixmap* pix;
 
   /**
@@ -1253,10 +1291,14 @@ signals:
 
 protected:
 
-  /** A pointer to the main dockwidget (where one can manualDock() to */
+  /**
+   * A pointer to the main dockwidget (where one can manualDock() to
+   */
   KDockWidget* mainDockWidget;
 
-  /** A pointer to the manager for the dock process */
+  /**
+   * A pointer to the manager for the dock process
+   */
   KDockManager* dockManager;
 
 protected slots:

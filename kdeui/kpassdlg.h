@@ -190,7 +190,9 @@ public:
      */
     const char *password() const { return m_pEdit->password(); }
 
-    /** Returns true if the user wants to keep the password. */
+    /**
+     * Returns true if the user wants to keep the password.
+     */
     bool keep() const { return m_Keep; }
 
     /**
@@ -219,7 +221,9 @@ public:
      */
     static int getNewPassword(QCString &password, QString prompt);
 
-    /** Static helper funtion that disables core dumps. */
+    /**
+     * Static helper funtion that disables core dumps.
+     */
     static void disableCoreDumps();
 
 protected slots:
@@ -229,9 +233,11 @@ protected slots:
 
 protected:
 
-    /** Virtual function that can be overridden to provide password
+    /**
+     * Virtual function that can be overridden to provide password
      * checking in derived classes. It should return @p true if the
-     * password is valid, @p false otherwise. */
+     * password is valid, @p false otherwise.
+     */
     virtual bool checkPassword(const char *) { return true; }
 
 private:

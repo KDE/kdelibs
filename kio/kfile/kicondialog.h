@@ -44,17 +44,23 @@ public:
     KIconCanvas(QWidget *parent=0L, const char *name=0L);
     ~KIconCanvas();
 
-    /** Load icons into the canvas. */
+    /**
+     * Load icons into the canvas.
+     */
     void loadFiles(const QStringList& files);
 
-    /** Returns the current icon. */
+    /**
+     * Returns the current icon.
+     */
     QString getCurrent() const;
 
 public slots:
     void stopLoading();
 
 signals:
-    /** Emitted when the current icon has changed. */
+    /**
+     * Emitted when the current icon has changed.
+     */
     void nameChanged(QString);
 
     void startLoading(int);

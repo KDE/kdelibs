@@ -87,7 +87,9 @@ namespace KKeyServer
 
 	bool initializeMods();
 
-	/** Returns the equivalent X modifier mask of the given modifier flag. */
+	/**
+	 * Returns the equivalent X modifier mask of the given modifier flag.
+	 */
 	uint modX( KKey::ModFlag );
 	/**
 	 * Returns true if the current keyboard layout supports the Win key.
@@ -101,8 +103,10 @@ namespace KKeyServer
 	uint modXNumLock();
 	uint modXWin();
 	uint modXScrollLock();
-	/** Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
-	 * Win (if available). */
+	/**
+	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
+	 * Win (if available).
+	 */
 	uint accelModMaskX();
 
 	bool keyQtToSym( int keyQt, uint& sym );

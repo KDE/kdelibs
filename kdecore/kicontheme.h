@@ -35,7 +35,9 @@ class KIcon
 public:
     KIcon() { size = 0; }
 
-    /** Return true if this icon is valid, false otherwise. */
+    /**
+     * Return true if this icon is valid, false otherwise.
+     */
     bool isValid() const { return size != 0; }
 
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
@@ -50,19 +52,29 @@ public:
     enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
             HiddenOverlay=0x800, OverlayMask = ~0xff };
 
-    /** The size in pixels of the icon. */
+    /**
+     * The size in pixels of the icon.
+     */
     int size;
 
-    /** The context of the icon. */
+    /**
+     * The context of the icon.
+     */
     Context context;
 
-    /** The type of the icon: Fixed, Scalable or Threshold. */
+    /**
+     * The type of the icon: Fixed, Scalable or Threshold.
+     **/
     Type type;
 
-    /** The threshold in case type == Threshold */
+    /**
+     * The threshold in case type == Threshold
+     */
     int threshold;
 
-    /** The full path of the icon. */
+    /**
+     * The full path of the icon.
+     */
     QString path;
 
 private:
@@ -79,61 +91,93 @@ inline KIcon::Group operator++(KIcon::Group& group,int) { KIcon::Group ret = gro
 class KIconTheme
 {
 public:
-    /** Load an icon theme by name.  */
+    /**
+     * Load an icon theme by name.
+     */
     KIconTheme(const QString& name, const QString& appName=QString::null);
     ~KIconTheme();
 
-    /** The stylized name of the icon theme. */
+    /**
+     * The stylized name of the icon theme.
+     */
     QString name() const { return mName; }
 
-    /** A description for the icon theme. */
+    /**
+     * A description for the icon theme.
+     */
     QString description() const { return mDesc; }
 
-    /** Return the name of the "example" icon. */
+    /**
+     * Return the name of the "example" icon.
+     */
     QString example() const;
 
-    /** Return the name of the screenshot. */
+    /**
+     * Return the name of the screenshot.
+     */
     QString screenshot() const;
 
-    /** Returns the name of this theme's link overlay. */
+    /**
+     * Returns the name of this theme's link overlay.
+     */
     QString linkOverlay() const;
 
-    /** Returns the name of this theme's zip overlay. */
+    /**
+     * Returns the name of this theme's zip overlay.
+     */
     QString zipOverlay() const;
 
-    /** Returns the name of this theme's lock overlay. */
+    /**
+     * Returns the name of this theme's lock overlay.
+     */
     QString lockOverlay() const;
 
-    /** Returns the toplevel theme directory. */
+    /**
+     * Returns the toplevel theme directory.
+     */
     QString dir() const { return mDir; }
 
-    /** The themes this icon theme falls back on. */
+    /**
+     * The themes this icon theme falls back on.
+     */
     QStringList inherits() const { return mInherits; }
 
-    /** The icon theme exists? */
+    /**
+     * The icon theme exists?
+     */
     bool isValid() const;
 
-    /** The minimum display depth required for this theme. This can either
-     * be 8 or 32 */
+    /**
+     * The minimum display depth required for this theme. This can either
+     * be 8 or 32.
+     */
     int depth() const { return mDepth; }
 
-    /** The default size of this theme for a certain icon group.
+    /**
+     * The default size of this theme for a certain icon group.
      * @param group The icon group. See @ref #KIcon::Group.
      * @return The default size in pixels for the given icon group.
      */
     int defaultSize(KIcon::Group group) const;
 
-    /** Query available sizes for a group. */
+    /**
+     * Query available sizes for a group.
+     */
     QValueList<int> querySizes(KIcon::Group group) const;
 
-    /** Query available icons for a size and context. */
+    /**
+     * Query available icons for a size and context.
+     */
     QStringList queryIcons(int size, KIcon::Context context = KIcon::Any) const;
 
-    /** Query available icons for a context and preferred size. */
+    /**
+     * Query available icons for a context and preferred size.
+     */
     QStringList queryIconsByContext(int size, KIcon::Context context = KIcon::Any) const;
 
 
-    /** Lookup an icon in the theme.
+    /**
+     * Lookup an icon in the theme.
      * @param name The name of the icon, without extension.
      * @param size The desired size of the icon.
      * @param match The matching mode. KIcon::MatchExact returns an icon
@@ -144,10 +188,14 @@ public:
      */
     KIcon iconPath(const QString& name, int size, KIcon::MatchType match) const;
 
-    /** List all icon themes installed on the system, global and local. */
+    /**
+     * List all icon themes installed on the system, global and local.
+     */
     static QStringList list();
 
-    /** Returns the current icon theme. */
+    /**
+     * Returns the current icon theme.
+     */
     static QString current();
 
     static void reconfigure();

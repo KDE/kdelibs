@@ -57,7 +57,9 @@ public:
     KHTMLSettings();
     KHTMLSettings(const KHTMLSettings &other);
 
-    /** Called by constructor and reparseConfiguration */
+    /**
+     * Called by constructor and reparseConfiguration
+     */
     void init();
 
     /** Read settings from @p config.
@@ -66,7 +68,9 @@ public:
      */
     void init( KConfig * config, bool reset = true );
 
-    /** Destructor. Don't delete any instance by yourself. */
+    /**
+     * Destructor. Don't delete any instance by yourself.
+     */
     virtual ~KHTMLSettings();
 
     // Behaviour settings

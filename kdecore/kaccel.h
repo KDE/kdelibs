@@ -167,15 +167,23 @@ class KAccel : public QAccel
 	bool remove( const QString& sAction );
 	bool updateConnections();
 
-	/** Return the shortcut associated with the action named by @p sAction. */
+	/**
+	 * Return the shortcut associated with the action named by @p sAction.
+	 */
 	const KShortcut& shortcut( const QString& sAction ) const;
 
-	/** Set the shortcut to be associated with the action named by @p sAction. */
+	/**
+	 * Set the shortcut to be associated with the action named by @p sAction.
+	 */
 	bool setShortcut( const QString& sAction, const KShortcut& );
-	/** Set the slot to be called when the shortcut of the action named
-	  * by @p sAction is pressed. */
+	/**
+	 * Set the slot to be called when the shortcut of the action named
+	 * by @p sAction is pressed.
+	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
-	/** Enable or disable the action named by @p sAction. */
+	/**
+	 * Enable or disable the action named by @p sAction.
+	 */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
 	const QString& configGroup() const;

@@ -559,7 +559,9 @@ namespace KJS {
     Operator oper;
   };
 
-  /** expr1 && expr2, expr1 || expr2 */
+  /**
+   * expr1 && expr2, expr1 || expr2
+   */
   class BinaryLogicalNode : public Node {
   public:
     BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
@@ -574,7 +576,9 @@ namespace KJS {
     Operator oper;
   };
 
-  /** The ternary operator, "logical ? expr1 : expr2" */
+  /**
+   * The ternary operator, "logical ? expr1 : expr2"
+   */
   class ConditionalNode : public Node {
   public:
     ConditionalNode(Node *l, Node *e1, Node *e2) :

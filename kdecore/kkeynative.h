@@ -33,7 +33,9 @@ class KKeyNative
 	KKeyNative( const XEvent* );
 	KKeyNative( const KKey& );
 	KKeyNative( const KKeyNative& );
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	KKeyNative( uint code, uint mod, uint sym );
 	~KKeyNative();
 
@@ -67,8 +69,10 @@ class KKeyNative
 	// General query functions. //
 	static bool keyboardHasWinKey();
 	static uint modX( KKey::ModFlag modFlag );
-	/** Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
-	 * Win (if available). */
+	/**
+	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
+	 * Win (if available).
+	 */
 	static uint accelModMaskX();
 
  private:

@@ -51,7 +51,9 @@ class KKey
 	KKey( const QKeyEvent* );
 	KKey( const KKey& );
 	KKey( const QString& );
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	KKey( uint key, uint mod );
 	~KKey();
 
@@ -62,7 +64,9 @@ class KKey
 	bool init( const QKeyEvent* );
 	bool init( const KKey& );
 	bool init( const QString& );
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	bool init( uint key, uint mod );
 
 	KKey& operator =( const KKey& key )
@@ -73,9 +77,13 @@ class KKey
 	bool isValidQt() const;
 	bool isValidNative() const;
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	uint sym() const;
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	uint modFlags() const;
 
  // Comparison Methods

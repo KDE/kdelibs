@@ -64,10 +64,14 @@ public:
      */
     virtual ~Plugin();
 
-    /** Reimplemented for internal reasons */
+    /**
+     * Reimplemented for internal reasons
+     */
     virtual QString xmlFile() const;
 
-    /** Reimplemented for internal reasons */
+    /**
+     * Reimplemented for internal reasons
+     */
     virtual QString localXMLFile() const;
 
     /**

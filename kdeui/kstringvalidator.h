@@ -116,13 +116,16 @@ public:
   KMimeTypeValidator( QObject* parent, const char* name=0)
     : QValidator( parent, name ) {}
   
-  /** Checks for well-formed mimetype. Returns
-      @li Acceptable iff input ~= /^[:allowed chars:]+\/[:allowed chars:]+$/
-      @li Intermediate iff input ~= /^[:allowed chars:]*\/?[:allowed chars:]*$/
-      @li Invalid else
-  */
+  /**
+   * Checks for well-formed mimetype. Returns
+   * @li Acceptable iff input ~= /^[:allowed chars:]+\/[:allowed chars:]+$/
+   * @li Intermediate iff input ~= /^[:allowed chars:]*\/?[:allowed chars:]*$/
+   * @li Invalid else
+   */
   virtual State validate( QString & input, int & pos ) const;
-  /** Removes all characters that are forbidden in mimetypes. */
+  /**
+   * Removes all characters that are forbidden in mimetypes.
+   */
   virtual void fixup( QString & input ) const;
 private:
   class KMimeTypeValidator* d;

@@ -286,7 +286,9 @@ private:
    */
   KFileItemList m_items;
 
-  /** For templates */
+  /**
+   * For templates
+   */
   QString m_defaultName;
   KURL m_currentDir;
 

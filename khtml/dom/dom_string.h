@@ -43,7 +43,9 @@ class DOMString
     friend class CharacterDataImpl;
     friend bool operator==( const DOMString &a, const char *b );
 public:
-    /** default constructor. Gives an empty DOMString */
+    /**
+     * default constructor. Gives an empty DOMString
+     */
     DOMString();
 
     DOMString(const QChar *str, uint len);

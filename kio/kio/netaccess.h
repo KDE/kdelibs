@@ -206,11 +206,17 @@ public:
     static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
 
 private:
-    /** Private constructor */
+    /**
+     * Private constructor
+     */
     NetAccess() {}
-    /** Private destructor */
+    /**
+     * Private destructor
+     */
     ~NetAccess() {}
-    /** Internal methods */
+    /**
+     * Internal methods
+     */
     bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
     bool dircopyInternal(const KURL& src, const KURL& target, bool overwrite);
     bool statInternal(const KURL & url);
@@ -220,11 +226,15 @@ private:
     QString mimetypeInternal(const KURL & url);
     void enter_loop();
     QString m_mimetype;
-    /** List of temporary files */
+    /**
+     * List of temporary files
+     */
     static QStringList* tmpfiles;
 
     static QString* lastErrorMsg;
-    /** Whether the download succeeded or not */
+    /**
+     * Whether the download succeeded or not
+     */
     bool bJobOK;
     friend class I_like_this_class;
 

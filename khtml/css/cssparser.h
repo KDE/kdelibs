@@ -59,10 +59,14 @@ public:
 	    delete tagHistory;
     }
 
-    /** Print debug output for this selector */
+    /**
+     * Print debug output for this selector
+     */
     void print(void);
 
-    /** Re-create selector text from selector's data */
+    /**
+     * Re-create selector text from selector's data
+     */
     DOMString selectorText() const;
 
     // checks if the 2 selectors (including sub selectors) agree.

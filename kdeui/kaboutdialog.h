@@ -168,47 +168,79 @@ public:
    * Sets the image as the application logo.
    */
   void setLogo(const QPixmap&);
-  /** Sets the author's name and email address. */
+  /**
+   * Sets the author's name and email address.
+   */
   void setAuthor(const QString& name, const QString& email,
 		 const QString& url, const QString& work);
-  /** Sets the maintainers name and email address. */
+  /**
+   * Sets the maintainers name and email address.
+   */
   void setMaintainer(const QString& name, const QString& email,
 		     const QString& url, const QString& work);
-  /** Shows this person as one of the major contributors. */
+  /**
+   * Shows this person as one of the major contributors.
+   */
   void addContributor(const QString& name, const QString& email,
 		      const QString& url, const QString& work);
-  /** Sets the text describing the version. */
+  /**
+   * Sets the text describing the version.
+   */
   void setVersion(const QString& name);
   // -------------------------------------------------------------------------
 protected slots:
-  /** Catches the signals from the contributors elements. */
+  /**
+   * Catches the signals from the contributors elements.
+   */
   void sendEmailSlot(const QString& name, const QString& email);
-  /** Catches the clicked URLs. */
+  /**
+   * Catches the clicked URLs.
+   */
   void openURLSlot(const QString& url);
   // -------------------------------------------------------------------------
 signals:
-  /** An email address has been selected by the user. */
+  /**
+   * An email address has been selected by the user.
+   */
   void sendEmail(const QString& name, const QString& email);
-  /** An URL has been clicked. */
+  /**
+   * An URL has been clicked.
+   */
   void openURL(const QString& url);
   // -------------------------------------------------------------------------
 protected:
   // events:
-  /** The resize event. */
+  /**
+   * The resize event.
+   */
   void resizeEvent(QResizeEvent*);
-  /** The label showing the program version. */
+  /**
+   * The label showing the program version.
+   */
   QLabel *version;
-  /** The label showing the text "Other contributors:". */
+  /**
+   * The label showing the text "Other contributors:".
+   */
   QLabel *cont;
-  /** The frame showing the logo. */
+  /**
+   * The frame showing the logo.
+   */
   QLabel *logo;
-  /** The application developer. */
+  /**
+   * The application developer.
+   */
   KAboutContributor *author;
-  /** The application maintainer. */
+  /**
+   * The application maintainer.
+   */
   KAboutContributor *maintainer;
-  /** Show the maintainer? */
+  /**
+   * Show the maintainer?
+   */
   bool showMaintainer;
-  /** A set of people who contributed to the application. */
+  /**
+   * A set of people who contributed to the application.
+   */
   QPtrList<KAboutContributor> contributors;
   // #########################################################################
   //

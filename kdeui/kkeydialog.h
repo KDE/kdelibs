@@ -154,12 +154,16 @@ class KKeyChooser : public QWidget
 
 #ifndef KDE_NO_COMPAT
  public:
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KKeyChooser( KAccel* actions, QWidget* parent,
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
 			bool bAllowWinKey = false );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
@@ -169,7 +173,7 @@ class KKeyChooser : public QWidget
 	/**
 	 * Rebuild list entries based on underlying map.
 	 * Use this if you changed the underlying map.
-	 **/
+	 */
 	void listSync();
 
 #endif
@@ -238,7 +242,7 @@ class KKeyDialog : public KDialogBase
 	 * from a @ref KAccelBase object, and the modifications are written to that object
 	 * when the dialog is closed.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
-	 **/
+	 */
 	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 
 	/**
@@ -252,7 +256,7 @@ class KKeyDialog : public KDialogBase
 	 * It behaves essentially like the above function.
 	 * The dialog is initialized
 	 * from an action collection (for XMLGUI based applications).
-	 **/
+	 */
 	static int configure( KActionCollection* coll,
 		QWidget* parent = 0, bool bSaveSettings = true );
 

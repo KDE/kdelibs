@@ -78,7 +78,9 @@ namespace KParts {
         // NotHandled means that foundMimeType should call KRun::foundMimeType,
         // i.e. launch an external app.
         enum NonEmbeddableResult { Handled, NotHandled, Delayed };
-        /** Helper for foundMimeType: call this if the mimetype couldn't be embedded */
+        /**
+	 * Helper for foundMimeType: call this if the mimetype couldn't be embedded
+	 */
         NonEmbeddableResult handleNonEmbeddable( const QString& mimeType );
 
     protected slots:

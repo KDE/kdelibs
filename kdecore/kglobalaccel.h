@@ -75,14 +75,22 @@ class KGlobalAccel : public QObject
 
 	bool updateConnections();
 
-	/** Set the shortcut to be associated with the action named by @p sAction. */
+	/**
+	 * Set the shortcut to be associated with the action named by @p sAction.
+	 */
 	const KShortcut& shortcut( const QString& sAction ) const;
-	/** Set the shortcut to be associated with the action named by @p sAction. */
+	/**
+	 * Set the shortcut to be associated with the action named by @p sAction.
+	 */
 	bool setShortcut( const QString& sAction, const KShortcut& );
-	/** Set the slot to be called when the shortcut of the action named
-	  * by @p sAction is pressed. */
+	/**
+	 * Set the slot to be called when the shortcut of the action named
+	 * by @p sAction is pressed.
+	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
-	/** Enable or disable the action named by @p sAction. */
+	/** 
+	 * Enable or disable the action named by @p sAction.
+	 */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
 	const QString& configGroup() const;
@@ -101,8 +109,10 @@ class KGlobalAccel : public QObject
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 
-	/** @internal -- this a wrapper function to
-	 * KAccelActions::useFourModifierKeys(). */
+	/**
+	 * @internal -- this a wrapper function to
+	 * KAccelActions::useFourModifierKeys().
+	 */
 	static bool useFourModifierKeys();
 
  private:

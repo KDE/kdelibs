@@ -455,14 +455,20 @@ private:
         PopupAutoCompletion
     };
 
-    /** Initializes variables.  Called from the constructors. */
+    /**
+     * Initializes variables.  Called from the constructors.
+     */
     void init();
 
-    /** Creates the completion box */
+    /**
+     * Creates the completion box
+     */
     void makeCompletionBox();
     
-    /** Checks whether we should/should not consume a key used as 
-        an accelerator.*/
+    /**
+     * Checks whether we should/should not consume a key used as 
+     * an accelerator.
+     */
     bool overrideAccel (const QKeyEvent* e);
 
     bool m_bEnableMenu;

@@ -495,7 +495,9 @@ private:
         SemiAutoCompletion
     };
 
-    /** Initializes the variables upon construction. */
+    /**
+     * Initializes the variables upon construction.
+     */
     void init();
     /**
      * Temporary functions to delete words back and foward until

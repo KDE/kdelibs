@@ -130,19 +130,27 @@ namespace KParts
         }
     };
 
-    /** @internal */
+    /**
+     * @internal
+     */
     template <class T>
     GenericFactoryBase<T> *GenericFactoryBase<T>::s_self = 0;
 
-    /** @internal */
+    /**
+     * @internal
+     */
     template <class T>
     KInstance *GenericFactoryBase<T>::s_instance = 0;
 
-    /** @internal */
+    /**
+     * @internal
+     */
     template <class T>
     KAboutData *GenericFactoryBase<T>::s_aboutData = 0;
 
-    /** @internal */
+    /**
+     * @internal
+     */
     template <class T>
     KInstance *GenericFactoryBase<T>::instance()
     {
@@ -156,7 +164,9 @@ namespace KParts
         return s_instance;
     }
 
-    /** @internal */
+    /**
+     * @internal
+     */
     template <class T>
     KAboutData *GenericFactoryBase<T>::aboutData()
     {

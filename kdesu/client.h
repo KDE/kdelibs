@@ -163,13 +163,19 @@ public:
      */
     int ping();
 
-    /** Stop the daemon.  */
+    /**
+     * Stop the daemon.
+     */
     int stopServer();
 
-    /** Try to start up kdesud */
+    /**
+     * Try to start up kdesud
+     */
     int startServer();
 
-    /** Returns true if the server is safe (installed setgid), false otherwise. */
+    /**
+     * Returns true if the server is safe (installed setgid), false otherwise.
+     */
     bool isServerSGID();
 
 private:

@@ -58,9 +58,13 @@ class TestRender : public QWidget
 {
   Q_OBJECT
 public:
-  /** construtor */
+  /**
+   * construtor
+   */
   TestRender(QString _sourceDir, QString _destDir, QString _logFilename, QWidget* parent=0, const char *name=0);
-  /** destructor */
+  /**
+   * destructor
+   */
   ~TestRender();
 
   void processFiles();

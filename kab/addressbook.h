@@ -35,16 +35,30 @@ class KeyNameMap;
 #include <qvariant.h>
 #include <qmap.h>
 
-/** The class KabKey is used to select entries out of the database file.
- *  In future, keys might become more complex. */
+/**
+ * The class KabKey is used to select entries out of the database file.
+ * In future, keys might become more complex.
+ */
 class KabKey
 {
 public:
-  bool operator==(const KabKey&) const; /**< The comparison operator. */
-  QCString getKey() const; /**< Get the key as a QCString. */
-  void setKey(const QCString&); /**< Set this key. */
+  /**
+   * The comparison operator
+   */
+  bool operator==(const KabKey&) const;
+  /**
+   * Get the key as a QCString
+   */
+  QCString getKey() const;
+  /**
+   * Set this key
+   */
+  void setKey(const QCString&);
 protected:
-  QCString key; /**< The key of the in this database. */
+  /**
+   * The key of the in this database
+   */
+  QCString key;
 
   class KabKeyPrivate;
   KabKeyPrivate *d;
@@ -164,18 +178,20 @@ class CategoriesMap : public QMap<int, QString>
  *  your mainwindow (or whereever). (The toolbar is not implemented by now). <BR>
  *  Some parts of the AddressBook widget are \e interactive, that means they are
  *  displayed as transparent KURLLabels that react when the user clicks on it.
- *  These interactive parts have to be enabled by calling #setInteractiveMode. */
-
+ *  These interactive parts have to be enabled by calling #setInteractiveMode.
+ */
 class AddressBook : public QFrame
 {
   // ############################################################################
   Q_OBJECT
   // ----------------------------------------------------------------------------
 public:
-  /** The return values of some AddressBook member functions are #ErrorCode 
-   *  values. */
+  /**
+   * The return values of some AddressBook member functions are #ErrorCode
+   * values.
+   */
   enum ErrorCode {
-    NoError, /**< No error, the operation did not fail. */
+    NoError, /** No error, the operation did not fail. */
     PermDenied, /**< Access permissions for the operation are not available. */
     Locked, /**< An writing operation on a locked file was requested. */
     Rejected, /**< The requested operation has been rejected by the user. */
@@ -188,8 +204,10 @@ public:
     NoSuchField, /**< You queried a field that does not exist. */ 
     NotImplemented /**< The requested operation is not implemented. */
   };
-  /** Some predefined telephone types. More are possible, but these are
-   *  provided and thus, for example, translated. */
+  /**
+   * Some predefined telephone types. More are possible, but these are
+   * provided and thus, for example, translated.
+   */
   enum Telephone {
     NoTelephone,
     Fixed,
@@ -397,9 +415,11 @@ public:
     QStringList talk;  /**< The talk addresses. */
     QStringList emails; /**< The email addresses. */
     QStringList keywords; /**< The user defined keywords for searching. */
-    /** Telephon numbers and types. This list contains combinations of telephone
-     *  numbers and the types of the phones, in this order. See enum
-     *  Telephone above. */
+    /**
+     * Telephon numbers and types. This list contains combinations of telephone
+     * numbers and the types of the phones, in this order. See enum
+     * Telephone above.
+     */
     QStringList telephone; 
     QStringList URLs; /**< The home or related web pages of this person. */
     QString user1; /**< The first user-declared field. */
@@ -411,49 +431,74 @@ public:
   protected:
     static KeyNameMap *fields;
   };
-  /** The constructor. If \e load is true, the user standard file will
-   *  automatically be loaded into the object. */
+  /**
+   * The constructor. If \e load is true, the user standard file will
+   * automatically be loaded into the object.
+   */
   AddressBook(QWidget* parent=0, const char* name=0, bool load=true);
   ~AddressBook(); /**< The destructor. */
-  /** Get the internal state of the object. 
-   *  If no problem occured, it returns ::NoError. 
-   *  If the standard or the latest opened file could not be loaded,
-   *  it returns ::PermDenied.*/
+  /**
+   * Get the internal state of the object. 
+   * If no problem occured, it returns ::NoError. 
+   * If the standard or the latest opened file could not be loaded,
+   * it returns ::PermDenied
+   */
   ErrorCode getState();
-  /** Load the file with the given path. An empty file name reloads the 
-   *  currently opened file. */
+  /**
+   * Load the file with the given path. An empty file name reloads the 
+   * currently opened file.
+   */
   ErrorCode load(const QString& filename=QString::null);
-  /** Save the file to the given path and file name.  An empty file name saves 
-   *  to the file where the database has been read from.
-   *  If force is true, the method will switch to r/w mode for saving and
-   *  back. */
+  /**
+   * Save the file to the given path and file name.  An empty file name saves 
+   * to the file where the database has been read from.
+   * If force is true, the method will switch to r/w mode for saving and
+   * back.
+   */
   ErrorCode save(const QString& filename=QString::null, bool force=false);
-  /** Close this file. 
-   *  ::closeFile assures sure that the ::data object is reset no matter of the 
-   *  state of the assigned file. 
-   *  If \a save is true, it will not close the file if it could not be 
-   *  saved. */
+  /**
+   * Close this file. 
+   * ::closeFile assures sure that the ::data object is reset no matter of the 
+   * state of the assigned file. 
+   * If \a save is true, it will not close the file if it could not be 
+   * saved.
+   */
   ErrorCode closeFile(bool saveit=true);
-  /** Retrieve an entry from the database by its key. */
+  /**
+   * Retrieve an entry from the database by its key.
+   */
   ErrorCode getEntry(const KabKey& key, Entry&);
-  /** Retrieve the Section of the entry directly, returning a section object. */
+  /**
+   * Retrieve the Section of the entry directly, returning a section object.
+   */
   ErrorCode getEntry(const KabKey& key, Section*&);
-  /** Get all entries in displaying order. This method might be slow (O(n)). */
+  /**
+   * Get all entries in displaying order. This method might be slow (O(n)).
+   */
   ErrorCode getEntries(std::list<Entry>&);
-  /** Add an ::Entry, \a return the new key for further operations.
-   *  If update is false, the mirror map will not be affected, if it is true,
-   *  the mirror map gets updated, too. */
+  /**
+   * Add an ::Entry, \a return the new key for further operations.
+   * If update is false, the mirror map will not be affected, if it is true,
+   * the mirror map gets updated, too.
+   */
   ErrorCode add(const Entry&, KabKey& key, bool update=true);
-  /** Set the entry with the given key to the new contents. Be aware of
-   *  #PermDenied for read-only databases or file sharing conflicts. You cannot 
-   *  change entries in a database for which you do not have write access. */
+  /**
+   * Set the entry with the given key to the new contents. Be aware of
+   * #PermDenied for read-only databases or file sharing conflicts. You cannot 
+   * change entries in a database for which you do not have write access.
+   */
   ErrorCode change(const KabKey& key, const Entry&);
-  /** Remove the  entry with the given key. Returns #NoSuchEntry if there is no 
-   *  entry with this key, #PermDenied for read only databases. */
+  /**
+   * Remove the  entry with the given key. Returns #NoSuchEntry if there is no 
+   * entry with this key, #PermDenied for read only databases.
+   */
   ErrorCode remove(const KabKey& key);
-  /** Returns the number of entries in the loaded database. */
+  /**
+   * Returns the number of entries in the loaded database.
+   */
   unsigned int noOfEntries();
-  /** This method returns the literal name for the entry, 
+  /**
+   * This method returns the literal name for the entry, 
     * containing either the formatted name (if given) or a 
     * combination of the first, additional and last name. 
     * The name is returned in \a text.
@@ -468,73 +513,104 @@ public:
     */
   ErrorCode literalName(const KabKey& key, QString& text,
 			bool reverse=false, bool initials=false);
-  /** This is an overloaded method that differs only in the arguments it takes.
+  /**
+   * This is an overloaded method that differs only in the arguments it takes.
    */
   ErrorCode literalName(const Entry& entry, QString& text,
 			bool reverse=false, bool initials=false);
-  /** Get the key of the item in the selector with the given index. */
+  /**
+   * Get the key of the item in the selector with the given index.
+   */
   ErrorCode getKey(int index, KabKey&);
-  /** Get the index of this key in the selector. This is the reverse
-      functionality to getKey(). */
+  /**
+   * Get the index of this key in the selector. This is the reverse
+   * functionality to getKey().
+   */
   ErrorCode getIndex(const KabKey&, int&);
-  /** Fill the string list with name lines. If your application shows a combobox 
-   *  containing an overview over the currently loaded KabAPI database, then 
-   *  call this method when receiving the signal ::changed and display the list
-   *  in the combo. */
+  /**
+   * Fill the string list with name lines. If your application shows a combobox 
+   * containing an overview over the currently loaded KabAPI database, then 
+   * call this method when receiving the signal ::changed and display the list
+   * in the combo.
+   */
   ErrorCode getListOfNames(QStringList*, bool reverse=true, bool initials=true);
-  /** Hand over the configuration database. Careful! */
+  /**
+   * Hand over the configuration database. Careful!
+   */
   QConfigDB* getConfig(); 
-  /** This method returns the QConfigDB section where the configuration of the
-      currently opened file is stored. It might be used to retrieve or to modify
-      these settings. The file-specific settings are saved along with
-      the open file.
-      Do not confuse the configuration section of the opened file with 
-      the configuration of the program. Each file might have its own
-      local configuration for some settings where it makes sense. 
-      @ return Null if no file has been opened. 
-  */
+  /**
+   * This method returns the QConfigDB section where the configuration of the
+   * currently opened file is stored. It might be used to retrieve or to modify
+   * these settings. The file-specific settings are saved along with
+   * the open file.
+   * Do not confuse the configuration section of the opened file with 
+   * the configuration of the program. Each file might have its own
+   * local configuration for some settings where it makes sense. 
+   * @ return Null if no file has been opened. 
+   */
   Section *configurationSection();
-  /** This method opens a dialog for configuring the file-specific settings
-   *  for the loaded file. The database is automatically saved if the user
-   *  accepts the changes. */
+  /**
+   * This method opens a dialog for configuring the file-specific settings
+   * for the loaded file. The database is automatically saved if the user
+   * accepts the changes.
+   */
   // ErrorCode configureFile();
-  /** Creates a new database with the given file name. If the filename is 
-   *  empty, it creates the users standard data file. The method does not load
-   *  the new database. */
+  /**
+   * Creates a new database with the given file name. If the filename is 
+   * empty, it creates the users standard data file. The method does not load
+   * the new database.
+   */
   ErrorCode createNew(const QString& filename=QString::null);
-  /** Creates the local configuration file. The filename is fixed to
-   *  \c kab.config, it will be created in the local kab directory
-   *  (\c $HOME/.kde/share/apps/kab). Adapt the global configuration template
-   *  file (\c $KDEDIR/share/apps/kab/template.config) for unusual site-specific
-   *  settings.
-   *  The method does not load the new config file. */
+  /**
+   * Creates the local configuration file. The filename is fixed to
+   * \c kab.config, it will be created in the local kab directory
+   * (\c $HOME/.kde/share/apps/kab). Adapt the global configuration template
+   * file (\c $KDEDIR/share/apps/kab/template.config) for unusual site-specific
+   * settings.
+   * The method does not load the new config file.
+   */
   ErrorCode createConfigFile();
   ErrorCode loadConfigFile(); /**< Load the local configuration file. */
   // ErrorCode configureKab(); /**< Open the configuration dialog for the KabAPI. */
   // QSize sizeHint();  /**< The preferred (minimal) size of the view. */ // ni
-  /** This method parses a vCard and creates an Entry object from it. */
+  /**
+   * This method parses a vCard and creates an Entry object from it.
+   */
   ErrorCode makeEntryFromVCard(const QString& card, Entry&);
-  /** This method creates a vCard string from an entry. */
+  /**
+   * This method creates a vCard string from an entry.
+   */
   ErrorCode makeVCardFromEntry(const Entry& entry, const QString& card);
-  /** Returns the complete path to the user standard file. An empty path
-   *  indicates an error, but this should not happen. It is NOT ensured
-   *  that the file exists. */
+  /**
+   * Returns the complete path to the user standard file. An empty path
+   * indicates an error, but this should not happen. It is NOT ensured
+   * that the file exists.
+   */
   QString getStandardFileName();
-  /** Call this to get a telephone type translated to the locale. */
+  /**
+   * Call this to get a telephone type translated to the locale.
+   */
   static QString phoneType(AddressBook::Telephone);
-  /** Query the entry categories defined for this address
-      book. Categories may differ between addressbooks. */
+  /**
+   * Query the entry categories defined for this address
+   * book. Categories may differ between addressbooks.
+   */
   ErrorCode categories(CategoriesMap& categories);
-  /** Modify the categories for this addressbook. The map given will replace the 
-      previoulsy stored one. */
+  /**
+   * Modify the categories for this addressbook. The map given will replace the 
+   * previoulsy stored one.
+   */
   ErrorCode setCategories(const CategoriesMap& categories);
-  /** Query the real name of a category by its index. */
+  /**
+   * Query the real name of a category by its index.
+   */
   ErrorCode category(int index, QString&);
-  /** Query the category section. This is the "raw" storage of the defined 
-      categories. It is always defined (or will be created if you have an old 
-      file that does not have categories).
-      @see Section
-  */
+  /**
+   * Query the category section. This is the "raw" storage of the defined 
+   * categories. It is always defined (or will be created if you have an old 
+   *  file that does not have categories).
+   *  @see Section
+   */
   Section* categoriesSection();
   // ----------------------------------------------------------------------------
 
@@ -548,63 +624,99 @@ protected:
   QConfigDB *data; /**< The currently open data files. */
   StringKabKeyMap *entries; /**< The mirror map. */
   ErrorCode state; /**< The internal state of the object. */
-  /** Get the next available entry key for this file. For internal use only. */
+  /**
+   * Get the next available entry key for this file. For internal use only.
+   */
   KabKey nextAvailEntryKey();
-  /** Returns true if both pathes point to the same file.
-   *  The method resolves relative file names to find this out. */
+  /**
+   * Returns true if both pathes point to the same file.
+   *  The method resolves relative file names to find this out.
+   */
   bool isSameFile(const QString& a, const QString& b);
-  /** Parse the section and copy its contents into \a entry.
-   *  The method expects a subsection called \e addresses that contains a
-   *  number of subsections each containing data for one Entry::Address object.
-   *  All other fields are copied directly into the members of \a entry. */
+  /**
+   * Parse the section and copy its contents into \a entry.
+   * The method expects a subsection called \e addresses that contains a
+   * number of subsections each containing data for one Entry::Address object.
+   * All other fields are copied directly into the members of \a entry.
+   */
   ErrorCode makeEntryFromSection(Section*, Entry&); // nicht beendet
-  /** For internal use only. This parses one address subsection and puts its
-   *  contents in the Address object. */
+  /**
+   * For internal use only. This parses one address subsection and puts its
+   * contents in the Address object.
+   */
   ErrorCode makeAddressFromMap(KeyValueMap*, Entry::Address&);
-  /** Create a section from the entries settings. */
+  /**
+   * Create a section from the entries settings.
+   */
   ErrorCode makeSectionFromEntry(const Entry&, Section&); // nicht beendet
-  /** Update the mirror map after changes of the database. */
+  /**
+   * Update the mirror map after changes of the database.
+   */
   ErrorCode updateMirrorMap();
-  /** Get the entry section of the file. Maybe a NULL pointer if no file is
-   *  opened. */
+  /**
+   * Get the entry section of the file. Maybe a NULL pointer if no file is
+   * opened.
+   */
   Section* entrySection();
-  /** Lock the file for changing.
-   *  Since all database files are opened read-only, they must be locked before
-   *  the files contents are changed. After changing the file must be saved and
-   *  unlocked. Returns ::PermDenied if the file could not be locked, ::NoError
-   *  if it was not locked and is now, and ::Locked if the file is already
-   *  locked.
-   *  @see unlock
-   *  @see QConfigDB::setFileName */
+  /**
+   * Lock the file for changing.
+   * Since all database files are opened read-only, they must be locked before
+   * the files contents are changed. After changing the file must be saved and
+   * unlocked. Returns ::PermDenied if the file could not be locked, ::NoError
+   * if it was not locked and is now, and ::Locked if the file is already
+   * locked.
+   * @see unlock
+   * @see QConfigDB::setFileName
+   */
   ErrorCode lock();
-  /** Unlock the file after changes. Returns ::NoError if the file was locked
-   *  and could be unlocked, ::PermDenied if the file was not locked and
-   *  possibly ::InternError if anything fails.
-   *  @see ::lock
-   *  @see QConfigDB::setFileName */ 
+  /**
+   * Unlock the file after changes. Returns ::NoError if the file was locked
+   * and could be unlocked, ::PermDenied if the file was not locked and
+   * possibly ::InternError if anything fails.
+   * @see ::lock
+   * @see QConfigDB::setFileName
+   */ 
   ErrorCode unlock();
-  /** Set the background image. Kab will store a deep copy of the image.
-   *  If the image is a null image nothing will be displayed. */
+  /**
+   * Set the background image. Kab will store a deep copy of the image.
+   * If the image is a null image nothing will be displayed.
+   */
   // void setBackground(const QImage&);
-  /** Enable or disable the background image. */
+  /**
+   * Enable or disable the background image.
+   */
   // void setBackgroundEnabled(bool state);
-  /** Retrieve wether the background image is enabled or not. */
+  /**
+   * Retrieve wether the background image is enabled or not.
+   */
   // bool getBackgroundEnabled();
-  /** Set if the URL labels are interactive. */
+  /**
+   * Set if the URL labels are interactive.
+   */
   // void setInteractiveMode(bool state);
-  /** Get if the URL labels are interactive. */
+  /**
+   * Get if the URL labels are interactive.
+   */
   // bool getInteractiveMode();
 protected slots:
-  /** Called when ::data has been cleared or reloaded. */
+  /**
+   * Called when ::data has been cleared or reloaded.
+   */
   void reloaded(QConfigDB*);
-  /** Called when the \e file assigned to ::data has changed on disk. */
+  /**
+   * Called when the \e file assigned to ::data has changed on disk.
+   */
   void dataFileChanged();
-  /** Called when the \e file assigned to ::config has changed on disk. */
+  /**
+   * Called when the \e file assigned to ::config has changed on disk.
+   */
   void configFileChanged();
   // ----------------------------------------------------------------------------
 public slots:
-  /** This slot is called when an external object changed the database through
-      the kabapi. */
+  /**
+   * This slot is called when an external object changed the database through
+   * the kabapi.
+   */
   void externalChange(); 
   // ----------------------------------------------------------------------------
 signals:

@@ -96,7 +96,9 @@ class KFileView {
 public:
     KFileView();
 
-    /** Destructor */
+    /**
+     * Destructor
+     */
     virtual ~KFileView();
 
     /**

@@ -29,10 +29,14 @@ public:
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
 
-    /** Sets the target host. */
+    /**
+     * Sets the target host.
+     */
     void setHost(const QCString &host) { m_Host = host; }
 
-    /** Sets the localtion of the remote stub. */
+    /**
+     * Sets the localtion of the remote stub.
+     */
     void setStub(const QCString &stub);
 
     /** 
@@ -48,7 +52,9 @@ public:
      */
     int checkInstall(const char *password);
 
-    /** Executes the command. */
+    /**
+     * Executes the command.
+     */
     int exec(const char *password, int check=0);
 
     QCString prompt() { return m_Prompt; }

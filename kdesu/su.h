@@ -29,7 +29,9 @@ public:
 
     enum Errors { SuNotFound=1, SuNotAllowed, SuIncorrectPassword };
 
-    /** Executes the command. This will wait for the command to finish. */
+    /**
+     * Executes the command. This will wait for the command to finish.
+     */
     int exec(const char *password, int check=0);
 
     /** 

@@ -84,23 +84,35 @@ public:
      */
     int WaitSlave();
 
-    /** Enables/disables local echo on the pseudo tty. */
+    /**
+     * Enables/disables local echo on the pseudo tty.
+     */
     int enableLocalEcho(bool enable=true);
 
-    /** Enables/disables terminal output. Relevant only to some subclasses. */
+    /**
+     * Enables/disables terminal output. Relevant only to some subclasses.
+     */
     void setTerminal(bool terminal) { m_bTerminal = terminal; }
 
-    /** Overwrites the password as soon as it is used. Relevant only to
-     * some subclasses. */
+    /**
+     * Overwrites the password as soon as it is used. Relevant only to
+     * some subclasses.
+     */
     void setErase(bool erase) { m_bErase = erase; }
 
-    /** Set additinal environment variables. */
+    /**
+     * Set additinal environment variables.
+     */
     void setEnvironment( const QCStringList &env );
 
-    /** Returns the filedescriptor of the process. */
+    /**
+     * Returns the filedescriptor of the process.
+     */
     int fd() {return m_Fd;};
 
-    /** Returns the pid of the process. */
+    /**
+     * Returns the pid of the process.
+     */
     int pid() {return m_Pid;};
 
 protected:

@@ -182,17 +182,29 @@ class KDirWatch : public QObject
     */
    static void statistics();
 
-   /** @ref created() */
+   /**
+    * @ref created()
+    */
    void setDirCreated( const QString& );
-   /** @ref dirty() */
+   /**
+    * @ref dirty()
+    */
    void setDirDirty( const QString& );
-   /** @ref deleted() */
+   /**
+    * @ref deleted()
+    */
    void setDirDeleted( const QString& );
-   /** @ref fileCreated() */
+   /**
+    * @ref fileCreated()
+    */
    void setFileCreated( const QString& );
-   /** @ref fileDirty() */
+   /**
+    * @ref fileDirty()
+    */
    void setFileDirty( const QString& );
-   /** @ref fileDeleted() */
+   /**
+    * @ref fileDeleted()
+    */
    void setFileDeleted( const QString& );
 
    /**

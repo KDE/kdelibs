@@ -109,7 +109,9 @@ class KToggleAction;
  */
 namespace KStdAction
 {
-	/** The standard menubar and toolbar actions. */
+	/**
+	 * The standard menubar and toolbar actions.
+	 */
 	enum StdAction {
 		ActionNone,
 
@@ -171,10 +173,14 @@ namespace KStdAction
 	const char* name( StdAction id );
 	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
 
-	/** Create a new document or window. */
+	/**
+	 * Create a new document or window.
+	 */
 	KAction *openNew(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
-	/** Open an existing file. */
+	/**
+	 * Open an existing file.
+	 */
 	KAction *open(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
 	/**

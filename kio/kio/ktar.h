@@ -110,7 +110,9 @@ private:
     KTarPrivate * d;
 };
 
-/** Old, deprecated naming */
+/**
+ * Old, deprecated naming
+ */
 #define KTarGz KTar
 #define KTarEntry KArchiveEntry
 #define KTarFile KArchiveFile

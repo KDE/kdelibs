@@ -260,28 +260,44 @@ public:
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const KShortcut& cut,
 		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
 		QObject* parent = 0, const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
 		QObject* parent = 0, const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
 		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( const QString& text, const QString& pix, const KShortcut& cut,
 		const QObject* receiver, const char* slot, QObject* parent,
 		const char* name = 0 );
-	/** @obsolete */
+	/**
+	 * @obsolete
+	 */
 	KAction( QObject* parent = 0, const char* name = 0 );
 
-    /** Standard destructor */
+    /**
+     * Standard destructor
+     */
     virtual ~KAction();
 
     /**
@@ -376,10 +392,14 @@ public:
     QString shortcutText() const;
     void setShortcutText( const QString& );
 
-    /** Returns true if this action is enabled. */
+    /**
+     * Returns true if this action is enabled.
+     */
     virtual bool isEnabled() const;
 
-    /** Returns true if this action's shortcut is configurable. */
+    /**
+     * Returns true if this action's shortcut is configurable.
+     */
     virtual bool isShortcutConfigurable() const;
 
     virtual QString group() const;
@@ -461,7 +481,9 @@ public slots:
      */
     virtual void setEnabled(bool enable);
 
-    /** Indicate whether the user may configure the action's shortcut. */
+    /**
+     * Indicate whether the user may configure the action's shortcut.
+     */
     virtual void setShortcutConfigurable( bool );
 
     /**
@@ -1392,23 +1414,23 @@ public:
     void popup( const QPoint& global );
 
     /**
-       Returns true if this action creates a delayed popup menu
-       when plugged in a KToolbar.
+     * Returns true if this action creates a delayed popup menu
+     * when plugged in a KToolbar.
      */
     bool delayed() const;
     /**
-       If set to true, this action will create a delayed popup menu
-       when plugged in a KToolbar. Otherwise it creates a normal popup.
-       Default: delayed
-
-       Remember that if the "main" action (the toolbar button itself)
-       cannot be clicked, then you should call setDelayed(false).
-
-       On the opposite, if the main action can be clicked, it can only happen
-       in a toolbar: in a menu, the parent of a submenu can't be activated.
-       To get a "normal" menu item when plugged a menu (and no submenu)
-       use KToolBarPopupAction.
-    */
+     * If set to true, this action will create a delayed popup menu
+     * when plugged in a KToolbar. Otherwise it creates a normal popup.
+     * Default: delayed
+     *
+     * Remember that if the "main" action (the toolbar button itself)
+     * cannot be clicked, then you should call setDelayed(false).
+     *
+     * On the opposite, if the main action can be clicked, it can only happen
+     * in a toolbar: in a menu, the parent of a submenu can't be activated.
+     * To get a "normal" menu item when plugged a menu (and no submenu)
+     * use KToolBarPopupAction.
+     */
     void setDelayed(bool _delayed);
 
     /**
@@ -1594,7 +1616,9 @@ public:
    */
   virtual void setWidget( QWidget *widget );
 
-  /* Return the collection's KAccel object */
+  /**
+   * Return the collection's KAccel object
+   */
   virtual KAccel* accel();
   virtual const KAccel* accel() const;
   virtual uint count() const;
@@ -1606,9 +1630,13 @@ public:
   virtual KActionPtrList actions( const QString& group ) const;
   virtual KActionPtrList actions() const;
 
-  // Used for reading shortcut configuration from a non-XML rc file.
+  /**
+   * Used for reading shortcut configuration from a non-XML rc file.
+   */
   bool readShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
-  // Used for writing shortcut configuration to a non-XML rc file.
+  /**
+   * Used for writing shortcut configuration to a non-XML rc file.
+   */
   bool writeShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 ) const;
 
   void setInstance( KInstance *instance );

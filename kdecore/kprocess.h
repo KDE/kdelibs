@@ -43,7 +43,7 @@ class KProcessPrivate;
 /**
  * Child process invocation, monitoring and control.
  *
-  * @sect General usage and features
+ * @sect General usage and features
  *
  *This class allows a KDE application to start child processes without having
  *to worry about UN*X signal handling issues and zombie process reaping.
@@ -167,7 +167,7 @@ public:
 
   /**
    * Run-modes for a child process.
-  */
+   */
   enum RunMode {
       /**
        * The application does not receive notifications from the subprocess when
@@ -183,7 +183,9 @@ public:
         */
        Block };
 
-  /** Constructor */
+  /**
+   * Constructor
+   */
   KProcess();
 
   /**
@@ -496,75 +498,76 @@ signals:
 protected slots:
 
  /**
-   This slot gets activated when data from the child's stdout arrives.
-   It usually calls "childOutput"
+  * This slot gets activated when data from the child's stdout arrives.
+  * It usually calls "childOutput"
   */
   void slotChildOutput(int fdno);
 
  /**
-   This slot gets activated when data from the child's stderr arrives.
-   It usually calls "childError"
+  * This slot gets activated when data from the child's stderr arrives.
+  * It usually calls "childError"
   */
   void slotChildError(int fdno);
   /*
 	Slot functions for capturing stdout and stderr of the child
   */
 
-
   /**
-	Called when another bulk of data can be sent to the child's
-	stdin. If there is no more data to be sent to stdin currently
-	available, this function must disable the QSocketNotifier "innot".
-  */
+   * Called when another bulk of data can be sent to the child's
+   * stdin. If there is no more data to be sent to stdin currently
+   * available, this function must disable the QSocketNotifier "innot".
+   */
   void slotSendData(int dummy);
 
 protected:
 
   /**
-     Sets up the environment according to the data passed via 
-     setEnvironment(...)
-  */
+   * Sets up the environment according to the data passed via 
+   * setEnvironment(...)
+   */
   void setupEnvironment();
 
   /**
-     The list of the process' command line arguments. The first entry
-     in this list is the executable itself.
-  */
+   * The list of the process' command line arguments. The first entry
+   * in this list is the executable itself.
+   */
   QValueList<QCString> arguments;
   /**
-     How to run the process (Block, NotifyOnExit, DontCare). You should
-     not modify this data member directly from derived classes.
-  */
+   * How to run the process (Block, NotifyOnExit, DontCare). You should
+   *  not modify this data member directly from derived classes.
+   */
   RunMode run_mode;
   /**
-     true if the process is currently running. You should not
-     modify this data member directly from derived classes. For
-     reading the value of this data member, please use "isRunning()"
-     since "runs" will probably be made private in later versions
-     of KProcess.
-  */
+   * true if the process is currently running. You should not
+   * modify this data member directly from derived classes. For
+   * reading the value of this data member, please use "isRunning()"
+   * since "runs" will probably be made private in later versions
+   * of KProcess.
+   */
   bool runs;
 
   /**
-      The PID of the currently running process (see "getPid()").
-      You should not modify this data member in derived classes.
-      Please use "getPid()" instead of directly accessing this
-      member function since it will probably be made private in
-      later versions of KProcess.
-  */
+   * The PID of the currently running process (see "getPid()").
+   * You should not modify this data member in derived classes.
+   * Please use "getPid()" instead of directly accessing this
+   * member function since it will probably be made private in
+   * later versions of KProcess.
+   */
   pid_t pid_;
 
-  /** The process' exit status as returned by "waitpid". You should not
-      modify the value of this data member from derived classes. You should
-      rather use @ref exitStatus than accessing this data member directly
-      since it will probably be made private in further versions of
-      KProcess.
-  */
+  /**
+   * The process' exit status as returned by "waitpid". You should not
+   * modify the value of this data member from derived classes. You should
+   * rather use @ref exitStatus than accessing this data member directly
+   * since it will probably be made private in further versions of
+   * KProcess.
+   */
   int status;
 
 
-  /** See setRunPrivileged()
-  */
+  /**
+   * See setRunPrivileged()
+   */
   bool keepPrivs;
 
   /*
@@ -581,54 +584,54 @@ protected:
   */
 
   /**
-    This function is called from "KProcess::start" right before a "fork" takes
-    place. According to
-    the "comm" parameter this function has to initialize the "in", "out" and
-    "err" data member of KProcess.
-
-    This function should return 0 if setting the needed communication channels
-    was successful.
-
-    The default implementation is to create UNIX STREAM sockets for the communication,
-    but you could overload this function and establish a TCP/IP communication for
-    network communication, for example.
-  */
+   * This function is called from "KProcess::start" right before a "fork" takes
+   * place. According to
+   * the "comm" parameter this function has to initialize the "in", "out" and
+   * "err" data member of KProcess.
+   *
+   * This function should return 0 if setting the needed communication channels
+   * was successful.
+   *
+   * The default implementation is to create UNIX STREAM sockets for the communication,
+   * but you could overload this function and establish a TCP/IP communication for
+   * network communication, for example.
+   */
   virtual int setupCommunication(Communication comm);
 
   /**
-     Called right after a (successful) fork on the parent side. This function
-     will usually do some communications cleanup, like closing the reading end
-     of the "stdin" communication channel.
-
-     Furthermore, it must also create the QSocketNotifiers "innot", "outnot" and
-     "errnot" and connect their Qt slots to the respective KProcess member functions.
-
-     For a more detailed explanation, it is best to have a look at the default
-     implementation of "setupCommunication" in kprocess.cpp.
-  */
+   * Called right after a (successful) fork on the parent side. This function
+   * will usually do some communications cleanup, like closing the reading end
+   * of the "stdin" communication channel.
+   *
+   * Furthermore, it must also create the QSocketNotifiers "innot", "outnot" and
+   * "errnot" and connect their Qt slots to the respective KProcess member functions.
+   *
+   * For a more detailed explanation, it is best to have a look at the default
+   * implementation of "setupCommunication" in kprocess.cpp.
+   */
   virtual int commSetupDoneP();
 
   /**
-     Called right after a (successful) fork, but before an "exec" on the child
-     process' side. It usually just closes the unused communication ends of
-     "in", "out" and "err" (like the writing end of the "in" communication
-     channel.
-  */
+   * Called right after a (successful) fork, but before an "exec" on the child
+   * process' side. It usually just closes the unused communication ends of
+   * "in", "out" and "err" (like the writing end of the "in" communication
+   * channel.
+   */
   virtual int commSetupDoneC();
 
 
   /**
-     Immediately called after a process has exited. This function normally
-     calls commClose to close all open communication channels to this
-     process and emits the "processExited" signal (if the process was
-     not running in the "DontCare" mode).
-  */
+   * Immediately called after a process has exited. This function normally
+   * calls commClose to close all open communication channels to this
+   * process and emits the "processExited" signal (if the process was
+   * not running in the "DontCare" mode).
+   */
   virtual void processHasExited(int state);
 
   /**
-     Should clean up the communication links to the child after it has
-     exited. Should be called from "processHasExited".
-  */
+   * Should clean up the communication links to the child after it has
+   * exited. Should be called from "processHasExited".
+   */
   virtual void commClose();
 
 
@@ -647,23 +650,23 @@ protected:
   QSocketNotifier *errnot;
 
   /**
-     Lists the communication links that are activated for the child
-     process.  Should not be modified from derived classes.
-  */
+   * Lists the communication links that are activated for the child
+   * process.  Should not be modified from derived classes.
+   */
   Communication communication;
 
   /**
-     Called by "slotChildOutput" this function copies data arriving from the
-     child process's stdout to the respective buffer and emits the signal
-     "@ref receivedStderr".
-  */
+   * Called by "slotChildOutput" this function copies data arriving from the
+   * child process's stdout to the respective buffer and emits the signal
+   * "@ref receivedStderr".
+   */
   int childOutput(int fdno);
 
   /**
-     Called by "slotChildOutput" this function copies data arriving from the
-     child process's stdout to the respective buffer and emits the signal
-     "@ref receivedStderr"
-  */
+   * Called by "slotChildOutput" this function copies data arriving from the
+   * child process's stdout to the respective buffer and emits the signal
+   * "@ref receivedStderr"
+   */
   int childError(int fdno);
 
   // information about the data that has to be sent to the child:
@@ -673,9 +676,9 @@ protected:
   int input_total;   // total length of input_data
 
   /**
-    @ref KProcessController is a friend of KProcess because it has to have
-    access to various data members.
-  */
+   * @ref KProcessController is a friend of KProcess because it has to have
+   * access to various data members.
+   */
   friend class KProcessController;
 
 
@@ -697,25 +700,25 @@ class KShellProcessPrivate;
 * KShellProcess runs the specified executable through a UN*X shell so
 * that standard shell mechanisms like wild card matching, use of pipes
 * and environment variable expansion will work.
-
+*
 * For example, you could run commands like the following through
 * KShellProcess:
-
+*
 * <pre>
 *   ls ~/HOME/ *.lyx | sort | uniq |wc -l
 * </pre>
-
+*
 * KShellProcess tries really hard to find a valid executable shell. Here
 * is the algorithm used for finding an executable shell:
-
+*
 *    @li Try the executable pointed to by the "SHELL" environment
 *    variable with white spaces stripped off
-
+*
 *    @li If your process runs with uid != euid or gid != egid, a shell
 *    not listed in /etc/shells will not used.
-
+*
 *    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
-
+*
 *   @short A class derived from @ref KProcess to start child
 *   	processes through a shell.
 *   @author Christian Czezakte <e9025461@student.tuwien.ac.at>
@@ -728,12 +731,12 @@ class KShellProcess: public KProcess
 public:
 
   /**
-      Constructor
-
-      By specifying the name of a shell (like "/bin/bash") you can override
-      the mechanism for finding a valid shell as described in the detailed
-      description of this class.
-  */
+   * Constructor
+   *
+   * By specifying the name of a shell (like "/bin/bash") you can override
+   * the mechanism for finding a valid shell as described in the detailed
+   * description of this class.
+   */
   KShellProcess(const char *shellname=0);
 
   /**
@@ -742,10 +745,10 @@ public:
   ~KShellProcess();
 
   /**
-    Starts up the process. -- For a detailed description
-    have a look at the "start" member function and the detailed
-    description of @ref KProcess .
-  */
+   * Starts up the process. -- For a detailed description
+   * have a look at the "start" member function and the detailed
+   * description of @ref KProcess .
+   */
   virtual bool start(RunMode  runmode = NotifyOnExit,
 		  Communication comm = NoCommunication);
 
@@ -762,13 +765,13 @@ private:
   /**
    * Searches for a valid shell. See the general description of this
    * class for information on how the search is actually performed.
-  */
+   */
   QCString searchShell();
 
   /**
    * Used by @ref searchShell in order to find out whether the shell found
    * is actually executable at all.
-  */
+   */
   bool isExecutable(const QCString &filename);
 
   QCString shell;

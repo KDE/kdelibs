@@ -132,7 +132,9 @@ public:
    * It is meant for the configuration module _only_. @internal.
    */
   static void setConfigurationMode() { s_configurationMode = true; }
-  /** @internal */
+  /**
+   * @internal
+   */
   static bool configurationMode() { return s_configurationMode; }
 
 protected:
