@@ -24,6 +24,10 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
 {
   m_pTabBar = new KTabBar(this, "tabbar");
   setTabBar(m_pTabBar);
+
+  connect(m_pTabBar, SIGNAL(contextMenu( QWidget *, const QPoint & )), this, SIGNAL(contextMenu( QWidget *, const QPoint & )));
+  connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
+  connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
 }
 
 #include "ktabwidget.moc"

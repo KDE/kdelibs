@@ -4,7 +4,7 @@
 #include "tab.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :QVBox( parent, name ), mChange(0), mRed( false ), mLeftPopup( false ), mRightPopup( false )
+  :QVBox( parent, name ), mChange(0), mRed( false ), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false )
 {
   resize( 600,300 );
 
@@ -25,6 +25,9 @@ Test::Test( QWidget* parent, const char *name )
   mWidget->changeTab( mList[2], SmallIcon( "konsole" ), "Three" );
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), this, SLOT( currentChanged( QWidget * ) ) );
+  connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), this, SLOT(contextMenu( QWidget *, const QPoint & )));
+  connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
+  connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
 
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid, 4, 2 );
@@ -181,6 +184,45 @@ void Test::toggleTabPosition(bool state)
 void Test::toggleTabShape(bool state)
 {
   mWidget->setTabShape(state ? QTabWidget::Triangular : QTabWidget::Rounded);
+}
+
+void Test::contextMenu(QWidget *w, const QPoint &p)
+{
+  if (!mContextPopup) {
+      mContextPopup = new QPopupMenu(this);
+      mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
+      mContextPopup->insertItem(SmallIcon( "konqueror" ), "Set This Icon", 1);
+      mContextPopup->insertItem(SmallIcon( "kicker" ), "Set This Icon", 2);
+      connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
+  }
+  mContextWidget = w;
+  mContextPopup->popup(p);
+}
+
+void Test::contextMenuActivated(int item)
+{
+  switch (item) {
+    case 0: mWidget->changeTab( mContextWidget, SmallIcon( "konsole" ), "Konsole" );
+            break;
+    case 1: mWidget->changeTab( mContextWidget, SmallIcon( "konqueror" ), "Konqueror" );
+            break;
+    case 2: mWidget->changeTab( mContextWidget, SmallIcon( "kicker" ), "Kicker" );
+            break;
+  }
+}
+
+void Test::mouseDoubleClick(QWidget *w)
+{
+  mWidget->changeTab( w, Qt::green );
+}
+
+void Test::mouseMiddleClick(QWidget *w)
+{
+  if (mList.size()==1) return;
+
+  IntList::iterator it = mList.at( mWidget->indexOf(w) );
+  mList.erase( it );
+  mWidget->removePage( w );
 }
 
 void Test::timerDone()

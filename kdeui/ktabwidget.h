@@ -32,6 +32,11 @@ class KTabWidget : public QTabWidget
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
+signals:
+    void contextMenu( QWidget *, const QPoint & );
+    void mouseDoubleClick( QWidget * );
+    void mouseMiddleClick( QWidget * );
+
 private:
     KTabBar *m_pTabBar;
 

@@ -30,6 +30,15 @@ class KTabBar: public QTabBar
 public:
     KTabBar( QWidget* parent=0, const char* name=0 );
 
+signals:
+    void contextMenu( QWidget *, const QPoint & );
+    void mouseDoubleClick( QWidget * );
+    void mouseMiddleClick( QWidget * );
+
+protected slots:
+    virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void mousePressEvent(QMouseEvent *e);
+
 private:
     KTabBarPrivate * d;
 };

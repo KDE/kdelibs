@@ -31,6 +31,10 @@ private slots:
   void leftPopupActivated(int);
   void rightPopupActivated(int);
   void currentChanged(QWidget*);
+  void contextMenu(QWidget*, const QPoint&);
+  void contextMenuActivated(int);
+  void mouseDoubleClick(QWidget*);
+  void mouseMiddleClick(QWidget*);
 
 private:
   KTabWidget*     mWidget;
@@ -38,6 +42,8 @@ private:
 
   QPopupMenu*     mLeftPopup;
   QPopupMenu*     mRightPopup;
+  QPopupMenu*     mContextPopup;
+  QWidget*        mContextWidget;
 
   typedef QValueList<int> IntList;
   IntList         mList;

@@ -17,10 +17,40 @@
 */
 
 #include "ktabbar.h"
+#include "ktabwidget.h"
 
 KTabBar::KTabBar( QWidget * parent, const char *name )
     : QTabBar( parent, name )
 {
+}
+
+void KTabBar::mouseDoubleClickEvent(QMouseEvent *e)
+{
+  QTab *tab = selectTab( e->pos() );
+  if( tab== 0L ) return;
+
+  QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
+  emit( mouseDoubleClick( page ) );
+}
+
+void KTabBar::mousePressEvent(QMouseEvent *e)
+{
+  if(e->button() == MidButton) {
+    QTab *tab = selectTab(e->pos() );
+    if( tab== 0L ) return;
+
+    QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
+    emit( mouseMiddleClick( page ) );
+  }
+  else if(e->button() == RightButton) {
+    QTab *tab = selectTab(e->pos() );
+    if( tab== 0L ) return;
+
+    QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
+    emit( contextMenu( page, mapToGlobal( e->pos() ) ) );
+  }
+
+  QTabBar::mousePressEvent(e);
 }
 
 #include "ktabbar.moc"
