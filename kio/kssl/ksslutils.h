@@ -20,6 +20,8 @@
 #ifndef _INCLUDE_KSSLUTILS_H
 #define _INCLUDE_KSSLUTILS_H
 
+#include <kdemacros.h>
+
 #ifdef Q_WS_WIN
 #include "ksslconfig_win.h"
 #else
