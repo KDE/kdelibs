@@ -491,13 +491,6 @@ void XMLTokenizer::finish()
             pre->appendChild(lineText,exceptioncode);
             pre->appendChild(errorLocText,exceptioncode);
         }
-
-        // Close the renderers so that they update their display correctly
-        // ### this should not be necessary, but requires changes in the rendering code...
-        h1->closeRenderer();
-        if ( pre ) pre->closeRenderer();
-        body->closeRenderer();
-
         m_doc->document()->recalcStyle( NodeImpl::Inherit );
         m_doc->document()->updateRendering();
 
