@@ -39,9 +39,30 @@ private:
 		MenuTrigger( MenuType *m, int i ) { menu = m; id = i; }
 	};
 
-	typedef QList<Trigger>	Triggers;
-	typedef QList<MenuTrigger> MenuItems;
+	enum TriggerType { Menu, Button };
+	
+	/**
+	 * The type of the trigger.
+	 */
+	class TriggerInfo {
+	public:
 
+				
+		int id; // unused if type == Button
+		TriggerType type;
+		
+		union {
+			MenuType	*menu;
+			Trigger		*trigger;
+		} item;
+
+		TriggerInfo( MenuType *menu, int i ) 
+				{ type = Menu; id = i; item.menu = menu; }
+		TriggerInfo( Trigger *t )
+				{ type = Button; id = 0; item.trigger = t; }
+	};
+
+	typedef QList<TriggerInfo> Triggers;
 
 	QString	_name;
 	QString _localName;
@@ -54,7 +75,6 @@ private:
 	int _accelId;
 
 	Triggers	*_triggers;
-	MenuItems	*_menus;
 
 	QObject		*_receiver;
 	QString		_member;

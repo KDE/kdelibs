@@ -28,7 +28,6 @@ KAction::KAction( const char *desc,
 	_accelId( -1 ),
 
 	_triggers( 0 ),
-	_menus( 0 ),
 	_receiver( 0 ),
 	_member( QString::null )
 {
@@ -51,35 +50,49 @@ KAction::~KAction()
 
 	delete _icon;		_icon = 0;
 	delete _triggers;	_triggers = 0;
-	delete _menus;		_menus = 0;
 }
 
 void KAction::setAccel( int accel )
 {
 	_accel = accel;
 
-	if( _menus == 0 ) {
+ 	// set accel for all related menu items.
+
+	if( _triggers == 0 ) {
 		if ( _accel == 0 ) {
 			emit removeAccel( this );
 		}
 		else {
 			emit globalAccel( this, _accel );
 		}
-
 		return;
 	}
- 
- 	// set accel for all related menu items.
 
-	QListIterator<MenuTrigger> iter( *_menus );
-	MenuTrigger *t = iter.toFirst();
+	QListIterator<TriggerInfo> iter( *_triggers );
+	TriggerInfo *t = iter.toFirst();
+	int menuCount = 0;
 
 	for( ; t != 0; t = ++iter ) {
-		t->menu->setAccel( accel, t->id );
+		if( t->type != Menu ) {
+			continue;
+		}
+		++menuCount;
+
+		t->item.menu->setAccel( accel, t->id );
 	}
 
-	if( t != 0 && _accel != 0 ) {
-		removeAccel( this );
+	if( menuCount ) {
+		if ( _accel == 0 ) {
+			emit removeAccel( this );
+		}
+	}
+	else {
+		if ( _accel == 0 ) {
+			emit removeAccel( this );
+		}
+		else {
+			emit globalAccel( this, _accel );
+		}
 	}
 }
 
@@ -87,26 +100,27 @@ void KAction::addMenuItem( MenuType *menu, int id )
 {
 	assert( menu != 0 );
 
-	MenuTrigger *t = new MenuTrigger( menu, id );
+	TriggerInfo *t = new TriggerInfo( menu, id );
 
-	if( _menus == 0 ) {
-		_menus = new MenuItems;
-		_menus->setAutoDelete( true );
+	if( _triggers == 0 ) {
+		_triggers = new Triggers;
+		_triggers->setAutoDelete( true );
 	}
 
-	QListIterator<MenuTrigger> iter( *_menus );
+	QListIterator<TriggerInfo> iter( *_triggers );
 
 	// connect to menu's "destroyed" signal only once
-	for( iter.toFirst(); iter.current() && iter.current()->menu != menu; 
-			 ++iter ) {
+	TriggerInfo *i = iter.toFirst();
+	for( ; i  && (i->type != Menu || i->item.menu != menu ); 
+			 i = ++iter ) {
 		// continue till found or end
 	}
 
-	if( !iter.current() ) {
+	if( i ) {
 		connect( menu, SIGNAL(destroyed()), this, SLOT(menuDead()) );
 	}
 
-	_menus->append( t );
+	_triggers->append( t );
 
 	connect( menu, SIGNAL(activated(int)), 
 			this, SLOT(menuActivated(int)) );
@@ -138,7 +152,8 @@ void KAction::addTrigger( Trigger *uitrigger, const char *member,
 			" yet implemented." );
 	}
 
-	_triggers->append( uitrigger );
+	_triggers->append( new TriggerInfo( uitrigger ) );
+
 	connect( uitrigger, member, this, SIGNAL(activate()) );
 	connect( uitrigger, SIGNAL( destroyed() ), this, SLOT(senderDead()) );
 
@@ -147,6 +162,8 @@ void KAction::addTrigger( Trigger *uitrigger, const char *member,
 
 void KAction::senderDead()
 {
+	assert( _triggers != 0 );
+
 	const QObject * s = sender();
 
 	if( s == 0 || ! s->inherits("QWidget") ) {
@@ -155,8 +172,13 @@ void KAction::senderDead()
 
 	const Trigger *sdr = (const Trigger *)s;
 
-	for (Trigger *curr = _triggers->first(); curr != 0; ) {
-		if ( curr == sdr ) {
+	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
+		if( curr->type != Button ) {
+			curr = _triggers->next();
+			continue;
+		}
+
+		if ( curr->item.trigger == sdr ) {
 			_triggers->remove();
 			curr = _triggers->current();
 			continue;
@@ -168,6 +190,8 @@ void KAction::senderDead()
 
 void KAction::menuDead()
 {
+	assert( _triggers != 0 );
+
 	const QObject *s = sender();
 
 	if( s == 0 || !s->inherits( "QPopupMenu") ) {
@@ -175,24 +199,34 @@ void KAction::menuDead()
 	}
 
 	const MenuType *sdr = (MenuType *)s;
+	int menuCount = 0;
 
-	for (MenuTrigger *curr = _menus->first(); curr != 0; ) {
-		if ( curr->menu == sdr ) {
-			_menus->remove();
-			curr = _menus->current();
+	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
+		if( curr->type != Menu ) {
+			curr = _triggers->next();
 			continue;
 		}
 
-		curr = _menus->next();
+		++menuCount;
+
+		if ( curr->item.menu == sdr ) {
+			_triggers->remove();
+			curr = _triggers->current();
+			continue;
+		}
+
+		curr = _triggers->next();
 	}
 
-	if ( _menus->count() == 0 && _accel != 0 ) {
+	if ( menuCount == 0 && _accel != 0 ) {
 		emit globalAccel( this, _accel );
 	}
 }
 
 void KAction::menuActivated( int id )
 {
+	assert( _triggers != 0 );
+
 	const QObject *s = sender();
 	
 	if( s == 0 || !s->inherits( "QPopupMenu" ) ) {
@@ -201,11 +235,15 @@ void KAction::menuActivated( int id )
 
 	const MenuType *sdr = (MenuType *)s;
 
-	QListIterator<MenuTrigger> miter( *_menus );
-	const MenuTrigger *m = miter.toFirst();
+	QListIterator<TriggerInfo> miter( *_triggers );
+	const TriggerInfo *m = miter.toFirst();
 
 	for( ; m != 0; m = ++miter ) {
-		if ( m->menu == sdr && m->id == id ) {
+		if ( m->type != Menu ) {
+			continue;
+		}
+
+		if ( m->item.menu == sdr && m->id == id ) {
 			debug( "%s: match! %d", _name.ascii(), m->id );
 			emit activate();
 			return;
@@ -217,20 +255,21 @@ void KAction::setEnabled( bool state )
 {
 	blockSignals( !state );
 
-	if( _triggers != 0 ) {
-		QListIterator<Trigger> titer ( *_triggers );
-
-		for( ; titer.current(); ++titer ) {
-			titer.current()->setEnabled( state );
-		}
+	if ( _triggers == 0 ) {
+		return;
 	}
+		
+	QListIterator<TriggerInfo> titer ( *_triggers );
+	TriggerInfo *t = titer.current();
 
-	if( _menus != 0 ) {
-		QListIterator<MenuTrigger> miter ( *_menus );
-		MenuTrigger *t = 0;
-
-		for( ; (t = miter.current()) != 0; ++miter ) {
-			t->menu->setItemEnabled( t->id, state );
+	for( ; t != 0 ; t = ++titer ) {
+		switch ( t->type ) {
+			case Button:
+				t->item.trigger->setEnabled( state );
+				break;
+			case Menu:
+				t->item.menu->setItemEnabled( t->id, state );
+				break;
 		}
 	}
 }
