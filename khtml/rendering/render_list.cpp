@@ -147,7 +147,7 @@ bool RenderListItem::checkChildren() const
         o = o->firstChild();
     while (!o->nextSibling() && o->parent() != static_cast<const RenderObject*>(this))
         o = o->parent();
-    o = o->nextSibling();
+    //o = o->nextSibling();
     while( o ) {
         //kdDebug(0) << "checking " << renderName() << endl;
         if ( o->isText() || o->isReplaced() ) {
