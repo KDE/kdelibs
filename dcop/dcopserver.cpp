@@ -45,11 +45,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#ifdef DCOP_LOG
+#include <string.h>
+#endif
 
 #define QT_CLEAN_NAMESPACE 1
 #include <qfile.h>
 #include <qtextstream.h>
+#ifdef DCOP_LOG
 #include <qdir.h>
+#endif DCOP_LOG
 #include <qdatastream.h>
 #include <qptrstack.h>
 #include <qtimer.h>
@@ -1042,7 +1047,11 @@ DCOPServer::DCOPServer(bool _suicide)
     connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
 
 #ifdef DCOP_LOG
-    m_logger = new QFile( QString( "%1/.dcop.log" ).arg( QDir::homeDirPath() ) );
+    char hostname_buffer[256];
+    memset( hostname_buffer, 0, sizeof( hostname_buffer ) );
+    if ( gethostname( hostname_buffer, 255 ) < 0 )
+      hostname_buffer[0] = '\0';
+    m_logger = new QFile( QString( "%1/.dcop-%2.log" ).arg( QDir::homeDirPath() ).arg( hostname_buffer ) );
     if ( m_logger->open( IO_WriteOnly ) ) {
         m_stream = new QTextStream( m_logger );
     }
