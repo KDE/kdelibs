@@ -55,9 +55,12 @@ void Decoder::setEncoding(const char *_encoding, bool force)
     //kdDebug(0) << "setEncoding " << force << endl;
     enc = _encoding;
     haveEncoding = force;
-    
+
+    enc = enc.lower();
     if(enc.isNull() || enc.isEmpty())
 	enc = "iso8859-1";
+    if(enc == "visual") // hebrew visually ordered
+	enc = "iso8859-8";
     m_codec = KGlobal::charsets()->codecForName(enc);
 
     if(m_codec->mibEnum() == 11)  { 
@@ -135,8 +138,8 @@ QString Decoder::decode(const char *data, int len)
 			QCString str( ptr, (end-ptr));
 			str = str.lower();
 			int pos = 0;
-			if( (pos = str.find("http-equiv", pos)) == -1) break;
-			if( (pos = str.find("content-type", pos)) == -1) break;
+			//if( (pos = str.find("http-equiv", pos)) == -1) break;
+			//if( (pos = str.find("content-type", pos)) == -1) break;
 			if( (pos = str.find("charset", pos)) == -1) break;
 			pos += 7;
 			while( (str[pos] == ' ' || str[pos] == '='
