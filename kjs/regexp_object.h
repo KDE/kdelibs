@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifndef _REGEXP_OBJECT_H_
@@ -75,6 +74,7 @@ namespace KJS {
 
     Value get(ExecState *exec, const UString &p) const;
     int ** registerRegexp( const RegExp* re, const UString& s );
+    void setSubPatterns(int num) { lastNrSubPatterns = num; }
     Value arrayOfMatches(ExecState *exec, const UString &result) const;
   private:
     UString lastString;

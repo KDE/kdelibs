@@ -213,6 +213,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( reg, u );
     UString mstr = reg->match(u, -1, &pos, ovector);
+    regExpObj->setSubPatterns(reg->subPatterns());
     if (a0.isA(StringType))
       delete reg;
     if (id == Search) {
@@ -242,6 +243,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       do {
         int **ovector = regExpObj->registerRegexp( reg, u );
         UString mstr = reg->match(u, lastIndex, &pos, ovector);
+        regExpObj->setSubPatterns(reg->subPatterns());
         if (pos == -1)
           break;
         len = mstr.size();
