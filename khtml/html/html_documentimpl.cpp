@@ -362,14 +362,14 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         if ( hMode == XHtml )
             pMode = Strict;
     }
-    kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
-    kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
-    if( pMode == Strict )
-        kdDebug(6020) << " using strict parseMode" << endl;
-    else if (pMode == Compat )
-        kdDebug(6020) << " using compatibility parseMode" << endl;
-    else
-        kdDebug(6020) << " using transitional parseMode" << endl;
+//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
+//     if( pMode == Strict )
+//         kdDebug(6020) << " using strict parseMode" << endl;
+//     else if (pMode == Compat )
+//         kdDebug(6020) << " using compatibility parseMode" << endl;
+//     else
+//         kdDebug(6020) << " using transitional parseMode" << endl;
 }
 
 #include "html_documentimpl.moc"

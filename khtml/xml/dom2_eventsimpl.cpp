@@ -281,9 +281,9 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
 	    return "scroll";
 	// khtml extensions
 	case KHTML_DBLCLICK_EVENT:
-            return "khtml_dblclick";
+            return "dblclick";
 	case KHTML_CLICK_EVENT:
-            return "khtml_click";
+            return "click";
 	case KHTML_DRAGDROP_EVENT:
             return "khtml_dragdrop";
 	case KHTML_ERROR_EVENT:

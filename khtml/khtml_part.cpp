@@ -474,7 +474,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     setXMLFile( "khtml_browser.rc" );
 
   d = new KHTMLPartPrivate(parent());
-  kdDebug(6050) << "KHTMLPart::init this=" << this << " d=" << d << endl;
 
   d->m_view = view;
   setWidget( d->m_view );

@@ -38,7 +38,7 @@ static BidiIterator sor;
 static BidiIterator eor;
 static BidiContext *context;
 static BidiStatus status;
-static QPtrList<BidiRun> *sruns = 0; 
+static QPtrList<BidiRun> *sruns = 0;
 static QChar::Direction dir;
 static bool adjustEmbeddding = false;
 static bool emptyRun = true;
@@ -108,7 +108,7 @@ static inline RenderObject *next(RenderObject *par, RenderObject *current)
 		current = current->parent();
 	    }
 	}
-	
+
         if(!next) break;
 
         if(next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned())
@@ -238,16 +238,16 @@ static void appendRun()
         //kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
         sruns->append( new BidiRun(start, eor.pos + 1, obj, context, dir) );
     }
-    
-    ++eor; 
+
+    ++eor;
     sor = eor;
-    dir = QChar::DirON; 
+    dir = QChar::DirON;
     status.eor = QChar::DirON;
 }
 
 static void embed( QChar::Direction d )
 {
-    bool b = adjustEmbeddding ; 
+    bool b = adjustEmbeddding ;
     adjustEmbeddding = false;
     if ( d == QChar::DirPDF ) {
 	BidiContext *c = context->parent;
@@ -274,7 +274,7 @@ static void embed( QChar::Direction d )
 	    override = true;
 	else
 	    override = false;
-	
+
 	unsigned char level = context->level;
 	if ( runDir == QChar::DirR ) {
 	    if(level%2) // we have an odd level
@@ -319,11 +319,11 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
     dir = QChar::DirON;
     emptyRun = true;
-    
+
     BidiIterator current = start;
     BidiIterator last = current;
     while(current != end) {
-	
+
 	if ( emptyRun ) {
 	    sor = current;
 	    eor = current;
@@ -356,7 +356,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         case QChar::DirPDF:
 	    embed( dirCurrent );
 	    break;
-	    
+
             // strong types
         case QChar::DirL:
             if(dir == QChar::DirON)
@@ -627,7 +627,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 #endif
 
         last = current;
-	
+
 	// this causes the operator ++ to open and close embedding levels as needed
 	// for the CSS unicode-bidi property
 	adjustEmbeddding = true;
@@ -838,7 +838,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     }
 
     m_height += maxHeight;
-    
+
     sruns = 0;
 }
 
@@ -1118,11 +1118,6 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                 else
                     lBreak.pos = pos;
             }
-	    
-	    BidiIterator it = lBreak;
-	    ++it;
-	    if ( it.obj && it.obj->isBR() )
-		lBreak = it;
             return lBreak;
         }
 

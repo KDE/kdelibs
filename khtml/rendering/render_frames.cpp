@@ -183,6 +183,7 @@ void RenderFrameSet::layout( )
             if (remainingLen[k]) {
                 LengthType distributeType = countPercent ? Percent : Fixed;
                 int total = countPercent ? totalPercent : totalFixed;
+                if (!total) total = 1;
                 for (int i = 0; i < gridLen; ++i)
                     if (grid[i].type == distributeType) {
                         int toAdd = (remainingLen[k] * grid[i].value) / total;
