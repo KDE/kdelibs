@@ -228,7 +228,6 @@ bool SGIImage::readImage(QImage& img)
 	if (m_colormap != NORMAL)
 		return false;		// only NORMAL supported
 
-	// unused
 	for (int i = 0; i < 404; i++)
 		m_stream >> u8;
 
@@ -459,14 +458,14 @@ void SGIImage::writeHeader()
 
 void SGIImage::writeRle()
 {
-	uint i;
 	m_rle = 1;
 	kdDebug(399) << "writing RLE data" << endl;
 	writeHeader();
+	uint i;
 
 	// write start table
 	for (i = 0; i < m_numrows; i++)
-		m_stream << m_rlevector[m_starttab[i]]->offset();
+		m_stream << Q_UINT32(m_rlevector[m_starttab[i]]->offset());
 
 	// write length table
 	for (i = 0; i < m_numrows; i++)
@@ -481,7 +480,7 @@ void SGIImage::writeRle()
 void SGIImage::writeVerbatim(const QImage& img)
 {
 	m_rle = 0;
-	kdDebug(399) << "writing RLE data" << endl;
+	kdDebug(399) << "writing verbatim data" << endl;
 	writeHeader();
 
 	QRgb *c;
@@ -533,8 +532,7 @@ bool SGIImage::writeImage(QImage& img)
 	if (img.hasAlphaBuffer())
 		m_dim = 3, m_zsize++;
 
-	if (img.depth() != 32)
-		img.convertDepth(32);
+	img.convertDepth(32);
 
 	m_bpc = 1;
 	m_xsize = img.width();

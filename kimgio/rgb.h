@@ -57,11 +57,12 @@ public:
 	bool readImage(QImage&);
 	bool writeImage(QImage&);
 
-	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
 private:
+	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
 	QImageIO		*m_io;
 	QIODevice		*m_dev;
 	QDataStream		m_stream;
+
 	Q_UINT8			m_rle;
 	Q_UINT8			m_bpc;
 	Q_UINT16		m_dim;
@@ -72,6 +73,7 @@ private:
 	Q_UINT32		m_pixmax;
 	char			m_imagename[80];
 	Q_UINT32		m_colormap;
+
 	Q_UINT32		*m_starttab;
 	Q_UINT32		*m_lengthtab;
 	QByteArray		m_data;
