@@ -390,9 +390,13 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
 // ECMA 8.6.2.6
 Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
 {
-  /* TODO String on Date object */
-  if (hint != StringType && hint != NumberType)
-    hint = NumberType;
+  if (hint != StringType && hint != NumberType) {
+    /* Prefer String for Date objects */
+    if (_proto == exec->interpreter()->builtinDatePrototype().imp())
+      hint = StringType;
+    else
+      hint = NumberType;
+  }
 
   Value v;
   if (hint == StringType)
