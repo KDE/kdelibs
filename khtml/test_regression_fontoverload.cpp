@@ -318,3 +318,10 @@ void QApplication::setPalette( const QPalette &palette, bool informWidgets,
       qDebug("QApplication::setPalette");
 }
 
+#include <kparts/historyprovider.h>
+
+bool KParts::HistoryProvider::contains( const QString& item ) const
+{
+    return false;
+}
+
