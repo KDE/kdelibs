@@ -164,6 +164,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 	      langs.insert(it, ln + '_' + ct + '.' + chrset);
 	  }
 
+          langs.insert(it, ln);
 	}
 
       languageList += langs;
