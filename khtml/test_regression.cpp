@@ -1230,9 +1230,9 @@ void RegressionTest::testStaticFile(const QString & filename)
 
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
-        bool dumped = checkPaintdump(filename);
+        CheckResult dumped = checkPaintdump(filename);
         reportResult( dumped, "PAINT");
-        if (!dumped)
+        if (dumped == Failure)
             failures |= PaintFailure;
 
         doFailureReport(filename, failures );
@@ -1316,15 +1316,15 @@ void RegressionTest::testJSFile(const QString & filename )
     evalJS( interp, m_baseDir + "/tests/"+ filename, true );
 }
 
-bool RegressionTest::checkPaintdump(const QString &filename)
+RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filename)
 {
     QString againstFilename( filename + "-dump.png" );
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
     if ( cvsIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
-        return true;
+        return Ignored;
     }
-    bool result = false;
+    CheckResult result = Failure;
 
     QImage baseline;
     baseline.load( absFilename, "PNG");
@@ -1336,24 +1336,24 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     }
     else {
         ::unlink( QFile::encodeName( m_outputDir + "/" + againstFilename ) );
-        result = true;
+        result = Success;
     }
     return result;
 }
 
-bool RegressionTest::checkOutput(const QString &againstFilename)
+RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFilename)
 {
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
     if ( cvsIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
-        return true;
+        return Ignored;
     }
 
     bool domOut = againstFilename.endsWith( "-dom" );
     QString data = getPartOutput( domOut ? DOMTree : RenderTree );
     data.remove( char( 13 ) );
 
-    bool result = true;
+    CheckResult result = Success;
 
     // compare result to existing file
     QString outputFilename = QFileInfo(m_outputDir + "/" + againstFilename).absFilePath();
@@ -1377,10 +1377,10 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
 
         QString fileData = stream.read();
 
-        result = ( fileData == data );
-        if ( !m_genOutput && result ) {
+        result = ( fileData == data ) ? Success : Failure;
+        if ( !m_genOutput && result == Success ) {
             ::unlink( QFile::encodeName( outputFilename ) );
-            return true;
+            return Success;
         }
     }
 
@@ -1399,6 +1399,21 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
         printf("Generated %s\n", outputFilename.latin1());
 
     return result;
+}
+
+bool RegressionTest::reportIgnored( const QString & description )
+{
+    printf("IGNORED: ");
+    printDescription( description );
+    return true; // no error
+}
+
+bool RegressionTest::reportResult(CheckResult result, const QString & description)
+{
+    if ( result == Ignored )
+        return reportIgnored( description );
+    else
+        return reportResult( result == Success, description );
 }
 
 bool RegressionTest::reportResult(bool passed, const QString & description)
@@ -1426,6 +1441,12 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
         }
     }
 
+    printDescription( description );
+    return passed;
+}
+
+void RegressionTest::printDescription(const QString& description)
+{
     if (!m_currentCategory.isEmpty())
 	printf("%s/", m_currentCategory.latin1());
 
@@ -1439,7 +1460,6 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 
     printf("\n");
     fflush(stdout);
-    return passed;
 }
 
 void RegressionTest::createMissingDirs(const QString & filename)

@@ -137,11 +137,14 @@ public:
     void dumpRenderTree( QTextStream &outputStream, KHTMLPart* part );
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
-    bool checkOutput(const QString& againstFilename);
-    bool checkPaintdump( const QString& againstFilename);
+    enum CheckResult { Failure = 0, Success = 1, Ignored = 2 };
+    CheckResult checkOutput(const QString& againstFilename);
+    CheckResult checkPaintdump( const QString& againstFilename);
     enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
+    bool reportIgnored( const QString & description = QString::null );
     bool reportResult( bool passed, const QString & description = QString::null );
+    bool reportResult(CheckResult result, const QString & description = QString::null );
     void createMissingDirs(const QString &path);
 
     QImage renderToImage();
@@ -174,6 +177,9 @@ public:
     int m_known_failures;
 
     static RegressionTest *curr;
+
+private:
+    void printDescription(const QString& description);
 
     static bool cvsIgnored( const QString &filename );
 
