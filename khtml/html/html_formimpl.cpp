@@ -519,9 +519,9 @@ void HTMLFormElementImpl::submit(  )
 
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     w->writeMap(key, walletMap);
-                }
-            } else if (savePassword == KMessageBox::No)
-                view->addNonPasswordStorableSite(formUrl.host());
+                } else if (savePassword == KMessageBox::No)
+                    view->addNonPasswordStorableSite(formUrl.host());
+            }
         }
 
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
