@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KDESmartcard
+X-KDE-ModuleType=Library
+X-KDE-Library=gemsafe
+X-KDE-FactoryName=gemsafe
+X-KDE-Smartcard-Type=gem1
+X-KDE-Smartcard-SubType=gem2
+X-KDE-Smartcard-SubSubType=gem3
+Name=GemSafe Card implementation

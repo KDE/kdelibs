@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KDESmartcard
+
+[PropertyDef::X-KDE-Smartcard-Type]
+Type=QString
+[PropertyDef::X-KDE-Smartcard-SubType]
+Type=QString
+[PropertyDef::X-KDE-Smartcard-SubSubType]
+Type=QString

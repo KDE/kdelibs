@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KDESmartcard
+X-KDE-ModuleType=Library
+X-KDE-Library=gsm
+X-KDE-FactoryName=gsm
+X-KDE-Smartcard-Type=gsm1
+X-KDE-Smartcard-SubType=gsm2
+X-KDE-Smartcard-SubSubType=gsm3
+Name=GSM Card implementation
