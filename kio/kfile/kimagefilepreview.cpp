@@ -90,7 +90,7 @@ void KImageFilePreview::showPreview( const KURL &url, bool force )
         clearPreview();
 	currentURL = url;
 
-	if ( !url.isMalformed() && (autoMode || force) )
+	if ( autoMode || force )
 	{
             int w = imageLabel->contentsRect().width() - 4;
             int h = imageLabel->contentsRect().height() - 4;
@@ -163,7 +163,7 @@ void KImageFilePreview::clearPreview()
     }
 
     imageLabel->clear();
-    currentURL = KURL();
+//     currentURL = KURL();
 }
 
 #include "kimagefilepreview.moc"
