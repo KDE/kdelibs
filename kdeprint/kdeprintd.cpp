@@ -23,9 +23,12 @@
 #include <qfile.h>
 #include <klocale.h>
 #include <knotifyclient.h>
+#include <kmessagebox.h>
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kio/passdlg.h>
+
+#include <unistd.h>
 
 extern "C"
 {
@@ -58,10 +61,14 @@ KDEPrintd::~KDEPrintd()
 
 int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
+	QString	command(cmd);
+	if (!checkFiles(command, files))
+		return (-1);
+
 	KPrintProcess	*proc = new KPrintProcess;
 	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
 	connect(proc,SIGNAL(passwordRequested(KProcess*,const QString&)),SLOT(slotPasswordRequested(KProcess*,const QString&)));
-	*proc << cmd;
+	*proc << command;
 	if (remflag)
 		m_tempfiles.insert(proc,new QStringList(files));
 	if (proc->print())
@@ -116,6 +123,29 @@ QString KDEPrintd::openPassDlg(const QString& user)
 	if (KIO::PasswordDialog::getNameAndPassword(user_, pass_, NULL) == KDialog::Accepted)
 		result.append(user_).append(":").append(pass_);
 	return result;
+}
+
+bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
+{
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+		if (::access(QFile::encodeName(*it).data(), R_OK) != 0)
+		{
+			if (KMessageBox::warningContinueCancel(0,
+				i18n("Some of the files to print are not readable by the KDE "
+				     "print daemon. This may happen if you are trying to print "
+				     "as another user than the one currently logged in. To continue "
+				     "printing, you need to provide root's password."),
+				QString::null,
+				i18n("Provide root's password"),
+				"provideRootsPassword") == KMessageBox::Continue)
+			{
+				cmd = ("kdesu -c " + KShellProcess::quote(cmd));
+				break;
+			}
+			else
+				return false;
+		}
+	return true;
 }
 
 #include "kdeprintd.moc"

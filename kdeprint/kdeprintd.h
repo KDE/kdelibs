@@ -47,6 +47,7 @@ protected slots:
 protected:
 	void cleanTempFiles();
 	void cleanTempFile(KProcess*);
+	bool checkFiles(QString& cmd, const QStringList& files);
 
 private:
 	QPtrList<KPrintProcess>	m_processpool;
