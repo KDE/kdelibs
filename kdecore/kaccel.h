@@ -36,7 +36,7 @@ class KAccelPrivate;
  *
  * Allow a user to configure shortcuts
  * through application configuration files or through the
- * @ref KKeyChooser GUI.
+ * @ref KKeyChooser GUI. 
  *
  * A KAccel contains a list of @ref KAccelAction objects.
  *
@@ -49,7 +49,8 @@ class KAccelPrivate;
  * children of this parent widget.  The most recently created KAccel object
  * has precedence over any KAccel objects created before it.
  * When a shortcut pressed, KAccel calls the slot to which it has been
- * connected.
+ * connected. If you want to set global accelerators, independent of the window
+ * which has the focus, use @ref KGlobalAccel.
  *
  * Reconfiguration of a given shortcut can be prevented by specifying
  * that an accelerator item is not configurable when it is inserted. A special
@@ -82,6 +83,7 @@ class KAccelPrivate;
  *</pre>
  *
  * @short Configurable shortcut support.
+ * @see KGlobalAccel
  * @version $Id$
  */
 
@@ -143,7 +145,8 @@ class KAccel : public QAccel
 	 * Enable auto-update of connections. This means that the signals
 	 * are automatically disconnected when you disable an action, and
 	 * re-enabled when you enable it. By default auto update is turned 
-	 * on.
+	 * on. If you disable auto-update, you need to call 
+	 * @ref updateConnections() after changing actions.
 	 *
 	 * @param bAuto true to enable, false to disable
 	 * @return the value of the flag before this call
@@ -217,7 +220,22 @@ class KAccel : public QAccel
 	 */
 	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
+        /**
+         * Removes the accelerator action identified by the name.
+         * Remember to also call updateConnections().
+	 * @param sAction the name of the action to remove
+	 * @return true if successful, false otherwise
+         */
 	bool remove( const QString& sAction );
+
+	/**
+	 * Updates the connections of the accelerations after changing them. 
+	 * This is only neccessary if you have disabled auto updates which are
+	 * on by default.
+	 * @return true if successful, false otherwise
+	 * @see setAutoUpdate()
+	 * @see getAutoUpdate()
+	 */
 	bool updateConnections();
 
 	/**

@@ -32,16 +32,35 @@ class KConfigBase;
 class KGlobalAccelPrivate;
 
 /**
-* KGlobalAccel description
+* KGlobalAccel allows you to have global accelerators that are independent of
+* the focused window. Unlike @ref KAccel it does not matter which window is 
+* currently active.
+*
+* @see KAccel
 */
 class KGlobalAccel : public QObject
 {
 	Q_OBJECT
  public:
+	/**
+	 * Creates a new KGlobalAccel object with the given @ref pParent and
+	 * @ref psName.
+	 * @param pParent the parent of the QObject
+	 * @param psName the name of the QObject
+	 */
 	KGlobalAccel( QObject* pParent, const char* psName = 0 );
 	virtual ~KGlobalAccel();
 
+	/**
+	 * Checks whether the accelerators are enabled.
+	 * @return true if the KGlobalAccel is enabled
+	 */
 	bool isEnabled();
+	
+	/**
+	 * Checks whether the accelerators are enabled.
+	 * @return true if the KGlobalAccel is enabled
+	 */
 	void setEnabled( bool bEnabled );
 
 	/**
@@ -74,48 +93,86 @@ class KGlobalAccel : public QObject
         /**
          * Removes the accelerator action identified by the name.
          * Remember to also call updateConnections().
+	 * @param sAction the name of the action to remove
          */
         void remove( const QString& sAction );
         
 	/**
 	 * Use this to insert a label into the action list.  This will be
 	 * displayed when the user configures shortcuts.
+	 * @param sName of the of the action to insert
+	 * @param sLabel a user-readable (i18n!) name for the action
+	 * @return the KAccelAction of the action
 	 */
 	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
+	/**
+	 * Updates the connections of the accelerations after changing them. 
+	 * @return true if successful, false otherwise
+	 */
 	bool updateConnections();
 
 	/**
 	 * Set the shortcut to be associated with the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @return the shortcut. If the action does not exist a null shortcut will be returned.
 	 */
 	const KShortcut& shortcut( const QString& sAction ) const;
 	/**
 	 * Set the shortcut to be associated with the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @param shortcut the shortcut for the action
+	 * @return true if successful, false otherwise
 	 */
-	bool setShortcut( const QString& sAction, const KShortcut& );
+	bool setShortcut( const QString& sAction, const KShortcut &shortcut );
 	/**
 	 * Set the slot to be called when the shortcut of the action named
 	 * by @p sAction is pressed.
+	 * @param sAction the name of the action
+	 * @param pObjSlot the receiver of the signal
+	 * @param psMethodSlot the slot to receive the signal
+	 * @return true if successful, false otherwise
 	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 	/** 
 	 * Enable or disable the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @param bEnabled true to enable, false to disable
+	 * @return true if successful, false otherwise
 	 */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
+	/**
+	 * Returns the configuration group that is used to save the accelerators.
+	 * @return the configuration group
+	 * @see KConfig
+	 */
 	const QString& configGroup() const;
-	void setConfigGroup( const QString& );
+
+	/**
+	 * Sets the configuration group that is used to save the accelerators.
+	 * @param cg the configuration group
+	 * @see KConfig
+	 */
+	void setConfigGroup( const QString &cg );
 
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
 	 * is zero) from the application's configuration file
 	 * @ref KGlobal::config().
+	 * @param pConfig the configuration file to read from, or 0 for the application
+	 *                 configuration file
+	 * @return true if successful, false otherwise
 	 */
 	bool readSettings( KConfigBase* pConfig = 0 );
+
 	/**
 	 * Write the current shortcuts to @p pConfig,
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.
+	 * @param pConfig the configuration file to read from, or 0 for the application
+	 *                 configuration file
+	 * @return true if successful, false otherwise
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 	// BCI: merge these two writeSettings methods in KDE 4.0
@@ -124,6 +181,10 @@ class KGlobalAccel : public QObject
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.  Alternatively, if bGlobal is true, then write
 	 * to kdeglobals.
+	 * @param pConfig the configuration file to read from, or 0 for the application
+	 *                 configuration file
+	 * @param bGlobal if true write the configuration to the kde global settings
+	 * @return true if successful, false otherwise
 	 */
 	bool writeSettings( KConfigBase* pConfig, bool bGlobal ) const;
 
