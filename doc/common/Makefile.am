@@ -11,6 +11,7 @@ common_DATA = artistic-license.html bottom1.png bottom2.png bsd-license.html \
 	qpl-license.html shadow.png web-docbottom.png \
 	x11-license.html xml.dcl web-doctop.png \
 	doctop1a.png doctop1b.png 1.png 2.png 3.png 4.png 5.png 6.png \
-	7.png 8.png 9.png 10.png
-
+	7.png 8.png 9.png 10.png \
+	doxygen.css header.html footer.html mainheader.html mainfooter.html \
+	docheadergears.png headerbg.png grad.png 
 
