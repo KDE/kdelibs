@@ -11,4 +11,3 @@ libkmedia2 0 libarts-alsa (>= 4:2.2.1-1) | libarts (>= 4:2.2.1-1)
 libsoundserver_idl 0 libarts-alsa (>= 4:2.2.1-1) | libarts (>= 4:2.2.1-1)
 libx11globalcomm 0 libarts-alsa (>= 4:2.2.1-1) | libarts (>= 4:2.2.1-1)
 libartsdsp_st 0 libarts-alsa (>= 4:2.2.1-1) | libarts (>= 4:2.2.1-1)
-
