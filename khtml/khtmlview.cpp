@@ -944,8 +944,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     else // QEvent::KeyRelease
     {
         if( !_ke->isAutoRepeat()) {
-            delete d->postponed_autorepeat;
-            d->postponed_autorepeat = NULL;
+            Q_ASSERT( d->postponed_autorepeat == NULL );
             return dispatchKeyEventHelper( _ke, false ); // keyup
         }
         else
