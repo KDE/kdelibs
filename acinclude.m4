@@ -406,9 +406,17 @@ extern "C" {
             eval "ac_cv_lib_jpeg=no")
 LIBS="$ac_save_LIBS"
 
+dnl what to do, if the normal way fails:
 if eval "test \"`echo $ac_cv_lib_jpeg`\" = no"; then
-	if test -f "$kde_libraries/libjpeg.a"; then
-	   ac_cv_lib_jpeg=`echo $kde_libraries/libjpeg.a`
+	if test -f "$kde_libraries/libjpeg.so; then
+	   test -f ./libjpegkde.so || $LN_S $kde_libraries/libjpeg.so ./libjpegkde.so
+	   ac_cv_lib_jpeg="-L\$(topdir) -ljpegkde"
+	else if test -f "$kde_libraries/libjpeg.sl; then
+	   test -f ./libjpegkde.sl ||$LN_S $kde_libraries/libjpeg.sl ./libjpegkde.sl
+	   ac_cv_lib_jpeg="-L\$(topdir) -ljpegkde"	
+	else if test -f "$kde_libraries/libjpeg.a"; then
+	   test -f ./libjpegkde.a || $LN_S $kde_libraries/libjpeg.a ./libjpegkde.a
+	   ac_cv_lib_jpeg="-L\$(topdir) -ljpegkde"	
         else
 	  AC_MSG_ERROR([
 You need jpeglib6a. Please install the kdesupport package.
@@ -417,6 +425,7 @@ old libjpeg somewhere.
 In this case copy $KDEDIR/lib/libjpeg* to /usr/lib.
 ])
 	fi
+      fi
    fi
 ])dnl
 if eval "test ! \"`echo $ac_cv_lib_jpeg`\" = no"; then
