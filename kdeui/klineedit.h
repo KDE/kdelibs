@@ -205,14 +205,14 @@ public:
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p grab = @p true to make @p KComboBox stop these
+     * Call this method with @p trap = @p true to make @p KComboBox stop these
      * events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
      *
      * @see trapReturnKey()
      */
-    void setTrapReturnKey( bool grab );
+    void setTrapReturnKey( bool trap );
 
     /**
      * @returns @p true if keyevents of @p Key_Return or

@@ -231,21 +231,21 @@ public:
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p grab equal to @p true to make @ref KComboBox
+     * Call this method with @p trap equal to @p true to make @ref KComboBox
      * stop these
      * events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
      *
-     * @see grabReturnKeyEvents()
+     * @see setTrapReturnKey()
      */
-    void setTrapReturnKey( bool grab );
+    void setTrapReturnKey( bool trap );
 
     /**
      * @return @p true if keyevents of Key_Return or Key_Enter will
      * be stopped or if they will be propagated.
      *
-     * @see setGrabReturnKeyEvents ()
+     * @see setTrapReturnKey ()
      */
     bool trapReturnKey() const;
 
