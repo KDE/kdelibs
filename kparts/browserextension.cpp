@@ -1,4 +1,4 @@
-/* This file is part of the KDE project
+ /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
              (C) 1999 David Faure <faure@kde.org>
 
@@ -278,8 +278,11 @@ public:
   {
   }
 
-  KURL m_delayedURL;
-  KParts::URLArgs m_delayedArgs;
+  struct DelayedRequest {
+    KURL m_delayedURL;
+    KParts::URLArgs m_delayedArgs;
+  };
+  QValueList<DelayedRequest> m_requests;
   bool m_urlDropHandlingEnabled;
   KBitArray m_actionStatus;
   BrowserInterface *m_browserInterface;
@@ -296,6 +299,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
                                     const char *name )
 : QObject( parent, name), m_part( parent )
 {
+  //kdDebug() << "BrowserExtension::BrowserExtension() " << this << endl;
   d = new BrowserExtensionPrivate;
   d->m_urlDropHandlingEnabled = false;
 
@@ -324,6 +328,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
 
 BrowserExtension::~BrowserExtension()
 {
+  //kdDebug() << "BrowserExtension::~BrowserExtension() " << this << endl;
   delete d;
 }
 
@@ -385,19 +390,20 @@ void BrowserExtension::slotCompleted()
 
 void BrowserExtension::slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
-    d->m_delayedURL = url;
-    d->m_delayedArgs = args;
+    //kdDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url() << endl;
+    BrowserExtensionPrivate::DelayedRequest req;
+    req.m_delayedURL = url;
+    req.m_delayedArgs = args;
+    d->m_requests.append( req );
     QTimer::singleShot( 0, this, SLOT( slotEmitOpenURLRequestDelayed() ) );
 }
 
 void BrowserExtension::slotEmitOpenURLRequestDelayed()
 {
-    if (d->m_delayedURL.isEmpty()) return;
-    KURL u = d->m_delayedURL;
-    KParts::URLArgs args = d->m_delayedArgs;
-    d->m_delayedURL = KURL();
-    d->m_delayedArgs = URLArgs();
-    emit openURLRequestDelayed( u, args );
+    if (d->m_requests.isEmpty()) return;
+    BrowserExtensionPrivate::DelayedRequest req = d->m_requests.front();
+    d->m_requests.pop_front();
+    emit openURLRequestDelayed( req.m_delayedURL, req.m_delayedArgs );
     // tricky: do not do anything here! (no access to member variables, etc.)
 }
 
