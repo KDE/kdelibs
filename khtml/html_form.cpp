@@ -120,7 +120,7 @@ void HTMLButtonElement::setTabIndex( long _tabIndex )
     if(!impl) return;
 
     QString aStr;
-    aStr.sprintf("%d", _tabIndex);
+    aStr.sprintf("%ld", _tabIndex);
     DOMString value(aStr);
     ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX, value);
 }
