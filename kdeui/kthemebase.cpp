@@ -28,42 +28,24 @@
 #include <qtextstream.h>
 #include <qdir.h>
 #include <qpainter.h>
+#include <stdlib.h>
 
-static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
-"Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
-"PushButton", "ExIndicatorOn", "ExIndicatorOff", "ComboBox", "ScrollBarSlider",
-"Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
-"ScrollBarDeco", "ComboDeco", "Splitter", "CheckMark", "MenuItemOn",
-"MenuItemOff", "MenuBar", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
-"ProgressBar", "ProgressBackground", "ActiveTab", "InactiveTab"};
+static const char *widgetEntries[] = { // unsunken widgets (see header)
+"PushButton", "ComboBox", "HSBarSlider", "VSBarSlider", "Bevel", "ToolButton",
+"ScrollButton", "HScrollDeco", "VScrollDeco", "ComboDeco", "MenuItem", "Tab",
+// sunken widgets
+"PushButtonDown", "ComboBoxDown", "HSBarSliderDown", "VSBarSliderDown",
+"BevelDown", "ToolButtonDown", "ScrollButtonDown", "HScrollDecoDown",
+"VScrollDecoDown", "ComboDecoDown", "MenuItemDown", "TabDown",
+// everything else
+"HScrollGroove", "VScrollGroove", "Slider", "SliderGroove", "CheckBoxDown",
+"CheckBox", "RadioDown", "Radio", "HBarHandle", "VBarHandle",
+"ToolBar", "Splitter", "CheckMark", "MenuBar", "ArrowUp", "ArrowDown",
+"ArrowLeft", "ArrowRight", "ProgressBar", "ProgressBackground",
+"MenuBarItem", "Background"
+};
 
-// Used only internally for handling non-widget option keys. These are needed
-// because they get iterated through in a couple of places and it allows the
-// use of small for loops.
-
-#define OPTIONS 21
-
-static const char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
-"ShadeStyle", "RoundButton", "RoundCombo", "RoundSlider", "FrameWidth",
-"ButtonXShift", "ButtonYShift", "SliderLength", "SplitterHandle", "Name",
-"Description", "CacheSize", "SmallSliderGroove", "3DFocus", "FocusOffset",
-"ActiveTabLine", "InactiveTabLine", "ReverseBevelContrast"};
-
-enum OptionLabel{OptSButtonType=0, OptArrowType, OptComboDeco, OptShadeStyle,
-OptRoundButton, OptRoundCombo, OptRoundSlider, OptFrameWidth, OptButtonXShift,
-OptButtonYShift, OptSliderLength, OptSplitterHandle, OptName, OptDescription,
-OptCacheSize, OptSmallGroove, Opt3DFocus, OptFocusOffset, OptATabLine,
-OptITabLine, OptRBevelContrast};
-
-#define WGROUPS 10
-
-static const char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
-"Gradient Highcolor", "Extended Background", "Extended Foreground", "Borders",
-"Highlights", "Pixmaps", "Blend"};
-
-enum WGroupLabel{WScale=0, WGradients, WGradientLow, WGradientHigh,
-WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps, WBlend};
-
+#define INHERIT_ITEMS 12
 
 
 // This is used to encode the keys. I used to use masks but I think this
@@ -80,24 +62,271 @@ union kthemeKey{
     unsigned int cacheKey;
 };
 
+// reads a single widget's config
+void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
+                                  bool *loadArray)
+{
+    if(loadArray[i] == true){
+        return; // already been preloaded.
+    }
+    
+    config->setGroup(widgetEntries[i]);
+    QString tmpStr;
+
+    if(config->hasKey("CopyWidget")){ // Duplicate another widget's config
+        int sIndex;
+        tmpStr = config->readEntry("CopyWidget", "");
+        if(!tmpStr.isEmpty()){
+            loadArray[i] = true;
+            for(sIndex=0; sIndex < WIDGETS; ++sIndex){
+                if(tmpStr == widgetEntries[sIndex]){
+                    if(!loadArray[sIndex]) // hasn't been loaded yet
+                        readWidgetConfig(sIndex, config, pixnames, loadArray);
+                    break;
+                }
+            }
+            if(loadArray[sIndex]){
+                copyWidgetConfig(sIndex, i, pixnames);
+            }
+            else{
+                warning("KThemeBase: Unable to identify source widget for %s!",
+                        widgetEntries[i]);
+            }
+            return;
+        }
+    }
+
+    // Scale hint
+    tmpStr = config->readEntry("Scale");
+    if(tmpStr == "Full")
+        scaleHints[i] = FullScale;
+    else if(tmpStr == "Horizontal")
+        scaleHints[i] =HorizontalScale;
+    else if(tmpStr == "Vertical")
+        scaleHints[i] = VerticalScale;
+    else{
+        if(tmpStr != "Tile" && !tmpStr.isEmpty())
+            warning("KThemeBase: Unrecognized scale option %s, using Tile.",
+                    tmpStr.ascii());
+        scaleHints[i] = TileScale;
+    }
+    
+    // Gradient type
+    tmpStr = config->readEntry("Gradient");
+    if(tmpStr == "Diagonal")
+        gradients[i] = GrDiagonal;
+    else if(tmpStr == "Horizontal")
+        gradients[i] = GrHorizontal;
+    else if(tmpStr == "Vertical")
+        gradients[i] = GrVertical;
+    else if(tmpStr == "Pyramid")
+        gradients[i] = GrPyramid;
+    else if(tmpStr == "Rectangle")
+        gradients[i] = GrRectangle;
+    else if(tmpStr == "Elliptic")
+        gradients[i] = GrElliptic;
+    else if(tmpStr == "ReverseBevel")
+        gradients[i] = GrReverseBevel;
+    else{
+        if(tmpStr != "None" && !tmpStr.isEmpty())
+            warning("KThemeBase: Unrecognized gradient option %s, using None.",
+                    tmpStr.ascii());
+        gradients[i] = GrNone;
+    }
+
+    // Blend intensity
+    blends[i] = config->readDoubleNumEntry("BlendIntensity", 0.0);
+
+    // Bevel contrast
+    bContrasts[i] = config->readNumEntry("BevelContrast", 0);
+
+    // Border width
+    borders[i] = config->readNumEntry("Border", 1);
+
+    // Highlight width
+    highlights[i] = config->readNumEntry("Highlight", 1);
+
+    // Gradient low color or blend background
+    if(gradients[i] != GrNone || blends[i] != 0.0)
+        grLowColors[i] =
+            new QColor(config->readColorEntry("GradientLow",
+                                              &kapp->palette().normal().
+                                              background()));
+    else
+        grLowColors[i] = NULL;
+
+    // Gradient high color
+    if(gradients[i] != GrNone)
+        grHighColors[i] =
+            new QColor(config->readColorEntry("GradientHigh",
+                                              &kapp->palette().normal().
+                                              background()));
+    else
+        grHighColors[i] = NULL;
+
+    // Extended color attributes
+    if(config->hasKey("Forground") || config->hasKey("Background")){
+        QColor fg, bg;
+        if(config->hasKey("Background"))
+            bg = config->readColorEntry("Background", &bg);
+        else
+            bg = kapp->palette().normal().background();
+        if(config->hasKey("Foreground"))
+            fg = config->readColorEntry("Foreground", &fg);
+        else
+            fg = kapp->palette().normal().foreground();
+        colors[i] = makeColorGroup(fg, bg, Qt::WindowsStyle);
+    }
+    else
+        colors[i] = NULL;
+
+    // Pixmap
+    int existing;
+    tmpStr = config->readEntry("Pixmap", "");
+    pixnames[i] = tmpStr;
+    duplicate[i] = false;
+    pixmaps[i] = NULL;
+    images[i] = NULL;
+    // Scan for duplicate pixmaps(two identical pixmaps, tile scale, no blend,
+    // no pixmapped border)
+    if(!tmpStr.isEmpty()){
+        for(existing=0; existing < i; ++existing){
+            if(tmpStr == pixnames[existing] && scaleHints[i] == TileScale &&
+               scaleHints[existing] == TileScale && blends[existing] == 0.0 &&
+               blends[i] == 0.0){
+                pixmaps[i] = pixmaps[existing];
+                duplicate[i] = true;
+                warning("KThemeBase: Marking %s as duplicate.",
+                        pixnames[i].latin1());
+                break;
+            }
+        }
+    }
+    // load
+    if(!duplicate[i] && !tmpStr.isEmpty()){
+        pixmaps[i] = loadPixmap(tmpStr);
+        // load and save images for scaled/blended widgets for speed.
+        if(scaleHints[i] == TileScale && blends[i] == 0.0)
+            images[i] = NULL;
+        else
+            images[i] = loadImage(tmpStr);
+    }
+
+    // Various widget specific settings. This was more efficent when bunched
+    // together in the misc group, but this makes an easier to read config.
+    if(i == SliderGroove)
+        roundedSlider = config->readBoolEntry("SmallGroove", false);
+    else if(i == ActiveTab)
+        aTabLine = config->readBoolEntry("BottomLine", true);
+    else if(i == InactiveTab)
+        iTabLine = config->readBoolEntry("BottomLine", true);
+    else if(i == Splitter)
+        splitterWidth = config->readNumEntry("Width", 10);
+    else if(i == ComboBox || i == ComboBoxDown){
+        if(config->hasKey("Round"))
+            roundedCombo = config->readBoolEntry("Round", false);
+    }
+    else if (i == PushButton || i == PushButtonDown){
+        if(config->hasKey("XShift"))
+            btnXShift = config->readNumEntry("XShift", 0);
+        if(config->hasKey("YShift"))
+            btnYShift = config->readNumEntry("YShift", 0);
+        if(config->hasKey("3DFocusRect"))
+            focus3D = config->readBoolEntry("3DFocusRect", false);
+        if(config->hasKey("3DFocusOffset"))
+            focus3DOffset = config->readNumEntry("3DFocusOffset", 0);
+        if(config->hasKey("Round"))
+            roundedButton = config->readBoolEntry("Round", false);
+    }
+
+    loadArray[i] = true;
+}
+
+void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames)
+{
+    scaleHints[destID] = scaleHints[sourceID];
+    gradients[destID] = gradients[sourceID];
+    blends[destID] = blends[sourceID];
+    bContrasts[destID] = bContrasts[sourceID];
+    borders[destID] = borders[sourceID];
+    highlights[destID] = highlights[sourceID];
+
+    if(grLowColors[sourceID])
+        grLowColors[destID] = new QColor(*grLowColors[sourceID]);
+    else
+        grLowColors[destID] = NULL;
+
+    if(grHighColors[sourceID])
+        grHighColors[destID] = new QColor(*grHighColors[sourceID]);
+    else
+        grHighColors[destID] = NULL;
+    
+    if(colors[sourceID])
+        colors[destID] = new QColorGroup(*colors[sourceID]);
+    else
+        colors[destID] = NULL;
+
+    pixnames[destID] = pixnames[sourceID];
+    duplicate[destID] = false;
+    pixmaps[destID] = NULL;
+    images[destID] = NULL;
+    if(!pixnames[destID].isEmpty()){
+        if(scaleHints[sourceID] == TileScale && blends[sourceID] == 0.0){
+            pixmaps[destID] = pixmaps[sourceID];
+            duplicate[destID] = true;
+            warning("KThemeBase: Marking %s as duplicate.",
+                    pixnames[destID].latin1());
+        }
+        if(!duplicate[destID]){
+            pixmaps[destID] = loadPixmap(pixnames[destID]);
+            if(scaleHints[destID] == TileScale && blends[destID] == 0.0)
+                images[destID] = NULL;
+            else
+                images[destID] = loadImage(pixnames[destID]);
+        }
+    }
+    if(sourceID == ActiveTab && destID == InactiveTab)
+        aTabLine = iTabLine;
+    else if(sourceID == InactiveTab && destID == ActiveTab)
+        iTabLine = aTabLine;
+}
+    
 
 void KThemeBase::readConfig(Qt::GUIStyle style)
 {
-    
-    // Pixmap only widgets. These widgets aren't scaled and can be blended once
-    // on loading
-#define PREBLEND_ITEMS 8
+#define PREBLEND_ITEMS 12
     static WidgetType preBlend[]={Slider, IndicatorOn, IndicatorOff,
-    ExIndicatorOn, ExIndicatorOff, ScrollDeco, ComboDeco, CheckMark};
+    ExIndicatorOn, ExIndicatorOff, HScrollDeco, VScrollDeco, HScrollDecoDown,
+    VScrollDecoDown, ComboDeco, ComboDecoDown, CheckMark};
 
     int i;
     QString tmpStr;
-   // debug("KThemeStyle: Reading theme settings.");
-    KConfig config("kstylerc", true, false);
+    QString pixnames[WIDGETS]; // used for duplicate check
+    bool loaded[WIDGETS]; // used for preloading for CopyWidget
 
-    // Read in misc settings
+    // initalize defaults that may not be read
+    for(i=0; i < WIDGETS; ++i)
+        loaded[i] = false;
+    btnXShift = btnYShift = focus3DOffset = 0;
+    aTabLine = iTabLine = true;
+    roundedButton = roundedCombo = roundedSlider = focus3D = false;
+    splitterWidth = 10;
+    
+    KConfig config("kstylerc", true, false);
+    for(i=0; i < INHERIT_ITEMS; ++i) 
+        readWidgetConfig(i, &config, pixnames, loaded);
+    for(; i < INHERIT_ITEMS*2; ++i){
+        if(config.hasGroup(widgetEntries[i]))
+            readWidgetConfig(i, &config, pixnames, loaded);
+        else
+            copyWidgetConfig(i-INHERIT_ITEMS, i, pixnames);
+    }
+    for(; i < WIDGETS; ++i) 
+        readWidgetConfig(i, &config, pixnames, loaded);
+
+    // misc items
     config.setGroup("Misc");
-    tmpStr = config.readEntry(optionEntries[OptSButtonType]);
+    tmpStr = config.readEntry("SButtonPosition");
     if(tmpStr == "BottomLeft")
         sbPlacement = SBBottomLeft;
     else if(tmpStr == "BottomRight")
@@ -108,7 +337,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     tmpStr.ascii());
         sbPlacement = SBOpposite;
     }
-    tmpStr = config.readEntry(optionEntries[OptArrowType]);
+    tmpStr = config.readEntry("ArrowType");
     if(tmpStr == "Small")
         arrowStyle = SmallArrow;
     else if(tmpStr == "3D")
@@ -119,201 +348,21 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     tmpStr.ascii());
         arrowStyle = LargeArrow;
     }
-    tmpStr = config.readEntry(optionEntries[OptShadeStyle]);
+    tmpStr = config.readEntry("ShadeStyle");
     if(tmpStr == "Motif")
         shading = Motif;
     else if(tmpStr == "Next")
         shading = Next;
     else
         shading = Windows;
-    smallGroove = config.
-        readBoolEntry(optionEntries[OptSmallGroove], false);
-    roundedButton = config.
-        readBoolEntry(optionEntries[OptRoundButton], false);
-    roundedCombo = config.
-        readBoolEntry(optionEntries[OptRoundCombo], false);
-    roundedSlider = config.
-        readBoolEntry(optionEntries[OptRoundSlider], false);
-    focus3D = config.
-        readBoolEntry(optionEntries[Opt3DFocus], false);
-    aTabLine = config.
-        readBoolEntry(optionEntries[OptATabLine], false);
-    iTabLine = config.
-        readBoolEntry(optionEntries[OptITabLine], false);
-    focus3DOffset = config.
-        readNumEntry(optionEntries[OptFocusOffset], 0);
-    defaultFrame = config.
-        readNumEntry(optionEntries[OptFrameWidth], 2);
-    btnXShift = config.
-        readNumEntry(optionEntries[OptButtonXShift], 0);
-    btnYShift = config.
-        readNumEntry(optionEntries[OptButtonYShift], 0);
-    sliderLen = config.
-        readNumEntry(optionEntries[OptSliderLength], 30);
-    splitterWidth = config.
-        readNumEntry(optionEntries[OptSplitterHandle], 10);
-    cacheSize = config.
-        readNumEntry(optionEntries[OptCacheSize], 1024);
-    rBevelContrast = config.
-        readNumEntry(optionEntries[OptRBevelContrast], 0);
-
-    // Read in the scale hints
-    config.setGroup(wGroupEntries[WScale]);
-    for(i=0; i < WIDGETS; ++i){
-        tmpStr = config.readEntry(widgetEntries[i]);
-        if(tmpStr == "Full")
-            scaleHints[i] = FullScale;
-        else if(tmpStr == "Horizontal")
-            scaleHints[i] =HorizontalScale;
-        else if(tmpStr == "Vertical")
-            scaleHints[i] = VerticalScale;
-        else{
-            if(tmpStr != "Tile" && !tmpStr.isEmpty())
-                warning("KThemeStyle: Unrecognized scale option %s, using Tile.",
-                        tmpStr.ascii());
-            scaleHints[i] = TileScale;
-        }
-    }
-    // Read in gradient types
-    config.setGroup(wGroupEntries[WGradients]);
-    for(i=0; i < WIDGETS; ++i){
-        tmpStr = config.readEntry(widgetEntries[i]);
-        if(tmpStr == "Diagonal")
-            gradients[i] = GrDiagonal;
-        else if(tmpStr == "Horizontal")
-            gradients[i] = GrHorizontal;
-        else if(tmpStr == "Vertical")
-            gradients[i] = GrVertical;
-        else if(tmpStr == "Pyramid")
-            gradients[i] = GrPyramid;
-        else if(tmpStr == "Rectangle")
-            gradients[i] = GrRectangle;
-        else if(tmpStr == "Elliptic")
-            gradients[i] = GrElliptic;
-        else if(tmpStr == "ReverseBevel")
-            gradients[i] = GrReverseBevel;
-        else{
-            if(tmpStr != "None" && !tmpStr.isEmpty())
-                warning("KThemeStyle: Unrecognized gradient option %s, using None.",
-                        tmpStr.ascii());
-            gradients[i] = GrNone;
-        }
-    }
-    // Read in blend intensity values
-    config.setGroup(wGroupEntries[WBlend]);
-    for(i=0; i < WIDGETS; ++i)
-        blends[i] = config.readDoubleNumEntry(widgetEntries[i], 0.0);
-
-    // Read in gradient low colors (or blend background)
-    config.setGroup(wGroupEntries[WGradientLow]);
-    for(i=0; i < WIDGETS; ++i){
-        if(gradients[i] != GrNone || blends[i] != 0.0){
-            grLowColors[i] =
-                new QColor(config.readColorEntry(widgetEntries[i],
-                                                 &kapp->palette().normal().
-                                                 background()));
-        }
-        else
-            grLowColors[i] = NULL;
-    }
-    // Read in gradient high colors
-    config.setGroup(wGroupEntries[WGradientHigh]);
-    for(i=0; i < WIDGETS; ++i){
-        if(gradients[i] != GrNone){
-            grHighColors[i] =
-                new QColor(config.readColorEntry(widgetEntries[i],
-                                                 &kapp->palette().normal().
-                                                 background()));
-        }
-        else
-            grHighColors[i] = NULL;
-    }
-    // Read in the extended color attributes
-    QColor bg[WIDGETS]; // We need to store these for a sec
-    config.setGroup(wGroupEntries[WExtBackground]);
-    for(i=0; i < WIDGETS; ++i){
-        if(config.hasKey(widgetEntries[i]))
-            bg[i] = config.readColorEntry(widgetEntries[i], &bg[i]);
-    }
-    // Combine fg and stored bg colors into a color group
-    config.setGroup(wGroupEntries[WExtForeground]);
-    QColor fg;
-    for(i=0; i < WIDGETS; ++i){
-        if(config.hasKey(widgetEntries[i]) || bg[i].isValid()){
-            fg = kapp->palette().normal().foreground();
-            fg = config.readColorEntry(widgetEntries[i], &fg);
-            colors[i] = makeColorGroup(fg, bg[i], style);
-        }
-        else
-            colors[i] = NULL;
-    }
-    // Read in border widths
-    config.setGroup(wGroupEntries[WBorders]);
-    for(i=0; i < WIDGETS; ++i)
-        borders[i] = config.readNumEntry(widgetEntries[i], 1);
-    // Read in highlight widths
-    config.setGroup(wGroupEntries[WHighlights]);
-    for(i=0; i < WIDGETS; ++i)
-        highlights[i] = config.readNumEntry(widgetEntries[i], 1);
-    // Read in pixmaps
-    config.setGroup(wGroupEntries[WPixmaps]);
-    int existing;
-    QString pixnames[WIDGETS];
-    for(i=0; i < WIDGETS; ++i){
-        tmpStr = config.readEntry(widgetEntries[i], "");
-        pixnames[i] = tmpStr;
-        duplicate[i] = false;
-        pixmaps[i] = NULL;
-        images[i] = NULL;
-        if(!tmpStr.isEmpty()){
-            // Scan for duplicate pixmaps (if two identical pixmaps are both
-            // tile scale and not blended).
-            for(existing=0; existing < i; ++existing){
-                if(tmpStr == pixnames[existing] && scaleHints[i] ==
-                   TileScale && scaleHints[existing] == TileScale
-                   && blends[existing] == 0.0 && blends[i] == 0.0){
-                    pixmaps[i] = pixmaps[existing];
-                    images[i] = NULL;
-                    duplicate[i] = true;
-                    warning("KThemeStyle: Marking %s as duplicate.",
-                            pixnames[i].ascii());
-                    break;
-                }
-            }
-            // load pixmap
-            if(!duplicate[i]){
-                if(tmpStr.isEmpty()){
-                    warning("KThemeStyle: No pixmap specified for %s.",
-                            widgetEntries[i]);
-                }
-                else{
-                    if(scaleHints[i] == TileScale && blends[i] == 0.0){
-                        pixmaps[i] = loadPixmap(tmpStr);
-                        images[i] = NULL;
-                    }
-                    else{
-                        images[i] = loadImage(tmpStr);
-                        pixmaps[i] = loadPixmap(tmpStr);
-                    }
-                }
-            }
-        }
-    }
+    defaultFrame = config.readNumEntry("FrameWidth", 2);
+    cacheSize = config. readNumEntry("Cache", 1024);
 
     // Handle preblend items
     for(i=0; i < PREBLEND_ITEMS; ++i){
         if(pixmaps[preBlend[i]] != NULL && blends[preBlend[i]] != 0.0)
             blend(preBlend[i]);
     }
-    
-#ifdef KSTYLE_DEBUG
-    for(existing=0, i=0; i < WIDGETS; ++i)
-        if(images[i] || pixmaps[i])
-            ++existing;
-    warning("KThemeStyle: %d out of %d pixmaps allocated", existing, WIDGETS);
-#endif
-    warning("KThemeStyle: Finished reading theme settings.");
-
 }
 
 KThemeBase::KThemeBase(const QString &)
@@ -322,58 +371,20 @@ KThemeBase::KThemeBase(const QString &)
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
-}                            
-
-KThemeBase::~KThemeBase()
-{
-    int i;
-    for(i=0; i < WIDGETS; ++i){
-        if(!duplicate[i]){
-            if(images[i])
-                delete images[i];
-            if(pixmaps[i])
-                delete pixmaps[i];
-        }
-        if(colors[i])
-            delete(colors[i]);
-        if(grLowColors[i])
-            delete(grLowColors[i]);
-        if(grHighColors[i])
-            delete(grHighColors[i]);
-    }
-    delete cache;
 }
 
-void KThemeBase::applyConfigFile(const QString &inFile)
+void KThemeBase::applyConfigFile(const QString &file)
 {
-    int group, widget;
-    KConfig inConfig(inFile, true, false);
-    KConfig outConfig("kstylerc", false, false);
-
-    // Write the theme specific keys to kstylerc
-    for(group=0; group < WGROUPS; ++group){
-        outConfig.setGroup(wGroupEntries[group]);
-        inConfig.setGroup(wGroupEntries[group]);
-        for(widget=0; widget < WIDGETS; ++widget)
-            outConfig.writeEntry(widgetEntries[widget],
-                                 inConfig.readEntry(widgetEntries[widget],
-                                                    " "));
-    }
-    inConfig.setGroup("Misc");
-    outConfig.setGroup("Misc");
-    for(widget=0; widget < OPTIONS; ++widget){
-        outConfig.writeEntry(optionEntries[widget],
-                             inConfig.readEntry(optionEntries[widget], " "));
-    }
-
-    // Write the std color scheme keys to kdeglobals
+    QString cmd;
+    // Fix to use KStdDirs
+    cmd.sprintf("cp %s %s/.kde/share/config/kstylerc", file.latin1(),
+                QDir::homeDirPath().latin1());
+    system(cmd.latin1());
+    // handle std color scheme
+    KConfig inConfig(file, true, false);
     KConfig *globalConfig = KGlobal::config();
-    // I have no idea why I have to call rollback but if I don't *all* keys
-    // get written to kdeglobals, not just the ones I write! Can someone look
-    // at this? I am probably doing sumthin' stupid here ;-)
-    globalConfig->rollback(true);
     globalConfig->setGroup("General");
-    inConfig.setGroup("General");
+    inConfig.setGroup("General");                 
     if(inConfig.hasKey("foreground"))
         globalConfig->writeEntry("foreground",
                                  inConfig.readEntry("foreground", " "), true,
@@ -399,8 +410,7 @@ void KThemeBase::applyConfigFile(const QString &inFile)
                                  inConfig.readEntry("windowBackground", " "),
                                  true, true);
     globalConfig->setGroup("KDE");
-    inConfig.setGroup("KDE");
-
+    inConfig.setGroup("KDE");                                 
     if(inConfig.hasKey("contrast"))
         globalConfig->writeEntry("contrast",
                                  inConfig.readEntry("contrast", " "), true,
@@ -408,24 +418,27 @@ void KThemeBase::applyConfigFile(const QString &inFile)
     globalConfig->writeEntry("widgetStyle",
                              inConfig.readEntry("widgetStyle", " "), true,
                              true);
-    globalConfig->sync();
+    globalConfig->sync();             
 }
 
-QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
-                                        Qt::GUIStyle)
+KThemeBase::~KThemeBase()
 {
-    if(shading == Motif){
-        int highlightVal, lowlightVal;
-        highlightVal=100+(2*kapp->contrast()+4)*16/10;
-        lowlightVal=100+((2*kapp->contrast()+4)*10);
-        return(new QColorGroup(fg, bg, bg.light(highlightVal),
-                               bg.dark(lowlightVal), bg.dark(120),
-                               fg, kapp->palette().normal().base()));
+    int i;
+    for(i=0; i < WIDGETS; ++i){
+        if(!duplicate[i]){
+            if(images[i])
+                delete images[i];
+            if(pixmaps[i])
+                delete pixmaps[i];
+        }
+        if(colors[i])
+            delete(colors[i]);
+        if(grLowColors[i])
+            delete(grLowColors[i]);
+        if(grHighColors[i])
+            delete(grHighColors[i]);
     }
-    else
-        return(new QColorGroup( fg, bg, bg.light(150), bg.dark(),
-                                bg.dark(120), fg,
-                                kapp->palette().normal().base()));
+    delete cache;
 }
 
 QImage* KThemeBase::loadImage(QString &name)
@@ -442,7 +455,7 @@ QImage* KThemeBase::loadImage(QString &name)
  
 KThemePixmap* KThemeBase::loadPixmap(QString &name)
 {
-    KThemePixmap *pixmap = new KThemePixmap;
+    KThemePixmap *pixmap = new KThemePixmap(false);
     QString path = locate("kstyle_pixmap", name);
     pixmap->load(path);
     if (!pixmap->isNull())
@@ -636,9 +649,9 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                         KPixmapEffect::DiagonalGradient);
                 KPixmapEffect::gradient(s,
                                         grLowColors[widget]->
-                                        dark(rBevelContrast),
+                                        dark(bevelContrast(widget)),
                                         grHighColors[widget]->
-                                        light(rBevelContrast),
+                                        light(bevelContrast(widget)),
                                         KPixmapEffect::DiagonalGradient);
                 pixmaps[widget]->setSecondary(s);
             }
@@ -691,6 +704,43 @@ KThemePixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget)
         return(gradient(w, h, widget));
 
     return(scale(w, h, widget));
+}
+
+QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
+                                        Qt::GUIStyle)
+{
+    if(shading == Motif){
+        int highlightVal, lowlightVal;
+        highlightVal=100+(2*kapp->contrast()+4)*16/10;
+        lowlightVal=100+((2*kapp->contrast()+4)*10);
+        return(new QColorGroup(fg, bg, bg.light(highlightVal),
+                               bg.dark(lowlightVal), bg.dark(120),
+                               fg, kapp->palette().normal().base()));
+    }
+    else
+        return(new QColorGroup( fg, bg, bg.light(150), bg.dark(),
+                                bg.dark(120), fg,
+                                kapp->palette().normal().base()));
+}
+
+KThemePixmap::KThemePixmap(bool timer)
+    : KPixmap()
+{
+    s = NULL;
+    if(timer){
+        t = new QTime;
+        t->start();
+    }
+    else
+        t = NULL;
+}
+
+KThemePixmap::~KThemePixmap()
+{
+    if(s)
+        delete s;
+    if(t)
+        delete t;
 }
 
 KThemeCache::KThemeCache(int maxSize, QObject *parent, const char *name)

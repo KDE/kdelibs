@@ -49,7 +49,8 @@ public:
      * Defaults to ~/.kderc.
      */
     KThemeStyle(const QString &configFile = QString::null) :
-         KThemeBase(configFile) {;}
+        KThemeBase(configFile) {;}
+    ~KThemeStyle(){warning("Kthemestyle destructor called");}
     virtual void polish(QWidget* );
     virtual void unPolish(QWidget* );
     /**

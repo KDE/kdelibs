@@ -29,7 +29,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 32
+#define WIDGETS 46
 
 /**
  * This class adds simple time management to KPixmap for use in flushing
@@ -40,17 +40,50 @@
 class KThemePixmap : public KPixmap
 {
 public:
-    KThemePixmap() : KPixmap() {t.start(); s = NULL;}
-    ~KThemePixmap(){if(s) delete s;}
-    KPixmap* secondary(){return(s);}
-    void setSecondary(KPixmap &p){if(s) delete s; s = new KPixmap(p);}
-    void clearSecondary(){if(s) delete s; s = NULL;}
-    void updateAccessed() {t.start();}
-    bool isOld() {return(t.elapsed() >= 300000);} // 5 minutes
+    enum BorderType{Top=0, Bottom, Left, Right, TopLeft, TopRight, BottomLeft,
+    BottomRight};
+    
+    KThemePixmap(bool timer = true);
+    ~KThemePixmap();
+    QPixmap* secondary();
+    void setSecondary(QPixmap &p);
+    void clearSecondary();
+    void updateAccessed();
+    bool isOld();
 protected:
-    QTime t;
-    KPixmap *s;
+    QTime *t;
+    QPixmap *s;
 };
+
+inline QPixmap* KThemePixmap::secondary()
+{
+    return(s);
+}
+
+inline void KThemePixmap::setSecondary(QPixmap &p)
+{
+    if(s)
+        delete s;
+    s = new QPixmap(p);
+}
+
+inline void KThemePixmap::clearSecondary()
+{
+    if(s)
+        delete s;
+    s = NULL;
+}
+
+inline void KThemePixmap::updateAccessed()
+{
+    if (t)
+        t->start();
+}
+
+inline bool KThemePixmap::isOld()
+{
+    return(t ? t->elapsed() >= 300000 : false);
+}
 
 /**
  * A very simple pixmap cache for theme plugins. QPixmapCache is not used
@@ -177,7 +210,7 @@ public:
      * uses, BottomRight is like Platinum, and Opposite it like Windows and
      * Motif.
      */
-    enum SButton{SBBottomLeft, SBBottomRight, SBOpposite};
+     enum SButton{SBBottomLeft, SBBottomRight, SBOpposite};
     /**
      * The gradient types. Horizontal is left to right, Vertical is top to
      * bottom, and diagonal is upper-left to bottom-right.
@@ -187,12 +220,35 @@ public:
     /**
      * This provides a list of widget types that KThemeBase recognizes.
      */
-     enum WidgetType{HScrollGroove=0, VScrollGroove, Slider, SliderGroove,
-     IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
-     ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
-     ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
-     MenuItemOn, MenuItemOff, MenuBar, ArrowUp, ArrowDown, ArrowLeft,
-     ArrowRight, ProgressBar, ProgressBg, ActiveTab, InactiveTab};
+    /* Internal note: The order here is important. Some widgets inherit
+     * properties. This is usually for when you have two settings for the
+     * same widget, ie: on(sunken), and off. The on settings will inherit
+     * the properties of the off one when nothing is specified in the config.
+     *
+     * In order to be able to handle this while still having everything in
+     * one group that is easy to loop from we have the following order:
+     * unsunked(off) items, sunken(on)items, and then the ones that don't
+     * matter. INHERIT_ITEMS define the number of widgets that have inheritence
+     * so if 0 == PushButtonOff then INHERIT_ITEMS should == PushButtonOn
+     * and so on. WIDGETS define the total number of widgets.
+     */
+     enum WidgetType{
+         // Off (unsunken widgets)
+         PushButton=0, ComboBox, HScrollBarSlider, VScrollBarSlider, Bevel,
+         ToolButton, ScrollButton, HScrollDeco, VScrollDeco,
+         ComboDeco, MenuItem, InactiveTab,
+         // On (sunken widgets)
+         PushButtonDown, ComboBoxDown, HScrollBarSliderDown,
+         VScrollBarSliderDown, BevelDown, ToolButtonDown, ScrollButtonDown,
+         HScrollDecoDown, VScrollDecoDown, ComboDecoDown, MenuItemDown,
+         ActiveTab,
+         // Everything else (indicators must have separate settings)
+         HScrollGroove, VScrollGroove, Slider, SliderGroove, IndicatorOn,
+         IndicatorOff, ExIndicatorOn, ExIndicatorOff, HBarHandle, VBarHandle,
+         ToolBar, Splitter, CheckMark, MenuBar, ArrowUp, ArrowDown,
+         ArrowLeft, ArrowRight, ProgressBar, ProgressBg, MenuBarItem,
+         Background};
+
     /**
      * The scaling type specified by the KConfig file.
      *
@@ -275,9 +331,9 @@ public:
      */
     int splitWidth() const;
     /**
-     * The contrast for reverse gradient bevels.
+     * The contrast for some bevel effects such as reverse gradient.
      */
-    int reverseBevelContrast() const;
+    int bevelContrast(WidgetType widget) const;
     /**
      * The button text X shift.
      */
@@ -360,6 +416,9 @@ protected:
      * is obsolete.
      */
     void readConfig(Qt::GUIStyle colorStyle = Qt::WindowsStyle);
+    void readWidgetConfig(int i, KConfig *config, QString *pixnames,
+                          bool *loadArray);
+    void copyWidgetConfig(int sourceID, int destID, QString *pixnames);
     /**
      * Makes a full color group based on the given foreground and background
      * colors. This is the same code used by KDE (kapp.cpp) in previous
@@ -386,7 +445,6 @@ private:
     int btnXShift, btnYShift;
     int sliderLen;
     int splitterWidth;
-    int rBevelContrast;
     int focus3DOffset;
     bool smallGroove;
     bool roundedButton, roundedCombo, roundedSlider;
@@ -441,12 +499,16 @@ private:
      */
     float blends[WIDGETS];
     /**
+     * Bevel contrasts
+     */
+    unsigned char bContrasts[WIDGETS];
+    /**
      * Duplicate pixmap entries (used during destruction).
      */
     bool duplicate[WIDGETS];
 };
 
-inline bool KThemeBase::isPixmap(const WidgetType widget) const
+inline bool KThemeBase::isPixmap( WidgetType widget) const
 {
     return(pixmaps[widget] != NULL || gradients[widget] != GrNone);
 }
@@ -466,9 +528,9 @@ inline int KThemeBase::focusOffset() const
     return(focus3DOffset);
 }
 
-inline int KThemeBase::reverseBevelContrast() const
+inline int KThemeBase::bevelContrast(WidgetType widget) const
 {
-    return(rBevelContrast);
+    return(bContrasts[widget]);
 }
 
 inline KThemeBase::ScaleHint KThemeBase::scaleHint(WidgetType widget) const
@@ -514,7 +576,7 @@ inline int KThemeBase::highlightWidth(WidgetType widget) const
 
 inline int KThemeBase::decoWidth(WidgetType widget) const
 {
-    return(borders[widget] + highlights[widget]);
+    return(borders[widget]+highlights[widget]);
 }
 
 inline QColor* KThemeBase::gradientHigh(WidgetType widget) const

@@ -32,25 +32,24 @@
 
 void KThemeStyle::polish(QApplication *app)
 {
-  oldPalette = app->palette();
-  if(isPixmap(Background)){
-      QPalette newPalette = oldPalette;
-      QBrush bgBrush(oldPalette.color(QPalette::Normal,
-                                      QColorGroup::Background),
-                     *uncached(Background));
-      newPalette.setBrush(QPalette::Normal, QColorGroup::Background,
-                          bgBrush);
-      bgBrush.setColor(oldPalette.color(QPalette::Disabled,
-                                        QColorGroup::Background));
-      newPalette.setBrush(QPalette::Disabled, QColorGroup::Background,
-                          bgBrush);
-      bgBrush.setColor(oldPalette.color(QPalette::Active,
-                                        QColorGroup::Background));
-      newPalette.setBrush(QPalette::Active, QColorGroup::Background,
-                          bgBrush);
-
-      app->setPalette(newPalette, true);
-  }
+    oldPalette = app->palette();
+    if(isPixmap(Background)){
+        QPalette newPalette = oldPalette;
+        QBrush bgBrush(oldPalette.color(QPalette::Normal,
+                                        QColorGroup::Background),
+                       *uncached(Background));
+        newPalette.setBrush(QPalette::Normal, QColorGroup::Background,
+                            bgBrush);
+        bgBrush.setColor(oldPalette.color(QPalette::Disabled,
+                                          QColorGroup::Background));
+        newPalette.setBrush(QPalette::Disabled, QColorGroup::Background,
+                            bgBrush);
+        bgBrush.setColor(oldPalette.color(QPalette::Active,
+                                          QColorGroup::Background));
+        newPalette.setBrush(QPalette::Active, QColorGroup::Background,
+                            bgBrush);
+        app->setPalette(newPalette, true);
+    }
 }
 
 void KThemeStyle::unPolish(QApplication *app)
@@ -66,6 +65,21 @@ void KThemeStyle::polish(QWidget *w)
            || w->inherits("QSlider"))
             w->setAutoMask( TRUE );
     }
+    if(w->inherits("QPopupMenu")){
+        if(isColor(MenuItem)){
+            QPalette newPal(w->palette());
+            w->setPalettePropagation(QWidget::SamePalette);
+            newPal.setNormal(*colorGroup(newPal.normal(), MenuItem));
+            newPal.setDisabled(*colorGroup(newPal.normal(), MenuItem));
+            w->setPalette(newPal);
+        }
+        if(isColor(MenuItemDown)){
+            QPalette newPal(w->palette());
+            w->setPalettePropagation(QWidget::SamePalette);
+            newPal.setActive(*colorGroup(newPal.active(), MenuItemDown));
+            w->setPalette(newPal);
+        }
+    }
 }
 
 void KThemeStyle::unPolish(QWidget* w)
@@ -76,6 +90,8 @@ void KThemeStyle::unPolish(QWidget* w)
            || w->inherits("QSlider"))
             w->setAutoMask( FALSE );
     }
+    if(w->inherits("QPopupMenu"))
+        w->setPalette(kapp->palette());
 }                                     
 
 void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
@@ -124,7 +140,8 @@ void KThemeStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                              const QColorGroup &g, bool sunken,
                              const QBrush *fill)
 {
-    drawBaseButton(p, x, y, w, h, g, sunken, roundButton(), PushButton, fill);
+    drawBaseButton(p, x, y, w, h, g, sunken, roundButton(), sunken ?
+                   PushButtonDown : PushButton, fill);
 }
 
 void KThemeStyle::drawPushButton(QPushButton* btn, QPainter *p)
@@ -199,7 +216,8 @@ void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken,
                                   const QBrush *)
 {
-    drawBaseButton(p, x, y, w, h, g, sunken, false, Bevel);
+    drawBaseButton(p, x, y, w, h, g, sunken, false,
+                   sunken ? BevelDown : Bevel);
 }
 
 void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -207,7 +225,8 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      bool raised, bool enabled, bool popup,
                                      KToolButtonType type, const QString &btext,
                                      const QPixmap *pixmap, QFont *font){
-    drawBaseButton(p, x, y, w, h, g, sunken, false, ToolButton);
+    drawBaseButton(p, x, y, w, h, g, sunken, false, sunken ?
+                   ToolButtonDown : ToolButton);
     int dx, dy;
     if (type == Icon){ // icon only
         if (pixmap){
@@ -309,7 +328,10 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 void KThemeStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool, QBrush *)
 {
-    drawBaseButton(p, x, y, w, h, g, false, false, BarHandle);
+    if(w > h)
+        drawBaseButton(p, x, y, w, h, g, false, false, HBarHandle);
+    else
+        drawBaseButton(p, x, y, w, h, g, false, false, VBarHandle);
 }
 
 void KThemeStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
@@ -320,7 +342,8 @@ void KThemeStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
 
 QRect KThemeStyle::buttonRect(int x, int y, int w, int h)
 {
-    int spacing = decoWidth(PushButton);
+    int spacing = decoWidth(PushButton) > decoWidth(PushButtonDown) ?
+        decoWidth(PushButton) : decoWidth(PushButtonDown);
     return(QRect(x+spacing+4, y+spacing+4, w-(spacing*2)-4, h-(spacing*2)-4));
 }                                                            
 
@@ -328,16 +351,22 @@ void KThemeStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken, bool,
                                   bool, const QBrush *)
 {
-    drawBaseButton(p, x, y, w, h, g, sunken, roundComboBox(), ComboBox);
-    if(isPixmap(ComboDeco))
-        p->drawPixmap(w - uncached(ComboDeco)->width()-decoWidth(ComboBox)-2,
-                      y +(h - uncached(ComboDeco)->
-                          height())/2,
-                      *uncached(ComboDeco));
+    WidgetType widget = sunken ? ComboBoxDown : ComboBox;
+    drawBaseButton(p, x, y, w, h, g, sunken, roundComboBox(), widget);
+    if(!sunken && isPixmap(ComboDeco))
+        p->drawPixmap(w - uncached(ComboDeco)->width()-
+                      decoWidth(ComboBox)-2,
+                      y+(h - uncached(ComboDeco)->
+                         height())/2, *uncached(ComboDeco));
+    else if(sunken && isPixmap(ComboDecoDown))
+        p->drawPixmap(w - uncached(ComboDecoDown)->width()-
+                      decoWidth(ComboBoxDown)-2,
+                      y +(h - uncached(ComboDecoDown)->
+                          height())/2, *uncached(ComboDecoDown));
     else{
         qDrawArrow(p, Qt::DownArrow, Qt::MotifStyle, false, w-15, y+6, 10,
-                   h-15, *colorGroup(g, ComboBox), true);
-        qDrawShadeRect(p, w-14, y+7+(h-15), 10, 3, *colorGroup(g, ComboBox));
+                   h-15, *colorGroup(g, widget), true);
+        qDrawShadeRect(p, w-14, y+7+(h-15), 10, 3, *colorGroup(g, widget));
     }
 }
 
@@ -420,6 +449,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     // End of the button placement code
 
+    bool active;
     if((controls & QStyle::SubPage)){
         drawScrollBarGroove(p, sb, horizontal, subPage, g);
     }
@@ -427,36 +457,45 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         drawScrollBarGroove(p, sb, horizontal, addPage, g);
     }
     if(controls & QStyle::AddLine){
+        active = activeControl == QStyle::AddLine;
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
-                       activeControl == AddLine, false, ScrollButton);
-        drawArrow(p, (horizontal) ? RightArrow : DownArrow, false,
-                  add.x()+3, add.y()+3, add.width()-6,
-                  add.height()-6, *colorGroup(g, ScrollButton));
+                       active, false, active ? ScrollButtonDown : ScrollButton);
+        drawArrow(p, (horizontal) ? RightArrow : DownArrow, false, add.x()+3,
+                  add.y()+3, add.width()-6, add.height()-6,
+                  *colorGroup(g, active ? ScrollButtonDown : ScrollButton));
     }
     if(controls & QStyle::SubLine){
+        active = activeControl == QStyle::SubLine;
         p->setPen(g.dark());
         p->drawRect(sub);
         drawBaseButton(p, sub.x(), sub.y(), sub.width(), sub.height(), g,
-                       activeControl == SubLine, false, ScrollButton);
+                       active, false, active ? ScrollButtonDown : ScrollButton);
         drawArrow(p, (horizontal)  ? LeftArrow : UpArrow, false, sub.x()+3,
                   sub.y()+3, sub.width()-6, sub.height()-6,
-                  *colorGroup(g, ScrollButton));
+                  *colorGroup(g, active ? ScrollButtonDown : ScrollButton));
     }
     if(controls & QStyle::Slider){
+        active = activeControl == QStyle::Slider;
+        WidgetType widget = horizontal ?
+            active ? HScrollBarSliderDown : HScrollBarSlider :
+            active ? VScrollBarSliderDown : VScrollBarSlider;
+            
         drawBaseButton(p, slider.x(), slider.y(), slider.width(),
-                       slider.height(), g, false, ScrollBarSlider);
-        int spaceW = horizontal ? slider.width()-decoWidth(ScrollBarSlider)-4 :
+                       slider.height(), g, active, false, widget);
+        int spaceW = horizontal ? slider.width()-decoWidth(widget)-4 :
             slider.width();
         int spaceH = horizontal ? slider.height() :
-            slider.height()-decoWidth(ScrollBarSlider)-4;
-        if(isPixmap(ScrollDeco)){
-            if(spaceW >= uncached(ScrollDeco)->width() &&
-               spaceH >= uncached(ScrollDeco)->height()){
+            slider.height()-decoWidth(widget)-4;
+        widget = active ? horizontal ? HScrollDecoDown : VScrollDecoDown :
+            horizontal ? HScrollDeco : VScrollDeco;
+        if(isPixmap(widget)){
+            if(spaceW >= uncached(widget)->width() &&
+               spaceH >= uncached(widget)->height()){
                 p->drawPixmap(slider.x()+(slider.width() -
-                                          uncached(ScrollDeco)->width())/2,
+                                          uncached(widget)->width())/2,
                               slider.y()+(slider.height() -
-                                          uncached(ScrollDeco)->height())/2,
-                              *uncached(ScrollDeco));
+                                          uncached(widget)->height())/2,
+                              *uncached(widget));
             }
         }
     }
@@ -492,7 +531,7 @@ void KThemeStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                    int &buttonDim)
 {
     bool horizontal = sb->orientation() == QScrollBar::Horizontal;
-    int offset = borderWidth(horizontal ? HScrollGroove : VScrollGroove);
+    int offset = decoWidth(horizontal ? HScrollGroove : VScrollGroove);
     int maxlen;
     int len = horizontal ? sb->width()  : sb->height();
     int extent = horizontal ? sb->height() : sb->width();
@@ -918,17 +957,19 @@ void KThemeStyle::drawShade(QPainter *p, int x, int y, int w, int h,
 
 void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 {
-    const QColorGroup *cg = colorGroup(btn->colorGroup(), PushButton);
+    WidgetType widget = btn->isDown() || btn->isOn() ? PushButtonDown :
+        PushButton;
+    const QColorGroup *cg = colorGroup(btn->colorGroup(), widget);
     int x, y, w, h;
-
+    
     QRect r = btn->rect();
     r.rect(&x, &y, &w, &h);
-    x+=decoWidth(PushButton);
-    y+=decoWidth(PushButton);
-    w-=decoWidth(PushButton)*2;
-    h-=decoWidth(PushButton)*2;
+    x+=decoWidth(widget);
+    y+=decoWidth(widget);
+    w-=decoWidth(widget)*2;
+    h-=decoWidth(widget)*2;
     
-    if(btn->isDown() || btn->isOn()){
+    if(widget == PushButtonDown){
         drawItem(p, x+buttonXShift(), y+buttonYShift(),
                  w, h, AlignCenter | ShowPrefix, *cg, btn->isEnabled(),
                  btn->pixmap(), btn->text(), -1, &cg->buttonText());
@@ -969,7 +1010,7 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
                                      const QFontMetrics &fm)
 {
     int h2, h = 0;
-    int offset = QMAX(decoWidth(MenuItemOn), decoWidth(MenuItemOff)) + 4;
+    int offset = QMAX(decoWidth(MenuItemDown), decoWidth(MenuItem)) + 4;
     
     if(mi->isSeparator())
         return(2);
@@ -1011,12 +1052,12 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                      bool enabled, int x, int y, int w, int h)
 {
     bool dis = !enabled;
-    const QColorGroup &g = dis ? *colorGroup(pal.normal(), MenuItemOff) :
-        *colorGroup(pal.normal(), MenuItemOn);
+    const QColorGroup &g = dis ? *colorGroup(pal.normal(), MenuItem) :
+        *colorGroup(pal.normal(), MenuItemDown);
     
-    QColorGroup itemg = dis ? *colorGroup(pal.disabled(), MenuItemOff)
-        : act ? *colorGroup(pal.active(), MenuItemOn)
-        : *colorGroup(pal.normal(), MenuItemOff);
+    QColorGroup itemg = dis ? *colorGroup(pal.disabled(), MenuItem)
+        : act ? *colorGroup(pal.active(), MenuItemDown)
+        : *colorGroup(pal.normal(), MenuItem);
 
     if (checkable)
         maxpmw = QMAX( maxpmw, 12 ); 
@@ -1029,10 +1070,26 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
 	p->drawLine(x, y+1, x+w, y+1);
 	return;
     }
-
-    drawBaseButton(p, x, y, w, h, g, act, false, act ? MenuItemOn :
-                   MenuItemOff);
-
+    if(act){
+        drawBaseButton(p, x, y, w, h, g, true, false, MenuItemDown);
+    }
+    else{
+        drawShade(p, x, y, w, h, *colorGroup(g, MenuItem), false, false,
+                  highlightWidth(MenuItem), borderWidth(MenuItem),
+                  shade());
+        int dw = decoWidth(MenuItem);
+        if(!isPixmap(MenuItem))
+            p->fillRect(x+dw, y+dw, w-dw*2, h-dw*2,
+                        colorGroup(g, MenuItem)->
+                        brush(QColorGroup::Background));
+        else{
+            // process inactive item pixmaps as one large item
+            p->drawTiledPixmap(x+dw, y+dw, w-dw*2, h-dw*2, *scalePixmap
+                               (w, p->window().height(), MenuItem),
+                               x, y);
+        }
+        
+    }
     if ( mi->iconSet() ) {
 	QIconSet::Mode mode = dis?QIconSet::Disabled:QIconSet::Normal;
 	if (act && !dis)
@@ -1056,7 +1113,7 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
         }
     }
 
-    p->setPen(act ? g.highlightedText() : g.buttonText());
+    p->setPen(colorGroup(g, act ? MenuItemDown : MenuItem)->text());
 
     QColor discol;
     if (dis) {
@@ -1098,8 +1155,9 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
     if (mi->popup()) {
         int dim = (h-2*motifItemFrame) / 2;
 	if (act) {
-	    if (!dis)
-		discol = white;
+            if (!dis)
+                discol = colorGroup(g, MenuItemDown)->text();
+		//discol = white;
             QColorGroup g2(discol, g.highlight(),
                            white, white,
                            dis ? discol : white,
@@ -1145,10 +1203,11 @@ void KThemeStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool active,
                                 QMenuItem *mi, QBrush *)
 {
-    const QColorGroup *cg = colorGroup(g, MenuBar);
+    const QColorGroup *cg = colorGroup(g, active ? MenuBarItem : MenuBar);
     QColor btext = cg->buttonText();
     if(active)
-        qDrawShadePanel(p, x, y, w, h, *cg, false, 1);
+        drawBaseButton(p, x, y, w, h, *cg, false, false, MenuBarItem);
+        //qDrawShadePanel(p, x, y, w, h, *cg, false, 1);
     
     drawItem(p, x, y, w, h, AlignCenter|ShowPrefix|DontClip|SingleLine,
              *cg, mi->isEnabled(), mi->pixmap(), mi->text(),
