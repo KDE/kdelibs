@@ -228,7 +228,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_MODAL",
 	    "_NET_WM_STATE_STICKY",
 	    "_NET_WM_STATE_MAXIMIZED_VERT",
-	    "_NET_WM_STATE_MAXIMIZED_HORIZ",
+	    "_NET_WM_STATE_MAXIMIZED_HORZ",
 	    "_NET_WM_STATE_SHADED",
 	    "_NET_WM_STATE_SKIP_TASKBAR",
 	    "_NET_WM_STATE_SKIP_PAGER",
