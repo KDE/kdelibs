@@ -45,7 +45,11 @@ Shell::Shell()
   (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
   (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
 
-  m_manager = new KPartManager( m_builder );
+  m_manager = new KPartManager( this );
+
+  // When the manager says the active part changes, the builder updates (recreates) the GUI
+  connect( m_manager, SIGNAL( activePartChanged( KPart * ) ),
+           m_builder, SLOT( createGUI( KPart * ) ) );
 
   setView( m_splitter );
 

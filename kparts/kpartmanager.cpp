@@ -7,16 +7,10 @@
 
 #include <assert.h>
 
-KPartManager::KPartManager( KXMLGUIBuilder * builder )
- : QObject( builder, "KPartManager" )
+KPartManager::KPartManager( QObject * parent, const char * name )
+ : QObject( parent, name )
 {
   m_activePart = 0;
-
-  // Oh oh, found a nice trick :-) Now I know why it's (new part, old part)
-  // and not the other way round :)  (David)
-  // :-) ..and I was waiting for the day someone discovering that one :-) (Simon)
-  connect( this, SIGNAL( activePartChanged( KPart *, KPart * ) ),
-           builder, SLOT( createGUI( KPart * ) ) );
 
   qApp->installEventFilter( this );
 }
@@ -42,9 +36,8 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 	if ( !part )
 	  return FALSE;
 		
-        KPart *oldActivePart = m_activePart;
         m_activePart = part;
-        emit activePartChanged( m_activePart, oldActivePart );
+        emit activePartChanged( m_activePart );
 	return FALSE;
       }
       o = o->parent();
@@ -74,9 +67,8 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
     part = findPartFromWidget( w );
     if ( part && part != m_activePart )
     {
-      KPart *oldActivePart = m_activePart;
       m_activePart = part;
-      emit activePartChanged( m_activePart, oldActivePart );
+      emit activePartChanged( m_activePart );
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
@@ -110,9 +102,8 @@ void KPartManager::addPart( KPart *part )
 
   m_parts.append( part );
 
-  KPart *oldActivePart = m_activePart;
   m_activePart = part;
-  emit activePartChanged( m_activePart, oldActivePart );
+  emit activePartChanged( m_activePart );
 }
 
 void KPartManager::removePart( KPart *part )
@@ -125,7 +116,7 @@ void KPartManager::removePart( KPart *part )
   if ( part == m_activePart )
   {
     m_activePart = 0;
-    emit activePartChanged( 0, part );
+    emit activePartChanged( 0 );
   }
 }
 
