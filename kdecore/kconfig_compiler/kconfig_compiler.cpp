@@ -1108,12 +1108,12 @@ int main( int argc, char **argv )
   // Singleton implementation
   if ( singleton ) {
     cpp << className << " *" << className << "::mSelf = 0;" << endl;
-    cpp << "static KStaticDeleter<" << className << "> staticDeleter;" << endl << endl;
+    cpp << "static KStaticDeleter<" << className << "> static" << className << "Deleter;" << endl << endl;
 
     cpp << className << " *" << className << "::self()" << endl;
     cpp << "{" << endl;
     cpp << "  if ( !mSelf ) {" << endl;
-    cpp << "    staticDeleter.setObject( mSelf, new " << className << "() );" << endl;
+    cpp << "    static" << className << "Deleter.setObject( mSelf, new " << className << "() );" << endl;
     cpp << "    mSelf->readConfig();" << endl;
     cpp << "  }" << endl << endl;
     cpp << "  return mSelf;" << endl;
@@ -1240,7 +1240,7 @@ int main( int argc, char **argv )
   cpp << "{" << endl;
   if ( singleton ) {
     cpp << "  if ( mSelf == this )" << endl;
-    cpp << "    staticDeleter.setObject( mSelf, 0, false );" << endl;
+    cpp << "    static" << className << "Deleter.setObject( mSelf, 0, false );" << endl;
   }
   cpp << "}" << endl << endl;
 
