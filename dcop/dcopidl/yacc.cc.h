@@ -32,6 +32,7 @@ typedef union
 #define	T_SCOPE	282
 #define	T_NULL	283
 #define	T_DCOP	284
+#define	T_DCOP_AREA	285
 
 
 extern YYSTYPE yylval;

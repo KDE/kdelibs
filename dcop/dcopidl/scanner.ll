@@ -112,6 +112,8 @@ Float_Literal3          {Digits}"."{Digits}
 Float_Literal4		"."{Digits}
 Float_Literal5		"."{Digits}(e|E)("+"|"-")?{Digits}
 
+KDCOP			([^k]|k[^_]|k_[^d]|k_d[^c]|k_dc[^o]|k_dco[^p])*
+
 /*--------------------------------------------------------------------------*/
 
 Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
@@ -153,9 +155,15 @@ enum			return T_ENUM;
 class			return T_CLASS;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
+"k_dcop"		return T_DCOP_AREA;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 "0"			return T_NULL;
+
+"private:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
+"private:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
+"public:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
+"public:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );

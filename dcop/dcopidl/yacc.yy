@@ -57,6 +57,7 @@ void yyerror( const char *s )
 %token T_SCOPE
 %token T_NULL
 %token T_DCOP
+%token T_DCOP_AREA
 
 %type <_str> body
 %type <_str> class_header
@@ -67,6 +68,7 @@ void yyerror( const char *s )
 %type <_str> param
 %type <_str> params
 %type <_str> return
+%type <_str> return_params
 %type <_str> qualifier
 
 %%
@@ -115,12 +117,26 @@ class_header
 	  {
 		$$ = $4;
 	  }
+	| T_COLON T_PUBLIC super_classes
+	  {
+		$$ = $3;
+		qDebug("You must inherit virtual");
+		exit(1);
+	  }
+	| T_LEFT_CURLY_BRACKET
+	  {
+		qDebug("You must inherit from DCOPObject");
+		exit(1);
+	  }
 	;
 
 class
-	: T_CLASS T_IDENTIFIER class_header T_DCOP T_PUBLIC T_COLON body T_SEMICOLON
+	: T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
 	  {
-		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $7->latin1() );
+		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
+	  }
+	| T_CLASS T_IDENTIFIER T_SEMICOLON class
+	  {
 	  }
 	;
 
@@ -137,20 +153,9 @@ body
 	  {
 		$$ = new QString( *($1) + *($2) );
 	  }
-	| constructor body
+	| T_DCOP_AREA T_COLON  body
 	  {
-		$$ = $2;
-	  }
-	;
-
-constructor
-	: T_IDENTIFIER T_LEFT_PARANTHESIS T_CONST T_IDENTIFIER T_AMPERSAND T_IDENTIFIER T_RIGHT_PARANTHESIS T_SEMICOLON
-	  {
-		if ( *($4) != "QString" )
-	        {
-			qDebug("Constructor must take 'const QString&' as argument.");
-			exit(1);
-	   	}
+		$$ = $3;
 	  }
 	;
 
@@ -189,6 +194,17 @@ qualifier
 	  }
 	;
 
+return_params
+	: T_IDENTIFIER
+	  {
+		$$ = $1;
+	  }
+	| T_IDENTIFIER T_COMMA typedef_params
+	  {
+		$$ = new QString( *($1) + *($3) );
+	  }
+	;
+
 return
 	: T_IDENTIFIER
 	  {
@@ -200,6 +216,18 @@ return
 	  {
 		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"&\"/>");
 		*tmp = tmp->arg( *($2) );
+		$$ = tmp;		
+	  }
+	| T_IDENTIFIER T_LESS return_params T_GREATER
+	  {
+		QString* tmp = new QString("<RET type=\"%1<%2>\"/>");
+		*tmp = tmp->arg( *($1) ).arg( *($3) );
+		$$ = tmp;		
+	  }
+	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND
+	  {
+		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"&\"/>");
+		*tmp = tmp->arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
 	;
@@ -267,9 +295,9 @@ function
 	  }
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
 	  {
-		$$ = new QString();
-		qDebug("The function %s is not virtual", $2->latin1() );
-		exit(1);
+		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
+		*tmp = tmp->arg( *($2) ).arg( *($1) ).arg( *($4) ).arg( *($6) );
+		$$ = tmp;
 	  }
 	| T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
 	  {
@@ -279,9 +307,9 @@ function
 	  }
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
 	  {
-		$$ = new QString();
-		qDebug("The function %s is not virtual", $2->latin1() );
-		exit(1);
+		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
+		*tmp = tmp->arg( *($2) ).arg( *($1) ).arg( *($4) ).arg( *($6) );
+		$$ = tmp;
 	  }
 	;
 
