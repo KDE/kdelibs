@@ -166,6 +166,8 @@ public:
 
   /**
    * @return the last child of this listview.
+   *
+   * @see lastItem()
    */
   QListViewItem* lastChild () const;
 
@@ -273,18 +275,28 @@ public:
 
   /**
    * @deprecated
+   * @see #setFullWidth()
    */
   void setFullWidth();
+  
   /**
    * Let the last column fit exactly all the available width.
+   *
+   * @see #fullWidth()
    */
   void setFullWidth(bool fullWidth);
+  
   /**
    * Returns whether the last column is set to fit the available width.
+   *
+   * @see #setFullWidth()
    */
   bool fullWidth() const;
+  
   /**
    * Reimplemented for full width support
+   *
+   * @see #removeColumn()
    */
   virtual int addColumn(const QString& label, int width = -1);
   /**
@@ -293,6 +305,8 @@ public:
   virtual int addColumn(const QIconSet& iconset, const QString& label, int width = -1);
   /**
    * Reimplemented for full width support
+   *
+   * @see #addColumn()
    */
   virtual void removeColumn(int index);
 
@@ -302,10 +316,14 @@ public:
    *
    * @param c the color to use for every other item. Set to an invalid
    *        colour to disable alternate colours.
-   */
+   *
+   * @see #alternateBackground()
+   **/
   void setAlternateBackground(const QColor &c);
   /**
    * @return the alternate background color
+   *
+   * @see #setAlternateBackground()
    */
   const QColor &alternateBackground() const;
 
