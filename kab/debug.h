@@ -76,7 +76,7 @@ inline void LG(...) {}
 // ##############################################################################
 // a static string that contains the authors email address, must be defined by 
 // the application:
-extern string AuthorEmailAddress;
+extern char* AuthorEmailAddress;
 // ##############################################################################
 // we use our own kind of assertions here: colorful, cute and impressive bugs!
 #if ! defined NDEBUG || defined DEBUG

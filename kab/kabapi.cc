@@ -7,149 +7,123 @@
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class,
- *             Nana for debugging
+ * requires:   C++-compiler, STL
  * $Revision$
  */
 
 #include "kabapi.h"
-#include "editentry.h"
-#include <qpushbutton.h>
-#include <qframe.h>
+// #include "editentry.h"
+#include <qlistbox.h>
 #include <kmessagebox.h>
 #include "debug.h"
 #include <klocale.h>
 
-KabAPI::KabAPI(QWidget* parent)
-  : QDialog(parent, 0, true),
-    widget(0)
+#include "kabapi.moc"
+
+KabAPI::KabAPI(QWidget* parent, const char* name)
+  : KDialogBase(parent, name),
+    book(0),
+    listbox(new QListBox(this)),
+    selection(-1)
 {
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "KabAPI constructor: called.\n");
-  // ############################################################################
-  /* NOTE: the AddressWidget-object is NOT created here, the
-   *       pointer to it is initially set to zero.
-   */
-  // ----- create subwidgets:
-  buttonOK=new QPushButton(this);
-  CHECK(buttonOK!=0);
-  buttonOK->setText(i18n("OK"));
-  buttonCancel=new QPushButton(this);
-  CHECK(buttonCancel!=0);
-  buttonCancel->setText(i18n("Cancel"));
-  frameLine=new QFrame(this);
-  CHECK(frameLine!=0);
-  frameLine->setFrameStyle(QFrame::HLine | QFrame::Raised);
-  // ----- create connections:
-  connect(buttonOK, SIGNAL(clicked()), SLOT(accept()));
-  connect(buttonCancel, SIGNAL(clicked()), SLOT(reject()));
-  LG(GUARD, "KabAPI constructor: done.\n");
-  // ############################################################################  
+  CHECK_PTR(listbox);
+  setMainWidget(listbox);
+  showButtonApply(false);
+  enableButtonSeparator(true);
+  connect(listbox, SIGNAL(highlighted(int)), SLOT(entrySelected(int)));
 }
 
-void KabAPI::initializeGeometry()
+int KabAPI::exec()
 {
-  REQUIRE(widget!=0);
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "KabAPI::initializeGeometry: called.\n");
-  // ############################################################################
-  const int Grid=3;
-  const int ButtonWidth=QMAX(buttonOK->sizeHint().width(),
-			     buttonCancel->sizeHint().width());
-  const int ButtonHeight=buttonOK->sizeHint().height();
-  int cx=widget->width();
-  int cy=0;
-  // ----- the addresswidget:
-  widget->move(0, cy);
-  cy+=widget->height()+Grid;
-  // ----- the horizontal line:
-  frameLine->setGeometry(Grid, cy, cx-2*Grid, Grid);
-  cy+=2*Grid;
-  // ----- the buttons:
-  buttonOK->setGeometry(Grid, cy, ButtonWidth, ButtonHeight);
-  buttonCancel->setGeometry(cx-Grid-ButtonWidth, cy, ButtonWidth, ButtonHeight);
-  cy+=Grid+ButtonHeight;
-  // ----- 
-  setFixedSize(cx, cy);
-  LG(GUARD, "KabAPI::initializeGeometry: done.\n");
-  // ############################################################################  
-}
-  
-KabAPI::ErrorCode KabAPI::init(bool readonly)
-{
-  // ############################################################################  
-  widget=new AddressWidget(this, 0, readonly);
-  if(widget!=0)
+  QStringList names;
+  // -----
+  if(book==0)
     {
-      connect(widget, SIGNAL(sizeChanged()), SLOT(initializeGeometry()));
-      initializeGeometry();
-      if(widget->isRO() && readonly==false)
+      debug("KabAPI::exec: you have to call init before using the API.");
+      return -1;
+    } else {
+      if(book->getListOfNames(&names, true, false)==AddressBook::NoError)
 	{
-	  return PermDenied;
+	  listbox->clear();
+	  listbox->insertStringList(names);
+	  if(names.count()>0)
+	    {
+	      listbox->setCurrentItem(0);
+	    }
+	  listbox->setMinimumSize(listbox->sizeHint());
+	  adjustSize();
+	  resize(minimumSize());
+	  return KDialogBase::exec();
 	} else {
-	  return NoError;
+	  debug("KabAPI::exec: error creating interface.");
+	  return -1;
 	}
+    }
+}  
+    
+AddressBook::ErrorCode KabAPI::init()
+{
+  // ############################################################################  
+  book=new AddressBook(this, "KABAPI::book", true);
+  if(book->getState()==AddressBook::NoError)
+    {
+      connect(book, SIGNAL(setStatus(const QString&)),
+	      SLOT(setStatusSlot(const QString&)));
+      return AddressBook::NoError;
     } else {
-      return InternError;
+      return AddressBook::InternError;
     }
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::getEntry(AddressBook::Entry& entry_, string& key)
+AddressBook::ErrorCode KabAPI::getEntry(AddressBook::Entry& entry, KabKey& key)
 {
-  REQUIRE(widget!=0);
-  // ############################################################################  
-  AddressBook::Entry entry;
-  // -----
-  if(widget->currentEntry(entry))
+  REQUIRE(book!=0);
+  REQUIRE(selection!=-1); // this is true if the dialog has been accepted
+  // ############################################################################
+  if(book->noOfEntries()==0)
     {
-      entry_=entry;
-      key=widget->currentEntry();
-      CHECK(!key.empty());
-      return NoError;
+      return AddressBook::NoEntry;
+    }
+  if(selection>=0)
+    {
+      if(book->getKey(selection, key)==AddressBook::NoError)
+	{
+	  if(book->getEntry(key, entry)==AddressBook::NoError)
+	    {
+	      return AddressBook::NoError;
+	    } else {
+	      return AddressBook::InternError; // this may not happen
+	    }
+	} else {
+	  CHECK(book->noOfEntries()==0); // mirror map inconsistency ?
+	  return AddressBook::NoEntry;
+	}
     } else {
-      return NoEntry;
-    } 
+      return AddressBook::InternError;
+    }
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::add(const AddressBook::Entry& entry, string& key,
-			      bool edit_)
+AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
+				   bool update)
 {
-  REQUIRE(widget!=0);
+  REQUIRE(book!=0);
   register bool GUARD; GUARD=true;
   // ############################################################################  
-  string dummy;
-  AddressBook::Entry changed=entry;
-  // -----
-  if(widget->isRO())
+  if(book->add(entry, key, update)!=AddressBook::NoError)
     {
-      return PermDenied;
-    }
-  if(edit_)
-    {
-      if(edit(changed)!=NoError)
-	{
-	  LG(GUARD, "KabAPI::add: edit dialog rejected.\n");
-	  return Rejected;
-	}
-    }
-  if(!widget->AddressBook::add(changed, dummy))
-    {
-      KMessageBox::sorry(this,
-			  i18n("Your new entry could not be added."));
-      return InternError;
+      KMessageBox::sorry(this, i18n("Your new entry could not be added."));
+      return AddressBook::InternError;
     } else {
-      widget->updateSelector();
-      widget->setCurrent(dummy);
-      key=dummy;
-      return NoError;
+      return AddressBook::NoError;
     }
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::edit(AddressBook::Entry& entry)
-{
+/*
+  AddressBook::ErrorCode KabAPI::edit(AddressBook::Entry& entry)
+  {
   REQUIRE(widget!=0);
   register bool GUARD; GUARD=true;
   LG(GUARD, "KabAPI::edit[foreign entry]: called.\n");
@@ -158,20 +132,20 @@ KabAPI::ErrorCode KabAPI::edit(AddressBook::Entry& entry)
   // -----
   dialog.setEntry(entry);
   if(dialog.exec())
-    {
-      LG(GUARD, "KabAPI::add: dialog finished with accept().\n");
-      entry=dialog.getEntry();
-    } else {
-      LG(GUARD, "KabAPI::add: dialog finished with reject().\n");
-      return Rejected;
-    }  
+  {
+  LG(GUARD, "KabAPI::add: dialog finished with accept().\n");
+  entry=dialog.getEntry();
+  } else {
+  LG(GUARD, "KabAPI::add: dialog finished with reject().\n");
+  return Rejected;
+  }  
   LG(GUARD, "KabAPI::edit[foreign entry]: finished.\n");
   return NoError;
   // ############################################################################  
-}
+  }
 
-KabAPI::ErrorCode KabAPI::edit(const string& key)
-{
+  AddressBook::ErrorCode KabAPI::edit(const QCString& key)
+  {
   REQUIRE(widget!=0);
   register bool GUARD; GUARD=true;
   LG(GUARD, "KabAPI::edit: called.\n");
@@ -179,104 +153,134 @@ KabAPI::ErrorCode KabAPI::edit(const string& key)
   AddressBook::Entry entry;
   // -----
   if(widget->isRO())
-    {
-      LG(GUARD, "KabAPI::edit: database is readonly.\n");
-      return PermDenied;
-    }
+  {
+  LG(GUARD, "KabAPI::edit: database is readonly.\n");
+  return PermDenied;
+  }
   if(widget->getEntry(key, entry))
-    {
-      if(edit(entry)==NoError)
-	{
-	  if(!widget->change(key, entry))
-	     {
-	       L("KabAPI::edit: Changing the entry failed!");
-	       CHECK(false);
-	     }
-	} else {
-	  LG(GUARD, "KabAPI::edit: rejected.\n");
-	  return Rejected;
-	}
-    } else {
-      LG(GUARD, "KabAPI::edit: no such entry.\n");
-      return NoEntry;
-    }
+  {
+  if(edit(entry)==NoError)
+  {
+  if(!widget->change(key, entry))
+  {
+  L("KabAPI::edit: Changing the entry failed!");
+  CHECK(false);
+  }
+  } else {
+  LG(GUARD, "KabAPI::edit: rejected.\n");
+  return Rejected;
+  }
+  } else {
+  LG(GUARD, "KabAPI::edit: no such entry.\n");
+  return NoEntry;
+  }
   LG(GUARD, "KabAPI::edit: finished.\n");
   return NoError;
   // ############################################################################  
-}
+  }
 
-KabAPI::ErrorCode KabAPI::remove(const string& key)
+*/
+
+AddressBook::ErrorCode KabAPI::remove(const KabKey& key)
 {
-  REQUIRE(widget!=0);
+  REQUIRE(book!=0);
   register bool GUARD; GUARD=true;
   LG(GUARD, "KabAPI::remove: called.\n");
   // ############################################################################  
-  if(widget->isRO())
+  if(book->AddressBook::remove(key)==AddressBook::NoError)
     {
-      return PermDenied;
-    }
-  if(widget->AddressBook::remove(key))
-    {
-      return NoError;
+      return AddressBook::NoError;
     } else {
-      return NoEntry;
+      return AddressBook::NoEntry;
     }
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::getEntryByName(const string&, 
+AddressBook::ErrorCode KabAPI::getEntryByName(const QString&, 
 					 list<AddressBook::Entry>&, const int)
 {
   // ############################################################################  
-  return NotImplemented;
+  return AddressBook::NotImplemented;
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::getEntryByName(const AddressBook::Entry&,
+AddressBook::ErrorCode KabAPI::getEntryByName(const AddressBook::Entry&,
 					 list<AddressBook::Entry>&, const int)
 {
   // ############################################################################  
-  return NotImplemented;
+  return AddressBook::NotImplemented;
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
+AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
 {
   register bool GUARD; GUARD=true;
   REQUIRE(entries.empty());
-  REQUIRE(widget!=0);
+  REQUIRE(book!=0);
   LG(GUARD, "KabAPI::getEntries: called.\n");
   // ############################################################################  
-  if(widget->noOfEntries()==0)
+  if(book->noOfEntries()==0)
     { // ----- database is valid, but empty:
       LG(GUARD, "KabAPI::getEntries: no entries.\n");
-      return NoEntry;
+      return AddressBook::NoEntry;
     }
-  if(!widget->getEntries(entries))
+  if(!book->getEntries(entries))
     {
       L("KabAPI::getEntries: intern error.\n");
-      return InternError;
+      return AddressBook::InternError;
     } else {
       LG(GUARD, "KabAPI::getEntries: done.\n");
-      return NoError;
+      return AddressBook::NoError;
     }
   // ############################################################################  
 }
 
-KabAPI::ErrorCode KabAPI::sendEmail(const string& address, const string& subject)
+AddressBook::ErrorCode KabAPI::sendEmail(const QString& /* address */,
+				    const QString& /* subject */)
 {
-  REQUIRE(widget!=0);
+  REQUIRE(book!=0);
   // ############################################################################
-  if(widget->sendEmail(address, subject))
+  // WORK_TO_DO: kabapi is  not supposed to send emails.
+  /*
+    if(widget->sendEmail(address, subject))
     {
-      return NoError;
+    return NoError;
     } else {
-      return InternError;
+    return InternError;
+    }
+  */
+  return AddressBook::NotImplemented;
+  // ############################################################################
+}
+
+AddressBook* KabAPI::addressbook()
+{
+  // ############################################################################
+  return book;
+  // ############################################################################
+}
+
+AddressBook::ErrorCode KabAPI::save(bool force)
+{
+  REQUIRE(book!=0);
+  // ############################################################################
+  if(book->save("", force)!=AddressBook::NoError)
+    {
+      return AddressBook::PermDenied;
+    } else {
+      return AddressBook::NoError;
     }
   // ############################################################################
 }
 
-// #############################################################################
-// MOC OUTPUT FILES:
-#include "kabapi.moc"
-// #############################################################################
+void KabAPI::entrySelected(int index)
+{
+  CHECK(index>=0 && (unsigned)index<book->noOfEntries());
+  debug("KabAPI::entrySelected: entry %i selected.", index);
+  selection=index;
+}
+
+void KabAPI::setStatusSlot(const QString& text)
+{
+  emit(setStatus(text));
+}

@@ -1,1468 +1,1976 @@
 /* -*- C++ -*-
- * This file implements the database of addresses and
- * configuration values.
- *
- * the KDE addressbook.
- * copyright:  (C) Mirko Sucker, 1998
+ * This file implements the basic personal information management class
+ * used in the KDE addressbook.
+ * 
+ * the KDE addressbook
+ * copyright:  (C) Mirko Sucker, 1998 1999
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class,
- *             Nana for debugging
+ * requires:   recent C++-compiler, at least Qt 1.4, STL
  * $Revision$
  */
 
-#include "addressbook.h"    
-#include <qwidget.h>
-#ifdef KAB_DEBUG
+#include "addressbook.h"
+#include "qconfigDB.h"
+#include <qmessagebox.h>
+#include <qfileinfo.h>
+#include <qstringlist.h>
 #include "debug.h"
-#endif
 #include <kapp.h>
-#include <klocale.h>
-#include "debug.h"
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <klocale.h>
 
 extern "C" {
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
-	   }
+}
 
-bool AddressBook::initialized=false;
-const char* AddressBook::ConfigSection="Config";
-const char* AddressBook::EntrySection="Entries";
-const char* AddressBook::DBFileName="addressbook.database";
-const char* AddressBook::Fields[]= {
-    "name", "firstname", "emails",
-    "telephone", "town", "address",
-    "state", "zip",
-    "additionalName", "namePrefix",
-    "fn", "comment", "org", "orgUnit",
-    "orgSubUnit", "title", "role",
-    "fax", "modem", "URL", "birthday" };
-const int AddressBook::NoOfFields=sizeof(Fields)/sizeof(Fields[0]);
+// ----- some defines:
+#ifdef STD_USERFILENAME
+#undef STD_USERFILENAME
+#endif
+#define STD_USERFILENAME "addressbook.kab"
+#ifdef STD_CONFIGFILENAME
+#undef STD_CONFIGFILENAME
+#endif
+#define STD_CONFIGFILENAME "kab.config"
+#ifdef KAB_LOCALDIR
+#undef KAB_LOCALDIR
+#endif
+#define KAB_LOCALDIR "kab" // change to "kab" after hot states
+#ifdef ENTRY_SECTION
+#undef ENTRY_SECTION
+#endif
+#define ENTRY_SECTION "entries"
+#ifdef LOCAL_CONFIG_SECTION // the name of the file-local configuration section
+#undef LOCAL_CONFIG_SECTION
+#endif
+#define LOCAL_CONFIG_SECTION "config"
+#ifdef ADDRESS_SUBSECTION // the name of the subsection for each entry
+#undef ADDRESS_SUBSECTION
+#endif
+#define ADDRESS_SUBSECTION "addresses"
+#ifdef KAB_TEMPLATEFILE
+#undef KAB_TEMPLATEFILE
+#endif
+#define KAB_TEMPLATEFILE "template.kab"
+#ifdef KAB_CONFIGTEMPLATE
+#undef KAB_CONFIGTEMPLATE
+#endif
+#define KAB_CONFIGTEMPLATE "template.config"
 
-/* Some defaults (e.g., all settings that are lists of parameters)
- * must be added in AddressBook::restoreDefaults(..)!
- */
-
-const char* AddressBook::Defaults[]= { 
-  "Version=1.0",
-  "QueryOnDelete=true",
-  "QueryOnChange=true",
-  "SaveOnExit=true",
-  "QueryOnSave=true",
-  "CreateBackup=true",
-  "MailCommand=kmail",
-  "MailSelectAddress=true",
-  "TalkCommand=ktalk",
-  "Background=background_1.jpg"
+struct QStringLess 
+  : public binary_function<const QString&, const QString&, bool> 
+{
+  /** The function operator, inline. */
+  bool operator()(const QString& x, const QString& y) const 
+  { 
+    return x < (const char*)y; // make one Qt operator fit exactly
+  }
 };
 
-AddressBook::AddressBook(bool readonly_)
-  : ConfigDB()
+// ----- the derived map class:
+class StringKabKeyMap : public map<QString, KabKey, QStringLess>
+{ /* Same as map, but a class for compilation reasons. This way we do not need
+   * to include the QStringLess class into the addressbook header file. */ 
+};
+
+bool
+KabKey::operator == (const KabKey& key) const
+{
+  // ###########################################################################
+  return key.getKey()==getKey();
+  // ###########################################################################
+}
+
+void
+KabKey::setKey(const QCString& text)
+{
+  // ###########################################################################
+  key=text;
+  // ###########################################################################
+}
+
+QCString
+KabKey::getKey() const
+{
+  // ###########################################################################
+  return key;
+  // ###########################################################################
+}
+
+/*
+  const QConfigDB*
+  AddressBook::Entry::getFile()
+  {
+  // ###########################################################################
+  return file;
+  // ###########################################################################
+  }
+*/
+
+AddressBook::ErrorCode
+AddressBook::Entry::getAddress(int index, Address& address)
+{
+  // ###########################################################################
+  list<Address>::iterator pos;
+  // -----
+  if(index>=0 && (unsigned)index<addresses.size())
+    {
+      pos=addresses.begin();
+      advance(pos, index);
+      address=*pos;
+      return AddressBook::NoError;
+    } else {
+      return AddressBook::OutOfRange;
+    }
+  // ###########################################################################
+}  
+
+int AddressBook::Entry::noOfAddresses() const
+{
+  return addresses.size();
+}
+
+AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
+  : QFrame(parent, name),
+    config(new QConfigDB(this)),
+    data(new QConfigDB(this)),
+    // background(new QImage),
+    // backgroundEnabled(true),
+    entries(new StringKabKeyMap),
+    state(NoFile)
+    // currentAddress(0),
+    // addressCombo(new QComboBox(this))
 {
   register bool GUARD; GUARD=true;
-  REQUIRE(DBFileName!=0);
-  // ############################################################################
-  /* The constructor is written to be save. It does NOT
-   * assume a connection to a X display, that is why it sends
-   * all of its output to stdout. This provides the
-   * possibility to use the program as a kind of address data
-   * server.
-   */
-  string filename;
-  string dir;
-  LG(GUARD, "AddressBook constructor: called%s.\n",
-     readonly_ ? " (readonly)" : "");
-  // ----- check if directory exists:
-  if(initialized)
+  // ###########################################################################
+  // WORK_TO_DO: remove this and change directory to "kab":
+  // debug("AddressBook constructor: Note that the directory \n"
+  // 	"    \"~/.kde/share/apps/kab2\" is used currently!\n");
+  QString dir, filename;
+  // ----- create URL labels:
+  // urlEmail=new KURLLabel(this);
+  // urlHomepage=new KURLLabel(this);
+  // ----- do memory checks (do not rely on exception handling):
+  if(config==0 || data==0 || entries==0 
+     /* || urlEmail==0 || urlHomepage==0
+	|| addressCombo==0 || background==0 */ )
     {
-      LG(GUARD, "AddressBook constructor: class already initialized.\n");
-    } else {
-      LG(GUARD, "AddressBook constructor: initializing class.\n");
-      initialized=true;
-      LG(GUARD, "AddressBook constructor: done.\n");
+      QMessageBox::critical
+	(this, i18n("kab: Out of memory"),
+	 i18n("Cannot initialize local variables."));
+      kapp->quit(); // It is critical, but will possibly never happen. 
     }
-  LG(GUARD, "AddressBook constructor: checking user directory.\n");
-  dir = KGlobal::dirs()->saveLocation("data", "kab", false);
-  if(access(dir.c_str(), F_OK)!=0)
+  connect(data, SIGNAL(fileChanged()), SLOT(dataFileChanged()));
+  connect(data, SIGNAL(changed(QConfigDB*)),
+	  SLOT(reloaded(QConfigDB*)));
+  connect(config, SIGNAL(fileChanged()), SLOT(configFileChanged()));
+  // ----- set style:
+  setLineWidth(1);
+  setFrameStyle(QFrame::Box | QFrame::Sunken);
+  // urlEmail->setAutoResize(true);
+  // urlEmail->setTransparentMode(false);
+  // urlEmail->setLineWidth(0);
+  // urlEmail->setMidLineWidth(0);
+  // urlHomepage->setAutoResize(true);
+  // urlHomepage->setTransparentMode(false);
+  // urlHomepage->setLineWidth(0);
+  // urlHomepage->setMidLineWidth(0);
+  // setInteractiveMode(false);
+  // -----
+  // connect(addressCombo, SIGNAL(highlighted(int)), SLOT(addressSelected(int)));
+  // -----
+  // connect(urlEmail, SIGNAL(leftClickedURL(const char*)), SLOT(mailURLClicked(const char*)));
+  // connect(urlHomepage, SIGNAL(leftClickedURL(const char*)), SLOT(homeURLClicked(const char*)));
+  // ----- check and possibly create kab's local directory:
+  dir=baseDir();
+  CHECK(dir!=QString::null);
+  // ----- open or create the configuration file and load it:
+  filename=dir+"/"+STD_CONFIGFILENAME;
+  if(::access(filename, F_OK)!=0) // if it does not exist
     {
-      cerr << i18n
-	("The directory where user specific data for the\n"
-	 "addressbook application is stored does not exist.\n"
-	 "The program will try to create\n         ")
-	   << dir << endl
-	   << i18n("and store all local files in this directory.") << endl;
-      if(mkdir(dir.c_str(), 0755)!=0)
+      if(createConfigFile()!=NoError)
 	{
-	  cerr << i18n
-	    ("The directory could not be created.\n"
-	     "Probably you do not have used KDE before, so\n"
-	     "you do not have a local \".kde\" directory\n"
-	     "in your home directory. Run the KDE filemanager\n"
-	     "kfm once to automatically create it.") << endl;
-	  ::exit(-1);
+	  QMessageBox::critical
+	    (this, i18n("File error"),
+	     i18n("Your local kab configuration file\n\"")
+	     +filename+"\"\n"+
+	     i18n("could not be created. kab will probably not\n"
+		  "work correctly without it.\n"
+		  "Make sure you did not remove writing permission\n"
+		  "from your local kde directory."));
+	  state=PermDenied;
 	} else {
-	  CHECK(access(dir.c_str(), X_OK | F_OK /* R_OK | W_OK | */ )==0);
-	  cerr << i18n("The directory has been created.\n") << endl;
+	  QMessageBox::information
+	    (this, i18n("Note"),
+	     i18n("kab has created your local configuration file in\n\"")
+	     +filename+"\"");
 	}
-    } else {
-      LG(GUARD, "AddressBook constructor: local data dir found.\n");
     }
-  // ----- is it locked ?
-  filename=dir+(string)DBFileName;
-  if(ConfigDB::IsLocked(filename)!=0)
+  loadConfigFile();
+  // ----- check and possibly create user standard file:
+  filename=dir+"/"+STD_USERFILENAME;
+  if(::access(filename, F_OK)!=0) // if it does not exist
     {
-      LG(GUARD, "AddressBook constructor: the file is locked.\n");
-      if(!ConfigDB::CheckLockFile(filename))
+      if(createNew(filename)!=NoError) // ...and we cannot create it
 	{
-	  if(::remove((filename+".lock").c_str())==0)
+	  QMessageBox::critical
+	    (this, i18n("File error"),
+	     i18n("Your standard kab database file\n\"")
+	     +filename+"\"\n"+
+	     i18n("could not be created. kab will probably not\n"
+		  "work correctly without it.\n"
+		  "Make sure you did not remove writing permission\n"
+		  "from your local kde directory."));
+	  state=PermDenied;
+	} else {
+	  QMessageBox::information
+	    (this, i18n("Note"),
+	     i18n("kab has created your standard addressbook in\n\"")
+	     +filename+"\"");
+	}
+    }
+  // ----- load the user standard file:
+  if(loadit)
+    {
+      if(load(filename)!=NoError)
+	{ // ----- the standard file could not be loaded
+	  state=PermDenied; 
+	} else {
+	  // ----- create the backup file:
+	  QString temp=data->fileName();
+	  if(data->setFileName(temp+".backup", false, false))
 	    {
-	      LG(GUARD, "AddressBook constructor: stale "
-		 "lockfile, removed, read+write-mode.\n");
+	      if(!data->save())
+		{
+		  QMessageBox::information
+		    (this, i18n("kab: File error"), 
+		     i18n("Cannot create backup file (permission denied)."));
+		}
 	    } else {
-	      LG(GUARD, "AddressBook constructor: opening read only.\n");
-	      readonly_=true;
+	      QMessageBox::information
+		(this, i18n("kab: File error"),
+		 i18n("Cannot open backup file for "
+		      "writing ((permission denied)."));
 	    }
-	} else {
-	  LG(GUARD, "AddressBook constructor: lockfile is valid.\n");
-	  readonly_=true;
-	}
-    } else {
-      LG(GUARD, "AddressBook constructor: the file is not locked.\n");
-    }
-  // ----- set filename -> readonly?
-  LG(GUARD, "AddressBook constructor: setting database filename to\n"
-     "            \"%s\".\n", filename.c_str());
-  if(readonly_==false)
-    {
-      if(!setFileName(filename, true, readonly_))
-	{
-	  cerr << i18n("No addressbook database file, creating new one.")
-	       << endl;
-	  // -----
-	  if(!createNew(filename))
-	    { // ----- createNew is verbose enough:
-	      ::exit(-1);
-	    }
-	} else {
-	  // The program will by default create backup when the key
-	  //   "CreateBackup"
-	  // is missing in config section:
-	  bool backup=true;
-	  string backupfilename=filename+".backup";
-	  LG(GUARD, "AddressBook constructor: creating backup "
-	     "of database in file \"%s\".\n", backupfilename.c_str());
-	  KeyValueMap* keys;
-	  if(!load())
+	  // ----- reset the filename:
+	  if(!data->setFileName(temp, true, true))
 	    {
-	      cerr << i18n
-		("Tried to load database for creating backup, but failed")
-		   << endl;
-	      ::exit(-1);
-	    }
-	  get(ConfigSection, keys);
-	  // database must be valid:
-	  CHECK(get(ConfigSection, keys));
-	  keys->get("CreateBackup", backup);
-	  CHECK(keys->get("CreateBackup", backup));
-	  // ----- check for stale lockfile:
-	  if(ConfigDB::IsLocked(backupfilename)!=0)
-	    {
-	      LG(GUARD, "AddressBook constructor: the backup file is locked.\n");
-	      if(ConfigDB::CheckLockFile(backupfilename))
-		{
-		  backup=false;
-		} else {
-		  if(::remove((backupfilename+".lock").c_str())==0)
-		    {
-		      LG(GUARD, "AddressBook constructor: "
-			 "stale lockfile, removed.\n");
-		    } else {
-		      LG(GUARD,
-			 "AddressBook constructor: could "
-			 "not remove stale lockfile.\n");
-		    }
-		}
-	    }
-	  if(backup)
-	    {
-	      if(setFileName(backupfilename, false, false))
-		{
-		  CHECK(!isRO());
-		  if(!save("backup file for addressbook database"))
-		    {
-		      cerr << i18n("Unable to save to backup file.") << endl;
-		      ::exit(-1);
-		    }
-		  if(!setFileName(filename, true, readonly_))
-		    {
-		      cerr << i18n
-			("Unable to reset filename after creating backup.")
-			   << endl;
-		      ::exit(-1);
-		    }
-		} else {
-		  cerr << i18n("Unable to create backup file") << endl;
-		}
-	    }
-	  clear();
-	  LG(GUARD, "AddressBook constructor: backup created.\n");
-	}
-      /* not needed, as already done:
-       * LG(GUARD, "AddressBook constructor: "
-       *  "changing mode back to read-only.\n");
-       * setFileName(filename, true, true);
-       * CHECK(setFileName(filename, true, true));
-       * LG(GUARD, "AddressBook constructor: opened database read-only.\n");
-       */
-    } else { // ----- open read-only
-      if(setFileName(filename, true, true))
-	{
-	  LG(GUARD, "AddressBook constructor: opened database, file existed.\n");
-	} else {
-	  if(!createNew(filename))
-	    {
-	      LG(GUARD, "AddressBook constructor: no database existed, "
-		 "error creating new one, giving up.\n");
-	      ::exit(-1);
+	      QMessageBox::information
+		(this, i18n("kab: File error"),
+		 i18n("Critical error:\n"
+		      "Permissions changed in local directory!"));
+	      closeFile(false);
+	      state=PermDenied;
 	    } else {
-	      if(setFileName(filename, true, true))
-		{
-		  LG(GUARD, "AddressBook constructor: created new file.\n");
-		} else { // ----- this is a program failure!
-		  CHECK(false);
-		}
+	      state=NoError;
 	    }
 	}
-      LG(GUARD, "AddressBook constructor: opened database read-only.\n");
     }
   // -----
-  CHECK(isRO()==readonly);
-  LG(GUARD, "AddressBook constructor: done.\n");
-  // ############################################################################
-  ENSURE(entries.empty());
+  data->watch(true);
+  // ###########################################################################
 }
 
-void AddressBook::restoreDefaults()
+AddressBook::~AddressBook()
 {
-  // ############################################################################
-  CHECK(configSection()!=0);
-  KeyValueMap* keys=configSection()->getKeys();
-  unsigned int index;
-  const unsigned int Size=(sizeof(Defaults)/sizeof(Defaults[0]));
-  list<string> mailParams;
-  list<string> talkParams;
+  // ###########################################################################
+  delete data;
+  delete config;
+  // delete background;
+  delete entries;
+  // ###########################################################################
+}
+
+QConfigDB*
+AddressBook::getConfig()
+{
+  // ###########################################################################
+  return config;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::getState()
+{
+  // ###########################################################################
+  return state;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::load(QString filename)
+{
+  // ----- Remark: Close the file if it could not be loaded!
+  REQUIRE(access(baseDir(), X_OK | F_OK)==0);
+  // ###########################################################################
+  const QString dir=baseDir();
+  ErrorCode rc=NoError;
+  QFileInfo newfile, oldfile;
   // -----
-  CHECK(keys!=0);
-  keys->clear();
-  CHECK(keys->empty());
-  for(index=0; index<Size; index++)
+  if(filename.isEmpty())
+    { // ----- reload the curent data file:
+      filename=data->fileName();
+    }
+  if(filename.isEmpty()) // there was never a filename set:
     {
-      if(!keys->insertLine(Defaults[index], true))
+      state=NoFile;
+      return NoFile;
+    }
+  // -----
+  newfile.setFile(filename);
+  oldfile.setFile(data->fileName());
+  if(isSameFile(filename, data->fileName()))
+    { // ----- possibly deleted file:
+      if(data->load())
 	{
-	  cerr << i18n("Unable to insert \"") << Defaults[index]
-	       << i18n("\" into configuration section (ignored).") << endl;
-	  // this is a syntax error in the "Defaults" aggregate!
-	  CHECK(false);
+	  emit(setStatus(i18n("File reloaded.")));
+	  state=NoError;
+	} else {
+	  switch
+	    (QMessageBox::information
+	     (this, i18n("File error"),
+	      i18n("The currently loaded file\n\"")
+	      +oldfile.absFilePath()+"\"\n"+
+	      i18n
+	      ("cannot be reloaded. kab may close or save it.\n"
+	       "Save it if you accidently deleted your data file.\n"
+	       "Close it if you intended to do so.\n"
+	       "Your file will be closed by default."),
+	      i18n("&Close"), i18n("&Save")))
+	    {
+	    case 1: // save
+	      if(!data->save(i18n("(Safety copy on file error)"), true))
+		{
+		  QMessageBox::information
+		    (this, i18n("File error"),
+		     i18n("Cannot save the file, will close it now."));
+		  closeFile(false);
+		  rc=PermDenied;
+		}
+	      break; // no error if we could save the file
+	    default: // close
+	      closeFile(false);
+	      rc=NoSuchFile;
+	      break;
+	    }
+	}
+    } else { // ----- set new filename
+      if(data->setFileName(filename, true, true))
+	{
+	  if(data->load())
+	    {
+	      emit(changed());
+	      emit(setStatus(i18n("File opened.")));
+	      state=NoError;
+	    } else {
+	      QMessageBox::information
+		(this, i18n("File error"),
+		 i18n("Could not load the file."));
+	      closeFile(false);
+	      emit(setStatus(i18n("No such file.")));
+	      rc=NoSuchFile;
+	    }
+	} else {
+	  if(QMessageBox::information
+	     (this, i18n("No such file"),
+	      i18n("The file\n\"")
+	      +filename+"\"\n"+
+	      i18n(" cannot be found. Create a new one?"),
+	      i18n("OK"), i18n("Cancel"))==0)
+	    {
+	      if(createNew(filename)==NoError)
+		{
+		  emit(setStatus(i18n("New file.")));
+		} else { // ----- do not close here, stick with the old file:
+		  emit(setStatus(i18n("Cancelled.")));
+		}
+	    }
 	}
     }
-  // ----- the lists cannot be inserted by constants because
-  //       they are mangled during the insertion:
-  mailParams.push_back("<person>"); // kmail configuration ...
-  mailParams.push_back("-s");
-  mailParams.push_back("<subject>");
-  if(!keys->insert("MailParameters", mailParams, true))
+  // -----
+  if(rc==NoError)
     {
-      CHECK(false);
+      updateMirrorMap();
     }
-  talkParams.push_back("--autoexit");
-  talkParams.push_back("<person>");
-  if(!keys->insert("TalkParameters", talkParams, true))
-    {
-      CHECK(false);
-    }
-  // ----- the file format (a int value) is inserted here:
-  if(!keys->insert("FileFormat", KAB_FILE_FORMAT, true))
-    {
-      CHECK(false);
-    }
-  // ----- store the version of kab that is in use:
-  if(!keys->insert("Version", KAB_VERSION, true))
-    {
-      CHECK(false);
-    }
-  // ############################################################################
+  // -----
+  return rc;
+  // ###########################################################################
 }
 
-bool AddressBook::invariant()
-{
-  register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressBook::invariant: checking invariants for"
-     " this AddressBook object.\n");
-  // ############################################################################
-  // do not call REQUIRE or ENSURE here!
-  // (this would cause an infinite loop)
-  // also be careful not to call functions that call
-  // REQUIRE or ENSURE themselves!
-  if(entrySection()!=0) // DB has already been loaded
-    {
-      if(entries.size()!=entrySection()->noOfSections()) return false;
-      if(entrySection()->noOfSections()!=noOfEntries()) return false;
-    }
-  return true;
-  // ############################################################################
-}
-void AddressBook::changed()
+AddressBook::ErrorCode
+AddressBook::getListOfNames(QStringList* strings, bool reverse, bool initials)
 {
   register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::changed: Database has changed its contents.\n");
-  // ############################################################################
-  // You should not use REQUIRE here because - as the DB
-  // contents have changed - we cannot ensure the entries-map
-  // to be consistent. It is the job of this function to
-  // create the consistency.
-  updateEntriesMap();
-  first();
-  if(noOfEntries()==0) currentChanged();
-  // ############################################################################
-  LG(GUARD && (entrySection()==0 || noOfEntries()==0),
-     "AddressBook::changed: Database is empty now.\n");
-  ENSURE(1); // check if we have done all right
-  LG(GUARD, "AddressBook::changed: done.\n");
+  // ###########################################################################
+  LG(GUARD, "AddressBook::getListOfNames: called.\n");
+  StringKabKeyMap::iterator pos;
+  QString desc;
+  ErrorCode rc=NoError;
+  ErrorCode temp;
+  // ----- erase the list contents:
+  strings->clear();
+  // ----- ...and fill it:
+  for(pos=entries->begin(); pos!=entries->end(); ++pos)
+    {
+      temp=literalName((*pos).second, desc, reverse, initials);
+      if(temp!=AddressBook::NoError)
+	{
+	  desc=i18n("(Internal error in kab)");
+	  rc=InternError;
+	}
+      if(desc.isEmpty())
+	{
+	  desc=i18n("(empty entry)");
+	}
+      LG(GUARD, "AddressBook::getListOfNames: adding %s.\n", desc.data());
+      strings->append(desc);
+    }
+  // ----- any problems?
+  ENSURE((unsigned)strings->count()==entries->size());
+  LG(GUARD, "AddressBook::getListOfNames: done, %i entries.\n",
+     strings->count());
+  return rc;
+  // ###########################################################################
 }
 
-void AddressBook::updateEntriesMap(string theOne)
+AddressBook::ErrorCode 
+AddressBook::literalName(const KabKey& key, QString& text, bool rev, bool init)
 {
-  // no REQUIRE !! it is impossible to be true!
-  register bool GUARD; GUARD=false;
-  // ############################################################################
-  LG(GUARD, "AddressBook::updateEntriesMap: updating mirror map.\n");
-  Section::StringSectionMap::iterator pos;
-  string key;
+  // ###########################################################################
   Entry entry;
-  Section* section=entrySection();
-  // -----
-  // entries.erase(); // ni in GNU C++ 2.7.2.1
-  entries.erase(entries.begin(), entries.end());
-  CHECK(entries.empty());
-  if(section!=0)
+  ErrorCode rc;
+  // ----- get the entry:
+  rc=getEntry(key, entry);
+  if(rc!=NoError)
     {
-      for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); pos++)
-	{
-	  //	  makeEntryFromSection(*(*pos).second, entry);
-	  //	  CHECK(makeEntryFromSection(*(*pos).second, entry));
-	  // configurable sorting orter has to attack here:
-	  // sorting order depends on the constructed key
-	  description((*pos).first, key, true);
-	  CHECK(description((*pos).first, key, true));
-	  // Problem: If there are two entries that are
-	  // exactly similar to each other, the key could
-	  // be the same and could not be inserted into
-	  // the map because the keys are identifying.
-	  // Solution:: Add the (identifying) DB entry key
-	  // to the key for the mirror map (if a part of a
-	  // key is identifying the whole key is).
-	  key+=(*pos).first;
-	  CHECK(!(*pos).first.empty());
-	  entries.insert(StringStringMap::value_type(key, (*pos).first));
-	}
-      LG(GUARD, "AddressBook::updateEntriesMap: current-key (%s) is %s.\n",
-	 theOne.c_str(), theOne.empty() ? "empty" : "not empty");
-      if(theOne.empty())
-	{
-	  current=entries.begin();
-	  currentChanged();
-	} else {
-	  setCurrent(theOne);
-	  CHECK(setCurrent(theOne));
-	}
-    } // else: DB is empty, entries should be too
-  LG(GUARD, "AddressBook::updateEntriesMap: inserted %i elements in mirror map, "
-     "DB has %i entries.\n", entries.size(), noOfEntries());
-  // ############################################################################
-  ENSURE(1); // check invariants
+      return rc;
+    }
+  // -----
+  return literalName(entry, text, rev, init);
+  // ###########################################################################
 }
 
-bool AddressBook::setCurrent(const string& key)
-{ // set current entry using its key in the entrySection:
-  // ############################################################################
-  StringStringMap::iterator pos;
+AddressBook::ErrorCode 
+AddressBook::literalName(const Entry& entry, QString& text, bool rev, bool init)
+{
+  register bool GUARD; GUARD=false;
+  // ###########################################################################
+  LG(GUARD, "AddressBook::literalName: called.\n");
+  QString firstname, middlename, lastname, nameprefix;
+  // ----- is the formatted name set?
+  if(!entry.fn.isEmpty())
+    {
+      text=entry.fn;
+      LG(GUARD, "AddressBook::literalName: done (fn).\n");
+      return NoError;
+    }
+  // ----- prepare the strings:
+  firstname=entry.firstname.simplifyWhiteSpace();
+  middlename=entry.middlename.simplifyWhiteSpace();
+  lastname=entry.lastname.simplifyWhiteSpace();
+  nameprefix=entry.nameprefix.simplifyWhiteSpace();
+  // ----- create the initials:
+  if(init)
+    {
+      if(!firstname.isEmpty()) firstname=firstname.mid(0, 1)+'.';
+      if(!middlename.isEmpty()) middlename=middlename.mid(0, 1)+'.';
+      // if(!lastname.isEmpty()) lastname=lastname.mid(0, 1)+'.';
+    }
+  // ----- assemble the string:
+  text="";
+  if(rev)
+    { // name, firstname - add. name - name prefix
+      if(!lastname.isEmpty())
+	{
+	  text=lastname;
+	}
+      if(!firstname.isEmpty() || !middlename.isEmpty() || !nameprefix.isEmpty())
+	{
+	  text+=',';
+	}
+      if(!firstname.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=firstname;
+	}
+      if(!middlename.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=middlename;
+	}
+      if(!nameprefix.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=nameprefix;
+	}      
+    } else {
+      // firstname - add. name - name prefix - name
+      text=firstname;
+      if(!middlename.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=middlename;
+	}
+      if(!nameprefix.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=nameprefix;
+	}
+      if(!lastname.isEmpty())
+	{
+	  if(!text.isEmpty())
+	    {
+	      text+=' ';
+	    }
+	  text+=lastname;
+	}
+    }
   // -----
-  for(pos=entries.begin(); pos!=entries.end(); pos++)
+  LG(GUARD, "AddressBook::literalName: done: %s.\n", text.data());
+  return NoError;
+  // ###########################################################################
+}
+  
+unsigned int 
+AddressBook::noOfEntries()
+{
+  // ###########################################################################
+  return entries->size();
+  // ###########################################################################
+}
+
+void 
+AddressBook::dataFileChanged()
+{
+  // ###########################################################################
+  load();
+  // ###########################################################################
+}
+
+void 
+AddressBook::configFileChanged()
+{
+  register bool GUARD; GUARD=true;
+  // ###########################################################################
+  if(!config->load())
+    {
+      QMessageBox::critical
+	(this, i18n("kab: File error"),
+	 i18n("Cannot reload configuration file!"));
+    } else {
+      LG(GUARD, "AddressBook::configFileChanged: config file reloaded.\n");
+      emit(setStatus(i18n("Configuration file reloaded.")));
+    }
+  // ###########################################################################
+}
+
+void
+AddressBook::reloaded(QConfigDB* db)
+{
+  register bool GUARD; GUARD=true;
+  // ###########################################################################
+  if(db==data)
+    {
+      LG(GUARD, "AddressBook::reloaded: file has been reloaded.\n");
+      updateMirrorMap(); // WORK_TO_DO: what's up with the return value?
+      changed();
+    }
+  // ###########################################################################
+}
+
+/*
+  AddressBook::ErrorCode
+  AddressBook::displayEntry(const AddressBook::Entry& entry, int index)
+  {
+  // ###########################################################################
+  QStrList strings;
+  list<AddressBook::Entry::Address>::iterator pos;
+  // -----
+  current=entry;
+  currentAddress=index;
+  for(pos=current.addresses.begin(); pos!=current.addresses.end(); ++pos)
+  {
+  strings.append((*pos).headline);
+  }
+  addressCombo->clear();
+  addressCombo->insertStrList(&strings);
+  repaint(false);
+  return NoError;
+  // ###########################################################################
+  }
+
+  AddressBook::ErrorCode
+  AddressBook::displayEntry(int position, int index)
+  {
+  // ###########################################################################
+  KabKey key;
+  QStrList strings;
+  list<AddressBook::Entry::Address>::iterator pos;
+  // -----
+  if(getKey(position, key)!=NoError)
+  {
+  return NoSuchEntry;
+  }
+  if(getEntry(key, current)!=NoError)
+  {
+  CHECK(false);
+  return InternError;
+  }
+  currentAddress=index;
+  for(pos=current.addresses.begin(); pos!=current.addresses.end(); ++pos)
+  {
+  strings.append((*pos).headline);
+  }
+  addressCombo->clear();
+  addressCombo->insertStrList(&strings);
+  repaint(false);
+  return NoError;
+  // ###########################################################################
+  }
+*/
+
+
+AddressBook::ErrorCode 
+AddressBook::save(const QString& filename, bool force)
+{
+  // ###########################################################################
+  if(filename.isEmpty())
+    {
+      if(data->save(0, force)) 
+	{
+	  emit(setStatus(i18n("File saved.")));
+	  return NoError;
+	} else {
+	  return PermDenied;
+	}
+    } else {
+      if(data->setFileName(filename, false, false))
+	{
+	  if(data->save(0, true))
+	    {
+	      emit(newFile(filename));
+	      return NoError;
+	    } else {
+	      return PermDenied;
+	    }
+	} else {
+	  return PermDenied;
+	}
+    }
+  // ###########################################################################
+}
+
+bool
+AddressBook::isSameFile(const QString& a, const QString& b)
+{
+  // ###########################################################################
+  QFileInfo filea(a), fileb(b);
+  // -----
+  return filea.absFilePath()==fileb.absFilePath();
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode 
+AddressBook::closeFile(bool saveit)
+{
+  // ###########################################################################
+  if(saveit)
+    {
+      if(save()!=NoError)
+	{
+	  emit(setStatus(i18n("Permission denied.")));
+	  return PermDenied;
+	}
+    }
+  data->clear();
+  // data->reset(); WORK_TO_DO: File name is not reset by now.
+  emit(setStatus(i18n("File closed.")));
+  return NoError;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode 
+AddressBook::getEntry(const KabKey& key, Entry& entry)
+{
+  // ###########################################################################
+  Section *section;
+  // -----
+  if(getEntry(key, section)==NoError)
+    {
+      return makeEntryFromSection(section, entry);
+    } else {
+      return NoSuchEntry;
+    }
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode 
+AddressBook::getEntry(const KabKey& key, Section*& section)
+{
+  register bool GUARD; GUARD=true;
+  // ###########################################################################
+  LG(GUARD, "AddressBook::getEntry: searching entry with key %s.\n",
+     key.getKey().data());
+  StringKabKeyMap::iterator pos;
+  // -----
+  for(pos=entries->begin(); pos!=entries->end(); ++pos)
     {
       if((*pos).second==key)
 	{
-	  current=pos;
-	  currentChanged();
-	  return true;
+	  LG(GUARD, "AddressBook::getEntry: key exists.\n");
+	  break;
 	}
     }
-  CHECK(pos==entries.end());
-  return false; // no such key
-  // ############################################################################
+  if(pos==entries->end())
+    {
+      LG(GUARD, "AddressBook::getEntry: no such entry.\n");
+      return NoSuchEntry;
+    } else {
+      if(data->get((QCString)ENTRY_SECTION+'/'+key.getKey(), section))
+	{
+	  LG(GUARD, "AddressBook::getEntry: done.\n");
+	  return NoError;
+	} else {
+	  CHECK(false); // Inconsistency between mirror map and database!
+	  return InternError;
+	}
+    }
+  // ###########################################################################
 }
 
-Section* AddressBook::configSection()
+AddressBook::ErrorCode
+AddressBook::getEntries(list<Entry>& thelist)
 {
-  REQUIRE(ConfigSection!=0);
-  // ############################################################################
+  // ###########################################################################
+  StringKabKeyMap::iterator pos;
+  Entry entry;
+  // -----
+  thelist.erase(thelist.begin(), thelist.end());
+  CHECK(thelist.empty());
+  for(pos=entries->begin(); pos!=entries->end(); ++pos)
+    {
+      if(getEntry((*pos).second, entry))
+	{
+	  thelist.push_back(entry);
+	} else {
+	  CHECK(false); // Inconsistency between mirror map and database!
+	  return InternError;
+	}
+    }
+  // -----
+  return NoError;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::getKey(int index, KabKey& key)
+{
+  // ###########################################################################
+  StringKabKeyMap::iterator pos;
+  // -----
+  if((unsigned)index<entries->size())
+    {
+      pos=entries->begin();
+      advance(pos, index);
+      key=(*pos).second;
+      return NoError;
+    } else {
+      return NoSuchEntry;
+    }
+  // ###########################################################################
+}
+
+Section*
+AddressBook::entrySection()
+{
+  // ###########################################################################
   Section* section;
   // -----
-  if(!get(ConfigSection, section))
+  if(!data->get(ENTRY_SECTION, section))
     {
       return 0;
     } else {
       return section;
     }
-  // ############################################################################
+  // ###########################################################################
 }
 
-Section* AddressBook::entrySection()
+AddressBook::ErrorCode
+AddressBook::add(const Entry& entry, KabKey& key, bool update)
 {
-  // ############################################################################
-  Section* section;
+  bool GUARD; GUARD=true;
+  LG(GUARD, "AddressBook::add: called.\n");
+  // ###########################################################################
+  Section* theEntries=entrySection();
+  Section* newEntry;
+  KabKey nextKey;
+  ErrorCode locked;
+  ErrorCode rc;
   // -----
-  if(!get(EntrySection, section))
+  if(theEntries==0)
     {
-      return 0;
-    } else {
-      return section;
+      L("AddressBook::add: no entries section.\n");
+      return NoFile;
     }
-  // ############################################################################
+  newEntry=new Section;
+  if(newEntry==0)
+    {
+      QMessageBox::critical
+	(this, i18n("Out of memory"),
+	 i18n("Cannot initialize local variables."));
+      kapp->quit(); // It is critical, but will possibly never happen.
+      return InternError; // shut the compiler up...
+    }
+  // ----- lock the file:
+  locked=lock();
+  switch(locked)
+    {
+    case PermDenied:
+      LG(GUARD, "AddressBook::add: permission denied.\n");
+      return PermDenied; // cannot get r/w mode
+    case Locked:
+      LG(GUARD, "AddressBook::add: db is already in r/w mode.\n");
+      break;
+    case NoError:
+      LG(GUARD, "AddressBook::add: got writing permissions.\n");
+      break;
+    default:
+      LG(GUARD, "AddressBook::add: unknown response, exiting.\n");
+      return InternError;
+    }
+  // -----
+  if(makeSectionFromEntry(entry, *newEntry)==NoError)
+    {
+      nextKey=nextAvailEntryKey();
+      if(!theEntries->add(nextKey.getKey(), newEntry))
+	{
+	  L("AddressBook::add: Cannot insert section.\n");
+	  rc=InternError;
+	} else {
+	  key=nextKey;
+	  rc=NoError;
+	}
+      if(update) updateMirrorMap();
+    } else {
+      rc=InternError;
+    }
+  if(locked!=Locked)
+    { // ----- unlock the file here:
+      LG(GUARD, "AddressBook::add: dropped writing permissions.\n");
+      locked=unlock();
+    }
+  // -----
+  LG(GUARD, "AddressBook::add: done.\n");
+  if(locked!=NoError)
+    {
+      return locked;
+    }
+  if(rc!=NoError)
+    {
+      return rc;
+    }
+  return NoError;
+  // ###########################################################################
 }
 
-bool AddressBook::makeEntryFromSection(Section& section, Entry& entry)
+AddressBook::ErrorCode
+AddressBook::change(const KabKey& key, const Entry& entry)
 {
-  register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressBook::makeEntryFromSection: parsing section.\n");
-  // ############################################################################
-  KeyValueMap* map;
-  list<int> birthday;
-  Entry dummy;
-  // ----- clear up the old entry: (change on July 19 1998):
-  entry=dummy; // dummy is always completely empty
+  // ###########################################################################
+  Section* theEntries=entrySection();
+  Section* oldEntry;
+  ErrorCode locked;
+  ErrorCode rc;
   // -----
-  map=section.getKeys();
-  // the first 6 keys are required, something went wrong if
-  // these are not set:
-  if(!map->get("name", entry.name)
-     || !map->get("firstname", entry.firstname)
-     || !map->get("email", entry.email)
-     || !map->get("telephone", entry.telephone)
-     || !map->get("town", entry.town)
-     || !map->get("address", entry.address))
+  if(theEntries==0)
     {
-      return false;
-    } else { // the entry should be OK
-      map->get("additionalName", entry.additionalName);
-      map->get("namePrefix", entry.namePrefix);
-      map->get("fn", entry.fn);
-      map->get("comment", entry.comment);
-      map->get("org", entry.org);
-      map->get("orgUnit", entry.orgUnit);
-      map->get("orgSubUnit", entry.orgSubUnit);
-      map->get("title", entry.title);
-      map->get("role", entry.role);
-      map->get("deliveryLabel", entry.deliveryLabel);
-      map->get("email2", entry.email2);
-      map->get("email3", entry.email3);
-      map->get("fax", entry.fax);
-      map->get("modem", entry.modem);
-      map->get("URL", entry.URL);
-      map->get("zip", entry.zip);
-      map->get("state", entry.state);
-      map->get("country", entry.country);
-      if(map->get("talk", entry.talk))
+      return NoFile;
+    }
+  // ----- lock the file:
+  locked=lock();
+  if(locked==PermDenied)
+    {
+      return PermDenied; // cannot get r/w mode
+    }
+  // -----
+  if(!theEntries->find(key.getKey(), oldEntry))
+    {
+      rc=NoSuchEntry;
+    } else {
+      oldEntry->clear();
+      CHECK(oldEntry->empty());
+      rc=makeSectionFromEntry(entry, *oldEntry);
+    }
+  // -----
+  if(locked!=PermDenied)
+    { // ----- unlock the file here:
+      locked=unlock();
+    }
+  if(locked==NoError)
+    {
+      return rc;
+    } else {
+      return locked;
+    }  
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::remove(const KabKey& key)
+{
+  // ###########################################################################
+  Section *theEntries=entrySection();
+  ErrorCode locked;
+  ErrorCode rc;
+  // -----
+  if(theEntries==0)
+    {
+      return NoFile;
+    }
+  // ----- lock the file:
+  locked=lock();
+  if(locked==PermDenied)
+    {
+      return PermDenied; // cannot get r/w mode
+    }
+  // -----
+  if(theEntries->remove(key.getKey()))
+    {
+      rc=NoError;
+    } else {
+      rc=NoSuchEntry;
+    }
+  // -----
+  if(locked!=PermDenied)
+    { // ----- unlock the file here:
+      locked=unlock();
+    }
+  if(locked==NoError)
+    {
+      return rc;
+    } else {
+      return locked;
+    }  
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::lock()
+{
+  // ###########################################################################
+  if(!data->isRO()) return Locked;
+  if(data->setFileName(data->fileName(), false, false))
+    {
+      return NoError;
+    } else {
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("The file you wanted to change could not be locked.\n"
+	      "It is probably in use by another application or read-only."));
+      return PermDenied;
+    }
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::unlock()
+{
+  // ###########################################################################
+  if(data->isRO()) return PermDenied;
+  if(data->setFileName(data->fileName(), true, true))
+    {
+      return NoError;
+    } else {
+      return InternError;
+    }
+  // ###########################################################################
+}
+
+/*
+  void
+  AddressBook::resizeEvent(QResizeEvent*)
+  {
+  // ###########################################################################
+  const int Grid=3;
+  const int FW=frameWidth();
+  // -----
+  addressCombo->setGeometry
+  (Grid+FW,
+  3*Grid+FW+2*fontMetrics().height(),
+  width()-2*Grid-2*FW,
+  addressCombo->sizeHint().height());
+  // ###########################################################################
+  }
+*/
+
+/* The view of this widget is partened into four parts. On top the name of the
+   person is displayed, including titles and ranks. Two lines of text are
+   reserved for this.
+   Below this two lines the address is shown, below a KDataNavigator that allows
+   to select an address. This part needs the height of the KDataNavigator and
+   four lines of text. A line is drawn below it.
+   The comment is printed below the address. The comment field stretches to the
+   space available, since it may be a long text.
+   On the bottom contact information is displayed, the telephone numbers, email
+   addresses and the URLs. */
+// WORK_TO_DO: the comment is not displayed by now.
+/*
+  void
+  AddressBook::paintEvent(QPaintEvent* e)
+  {
+  REQUIRE(background!=0);
+  // ###########################################################################
+  const int Grid=3;
+  const int FW=frameWidth();
+  QFont original, font;
+  QFrame::paintEvent(e);
+  bool useBackground=false;
+  bool drawSeparator=false;
+  QPixmap pm(contentsRect().width(), contentsRect().height());
+  QPainter p;
+  QString temp;
+  int posSeparator=0, cy, addressHeight, contactHeight;
+  Entry::Address address;
+  int nameHeight, bottomHeight, noOfBottomLines=0;
+  bool showName, showAddress, showBottom;
+  // ----- begin painting:
+  p.begin(&pm);
+  // ----- decide some style rules, get fonts, get the address:
+  if(!background->isNull() && backgroundEnabled==true)
+  {
+  useBackground=true;
+  } else {
+  useBackground=false;
+  }
+  if(current.getAddress(currentAddress, address)!=NoError)
+  {
+  // L("AddressBook::paintEvent: address index out of range!\n");
+  }
+  // ----- draw the background:
+  if(useBackground)
+  {
+  CHECK(background!=0 && !background->isNull());
+  QPixmap pm;
+  pm=*background;
+  p.drawTiledPixmap(0, 0, width(), height(), pm);
+  } else {
+  p.setPen(kapp->backgroundColor);
+  p.setBrush(kapp->backgroundColor);
+  p.drawRect(0, 0, width(), height());
+  p.setPen(black);
+  }
+  // ----- now draw on the background:
+  original=p.font();
+  font.setFamily(original.family());
+  font.setPointSize(10);
+  p.setFont(font);
+  // ----- calculate sizes and decide display contents:
+  nameHeight=2*Grid+FW+2*p.fontMetrics().height();
+  if(!current.telephone.empty()) noOfBottomLines+=1;
+  if(!current.URLs.empty()) noOfBottomLines+=1;
+  if(!current.emails.empty()) noOfBottomLines+=1;
+  bottomHeight=3*Grid+FW+noOfBottomLines*p.fontMetrics().height();
+  addressHeight=height()-nameHeight-bottomHeight;
+  showAddress=height()-nameHeight-bottomHeight
+  >addressCombo->sizeHint().height()+4*QFontMetrics(original).height();
+showBottom=height()-nameHeight>=bottomHeight;
+showName=height()>=nameHeight;
+//   L("AddressBook::paintEvent: %sshow name,\n"
+//     "                         %sshow address,\n"
+//     "                         %sshow bottom.\n",
+//     showName ? "" : "do not ",
+//     showAddress ? "" : "do not ",
+//     showBottom ? "" : "do not ");
+// ----- now draw the contact lines and labels:
+if(showBottom)
+{
+cy=pm.height()-Grid;
+if(!current.URLs.empty())
+{
+temp=(QString)"URL: "+current.URLs.front();
+if(current.URLs.size()>1)
+{
+temp+=" [..]";
+}
+urlHomepage->setFont(font);
+urlHomepage->setText(temp);
+urlHomepage->move(Grid+frameWidth(),
+  cy+3+frameWidth()-urlHomepage->height());
+urlHomepage->show();
+cy-=urlHomepage->height();
+drawSeparator=true;
+temp="";
+} else {
+urlHomepage->hide();
+}
+if(!current.emails.empty())
+{
+temp=(QString)"email: "+current.emails.front();
+if(current.emails.size()>1)
+{
+temp+=" [..]";
+}
+urlEmail->setFont(font);
+urlEmail->setText(temp);
+urlEmail->move(Grid+frameWidth(), cy-urlEmail->height()+5);
+urlEmail->show();
+cy-=urlEmail->height();
+drawSeparator=true;
+temp="";
+} else {
+urlEmail->hide();
+}
+if(!current.telephone.empty())
+{
+temp+=QString("tel: ")+current.telephone.front();
+if(current.telephone.size()>1)
+{
+temp+=" [..]";
+}
+p.drawText(Grid, cy, temp);
+cy-=p.fontMetrics().height();
+drawSeparator=true;
+temp="";
+}
+if(drawSeparator)
+{
+  posSeparator=cy;
+  cy-=Grid;
+} 
+contactHeight=height()-cy;
+CHECK(contactHeight>0);
+if(drawSeparator)
+{
+  p.drawLine(Grid, posSeparator, pm.width()-Grid, posSeparator);
+}
+} else {
+  urlHomepage->hide();
+urlEmail->hide();
+}
+// (now contactHeight is the actual number of pixels needed)
+if(showName)
+{
+// ----- print the birthday in the upper right corner if it is valid:
+if(current.birthday.isValid())
+  { //       by now I do not take care if there is enough space left
+    p.drawText
+      (pm.width()-Grid-p.fontMetrics().width(current.birthday.toString()),
+       Grid+p.fontMetrics().ascent(), current.birthday.toString());
+  }
+// ----- draw the address, begin on top
+ cy=Grid;
+ font.setPointSize(12);
+ p.setFont(font);
+ if(!current.fn.isEmpty())
+   {
+     temp=current.fn;
+   } else {
+     if(!current.rank.isEmpty())
+       {
+	 if(!temp.isEmpty()) temp+=" ";
+	 temp+=current.rank;
+       }
+     if(!current.nameprefix.isEmpty())
+       {
+	 if(!temp.isEmpty()) temp+=" ";
+	 temp+=current.nameprefix;
+       }
+if(!current.firstname.isEmpty())
+{
+  if(!temp.isEmpty()) temp+=" ";
+  temp+=current.firstname;
+}
+if(!current.middlename.isEmpty())
+{
+  if(!temp.isEmpty()) temp+=" ";
+  temp+=current.middlename;
+}
+if(!current.lastname.isEmpty())
+{
+  if(!temp.isEmpty()) temp+=" ";
+  temp+=current.lastname;
+}
+}
+if(!temp.isEmpty())
+{
+  font.setItalic(true);
+  p.setFont(font);
+  p.setPen(blue);
+  p.drawText(2*Grid, cy+p.fontMetrics().height(), temp);
+  font.setItalic(false);
+  p.setFont(font);
+  p.setPen(black);
+  cy+=p.fontMetrics().height();
+}
+if(!current.title.isEmpty())
+{
+  p.drawText(2*Grid, cy+p.fontMetrics().height(), current.title);
+  cy+=p.fontMetrics().height();
+}      
+}
+// ----- now draw the address:
+if(showAddress)
+{
+  // find starting point:
+  cy=addressCombo->y()+addressCombo->height();
+  if(!address.role.isEmpty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.role);
+      cy+=p.fontMetrics().height();
+    }        
+  if(!address.address.isEmpty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.address);
+      cy+=p.fontMetrics().height();
+    }
+  temp = "";
+  if(!address.town.isEmpty())
+    {
+      temp+=address.town;
+    } 
+  if(!address.state.isEmpty())
+    {
+      if (!temp.isEmpty()) temp += " ";
+      temp+=address.state;
+    }
+  if(!address.zip.isEmpty())
+    {
+      if (!temp.isEmpty()) temp += " ";
+      temp += address.zip;
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp);
+      cy+=p.fontMetrics().height();
+    }
+  if(!address.country.isEmpty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), address.country);
+      cy+=p.fontMetrics().height();
+    }
+  addressHeight=cy+Grid;
+  addressCombo->show();
+} else {
+  addressCombo->hide();
+}
+// ----- finish painting:
+p.end();
+bitBlt(this, contentsRect().left(), contentsRect().top(), &pm);
+// ###########################################################################
+}
+*/
+
+KabKey 
+AddressBook::nextAvailEntryKey()
+{
+  // ###########################################################################
+  int max=0;
+  int temp;
+  Section::StringSectionMap::iterator pos;
+  Section *section=entrySection();
+  KabKey key;
+  QCString dummy;
+  bool good=true;
+  // -----
+  if(section!=0)
+    {
+      for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); ++pos)
 	{
-	  LG(GUARD, "AddressBook::makeEntryFromSection: "
-	     "found %stalk address(es) (%i).\n",
-	     entry.talk.empty() ? "no " : "",
-	     entry.talk.size());
-	}
-      if(map->get("keywords", entry.keywords))
-	{
-	  LG(GUARD, "AddressBook::makeEntryFromSection: "
-	     "found %skeyword(s) (%i).\n",
-	     entry.keywords.empty() ? "no " : "",
-	     entry.keywords.size());
-	}
-      if(map->get("emails", entry.emails))
-	{
-	  LG(GUARD, "AddressBook::makeEntryFromSection: "
-	     "found %semail address(es) (%i).\n",
-	     entry.emails.empty() ? "no " : "",
-	     entry.emails.size());
-	}
-      if(map->get("birthday", birthday))
-	{
-	  LG(GUARD, "AddressBook::makeEntryFromSection: "
-	     "read a birthday int list.\n");
-	  if(birthday.size()==3) // year, month, day
+	  temp=0;
+	  temp=(*pos).first.toInt(&good);
+	  if(!good)
 	    {
-	      int y, m, d;
-	      d=birthday.back(); birthday.pop_back();
-	      m=birthday.back(); birthday.pop_back();
-	      y=birthday.back(); birthday.pop_back();
-	      LG(GUARD, "AddressBook::makeEntryFromSection:  "
-		 "birthday values are %i-%i-%i (YMD).\n", y, m, d);
-	      if(entry.birthday.setYMD(y, m, d))
-		{
-		  LG(GUARD, "AddressBook::makeEntryFromSection: the date is "
-		     "valid, set birthday to %i-%i-%i (YMD).\n",
-		     entry.birthday.year() , entry.birthday.month(),
-		     entry.birthday.day());
-		} else {
-		  LG(GUARD, "AddressBook::makeEntryFromSection: birthday is not "
-		     "a valid date.\n");
-		}
-	    } else {
-	      LG(GUARD, "AddressBook::makeEntryFromSection: more or less than 3 "
-		 "integers in birthday.\n");
+	      L("AddressBook::nextAvailEntryKey: non-integer entry key.\n");
+	      CHECK(false);
+	    }
+	  if(temp>max)
+	    {
+	      max=temp;
 	    }
 	}
     }
-  return true;
-  // ############################################################################
-}
-
-bool AddressBook::currentEntry(Entry& entry)
-{
-  // ############################################################################
-  Entry temp;
   // -----
-  if(noOfEntries()>0)
-    {
-      Section::StringSectionMap::iterator pos;
-      entrySection()->find((*current).second, pos);
-      CHECK(entrySection()->find((*current).second, pos));
-      makeEntryFromSection(*(*pos).second, entry);
-      // this should work all time (it never failed for me)
-      CHECK(makeEntryFromSection(*(*pos).second, entry));
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
+  dummy.setNum(++max);
+  key.setKey(dummy);
+  CHECK(key.getKey().toInt(&good)==max);
+  return key;
+  // ###########################################################################
 }
 
-bool AddressBook::first()
-{
-  REQUIRE(1);
-  // ############################################################################
-  StringStringMap::iterator pos;
-  // -----
-  if(noOfEntries()>0)
-    {
-      pos=entries.begin();
-      if(pos!=current)
-	{
-	  current=pos;
-	  currentChanged();
-	} else {
-	  return false;
-	}
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::previous()
-{
-  REQUIRE(1);
-  // ############################################################################
-  if(noOfEntries()>0 && current!=entries.begin())
-    {
-      --current;
-      currentChanged();
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::next()
-{
-  REQUIRE(1);
-  // ############################################################################
-  if(noOfEntries()>0 && current!=entries.end() && current!=--entries.end())
-    {
-      ++current;
-      currentChanged();
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::last()
-{
-  // ############################################################################
-  StringStringMap::iterator pos;
-  // -----
-  if(noOfEntries()>0)
-    {
-      pos=entries.end();
-      --pos;
-      if(pos!=current)
-	{
-	  current=pos;
-	  currentChanged();
-	} else {
-	  return false;
-	}
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-void AddressBook::currentChanged()
-{
-  register bool GUARD; GUARD=false;
-  // ############################################################################
-  LG(GUARD, "AddressBook::currentChanged: current entry changed.\n");
-  // ############################################################################
-}
-
-unsigned int AddressBook::noOfEntries()
-{
-  // ############################################################################
-  Section* section=entrySection();
-  // -----
-  if(section!=0) // database has been loaded
-    {
-      return section->noOfSections();
-    } else {
-      return 0;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::add(const Entry& entry, string& key)
-{
-  register bool GUARD; GUARD=false;
-  LG(!key.empty(), "AddressBook::add: reference <key> is not empty!.\n");
-  // ############################################################################
-  LG(GUARD, "AddressBook::add[entry]: adding entry.\n");
-  list<int> birthday;
-  // ----- prepare birthday list:
-  if(entry.birthday.isValid())
-    { // construct a list from the date:
-      birthday.push_back(entry.birthday.year());
-      birthday.push_back(entry.birthday.month());
-      birthday.push_back(entry.birthday.day());
-      LG(GUARD, "AddressBook::add[entry]: birthday is valid, using it.\n");
-    }
-  // ----- find new name for the new entry:
-  string name=nextAvailEntryKey();
-  string path=(string)EntrySection+(string)"/"+name;
-  if(!createSection(path))
-    { //       this may not happen:
-     cerr << i18n("Unable to add a new entry with available key.") << endl;
-      ::exit(-1);
-    } else {
-      KeyValueMap* map;
-      if(!get(path, map))
-	{ //       again: this may not happen:
-	  cerr << i18n("Cannot find previously created section.") << endl;
-	  ::exit(-1);
-	}
-      if(   !map->insert("name", entry.name)
-	 || !map->insert("firstname", entry.firstname)
-	 || !map->insert("additionalName", entry.additionalName)
-	 || !map->insert("namePrefix", entry.namePrefix)
-	 || !map->insert("fn", entry.fn)
-	 || !map->insert("comment", entry.comment)
-	 || !map->insert("org", entry.org)
-	 || !map->insert("orgUnit", entry.orgUnit)
-	 || !map->insert("orgSubUnit", entry.orgSubUnit)
-	 || !map->insert("title", entry.title)
-	 || !map->insert("role", entry.role)
-	 || !map->insert("deliveryLabel", entry.deliveryLabel)
-	 || !map->insert("email", entry.email)
-	 || !map->insert("email2", entry.email2)
-	 || !map->insert("email3", entry.email3)
-	 || !map->insert("address", entry.address)
- 	 || !map->insert("town", entry.town)
-	 || !map->insert("telephone", entry.telephone)
-	 || !map->insert("fax", entry.fax)
-	 || !map->insert("modem", entry.modem)
-	 || !map->insert("URL", entry.URL)
-	 || !map->insert("birthday", birthday)
-	 || !map->insert("talk", entry.talk)
-	 || !map->insert("emails", entry.emails)
-	 || !map->insert("keywords", entry.keywords)
-	 || !map->insert("state", entry.state)
-	 || !map->insert("zip", entry.zip)
-	 || !map->insert("country", entry.country))
-	{ //       errors again may not happen:
-	  cerr << i18n("Unable to create key-value-map for entry.") << endl;
-	  ::exit(-1);
-	}
-    }
-  // add the element to the mirror map (this also updates the current entry):
-  updateEntriesMap(name);
-  key=name;
-  return true;
-  // ############################################################################
-}
-
-bool AddressBook::add(string& key)
-{
-  // ############################################################################
-  Entry temp; // all parts are empty
-  return add(temp, key);
-  // ############################################################################
-}
-
-bool AddressBook::change(const Entry& contents)
-{
-  // ############################################################################
-  return change(currentEntry(), contents);
-  // ############################################################################
-}
-
-bool AddressBook::change(const string& key, const Entry& contents)
+AddressBook::ErrorCode
+AddressBook::updateMirrorMap()
 {
   register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::change: changing entry.\n");
-  // ############################################################################
-  const char* StringKeys[]= { // all keys with data type string
-    "name",
-    "firstname",
-    "additionalName", 
-    "namePrefix",
-    "fn",
-    "comment",
-    "org",
-    "orgUnit",
-    "orgSubUnit", 
-    "title",
-    "role", 
-    "deliveryLabel",
-    "address", 
-    "town", 
-    "telephone",
-    "fax", 
-    "modem",
-    "URL",
-    "zip",
-    "state", 
-    "country" };
-  const string * StringObjects[]= { // the respective fields - all strings:
-    &contents.name,
-    &contents.firstname,
-    &contents.additionalName,
-    &contents.namePrefix,
-    &contents.fn,
-    &contents.comment,
-    &contents.org,
-    &contents.orgUnit,
-    &contents.orgSubUnit,
-    &contents.title,
-    &contents.role,
-    &contents.deliveryLabel,
-    &contents.address,
-    &contents.town,
-    &contents.telephone,
-    &contents.fax,
-    &contents.modem,
-    &contents.URL,
-    &contents.zip,
-    &contents.state,
-    &contents.country };
-  const int NoOfStrings=sizeof(StringKeys)/sizeof(StringKeys[0]);
-  const char* ListKeys[]= { // all keys with data type string list
-    "talk", "emails", "keywords" 
-  };
-  const list<string> *ListObjects[]= { // the respective fields - all lists:
-    &contents.talk,
-    &contents.emails,
-    &contents.keywords
-  };
-  const int NoOfLists=sizeof(ListKeys)/sizeof(ListKeys[0]);
-  list<int> birthday;
-  int count;
-  // ----- verification:
-  CHECK(NoOfStrings==sizeof(StringObjects)/sizeof(StringObjects[0]));
-  CHECK(NoOfLists==sizeof(ListObjects)/sizeof(ListObjects[0]));
-  // ----- check permissions:
-  if(readonly)
-    {
-      L("AddressBook::change: DB is readonly!\n");
-      return false;
-    }
-  // -----
-  if(contents.birthday.isValid())
-    {
-      birthday.push_back(contents.birthday.year());
-      birthday.push_back(contents.birthday.month());
-      birthday.push_back(contents.birthday.day());
-      LG(GUARD, "AddressBook::change: birthday is valid, using it.\n");
-    }
-  Section* section;
-  if(!entrySection()->find(key, section))
-    {
-      LG(GUARD, "AddressBook::change: no such entry.\n");
-      return false;
-    }
-  KeyValueMap* keys=section->getKeys();
-  CHECK(keys!=0);
-  // ----- set the values for the string fields:
-  for(count=0; count<NoOfStrings; ++count)
-    {
-      LG(GUARD, "AddressBook::change: setting value \"%s\" for key \"%s\".\n",
-	 StringObjects[count]->c_str(), StringKeys[count]);
-      if(!keys->insert(StringKeys[count], *(StringObjects[count]), true))
-	{
-	  LG(GUARD, "AddressBook::change: failed.\n");
-	  // kill the program -> may not happen in debug version!
-	  CHECK(0); 
-	  return false;
-	}
-    }
-  // ----- set the values for the string list fields:
-  for(count=0; count<NoOfLists; ++count)
-    {
-      LG(GUARD, "AddressBook::change: setting value for key \"%s\".\n",
-	 ListKeys[count]);
-      if(!keys->insert(ListKeys[count], *(ListObjects[count]), true))
-	{
-	  LG(GUARD, "AddressBook::change: failed.\n");
-	  // kill the program -> may not happen in debug version!
-	  CHECK(0); 
-	  return false;
-	}
-    }
-  // ----- now handle special cases - lists, dates:
-  if((birthday.empty() 
-	 ? !keys->insert("birthday", "", true)
-	 : !keys->insert("birthday", birthday, true)))
-    {
-      LG(GUARD, "AddressBook::change: failed to set birthday.\n");
-      CHECK(0); 
-      return false;
-    }
-  // ----- done:
-  LG(GUARD, "AddressBook::change:  done, updating using current-key %s.\n",
-     currentEntry().c_str());
-  updateEntriesMap((*current).second);
-  return true;
-  // ############################################################################
-}
-
-bool AddressBook::remove()
-{
-  // ############################################################################
-  return remove(currentEntry());
-  // ############################################################################
-}
-
-bool AddressBook::remove(const string& key)
-{
-  // ############################################################################
+  // ###########################################################################
+  LG(GUARD, "AddressBook::updateMirrorMap: updating mirror map.\n");
+  QString key;
+  Entry entry;
+  ErrorCode ec;
+  KabKey kk;
+  Section *section=entrySection();
   Section::StringSectionMap::iterator pos;
   // -----
-  if(!entrySection()->find(key, pos))
-    { // ----- no such entry:
-      return false;
-    }
-  if(entrySection()->remove((*pos).first))
-    {
-      updateEntriesMap();
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-string AddressBook::nextAvailEntryKey()
-{ // should be improved
-  // (is O(n), but by now it re-uses deleted entry keys)
-  // ############################################################################
-  unsigned int key=0;
-  char name[1024];
-  KeyValueMap* dummy;
-  // -----
-  do {
-    sprintf(name, "%s/%u", EntrySection, ++key);
-  } while(get(name, dummy));
-  sprintf(name, "%u", key);
-  return name;
-  // ############################################################################
-}
-
-bool AddressBook::setCurrent(int index)
-{
-  // ############################################################################
-  if(entries.size()>(unsigned int)index && index>=0)
-    {
-      current=entries.begin();
-      advance(current, index);
-      currentChanged();
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::isFirstEntry()
-{
-  // ############################################################################
-  if(noOfEntries()!=0 && current==entries.begin())	
-    {
-      return true;
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-bool AddressBook::isLastEntry()
-{
-  // ############################################################################
-  StringStringMap::iterator pos=current;
-  // -----
-  if(noOfEntries()!=0)
-    {
-      // must not be if DB is not empty:
-      CHECK(current!=entries.end());
-      pos++;
-      if(pos==entries.end())
-	{
-	  return true;
-	} else {
-	  return false;
-	}
-    } else {
-      return false;
-    }
-  // ############################################################################
-}
-
-string AddressBook::getName(const string& key)
-{
-  register bool GUARD; GUARD=false;
-  // ############################################################################
-  string result;
-  Entry entry;
-  Section* section;
-  const string path=EntrySection+(string)"/"+key;
-  // -----
-  LG(GUARD, "AddressBook::getName: searching for section \"%s\" (key is %s).\n",
-     path.c_str(), key.c_str());
-  // this method may not be called with wrong keys:
-  get(path, section);  CHECK(get(path, section));
-  makeEntryFromSection(*section, entry);
-  LG(GUARD, "AddressBook::getName: got section and converted it to an Entry "
-     "object.\n");
-  if(!entry.fn.empty())
-    { // use the formatted name if it is defined:
-      result=entry.fn;
-    } else {
-      // construct the name from firstname and name:
-      result=entry.firstname;
-      // add a space if needed:
-      if(!result.empty()) result+=" ";
-      // add name:
-      result+=entry.name;
-      // use email-address if this is empty:
-      if(result.empty() && !entry.emails.empty())
-	{
-	  result=entry.emails.front();
-	}
-      // if this is still empty use telefon number in
-      // brackets:
-      if(result.empty())
-	{
-	  if(!entry.telephone.empty())
-	    {
-	      result=(string)"("+entry.telephone+(string)")";
-	    } else {
-	      // complain if all this is still empty:
-	      result=i18n("entry without name");
-	    }
-	}
-    }
-  LG(GUARD, "AddressBook::getName: result is %s.\n", result.c_str());
-  return result;
-  // ############################################################################
-}
-
-bool AddressBook::createNew(string filename)
-{
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::createNew: creating new database.\n");
-  // ############################################################################
-  KeyValueMap* section;
-  // -----
-  if(!setFileName(filename, false))
-    {
-      cerr << i18n("Unable to create new database file (probably permission "
-		   "denied), exiting.") << endl;
-      return false;
-    } else {
-      if(!createSection(ConfigSection))
-	{
-	  cerr << i18n("Cannot create configuration section, exiting.") << endl;
-	  return false;
-	}
-      if(!createSection(EntrySection))
-	{
-	  cerr << i18n("Cannot create entries section, exiting.") << endl;
-	  return false;
-	}
-      if(!get(ConfigSection, section))
-	{
-	  cerr << i18n("Unable to find previously created section, exiting.")
-	       << endl;
-	  return false;
-	}
-      // ----- sets the initial state of the settings:
-      restoreDefaults();
-      if(!save())
-	{
-	  cerr << i18n("Cannot save newly created database.")
-	       << endl;
-	  return false;
-	}
-      if(!clear())
-	{
-	  cerr << i18n("Cannot erase database contents.") << endl;
-	  return false;
-	}
-    }
-  LG(GUARD, "AddressBook::createNew: done.\n");
-  return true;
-  // ############################################################################
-}
-
-string AddressBook::currentEntry()
-{
-  register bool GUARD; GUARD=false;
-  // ############################################################################
-  if(noOfEntries()==0)
-    {
-      LG(GUARD, "AddressBook::currentEntry: no entries.\n");
-      return "";
-    }
-  LG(GUARD, "AddressBook::currentEntry: current entry is %s.\n",
-     (*current).second.c_str());
-  return (*current).second;
-  // ############################################################################
-}
-
-bool AddressBook::getEntries(list<AddressBook::Entry>& entries)
-{
-  register bool GUARD; GUARD=false;
-  REQUIRE(entries.empty());
-  LG(GUARD, "AddressBook::getEntries: called.\n");
-  // ############################################################################
-  Section::StringSectionMap::iterator pos;
-  Section* section=entrySection();
-  Entry entry;
-  bool error=false;
-  // -----
+  entries->erase(entries->begin(), entries->end());
+  CHECK(entries->empty());
   if(section==0)
-    { // ----- database has been cleared completely before:
-      LG(GUARD, "AddressBook::getEntries: no entries, empty database.\n");
-      return false;
+    {
+      LG(GUARD, "AddressBook::updateMirrorMap: done, no file loaded.\n");
+      return NoError;
     }
-  for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); pos++)
-    { // ----- for all entries:
-      if(makeEntryFromSection(*((*pos).second), entry))
+  for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); ++pos)
+    {
+      if(makeEntryFromSection((*pos).second, entry)!=NoError)
 	{
-	  entries.push_back(entry);
+	  CHECK(false);
+	  // return InternError; // it is saver to continue without a key
+	}
+      key="";
+      ec=literalName(entry, key, true, false);
+      if(key.isEmpty() || ec!=NoError)
+	{
+	  key=i18n("(empty entry)");
+	}
+      key+=(*pos).first; // append the section name to make the key unique
+      kk.setKey((*pos).first);
+      entries->insert(StringKabKeyMap::value_type(key, kk));
+    }
+  // -----
+  ENSURE(entries->size()==section->noOfSections());
+  LG(GUARD, "AddressBook::updateMirrorMap: done.\n");
+  return NoError;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::makeEntryFromSection(Section* section, Entry& entry)
+{
+  REQUIRE(section!=0);
+  // ###########################################################################
+  // -----
+  Section *addresses;
+  Section *addressSection;
+  Section::StringSectionMap::iterator pos;
+  KeyValueMap *keys;
+  Entry temp;
+  Entry::Address address;
+  Entry::Address addressDummy;
+  int count;
+  // ----- create the aggregats:
+  const QCString StringKeys[]= {
+    "title",
+    "rank",
+    "fn",
+    "nameprefix",
+    "firstname",
+    "middlename",
+    "lastname",
+    "comment",
+    "user1",
+    "user2",
+    "user3",
+    "user4"
+  };
+  QString* StringValues[]= {
+    &temp.title,
+    &temp.rank,
+    &temp.fn,
+    &temp.nameprefix,
+    &temp.firstname,
+    &temp.middlename,
+    &temp.lastname,
+    &temp.comment,
+    &temp.user1,
+    &temp.user2,
+    &temp.user3,
+    &temp.user4     
+  };
+  const int StringKeySize=sizeof(StringKeys)/sizeof(StringKeys[0]);
+  CHECK(StringKeySize==sizeof(StringValues)/sizeof(StringValues[0]));
+  const QCString StringListKeys[]= {
+    "talk",
+    "emails",
+    "keywords",
+    "telephone",
+    "URLs"
+  };
+  QStringList* StringListValues[]= {
+    &temp.talk,
+    &temp.emails,
+    &temp.keywords,
+    &temp.telephone,
+    &temp.URLs
+  };
+  const int StringListKeySize=sizeof(StringListKeys)/sizeof(StringListKeys[0]);
+  CHECK(StringListKeySize==
+	sizeof(StringListValues)/sizeof(StringListValues[0]));
+  // ----- first parse "addresses" subsection:
+  if(!section->find(ADDRESS_SUBSECTION, addresses))
+    {
+      CHECK(false); // currently we are very critical here in the debug version
+      return InternError; // no subsection called "addresses"
+    }
+  CHECK(addresses!=0);
+  for(pos=addresses->sectionsBegin(); pos!=addresses->sectionsEnd(); ++pos)
+    {
+      if(!addresses->find((*pos).first, addressSection))
+	{
+	  CHECK(false); // currently we are very critical ...
+	  return InternError; // no section we have an iterator for?
+	}
+      keys=addressSection->getKeys();
+      CHECK(keys!=0);
+      address=addressDummy; // clean it up
+      if(makeAddressFromMap(keys, address)==AddressBook::NoError)
+	{
+	  // ----- add the address to the list of addresses:
+	  temp.addresses.push_back(address);
 	} else {
-	  L("AddressBook::getEntries: error parsing entry %s.\n",
-	    (*pos).first.c_str());
-	  CHECK(false);
-	  error=true;
+	  debug("AddressBook::makeEntryFromSection: cannot find all fields "
+		"in an address subsection.");
+	  CHECK(false); // meanwhile, not in release
 	}
     }
-  LG(GUARD, "AddressBook::getEntries: done, %i entries%s.\n",
-     entries.size(), error ? ", errors occured" : "");
-  CHECK(entries.size()==noOfEntries());
-  return !error;
-  // ############################################################################
+  CHECK(temp.addresses.size()==addresses->noOfSections());
+  // ----- now parse all other fields directly:
+  keys=section->getKeys();
+  CHECK(keys!=0);
+  for(count=0; count<StringKeySize; ++count)
+    {
+      if(!keys->get(StringKeys[count], *StringValues[count]))
+	{
+	  debug("AddressBook::makeEntryFromSection: error: could not get "
+		"value for key %s.", (const char*)StringKeys[count]);
+	  CHECK(false); // kill in debug version
+	}
+    }
+  for(count=0; count<StringListKeySize; ++count)
+    {
+      if(!keys->get(StringListKeys[count], *StringListValues[count]))
+	{
+	  debug("AddressBook::makeEntryFromSection: error: could not get "
+		"value for key %s.", (const char*)StringListKeys[count]);
+	  CHECK(false); // kill in debug version
+	}
+    }
+  CHECK(temp.telephone.count()%2==0); // must be an even number
+  // ----- finally get the birthday:
+  keys->get("birthday", temp.birthday); // this may return false (no date)
+  // -----
+  entry=temp;
+  CHECK(entry.addresses.size()==temp.addresses.size());
+  return NoError;
+  // ###########################################################################
 }
 
-bool AddressBook::nameOfField(const string& field, string& name)
+AddressBook::ErrorCode
+AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
 {
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::nameOfField: called.\n");
-  // ############################################################################
-  // this is only initialized once:
-  static map<string, string, less<string> > *names=0;
-  map<string, string, less<string> >::iterator pos;
-  // ----- initialize the "names" map:
-  if(names==0)
-    { // ----- names will never get deleted during runtime
-      LG(GUARD, "AddressBook::nameOfField: first call, need"
-	 " to initialize name translations.\n");
-      names=new map<string, string, less<string> >;
-      if(!names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("name", i18n("Name").data())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("firstname", i18n("First name").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("additionalName", i18n("Additional name").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("namePrefix", i18n("Name prefix").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("fn", i18n("Formatted name").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("comment", i18n("Comment").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("org", i18n("Organization").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("orgUnit", i18n("Unit").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("orgSubUnit", i18n("Subunit").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("title", i18n("Title").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("role", i18n("Role").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("birthday", i18n("Birthday").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("talk", i18n("Talk addresses").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("deliveryLabel", i18n("Delivery label").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("email", i18n("Email address").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("email2", i18n("Second email address").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("email3", i18n("Third email address").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("emails", i18n("Email addresses").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("address", i18n("Address").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("town", i18n("City/Town").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("telephone", i18n("Telephone").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("fax", i18n("Fax number").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("modem", i18n("Modem number").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("URL", i18n("Homepage URL").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("zip", i18n("Zip/postal code").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("state", i18n("State/province").ascii())).second
-	 ||
-	 !names->insert
-	 (map<string, string, less<string> >::value_type
-	  ("country", i18n("Country").ascii())).second
-	 )
-	{ // ----- all errors here are typos:
-	  CHECK(false);
-	}
-      LG(GUARD, "AddressBook::nameOfField: translation done.\n");
-    }
-  // ----- now do the real transition:
-  CHECK(names!=0);
-  pos=names->find(field);
-  if(pos==names->end())
+  REQUIRE(keys!=0);
+  // ###########################################################################
+  const QCString Keys[]= {
+    "headline",
+    "position",
+    "org",
+    "orgunit",
+    "orgsubunit",
+    "role",
+    "deliverylabel",
+    "address",
+    "zip",
+    "town",
+    "country",
+    "state" 
+  };
+  QString* strings[]= {
+    &address.headline,
+    &address.position,
+    &address.org,
+    &address.orgUnit,
+    &address.orgSubUnit,
+    &address.role,
+    &address.deliveryLabel,
+    &address.address,
+    &address.zip,
+    &address.town,
+    &address.country,
+    &address.state
+  };
+  const int Size=sizeof(Keys)/sizeof(Keys[0]);
+  CHECK(Size==sizeof(strings)/sizeof(strings[0]));
+  int count;
+  // -----
+  for(count=0; count<Size; ++count)
     {
-      LG(GUARD, "AddressBook::nameOfField: unknown field.\n");
-      return false;
-    } else {
-      name=(*pos).second;
-      LG(GUARD, "AddressBook::nameOfField: name for field %s is %s.\n",
-	 field.c_str(), name.c_str());
-      return true;
+      if(!keys->get(Keys[count], *strings[count]))
+	{
+	  debug("AddressBook::makeAddressFromSection: error: could not get "
+		"value for key %s.", (const char*)Keys[count]);
+	}
     }
-  // ############################################################################
+  return NoError;
+  // ###########################################################################
+}
+  
+AddressBook::ErrorCode
+AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
+{
+  // ###########################################################################
+  list<Entry::Address>::const_iterator addPos;
+  Section *addresses=0;
+  Section *address=0;
+  QCString key; // used for creating address subsection keys
+  int count=0; // counts the addresses
+  KeyValueMap *keys;
+  // ----- prepare the section object:
+  section.clear();
+  CHECK(section.empty());
+  // ----- first create "addresses" subsection:
+  if(!section.add(ADDRESS_SUBSECTION))
+    {
+      L("AddressBook::makeSectionFromEntry: cannot create %s subsection.\n",
+	ADDRESS_SUBSECTION);
+      CHECK(false); // currently we are very critical here in the debug version
+      return InternError;
+    }
+  if(!section.find(ADDRESS_SUBSECTION, addresses))
+    {
+      L("AddressBook::makeSectionFromEntry: cannot get new section.\n");
+      CHECK(false); // currently we are very critical here in the debug version
+      return InternError;
+    }      
+  // ----- now insert addresses:
+  for(addPos=entry.addresses.begin(); addPos!=entry.addresses.end(); ++addPos)
+    {
+      ++count;
+      key.setNum(count);
+      CHECK(key.toInt(0)==count);
+      if(!addresses->add(key))
+	{
+	  L("AddressBook::makeSectionFromEntry: cannot create address "
+	    "subsection %s.\n", (const char*)key);
+	  CHECK(false); // currently we are very critical...
+	  return InternError;
+	}
+      if(!addresses->find(key, address))
+	{
+	  L("AddressBook::makeSectionFromEntry: cannot get new subsection.\n");
+	  CHECK(false); // currently we are very critical...
+	  return InternError;
+	}
+      CHECK(address!=0);
+      keys=address->getKeys();
+      CHECK(keys->empty()); // semantical check
+      // ----- now insert keys into address:
+      if(!keys->insert("headline", (*addPos).headline) ||
+	 !keys->insert("position", (*addPos).position) ||
+	 !keys->insert("org", (*addPos).org) ||
+	 !keys->insert("orgunit", (*addPos).orgUnit) ||
+	 !keys->insert("orgsubunit", (*addPos).orgSubUnit) ||
+	 !keys->insert("role", (*addPos).role) ||
+	 !keys->insert("deliverylabel", (*addPos).deliveryLabel) ||
+	 !keys->insert("address", (*addPos).address) ||
+	 !keys->insert("zip", (*addPos).zip) ||
+	 !keys->insert("town", (*addPos).town) ||
+	 !keys->insert("country", (*addPos).country) ||
+	 !keys->insert("state", (*addPos).state))
+	{
+	  L("AddressBook::makeSectionFromEntry: cannot completely create "
+	    "address subsection.\n");
+	  CHECK(false); // meanwhile, not in release
+	  return InternError;
+	}
+    }
+  // ----- now add the other fields:
+  keys=section.getKeys();
+  if(!keys->insert("title", entry.title) ||
+     !keys->insert("rank", entry.rank) ||
+     !keys->insert("fn", entry.fn) ||
+     !keys->insert("nameprefix", entry.nameprefix) ||
+     !keys->insert("firstname", entry.firstname) ||
+     !keys->insert("middlename", entry.middlename) ||
+     !keys->insert("lastname", entry.lastname) ||
+     !keys->insert("birthday", entry.birthday) ||
+     !keys->insert("comment", entry.comment) ||
+     !keys->insert("talk", entry.talk) ||
+     !keys->insert("emails", entry.emails) ||
+     !keys->insert("keywords", entry.keywords) ||
+     !keys->insert("telephone", entry.telephone) ||
+     !keys->insert("URLs", entry.URLs) ||
+     !keys->insert("user1", entry.user1) ||
+     !keys->insert("user2", entry.user2) ||
+     !keys->insert("user3", entry.user3) ||
+     !keys->insert("user4", entry.user4))     
+    {
+      L("AddressBook::makeEntryFromSection: cannot insert all fields of the "
+	"entry into its section!");
+      CHECK(false); // currently we are very critical here in the debug version
+      return InternError;
+    }
+  // -----
+  return NoError;
+  // ###########################################################################
 }
 
-bool AddressBook::literalName(const string& key, string& text, bool reverse,
-			      bool initials)
+AddressBook::ErrorCode
+AddressBook::createNew(const QString& filename)
 {
-  register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressBook::literalName: called.\n");
-  // ############################################################################
-  // ----- this method will return either (in this order)
-  //       ° the formatted name, if it is set,
-  //       ° a combination (see header) of the name fields
-  //       for purposes where an entry should be displayed
-  //       identified by its name.
-  Entry entry;
-  string name;
-  string firstname, addname, nameprefix;
+  // ###########################################################################
+  // const QString KabPublicDir=KApplication::kde_datadir()+"/kab/";
+  // const QString KabPublicDir="./"; // WORK_TO_DO: remove this line!
+  const QString KabTemplateFile=locate("data", "kab/template.kab");
+  debug("AddressBook::createNew: template file is \"%s\".",
+	(const char*)KabTemplateFile.utf8());
+  // KabPublicDir+KAB_TEMPLATEFILE;
+  QConfigDB db;
   // -----
-  if(!getEntry(key, entry))
+  if(KabTemplateFile.isEmpty()
+     || !db.setFileName(KabTemplateFile, true, true))
     {
-      LG(GUARD, "AddressBook::literalName: no such entry.\n");
-      return false;
+      QMessageBox::critical
+	(this, i18n("kab: File error"),
+	 i18n("Cannot find kab's template file.\n"
+	      "You cannot create new files."));
+      return InternError;
     }
-  // ----- is the formatted name set?
-  if(!entry.fn.empty())
+  if(!db.load())
     {
-      text=entry.fn;
-      return true;
+      QMessageBox::critical
+	(this, i18n("kab: Format error"),
+	 i18n("Cannot read kab's template file.\n"
+	      "You cannot create new files."));
+      return InternError;
     }
-  // ----- prepare text parts:
-  if(initials)
+  if(!db.setFileName(filename, false, false))
     {
-      const string WhiteSpaces=" \t\n";
-      string::size_type pos;
-      // -----
-      pos=entry.firstname.find_first_not_of(WhiteSpaces);
-      firstname=pos==string::npos
-	? (string)"" : entry.firstname.substr(pos, 1)+(string)".";
-      pos=entry.namePrefix.find_first_not_of(WhiteSpaces);
-      addname=pos==string::npos
-	? (string)"" : entry.additionalName.substr(pos, 1)+(string)".";
-      nameprefix=entry.namePrefix;
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("Cannot create the file\n\"")
+	 +filename+"\"\n"+
+	 i18n("Could not create the new file."));
+      return PermDenied;
+    }
+  if(!db.save())
+    {
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("Cannot save the file\n\"")
+	 +filename+"\"\n"+
+	 i18n("Could not create the new file."));
+      return InternError;
+    }
+  // -----
+  return NoError;
+  // ###########################################################################
+}
+  
+/*
+  AddressBook::ErrorCode
+  AddressBook::configureFile()
+  {
+  // ###########################################################################
+  DialogBase base(this);
+  KabFileConfigWidget conf(data, &base, 0);
+  // -----
+  base.setCaption(i18n("kab: Configure this file"));
+  base.enableButtonApply(false);
+  base.setMainWidget(&conf);
+  base.resize(base.minimumSize());
+  if(base.exec())
+    { // ----- first "save" settings into the QConfigDB object:
+    if(conf.saveSettings()==NoError)
+    { // ----- ...then save it to the file:
+    return save();
     } else {
-      firstname=entry.firstname;
-      addname=entry.additionalName;
-      nameprefix=entry.namePrefix;
+    return PermDenied;
     }
-  // ----- assemble the string:
-  if(reverse)
-    { // name, firstname - add. name - name prefix
-      name=entry.name;
-      if(!name.empty())
-	{
-	  name+=", ";
-	}
-      if(!firstname.empty())
-	{
-	  name+=firstname;
-	}
-      if(!addname.empty())
-	{
-	  if(!name.empty())
-	    {
-	      name+=" ";
-	    }
-	  name+=addname;
-	}
-      if(!nameprefix.empty())
-	{
-	  if(!name.empty())
-	    {
-	      name+=" ";
-	    }
-	  name+=nameprefix;
-	}
     } else {
-      // firstname - add. name - name prefix - name
-      name=firstname;
-      if(!addname.empty())
-	{
-	  if(!name.empty())
-	    {
-	      name+=" ";
-	    }
-	  name+=addname;
-	}
-      if(!nameprefix.empty())
-	{
-	  if(!name.empty())
-	    {
-	      name+=" ";
-	    }
-	  name+=nameprefix;
-	}
-      if(!entry.name.empty())
-	{
-	  if(!name.empty())
-	    {
-	      name+=" ";
-	    }
-	  name+=entry.name;
-	}
+    emit(setStatus(i18n("Rejected.")));
+    return Rejected;
     }
-  text=name;
-  LG(GUARD, "AddressBook::literalName: done, name is %s.\n", text.c_str());
-  return true;
-  // ############################################################################
+    // ###########################################################################
+    }
+
+bool
+AddressBook::getBackgroundEnabled()
+{
+  // ###########################################################################
+  return backgroundEnabled;
+  // ###########################################################################
 }
 
-bool AddressBook::description(const string& key, string& text, bool reverse,
-			      bool initials)
+void
+AddressBook::setBackgroundEnabled(bool state)
 {
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::description: called.\n");
-  // ############################################################################
-  string temp;
-  Entry entry;
-  // -----
-  if(!literalName(key, temp, reverse, initials))
-    {
-      LG(GUARD, "AddressBook::description: no such entry.\n");
-      return false;
-    }
-  // -----
-  if(!temp.empty())
-    {
-      text=temp;
-      LG(GUARD, "AddressBook::description: done, description is %s.\n",
-	 text.c_str());
-      return true;
-    }
-  getEntry(key, entry); CHECK(getEntry(key, entry));
-  if(!entry.emails.empty())
-    {
-      text=entry.emails.front();
-      LG(GUARD, "AddressBook::description: done, description"
-	 " is %s (email address).\n", text.c_str());
-      return true;
-    }
-  if(!entry.talk.empty())
-    {
-      text=entry.talk.front();
-      LG(GUARD, "AddressBook::description: done, description"
-	 " is %s (talk address).\n", text.c_str());
-      return true;
-    }
-  // ----- give up:
-  text=i18n("(unnamed entry)");
-  LG(GUARD, "AddressBook::description: done, description is %s.\n",
-     text.c_str());
-  return true;
-  // ############################################################################
+  // ###########################################################################
+  backgroundEnabled=state;
+  // ###########################################################################
 }
 
-bool AddressBook::birthDay(const string& key, QDate& date)
+void
+AddressBook::setBackground(const QImage& image)
 {
-  register bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::birthDay: called.\n");
-  // ############################################################################
-  Entry entry;
-  // -----
-  if(!getEntry(key, entry))
-    {
-      LG(GUARD, "AddressBook::birthDay: no such entry.\n");
-      return false;
-    }
-  if(!entry.birthday.isValid())
-    {
-      LG(GUARD, "AddressBook::birthDay: no birthday.\n");
-      return false;
-    } else {
-      date=entry.birthday;
-      LG(GUARD, "AddressBook::birthDay: done.\n");
-      return true;
-    }
-  // ############################################################################
+  // ###########################################################################
+  *background=image;
+  // ###########################################################################
+}
+  
+bool
+AddressBook::getInteractiveMode()
+{
+  // ###########################################################################
+  return urlsEnabled;
+  // ###########################################################################
 }
 
-bool AddressBook::getEntry(const string& key, Section*& data)
+void
+AddressBook::setInteractiveMode(bool state)
 {
-  register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressBook::getEntry[as a map]: called.\n");
-  // ############################################################################
-  Section* entries;
-  Section* entry;
-  // -----
-  if(noOfEntries()==0)
-    {
-      LG(GUARD, "AddressBook::getEntry[as a map]: no entries.\n");
-      return false;
-    }
-  entries=entrySection();
-  CHECK(entries!=0);
-  if(entries->find(key, entry))
-    {
-      LG(GUARD, "AddressBook::getEntry[as a map]: entry %s found.\n",
-	 key.c_str());
-      data=entry;
-      LG(GUARD, "AddressBook::getEntry[as a map]: done.\n");
-      return true;
-    } else {
-      LG(GUARD, "AddressBook::getEntry[as a map]: no such entry.\n");
-      return false;
-    }
-  // ############################################################################
+  // ###########################################################################
+  urlsEnabled=state;
+  urlEmail->setFloat(state);
+  urlEmail->setUnderline(state);
+  // urlEmail->setEnabled(state;
+  urlHomepage->setFloat(state);
+  urlHomepage->setUnderline(state);
+  // urlHomepage->setEnabled(state);
+  // ###########################################################################
 }
 
-bool AddressBook::getEntry(const string& key, Entry& ref)
+void
+AddressBook::appearanceChanged()
 {
-  register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressBook::getEntry: called.\n");
-  // ############################################################################
-  Section* section;
+  // ###########################################################################
+  repaint(false);
+  // ###########################################################################
+}
+*/
+
+AddressBook::ErrorCode
+AddressBook::createConfigFile()
+{
+  // ###########################################################################
+  // const QString KabPublicDir=KApplication::kde_datadir()+"/kab/";
+  // const QString KabPublicDir=globalDir(); // WORK_TO_DO: remove this line!
+  // KabPublicDir+"/"+KAB_CONFIGTEMPLATE;
+  const QString ConfigTemplateFile=locate("data", "kab/template.config");
+  debug("AddressBook::createConfigFile: config template file is \"%s\".",
+	(const char*)ConfigTemplateFile.utf8());
+  const QString filename=baseDir()+"/"+STD_CONFIGFILENAME;
+  QConfigDB db;
   // -----
-  if(!getEntry(key, section))
+  if(ConfigTemplateFile.isEmpty()
+     || !db.setFileName(ConfigTemplateFile, true, true))
     {
-      LG(GUARD, "AddressBook::getEntry: no such entry %s.\n", key.c_str());
-      return false;
-    } else {
-      if(!makeEntryFromSection(*section, ref))
-	{ // ----- may simply not happen:
-	  CHECK(false);
+      QMessageBox::critical
+	(this, i18n("kab: File error"),
+	 i18n("Cannot find kab's configuration template file.\n"
+	      "kab cannot be configured."));
+      return InternError;
+    }
+  if(!db.load())
+    {
+      QMessageBox::critical
+	(this, i18n("kab: Format error"),
+	 i18n("Cannot read kab's configuration template file.\n"
+	      "kab cannot be configured."));
+      return InternError;
+    }
+  if(!db.setFileName(filename, false, false))
+    {
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("Cannot create the file\n\"")
+	 +filename+"\"\n"+
+	 i18n("Could not create the new configuration file."));
+      return PermDenied;
+    }
+  if(!db.save())
+    {
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("Cannot save the file\n\"")
+	 +filename+"\"\n"+
+	 i18n("Could not create the new configuration file."));
+      return InternError;
+    }
+  // -----
+  return NoError;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::loadConfigFile()
+{
+  // ###########################################################################
+  QString file;
+  // -----
+  file=baseDir()+"/"+STD_CONFIGFILENAME;
+  if(config->setFileName(file, true, true))
+    {
+      if(config->load())
+	{
+	  return NoError;
+	} else {
+	  QMessageBox::information
+	    (this, i18n("kab: File error"),
+	     i18n("Cannot load kab's local configuration file,\n"
+		  "possibly there is a formation error.\n"
+		  "kab cannot be configured."));
+	  return InternError;
 	}
-      LG(GUARD, "AddressBook::getEntry: done.\n");
-      return true;
+    } else {
+      QMessageBox::information
+	(this, i18n("kab: File error"),
+	 i18n("Cannot find kab's local configuration file.\n"
+	      "kab cannot be configured."));
+      return NoSuchFile;
     }
-  // ############################################################################
+  // ###########################################################################
+}
+
+/*
+  void
+  AddressBook::mailURLClicked(const char* c)
+  {
+  // ###########################################################################
+  emit(mail(c));
+  // ###########################################################################
+  }
+
+  void
+  AddressBook::homeURLClicked(const char* c)
+  {
+  // ###########################################################################
+  emit(browse(c));
+  // ###########################################################################
+  }
+  
+  void
+  AddressBook::addressSelected(int index)
+  {
+  // ###########################################################################
+  CHECK(index>=0 && (unsigned)index<current.addresses.size());
+  currentAddress=index;
+  repaint(false);
+  // ###########################################################################
+  }
+*/
+
+AddressBook::ErrorCode
+AddressBook::makeVCardFromEntry(const Entry&, QString)
+{
+  // ###########################################################################
+  return NotImplemented;
+  // ###########################################################################
+}
+
+AddressBook::ErrorCode
+AddressBook::makeEntryFromVCard(const QString&, Entry&)
+{
+  // ###########################################################################
+  return NotImplemented;
+  // ###########################################################################
+}
+
+QString
+AddressBook::getStandardFilename()
+{
+  // ###########################################################################
+  QString temp;
+  // -----
+  temp=baseDir();
+  temp+=QString("/")+STD_USERFILENAME;
+  return temp;
+  // ###########################################################################
+}
+
+QString
+AddressBook::baseDir()
+{
+  // ###########################################################################
+  QString dir;
+  // -----
+  dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, false);
+  if(dir==QString::null)
+    {
+      QMessageBox::information
+	(this, i18n("kab: First usage"),
+	 i18n("The directory where user specific data for the\n"
+	      "addressbook application is stored does not exist.\n"
+	      "The program will try to create\n         \"")
+	 +dir+"\"\n"+
+	 i18n("and store all local files in this directory."));
+      // ----- create the directory and check success:
+      dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, true);
+      if(dir==QString::null)
+	{
+	  QMessageBox::information
+	    (this, i18n("kab: Error creating directory"),
+	     i18n("The directory could not be created.\n"
+		  "Probably you do not have used KDE before, so\n"
+		  "you do not have a local \".kde\" directory\n"
+		  "in your home directory. Run the KDE filemanager\n"
+		  "kfm once to automatically create it.\n"
+		  "kab will continue, but no file will be loaded."));
+	  state=PermDenied;
+	  return QString::null;
+	} else { // ----- just for interactivity:
+	  CHECK(access(dir, X_OK | F_OK)==0);
+	  QMessageBox::information
+	    (this, i18n("kab: Directory created"),
+	     i18n("The directory has been created."));
+	  return dir;
+	}
+    } else {
+      return dir;
+    }
+  // ###########################################################################
+}
+
+/*
+  QString
+  AddressBook::globalDir()
+  {
+  // ###########################################################################
+  QString dir;
+  // -----
+  // dir=locate("appdata", "");
+  dir="./";
+  ENSURE(dir!=QString::null);
+  debug("AddressBook::globalDir: THIS IS NOT IMPLEMENTED!"
+  "AddressBook::globalDir: %s.\n"
+  "AddressBook::globalDir: FIXME!", (const char*)dir.utf8());
+  return dir;
+  // ###########################################################################
+  }
+*/
+  
+QString AddressBook::phoneType(AddressBook::Telephone phone)
+{
+  switch(phone)
+    {
+    case Fixed: return i18n("fixed"); break;
+    case Mobile: return i18n("mobile"); break;
+    case Fax: return i18n("fax"); break;
+    case Modem: return i18n("modem"); break;
+    default: return i18n("general");
+    }
 }
 

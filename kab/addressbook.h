@@ -1,265 +1,543 @@
- /* -*- C++ -*-
- * This test creates a database of adresses and 
- * configuration values. It also reports any errors
- * that happen using the database functionality.
+/* -*- C++ -*-
+ * This file declares the basic personal information management class
+ * used in the KDE addressbook.
  * 
- * the Configuration Database library
- * copyright:  (C) Mirko Sucker, 1998
+ * the KDE addressbook
+ * copyright:  (C) Mirko Sucker, 1998, 1999
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
- *                          <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class, Qt
- *             NANA (for debugging)
+ * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
+ * requires:   recent C++-compiler, at least Qt 1.4, STL
  * $Revision$
  */
   
 #ifndef ADDRESSBOOK_H
 #define ADDRESSBOOK_H
 
-#include "configDB.h"
-#include <qdatetime.h>
+class KeyValueMap;
+class QConfigDB; 
+// class QImage;
+class Section;
+// class QStringLess;
+class StringKabKeyMap; /* The type of the mirror map. */
+class QStringList;
+// class QComboBox;
+// class KURLLabel;
+// class KDataNavigator;
 
-// -----------------------------
-// this will be incremented when kab's file format changes
-// significantly
+#include <list>
+#include <qframe.h>
+#include <qdatetime.h>
+#include <qstring.h>
+#include <qsize.h>
+
+/** The class KabKey is used to select entries out of the database file.
+ *  In future, keys might become more complex. */
+class KabKey
+{
+public:
+  bool operator==(const KabKey&) const; /**< The comparison operator. */
+  QCString getKey() const; /**< Get the key as a QCString. */
+  void setKey(const QCString&); /**< Set this key. */
+protected:
+  QCString key; /**< The key of the in this database. */
+};
+
+// -----------------------------------------------------------------------------
+// this will be incremented when kab's file format changes significantly:
 #if defined KAB_FILE_FORMAT
 #undef KAB_FILE_FORMAT
 #endif
 /*
-  0: all format before the email list was implemented
-  1: format enhanced for unlimited number of email addresses
-  2: format enhanced by more address fields
+  0:  all formats before the email list was implemented
+  1:  format enhanced for unlimited number of email addresses
+  2:  format enhanced by more address fields
+  10: format of kab 2
 */
-#define KAB_FILE_FORMAT 2
-// -----------------------------
-// this float value will contain the program version used
-// for different purposes:
+#define KAB_FILE_FORMAT 10
+
+// -----------------------------------------------------------------------------
+// this defines will contain the program version used for different purposes:
 #ifdef KAB_VERSION
 #undef KAB_VERSION
 #endif
-#define KAB_VERSION 1.0
-// -----------------------------
+#ifdef KAB_MINOR
+#undef KAB_MINOR
+#endif
+#ifdef KAB_PATCH
+#undef KAB_PATCH
+#endif
+#ifdef KAB_STATE
+#undef KAB_STATE
+#endif
+#define KAB_VERSION 1
+#define KAB_MINOR   0
+#define KAB_PATCH   0
+#define KAB_STATE   "alpha"
 
-class AddressBook : public ConfigDB
+// -----------------------------------------------------------------------------
+/** The class AddressBook implements the base class for the KDE addressbook. 
+ *  \par Overview
+ *  It
+ *  is used by the KabAPI to make the interface to kab files available to 
+ *  application programmers. <BR> 
+ *  Unlike in the first kab version, the configuration file and the data file are 
+ *  different objects of QConfigDB.  This way,  the data file is no more limited
+ *  to the one in the users KDE directory, multiple files may be used.  Different
+ *  instances of the program may use different data files.  Read-only addressbook
+ *  files are possible. <BR>
+ *  Only one configuration file per user is used, it is <BR>
+ *  <TT>   ~/.kde/share/apps/kab/kab.config </TT> <BR>
+ *  A standard user file will automatically be created as <BR> 
+ *  <TT>   ~/.kde/share/apps/kab/addressbook.kab </TT> <BR>
+ *  File changes are watched by the program, so every instance will automatically
+ *  update its database on a change of the opened file. 
+ *
+ *  \par The KDE addressbook database system
+ *  kab manages entries in address databases based on a key system where the 
+ *  program assigns keys to added entries. These keys are not reused in one file, 
+ *  so API users can rely on a key to be unique and identifying until the entry 
+ *  is deleted by the user (this is a change to kab 1 that reused freed entry 
+ *  keys). Of course, in different files a key might be used twice. <BR>
+ *  The keys are objects of the type KabKey and define the section in the 
+ *  addressbook database where the entry is stored (see QConfigDB
+ *  reference). Keys invalidate on file changes, so keep track of the
+ *  signal ::changed. <BR>
+ *  kab watches file changes. If the opened file changes on disk, it is
+ *  automatically reloaded and ::changed() is emitted. 
+ *
+ *  \par The users standard personal information database
+ *  kab assumes that it is able to read and write the users standard database.
+ *  This way, the kab application itselfes and applications using the KabAPI can
+ *  rely on the possibility to add entries to this database (from a browser, for
+ *  example). Usually, this file is opened automatically by the constructor. 
+ *  If - for what reason ever - the file cannot be either created or read, kab 
+ *  will still start up, but no database operation will work until the user 
+ *  opened a file. In this case, the method ::getState will return 
+ *  ::PermDenied. In general it is a good idea to check the return value of the
+ *  ::getState method before using KabAPI operations.
+ *
+ *  \par The mirror map
+ *  The entries are stored in the QConfigDB object ::data which represents the
+ *  currently opened file. In every file there is a section with the name 
+ *  <TT> entries </TT> that contains a subsection for every entry. The name of
+ *  the subsection is the key of the entry. <BR>
+ *  When retrieving the sections, they are ordered alphabetically by their keys.
+ *  This is not what users expect, since the keys show the insertion order of 
+ *  the entries, not more and not less. Additionally the displaying order should
+ *  be configurable. <BR>
+ *  That is why kab uses a STL map to map its entry keys to user
+ *  (at least programmer...) defined descriptors. Usually, the descriptors are 
+ *  created as a combination of the entry data, and then displayed in aphabetical 
+ *  order in the selector combobox. This map is called the mirror map throughout 
+ *  the documentation. It is created or updated everytime the database changes.
+ *  Thus the way to find a special entry is: <OL>
+ *  <LI> the user selects an item in the selector combo box, returning its 
+ *       index, </LI>
+ *  <LI> the index is used to find the key of the entry in the mirror map, </LI>
+ *  <LI> and finally the entry is retrieved by its key from the database. </LI>
+ *  </OL>
+ *  To modify the sorting order, the way to create the entry descriptors in the 
+ *  mirror map nedds to be changed. 
+ *
+ *  \par The view
+ *  If you display an AddressBook object (that is a derived QFrame), 
+ *  it may show an entry 
+ *  of the database that you might select. The entry you hand over to the method
+ *  ::displayEntry does not need to be contained in the currently loaded file.
+ *  This way you may integrate views of 
+ *  the users addressbook database in your own application as a simple widget 
+ *  type. To allow the user to
+ *  navigate through the database, you might want to show kab's own toolbar in 
+ *  your mainwindow (or whereever). (The toolbar is not implemented by now). <BR>
+ *  Some parts of the AddressBook widget are \e interactive, that means they are
+ *  displayed as transparent KURLLabels that react when the user clicks on it.
+ *  These interactive parts have to be enabled by calling #setInteractiveMode. */
+
+class AddressBook : public QFrame
 {
   // ############################################################################
+  Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
-  /** An object of the class {\em Entry} represents one entry.
-    * More fields can easily be added: add a new string, find a
-    * name for it in the entry-sections of the database that is 
-    * not used until now (automatically done by nextAvailEntryKey),
-    * and change the {\tt makeEntryFromSection}-,
-    * the {\tt add(..)}-, the {\tt change}- and the 
-    * nameOfField-methods.
-    */
-  class Entry {
-  public:
-    // changed on April 4 1998
-    // (added talk-address-list)
-    // changed on June 9 1998
-    // (added keywords list)
-    // ----------------------------------
-    string name;
-    string firstname;
-    string additionalName;
-    string namePrefix;
-    string fn; // formatted name 
-    string comment;
-    string org; // organization -
-    string orgUnit; 
-    string orgSubUnit; 
-    string title; 
-    string role; 
-    // QPixmap logo;
-    QDate birthday; // now implemented
-    list<string> talk; // list of talk addresses
-    list<string> keywords; // list of form-free keywords
-    // string sound; // base64 coded wav - file
-    // string agent; // contains a complete vCard possibly?
-    string deliveryLabel; // missing in implementation
-    // Attention API users: 
-    // The email fields will be changed to an unlimited list of
-    // email addresses and remarks, see list<string> emails below.
-    // Do not rely on the availablility of the three string 
-    // members, I think this is much to inflexible.
-    // Currently, the emails-list will be empty, but not for long!
-    string email; 
-    string email2; 
-    string email3; 
-    // This list contains the email addresses.
-    list<string> emails;
-    string address; 
-    string town; 
-    // new fields, hint from Preston Brown:
-    string zip; // zip or postal code
-    string state; // for state or province
-    string country; // for federal states
-    // -----
-    string telephone; 
-    string fax; 
-    string modem; 
-    string URL; 
+  /** The return values of some AddressBook member functions are #ErrorCode 
+   *  values. */
+  enum ErrorCode {
+    NoError, /**< No error, the operation did not fail. */
+    PermDenied, /**< Access permissions for the operation are not available. */
+    Locked, /**< An writing operation on a locked file was requested. */
+    Rejected, /**< The requested operation has been rejected by the user. */
+    NoSuchEntry, /**< An entry has been referenced using a unknown key. */
+    NoEntry, /**< You tried to retrieve an entry but there is none. */
+    NoFile, /**< No file has been loaded by now. */
+    NoSuchFile, /**< A filename could not be found on the filesystem. */
+    InternError, /**< A error in kab's internal logic occured. */
+    OutOfRange, /**< An index value was out of the allowed range. */
+    NotImplemented /**< The requested operation is not implemented. */
   };
-  /** An aggregat containing the keys of all declared fields:
-    */
-  static const char* Fields[];
-  /** The number of elements in Fields.
-    */
-  static const int NoOfFields;
-  // ----------------------------------------------------------------------------
-protected:
-  /** This method will be called by all REQUIRE and ENSURE statements. It
-    * returns {\tt true} if no inconsistencies regarding the internal 
-    * data structures can be found.
-    * You need to be careful not to create endless looping here!
-    * (See the Nana documentation, "eiffel.h", for details.)
-    */
-  bool invariant();
-  /** The DB uses another map to access the entries in different orders.
-    * This map has always the same number of entries as there are subsections
-    * in the entry-section. The map contains strings describing the order of 
-    * the entries (which can be reordered) and according to each string the 
-    * {\em subsection name} of the entry in the entry-section. The 
-    * {\tt current}-iterator is used to have one entry that is currently 
-    * displayed.
-    */
-  typedef map<string, string, less<string> > StringStringMap;
-  StringStringMap entries;
-  StringStringMap::iterator current;
-  bool isFirstEntry();
-  bool isLastEntry();
-  /** This method creates the mirror map by inserting an entry for each 
-    * (DB) entry in it. It sets current to the entry with the key <key>.
-    */
-  void updateEntriesMap(string key="");
-  /// Convenience methods to retrieve frequently needed pointers and numbers.
-  Section* configSection();
-  Section* entrySection();
-  /** See the implementation file addressbook.cc for the contents of the 
-    * constants.
-    */
-  static const char* ConfigSection;
-  static const char* EntrySection;
-  static const char* DBFileName;
-  static const char* Defaults[];
-  static bool initialized;
-  /** This converts a subsection of the entry-section to an object of the 
-    * {\em Entry}-class. It erases alll fields in the referenced entry
-    * even if they are empty in the section.
-    */
-  bool makeEntryFromSection(Section&, Entry&);
-  /// Get a verbose name (human readable) for an entry:
-  string getName(const string& key); 
-  /// internal!
-  string nextAvailEntryKey();  
-  // creates a new database:
-  bool createNew(string filename);
-  // ----------------------------------------------------------------------------
-public:
-  /// This methods retrieve the current entry.
-  bool currentEntry(Section**);
-  bool currentEntry(Entry&);
-  /** This method sets current to the element in entries at the given index. */
-  bool setCurrent(int index); 
-  /** This method sets the current key to the one with the given key 
-    * in the ENTRIES-section. This is reverse to the method before!
-    */
-  bool setCurrent(const string& key); 
-  /** This method returns the entry that has the key given in the 
-    * reference. It returns false if there is no entry with this
-    * key.
-    */
-  bool getEntry(const string& key, Entry& entry);
-  /** This method returns the entries section directly. 
-   * Be careful, it is the pointer to the ORIGINAL section that is returned!
-    * The method returns false if the entry cannot be found.
-    */
-  bool getEntry(const string& key, Section*& entry);
-  /** Using getEntries(..), the caller will get a copy of all entries in the 
-    *  database. This might seem unneeded, but the address database can be 
-    *  used by multiple instances of the kab API at the same time, so that, 
-    *  if the programmer wants, for example, print a letter header for all 
-    *  persons, the database might change during the operation. That is why 
-    *  she can retrieve the whole database in one operation. 
-    *  It is required that the referenced list is empty.
-    * @short Retrieves all entries out of the database.
-    * @params entries Reference to a list of entries.
-    * @return False on error or true.
-    */
-  bool getEntries(list<AddressBook::Entry>& entries);
-  /** Returns the key of the current entry. The string is empty if
-    * there are no entries.
-    */
-  string currentEntry();
-  /** Returns the number of entries in the database.
-    */
+  /** Some predefined telephone types. More are possible, but these are
+   *  provided and thus, for example, translated. */
+  enum Telephone {
+    NoTelephone,
+    Fixed,
+    Mobile,
+    Fax,
+    Modem
+  };
+  /** Each entry in a loaded database has its own ::Entry object.
+   *
+   *  \par The structure of the address database
+   *  As you might have read, kab uses the QConfigDB class to manage its
+   *  data files. This class is intended to handle hierarchical structures.
+   *  Thus, kab is able to create human readable but still deep and complex
+   *  data files. This paragraph describes the overall structure of the
+   *  files, the next two deal with special parts of it. <BR>
+   *  First of all, kab II data files (that usually end with \c .kab, while in
+   *  kab 1 the fixed file name was \c addressbook.database) have two main
+   *  sections (see the documentation of the QConfigDB and Section classes),
+   *  one is called \c config, it contains different file specific
+   *  configuration settings like the last displayed entry, and one section
+   *  called \c entries that in turn contains a subsection for each entry in
+   *  the database file. The keys of this subsections are the literal strings
+   *  that are used in the KabKey class in the member KabKey::key. Each entry
+   *  subsection has some key-value-pairs described below and another
+   *  subsection "addresses" with one or more addresses in it. See the
+   *  following example for a kab II data file (without any key-value-pairs):
+   *  <BR> <PRE>
+   *  [config]
+   *  [END]
+   *  [entries]
+   *     [1] (the first entry with literal key "1")
+   *       [addresses]
+   *         [1] (the first address, addresses are enumerated)
+   *         [END]
+   *         [2] (the second address)
+   *         [END]
+   *         ... (more addresses may follow)
+   *       [END]
+   *     [END]
+   *     [2] (the second entry)
+   *       [addresses]
+   *         [1]
+   *         [END]
+   *       [END]
+   *     [END]
+   *     ... (more entries may follow)
+   *  [END] </PRE> <BR>
+   *
+   *  \par The fields an entry contains
+   *  An entry contains all settings that are expected to be unique for all
+   *  addresses directly as key-value-pairs. Everything that is part of a
+   *  specific address of this person is part of an object of the member list
+   *  \c addresses referenced in the next paragraph. <BR>
+   *  The keys defined directly in the entry sections are: <DL>
+   *  <DD> "title" The title of that person. </DD>
+   *  <DD> "rank" A possible military rank of that person. </DD>
+   *  <DD> "fn" The formatted name. If it is not empty, it replaces the
+   *       standard combination of the other name fields in the address
+   *       display. </DD>
+   *  <DD> "nameprefix" A possible name prefix. </DD>
+   *  <DD> "firstname" The first name. </DD>
+   *  <DD> "middlename" The middle name. </DD>
+   *  <DD> "lastname" The last name. </DD>
+   *  <DD> "birthday" The birthday (a QDate). </DD>
+   *  <DD> "comment" A free form comment. </DD>
+   *  <DD> "talk" The talk addresses (a string list). </DD>
+   *  <DD> "emails" The email addresses (a string list). </DD>
+   *  <DD> "keywords" A list of free-form keywords. </DD>
+   *  <DD> "telephone" A list of telephone numbers in a special format. </DD>
+   *  <DD> "URLs" A list of internet addresses. </DD>
+   *  <DD> "user_1" The first user-declared data field. </DD>
+   *  <DD> "user_2" The second user-declared data field. </DD>
+   *  <DD> "user_3" The third user-declared data field. </DD>
+   *  <DD> "user_4" The fourth user-declared data field. </DD>
+   *  </DL>
+   *  See the next section for a description of the addresses subsections.
+   * 
+   *  \par The fields of the addresses subsections
+   *  The section for each entry contains a subsection \c addresses with
+   *  in turn a subsection for each address. The addresses are enumerated
+   *  in the order they are inserted, their keys are the numbers of
+   *  inserting converted to a string. <BR>
+   *  The keys defined in an address subsection are: <DL>
+   *  <DD> "headline" A headline shown for the address. </DD>
+   *  <DD> "position" The position of the person. </DD>
+   *  <DD> "org" The organisation. </DD>
+   *  <DD> "orgunit" The organisational unit. </DD>
+   *  <DD> "orgsubunit" The organisational subunit. </DD>
+   *  <DD> "role" The role of the person. </DD>
+   *  <DD> "deliverylabel" A label for delivering to this address. </DD>
+   *  <DD> "address" The street, house no., flat etc line. </DD>
+   *  <DD> "zip" A zip or postal code. </DD>
+   *  <DD> "town" The town the person lives in in this address. </DD>
+   *  <DD> "country" The country for federal states. </DD>
+   *  <DD> "state" The state for federal states. </DD>
+   *
+   *  \par The local configuration section
+   *  For each kab II database file there are some settings that apply
+   *  only to the file itselfes, not to all kab databases the user works
+   *  with. These settings are called the local configuration. The settings
+   *  are stored in the \c config section of the local file. The following
+   *  keys are declared in this section: <DL>
+   *  <DD> "user_1" The \e name of the first user-declared field. </DD>
+   *  <DD> "user_2" The \e name of the second user-declared field. </DD>
+   *  <DD> "user_3" The \e name of the third user-declared field. </DD>
+   *  <DD> "user_4" The \e name of the fourth user-declared field. </DD>
+   *  </DL>
+   *  More fields will surely follow.
+   **/
+  class Entry {
+  protected:
+    /** \internal The pointer to the file the entry is read from. */
+    // const QConfigDB *file; 
+  public:
+    // types:
+    /** Since an entry may have different addresses, we need a type for them.
+     *  Multiple addresses are used to distinguish between addresses at home
+     * and work, for example. */
+    struct Address {
+      QString headline; /**< The headline for this address. */
+      QString position; /**< The position of the person at this address. */
+      QString org; /**< The organisation of the person at this address. */
+      QString orgUnit;  /**< The org unit of the person at this address. */
+      QString orgSubUnit; /**< The org subunit of the person at this address. */
+      QString role; /**< The role of the person at this address. */      
+      QString deliveryLabel; /**< The description for delivering. */
+      QString address; /**< Street, with house number. */
+      QString zip; /**< Zip or postal code. */
+      QString town; /**< The town. */
+      QString country; /**< The country for federal states. */
+      QString state; /**< The state for federal states. */
+    };
+    /** Contains one or more Address objects. */
+    list<AddressBook::Entry::Address> addresses; 
+    // methods:
+    /** Use this method to retrieve the address at the given \a index.
+     *  The method is provided for convenience. The address data is
+     *  returned in \a address. */
+    AddressBook::ErrorCode getAddress(int index, Address& address);
+    /** Returns the number of addresses of this entry. */
+    int noOfAddresses() const;
+    // const QConfigDB *getFile(); /**< Returns a pointer to the database. */
+    // members:
+    // this parts are assumed to be unique for every entry:
+    QString title; /**< The title of the person. */
+    QString rank; /**< The rank of the person. */
+    QString fn; /**< The formatted name of the person. */
+    QString nameprefix; /**< A possibly name prefix for that person. */
+    QString firstname; /**< The first name of the person. */
+    QString middlename; /**< The middle name of the person. */
+    QString lastname; /**< The last name of the person. */
+    QDate birthday; /**< The birthday of this person. */
+    QString comment; /**< The comment. */
+    QStringList talk;  /**< The talk addresses. */
+    QStringList emails; /**< The email addresses. */
+    QStringList keywords; /**< The user defined keywords for searching. */
+    /** Telephon numbers and types. This list contains combinations of telephone
+     *  numbers and the types of the phones, in this order. Types are (in 
+     *  literal strings) 
+     *  "mobil", "fix", "beeper", "answer machine", "fax", "dial in". 
+     *  Send your comments for more types, please! */
+    QStringList telephone; 
+    QStringList URLs; /**< The home or related web pages of this person. */
+    QString user1; /**< The first user-declared field. */
+    QString user2; /**< The second user-declared field. */
+    QString user3; /**< The third user-declared field. */
+    QString user4; /**< The fourth user-declared field. */    
+  };
+  /** The constructor. If \e load is true, the user standard file will
+   *  automatically be loaded into the object. */
+  AddressBook(QWidget* parent=0, const char* name=0, bool load=true);
+  ~AddressBook(); /**< The destructor. */
+  /** Get the internal state of the object. 
+   *  If no problem occured, it returns ::NoError. 
+   *  If the standard or the latest opened file could not be loaded,
+   *  it returns ::PermDenied.*/
+  ErrorCode getState();
+  /** Load the file with the given path. An empty file name reloads the 
+   *  currently opened file. */
+  ErrorCode load(QString filename="");
+  /** Save the file to the given path and file name.  An empty file name saves 
+   *  to the file where the database has been read from.
+   *  If force is true, the method will switch to r/w mode for saving and
+   *  back. */
+  ErrorCode save(const QString& filename="", bool force=false);
+  /** Close this file. 
+   *  ::closeFile assures sure that the ::data object is reset no matter of the 
+   *  state of the assigned file. 
+   *  If \a save is true, it will not close the file if it could not be 
+   *  saved. */
+  ErrorCode closeFile(bool saveit=true);
+  /** Retrieve an entry from the database by its key. */
+  ErrorCode getEntry(const KabKey& key, Entry&);
+  /** Retrieve the Section of the entry directly, returning a section object. */
+  ErrorCode getEntry(const KabKey& key, Section*&);
+  /** Get all entries in displaying order. This method might be slow (O(n)). */
+  ErrorCode getEntries(list<Entry>&);
+  /** Add an ::Entry, \a return the new key for further operations.
+   *  If update is false, the mirror map will not be affected, if it is true,
+   *  the mirror map gets updated, too. */
+  ErrorCode add(const Entry&, KabKey& key, bool update=true);
+  /** Set the entry with the given key to the new contents. Be aware of
+   *  #PermDenied for read-only databases or file sharing conflicts. You cannot 
+   *  change entries in a database for which you do not have write access. */
+  ErrorCode change(const KabKey& key, const Entry&);
+  /** Remove the  entry with the given key. Returns #NoSuchEntry if there is no 
+   *  entry with this key, #PermDenied for read only databases. */
+  ErrorCode remove(const KabKey& key);
+  /** Returns the number of entries in the loaded database. */
   unsigned int noOfEntries();
-  /** The following methods are used to navigate through the entries.
-    * They all change the current-iterator.
-    */
-  bool first();
-  bool previous();
-  bool next();
-  bool last();
-  // managing entries
-  // add an entry, return the new key for further operations:
-  bool add(const Entry&, string& key);
-  inline bool add(string& key); // empty entry 
-  /** Change the current entry.
-    */
-  bool change(const Entry&);
-  /** Change the entry with the given key.
-    */
-  bool change(const string& key, const Entry&);
-  /** Remove the current entry.
-    */
-  bool remove();
-  /** Remove the  entry with the given key. Returns false if 
-    * there is no entry with this key.
-    */
-  bool remove(const string& key);
-  // some convenience functions with "soft" information
-  /** This method is intended for printing and exporting purposes.
-    * It returns the localized literal name of a data field (for
-    * example, "name" (en) or "Name" (de) for the field "name")
-    * in the second reference.
-    * It returns false if the field descriptor (param 0) is unknown.
-    */
-  bool nameOfField(const string& field, string& name);
   /** This method returns the literal name for the entry, 
     * containing either the formatted name (if given) or a 
     * combination of the first, additional and last name. 
-    * The name is returned in text.
-    * If reverse is false, the text looks like
+    * The name is returned in \a text.
+    * If \a reverse is false, the text looks like
     *    firstname (add. name) last name,
     * if it is true, 
     +    last name, first name (add. name).
-    * If initials is true, the text contains only initials:
+    * If \a initials is true, the text contains initials only:
     *    f. a. name [with reverse==false] or
     *    name, f. a. [with reverse==true].
-    * If there is no entry with this key, the method returns false.
+    * If there is no entry with this key, the method returns ::NoSuchEntry.
     */
-  bool literalName(const string& key, string& text,
-		   bool reverse=false, bool initials=false);
-  /** This method returns the same as literalName, except that
-    * it fills the returned text with an email or talk address
-    * or any other useful information, so the text can be used
-    * to identify an entry even if its name fields are all 
-    * empty.
-    */
-  bool description(const string& key, string& text,
-		   bool reverse=false, bool initials=false);
-  /** This method returns the birthday for this entry in date or 
-    * false if the entry does not have a birthday value. 
-    */
-  bool birthDay(const string& key, QDate& date);
-  // constructor
-  AddressBook(bool readonly=false);
-  // -----
-  void restoreDefaults();
-  void changed(); // virtual from ConfigDB
-  virtual void currentChanged(); // for notifications
+  ErrorCode literalName(const KabKey& key, QString& text,
+			bool reverse=false, bool initials=false);
+  /** This is an overloaded method that differs only in the arguments it takes.
+   */
+  ErrorCode literalName(const Entry& entry, QString& text,
+			bool reverse=false, bool initials=false);
+  /** Get the key of the item in the selector with the given index. */
+  ErrorCode getKey(int index, KabKey&);
+  /** Display this entry. If the entry has more than one address, the address
+   *  at index \a index is displayed. */
+  // ErrorCode displayEntry(const AddressBook::Entry&, int index=0);
+  /** Display the entry at the index \e position in the current file.
+   *  The index is the position of the entries description in the string
+   *  list return by ::getListOfName, or the position of the entry in the
+   *  mirror map.
+   *  If the index is out of range, NoSuchEntry is returned. */
+  // ErrorCode displayEntry(int position, int address=0);
+  /** Fill the string list with name lines. If your application shows a combobox 
+   *  containing an overview over the currently loaded KabAPI database, then 
+   *  call this method when receiving the signal ::changed and display the list
+   *  in the combo. */
+  ErrorCode getListOfNames(QStringList*, bool reverse=true, bool initials=true);
+  QConfigDB* getConfig(); /**< Hand over the configuration database. Careful! */
+  /** This method opens a dialog for configuring the file-specific settings
+   *  for the loaded file. The database is automatically saved if the user
+   *  accepts the changes. */
+  // ErrorCode configureFile();
+  /** Creates a new database with the given file name. If the filename is 
+   *  empty, it creates the users standard data file. The method does not load
+   *  the new database. */
+  ErrorCode createNew(const QString& filename="");
+  /** Creates the local configuration file. The filename is fixed to
+   *  \c kab.config, it will be created in the local kab directory
+   *  (\c $HOME/.kde/share/apps/kab). Adapt the global configuration template
+   *  file (\c $KDEDIR/share/apps/kab/template.config) for unusual site-specific
+   *  settings.
+   *  The method does not load the new config file. */
+  ErrorCode createConfigFile();
+  ErrorCode loadConfigFile(); /**< Load the local configuration file. */
+  // ErrorCode configureKab(); /**< Open the configuration dialog for the KabAPI. */
+  // QSize sizeHint();  /**< The preferred (minimal) size of the view. */ // ni
+  /** This method parses a vCard and creates an Entry object from it. */
+  ErrorCode makeEntryFromVCard(const QString& card, Entry&);
+  /** This method creates a vCard string from an entry. */
+  ErrorCode makeVCardFromEntry(const Entry& entry, QString card);
+  /** Returns the complete path to the user standard file. An empty path
+   *  indicates an error, but this should not happen. It is NOT ensured
+   *  that the file exists. */
+  QString getStandardFilename();
+  /** Call this to get a telephone type translated to the locale. */
+  static QString phoneType(AddressBook::Telephone);
+  // ----------------------------------------------------------------------------
+protected:
+  QConfigDB *config; /**< The configuration database. */
+  QConfigDB *data; /**< The currently open data files. */
+  // QImage *background; /**< The background pattern, a null image by default. */
+  // bool backgroundEnabled; /**< If true, the background image is displayed. */
+  StringKabKeyMap *entries; /**< The mirror map. */
+  ErrorCode state; /**< The internal state of the object. */
+  // Entry current; /**< The entry that is displayed now. */
+  // int currentAddress; /**< The address of the entry that has been selected. */
+  // KURLLabel *urlEmail; /**< The interactive email line. */
+  // KURLLabel *urlHomepage; /**< The interactive URL line. */
+  // bool urlsEnabled; /**< Wether the interactive mode is enabled or not. */
+  // QComboBox *addressCombo; /**< The navigator for selecting the address. */
+  // void paintEvent(QPaintEvent*); /**< The paint event. */
+  // void resizeEvent(QResizeEvent*); /**< The resize event. */
+  /** Get the next available entry key for this file. For internal use only. */
+  KabKey nextAvailEntryKey(); // fertig
+  /** Returns true if both pathes point to the same file.
+   *  The method resolves relative file names to find this out. */
+  bool isSameFile(const QString& a, const QString& b); // fertig
+  /** Parse the section and copy its contents into \a entry.
+   *  The method expects a subsection called \e addresses that contains a
+   *  number of subsections each containing data for one Entry::Address object.
+   *  All other fields are copied directly into the members of \a entry. */
+  ErrorCode makeEntryFromSection(Section*, Entry&); // nicht beendet
+  /** For internal use only. This parses one address subsection and puts its
+   *  contents in the Address object. */
+  ErrorCode makeAddressFromMap(KeyValueMap*, Entry::Address&);
+  /** Create a section from the entries settings. */
+  ErrorCode makeSectionFromEntry(const Entry&, Section&); // nicht beendet
+  /** Update the mirror map after changes of the database. */
+  ErrorCode updateMirrorMap();
+  /** Get the entry section of the file. Maybe a NULL pointer if no file is
+   *  opened. */
+  Section* entrySection(); // fertig
+  /** Lock the file for changing.
+   *  Since all database files are opened read-only, they must be locked before
+   *  the files contents are changed. After changing the file must be saved and
+   *  unlocked. Returns ::PermDenied if the file could not be locked, ::NoError
+   *  if it was not locked and is now, and ::Locked if the file is already
+   *  locked.
+   *  @see unlock
+   *  @see QConfigDB::setFileName */
+  ErrorCode lock(); // fertig
+  /** Unlock the file after changes. Returns ::NoError if the file was locked
+   *  and could be unlocked, ::PermDenied if the file was not locked and
+   *  possibly ::InternError if anything fails.
+   *  @see ::lock
+   *  @see QConfigDB::setFileName */ 
+  ErrorCode unlock(); // fertig ab hier
+  /** Set the background image. Kab will store a deep copy of the image.
+   *  If the image is a null image nothing will be displayed. */
+  // void setBackground(const QImage&);
+  /** Enable or disable the background image. */
+  // void setBackgroundEnabled(bool state);
+  /** Retrieve wether the background image is enabled or not. */
+  // bool getBackgroundEnabled();
+  /** Set if the URL labels are interactive. */
+  // void setInteractiveMode(bool state);
+  /** Get if the URL labels are interactive. */
+  // bool getInteractiveMode();
+  /** Returns the users own kab data directory. Usually ~/.kde/share/apps/kab. */
+  QString baseDir();
+  /** Returns the global data dir of kab (usually $KDEDIR/share/apps/kab). */
+  // QString globalDir(); // replaced by locate, hopefully
+  // ----------------------------------------------------------------------------
+protected slots:
+  /** Called when ::data has been cleared or reloaded. */
+  void reloaded(QConfigDB*);
+  /** Called when the \e file assigned to ::data has changed on disk. */
+  void dataFileChanged();
+  /** Called when the \e file assigned to ::config has changed on disk. */
+  void configFileChanged();
+  // void appearanceChanged(); /**< Called on kapp->appearanceChanged. */
+  // void mailURLClicked(const char*); /**< \internal */
+  // void homeURLClicked(const char*); /**< \internal */
+  // void addressSelected(int); /**< \internal */
+  // ----------------------------------------------------------------------------
+signals:
+  void changed(); /**< The entries have changed, update the selector. */
+  // void browse(const char*); /**< The user clicked on the homepage URL. */
+  // void mail(const char*); /**< The user clicked on the email address. */
+  // void edit(); /**< The user double-clicked the address display. */
+  void setStatus(const QString&); /**< This is kab radio with the news... */
+  void newFile(const char*); /**< Notifies changes of the file name. */
   // ############################################################################
 };
 
 #endif // ADDRESSBOOK_H
+
