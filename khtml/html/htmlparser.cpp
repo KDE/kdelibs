@@ -178,6 +178,7 @@ void KHTMLParser::reset()
     haveFrameSet = false;
     haveContent = false;
     haveBody = false;
+    haveTitle = false;
     haveMalformedTable = false;
     inSelect = false;
     m_inline = false;
@@ -757,7 +758,13 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLStyleElementImpl(document);
         break;
     case ID_TITLE:
+        // only one non-empty <title> allowed
+        if (haveTitle) {
+            discard_until = ID_TITLE+ID_CLOSE_TAG;
+            break;
+        }
         n = new HTMLTitleElementImpl(document);
+        // we'll set haveTitle when closing the tag
         break;
 
 // frames
@@ -1094,7 +1101,11 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_SELECT+ID_CLOSE_TAG:
         inSelect = false;
         break;
-
+    case ID_TITLE+ID_CLOSE_TAG:
+        // Set haveTitle only if <title> isn't empty
+        if ( current->firstChild() )
+            haveTitle = true;
+        break;
     default:
         break;
     }

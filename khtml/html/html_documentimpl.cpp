@@ -294,16 +294,6 @@ void HTMLDocumentImpl::close()
     HTMLElementImpl* b = body();
     if (b && doload) {
 
-        // set the title once if not already set
-        for (NodeImpl *n = this; n; n = n->traverseNextNode()) {
-            if (!title().isEmpty())
-                break;
-            if (n->id() == ID_TITLE)
-                setTitle(static_cast<HTMLTitleElementImpl*>(n)->text());
-            else if (n->id() == ID_BODY ||
-                     n->id() == ID_FRAMESET)
-                break;
-        }
         if (title().isEmpty()) // ensure setTitle is called at least once
             setTitle( DOMString() );
 

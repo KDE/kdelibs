@@ -556,7 +556,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
     return 0;
 }
 
-void DocumentImpl::setTitle(DOMString _title)
+void DocumentImpl::setTitle(const DOMString& _title)
 {
     if (_title == m_title && !m_title.isNull()) return;
 

@@ -448,6 +448,8 @@ void HTMLTitleElementImpl::childrenChanged()
 	if ((c->nodeType() == Node::TEXT_NODE) || (c->nodeType() == Node::CDATA_SECTION_NODE))
 	    m_title += c->nodeValue();
     }
+    if ( !m_title.isEmpty() && inDocument())
+        getDocument()->setTitle(m_title);
 }
 
 DOMString HTMLTitleElementImpl::text()

@@ -155,7 +155,7 @@ public:
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
     DOMString title() const { return m_title; }
-    void setTitle(DOMString _title);
+    void setTitle(const DOMString& _title);
 
     // DOM methods overridden from  parent classes
 
