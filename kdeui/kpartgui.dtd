@@ -11,7 +11,7 @@
 -->
 
 <!--The root element that must enclose all other tags in the document. -->
-<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | DefineGroup | MainWindow | StatusBar)*)>
+<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | DefineGroup | MainWindow | StatusBar | Menu)*)>
 <!ATTLIST kpartgui
   name CDATA #REQUIRED
   library CDATA #IMPLIED
@@ -37,10 +37,11 @@
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
-<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | DefineGroup)*)>
+<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | DefineGroup | Menu )*)>
 <!ATTLIST Menu
   name CDATA #REQUIRED
   group CDATA #IMPLIED
+  icon CDATA #IMPLIED
 >
 
 <!-- Defines both Standard and app-specific actions. An action can appear in a menu, a toolbar or in a
