@@ -197,6 +197,18 @@ public:
    signals:
       void changed();
 
+      /**
+       * This signal is emmitted when the user adds a new string to the list,
+       * the parameter is the added string.
+       */
+      void added( const QString & text );
+
+      /**
+       * This signal is emmitted when the user removes a string from the list,
+       * the parameter is the removed string.
+       */
+      void removed( const QString & text );
+
    protected slots:
       //the names should be self-explaining
       void moveItemUp();

@@ -276,6 +276,7 @@ void KEditListBox::addItem()
         m_listBox->insertItem(currentTextLE);
         m_listBox->blockSignals( block );
         emit changed();
+	emit added( currentTextLE );
     }
 }
 
@@ -292,11 +293,14 @@ void KEditListBox::removeItem()
 
     if ( selected >= 0 )
     {
+	QString removedText = m_listBox->currentText();
+
         m_listBox->removeItem( selected );
         if ( count() > 0 )
             m_listBox->setSelected( QMIN( selected, count() - 1 ), true );
 
         emit changed();
+	emit removed( removedText );
     }
 
     if ( servRemoveButton && m_listBox->currentItem() == -1 )
