@@ -198,8 +198,10 @@ void player::generateBeats(void)
         {
             ev=spev;
             /* Looking if ev->next is NULL is not needed because
-             we are sure that a ev->type == 0 exists */
-            while (ev->next->type!=0) ev=ev->next;
+             we are sure that a ev->type == 0 exists, we just have
+	     to assure that the first spev is not the only one */
+            if (ev->next!=NULL)
+                while (ev->next->type!=0) ev=ev->next;
         }
         while (nextbeatms<info->millisecsTotal)
         {
