@@ -36,7 +36,8 @@ noinst_HEADERS = \
 	dom2_eventsimpl.h  dom2_viewsimpl.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
- -I$(top_srcdir)/khtml -I$(top_srcdir) $(all_includes)
+ -I$(top_srcdir)/khtml -I$(top_srcdir) -I$(top_srcdir)/kwallet/client \
+ $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 

@@ -35,7 +35,9 @@ noinst_HEADERS = \
 	cssstyleselector.h csshelper.h parser.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
- -I$(top_srcdir)/khtml -I$(top_srcdir)/libltdl -I$(top_srcdir) $(all_includes)
+ -I$(top_srcdir)/khtml -I$(top_srcdir)/libltdl -I$(top_srcdir) \
+ -I$(top_srcdir)/kwallet/client \
+ $(all_includes)
 
 cssdir = $(kde_datadir)/khtml/css
 css_DATA = html4.css quirks.css
