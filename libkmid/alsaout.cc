@@ -105,7 +105,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
 
   volumepercentage=100;
 #ifdef HAVE_LIBASOUND
-  printf("%d %d %d (%s)\n",device, di->tgtclient, di->tgtport, di->tgtname);
+//  printf("%d %d %d (%s)\n",device, di->tgtclient, di->tgtport, di->tgtname);
 #endif
 
   _ok=1;
