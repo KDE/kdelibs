@@ -3,8 +3,8 @@
  *
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
- *
- *     Copyright (c) 1999 Dirk A. Mueller <dmuell@gmx.net>
+ * Rewritten and maintained by:
+ *     Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
  *
  *  Requires the Qt widget libraries, available at no cost at
  *  http://www.troll.no/
@@ -249,6 +249,14 @@ void KIntSpinBox::setEditFocus(bool mark)
 
 // -----------------------------------------------------------------------------
 
+void KIntSpinBox::focusInEvent(QFocusEvent* e)
+{
+    QSpinBox::focusInEvent(e);
+}
+
+
+// -----------------------------------------------------------------------------
+
 KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
                            int _base, const char* name)
     : KNumInput(below, parent, name)
@@ -263,7 +271,7 @@ void KIntNumInput::init(int val, int _base)
 {
     m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, _base, this, "KIntNumInput::KIntSpinBox");
     m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
-    connect(m_spin, SIGNAL(valueChanged(int)), SIGNAL(valueChanged(int)));
+    connect(m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
 
     setFocusProxy(m_spin);
 }
@@ -271,9 +279,11 @@ void KIntNumInput::init(int val, int _base)
 
 // -----------------------------------------------------------------------------
 
-void KIntNumInput::sliderMoved(int val)
+void KIntNumInput::spinValueChanged(int val)
 {
-    m_spin->setValue(val);
+    if(m_slider)
+        m_slider->setValue(val);
+
     emit valueChanged(val);
 }
 
@@ -295,7 +305,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
         int major = (upper-lower)/10;
         m_slider->setSteps( step, major );
         m_slider->setTickInterval(major);
-        connect(m_slider, SIGNAL(valueChanged(int)), SLOT(sliderMoved(int)));
+        connect(m_slider, SIGNAL(valueChanged(int)), m_spin, SLOT(setValue(int)));
     }
     else {
         delete m_slider;
@@ -450,12 +460,69 @@ void KIntNumInput::setLabel(QString label, int a)
 
 /**
  *
- *
- *
- *
- *
+ * This is just a small wrapper mainly to enable mouseWheel support
  *
  */
+
+class KDoubleLine : public QLineEdit
+{
+public:
+    KDoubleLine(KDoubleNumInput* parent, const char* name)
+        : QLineEdit(parent, name)
+        { };
+
+    void interpretText();
+protected:
+    virtual void wheelEvent(QWheelEvent* e);
+};
+
+void KDoubleLine::wheelEvent(QWheelEvent* e)
+{
+    KDoubleNumInput* w = static_cast<KDoubleNumInput*>(parent());
+
+    if(edited())
+        interpretText();
+
+    if(w->m_range) {
+        w->setValue(w->value() + (e->delta()/120)*w->m_step);
+        e->accept();
+    }
+    else
+        e->ignore();
+}
+
+
+void KDoubleLine::interpretText()
+{
+    KDoubleNumInput* w = static_cast<KDoubleNumInput*>(parent());
+
+    QString s = QString(text()).stripWhiteSpace();
+    if ( !w->m_prefix.isEmpty() ) {
+        QString px = QString(w->m_prefix).stripWhiteSpace();
+        int len = px.length();
+        if ( len && s.left(len) == px )
+            s.remove( 0, len );
+    }
+    if ( !w->m_suffix.isEmpty() ) {
+        QString sx = QString(w->m_suffix).stripWhiteSpace();
+        int len = sx.length();
+        if ( len && s.right(len) == sx )
+            s.truncate( s.length() - len );
+    }
+
+    s = s.stripWhiteSpace();
+
+    if(edited()) {
+        bool ok;
+        double value = s.toDouble(&ok);
+        if(ok) {
+            w->m_value = value;
+            setEdited(false);
+        }
+
+    }
+}
+
 
 // -----------------------------------------------------------------------------
 
@@ -491,10 +558,10 @@ void KDoubleNumInput::init(double value)
     m_value = value;
     m_format = qstrdup("%.2f");
 
-    edit = new QLineEdit(this, "KDoubleNumInput::QLineEdit");
+    edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
     edit->setAlignment(AlignRight);
     edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
-
+    edit->installEventFilter( this );
     //setFocusProxy(edit);
 
     m_suffix = m_prefix = "";
@@ -604,19 +671,6 @@ void KDoubleNumInput::doLayout()
     }
 
     m_colw2 = m_sizeEdit.width();
-
-#if 0
-    // label sizeHint
-    m_sizeLabel = (m_label ? m_label->sizeHint() : QSize(0,0));
-
-    if(m_label && (m_alignment & AlignVCenter))
-        m_colw1 = m_sizeLabel.width();
-    else
-        m_colw1 = 0;
-
-    // slider sizeHint
-    m_sizeSlider = (m_slider ? m_slider->sizeHint() : QSize(0, 0));
-#endif
 }
 
 
@@ -629,7 +683,10 @@ void KDoubleNumInput::setValue(double val)
     if(m_value < m_lower) m_value = m_lower;
     if(m_upper < m_value) m_value = m_upper;
 
-    if(m_slider)  m_slider->setValue(val);
+    if(m_slider) {
+        int slvalue = int(((m_value - m_lower)/(m_upper - m_lower))*m_sliderstep);
+        m_slider->setValue(slvalue);
+    }
 
     resetEditBox();
 }
@@ -654,7 +711,8 @@ void KDoubleNumInput::setRange(double lower, double upper, double step, bool sli
 
     if(slider) {
         m_sliderstep = int(floor(QMIN((m_upper - m_lower)/m_step, double(INT_MAX-5e7))));
-        m_slider = new QSlider(0, m_sliderstep, 1, floor(m_value*double(m_sliderstep)),
+        int slvalue = int(((m_value - m_lower)/(m_upper - m_lower))*m_sliderstep);
+        m_slider = new QSlider(0, m_sliderstep, 1, slvalue,
                                QSlider::Horizontal, this);
         m_slider->setTickmarks(QSlider::Below);
         m_slider->setTickInterval(m_slider->maxValue() / 10);
@@ -723,17 +781,6 @@ void KDoubleNumInput::resetEditBox()
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::focusInEvent(QFocusEvent*)
-{
-    qDebug("focusInEvent");
-
-    edit->setFocus();
-    edit->selectAll();
-}
-
-
-// -----------------------------------------------------------------------------
-
 void KDoubleNumInput::setSpecialValueText(const QString& text)
 {
     m_specialvalue = text;
@@ -753,6 +800,44 @@ void KDoubleNumInput::setLabel(QString label, int a)
         m_label->setBuddy(edit);
 
 }
+
+// -----------------------------------------------------------------------------
+
+bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
+{
+    if ( obj != edit )
+	return false;
+
+    bool revalue = false;
+    double old_value = m_value;
+
+    if (ev->type() == QEvent::FocusOut || ev->type() == QEvent::Leave) {
+        edit->interpretText();
+        revalue = false;
+    } else if ( ev->type() == QEvent::KeyPress ) {
+	QKeyEvent* k = (QKeyEvent*)ev;
+	if ( k->key() == Key_Up || k->text() == "+" ) {
+            if(m_range)
+                m_value += m_step;
+            revalue = true;
+	} else if ( k->key() == Key_Down || k->text() == "-" ) {
+            if(m_range)
+                m_value -= m_step;
+            revalue = true;
+	} else if ( k->key() == Key_Return ) {
+            edit->interpretText();
+            revalue = false;
+	}
+    }
+
+    if(m_value != old_value) {
+        setValue(m_value);
+        emit valueChanged(m_value);
+    }
+
+    return revalue;
+}
+
 
 // -----------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
  * knuminput.h
  *
  *  Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
- *  Copyright (c) 1999 Dirk A. Mueller <mueller@kde.org>
+ *  Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
  *
  *  Requires the Qt widget libraries, available at no cost at
  *  http://www.troll.no/
@@ -259,7 +259,7 @@ signals:
     void valueChanged(int);
 
 protected slots:
-    void sliderMoved(int);
+    void spinValueChanged(int);
 
 protected:
     void init(int value, int _base);
@@ -274,6 +274,8 @@ protected:
 
 
 /* ------------------------------------------------------------------------ */
+
+class KDoubleLine;
 
 /**
  * KDoubleNumInput combines a @ref QSpinBox and optionally a @ref QSlider
@@ -390,12 +392,12 @@ protected slots:
 protected:
     void init(double value);
     virtual void doLayout();
-    virtual void focusInEvent(QFocusEvent*);
+    virtual bool eventFilter(QObject*, QEvent*);
 
     void resizeEvent ( QResizeEvent * );
     void resetEditBox();
 
-    QLineEdit*   edit;
+    KDoubleLine*   edit;
 
     bool     m_range;
     double   m_value, m_lower, m_upper, m_step;
@@ -405,7 +407,7 @@ protected:
 
     QSize    m_sizeEdit;
 
-    QWidget* m_prev, *m_next;
+    friend class KDoubleLine;
 };
 
 
@@ -464,6 +466,11 @@ protected:
      *  Overloaded to make use of the base given in the constructor.
      */
     virtual int mapTextToValue(bool*);
+
+    /**
+     * reimplemented for internal reasons
+     */
+    virtual void focusInEvent(QFocusEvent*);
 
     int val_base;
 };
