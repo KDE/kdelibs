@@ -42,11 +42,11 @@
 
 
 extern "C" {
-   KDEDModule *create_kardsvc(const QCString &name) {
+   KDE_EXPORT KDEDModule *create_kardsvc(const QCString &name) {
 	   return new KardSvc(name);
    }
 
-   const bool __kde_do_unload = false;
+   KDE_EXPORT const bool __kde_do_unload = false;
 }
 
 

@@ -42,7 +42,7 @@
 
 extern "C"
 {
-	KDEDModule *create_kdeprintd(const QCString& name)
+	KDE_EXPORT KDEDModule *create_kdeprintd(const QCString& name)
 	{
 		return new KDEPrintd(name);
 	}

@@ -53,7 +53,7 @@
 #include <X11/Xlib.h>
 
 extern "C" {
-   KDEDModule *create_kwalletd(const QCString &name) {
+   KDE_EXPORT KDEDModule *create_kwalletd(const QCString &name) {
 	   return new KWalletD(name);
    }
 }

@@ -53,11 +53,11 @@
 // See design notes at end
 
 extern "C" {
-	KDEDModule *create_kssld(const QCString &name) {
+	KDE_EXPORT KDEDModule *create_kssld(const QCString &name) {
 		return new KSSLD(name);
 	}
 
-	void *__kde_do_unload;
+	KDE_EXPORT void *__kde_do_unload;
 }
 
 

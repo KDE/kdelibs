@@ -187,7 +187,7 @@ namespace KPAC
         return "DIRECT";
     }
 
-    extern "C" KDEDModule* create_proxyscout( const QCString& name )
+    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QCString& name )
     {
         return new ProxyScout( name );
     }

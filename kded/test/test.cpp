@@ -34,7 +34,7 @@ void TestModule::registerMe(const QCString &app)
 }
 
 extern "C" { 
-  KDEDModule *create_test(const QCString &obj)
+  KDE_EXPORT KDEDModule *create_test(const QCString &obj)
   {
      return new TestModule(obj);
   }

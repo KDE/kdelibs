@@ -46,7 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookieserver.h"
 
 extern "C" {
-    KDEDModule *create_kcookiejar(const QCString &name)
+    KDE_EXPORT KDEDModule *create_kcookiejar(const QCString &name)
     {
        return new KCookieServer(name);
     }

@@ -25,7 +25,7 @@ KDETrayModule::KDETrayModule( const QCString& obj )
     }
 
 extern "C" 
-KDEDModule *create_kdetrayproxy( const QCString& obj )
+KDE_EXPORT KDEDModule *create_kdetrayproxy( const QCString& obj )
     {
     return new KDETrayModule( obj );
     }

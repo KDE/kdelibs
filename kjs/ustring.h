@@ -424,7 +424,7 @@ namespace KJS {
     /**
      * Static instance of a null string.
      */
-    KJS_EXPORT static UString null;
+    static UString null;
 #ifdef KJS_DEBUG_MEM
     /**
      * Clear statically allocated resources.

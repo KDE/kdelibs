@@ -40,7 +40,7 @@ class Kded;
  *
  * \code
  *   extern "C" {
- *     KDEDModule *create_xyz(QCString *name)
+ *     KDE_EXPORT KDEDModule *create_xyz(QCString *name)
  *     {
  *       return new XYZ(name);
  *     }
