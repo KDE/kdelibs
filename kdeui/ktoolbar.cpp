@@ -92,7 +92,7 @@ public:
         m_xmlguiClient   = 0;
         m_configurePlugged = false;
 
-        oldPos = QMainWindow::DockUnmanaged;
+        oldPos = Qt::DockUnmanaged;
 
         modified = m_isHorizontal = positioned = FALSE;
     }
@@ -116,13 +116,11 @@ public:
 
     struct ToolBarInfo
     {
-        ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( QMainWindow::DockTop ) {}
-        ToolBarInfo( QMainWindow::ToolBarDock d,
-                     int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
-        }
+        ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( Qt::DockTop ) {}
+        ToolBarInfo( Qt::Dock d, int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {}
         int index, offset;
         bool newline;
-        QMainWindow::ToolBarDock dock;
+        Qt::Dock dock;
     };
 
     ToolBarInfo toolBarInfo;
@@ -758,7 +756,7 @@ void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !mainWindow() )
         return;
-    mainWindow()->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
+    mainWindow()->moveDockWindow( this, (Dock)bpos );
 }
 
 
@@ -766,12 +764,12 @@ KToolBar::BarPosition KToolBar::barPos() const
 {
     if ( !this->mainWindow() )
         return KToolBar::Top;
-    QMainWindow::ToolBarDock dock;
+    Dock dock;
     int dm1, dm2;
     bool dm3;
     this->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
-    if ( dock == QMainWindow::DockUnmanaged ) {
-        return (KToolBar::BarPosition)QMainWindow::DockTop;
+    if ( dock == DockUnmanaged ) {
+        return (KToolBar::BarPosition)DockTop;
     }
     return (BarPosition)dock;
 }
@@ -934,9 +932,9 @@ void KToolBar::setFlat (bool flag)
     if ( !mainWindow() )
         return;
     if ( flag )
-        mainWindow()->moveToolBar( this, QMainWindow::DockMinimized );
+        mainWindow()->moveDockWindow( this, DockMinimized );
     else
-        mainWindow()->moveToolBar( this, QMainWindow::DockTop );
+        mainWindow()->moveDockWindow( this, DockTop );
     // And remember to save the new look later
     if ( mainWindow()->inherits( "KMainWindow" ) )
         static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
@@ -1099,21 +1097,21 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
             case -1:
                 return; // popup cancelled
             case CONTEXT_LEFT:
-                mw->moveToolBar( this, QMainWindow::DockLeft );
+                mw->moveDockWindow( this, DockLeft );
                 break;
             case CONTEXT_RIGHT:
-                mw->moveToolBar( this, QMainWindow::DockRight );
+                mw->moveDockWindow( this, DockRight );
                 break;
             case CONTEXT_TOP:
-                mw->moveToolBar( this, QMainWindow::DockTop );
+                mw->moveDockWindow( this, DockTop );
                 break;
             case CONTEXT_BOTTOM:
-                mw->moveToolBar( this, QMainWindow::DockBottom );
+                mw->moveDockWindow( this, DockBottom );
                 break;
             case CONTEXT_FLOAT:
                 break;
             case CONTEXT_FLAT:
-                mw->moveToolBar( this, QMainWindow::DockMinimized );
+                mw->moveDockWindow( this, DockMinimized );
                 break;
             case CONTEXT_ICONS:
                 setIconText( IconOnly );
@@ -1551,19 +1549,19 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         bool newLine = config->readEntry(attrNewLine).lower() == "true"; // someone used "TRUE" we can't use readBoolEntry :(
         bool hidden = config->readBoolEntry(attrHidden, false);
 
-        BarPosition pos(Top);
+        Dock pos(DockTop);
         if ( position == "Top" )
-            pos = Top;
+            pos = DockTop;
         else if ( position == "Bottom" )
-            pos = Bottom;
+            pos = DockBottom;
         else if ( position == "Left" )
-            pos = Left;
+            pos = DockLeft;
         else if ( position == "Right" )
-            pos = Right;
+            pos = DockRight;
         else if ( position == "Floating" )
-            pos = Floating;
+            pos = DockTornOff;
         else if ( position == "Flat" )
-            pos = Flat;
+            pos = DockMinimized;
 
         //kdDebug(220) << "KToolBar::applySettings hidden=" << hidden << endl;
         if (hidden)
@@ -1576,14 +1574,14 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
             QMainWindow *mw = mainWindow();
 
             //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
-            d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, index, newLine, offset );
+            d->toolBarInfo = KToolBarPrivate::ToolBarInfo( pos, index, newLine, offset );
 
-            // moveToolBar calls QDockArea which does a reparent() on us with
+            // moveDockWindow calls QDockArea which does a reparent() on us with
             // showIt = true, so we loose our visibility status
             bool doHide = isHidden();
 
-            mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, index, offset );
-            //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
+			mw->moveDockWindow( this, pos, newLine, index, offset );
+            //kdDebug(220) << "KToolBar::applySettings " << name() << " moveDockWindow with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
             if ( doHide )
                 hide();
         }
@@ -1626,7 +1624,7 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 {
     if ( tb != this )
         return;
-    if ( d->oldPos == QMainWindow::DockMinimized )
+    if ( d->oldPos == DockMinimized )
         rebuildLayout();
     d->oldPos = (QMainWindow::ToolBarDock)barPos();
     if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
@@ -1664,24 +1662,24 @@ void KToolBar::loadState( const QDomElement &element )
             setFullSize( FALSE );
     }
 
-    QMainWindow::ToolBarDock dock = QMainWindow::DockTop;
+    Dock dock = DockTop;
     int index = -1 /*append by default*/, offset = -1;
     bool nl = FALSE;
 
     //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
     if ( !attrPosition.isEmpty() ) {
         if ( attrPosition == "top" )
-            dock = QMainWindow::DockTop;
+            dock = DockTop;
         else if ( attrPosition == "left" )
-            dock = QMainWindow::DockLeft;
+            dock = DockLeft;
         else if ( attrPosition == "right" )
-            dock = QMainWindow::DockRight;
+            dock = DockRight;
         else if ( attrPosition == "bottom" )
-            dock = QMainWindow::DockBottom;
+            dock = DockBottom;
         else if ( attrPosition == "floating" )
-            dock = QMainWindow::DockTornOff;
+            dock = DockTornOff;
         else if ( attrPosition == "flat" )
-            dock = QMainWindow::DockMinimized;
+            dock = DockMinimized;
     }
 
     if ( !attrIndex.isEmpty() )
@@ -1695,8 +1693,8 @@ void KToolBar::loadState( const QDomElement &element )
     d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, nl, offset );
     if ( mw )
     {
-       mw->moveToolBar( this, dock, nl, index, offset );
-       //kdDebug(220) << "moveToolBar in loadState for " << name() << " dock=" << dock << " nl=" << nl << " offset=" << offset << endl;
+       mw->moveDockWindow( this, dock, nl, index, offset );
+       //kdDebug(220) << "moveDockWindow in loadState for " << name() << " dock=" << dock << " nl=" << nl << " offset=" << offset << endl;
     }
 
     if ( !attrIconText.isEmpty() ) {
@@ -1811,11 +1809,11 @@ void KToolBar::positionYourself( bool force )
         //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
     }
-    // we can't test for ForceHide after moveToolBar because QDockArea
+    // we can't test for ForceHide after moveDockWindow because QDockArea
     // does a reparent() with showIt == true
     bool doHide = isHidden();
     //kdDebug(220) << "positionYourself " << name() << " dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
-    mainWindow()->moveToolBar( this, d->toolBarInfo.dock,
+    mainWindow()->moveDockWindow( this, d->toolBarInfo.dock,
                                d->toolBarInfo.newline,
                                d->toolBarInfo.index,
                                d->toolBarInfo.offset );
