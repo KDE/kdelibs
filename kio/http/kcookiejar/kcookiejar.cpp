@@ -715,13 +715,6 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 
        if (!valid)
        {
-          // Maybe the host.foo tries to set cookies for .host.foo
-          if ("."+cookiePtr->host() == cookiePtr->domain())
-             valid = true;
-       }
-
-       if (!valid)
-       {
           qWarning("WARNING: Host %s tries to set cookie for domain %s",
                     cookiePtr->host().latin1(), cookiePtr->domain().latin1());
 
@@ -736,10 +729,10 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
               cookiePtr->host().latin1(), cookiePtr->domain().latin1());
         return KCookieReject;
     }
-    // No need to test for empty since and domain
-    // and host name match since those things have
-    // already been taken care of either at the
-    // beginning of this method or in ::makeCookies...
+    // No need to test for empty domain and domain-
+    // hostname match since those things have already
+    // have been taken care of either at the beginning
+    // of this method or in ::makeCookies...(DA)
     QString domain = cookiePtr->domain();
     KHttpCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;
