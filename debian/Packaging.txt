@@ -36,17 +36,17 @@ tag of hints="KDE".
 is a bit more complex.  The tag "kderemove" needs to be used to make sure
 there is no duplication in menu entries.  "What for?" you ask...well here's
 why.  For every KDE app there is a corresponding .desktop file under the
-/usr/share/applnk directory tree.  This is either provided by the package 
+/etc/kde2/applnk directory tree.  This is either provided by the package 
 itself or created by the maintainer when one doesn't exist.  This file is used
 by the KDE menu system to list the application within the KDE menu.  This
 is how KDE handles it's menus...there must be a .desktop (or .kdelnk) file 
-under /usr/share/applnk in order for it to show up on the KDE menu.  Well
+under /etc/kde2/applnk in order for it to show up on the KDE menu.  Well
 by default this will only show KDE applications and not any of the other 
 non-KDE apps you have installed on your computer.   So we use the Debian 
 menu package to pull in all of the non-KDE applications.  The kdebase package
 provides it's own menu-method which processes each of the menu items under
 /usr/lib/menu and creates .desktop files under /var/lib/kde/menu.  There
-is a symlink under /usr/share/applnk pointing to /var/lib/kde/menu so that
+is a symlink under /etc/kde2/applnk pointing to /var/lib/kde/menu so that
 all of the .desktop files that are dynamically created by the menu program
 and placed under /var/lib/kde/menu show up under a submenu of the KDE menu.
 So now with every Debian package (including all the KDE packages) a .desktop

@@ -1,1 +1,5 @@
 /etc/kde2/system.kdeglobals /etc/kderc
+/etc/kde2/applnk /usr/share/applnk
+/etc/kde2/mimelnk /usr/share/mimelnk
+/etc/kde2/services /usr/share/services
+/etc/kde2/servicetypes /usr/share/servicetypes
