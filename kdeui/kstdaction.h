@@ -19,6 +19,7 @@
 #define KSTDACTION_H
 
 class QObject;
+class QWidget;
 class KAction;
 class KActionCollection;
 class KRecentFilesAction;
@@ -143,125 +144,393 @@ namespace KStdAction
 	};
 
 	/**
-	 * @internal
 	 * Creates an action corresponding to the
 	 * @ref KStdAction::StdAction enum.
-	 * Use KActionCollection::insert() instead.
 	 */
-	KAction* create( StdAction id, KActionCollection* parent,
+	KAction* create( StdAction id, const char *name,
 		const QObject *recvr, const char *slot,
-		const char *name = 0 );
+		KActionCollection* parent );
 
-    /**
-     * @obsolete. Creates an action corresponding to the
-     * @ref KStdAction::StdAction enum.
-     */
-    KAction *action(StdAction act_enum, const QObject *recvr = 0,
-                           const char *slot = 0, QObject *parent = 0,
-                           const char *name = 0L );
+	inline KAction* create( StdAction id,
+		const QObject *recvr, const char *slot,
+		KActionCollection* parent )
+		{ return create( id, 0, recvr, slot, parent ); }
 
-    /**
-     * This will return the internal name of a given standard action.
-     */
-    const char* stdName(StdAction act_enum);
+	/**
+	* @obsolete. Creates an action corresponding to the
+	* @ref KStdAction::StdAction enum.
+	*/
+	inline KAction *action(StdAction act_enum,
+		const QObject *recvr, const char *slot,
+		KActionCollection *parent, const char *name = 0L )
+		{ return create( act_enum, name, recvr, slot, parent ); }
 
-    /** Create a new document or window. */
-    KAction *openNew(const QObject *recvr = 0, const char *slot = 0,
-                            QObject *parent = 0, const char *name = 0L );
+	/**
+	 * This will return the internal name of a given standard action.
+	 */
+	const char* name( StdAction id );
+	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
 
-    /**
-     * Open an existing file.
-     */
-    KAction *open(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/** Create a new document or window. */
+	KAction *openNew(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Open a recently used document.
-     * @param slot The SLOT to invoke when a URL is selected.
-     * Its signature is of the form slotURLSelected( const KURL & ).
-     */
-    KRecentFilesAction *openRecent(const QObject *recvr = 0,
-                                          const char *slot = 0,
-                                          QObject *parent = 0,
-                                          const char *name = 0L );
+	/** Open an existing file. */
+	KAction *open(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Save the current document.
-     */
-    KAction *save(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	 * Open a recently used document.
+	 * @param slot The SLOT to invoke when a URL is selected.
+	 * Its signature is of the form slotURLSelected( const KURL & ).
+	 */
+	KRecentFilesAction *openRecent(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Save the current document under a different name.
-     */
-    KAction *saveAs(const QObject *recvr = 0, const char *slot = 0,
-                           QObject *parent = 0, const char *name = 0L );
+	/**
+	 * Save the current document.
+	 */
+	KAction *save(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Revert the current document to the last saved version
-     * (essentially will undo all changes).
-     */
-    KAction *revert(const QObject *recvr = 0, const char *slot = 0,
-                           QObject *parent = 0, const char *name = 0L );
+	/**
+	* Save the current document under a different name.
+	*/
+	KAction *saveAs(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Close the current document.
-     */
-    KAction *close(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0, const char *name = 0L );
+	/**
+	* Revert the current document to the last saved version
+	* (essentially will undo all changes).
+	*/
+	KAction *revert(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Print the current document.
-     */
-    KAction *print(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0, const char *name = 0L );
+	/**
+	* Close the current document.
+	*/
+	KAction *close(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Show a print preview of the current document.
-     */
-    KAction *printPreview(const QObject *recvr = 0, const char *slot = 0,
-                                 QObject *parent = 0, const char *name = 0L );
+	/**
+	* Print the current document.
+	*/
+	KAction *print(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Mail this document.
-     */
-    KAction *mail(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	* Show a print preview of the current document.
+	*/
+	KAction *printPreview(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Quit the program.
-     */
-    KAction *quit(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	* Mail this document.
+	*/
+	KAction *mail(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Undo the last operation.
-     */
-    KAction *undo(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	* Quit the program.
+	*/
+	KAction *quit(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Redo the last operation.
-     */
-    KAction *redo(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	* Undo the last operation.
+	*/
+	KAction *undo(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Cut selected area and store it in the clipboard.
-     */
-    KAction *cut(const QObject *recvr = 0, const char *slot = 0,
-                        QObject *parent = 0, const char *name = 0L );
+	/**
+	* Redo the last operation.
+	*/
+	KAction *redo(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Copy the selected area into the clipboard.
-     */
-    KAction *copy(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+	/**
+	* Cut selected area and store it in the clipboard.
+	*/
+	KAction *cut(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
 
-    /**
-     * Paste the contents of clipboard at the current mouse or cursor
-     * position.
-     */
+	/**
+	* Copy the selected area into the clipboard.
+	*/
+	KAction *copy(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Paste the contents of clipboard at the current mouse or cursor
+	* position.
+	*/
+	KAction *paste(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Select all elements in the current document.
+	*/
+	KAction *selectAll(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Deselect any selected elements in the current document.
+	*/
+	KAction *deselect(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Initiate a 'find' request in the current document.
+	*/
+	KAction *find(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Find the next instance of a stored 'find'.
+	*/
+	KAction *findNext(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Find a previous instance of a stored 'find'.
+	*/
+	KAction *findPrev(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Find and replace matches.
+	*/
+	KAction *replace(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* View the document at its actual size.
+	*/
+	KAction *actualSize(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Fit the document view to the size of the current window.
+	*/
+	KAction *fitToPage(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Fit the document view to the width of the current window.
+	*/
+	KAction *fitToWidth(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Fit the document view to the height of the current window.
+	*/
+	KAction *fitToHeight(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Zoom in.
+	*/
+	KAction *zoomIn(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Zoom out.
+	*/
+	KAction *zoomOut(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Popup a zoom dialog.
+	*/
+	KAction *zoom(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Redisplay or redraw the document.
+	*/
+	KAction *redisplay(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Move up (web style menu).
+	*/
+	KAction *up(const QObject *recvr, const char *slot,
+			KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Move back (web style menu).
+	*/
+	KAction *back(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Move forward (web style menu).
+	*/
+	KAction *forward(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Go to the "Home" position or document.
+	*/
+	KAction *home(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Scroll up one page.
+	*/
+	KAction *prior(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Scroll down one page.
+	*/
+	KAction *next(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Go to somewhere in general.
+	*/
+	KAction *goTo(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+
+	/**
+	* Go to a specific page (dialog).
+	*/
+	KAction *gotoPage(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Go to a specific line (dialog).
+	*/
+	KAction *gotoLine(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Jump to the first page.
+	*/
+	KAction *firstPage(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Jump to the last page.
+	*/
+	KAction *lastPage(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Add the current page to the bookmarks tree.
+	*/
+	KAction *addBookmark(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Edit the application bookmarks.
+	*/
+	KAction *editBookmarks(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Pop up the spell checker.
+	*/
+	KAction *spelling(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+
+	/**
+	* Show/Hide the menubar.
+	*/
+	KToggleAction *showMenubar(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Show/Hide the primary toolbar.
+	*/
+	KToggleAction *showToolbar(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Show/Hide the statusbar.
+	*/
+	KToggleAction *showStatusbar(const QObject *recvr, const char *slot,
+						KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the save options dialog.
+	*/
+	KAction *saveOptions(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the configure key bindings dialog.
+	*/
+	KAction *keyBindings(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the preferences/options dialog.
+	*/
+	KAction *preferences(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* The Customize Toolbar dialog.
+	*/
+	KAction *configureToolbars(const QObject *recvr,
+					const char *slot,
+					KActionCollection* parent,
+					const char *name = 0 );
+
+	/**
+	* Display the help.
+	*/
+	KAction *help(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the help contents.
+	*/
+	KAction *helpContents(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Trigger the What's This cursor.
+	*/
+	KAction *whatsThis(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Open up the Report Bug dialog.
+	*/
+	KAction *reportBug(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the application's About box.
+	*/
+	KAction *aboutApp(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display the About KDE dialog.
+	*/
+	KAction *aboutKDE(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+//#ifndef KDE_NO_COMPAT
+#if 0
+    KAction *openNew(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *open(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KRecentFilesAction *openRecent(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *save(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *saveAs(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *revert(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *close(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *print(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *printPreview(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *mail(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *quit(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *undo(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *redo(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *cut(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+    KAction *copy(const QObject *recvr = 0, const char *slot = 0, QObject *parent = 0, const char *name = 0L );
     KAction *paste(const QObject *recvr = 0, const char *slot = 0,
                           QObject *parent = 0, const char *name = 0L );
 
@@ -514,6 +783,7 @@ namespace KStdAction
      */
     KAction *aboutKDE(const QObject *recvr = 0, const char *slot = 0,
                              QObject *parent = 0, const char *name = 0L );
+#endif // !KDE_NO_COMPAT
 };
 
 #endif // KSTDACTION_H
