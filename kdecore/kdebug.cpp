@@ -98,11 +98,14 @@ static QString getDescrFromNum(unsigned int _num)
     return QString::null;
 
   QString filename(locate("config","kdebug.areas"));
+  if (filename.isEmpty())
+      return QString::null;
+
   QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
     qWarning("Couldn't open %s", filename.local8Bit().data());
     file.close();
-    return "";
+    return QString::null;
   }
 
   unsigned long number = 0;
