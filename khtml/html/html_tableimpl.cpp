@@ -481,13 +481,13 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
+            addCSSProperty(CSS_PROP_FLOAT, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_FLOAT);
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -565,7 +565,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_VALIGN:
     {
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -780,7 +780,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
                 strcasecmp(attr->value(), "center" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER );
             else
-                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value().lower());
         }
         else
             removeCSSProperty(CSS_PROP_TEXT_ALIGN);
@@ -877,7 +877,7 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
@@ -901,7 +901,7 @@ void HTMLTableCaptionElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value());
+            addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value().lower());
         else
             removeCSSProperty(CSS_PROP_CAPTION_SIDE);
         break;

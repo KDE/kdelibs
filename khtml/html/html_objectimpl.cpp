@@ -272,7 +272,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 	addHTMLAlignment( attr->value() );
 	break;
      case ATTR_VALIGN:
-        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
         break;
      case ATTR_PLUGINPAGE:
      case ATTR_PLUGINSPAGE: {
@@ -280,7 +280,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
         break;
       }
      case ATTR_HIDDEN:
-        if (attr->value().lower()=="yes" || attr->value().lower()=="true")
+        if (strcasecmp( attr->value(), "yes" ) == 0 || strcasecmp( attr->value() , "true") == 0 )
            hidden = true;
         else
            hidden = false;

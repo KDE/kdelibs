@@ -1,3 +1,8 @@
+2004-10-26  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_elementimpl.cpp (addCSSProperty): don't add all css properties in 
+        lower case but select those those where it matters
+
 2004-10-26  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/bidi.{h,cpp}: Merge bidi-changes from WebCore

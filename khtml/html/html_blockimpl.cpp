@@ -44,12 +44,12 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALIGN:
     {
-        DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "middle" ) == 0 || strcasecmp( attr->value(), "center" ) == 0 )
+        DOMString v = attr->value().lower();
+        if ( strcmp( v, "middle" ) == 0 || strcmp( v, "center" ) == 0 )
             addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER);
-        else if (strcasecmp(attr->value(), "left") == 0)
+        else if (strcmp(v, "left") == 0)
             addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_LEFT);
-        else if (strcasecmp(attr->value(), "right") == 0)
+        else if (strcmp(v, "right") == 0)
             addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_RIGHT);
         else
             addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
@@ -230,20 +230,20 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
                 if (attr->value() == "-1" || strcasecmp(attr->value(), "infinite") == 0)
                     addCSSProperty(CSS_PROP__KHTML_MARQUEE_REPETITION, CSS_VAL_INFINITE);
                 else
-                    addCSSLength(CSS_PROP__KHTML_MARQUEE_REPETITION, attr->value(), true);
+                    addCSSLength(CSS_PROP__KHTML_MARQUEE_REPETITION, attr->value().lower(), true);
             }
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_REPETITION);
             break;
         case ATTR_BEHAVIOR:
             if (!attr->value().isEmpty())
-                addCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE, attr->value());
+                addCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE, attr->value().lower());
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE);
             break;
         case ATTR_DIRECTION:
             if (!attr->value().isEmpty())
-                addCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION, attr->value());
+                addCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION, attr->value().lower());
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION);
             break;
