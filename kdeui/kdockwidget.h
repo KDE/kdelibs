@@ -43,9 +43,13 @@
 #include <qframe.h>
 
 #ifndef NO_KDE2
- #include <kmainwindow.h>
+#include <kmainwindow.h>
+#undef  EXPORT_DOCKCLASS
+#define EXPORT_DOCKCLASS
 #else
- #include <qmainwindow.h>
+#include <qmainwindow.h>
+#include "exportdockclass.h"
+#include "dummykmainwindow.h"
 #endif
 
 #include "kdocktabctl.h"
@@ -280,7 +284,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockTabGroup : public KDockTabCtl
+class EXPORT_DOCKCLASS KDockTabGroup : public KDockTabCtl
 {
   Q_OBJECT
 public:
@@ -336,7 +340,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockWidget: public QWidget
+class EXPORT_DOCKCLASS KDockWidget: public QWidget
 {
   Q_OBJECT
 friend class KDockManager;
@@ -510,7 +514,7 @@ public:
    */
   bool isDockBackPossible();
 
-  /** Set a string that is used for the label of the tab page when in tab page mode 
+  /** Set a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
   void setTabPageLabel( const QString& label) { tabPageTitle = label; }; 
@@ -553,7 +557,7 @@ protected:
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
   KDockTabGroup* parentTabGroup();
-  
+
   /**
    * Check some conditions and show or hide the dockwidget header (drag panel).
    * The header is hidden if:
@@ -684,7 +688,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockManager: public QObject
+class EXPORT_DOCKCLASS KDockManager: public QObject
 {
   Q_OBJECT
 friend class KDockWidget;
@@ -999,7 +1003,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockMainWindow : public KMainWindow
+class EXPORT_DOCKCLASS KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
 
@@ -1115,7 +1119,7 @@ public:
   /**
    * This method calls the base class method. 
    * If the given widget inherits KDockWidget, applyToWidget(this) is called.
-   * 
+   *
    * @param _ any widget that should become the main view
    */
   void setView( QWidget* );

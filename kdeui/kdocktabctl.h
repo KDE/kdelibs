@@ -39,6 +39,13 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
+#ifndef NO_KDE2
+#undef  EXPORT_DOCKCLASS
+#define EXPORT_DOCKCLASS
+#else
+#include "exportdockclass.h"
+#endif
+
 class QWidgetStack;
 class QBoxLayout;
 class QPushButton;
@@ -58,7 +65,7 @@ class KDockDynTabBarToolTip;
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockTabBar : public QWidget
+class EXPORT_DOCKCLASS KDockTabBar : public QWidget
 {
   Q_OBJECT
   
@@ -297,7 +304,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockTabBarPainter : public QWidget
+class EXPORT_DOCKCLASS KDockTabBarPainter : public QWidget
 {
   Q_OBJECT
   friend class KDockTabBar;
@@ -361,7 +368,7 @@ protected:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockTabCtl : public QWidget
+class EXPORT_DOCKCLASS KDockTabCtl : public QWidget
 {
   Q_OBJECT
 
