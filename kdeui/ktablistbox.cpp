@@ -363,10 +363,10 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   f = locate("data", "khtml/pics/khtml_dnd.xpm");
   dndDefaultPixmap.load(f);
 
-  f = locate("toolbar", "up.xpm");
+  f = locate("toolbar", "up.png");
   upPix.load(f);
 
-  f = locate("toolbar", "down.xpm");
+  f = locate("toolbar", "down.png");
   downPix.load(f);
 
   QPalette pal = palette();
