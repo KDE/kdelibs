@@ -25,7 +25,7 @@
 #include <kuserprofile.h>
 #include <ktempfile.h>
 #include <kdebug.h>
-
+#include <kstandarddirs.h>
 #include <assert.h>
 
 using namespace KParts;
@@ -229,11 +229,39 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
-
 // Default implementation, overriden in KHTMLRun
 void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
 {
-    simpleSave( url, suggestedFilename );
+
+    // DownloadManager <-> konqueror integration
+    // find if the integration is enabled
+    // the empty key  means no integration
+    KConfig *cfg = new KConfig("konquerorrc", false, false);
+    cfg->setGroup("HTML Settings");
+    QString downloadManger=cfg->readEntry("DownloadManager");
+    if (!downloadManger.isEmpty())
+    {
+        // then find the download manager location 
+        kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
+        QString cmd=KStandardDirs::findExe(downloadManger);
+        if (cmd.isEmpty())
+        {
+            QString errMsg=i18n("Sorry, I can't find  the Download Manager (%1) in your $PATH ").arg(downloadManger);
+            QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with konqueror will be disabled!");
+            KMessageBox::detailedSorry(0,errMsg,errMsgEx);
+            cfg->writeEntry("DownloadManager",QString::null);
+            cfg->sync ();
+        }
+        else
+        {
+	     cmd+=" " + url.url(); 
+            kdDebug(1000) << "Calling command  "<<cmd<<endl;
+            KRun::runCommand(cmd);
+        }
+    }
+    else
+        simpleSave( url, suggestedFilename );
+    delete cfg;
 }
 
 // static
