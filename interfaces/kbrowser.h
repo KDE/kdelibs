@@ -33,6 +33,8 @@ typedef QList<KFileItem> KFileItemList;
 
 class QString;
 
+namespace KParts {
+
  /**
   * The following standard actions are defined by the host of the view :
   * 
@@ -71,14 +73,39 @@ public:
 
   virtual ~BrowserExtension() { }
 
-  // Simon: some comments here please :)
+  /**
+   * Move the view to the position (x,y)
+   * (This allows the browser to restore a view at the exact
+   *  position it was when we left it, during navigation)
+   * For a scrollview, implement this using setContentsPos()
+   */
   virtual void setXYOffset( int /* x */, int /* y */ ) {};
+  /**
+   * @return the current x offset
+   * For a scrollview, implement this using contentsX()
+   */
   virtual int xOffset() { return 0; }
+  /**
+   * @return the current y offset
+   * For a scrollview, implement this using contentsY()
+   */
   virtual int yOffset() { return 0; }
 
+  /**
+   * Used by the browser to save the current state of the view
+   * (in order to restore it if going back in navigation)
+   * If you want to save additionnal properties, reimplement it
+   * but don't forget to call the parent method (probably first).
+   */
   virtual void saveState( QDataStream &stream )
   { stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
 
+  /**
+   * Used by the browser to restore the view in the state
+   * it was when we left it.
+   * If you saved additionnal properties, reimplement it
+   * but don't forget to call the parent method (probably first).
+   */
   virtual void restoreState( QDataStream &stream )
   { KURL u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
     m_part->openURL( u ); setXYOffset( xOfs, yOfs ); }
@@ -90,8 +117,18 @@ signals:
    */
   void enableAction( const char * name, bool enabled );
 
+  /**
+   * Open @p url in the browser, optionnally forcing @p reload, and 
+   * optionnally setting the x and y offsets.
+   * The @serviceType allows to ...
+   */
   void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
+
   void setStatusBarText( const QString &text );
+
+  /**
+   * Update the URL shown in the browser's location bar to @p url
+   */
   void setLocationBarURL( const QString &url );
   void createNewWindow( const QString &url );
   void loadingProgress( int percent );
@@ -100,6 +137,8 @@ signals:
 
 private:
   KParts::ReadOnlyPart *m_part;
+};
+
 };
 
 #endif
