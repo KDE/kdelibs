@@ -17,7 +17,6 @@
 */
 #include "kdockwidget.h"
 #include "kdockwidget_private.h"
-#include <kdocktabctl.h>
 
 #include <qlayout.h>
 #include <qpainter.h>
@@ -25,6 +24,7 @@
 #include <qstrlist.h>
 #include <qcursor.h>
 #include <qwidgetlist.h>
+#include <qtabwidget.h>
 
 #ifndef NO_KDE2
 #ifdef Q_WS_X11
@@ -511,7 +511,7 @@ bool KDockWidget::event( QEvent *event )
         }
         if ( parentTabGroup() ){
           setDockTabName( parentTabGroup() );
-          parentTabGroup()->setPageCaption( this, tabPageLabel() );
+          parentTabGroup()->setTabLabel( this, tabPageLabel() );
         }
       }
       break;
@@ -578,11 +578,11 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if ( parentTab ){
     // add to existing TabGroup
     applyToWidget( parentTab );
-    parentTab->insertPage( this, tabPageLabel(), -1, tabIndex );
-    parentTab->setPixmap( this, icon() ? *icon() : QPixmap());
+    parentTab->insertTab( this, icon() ? *icon() : QPixmap(),
+                          tabPageLabel(), tabIndex );
     setDockTabName( parentTab );
     if( !toolTipStr.isEmpty())
-      parentTab->setToolTip( this, toolTipStr);
+      parentTab->setTabToolTip( this, toolTipStr);
 
     currentDockPos = KDockWidget::DockCenter;
     emit manager->change();
@@ -629,15 +629,15 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     applyToWidget( tab );
 
 
-    tab->insertPage( target, target->tabPageLabel() );
-    tab->setPixmap( target, target->icon() ? *(target->icon()) : QPixmap());
+    tab->insertTab( target, target->icon() ? *(target->icon()) : QPixmap(),
+                    target->tabPageLabel() );
     if( !target->toolTipString().isEmpty())
-      tab->setToolTip( target, target->toolTipString());
+      tab->setTabToolTip( target, target->toolTipString());
 
-    tab->insertPage( this, tabPageLabel(), -1, tabIndex );
-    tab->setPixmap( this, icon() ? *icon() : QPixmap());
+    tab->insertTab( this, icon() ? *icon() : QPixmap(),
+                    tabPageLabel(), tabIndex );
     if( !toolTipString().isEmpty())
-      tab->setToolTip( this, toolTipString());
+      tab->setTabToolTip( this, toolTipString());
 
     setDockTabName( tab );
     tab->show();
@@ -732,16 +732,16 @@ void KDockWidget::undock()
 
   KDockTabGroup* parentTab = parentTabGroup();
   if ( parentTab ){
-    d->index = parentTab->index( this); // memorize the page position in the tab widget
+    d->index = parentTab->indexOf( this); // memorize the page position in the tab widget
     parentTab->removePage( this );
-    formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
+    formerBrotherDockWidget = (KDockWidget*)parentTab->page(0);
     QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
                       this, SLOT(loseFormerBrotherDockWidget()) );
     applyToWidget( 0L );
-    if ( parentTab->pageCount() == 1 ){
+    if ( parentTab->count() == 1 ){
 
       // last subdock widget in the tab control
-      KDockWidget* lastTab = (KDockWidget*)parentTab->getFirstPage();
+      KDockWidget* lastTab = (KDockWidget*)parentTab->page(0);
       parentTab->removePage( lastTab );
       lastTab->applyToWidget( 0L );
       lastTab->move( parentTab->mapToGlobal(parentTab->frameGeometry().topLeft()) );
@@ -864,7 +864,8 @@ void KDockWidget::setDockTabName( KDockTabGroup* tab )
 {
   QString listOfName;
   QString listOfCaption;
-  for ( QWidget* w = tab->getFirstPage(); w; w = tab->getNextPage( w ) ){
+  for ( int i = 0; i < tab->count(); ++i ) {
+    QWidget *w = tab->page( i );
     listOfCaption.append( w->caption() ).append(",");
     listOfName.append( w->name() ).append(",");
   }
@@ -911,7 +912,7 @@ void KDockWidget::changeHideShowState()
 void KDockWidget::makeDockVisible()
 {
   if ( parentTabGroup() ){
-    parentTabGroup()->setVisiblePage( this );
+    parentTabGroup()->showPage( this );
   }
   if ( isVisible() ) return;
 
@@ -1560,13 +1561,10 @@ void KDockManager::writeConfig(QDomElement &base)
             groupEl = doc.createElement("tabGroup");
 
             QStrList list;
-            for ( QWidget *w = ((KDockTabGroup*)obj->widget)->getFirstPage();
-                  w;
-                  w = ((KDockTabGroup*)obj->widget)->getNextPage(w) ) {
-                list.append( w->name() );
-            }
+            for ( int i = 0; i < ((KDockTabGroup*)obj->widget)->count(); ++i )
+                list.append( ((KDockTabGroup*)obj->widget)->page( i )->name() );
             groupEl.appendChild(createListEntry(doc, "tabs", "tab", list));
-            groupEl.appendChild(createNumberEntry(doc, "currentTab", ((KDockTabGroup*)obj->widget)->visiblePageId()));
+            groupEl.appendChild(createNumberEntry(doc, "currentTab", ((KDockTabGroup*)obj->widget)->currentPageIndex()));
         } else {
             //// Save an ordinary dock widget
             groupEl = doc.createElement("dock");
@@ -1671,7 +1669,7 @@ void KDockManager::readConfig(QDomElement &base)
                 }
                 if (obj) {
                     obj->setName(name.latin1());
-                    tab->setVisiblePage(numberEntry(childEl, "currentTab"));
+                    tab->showPage(tab->page(numberEntry(childEl, "currentTab")));
                 }
             }
         } else if (childEl.tagName() == "dock") {
@@ -1807,11 +1805,10 @@ void KDockManager::writeConfig( KConfig* c, QString group )
           c->writeEntry( cname+":parent", "yes");
         }
         QStrList list;
-        for ( QWidget* w = ((KDockTabGroup*)obj->widget)->getFirstPage(); w; w = ((KDockTabGroup*)obj->widget)->getNextPage( w ) ){
-          list.append( w->name() );
-        }
+        for ( int i = 0; i < ((KDockTabGroup*)obj->widget)->count(); ++i )
+          list.append( ((KDockTabGroup*)obj->widget)->page( i )->name() );
         c->writeEntry( cname+":tabNames", list );
-        c->writeEntry( cname+":curTab", ((KDockTabGroup*)obj->widget)->visiblePageId() );
+        c->writeEntry( cname+":curTab", ((KDockTabGroup*)obj->widget)->currentPageIndex() );
 
         nameList.append( obj->name() );
         findList.append( obj->name() ); // not realy need !!!
@@ -1925,7 +1922,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
           c->setGroup( group );
-          tab->setVisiblePage( c->readNumEntry( oname+":curTab" ) );
+          tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
         }
       }
       obj = tabDockGroup;

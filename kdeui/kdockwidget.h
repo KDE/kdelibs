@@ -53,6 +53,7 @@
 #include <qlist.h>
 #include <qframe.h>
 #include <qdom.h>
+#include <qtabwidget.h>
 
 #ifndef NO_KDE2
 #include <kmainwindow.h>
@@ -64,8 +65,6 @@
 #include "exportdockclass.h"
 #include "dummykmainwindow.h"
 #endif
-
-#include "kdocktabctl.h"
 
 class KDockSplitter;
 class KDockManager;
@@ -302,7 +301,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class EXPORT_DOCKCLASS KDockTabGroup : public KDockTabCtl
+class EXPORT_DOCKCLASS KDockTabGroup : public QTabWidget
 {
   Q_OBJECT
 public:
@@ -310,7 +309,7 @@ public:
    * Constructs this. It just calls the method of the base class.
    */
   KDockTabGroup( QWidget *parent = 0, const char *name = 0 )
-  :KDockTabCtl( parent, name ){};
+  :QTabWidget( parent, name ){};
 
   /**
    * Destructs a KDockTabGroup.
