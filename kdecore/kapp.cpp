@@ -1282,7 +1282,9 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
 {
    KConfig config("emaildefaults");
    config.setGroup("ClientInfo");
-   QString command = config.readEntry("EmailClient", "kmail --composer -s %s -c %c -b %b %t");
+   QString command = config.readEntry("EmailClient");
+   if (command.isEmpty() || command == QString::fromLatin1("kmail"))
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
