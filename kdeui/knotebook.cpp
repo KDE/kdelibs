@@ -425,7 +425,7 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       }
       else
         button->setText("<< " + i18n("&Previous"));
-      //debug("Setting previous to: %s", str.data());
+      //debug("Setting previous to: %s", str.ascii());
       button->show();
       if(pnote->enablearrowbuttons)
         arrow->show();
@@ -445,7 +445,7 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       }
       else
         button->setText(i18n("&Next") + " >>");
-      //debug("Setting next to: %s", str.data());
+      //debug("Setting next to: %s", str.ascii());
       button->show();
       if(pnote->enablearrowbuttons)
         arrow->show();
@@ -468,7 +468,7 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       {
         str = sections->at(pnote->current+1)->getTitle(0);
         str += " >>";
-        //debug("Setting next to: %s", str.data());
+        //debug("Setting next to: %s", str.ascii());
         button->setText(str);
         button->show();
         if(pnote->enablearrowbuttons)
@@ -489,7 +489,7 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       {
         str = "<< ";
         str += sections->at(pnote->current-1)->getTitle(sections->at(pnote->current-1)->numPages()-1);
-        //debug("Setting previous to: %s", str.data());
+        //debug("Setting previous to: %s", str.ascii());
         button->setText(str);
         button->show();
         if(pnote->enablearrowbuttons)
