@@ -188,7 +188,11 @@ bool KSycoca::checkVersion(bool abortOnError)
 
 QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 {
-   checkVersion();
+   if (!checkVersion(false))
+   {
+      system("kdeinit");
+      checkVersion();
+   }
    Q_INT32 aId;
    Q_INT32 aOffset;
    while(true)
