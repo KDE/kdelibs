@@ -294,7 +294,7 @@ protected:
       * gets the entry at index and calls the other select function
       * with it
       **/
-    void select( int index );
+    void select( uint index );
 
     void highlight( int index );
     void highlight( KFileInfo *);
