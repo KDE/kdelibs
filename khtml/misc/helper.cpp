@@ -278,7 +278,7 @@ QRgb khtml::parseColor(QString name, bool strictParsing)
     return invalidColor;
 }
 
-QPainter *khtml::printpainter = 0;
+QPainter *printpainter = 0;
 
 void khtml::setPrintPainter( QPainter *printer )
 {
