@@ -864,7 +864,9 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     //kdDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
 
-    if ( (_mouse->button() == MidButton) && !m_part->d->m_bOpenMiddleClick && !d->m_mouseScrollTimer && mev.url.isNull()) {
+    if ( (_mouse->button() == MidButton) &&
+          !m_part->d->m_bOpenMiddleClick && !d->m_mouseScrollTimer &&
+          mev.url.isNull() && (mev.innerNode.elementId() != ID_INPUT) ) {
         QPoint point = mapFromGlobal( _mouse->globalPos() );
 
         d->m_mouseScroll_byX = 0;
@@ -923,14 +925,14 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
             d->m_mouseScrollIndicator->setMask( mask );
         }
-	else {
-	    if ( hasHorBar && !hasVerBar )
-	        viewport()->setCursor( KCursor::SizeHorCursor );
-	    else if ( !hasHorBar && hasVerBar )
-	        viewport()->setCursor( KCursor::SizeVerCursor );
-	    else
-	        viewport()->setCursor( KCursor::SizeAllCursor );
-	}	
+        else {
+            if ( hasHorBar && !hasVerBar )
+                viewport()->setCursor( KCursor::SizeHorCursor );
+            else if ( !hasHorBar && hasVerBar )
+                viewport()->setCursor( KCursor::SizeVerCursor );
+            else
+                viewport()->setCursor( KCursor::SizeAllCursor );
+        }
 
         return;
     }
