@@ -2901,15 +2901,19 @@ bool HTTPProtocol::readHeader()
 
       // If we still have text, then it means we have a mime-type with a
       // parameter (eg: charset=iso-8851) ; so let's get that...
-      if (*pos)
+      while (*pos)
       {
         start = ++pos;
         while ( *pos && *pos != '=' )  pos++;
 
+	char *end = pos;
+	while ( *end && *end != ';' )  end++;
+
         if (*pos)
         {
           mediaAttribute = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
-          mediaValue = QString::fromLatin1(++pos).stripWhiteSpace();
+          mediaValue = QString::fromLatin1(++pos, end-pos).stripWhiteSpace();
+	  pos = end;
           if (mediaValue.length() &&
               (mediaValue[0] == '"') &&
               (mediaValue[mediaValue.length()-1] == '"'))
@@ -2920,14 +2924,14 @@ bool HTTPProtocol::readHeader()
           kdDebug (7113) << "(" << m_pid << ") Media-Parameter Value: "
                          << mediaValue << endl;
 
-          if ( mediaAttribute.lower() == "charset")
+          if ( mediaAttribute == "charset")
           {
             mediaValue = mediaValue.lower();
             m_request.strCharset = mediaValue;
           }
           else
           {
-            setMetaData("media-"+mediaAttribute.lower(), mediaValue);
+            setMetaData("media-"+mediaAttribute, mediaValue);
           }
         }
       }
