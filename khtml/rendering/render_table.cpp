@@ -979,13 +979,17 @@ int RenderTableSection::layoutRows( int toAdd )
 	    int add = 0;
 	    if ( totalPercent > 100 )
 		totalPercent = 100;
+	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
 		if ( totalPercent > 0 && grid[r].height.type == Percent ) {
-		    int toAdd = QMIN( dh, totalHeight * grid[r].height.value / 100 );
+		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value / 100)-rh );
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value;
+// 		    qDebug( "adding %d to row %d", toAdd, r );
 		}
+		if ( r < totalRows-1 )
+		    rh = rowPos[r+2] - rowPos[r+1];
                 rowPos[r+1] += add;
 	    }
 	}
