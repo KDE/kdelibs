@@ -389,6 +389,7 @@ QString getX11EventName( XEvent* e )
 KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
   : QWidget( parent, name, f )
 {
+    kdDebug(6100) << "new KJavaEmbed " << name << "WFlags=" << QString("%1").arg(f,0,16) << endl;
     d = new KJavaEmbedPrivate;
 
     setFocusPolicy( StrongFocus );
@@ -403,6 +404,7 @@ KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
  */
 KJavaEmbed::~KJavaEmbed()
 {
+    kdDebug(6100) << "~KJavaEmbed() window=" << window << endl;
     if ( window != 0 )
     {
         XUnmapWindow( qt_xdisplay(), window );
@@ -416,7 +418,7 @@ KJavaEmbed::~KJavaEmbed()
  */
 void KJavaEmbed::resizeEvent( QResizeEvent* e )
 {
-//    kdDebug(6100) << "KJavaEmbed::resizeEvent" << endl;
+    kdDebug(6100) << "KJavaEmbed::resizeEvent width=" << e->size().width() << " height=" << e->size().height() <<endl;
     QWidget::resizeEvent( e );
 
     if ( window != 0 )
@@ -425,11 +427,14 @@ void KJavaEmbed::resizeEvent( QResizeEvent* e )
 
 bool  KJavaEmbed::event( QEvent* e)
 {
-//    kdDebug(6100) << "KJavaEmbed::event, event type = " << getQtEventName( e ) << endl;
+    kdDebug(6100) << "KJavaEmbed::event, event type = " << getQtEventName( e ) << " window=" << window << endl;
     switch( e->type() )
     {
         case QEvent::ShowWindowRequest:
-            XMapRaised( qt_xdisplay(), window );
+            kdDebug(6100) << "XMapRaised window=" << window << endl;
+            if (window != 0) {
+                XMapRaised( qt_xdisplay(), window );
+            }
             break;
 
         default:
@@ -443,7 +448,7 @@ bool  KJavaEmbed::event( QEvent* e)
  */
 void KJavaEmbed::focusInEvent( QFocusEvent* )
 {
-//    kdDebug(6100) << "KJavaEmbed::focusInEvent" << endl;
+    kdDebug(6100) << "KJavaEmbed::focusInEvent" << endl;
 
     if ( !window )
         return;
@@ -460,7 +465,7 @@ void KJavaEmbed::focusInEvent( QFocusEvent* )
  */
 void KJavaEmbed::focusOutEvent( QFocusEvent* )
 {
-//    kdDebug(6100) << "KJavaEmbed::focusOutEvent" << endl;
+    kdDebug(6100) << "KJavaEmbed::focusOutEvent" << endl;
 
     if ( !window )
         return;
@@ -505,7 +510,7 @@ static bool wstate_withdrawn( WId winid )
  */
 void KJavaEmbed::embed( WId w )
 {
-    // kdDebug(6100) << "KJavaEmbed::embed " << w << endl;
+    kdDebug(6100) << "KJavaEmbed::embed " << w << endl;
 
     if ( w == 0 )
         return;
@@ -541,11 +546,11 @@ void KJavaEmbed::embed( WId w )
     //now reparent the window to be swallowed by the KJavaEmbed widget
     XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
     QApplication::syncX();
-
+    
     //now resize it
     XResizeWindow( qt_xdisplay(), window, width(), height() );
     XMapRaised( qt_xdisplay(), window );
-
+    
     setFocus();
 }
 
@@ -563,8 +568,8 @@ bool KJavaEmbed::focusNextPrevChild( bool next )
  */
 bool KJavaEmbed::x11Event( XEvent* e)
 {
-//    kdDebug(6100) << "KJavaEmbed::x11Event, event = " << getX11EventName( e )
-//        << ", window = " << e->xany.window << endl;
+    kdDebug(6100) << "KJavaEmbed::x11Event, event = " << getX11EventName( e )
+        << ", window = " << e->xany.window << endl;
 
     switch ( e->type )
     {
@@ -574,7 +579,16 @@ bool KJavaEmbed::x11Event( XEvent* e)
                 window = 0;
             }
             break;
-
+        case ConfigureRequest:
+            kdDebug(6100) 
+                << " send_event=" << e->xconfigurerequest.send_event 
+                << " x=" << e->xconfigurerequest.x 
+                << " y=" << e->xconfigurerequest.y 
+                << " w=" << e->xconfigurerequest.width
+                << " h=" << e->xconfigurerequest.height 
+                << " parent=" << e->xconfigurerequest.parent
+                << " above=" << e->xconfigurerequest.above
+                << endl;
         default:
 	        break;
     }

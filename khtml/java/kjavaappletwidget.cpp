@@ -19,7 +19,7 @@ int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
-   : KJavaEmbed( parent, name )
+   : EMBEDCLASS ( parent, name )
 {
     m_applet = new KJavaApplet( this, context );
     d        = new KJavaAppletWidgetPrivate;
@@ -43,8 +43,11 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::showApplet()
 {
+    kdDebug(6100) << "showApplet() " << m_swallowTitle << endl;
     connect( m_kwm, SIGNAL( windowAdded( WId ) ),
 	         this,  SLOT( setWindow( WId ) ) );
+    // if the following line is commented out, applets show up earlier
+    // but are first displayed in a separate window.
     m_kwm->doNotManage( m_swallowTitle );
 
     //Now we send applet info to the applet server
@@ -65,11 +68,12 @@ void KJavaAppletWidget::setWindow( WId w )
 
         delete d->tmplabel;
         d->tmplabel = 0;
-
+        
         // disconnect from KWM events
         disconnect( m_kwm, SIGNAL( windowAdded( WId ) ),
                     this,  SLOT( setWindow( WId ) ) );
 
+        
         embed( w );
         setFocus();
     }
@@ -78,7 +82,7 @@ void KJavaAppletWidget::setWindow( WId w )
 QSize KJavaAppletWidget::sizeHint()
 {
     kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
-    QSize rval = KJavaEmbed::sizeHint();
+    QSize rval = EMBEDCLASS::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
     {
@@ -103,7 +107,7 @@ void KJavaAppletWidget::resize( int w, int h )
         m_applet->setSize( QSize( w, h ) );
     }
 
-    KJavaEmbed::resize( w, h );
+    EMBEDCLASS::resize( w, h );
 }
 
 #include "kjavaappletwidget.moc"
