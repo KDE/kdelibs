@@ -365,13 +365,20 @@ KHTMLPart::~KHTMLPart()
     d->m_manager->setActivePart( 0 );
     // Shouldn't we delete d->m_manager here ? (David)
   }
+  
+  stopAutoScroll();
   d->m_redirectionTimer.stop();
-  closeURL();
+  
+  if ( d->m_job )
+    d->m_job->kill();
 
-  clear();
+  khtml::Cache::loader()->cancelRequests( m_url.url() );
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
               this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
+    
+  clear();
+
   if ( d->m_view )
   {
     d->m_view->hide();
@@ -1704,13 +1711,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
 
     if ( !part )
-    {
-      // emit an openURLRequest signal here to make konqueror bring up the "save as blah or open" dialog, when
-      // clicking on those famous "download" buttons on the web which link to http://blah.org/foo.tar.gz
-      // (Simon)
-      emit d->m_extension->openURLRequest( url );
       return;
-    }
 
     //CRITICAL STUFF
     if ( child->m_part )
