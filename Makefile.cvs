@@ -3,10 +3,11 @@ all:
 	@echo "I will delete it before making the distribution"
 	@echo ""
 	@if test ! -d admin; then \
-	   @echo "Please recheckout this module!"; \
-	   @echo "for cvs: use checkout once and after that update again" ;\
-	   @echo "for cvsup: checkout kde-common from cvsup and" ;\
-	   @echo "   link kde-common/admin to ./admin" ;\
+	   echo "Please recheckout this module!" ;\
+	   echo "for cvs: use checkout once and after that update again" ;\
+	   echo "for cvsup: checkout kde-common from cvsup and" ;\
+	   echo "   link kde-common/admin to ./admin" ;\
+	   exit ;\
 	fi
 	cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
 	aclocal
