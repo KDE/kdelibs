@@ -220,26 +220,30 @@ void KBookmarkBar::slotBookmarkSelected()
 
 static KToolBar* sepToolBar = 0;
 static int sepId = -9999; // fixme with define for num?
+static int sepIndex;
 
 static void removeTempSep()
 {
     if (sepToolBar) {
-        sepToolBar->removeItem(sepId);
+        sepToolBar->removeItemDelayed(sepId);
         sepToolBar = 0;
     }
 }
 
-static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
-                           KToolBarButton* &b, KToolBar* &tb, KAction* &a, int &index)
+static bool findDestAction(QPoint pos, QPtrList<KAction> actions, KAction* &a)
 {
-    static int sepIndex;
     kdDebug(7043) << "pos() == " << pos << endl;
     bool found = false;
+
+    KToolBarButton* b; 
+    int index;
 
     // search for a toolbarbutton at pos
     KToolBar *ttb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(ttb);
+
     sepToolBar = ttb;
+    removeTempSep();
 
     b = dynamic_cast<KToolBarButton*>(ttb->childAt(pos));
 
@@ -303,21 +307,14 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
 
 okay_exit:
     a = (*it);
-    tb = ttb;
-
-    // delete+insert the separator if moved
-    if (sepIndex != index+1 || !sepToolBar)
-    {
-        removeTempSep();
-        sepIndex = tb->insertLineSeparator(index + 1, sepId);
-    }
+    sepIndex = index + 1;
 
 failure_exit:
+    sepIndex = ttb->insertLineSeparator(sepIndex, sepId);
     return found;
 }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
-    static KToolBar* tb = 0;
     static KAction* a = 0;
     if ( e->type() == QEvent::DragLeave )
     {
@@ -354,11 +351,9 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     else if ( e->type() == QEvent::DragMove )
     {
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
-        KToolBarButton* b;
-        int index;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        if (findDestAction(dme->pos(), dptr()->m_actions, b, tb, a, index))
+        if (findDestAction(dme->pos(), dptr()->m_actions, a))
             dme->accept();
     }
     return false;
