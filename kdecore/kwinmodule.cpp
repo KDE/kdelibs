@@ -51,7 +51,6 @@ public:
 				     -1, false
 				     )
     {
-	qDebug("create kwin modue private %p", this);
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
 	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
@@ -144,9 +143,11 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	if ( m & WorkArea )
 	    for ( module = modules.first(); module; module = modules.next() )
 		emit module->workAreaChanged();
-	if ( m & ClientListStacking )
+	if ( m & ClientListStacking ) {
+	    updateStackingOrder();
 	    for ( module = modules.first(); module; module = modules.next() )
 		emit module->stackingOrderChanged();
+	}
     } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
 	unsigned int dirty = ni.event( ev );
