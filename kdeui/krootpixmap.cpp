@@ -166,7 +166,8 @@ void KRootPixmap::repaint(bool force)
  	updateBackground( m_pPixmap );
 	return;
     }
-    m_Rect = QRect(p1, p2);
+    if (!force)
+      m_Rect = QRect(p1, p2);
     m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
