@@ -87,16 +87,14 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
-    QListIterator<StyleSheetImpl> it(doc->styleSheets()->styleSheets);
-    for (; it.current(); ++it)
-	authorStyle->append(it.current());
+    StyleSheetListImpl* ss = doc->styleSheets();
+    for ( QListIterator<StyleSheetImpl> it( ss->styleSheets ); it.current(); ++it )
+ 	authorStyle->append( it.current());
 
     buildLists();
 
     //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
     //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
-//     if ( userStyle )
-//     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
     KURL u = doc->baseURL().string();
     u.setQuery( QString::null );
@@ -1851,7 +1849,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	    l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
 	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	    l = Length( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) , Percent );
+	    l = Length( int( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
 
 	  style->setVerticalAlign( LENGTH );
 	  style->setVerticalAlignLength( l );
