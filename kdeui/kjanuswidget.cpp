@@ -227,7 +227,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
 
 void KJanusWidget::pageGone( QObject *obj )
 {
-  removePage(static_cast<QWidget*>obj);
+  removePage( static_cast<QWidget*>( obj ) );
 }
 
 QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
