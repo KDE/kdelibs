@@ -53,6 +53,10 @@
 #include <qfile.h>
 #include <qtextcodec.h>
 
+// for keygen
+#include <qstring.h>
+#include <ksslkeygen.h>
+
 #include <assert.h>
 
 using namespace DOM;
@@ -1831,10 +1835,12 @@ HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementIm
 
 void HTMLKeygenElementImpl::init(DocumentPtr* doc)
 {
-    HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
-    addChild(o);
-    TextImpl* t = new TextImpl(doc, DOMString("christmas present"));
-    o->addChild(t);
+    QStringList keys = KSSLKeyGen::supportedKeySizes();
+    for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
+        HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
+        addChild(o);
+        o->addChild(new TextImpl(doc, DOMString(*i)));
+    }
 }
 
 
