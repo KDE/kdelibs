@@ -54,11 +54,15 @@
     . FDLIS (% - if "INCLUDE", set also FDLISTitles)
     . FDLFCT (% - if "INCLUDE", set also FDLFCTTitles)
     . FDLBCT (% - if "INCLUDE", set also FDLBCTTitles)
+    . addindex (%)
 
     (% indicates parameter entities whose value should be "INCLUDE" if
     set).  The others are general entities.  The ones that begin with
     `FDL' should be set according to the guidelines in the GNU Free
-    Documentation License.
+    Documentation License.  %addindex; set to INCLUDE will trigger the
+    inclusion of the index file, which should only be done when the file
+    is present (ideally with `-i addindex').  If there are too many
+    problems with it, I will enforce this ;-)
 
     Calling these definitions as indicated above will make the
     following entities available for use in the text:
