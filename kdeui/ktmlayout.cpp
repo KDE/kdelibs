@@ -42,23 +42,27 @@ KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 					 const char *name) :
 	QLayout(parent, border, space, name)
 {
-	topMenuBar = bottomMenuBar = statusBar = 0;
+    topMenuBar = bottomMenuBar = statusBar = 0;
     indicatorWidget = 0;
-	mainItem = 0;
-	maxWraps = (unsigned) -1;	// set to maximum value
+    mainItem = 0;
+    maxWraps = (unsigned) -1;	// set to maximum value
 }
 
 void
 KTMLayout::setGeometry(const QRect& rect)
 {
-	/* The main item is required so it makes no sense to do a layout without
-	 * it. */
-	if (!mainItem)
-		return;
+    /* The main item is required so it makes no sense to do a layout without
+     * it. */
+//WABA: Bullshit. Now it looks like crap when a mainwindow hasn't been set 
+//yet. 
+//While i'm ranting, which moron puts these ridiculous tabs in this file?
+    
+//    if (!mainItem)
+//        return;
 
-	QLayout::setGeometry(rect);
+    QLayout::setGeometry(rect);
 
-	int currY = rect.y();
+    int currY = rect.y();
 
     /* if neither the menubar nor the statusbar exist, then we have no
      * place to display the indicator widget (yet). so hide it */
