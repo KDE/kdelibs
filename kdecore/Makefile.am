@@ -47,6 +47,8 @@ BUILT_SOURCES = ksock.moc drag.moc  kapp.moc kprocess.moc	\
 	kprocctrl.moc kiconloader.moc kdebugdialog.moc kconfig.moc \
 	kconfigbase.moc ksimpleconfig.moc kglobalaccel.moc 
 
+SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
+
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc
 kapp.cpp: kapp.moc
@@ -65,6 +67,13 @@ install-data-local: charsets.config
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
+
+## generate lib documentation
+srcdoc:
+	$(mkinstalldirs) $(SRCDOC_DEST)
+	kdoc -H -d $(SRCDOC_DEST) kdecore \
+		 $(include_HEADERS) -lqt
+
 
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
