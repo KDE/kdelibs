@@ -25,11 +25,11 @@
 
     Refer to this DTD as
 
-      "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN"
+      "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN"
 
     For instance:
 
-      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN"
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN"
                      "customization/dtd/kdex.dtd">
 
     and use catalog.xml or docbook.cat as the catalogue file.
@@ -100,7 +100,7 @@
      first "Modifications" section -->
 
 <!ENTITY % kde.modifications PUBLIC
-  "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
+  "-//KDE//ELEMENTS DocBook XML Modifications V1.1//EN"
   "modifications.elements"                                           >
 %kde.modifications;
 

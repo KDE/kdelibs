@@ -1,20 +1,19 @@
 <?xml version="1.0" ?>
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
   <!ENTITY kappname "&kapp;"><!-- replace kapp here, do *not* replace kappname-->
   <!ENTITY package "kde-module"><!-- kdebase, kdeadmin, etc -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE"><!-- change language only here -->
-  
-  
+    
   <!-- Do not define any other entities; instead, use the entities
-       from kde-genent.entities and $LANG/user.entities. -->
+       from entities/general.entities and $LANG/user.entities. -->
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
      Minor update to "Credits and Licenses" section on August 24, 2000
      Removed "Revision history" section on 22 January 2001
      Changed to Installation/Help menu entities 18 October 2001
-     Other minor cleanup and changes 18 October 2001 -->
-
+     Other minor cleanup and changes 18 October 2001 
+     FPI change and minor changes November 2002 -->
 
 <!--
 This template was designed by: David Rugge davidrugge@mindspring.com
@@ -46,7 +45,13 @@ as Authors, publish date, the abstract, and Keywords -->
 <title>The &kapp; Handbook</title>
 
 <authorgroup>
-<author><!-- please use the entities in contributor.entities for these -->
+<author>
+<!-- This is just put in as an example.  For real documentation, please 
+     define a general entity in entities/contributor.entities, e.g.
+<!ENTITY George.N.Ugnacious "<personname><firstname>George</firstname><othername>N.</othername><surname>Ugnacious</surname></personname>">
+<!ENTITY George.N.Ugnacious.mail "<email>gnu@kde.org</email>">
+and use `&George.N.Ugnacious; &George.N.Ugnacious.mail;' in the author element.
+ -->
 <personname>
 <firstname>George</firstname>
 <othername>N.</othername>
@@ -59,8 +64,7 @@ as Authors, publish date, the abstract, and Keywords -->
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 
 <copyright>
-<year>1999</year>
-<year>2000</year>
+<year>2002</year>
 <holder>George N. Ugnacious</holder>
 </copyright>
 <!-- Translators: put here the copyright notice of the translation -->
@@ -75,7 +79,7 @@ Please respect the format of the date (YYYY-MM-DD) and of the version
 (V.MM.LL), it could be used by automation scripts.
 Do NOT change these in the translation. -->
 
-<date>2001-10-18</date>
+<date>2002-11-29</date>
 <releaseinfo>1.01.00</releaseinfo>
 
 <!-- Abstract about this handbook -->
@@ -543,7 +547,7 @@ dicer-toaster daemon first, or &kapp; won't work !</para>
 
 <!--
 Local Variables:
-mode: sgml
+mode: xml
 sgml-minimize-attributes:nil
 sgml-general-insert-case:lower
 sgml-indent-step:0
@@ -552,4 +556,3 @@ End:
 
 vim:tabstop=2:shiftwidth=2:expandtab 
 -->
-

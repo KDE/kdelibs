@@ -26,7 +26,7 @@ SGMLDECL "xml.dcl"
 
 			    -- DocBook --
 
-PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN"
+PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN"
        "dtd/kdex.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/rdbhier2.elements"
@@ -36,7 +36,7 @@ PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.2//EN"
        "entities/general.entities"
 PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations (Persons) V1.0//EN"
        "entities/contributor.entities"
-PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications (Restrictions) V1.1//EN"
        "dtd/modifications.elements"
 
 		      -- General KDE Entities --
