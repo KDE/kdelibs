@@ -236,22 +236,22 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
-                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw) - 1;
+                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
             } else {
                 cw = w-vpab;
                 cx = _tx;
-                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw) - 1) % pixw );
+                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
             }
             
             cx += borderLeft() + paddingLeft();
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
                 ch = pixh;
-                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh) - 1;
+                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
             } else {
                 ch = h-hpab;
                 cy = _ty;
-                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh) - 1) % pixh );
+                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
             }            
             
             cy += borderTop() + paddingTop();
@@ -268,20 +268,20 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
-                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw) - 1;
+                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw);
             } else {
                 cw = pw;
                 cx = vr.x();
-                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw) - 1) % pixw );
+                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
             }
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
                 ch = pixh;
-                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh) - 1;
+                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh);
             } else {
                 ch = ph;
                 cy = vr.y();
-                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh) - 1) % pixh );
+                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
             }              
 
             QRect fix(cx,cy,cw,ch);
