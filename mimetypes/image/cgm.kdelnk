@@ -5,5 +5,7 @@ MimeType=image/cgm
 Icon=image.xpm
 Patterns=*.cgm;*.CGM;
 Comment=Computer Graphics Metafile
+Comment[fi]=Computer Graphics -metatiedosto
+Comment[is]=Computer Graphics Metafile (mynd)
 Comment[no]=Metafil for datagrafikk
 Comment[ru]=Метафайл графических данных
