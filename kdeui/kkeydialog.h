@@ -15,28 +15,21 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef __KKEYDIALOG_H__
 #define __KKEYDIALOG_H__
 
-#include <qdict.h>
+
 #include <qaccel.h>
-
-#include <qlistbox.h>
-
-//#include <qlabel.h>
-
+#include <qdict.h>
+#include <qobject.h>
 #include <qpushbutton.h>
 
-//#include <qcheckbox.h>
-//#include <qlineedit.h>
-//#include <qbuttongroup.h>
-//#include <qtableview.h>
-//#include <qstrlist.h>
-//#include <qpopupmenu.h>
-//#include <qgroupbox.h>
-
-#include <qobject.h>
-
+#include <kaccel.h>
+#include <kapp.h>
+#include <kdialogbase.h>
+#include <kglobalaccel.h>
+#include <klistbox.h>
 
 class QButtonGroup;
 class QCheckBox;
@@ -44,10 +37,6 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 
-#include "kaccel.h"
-#include <kapp.h>
-#include <kdialogbase.h>
-#include "kglobalaccel.h"
 
 /**
  *  A list box item for KSplitList.It uses two columns to display
@@ -89,7 +78,7 @@ protected:
  *
  *  @short A list box capable of multi-columns
  */
-class KSplitList: public QListBox
+class KSplitList: public KListBox
 {
   Q_OBJECT
 

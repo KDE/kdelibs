@@ -31,27 +31,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qfile.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
-#include <qscrollbar.h>
-#include <qfont.h>
-#include <qlayout.h>
 #include <qcombobox.h>
-#include <qlistbox.h>
+#include <qfile.h>
+#include <qfont.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
-#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qscrollbar.h>
+#include <qstringlist.h>
+#include <qtextstream.h>
 
-#include <kglobal.h>
-#include <kdialog.h>
-#include <klocale.h>
-#include <kcharsets.h>
-#include <kbuttonbox.h>
-#include <qlineedit.h>
-#include <kstddirs.h>
 #include <kapp.h>
+#include <kcharsets.h>
 #include <kconfig.h>
+#include <kdialog.h>
+#include <kglobal.h>
+#include <qlineedit.h>
+#include <klistbox.h>
+#include <klocale.h>
+#include <kstddirs.h>
 
 #include <X11/Xlib.h>
 
@@ -125,7 +123,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   //
   // now create the actual boxes that hold the info
   //
-  familyListBox = new QListBox( page, "familyListBox");
+  familyListBox = new KListBox( page, "familyListBox");
   gridLayout->addWidget( familyListBox, row, 0 );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
@@ -142,7 +140,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   familyListBox->setMinimumHeight(
     minimumListHeight( familyListBox, visibleListSize  ) );
 
-  styleListBox = new QListBox( page, "styleListBox");
+  styleListBox = new KListBox( page, "styleListBox");
   gridLayout->addWidget(styleListBox, row, 1);
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
@@ -156,7 +154,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	  SLOT(style_chosen_slot(const QString &)));
 
 
-  sizeListBox = new QListBox( page, "sizeListBox");
+  sizeListBox = new KListBox( page, "sizeListBox");
   gridLayout->addWidget(sizeListBox, row, 2);
 
   const char *c[] =
@@ -521,6 +519,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.48  2000/01/17 19:07:58  bieker
+* Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
+* yet).
+*
 * Revision 1.47  1999/10/31 11:39:55  reggie
 * KLineEdit -> QLineEdit
 *

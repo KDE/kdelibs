@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2000/01/17 19:07:59  bieker
+ * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
+ * yet).
+ *
  * Revision 1.14  1999/12/11 18:37:12  faure
  * ../../../kdelibs/kdeui/kmessagebox.cpp:118: warning: control reaches
  * end of non-void function `KMessageBox::questionYesNo(QWidget *,
@@ -90,20 +94,22 @@
  *
  */
 
-#include "kmessagebox.h"
-#include <qmessagebox.h>
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qlabel.h>
-#include <qcheckbox.h>
-#include <qstringlist.h>
-#include <qlistbox.h>
-#include <qlineedit.h>
 
-#include "kapp.h"
-#include "kconfig.h"
-#include "klocale.h"
-#include "kdialogbase.h"
+#include <qcheckbox.h>
+#include <qhbox.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qmessagebox.h>
+#include <qstringlist.h>
+#include <qvbox.h>
+
+#include <kapp.h>
+#include <kconfig.h>
+#include <kdialogbase.h>
+#include <klistbox.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+
 
  /** 
   * Easy MessageBox Dialog. 
@@ -153,7 +159,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
  
     if (!strlist.isEmpty())
     {
-      QListBox *listbox=new QListBox( topcontents );
+      KListBox *listbox=new KListBox( topcontents );
       listbox->insertStringList( strlist );
     }
  

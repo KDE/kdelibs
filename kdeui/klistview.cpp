@@ -47,3 +47,4 @@ void KListView::slotOnViewport()
 	return;
     viewport()->setCursor( oldCursor );
 }
+

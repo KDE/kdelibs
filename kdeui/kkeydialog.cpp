@@ -102,7 +102,7 @@ int KSplitListItem::width(const QListBox *lb ) const
 /*                                                                     */
 /***********************************************************************/
 KSplitList::KSplitList( QWidget *parent , const char *name )
-  : QListBox( parent, name )
+  : KListBox( parent, name )
 {
   setFocusPolicy( QWidget::StrongFocus );
   if( style() == MotifStyle )
@@ -114,7 +114,7 @@ KSplitList::KSplitList( QWidget *parent , const char *name )
 void KSplitList::resizeEvent( QResizeEvent *e )
 {
   emit newWidth( width() );
-  QListBox::resizeEvent( e );
+  KListBox::resizeEvent( e );
 }
 
 void KSplitList::styleChange( GUIStyle )
@@ -127,7 +127,7 @@ void KSplitList::styleChange( GUIStyle )
 
 void KSplitList::paletteChange ( const QPalette & oldPalette )
 {
-  QListBox::paletteChange( oldPalette );
+  KListBox::paletteChange( oldPalette );
 }
 
 

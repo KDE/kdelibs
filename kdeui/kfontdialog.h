@@ -28,17 +28,17 @@
 #ifndef _K_FONT_DIALOG_H_
 #define _K_FONT_DIALOG_H_
 
-#include <qdialog.h>
-#include <qlineedit.h>
 
+#include <qlineedit.h>
 #include <kdialogbase.h>
 
-class QLabel;
-class QListBox;
+
 class QComboBox;
-class QGroupBox;
 class QFont;
+class QGroupBox;
+class QLabel;
 class QStringList;
+class KListBox;
 
 /**
  * Widget for interactive font selection.
@@ -155,9 +155,9 @@ protected:
   QLineEdit    *sampleEdit;
   QLineEdit    *xlfdEdit;
 
-  QListBox     *familyListBox;
-  QListBox     *styleListBox;
-  QListBox     *sizeListBox;
+  KListBox     *familyListBox;
+  KListBox     *styleListBox;
+  KListBox     *sizeListBox;
   QComboBox    *charsetsCombo;
   
   QFont        selFont;
