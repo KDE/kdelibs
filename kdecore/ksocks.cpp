@@ -24,6 +24,8 @@
 #include "klibloader.h"
 #include <kconfig.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include <unistd.h>
 
@@ -50,22 +52,22 @@ enum SymbolKeys {
 extern "C" {
 // Function pointer table
 static int     (*F_SOCKSinit)   (char *);
-static int     (*F_connect)     (int, const struct sockaddr *, socklen_t);
-static ssize_t (*F_read)        (int, void *, size_t);
-static ssize_t (*F_write)       (int, const void *, size_t);
-static int     (*F_recvfrom)    (int, void *, size_t, int, struct sockaddr *, 
-                                 socklen_t *);
-static int     (*F_sendto)      (int, const void *, size_t, int,
-                                 const struct sockaddr *, socklen_t);
-static int     (*F_recv)        (int, void *, size_t, int);
-static int     (*F_send)        (int, const void *, size_t, int);
-static int     (*F_getsockname) (int, struct sockaddr *, socklen_t *);
-static int     (*F_getpeername) (int, struct sockaddr *, socklen_t *);
-static int     (*F_accept)      (int, struct sockaddr *, socklen_t *);
+static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t);
+static signed long int (*F_read)        (int, void *, unsigned long int);
+static signed long int (*F_write)       (int, const void *, unsigned long int);
+static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *, 
+                                 ksocklen_t *);
+static int     (*F_sendto)      (int, const void *, unsigned long int, int,
+                                 const struct sockaddr *, ksocklen_t);
+static int     (*F_recv)        (int, void *, unsigned long int, int);
+static int     (*F_send)        (int, const void *, unsigned long int, int);
+static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *);
+static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *);
+static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *);
 static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *, 
                                  struct timeval *);
 static int     (*F_listen)      (int, int);
-static int     (*F_bind)        (int, struct sockaddr *, socklen_t);
+static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t);
 };
 
 
@@ -383,73 +385,73 @@ void KSocks::enableSocks() {
  *
  */
 
-int KSocks::connect (int sockfd, const struct sockaddr *serv_addr,
-                                                   socklen_t addrlen) {
+int KSocks::connect (int sockfd, const sockaddr *serv_addr,
+                                                   ksocklen_t addrlen) {
   if (_useSocks && F_connect)
     return (*F_connect)(sockfd, serv_addr, addrlen);
   else return ::connect(sockfd, serv_addr, addrlen);
 }
 
 
-ssize_t KSocks::read (int fd, void *buf, size_t count) {
+signed long int KSocks::read (int fd, void *buf, unsigned long int count) {
   if (_useSocks && F_read)
     return (*F_read)(fd, buf, count);
   else return ::read(fd, buf, count);
 }
 
 
-ssize_t KSocks::write (int fd, const void *buf, size_t count) {
+signed long int KSocks::write (int fd, const void *buf, unsigned long int count) {
   if (_useSocks && F_write)
     return (*F_write)(fd, buf, count);
   else return ::write(fd, buf, count);
 }
 
 
-int KSocks::recvfrom (int s, void *buf, size_t len, int flags,
-                                struct sockaddr *from, socklen_t *fromlen) {
+int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
+                                sockaddr *from, ksocklen_t *fromlen) {
   if (_useSocks && F_recvfrom)
     return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
   else return ::recvfrom(s, buf, len, flags, from, fromlen);
 }
 
 
-int KSocks::sendto (int s, const void *msg, size_t len, int flags,
-                             const struct sockaddr *to, socklen_t tolen) {
+int KSocks::sendto (int s, const void *msg, unsigned long int len, int flags,
+                             const sockaddr *to, ksocklen_t tolen) {
   if (_useSocks && F_sendto)
     return (*F_sendto)(s, msg, len, flags, to, tolen);
   else return ::sendto(s, msg, len, flags, to, tolen);
 }
 
 
-int KSocks::recv (int s, void *buf, size_t len, int flags) {
+int KSocks::recv (int s, void *buf, unsigned long int len, int flags) {
   if (_useSocks && F_recv)
     return (*F_recv)(s, buf, len, flags);
   else return ::recv(s, buf, len, flags);
 }
 
 
-int KSocks::send (int s, const void *msg, size_t len, int flags) {
+int KSocks::send (int s, const void *msg, unsigned long int len, int flags) {
   if (_useSocks && F_send)
     return (*F_send)(s, msg, len, flags);
   else return ::send(s, msg, len, flags);
 }
 
 
-int KSocks::getsockname (int s, struct sockaddr *name, socklen_t *namelen) {
+int KSocks::getsockname (int s, sockaddr *name, ksocklen_t *namelen) {
   if (_useSocks && F_getsockname)
     return (*F_getsockname)(s, name, namelen);
   else return ::getsockname(s, name, namelen);
 }
 
 
-int KSocks::getpeername (int s, struct sockaddr *name, socklen_t *namelen) {
+int KSocks::getpeername (int s, sockaddr *name, ksocklen_t *namelen) {
   if (_useSocks && F_getpeername)
     return (*F_getpeername)(s, name, namelen);
   else return ::getpeername(s, name, namelen);
 }
 
 
-int KSocks::accept (int s, struct sockaddr *addr, socklen_t *addrlen) {
+int KSocks::accept (int s, sockaddr *addr, ksocklen_t *addrlen) {
   if (_useSocks && F_accept)
     return (*F_accept)(s, addr, addrlen);
   else return ::accept(s, addr, addrlen);
@@ -471,7 +473,7 @@ int KSocks::listen (int s, int backlog) {
 }
 
 
-int KSocks::bind (int sockfd, struct sockaddr *my_addr, socklen_t addrlen) {
+int KSocks::bind (int sockfd, sockaddr *my_addr, ksocklen_t addrlen) {
   if (_useSocks && F_bind)
     return (*F_bind)(sockfd, my_addr, addrlen);
   else return ::bind(sockfd, my_addr, addrlen);

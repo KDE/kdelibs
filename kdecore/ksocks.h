@@ -19,14 +19,14 @@
 #define _KSOCKS_H_
 
 #include <qstringlist.h>
+#include <ksockaddr.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 
 class KSocksTable;
 class KSocksPrivate;
 class KLibrary;
 class KConfig;
-
+struct sockaddr;
 
 
 class KSocks {
@@ -61,24 +61,24 @@ public:
    /**
     **     REIMPLEMENTATIONS OF LIBC SOCKET FUNCTIONS
     **/
-    int     connect     (int sockfd, const struct sockaddr *serv_addr, 
-                                socklen_t addrlen);
-    ssize_t read        (int fd, void *buf, size_t count);
-    ssize_t write       (int fd, const void *buf, size_t count);
-    int     recvfrom    (int s, void *buf, size_t len, int flags, 
-                                struct sockaddr *from, socklen_t *fromlen);
-    int     sendto      (int s, const void *msg, size_t len, int flags,
-                             const struct sockaddr *to, socklen_t tolen);
-    int     recv        (int s, void *buf, size_t len, int flags);
-    int     send        (int s, const void *msg, size_t len, int flags);
-    int     getsockname (int s, struct sockaddr *name, socklen_t *namelen);
-    int     getpeername (int s, struct sockaddr *name, socklen_t *namelen);
-    int     accept      (int s, struct sockaddr *addr, socklen_t *addrlen);
+    int     connect     (int sockfd, const sockaddr *serv_addr, 
+                                ksocklen_t addrlen);
+    signed long int read  (int fd, void *buf, unsigned long int count);
+    signed long int write (int fd, const void *buf, unsigned long int count);
+    int     recvfrom    (int s, void *buf, unsigned long int len, int flags, 
+                                sockaddr *from, ksocklen_t *fromlen);
+    int     sendto      (int s, const void *msg, unsigned long int len, int flags,
+                             const sockaddr *to, ksocklen_t tolen);
+    int     recv        (int s, void *buf, unsigned long int len, int flags);
+    int     send        (int s, const void *msg, unsigned long int len, int flags);
+    int     getsockname (int s, sockaddr *name, ksocklen_t *namelen);
+    int     getpeername (int s, sockaddr *name, ksocklen_t *namelen);
+    int     accept      (int s, sockaddr *addr, ksocklen_t *addrlen);
     int     select      (int n, fd_set *readfds, fd_set *writefds, 
                                 fd_set *exceptfds, struct timeval *timeout);
     int     listen      (int s, int backlog);
-    int     bind        (int sockfd, struct sockaddr *my_addr, 
-                                     socklen_t addrlen);
+    int     bind        (int sockfd, sockaddr *my_addr, 
+                                     ksocklen_t addrlen);
 
 
 
