@@ -26,6 +26,11 @@
 #include <qmap.h>
 #include <qstring.h>
 
+#define K_DCOP \
+public:        \
+  virtual bool process(const QString &fun, const QByteArray &data, QByteArray &replyData); \
+private:
+
 /**
  * DCOPObject provides an interface for receiving DCOP messages.
  *
