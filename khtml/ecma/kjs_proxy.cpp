@@ -176,6 +176,8 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 
 KJScript *KJSProxyImpl::jScript()
 {
+  if (!m_script)
+    initScript();
   return m_script;
 }
 
