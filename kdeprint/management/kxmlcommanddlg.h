@@ -109,6 +109,7 @@ protected slots:
 
 private:
 	QLineEdit	*m_description;
+	QLabel		*m_idname;
 	QComboBox	*m_mimetype;
 	KListBox	*m_availablemime, *m_selectedmime;
 	QPushButton	*m_addmime, *m_removemime;

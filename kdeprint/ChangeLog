@@ -260,3 +260,15 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 13/12/2001 Michael Goffioul <goffioul@imec.be>
   * general: preleminary support for external printer tool. Only escputil
     at this moment.
+
+03/01/2002 Michael Goffioul <goffioul@imec.be>
+  * general:
+  	. added a "ID name" label to the first dialog for command editing
+	. put "View Printer Infos" in front of orientation and view type
+	  change (more logical)
+	. added a confirmation dialog before sending a test page to a
+	  printer (printer and instance test)
+	. added a short summary below the command selector containing the
+	  ID and the output type ("not allowed" if no output supported).
+	. added a WhatsThis help to the "Instances" tab briefly explaining
+	  what's an instance.

@@ -730,7 +730,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 //-----------------------------------------------------------------------------------------------------
 
 KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, i18n("Command Edit"), Ok|Cancel|Details, Ok, true)
+: KDialogBase(parent, name, true, QString::null, Ok|Cancel|Details, Ok, true)
 {
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;
@@ -742,6 +742,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Requirements"), topmain);
 
 	m_description = new QLineEdit(topmain);
+	m_idname = new QLabel(topmain);
 	m_requirements = new KListView(m_gb2);
 	m_requirements->addColumn("");
 	m_requirements->header()->hide();
@@ -768,14 +769,21 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_desclab->setBuddy(m_description);
 	QLabel	*m_mimetypelab = new QLabel(i18n("Output &Format:"), dummy);
 	m_mimetypelab->setBuddy(m_mimetype);
+	QLabel	*m_idnamelab = new QLabel(i18n("ID Name:"), topmain);
+
+	QFont	f(m_idname->font());
+	f.setBold(true);
+	m_idname->setFont(f);
 
 	KSeparator	*sep1 = new KSeparator(QFrame::HLine, dummy);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(topmain, 0, 10);
-	QHBoxLayout	*l5 = new QHBoxLayout(0, 0, 5);
+	QGridLayout	*l5 = new QGridLayout(0, 2, 2, 0, 5);
 	l0->addLayout(l5);
-	l5->addWidget(m_desclab);
-	l5->addWidget(m_description);
+	l5->addWidget(m_idnamelab, 0, 0);
+	l5->addWidget(m_idname, 0, 1);
+	l5->addWidget(m_desclab, 1, 0);
+	l5->addWidget(m_description, 1, 1);
 	l0->addWidget(m_gb2);
 	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 0);
 	l0->addLayout(l3);
@@ -830,8 +838,11 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 {
+	setCaption(i18n("Command Edit for %1").arg(xmlCmd->name()));
+
 	m_cmd = xmlCmd;
 	m_description->setText(xmlCmd->description());
+	m_idname->setText(xmlCmd->name());
 
 	m_requirements->clear();
 	QStringList	list = xmlCmd->requirements();

@@ -31,6 +31,7 @@
 #include <qlayout.h>
 #include <qinputdialog.h>
 #include <qregexp.h>
+#include <qwhatsthis.h>
 #include <kmessagebox.h>
 #include <klistbox.h>
 #include <kaction.h>
@@ -58,6 +59,16 @@ KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 	main_->addLayout(sub_);
 	sub_->addWidget(m_toolbar);
 	sub_->addStretch(1);
+
+	QWhatsThis::add(this,
+		i18n("Define/Edit here instances for the current selected "
+		     "printer. An instance is a combination of a real "
+		     "(physical) printer and a set of predefined options. "
+		     "For a single InkJet printer, you could define different "
+		     "print formats like <i>DraftQuality</i>, <i>PhotoQuality</i> "
+		     "or <i>TwoSided</i>. Those instances appear as normal "
+		     "printers in the print dialog and allow you to quickly "
+		     "select the print format you want."));
 }
 
 KMInstancePage::~KMInstancePage()
@@ -244,7 +255,7 @@ void KMInstancePage::slotTest()
 			KMessageBox::error(this,i18n("Unable to locate test page."));
 		else if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
-		else
+		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on <b>%1</b>. Do you want to continue?").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			KPrinter::setApplicationType(KPrinter::StandAlone);
 			KPrinter	pr;

@@ -236,10 +236,9 @@ void KMMainView::initActions()
 	m_actions->action("manager_configure")->plug(m_toolbar);
 	m_actions->action("view_refresh")->plug(m_toolbar);
 	m_toolbar->insertLineSeparator();
+	m_actions->action("view_printerinfos")->plug(m_toolbar);
 	m_actions->action("view_change")->plug(m_toolbar);
 	m_actions->action("orientation_change")->plug(m_toolbar);
-	m_toolbar->insertSeparator();
-	m_actions->action("view_printerinfos")->plug(m_toolbar);
 
 	loadPluginActions();
 	slotPrinterSelected(0);
@@ -361,10 +360,10 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 		m_actions->action("view_refresh")->plug(m_pop);
 		m_pop->insertSeparator();
 	}
+	m_actions->action("view_printerinfos")->plug(m_pop);
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
-	m_actions->action("view_printerinfos")->plug(m_pop);
 
 	// pop the menu
 	m_pop->popup(p);
@@ -507,10 +506,13 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMFactory::self()->manager()->testPrinter(m_current))
-			KMessageBox::information(this,i18n("<nobr>Test page successfully sent to printer <b>%1</b>.</nobr>").arg(m_current->printerName()));
-		else
-			showErrorMsg(i18n("Unable to test printer <b>%1</b>.").arg(m_current->printerName()));
+		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on <b>%1</b>. Do you want to continue?").arg(m_current->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		{
+			if (KMFactory::self()->manager()->testPrinter(m_current))
+				KMessageBox::information(this,i18n("<nobr>Test page successfully sent to printer <b>%1</b>.</nobr>").arg(m_current->printerName()));
+			else
+				showErrorMsg(i18n("Unable to test printer <b>%1</b>.").arg(m_current->printerName()));
+		}
 		KMTimer::self()->release(true);
 	}
 }

@@ -39,6 +39,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 : QWidget(parent, name)
 {
 	m_cmd = new QComboBox(this);
+	connect(m_cmd, SIGNAL(activated(int)), SLOT(slotCommandSelected(int)));
 	QPushButton	*m_add = new QPushButton(this);
 	QPushButton	*m_edit = new QPushButton(this);
 	m_add->setPixmap(SmallIcon("filenew"));
@@ -47,6 +48,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
 	QToolTip::add(m_add, i18n("New Command"));
 	QToolTip::add(m_edit, i18n("Edit Command"));
+	m_shortinfo = new QLabel(this);
 
 	m_line = 0;
 	m_usefilter = 0;
@@ -65,6 +67,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_cmd, SLOT(setEnabled(bool)));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_add, SLOT(setEnabled(bool)));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_edit, SLOT(setEnabled(bool)));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_shortinfo, SLOT(setEnabled(bool)));
 		m_usefilter->setChecked(true);
 		m_usefilter->setChecked(false);
 		//setFocusProxy(m_line);
@@ -83,17 +86,19 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	else
 		setFocusProxy(m_cmd);
 
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 0);
+	QGridLayout	*l2 = new QGridLayout(0, 2, (m_usefilter?3:2), 0, 5);
+	int	c(0);
 	l0->addLayout(l2);
 	if (m_usefilter)
 	{
-		l2->addWidget(m_usefilter);
-		l2->addSpacing(5);
+		l2->addWidget(m_usefilter, 0, c++);
 	}
-	l2->addWidget(m_cmd);
-	l2->addSpacing(10);
-	l2->addWidget(m_add);
-	l2->addWidget(m_edit);
+	l2->addWidget(m_cmd, 0, c);
+	l2->addWidget(m_shortinfo, 1, c);
+	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 0);
+	l2->addLayout(l3, 0, c+1);
+	l3->addWidget(m_add);
+	l3->addWidget(m_edit);
 
 	loadCommands();
 }
@@ -118,6 +123,8 @@ void KXmlCommandSelector::loadCommands()
 	int	index = m_cmdlist.findIndex(thisCmd);
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
+	if (m_cmd->currentItem() != -1)
+		slotCommandSelected(m_cmd->currentItem());
 }
 
 QString KXmlCommandSelector::command() const
@@ -140,6 +147,8 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 		m_line->setText((index == -1 ? cmd : QString::null));
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
+	if (m_cmd->currentItem() != -1)
+		slotCommandSelected(m_cmd->currentItem());
 }
 
 void KXmlCommandSelector::slotAddCommand()
@@ -195,6 +204,26 @@ void KXmlCommandSelector::slotBrowse()
 	QString	filename = KFileDialog::getOpenFileName(QString::null, QString::null, this);
 	if (!filename.isEmpty() && m_line)
 		m_line->setText(filename);
+}
+
+void KXmlCommandSelector::slotCommandSelected(int ID)
+{
+	KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(m_cmdlist[ID]);
+	if (xmlCmd)
+	{
+		QString	msg(QString::fromLocal8Bit("(ID = %1, %2 = ").arg(xmlCmd->name()).arg(i18n("output")));
+		if (KXmlCommandManager::self()->checkCommand(xmlCmd->name(), KXmlCommandManager::None, KXmlCommandManager::Basic))
+		{
+			if (xmlCmd->mimeType() == "all/all")
+				msg.append(i18n("undefined"));
+			else
+				msg.append(xmlCmd->mimeType());
+		}
+		else
+			msg.append(i18n("not allowed"));
+		msg.append(")");
+		m_shortinfo->setText(msg);
+	}
 }
 
 #include "kxmlcommandselector.moc"
