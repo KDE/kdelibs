@@ -416,8 +416,8 @@ interface GlobalComm {
 interface TmpGlobalComm : GlobalComm {
 };
 
-/* this is only (!) used for generation of the Object_stub stuff
-
+// this is only (!) used for generation of the Object_stub stuff
+/*
 interface Object {
 	// access to the flow system this object is running in
 	readonly attribute FlowSystem _flowSystem;
@@ -436,6 +436,9 @@ interface Object {
 
 	// stringifies the object to one string
 	string _toString();
+	
+	// Run-time type compatibility check
+	boolean _isCompatibleWith(string interfacename);
 
 	// prepares object for remote transmission (so that it will not be freed
 	// soon, since the remote receiver expects it to be there after receiving
@@ -449,6 +452,6 @@ interface Object {
 	// declares that the object is no longer used remotely
 	void _releaseRemote();
 };
-
 */
+
 };

@@ -141,6 +141,9 @@ public:
 	// cast operation
 	virtual void *_cast(unsigned long iid);
 	void *_cast(std::string interface);
+	
+	// Run-time type compatibility check
+	virtual bool _isCompatibleWith(const std::string& interfacename) = 0;
 
 	/*
 	 * when this is true, a fatal communication error has occured (of course
@@ -241,6 +244,9 @@ public:
 	InterfaceDef* _queryInterface(const std::string& name);
 	TypeDef* _queryType(const std::string& name);
 	virtual std::string _toString();
+	
+	// Run-time type compatibility check
+	bool _isCompatibleWith(const std::string& interfacename);
 };
 
 class Object_stub : virtual public Object_base {
@@ -291,6 +297,9 @@ public:
 	virtual void _copyRemote();
 	virtual void _useRemote();
 	virtual void _releaseRemote();
+	
+	// Run-time type compatibility check
+	bool _isCompatibleWith(const std::string& interfacename);
 
 	/*
 	 * communication error? this is true when your connection to the remote

@@ -334,6 +334,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -367,7 +368,7 @@ public:
 	inline InterfaceRepo(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline InterfaceRepo(const Arts::DynamicCast& c) : _cache(0) {
-		InterfaceRepo_base * ptr = (InterfaceRepo_base *)c.object()._base()->_cast(InterfaceRepo_base::_IID);
+		InterfaceRepo_base * ptr = InterfaceRepo_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();
@@ -433,6 +434,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -466,7 +468,7 @@ public:
 	inline FlowSystemSender(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystemSender(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystemSender_base * ptr = (FlowSystemSender_base *)c.object()._base()->_cast(FlowSystemSender_base::_IID);
+		FlowSystemSender_base * ptr = FlowSystemSender_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();
@@ -529,6 +531,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -562,7 +565,7 @@ public:
 	inline FlowSystemReceiver(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystemReceiver(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystemReceiver_base * ptr = (FlowSystemReceiver_base *)c.object()._base()->_cast(FlowSystemReceiver_base::_IID);
+		FlowSystemReceiver_base * ptr = FlowSystemReceiver_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();
@@ -635,6 +638,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -668,7 +672,7 @@ public:
 	inline FlowSystem(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystem(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystem_base * ptr = (FlowSystem_base *)c.object()._base()->_cast(FlowSystem_base::_IID);
+		FlowSystem_base * ptr = FlowSystem_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();
@@ -740,6 +744,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -773,7 +778,7 @@ public:
 	inline GlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline GlobalComm(const Arts::DynamicCast& c) : _cache(0) {
-		GlobalComm_base * ptr = (GlobalComm_base *)c.object()._base()->_cast(GlobalComm_base::_IID);
+		GlobalComm_base * ptr = GlobalComm_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();
@@ -836,6 +841,7 @@ public:
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
 	void _buildMethodTable();
 	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
@@ -869,7 +875,7 @@ public:
 	inline TmpGlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline TmpGlobalComm(const Arts::DynamicCast& c) : _cache(0) {
-		TmpGlobalComm_base * ptr = (TmpGlobalComm_base *)c.object()._base()->_cast(TmpGlobalComm_base::_IID);
+		TmpGlobalComm_base * ptr = TmpGlobalComm_base::_fromString(c.object().toString());
 		if (ptr) {
 			_pool->Dec();
 			_pool = c.object()._get_pool();

@@ -394,6 +394,11 @@ string Object_skel::_interfaceNameSkel()
 	return "";
 }
 
+bool Object_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename=="Arts::Object") return true;
+	return false;
+}
 
 InterfaceDef* Object_skel::_queryInterface(const string& name)
 {
@@ -501,82 +506,109 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 }
 
 // _lookupMethod
-static void _dispatch_Object_00(void *object, Buffer *request, Buffer *result)
+static void _dispatch_Arts_Object_00(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
-	MethodDef methodDef(*request);
-	result->writeLong(((Object_skel *)object)->_lookupMethod(methodDef));
+	Arts::MethodDef methodDef(*request);
+	result->writeLong(((Arts::Object_skel *)object)->_lookupMethod(methodDef));
 }
 
 // _interfaceName
-static void _dispatch_Object_01(void *object, Buffer *, Buffer *result)
+static void _dispatch_Arts_Object_01(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
-	result->writeString(((Object_skel *)object)->_interfaceName());
+	result->writeString(((Arts::Object_skel *)object)->_interfaceName());
 }
 
 // _queryInterface
-static void _dispatch_Object_02(void *object, Buffer *request, Buffer *result)
+static void _dispatch_Arts_Object_02(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
-	string name;
+	std::string name;
 	request->readString(name);
-	InterfaceDef *_returnCode = ((Object_skel *)object)->_queryInterface(name);
+	Arts::InterfaceDef *_returnCode = ((Arts::Object_skel *)object)->_queryInterface(name);
 	_returnCode->writeType(*result);
 	delete _returnCode;
 }
 
 // _queryType
-static void _dispatch_Object_03(void *object, Buffer *request, Buffer *result)
+static void _dispatch_Arts_Object_03(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
-	string name;
+	std::string name;
 	request->readString(name);
-	TypeDef *_returnCode = ((Object_skel *)object)->_queryType(name);
+	Arts::TypeDef *_returnCode = ((Arts::Object_skel *)object)->_queryType(name);
 	_returnCode->writeType(*result);
 	delete _returnCode;
 }
 
 // _toString
-static void _dispatch_Object_04(void *object, Buffer *, Buffer *result)
+static void _dispatch_Arts_Object_04(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
-	result->writeString(((Object_skel *)object)->_toString());
+	result->writeString(((Arts::Object_skel *)object)->_toString());
+}
+
+// _isCompatibleWith
+static void _dispatch_Arts_Object_05(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	std::string interfacename;
+	request->readString(interfacename);
+	result->writeBool(((Arts::Object_skel *)object)->_isCompatibleWith(interfacename));
 }
 
 // _copyRemote
-static void _dispatch_Object_05(void *object, Buffer *, Buffer *)
+static void _dispatch_Arts_Object_06(void *object, Arts::Buffer *, Arts::Buffer *)
 {
-	((Object_skel *)object)->_copyRemote();
+	((Arts::Object_skel *)object)->_copyRemote();
 }
 
 // _useRemote
-static void _dispatch_Object_06(void *object, Buffer *, Buffer *)
+static void _dispatch_Arts_Object_07(void *object, Arts::Buffer *, Arts::Buffer *)
 {
-	((Object_skel *)object)->_useRemote();
+	((Arts::Object_skel *)object)->_useRemote();
 }
 
 // _releaseRemote
-static void _dispatch_Object_07(void *object, Buffer *, Buffer *)
+static void _dispatch_Arts_Object_08(void *object, Arts::Buffer *, Arts::Buffer *)
 {
-	((Object_skel *)object)->_releaseRemote();
+	((Arts::Object_skel *)object)->_releaseRemote();
 }
 
 // _get__flowSystem
-static void _dispatch_Object_08(void *object, Buffer *, Buffer *result)
+static void _dispatch_Arts_Object_09(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
-	FlowSystem returnCode = ((Object_skel *)object)->_flowSystem();
+	Arts::FlowSystem returnCode = ((Arts::Object_skel *)object)->_flowSystem();
 	writeObject(*result,returnCode._base());
 }
 
-void Object_skel::_buildMethodTable()
+void Arts::Object_skel::_buildMethodTable()
 {
-	Buffer m;
-	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f64446566000f0000005f696e746572666163654e616d650007000000737472696e67000000000000000000100000005f7175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000b0000005f71756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d65000a0000005f746f537472696e670007000000737472696e670000000000000000000c0000005f636f707952656d6f74650005000000766f69640000000000000000000b0000005f75736552656d6f74650005000000766f69640000000000000000000f0000005f72656c6561736552656d6f74650005000000766f6964000000000000000000110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000000000000000000","MethodTable");
-	_addMethod(_dispatch_Object_00,this,MethodDef(m));
-	_addMethod(_dispatch_Object_01,this,MethodDef(m));
-	_addMethod(_dispatch_Object_02,this,MethodDef(m));
-	_addMethod(_dispatch_Object_03,this,MethodDef(m));
-	_addMethod(_dispatch_Object_04,this,MethodDef(m));
-	_addMethod(_dispatch_Object_05,this,MethodDef(m));
-	_addMethod(_dispatch_Object_06,this,MethodDef(m));
-	_addMethod(_dispatch_Object_07,this,MethodDef(m));
-	_addMethod(_dispatch_Object_08,this,MethodDef(m));
+	Arts::Buffer m;
+	m.fromString(
+        "MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e6700"
+        "020000000100000010000000417274733a3a4d6574686f64446566000a0000006d"
+        "6574686f64446566000f0000005f696e746572666163654e616d65000700000073"
+        "7472696e67000200000000000000100000005f7175657279496e74657266616365"
+        "0013000000417274733a3a496e7465726661636544656600020000000100000007"
+        "000000737472696e6700050000006e616d65000b0000005f717565727954797065"
+        "000e000000417274733a3a54797065446566000200000001000000070000007374"
+        "72696e6700050000006e616d65000a0000005f746f537472696e67000700000073"
+        "7472696e67000200000000000000120000005f6973436f6d70617469626c655769"
+        "74680008000000626f6f6c65616e00020000000100000007000000737472696e67"
+        "000e000000696e746572666163656e616d65000c0000005f636f707952656d6f74"
+        "650005000000766f69640002000000000000000b0000005f75736552656d6f7465"
+        "0005000000766f69640002000000000000000f0000005f72656c6561736552656d"
+        "6f74650005000000766f6964000200000000000000110000005f6765745f5f666c"
+        "6f7753797374656d0011000000417274733a3a466c6f7753797374656d00020000"
+        "0000000000",
+		"MethodTable"
+	);
+	_addMethod(_dispatch_Arts_Object_00,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_01,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_02,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_03,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_04,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_05,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_06,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_07,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_08,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_09,this,Arts::MethodDef(m));
 }
 
 /*
@@ -796,6 +828,23 @@ string Object_stub::_toString()
 	if(!result) return ""; // error
 	string returnCode;
 	result->readString(returnCode);
+	delete result;
+	return returnCode;
+}
+
+bool Arts::Object_stub::_isCompatibleWith(const std::string& interfacename)
+{
+	long methodID = _lookupMethodFast("method:120000005f6973436f6d70617469626c65576974680008000000626f6f6c65616e00020000000100000007000000737472696e67000e000000696e746572666163656e616d6500");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->writeString(interfacename);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return false; // error occured
+	bool returnCode = result->readBool();
 	delete result;
 	return returnCode;
 }

@@ -772,6 +772,10 @@ Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromReference(Arts::ObjectR
 		if(conn)
 		{
 			result = new Arts::InterfaceRepo_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::InterfaceRepo")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -876,6 +880,13 @@ std::string Arts::InterfaceRepo_skel::_interfaceName()
 	return "Arts::InterfaceRepo";
 }
 
+bool Arts::InterfaceRepo_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::InterfaceRepo") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
+}
+
 std::string Arts::InterfaceRepo_skel::_interfaceNameSkel()
 {
 	return "Arts::InterfaceRepo";
@@ -973,6 +984,10 @@ Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromReference(Arts::O
 		if(conn)
 		{
 			result = new Arts::FlowSystemSender_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::FlowSystemSender")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -1019,6 +1034,13 @@ void Arts::FlowSystemSender_stub::processed()
 std::string Arts::FlowSystemSender_skel::_interfaceName()
 {
 	return "Arts::FlowSystemSender";
+}
+
+bool Arts::FlowSystemSender_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::FlowSystemSender") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
 }
 
 std::string Arts::FlowSystemSender_skel::_interfaceNameSkel()
@@ -1081,6 +1103,10 @@ Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromReference(Art
 		if(conn)
 		{
 			result = new Arts::FlowSystemReceiver_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::FlowSystemReceiver")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -1134,6 +1160,13 @@ long Arts::FlowSystemReceiver_stub::receiveHandlerID()
 std::string Arts::FlowSystemReceiver_skel::_interfaceName()
 {
 	return "Arts::FlowSystemReceiver";
+}
+
+bool Arts::FlowSystemReceiver_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::FlowSystemReceiver") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
 }
 
 std::string Arts::FlowSystemReceiver_skel::_interfaceNameSkel()
@@ -1196,6 +1229,10 @@ Arts::FlowSystem_base *Arts::FlowSystem_base::_fromReference(Arts::ObjectReferen
 		if(conn)
 		{
 			result = new Arts::FlowSystem_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::FlowSystem")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -1333,6 +1370,13 @@ Arts::FlowSystemReceiver Arts::FlowSystem_stub::createReceiver(Arts::Object dest
 std::string Arts::FlowSystem_skel::_interfaceName()
 {
 	return "Arts::FlowSystem";
+}
+
+bool Arts::FlowSystem_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::FlowSystem") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
 }
 
 std::string Arts::FlowSystem_skel::_interfaceNameSkel()
@@ -1487,6 +1531,10 @@ Arts::GlobalComm_base *Arts::GlobalComm_base::_fromReference(Arts::ObjectReferen
 		if(conn)
 		{
 			result = new Arts::GlobalComm_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::GlobalComm")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -1576,6 +1624,13 @@ std::string Arts::GlobalComm_skel::_interfaceName()
 	return "Arts::GlobalComm";
 }
 
+bool Arts::GlobalComm_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::GlobalComm") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
+}
+
 std::string Arts::GlobalComm_skel::_interfaceNameSkel()
 {
 	return "Arts::GlobalComm";
@@ -1662,6 +1717,10 @@ Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromReference(Arts::ObjectR
 		if(conn)
 		{
 			result = new Arts::TmpGlobalComm_stub(conn,r.objectID);
+			if (!result->_isCompatibleWith("Arts::TmpGlobalComm")) {
+			result->_release();
+			return 0;
+			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
 		}
@@ -1700,6 +1759,14 @@ Arts::TmpGlobalComm_stub::TmpGlobalComm_stub(Arts::Connection *connection, long 
 std::string Arts::TmpGlobalComm_skel::_interfaceName()
 {
 	return "Arts::TmpGlobalComm";
+}
+
+bool Arts::TmpGlobalComm_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::TmpGlobalComm") return true;
+	if (interfacename == "Arts::GlobalComm") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
 }
 
 std::string Arts::TmpGlobalComm_skel::_interfaceNameSkel()

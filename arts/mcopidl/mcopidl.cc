@@ -1452,6 +1452,7 @@ void doInterfacesHeader(FILE *header)
 
 		fprintf(header,"\tstatic std::string _interfaceNameSkel();\n");
 		fprintf(header,"\tstd::string _interfaceName();\n");
+		fprintf(header,"\tbool _isCompatibleWith(const std::string& interfacename);\n");
 		fprintf(header,"\tvoid _buildMethodTable();\n");
 		fprintf(header,"\tvoid dispatch(Arts::Buffer *request, Arts::Buffer *result,"
 						"long methodID);\n");
@@ -1515,8 +1516,8 @@ void doInterfacesHeader(FILE *header)
 			iname.c_str(),iname.c_str(), iname.c_str());
 		fprintf(header,"\tinline %s(const Arts::DynamicCast& c) : _cache(0) {\n",
 			iname.c_str());
-		fprintf(header,"\t\t%s_base * ptr = (%s_base *)c.object()._base()->_cast(%s_base::_IID);\n",
-			iname.c_str(),iname.c_str(),iname.c_str());
+		fprintf(header,"\t\t%s_base * ptr = %s_base::_fromString(c.object().toString());\n",
+			iname.c_str(),iname.c_str());
 		fprintf(header,"\t\tif (ptr) {\n");
 		fprintf(header,"\t\t\t_pool->Dec();\n");
 		fprintf(header,"\t\t\t_pool = c.object()._get_pool();\n");
@@ -1846,6 +1847,13 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t\t{\n");
 		fprintf(source,"\t\t\tresult = new %s_stub(conn,r.objectID);\n",
 										d->name.c_str());
+		// Type checking
+		fprintf(source,"\t\t\tif (!result->_isCompatibleWith(\"%s\")) {\n",
+			d->name.c_str());
+		fprintf(source,"\t\t\tresult->_release();\n");
+		fprintf(source,"\t\t\treturn 0;\n");
+		fprintf(source,"\t\t\t}\n");
+		
 		fprintf(source,"\t\t\tif(needcopy) result->_copyRemote();\n");
 		fprintf(source,"\t\t\tresult->_useRemote();\n");
 		fprintf(source,"\t\t}\n");
@@ -1976,6 +1984,22 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
+		// Run-time type compatibility check
+		fprintf(source,"bool %s_skel::_isCompatibleWith(const std::string& interfacename)\n",
+			d->name.c_str());
+		fprintf(source,"{\n");
+		// Interface is compatible with itself!
+		fprintf(source,"\tif (interfacename == \"%s\") return true;\n",d->name.c_str());
+		// It also provides the parent interfaces
+		for(pci = parentCast.begin(); pci != parentCast.end();pci++)
+		{
+			fprintf(source,"\tif (interfacename == \"%s\") return true;\n", pci->c_str());
+		}
+		// and is ultimately an Object
+		fprintf(source,"\tif (interfacename == \"Arts::Object\") return true;\n");
+		fprintf(source,"\treturn false;\n"); // And nothing else
+		fprintf(source,"}\n\n");
+		
 		fprintf(source,"std::string %s_skel::_interfaceNameSkel()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
