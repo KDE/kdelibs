@@ -43,7 +43,7 @@ dnl Test for libidn (IDNA support)
 dnl -------
 
 LIB_IDN=
-AC_CHECK_LIB(idn, idna_to_ascii_4i, [
+KDE_CHECK_LIB(idn, idna_to_ascii_4i, [
   AC_DEFINE_UNQUOTED(HAVE_LIBIDN, 1, [Defined if you have libidn in your system])
   LIB_IDN=-lidn
 ])

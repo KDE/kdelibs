@@ -23,6 +23,10 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
