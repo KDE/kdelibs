@@ -628,12 +628,12 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	    imageURL = _filename;
 	    imageURL.detach();
 	    synchron = TRUE;
-	    htmlWidget->requestImage( this, imageURL.data() );
+	    htmlWidget->requestFile( this, imageURL.data() );
 	    synchron = FALSE;
 	    // If we have to wait for the image...
 	    if ( pixmap == 0L )
 	    {
-		// Make shure that we dont get broken values here
+		// Make sure that we dont get broken values here
 		if ( ascent == -1 )
 		{
 		    predefinedHeight = FALSE;
@@ -686,7 +686,7 @@ void HTMLImage::init()
     	ascent = pixmap->height();
 }
 
-void HTMLImage::imageLoaded( const char *_filename )
+void HTMLImage::fileLoaded( const char *_filename )
 {
     pixmap = new QPixmap();
     pixmap->load( _filename );	    
@@ -810,13 +810,130 @@ HTMLArea::HTMLArea( int _x, int _y, int _r, const char *_url,
 
 //----------------------------------------------------------------------------
 
-HTMLMap::HTMLMap( const char *_url )
+HTMLMap::HTMLMap( KHTMLWidget *w, const char *_url )
+	: HTMLObject()
 {
 	areas.setAutoDelete( true );
 	url = _url;
+	htmlWidget = w;
+
+	if ( url.contains( ':' ) )
+		htmlWidget->requestFile( this, url );
 }
 
-const HTMLArea *HTMLMap::checkPoint( int _x, int _y )
+// The external map has been downloaded
+void HTMLMap::fileLoaded( const char *_filename )
+{
+	QFile file( _filename );
+	QString buffer;
+	QString href;
+	QString coords;
+	HTMLArea::Shape shape = HTMLArea::Rect;
+	char ch;
+
+	if ( file.open( IO_ReadOnly ) )
+	{
+		while ( !file.atEnd() )
+		{
+			// read in a line
+			buffer.data()[0] = '\0';
+			do
+			{
+				ch = file.getch();
+				if ( ch != '\n' && ch != -1 );
+					buffer += ch;
+			}
+			while ( ch != '\n' && ch != -1 );
+
+			// comment?
+			if ( buffer[0] == '#' )
+				continue;
+
+			StringTokenizer st( buffer, " " );
+
+			// get shape
+			const char *p = st.nextToken();
+
+			if ( strncasecmp( p, "rect", 4 ) == 0 )
+				shape = HTMLArea::Rect;
+			else if ( strncasecmp( p, "poly", 4 ) == 0 )
+				shape = HTMLArea::Poly;
+			else if ( strncasecmp( p, "circle", 6 ) == 0 )
+				shape = HTMLArea::Circle;
+
+			// get url
+			p = st.nextToken();
+
+			if ( *p == '#' )
+			{// reference
+				KURL u( htmlWidget->getDocumentURL() );
+				u.setReference( p + 1 );
+				href = u.url();
+			}
+			else if ( strchr( p, ':' ) )
+			{// full URL
+				href =  p;
+			}
+			else
+			{// relative URL
+				KURL u2( htmlWidget->getBaseURL(), p );
+				href = u2.url();
+			}
+
+			// read coords and create object
+			HTMLArea *area = 0;
+
+			switch ( shape )
+			{
+				case HTMLArea::Rect:
+					{
+						p = st.nextToken();
+						int x1, y1, x2, y2;
+						sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+						QRect rect( x1, y1, x2-x1, y2-y1 );
+						area = new HTMLArea( rect, href, "" );
+						printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
+					}
+					break;
+
+				case HTMLArea::Circle:
+					{
+						p = st.nextToken();
+						int xc, yc, rc;
+						sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
+						area = new HTMLArea( xc, yc, rc, href, "" );
+						printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
+					}
+					break;
+
+				case HTMLArea::Poly:
+					{
+						printf( "Area Poly " );
+						int count = 0, x, y;
+						QPointArray parray;
+						while ( st.hasMoreTokens() )
+						{
+							p = st.nextToken();
+							sscanf( p, "%d,%d", &x, &y );
+							parray.resize( count + 1 );
+							parray.setPoint( count, x, y );
+							printf( "%d, %d  ", x, y );
+							count++;
+						}
+						printf( "\n" );
+						if ( count > 2 )
+							area = new HTMLArea( parray, href, "" );
+					}
+					break;
+			}
+
+			if ( area )
+				addArea( area );
+		}
+	}
+}
+
+const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 {
 	const HTMLArea *area;
 
@@ -837,8 +954,9 @@ HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
 	: HTMLImage( widget, _filename, _url, _target, _max_width, _width,
 		_height, _percent )
 {
+	type = ClientSide;
+	serverurl = _url;
 }
-
 
 HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 {
@@ -846,21 +964,32 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 	{
 		if ( _y > y - ascent && _y < y + descent + 1 )
 		{
-			HTMLMap *map = htmlWidget->getMap( mapurl );
-			if ( map )
+			if ( type == ClientSide )
 			{
-				const HTMLArea *area = map->checkPoint( _x - x, _y - ( y -ascent ) );
-				if ( area )
+				HTMLMap *map = htmlWidget->getMap( mapurl );
+				if ( map )
 				{
-					url = area->getURL();
-					target = area->getTarget();
-					return this;
+					const HTMLArea *area = map->containsPoint( _x - x,
+						_y - ( y -ascent ) );
+					if ( area )
+					{
+						url = area->getURL();
+						target = area->getTarget();
+						return this;
+					}
+					else
+					{
+						url.resize( 0 );
+						target.resize( 0 );
+					}
 				}
-				else
-				{
-					url.resize( 0 );
-					target.resize( 0 );
-				}
+			}
+			else
+			{
+				QString coords;
+				coords.sprintf( "?%d,%d", _x - x, _y - ( y -ascent ) );
+				url = serverurl + coords;
+				return this;
 			}
 		}
 	}

@@ -1180,18 +1180,18 @@ bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
 	int _x2, int _y2, int _tx, int _ty )
 {
     HTMLObject *obj;
-	bool isSel = false;
+    bool isSel = false;
 
-	_tx += x;
-	_ty += y - ascent;
+    _tx += x;
+    _ty += y - ascent;
 
-	for ( obj = list.first(); obj != NULL; obj = list.next() )
-	{
-		isSel |= obj->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
-			_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
-	}
+    for ( obj = list.first(); obj != NULL; obj = list.next() )
+    {
+	isSel |= obj->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
+		_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+    }
 
-	return isSel;
+    return isSel;
 }
 
 HTMLObject* HTMLClue::checkPoint( int _x, int _y )
@@ -1213,73 +1213,73 @@ HTMLObject* HTMLClue::checkPoint( int _x, int _y )
 
 void HTMLClue::calcSize( HTMLClue * )
 {
-	HTMLObject *obj;
+    HTMLObject *obj;
 
-	// If we have already called calcSize for the children, then just
-	// continue from the last object done in previous call.
-	if ( prevCalcObj >= 0 )
-		obj = list.at( prevCalcObj );	// this will always find an object
-	else
-	{
-//		x = y = ascent = 0;
-		ascent = 0;
-		obj = list.first();
-	}
+    // If we have already called calcSize for the children, then just
+    // continue from the last object done in previous call.
+    if ( prevCalcObj >= 0 )
+	obj = list.at( prevCalcObj );	// this will always find an object
+    else
+    {
+//	x = y = ascent = 0;
+	ascent = 0;
+	obj = list.first();
+    }
 
-	while ( obj != NULL )
-	{
-		obj->calcSize( this );
-		obj = list.next();
-	}
+    while ( obj != NULL )
+    {
+	obj->calcSize( this );
+	obj = list.next();
+    }
 
-	// remember this object so that we can start from here next time
-	// we are called.
-	list.last();
-	prevCalcObj = list.at();
+    // remember this object so that we can start from here next time
+    // we are called.
+    list.last();
+    prevCalcObj = list.at();
 }
 
 void HTMLClue::recalcBaseSize( QPainter *_painter )
 {
-	HTMLObject *obj;
+    HTMLObject *obj;
 
-	for ( obj = list.first(); obj != NULL; obj = list.next() )
-		obj->recalcBaseSize( _painter );
+    for ( obj = list.first(); obj != NULL; obj = list.next() )
+	obj->recalcBaseSize( _painter );
 }
 
 int HTMLClue::calcMinWidth()
 {
     HTMLObject *obj;
-	int minWidth = 0;
+    int minWidth = 0;
 
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
 	int w = obj->calcMinWidth();
 	if ( w > minWidth )
-		minWidth = w;
+	    minWidth = w;
     }
 
-	if ( isFixedWidth() )
-		return width > minWidth ? width : minWidth;
+    if ( isFixedWidth() )
+	return width > minWidth ? width : minWidth;
 
-	return minWidth;
+    return minWidth;
 }
 
 int HTMLClue::calcPreferredWidth()
 {
-	if ( isFixedWidth() )
-		return width;
+    if ( isFixedWidth() )
+	return width;
 
-	HTMLObject *obj;
-	int prefWidth = 0;
+    HTMLObject *obj;
+    int prefWidth = 0;
 
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
 	int w = obj->calcPreferredWidth();
 	if ( w > prefWidth )
-		prefWidth = w;
+	    prefWidth = w;
     }
 
-	return prefWidth;
+    return prefWidth;
 }
 
 void HTMLClue::setMaxAscent( int _a )
@@ -1291,34 +1291,34 @@ void HTMLClue::setMaxAscent( int _a )
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
 	    obj->setYPos( obj->getYPos() + ( _a - ascent )/2 );
     }
-	else if ( valign == Bottom )
-	{
+    else if ( valign == Bottom )
+    {
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
 	    obj->setYPos( obj->getYPos() + _a - ascent );
-	}
+    }
 
-	ascent = _a;
+    ascent = _a;
 }
 
 int HTMLClue::findPageBreak( int _y )
 {
-	if ( _y > y )
-		return -1;
+    if ( _y > y )
+	return -1;
 
-	HTMLObject *obj;
-	int pos;
+    HTMLObject *obj;
+    int pos;
 
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
-		if ( !obj->isAligned() )
-		{
-			pos = obj->findPageBreak( _y - ( y - ascent ) );
-			if ( pos >= 0 )
-				return ( pos + y - ascent );
-		}
+	if ( !obj->isAligned() )
+	{
+	    pos = obj->findPageBreak( _y - ( y - ascent ) );
+	    if ( pos >= 0 )
+		return ( pos + y - ascent );
+	}
     }
 
-	return -1;
+    return -1;
 }
 
 bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
@@ -1335,23 +1335,23 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     _ty += y - ascent;
 
 #ifdef CLUE_DEBUG
-	// draw rectangles around clues - for debugging
-	QBrush brush;
-	_painter->setBrush( brush );
-	_painter->drawRect( _tx, _ty, width, getHeight() );
+    // draw rectangles around clues - for debugging
+    QBrush brush;
+    _painter->setBrush( brush );
+    _painter->drawRect( _tx, _ty, width, getHeight() );
 #endif
 
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
-		if ( !obj->isAligned() )
-		{
-			if ( obj->print( _painter, _x - x, _y - (y - getHeight()),
-					_width, _height, _tx, _ty, toPrinter ) && toPrinter )
-				return true;
-		}
+	if ( !obj->isAligned() )
+	{
+	    if ( obj->print( _painter, _x - x, _y - (y - getHeight()),
+			_width, _height, _tx, _ty, toPrinter ) && toPrinter )
+	    return true;
+	}
     }
 
-	return false;
+    return false;
 }
 
 void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
@@ -1376,7 +1376,8 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     {
 	if ( obj == _obj )
 	{
-	    obj->print( _painter, _x - x, _y - (y - getHeight()), _width, _height, _tx, _ty );
+	    obj->print( _painter, _x - x, _y - (y - getHeight()), _width,	
+		    _height, _tx, _ty );
 	    return;
 	}
     }
@@ -1386,56 +1387,56 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
 void HTMLClueV::reset()
 {
-	HTMLClue::reset();
+    HTMLClue::reset();
 
-	alignLeftList.clear();
-	alignRightList.clear();
+    alignLeftList.clear();
+    alignRightList.clear();
 }
 
 void HTMLClueV::setMaxWidth( int _max_width )
 {
-	HTMLObject *obj;
+    HTMLObject *obj;
 
-	if ( !isFixedWidth() )
-	{
-		max_width = _max_width;
-		if ( percent > 0 )
-			width = _max_width * percent / 100;
-		else
-			width = max_width;
-	}
+    if ( !isFixedWidth() )
+    {
+	max_width = _max_width;
+	if ( percent > 0 )
+	    width = _max_width * percent / 100;
+	else
+	    width = max_width;
+    }
 
-	for ( obj = list.first(); obj != 0L; obj = list.next() )
-	{
-		obj->setMaxWidth( width );
-	}
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+	obj->setMaxWidth( width );
+    }
 }
 
 HTMLObject* HTMLClueV::checkPoint( int _x, int _y )
 {
     HTMLObject *obj2;
 
-	if ( ( obj2 = HTMLClue::checkPoint( _x, _y ) ) != NULL )
-		return obj2;
+    if ( ( obj2 = HTMLClue::checkPoint( _x, _y ) ) != NULL )
+	    return obj2;
 
     if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
 	return 0L;
 
-	HTMLClueAligned *clue;
-	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
-	{
-		if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
-				 _y - (y - ascent) - ( clue->parent()->getYPos() -
-				 clue->parent()->getAscent() ) )) != 0L)
-			return obj2;
-	}
-	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
-	{
-		if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
-				 _y - (y - ascent) - ( clue->parent()->getYPos() -
-				 clue->parent()->getAscent() ) )) != 0L)
-			return obj2;
-	}
+    HTMLClueAligned *clue;
+    for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
+    {
+	if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
+		 _y - (y - ascent) - ( clue->parent()->getYPos() -
+		 clue->parent()->getAscent() ) )) != 0L)
+	    return obj2;
+    }
+    for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
+    {
+	if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
+		 _y - (y - ascent) - ( clue->parent()->getYPos() -
+		 clue->parent()->getAscent() ) )) != 0L)
+	    return obj2;
+    }
 
     return 0L;
 }
@@ -1449,26 +1450,26 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	// continue from the last object done in previous call.
 	if ( prevCalcObj >= 0 )
 	{
-		obj = list.at( prevCalcObj );	// This will always find an object.
-		ascent -= obj->getHeight();	// Otherwise it will be added twice.
+	    obj = list.at( prevCalcObj );  // This will always find an object.
+	    ascent -= obj->getHeight();	   // Otherwise it will be added twice.
 	}
 	else
 	{
-		ascent = descent = 0;
-		obj = list.first();
+	    ascent = descent = 0;
+	    obj = list.first();
 	}
 
 	while ( obj != NULL )
 	{
-		// Set an initial ypos so that the alignment stuff knows where
-		// the top of this object is
-		obj->setYPos( ascent );
-		obj->calcSize( this );
-		if ( obj->getWidth() > width )
-			width = obj->getWidth();
-		ascent += obj->getHeight();
-		obj->setPos( lmargin, ascent - obj->getDescent() );
-		obj = list.next();
+	    // Set an initial ypos so that the alignment stuff knows where
+	    // the top of this object is
+	    obj->setYPos( ascent );
+	    obj->calcSize( this );
+	    if ( obj->getWidth() > width )
+		    width = obj->getWidth();
+	    ascent += obj->getHeight();
+	    obj->setPos( lmargin, ascent - obj->getDescent() );
+	    obj = list.next();
 	}
 
 	// remember this object so that we can start from here next time
@@ -1481,33 +1482,33 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 */
 	if ( halign == HCenter )
 	{
-		for ( obj = list.first(); obj != 0L; obj = list.next() )
-			obj->setXPos( lmargin + (width - obj->getWidth()) / 2 );
+	    for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->setXPos( lmargin + (width - obj->getWidth()) / 2 );
 	}
 	else if ( halign == Right )
 	{
-		for ( obj = list.first(); obj != 0L; obj = list.next() )
-			obj->setXPos( lmargin + width - obj->getWidth() );
+	    for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->setXPos( lmargin + width - obj->getWidth() );
 	}
 
 	HTMLClueAligned *clue;
 	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
 	{
-		if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
-			ascent = clue->getYPos() + clue->parent()->getYPos();
+	    if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
+		ascent = clue->getYPos() + clue->parent()->getYPos();
 	}
 	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
 	{
-		if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
-			ascent = clue->getYPos() + clue->parent()->getYPos();
+	    if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
+		ascent = clue->getYPos() + clue->parent()->getYPos();
 	}
 }
 
 bool HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
-	bool rv = HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
+    bool rv = HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
 
-	// print aligned objects
+    // print aligned objects
     if ( _y + _height < y - getAscent() || _y > y )
 	return rv;
     
@@ -1531,79 +1532,125 @@ bool HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 		_ty + clue->parent()->getYPos() - clue->parent()->getAscent() );
     }
 
-	return rv;
+    return rv;
 }
 
 int HTMLClueV::getLeftMargin( int _y )
 {
-	int margin = 0;
-	HTMLClueAligned *clue;
+    int margin = 0;
+    HTMLClueAligned *clue;
 
-	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
-	{
-		if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
-				clue->parent()->getAscent() < _y &&
-				clue->getYPos() + clue->parent()->getYPos() -
-				clue->parent()->getAscent() > _y )
-			margin = clue->getXPos() + clue->getWidth();
-	}
+    for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
+    {
+	if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
+		    clue->parent()->getAscent() < _y &&
+		    clue->getYPos() + clue->parent()->getYPos() -
+		    clue->parent()->getAscent() > _y )
+	    margin = clue->getXPos() + clue->getWidth();
+    }
 
-	return margin;
+    return margin;
 }
 
 int HTMLClueV::getRightMargin( int _y )
 {
-	int margin = max_width;
-	HTMLClueAligned *clue;
+    int margin = max_width;
+    HTMLClueAligned *clue;
 
-	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
-	{
-		if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
-				clue->parent()->getAscent() < _y &&
-				clue->getYPos() + clue->parent()->getYPos() -
-				clue->parent()->getAscent() > _y )
-			margin = clue->getXPos();
-	}
+    for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
+    {
+	if ( clue->getYPos()-clue->getAscent()+clue->parent()->getYPos() -
+		clue->parent()->getAscent() < _y &&
+		clue->getYPos() + clue->parent()->getYPos() -
+		clue->parent()->getAscent() > _y )
+	    margin = clue->getXPos();
+    }
 
-	return margin;
+    return margin;
 }
 
 //-----------------------------------------------------------------------------
 
-void HTMLClueH::setMaxWidth( int _w )
+bool HTMLClueH::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
 {
-	HTMLObject *obj;
-	max_width = _w;
+    HTMLObject *obj;
+    bool isSel = false;
+    int a = 0, d = 0;
 
-	// first calculate width minus fixed width objects
+    if ( list.isEmpty() )
+	return false;
+
+    _tx += x;
+    _ty += y - ascent;
+
+    // get max ascent and descent
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
-		if ( obj->getPercent() == 0 )	// i.e. fixed width objects
-			_w -= obj->getWidth();
+	if ( obj->getAscent() > a )
+	    a = obj->getAscent();
+	if ( obj->getDescent() > d )
+	    d = obj->getDescent();
     }
 
-	// now call setMaxWidth for variable objects
+    int rely1 = _y1 - ( y - ascent );
+    int rely2 = _y2 - ( y - ascent );
+    int ypos = list.getFirst()->getYPos();
+
+    if ( rely1 > ypos - a && rely1 < ypos + d )
+	rely1 = ypos-1;
+
+    if ( rely2 > ypos - a && rely2 < ypos + d )
+	rely2 = ypos;
+
+    // (de)select objects
     for ( obj = list.first(); obj != 0L; obj = list.next() )
-		if ( obj->getPercent() > 0 )
-			obj->setMaxWidth( _w );
+    {
+	if ( obj->getObjectType() == Clue )
+	    isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+		    _x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+	else
+	    isSel |= obj->selectText( _painter, _x1 - x, rely1,
+		    _x2 - x, rely2, _tx, _ty );
+    }
+
+    return isSel;
+}
+
+void HTMLClueH::setMaxWidth( int _w )
+{
+    HTMLObject *obj;
+    max_width = _w;
+
+    // first calculate width minus fixed width objects
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+	if ( obj->getPercent() == 0 )	// i.e. fixed width objects
+	    _w -= obj->getWidth();
+    }
+
+    // now call setMaxWidth for variable objects
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+	if ( obj->getPercent() > 0 )
+	    obj->setMaxWidth( _w );
 }
 
 void HTMLClueH::calcSize( HTMLClue *parent )
 {
-	// make sure children are properly sized
-	setMaxWidth( max_width );
+    // make sure children are properly sized
+    setMaxWidth( max_width );
 
     HTMLClue::calcSize( this );
     
     HTMLObject *obj;
-	int lmargin = parent->getLeftMargin( getYPos() );
+    int lmargin = parent->getLeftMargin( getYPos() );
 
     width = lmargin;
     descent = 0;
     ascent = 0;
 
-	int a = 0;
-	int d = 0;
+    int a = 0;
+    int d = 0;
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
 	obj->setXPos( width );
@@ -1614,23 +1661,23 @@ void HTMLClueH::calcSize( HTMLClue *parent )
 	    d = obj->getDescent();
     }
 
-	ascent = a+d;
+    ascent = a+d;
 
-	switch ( valign )
-	{
-		case Top:
-			for ( obj = list.first(); obj != 0L; obj = list.next() )
-				obj->setYPos( obj->getAscent() );
-			break;
+    switch ( valign )
+    {
+	case Top:
+	    for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->setYPos( obj->getAscent() );
+	    break;
 
-		case VCenter:
-			for ( obj = list.first(); obj != 0L; obj = list.next() )
-				obj->setYPos( ascent/2 );
-			break;
+	case VCenter:
+	    for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->setYPos( ascent/2 );
+	    break;
 
-		default:
-			for ( obj = list.first(); obj != 0L; obj = list.next() )
-				obj->setYPos( ascent - d );
+	default:
+	    for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->setYPos( ascent - d );
     }
 }
 
@@ -1665,68 +1712,68 @@ int HTMLClueH::calcPreferredWidth()
 bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
 	int _x2, int _y2, int _tx, int _ty )
 {
-	HTMLObject *lineEnd, *obj;
-	bool isSel = false;
-	int ypos, a, d, rely1, rely2;
+    HTMLObject *lineEnd, *obj;
+    bool isSel = false;
+    int ypos, a, d, rely1, rely2;
 
-	_tx += x;
-	_ty += y - ascent;
+    _tx += x;
+    _ty += y - ascent;
 
-	QListIterator<HTMLObject> line( list );
-	lineEnd = line.current();
-	obj = list.first();
+    QListIterator<HTMLObject> line( list );
+    lineEnd = line.current();
+    obj = list.first();
 
-	while ( lineEnd )
+    while ( lineEnd )
+    {
+	ypos = lineEnd->getYPos();
+	a = lineEnd->getAscent();
+	d = lineEnd->getDescent();
+
+	while ( lineEnd && lineEnd->getYPos() == ypos )
 	{
-		ypos = lineEnd->getYPos();
+	    if ( lineEnd->getAscent() > a )
 		a = lineEnd->getAscent();
+	    if ( lineEnd->getDescent() > d )
 		d = lineEnd->getDescent();
-
-		while ( lineEnd && lineEnd->getYPos() == ypos )
-		{
-			if ( lineEnd->getAscent() > a )
-				a = lineEnd->getAscent();
-			if ( lineEnd->getDescent() > d )
-				d = lineEnd->getDescent();
-			lineEnd = ++line;
-		}
-
-		rely1 = _y1 - ( y - ascent );
-		rely2 = _y2 - ( y - ascent );
-
-		if ( rely1 > ypos - a && rely1 < ypos + d )
-			rely1 = ypos-1;
-
-		if ( rely2 > ypos - a && rely2 < ypos + d )
-			rely2 = ypos;
-
-		while ( obj != lineEnd )
-		{
-			if ( obj->getObjectType() == Clue )
-				isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
-					_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
-			else
-				isSel |= obj->selectText( _painter, _x1 - x, rely1,
-					_x2 - x, rely2, _tx, _ty );
-			obj = list.next();
-		}
+	    lineEnd = ++line;
 	}
 
-	return isSel;
+	rely1 = _y1 - ( y - ascent );
+	rely2 = _y2 - ( y - ascent );
+
+	if ( rely1 > ypos - a && rely1 < ypos + d )
+	    rely1 = ypos-1;
+
+	if ( rely2 > ypos - a && rely2 < ypos + d )
+	    rely2 = ypos;
+
+	while ( obj != lineEnd )
+	{
+	    if ( obj->getObjectType() == Clue )
+		isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+			_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+	    else
+		isSel |= obj->selectText( _painter, _x1 - x, rely1,
+			_x2 - x, rely2, _tx, _ty );
+	    obj = list.next();
+	}
+    }
+
+    return isSel;
 }
 
 void HTMLClueFlow::getSelectedText( QString &_str )
 {
-	HTMLObject *obj;
+    HTMLObject *obj;
 
-	for ( obj = list.first(); obj != 0L; obj = list.next() )
-	{
-		if ( obj != list.getFirst() || !obj->isSeparator() )
-			obj->getSelectedText( _str );
-	}
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+	if ( obj != list.getFirst() || !obj->isSeparator() )
+	    obj->getSelectedText( _str );
+    }
 
-	if ( !list.isEmpty() && list.getLast()->isSelected() )
-		_str += '\n';
+    if ( !list.isEmpty() && list.getLast()->isSelected() )
+	_str += '\n';
 }
 
 void HTMLClueFlow::calcSize( HTMLClue *parent )

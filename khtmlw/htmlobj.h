@@ -99,6 +99,13 @@ public:
     
     virtual void reset() { setPrinted( false ); }
 
+	/*
+	 * These functions are overloaded by objects that need to have a remote
+	 * file downloaded, e.g. HTMLImage.
+	 */
+	virtual void fileLoaded( const char * /* _filename */ ) { }
+	virtual const char *requestedFile() { return 0; }
+
 	enum ObjectType { Object, Clue };
     /************************************************************
 	 * sometimes a clue would like to know if an object is a 
@@ -299,13 +306,14 @@ public:
     static void cacheImage( const char * );
     static QPixmap* findImage( const char * );
 
-    const char* getImageURL() const { return imageURL.data(); }
-    /// Tells the object the the requested image is available
-    /**
-      The image is on the local disk in the file named '_filename.'
-      */
-    void imageLoaded( const char *_filename );
-    
+    /* Tells the object the the requested image is available
+     *
+     * The image is on the local disk in the file named '_filename.'
+     */
+	virtual void fileLoaded( const char *_filename );
+	virtual const char *requestedFile()
+		{	return imageURL.data(); }
+
 protected:
 
     /// Calculates the size of the loaded image.
@@ -404,22 +412,29 @@ protected:
 /*
  * HTMLMap contains a list of areas in the image map.
  * i.e. all areas between <MAP > </MAP>
+ * This object is derived from HTMLObject so that it can make use of
+ * URLLoaded().
  */
-class HTMLMap
+class HTMLMap : public HTMLObject
 {
 public:
-	HTMLMap( const char *_url );
+	HTMLMap( KHTMLWidget *w, const char *_url );
+	virtual ~HTMLMap() { }
+
+	virtual void fileLoaded( const char *_filename );
+	virtual const char *requestedFile()
+		{	return url.data(); }
 
 	void addArea( HTMLArea *_area )
 		{	areas.append( _area ); }
-	const HTMLArea *checkPoint( int, int );
+	const HTMLArea *containsPoint( int, int );
 
 	const QString &mapURL() const
 		{	return url; }
 
 protected:
-	QString url;
 	QList<HTMLArea> areas;
+	KHTMLWidget *htmlWidget;
 };
 
 //----------------------------------------------------------------------------
@@ -439,8 +454,28 @@ public:
 	const QString& mapURL() const
 		{	return mapurl; }
 
+	enum Type { ClientSide, ServerSide };
+
+	void setMapType( Type t )
+		{	type = t; }
+	bool mapType() const
+		{	return type; }
+
 protected:
+	/*
+	 * The URL set by <a href=...><img ... ISMAP></a> for server side maps
+	 */
+	QString serverurl;
+
+	/*
+	 * The URL set by <img ... USEMAP=mapurl> for client side maps
+	 */
 	QString mapurl;
+
+	/*
+	 * ClientSide or ServerSide
+	 */
+	Type type;
 };
 
 //----------------------------------------------------------------------------

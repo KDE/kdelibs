@@ -1,7 +1,21 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 2 August 1997 - Martin Jones.
+Last Change: 9 August 1997 - Martin Jones.
+
+Version 0.8.7 - Martin
+----------------------
+
+ Fix font selection.
+ Change requestImage to requestFile to be more general.
+ Fix bug in tokeniser - segv with tokens > 1000 chars.
+ Disallow slotAddLine etc. if scrollbars are not visible.
+ Add type="i"|"I"|"a"|"A" to <ol type=...>.
+ Support server side image maps.
+ Add support to client side image maps for separate (remote) map files.
+ Fix black frames bug.
+ Add text selection support to KHTMLView.
+ Improve text selection in <pre>...</pre> mode.
 
 
 Version 0.8.6 - Martin

@@ -65,9 +65,9 @@ KHTMLView* JSEnvironment::getKHTMLView()
 
 JSEnvironment::~JSEnvironment()
 {
-    printf("===================================== DEL JSEnv 1 =============================\n");
+    printf("================================ DEL JSEnv 1 ========================\n");
     delete globalScope;
-    printf("===================================== DEL JSEnv 2 =============================\n");
+    printf("================================ DEL JSEnv 2 ========================\n");
 }
 
 /**********************************************************
@@ -113,7 +113,7 @@ JSWindowObject::JSWindowObject( JSEnvironment *_jsenv ) : JSUserDefinedObject()
 
 JSWindowObject::~JSWindowObject()
 {
-    printf("===================================== DEL JSWindowObject =============================\n");
+    printf("============================== DEL JSWindowObject ======================\n");
 }
 
 /**********************************************************
@@ -165,7 +165,7 @@ int JSWindowArrayObject::rightValue( JSObject *_index, JSValue *_rv )
 
 JSWindowArrayObject::~JSWindowArrayObject()
 {
-    printf("===================================== DEL JSWindowArrayObject =============================\n");
+    printf("============================== DEL JSWindowArrayObject ======================\n");
 }
 
 /**********************************************************
@@ -263,7 +263,7 @@ void JSWindowVarObject::clear()
 
 JSWindowVarObject::~JSWindowVarObject()
 {
-    printf("===================================== DEL JSWindowVarObject =============================\n");
+    printf("============================== DEL JSWindowVarObject ======================\n");
 }
 
 /**********************************************************
@@ -282,7 +282,7 @@ JSDocumentObject::JSDocumentObject( JSWindowObject *_window ) : JSUserDefinedObj
 
 JSDocumentObject::~JSDocumentObject()
 {
-    printf("===================================== DEL JSDocumentObject =============================\n");
+    printf("============================== DEL JSDocumentObject ======================\n");
     // delete jsDocumentWrite;
 }
 
@@ -358,7 +358,7 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 
 JSDocumentWriteFunction::~JSDocumentWriteFunction()
 {
-    printf("===================================== DEL JSDocumentWriteFunction =============================\n");
+    printf("============================== DEL JSDocumentWriteFunction ======================\n");
 }
 
 /**********************************************************
@@ -376,7 +376,7 @@ JSEventHandler::JSEventHandler( JSEnvironment *_env, const char *_name, const ch
 
 JSEventHandler::~JSEventHandler()
 {
-    printf("===================================== DEL JSEventHandler =============================\n");
+    printf("============================== DEL JSEventHandler ======================\n");
     if ( code )
 	delete code;
 }

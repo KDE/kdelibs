@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------------
+//
+// KDE HTML Widget
+//
+// Copyright (c) 1997 The KDE Project
+//
+
 #ifndef HTMLVIEW_H
 #define HTMLVIEW_H
 
@@ -35,12 +42,13 @@ public:
      * to fill the widget with content.
      *
      * @param _name is the name of the widget. Usually this name is only
-     *              meaningful for Qt but in this case it is the name of
-     *              the HTML window. This means you can reference this name
-     *              in the &lt; href=... target=... &gt; tag. If this argument is 0L
-     *              then a unique default name is chosen.
+     *          meaningful for Qt but in this case it is the name of
+     *          the HTML window. This means you can reference this name
+     *          in the &lt; href=... target=... &gt; tag. If this argument is 0L
+     *          then a unique default name is chosen.
      */
-    KHTMLView( QWidget *_parent = 0L, const char *_name = 0L, int _flags = 0, KHTMLView *_parent_view = 0L );
+    KHTMLView( QWidget *_parent = 0L, const char *_name = 0L, int _flags = 0,
+	KHTMLView *_parent_view = 0L );
     /**
      * Destroys the widget and all of its child widgets.
      */
@@ -55,22 +63,25 @@ public:
      * view->begin( u.directoryURL() );
      * </PRE>
      *
-     * @param _dx is the initial horizontal scrollbar value. Usually you dont want to
-     *            use this.
-     * @param _dy is the initial vertical scrollbar value. Usually you dont want to
-     *            use this.
+     * @param _dx is the initial horizontal scrollbar value. Usually you don't
+     *            want to use this.
+     * @param _dy is the initial vertical scrollbar value. Usually you don't
+     *            want to use this.
      */
     virtual void begin( const char *_url = 0L, int _dx = 0, int _dy = 0 );
+
     /**
      * Writes another part of the HTML code to the widget. You may call
      * this function many times in sequence. But remember: The less calls
      * the faster the widget is.
      */
     virtual void write( const char *_text );
+
     /**
      * Call this after your last call to @ref #write.
      */
     virtual void end();
+
     /**
      * This function will parse the code that has been previously written using
      * the @ref #write function. Call this one after calling @ref #end.
@@ -78,8 +89,8 @@ public:
     virtual void parse();
 
     /**
-     * Shows '_url' in this view. Usually a @ref #documentRequest signal is emitted
-     * to load the url.
+     * Shows '_url' in this view. Usually a @ref #documentRequest signal is
+     * emitted to load the url.
      */
     virtual void openURL( const char *_url );
 
@@ -172,6 +183,7 @@ public:
      * @see frameBorder
      */
     void setFrameBorder( int _b ) { frameBorder = _b;  }
+
     /**
      * @return the width of the border in pixels.
      *
@@ -190,6 +202,7 @@ public:
      * @see #scrolling
      */  
     void setScrolling( int _scroll ) { scrolling = _scroll;  }
+
     /**
      * @return 1 for yes, 0 for no and -1 for auto.
      *
@@ -207,6 +220,7 @@ public:
      * FOR INTERNAL USE ONLY.
      */
     void setAllowResize( bool _allow ) { bAllowResize = _allow; }
+
     /**
      * This function is used in @ref HTMLFrameSet. It is for
      * INTERNAL USE ONLY.
@@ -216,12 +230,14 @@ public:
      * @see #setAllowResize
      */
     bool allowResize() { return bAllowResize; }
+
     /**
      * Sets the width of the margin. This function is used to implement
      * the <tt>&lt;frame marginwidth=... &gt;</tt> tag.<br>
      * FOR INTERNAL USE ONLY.
      */
     void setMarginWidth( int _w );
+
     /**
      * Sets the width of the margin. This function is used to implement
      * the <tt>&lt;frame marginheight=... &gt;</tt> tag.<br>
@@ -236,6 +252,7 @@ public:
      * FOR INTERNAL USE ONLY.
      */
     void setSelected( bool _selected );
+
     /**
      * FOR INTERNAL USE ONLY.
      *
@@ -252,6 +269,7 @@ public:
      *          which part of the document the user is currently looking at.
      */
     int xOffset();
+
     /**
      * @return the y offset of the widget. You may use this function to remeber
      *          which part of the document the user is currently looking at.
@@ -265,7 +283,8 @@ public:
     const char* getURL( QPoint & p );
 
     /**
-     * Seaerches for a KHTMLView with a specific name as mentioned in the constructor.
+     * Seaerches for a KHTMLView with a specific name as mentioned in the
+     * constructor.
      * 
      * @see #setName
      * @see #name
@@ -291,9 +310,27 @@ public:
      * You can test this using list.isNull().
      */
     virtual void getSelected( QStrList &_list );
+
+    /**
+     * Get the text the user has marked.
+     *
+     * @param _str is the QString which will contain the text the user
+     * selected.  The selected text is appended to any text currently in
+     * _str.
+     */
+    virtual void getSelectedText( QString &_str );
+
+    /**
+     * Has the user selected any text?  Call @ref #getSelectedText to
+     * retrieve the selected text.
+     *
+     * @return true if there is text selected.
+     */
+     bool isTextSelected() const;
   
     /**
-     * This function allows you to customize the behavior of the @ref KHTMLWidget.
+     * This function allows you to customize the behavior of the
+     * @ref KHTMLWidget.
      * 
      * @return TRUE if the function handled the event, FALSE otherwise.
      *
@@ -301,8 +338,10 @@ public:
      * @see #mouseReleaseHook
      */
     virtual bool mouseMoveHook( QMouseEvent *_ev );
+
     /**
-     * This function allows you to customize the behavior of the @ref KHTMLWidget.
+     * This function allows you to customize the behavior of the
+     * @ref KHTMLWidget.
      * 
      * @return TRUE if the function handled the event, FALSE otherwise.
      *
@@ -310,6 +349,7 @@ public:
      * @see #mouseMoveHook
      */
     virtual bool mouseReleaseHook( QMouseEvent *_ev );
+
     /**
      * This function is called if the user presses the mouse. If he clicks on
      * a link you get the URL in '_url'.
@@ -326,13 +366,14 @@ public:
      * @see #mouseMoveHook
      * @see #mouseReleaseHook
      */
-    virtual bool mousePressedHook( const char* _url, const char *_target, QMouseEvent *_ev,
-				   bool _isselected );
+    virtual bool mousePressedHook( const char* _url, const char *_target,
+	QMouseEvent *_ev, bool _isselected );
+
     /**
-     * This function is called if the user wants to start a DND action. Overload this
-     * function and return TRUE to indicate that you processed the event. By default
-     * the function returns FALSE. This causes the @ref KHTMLWidget to process the
-     * event.
+     * This function is called if the user wants to start a DND action.
+     * Overload this function and return TRUE to indicate that you processed
+     * the event. By default the function returns FALSE. This causes the
+     * @ref KHTMLWidget to process the event.
      * Usually this function calls @ref KHTMLWidget::startDrag like this:
      * <TT>view->startDrag(....)</TT>. Dont call the startDrag function of any
      * other window. KDND would not like it :-)
@@ -380,7 +421,8 @@ public:
     KHTMLWidget* getKHTMLWidget() { return view; }
 
     /**
-     * @return the parent KHTMLView of this one or 0L is this is the top level view.
+     * @return the parent KHTMLView of this one or 0L is this is the top level
+     * view.
      *
      * @see #parentView
      */
@@ -392,16 +434,19 @@ public:
      * @see #cookie
      */
     const char* getCookie() { return cookie.data(); }
+
     /**
      * For internal use only.
      *
      * @see #cookie
      */
-    void setCookie( const char *_c ) { printf("Setting cookie '%s'\n",_c); cookie = _c; }
+    void setCookie( const char *_c )
+	{ printf("Setting cookie '%s'\n",_c); cookie = _c; }
                   
 signals:
     /**
-     * This signal is emitted if we deal with frames ( or one of the child widgets! ).
+     * This signal is emitted if we deal with frames ( or one of the child
+     * widgets! ).
      * It tells the owner of the widget to provide a certain URL for a widget.
      * The owner has to call <PRE>
      * _widget->begin( .. );
@@ -409,8 +454,9 @@ signals:
      * _widget->write( .. ); ....
      * _widget->end();
      * </PRE>
-     * This may happen before returning ( directly after receiving this signal ), or some time
-     * later on. You may be notified that the URL is no longer wanted. This is done with the
+     * This may happen before returning ( directly after receiving this
+     * signal ), or some time later on. You may be notified that the URL
+     * is no longer wanted. This is done with the
      * signal @ref #cancelDocumentRequest.
      *
      * @param _widget is the widget that requests the document.
@@ -445,7 +491,8 @@ signals:
      * @param _button is <tt>LeftButton, MiddleButton or RightButton</tt>
      * @param _target is the target window or 0L if none is specified.
      */
-    void URLSelected( KHTMLView *_view, const char *_url, int _button, const char *_target );
+    void URLSelected( KHTMLView *_view, const char *_url, int _button,
+	const char *_target );
 
     /**
      * Signals that the mouse cursor is over URL '_url'.
@@ -454,6 +501,17 @@ signals:
      * @param _url is a full qualified URL.
      */
     void onURL( KHTMLView *_view, const char *_url );
+
+    /**
+     * Signal that the user has selected text or the existing selection has
+     * become unselected.  The text may be retrieved using
+     * @ref #getSelectedText.  This is a good signal to connect to for
+     * enabling/disabling the Copy menu item or calling XSetSelectionOwner().
+     *
+     * @param _selected is true if the user has selected text or false if
+     * the current selection has been removed.
+     */
+    void textSelected( KHTMLView *_view, bool _selected );
 
     /**
      * This signal is Emitted if the user pressed the right mouse button
@@ -479,6 +537,7 @@ signals:
      * @see #cancelImageRequest
      */
     void imageRequest( KHTMLView *_view, const char *_url );
+
     /**
      * This signal is only emitted if this widget and not one of its children
      * requests an image.
@@ -491,6 +550,7 @@ signals:
      * @see #imageRequest
      */
     void cancelImageRequest( KHTMLView *_view, const char *_url );
+
     /**
      * This signal is only emitted if this widget and not one of its children
      * cancels a requested image.
@@ -503,7 +563,8 @@ signals:
      * @param _url is the <form action=...> value
      * @param _method is the <form method=...> value
      */
-    void formSubmitted( KHTMLView *_view, const char *_method, const char *_url );
+    void formSubmitted( KHTMLView *_view, const char *_method,
+	const char *_url );
 
     /**
      * Emitted if the user presses the mouse button over this widget and if
@@ -515,12 +576,13 @@ signals:
     void frameSelected( KHTMLView *_view );
 
     /**
-     * The widget started working. You may use this signal to implement an animated
-     * logo like netscape has one.
+     * The widget started working. You may use this signal to implement an
+     * animated logo like netscape has one.
      *
      * @see #documentDone
      */
     void documentStarted( KHTMLView *_view );
+
     /**
      * This signal is emitted if the widget has parsed and if all images
      * arrived. Mention that this is only true or '_view'. The parent widget
@@ -542,13 +604,15 @@ public slots:
 
     /**
      * This slot is connected to all children. It emits the signal
-     * @ref #documentRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #documentRequest if called. <b>This slot is for internal use
+     * only</b>.
      */
     void slotDocumentRequest( KHTMLView* _view, const char* _url );
 
     /**
      * This slot is connected to all children. It emits the signal
-     * @ref #cancelDocumentRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #cancelDocumentRequest if called. <b>This slot is for internal use
+     * only</b>.
      */
     void slotCancelDocumentRequest( KHTMLView* _view, const char* _url );
 
@@ -556,7 +620,8 @@ public slots:
      * This slot is connected to all children. It emits the signal
      * @ref #URLSelected if called. <b>This slot is for internal use only</b>.
      */
-    void slotURLSelected( KHTMLView* _view, const char* _url, int _button, const char *_target );
+    void slotURLSelected( KHTMLView* _view, const char* _url, int _button,
+	const char *_target );
 
     /**
      * This slot is connected to all children. It emits the signal
@@ -574,7 +639,8 @@ public slots:
      * This slot is connected to all children. It emits the signal
      * @ref #popupMenu if called. <b>This slot is for internal use only</b>.
      */
-    void slotPopupMenu( KHTMLView *_view, const char *_url, const QPoint &_point );
+    void slotPopupMenu( KHTMLView *_view, const char *_url,
+	const QPoint &_point );
 
     /**
      * This slot is connected to all children. It emits the signal
@@ -584,24 +650,29 @@ public slots:
 
     /**
      * This slot is connected to all children. It emits the signal
-     * @ref #cancelImageRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #cancelImageRequest if called. <b>This slot is for internal use
+     * only</b>.
      */
     void slotCancelImageRequest( KHTMLView *_view, const char *_url );
 
     /**
      * This slot is connected to all children. It emits the signal
-     * @ref #cancelImageRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #cancelImageRequest if called. <b>This slot is for internal use
+     * only</b>.
      *
      * @param _method is the <form method=...> value
      * @param _url is the <form action=...> value
      */
-    void slotFormSubmitted( KHTMLView *_view, const char *_method, const char *_url );
+    void slotFormSubmitted( KHTMLView *_view, const char *_method,
+	const char *_url );
 
     /**
      * This slot is connected to all children. It emits the signal
-     * @ref #documentStarted if called. <b>This slot is for internal use only</b>.
+     * @ref #documentStarted if called. <b>This slot is for internal use
+     * only</b>.
      */
     void slotDocumentStarted( KHTMLView *_view );
+
     /**
      * This slot is connected to all children. It emits the signal
      * @ref #documentDone if called. <b>This slot is for internal use only</b>.
@@ -612,14 +683,17 @@ public slots:
      * You can move the vertical scrollbar by calling this slot.
      */
     void slotVertSubtractLine();
+
     /**
      * You can move the vertical scrollbar by calling this slot.
      */
     void slotVertAddLine();
+
     /**
      * You can move the vertical scrollbar by calling this slot.
      */
     void slotVertSubtractPage();
+
     /**
      * You can move the vertical scrollbar by calling this slot.
      */
@@ -631,13 +705,20 @@ protected slots:
      * This slot is connected to @ref KHTMLWidget. It emits the signal
      * @ref #URLSelected if called. <b>This slot is for internal use only</b>.
      */
-    virtual void slotURLSelected( const char* _url, int _button, const char *_target );
+    virtual void slotURLSelected( const char* _url, int _button,
+	const char *_target );
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
      * @ref #onURL if called. <b>This slot is for internal use only</b>.
      */
     virtual void slotOnURL( const char *_url );
+
+    /*
+     * This slot is connected to @ref KHTMLWidget. It emits the signal
+     * @ref #textSelected if called.  This slot is for internal use only.
+     */
+    virtual void slotTextSelected( bool _selected );
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
@@ -653,13 +734,15 @@ protected slots:
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
-     * @ref #cancelImageRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #cancelImageRequest if called. <b>This slot is for internal use
+     * only</b>.
      */
     virtual void slotCancelImageRequest( const char *_url );
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
-     * @ref #cancelImageRequest if called. <b>This slot is for internal use only</b>.
+     * @ref #cancelImageRequest if called. <b>This slot is for internal use
+     * only</b>.
      *
      * @param _url is the <form action=...> value
      * @param _method is the <form method=...> value
@@ -672,11 +755,14 @@ protected slots:
      * <b>For Internal use only</b>.
      */
     virtual void slotDocumentChanged();
+
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
-     * @ref #documentStarted if called. <b>This slot is for internal use only</b>.
+     * @ref #documentStarted if called. <b>This slot is for internal use
+     * only</b>.
      */
     virtual void slotDocumentStarted();
+
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
      * @ref #documentDone if called. <b>This slot is for internal use only</b>.
@@ -687,6 +773,7 @@ protected slots:
      * Connected to the HTML widget.
      */
     void slotScrollVert( int );
+
     /**
      * Connected to the HTML widget
      */
@@ -707,10 +794,12 @@ protected:
      * The horizontal scrollbar
      */    
     QScrollBar *horz;
+
     /**
      * The vertical scrollbar
      */    
     QScrollBar *vert;
+
     /**
      * The HTML Widget.
      */
@@ -718,7 +807,8 @@ protected:
 
     /**
      * The currently displayed URL.
-     * This is usually the same URL as the one passed to the Constructor of @ref KIDWIindow::KIDWindow.
+     * This is usually the same URL as the one passed to the Constructor of
+     * @ref KIDWIindow::KIDWindow.
      */
     QString url;
 
@@ -728,6 +818,7 @@ protected:
      * @see horz
      */
     bool displayHScroll;
+
     /**
      * Flag that indicates wether we show a vertictal scrollbar.
      *
@@ -741,7 +832,8 @@ protected:
     static QList<KHTMLView> *viewList;
 
     /**
-     * The name of the window. You can refer to this name in the &lt;a href=... target=... &gt> tag.
+     * The name of the window. You can refer to this name in the
+     * &lt;a href=... target=... &gt> tag.
      *
      * @see #findView
      * @see #setName
@@ -753,18 +845,20 @@ protected:
      * @see #setAllowResize
      */
     bool bAllowResize;
+
     /**
      * @see #setScrolling
      */
     int scrolling;
+
     /**
      * @see #setFrameBorder
      */
     int frameBorder;
 
     /**
-     * Pointer to the parent KHTMLView. If this view is the toplevel frame or if there
-     * are no frames at all then this pointer is 0L.
+     * Pointer to the parent KHTMLView. If this view is the toplevel frame or
+     * if there are no frames at all then this pointer is 0L.
      */
     KHTMLView *parentView;
 

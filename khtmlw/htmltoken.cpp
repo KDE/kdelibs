@@ -22,50 +22,50 @@
 
 const char *BlockingToken::token()
 {
-	switch ( ttype )
-	{
-		case Grid:
-			return "</grid";
-			break;
+    switch ( ttype )
+    {
+	case Grid:
+		return "</grid";
+		break;
 
-		case Table:
-			return "</table";
-			break;
+	case Table:
+		return "</table";
+		break;
 
-		case UnorderedList:
-			return "</ul";
-			break;
+	case UnorderedList:
+		return "</ul";
+		break;
 
-		case OrderedList:
-			return "</ol";
-			break;
+	case OrderedList:
+		return "</ol";
+		break;
 
-		case Menu:
-			return "</menu";
-			break;
+	case Menu:
+		return "</menu";
+		break;
 
-		case Dir:
-			return "</dir";
-			break;
+	case Dir:
+		return "</dir";
+		break;
 
-		case Glossary:
-			return "</dl";
-			break;
+	case Glossary:
+		return "</dl";
+		break;
 
-		case FrameSet:
-			return "</frameset";
-			break;
+	case FrameSet:
+		return "</frameset";
+		break;
 
-		case Script:
-			return "</script";
-			break;
+	case Script:
+		return "</script";
+		break;
 
-		case Cell:
-			return "</cell";
-			break;
-	}
+	case Cell:
+		return "</cell";
+		break;
+    }
 
-	return "";
+    return "";
 }
 
 //-----------------------------------------------------------------------------
@@ -89,10 +89,10 @@ void HTMLTokenizer::begin()
     tag = false;
     space = false;
     pre = false;
-    script = FALSE;
+    script = false;
     comment = false;
-    squote = FALSE;
-    dquote = FALSE;
+    squote = false;
+    dquote = false;
     scriptCount = 0;
 }
 
@@ -102,8 +102,8 @@ void HTMLTokenizer::write( const char *str )
     // code in. This may happen while parsing the <script> tag, since the output
     // of the java code is treated as HTML code. This means we have to modify
     // the HTML code on the fly by inserting new HTML stuff.
-    // If this pointer is not null, one has to free the memory before leaving this
-    // function.
+    // If this pointer is not null, one has to free the memory before leaving
+    // this function.
     char *srcPtr = 0L;
     
     if ( str == NULL )
@@ -120,362 +120,364 @@ void HTMLTokenizer::write( const char *str )
     int pre_pos = 0;
 
     while ( *src != 0 )
+    {
+	if ( dest - buffer > size )
 	{
-		if ( dest - buffer > size )
+	    char *newbuf = new char [ size + 1024 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+	if ( comment )
+	{
+	    if ( !strncmp( src, "-->", 3 ) )
+	    {
+		src += 3;
+		comment = false;
+	    }
+	    else
+		src++;
+	}
+	// We are inside of the <script> tag. Look for </script>,
+	// otherwise print out every received character
+	else if ( script )
+	{
+	    // Allocate memory to store the script. We will write maximal
+	    // 10 characers.
+	    if ( scriptCodeSize + 11 > scriptCodeMaxSize )
+	    {
+		char *newbuf = new char [ scriptCodeSize + 1024 ];
+		memcpy( newbuf, scriptCode, scriptCodeSize );
+		delete [] scriptCode;
+		scriptCode = newbuf;
+		scriptCodeMaxSize += 1024;
+	    }
+
+	    if ( *src == '\"' && !squote)
+	    {
+		scriptCode[ scriptCodeSize++ ] = *src++;
+		dquote = !dquote;
+	    }
+	    else if ( *src == '\'' && !dquote )
+	    {
+		scriptCode[ scriptCodeSize++ ] = *src++;
+		squote = !squote;
+	    }
+	    // Did we find </script> ? => We have the complete code
+	    else if ( scriptCount == 8 && *src == '>' )
+	    {
+		src++;
+		scriptCode[ scriptCodeSize ] = 0;
+		scriptCode[ scriptCodeSize + 1 ] = 0;
+		script = false;
+		printf("================================================================\n");
+		if ( jsEnvironment == 0L )
+		    jsEnvironment = widget->getJSEnvironment();
+		printf("================================================================\n");
+		printf("%s\n",scriptCode );
+		printf("================================================================\n");
+		JSCode *code = jsEnvironment->parse( scriptCode );
+		printf("================================================================\n");
+		int ret = jsEnvironment->exec( code );
+		printf("RETURN '%i'\n",ret );
+		delete code;
+		const char *javaOutString = jsEnvironment->readOutput();
+		printf("================================================================\n");
+		if ( srcPtr )
+		    delete [] srcPtr;
+		srcPtr = new char[ strlen( src ) + strlen( javaOutString ) + 1 ];
+		strcpy( srcPtr, javaOutString );
+		strcat( srcPtr, src );
+		src = srcPtr;
+		printf("================================================================\n");
+	    }
+	    // Find out wether we see a </script> tag without looking at
+	    // any other then the current character, since further characters
+	    // may still be on their way thru the web!
+	    else if ( scriptCount > 0 )
+	    {
+		if ( tolower(*src) == scriptString[ scriptCount ] )
 		{
-			char *newbuf = new char [ size + 1024 ];
-			memcpy( newbuf, buffer, dest - buffer + 1 );
-			delete [] buffer;
-			buffer = newbuf;
-			size += 1000;
+		    scriptBuffer[ scriptCount ] = *src;
+		    scriptCount++;
+		    src++;
 		}
-		if ( comment )
+		// We were wrong => print all buffered characters and the current one;
+		else
 		{
-			if ( !strncmp( src, "-->", 3 ) )
+		    scriptBuffer[ scriptCount ] = 0;
+		    char *p = scriptBuffer;
+		    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
+		    scriptCode[ scriptCodeSize++ ] = *src++;
+		}
+		
+	    }
+	    // Is this perhaps the start of the </script> tag?
+	    else if ( *src == '<' && !dquote && !squote )
+	    {
+		scriptCount = 1;
+		scriptBuffer[ 0 ] = '<';
+		src++;
+	    }
+	    else
+		scriptCode[ scriptCodeSize++ ] = *src++;
+	}
+	else if ( *src == '&' )
+	{
+	    if ( pre )
+		pre_pos ++;	    
+	    space = false;
+
+	    // Is the string long enough?
+	    if ( *(src+1) != '\0' && *(src+2) != '\0' )
+	    {
+		// Special character by number?
+		if ( *(src + 1) == '#' )
+		{
+		    char *endptr;
+		    int z = (int) strtol( src+2, &endptr, 10 );
+		    *dest++ = z;
+		    src = endptr;
+		    // Skip a trailing ';' ?
+		    if ( *src == ';' )
+			src++;
+		}
+		// Special character ?
+		else if ( isalpha( *(src + 1) ) )
+		{
+		    int tmpcnt;
+		    
+		    for ( tmpcnt = 0; tmpcnt < NUM_AMPSEQ; tmpcnt++ ) 
+		    {
+			if ( strncmp( AmpSequences[ tmpcnt ].tag, src+1,
+			     strlen( AmpSequences[ tmpcnt ].tag ) ) == 0 )
 			{
-				src += 3;
-				comment = false;
-			}
-			else
+			    *dest++ = AmpSequences[ tmpcnt ].value;
+			    src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
+			    if ( *src == ';' )
 				src++;
+			    break;
+			}
+		    }
+
+		    if ( tmpcnt == NUM_AMPSEQ )
+			*dest++ = *src++;
 		}
-		// We are inside of the <script> tag. Look for </script>, otherwise
-		// print out every received character
-		else if ( script )
-		{
-		    // Allocate memory to store the script. We will write maximal
-		    // 10 characers.
-		    if ( scriptCodeSize + 11 > scriptCodeMaxSize )
-		    {
-			char *newbuf = new char [ scriptCodeSize + 1024 ];
-			memcpy( newbuf, scriptCode, scriptCodeSize );
-			delete [] scriptCode;
-			scriptCode = newbuf;
-			scriptCodeMaxSize += 1024;
-		    }
+		else
+		    *dest++ = *src++;
+	    }
+	    else
+		*dest++ = *src++;
+	}
+	else if ( *src == '<' )
+	{
+	    if ( strncasecmp( src, "<pre>", 5 ) == 0 )
+	    {
+		pre_pos = 0;
+		pre = true;
+	    }
+	    else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
+		pre = false;
+	    else if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
+	    {
+		src += 4;
+		comment = true;
+		continue;
+	    }
+	    else if ( strncasecmp( src, "<script", 7 ) == 0 )
+	    {
+		script = true;
+		blocking.append( new BlockingToken( BlockingToken::Script,
+				tokenList.at() ) );
+		src = strchr( src, '>' );
+		if ( src == 0L )
+		    src = "";
+		else
+		    src++;
+		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+	    }
+	    else if ( strncasecmp( src, "<frameset", 9 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::FrameSet,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<cell", 5 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Cell,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<table", 6 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Table,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<ul", 3 ) == 0 )
+	    {
+		blocking.append( new BlockingToken(BlockingToken::UnorderedList,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<ol", 3 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::OrderedList,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<menu", 5 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Menu,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<dir", 4 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Dir,
+				tokenList.at() ) );
+	    }
+	    else if ( !blocking.isEmpty() && 
+		    strncasecmp( src, blocking.getLast()->token(),
+			strlen( blocking.getLast()->token() ) ) == 0 )
+	    {
+		blocking.removeLast();
+	    }
 
-		    if ( *src == '\"' && !squote)
-		    {
-			scriptCode[ scriptCodeSize++ ] = *src++;
-			dquote = !dquote;
-		    }
-		    else if ( *src == '\'' && !dquote )
-		    {
-			scriptCode[ scriptCodeSize++ ] = *src++;
-			squote = !squote;
-		    }
-		    // Did we find </script> ? => We have the complete code
-		    else if ( scriptCount == 8 && *src == '>' )
-		    {
-			src++;
-			scriptCode[ scriptCodeSize ] = 0;
-			scriptCode[ scriptCodeSize + 1 ] = 0;
-			script = FALSE;
-			printf("================================================================\n");
-			if ( jsEnvironment == 0L )
-			    jsEnvironment = widget->getJSEnvironment();
-			printf("================================================================\n");
-			printf("%s\n",scriptCode );
-			printf("================================================================\n");
-			JSCode *code = jsEnvironment->parse( scriptCode );
-			printf("================================================================\n");
-			int ret = jsEnvironment->exec( code );
-			printf("RETURN '%i'\n",ret );
-			delete code;
-			const char *javaOutString = jsEnvironment->readOutput();
-			printf("================================================================\n");
-			if ( srcPtr )
-			    delete [] srcPtr;
-			srcPtr = new char[ strlen( src ) + strlen( javaOutString ) + 1 ];
-			strcpy( srcPtr, javaOutString );
-			strcat( srcPtr, src );
-			src = srcPtr;
-			printf("================================================================\n");
-		    }
-		    // Find out wether we see a </script> tag without looking at
-		    // any other then the current character, since further characters
-		    // may still be on their way thru the web!
-		    else if ( scriptCount > 0 )
-		    {
-			if ( *src == scriptString[ scriptCount ] )
-			{
-			    scriptBuffer[ scriptCount ] = *src;
-			    scriptCount++;
-			    src++;
-			}
-			// We were wrong => print all buffered characters and the current one;
-			else
-			{
-			    scriptBuffer[ scriptCount ] = 0;
-			    char *p = scriptBuffer;
-			    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
-			    scriptCode[ scriptCodeSize++ ] = *src++;
-			}
-			
-		    }
-		    // Is this perhaps the start of the </script> tag?
-		    else if ( *src == '<' && !dquote && !squote )
-		    {
-			scriptCount = 1;
-			scriptBuffer[ 0 ] = '<';
-			src++;
-		    }
-		    else
-			scriptCode[ scriptCodeSize++ ] = *src++;
+	    space = false;
+
+	    if ( !script )
+	    {
+		if ( dest > buffer )
+		{
+		    *dest++ = 0;
+		    tokenList.append( buffer );
+		    dest = buffer;
 		}
-		else if ( *src == '&' )
+		*dest++ = TAG_ESCAPE;
+		*dest++ = '<';
+		tag = true;
+		src++;
+	    }
+	}
+	else if ( *src == '>' )
+	{
+	    space = false;
+
+	    *dest++ = '>';
+	    *dest++ = 0;
+	    tokenList.append( buffer );
+	    dest = buffer;
+	    tag = false;
+	    src++;
+	}
+	else if ( !tag && pre && ( *src == ' ' || *src == '\t' ||
+		*src == '\n' || *src == 13 ) )
+	{
+	    // For every line break in <pre> insert a the tag '\n'.
+	    if ( *src == '\n' )
+	    {
+		*dest++ = 0;
+		tokenList.append( buffer );
+		dest = buffer;
+		*dest++ = TAG_ESCAPE;
+		*dest++ = '\n';
+		*dest++ = 0;
+		tokenList.append( buffer );
+		dest = buffer;
+		pre_pos = 0; 
+	    }
+	    else if ( *src == '\t' )
+	    {
+		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
+		for ( int x = 0; x < p; x++ )
+		    *dest++ = ' ';
+	    }
+	    else if ( *src == ' ' )
+	    {
+		pre_pos ++;
+		*dest++ = ' ';
+		space = true;
+	    }
+	    src++;
+	}
+	else if ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 )
+	{
+	    if ( !tag && script )
+	    {
+		// Dont manipulate any character inside of the <script> tag
+		*dest++ = *src++;
+	    }
+	    else
+	    {
+		if ( !space )
 		{
-			if ( pre )
-			    pre_pos ++;	    
-			space = false;
-
-			// Is the string long enough?
-			if ( *(src+1) != '\0' && *(src+2) != '\0' )
-			{
-				// Special character by number?
-				if ( *(src + 1) == '#' )
-				{
-					char *endptr;
-					int z = (int) strtol( src+2, &endptr, 10 );
-					*dest++ = z;
-					src = endptr;
-					// Skip a trailing ';' ?
-					if ( *src == ';' )
-						src++;
-				}
-				// Special character ?
-				else if ( isalpha( *(src + 1) ) )
-				{
-					int tmpcnt;
-					
-					for ( tmpcnt = 0; tmpcnt < NUM_AMPSEQ; tmpcnt++ ) 
-					{
-						if ( strncmp( AmpSequences[ tmpcnt ].tag, src+1,
-							 strlen( AmpSequences[ tmpcnt ].tag ) ) == 0 )
-						{
-							*dest++ = AmpSequences[ tmpcnt ].value;
-							src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
-							if ( *src == ';' )
-								src++;
-							break;
-						}
-					}
-
-					if ( tmpcnt == NUM_AMPSEQ )
-						*dest++ = *src++;
-				}
-				else
-					*dest++ = *src++;
-			}
-			else
-				*dest++ = *src++;
-		}
-		else if ( *src == '<' )
-		{
-			if ( strncasecmp( src, "<pre>", 5 ) == 0 )
-			{
-				pre_pos = 0;
-				pre = TRUE;
-			}
-			else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
-				pre = false;
-			else if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
-			{
-				src += 4;
-				comment = true;
-				continue;
-			}
-			else if ( strncasecmp( src, "<script", 7 ) == 0 )
-			{
-			        script = TRUE;
-				blocking.append( new BlockingToken( BlockingToken::Script,
-						tokenList.at() ) );
-				src = strchr( src, '>' );
-				if ( src == 0L )
-				    src = "";
-				else
-				    src++;
-				
-				scriptCode = new char[ 1024 ];
-				scriptCodeSize = 0;
-				scriptCodeMaxSize = 1024;
-			}
-			else if ( strncasecmp( src, "<frameset", 9 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::FrameSet,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<cell", 5 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::Cell,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<table", 6 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::Table,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<ul", 3 ) == 0 )
-			{
-				blocking.append( new BlockingToken(BlockingToken::UnorderedList,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<ol", 3 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::OrderedList,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<menu", 5 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::Menu,
-						tokenList.at() ) );
-			}
-			else if ( strncasecmp( src, "<dir", 4 ) == 0 )
-			{
-				blocking.append( new BlockingToken( BlockingToken::Dir,
-						tokenList.at() ) );
-			}
-			else if ( !blocking.isEmpty() && 
-				strncasecmp( src, blocking.getLast()->token(),
-					strlen( blocking.getLast()->token() ) ) == 0 )
-			{
-				blocking.removeLast();
-			}
-
-			space = false;
-
-			if ( !script )
-			{
-			    if ( dest > buffer )
-			    {
-				*dest++ = 0;
-				tokenList.append( buffer );
-				dest = buffer;
-			    }
-			    *dest++ = TAG_ESCAPE;
-			    *dest++ = '<';
-			    tag = true;
-			    src++;
-			}
-		}
-		else if ( *src == '>' )
-		{
-			space = false;
-
-			*dest++ = '>';
+		    *dest++ = ' ';
+		    if ( !tag )
+		    {
+			// MRJ - taking this line out reduces mem usage by
+			// about 1/3 and makes almost no difference to output
+			// *dest++ = 0;
 			*dest++ = 0;
 			tokenList.append( buffer );
 			dest = buffer;
-			tag = false;
-			src++;
+		    }
 		}
-		else if ( !tag && pre && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
-		{
-			// For every line break in <pre> insert a the tag '\n'.
-			if ( *src == '\n' )
-			{
-				*dest++ = 0;
-				tokenList.append( buffer );
-				dest = buffer;
-				*dest++ = TAG_ESCAPE;
-				*dest++ = '\n';
-				*dest++ = 0;
-				tokenList.append( buffer );
-				dest = buffer;
-				pre_pos = 0; 
-			}
-			else if ( *src == '\t' )
-			{
-				int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
-				for ( int x = 0; x < p; x++ )
-					*dest++ = ' ';
-			}
-			else if ( *src == ' ' )
-			{
-				pre_pos ++;
-				*dest++ = ' ';
-				space = TRUE;
-			}
-			src++;
-		}
-		else if ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 )
-		{
-			if ( !tag && script )
-			{
-				// Dont manipulate any character inside of the <script> tag
-		    	*dest++ = *src++;
-			}
-			else
-			{
-				if ( !space )
-				{
-					*dest++ = ' ';
-					if ( !tag )
-					{
-					// MRJ - taking this line out reduces mem usage by about 1/3
-					// and makes almost no difference to output
-					//		*dest++ = 0;
-						*dest++ = 0;
-						tokenList.append( buffer );
-						dest = buffer;
-					}
-				}
-				src++;
-				space = TRUE;
-			}
-		}
-		else
-		{
-			space = false;
-			if ( pre )
-				pre_pos++;
-			
-			*dest++ = *src++;
-		}
+		src++;
+		space = true;
+	    }
 	}
-
-	if ( pos >= 0 )
-		tokenList.at( pos );
 	else
-		tokenList.last();
+	{
+	    space = false;
+	    if ( pre )
+		pre_pos++;
+	    
+	    *dest++ = *src++;
+	}
+    }
 
-	if ( srcPtr )
-	    delete [] srcPtr;
+    if ( pos >= 0 )
+	tokenList.at( pos );
+    else
+	tokenList.last();
+
+    if ( srcPtr )
+	delete [] srcPtr;
 }
 
 void HTMLTokenizer::end()
 {
-	int pos = tokenList.at();
+    int pos = tokenList.at();
 
-	*dest = 0;
-	tokenList.append( buffer );
+    *dest = 0;
+    tokenList.append( buffer );
 
-	delete [] buffer;
+    delete [] buffer;
 
-	// if there are still blocking tokens then the HTML is illegal - remove
-	// blocks anyway and hope for the best
-	blocking.clear();
+    // if there are still blocking tokens then the HTML is illegal - remove
+    // blocks anyway and hope for the best
+    blocking.clear();
 
-	if ( pos >= 0 )
-		tokenList.at( pos );
-	else
-		tokenList.last();
+    if ( pos >= 0 )
+	tokenList.at( pos );
+    else
+	tokenList.last();
 }
 
 const char* HTMLTokenizer::nextToken()
 {
-	const char *ret = tokenList.next();
+    const char *ret = tokenList.next();
 
-	return ret;
+    return ret;
 }
 
 bool HTMLTokenizer::hasMoreTokens()
 {
-	if ( !blocking.isEmpty() &&
-		blocking.getFirst()->getPosition() <= tokenList.at() )
-		return false;
+    if ( !blocking.isEmpty() &&
+	    blocking.getFirst()->getPosition() <= tokenList.at() )
+	return false;
 
-	return (tokenList.current() && tokenList.current() != tokenList.getLast());
+    return (tokenList.current() && tokenList.current() != tokenList.getLast());
 }
 
 HTMLTokenizer::~HTMLTokenizer()

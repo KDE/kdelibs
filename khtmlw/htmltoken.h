@@ -44,19 +44,19 @@ protected:
 class BlockingToken
 {
 public:
-	enum Token { Grid, Table, UnorderedList, OrderedList, Menu, Dir, Glossary,
-		     FrameSet, Script, Cell };
+    enum Token { Grid, Table, UnorderedList, OrderedList, Menu, Dir, Glossary,
+		 FrameSet, Script, Cell };
 
-	BlockingToken( Token t, int p )
-		{	ttype = t; pos = p; }
+    BlockingToken( Token t, int p )
+	    {	ttype = t; pos = p; }
 
-	int getPosition()
-		{	return pos; }
-	const char *token();
+    int getPosition()
+	    {	return pos; }
+    const char *token();
 
 protected:
-	Token ttype;
-	int pos;
+    Token ttype;
+    int pos;
 };
 
 //-----------------------------------------------------------------------------
@@ -67,9 +67,9 @@ public:
     HTMLTokenizer( KHTMLWidget *_widget = NULL );
     ~HTMLTokenizer();
 
-	void begin();
-	void write( const char * );
-	void end();
+    void begin();
+    void write( const char * );
+    void end();
 
     const char* nextToken();
     bool hasMoreTokens();
@@ -129,12 +129,13 @@ protected:
     KHTMLWidget *widget;
     
     /**
-     * This pointer is 0L until used. The @ref KHTMLWidget has an instance of this
-     * class for us. We ask for it when we see some JavaScript stuff for the first time.
+     * This pointer is 0L until used. The @ref KHTMLWidget has an instance of
+     * this class for us. We ask for it when we see some JavaScript stuff for
+     * the first time.
      */
     JSEnvironment* jsEnvironment;
     
-    // These are tokens which we are waiting for ending tokens for
+    // These are tokens for which we are awaiting ending tokens
     QList<BlockingToken> blocking;
 };
 

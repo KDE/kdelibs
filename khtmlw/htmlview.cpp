@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------------
+//
+// KDE HTML Widget
+//
+// Copyright (c) 1997 The KDE Project
+//
+
 #include "htmlview.h"
 
 QList<KHTMLView> *KHTMLView::viewList = NULL;
@@ -13,12 +20,12 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
     scrolling = -1;
     frameBorder = -1;
     
-    printf("Constructed KHTML View\n");
+    debugT("Constructed KHTML View\n");
     
-	if (viewList == NULL)
-		viewList = new QList<KHTMLView>;
-	viewList->setAutoDelete( FALSE );
-	viewList->append( this );
+    if ( viewList == NULL )
+	viewList = new QList<KHTMLView>;
+    viewList->setAutoDelete( FALSE );
+    viewList->append( this );
     
     frameName = _name;
     
@@ -32,7 +39,7 @@ KHTMLView::~KHTMLView()
 {
     viewList->removeRef( this );
     
-    printf("Deleted View\n");
+    debugT("Deleted View\n");
 }
 
 KHTMLView* KHTMLView::newView( QWidget *_parent, const char *_name, int _flags )
@@ -65,7 +72,7 @@ KHTMLView* KHTMLView::findView( const char *_name )
     {
 	if ( v->getFrameName() )
 	{
-	    printf("Comparing '%s' '%s'\n", _name, v->getFrameName() );
+	    debugT("Comparing '%s' '%s'\n", _name, v->getFrameName() );
 	    if ( strcmp( v->getFrameName(), _name ) == 0 )
 		return v;
 	}
@@ -105,22 +112,21 @@ void KHTMLView::parse()
 
 void KHTMLView::print()
 {
-	view->print();
+    view->print();
 }
 
 void KHTMLView::initGUI()
 {
-    horz = new QScrollBar( 0, 0, 12, width(), 0, QScrollBar::Horizontal, this, "horz" );
+    horz = new QScrollBar( 0, 0, 12, width(), 0, QScrollBar::Horizontal,
+	    this, "horz" );
     horz->hide();
-    vert = new QScrollBar( 0, 0, 12, height(), 0, QScrollBar::Vertical, this, "vert" );
+    vert = new QScrollBar( 0, 0, 12, height(), 0, QScrollBar::Vertical,
+	    this, "vert" );
     vert->hide();
     
     horz->setMinimumSize( 16, 16 );
     vert->setMinimumSize( 16, 16 );
 
-    QString pixdir = getenv( "KDEDIR" );
-    pixdir += "/lib/pics/";
-    
     view = new KHTMLWidget( this, "" );
     CHECK_PTR( view );
     view->setView( this );
@@ -128,19 +134,23 @@ void KHTMLView::initGUI()
     connect( view, SIGNAL( scrollVert( int ) ), SLOT( slotScrollVert( int ) ) );
     connect( view, SIGNAL( scrollHorz( int ) ), SLOT( slotScrollHorz( int ) ) );
 
-    connect( vert, SIGNAL( valueChanged(int) ), view, SLOT( slotScrollVert(int) ) );
-    connect( horz, SIGNAL( valueChanged(int) ), view, SLOT( slotScrollHorz(int) ) );
+    connect( vert, SIGNAL(valueChanged(int)), view, SLOT(slotScrollVert(int)) );
+    connect( horz, SIGNAL(valueChanged(int)), view, SLOT(slotScrollHorz(int)) );
 
     connect( view, SIGNAL( documentChanged() ), SLOT( slotDocumentChanged() ) );
-    connect( view, SIGNAL( setTitle( const char* ) ), this, SLOT( slotSetTitle( const char * ) ) );
+    connect( view, SIGNAL( setTitle( const char* ) ),
+	     this, SLOT( slotSetTitle( const char * ) ) );
     connect( view, SIGNAL( URLSelected( const char*, int, const char* ) ),
 	     this, SLOT( slotURLSelected( const char *, int, const char* ) ) );    
-    connect( view, SIGNAL( onURL( const char* ) ), this, SLOT( slotOnURL( const char * ) ) );
+    connect( view, SIGNAL( onURL( const char* ) ),
+	     this, SLOT( slotOnURL( const char * ) ) );
+    connect( view, SIGNAL( textSelected( bool ) ),
+	     this, SLOT( slotTextSelected( bool ) ) );
     connect( view, SIGNAL( popupMenu( const char*, const QPoint & ) ),
 	     this, SLOT( slotPopupMenu( const char *, const QPoint & ) ) );
-    connect( view, SIGNAL( imageRequest( const char* ) ),
+    connect( view, SIGNAL( fileRequest( const char* ) ),
 	     this, SLOT( slotImageRequest( const char * ) ) );
-    connect( view, SIGNAL( cancelImageRequest( const char* ) ),
+    connect( view, SIGNAL( cancelFileRequest( const char* ) ),
 	     this, SLOT( slotCancelImageRequest( const char * ) ) );
     connect( view, SIGNAL( formSubmitted( const char *, const char* ) ),
 	     this, SLOT( slotFormSubmitted( const char *, const char* ) ) );
@@ -178,7 +188,7 @@ void KHTMLView::resizeEvent( QResizeEvent * )
     
 void KHTMLView::closeEvent( QCloseEvent *e )
 {
-    printf("Closing\n");
+    debugT("Closing\n");
     e->accept();
 
     delete this;
@@ -199,25 +209,27 @@ void KHTMLView::slotDocumentChanged()
     if ( url.isNull() )
 	return;
     
-    printf("################## SLOTDOCUMENTCHANGED ## %s ## %x\n", url.data(), this);
-    printf("(%i %i) %i %i %i %i\n",view->x(), view->y(), view->width(),view->height(),view->docWidth(),view->docHeight());
-    printf("Scrollers: H=%c V=%c\n",'0'+displayHScroll,'0'+displayVScroll);
-    printf("IsFrameSet %c\n",'0'+isFrameSet());
+    debugT("################## SLOTDOCUMENTCHANGED ## %s ## %x\n", url.data(),
+	(int)this);
+    debugT("(%i %i) %i %i %i %i\n",view->x(), view->y(), view->width(),
+	view->height(),view->docWidth(),view->docHeight());
+    debugT("Scrollers: H=%c V=%c\n",'0'+displayHScroll,'0'+displayVScroll);
+    debugT("IsFrameSet %c\n",'0'+isFrameSet());
 
     bool oldh = displayHScroll;
 
     calcScrollBars();    
 
-	if ( displayHScroll && !oldh )
-		view->setGeometry( 0, 0, width(), height() - 16 );
-	else if ( !displayHScroll && oldh )
-		view->setGeometry( 0, 0, width(), height() );
+    if ( displayHScroll && !oldh )
+	view->setGeometry( 0, 0, width(), height() - 16 );
+    else if ( !displayHScroll && oldh )
+	view->setGeometry( 0, 0, width(), height() );
 }
 
 void KHTMLView::calcScrollBars()
 {
     if ( view->docWidth() > view->width() && !isFrameSet() )
-		displayHScroll = TRUE;
+	displayHScroll = TRUE;
     else
         displayHScroll = FALSE;
     
@@ -240,31 +252,34 @@ void KHTMLView::calcScrollBars()
 	vert->setRange( 0, view->docHeight() - view->height() );
     }    
 
-	int right = 0;
-	if ( displayVScroll )
-		right = 16;
-      
-	int bottom = 0;
-	if ( !displayHScroll )
-		horz->hide();
-	else
-	{
-		bottom = 16;
-		printf("Showing HScrollBar\n");
-		horz->setGeometry( 0, height() - 16, width() - right, 16 );
-		horz->show();
-		horz->raise();
-	}
-    
-	if ( !displayVScroll )
-		vert->hide();
-	else
-	{
-		printf("Showing VScrollBar\n");
-		vert->setGeometry( width() - 16, 0, 16, height() - bottom );
-		vert->show();
-		vert->raise();
-	}
+    int right = 0;
+    if ( displayVScroll )
+	right = 16;
+  
+    int bottom = 0;
+    if ( !displayHScroll )
+	horz->hide();
+    else
+    {
+	bottom = 16;
+	debugT("Showing HScrollBar\n");
+	horz->setGeometry( 0, height() - 16, width() - right, 16 );
+	horz->show();
+	horz->raise();
+    }
+
+    if ( !displayVScroll )
+    {
+	vert->hide();
+	view->slotScrollVert( 0 );
+    }
+    else
+    {
+	debugT("Showing VScrollBar\n");
+	vert->setGeometry( width() - 16, 0, 16, height() - bottom );
+	vert->show();
+	vert->raise();
+    }
 }
 
 void KHTMLView::slotDocumentStarted( KHTMLView *_view )
@@ -302,31 +317,39 @@ void KHTMLView::slotSetTitle( const char *_text )
     emit setTitle( _text );
 }
 
-void KHTMLView::slotURLSelected( KHTMLView *_view, const char *_url, int _button, const char *_target )
+void KHTMLView::slotURLSelected( KHTMLView *_view, const char *_url,
+    int _button, const char *_target )
 {
-    printf("URL selected '%s'\n",_url );
+    debugT("URL selected '%s'\n",_url );
     emit URLSelected( _view, _url, _button, _target );
 }
 
-void KHTMLView::slotURLSelected( const char *_url, int _button, const char *_target )
+void KHTMLView::slotURLSelected( const char *_url, int _button,
+    const char *_target )
 {
-    printf("URL 2 selected '%s'\n",_url );
+    debugT("URL 2 selected '%s'\n",_url );
     emit URLSelected( this, _url, _button, _target );
 }
 
 void KHTMLView::slotOnURL( KHTMLView *_view, const char *_url )
 {
-    printf("On URL '%s'\n",_url );
+    debugT("On URL '%s'\n",_url );
     emit onURL( _view, _url );
 }
 
 void KHTMLView::slotOnURL( const char *_url )
 {
-    printf("On URL 2 '%s'\n",_url);
+    debugT("On URL 2 '%s'\n",_url);
     emit onURL( this, _url );
 }
 
-void KHTMLView::slotPopupMenu( KHTMLView *_view, const char *_url, const QPoint &_point )
+void KHTMLView::slotTextSelected( bool _selected )
+{
+    emit textSelected( this, _selected );
+}
+
+void KHTMLView::slotPopupMenu( KHTMLView *_view, const char *_url,
+    const QPoint &_point )
 {
     emit popupMenu( _view, _url, _point );
 }
@@ -361,7 +384,7 @@ void KHTMLView::slotCancelImageRequest( const char *_url )
 void KHTMLView::slotImageLoaded( const char *_url, const char *_filename )
 {
     if ( view )
-	view->slotImageLoaded( _url, _filename );
+	view->slotFileLoaded( _url, _filename );
 }
 
 void KHTMLView::slotFormSubmitted( KHTMLView *_view, const char *_method, const char *_url )
@@ -371,7 +394,7 @@ void KHTMLView::slotFormSubmitted( KHTMLView *_view, const char *_method, const 
 
 void KHTMLView::slotFormSubmitted( const char *_method, const char *_url )
 {
-    printf("Form submitted '%s'\n",_url);
+    debugT("Form submitted '%s'\n",_url);
     
     emit formSubmitted( this, _url, _method );
 }
@@ -408,13 +431,13 @@ bool KHTMLView::isFrameSet()
 
 void KHTMLView::setIsFrameSet( bool _frameset )
 {
-  /*  if ( _frameset )
-  {
-    displayVScroll = FALSE;
-    displayHScroll = FALSE;
-  } */
-  
-  view->setIsFrameSet( _frameset ); 
+    /*  if ( _frameset )
+    {
+	displayVScroll = FALSE;
+	displayHScroll = FALSE;
+    } */
+
+    view->setIsFrameSet( _frameset ); 
 }
 
 bool KHTMLView::isFrame()
@@ -424,127 +447,131 @@ bool KHTMLView::isFrame()
 
 void KHTMLView::setIsFrame( bool _frame )
 {
-  printf(">>>>>>>>>>>>>>>>>>> I am a frame %x <<<<<<<<<<<<<<<<<<<<<<\n",(int)this);
+    debugT(">>>>>>>>>>>>>>>> I am a frame %x <<<<<<<<<<<<<<<<<<\n",(int)this);
   
-  /*  if ( _frame )
-  {
-    displayVScroll = FALSE;
-    displayHScroll = FALSE;
-  } */
-  
-  view->setIsFrame( _frame ); 
+    /*  if ( _frame )
+    {
+	displayVScroll = FALSE;
+	displayHScroll = FALSE;
+    } */
+
+    view->setIsFrame( _frame ); 
 }
 
 void KHTMLView::setSelected( bool _selected )
 {
-  view->setSelected( _selected ); 
-  if ( _selected )
-    emit frameSelected( this );
+    view->setSelected( _selected ); 
+    if ( _selected )
+	emit frameSelected( this );
 }
 
 bool KHTMLView::isSelected()
 {
-  return view->isSelected();
+    return view->isSelected();
 }
 
 KHTMLView* KHTMLView::getSelectedView()
 {
- printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
-  if ( isFrame() && isSelected() )
-    return this;
- printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 2 <<<<<<<<<<<<<<<<<<<<<<<<\n");
-  if ( isFrameSet() )
-    return view->getSelectedFrame();
- printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
-  return 0L;
+    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    if ( isFrame() && isSelected() )
+	return this;
+
+    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 2 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    if ( isFrameSet() )
+	return view->getSelectedFrame();
+
+    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    return 0L;
 }
 
 void KHTMLView::slotVertSubtractLine()
 {
- vert->subtractLine ();
+    if ( vert->isVisible() )
+	vert->subtractLine ();
 }
 
 void KHTMLView::slotVertAddLine()
 {
- vert->addLine ();
+    if ( vert->isVisible() )
+	vert->addLine ();
 }
 
 void KHTMLView::slotVertSubtractPage()
 {
- vert->subtractPage ();
+    if ( vert->isVisible() )
+	vert->subtractPage ();
 }
 
 void KHTMLView::slotVertAddPage()
 {
- vert->addPage ();
+    if ( vert->isVisible() )
+	vert->addPage ();
 }                       
 
 bool KHTMLView::mouseMoveHook( QMouseEvent * )
 {
-  return FALSE;
+    return FALSE;
 }
 
 bool KHTMLView::mouseReleaseHook( QMouseEvent * )
 {
-  return FALSE;
+    return FALSE;
 }
 
-bool KHTMLView::mousePressedHook( const char*, const char*, QMouseEvent *, bool )
+bool KHTMLView::mousePressedHook( const char*, const char*, QMouseEvent*, bool )
 {
-  return FALSE;
+    return FALSE;
 }
 
 bool KHTMLView::dndHook( const char *, QPoint & )
 {
-  return FALSE;
+    return FALSE;
 }
 
 void KHTMLView::select( QPainter * _painter, QRect &_rect )
 {
-  view->select( _painter, _rect );
+    view->select( _painter, _rect );
 }
 
 void KHTMLView::select( QPainter * _painter, bool _select )
 {
-  view->select( _painter, _select );
+    view->select( _painter, _select );
 }
 
-void KHTMLView::selectByURL( QPainter * _painter, const char *_url, bool _select )
+void KHTMLView::selectByURL( QPainter *_painter,const char *_url,bool _select )
 {
-  view->selectByURL( _painter, _url, _select );
+    view->selectByURL( _painter, _url, _select );
 }
 
 void KHTMLView::getSelected( QStrList &_list )
 {
-  view->getSelected( _list );
+    view->getSelected( _list );
+}
+
+void KHTMLView::getSelectedText( QString &_str )
+{
+    view->getSelectedText( _str );
+}
+
+bool KHTMLView::isTextSelected() const
+{
+    return view->isTextSelected();
 }
 
 void KHTMLView::setMarginWidth( int _w )
 {
-  view->setMarginWidth( _w );
+    view->setMarginWidth( _w );
 }
 
 void KHTMLView::setMarginHeight( int _h )
 {
-  view->setMarginHeight( _h );
+    view->setMarginHeight( _h );
 }
 
 bool KHTMLView::gotoAnchor(const char* anchor)
 {
-  return view->gotoAnchor(anchor);
+    return view->gotoAnchor(anchor);
 }
 
 #include "htmlview.moc"
-
-
-
-
-
-
-
-
-
-
-
-
 
