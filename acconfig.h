@@ -50,8 +50,8 @@
 /* Where your icon should go to. */
 #undef KDE_ICONDIR
 
- /* Where your mini icon should go to. */
-#undef KDE_MINIDIR
+ /* Where your sound data should go to. */
+#undef KDE_SOUNDDIR
 
 /* Where you install application data. */
 #undef KDE_DATADIR

@@ -62,7 +62,7 @@ if test "$1" = "default"; then
   kde_htmldir="\$(prefix)/share/doc/HTML"
   kde_appsdir="\$(prefix)/share/applnk"
   kde_icondir="\$(prefix)/share/icons"
-  kde_minidir="\$(prefix)/share/icons/mini"
+  kde_sounddir="\$(prefix)/share/sounds"
   kde_datadir="\$(prefix)/share/apps"
   kde_locale="\$(prefix)/share/locale"
   kde_cgidir="\$(exec_prefix)/cgi-bin"
@@ -89,7 +89,7 @@ int main() {
 printf("kde_htmldir=\\"%s\\"\n", KApplication::kde_htmldir().data());
 printf("kde_appsdir=\\"%s\\"\n", KApplication::kde_appsdir().data());
 printf("kde_icondir=\\"%s\\"\n", KApplication::kde_icondir().data());
-printf("kde_minidir=\\"%s\\"\n", KApplication::kde_minidir().data());
+printf("kde_sounddir=\\"%s\\"\n", KApplication::kde_sounddir().data());
 printf("kde_datadir=\\"%s\\"\n", KApplication::kde_datadir().data());
 printf("kde_locale=\\"%s\\"\n", KApplication::kde_localedir().data());
 printf("kde_cgidir=\\"%s\\"\n", KApplication::kde_cgidir().data());
@@ -127,7 +127,7 @@ kde_cv_all_paths="kde_have_all_paths=\"yes\" \
 	kde_htmldir=\"$kde_htmldir\" \
 	kde_appsdir=\"$kde_appsdir\" \
 	kde_icondir=\"$kde_icondir\" \
-	kde_minidir=\"$kde_minidir\" \
+	kde_sounddir=\"$kde_sounddir\" \
 	kde_datadir=\"$kde_datadir\" \
 	kde_locale=\"$kde_locale\" \
 	kde_cgidir=\"$kde_cgidir\" \
@@ -145,7 +145,7 @@ rm -fr conftest*
 eval "$kde_cv_all_paths"
 
 if test -z "$kde_htmldir" || test -z "$kde_appsdir" ||
-   test -z "$kde_icondir" || test -z "$kde_minidir" ||
+   test -z "$kde_icondir" || test -z "$kde_sounddir" ||
    test -z "$kde_datadir" || test -z "$kde_locale"  ||
    test -z "$kde_cgidir"  || test -z "$kde_confdir" ||
    test -z "$kde_mimedir" || test -z "$kde_toolbardir" ||
@@ -163,7 +163,7 @@ if test -n "$install_root"; then
   KDE_REPLACE_ROOT(kde_htmldir)
   KDE_REPLACE_ROOT(kde_appsdir)
   KDE_REPLACE_ROOT(kde_icondir)
-  KDE_REPLACE_ROOT(kde_minidir)
+  KDE_REPLACE_ROOT(kde_sounddir)
   KDE_REPLACE_ROOT(kde_datadir)
   KDE_REPLACE_ROOT(kde_locale)
   KDE_REPLACE_ROOT(kde_cgidir)
@@ -187,6 +187,8 @@ AC_DEFUN(AC_SUBST_KFSSTND,
 AC_SUBST(kde_htmldir)
 AC_SUBST(kde_appsdir)
 AC_SUBST(kde_icondir)
+AC_SUBST(kde_sounddir)
+kde_minidir="$kde_icondir/mini"
 AC_SUBST(kde_minidir)
 AC_SUBST(kde_datadir)
 AC_SUBST(kde_locale)
@@ -197,6 +199,33 @@ AC_SUBST(kde_toolbardir)
 AC_SUBST(kde_wallpaperdir)
 AC_SUBST(kde_bindir)
 AC_SUBST(kde_partsdir)
+])
+
+AC_DEFUN(KDE_MISC_TESTS,
+[
+   AC_LANG_C
+   dnl Checks for libraries. 
+   AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
+   AC_SUBST(LIBCOMPAT)
+   AC_CHECK_LIB(crypt, main, [LIBCRYPT="-lcrypt"]) dnl for BSD
+   AC_SUBST(LIBCRYPT)
+   AC_CHECK_KSIZE_T
+   dnl I need to check for libsocket before testing X
+   AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
+   AC_CHECK_LIB(ucb, killpg, [LIBUCB="-lucb"]) dnl for Solaris2.4
+   AC_SUBST(LIBUCB)
+
+   case $host in  dnl this *is* LynxOS specific
+   *-*-lynxos* )
+        AC_MSG_CHECKING([LynxOS header file wrappers])
+        [CFLAGS="$CFLAGS -D__NO_INCLUDE_WARN__"]
+        AC_MSG_RESULT(disabled)
+        AC_CHECK_LIB(bsd, gethostbyname, [LIBSOCKET="-lbsd"]) dnl for LynxOS
+         ;;
+    esac
+
+    AC_SUBST(LIBSOCKET)
+
 ])
 
 ## ------------------------------------------------------------------------
@@ -457,16 +486,23 @@ AC_PATH_QT_1_3
 ##
 AC_DEFUN(AC_BASE_PATH_KDE,
 [
+AC_REQUIRE([KDE_MISC_TESTS])
 AC_REQUIRE([AC_PATH_QT])dnl
 AC_MSG_CHECKING([for KDE])
 
 if test "${prefix}" != NONE; then
-  kde_libraries=${prefix}/lib
   kde_includes=${prefix}/include
-  ac_kde_libraries=$prefix/lib
   ac_kde_includes=$prefix/include
+
+  if test "${exec_prefix}" != NONE; then
+    kde_libraries=${exec_prefix}/lib
+    ac_kde_libraries=$exec_prefix/lib
+  else
+    kde_libraries=${prefix}/lib
+    ac_kde_libraries=$prefix/lib
+  fi
 else
-  ac_kde_includes= 
+  ac_kde_includes=
   ac_kde_libraries=
   kde_libraries=""
   kde_includes=""
@@ -482,7 +518,7 @@ test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
 if test -n "$ac_kde_includes" && test ! -r "$ac_kde_includes/ksock.h"; then
   AC_MSG_ERROR([
-in the prefix, you've choosen, are no kde headers installed. This will fail.
+in the prefix, you've chosen, are no kde headers installed. This will fail.
 So, check this please and use another prefix!])
 fi
 ac_kde_includes=$kde_incdir
@@ -493,7 +529,7 @@ AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 
 if test -n "$ac_kde_libraries" && test ! -r "$ac_kde_libraries/libkdecore.la"; then
 AC_MSG_ERROR([
-in the prefix, you've choosen, are no kde libraries installed. This will fail.
+in the prefix, you've chosen, are no kde libraries installed. This will fail.
 So, check this please and use another prefix!])
 fi
 ac_kde_libraries=$kde_libdir
