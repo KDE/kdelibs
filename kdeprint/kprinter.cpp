@@ -137,7 +137,8 @@ KPrinter::~KPrinter()
 	if (d->m_restore)
 		saveSettings();
 
-	// delete private data
+	// delete private data (along any data allocated internally)
+	delete d->m_pagesize;
 	delete d;
 }
 
@@ -962,7 +963,27 @@ QSize KPrinter::realPageSize() const
 }
 
 void KPrinter::setRealPageSize(DrPageSize *p)
-{ d->m_pagesize = p; }
+{
+	if ( p )
+	{
+		kdDebug( 500 ) << "Page size:  width =" << p->pageWidth() << endl;
+		kdDebug( 500 ) << "Page size: height =" << p->pageHeight() << endl;
+		kdDebug( 500 ) << "Page size:   left =" << p->leftMargin() << endl;
+		kdDebug( 500 ) << "Page size:    top =" << p->topMargin() << endl;
+		kdDebug( 500 ) << "Page size:  right =" << p->rightMargin() << endl;
+		kdDebug( 500 ) << "Page size: bottom =" << p->bottomMargin() << endl;
+	}
+	else
+		kdDebug( 500 ) << "Resetting page size" << endl;
+
+	/* we copy the page size structure internally
+	 * as the original object is owned by the driver
+	 * that control its destrution */
+	delete d->m_pagesize;
+	d->m_pagesize = 0;
+	if ( p )
+		d->m_pagesize = new DrPageSize( *p );
+}
 
 // FIXME: remove for 4.0
 void KPrinter::setRealPageSize( QSize )
