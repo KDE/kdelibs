@@ -48,13 +48,19 @@ KTabWidget::~KTabWidget()
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
-    static_cast<KTabBar*>(tabBar())->setTabColor( t->identifier(), color );
+    if (t) {
+        static_cast<KTabBar*>(tabBar())->setTabColor( t->identifier(), color );
+    }
 }
 
 const QColor &KTabWidget::tabColor( QWidget *w ) const
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
-    return static_cast<KTabBar*>(tabBar())->tabColor( t->identifier() );
+    if (t) {
+        return static_cast<KTabBar*>(tabBar())->tabColor( t->identifier() );
+    } else {
+        return QColor();
+    }
 }
 
 void KTabWidget::setTabReorderingEnabled( bool on)
