@@ -434,7 +434,7 @@ khtml::RenderStyle* ElementImpl::activeStyle()
     if (!m_style) return 0;
 
     RenderStyle* dynamicStyle=0;
-    if ((dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER)) && mouseInside())
+    if ( mouseInside() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER)) )
         return dynamicStyle;
 
     return m_style;

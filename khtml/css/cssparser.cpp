@@ -869,7 +869,9 @@ public:
 	if ( yyTok == Tok_Symbol || ( yyTok = Tok_String && !strictParsing ) ) {
 	    // accept quoted "serif" only in non strict mode.
 	    *ffamily = yyStr;
-	    yyTok = getToken();
+	    // unquoted courier new should return courier new
+	    while( (yyTok = getToken()) == Tok_Symbol )
+		*ffamily += " " + yyStr;
 	    matched = true;
 	} else if ( yyTok == Tok_String ) {
 	    if ( yyStr != "serif" && yyStr != "sans-serif" &&
@@ -1405,6 +1407,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    return false;
 	for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
 	    list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
+	    //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl; 
 	}
         //kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
         if(list->length())
