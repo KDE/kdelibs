@@ -1588,8 +1588,6 @@ public:
   virtual KActionPtrList actions( const QString& group ) const;
   virtual KActionPtrList actions() const;
 
-  //virtual void createKeyMap( KAccelActions& ) const;
-  //virtual void setKeyMap( const KAccelActions& map );
   // Used for reading shortcut configuration from a non-XML rc file.
   bool readShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
   // Used for writing shortcut configuration to a non-XML rc file.
@@ -1658,72 +1656,6 @@ public slots:
    */
   void clear();
 #endif // !KDE_NO_COMPAT
-};
-
-// TODO: move these to another header file? -- ellis
-#include <kshortcutlist.h>
-//---------------------------------------------------------------------
-// class KActionShortcutList
-//---------------------------------------------------------------------
-
-class KActionShortcutList : public KShortcutList
-{
- public:
-	KActionShortcutList( KActionCollection* );
-	virtual ~KActionShortcutList();
-
-	virtual uint count() const;
-	virtual QString name( uint i ) const;
-	virtual QString label( uint ) const;
-	virtual QString whatsThis( uint ) const;
-	virtual const KShortcut& shortcut( uint ) const;
-	virtual const KShortcut& shortcutDefault( uint ) const;
-	virtual bool isConfigurable( uint ) const;
-	virtual bool setShortcut( uint, const KShortcut& );
-
-	virtual const KInstance* instance() const;
-
-	virtual QVariant getOther( Other, uint index ) const;
-	virtual bool setOther( Other, uint index, QVariant );
-
-	virtual bool save() const;
-
- protected:
-	KActionCollection& m_actions;
-
- private:
-	class KAccelShortcutListPrivate* d;
-};
-
-//---------------------------------------------------------------------
-// class KActionPtrShortcutList
-//---------------------------------------------------------------------
-
-class KActionPtrShortcutList : public KShortcutList
-{
- public:
-	KActionPtrShortcutList( KActionPtrList& );
-	virtual ~KActionPtrShortcutList();
-
-	virtual uint count() const;
-	virtual QString name( uint i ) const;
-	virtual QString label( uint ) const;
-	virtual QString whatsThis( uint ) const;
-	virtual const KShortcut& shortcut( uint ) const;
-	virtual const KShortcut& shortcutDefault( uint ) const;
-	virtual bool isConfigurable( uint ) const;
-	virtual bool setShortcut( uint, const KShortcut& );
-
-	virtual QVariant getOther( Other, uint index ) const;
-	virtual bool setOther( Other, uint index, QVariant );
-
-	virtual bool save() const;
-
- protected:
-	KActionPtrList& m_actions;
-
- private:
-	class KAccelShortcutListPrivate* d;
 };
 
 #endif

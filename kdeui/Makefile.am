@@ -48,7 +48,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kdualcolorbtn.h kdualcolorbutton.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
 		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
-		kstdaction.h kcombobox.h \
+		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
 		kpixmapio.h kwordwrap.h \

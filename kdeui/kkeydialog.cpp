@@ -33,6 +33,7 @@
 
 #include <kaccel.h>
 #include <kaction.h>
+#include <kactionshortcutlist.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>

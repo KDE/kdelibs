@@ -29,6 +29,7 @@
 #endif
 
 #include "kaction.h"
+#include "kactionshortcutlist.h"
 
 #include <assert.h>
 
@@ -919,6 +920,7 @@ void KAction::slotActivated()
 
 void KAction::slotDestroyed()
 {
+  kdDebug(125) << "KAction::slotDestroyed(): sender = " << sender() << endl;
   if ( sender() == d->m_kaccel )
   {
     d->m_kaccel = 0;
@@ -2323,6 +2325,7 @@ KActionMenu::KActionMenu( const QString& text, const QString& icon,
 
 KActionMenu::~KActionMenu()
 {
+  kdDebug(125) << "KActionMenu::~KActionMenu()" << endl; // ellis
   delete d; d = 0;
 }
 
