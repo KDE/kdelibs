@@ -358,10 +358,10 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
 
-    if ( o == this )
+    QKeyEvent *e = dynamic_cast<QKeyEvent *>( ev );
+    if ( o == this && e )
     {
         KCursor::autoHideEventFilter( this, ev );
-        QKeyEvent* e = static_cast<QKeyEvent*>(ev);
         if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
         {
             emit returnPressed( displayText() );
