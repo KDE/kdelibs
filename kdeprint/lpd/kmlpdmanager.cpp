@@ -32,6 +32,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qmap.h>
+#include <qregexp.h>
 
 #include <klocale.h>
 #include <kstddirs.h>

@@ -24,6 +24,7 @@
 #include "kmobject.h"
 
 #include <qheader.h>
+#include <qpainter.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kcursor.h>

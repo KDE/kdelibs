@@ -21,6 +21,7 @@
 #define	CUPSLIST_H
 
 #include <qwidget.h>
+#include <qstringlist.h>
 
 class QPushButton;
 class QListView;

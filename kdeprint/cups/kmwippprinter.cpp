@@ -32,6 +32,7 @@
 #include <kmessagebox.h>
 #include <qtextview.h>
 #include <qlayout.h>
+#include <qregexp.h>
 #include <kseparator.h>
 #include <klocale.h>
 #include <kiconloader.h>

@@ -28,6 +28,7 @@
 #include <qlayout.h>
 #include <qpixmap.h>
 #include <qwhatsthis.h>
+#include <qstringlist.h>
 
 #include <kseparator.h>
 #include <klocale.h>

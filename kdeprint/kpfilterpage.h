@@ -23,6 +23,7 @@
 #include "kprintdialogpage.h"
 
 #include <qdict.h>
+#include <qstringlist.h>
 
 class KListView;
 class KPrintFilter;

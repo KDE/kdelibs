@@ -23,6 +23,7 @@
 
 #include <qwidgetstack.h>
 #include <qlabel.h>
+#include <qpainter.h>
 #include <klistbox.h>
 #include <qlayout.h>
 #include <kseparator.h>

@@ -25,6 +25,7 @@
 #include <qlayout.h>
 #include <qdragobject.h>
 #include <qtooltip.h>
+#include <qregexp.h>
 
 #include <kio/netaccess.h>
 #include <kfiledialog.h>

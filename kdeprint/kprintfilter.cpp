@@ -23,6 +23,7 @@
 
 #include <qxml.h>
 #include <qstack.h>
+#include <qregexp.h>
 #include <kstddirs.h>
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>

@@ -22,6 +22,7 @@
 #include "kmiconview.h"
 #include "kmprinter.h"
 
+#include <qpainter.h>
 #include <kiconloader.h>
 
 KMIconViewItem::KMIconViewItem(QIconView *parent, KMPrinter *p)

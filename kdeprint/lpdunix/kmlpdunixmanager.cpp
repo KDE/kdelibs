@@ -27,6 +27,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
+#include <qregexp.h>
 #include <klocale.h>
 #include <kstddirs.h>
 #include <kdebug.h>

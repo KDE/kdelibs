@@ -42,6 +42,7 @@
 #include <qtabwidget.h>
 #include <qvbox.h>
 #include <qlayout.h>
+#include <qregexp.h>
 #include <kmessagebox.h>
 #include <qdir.h>
 #include <qtooltip.h>

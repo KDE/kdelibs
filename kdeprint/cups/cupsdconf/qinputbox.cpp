@@ -23,6 +23,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qregexp.h>
 #include <klocale.h>
 
 QInputBox::QInputBox(QWidget *parent,const char *name)

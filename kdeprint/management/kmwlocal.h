@@ -22,6 +22,8 @@
 
 #include "kmwizardpage.h"
 
+#include <qstringlist.h>
+
 class QLineEdit;
 class KListView;
 class QListViewItem;

@@ -20,6 +20,7 @@
 #include "cupsdcomment.h"
 
 #include <qfile.h>
+#include <qregexp.h>
 #include <kstddirs.h>
 
 QString Comment::comment()

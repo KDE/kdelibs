@@ -30,6 +30,7 @@
 #include "kprintfilter.h"
 
 #include <qfile.h>
+#include <qregexp.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kapp.h>
