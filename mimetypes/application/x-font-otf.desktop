@@ -1,6 +1,16 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Opentype Font
+Comment=OpenType Font
+Comment[ca]=Font Opentype
+Comment[cs]=Opentype písmo
+Comment[es]=Fuente OpenType
+Comment[fa]=قلم Opentype
+Comment[pt_BR]=Fonte OpenType
+Comment[sk]=Písmo Opentype
+Comment[sr]=Opentype фонт
+Comment[sv]=Opentype-teckensnitt
+Comment[wa]=Fonte openType
+Comment[xx]=xxOpentype Fontxx
 Icon=font_truetype
 Type=MimeType
 MimeType=application/x-font-otf
