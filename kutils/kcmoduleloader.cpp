@@ -36,7 +36,7 @@
 
 /***************************************************************/
 /**
- * When something goes wrong in loading the module, this one 
+ * When something goes wrong in loading the module, this one
  * jumps in as a "dummy" module.
  */
 class KCMError : public KCModule
@@ -215,11 +215,11 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
     return true;
   }
   else
-  { 
+  {
     /**
      * If something fails we return true - we can't risk functionality becoming
-     * unavailable because of a buggy test. Furthermore, the error needs to 
-     * show so it is discovered. KCModuleProxy will detect the error and load 
+     * unavailable because of a buggy test. Furthermore, the error needs to
+     * show so it is discovered. KCModuleProxy will detect the error and load
      * a corresponding KCMError.
      * */
     KLibLoader* loader = KLibLoader::self();
@@ -233,7 +233,7 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
         if( func() )
         {
           return true;
-        }  
+        }
         else
         {
           return false;
@@ -241,11 +241,11 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
       }
       else
       {
-        kdDebug(1280) << "The test function for module '" << module.fileName() << "' could not be found." << endl;
+        kdDebug(1208) << "The test function for module '" << module.fileName() << "' could not be found." << endl;
         return true;
       }
     }
-    kdDebug(1280) << "The library '" << module.library() << "' could not be found." << endl;
+    kdDebug(1208) << "The library '" << module.library() << "' could not be found." << endl;
     return true;
   }
 }
