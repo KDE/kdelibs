@@ -1,12 +1,7 @@
-kdelibs (4:2.2-cvs20010521-1) experimental; urgency=low
+kdelibs (4:2.2-cvs20010525-1) experimental; urgency=low
 
-  * New upstream CVS pull (alpha2)
+  * New upstream CVS pull (post alpha2)
   * Remove old .shlibs files
-
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 21 May 2001 23:59:00 -0700
-
-kdelibs (4:2.2-cvs20010503-1) experimental; urgency=low
- 
   * Moving to -cvs{date] format for entering into experimental
   * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
     date listed in the version number states when the initial pull was made
@@ -30,7 +25,7 @@ kdelibs (4:2.2-cvs20010503-1) experimental; urgency=low
   * Moving kdoc and qt-doc into Build-Depends-Indep
   * Add Provides in for libarts-alsa/libkmid-alsa
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 03 May 2001 00:15:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 25 May 2001 11:10:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
  
