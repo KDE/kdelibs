@@ -12,11 +12,13 @@
 #define __KVIDEOWIDGET_H
 
 #include <qevent.h>
+#include <qimage.h>
 #include <qwidget.h>
 #include <kmedia2.h>
+#include <kxmlguiclient.h>
 
 
-class KVideoWidget : public QWidget
+class KVideoWidget : public QWidget, virtual public KXMLGUIClient
 {
 Q_OBJECT
 
@@ -25,6 +27,7 @@ public:
     virtual ~KVideoWidget();
 
     void embed( Arts::VideoPlayObject vpo );
+    static QImage snapshot( Arts::VideoPlayObject vpo );
 
     bool isEmbedded();
     bool isFullscreen();
@@ -43,22 +46,26 @@ protected:
     virtual bool x11Event( XEvent *event );
 
 public slots:
-    void slotFullscreen();
-    void slotWindowed();
-    void slotHalfSize();
-    void slotNormalSize();
-    void slotDoubleSize();
+    void setFullscreen();
+    void setWindowed();
+    void setHalfSize();
+    void setNormalSize();
+    void setDoubleSize();
+
+protected slots:
+    void fullscreenActivated();
+    void halfSizeActivated();
+    void normalSizeActivated();
+    void doubleSizeActivated();
 
 signals:
     void adaptSize( int width, int height );
     void rightButtonPressed( const QPoint & );
-    void zoomChanged();
 
 private:
     QWidget *fullscreenWidget;
     bool embedded;
     bool enabled;
-    int zoom;
     int videoWidth;
     int videoHeight;
 };

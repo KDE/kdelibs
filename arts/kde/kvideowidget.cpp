@@ -16,6 +16,7 @@
 #include <qaccel.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <kaction.h>
 #include "kvideowidget.h"
 
 #define VPO_ADD_WINDOW		1
@@ -25,8 +26,6 @@
 #define VPO_ENABLE_WINDOW	5
 #define VPO_RELEASE_WINDOW	6
 #define VPO_RESIZE_NOTIFY	7
-
-enum VideoZoom { CustomSize, HalfSize, NormalSize, DoubleSize };
 
 
 static void sendEvent( Window window, long message, long arg1 = 0, long arg2 = 0 )
@@ -72,24 +71,20 @@ static void releaseWinId( Window window )
 class KFullscreenVideoWidget : public KVideoWidget
 {
 public:
-    KFullscreenVideoWidget();
+    KFullscreenVideoWidget( KVideoWidget *parent = 0, const char *name = 0 );
 
 protected:
-    virtual void hideEvent( QHideEvent * );
     virtual void windowActivationChange( bool );
     virtual bool x11Event( XEvent *event );
+
+private:
+    KVideoWidget *videoWidget;
 };
 
-KFullscreenVideoWidget::KFullscreenVideoWidget()
-    : KVideoWidget( 0, 0, WType_TopLevel | WStyle_Customize | WStyle_NoBorder )
+KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char *name )
+    : KVideoWidget( parent, name, WType_TopLevel | WStyle_Customize | WStyle_NoBorder )
 {
-    setEraseColor( black );
-}
-
-void KFullscreenVideoWidget::hideEvent( QHideEvent * )
-{
-    releaseWinId( winId() );
-
+    this->videoWidget = parent;
     setEraseColor( black );
 }
 
@@ -97,7 +92,7 @@ void KFullscreenVideoWidget::windowActivationChange( bool )
 {
     if (!isActiveWindow())
     {
-	hide();
+	videoWidget->setWindowed();
     }
 }
 
@@ -105,15 +100,21 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
 {
     Atom atom = XInternAtom( qt_xdisplay(), "VPO_X11_COMM", False );
 
-    if (event->type == ClientMessage &&
-	event->xclient.message_type == atom &&
-	event->xclient.data.l[0] == VPO_DISABLE_NOTIFY)
+    if (event->type == ClientMessage && event->xclient.message_type == atom)
     {
-	hide();
+	switch (event->xclient.data.l[0])
+	{
+	case VPO_DESTROY_NOTIFY:
+	case VPO_DISABLE_NOTIFY:
+	    setEraseColor( black );
+	    break;
+	case VPO_ENABLE_NOTIFY:
+	    setBackgroundMode( NoBackground );
+	    break;
+	}
     }
-    return KVideoWidget::x11Event( event );
+    return false;
 }
-
 
 KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
     : QWidget( parent, name, f )
@@ -125,24 +126,26 @@ KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
     fullscreenWidget = 0;
     embedded	     = false;
     enabled	     = false;
-    zoom	     = CustomSize;
     videoWidth	     = 0;
     videoHeight	     = 0;
 
-    // Add fullscreen widget
-    if (parent && !(f & WType_TopLevel))
-    {
-	fullscreenWidget = new KFullscreenVideoWidget();
+    // Setup actions
+    new KToggleAction( "Fullscreen &Mode", "window_fullscreen",
+		       CTRL+SHIFT+Key_F, this, SLOT(fullscreenActivated()),
+		       actionCollection(), "fullscreen_mode" );
+    new KRadioAction( "&Half Size", ALT+Key_0,
+		      this, SLOT(halfSizeActivated()),
+		      actionCollection(), "half_size" );
+    new KRadioAction( "&Normal Size", ALT+Key_1,
+		      this, SLOT(normalSizeActivated()),
+		      actionCollection(), "normal_size" );
+    new KRadioAction( "&Double Size", ALT+Key_2,
+		      this, SLOT(doubleSizeActivated()),
+		      actionCollection(), "double_size" );
 
-	// Interconnect right mouse button signals
-	connect( fullscreenWidget, SIGNAL(rightButtonPressed(const QPoint &)),
-		 this, SIGNAL(rightButtonPressed(const QPoint &)) );
-
-	// Leave fullscreen mode with <Escape> key
-	QAccel *a = new QAccel( fullscreenWidget );
-	a->connectItem( a->insertItem( Key_Escape ),
-			this, SLOT(slotWindowed()) );
-    }
+    ((KToggleAction *)action( "half_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
+    ((KToggleAction *)action( "normal_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
+    ((KToggleAction *)action( "double_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
 }
 
 KVideoWidget::~KVideoWidget()
@@ -162,7 +165,11 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	if (embedded)
 	{
 	    releaseWinId( winId() );
-	    releaseWinId( fullscreenWidget->winId() );
+
+	    if (fullscreenWidget)
+	    {
+		releaseWinId( fullscreenWidget->winId() );
+	    }
 
 	    setEraseColor( lightGray );
 	    embedded = false;
@@ -172,7 +179,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	videoWidth  = 0;
 	videoHeight = 0;
 
-	if (zoom != CustomSize)
+	if (isHalfSize() || isNormalSize() || isDoubleSize())
 	    emit adaptSize( 0, 0 );
     }
     else
@@ -182,7 +189,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	setBackgroundMode( NoBackground );
 
 	// Don't reset fullscreen mode for video playlists
-	if (fullscreenWidget->isVisible())
+	if (fullscreenWidget)
 	{
 	    vpo.x11WindowId( fullscreenWidget->winId() );
 	}
@@ -190,7 +197,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	vpo.x11WindowId( winId() );
 
 	// Re-enable video widget
-	if (fullscreenWidget->isVisible())
+	if (fullscreenWidget)
 	{
 	    sendEvent( fullscreenWidget->winId(), VPO_ENABLE_WINDOW );
 	}
@@ -201,6 +208,38 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
     }
 }
 
+QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
+{
+    Window root;
+    Pixmap pixmap;
+    XImage *xImage;
+    unsigned int width, height, border, depth;
+    int x, y;
+
+    if (vpo.isNull() || (long)(pixmap = vpo.x11Snapshot()) == -1)
+	return QImage();
+
+    // Get 32bit RGBA image data (stored in 1bpp pixmap)
+    XGetGeometry( qt_xdisplay(), pixmap, &root, &x, &y, &width, &height, &border, &depth );
+
+    xImage = XGetImage( qt_xdisplay(), pixmap, 0, 0, width, height, 1, XYPixmap );
+
+    if (xImage == 0)
+    {
+	XFreePixmap( qt_xdisplay(), pixmap );
+	return QImage();
+    }
+
+    // Convert 32bit RGBA image data into Qt image
+    QImage qImage = QImage( (uchar *)xImage->data, width/32, height, 32, (QRgb *)0, 0, QImage::IgnoreEndian ).copy();
+
+    // Free X11 resources and return Qt image
+    XDestroyImage( xImage );
+    XFreePixmap( qt_xdisplay(), pixmap );
+
+    return qImage;
+}
+
 bool KVideoWidget::isEmbedded()
 {
     return embedded;
@@ -208,22 +247,58 @@ bool KVideoWidget::isEmbedded()
 
 bool KVideoWidget::isFullscreen()
 {
-    return fullscreenWidget->isVisible();
+    return ((KToggleAction *)action( "fullscreen_mode" ))->isChecked();
 }
 
 bool KVideoWidget::isHalfSize()
 {
-    return (zoom == HalfSize);
+    return ((KToggleAction *)action( "half_size" ))->isChecked();
 }
 
 bool KVideoWidget::isNormalSize()
 {
-    return (zoom == NormalSize);
+    return ((KToggleAction *)action( "normal_size" ))->isChecked();
 }
 
 bool KVideoWidget::isDoubleSize()
 {
-    return (zoom == DoubleSize);
+    return ((KToggleAction *)action( "double_size" ))->isChecked();
+}
+
+void KVideoWidget::setFullscreen()
+{
+    if (!isFullscreen())
+    {
+	((KToggleAction *)action( "fullscreen_mode" ))->setChecked( true );
+	fullscreenActivated();
+    }
+}
+
+void KVideoWidget::setWindowed()
+{
+    if (isFullscreen())
+    {
+	((KToggleAction *)action( "fullscreen_mode" ))->setChecked( false );
+	fullscreenActivated();
+    }
+}
+
+void KVideoWidget::setHalfSize()
+{
+    ((KToggleAction *)action( "half_size" ))->setChecked( true );
+    halfSizeActivated();
+}
+
+void KVideoWidget::setNormalSize()
+{
+    ((KToggleAction *)action( "normal_size" ))->setChecked( true );
+    normalSizeActivated();
+}
+
+void KVideoWidget::setDoubleSize()
+{
+    ((KToggleAction *)action( "double_size" ))->setChecked( true );
+    doubleSizeActivated();
 }
 
 QSize KVideoWidget::sizeHint() const
@@ -251,26 +326,23 @@ void KVideoWidget::resizeEvent( QResizeEvent *event )
 {
     QWidget::resizeEvent( event );
 
-    int oldZoom = zoom;
-
     if (width() > minimumWidth() || height() > minimumHeight())
     {
-	if (width() == QMAX( (videoWidth >> 1), minimumWidth() ) &&
-	         height() == QMAX( (videoHeight >> 1), minimumHeight() ))
-	    zoom = HalfSize;
+	if (width() == QMAX( (videoWidth / 2), minimumWidth() ) &&
+	         height() == QMAX( (videoHeight / 2), minimumHeight() ))
+	    ((KToggleAction *)action( "half_size" ))->setChecked( true );
 	else if (width() == QMAX( videoWidth, minimumWidth() ) &&
 		 height() == QMAX( videoHeight, minimumHeight() ))
-	    zoom = NormalSize;
-	else if (width() == QMAX( (videoWidth << 1), minimumWidth() ) &&
-		 height() == QMAX( (videoHeight << 1), minimumHeight() ))
-	    zoom = DoubleSize;
+	    ((KToggleAction *)action( "normal_size" ))->setChecked( true );
+	else if (width() == QMAX( (2 * videoWidth), minimumWidth() ) &&
+		 height() == QMAX( (2 * videoHeight), minimumHeight() ))
+	    ((KToggleAction *)action( "double_size" ))->setChecked( true );
 	else
-	    zoom = CustomSize;
-    }
-
-    if (oldZoom != zoom)
-    {
-	emit zoomChanged();
+	{
+	    ((KToggleAction *)action( "half_size" ))->setChecked( false );
+	    ((KToggleAction *)action( "normal_size" ))->setChecked( false );
+	    ((KToggleAction *)action( "double_size" ))->setChecked( false );
+	}
     }
 }
 
@@ -286,12 +358,12 @@ bool KVideoWidget::x11Event( XEvent *event )
 	    videoWidth  = event->xclient.data.l[1];
 	    videoHeight = event->xclient.data.l[2];
 
-	    if (zoom == HalfSize)
-		emit adaptSize( (videoWidth >> 1), (videoHeight >> 1) );
-	    else if (zoom == NormalSize)
+	    if (isHalfSize())
+		emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
+	    else if (isNormalSize())
 		emit adaptSize( videoWidth, videoHeight );
-	    else if (zoom == DoubleSize)
-		emit adaptSize( (videoWidth << 1), (videoHeight << 1) );
+	    else if (isDoubleSize())
+		emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
 	    break;
 	case VPO_DESTROY_NOTIFY:
 	    embedded = false;
@@ -310,72 +382,63 @@ bool KVideoWidget::x11Event( XEvent *event )
     return false;
 }
 
-void KVideoWidget::slotFullscreen()
+void KVideoWidget::fullscreenActivated()
 {
-    if (!isFullscreen())
+    if (isFullscreen() && !fullscreenWidget)
     {
-#if 1	// Ugly workaround for Qt-3.x
-	fullscreenWidget->showNormal();
-#endif
+	fullscreenWidget = new KFullscreenVideoWidget( this );
+
+	// Interconnect right mouse button signals
+	connect( fullscreenWidget, SIGNAL(rightButtonPressed(const QPoint &)),
+		 this, SIGNAL(rightButtonPressed(const QPoint &)) );
+
+	// Leave fullscreen mode with <Escape> key
+	QAccel *a = new QAccel( fullscreenWidget );
+	a->connectItem( a->insertItem( Key_Escape ),
+			this, SLOT(setWindowed()) );
+
 	fullscreenWidget->showFullScreen();
 	fullscreenWidget->setFocus();
 
 	// Add fullscreen window
 	sendEvent( winId(), VPO_ADD_WINDOW, fullscreenWidget->winId(), true );
     }
-}
-
-void KVideoWidget::slotWindowed()
-{
-    if (isFullscreen())
+    else
     {
-	fullscreenWidget->hide();
-    }
-    sendEvent( winId(), VPO_ENABLE_WINDOW );
-}
-
-void KVideoWidget::slotHalfSize()
-{
-    if (zoom != HalfSize)
-    {
-	zoom = HalfSize;
-
-	if (isEmbedded())
+	if (fullscreenWidget)
 	{
-	    emit adaptSize( (videoWidth >> 1), (videoHeight >> 1) );
+	    delete fullscreenWidget;
+	    fullscreenWidget = 0;
 	}
 
-	emit zoomChanged();
+	sendEvent( winId(), VPO_ENABLE_WINDOW );
     }
 }
 
-void KVideoWidget::slotNormalSize()
+void KVideoWidget::halfSizeActivated()
 {
-    if (zoom != NormalSize)
+    if (isHalfSize())
     {
-	zoom = NormalSize;
-
-	if (isEmbedded())
-	{
-	    emit adaptSize( videoWidth, videoHeight );
-	}
-
-	emit zoomChanged();
+	emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
+	setWindowed();
     }
 }
 
-void KVideoWidget::slotDoubleSize()
+void KVideoWidget::normalSizeActivated()
 {
-    if (zoom != DoubleSize)
+    if (isNormalSize())
     {
-	zoom = DoubleSize;
+	emit adaptSize( videoWidth, videoHeight );
+	setWindowed();
+    }
+}
 
-	if (isEmbedded())
-	{
-	    emit adaptSize( (videoWidth << 1), (videoHeight << 1) );
-	}
-
-	emit zoomChanged();
+void KVideoWidget::doubleSizeActivated()
+{
+    if (isDoubleSize())
+    {
+	emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
+	setWindowed();
     }
 }
 
