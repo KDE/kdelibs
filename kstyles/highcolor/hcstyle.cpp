@@ -1057,9 +1057,14 @@ void HCStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
         else
             p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Midlight));
     }
-    else
-        qDrawShadePanel(p, x, y, w, h, g, false, 1,
-                        &g.brush(QColorGroup::Background));
+    else{
+        qDrawShadePanel(p, x, y, w, h, g, false, 1);
+		if(vSmall)
+            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-1);
+		else
+            p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
+	}
+			
 }
 
 void HCStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
