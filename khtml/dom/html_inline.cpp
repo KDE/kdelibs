@@ -27,7 +27,7 @@
 #include "html_inlineimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 HTMLAnchorElement::HTMLAnchorElement() : HTMLElement()
 {

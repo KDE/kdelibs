@@ -31,7 +31,7 @@
 #include "html_tableimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 HTMLTableCaptionElement::HTMLTableCaptionElement() : HTMLElement()
 {

@@ -29,7 +29,7 @@
 #include "html_element.h"
 #include "html_elementimpl.h"
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 HTMLAppletElement::HTMLAppletElement() : HTMLElement()
 {

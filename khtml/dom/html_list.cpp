@@ -26,7 +26,7 @@
 #include "html_listimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 HTMLDListElement::HTMLDListElement() : HTMLElement()
 {

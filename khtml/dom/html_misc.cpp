@@ -28,7 +28,7 @@
 #include "html_miscimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 HTMLBaseFontElement::HTMLBaseFontElement() : HTMLElement()
 {

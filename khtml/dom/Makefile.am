@@ -21,27 +21,26 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkhtmldom.la
 libkhtmldom_la_SOURCES = \
-	css_extensions.cpp  dom_misc.cpp        html_block.cpp      html_inline.cpp \
+	dom_misc.cpp        html_block.cpp      html_inline.cpp \
 	css_rule.cpp        dom_node.cpp        html_document.cpp   html_list.cpp \
 	css_stylesheet.cpp  dom_string.cpp      html_element.cpp    html_misc.cpp \
 	css_value.cpp       dom_text.cpp        html_form.cpp       html_object.cpp \
 	dom_doc.cpp         dom_xml.cpp         html_head.cpp       html_table.cpp \
 	dom_element.cpp     html_base.cpp       html_image.cpp
+#	css_extensions.cpp
 
 libkhtmldom_la_METASOURCES = AUTO
 
 myincludedir = $(includedir)/dom
 myinclude_HEADERS = \
-	css_extensions.h  dom_exception.h   html_base.h       html_inline.h \
+	dom_exception.h   html_base.h       html_inline.h \
 	css_rule.h        dom_html.h        html_block.h      html_list.h \
 	css_stylesheet.h  dom_misc.h        html_document.h   html_misc.h \
 	css_value.h       dom_node.h        html_element.h    html_object.h \
 	dom_core.h        dom_string.h      html_form.h       html_table.h \
 	dom_doc.h         dom_text.h        html_head.h \
 	dom_element.h     dom_xml.h         html_image.h
-
-
-libkhtmldom_la_LDFLAGS = -version-info 3:0
+#	css_extensions.h  
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop \
