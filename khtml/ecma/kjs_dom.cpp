@@ -94,7 +94,7 @@ KJSO DOMNode::tryGet(const UString &p) const
 //  else if (p == "supports") // new for DOM2 - not yet in khtml
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
   else
-    result = Undefined();
+    result = Imp::get(p);
 
   return result;
 }
@@ -107,6 +107,8 @@ void DOMNode::tryPut(const UString &p, const KJSO& v)
 //  else if (p == "prefix") { // new for DOM2 - not yet in khtml
 //    node.setPrefix(v.toString().value().string());
 //  }
+  else
+    Imp::put(p, v);
 }
 
 KJSO DOMNode::toPrimitive(Type preferred) const

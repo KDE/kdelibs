@@ -202,10 +202,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     result = DOMDocument::tryGet(p);
 
     if (result.isA(UndefinedType)) {
-      DOM::HTMLCollection coll = doc.images(); /* ### TODO: all() */
+      DOM::HTMLCollection coll = doc.all();
       DOM::HTMLElement element = coll.namedItem(p.string());
-      if (element.isNull())
-	element = doc.forms().namedItem(p.string());
       result = getDOMNode(element);
     }
     return result;
