@@ -463,21 +463,25 @@ fi
 AC_CACHE_VAL(ac_cv_have_kde,
 [#try to guess kde locations
 
-kde_incdirs="$kde_includes /usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
+if test -z "$1"; then
+
+kde_incdirs="$ac_kde_includes /usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
 test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
-if test -n "$kde_includes" && test ! -r "$kde_incdir/ksock.h"; then
-  AC_MSG_ERROR([in the prefix, you've choosen, are no kde headers installed. This will fail.
+if test -n "$ac_kde_includes" && test ! -r "$ac_kde_includes/ksock.h"; then
+  AC_MSG_ERROR([
+in the prefix, you've choosen, are no kde headers installed. This will fail.
 So, check this please and use another prefix!])
 fi
 ac_kde_includes=$kde_incdir
 
-kde_libdirs="$kde_libraries /usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
+kde_libdirs="$ac_kde_libraries /usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 
-if test -n "$kde_libraries" && test ! -r "$kde_libdir/libkdecore.la"; then
-AC_MSG_ERROR([in the prefix, you've choosen, are no kde libraries installed. This will fail.
+if test -n "ac_$kde_libraries" && test ! -r "$ac_kde_libraries/libkdecore.la"; then
+AC_MSG_ERROR([
+in the prefix, you've choosen, are no kde libraries installed. This will fail.
 So, check this please and use another prefix!])
 fi
 ac_kde_libraries=$kde_libdir
@@ -487,11 +491,18 @@ if test "$ac_kde_includes" = NO || test "$ac_kde_libraries" = NO; then
 else
   ac_cv_have_kde="have_kde=yes \
     ac_kde_includes=$ac_kde_includes ac_kde_libraries=$ac_kde_libraries"
-fi])dnl
+fi
+
+else dnl test -z $1 
+  
+  ac_cv_have_kde="have_kde=no"
+
+fi
+])dnl
 
 eval "$ac_cv_have_kde"
 
-if test "$have_kde" != yes; then
+if test "$have_kde" != "yes"; then
  if test "${prefix}" = NONE; then
   ac_kde_prefix=$ac_default_prefix
  else
