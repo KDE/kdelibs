@@ -52,7 +52,5 @@ KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 			return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype->name().latin1()), createBUS), false);
 	}
 	else
-	{
 		return new KPlayObject();
-	}
 }
