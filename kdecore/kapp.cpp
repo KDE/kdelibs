@@ -33,7 +33,6 @@
 #include <qkeycode.h>
 #include <qwidcoll.h>
 #include <qpopupmenu.h>
-#include <drag.h>
 
 #include <kapp.h>
 #include <kglobal.h>
@@ -117,8 +116,6 @@ void KApplication::init()
   // set up the fance KDE xio error handler (Matthias)
   XSetIOErrorHandler( kde_xio_errhandler );
 
-  rootDropZone = 0L;
-
   // CC: install KProcess' signal handler
   // by creating the KProcController instance (if its not already existing)
   // This is handled be KProcess (stefh)
@@ -131,15 +128,7 @@ void KApplication::init()
   styleHandle = 0;
   pKStyle = 0;
 
-  // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
-  DndSelection = XInternAtom( display, "DndSelection", False );
-  DndProtocol = XInternAtom( display, "DndProtocol", False );
-  DndEnterProtocol = XInternAtom( display, "DndEnterProtocol", False );
-  DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );
-  DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );
-  lastEnteredDropZone = 0L;
-  dropZones.setAutoDelete( false );
 
   WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
   WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
@@ -490,205 +479,94 @@ KApplication::~KApplication()
 
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-  // You can get root drop events twice.
-  // This is to avoid this.
-  static int rootDropEventID = -1;
+  if ( _event->type == ClientMessage ) {
+    XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
 
-  if ( _event->type == ClientMessage )
-    {
-	  XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
-	  // session management
-	  if( cme->message_type == WM_PROTOCOLS )
-		{
-		  if( (Atom)(cme->data.l[0]) == WM_SAVE_YOURSELF )
-			{
-			    //we want a new session config!
-			    if (bIsRestored && pSessionConfig) {
-				delete pSessionConfig;
-				pSessionConfig = 0;
-				bIsRestored = false;
-			    }
-				
-			
-			  if (!topWidget() ||
-			      cme->window != topWidget()->winId()){
-			    KWM::setWmCommand(cme->window, "");
-			    return true;
-			  }
-			
-			  emit saveYourself(); // give applications a chance to
-			  // save their data
-			  if (bSessionManagementUserDefined)
-			    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
-			  else {
-			
-			    if (pSessionConfig && !aSessionName.isEmpty()){
-			      QString aCommand = name();
-			      if (aCommand != argv()[0]){
-					if (argv()[0][0]=='/')
-					  aCommand = argv()[0];
-					else {
-					  char* s = new char[1024];
-					  aCommand=(getcwd(s, 1024));
-					  aCommand+="/";
-					  delete [] s;
-					  aCommand+=name();
-					}
-			      }
-			      aCommand+=" -restore ";
-			      aCommand+=aSessionName;
-			      aCommand+=aDummyString2;
-			      KWM::setWmCommand( topWidget()->winId(),
-									 aCommand);
-			      pSessionConfig->sync();
-			    } else {
-			      QString aCommand = argv()[0];
-			      aCommand+=aDummyString2;
-			      KWM::setWmCommand( topWidget()->winId(),
-									 aCommand);
-			    }
-			  }
-			
-			  return true;
-			}
-		}
-
-	  // stuff for reconfiguring
-	  if ( cme->message_type == KDEChangeStyle )
-		{
-		  QString str;
-		
-		  KGlobal::config()->setGroup("KDE");
-		  str = KGlobal::config()->readEntry("widgetStyle");
-		  if(!str.isNull())
-		    if(str == "Motif")
-		      applyGUIStyle(MotifStyle);
-		    else
-		      if(str == "Windows 95")
-			applyGUIStyle(WindowsStyle);
-		  return true;
-		}
-
-	  if ( cme->message_type == KDEChangePalette )
-		{
-		  readSettings(true);
-		  kdisplaySetPalette();
-		
-		  return True;
-		}
-	  if ( cme->message_type == KDEChangeGeneral )
-		{
-		  readSettings(true);
-		  kdisplaySetPalette(); // This has to be first (mosfet)
-		  kdisplaySetStyleAndFont();
-		
-		  return True;
-		}
+    // session management
+    if( cme->message_type == WM_PROTOCOLS ) {
+      if( (Atom)(cme->data.l[0]) == WM_SAVE_YOURSELF ) {
+	//we want a new session config!
+	if (bIsRestored && pSessionConfig) {
+	  delete pSessionConfig;
+	  pSessionConfig = 0;
+	  bIsRestored = false;
+	}
 	
-	  if ( cme->message_type == DndLeaveProtocol )
-		{
-		  if ( lastEnteredDropZone != 0L )
-			lastEnteredDropZone->leave();
 	
-		  lastEnteredDropZone = 0L;
-
-		  return true;
-		}
-	  else if ( cme->message_type != DndProtocol && cme->message_type != DndEnterProtocol &&
-				cme->message_type != DndRootProtocol )
-	    return false;
-	
-	  Window root = DefaultRootWindow(display);
-	
-	  unsigned char *Data;
-	  unsigned long Size;
-	  Atom    ActualType;
-	  int     ActualFormat;
-	  unsigned long RemainingBytes;
-
-	  XGetWindowProperty(display,root,DndSelection,
-						 0L,1000000L,
-						 false,AnyPropertyType,
-						 &ActualType,&ActualFormat,
-						 &Size,&RemainingBytes,
-						 &Data);
-
-	  QPoint p( (int)cme->data.l[3], (int)cme->data.l[4] );
-
-	  if ( cme->message_type == DndRootProtocol )
-		{
-		  if ( rootDropEventID == (int)cme->data.l[1] )
-			return false;
-	
-		  rootDropEventID = (int)cme->data.l[1];
-
-		  if ( rootDropZone != 0L )
-			rootDropZone->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
-		  return true;
-		}
-	
-	  KDNDDropZone *dz;
-	  KDNDDropZone *result = 0L;
-	
-	  /*
-		for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
-		{
-		QPoint p2 = dz->getWidget()->mapFromGlobal( p );
-		if ( dz->getWidget()->rect().contains( p2 ) )
-		result = dz;
-		}
-	  */
-
-	  QWidget *w = widgetAt( p.x(), p.y(), true );
-
-	  while ( result == 0L && w != 0L )
-		{
-	      for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
-			{
-			  if ( dz->getWidget() == w )
-				result = dz;
-			}
-	
-	      if ( result == 0L )
-			w = w->parentWidget();
-		}
-
-	  // KFM hack. Find not decorated windows ( root icons )
-	  if ( result == 0L )
-		for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
-	      {
-			QPoint p2 = dz->getWidget()->mapFromGlobal( p );
-			if ( dz->getWidget()->rect().contains( p2 ) )
-		      result = dz;
-	      }
-	
-	  if ( result != 0L )
-		{
-	      if ( cme->message_type == DndProtocol )
-			{
-			  result->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
-			}
-	      else if ( cme->message_type == DndEnterProtocol )
-			{
-			  // If we entered another drop zone, tell the drop zone we left about it
-			  if ( lastEnteredDropZone != 0L && lastEnteredDropZone != result )
-				lastEnteredDropZone->leave();
-		
-			  // Notify the drop zone over which the pointer is right now.
-			  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
-			  lastEnteredDropZone = result;
-			}
-		}
-	  else
-		{
-		  // Notify the last DropZone that the pointer has left the drop zone.
-		  if ( lastEnteredDropZone != 0L )
-			lastEnteredDropZone->leave();
-		  lastEnteredDropZone = 0L;
-		}
-
+	if (!topWidget() ||
+	    cme->window != topWidget()->winId()) {
+	  KWM::setWmCommand(cme->window, "");
 	  return true;
+	}
+	
+	emit saveYourself(); // give applications a chance to
+	// save their data
+	if (bSessionManagementUserDefined)
+	  KWM::setWmCommand( topWidget()->winId(), aWmCommand);
+	else {
+	  
+	  if (pSessionConfig && !aSessionName.isEmpty()){
+	    QString aCommand = name();
+	    if (aCommand != argv()[0]){
+	      if (argv()[0][0]=='/')
+		aCommand = argv()[0];
+	      else {
+		char* s = new char[1024];
+		aCommand=(getcwd(s, 1024));
+		aCommand+="/";
+		delete [] s;
+		aCommand+=name();
+	      }
+	    }
+	    aCommand+=" -restore ";
+	    aCommand+=aSessionName;
+	    aCommand+=aDummyString2;
+	    KWM::setWmCommand( topWidget()->winId(),
+			       aCommand);
+	    pSessionConfig->sync();
+	  } else {
+	    QString aCommand = argv()[0];
+	    aCommand+=aDummyString2;
+	    KWM::setWmCommand( topWidget()->winId(),
+			       aCommand);
+	  }
+	}
+	
+	return true;
+      }
     }
+
+    // stuff for reconfiguring
+    if ( cme->message_type == KDEChangeStyle ) {
+      QString str;
+      
+      KGlobal::config()->setGroup("KDE");
+      str = KGlobal::config()->readEntry("widgetStyle");
+      if(!str.isNull())
+	if(str == "Motif")
+	  applyGUIStyle(MotifStyle);
+	else
+	  if(str == "Windows 95")
+	    applyGUIStyle(WindowsStyle);
+      return true;
+    }
+    
+    if ( cme->message_type == KDEChangePalette )
+      {
+	readSettings(true);
+	kdisplaySetPalette();
+	
+	return True;
+      }
+    if ( cme->message_type == KDEChangeGeneral )
+      {
+	readSettings(true);
+	kdisplaySetPalette(); // This has to be first (mosfet)
+	kdisplaySetStyleAndFont();
+	
+	return True;
+      }
+  }
 
   return false;
 }

@@ -38,7 +38,6 @@ typedef unsigned long Atom;
 #include <qpixmap.h>
 class QPopupMenu;
 class QStrList;
-class KDNDDropZone;
 
 #define kapp KApplication::getKApplication()
 
@@ -295,85 +294,22 @@ public:
   QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
 
   /**
-   * An X11 atom used for IPC
-   */
-  Atom getDndSelectionAtom() { return DndSelection; }
-  /**
-   * An X11 atom used for IPC
-   */
-  Atom getDndProtocolAtom() { return DndProtocol; }
-  /**
-   * An X11 atom used for IPC
-   */
-  Atom getDndEnterProtocolAtom() { return DndEnterProtocol; }
-  /**
-   * An X11 atom used for IPC
-   */
-  Atom getDndLeaveProtocolAtom() { return DndLeaveProtocol; }
-  /**
-   * An X11 atom used for IPC
-   */
-  Atom getDndRootProtocolAtom() { return DndRootProtocol; }
-  
-  /**
    * Get the X11 display
    */
   Display *getDisplay() { return display; }
-  /**
-	* Used by KDNDDropZone to register
-	*/
-  virtual void addDropZone( KDNDDropZone *_z ) { dropZones.append( _z ); }
-  /**
-	* Used by KDNDDropZone during shutdown
-	*/
-  virtual void removeDropZone( KDNDDropZone *_z ) { dropZones.remove( _z ); }
-  /**
-	* Set the DropZone which receives root drop events.
-	*/
-  virtual void setRootDropZone( KDNDDropZone *_z ) { rootDropZone = _z; }
 
 protected:
   /**
-	* List of all DropZones.
-	*/
-  QList<KDNDDropZone> dropZones;
-
-  /**
-	* The last drop zone the mouse was over.
-	*
-	* If we get a DndLeaveProtocol we must inform 'lastEnteredDropZone'
-	* that the mouse left the DropZone.
-	*/
-  KDNDDropZone *lastEnteredDropZone;
-
-  /**
-	* The DropZone which receives root drop events.
-	*/
-  KDNDDropZone *rootDropZone;
-
-  /**
-	* Used to catch X11 events
-	*/
+   * Used to catch X11 events
+   */
   bool x11EventFilter( XEvent * );
 
   /**
-	* Two X11 atoms used for session management
-	*/
+   * Two X11 atoms used for session management
+   */
   Atom WM_SAVE_YOURSELF;
   Atom WM_PROTOCOLS;
 
-  /**
-	* X11 atoms used for IPC
-	*/
-  Atom DndSelection;
-  Atom DndProtocol;
-  Atom DndEnterProtocol;
-  Atom DndLeaveProtocol;
-  Atom DndRootProtocol;
-
-  /**
-   * The X11 display
-   */
   Display *display;
 
   Atom KDEChangePalette;
@@ -544,6 +480,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.94  1999/06/23 19:13:39  knoll
+// removed xxxFont() methods. Use KGlobal::xxxFont() instead.
+//
 // Revision 1.93  1999/06/20 09:41:48  kulow
 // big patch:
 // removed const QString as return values
