@@ -301,6 +301,18 @@ void KBugReport::slotOk( void )
     accept();
 }
 
+void KBugReport::slotCancel()
+{
+  if( m_lineedit->edited() || m_subject->edited() )
+  {
+    int rc = KMessageBox::warningContinueCancel( this,
+             i18n( "Close and discard\nedited message?" ),
+             i18n( "Close message" ), i18n( "&Discard" ) );
+    if( rc == KMessageBox::Cancel )
+      return;
+  }
+  KDialogBase::slotCancel();
+}
 
 
 QString KBugReport::text()

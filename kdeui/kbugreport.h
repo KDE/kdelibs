@@ -73,6 +73,10 @@ protected slots:
    * OK has been clicked
    */
   virtual void slotOk( void );
+  /**
+   * Cancel has been clicked
+   */
+  virtual void slotCancel();
 
 protected:
   QString text();
