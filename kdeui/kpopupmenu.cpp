@@ -479,6 +479,7 @@ QPopupMenu* KPopupMenu::contextMenu()
     if (!d->m_ctxMenu)
     {
         d->m_ctxMenu = new QPopupMenu(this);
+        installEventFilter(this);
         connect(d->m_ctxMenu, SIGNAL(aboutToHide()), this, SLOT(ctxMenuHiding()));
     }
 
