@@ -51,6 +51,14 @@ void AttributeImpl::allocateImpl(ElementImpl* e) {
     _impl->ref();
 }
 
+void AttributeImpl::detachImpl()
+{
+    if (_impl) {
+	_impl->deref();
+	_impl = 0;
+    }
+}
+
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a)
     : NodeBaseImpl(docPtr),
       m_element(element),
@@ -63,7 +71,6 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a)
 
 AttrImpl::~AttrImpl()
 {
-    assert(m_attribute->_impl == this);
     m_attribute->_impl = 0;
     m_attribute->deref();
 }
@@ -675,6 +682,7 @@ void NamedAttrMapImpl::clearAttributes()
         for (i = 0; i < len; i++) {
             if (attrs[i]->_impl)
                 attrs[i]->_impl->m_element = 0;
+	    attrs[i]->detachImpl();
             attrs[i]->deref();
         }
         delete [] attrs;
@@ -779,6 +787,7 @@ void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
         element->dispatchAttrRemovalEvent(attr);
         element->dispatchSubtreeModifiedEvent();
     }
+    attr->detachImpl();
     attr->deref();
 }
 
