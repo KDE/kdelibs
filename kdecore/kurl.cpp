@@ -892,10 +892,10 @@ bool KURL::isParentOf( const KURL& _u ) const
     if ( p2[p2.length()-1] != '/' )
         p2 += '/';
 
-    kdDebug(126) << "p1=" << p1 << endl;
-    kdDebug(126) << "p2=" << p2 << endl;
-    kdDebug(126) << "p1.length()=" << p1.length() << endl;
-    kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
+    //kdDebug(126) << "p1=" << p1 << endl;
+    //kdDebug(126) << "p2=" << p2 << endl;
+    //kdDebug(126) << "p1.length()=" << p1.length() << endl;
+    //kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
     return p2.startsWith( p1 );
   }
   return false;
