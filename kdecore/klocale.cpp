@@ -34,6 +34,7 @@
 
 #include <stdlib.h>
 
+#include <qtextcodec.h>
 #include <qdir.h>
 #include <qdatetime.h>
 
@@ -99,7 +100,7 @@ QString KLocale::mergeLocale(const QString& lang,const QString& country,
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
-			  QString& chset){
+			  QString& chrset){
 
     QString str = aStr.copy();
 
@@ -110,12 +111,12 @@ void KLocale::splitLocale(const QString& aStr,
     }
 
     country=QString::null;
-    chset=QString::null;
+    chrset=QString::null;
     lang=QString::null;
 
     f = str.find('.');
     if (f >= 0) {
-	chset = str.right(str.length() - f - 1);
+	chrset = str.right(str.length() - f - 1);
 	str.truncate(f);
     }
 
@@ -126,33 +127,6 @@ void KLocale::splitLocale(const QString& aStr,
     }
 
     lang = str;
-
-    if (chset.isEmpty() && kapp != 0){
-	QString dir, location;
-
-	if (!country.isEmpty()) {
-	    dir = lang + "_" + country;
-	    location = locate("locale", dir + "/charset");
-	}
-	
-	if (location.isNull()){
-	    dir = lang;
-	    location = locate("locale", lang + "/charset");
-	}
-	if (!location.isNull()){
-	    QFile f(location);
-	    if (f.exists() && f.open(IO_ReadOnly)){
-		char *buf=new char[256];
-		int l=f.readLine(buf,256);
-		if (l>0){
-		    if (buf[l-1]=='\n') buf[l-1]=0;
-		    if (KGlobal::charsets()->isAvailable(buf)) chset=buf;
-		}
-		delete [] buf;
-		f.close();
-	    }
-	}
-    }
 }
 
 QString KLocale::language() const
@@ -221,6 +195,37 @@ KLocale::KLocale( const QString& _catalogue )
     catalogues = new QStrList(true);
 
     initLanguage(KGlobal::instance()->_config, catalogue);
+    initFormat(KGlobal::instance()->_config);
+}
+
+void KLocale::setCharsetLang(const QString &_lang)
+{
+  QTextCodec *p = 0;
+  QString location = locate("locale", _lang + "/charset");
+  if (!location.isNull())
+  {
+    QFile f(location);
+    if (f.exists() && f.open(IO_ReadOnly))
+    {
+      char *buf=new char[256]; 
+      int l=f.readLine(buf,256);
+      if (l>0)
+      {
+        if (buf[l-1]=='\n') buf[l-1]=0;
+        if ((p = QTextCodec::codecForName( buf )))
+          chset = buf;
+      }
+      f.close();
+      delete [] buf;
+    }
+  }
+  if (p)
+    codec = p;
+  else
+  {
+    codec = QTextCodec::codecForName( "iso8859-1" );
+    chset = "us-ascii";
+  }
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)
@@ -324,7 +329,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   }
   lang = _lang; // taking deep copy
 
-  chset=chrset;
+  setCharsetLang(lang);
 #ifdef HAVE_SETLOCALE
   setlocale(LC_MESSAGES,lang.ascii());
   lc_numeric  = setlocale(LC_NUMERIC, 0); // save these values
@@ -348,10 +353,8 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   // So when LC_CTYPE is not set (is set to "C") better stay
   // with LC_MESSAGES
   QString lc_ctype=getLocale("LC_CTYPE");
-  if ( !lc_ctype.isEmpty() && lc_ctype!="C"){
+  if ( !lc_ctype.isEmpty() && lc_ctype!="C" )
     splitLocale(getLocale("LC_CTYPE"),ln,ct,chrset);
-    if (!chrset.isEmpty()) chset=chrset;
-  }
 #else
   lc_numeric="C";
   lc_monetary="C";
@@ -361,8 +364,6 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   insertCatalogue( catalogue );
   insertCatalogue( SYSTEM_MESSAGES );
-  if (chset.isEmpty() || !KGlobal::charsets()->isAvailable(chset))
-    chset="us-ascii";
 
   aliases.setAutoDelete(true);
 
@@ -370,15 +371,16 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   money = config->readEntry("Monetary", lang);
   time = config->readEntry("Time", lang);
 
-  initFormat();
-
   _inited = true;
 }
 
 // init some stuff for format*()
-void KLocale::initFormat()
+void KLocale::initFormat(KConfig *config)
 {
-  KConfig* config = KGlobal::config();
+  if (!config)
+    return;
+
+  KConfigGroupSaver saver(config, "Locale");
 
   // Numeric
   KSimpleConfig numentry(locate("locale", "l10n/" + number + "/entry.desktop"), true);
@@ -453,13 +455,10 @@ void KLocale::initFormat()
     _datefmtshort = timentry.readEntry("DateFormatShort", "%m/%d/%y");
 }
 
-void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
+void KLocale::setLanguage(const QString &_lang)
 {
-  if (!_lang.isEmpty()) lang = _lang;
-  if (!_langs.isEmpty()) langs = _langs;
-  if (!_number.isEmpty()) number = _number;
-  if (!_money.isEmpty()) money = _money;
-  if (!_time.isEmpty()) time = _time;
+  lang = _lang;
+  setCharsetLang(lang);
 
   QStrList *cats = catalogues;
   catalogues = new QStrList;
@@ -467,7 +466,20 @@ void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QSt
        catalogue = cats->next())
     insertCatalogue( catalogue );
   delete cats;
-  initFormat();
+}
+
+void KLocale::setCountry(const QString &_number, const QString &_money, const QString &_time)
+{
+  if (!_number.isNull()) number = _number;
+  if (!_money.isNull()) money = _money;
+  if (!_time.isNull()) time = _time;
+
+  initFormat(KGlobal::instance()->_config);
+}
+
+void KLocale::setCountry(const QString &country)
+{
+  setCountry(country, country, country);
 }
 
 void KLocale::insertCatalogue( const QString& catalogue )
@@ -498,7 +510,7 @@ QString KLocale::translate(const char* msgid) const
 	    break;
     }
 
-    return QString::fromLocal8Bit( text );
+    return codec->toUnicode( text );
 }
 
 QString KLocale::decimalSymbol() const {

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+class QTextCodec;
 class QStrList;
 class QDate;
 class QTime;
@@ -92,14 +93,15 @@ public:
     QString translate( const char *index ) const;
     
     /**
-     * Allows programs such as kcmlocale to choose locales.
+     * Allows programs such as kcmlocale to choose which translation to use.
      */
-    void setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time);
+    void setLanguage(const QString &_lang);
 
     /**
-     * Makes {format,read}*() methods ready for use.
+     * Allows programs such as kcmlocale to choose how to format numbers etc.
      */
-    void initFormat();
+    void setCountry(const QString &country);
+    void setCountry(const QString &_number, const QString &_money, const QString &_time);
 
     /**
      * Various positions for where to place the positive or negative
@@ -361,6 +363,11 @@ public:
     bool numericLocaleEnabled() const;
 
     /**
+     * Makes {format,read}*() methods ready for use.
+     */
+    void initFormat(KConfig *config);
+
+    /**
      * Init the instance with the given config object. It should
      * be valid and contain the global entries.
      **/
@@ -384,6 +391,7 @@ private:
     QString money;
     QString time;
     QString chset;
+    QTextCodec *codec;
     QString lc_numeric;
     QString lc_monetary;
     QString lc_time;
@@ -408,6 +416,9 @@ private:
     QString _timefmt;
     QString _datefmt;
     QString _datefmtshort;
+
+    void setCharsetLang(const QString &_lang);
+
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );
