@@ -1140,10 +1140,10 @@ void KApplication::startKdeinit()
      srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
   if (srv.isEmpty())
      return;
-  if (kapp)
+  if (kapp && (Tty != kapp->type()))
     setOverrideCursor( Qt::waitCursor );
   my_system(QFile::encodeName(srv)+" --suicide");
-  if (kapp)
+  if (kapp && (Tty != kapp->type()))
     restoreOverrideCursor();
 }
 
@@ -1164,9 +1164,21 @@ void KApplication::dcopFailure(const QString &msg)
      msgStr += msg;
      msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
 
-     QMessageBox::critical(kapp->mainWidget(),
-                        i18n("DCOP communications error (%1)").arg(kapp->caption()),
-                        msgStr, i18n("OK"));
+     if (Tty != kapp->type())
+     {
+       QMessageBox::critical
+         (
+           kapp->mainWidget(),
+           i18n("DCOP communications error (%1)").arg(kapp->caption()),
+           msgStr,
+           i18n("OK")
+         );
+     }
+     else
+     {
+       fprintf(stderr, "%s\n", msgStr.local8Bit().data());
+     }
+
      return;
   }
 }
