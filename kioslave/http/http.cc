@@ -2786,10 +2786,6 @@ bool HTTPProtocol::readHeader()
      }
   }
 
-  // Send the response header if it was requested
-  if (!responseHeader.isEmpty())
-    setMetaData("HTTP-Headers", responseHeader.join("\n"));
-
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
        (m_responseCode == 407 && ProxyAuthentication == AUTH_None) )
@@ -3046,6 +3042,14 @@ bool HTTPProtocol::readHeader()
   // this method is somewhat recursive....
   if ( !mediaAttribute.isEmpty() )
     setMetaData(mediaAttribute, mediaValue);
+    
+  // Send the response header if it was requested
+  if (!responseHeader.isEmpty())
+  {
+    kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " 
+                  << responseHeader.join("\n") << endl;
+    setMetaData("HTTP-Headers", responseHeader.join("\n"));
+  }
 
   if( !disposition.isEmpty() )
   {
