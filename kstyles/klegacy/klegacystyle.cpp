@@ -302,7 +302,6 @@ static QPixmap *drawImage(QImage *image, int width, int height,
 	if (width < 2) width = 2;
 	if (height < 2) height = 2;
 
-	QImage img;
 	int x[3], y[3], w[3], h[3], x2[3], y2[3], w2[3], h2[3];
 
 	// left
@@ -2084,7 +2083,7 @@ void KLegacyStyle::polishPopupMenu(QPopupMenu *popup) {
 void KLegacyStyle::unPolish(QWidget *widget) {
     if (widget->inherits("KDesktop"))
 	return;
-    
+
     widget->setBackgroundOrigin(QWidget::WidgetOrigin);
     widget->setBackgroundPixmap(QPixmap());
     widget->removeEventFilter(this);
@@ -2097,7 +2096,7 @@ void KLegacyStyle::unPolish(QWidget *widget) {
 void KLegacyStyle::unPolish(QApplication *app) {
     app->setFont(priv->oldfont, TRUE);
     app->setPalette(priv->oldpalette, TRUE);
-    
+
     qt_set_draw_menu_bar_impl(0);
 
     KStyle::unPolish(app);
@@ -3023,53 +3022,53 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 					bool active, QPixmap *icon, QBrush *fill)
 {
     drawBevelButton(p, x, y, w, h, g, active, fill);
-    
+
     const int pxWidth = 20;
     int textPos = pxWidth;
-    
+
     QRect br(buttonRect(x, y, w, h));
 
     if (active)
         p->translate(1,1);
-    
+
     if (icon && ! icon->isNull()) {
 	int dx = (pxWidth - icon->width()) / 2;
 	int dy = (h - icon->height()) / 2;
-	
+
         p->drawPixmap(br.x() + dx, dy, *icon);
     }
-    
+
     QString s(title);
-    
+
     static QString modStr = QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
-    
+
     int modStrPos = s.find(modStr);
-    
+
     if (modStrPos != -1) {
         s.remove(modStrPos, modStr.length()+1);
-        
+
 	QPixmap modPixmap = SmallIcon("modified");
-	
+
 	int dx = (pxWidth - modPixmap.width()) / 2;
 	int dy = (h - modPixmap.height()) / 2;
-	
+
 	p->drawPixmap(br.x() + textPos + dx, dy, modPixmap);
-	
+
 	textPos += pxWidth;
     }
-    
+
     if (! s.isEmpty()) {
 	if (p->fontMetrics().width(s) > br.width() - textPos) {
 	    int maxLen = br.width() - textPos - p->fontMetrics().width("...");
-	    
+
 	    while ( (! s.isEmpty()) && (p->fontMetrics().width(s) > maxLen))
 		s.truncate(s.length() - 1);
-	    
+
 	    s.append("...");
 	}
-	
+
 	p->setPen((active) ? g.foreground() : g.buttonText());
-	
+
 	p->drawText(br.x() + textPos, -1, w - textPos, h, AlignVCenter | AlignLeft, s);
     }
 }

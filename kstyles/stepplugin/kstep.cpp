@@ -149,7 +149,6 @@ void KStepStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
 {
     drawButton(p, x, y, w, h, nextGrp, sunken, fill);
     int deco_y = (h-8)/2;
-    QBrush oldBrush = p->brush();
     QPen oldPen = p->pen();
     p->setPen(g.mid());
     p->fillRect(x + w-13, y + deco_y + 2, 9, 6, g.brush(QColorGroup::Mid));
@@ -208,28 +207,28 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 
     if(controls & AddLine){
         if(add.isValid()){
-            drawButton(p, add.x(), add.y(), add.width(), add.height(), 
+            drawButton(p, add.x(), add.y(), add.width(), add.height(),
                             nextGrp, activeControl == AddLine);
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
                              add.x()+3, add.y()+3, add.width()-7, nextGrp);
         }
     }
-    
+
     if(controls & SubLine){
         if(sub.isValid()){
-            drawButton(p, sub.x(), sub.y(), sub.width(), sub.height(), 
+            drawButton(p, sub.x(), sub.y(), sub.width(), sub.height(),
                             nextGrp, activeControl == SubLine);
-            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, 
+            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow,
                             sub.x()+3, sub.y()+3, sub.width()-7, nextGrp);
         }
     }
-    
+
     if((controls & SubPage))
         p->fillRect(subPage, g.brush(QColorGroup::Mid));
-        
+
     if((controls & AddPage))
         p->fillRect(addPage, g.brush(QColorGroup::Mid));
-        
+
     if(controls & Slider){
         if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
             if(horizontal)
@@ -470,15 +469,15 @@ void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
 
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
                                   int y, int base, const QColorGroup &g)
-{       
+{
     QBrush oldBrush = p->brush();
     QPen oldPen = p->pen();
     p->setBrush(g.brush(QColorGroup::Dark));
     p->setPen(g.dark());
-    
-    int x2=x+base-1, y2=y+base-1; 
+
+    int x2=x+base-1, y2=y+base-1;
     int i=0, j=0;
-    
+
     switch (type){
     case Qt::UpArrow:
         do {
