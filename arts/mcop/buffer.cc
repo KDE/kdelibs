@@ -75,6 +75,13 @@ void Buffer::writeFloat(float f) {
 	writeLong(*f_as_long);
 }
 
+void Buffer::writeFloatSeq(const std::vector<float>& seq) {
+	writeLong(seq.size());
+
+	vector<float>::const_iterator i;
+	for(i = seq.begin(); i != seq.end(); i++) writeFloat(*i);
+}
+
 void Buffer::writeString(const string& s) {
 	long len = s.size()+1;
 
@@ -192,6 +199,15 @@ float Buffer::readFloat()
 
 	if(!_readError) return *(float *)&f_as_long;
 	return 0.0;
+}
+
+void Buffer::readFloatSeq(vector<float>& result)
+{
+	// might be optimizable a bit
+	long i,seqlen = readLong();
+
+	result.clear();
+	for(i=0;i<seqlen;i++) result.push_back(readFloat());
 }
 
 void Buffer::readString(string& result)

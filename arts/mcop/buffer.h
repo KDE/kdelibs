@@ -45,10 +45,11 @@ public:
 	bool readError();
 	void writeBool(bool b);
 	void writeByte(mcopbyte b);
-	void writeByteSeq(const vector<mcopbyte>& seq);
+	void writeByteSeq(const std::vector<mcopbyte>& seq);
 	void writeLong(long l);
 	void writeLongSeq(const std::vector<long>& seq);
 	void writeFloat(float f);
+	void writeFloatSeq(const std::vector<float>& seq);
 	void writeString(const std::string& s);
 	void writeStringSeq(const std::vector<std::string>& seq);
 	inline long size() {
@@ -71,6 +72,7 @@ public:
 	long readLong();
 	void readLongSeq(std::vector<long>& result);
 	float readFloat();
+	void readFloatSeq(std::vector<float>& result);
 	void readString(std::string& result);
 	void readStringSeq(std::vector<std::string>& result);
 

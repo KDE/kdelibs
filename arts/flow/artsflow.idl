@@ -315,6 +315,13 @@ interface StereoVolumeControl : StereoEffect {
 	readonly attribute float currentVolumeRight;
 };
 
+/*
+ * this is a funny fft scope
+ */
+interface StereoFFTScope : StereoEffect {
+	readonly attribute sequence<float> scope;
+};
+
 interface StereoEffectStack : SynthModule {
 	/*
 	   these should be streams - however dynamic expansion isn't there

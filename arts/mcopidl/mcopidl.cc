@@ -191,7 +191,7 @@ bool isInterface( string type )
 #define MODEL_RES_READ_SEQ	(MODEL_RES_READ|MODEL_SEQ)
 #define MODEL_REQ_WRITE_SEQ	(MODEL_REQ_WRITE|MODEL_SEQ)
 #define MODEL_RESULT_SEQ	(MODEL_RESULT|MODEL_SEQ)
-#define MODEL_INVOKE_SEQ	(MODEL_RESULT|MODEL_SEQ)
+#define MODEL_INVOKE_SEQ	(MODEL_INVOKE|MODEL_SEQ)
 
 /**
  * generates a piece of code for the specified type/name
@@ -250,6 +250,15 @@ string createTypeCode(string type, const string& name, long model,
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
+		if(model==MODEL_RES_READ_SEQ)
+		{
+			result = indent + "std::vector<float> *_returnCode ="
+												" new std::vector<float>;\n";
+			result += indent + "if(!result) return _returnCode; // error occured\n";
+			result += indent + "result->readFloatSeq(*_returnCode);\n";
+			result += indent + "delete result;\n";
+			result += indent + "return _returnCode;\n";
+		}
 		if(model==MODEL_REQ_READ)
 			result = indent + "float "+name+" = request->readFloat();\n";
 		if(model==MODEL_WRITE)
@@ -258,6 +267,12 @@ string createTypeCode(string type, const string& name, long model,
 			result = "request->writeFloat("+name+")";
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeFloat("+name+");\n";
+		if(model==MODEL_INVOKE_SEQ)
+		{
+			result = indent + "vector<float> *_returnCode = "+name+";\n"
+				   + indent + "result->writeFloatSeq(*_returnCode);\n"
+				   + indent + "delete _returnCode;\n";
+		}
 	}
 	else if(type == "boolean")
 	{
