@@ -44,23 +44,51 @@ inline kdbgstream operator<<( kdbgstream str, const QRegion & reg ) {
 
 inline kdbgstream operator<<( kdbgstream str, const KURL & u )  { str << u.prettyURL(); return str; }
 
-inline kdbgstream operator<<( kdbgstream str, const QStringList & l )  { 
-  str = str.operator<<("("); 
-  for (QStringList::ConstIterator it = l.begin(); it != l.end(); ++it) { 
-    str = str.operator<<( *it); 
+inline kdbgstream operator<<( kdbgstream str, const QStringList & l )  {
+  str = str.operator<<("(");
+  for (QStringList::ConstIterator it = l.begin(); it != l.end(); ++it) {
+    str = str.operator<<( *it);
     if (it != l.fromLast())
-      str = str.operator<<( ", "); 
+      str = str.operator<<( ", ");
   }
-  str = str.operator<<(")"); 
+  str = str.operator<<(")");
   return str;
+}
+inline kdbgstream operator<<( kdbgstream str, const QColor &c )  {
+    if ( c.isValid() )
+        str = str.operator<<(c.name());
+    else
+        str = str.operator<<("(invalid/default)");
+    return str;
+}
+inline kdbgstream operator<<( kdbgstream str, const QBrush &b )  {
+    static const char* const s_brushStyles[] = {
+        "NoBrush", "SolidPattern", "Dense1Pattern", "Dense2Pattern", "Dense3Pattern",
+        "Dense4Pattern", "Dense5Pattern", "Dense6Pattern", "Dense7Pattern",
+        "HorPattern", "VerPattern", "CrossPattern", "BDiagPattern", "FDiagPattern",
+        "DiagCrossPattern" };
+    str = str.operator<<("[ style: ");
+    str = str.operator<<(s_brushStyles[ b.style() ]);
+    str = str.operator<<(" color: ");
+    // can't use operator<<(str, b.color()) because that terminates a kdbgstream (flushes)
+    if ( b.color().isValid() )
+        str = str.operator<<(b.color().name());
+    else
+        str = str.operator<<("(invalid/default)");
+    if ( b.pixmap() )
+        str = str.operator<<(" has a pixmap");
+    str = str.operator<<(" ]");
+    return str;
 }
 
 inline kndbgstream operator<<( kndbgstream str, const QPoint & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const QSize & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const QRect & )  { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QRegion & ) { return str; }
 inline kndbgstream operator<<( kndbgstream str, const KURL & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const QStringList & ) { return str; }
-inline kndbgstream operator<<( kndbgstream str, const QRegion & ) { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QColor & ) { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QBrush & ) { return str; }
 
 #endif
 
