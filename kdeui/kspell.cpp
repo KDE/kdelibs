@@ -893,7 +893,7 @@ void KSpell::checkList4 ()
   case KS_STOP:
     ksdlg->hide();
     emit done( true );
-    break;
+    return;
   case KS_CONFIG:
     ksdlg->hide();
     emit done( false );
