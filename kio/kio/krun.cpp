@@ -793,6 +793,7 @@ void KRun::init()
     else if (exec.startsWith("!"))
     {
        exec = exec.mid(1); // Literal command
+       exec += " %u";
        run( exec, urls );
        ok = true;
     }
