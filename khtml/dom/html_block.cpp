@@ -74,15 +74,18 @@ void HTMLBlockquoteElement::setCite( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLDivElement::HTMLDivElement() : HTMLElement()
+HTMLDivElement::HTMLDivElement()
+    : HTMLElement()
 {
 }
 
-HTMLDivElement::HTMLDivElement(const HTMLDivElement &other) : HTMLElement(other)
+HTMLDivElement::HTMLDivElement(const HTMLDivElement &other)
+    : HTMLElement(other)
 {
 }
 
-HTMLDivElement::HTMLDivElement(HTMLDivElementImpl *impl) : HTMLElement(impl)
+HTMLDivElement::HTMLDivElement(HTMLDivElementImpl *impl)
+    : HTMLElement(impl)
 {
 }
 
