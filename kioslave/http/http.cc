@@ -3066,8 +3066,14 @@ bool HTTPProtocol::readHeader()
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
        (m_responseCode == 407 && ProxyAuthentication == AUTH_None) )
   {
-    error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
-    return false;
+    m_bUnauthorized = false;
+    if (m_request.bErrorPage)
+      errorPage();
+    else
+    {
+      error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
+      return false;
+    }
   }
 
   // Fixup expire date for clock drift.
