@@ -17,6 +17,11 @@
     Boston, MA 02111-1307, USA.
 */
 #include <qkeycode.h>
+#include <qlayout.h>
+#include <qpainter.h>
+#include <qapp.h>
+#include <qdrawutl.h>
+#include <qmsgbox.h>
 
 #include <kkeyconf.h>
 #include "kkeydata.moc"
@@ -88,7 +93,7 @@ bool KKeyConfig::addKey( const QString& functionName, uint keyCode,
 	pEntry->aCurrentKeyCode = keyCode;
 	pEntry->bConfigurable = configurable;
 	pEntry->aAccelId = 0;
-	pEntry->pConnectDict = 0L;
+	pEntry->pConnectDict = NULL;
 
 	if ( !configurable )
 		return TRUE;
@@ -294,6 +299,8 @@ bool KKeyConfig::configureKeys( QWidget *parent )
 	QDictIterator<KKeyEntry> aKeyIt(aKeyDict);
 	KKeyConfigure kDialog( &aKeyIt, parent );
 	
+	kDialog.resize(450,320);
+	
 	if ( kDialog.exec() ) {
 		bool modified = FALSE;
 		bool activated;
@@ -387,7 +394,7 @@ const QString keyToString( uint keyCode )
 		}
 	}
 	
-	return QString(0);
+	return QString((char *)NULL);
 }
 
 uint stringToKey(const QString& key )
@@ -400,14 +407,14 @@ uint stringToKey(const QString& key )
 	strncpy(sKey, (const char *)key, 200);
 	next_tok = strtok(sKey,"+");
 	
-	if ( next_tok == 0L ) return 0;
+	if ( next_tok==NULL ) return 0;
 	
 	do {
 		toks[nb_toks] = next_tok;
 		nb_toks++;
 		if ( nb_toks==5 ) return 0;
-		next_tok = strtok(0L, "+");
-	} while ( next_tok!= 0L );
+		next_tok = strtok(NULL, "+");
+	} while ( next_tok!=NULL );
 	
 	/* we test if there is one and only one key (the others tokens
 	   are accelerators) ; we also fill the keycode with infos */
@@ -491,7 +498,179 @@ void KKeyWidgetEntry::deleteItem( int accelId,
 }
 
 /*****************************************************************************/
-/* KKeyConfigure */
+/* SplitListItem                                                             */
+/*                                                                           */
+/* Added by Mark Donohoe <donohoe@kde.org>                                   */
+/*                                                                           */
+/*****************************************************************************/
+
+SplitListItem::SplitListItem( const char *s )
+	:  QListBoxItem()
+{
+	setText( s );
+	
+	QString str( s );
+	int i = str.find( ":" );
+	
+	actionName = str.left( i );
+	actionName.simplifyWhiteSpace();
+	
+	str.remove( 0, i+1 );
+	
+	keyName = str.simplifyWhiteSpace();
+	
+	halfWidth = 0;
+}
+
+void SplitListItem::setWidth( int newWidth )
+{
+	halfWidth = newWidth/2;
+}
+
+void SplitListItem::paint( QPainter *p )
+{
+    QFontMetrics fm = p->fontMetrics();
+    int yPos;                       // vertical text position
+    yPos = fm.ascent() + fm.leading()/2;
+    p->drawText( 5, yPos, actionName );
+	p->drawText( 5 + halfWidth, yPos, keyName );
+}
+
+int SplitListItem::height(const QListBox *lb ) const
+{
+    return lb->fontMetrics().lineSpacing() + 1;
+}
+
+int SplitListItem::width(const QListBox *lb ) const
+{
+    return lb->fontMetrics().width( text() ) + 6;
+}
+
+/*****************************************************************************/
+/* SplitList                                                                 */
+/*                                                                           */
+/* Added by Mark Donohoe <donohoe@kde.org>                                   */
+/*                                                                           */
+/*****************************************************************************/
+
+SplitList::SplitList( QWidget *parent , const char *name )
+	: QListBox( parent, name )
+{
+	setFocusPolicy( QWidget::StrongFocus );
+	if( style() == MotifStyle )
+		setFrameStyle( QFrame::Panel | QFrame::Sunken );
+	else
+		setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
+
+	selectColor = KApplication::getKApplication()->selectColor;
+	selectTextColor = KApplication::getKApplication()->selectTextColor;
+}
+
+void SplitList::resizeEvent( QResizeEvent *e )
+{
+	emit newWidth( width() );
+	QListBox::resizeEvent( e );
+}
+
+void SplitList::styleChange( GUIStyle )
+{
+	if( style() == MotifStyle )
+		setFrameStyle( QFrame::Panel | QFrame::Sunken );
+	else
+		setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
+}
+
+void SplitList::paletteChange ( const QPalette & oldPalette )
+{
+	selectColor = KApplication::getKApplication()->selectColor;
+	selectTextColor = KApplication::getKApplication()->selectTextColor;
+	QListBox::paletteChange( oldPalette );
+	
+}
+
+/*****************************************************************************/
+/* KeyButton                                                                 */
+/*                                                                           */
+/* Added by Mark Donohoe <donohoe@kde.org>                                   */
+/*                                                                           */
+/*****************************************************************************/
+
+KeyButton::KeyButton( const char* name, QWidget *parent)
+	: QPushButton( parent, name )
+{
+    setFocusPolicy( QWidget::StrongFocus );
+	editing = FALSE;
+}
+
+KeyButton::~KeyButton ()
+{
+}
+
+void KeyButton::setText( QString text )
+{
+	QPushButton::setText( text );
+	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
+}
+
+void KeyButton::setEdit( bool edit )
+{
+	editing = edit;
+	repaint();
+}
+
+
+void KeyButton::paint( QPainter *painter )
+{
+	QPointArray a( 4 );
+	a.setPoint( 0, 0, 0) ;
+	a.setPoint( 1, width(), 0 );
+	a.setPoint( 2, 0, height() );
+	a.setPoint( 3, 0, 0 );
+
+	QRegion r1( a );
+	painter->setClipRegion( r1 );
+	painter->setBrush( backgroundColor().light() );
+	painter->drawRoundRect( 0, 0, width(), height(), 20, 20);
+
+	a.setPoint( 0, width(), height() );
+	a.setPoint( 1, width(), 0 );
+	a.setPoint( 2, 0, height() );
+	a.setPoint( 3, width(), height() );
+
+	QRegion r2( a );
+	painter->setClipRegion( r2 );
+	painter->setBrush( backgroundColor().dark() );
+	painter->drawRoundRect( 0, 0, width(), height(), 20, 20 );
+
+	painter->setClipping( FALSE );
+	qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8, 
+								colorGroup(), TRUE, 1, 0L );
+	if ( editing ) {
+		painter->setPen( colorGroup().base() );
+		painter->setBrush( colorGroup().base() );
+	} else {
+		painter->setPen( backgroundColor() );
+		painter->setBrush( backgroundColor() );
+	}
+	painter->drawRect( 7, 5, width() - 14, height() - 10 ); 
+
+	drawButtonLabel( painter );
+	
+	painter->setPen( colorGroup().text() );
+	painter->setBrush( NoBrush );
+	if( hasFocus() || editing ) {
+		painter->drawRect( 8, 6, width() - 16, height() - 12 );
+	}	
+}
+
+/*****************************************************************************/
+/* KKeyConfigure                                                             */
+/*                                                                           */
+/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                        */
+/*                                                                           */
+/* Substantially revised by Mark Donohoe <donohoe@kde.org>                   */
+/*                                                                           */
+/*****************************************************************************/
 
 #define V_SPACING          12
 #define H_SPACING          20
@@ -515,120 +694,203 @@ KKeyConfigure::KKeyConfigure( QDictIterator<KKeyEntry> *aKeyIt,
 							  QWidget *parent )
     : QDialog( parent, 0, TRUE )
 {
-	setCaption("Keys Configuration");
-	
+	setCaption("Configure key bindings");
 	bKeyIntercept = FALSE;
 	setFocusPolicy( QWidget::StrongFocus );
 	
-	/* create the listbox + copy all currentKeyCodes to configKeyCodes */
-	wList = new QListBox(this);
-	wList->setAutoBottomScrollBar(FALSE);
+	// TOP LAYOUT MANAGER
+	
+	// The following layout is used for the dialog
+	// 		LIST LABELS LAYOUT
+	//		SPLIT LIST BOX WIDGET
+	//		CHOOSE KEY GROUP BOX WIDGET
+	//		BUTTONS LAYOUT
+	// Items are added to topLayout as they are created.
+	
+	QBoxLayout *topLayout = new QVBoxLayout( this, 10 ); 
+	
+	// CREATE LIST LABELS
+	
+	QBoxLayout *labels = new QHBoxLayout();
+	topLayout->addLayout( labels );
+	
+	actLabel = new QLabel(this);
+	labels->addWidget( actLabel );
+	
+	actLabel->setFrameStyle( QFrame::NoFrame );
+	actLabel->setText("Action");
+	actLabel->setFixedHeight( actLabel->sizeHint().height() );
+	
+	keyLabel = new QLabel(this);
+	labels->addWidget(keyLabel);
+	
+	keyLabel->setFrameStyle( QFrame::NoFrame );
+	keyLabel->setText("Key");
+	keyLabel->setFixedHeight( keyLabel->sizeHint().height() );
+	
+	// CREATE SPLIT LIST BOX
+	
+	// Copy all currentKeyCodes to configKeyCodes
+	// and fill up the split list box with the action/key pairs.
+	
+	wList = new SplitList( this );
+	topLayout->addWidget( wList, 15 );
+	
+	wList->setAutoUpdate(FALSE);
+	wList->setFocus();
 	
 	aIt = aKeyIt;
 	aIt->toFirst();
 	while ( aIt->current() ) {
 		aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
-		wList->insertItem(item(aIt->current()->aConfigKeyCode,
-							   aIt->currentKey()));
-		++(*aIt);
+		
+		SplitListItem *sli = new SplitListItem(
+		 	item( aIt->current()->aConfigKeyCode, aIt->currentKey() )
+		);
+		
+		connect( wList, SIGNAL( newWidth( int ) ),
+				 sli, SLOT( setWidth( int ) ) );
+		wList->insertItem( sli );
+		
+		++ ( *aIt );
 	}
 
-	/* if no keys defined */
-	if ( wList->count() == 0 ) wList->hide();
+	if ( wList->count() == 0 ) wList->setEnabled( FALSE );
+	//connect( wList, SIGNAL( selected( int ) ), SLOT( toChange( int ) ) );
+	connect( wList, SIGNAL( highlighted( int ) ), SLOT( toChange( int ) ) );
 	
-	/* adjust the listbox geometry */
-	//  wList->setFont( QFont("Courier", 12, QFont::Normal) );
+	// CREATE CHOOSE KEY GROUP
 	
-	/* there is a problem with the maxItemWidth() when using a non default
-	 * 	      font */
+	fCArea = new QGroupBox( this );
+	topLayout->addWidget( fCArea, 1 );
 	
-	int lWidth = wList->maxItemWidth() + H_DEC;
-	if ( lWidth < LIST_WIDTH ) 
-		lWidth = LIST_WIDTH;
-	wList->setGeometry( H_SPACING, V_SPACING, lWidth, LIST_HEIGHT );
-	
-	/* connect the list's signals */
-	connect( wList, SIGNAL(highlighted(int)), SLOT(toChange(int)) );
-	
-	/* create the buttons */
-	bAllDefault = new QPushButton(this);
-	bAllDefault->setGeometry( H_SPACING + (lWidth-ALL_DEFAULT_WIDTH)/2,
-							  2*V_SPACING + LIST_HEIGHT, ALL_DEFAULT_WIDTH,
-							  TEXT_HEIGHT );
-	bAllDefault->setText("All Default");
-	connect(bAllDefault, SIGNAL(clicked()), SLOT(allDefault()));
-	if ( wList->count()==0 ) bAllDefault->hide();
-	
-	int totalWidth = 3*H_SPACING + lWidth + CHANGE_AREA_WIDTH + 2*FRAME_WIDTH;
-	int partialHeight = 3*V_SPACING + LIST_HEIGHT + TEXT_HEIGHT
-		+ BIG_BUTTON_DEC;
-	int hSpacing = (totalWidth-2*BIG_BUTTON_WIDTH)/3;
-	
-	bOk = new QPushButton(this);
-	bOk->setGeometry( hSpacing, partialHeight,
-					  BIG_BUTTON_WIDTH, BIG_BUTTON_HEIGHT );
-	bOk->setText("OK");
-	connect(bOk, SIGNAL(clicked()), SLOT(accept()));
-	bCancel = new QPushButton(this);
-	bCancel->setGeometry( 2*hSpacing+BIG_BUTTON_WIDTH, partialHeight,
-						  BIG_BUTTON_WIDTH, BIG_BUTTON_HEIGHT );
-	bCancel->setText("Cancel");
-	connect(bCancel, SIGNAL(clicked()), SLOT(reject()));
-	
-	/* create the change area */
-	fCArea = new QFrame(this);
-	fCArea->setGeometry( 2*H_SPACING + lWidth, V_SPACING,
-						 CHANGE_AREA_WIDTH + 2*FRAME_WIDTH,
-						 CHANGE_AREA_HEIGHT + 3*FRAME_HEIGHT + TEXT_HEIGHT );
+	fCArea->setTitle( "Choose Key" );
 	fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 	
-	int vSpacing = (CHANGE_AREA_HEIGHT-3*TEXT_HEIGHT)/2 + TEXT_HEIGHT;
-	cShift = new QCheckBox(fCArea);
-	cShift->setGeometry( FRAME_WIDTH, FRAME_HEIGHT,
-						 CHECK_BOX_WIDTH, TEXT_HEIGHT );
-	cShift->setText("SHIFT");
-	cShift->hide();
-	connect(cShift, SIGNAL(clicked()), SLOT(shiftClicked()));
-	cCtrl = new QCheckBox(fCArea);
-	cCtrl->setGeometry( FRAME_WIDTH, FRAME_HEIGHT + vSpacing,
-					    CHECK_BOX_WIDTH, TEXT_HEIGHT );
-	cCtrl->setText("CTRL");
-	cCtrl->hide();
-	connect(cCtrl, SIGNAL(clicked()), SLOT(ctrlClicked()));
-	cAlt = new QCheckBox(fCArea);
-	cAlt->setGeometry( FRAME_WIDTH, FRAME_HEIGHT + 2*vSpacing,
-					   CHECK_BOX_WIDTH, TEXT_HEIGHT );
-	cAlt->setText("ALT");
-	cAlt->hide();
-	connect(cAlt, SIGNAL(clicked()), SLOT(altClicked()));
+	// CHOOSE KEY GROUP LAYOUT MANAGER
 	
-	hSpacing = (CHANGE_AREA_WIDTH-CHECK_BOX_WIDTH
-				-CHANGE_BUTTON_WIDTH-EDIT_BUTTON_WIDTH)/2;
-	vSpacing = (CHANGE_AREA_HEIGHT-TEXT_HEIGHT)/2;
+	QGridLayout *grid = new QGridLayout( fCArea, 5, 4, 2 );
 	
-	bChange = new QPushButton(fCArea);
-	bChange->setGeometry( CHECK_BOX_WIDTH + hSpacing + FRAME_WIDTH,
-						  FRAME_HEIGHT + vSpacing,
-						  CHANGE_BUTTON_WIDTH, TEXT_HEIGHT );
-	bChange->setFont( QFont("Helvetica", 14, QFont::Bold) );
-	bChange->hide();
-	connect(bChange, SIGNAL(clicked()), SLOT(changeKey()));
-	
-	eKey = new QLineEdit(fCArea);
-	eKey->setGeometry( CHECK_BOX_WIDTH + hSpacing + FRAME_WIDTH,
-					   FRAME_HEIGHT + vSpacing,
-					   CHANGE_BUTTON_WIDTH, TEXT_HEIGHT );
-	eKey->setFont( QFont("Helvetica", 14, QFont::Bold) );
-	eKey->setMaxLength(MAX_KEY_LENGTH);
-	eKey->hide();
-	connect(eKey, SIGNAL(returnPressed()), SLOT(editEnd()));
+	grid->setRowStretch(0,20);
+	grid->setRowStretch(1,10);
+	grid->setRowStretch(2,10);
+	grid->setRowStretch(3,10);
+	grid->setRowStretch(4,10);
 
-	int hSpacing2 = (CHANGE_AREA_WIDTH-CHANGE_BUTTON_WIDTH)/2;
-	vSpacing = (CHANGE_AREA_HEIGHT+FRAME_HEIGHT+TEXT_HEIGHT-TEXT_HEIGHT)/2;
+	grid->setColStretch(0,10);
+	grid->setColStretch(1,10);
+	grid->setColStretch(2,10);
+	grid->setColStretch(3,10);
+	
+	bChange = new KeyButton("key", fCArea);
+	bChange->setEnabled( FALSE );
+	connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
+	
+	cShift = new QCheckBox( fCArea );
+	cShift->setText( "SHIFT" );
+	cShift->setEnabled( FALSE );
+	connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
+	
+	cCtrl = new QCheckBox( fCArea );
+	cCtrl->setText( "CTRL" );
+	cCtrl->setEnabled( FALSE );
+	connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
+	
+	cAlt = new QCheckBox( fCArea );
+	cAlt->setText( "ALT" );
+	cAlt->setEnabled( FALSE );
+	connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
+	
+	// Set height of checkboxes to basic key button height.
+	// Basic key button height = push button height.
+	
+	cAlt->setFixedHeight( bChange->sizeHint().height() );
+	cShift->setFixedHeight( bChange->sizeHint().height() );
+	cCtrl->setFixedHeight( bChange->sizeHint().height() );
+	
+	fCArea->setMinimumHeight( 4*bChange->sizeHint().height() );
+	
+	// Add widgets to the geometry manager
+	
+	grid->addWidget( cShift, 1, 1 );
+	grid->addWidget( cCtrl, 2, 1 );
+	grid->addWidget( cAlt, 3, 1 );
+	grid->addMultiCellWidget( bChange, 2,3, 2,2 );
+	
+	
+	// CREATE THE BUTTONS
+	
+	QBoxLayout *buttons = new QHBoxLayout();
+    topLayout->addLayout( buttons );
+	
+	bHelp = new QPushButton( this );
+	bHelp->setText( "Help" );
+	bHelp->setEnabled( FALSE );
+	
+	bDefault = new QPushButton( this );
+	bDefault->setText( "Default" );
+	bDefault->setEnabled( FALSE );
+	connect( bDefault, SIGNAL( clicked() ), SLOT( defaultKey() ) );
+	
+	bAllDefault = new QPushButton( this );
+	bAllDefault->setText( "All Default ..." );
+	bAllDefault->setEnabled( FALSE );
+	connect( bAllDefault, SIGNAL( clicked() ), SLOT( allDefault() ) );
+	if ( wList->count()==0 ) bAllDefault->setEnabled( FALSE );
+	
+	bOk = new QPushButton( this );
+	bOk->setText( "OK" );
+	connect( bOk, SIGNAL( clicked() ), SLOT( accept() ) );
+	
+	bCancel = new QPushButton( this );
+	bCancel->setText( "Cancel" );
+	connect( bCancel, SIGNAL( clicked() ), SLOT( reject() ) );
+	
+	// Find widest button and set all buttons to this width
+	
+	int widget_width = 0;
+	
+	if( bHelp->sizeHint().width() > widget_width )
+		widget_width =  bHelp->sizeHint().width();
+	
+	if( bOk->sizeHint().width() > widget_width )
+		widget_width =  bOk->sizeHint().width();
+		
+	if( bCancel->sizeHint().width() > widget_width )
+		widget_width =  bCancel->sizeHint().width();
+		
+	if( bAllDefault->sizeHint().width() > widget_width )
+		widget_width =  bAllDefault->sizeHint().width();
+		
+	if( bDefault->sizeHint().width() > widget_width )
+		widget_width =  bDefault->sizeHint().width();
+	
+	bHelp->setFixedSize( widget_width, bOk->sizeHint().height() );	
+	bOk->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bCancel->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bAllDefault->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bDefault->setFixedSize( widget_width, bOk->sizeHint().height() );
+	
+	// Add buttons to the geometry manager.
+	
+	buttons->addWidget( bHelp, 0, AlignBottom );
+	buttons->addWidget( bDefault, 0, AlignBottom );
+	buttons->addWidget( bAllDefault, 0, AlignBottom );
+    buttons->addStretch( 10 );
+	buttons->addWidget( bOk, 0, AlignBottom );
+	buttons->addWidget( bCancel, 0, AlignBottom );
+
+	// eKey, lNotConfig, lInfo are legacy widgets
+	// They will be removed.
+	
+	//eKey = new QLineEdit(fCArea);
+	//eKey->resize(0,0);
+	//eKey->setMaxLength(MAX_KEY_LENGTH);
+	//eKey->hide( );
+	//connect(eKey, SIGNAL(returnPressed()), SLOT(editEnd()));
 	
 	lNotConfig = new QLabel(fCArea);
-	lNotConfig->setGeometry( FRAME_WIDTH + hSpacing2, FRAME_HEIGHT + vSpacing,
-							 CHANGE_BUTTON_WIDTH, TEXT_HEIGHT );
+	lNotConfig->resize(0,0);
 	lNotConfig->setFont( QFont("Helvetica", 14, QFont::Bold) );
 	lNotConfig->setAlignment( AlignCenter );
 	lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
@@ -638,30 +900,18 @@ KKeyConfigure::KKeyConfigure( QDictIterator<KKeyEntry> *aKeyIt,
 		lNotConfig->setText("Not configurable");
 		lNotConfig->hide();
 	}
-	
-	hSpacing = FRAME_WIDTH + CHECK_BOX_WIDTH + CHANGE_BUTTON_WIDTH
-		       + 2*hSpacing;
-	vSpacing = CHANGE_AREA_HEIGHT - 2*TEXT_HEIGHT;
-	
-	bEdit = new QPushButton(fCArea);
-	bEdit->setGeometry( hSpacing, FRAME_HEIGHT,
-					    EDIT_BUTTON_WIDTH, TEXT_HEIGHT );
-	bEdit->setText("Edit");
-	bEdit->hide();
-	connect(bEdit, SIGNAL(clicked()), SLOT(editKey()));
-	
-	bDefault = new QPushButton(fCArea);
-	bDefault->setGeometry( hSpacing, FRAME_HEIGHT + TEXT_HEIGHT + vSpacing,
-						   EDIT_BUTTON_WIDTH, TEXT_HEIGHT );
-	bDefault->setText("Default");
-	bDefault->hide();
-	connect(bDefault, SIGNAL(clicked()), SLOT(defaultKey()));
-	
+	lNotConfig->hide();
+
 	lInfo = new QLabel(fCArea);
-	lInfo->setGeometry( FRAME_WIDTH, 2*FRAME_HEIGHT + CHANGE_AREA_HEIGHT,
-					    CHANGE_AREA_WIDTH, TEXT_HEIGHT );
+	resize(0,0);
 	lInfo->setAlignment( AlignCenter );
+	lInfo->setEnabled( FALSE );
 	lInfo->hide();
+	
+	wList->setAutoUpdate(TRUE);
+	wList->update();
+	
+	topLayout->activate();
 }
 
 KKeyConfigure::~KKeyConfigure()
@@ -679,22 +929,18 @@ void KKeyConfigure::toChange(int index)
 	sEntryKey = aIt->currentKey();
 	pEntry = aIt->current();
 	
-	eKey->hide();
+	//eKey->setEnabled( FALSE );
 	
 	/* is the key configurable ? */
 	if ( !pEntry->bConfigurable) {
-		lInfo->hide();
-		cShift->hide(); cCtrl->hide(); cAlt->hide();
-		bChange->hide(); bEdit->hide(); bDefault->hide();
-		lNotConfig->show();
-	} else {
-		lNotConfig->hide();
-		lInfo->setText(""); lInfo->show();
+		lInfo->setEnabled( FALSE );
+		cShift->setEnabled( FALSE ); cCtrl->setEnabled( FALSE ); cAlt->setEnabled( FALSE );
+		bChange->setEnabled( FALSE );  bDefault->setEnabled( FALSE );
+		lNotConfig->setEnabled( TRUE );
 		
 		uint kCode = pEntry->aConfigKeyCode;
 		uint kSCode = kCode & ~(SHIFT | CTRL | ALT);
 		
-		cShift->show(); cCtrl->show(); cAlt->show();
 		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
 		else cShift->setChecked( kCode & SHIFT );
 		if ( kSCode == Key_Control ) cCtrl->setChecked(FALSE);
@@ -703,13 +949,69 @@ void KKeyConfigure::toChange(int index)
 		else cAlt->setChecked( kCode & ALT );
 		
 		QString str = keyToString( kSCode );
-		bChange->setText(str); eKey->setText(str);
-		bChange->show(); bEdit->show(); bDefault->show();
+		bChange->setText(str);
+	} else {
+		lNotConfig->setEnabled( FALSE );
+		lInfo->setText(""); lInfo->setEnabled( TRUE );
 		
-		if ( isKeyPresent() )
+		uint kCode = pEntry->aConfigKeyCode;
+		uint kSCode = kCode & ~(SHIFT | CTRL | ALT);
+		
+		cShift->setEnabled( TRUE ); cCtrl->setEnabled( TRUE ); cAlt->setEnabled( TRUE );
+		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
+		else cShift->setChecked( kCode & SHIFT );
+		if ( kSCode == Key_Control ) cCtrl->setChecked(FALSE);
+		else cCtrl->setChecked( kCode & CTRL );
+		if ( kSCode == Key_Alt ) cAlt->setChecked(FALSE);
+		else cAlt->setChecked( kCode & ALT );
+		
+		QString str = keyToString( kSCode );
+		bChange->setText(str); //eKey->setText(str);
+		bChange->setEnabled( TRUE ); bDefault->setEnabled( TRUE );
+		
+		if ( isKeyPresent() ) {
 			lInfo->setText("Attention : key already used");
+		}
 	}
 }
+
+void KKeyConfigure::fontChange( const QFont & )
+{
+	actLabel->setFixedHeight( actLabel->sizeHint().height() );
+	keyLabel->setFixedHeight( keyLabel->sizeHint().height() );
+
+	cAlt->setFixedHeight( bChange->sizeHint().height() );
+	cShift->setFixedHeight( bChange->sizeHint().height() );
+	cCtrl->setFixedHeight( bChange->sizeHint().height() );
+	
+	fCArea->setMinimumHeight( 4*bChange->sizeHint().height() );
+	
+	int widget_width = 0;
+	
+	if( bHelp->sizeHint().width() > widget_width )
+		widget_width =  bHelp->sizeHint().width();
+	
+	if( bOk->sizeHint().width() > widget_width )
+		widget_width =  bOk->sizeHint().width();
+		
+	if( bCancel->sizeHint().width() > widget_width )
+		widget_width =  bCancel->sizeHint().width();
+		
+	if( bAllDefault->sizeHint().width() > widget_width )
+		widget_width =  bAllDefault->sizeHint().width();
+		
+	if( bDefault->sizeHint().width() > widget_width )
+		widget_width =  bDefault->sizeHint().width();
+	
+	bHelp->setFixedSize( widget_width, bOk->sizeHint().height() );	
+	bOk->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bCancel->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bAllDefault->setFixedSize( widget_width, bOk->sizeHint().height() );
+	bDefault->setFixedSize( widget_width, bOk->sizeHint().height() );
+	
+	setMinimumWidth( 20+5*(widget_width+10) );
+}
+
 
 void KKeyConfigure::defaultKey()
 {
@@ -717,26 +1019,49 @@ void KKeyConfigure::defaultKey()
 	pEntry->aConfigKeyCode = pEntry->aDefaultKeyCode;
 	
 	/* update the list and the change area */
-	wList->changeItem(item(pEntry->aConfigKeyCode,
-						   sEntryKey), wList->currentItem());
+	
+	SplitListItem *sli = new SplitListItem(
+		 item(pEntry->aConfigKeyCode, sEntryKey)
+	);
+		
+	connect( wList, SIGNAL( newWidth( int ) ),
+			 	sli, SLOT( setWidth( int ) ) );
+				
+	sli->setWidth( wList->width() );
+
+	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
 }
 
 void KKeyConfigure::allDefault()
 {
-	/* change all configKeyCodes to default values */
+	// Change all configKeyCodes to default values
+	
+	// NB. There is a bug with this method. If an item in the list
+	// is selected then only this item is found in the dictionary
+	//
+	
 	aIt->toFirst();
 	wList->clear();
 	while ( aIt->current() ) {
 		aIt->current()->aConfigKeyCode = aIt->current()->aDefaultKeyCode;
-		wList->insertItem(item(aIt->current()->aConfigKeyCode,
-							   aIt->currentKey()));
+		
+		SplitListItem *sli = new SplitListItem(
+		 	item(aIt->current()->aConfigKeyCode, aIt->currentKey())
+		);
+		
+		debug("%s", sli->text());
+		
+		connect( wList, SIGNAL( newWidth( int ) ),
+				 sli, SLOT( setWidth( int ) ) );
+				 
+					
+		sli->setWidth( wList->width() );
+		
+		wList->insertItem( sli );
+		
 		++(*aIt);
 	}
-	/* clear the change area */
-	lInfo->hide(); lNotConfig->hide(); eKey->hide();
-	cShift->hide(); cCtrl->hide(); cAlt->hide();
-	bChange->hide(); bEdit->hide(); bDefault->hide();
 }
 
 #define MAX_FCTN_LENGTH 15
@@ -760,8 +1085,18 @@ void KKeyConfigure::shiftClicked()
 			pEntry->aConfigKeyCode |= SHIFT;
 		else
 			pEntry->aConfigKeyCode &= ~SHIFT;
-		wList->changeItem(item(pEntry->aConfigKeyCode,
-							   sEntryKey), wList->currentItem());
+			
+		SplitListItem *sli = new SplitListItem(
+		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		);
+		
+		connect( wList, SIGNAL( newWidth( int ) ),
+				 sli, SLOT( setWidth( int ) ) );
+				 
+					
+		sli->setWidth( wList->width() );
+		
+		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
 }
@@ -774,8 +1109,18 @@ void KKeyConfigure::ctrlClicked()
 			pEntry->aConfigKeyCode |= CTRL;
 		else
 			pEntry->aConfigKeyCode &= ~CTRL;
-		wList->changeItem(item(pEntry->aConfigKeyCode,
-							   sEntryKey), wList->currentItem());
+			
+		SplitListItem *sli = new SplitListItem(
+		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		);
+		
+		connect( wList, SIGNAL( newWidth( int ) ),
+				 sli, SLOT( setWidth( int ) ) );
+				 
+					
+		sli->setWidth( wList->width() );
+		
+		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
 }
@@ -788,18 +1133,33 @@ void KKeyConfigure::altClicked()
 			pEntry->aConfigKeyCode |= ALT;
 		else
 			pEntry->aConfigKeyCode &= ~ALT;
-		wList->changeItem(item(pEntry->aConfigKeyCode,
-							   sEntryKey), wList->currentItem());
+			
+		SplitListItem *sli = new SplitListItem(
+		 	item(pEntry->aConfigKeyCode, sEntryKey)
+		);
+		
+		connect( wList, SIGNAL( newWidth( int ) ),
+				 sli, SLOT( setWidth( int ) ) );
+				 
+					
+		sli->setWidth( wList->width() );
+			
+		wList->changeItem( sli, wList->currentItem() );
 	}
 	toChange(wList->currentItem());
 }
 
 void KKeyConfigure::changeKey()
 {
-	bChange->hide();
+	bChange->setEdit( TRUE );
 	lInfo->setText("Press the wanted key");
-	lInfo->show();
+	lInfo->setEnabled( TRUE );
 	/* give the focus to the widget */
+	
+	//eKey->setGeometry(bChange->x()+6, bChange->y()+4, bChange->width()-12,
+		//bChange->height()-8);
+	//eKey->show();
+	//eKey->setEnabled(TRUE);
 	setFocus();
 	bKeyIntercept = TRUE;
 }
@@ -820,11 +1180,17 @@ void KKeyConfigure::keyPressEvent( QKeyEvent *e )
 	}
 	
 	bKeyIntercept = FALSE;
+	//eKey->hide();
+	//eKey->setEnabled(FALSE);
+	bChange->setEdit(FALSE);
+	bChange->setFocus();
 	setKey(kCode);
 }
 
 void KKeyConfigure::setKey( uint kCode)
 {
+	uint kOldCode = pEntry->aConfigKeyCode;
+	
 	/* add the current modifier to the key */
 	if ( kCode!=Key_Shift ) kCode |= (pEntry->aConfigKeyCode & SHIFT);
 	if ( kCode!=Key_Control ) kCode |= (pEntry->aConfigKeyCode & CTRL);
@@ -832,20 +1198,38 @@ void KKeyConfigure::setKey( uint kCode)
 	
 	/* set the list and the chande button */
 	pEntry->aConfigKeyCode = kCode;
-	wList->changeItem(item(pEntry->aConfigKeyCode,
-						   sEntryKey), wList->currentItem());
+	
+	if ( isKeyPresent() ) {
+		lInfo->setText("Attention : key already used");
+		return;
+	}
+	
+	SplitListItem *sli = new SplitListItem(
+	 	item(pEntry->aConfigKeyCode, sEntryKey)
+	);
+		
+	connect( wList, SIGNAL( newWidth( int ) ),
+			 sli, SLOT( setWidth( int ) ) );
+				 
+				
+	sli->setWidth( wList->width() );
+	
+	wList->changeItem( sli, wList->currentItem() );
 	toChange(wList->currentItem());
 }
 
 void KKeyConfigure::editKey()
 {
-	bChange->hide(); eKey->show(); bEdit->hide();
+	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE ); 
 	lInfo->setText("Return to end edition");
 }
 
 void KKeyConfigure::editEnd()
 {
-	uint kCode = stringToKey(eKey->text());
+	debug("Called editEnd() which relies on eKey widget");
+	
+	//uint kCode = stringToKey(eKey->text());
+	uint kCode = 0;
 	if ( kCode==0 || (kCode & (SHIFT | CTRL | ALT)) ) {
 		lInfo->setText("Incorrect key");
 		return;
@@ -860,8 +1244,26 @@ bool KKeyConfigure::isKeyPresent()
 	aIt->toFirst();
 	while ( aIt->current() ) {
 		if ( aIt->current()!=pEntry
-			&& aIt->current()->aConfigKeyCode==pEntry->aConfigKeyCode )
+				&& aIt->current()->aConfigKeyCode==pEntry->aConfigKeyCode ) {
+			QString str( item(pEntry->aConfigKeyCode, sEntryKey) );
+			int i = str.find( ":" );
+
+			QString actionName = str.left( i );
+			actionName.simplifyWhiteSpace();
+
+			str.remove( 0, i+1 );
+
+			QString keyName = str.simplifyWhiteSpace();
+			
+			str.sprintf(
+				"The  %s  key combination has already been allocated\nto the  %s  action.\n\nPlease choose a unique key combination.",
+				keyName.data(),
+				actionName.data() );
+				
+			QMessageBox::warning( this, "Warning", str.data() );
+			
 			return TRUE;
+		}
 		++(*aIt);
 	}
 	return FALSE;

@@ -28,6 +28,13 @@
 #include <qpushbt.h>
 #include <qchkbox.h>
 #include <qlined.h>
+#include <qtablevw.h>
+#include <qstrlist.h>
+#include <qpopmenu.h>
+#include <qgrpbox.h>
+#include <qobject.h>
+
+#include <kapp.h>
 
 
 struct KKeyConnectEntry {
@@ -73,6 +80,78 @@ class KKeyWidgetEntry : public QObject
 };
 
 /**
+* A list box item for SplitList.It uses two columns to display 
+* action/key combination pairs.
+* @short A list box item for SplitList.
+*/
+class SplitListItem : public QObject, public QListBoxItem
+{
+	Q_OBJECT
+	
+public:
+    SplitListItem( const char *s );
+
+protected:
+    virtual void paint( QPainter * );
+    virtual int height( const QListBox * ) const;
+    virtual int width( const QListBox * ) const;
+
+public slots:
+	void setWidth( int newWidth );
+	
+private:
+	int halfWidth;
+	QString keyName;
+	QString actionName;
+};
+
+/**
+* A list box that can report its width to the items it
+* contains. Thus it can be used for multi column lists etc.
+* @short A list box capable of multi-columns
+*/
+class SplitList: public QListBox
+{
+	Q_OBJECT
+
+public:
+	SplitList( QWidget *parent = 0, const char *name = 0 );
+	~SplitList() { }
+
+signals:
+	void newWidth( int newWidth );
+	
+protected:
+	void resizeEvent( QResizeEvent * );
+	void paletteChange ( const QPalette & oldPalette );
+	void styleChange ( GUIStyle );
+
+private:
+	QColor selectColor;
+	QColor selectTextColor;
+};
+
+/**
+* A push button that looks like a keyboard key.
+* @short A push button that looks like a keyboard key.
+*/
+class KeyButton: public QPushButton
+{
+	Q_OBJECT
+
+public:
+	KeyButton( const char* name = 0, QWidget *parent = 0);
+	~KeyButton();
+	void setText( QString text );
+	void setEdit( bool edit );
+	bool editing;
+  
+protected:
+	void paint( QPainter *_painter );
+	void drawButton( QPainter *p ) { paint( p ); }
+};
+
+/**
 * A widget for configuration of function/accelerator assignments.
 * @short A widget for configuration of function/accelerator assignments.
 * @version $Id$
@@ -98,17 +177,20 @@ class KKeyConfigure : public QDialog
 	
  protected:
 	void keyPressEvent( QKeyEvent *e );
+	void fontChange( const QFont & ); 
 	
  private:
 	QDictIterator<KKeyEntry> *aIt;
 	KKeyEntry *pEntry;
 	QString sEntryKey;
-	QListBox *wList;
+	SplitList *wList;
 	QLabel *lInfo, *lNotConfig;
-	QPushButton *bAllDefault, *bChange, *bEdit, *bDefault, *bOk, *bCancel;
+	QLabel *actLabel, *keyLabel;
+	QPushButton *bAllDefault, *bDefault, *bOk, *bCancel, *bHelp;
+	KeyButton *bChange;
 	QCheckBox *cShift, *cCtrl, *cAlt;
-	QFrame *fCArea;
-	QLineEdit *eKey;
+	QGroupBox *fCArea;
+	//QLineEdit *eKey;
 	
 	bool bKeyIntercept;
 	
