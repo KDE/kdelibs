@@ -81,8 +81,6 @@ void Test::createFields()
 
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
-  string+="\nLocalized number: ";
-  string+=KGlobal::locale()->formatNumber(1234567.89123456789);
   string+="\nLocalized monetary numbers: ";
   string+=KGlobal::locale()->formatMoney(1234567.89) + " / " +KGlobal::locale()->formatMoney(-1234567.89);
   // This will not work
@@ -107,6 +105,15 @@ int main( int argc, char ** argv )
   KGlobal::locale()->setLanguage(QString::fromLatin1("en_US"));
   KGlobal::locale()->setCountry(QString::fromLatin1("C"));
   KGlobal::locale()->setThousandsSeparator(QString::fromLatin1(","));
+
+  QString formatted;
+  formatted = KGlobal::locale()->formatNumber( 70 ); check("formatNumber(70)",formatted,"70.00");
+  formatted = KGlobal::locale()->formatNumber( 70, 0 ); check("formatNumber(70, 0)",formatted,"70");
+  formatted = KGlobal::locale()->formatNumber( 70.2 ); check("formatNumber(70.2)",formatted,"70.20");
+  formatted = KGlobal::locale()->formatNumber( 70.24 ); check("formatNumber(70.24)",formatted,"70.24");
+  formatted = KGlobal::locale()->formatNumber( 70.245 ); check("formatNumber(70.245)",formatted,"70.25"); /*rounded*/
+  formatted = KGlobal::locale()->formatNumber(1234567.89123456789,8); check("formatNumber(1234567.89123456789,8)",formatted,"1,234,567.89123457");
+
   double num;
   bool ok;
   num = KGlobal::locale()->readNumber( "12,1", &ok ); check("readNumber(12,1)",ok?"yes":"no","no");
