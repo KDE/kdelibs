@@ -47,7 +47,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
   
   addressBook->clear();
 
-  VCardEntity e( data.local8Bit() );
+  VCardEntity e( data.utf8() );
   
   VCardListIterator it( e.cardList() );
 
@@ -246,7 +246,7 @@ bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
   if ( f.open(IO_WriteOnly) ) {
     QTextStream t( &f );
     t.setEncoding(QTextStream::UnicodeUTF8);
-    t << QString::fromLocal8Bit(vcards.asString());
+    t << QString::fromUtf8(vcards.asString());
     f.close();
   } else {
     return false;
