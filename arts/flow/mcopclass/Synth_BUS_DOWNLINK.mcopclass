@@ -1,0 +1,2 @@
+Buildable=true
+Interface=Arts::Synth_BUS_DOWNLINK,Arts::SynthModule,Arts::Object

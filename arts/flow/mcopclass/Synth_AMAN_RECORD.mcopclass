@@ -1,0 +1,2 @@
+Buildable=true
+Interface=Arts::Synth_AMAN_RECORD,Arts::AudioManagerClient,Arts::SynthModule,Arts::Object

@@ -193,6 +193,33 @@ interface Synth_PLAY_WAV : SynthModule {
 };
 
 /**
+ * sends data to a bus - busses are dynamic N:M connections - all signals
+ * from all uplinks are mixed together, and sent to all downlinks
+ */
+interface Synth_BUS_UPLINK : SynthModule {
+	/**
+	 * the name of the bus to use
+	 */
+	attribute string busname;
+
+	default in audio stream left,right;
+};
+
+/**
+ * receives data from a bus - busses are dynamic N:M connections - all signals
+ * from all uplinks are mixed together, and sent to all downlinks
+ */
+interface Synth_BUS_DOWNLINK : SynthModule {
+	/**
+	 * the name of the bus to use
+	 */
+	attribute string busname;
+
+	default out audio stream left,right;
+};
+
+
+/**
  * Byte stream to audio conversion object
  *
  * Converts an asynchronous byte stream to a synchronous audio stream
@@ -262,5 +289,90 @@ interface StereoEffectStack : StereoEffect {
 	 */
 	void remove(long ID);
 };
+
+/*
+ * Audio Manager stuff
+ */
+
+enum AudioManagerDirection { amPlay, amRecord };
+
+/**
+ * Information structure for audio manager clients
+ */
+struct AudioManagerInfo {
+	long ID;
+	string destination;
+
+	AudioManagerDirection direction;
+	string title, autoRestoreID;
+};
+
+/**
+ * an audio manager client
+ */
+interface AudioManagerClient {
+	readonly attribute long ID;
+	attribute AudioManagerDirection direction;
+	attribute string title, autoRestoreID;
+
+	void constructor(AudioManagerDirection direction, string title,
+					 string autoRestoreID);
+};
+
+/**
+ * The audio manager interface
+ */
+interface AudioManager {
+	/**
+	 * a list of destinations, where you can play/record data to/from
+	 */
+	readonly attribute sequence<string> destinations;
+
+	/**
+	 * a list of clients
+	 */
+	readonly attribute sequence<AudioManagerInfo> clients;
+
+	/**
+	 * this is incremented each time a change is made (i.e. new client attached)
+	 * TODO: SHOULD GO AWAY WITH ATTRIBUTE WATCHING
+	 */
+	readonly attribute long changes;
+
+	/**
+	 * this is used to route a client to another destination
+	 */
+	void setDestination(long ID, string destination);
+};
+/**
+ * This is a virtual output port, which you use to play data. Where exactly
+ * this data gets played is managed by the audiomanager.
+ *
+ * Creation: there are two ways to initialize a Synth_AMAN_PLAY - one is
+ * to set title and autoRestoreID to sensible (non empty) values. The other
+ * is to pass an already initialized AudioManagerClient on the constructor.
+ */
+interface Synth_AMAN_PLAY : SynthModule {
+	attribute string title, autoRestoreID;
+	void constructor(AudioManagerClient client);
+
+	default in audio stream left, right;
+};
+
+/**
+ * This is a virtual input port, which you use to record data. Where this
+ * data comes from is in turn managed by the audiomanager.
+ *
+ * Creation: there are two ways to initialize a Synth_AMAN_RECORD - one is
+ * to set title and autoRestoreID to sensible (non empty) values. The other
+ * is to pass an already initialized AudioManagerClient on the constructor.
+ */
+interface Synth_AMAN_RECORD : SynthModule {
+	attribute string title, autoRestoreID;
+	void constructor(AudioManagerClient client);
+
+	default out audio stream left, right;
+};
+
 
 };

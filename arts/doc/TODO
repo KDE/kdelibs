@@ -27,10 +27,8 @@ currently mostly done. Remaining issues are:
 - port visual objects
 - do streaming between servers again
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces
-- more work on dynamic N:M connectivity (SynthBus*)
 - synchronization: to synchronize audio/video output, you'll need to know how
   much time aRts buffers internally and to the hardware - supply this somehow
-- port artsbuilder
 - port every object
 - asynchronous streams (as opposed to synchronous) w/ language binding
 - notifications when attributes change
@@ -56,7 +54,6 @@ currently mostly done. Remaining issues are:
      then (this would for instance also close if clients are connected but
      not playing anything)
    - make an explicit call like "shutdown now" (esdctl off/esdctl on)
-- maybe fix crash when playing wav files without libaudiofile installed
 - Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
   it wants to have addObject() and removeObject() methods - this leads to
   slightly unlogic accesses from outside
