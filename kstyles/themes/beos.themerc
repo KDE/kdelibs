@@ -10,6 +10,7 @@ Comment[cs]=Styl podobný BeOS (bez motivu)
 Comment[da]=BeOSlignende stil uden tema
 Comment[de]=BeOS-Stil (kein komplettes Design)
 Comment[eo]=BeOS-simila stilo neetosa
+Comment[es]=Estilo Beos sin tema
 Comment[et]=Beos'i laadne stiil
 Comment[fi]=Teemoittamaton Beos:n kaltainen tyyli
 Comment[fr]=Style sans thème similaire à BeOS
@@ -31,7 +32,5 @@ Comment[sl]=Netematski slog, podoben Beosu
 Comment[sr]=Bez teme, nalik na BeOS stil
 Comment[sv]=Otemad Beos-liknande stil
 Comment[tr]=Beos benzeri temasız stil
-Comment[uk]=Стиль BeOS (без теми)
-Comment[zh_CN.GB2312]=没有主题的类似 Beos 的风格
 [KDE]
 widgetStyle=beosstyle.la

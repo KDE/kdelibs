@@ -15,6 +15,7 @@ Comment[da]=Indbygget udvidet Motif stil
 Comment[de]=Eingebauter, erweiterter Motif-Stil
 Comment[el]=Ενσωματομένο στυλ Motif με βελτιώσεις
 Comment[eo]=Enkonstruita etendita Motif-stilo
+Comment[es]=Estilo integrado Motif mejorado
 Comment[et]=Qt täiustatud Motif'i laadne stiil
 Comment[fi]=Sisäänrakennettu teemoittamaton paranneltu Motif tyyli
 Comment[fr]=Style Motif amélioré d'origine
@@ -33,7 +34,5 @@ Comment[pt_BR]=Estilo Motif interno melhorado
 Comment[ro]=Stil Motif avansat, intern
 Comment[sl]=Vgrajen izboljšani slog Motif
 Comment[sv]=Inbyggd utökad Motif-stil
-Comment[uk]=Вбудований покращений стиль Motif
-Comment[zh_CN.GB2312]=内建的增强的 Motif 风格
 [KDE]
 widgetStyle=MotifPlus
