@@ -49,6 +49,9 @@ servicetypedir = $(kde_servicetypesdir)
 kded_DATA = kpasswdserver.desktop
 kdeddir = $(kde_servicesdir)/kded
 
+dataprotocol_DATA = data.protocol
+dataprotocoldir = $(kde_servicesdir)
+
 dummy.cpp:
 	echo >dummy.cpp
 

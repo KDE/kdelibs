@@ -1,0 +1,9 @@
+[Protocol]
+protocol=data
+input=none
+output=stream
+reading=true
+defaultMimetype=text/plain
+Icon=www
+Description=A kioslave for data URIs (rfc2397)
+Description[de]=Ein Protokoll für data URIs (rfc2397)
