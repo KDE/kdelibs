@@ -21,6 +21,7 @@
 #include <config.h>
 #include <kparts/plugin.h>
 #include <kparts/part.h>
+#include <kparts/componentfactory.h>
 
 #include <qfile.h>
 #include <qobjectlist.h>
@@ -146,28 +147,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 {
-    KLibLoader* loader = KLibLoader::self();
-    if ( !loader )
-    {
-        kdError(1000) << "No library loader installed" << endl;
-        return 0;
-    }
-
-    KLibFactory* f = loader->factory( libname );
-    if ( !f )
-    {
-        kdError(1000) << "Could not initialize library" << endl;
-        return 0;
-    }
-    QObject* obj = f->create( parent, libname, "KParts::Plugin" );
-    if ( obj && !obj->inherits("KParts::Plugin" ) )
-    {
-        kdError(1000) << "The library does not feature an object of class Plugin" << endl;
-        delete obj;
-        return 0;
-    }
-
-    return dynamic_cast<Plugin *>( obj );
+    return ComponentFactory::createInstanceFromLibrary<Plugin>( libname, parent, libname );
 }
 
 QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
