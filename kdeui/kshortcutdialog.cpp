@@ -15,6 +15,8 @@
 #include <kiconloader.h>
 #include <kkeynative.h>
 #include <klocale.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
@@ -38,6 +40,7 @@ KShortcutBox::KShortcutBox( const KKeySequence& seq, QWidget* parent, const char
 :	QLabel( parent, name )
 {
 	setSeq( seq );
+	setFrameStyle( QFrame::Panel | QFrame::Plain );
 }
 
 void KShortcutBox::setSeq( const KKeySequence& seq )
@@ -89,7 +92,6 @@ void KShortcutDialog::initGUI()
 	QToolTip::add( pb0, i18n("Clear shortcut") );
 	connect( pb0, SIGNAL(clicked()), this, SLOT(slotClearSeq0()) );
 	m_peditSeq[0] = new KShortcutBox( m_cut.seq(0), pGroup );
-	m_peditSeq[0]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 	m_pcbMultiKey[0] = new QCheckBox( i18n("Multi-Key"), pGroup );
 	m_pcbMultiKey[0]->setChecked( m_cut.seq(0).count() > 1 );
 	connect( m_pcbMultiKey[0], SIGNAL(clicked()), this, SLOT(slotSeq0Selected()) );
@@ -102,7 +104,6 @@ void KShortcutDialog::initGUI()
 	QToolTip::add( pb1, i18n("Clear shortcut") );
 	connect( pb1, SIGNAL(clicked()), this, SLOT(slotClearSeq1()) );
 	m_peditSeq[1] = new KShortcutBox( m_cut.seq(1), pGroup );
-	m_peditSeq[1]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 	m_pcbMultiKey[1] = new QCheckBox( i18n("Multi-Key"), pGroup );
 	m_pcbMultiKey[1]->setChecked( m_cut.seq(1).count() > 1 );
 	connect( m_pcbMultiKey[1], SIGNAL(clicked()), this, SLOT(slotSeq1Selected()) );
@@ -119,8 +120,8 @@ void KShortcutDialog::initGUI()
 	pLayout->addWidget( m_pcbMultiKey[1], 1, 3 );
 
 	QVBox* pVBox = new QVBox( this );
-	m_pcmdOK = new QPushButton( i18n("OK"), pVBox );
-	m_pcmdCancel = new QPushButton( i18n("Cancel"), pVBox );
+	m_pcmdOK = new KPushButton( KStdGuiItem::ok(), pVBox );
+	m_pcmdCancel = new KPushButton( KStdGuiItem::cancel(), pVBox );
 	m_pcbAutoClose = new QCheckBox( i18n("Auto-Close"), pVBox );
 	m_pcbAutoClose->setChecked( true );
 	// Disable auto-close if the sequence we're editing is a multi-key shortcut.
