@@ -25,7 +25,7 @@
 
 using namespace KJS;
 
-KJSO *DOMNode::get(const CString &p) const
+KJSO *DOMNode::get(const UString &p) const
 {
   KJSO *result;
 
@@ -57,7 +57,7 @@ KJSO *DOMNode::get(const CString &p) const
   return result;
 }
 
-KJSO *DOMNodeList::get(const CString &p) const
+KJSO *DOMNodeList::get(const UString &p) const
 {
   KJSO *result;
 
@@ -69,7 +69,7 @@ KJSO *DOMNodeList::get(const CString &p) const
   return result;
 }
 
-KJSO *DOMDocument::get(const CString &p) const
+KJSO *DOMDocument::get(const UString &p) const
 {
   KJSO *result;
 
@@ -80,7 +80,7 @@ KJSO *DOMDocument::get(const CString &p) const
   return result;
 }
 
-KJSO *DOMElement::get(const CString &p) const
+KJSO *DOMElement::get(const UString &p) const
 {
   KJSO *result;
 

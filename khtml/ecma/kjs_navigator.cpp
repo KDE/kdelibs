@@ -28,7 +28,7 @@
 
 using namespace KJS;
 
-KJSO *Navigator::get(const CString &p) const
+KJSO *Navigator::get(const UString &p) const
 {
   UString str;
 

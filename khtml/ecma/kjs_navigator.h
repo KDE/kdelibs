@@ -30,7 +30,7 @@ namespace KJS {
   class Navigator : public HostObject {
   public:
     Navigator() { }
-    virtual KJSO *get(const CString &p) const;
+    virtual KJSO *get(const UString &p) const;
   };
 }; // namespace
 

@@ -28,7 +28,7 @@
 
 using namespace KJS;
 
-KJSO *Window::get(const CString &p) const
+KJSO *Window::get(const UString &p) const
 {
   if (p == "alert")
     return new WindowFunc(widget, WindowFunc::Alert);
@@ -38,7 +38,7 @@ KJSO *Window::get(const CString &p) const
   return new KJSUndefined();
 }
 
-void Window::put(const CString &, KJSO *, int)
+void Window::put(const UString &, KJSO *, int)
 {
 }
 

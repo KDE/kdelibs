@@ -60,7 +60,7 @@ extern "C" {
   // evaluate code
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
   {
-    return script->evaluate((const KJS::UnicodeChar*)c, len);
+    return script->evaluate((const KJS::UChar*)c, len);
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
@@ -71,9 +71,9 @@ extern "C" {
 
 UString::UString(const DOM::DOMString &d)
 {
-  l = d.length();
-  s = new UnicodeChar[l];
-  memcpy(s, d.unicode(), l * sizeof(UnicodeChar));
+  unsigned int len = d.length();
+  UChar *dat = new UChar[len];
+  rep = new UStringData(dat, len);
 }
 
 DOM::DOMString UString::string() const
@@ -86,7 +86,7 @@ QString UString::qstring() const
   return QString((QChar*) data(), size());
 }
 
-KJSO *KJS::HTMLDocFunction::get(const CString &p) const
+KJSO *KJS::HTMLDocFunction::get(const UString &p) const
 {
   Ptr tmp;
   DOM::HTMLCollection coll;
@@ -161,7 +161,7 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
   return new KJSCompletion(Normal, result);
 }
 
-KJSO *KJS::HTMLDocument::get(const CString &p) const
+KJSO *KJS::HTMLDocument::get(const UString &p) const
 {
   KJSO *result;
 
@@ -197,7 +197,7 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
     if (result->isA(Undefined)) {
       DOM::HTMLElement element;
       DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
-      DOM::Node node = coll.namedItem(DOM::DOMString(p.c_str()));
+      DOM::Node node = coll.namedItem(p.string());
       element = node;
       result = new HTMLElement(element);
     }
@@ -206,7 +206,7 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
   return result;
 }
 
-void KJS::HTMLDocument::put(const CString &p, KJSO *v, int)
+void KJS::HTMLDocument::put(const UString &p, KJSO *v, int)
 {
   Ptr s;
   if (p == "title") {
@@ -218,7 +218,7 @@ void KJS::HTMLDocument::put(const CString &p, KJSO *v, int)
   }
 }
 
-KJSO *KJS::HTMLElement::get(const CString &p) const
+KJSO *KJS::HTMLElement::get(const UString &p) const
 {
   DOM::DOMString str;
   DOM::HTMLHtmlElement html;
@@ -355,7 +355,7 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
   return new KJSString(str);
 }
 
-void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
+void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
 {
   DOM::HTMLHtmlElement html;
   DOM::HTMLLinkElement link;
@@ -488,7 +488,7 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
     element.setClassName(str);
 }
 
-KJSO *KJS::HTMLCollection::get(const CString &p) const
+KJSO *KJS::HTMLCollection::get(const UString &p) const
 {
   KJSO *result;
 
@@ -504,11 +504,11 @@ KJSO *KJS::HTMLCollection::get(const CString &p) const
     unsigned long u;
 
     // name or index ?
-    int ret = sscanf(p.c_str(), "%lu", &u);
+    int ret = sscanf(p.cstring().c_str(), "%lu", &u);
     if (ret)
       node = collection.item(u);
     else
-      node = collection.namedItem(DOM::DOMString(p.c_str()));
+      node = collection.namedItem(p.string());
 
     element = node;
     result = new HTMLElement(element);
@@ -569,22 +569,22 @@ KJSObject* ImageConstructor::construct(KJSList *)
   return result;
 }
 
-KJSO *Image::get(const CString &p) const
+KJSO *Image::get(const UString &p) const
 {
   KJSO *result;
 
   if (p == "src")
-    result = new KJSString(src.c_str());
+    result = new KJSString(src);
   else
     result = new KJSUndefined();
 
   return result;
 }
 
-void Image::put(const CString &p, KJSO *v, int)
+void Image::put(const UString &p, KJSO *v, int)
 {
   if (p == "src") {
     KJSO *str = toString(v);
-    src = str->sVal().cstring();
+    src = str->sVal();
   }
 }

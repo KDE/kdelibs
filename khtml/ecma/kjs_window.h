@@ -30,8 +30,8 @@ namespace KJS {
   class Window : public HostObject {
   public:
     Window(KHTMLView *w) : widget(w) { }
-    virtual KJSO *get(const CString &p) const;
-    virtual void put(const CString &p, KJSO *v, int);
+    virtual KJSO *get(const UString &p) const;
+    virtual void put(const UString &p, KJSO *v, int);
   private:
     KHTMLView *widget;
   };
