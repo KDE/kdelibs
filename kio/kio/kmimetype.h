@@ -39,6 +39,10 @@ class KSimpleConfig;
  * with it.
  *
  * The starting point you need is often the static methods.
+ *
+ * KMimeType inherits KServiceType because "text/plain" can be used to find
+ * services (apps and components) "which can open text/plain".
+ *
  * @see KServiceType
  */
 class KMimeType : public KServiceType
@@ -54,7 +58,7 @@ public:
    *
    * You may pass in arguments to create a mimetype with
    * specific properties.
-   * 
+   *
    * @param _fullpath the path to the configuration file (.desktop)
    * @param _type the mime type itself
    * @param _icon the name of the icon that represens the mime type
@@ -184,7 +188,7 @@ public:
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,
    * if available. Does NOT attempt to download the favicon, it only returns
-   * one that is already available. 
+   * one that is already available.
    *
    * If unavailable, returns QString::null.
    * @param url the URL of the favicon
@@ -218,7 +222,7 @@ public:
 
   /**
    * Retrieve the list of patterns associated with the MIME Type.
-   * @return a list of file globs that describe the file names 
+   * @return a list of file globs that describe the file names
    *         (or, usually, the extensions) of files with this mime type
    */
   const QStringList& patterns() const { return m_lstPatterns; }
@@ -260,8 +264,8 @@ public:
    * @em Very @em important: Don't store the result in a KMimeType* !
    *
    * @param _name the name of the mime type
-   * @return the pointer to the KMimeType with the given @p _name, or 
-   *         a pointer to the application/octet-stream KMimeType if 
+   * @return the pointer to the KMimeType with the given @p _name, or
+   *         a pointer to the application/octet-stream KMimeType if
    *         not found
    * @see KServiceType::serviceType
    */
@@ -286,7 +290,7 @@ public:
    *        "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would
    *        have to pass the "tar:/..." part of the URL, since gzip is
    *        a filter protocol and not a filesystem protocol.
-   * @param _mode the mode of the file (used, for example, to identify 
+   * @param _mode the mode of the file (used, for example, to identify
    *              executables)
    * @param _is_local_file true if the file is local
    * @param _fast_mode If set to true no disk access is allowed to
@@ -308,14 +312,14 @@ public:
    * the file will be examined if the URL a local file or
    * "application/octet-stream" is returned otherwise.
    *
-   * Equivalent to 
+   * Equivalent to
    *   <pre>
-   *        KURL u; 
-   *        u.setPath(path); 
+   *        KURL u;
+   *        u.setPath(path);
    *        return findByURL( u, mode, true, fast_mode );
    *   </pre>
    * @param path the path to the file
-   * @param _mode the mode of the file (used, for example, to identify 
+   * @param _mode the mode of the file (used, for example, to identify
    *              executables)
    * @param _fast_mode If set to true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
@@ -327,11 +331,11 @@ public:
   /**
    * Tries to find out the MIME type of a data chunk by looking for
    * certain magic numbers and characteristic strings in it.
-   * 
+   *
    * @param data the data to examine
    * @param accurracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
-   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the 
+   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
    *         type can not be found this way.
    */
   static Ptr findByContent( const QByteArray &data, int *accuracy=0 );
@@ -346,7 +350,7 @@ public:
    * @param fileName the path to the file
    * @param accurracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
-   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the 
+   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
    *         type can not be found this way.
    */
   static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
@@ -356,7 +360,7 @@ public:
    * or that would be human readable after decompression.
    * @since 3.2
    */
-  struct Format{ 
+  struct Format{
      bool text : 1;
      enum { NoCompression=0, GZipCompression } compression : 4;
      int dummy : 27;
@@ -382,6 +386,38 @@ public:
    *         "application/octet-stream"
    */
   static const QString & defaultMimeType();
+
+  /**
+   * Returns the default mimetype.
+   * Always application/octet-stream.
+   * This can be used to check the result of mimeType(name).
+   * @return the "application/octet-stream" mimetype pointer.
+   */
+  static KMimeType::Ptr defaultMimeTypePtr();
+
+  /**
+   * If this mimetype inherits from ("is also") another mimetype,
+   * return the name of the parent.
+   *
+   * For instance a text/x-log is a special kind of text/plain,
+   * so the definition of text/x-log can say "X-KDE-IsAlso=text/plain".
+   * Or an smb-workgroup is a special kind of inode/directory, etc.
+   * This mechanism can also be used to rename mimetypes and preserve compat.
+   *
+   * Note that this notion doesn't map to the servicetype inheritance mechanism,
+   * since an application that handles the specific type doesn't necessarily handle
+   * the base type. The opposite is true though.
+   *
+   * @return the parent mime type, or QString::null if not set
+   */
+  QString parentMimeType() const;
+
+  /**
+   * Do not use name()=="somename" anymore, to check for a given mimetype.
+   * For mimetype inheritance to work, use is("somename") instead.
+   * Warning, do not use inherits(), that's the servicetype inheritance concept!
+   */
+  bool is( const QString& mimeTypeName ) const;
 
 protected:
   void loadInternal( QDataStream& );

@@ -198,7 +198,7 @@ KService::init( KDesktopFile *config )
   entryMap.remove("GenericName");
   QString untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
   entryMap.insert("UntranslatedGenericName", untranslatedGenericName);
-  
+
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
   d->categories = config->readListEntry("Categories", ';');
@@ -340,6 +340,10 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 
   //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
 
+  KMimeType::Ptr mimePtr = KMimeType::mimeType( _servicetype );
+  if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
+      mimePtr = 0;
+
   // For each service type we are associated with, if it doesn't
   // match then we try its parent service types.
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
@@ -348,6 +352,12 @@ bool KService::hasServiceType( const QString& _servicetype ) const
       //kdDebug(7012) << "    has " << (*it) << endl;
       KServiceType::Ptr ptr = KServiceType::serviceType( *it );
       if ( ptr && ptr->inherits( _servicetype ) )
+          return true;
+
+      // The mimetype inheritance ("is also") works the other way.
+      // e.g. if we're looking for a handler for mimePtr==smb-workgroup
+      // then a handler for inode/directory is ok.
+      if ( mimePtr->is( *it ) )
           return true;
   }
   return false;
@@ -562,7 +572,7 @@ bool KService::noDisplay() const {
      if (aValue == "true" || aValue == "on" || aValue == "yes")
         return true;
   }
-  
+
   it = m_mapProps.find( "OnlyShowIn" );
   if ( (it != m_mapProps.end()) && (it.data().isValid()))
   {

@@ -84,6 +84,13 @@ void KMimeType::buildDefaultType()
   }
 }
 
+KMimeType::Ptr KMimeType::defaultMimeTypePtr()
+{
+  if ( !s_pDefaultType ) // we need a default type first
+    buildDefaultType();
+  return s_pDefaultType;
+}
+
 // Check for essential mimetypes
 void KMimeType::checkEssentialMimeTypes()
 {
@@ -240,7 +247,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     }
 
     // No more chances for non local URLs
-    return mimeType( defaultMimeType() );
+    return defaultMimeTypePtr();
   }
 
   // Do some magic for local files
@@ -249,7 +256,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )
-    return mimeType( defaultMimeType() );
+    return defaultMimeTypePtr();
 
   // The mimemagic stuff was successful
   return mimeType( result->mimeType() );
@@ -290,7 +297,7 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   KMimeType::Format result;
   result.compression = Format::NoCompression;
   KMimeType::Ptr mime = findByFileContent(fileName);
-  
+
   result.text = mime->name().startsWith("text/");
   QVariant v = mime->property("X-KDE-text");
   if (v.isValid())
@@ -298,7 +305,7 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
 
   if (mime->name().startsWith("inode/"))
      return result;
-     
+
   QFile f(fileName);
   if (f.open(IO_ReadOnly))
   {
@@ -438,7 +445,7 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _
   }
 
   return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
-  
+
 }
 
 QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
@@ -449,7 +456,7 @@ QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
     QString i( mt->icon( _url, _url.isLocalFile() ));
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType()) {
+    if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()) {
         i = favIconForURL( _url ); // maybe there is a favicon?
 
         if ( i.isEmpty() )
@@ -483,6 +490,27 @@ QString KMimeType::favIconForURL( const KURL& url )
     return QString::null;
 }
 
+QString KMimeType::parentMimeType() const
+{
+  QVariant v = property("X-KDE-IsAlso");
+  return v.toString();
+}
+
+bool KMimeType::is( const QString& mimeTypeName ) const
+{
+  if ( name() == mimeTypeName )
+      return true;
+  QString st = parentMimeType();
+  while ( !st.isEmpty() )
+  {
+      KMimeType::Ptr ptr = KMimeType::mimeType( st );
+      if (!ptr) return false; //error
+      if ( ptr->name() == mimeTypeName )
+          return true;
+      st = ptr->parentMimeType();
+  }
+  return false;
+}
 
 
 /*******************************************************

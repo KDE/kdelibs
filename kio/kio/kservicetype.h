@@ -129,7 +129,7 @@ public:
   QString parentServiceType() const;
 
   /**
-   * Checks whether this service type is or inhertis from @p servTypeName.
+   * Checks whether this service type is or inherits from @p servTypeName.
    * @return true if this servicetype is or inherits from @p servTypeName
    * @since 3.1
    */
