@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.42  1998/11/06 12:54:54  radej
+// sven: radioGroup is in. handle changed again (broken in vertical mode)
+//
 // Revision 1.41  1998/10/09 12:42:21  radej
 // sven: New: (un) highlight sugnals, Autorepeat buttons, button down when
 //       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
@@ -210,14 +213,14 @@ class KToolBarButton : public QButton
  * Combos, Frames and Lineds, and Widgets can be  autosized to full width.
  * Any Item can be right aligned, and buttons can be toggle buttons. Item
  * height,  type of buttons (icon or icon+text), and option for highlighting
- * is adjustable on constructor invocation by reading global config file.
+ * is adjustable on constructor invocation by reading config file.
  * Toolbar will reread config-file when it recieves signal
  * Kapplication:appearanceChanged.
  * Toolbar can float, be dragged from and docked back to parent window.
  * It autoresizes itself. This may lead to
  * some flickering, but there is no way to solve it (as far as I
  * know). <BR>
- * If you want to bind popups to buttons, see setButton(). <BR>
+ * You can bind popups and delayed popups to buttons. <BR>
  * You normaly use toolbar from subclassed KTopLevelWidget. When
  * you create toolbar object, insert items that you want to be in it.
  * Items can be inserted or removed ( removeItem() ) later, when toolbar
@@ -227,7 +230,7 @@ class KToolBarButton : public QButton
  * Then simply do addToolbar (toolbar),
  * and you're on. See how it's done in kwindowtest.
  * @short KDE Toolbar widget
- * @author Stephan Kulow <coolo@kde.org> Maintained by Sven Radej <sven@lisa.exp.univie.ac.at>
+ * @author Stephan Kulow <coolo@kde.org> Maintained by Sven Radej <radej@kde.org>
  */
  class KToolBar : public QFrame
   {
@@ -245,19 +248,23 @@ public:
    * Constructor.
    * Toolbar will read global-config file for item Size higlight
    * option and button type. However, you can pass desired height.
-   * This is not recomended.
+   * If you specify height here, config value has no effect.
+   * Exception is if you set Icontext mode to 3 (icons under text) whic sets
+   * size to minimum 40 pixels. For setting IconText mode, see
+   * @ref #setIconText .
+   * Setting size in constructor is not recomended.
    */
   KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1);
 
   /**
    * Destructor. If toolbar is floating it will cleanup itself.
-   * You MUST delete toolbar before exiting.
    */
   virtual ~KToolBar();
 
   /**
    * Inserts KButton with pixmap. You should connect to one or more signals in
-   * KToolBar: @ref #clicked , @ref #pressed , @ref #released , and
+   * KToolBar: @ref #clicked , @ref #pressed , @ref #released ,
+   * @ref highlighted  and
    * if toolbar is toggle button (@ref #setToggle ) @ref #toggled . Those
    * signals have id of a button that caused the signal.
    * If you want to bound an popup to button, see  @ref #setButton
@@ -272,7 +279,6 @@ public:
    * signals pressed, clicked and released, and
    * if toolbar is toggle button ( @ref #setToggle ) @ref #toggled .
    * You can add more signals with @ref #addConnection .
-   * If you want to bound an popup to button  @ref #setButton
    * @return Returns item index
    */
   int insertButton(const QPixmap& pixmap, int ID, const char *signal,
@@ -297,7 +303,7 @@ public:
    * has, plus signals @ref KLined::completion and @ref KLined::rotation
    * KLined can be set to autoresize itself to full free width
    * in toolbar, that is to last right aligned item. For that,
-   * toolbar must be set to full width.
+   * toolbar must be set to full width (which it is by default).
    * @see #setFullWidth
    * @see #setItemAutoSized
    * @see KLined
@@ -397,7 +403,7 @@ public:
    *
    * Don't add delayed popups to buttons which have normal popups.
    *
-   * You may add popups wich are derived from popupMenu.
+   * You may add popups wich are derived from QPopupMenu.
    */
   void setDelayedPopup (int id , QPopupMenu *_popup);
 
@@ -405,7 +411,7 @@ public:
    * Makes a button autorepeat button. Toggle, buttons with menu or
    * delayed menu cannot be autorepeat. More, you can and will receive
    * only signals clicked, and not pressed or released.
-   * When use presses this buton, you will receive signal clicked,
+   * When user presses this buton, you will receive signal clicked,
    * and if button is still pressed after some time, more clicks
    * in some interval. Since this uses @ref QButton::setAutoRepeat ,
    * I don't know how much is 'some'.
@@ -431,24 +437,6 @@ public:
    * If button is toggle (@ref #setToggle must be called first)
    * this will set him to state flag. This will also emit signal
    * #ref toggled . <BR>
-   * If button is not toggle, calling with flag = false will
-   * unhighlight this button.
-   * You will want to do this if you want buttons to have popups.
-   * This is what you do: <BR>
-   * - Connect to signal @ref #pressed <BR>
-   * - In slot, before you activate popup, call setButton(id, false); <BR>
-   * - activate your popup <BR>
-   * Example:
-   * <pre>
-   * toolbar->insertButton(pixmap, 1, SIGNAL(pressed()),
-   *                class, SLOT(slotPopup()), true, "Press this to popup");
-   * ...
-   * class::slotPopup()
-   * {
-   *  toolbar->setButton(1, false)  // this turns the button off
-   *  myPopupMenu->show();
-   * }
-   * </pre>
    * @see #setToggle
    */
   void setButton (int id, bool flag);
@@ -468,7 +456,7 @@ public:
 
   /**
    * Returns Lined text.
-   * If you want to store this text, you have to deep-copy it somwhere
+   * If you want to store this text, you have to deep-copy it somwhere.
    */
   const char *getLinedText (int id);
 
@@ -518,7 +506,8 @@ public:
    * </pre>
    * That way you can get access to other public methods
    * that @ref KCombo provides. @ref KCombo is KDE enhancement
-   * of @ref QComboBox .
+   * of @ref QComboBox . KCombo inherits QComboBox, so you can
+   * use pointer to QComboBox too.
    */
   KCombo * getCombo(int id);
   
@@ -647,6 +636,7 @@ public:
    * If you reimplement @ref KTopLevelWidget#resizeEvent or
    * KTopLevelWidget#updateRects,
    * be sure to call this function with maximal height toolbar can have.
+   * In 0xFE cases out of 0xFF you don't need to use this function.
    * @see #updateRects
    */
   void setMaxHeight (int h);  // Set max height for vertical toolbars
@@ -676,7 +666,8 @@ public:
 
   /**
    * Sets the kind of painting for buttons between : 0 (only icons),
-   * 1 (icon and text) and 2 (only text).
+   * 1 (icon and text, text is left from icons), 2 (only text),
+   * and 3 (icons and text, text is under icons).
    */
 
   void setIconText(int it);
@@ -708,6 +699,7 @@ public:
    * area height). Then loop through vertical toolbars,
    * @ref #setMaxHeight (calculated_max_height) on them,
    * call their updateRects(true), and _then_ move them to their locations.
+   * In 0xFE cases out of 0xFF you don't need to use this function.
    * @see KtopLevelWidget#updateRects
    */
   void updateRects(bool resize = false);
@@ -718,8 +710,6 @@ public:
      */
   QSize sizeHint();
     
-  // OLD  INTERFACE
-
 signals:
     /**
      * Emits when button id is clicked.
@@ -727,8 +717,7 @@ signals:
     void clicked(int id);
 
     /**
-     * Emits when button id is pressed. See @ref setButton for binding
-     * popups to buttons.
+     * Emits when button id is pressed.
      */
     void pressed(int);
 
@@ -750,7 +739,7 @@ signals:
     /**
      * This signal is emmited when item id gets highlighted/unhighlighted
      * (i.e when mouse enters/exits). Note that this signal is emited from
-     * all buttons (normal and toggle) even when there is no visible
+     * all buttons (normal, disabled and toggle) even when there is no visible
      * change in buttons (meaning, buttons do not raise when mouse enters).
      * Parameter isHighlighted is true when mouse enters and false when
      * mouse exits.
@@ -853,12 +842,14 @@ private:
  *************************************************************************/
  /**
   * KRadioGroup is class for group of radio butons in toolbar.
-  * Take toggle buttons which you already inserted into toolbar, and add
-  * them here. All buttons will emit signals toggled(bool) (or you can
-  * use sitgnal toggled (int id) from toolbar). When one button is set
-  * down, all others are unset. All buttons emit signals. Sory for bad
-  * docs, but time is like fuse, short and burning fast...
-  * @author radej@kde.org
+  * Take toggle buttons which you already inserted into toolbar,
+  * create KRadioGroup instance and add them here.
+  * All buttons will emit signals toggled (bool) (or you can
+  * use sitgnal @ref #toggled (int id) from toolbar). When one button is set
+  * down, all others are unset. All buttons emit signals - those who
+  * "go down" and those who "go up".
+  *
+  * @author Sven Radej <radej@kde.org>
   * @short Class for group of radio butons in toolbar.
   */
 class KRadioGroup : public QObject
@@ -877,12 +868,12 @@ public:
 
   /**
    * Adds button to group. Button cannot be unset by mouse clicks (you
-   * must press some other button to pop this one up)
+   * must press some other button tounset this one)
    */
   void addButton (int id);
 
   /**
-   * Removes button from group, making it again normal toggle button (i.e.
+   * Removes button from group, making it again toggle button (i.e.
    * You can unset it with mouse).
    */
   void removeButton (int id);
