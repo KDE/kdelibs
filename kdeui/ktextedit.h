@@ -73,14 +73,20 @@ public:
     /**
      * Turns spell checking for this text edit on or off.
      */
-    void setCheckSpelling( bool check );
+    void setCheckSpellingEnabled( bool check );
 
     /**
      * Returns true if spell checking is enabled for this text edit.
      */
-    bool checkSpelling() const;
+    bool checkSpellingEnabled() const;
 
     void highLightWord( unsigned int length, unsigned int pos );
+
+public slots:
+    /**
+     * Start the spell checker on this text edit.
+     */
+    void checkSpelling();
 
 protected:
     /**
@@ -116,7 +122,6 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private slots:
-    void slotCheckSpelling();
     void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );
     void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);

@@ -151,11 +151,11 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 {
     QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
 
-    if ( checkSpelling() ) {
+    if ( checkSpellingEnabled() ) {
 
 	menu->insertSeparator();
 	int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), 
-				   this, SLOT( slotCheckSpelling() ) );
+				   this, SLOT( checkSpelling() ) );
 
 	if( text().isEmpty() )
 	    menu->setItemEnabled( id, false );
@@ -180,7 +180,7 @@ void KTextEdit::setPalette( const QPalette& palette )
     d->customPalette = ownPalette();
 }
 
-void KTextEdit::setCheckSpelling( bool check )
+void KTextEdit::setCheckSpellingEnabled( bool check )
 {
     if ( ( check && d->highlighter ) || ( !check && !d->highlighter ) )
 	return;
@@ -197,7 +197,7 @@ void KTextEdit::setCheckSpelling( bool check )
     }
 }
 
-bool KTextEdit::checkSpelling() const
+bool KTextEdit::checkSpellingEnabled() const
 {
     return bool( d->highlighter );
 }
@@ -237,7 +237,7 @@ void KTextEdit::setReadOnly(bool readOnly)
 void KTextEdit::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void KTextEdit::slotCheckSpelling()
+void KTextEdit::checkSpelling()
 {
     delete d->spell;
     d->spell = new KSpell( this, i18n( "Spell Checking" ), 
