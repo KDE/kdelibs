@@ -650,6 +650,13 @@ signals:
    */
   void requestFocus(KParts::ReadOnlyPart *part);
 
+  /**
+   * Tell the host (browser) about security state of current page
+   * enum PageSecurity { NotCrypted, Encrypted, Mixed };
+   * @since 3.4
+   */
+  void setPageSecurity( int );
+
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );

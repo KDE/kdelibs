@@ -1444,6 +1444,7 @@ void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
 
 void KHTMLPart::setPageSecurity( PageSecurity sec )
 {
+  emit d->m_extension->setPageSecurity( sec );
   if ( sec != NotCrypted && !d->m_statusBarIconLabel && !parentPart() ) {
     d->m_statusBarIconLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
     d->m_statusBarIconLabel->setFixedHeight( instance()->iconLoader()->currentSize(KIcon::Small) );
