@@ -111,6 +111,9 @@ int PTY::getpt()
 	ptyfd = master_fd;
 	return ptyfd;
     }
+    ptyfd = -1;
+    kdDebug(900) << k_lineinfo << "Opening pty failed.\n";
+    return -1;
 
 #else
 
