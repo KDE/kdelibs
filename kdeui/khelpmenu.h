@@ -39,7 +39,9 @@ class KHelpMenuPrivate;
 
 
 /**
- * This class provides the standard KDE help menu with the default "about"
+ * @short Standard %KDE help menu with dialog boxes.
+ *
+ * This class provides the standard %KDE help menu with the default "about"
  * dialog boxes and help entry.
  *
  * This class is used in KMainWindow so
@@ -123,9 +125,7 @@ class KHelpMenuPrivate;
  * }
  * \endcode
  *
- * @short Standard KDE help menu with dialog boxes.
  * @author Espen Sand (espen@kde.org)
- * @version $Id$
  */
 
 class KDEUI_EXPORT KHelpMenu : public QObject
