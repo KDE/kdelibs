@@ -410,8 +410,7 @@ bool Ftp::ftpLogin( const QString & user )
           }
           else
           {
-            if( !user.isEmpty() )
-              m_user = user;
+            m_user = user;
           }
         }
       }
