@@ -224,7 +224,7 @@ void KToolBar::init()
 
   // request notification of changes in icon style
   kapp->addKipcEventMask(KIPC::IconChanged);
-  connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));                               
+  connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
 
   // finally, read in our configurable settings
   slotReadConfig();
@@ -235,7 +235,7 @@ void KToolBar::slotIconChanged(int group)
   if ((group != KIcon::Toolbar) && (group != KIcon::MainToolbar))
     return;
   if ((group == KIcon::MainToolbar) != !strcmp(name(), "mainToolBar"))
-    return; 
+    return;
 
   d->m_maxItemWidth  = 0;
   d->m_maxItemHeight = 0;
@@ -284,7 +284,7 @@ void KToolBar::slotReadConfig()
   else
     icontext = IconOnly;
 
-  // Use the default icon size for toolbar icons. This is not specified in 
+  // Use the default icon size for toolbar icons. This is not specified in
   // the [Toolbar style] section but in the [Icons] section.
   iconsize = 0;
 
@@ -303,7 +303,7 @@ void KToolBar::slotReadConfig()
     // now we always read in the IconText property
     icontext = (IconText)config->readNumEntry(attrIconText, icontext);
 
-    // now get the size: FIXME: Sizes are not yet saved. 
+    // now get the size: FIXME: Sizes are not yet saved.
     // iconsize = config->readNumEntry(attrSize, iconsize);
 
     // finally, get the position
@@ -1767,7 +1767,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     }
     size += fontMetrics().maxWidth() * 3;
   }
-  
+
   item->resize(size, fontMetrics().lineSpacing() + 5);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
@@ -1826,6 +1826,7 @@ void KToolBar::removeItem (int id)
       if(b->isAuto())
         haveAutoSized=false;
       d->m_items->remove(it);
+      delete b;
       break;
     }
   }
@@ -2891,11 +2892,11 @@ void KToolBar::setText( const QString & txt )
   d->m_sText = txt;
   // TODO use it in the tooltip for the handle
 }
- 
+
 const QString & KToolBar::text()
 {
   return d->m_sText;
 }
- 
+
 
 #include "ktoolbar.moc"
