@@ -81,8 +81,8 @@ void Connection::close()
     notifier = 0;
     delete socket;
     socket = 0;
-    if (f_out)
-       fclose(f_out);
+//    if (f_out) // causes double close, as KSocket already closed it for us
+//       fclose(f_out);
     f_out = 0;
     fd_in = -1;
     tasks.clear();
