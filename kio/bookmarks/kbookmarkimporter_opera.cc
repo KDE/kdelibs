@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2002-2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -103,6 +103,42 @@ QString KOperaBookmarkImporterImpl::findDefaultLocation(bool) const
    return KFileDialog::getOpenFileName( 
                QDir::homeDirPath() + "/.opera", 
                i18n("*.adr|Opera Bookmark Files (*.adr)") );
+}
+
+/////////////////////////////////////////////////
+
+class OperaExporter : private KBookmarkGroupTraverser {
+public:
+    OperaExporter();
+    QString generate( const KBookmarkGroup &grp ) { traverse(grp); return m_out; };
+private:
+    virtual void visit( const KBookmark & );
+    virtual void visitEnter( const KBookmarkGroup & );
+    virtual void visitLeave( const KBookmarkGroup & );
+private:
+    QString m_out;
+};
+
+OperaExporter::OperaExporter() {
+    m_out = "";
+}
+
+void OperaExporter::visit( const KBookmark &bk ) {
+    kdDebug() << "visit(" << bk.text() << ")" << endl;
+}
+
+void OperaExporter::visitEnter( const KBookmarkGroup &grp ) {
+    kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+}
+
+void OperaExporter::visitLeave( const KBookmarkGroup & ) {
+    kdDebug() << "visitLeave()" << endl;
+}
+
+void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
+    OperaExporter exporter;
+    QString content = exporter.generate( parent );
+    // write out file
 }
 
 #include "kbookmarkimporter_opera.moc"

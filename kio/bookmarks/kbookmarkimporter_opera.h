@@ -65,4 +65,14 @@ public:
     virtual QString findDefaultLocation(bool forSaving = false) const;
 };
 
+class KOperaBookmarkExporterImpl : public KBookmarkExporterBase
+{
+public:
+    KOperaBookmarkExporterImpl(KBookmarkManager* mgr, const QString & filename)
+      : KBookmarkExporterBase(mgr, filename) 
+    { ; }
+    virtual ~KOperaBookmarkExporterImpl() {}
+    virtual void write(KBookmarkGroup);
+};
+
 #endif
