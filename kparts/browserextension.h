@@ -21,6 +21,8 @@
 #ifndef __kbrowser_h__
 #define __kbrowser_h__
 
+#include <sys/types.h>
+
 #include <qpoint.h>
 #include <qlist.h>
 #include <qdatastream.h>
@@ -184,6 +186,8 @@ signals:
    * at the point @p global for the files @p items.
    */
   void popupMenu( const QPoint &global, const KFileItemList &items );
+
+  void popupMenu( const QPoint &global, const KURL &url, const QString &mimeType, mode_t mode = -1 );
 
 private slots:
   void slotCompleted();
