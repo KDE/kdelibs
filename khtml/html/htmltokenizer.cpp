@@ -1336,7 +1336,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             tagStartLineno = lineno+src.lineCount();
             ++src;
             startTag = true;
-            discard = NoneDiscard;
+            if (parser->noSpaces())
+                discard = NoneDiscard;
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
         {
