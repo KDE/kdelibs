@@ -306,7 +306,7 @@ public:
     /**
      * @returns the completion-box, that is used in completion mode
      * @ref KGlobalSettings::CompletionPopup.
-     * This method will create a completion-box by calling 
+     * This method will create a completion-box by calling
      * @ref makeCompletionBox, if none is there, yet.
      */
     KCompletionBox * completionBox();
@@ -501,6 +501,7 @@ public:
     /**
      * Constructs a "read-write" combobox. A read-only history combobox
      * doesn't make much sense, so it is only available as read-write.
+     * Completion will be used automatically for the items in the combo.
      *
      * The insertion-policy is set to NoInsertion, you have to add the items
      * yourself via the slot @ref addToHistory. If you want every item added,
@@ -517,6 +518,16 @@ public:
      * @p name the name of this widget.
      */
     KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
+
+    // ### merge these two constructors
+    /**
+     * Same as the previous constructor, but additionally has the option
+     * to specify whether you want to let KHistoryCombo handle completion
+     * or not. If set to @p true, KHistoryCombo will sync the completion to the
+     * contents of the combobox.
+     */
+    KHistoryCombo( bool useCompletion,
+		   QWidget *parent = 0L, const char *name = 0L );
 
     /**
      * Destructs the combo, the completion-object and the pixmap-provider
@@ -657,6 +668,11 @@ protected:
      */
     void insertItems( const QStringList& items );
 
+    /**
+     * @returns if we can modify the completion object or not.
+     */
+    bool useCompletion() { return completionObject(false, true) != 0L; }
+
 private slots:
     /**
      * resets the iterate index to -1
@@ -664,6 +680,8 @@ private slots:
     void slotReset();
 
 private:
+    void init( bool useCompletion );
+
     /**
      * the current position (index) in the combobox, used for Up and Down
      */

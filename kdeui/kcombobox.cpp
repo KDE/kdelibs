@@ -588,7 +588,22 @@ KCompletionBox * KComboBox::completionBox()
 KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
     : KComboBox( true, parent, name )
 {
-    completionObject()->setOrder( KCompletion::Weighted );
+    init( true ); // using completion
+}
+
+// we are always read-write
+KHistoryCombo::KHistoryCombo( bool useCompletion, 
+			      QWidget *parent, const char *name )
+    : KComboBox( true, parent, name )
+{
+    init( useCompletion );
+}
+
+void KHistoryCombo::init( bool useCompletion )
+{
+    if ( useCompletion )
+	completionObject()->setOrder( KCompletion::Weighted );
+
     setInsertionPolicy( NoInsertion );
     myIterateIndex = -1;
     myRotated = false;
@@ -614,7 +629,7 @@ void KHistoryCombo::setHistoryItems( QStringList items,
 
     insertItems( items );
 
-    if ( setCompletionList ) {
+    if ( setCompletionList && useCompletion() ) {
         // we don't have any weighting information here ;(
         KCompletion *comp = completionObject();
         comp->setOrder( KCompletion::Insertion );
@@ -637,7 +652,8 @@ QStringList KHistoryCombo::historyItems() const
 void KHistoryCombo::clearHistory()
 {
     KComboBox::clear();
-    completionObject()->clear();
+    if ( useCompletion() )
+	completionObject()->clear();
 }
 
 void KHistoryCombo::addToHistory( const QString& item )
@@ -647,6 +663,8 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     int last;
     QString rmItem;
+    
+    bool useComp = useCompletion();
     while ( count() >= maxCount() && count() > 0 ) {
         // remove the last item, as long as we are longer than maxCount()
         // remove the removed item from the completionObject if it isn't
@@ -654,7 +672,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         last = count() - 1;
         rmItem = text( last );
         removeItem( last );
-        if ( !contains( rmItem ) )
+        if ( useComp && !contains( rmItem ) )
             completionObject()->removeItem( rmItem );
     }
 
@@ -671,7 +689,9 @@ void KHistoryCombo::addToHistory( const QString& item )
         insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
     else
         insertItem( item, 0 );
-    completionObject()->addItem( item );
+    
+    if ( useComp )
+	completionObject()->addItem( item );
 }
 
 bool KHistoryCombo::removeFromHistory( const QString& item )
@@ -688,7 +708,7 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
         }
     }
 
-    if ( removed )
+    if ( removed && useCompletion() )
         completionObject()->removeItem( item );
 
     setEditText( temp );
