@@ -626,7 +626,7 @@ signals:
 
   void selectionChanged();
 
-  void sigNodeSelected(const DOM::Node &);
+  void sigNodeActivated(const DOM::Node &);
 
 
 protected:
@@ -686,6 +686,10 @@ protected:
     * @internal
     */
   void setFontBaseInternal( int base, bool absolute );
+
+public slots:
+
+  void slotActivateNode(const DOM::Node &);
 
 protected slots:
   /**

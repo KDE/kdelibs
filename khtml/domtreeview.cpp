@@ -27,7 +27,7 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
     addColumn("Value");
     setSorting(-1);
     part = currentpart;
-    connect(((const QObject *)part), SIGNAL(sigNodeSelected(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
+    connect(((const QObject *)part), SIGNAL(sigNodeActivated(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
 }
 
 DOMTreeView::~DOMTreeView()

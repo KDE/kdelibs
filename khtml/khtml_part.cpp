@@ -198,7 +198,8 @@ public:
         }
     }
 
-    focusNodeNumber = 0;
+    m_focusNodeNumber = 0;
+    m_focusNodeRestored = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -344,7 +345,8 @@ public:
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
 
-  int focusNodeNumber;
+  int m_focusNodeNumber;
+  bool m_focusNodeRestored;
 };
 
 namespace khtml {
@@ -1219,6 +1221,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
+  d->m_focusNodeRestored = false;
 
   KHTMLFactory::vLinks()->insert( url.url() );
 
@@ -1411,8 +1414,31 @@ void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::Cac
 
 void KHTMLPart::checkCompleted()
 {
-  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing
-  //          << " complete: " << d->m_bComplete << endl;
+    kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
+    kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+
+  // restore the cursor position
+  if (!d->m_bParsing && !d->m_focusNodeRestored)
+  {
+      int focusNodeNumber;
+      if ((focusNodeNumber = d->m_focusNodeNumber))
+      {
+	  DOM::ElementImpl *focusNode = 0;
+	  while(focusNodeNumber--)
+	  {
+	      if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
+		  break;
+	  }
+	  if (focusNode)
+	  {
+	      QRect focusRect = focusNode->getRect();
+	      d->m_view->ensureVisible(focusRect.x(), focusRect.y());
+	      d->m_doc->setFocusNode(focusNode);
+	  }
+      }
+      d->m_focusNodeRestored = true;
+  }
+
   int requests = 0;
 
   ConstFrameIt it = d->m_frames.begin();
@@ -1476,24 +1502,6 @@ void KHTMLPart::checkCompleted()
 
   if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-
-  int focusNodeNumber;
-  if ((focusNodeNumber = d->focusNodeNumber))
-  {
-      DOM::ElementImpl *focusNode = 0;
-      while(focusNodeNumber--)
-      {
-	  if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
-	      break;
-	  kdDebug(6000)<<"restoring: "<<focusNodeNumber<<".\n";
-      }
-      if (focusNode)
-      {
-	  QRect focusRect = focusNode->getRect();
-	  d->m_view->ensureVisible(focusRect.x(), focusRect.y());
-	  d->m_doc->setFocusNode(focusNode);
-      }
-  }
 
   if ( !d->m_redirectURL.isEmpty() )
     emit completed( true );
@@ -2800,20 +2808,26 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 void KHTMLPart::saveState( QDataStream &stream )
 {
   kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
-  kdDebug( 6050 ) << " old focusNodeNumber="<< d->focusNodeNumber << endl;
-  kdDebug( 6050 ) << " view at "<<d->m_view << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
   // save link cursor position
-  int focusNodeNumber = 0;
-  if (d->m_doc)
+  int focusNodeNumber;
+  if (!d->m_focusNodeRestored)
   {
-      DOM::ElementImpl *focusNode = d->m_doc->focusNode();
-      while( focusNode )
+      focusNodeNumber = d->m_focusNodeNumber;
+  }
+  else
+  {
+      focusNodeNumber = 0;
+      if (d->m_doc)
       {
-	  focusNodeNumber++;
-	  focusNode = d->m_doc->findNextLink(focusNode, false);
+	  DOM::ElementImpl *focusNode = d->m_doc->focusNode();
+	  while( focusNode )
+	  {
+	      focusNodeNumber++;
+	      focusNode = d->m_doc->findNextLink(focusNode, false);
+	  }
       }
   }
   stream << focusNodeNumber;
@@ -2895,8 +2909,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   // restore link cursor position
   // nth node is active. value is set in checkCompleted()
-  stream >> d->focusNodeNumber;
-  kdDebug()<<"new focus Node number is:"<<d->focusNodeNumber<<endl;
+  stream >> d->m_focusNodeNumber;
+  d->m_focusNodeRestored = false;
+  kdDebug()<<"new focus Node number is:"<<d->m_focusNodeNumber<<endl;
 
   stream >> d->m_cacheId;
 
@@ -3822,6 +3837,20 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 
     // (note: childObject returns 0 if the argument is 0)
     d->m_extension->setExtensionProxy( KParts::BrowserExtension::childObject( d->m_activeFrame ) );
+}
+
+void KHTMLPart::slotActivateNode(const DOM::Node &node)
+{
+    DOM::NodeImpl *handle = node.handle();
+    if (!d->m_doc || !handle || !handle->isElementNode())
+	return;
+    DOM::ElementImpl *e = static_cast<DOM::ElementImpl *>(handle);
+    d->m_doc->setFocusNode(e);
+    if (!d->m_view)
+	return;
+    QRect rect  = handle->getRect();
+    d->m_view->ensureVisible(rect.right(), rect.bottom());
+    d->m_view->ensureVisible(rect.left(), rect.top());
 }
 
 #include "khtml_part.moc"

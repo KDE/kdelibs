@@ -78,7 +78,6 @@ public:
         linkPressed = false;
         useSlowRepaints = false;
         originalNode = 0;
-        currentNode = 0;
 	borderTouched = false;
         vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
@@ -90,8 +89,6 @@ public:
     QPixmap  *paintBuffer;
     NodeImpl *underMouse;
 
-    // the currently selected node
-    ElementImpl *currentNode;
     // the node that was selected when enter was pressed
     ElementImpl *originalNode;
 
@@ -330,7 +327,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 
-    emit m_part->sigNodeSelected(mev.innerNode);
+    emit m_part->sigNodeActivated(mev.innerNode);
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -517,7 +514,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 					  LeftButton, 0,
 					  a->targetRef().string() );
 	    }
-	    m_part->xmlDocImpl()->setFocusNode(0);
+	    e->setPressed(false);
 	}
         return;
       break;
@@ -675,7 +672,7 @@ bool KHTMLView::gotoLink(bool forward)
 	kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
 
 	m_part->xmlDocImpl()->setFocusNode(nextTarget);
-	emit m_part->sigNodeSelected(Node(nextTarget));
+	emit m_part->sigNodeActivated(Node(nextTarget));
     }
     else kdDebug(6000)<<"did not reach the link."<<endl;
     return true;
