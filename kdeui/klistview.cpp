@@ -889,18 +889,15 @@ void KListView::contentsDropEvent(QDropEvent* e)
     e->acceptAction();
     QListViewItem *afterme;
     QListViewItem *parent;
-    QListViewItem *onme;
 
     findDrop(e->pos(), parent, afterme);
-    QPoint vp = contentsToViewport( e->pos() );
-    onme = isExecuteArea( vp ) ? itemAt( vp ) : 0L;
 
     if (e->source() == viewport() && itemsMovable())
         movableDropEvent(parent, afterme);
     else
     {
-        emit dropped(e, onme);
-        emit dropped(this, e, onme);
+        emit dropped(e, afterme);
+        emit dropped(this, e, afterme);
         emit dropped(e, parent, afterme);
         emit dropped(this, e, parent, afterme);
     }
@@ -988,7 +985,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     }
     if (dropHighlighter())
     {
-      QRect tmpRect = drawItemHighlighter(0, d->dragOverItem);
+      QRect tmpRect = drawItemHighlighter(0, d->afterItemDrop);
       if (tmpRect != d->mOldDropHighlighter)
       {
         cleanItemHighlighter();
