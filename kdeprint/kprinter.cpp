@@ -365,7 +365,7 @@ void KPrinterFactory::createLister()
 			joblister_ = new KCupsJobLister();
 #else
 			QMessageBox::critical(kapp->mainWidget(),i18n("Print configuration error"),i18n("<p>You system is configured to use the CUPS print system. However, the KDE environment is not compiled with CUPS support enabled. You should recompile the KDE print support or contact your system administrator. The current application will now try to use the old LPD print system.</p>"),QMessageBox::Ok|QMessageBox::Default,0);
-			joblister_ = new KJobPrinter();
+			joblister_ = new KJobLister();
 #endif
 			break;
 		case PDQ:
