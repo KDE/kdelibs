@@ -441,7 +441,7 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
                           bool check_against_std_keys)
     : QWidget( parent )
 {
-	init( aKeyMap, 0, check_against_std_keys, false, true );
+	init( aKeyMap, 0, check_against_std_keys, true, false );
 }
 
 void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
