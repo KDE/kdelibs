@@ -63,7 +63,7 @@ KDirLister::~KDirLister()
 
 void KDirLister::slotFileDirty( const QString& _file )
 {
-  kdDebug(7003) << "KDirLister::slotFileDirty( " << _file << " )" << endl;
+  //kdDebug(7003) << "KDirLister::slotFileDirty( " << _file << " )" << endl;
   KFileItem * item = find( _file );
   if ( item ) {
     // We need to refresh the item, because i.e. the permissions can have changed.
@@ -77,7 +77,7 @@ void KDirLister::slotFileDirty( const QString& _file )
 void KDirLister::slotDirectoryDirty( const QString& _dir )
 {
   // _dir does not contain a trailing slash
-  kdDebug(7003) << "KDirLister::slotDirectoryDirty( " << _dir << " )" << endl;
+  //kdDebug(7003) << "KDirLister::slotDirectoryDirty( " << _dir << " )" << endl;
   KURL url;
   url.setPath( _dir );
   slotURLDirty( url );
@@ -382,12 +382,7 @@ void KDirLister::deleteUnmarkedItems()
 
 void KDirLister::slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& list )
 {
-  // list is a QList, m_buffer is a QValueList, keeps a copy
-  KIO::UDSEntryListConstIterator it = list.begin();
-  KIO::UDSEntryListConstIterator end = list.end();
-  for (; it != end; ++it) {
-      m_buffer.append( *it );
-  }
+  m_buffer += list;
 }
 
 void KDirLister::setShowingDotFiles( bool _showDotFiles )
@@ -507,7 +502,7 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
     {
       if ( (*kit)->url().cmp( (*it), true /* ignore trailing slash */ ) )
       {
-        kdDebug(7003) << "FilesRemoved : unmarking " << (*kit)->url().url() << endl;
+        //kdDebug(7003) << "FilesRemoved : unmarking " << (*kit)->url().url() << endl;
         (*kit)->unmark();
         break;
       }
