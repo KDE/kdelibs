@@ -5,7 +5,10 @@ $(all_includes)
 LDFLAGS	= $(all_libraries)  -version-info 1:0:0
 libkparts_la_LIBADD  = $(LIB_KIO)
 
-SUBDIRS = . tests
+SUBDIRS = .
+
+check-local:
+	(cd tests && $(MAKE) check )
 
 ####### Files
 
