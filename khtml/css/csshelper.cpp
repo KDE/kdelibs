@@ -43,90 +43,81 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
     case CSSPrimitiveValue::CSS_EMS:
     case CSSPrimitiveValue::CSS_EXS:
     {
-	if(type == CSSPrimitiveValue::CSS_EMS)
-	{
+        if(type == CSSPrimitiveValue::CSS_EMS)
+        {
 #if 0
-	    QFontMetrics fm(style->font());
-	    factor = fm.height();
+            QFontMetrics fm(style->font());
+            factor = fm.height();
 #else
-	    QFontInfo fi(style->font());
-	    factor = fi.pointSize();
+            QFontInfo fi(style->font());
+            factor = fi.pointSize();
 #endif
-	    
-	    //kdDebug( 6080 ) << "EM = " << factor << endl;
-	}
-	else
-	{
-	    QFontMetrics fm(style->font());
-	    QRect b = fm.boundingRect('x');
-	    factor = b.height();
-	}
-	break;
+
+            //kdDebug( 6080 ) << "EM = " << factor << endl;
+        }
+        else
+        {
+            QFontMetrics fm(style->font());
+            QRect b = fm.boundingRect('x');
+            factor = b.height();
+        }
+        break;
     }
     case CSSPrimitiveValue::CSS_PX:
-	break;
+        break;
     case CSSPrimitiveValue::CSS_CM:
-	if(m == MetricScreen)
-	    factor = 72./2.54; //72dpi/(2.54 cm/in)
-	else
-	    factor = 300./2.54; //300dpi/(2.54 cm/in)
-	break;
+        if(m == MetricScreen)
+            factor = 72./2.54; //72dpi/(2.54 cm/in)
+        else
+            factor = 300./2.54; //300dpi/(2.54 cm/in)
+        break;
     case CSSPrimitiveValue::CSS_MM:
-	if(m == MetricScreen)
-	    factor = 72./25.4;
-	else
-	    factor = 300./25.4;
-	break;
+        if(m == MetricScreen)
+            factor = 72./25.4;
+        else
+            factor = 300./25.4;
+        break;
     case CSSPrimitiveValue::CSS_IN:
-	if(m == MetricScreen)
-	    factor = 72.;
-	else
-	    factor = 300.;
-	break;
+        if(m == MetricScreen)
+            factor = 72.;
+        else
+            factor = 300.;
+        break;
     case CSSPrimitiveValue::CSS_PT:
-	if(m == MetricScreen)
-	    factor = 1.;
-	else
-	    factor = 300./72.;
-	break;
+        if(m == MetricScreen)
+            factor = 1.;
+        else
+            factor = 300./72.;
+        break;
     case CSSPrimitiveValue::CSS_PC:
-	// 1 pc == 12 pt
-	if(m == MetricScreen)
-	    factor = 12.;
-	else
-	    factor = 300./72.*12.;
-	break;
+        // 1 pc == 12 pt
+        if(m == MetricScreen)
+            factor = 12.;
+        else
+            factor = 300./72.*12.;
+        break;
     default:
-	return -1;
+        return -1;
     }
     return (int)(val->getFloatValue(type)*factor);
 }
 
 DOMString khtml::parseURL(const DOMString &url)
 {
-    QString u = url.string();
-    if (u[0] == ' ')	// stripWhiteSpace does not do anything ???
-    	u = u.mid(1, u.length()-1);
-    if (u[u.length()-1] == ' ')
-    	u = u.mid(0, u.length()-1);
-	
-    if(u.find("url(") == 0 && u[u.length()-1] == ')')
-    {
-	u = u.mid(4, u.length()-5);
-    }
+    QString s = url.string().stripWhiteSpace();
+    if(s.find("url(") == 0 && s[s.length()-1] == ')')
+        s = s.mid(4, s.length()-5);
 
-    if (u[0] == ' ')
-    	u = u.mid(1, u.length()-1);
-    if (u[u.length()-1] == ' ')
-    	u = u.mid(0, u.length()-1);
-	
-    if(u[0] == '\"' && u[u.length()-1] == '\"')
-	u = u.mid(1, u.length()-2);
-	
-    if (u[0] == ' ')
-    	u = u.mid(1, u.length()-1);
-    if (u[u.length()-1] == ' ')
-    	u = u.mid(0, u.length()-1);
-    return u;
+    s = s.stripWhiteSpace();
+
+    if(s[0] == '\"' && s[s.length()-1] == '\"')
+        s = s.mid(1, s.length()-2);
+
+    if(s[0] == '\'' && s[s.length()-1] == '\'')
+        s = s.mid(1, s.length()-2);
+
+    // no more stripWhiteSpace here, as we're inside the
+    // actual string already
+    return DOMString(s.unicode(), s.length());
 }
 
