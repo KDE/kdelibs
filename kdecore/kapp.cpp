@@ -423,6 +423,7 @@ public:
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
   QString styleFile;
+   QString geometry_arg;
 };
 
 
@@ -992,7 +993,6 @@ static const KCmdLineOptions qt_options[] =
    { "nograb", I18N_NOOP("tells Qt to never grab the mouse or the keyboard."), 0},
    { "dograb", I18N_NOOP("running under a debugger can cause an implicit\n-nograb, use -dograb to override."), 0},
    { "sync", I18N_NOOP("switches to synchronous mode for debugging."), 0},
-   { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
    { "fn", 0, 0},
    { "font <fontname>", I18N_NOOP("defines the application font."), 0},
    { "bg", 0, 0},
@@ -1019,6 +1019,7 @@ static const KCmdLineOptions kde_options[] =
    { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps."), 0},
    { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager."), 0},
    { "style <style>", I18N_NOOP("sets the application GUI style."), 0},
+   { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
    { 0, 0, 0 }
 };
 
@@ -1114,8 +1115,17 @@ void KApplication::parseCommandLine( )
             XFree( data );
     }
 
+    if (args->isSet("geometry"))
+    {
+        d->geometry_arg = args->getOption("geometry");
+    }
 
     delete args; // Throw away
+}
+
+QString KApplication::geometryArgument() const
+{
+    return d->geometry_arg;
 }
 
 QPixmap KApplication::icon() const

@@ -550,6 +550,9 @@ protected:
      */
     QString settingsGroup() const;
 
+    /// parse the geometry from the geometry command line argument
+    void parseGeometry(bool parsewidth);
+
 protected slots:
 
    /**

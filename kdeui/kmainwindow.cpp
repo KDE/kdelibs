@@ -41,6 +41,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <assert.h>
 
 class KMainWindowPrivate {
 public:
@@ -50,6 +51,7 @@ public:
     bool settingsDirty:1;
     bool autoSaveWindowSize:1;
     QString autoSaveGroup;
+    bool care_about_geometry;
 };
 
 QList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -115,6 +117,8 @@ public:
     }
 };
 
+static bool beeing_first = true;
+
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
@@ -140,8 +144,48 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
+    if ((d->care_about_geometry = beeing_first)) {
+        beeing_first = false;
+        if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
+            d->care_about_geometry = false;
+        else
+            parseGeometry(false);
+    }
 
     setCaption( kapp->caption() );
+}
+
+void KMainWindow::parseGeometry(bool parsewidth)
+{
+    assert ( !kapp->geometryArgument().isNull() );
+    assert ( d->care_about_geometry );
+
+    int x, y;
+    int w, h;
+    int m = XParseGeometry( kapp->geometryArgument().latin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
+    if (parsewidth) {
+        QSize minSize = minimumSize();
+        QSize maxSize = maximumSize();
+        if ( (m & WidthValue) == 0 )
+            w = width();
+        if ( (m & HeightValue) == 0 )
+            h = height();
+         w = QMIN(w,maxSize.width());
+         h = QMIN(h,maxSize.height());
+         w = QMAX(w,minSize.width());
+         h = QMAX(h,minSize.height());
+         resize(w, h);
+    } else {
+        if ( parsewidth && (m & XValue) == 0 )
+            x = geometry().x();
+        if ( parsewidth && (m & YValue) == 0 )
+            y = geometry().y();
+        if ( (m & XNegative) )
+            x = KApplication::desktop()->width()  + x - w;
+        if ( (m & YNegative) )
+            y = KApplication::desktop()->height() + y - h;
+        move(x, y);
+    }
 }
 
 KMainWindow::~KMainWindow()
@@ -511,22 +555,26 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
         setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
-    // restore the size
-    QWidget *desk = KApplication::desktop();
-    QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
-                config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
-    if (size.isEmpty()) {
-        // try the KDE 2.0 way
-        size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
-                      config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
-        if (!size.isEmpty()) {
-            // make sure the other resolutions don't get old settings
-            config->writeEntry( QString::fromLatin1("Width"), 0 );
-            config->writeEntry( QString::fromLatin1("Height"), 0 );
+    if (d->care_about_geometry) {
+        parseGeometry(true);
+    } else {
+        // restore the size
+        QWidget *desk = KApplication::desktop();
+        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
+                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
+        if (size.isEmpty()) {
+            // try the KDE 2.0 way
+            size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
+                          config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+            if (!size.isEmpty()) {
+                // make sure the other resolutions don't get old settings
+                config->writeEntry( QString::fromLatin1("Width"), 0 );
+                config->writeEntry( QString::fromLatin1("Height"), 0 );
+            }
         }
+        if ( !size.isEmpty() )
+            resize( size );
     }
-    if ( !size.isEmpty() )
-        resize( size );
 
     if (internalStatusBar()) {
         entryList.clear();
