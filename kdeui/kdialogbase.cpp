@@ -1526,7 +1526,7 @@ void KDialogBase::hideEvent( QHideEvent *ev )
 void KDialogBase::closeEvent( QCloseEvent *e )
 {
     QPushButton *pb = actionButton( mEscapeButton );
-    if( pb != 0 ) {
+    if( pb != 0 && isShown() ) {
 	pb->animateClick();
     } else {
 	QDialog::closeEvent( e );
