@@ -1472,9 +1472,6 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
             break;
 
         case QVariant::Int :
-#if QT_VERSION >= 0x030200
-	case QVariant::ULongLong :
-#endif
             if (unit() == KFileMimeTypeInfo::Seconds)
             {
               int seconds = value.toInt() % 60;
@@ -1498,6 +1495,20 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
                 s = KGlobal::locale()->formatNumber( value.toInt() , 0);
             break;
 
+#if QT_VERSION >= 0x030200
+        case QVariant::LongLong :
+            s = KGlobal::locale()->formatNumber( value.toLongLong(), 0 );
+            break;
+
+	case QVariant::ULongLong :
+            if ( unit() == KFileMimeTypeInfo::Bytes )
+                return KIO::convertSize( value.toULongLong() );
+            else if ( unit() == KFileMimeTypeInfo::KiloBytes )
+                return KIO::convertSizeFromKB( value.toULongLong() );
+            else
+                s = KGlobal::locale()->formatNumber( value.toULongLong(), 0 );
+            break;
+#endif
         case QVariant::UInt :
             s = KGlobal::locale()->formatNumber( value.toUInt() , 0);
             break;
