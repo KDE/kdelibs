@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 #include <qtimer.h>
-#include <qglobal.h>
 
 #include "kiconview.h"
 #include <kconfig.h>
@@ -300,13 +299,6 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
 
     blockSignals( block );
   }
-
-#if QT_VERSION <= 221
-  // QIconView (2.2.1) bug workaround!
-  if ( e->state() & ShiftButton && !currentItem() ) {
-      setCurrentItem( firstItem() );
-  }
-#endif
 
   QIconView::contentsMousePressEvent( e );
   d->doAutoSelect = FALSE;
