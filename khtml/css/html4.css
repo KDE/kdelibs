@@ -304,6 +304,11 @@ LI {
 UL UL { 
 	list-style-type: circle;
 }
+
+OL UL { 
+	list-style-type: circle;
+}
+
 UL UL UL { 
 	list-style-type: square;
 }
@@ -515,6 +520,14 @@ frameset {
 
 frame { 
 	display: block;
+}
+
+nobr {
+        -konq-wrap-mode: -konq-none;
+}
+
+wbr {
+        -konq-wrap-mode: -konq-normal;
 }
 
 /* noscript is handled internally, as it depends on the html settings */

@@ -152,26 +152,13 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
     // ok, now some magic to get a nice unscaled font
     // ### all other font properties should be set before this one!!!!
     // ####### make it use the charset needed!!!!
-#if QT_VERSION < 300
-    QFont::CharSet cs = s->charset();
-    QString charset = KGlobal::charsets()->xCharsetName( cs );
-#endif
 
-#if QT_VERSION < 300
-    if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
-#else
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
-#endif
-
     {
-#if QT_VERSION < 300
-        QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
-#else
         QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
-#endif
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
-        //kdDebug() << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
+        kdDebug() << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
 
         QValueList<int>::Iterator it;
         float diff = 1; // ### 100% deviation
@@ -194,7 +181,7 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
 //             size = float( int( ( size + 1 ) / 2 )*2 );
     }
 
-    //qDebug(" -->>> using %f pixel font", size);
+    qDebug(" -->>> using %f pixel font", size);
 
     f.setPixelSizeFloat( size );
 }

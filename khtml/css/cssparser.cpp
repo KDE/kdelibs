@@ -236,7 +236,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
         if(*curP != ';')
             curP = parseToChar(startP, endP, ';', false, true);
         if(!curP) return 0;
-        
+
         DOMString mediaList = DOMString( startP, curP - startP);
         // ### check if at the beginning of the stylesheet (no style rule
         //     before the import rule)
@@ -252,7 +252,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
                 curP++;
         }
         if(!this->isCSSStyleSheet()) return 0;
-        
+
         return new CSSImportRuleImpl( this, url, mediaList );
     }
     else if(rule == "charset")
@@ -1335,7 +1335,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
 	  if (cssval) {
             int id = cssval->id;
-            if ((id >= CSS_VAL_CIRCLE && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
+            if ((id >= CSS_VAL_DISC && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
 	      parsedValue = new CSSPrimitiveValueImpl(id);
             }
 	  }
@@ -1907,13 +1907,19 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  break;
 	}
       case CSS_PROP__KONQ_FLOW_MODE:
-	{
+      {
 	  if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_AROUND_FLOATS)
-	    parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+              parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  break;
-	}
-	/* shorthand properties */
+      }
+      case CSS_PROP__KONQ_WRAP_MODE:
+      {
+	  if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_NONE)
+              parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 
+          break;
+      }
+      /* shorthand properties */
       case CSS_PROP_BACKGROUND:
     	// ['background-color' || 'background-image' ||'background-repeat' ||
 	// 'background-attachment' || 'background-position'] | inherit

@@ -2356,7 +2356,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	style->setTextDecorationColor(style->color());
         break;
     }
-
+    case CSS_PROP__KONQ_WRAP_MODE:
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent()) {
+            style->setNoLineBreak(primitiveValue->getIdent() == CSS_VAL__KONQ_NONE);
+            return;
+        }
+        break;
     case CSS_PROP__KONQ_FLOW_MODE:
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {

@@ -186,6 +186,7 @@ static-position, CSS_VAL_STATIC_POSITION
 thick, CSS_VAL_THICK
 thin, CSS_VAL_THIN
 underline, CSS_VAL_UNDERLINE
+-konq-none, CSS_VAL__KONQ_NONE
 -konq-normal, CSS_VAL__KONQ_NORMAL
 -konq-around-floats, CSS_VAL__KONQ_AROUND_FLOATS
 %%
