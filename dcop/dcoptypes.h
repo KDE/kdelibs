@@ -30,7 +30,7 @@ inline const char* dcopTypeName( char ) { return "char"; }
 inline const char* dcopTypeName( uchar ) { return "uchar"; }
 inline const char* dcopTypeName( int ) { return "int"; }
 inline const char* dcopTypeName( uint ) { return "uint"; }
-inline const char* dcopTypeName( long ) { return "long"; }
+inline const char* dcopTypeName( long ) { return "long int"; }
 inline const char* dcopTypeName( ulong ) { return "ulong"; }
 inline const char* dcopTypeName( double ) { return "double"; }
 inline const char* dcopTypeName( float ) { return "float"; }
