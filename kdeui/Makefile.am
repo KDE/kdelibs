@@ -86,7 +86,8 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp
 
-noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h
+noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
+		kdialogbase_priv.h
 
 libkdeui_la_METASOURCES = AUTO
 

@@ -40,7 +40,15 @@
 #include <kurllabel.h>
 #include <kdebug.h>
 
+#include "kdialogbase_priv.h"
+#include "kdialogbase_priv.moc"
+
 KDialogBaseTile *KDialogBase::mTile = 0;
+
+int KDialogBaseButton::id()
+{
+  return( mKey );
+}
 
 template class QList<KDialogBaseButton>;
 
@@ -130,6 +138,67 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
 KDialogBase::~KDialogBase()
 {
+}
+
+QPushButton *KDialogBase::SButton::append( int key, const QString &text )
+{
+  KDialogBaseButton *p = new KDialogBaseButton( text, key, box );
+  list.append( p );
+  return( p );
+}
+
+void KDialogBase::SButton::resize( bool sameWidth, int margin,
+    int spacing, int orientation )
+{
+  KDialogBaseButton *p;
+  int w = 0;
+  int t = 0;
+
+  for( p = list.first(); p!=0; p =  list.next() )
+  {
+    if( p->sizeHint().width() > w ) { w = p->sizeHint().width(); }
+  }
+
+  if( orientation == Horizontal )
+  {
+    for( p = list.first(); p!=0; p =  list.next() )
+    {
+      QSize s( p->sizeHint() );
+      if( sameWidth == true ) { s.setWidth( w ); }
+      p->setFixedSize( s );
+      t += s.width() + spacing;
+    }
+
+    p = list.first();
+    box->setMinimumHeight( margin*2 + ( p==0?0:p->sizeHint().height()));
+    box->setMinimumWidth( margin*2 + t - spacing );
+  }
+  else
+  {
+    // sameWidth has no effect here
+    for( p = list.first(); p!=0; p =  list.next() )
+    {
+      QSize s( p->sizeHint() );
+      s.setWidth( w );
+      p->setFixedSize( s );
+      t += s.height() + spacing;
+    }
+    box->setMinimumHeight( margin*2 + t - spacing );
+    box->setMinimumWidth( margin*2 + w );
+  }
+}
+
+QPushButton *KDialogBase::SButton::button( int key )
+{
+  KDialogBaseButton *p;
+  for( p = list.first(); p != 0; p = list.next() )
+  {
+    if( p->id() == key )
+    {
+      return( p );
+    }
+  }
+  return( 0 );
 }
 
 void
