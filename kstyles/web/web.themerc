@@ -1,5 +1,15 @@
 [Misc]
 Name=Web style
+Name[da]=Netsidestil
+Name[de]=Webstil
+Name[hu]=Web-szerű stílus
+Name[lv]=Web stils
+Name[no_NY]=Vevstil
 Comment=Web widget style
+Comment[da]=Netside dims-stil
+Comment[de]=Web-ähnlicher Stil für Bedienelemente
+Comment[hu]=Web-szerű grafikus stílus
+Comment[lv]=Web vidžeta stils
+Comment[no_NY]=Elementstilen 'vev'
 [KDE]
 widgetStyle=webstyle.la
