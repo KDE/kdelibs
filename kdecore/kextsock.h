@@ -85,7 +85,7 @@ class KExtendedSocketPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an extended socket
  */
-class KDE_DEPRECATED KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
+class KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
 {
   Q_OBJECT
 
@@ -927,7 +927,7 @@ public:
    * @param flags	the same flags as getnameinfo()
    * @returns 0 on success, nonzero otherwise.
    */
-  static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0);
+  static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0) KDE_DEPRECATED;
 
   /**
    * Performs resolution on the given socket address.
@@ -941,7 +941,7 @@ public:
    * @param flags	the same flags as getnameinfo()
    * @returns 0 on success, nonzero otherwise.
    */
-  static int resolve(::KSocketAddress* sock, QString& host, QString& port, int flags = 0);
+  static int resolve(::KSocketAddress* sock, QString& host, QString& port, int flags = 0) KDE_DEPRECATED;
 
   /** @deprecated
    * This function is now deprecated. Please use @ref KNetwork::KResolver::resolve.
@@ -963,7 +963,7 @@ public:
    * @param error	pointer to a variable holding the error code
    * @return a list of KAddressInfos
    */
-  static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
+  static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0) KDE_DEPRECATED;
 
   /**
    * Returns the local socket address
@@ -971,7 +971,7 @@ public:
    * @param fd		the file descriptor
    * @return the local socket address or 0 if an error occurred. Delete after use.
    */
-  static ::KSocketAddress *localAddress(int fd);
+  static ::KSocketAddress *localAddress(int fd) KDE_DEPRECATED;
 
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
@@ -980,7 +980,7 @@ public:
    * @param fd		the file descriptor
    * @return the peer socket address or 0 if an error occurred. Delete after use.
    */
-  static ::KSocketAddress *peerAddress(int fd);
+  static ::KSocketAddress *peerAddress(int fd) KDE_DEPRECATED;
 
   /**
    * Returns the representing text of this error code
@@ -999,7 +999,7 @@ public:
    * @param enable	if true, set address reusable
    * @return true on success, false on failure.
    */
-  static bool setAddressReusable(int fd, bool enable);
+  static bool setAddressReusable(int fd, bool enable) KDE_DEPRECATED;
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -1016,7 +1016,7 @@ private:
  * Contains information about an internet address. It wraps addrinfo,
  * see getaddrinfo(3) for more information.
  */
-class KAddressInfo
+class KDE_DEPRECATED KAddressInfo
 {
 private:
   addrinfo *ai;
