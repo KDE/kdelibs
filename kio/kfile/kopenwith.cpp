@@ -495,23 +495,7 @@ void KOpenWithDlg::slotOK()
 {
   if (!m_pService) {
     // no service was found, maybe they typed the name into the text field
-    KService::List sList = KService::allServices();
-    QValueListIterator<KService::Ptr> it(sList.begin());
-    QString text = edit->url();
-
-    for (; it != sList.end(); ++it)
-    {
-      QString exec = (*it)->exec().stripWhiteSpace();
-
-      int argPos = exec.find( ' ' ); // separate the executable from arguments ("blah -caption foo" or "bar %f") .
-      if ( argPos != -1 )            // this increases the change to find a dedicated service. Example: choose
-          exec = exec.left( argPos );// "open with" on a remote html document and type "kwrite" in the lineedit.
-                                     // in this case we don't want to use kfmexec but we want to use the kwrite
-                                     // service which handles network transparency the right way :)
-      if (exec == text ||
-          (*it)->name().lower() == text.lower())
-        m_pService = *it;
-    }
+    m_pService = KService::serviceByDesktopName(edit->url());
     if (m_pService)
     {
       KService::Ptr pService = m_pService;
