@@ -581,6 +581,7 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types[index], kde_default(types[index]));
 	index++;
     }
+    addResourceType("icon", "share/icons/locolor/"); // HACK
 
 }
 
