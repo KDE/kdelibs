@@ -70,5 +70,8 @@
 # ifndef KDEUI_EXPORT_DEPRECATED
 #  define KDEUI_EXPORT_DEPRECATED KDE_DEPRECATED KDEUI_EXPORT
 # endif
+# ifndef KABC_EXPORT_DEPRECATED
+#  define KABC_EXPORT_DEPRECATED KDE_DEPRECATED KABC_EXPORT
+# endif
 #endif
 /* (let's add KDE****_EXPORT_DEPRECATED for other libraries if it's needed) */
