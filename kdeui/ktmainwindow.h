@@ -199,7 +199,7 @@ public:
      * determined by the XML UI framework).
      */
     void setEnableToolBar( KToolBar::BarStatus stat = KToolBar::Toggle,
-                           const QString& name = QString::fromLatin1("mainToolBar") );
+                           const char * name = "mainToolBar" );
 
     /**
      * Set the width of the view frame.
@@ -249,7 +249,7 @@ public:
      *
      * @return A pointer to the toolbar or 0L if it doesn't exist
      **/
-    KToolBar *toolBar( const QString& name );
+    KToolBar *toolBar( const char * name );
 
     /**
      * @return An iterator over the list of all toolbars for this window.

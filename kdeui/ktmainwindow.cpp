@@ -736,16 +736,15 @@ KToolBar *KTMainWindow::toolBar( int ID )
     return result;
 }
 
-KToolBar *KTMainWindow::toolBar( const QString& name )
+KToolBar *KTMainWindow::toolBar( const char * name )
 {
-    KToolBar* result = 0L;
+    QListIterator<KToolBar> it(toolbars);
 
-    if ( factory() ) {
-	QWidget *widget = factory()->container( name, this );
-	if ( widget && widget->inherits("KToolBar") )
-	    result = (KToolBar*)widget;
-    }
-    return result;
+    for ( ; it.current(); ++it)
+      if ( !strcmp( it.current()->name(), name ) )
+	return it.current();
+
+    return 0L;
 }
 
 QListIterator<KToolBar> KTMainWindow::toolBarIterator() const
@@ -753,7 +752,7 @@ QListIterator<KToolBar> KTMainWindow::toolBarIterator() const
   return QListIterator<KToolBar>( toolbars );
 }
 
-void KTMainWindow::setEnableToolBar( KToolBar::BarStatus stat, const QString& name)
+void KTMainWindow::setEnableToolBar( KToolBar::BarStatus stat, const char * name)
 {
     KToolBar *t = toolBar( name );
     if ( t )
