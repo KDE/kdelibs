@@ -2,7 +2,9 @@
 
 #include <qsqlpropertymap.h>
 #include <qobjectlist.h> 
+#ifndef NDEBUG
 #include "kdebug.h"
+#endif
 #include <kconfig.h>
 #include <kapplication.h>
 
@@ -10,7 +12,9 @@ class KAutoConfig::KAutoConfigPrivate {
 
 public:
   KAutoConfigPrivate() : changed(false)
+#ifndef NDEBUG
 	  , retrievedSettings(false)
+#endif
   { }
   
   // Widgets to parse
@@ -23,10 +27,12 @@ public:
   
   // reset to false after saveSettings returns true.
   bool changed;
- 
+
+#ifndef NDEBUG
   // Many functions require this to be true to be of any value.
   bool retrievedSettings;
-
+#endif
+  
   // Known widgets that can be configured
   QMap<QWidget*, QPtrList<QWidget> > autoWidgets;
   // Default values for the widgets.
@@ -77,12 +83,14 @@ void KAutoConfig::ignoreSubWidget(QWidget *widget){
 }
 
 bool KAutoConfig::retrieveSettings(bool trackChanges){
+#ifndef NDEBUG
   if(d->retrievedSettings){
     kdDebug() << "This should not happen.  Function KAutoConfig::retrieveSettings() called more then once, returning first.  It is not recomended unless you know the implimentation details of KAutoConfig and what this breaks.  Please fix.";
     return false;
   }
   d->retrievedSettings = true;
-  
+#endif
+
   if(trackChanges){
     // QT
     changedMap.insert("QButton", SIGNAL(stateChanged(int)));
@@ -134,11 +142,13 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 }
 
 bool KAutoConfig::saveSettings() {
+#ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug() << "This should NEVER happen.  Function KAutoConfig::saveSettings() called before retrieveSettings. Please Fix.";
     return false;
   }
-
+#endif
+  
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
@@ -185,10 +195,12 @@ bool KAutoConfig::saveSettings() {
 }
 
 bool KAutoConfig::hasChanged() const {
+#ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug() << "This should NEVER happen.  Function KAutoConfig::hasChanged() called before retrieveSettings. Please Fix.";
     return false;
   }
+#endif
   
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
@@ -215,11 +227,42 @@ bool KAutoConfig::hasChanged() const {
   return false;
 }
 
+bool KAutoConfig::isDefault() const {
+#ifndef NDEBUG
+  if(!d->retrievedSettings){
+    kdDebug() << "This should NEVER happen.  Function KAutoConfig::hasChanged() called before retrieveSettings. Please Fix.";
+    return false;
+  }
+#endif
+  
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
+  // Go through all of the widgets
+  QPtrListIterator<QWidget> it( d->widgets );
+  QWidget *widget;
+  while ( (widget = it.current()) != 0 ) {
+    ++it;
+    config->setGroup(d->groups[widget]);
+    // Go through the known autowidgets of this widget and save
+    QPtrListIterator<QWidget> it( d->autoWidgets[widget] );
+    QWidget *groupWidget;
+    while ( (groupWidget = it.current()) != 0 ){
+      ++it;
+      QVariant defaultValue = d->defaultValues[groupWidget];
+      QVariant currentValue = propertyMap->property(groupWidget);
+      if(currentValue != defaultValue)
+        return false;
+    }
+  }
+  return true;
+}
+
 void KAutoConfig::resetSettings(){
+#ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug() << "This should NEVER happen.  Function KAutoConfig::resetSettings() called before retrieveSettings. Please Fix.";
     return;
   }
+#endif
   
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
@@ -241,14 +284,6 @@ void KAutoConfig::resetSettings(){
       }
     }
   }
-}
-
-void KAutoConfig::addWidgetChangedSignal(const QString &widgetName, const char *signal){
-  if(d->retrievedSettings){
-    kdDebug() << "This should NEVER happen.  Function KAutoConfig::addWidgetChangedSignal() called after retrieveSettings. Please Fix.";
-    return;
-  }
-  changedMap.insert(widgetName, signal);
 }
 
 bool KAutoConfig::parseChildren(const QWidget *widget,

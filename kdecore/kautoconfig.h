@@ -145,6 +145,16 @@ public:
   bool hasChanged() const;
 
   /**
+   * Traverse the specified widgets to see if anything is different then the
+   * default.
+   * @ref retrieveSettings() must be called before this function to build
+   * the list of known widgets and defaultValues.
+   * @return bool - true if any settings are different.
+   */
+  bool isDefault() const;
+
+
+  /**
    * Adds a widget and its signal to the internal list so that when
    * KAutoConfig finds widgetName in @ref retrieveSettings() it will know
    * how to connect its signal that it has changed to KAutoConfig's signal
@@ -159,7 +169,9 @@ public:
    * @param widgetName - The class name of the widget (className())
    * @param signal - the signal (with SIGNAL() wrapper) that should be called.
    */ 
-  void addWidgetChangedSignal(const QString &widgetName, const char *signal);
+  inline void addWidgetChangedSignal(const QString &widgetName, const char *signal){
+    changedMap.insert(widgetName, signal);
+  }
 
 public slots:
   /**
