@@ -145,7 +145,7 @@ namespace khtml {
 }
 
 
-FrameList::Iterator FrameList::find( const QString &name )
+KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 {
     Iterator it = begin();
     Iterator e = end();
@@ -1712,7 +1712,7 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
-  Tokenizer* t = d->m_doc->tokenizer();
+  khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( decoded, true );
 }
@@ -1727,7 +1727,7 @@ void KHTMLPart::write( const QString &str )
       d->m_doc->setParseMode( DocumentImpl::Strict );
       d->m_bFirstData = false;
   }
-  Tokenizer* t = d->m_doc->tokenizer();
+  khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( str, true );
 }
@@ -2076,7 +2076,6 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = "";
 
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
@@ -5718,7 +5717,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
        ( linkProto == "cgi" || linkProto == "file" ) &&
        proto != "file" && proto != "cgi" && proto != "man" && proto != "about")
   {
-    Tokenizer *tokenizer = d->m_doc->tokenizer();
+      khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();
     if (tokenizer)
       tokenizer->setOnHold(true);
 

@@ -84,6 +84,7 @@ namespace khtml
   class CSSStyleSelector;
   class HTMLTokenizer;
   class Decoder;
+  class XMLTokenizer;
 }
 
 namespace KJS {
@@ -91,8 +92,10 @@ namespace KJS {
     class WindowFunc;
     class ExternalFunc;
     class JSEventListener;
+    class JSNodeFilter;
     class DOMDocument;
     class SourceFile;
+    class ScheduledAction;
 }
 
 namespace KParts
@@ -192,6 +195,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
   friend class KJS::Window;
+  friend class KJS::ScheduledAction;
+  friend class KJS::JSNodeFilter;
   friend class KJS::WindowFunc;
   friend class KJS::ExternalFunc;
   friend class KJS::JSEventListener;
@@ -203,7 +208,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
   friend class khtml::HTMLTokenizer;
-  friend class XMLTokenizer;
+  friend class khtml::XMLTokenizer;
   friend class khtml::RenderWidget;
   friend class khtml::CSSStyleSelector;
   friend class KHTMLPartIface;
