@@ -64,19 +64,20 @@ class SMTP:public QObject
 public:
     SMTP(char *serverhost = 0, unsigned short int port = 0, int timeout = DEFAULT_SMTP_TIMEOUT);
     ~SMTP();
-    
+
     void setServerHost(const QString& serverhost);
     void setPort(unsigned short int port);
     void setTimeOut(int timeout);
-    
+
     bool isConnected(){return connected;};
     bool isFinished(){return finished;};
     QString getLastLine(){return lastLine;};
-    
+
     void setSenderAddress(const QString& sender);
     void setRecipientAddress(const QString& recipient);
     void setMessageSubject(const QString& subject);
     void setMessageBody(const QString& message);
+    void setMessageHeader(const QString &header);
 
     typedef enum {
         NONE = 0,             // null
@@ -139,11 +140,11 @@ private:
 
     bool connected;
     bool finished;
-    
+
     QString senderAddress;
     QString recipientAddress;
     QString messageSubject;
-    QString messageBody;
+    QString messageBody, messageHeader;
 
     SMTPClientStatus state;
     SMTPClientStatus lastState;

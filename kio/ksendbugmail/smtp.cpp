@@ -39,9 +39,10 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 
     senderAddress = "user@host.ext";
     recipientAddress = "user@host.ext";
-    messageSubject = "cddb unknown unknown";
+    messageSubject = "(no subject)";
     messageBody = "empty";
-    
+    messageHeader = "";
+
     connected = false;
     finished = false;
 
@@ -51,13 +52,13 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 
     uname(&uts);
     domainName = uts.nodename;
-    
-    
+
+
     if(domainName.isEmpty())
         domainName = "somemachine.nowhere.org";
 
     kdDebug() << "SMTP object created" << endl;
-    
+
     connect(&connectTimer, SIGNAL(timeout()), this, SLOT(connectTimerTick()));
     connect(&timeOutTimer, SIGNAL(timeout()), this, SLOT(connectTimedOut()));
     connect(&interactTimer, SIGNAL(timeout()), this, SLOT(interactTimedOut()));
@@ -111,6 +112,11 @@ void SMTP::setMessageBody(const QString& message)
     messageBody = message;
 }
 
+void SMTP::setMessageHeader(const QString &header)
+{
+    messageHeader = header;
+}
+
 void SMTP::openConnection(void)
 {
     kdDebug() << "started connect timer\n" << endl;
@@ -147,7 +153,7 @@ void SMTP::connectTimerTick(void)
 //    timeOutTimer.start(timeOut, TRUE);
 
     kdDebug() << "connectTimerTick called...\n" << endl;
-    
+
     if(sock){
         delete sock;
         sock = 0L;
@@ -179,7 +185,7 @@ void SMTP::connectTimedOut(void)
 {
     timeOutTimer.stop();
 
-    if(sock) 
+    if(sock)
 	sock->enableRead(false);
     kdDebug() << "socket connection timed out\n" << endl;
     socketClose(sock);
@@ -239,7 +245,7 @@ void SMTP::processLine(QString *line)
 {
     int i, stat;
     QString tmpstr;
-    
+
     i = line->find(' ');
     tmpstr = line->left(i);
     if(i > 3)
@@ -254,6 +260,7 @@ void SMTP::processLine(QString *line)
     case GREET:     //220
         state = IN;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
+        kdDebug() << "out: " << writeString << endl;
 	write(sock->socket(), writeString.ascii(), writeString.length());
         break;
     case GOODBYE:   //221
@@ -264,16 +271,19 @@ void SMTP::processLine(QString *line)
         case IN:
             state = READY;
             writeString = QString::fromLatin1("mail from: %1\r\n").arg(senderAddress);
+            kdDebug() << "out: " << writeString << endl;
             write(sock->socket(), writeString.ascii(), writeString.length());
             break;
         case READY:
             state = SENTFROM;
             writeString = QString::fromLatin1("rcpt to: %1\r\n").arg(recipientAddress);
+             kdDebug() << "out: " << writeString << endl;
             write(sock->socket(), writeString.ascii(), writeString.length());
             break;
         case SENTFROM:
             state = SENTTO;
             writeString = QString::fromLatin1("data\r\n");
+             kdDebug() << "out: " << writeString << endl;
             write(sock->socket(), writeString.ascii(), writeString.length());
             break;
         case DATA:
@@ -294,8 +304,10 @@ void SMTP::processLine(QString *line)
         state = DATA;
         //        writeString = QString::fromLatin1("Subject: %1\n%2\n.\n").arg(messageSubject).arg(messageBody);
         writeString = QString::fromLatin1("Subject: %1\r\n").arg(messageSubject);
+        writeString += messageHeader;
         writeString += messageBody;
         writeString += QString::fromLatin1(".\r\n");
+         kdDebug() << "out: " << writeString << endl;
         write(sock->socket(), writeString.ascii(), writeString.length());
         break;
     case ERROR:     //501

@@ -11,8 +11,8 @@
 #include <pwd.h>
 
 static KCmdLineOptions options[] = {
-    { "subject", I18N_NOOP("Subject line"), 0 },
-    { "recipient", I18N_NOOP("Recipient"), "submit@bugs.kde.org" },
+    { "subject <argument>", I18N_NOOP("Subject line"), 0 },
+    { "recipient <argument>", I18N_NOOP("Recipient"), "submit@bugs.kde.org" },
     { 0, 0, 0 }
 };
 
@@ -39,8 +39,11 @@ int main(int argc, char **argv) {
         subject = "(no subject)";
 
     QTextIStream input(stdin);
-    QString text;
-    input >> text;
+    QString text, line;
+    while (!input.eof()) {
+        line = input.readLine();
+        text += line + "\r\n";
+    }
     kdDebug() << text << endl;
 
     KConfig emailConf( QString::fromLatin1("emaildefaults") );
@@ -50,6 +53,10 @@ int main(int argc, char **argv) {
         struct passwd *p;
         p = getpwuid(getuid());
         fromaddr = QString::fromLatin1(p->pw_name);
+        fromaddr += "@";
+        char buffer[200];
+        gethostname(buffer, 200);
+        fromaddr += buffer;
     } else {
         QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
         if (!name.isEmpty())
@@ -63,9 +70,11 @@ int main(int argc, char **argv) {
     QObject::connect(sm, SIGNAL(messageSent()), &a, SLOT(quit()));
     QObject::connect(sm, SIGNAL(error(int)), &a, SLOT(quit()));
     sm->setServerHost(server);
+    sm->setPort(25);
     sm->setSenderAddress(fromaddr);
     sm->setRecipientAddress(recipient);
     sm->setMessageSubject(subject);
+    sm->setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
     sm->setMessageBody(text);
     sm->sendMessage();
 
