@@ -132,6 +132,7 @@
 #include "kappdcopiface.h"
 
 bool kde_have_kipc = true; // magic hook to disable kipc in kdm
+bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
@@ -748,7 +749,7 @@ void KApplication::init(bool GUIenabled)
   (void) KGlobal::locale();
 
   KConfig* config = KGlobal::config();
-  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
+  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
   // For brain-dead configurations where the user's local config file is not writable.
   // * We use kdialog to warn the user, so we better not generate warnings from
   //   kdialog itself.
