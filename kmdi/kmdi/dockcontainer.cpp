@@ -131,6 +131,7 @@ DockContainer::~DockContainer()
 
 void DockContainer::init()
 {
+  bool overlap = isOverlapMode();
   if (m_vertical)
   {
     parentDockWidget()->setForcedFixedWidth(m_tb->width());
@@ -141,6 +142,8 @@ void DockContainer::init()
     parentDockWidget()->setForcedFixedHeight(m_tb->height());
     activateOverlapMode(m_tb->height());
   }
+
+  if (!overlap) deactivateOverlapMode();
 
   // try to restore splitter size
   if ( parentDockWidget() && parentDockWidget()->parent() )

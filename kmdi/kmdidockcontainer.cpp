@@ -152,6 +152,7 @@ KMdiDockContainer::~KMdiDockContainer()
 
 void KMdiDockContainer::init()
 {
+	bool overlap = isOverlapMode();
 	kdDebug( 760 ) << k_funcinfo << endl;
 	if ( !m_horizontal )
 	{
@@ -165,6 +166,8 @@ void KMdiDockContainer::init()
 		parentDockWidget()->setForcedFixedHeight( m_tb->height() );
 		activateOverlapMode( m_tb->height() );
 	}
+
+	if (!overlap) deactivateOverlapMode();
 
 	// try to restore splitter size
 	if ( parentDockWidget() && parentDockWidget()->parent() )
