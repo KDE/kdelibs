@@ -74,7 +74,7 @@ libkiocore_la_SOURCES = \
 	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
 	observer.cpp uiserver.stub observer.skel \
 	kemailsettings.cpp authinfo.cpp \
-	kprotocolinfo.cpp kprotocolinfofactory.cpp \
+	kprotocolinfo.cpp \
 	renamedlg.cpp skipdlg.cpp
 
 uiserver_DIR = $(top_srcdir)/kio/misc
@@ -94,13 +94,12 @@ kioinclude_HEADERS = connection.h \
 	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
 	metainfojob.h davjob.h renamedlg.h skipdlg.h
 
-# Internal - kprotocolinfofactory.h is old stuff
+# Internal
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
 	kimageiofactory.h kdirwatch_p.h \
-	kprotocolinfofactory.h \
 	renamedlg.h skipdlg.h dataslave.h dataprotocol.h
 
 
