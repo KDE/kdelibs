@@ -140,6 +140,21 @@ public:
                const QString& xmlfile = QString::null, bool global = true,
 			   QWidget* parent = 0, const char* name = 0);
 
+  //KDE 4.0: merge the two constructors
+  /* Constructor for apps that do not use components, which has an extra argument
+   * specifying the toolbar to be shown.
+   * @param collection The collection of actions to work on.
+   * @param xmlfile The application's local resource file.
+   * @param global If @p true, then the global resource file will also
+   *               be parsed.
+   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param parent The parent of the dialog.
+   * @param name An internal name.
+   * @since 3.2
+   */
+  KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
+               const QString& xmlfile = QString::null, bool global = true,
+               QWidget* parent = 0, const char* name = 0);
   /**
    * Constructor for KParts based apps.
    *
@@ -164,6 +179,19 @@ public:
    * KMainWindow::createGUI()! If not, use the other KEditToolbar constructor.
    */
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
+
+  //KDE 4.0: merge the two constructors
+  /* Constructor for KParts based apps, which has an extra argument
+   * specifying the toolbar to be shown.
+   *
+   * @param factory Your application's factory object
+   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param parent The usual parent for the dialog.
+   * @param name An internal name.
+   * @since 3.2
+   */
+  KEditToolbar(const QString& defaultToolbar, KXMLGUIFactory* factory,
+               QWidget* parent = 0, const char* name = 0);
 
   /// destructor
   ~KEditToolbar();
@@ -257,6 +285,23 @@ public:
                      const QString& file = QString::null,
                      bool global = true, QWidget *parent = 0L);
 
+   //KDE 4.0: merge the two constructors
+   /* Same as above, with an extra agrument specifying the toolbar to be shown.
+   *
+   * @param collection The collection of actions to work on
+   * @param xmlfile The application's local resource file
+   * @param global If true, then the global resource file will also
+   *               be parsed
+   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param parent This widget's parent
+   * @since 3.2
+   */
+  KEditToolbarWidget(const QString& defaultToolbar,
+                     KActionCollection *collection,
+                     const QString& file = QString::null,
+                     bool global = true,
+                     QWidget *parent = 0L);
+
   /**
    * Constructor for KParts based apps.
    *
@@ -278,6 +323,19 @@ public:
    * @param parent This widget's parent
    */
   KEditToolbarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
+
+   //KDE 4.0: merge the two constructors
+   /* Same as above, with an extra agrument specifying the toolbar to be shown.
+   *
+   *
+   * @param factory Your application's factory object
+   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param parent This widget's parent
+   * @since 3.2
+   */
+  KEditToolbarWidget(const QString& defaultToolbar,
+                     KXMLGUIFactory* factory,
+                     QWidget *parent = 0L);
 
   /**
    * Destructor.  Note that any changes done in this widget will
@@ -321,7 +379,9 @@ protected slots:
 protected:
   void setupLayout();
 
-  void loadToolbarCombo();
+  void initNonKPart(KActionCollection *collection, const QString& file, bool global);
+  void initKPart(KXMLGUIFactory* factory);
+  void loadToolbarCombo(const QString& defaultToolbar = QString::null);
   void loadActionList(QDomElement& elem);
   void updateLocal(QDomElement& elem);
 

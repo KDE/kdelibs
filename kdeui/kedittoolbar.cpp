@@ -198,9 +198,26 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     init();
 }
 
+KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
+                           const QString& file, bool global,
+                           QWidget* parent, const char* name)
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+    m_widget(new KEditToolbarWidget(defaultToolbar, collection, file, global, this))
+{
+    init();
+}
+
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
     : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
       m_widget(new KEditToolbarWidget(factory, this))
+{
+    init();
+}
+
+KEditToolbar::KEditToolbar(const QString& defaultToolbar,KXMLGUIFactory* factory,
+                           QWidget* parent, const char* name)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+      m_widget(new KEditToolbarWidget(defaultToolbar, factory, this))
 {
     init();
 }
@@ -261,6 +278,60 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   : QWidget(parent),
     d(new KEditToolbarWidgetPrivate(instance(), collection))
 {
+  initNonKPart(collection, file, global);
+  // now load in our toolbar combo box
+  loadToolbarCombo();
+  adjustSize();
+  setMinimumSize(sizeHint());
+}
+
+KEditToolbarWidget::KEditToolbarWidget(const QString& defaultToolbar,
+                                       KActionCollection *collection,
+                                       const QString& file, bool global,
+                                       QWidget *parent)
+  : QWidget(parent),
+    d(new KEditToolbarWidgetPrivate(instance(), collection))
+{
+  initNonKPart(collection, file, global);
+  // now load in our toolbar combo box
+  loadToolbarCombo(defaultToolbar);
+  adjustSize();
+  setMinimumSize(sizeHint());
+}
+
+KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
+                                        QWidget *parent)
+  : QWidget(parent),
+    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
+{
+  initKPart(factory);
+  // now load in our toolbar combo box
+  loadToolbarCombo();
+  adjustSize();
+  setMinimumSize(sizeHint());
+}
+
+KEditToolbarWidget::KEditToolbarWidget( const QString& defaultToolbar,
+                                        KXMLGUIFactory* factory,
+                                        QWidget *parent)
+  : QWidget(parent),
+    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
+{
+  initKPart(factory);
+  // now load in our toolbar combo box
+  loadToolbarCombo(defaultToolbar);
+  adjustSize();
+  setMinimumSize(sizeHint());
+}
+
+KEditToolbarWidget::~KEditToolbarWidget()
+{
+    delete d;
+}
+
+void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
+                                      const QString& file, bool global)
+{
   // let's not forget the stuff that's not xml specific
   //d->m_collection = *collection;
   d->m_actionList = collection->actions();
@@ -295,19 +366,9 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
 
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
-
-  // now load in our toolbar combo box
-  loadToolbarCombo();
-  adjustSize();
-
-  //kdDebug() << "kedittoolbarwidget " << sizeHint() << endl;
-  setMinimumSize(sizeHint());
 }
 
-KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
-                                        QWidget *parent)
-  : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
+void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
 {
   // reusable vars
   QDomElement elem;
@@ -342,15 +403,6 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
 
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
-  setMinimumSize(sizeHint());
-
-  // now load in our toolbar combo box
-  loadToolbarCombo();
-}
-
-KEditToolbarWidget::~KEditToolbarWidget()
-{
-    delete d;
 }
 
 bool KEditToolbarWidget::save()
@@ -534,7 +586,7 @@ void KEditToolbarWidget::setupLayout()
   top_layout->addWidget(new KSeparator(this));
 }
 
-void KEditToolbarWidget::loadToolbarCombo()
+void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
 {
   static const QString &attrName = KGlobal::staticQString( "name" );
   static const QString &tagText = KGlobal::staticQString( "text" );
@@ -543,6 +595,8 @@ void KEditToolbarWidget::loadToolbarCombo()
   // just in case, we clear our combo
   m_toolbarCombo->clear();
 
+  int defaultToolbarId = 0;
+  int count = 0;
   // load in all of the toolbar names into this combo box
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
   for ( ; xit != d->m_xmlFiles.end(); ++xit)
@@ -575,11 +629,15 @@ void KEditToolbarWidget::loadToolbarCombo()
 
       m_toolbarCombo->setEnabled( true );
       m_toolbarCombo->insertItem( name );
+      if (name == defaultToolbar)
+          defaultToolbarId = count;
+      count++;
     }
   }
 
-  // we want to the first item selected and its actions loaded
-  slotToolbarSelected( m_toolbarCombo->currentText() );
+  // we want to the specified item selected and its actions loaded
+  m_toolbarCombo->setCurrentItem(defaultToolbarId);
+  slotToolbarSelected(m_toolbarCombo->currentText());
 }
 
 void KEditToolbarWidget::loadActionList(QDomElement& elem)
