@@ -174,6 +174,7 @@ private:
 * @author Jacek Konieczny <jacus@zeus.polsl.gliwice.pl>
 * @version $Id$
 * @short KDE charset support class
+* @internal
 */
 
 class KCharsetConversionResult{

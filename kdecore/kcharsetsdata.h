@@ -34,6 +34,10 @@
 #include <qintdict.h>
 #include <kcharsets.h>
 
+/**
+* Charset internal structure.
+* @internal
+*/
 struct KCharsetEntry{
   char *name;
   QFont::CharSet qtCharset;
@@ -107,6 +111,10 @@ public:
    bool ok()const{ return isOK; }
 };
 
+/**
+* Charset support structure.
+* @internal
+*/
 struct KCharTags{
   const char *tag;
   unsigned code;
@@ -116,6 +124,10 @@ struct KCharTags{
 
 class KSimpleConfig;
 
+/**
+* Charset support structure.
+* @internal
+*/
 struct KDispCharEntry{
   KCharsetEntry *charset;
   unsigned code;
