@@ -6,7 +6,7 @@ else
 ksgmldir=$KDB2HTML_UNINSTALLED
 fi
 
-CATALOG=$ksgmldir/kde.cat
+CATALOG=$ksgmldir/catalog
 DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
 
 # This keeps all system and user variable settings untouched, but
