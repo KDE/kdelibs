@@ -71,7 +71,7 @@ static QIntDict<KDebugEntry> *KDebugCache;
 
 static KStaticDeleter< QIntDict<KDebugEntry> > kdd;
 
-static QString getDescrFromNum(unsigned short _num)
+static QString getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
     KDebugCache = kdd.setObject(new QIntDict<KDebugEntry>);
@@ -155,7 +155,7 @@ enum DebugLevels {
 static KConfig *debug_Config = 0;
 static KStaticDeleter<KConfig> pcd;
 
-static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const char *data)
+static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
 {
   if ( !debug_Config && KGlobal::_instance )
   {
@@ -289,7 +289,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
         abort();
 }
 
-static void kDebugBackend2( unsigned short nLevel, unsigned short nArea, const char* fmt, va_list arguments )
+static void kDebugBackend2( unsigned short nLevel, unsigned int nArea, const char* fmt, va_list arguments )
 {
     char buf[4096] = "";
     int nSize = vsnprintf( buf, 4096, fmt, arguments );
