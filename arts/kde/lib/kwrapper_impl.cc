@@ -84,8 +84,3 @@ PlayObject KWrapperFactory_impl::createPlayObject(const string &url, const strin
 
     return PlayObject::null();
 }
-
-#ifndef __SUNPRO_CC
-/* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
-REGISTER_IMPLEMENTATION(KWrapperFactory_impl);
-#endif
