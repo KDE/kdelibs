@@ -102,16 +102,12 @@ QCString PtyProcess::readLine(bool block)
     if (!m_Inbuf.isEmpty()) 
     {
 	pos = m_Inbuf.find('\n');
-	if (pos == -1) 
-	{
-	    ret = m_Inbuf;
-	    m_Inbuf.resize(0);
-	} else 
+	if (pos != -1) 
 	{
 	    ret = m_Inbuf.left(pos);
 	    m_Inbuf = m_Inbuf.mid(pos+1);
+	    return ret;
 	}
-	return ret;
     }
 
     int flags = fcntl(m_Fd, F_GETFL);
