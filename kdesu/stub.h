@@ -33,6 +33,8 @@ public:
     StubProcess();
     ~StubProcess();
 
+    enum Errors { StubUnknownRequest=1 };
+
     /** Set the command. */
     void setCommand(QCString command) { m_Command = command; }
 

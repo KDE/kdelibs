@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -53,10 +54,9 @@ SuProcess::~SuProcess()
 {
 }
 
-
 int SuProcess::checkInstall(const char *password)
 {
-    return exec(password, true);
+    return exec(password, 1);
 }
 
 /*
@@ -77,62 +77,96 @@ int SuProcess::exec(const char *password, int check)
     args += QCString(__KDE_BINDIR) + "/kdesu_stub";
 
     if (StubProcess::exec(__PATH_SU, args) < 0)
-	return -1;
-    
-    if (ConverseSU(password) < 0) 
     {
-	kdError(900) << k_lineinfo << "Conversation with su failed\n";
-	return -1;
-    } 
+	return check ? SuNotFound : -1;
+    }
+    
+    int ret = ConverseSU(password);
+    if (ret != 0) 
+    {
+	if (!check)
+	{
+	    kdError(900) << k_lineinfo << "Conversation with su failed\n";
+	    ret = -1;
+	}
+	return ret;
+    }
+
     if (m_bErase) 
     {
 	char *ptr = const_cast<char *>(password);
 	for (unsigned i=0; i<strlen(password); i++)
 	    ptr[i] = '\000';
     }
-    if (ConverseStub(check) < 0) 
+
+    ret = ConverseStub(check);
+    if (ret != 0)
     {
-	kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
-	return -1;
-    }
-    
-    if (!check)
-    {
-	// Notify the taskbar that an app has been started. 
-	QString suffix = i18n("(as %1)").arg(m_User);
-	notifyTaskbar(suffix);
+	if (ret < 0)
+	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+	if (ret == StubUnknownRequest)
+	    ret = SuIncorrectPassword;
+	return ret;
     }
 
-    int ret = waitForChild();
+    if (check)
+    {
+	// All checks are ok
+	waitForChild();
+	return 0;
+    }
+	
+    // Notify the taskbar that an app has been started. 
+    QString suffix = i18n("(as %1)").arg(m_User);
+    notifyTaskbar(suffix);
+    ret = waitForChild();
     return ret;
 }
 
 /*
  * Conversation with su: feed the password.
+ * Return values: -1 = parse error, 0 = ok or >0 an error code.
  */
 
 int SuProcess::ConverseSU(const char *password)
 {	
-    int state = 0;
+    int colon, state = 0;
+    unsigned i, j;
 
     QCString line;
     while (state < 2) 
     {
 	line = readLine(); 
 	if (line.isNull())
+	{
+	    if (state == 0)
+		return SuNotAllowed;
 	    return -1;
+	}
+
 	switch (state) 
 	{
 	case 0:
-	    // Write password
-	    if (line.contains(':')) 
+	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
+	    for (i=0,j=0,colon=0; i<line.length(); i++) 
+	    {
+		if (line[i] == ':') 
+		{
+		    j = i; colon++;
+		    continue;
+		}
+		if (!isspace(line[i]))
+		    j++;
+	    }
+	    if ((colon == 1) && (line[j] == ':')) 
 	    {
 		WaitSlave();
 		write(m_Fd, password, strlen(password));
 		write(m_Fd, "\n", 1);
 		state++;
-	    } 
+	    }
 	    break;
+
 	case 1:
 	    if (line.stripWhiteSpace().isEmpty()) 
 	    {

@@ -27,6 +27,8 @@ public:
     SuProcess(QCString user=0, QCString command=0);
     ~SuProcess();
 
+    enum Errors { SuNotFound=1, SuNotAllowed, SuIncorrectPassword };
+
     /** Execute the command. This will wait for the command to finish. */
     int exec(const char *password, int check=0);
 

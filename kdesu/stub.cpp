@@ -126,7 +126,7 @@ int StubProcess::ConverseStub(bool check_only)
 	{
 	    kdWarning(900) << k_lineinfo << "Unknown request: -->" << line 
 		           << "<--\n";
-	    return -1;
+	    return StubUnknownRequest;
 	}
     }
 
