@@ -72,8 +72,8 @@
   <xsl:call-template name="anchor"/>
   <xsl:call-template name="person.name"/>
 </xsl:template>
-
+<!-- 
 <xsl:template match="programlisting">
  <xsl:param name="linenumbering.extension" select="1"/>
-</xsl:template>
+</xsl:template> -->
 </xsl:stylesheet>
