@@ -144,6 +144,7 @@ public:
 
 signals:
     void cleared();
+    void zoomView( int );
 
 protected:
     void clear();

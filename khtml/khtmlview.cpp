@@ -1498,7 +1498,13 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-    if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
+    if ( ( e->state() & ShiftButton ) == ShiftButton )
+    {
+        emit zoomView( e->delta() );
+        e->accept();
+    }
+    else if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible() 
+                && m_part->parentPart() ) {
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();

@@ -993,6 +993,11 @@ private slots:
    */
   void slotClearSelection();
 
+  /**
+   * @internal
+   */
+  void slotZoomView( int );
+
 private:
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };

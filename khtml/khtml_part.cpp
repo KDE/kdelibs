@@ -213,6 +213,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
 
+  connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );
+
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
   connect( this, SIGNAL( completed( bool ) ),
@@ -3656,6 +3658,14 @@ void KHTMLPart::setZoomFactor (int percent)
 
   d->m_paDecZoomFactor->setEnabled( d->m_zoomFactor > minZoom );
   d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
+}
+
+void KHTMLPart::slotZoomView( int delta )
+{
+  if ( delta < 0 )
+    slotIncZoom();
+  else
+    slotDecZoom();
 }
 
 void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
