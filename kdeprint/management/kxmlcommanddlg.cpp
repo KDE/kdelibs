@@ -34,6 +34,7 @@
 #include <qcheckbox.h>
 #include <ktextedit.h>
 #include <qregexp.h>
+#include <qwhatsthis.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -273,6 +274,69 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	connect( m_persistent, SIGNAL( toggled(bool) ), SLOT( slotChanged() ) );
 	m_dummy->setEnabled(false);
 	viewItem(0);
+
+	/**
+	 * Add some short help for the normal (non expert) user
+	 */
+	QWhatsThis::add( m_name, i18n( 
+				"An identification string. Use only alphanumeric characters except spaces. "
+				"The string <b>__root__</b> is reserved for internal use." ) );
+	QWhatsThis::add( m_namelab, QWhatsThis::textFor( m_name ) );
+	QWhatsThis::add( m_desc, i18n( 
+				"A description string. This string is shown in the interface, and should "
+				"be explicit enough about the role of the corresponding option." ) );
+	QWhatsThis::add( m_desclab, QWhatsThis::textFor( m_desc ) );
+	QWhatsThis::add( m_type, i18n( 
+				"The type of the option. This determines how the option is presented "
+				"graphically to the user." ) );
+	QWhatsThis::add( m_typelab, QWhatsThis::textFor( m_type ) );
+	QWhatsThis::add( m_format, i18n( 
+				"The format of the option. This determines how the option is formatted "
+				"for includion in the global command line. The tag <b>%value</b> can be used "
+				"to represent the user selection. This tag will be replaced at run-time by a "
+				"string representation of the option value." ) );
+	QWhatsThis::add( m_formatlab, QWhatsThis::textFor( m_format ) );
+	QWhatsThis::add( m_default, i18n( 
+				"The default value of the option. For non persistent options, nothing is "
+				"added to the command line if the option has that default value. If this "
+				"value does not correspond to the actual default value of the underlying "
+				"utility, make the option persistent to avoid unwanted effects." ) );
+	QWhatsThis::add( m_defaultlab, QWhatsThis::textFor( m_default ) );
+	QWhatsThis::add( m_persistent, i18n( 
+				"Make the option persistent. A persistent option is always written to the "
+				"command line, whatever its value. This is useful when the chosen default "
+				"value does not match with the actual default value of the underlying utility." ) );
+	QWhatsThis::add( m_command, i18n( 
+				"The full command line to execute the associated underlying utility. This "
+				"command line is based on a mechanism of tags that are replaced at run-time. "
+				"The supported tags are:<ul>"
+				"<li><b>%filterargs</b>: command options</li>"
+				"<li><b>%filterinput</b>: input specification</li>"
+				"<li><b>%filteroutput</b>: output specification</li>"
+				"<li><b>%psu</b>: the page size in upper case</li>"
+				"<li><b>%psl</b>: the page size in lower case</li></ul>" ) );
+	QWhatsThis::add( m_commandlab, QWhatsThis::textFor( m_command ) );
+	QWhatsThis::add( m_inputfile, i18n( 
+				"Input specification when the underlying utility reads input data from a file. Use "
+				"the tag <b>%in</b> to represent the input filename." ) );
+	QWhatsThis::add( m_inputfilelab, QWhatsThis::textFor( m_inputfile ) );
+	QWhatsThis::add( m_outputfile, i18n( 
+				"Output specification when the underlying utility writes output data to a file. Use "
+				"the tag <b>%out</b> to represent the output filename." ) );
+	QWhatsThis::add( m_outputfilelab, QWhatsThis::textFor( m_outputfile ) );
+	QWhatsThis::add( m_inputpipe, i18n( 
+				"Input specification when the underlying utility reads input data from its "
+				"standard input." ) );
+	QWhatsThis::add( m_inputpipelab, QWhatsThis::textFor( m_inputpipe ) );
+	QWhatsThis::add( m_outputpipe, i18n( 
+				"Output specification when the underlying utility writes output data to its "
+				"standard output." ) );
+	QWhatsThis::add( m_outputpipelab, QWhatsThis::textFor( m_outputpipe ) );
+	QWhatsThis::add( m_comment, i18n( 
+				"A comment about the underlying utility, which can be viewed by the user "
+				"from the interface. This comment string supports basic HTML tags like "
+				"&lt;a&gt;, &lt;b&gt; or &lt;i&gt;." ) );
+	QWhatsThis::add( m_commentlab, QWhatsThis::textFor( m_comment ) );
 
 	resize(660, 200);
 }
