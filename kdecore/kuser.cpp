@@ -21,10 +21,14 @@
 
 #include <kuser.h>
 
+#include "kstringhandler.h"
+
+#include <qstringlist.h>
+
 #include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <qstringlist.h>
+#include <stdlib.h>
 
 class KUserPrivate : public KShared
 {
@@ -35,9 +39,7 @@ public:
 	QString roomNumber, workPhone, homePhone;
 	QString homeDir, shell;
 
-	KUserPrivate() {
-		valid = false;
-	}
+	KUserPrivate() : valid(false) {}
 
 	KUserPrivate(long _uid,
 		     long _gid,
@@ -57,21 +59,34 @@ public:
 		workPhone(_workPhone),
 		homePhone(_homePhone),
 		homeDir(_homedir),
-		shell(_shell) {
-	}
+		shell(_shell) {}
 };
 
 
 KUser::KUser(UIDMode mode) {
-	fillPasswd(getpwuid((mode == UseEffectiveUID) ? geteuid() : getuid()));
+	long _uid = ::getuid(), _euid;
+	if (mode == UseEffectiveUID && (_euid = ::geteuid()) != _uid )
+		fillPasswd( ::getpwuid( _euid ) );
+	else {
+		fillName( ::getenv( "LOGNAME" ) );
+		if (uid() != _uid) {
+			fillName( ::getenv( "USER" ) );
+			if (uid() != _uid)
+				fillPasswd( ::getpwuid( _uid ) );
+		}
+	}
 }
 
 KUser::KUser(long uid) {
-	fillPasswd(getpwuid(uid));
+	fillPasswd( ::getpwuid( uid ) );
 }
 
 KUser::KUser(const QString& name) {
-	fillPasswd(getpwnam((const char*)name.local8Bit()));
+	fillName( name.local8Bit().data() );
+}
+
+KUser::KUser(const char *name) {
+	fillName( name );
 }
 
 bool KUser::operator ==(const KUser& user) const {
@@ -87,9 +102,13 @@ bool KUser::operator !=(const KUser& user) const {
 	return !operator ==(user);
 }
 
+void KUser::fillName(const char *name) {
+	fillPasswd(name ? ::getpwnam( name ) : 0);
+}
+
 void KUser::fillPasswd(struct passwd *p) {
 	if (p) {
-		QString gecos = QString::fromLocal8Bit(p->pw_gecos);
+		QString gecos = KStringHandler::from8Bit(p->pw_gecos); 
 		QStringList gecosList = QStringList::split(',', gecos, true);
 
 		d = new KUserPrivate(p->pw_uid,

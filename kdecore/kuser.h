@@ -1,6 +1,7 @@
 /*
  *  KUser - represent a user/account
- *  Copyright (C) 2002 Tim Jansen <tim@tjansen.de>
+ *  Copyright (C) 2002-2003 Tim Jansen <tim@tjansen.de>
+ *  Copyright (C) 2003 Oswald Buddenhagen <ossi@kde.org>
  *
  *  $Id$
  *
@@ -44,20 +45,20 @@ class KUser {
 
 public:
 
-  enum UIDMode{ 
+  enum UIDMode { 
   	UseEffectiveUID, ///< Use the effective user id.
   	UseRealUserID    ///< Use the real user id.
   };
 
   /**
    * Creates an object that contains information about the current user.
-   * (as returned by getuid(2) or geteuid(2)).
+   * (as returned by getuid(2) or geteuid(2), taking $LOGNAME/$USER into
+   * account).
    * @param mode if @ref UseEffectiveUID is passed the effective user is returned. 
    *        If @ref UseRealUserID is passed the real user will be returned. 
-   *        The difference is that when the user uses a command like "su", this 
-   *        will change the effective user, but not the real user. Use the 
-   *        effective user when checking permissions, and the real user for displaying
-   *        information about the user
+   *        The RUID will be different than the EUID in setuid programs; in  
+   *        such a case use the EUID for checking permissions, and the RUID 
+   *        for displaying information about the user.
    */
   KUser(UIDMode mode = UseEffectiveUID);
 
@@ -75,6 +76,22 @@ public:
    * @param name the name of the user
    */
   KUser(const QString& name);
+
+  /**
+   * Creates an object that contains information about the user with the given
+   * name. If the user does not exist isValid() will return false.
+   *
+   * @param name the name of the user
+   */
+  KUser(const char *name);
+
+  /**
+   * Creates an object from a passwd structure.
+   * If the pointer is null isValid() will return false.
+   *
+   * @param p the passwd structure to create the user from
+   */
+  KUser(struct passwd *p);
 
   /**
    * Two KUser objects are equal if isValid() is true 
@@ -169,6 +186,7 @@ public:
 private:
   KSharedPtr<KUserPrivate> d;
   void fillPasswd(struct passwd* p);
+  void fillName(const char* name);
 };
 
 #endif
