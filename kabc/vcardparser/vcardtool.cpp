@@ -435,11 +435,14 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           PhoneNumber phone;
           phone.setNumber( (*lineIt).value().asString() );
 
-          int type = PhoneNumber::Home; // default
+          int type = 0;
 
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
             type += mPhoneTypeMap[(*it).upper()];
+
+          if ( !type )
+            type = PhoneNumber::Home; // default
 
           phone.setType( type );
 
