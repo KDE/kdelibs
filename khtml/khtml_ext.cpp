@@ -114,7 +114,7 @@ void KHTMLPartBrowserExtension::editableWidgetFocused( QWidget *widget )
     editableWidgetFocused();
 }
 
-void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
+void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget * /*widget*/ )
 {
     QWidget *oldWidget = m_editableFormWidget;
 
