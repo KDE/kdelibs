@@ -123,7 +123,6 @@ void KGlobalAccel::connectItem( const QString& action,
     aKeyMap.replace(action, entry);
     aAvailableId++;
 
-    //kdDebug() << "KGlobalAccel::connectItem()\n";
     setItemEnabled( action, activate );
 
 }
@@ -230,7 +229,7 @@ void KGlobalAccel::readSettings(KConfig* config)
 		uint keyModX;
 
 		if ( keyStr.isEmpty() || keyStr.startsWith( "default" ))
-			keyQt = (*it).aDefaultKeyCode;
+			keyQt = KAccel::useFourModifierKeys() ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
 		else
 			keyQt = KAccel::stringToKey( keyStr );
 		KAccel::keyQtToKeyX( keyQt, &keyCodeX, 0, &keyModX );
@@ -452,6 +451,10 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	// Key values may have been reassigned: need to do new XGrabKey()s.
 	setEnabled( false );
 	setEnabled( true );
+	// This belongs somewhere else where it will only be called once, instead
+	//  of once for each application with a KGlobalAccel object.
+	// But where to go?
+	KAccel::readModifierMapping();
 	return true;
     }
 
@@ -468,12 +471,14 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
     // Search for which accelerator activated this event:
     KKeyEntry entry;
+    QString sConfigKey;
     for (KKeyEntryMap::ConstIterator it = aKeyMap.begin(); it != aKeyMap.end(); ++it) {
 	KAccel::keyQtToKeyX( (*it).aCurrentKeyCode, 0, &keySymX2, &keyModX2 );
 	//kdDebug() << "x11EventFilter: inspecting " << KAccel::keyToString( (*it).aCurrentKeyCode )
 	//	<< QString( " keySym: %1 keyMod: %2\n" ).arg( keySymX2, 0, 16 ).arg( keyModX2, 0, 16 );
 	if ( keySymX == keySymX2 && keyModX == (keyModX2 & keyModMaskX) ) {
 	    entry = *it;
+	    sConfigKey = it.key();
 	    break;
 	}
     }
@@ -486,11 +491,22 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
 	} else {
-		connect( this, SIGNAL( activated() ),
-			entry.receiver, entry.member);
-		emit activated();
-		disconnect( this, SIGNAL( activated() ), entry.receiver,
-			entry.member );
+		QRegExp r1( "([ ]*int[ ]*)" ), r2( " [0-9]+$" );
+		if( r1.match( entry.member ) >= 0 && r2.match( sConfigKey ) >= 0 ) {
+			int n = sConfigKey.mid( sConfigKey.findRev(' ')+1 ).toInt();
+			kdDebug(125) << "Calling " << entry.member << " int = " << n << endl;
+			connect( this, SIGNAL( activated( int ) ),
+				entry.receiver, entry.member);
+			emit activated( n );
+			disconnect( this, SIGNAL( activated( int ) ), entry.receiver,
+				entry.member );
+		} else {
+			connect( this, SIGNAL( activated() ),
+				entry.receiver, entry.member);
+			emit activated();
+			disconnect( this, SIGNAL( activated() ), entry.receiver,
+				entry.member );
+		}
 	}
     }
 

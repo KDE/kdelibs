@@ -68,6 +68,10 @@ public:
     //  usable as a shortcut.
     // bAllowMetaKey should be true only if this is not a shortcut
     //  for a specific application.
+    KKeyChooser( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder, QWidget* parent,
+		bool check_against_std_keys,
+		bool bAllowLetterShortcuts,
+		bool bAllowMetaKey = false );
     KKeyChooser( KKeyEntryMap *aKeyMap, QWidget* parent,
 		bool check_against_std_keys,
 		bool bAllowLetterShortcuts,
@@ -77,7 +81,7 @@ public:
     ~KKeyChooser();
 
 protected:
-    void init( KKeyEntryMap *aKeyMap,
+    void init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 		bool check_against_std_keys,
 		bool bAllowLetterShortcuts,
 		bool bAllowMetaKey );
@@ -96,6 +100,9 @@ public slots:
     void allDefault();
     // Whether to use the 3 or 4 modifier key scheme.
     void allDefault( bool useFourModifierKeys );
+    // This determines which default is used when the 'Default' button is
+    //  clicked.
+    void setPreferFourModifierKeys( bool preferFourModifierKeys );
 
    /**
     * Set all list entries to their changed values.
@@ -182,7 +189,7 @@ protected:
 class KKeyDialog : public KDialogBase
 {
   Q_OBJECT
-	
+
 public:
 
   KKeyDialog( KKeyEntryMap* aKeyDict, QWidget *parent = 0,

@@ -85,6 +85,7 @@ struct KKeyEntry {
 };
 
 typedef QMap<QString, KKeyEntry> KKeyEntryMap;
+typedef QMap<int, QString> KKeyMapOrder;
 
 /**
  * Handle keyboard accelerators.
@@ -434,6 +435,9 @@ class KAccel : public QAccel
 	 * items will be lost when the @ref KKeyEntry objects are deleted.
 	 */
 	KKeyEntryMap keyDict() const;
+	// Hack: to be replaced after the 2.2beta testing phase. -- ellis
+	const KKeyMapOrder& keyInsertOrder() const { return aKeyMapOrder; }
+	KKeyMapOrder& keyInsertOrder() { return aKeyMapOrder; }
 
 	/**
 	 * Read all key associations from @p config, or (if @p config
@@ -561,6 +565,18 @@ class KAccel : public QAccel
 	static QString keyToString( int keyCode, bool i18_n = FALSE );
 
 	// X11-Related Functions
+	// I want to move these functions out of KAccel and into their own
+	//  class ASAP.
+	// Naming Proceedure:
+	//  -CodeX	the index of the physical key pressed (keyboard dependent)
+	//  -Sym-	key symbol. Either unicode (like 'A') or special key (like delete)
+	//  -Mod-	contains bits for modifier flags
+	//  -X		Formatted for/by the X sever
+	//  -Qt		Formatted for/by Qt
+	//  keyQt	Qt shortcut key value containing both Qt Sym and Qt Mod.
+	//  keyEvent-	An X or Qt key event
+	// Example:
+	//  keyCodeXToKeyQt() converts the X11 key code & mod into a Qt shortcut key
 	enum ModKeysIndex {
 		ModShiftIndex, ModCapsLockIndex, ModCtrlIndex, ModAltIndex,
 		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
@@ -580,6 +596,7 @@ class KAccel : public QAccel
 	static QString keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n );
 	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
 
+	// Return the keyModX containing just the bit set for the given modifier.
 	static uint keyModXShift();		// ShiftMask
 	static uint keyModXLock();		// LockMask
 	static uint keyModXCtrl();		// ControlMask
@@ -589,9 +606,12 @@ class KAccel : public QAccel
 	static uint keyModXMeta();		// Normally Mod4Mask
 	static uint keyModXScrollLock();	// Normally Mod5Mask
 
+	// Return the keyMod mask containing the bits set for the modifiers
+	//  which may be used in accelerator shortcuts.
 	static uint accelModMaskQt();		// Normally Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1)
 	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
 
+	// Returns true if X has the Meta key assigned to a modifier bit
 	static bool keyboardHasMetaKey();
 
 signals:
@@ -600,10 +620,14 @@ signals:
  protected:
 	int aAvailableId;
 	KKeyEntryMap aKeyMap;
+	KKeyMapOrder aKeyMapOrder;	// A list preserving the original insertItem order.
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
 
+	// Indicate whether to default to the 3- or 4- modifier keyboard schemes
+	// This variable should also be moved into a class along with the
+	// X11-related key functions above.
 	static bool bUseFourModifierKeys;
  private:
         KAccelPrivate *d;

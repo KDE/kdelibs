@@ -213,6 +213,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     entry.aDefaultKeyCode = defaultKeyCode3.key();
     entry.aDefaultKeyCode4 = defaultKeyCode4.key();
     entry.aCurrentKeyCode = entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
+    kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << "entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
     entry.bConfigurable = configurable;
     entry.descr = descr;
     entry.menuId = id;
@@ -220,6 +221,13 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     entry.bEnabled = true;
 
     aKeyMap[action] = entry;
+
+    // Hack to get ordering and labeling working in kcontrol -- this will be replaced as
+    //  soon as the 2.2beta testing phase is over.
+    aKeyMapOrder[aKeyMapOrder.count()] = action;
+    // Program:XXX and Group:XXX labels should be disabled.
+    if( action.contains( ':' ) )
+    	entry.bEnabled = false;
 
     return true;
 }
@@ -347,7 +355,7 @@ void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfigBase *c
         s = pConfig->readEntry(it.key());
 
         if ( s.isNull() || s.startsWith( "default" ))
-            (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
+            (*it).aConfigKeyCode = useFourModifierKeys() ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
         else
             (*it).aConfigKeyCode = stringToKey( s );
 
@@ -548,13 +556,16 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 void KAccel::useFourModifierKeys( bool b )
 {
 	bUseFourModifierKeys = b && keyboardHasMetaKey();
+	kdDebug(125) << "bUseFourModifierKeys = " << bUseFourModifierKeys << endl;
 }
 
 bool KAccel::qtSupportsMetaKey()
 {
 	static int qtSupport = -1;
-	if( qtSupport == -1 )
+	if( qtSupport == -1 ) {
 		qtSupport = QAccel::stringToKey("Meta+A") & (Qt::ALT<<1);
+		kdDebug(125) << "Qt Supports Meta Key: " << qtSupport << endl;
+	}
 	return qtSupport == 1;
 }
 
@@ -605,7 +616,8 @@ void KAccel::readModifierMapping()
 	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
 	for( int i = Mod2MapIndex; i < 8; i++ ) {
 		int j = -1;
-		switch( XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i + j], 0 ) ) {
+		uint keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i + j], 0 );
+		switch( keySymX ) {
 			//case XK_Alt_L:
 			//case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
 			case XK_Num_Lock:	j = 4; break;	// Normally Mod2Mask
@@ -616,7 +628,7 @@ void KAccel::readModifierMapping()
 		}
 		if( j >= 0 )
 			g_aModKeys[j].keyModMaskX = (1<<i);
-		kdDebug(125) << QString( "%1 = mod%2, keycode: %3\n" ).arg(g_aModKeys[i].keyName).arg(i-2).arg( keyCodeXToString( xmk->modifiermap[xmk->max_keypermod * i + j], 0, false ) );
+		kdDebug(125) << QString( "%1 = mod%2, keycode: %3\n" ).arg(g_aModKeys[i].keyName).arg(i-2).arg(keySymX, 0, 16);
 	}
 
 	XFreeModifiermap(xmk);

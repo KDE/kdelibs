@@ -88,6 +88,9 @@ public:
     // Note, however, that this only applies to printable characters.
     //  'F1', 'Insert', etc., could still be used.
     bool bAllowLetterShortcuts;
+    // When set, pressing the 'Default' button will select the aDefaultKeycode4,
+    //  otherwise aDefaultKeycode.
+    bool bPreferFourModifierKeys;
 };
 
 // HACK: for getting around some of Qt's lack of Meta support
@@ -154,7 +157,7 @@ void KKeyButton::captureKey()
 bool KKeyButton::x11Event( XEvent *pEvent )
 {
 	if( editing ) {
-		//kdDebug() << "x11Event: type: " << pEvent->type << " window: " << pEvent->xany.window << endl;
+		//kdDebug(125) << "x11Event: type: " << pEvent->type << " window: " << pEvent->xany.window << endl;
 		switch( pEvent->type ) {
 			case XKeyPress:
 			case XKeyRelease:
@@ -174,7 +177,7 @@ void KKeyButton::keyPressEventX( XEvent *pEvent )
 	uint keyModX = 0, keySymX;
 	KAccel::keyEventXToKeyX( pEvent, 0, &keySymX, 0 );
 
-	//kdDebug() << QString( "keycode: 0x%1 state: 0x%2\n" )
+	//kdDebug(125) << QString( "keycode: 0x%1 state: 0x%2\n" )
 	//			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 );
 
 	switch( keySymX ) {
@@ -416,23 +419,32 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
 //************************************************************************
 // KKeyChooser                                                           *
 //************************************************************************
+KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder, QWidget* parent,
+			bool check_against_std_keys,
+			bool bAllowLetterShortcuts,
+			bool bAllowMetaKey )
+: QWidget( parent )
+{
+	init( aKeyMap, pMapOrder, check_against_std_keys, bAllowLetterShortcuts, bAllowMetaKey );
+}
+
 KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget* parent,
 			bool check_against_std_keys,
 			bool bAllowLetterShortcuts,
 			bool bAllowMetaKey )
 : QWidget( parent )
 {
-	init( aKeyMap, check_against_std_keys, bAllowLetterShortcuts, bAllowMetaKey );
+	init( aKeyMap, 0, check_against_std_keys, bAllowLetterShortcuts, bAllowMetaKey );
 }
 
 KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
                           bool check_against_std_keys)
     : QWidget( parent )
 {
-	init( aKeyMap, check_against_std_keys, false, true );
+	init( aKeyMap, 0, check_against_std_keys, false, true );
 }
 
-void KKeyChooser::init( KKeyEntryMap *aKeyMap,
+void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 			bool check_against_std_keys,
 			bool bAllowLetterShortcuts,
 			bool bAllowMetaKey )
@@ -441,11 +453,9 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap,
 
   d->bKeyIntercept = false;
   d->map = aKeyMap;
-  // Hack: until we have qt support of meta key, we can only use Meta with global
-  //  accelerators.  Since check_against_std_keys is 'true' for globals,
-  //  we can use it to determine whether or not to allow the Meta key.
   d->bAllowMetaKey = bAllowMetaKey;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
+  d->bPreferFourModifierKeys = KAccel::useFourModifierKeys();
 
   //
   // TOP LAYOUT MANAGER
@@ -482,20 +492,63 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap,
   QWhatsThis::add( d->wList, wtstr );
 
   d->wList->addColumn(i18n("Action"));
-  d->wList->addColumn(i18n("Current key"));
+  d->wList->addColumn(i18n("Current Key"));
 
   //
   // Add all "keys" to the list
   //
-  for (KKeyEntryMap::Iterator it = aKeyMap->begin();
-       it != aKeyMap->end(); ++it)
-  {
-    (*it).aConfigKeyCode = (*it).aCurrentKeyCode;
+  if( pMapOrder ) {
+	d->wList->setSorting( -1 );
+	// HACK to avoid alphabetic ording.  I'll re-write this in the
+	//  next development phase where API changes are not so sensitive. -- ellis
+	QListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
-    QListViewItem * s = new QListViewItem(d->wList,
-                                          (*it).descr,
-                                          KAccel::keyToString((*it).aConfigKeyCode, true));
-    d->actionMap[s] = it;
+	pParentItem = pProgramItem = pItem = new QListViewItem( d->wList, "Shortcuts" );
+	pParentItem->setExpandable( true );
+	pParentItem->setOpen( true );
+	pParentItem->setSelectable( false );
+	for( int i = 0; i < (int)pMapOrder->count(); i++ ) {
+		QString sConfigKey = (*pMapOrder)[i];
+		KKeyEntryMap::Iterator it = aKeyMap->find( sConfigKey );
+		kdDebug(125) << "Key: " << it.key() << endl;
+		if( it.key().contains("Program:") ) {
+			pItem = new QListViewItem( d->wList, pProgramItem, (*it).descr );
+			pItem->setSelectable( false );
+			pItem->setExpandable( true );
+			pItem->setOpen( true );
+			if( !pProgramItem->firstChild() )
+				delete pProgramItem;
+			pProgramItem = pParentItem = pItem;
+		} else if( it.key().contains("Group:") ) {
+			pItem = new QListViewItem( pProgramItem, pItem, (*it).descr );
+			pItem->setSelectable( false );
+			pItem->setExpandable( true );
+			pItem->setOpen( true );
+			if( pGroupItem && !pGroupItem->firstChild() )
+				delete pGroupItem;
+			pGroupItem = pParentItem = pItem;
+		} else {
+			pItem = new QListViewItem( pParentItem, pItem, (*it).descr,
+					KAccel::keyToString( (*it).aConfigKeyCode, true ) );
+			d->actionMap[pItem] = it;
+		}
+	}
+	if( !pProgramItem->firstChild() )
+		delete pProgramItem;
+	if( pGroupItem && !pGroupItem->firstChild() )
+		delete pGroupItem;
+  } else {
+
+    for (KKeyEntryMap::Iterator it = aKeyMap->begin();
+         it != aKeyMap->end(); ++it)
+    {
+      (*it).aConfigKeyCode = (*it).aCurrentKeyCode;
+
+      QListViewItem * s = new QListViewItem(d->wList,
+                                            (*it).descr,
+                                            KAccel::keyToString((*it).aConfigKeyCode, true));
+      d->actionMap[s] = it;
+    }
   }
 
   connect( d->wList, SIGNAL( currentChanged( QListViewItem * ) ),
@@ -528,42 +581,44 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap,
 
   grid->addRowSpacing(0,15);
   grid->addRowSpacing(5,1);*/
-  QGridLayout *grid = new QGridLayout( d->fCArea, 2, 4, KDialog::spacingHint() );
+  QGridLayout *grid = new QGridLayout( d->fCArea, 3, 4, KDialog::spacingHint() );
+  grid->addRowSpacing( 0, 5 );
 
   d->kbGroup = new QButtonGroup( d->fCArea );
   d->kbGroup->hide();
   d->kbGroup->setExclusive( true );
 
-  QRadioButton *rb = new QRadioButton( i18n("&No key"), d->fCArea );
+  QRadioButton *rb = new QRadioButton( i18n("&No Key"), d->fCArea );
   d->kbGroup->insert( rb, NoKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
-  grid->addWidget( rb, 0, 0 );
+  grid->addWidget( rb, 1, 0 );
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
 
   rb = new QRadioButton( i18n("De&fault Key"), d->fCArea );
   d->kbGroup->insert( rb, DefaultKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
-  grid->addWidget( rb, 0, 1 );
+  grid->addWidget( rb, 1, 1 );
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
 
   rb = new QRadioButton( i18n("Custom &Key"), d->fCArea );
   d->kbGroup->insert( rb, CustomKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
-  grid->addWidget( rb, 0, 2 );
+  grid->addWidget( rb, 1, 2 );
   QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
 
   connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
 
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
-  grid->addLayout( pushLayout, 0, 3 );
+  grid->addLayout( pushLayout, 1, 3 );
 
   d->bChange = new KKeyButton(d->fCArea, "key");
   d->bChange->setEnabled( false );
   connect( d->bChange, SIGNAL( capturedKey(uint) ), SLOT( capturedKey(uint) ) );
+  grid->addRowSpacing( 1, d->bChange->sizeHint().height() + 5 );
 
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
   		"you can press the key-combination which you would like to be assigned "
@@ -582,9 +637,7 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap,
   //d->lInfo->setAlignment( AlignCenter );
   //d->lInfo->setEnabled( false );
   //d->lInfo->hide();
-  grid->addMultiCellWidget( d->lInfo, 1, 1, 0, 3 );
-
-  grid->addRowSpacing( 0, d->bChange->sizeHint().height() + 5 );
+  grid->addMultiCellWidget( d->lInfo, 2, 2, 0, 3 );
 
   d->globalDict = new QDict<int> ( 100, false );
   d->globalDict->setAutoDelete( true );
@@ -671,17 +724,17 @@ void KKeyChooser::toChange( QListViewItem *item )
         d->kbGroup->find(DefaultKey)->setEnabled( false );
         d->kbGroup->find(CustomKey)->setEnabled( false );
 	d->bChange->setEnabled( false );
-    } else {
+    } else if( d->actionMap.contains( item ) ) {
         /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
 
 	// Set key strings
 	QString keyStrCfg = KAccel::keyToString( (*it).aConfigKeyCode, true );
-	QString keyStrDef = KAccel::keyToString( (*it).aDefaultKeyCode, true );
+	QString keyStrDef = KAccel::keyToString( (d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode), true );
 
         d->bChange->setKey( (*it).aConfigKeyCode );
         item->setText( 1, keyStrCfg );
-	((QRadioButton *)d->kbGroup->find(DefaultKey))->setText( QString("Default key (%1)").arg(keyStrDef.isEmpty() ? "None" : keyStrDef) );
+	d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? "None" : keyStrDef) );
 
 	// Select the appropriate radio button.
 	int index = ((*it).aConfigKeyCode == 0) ? NoKey
@@ -731,8 +784,9 @@ void KKeyChooser::noKey()
     if (!item)
         return;
 
-    kdDebug(125) << "no Key" << d->wList->currentItem()->text(0) << endl;
-    (*d->actionMap[d->wList->currentItem()]).aConfigKeyCode = 0;
+    //kdDebug(125) << "no Key" << d->wList->currentItem()->text(0) << endl;
+    if( d->actionMap.contains( d->wList->currentItem() ) )
+        (*d->actionMap[d->wList->currentItem()]).aConfigKeyCode = 0;
 
     /* update the list and the change area */
 
@@ -748,11 +802,15 @@ void KKeyChooser::defaultKey()
         return;
 
     /* update the list and the change area */
-    (*d->actionMap[item]).aConfigKeyCode =
-        (*d->actionMap[item]).aDefaultKeyCode;
+    if( d->actionMap.contains( item ) ) {
+        (*d->actionMap[item]).aConfigKeyCode =
+            (d->bPreferFourModifierKeys) ?
+                (*d->actionMap[item]).aDefaultKeyCode4 :
+                (*d->actionMap[item]).aDefaultKeyCode;
 
-    item->setText( 1,
-        KAccel::keyToString((*d->actionMap[item]).aConfigKeyCode, true) );
+        item->setText( 1,
+            KAccel::keyToString((*d->actionMap[item]).aConfigKeyCode, true) );
+    }
 
     toChange(d->wList->currentItem());
     emit keyChange();
@@ -767,21 +825,25 @@ void KKeyChooser::allDefault()
 void KKeyChooser::allDefault( bool useFourModifierKeys )
 {
     // Change all configKeyCodes to default values
+    kdDebug(125) << QString( "allDefault( %1 )\n" ).arg( useFourModifierKeys );
 
-    QListViewItem *at = d->wList->firstChild();
-    while (at) {
-
-        KKeyEntryMap::Iterator it = d->actionMap[at];
-kdDebug() << QString( "allDefault: %1 %2\n" ).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
-        if ( (*it).bConfigurable ) {
-            (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
-	    	(useFourModifierKeys) ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
-        }
-        at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
-
-        at = at->nextSibling();
+    for( QMap<QListViewItem*, KKeyEntryMap::Iterator>::Iterator itit = d->actionMap.begin();
+    	itit != d->actionMap.end(); ++itit ) {
+	KKeyEntryMap::Iterator it = *itit;
+        QListViewItem *at = itit.key();
+	    kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
+            if ( (*it).bConfigurable ) {
+                (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
+                    (useFourModifierKeys) ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+            }
+            at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
     }
     emit keyChange();
+}
+
+void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
+{
+	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
 }
 
 // These should be removed during the next clean-up.
@@ -805,10 +867,12 @@ void KKeyChooser::listSync()
     QListViewItem *item = d->wList->firstChild();
 
     while (item) {
-        KKeyEntryMap::Iterator it = d->actionMap[item];
+        if( d->actionMap.contains( item ) ) { // ellis -- for labels
+            KKeyEntryMap::Iterator it = d->actionMap[item];
 
-        if ( (*it).bConfigurable )
-            item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+            if ( (*it).bConfigurable )
+                item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+        }
 
         item = item->nextSibling();
     }
@@ -818,7 +882,7 @@ void KKeyChooser::listSync()
 void KKeyChooser::setKey( int keyCode )
 {
    QListViewItem *item = d->wList->currentItem();
-   if (!item)
+   if (!item || !d->actionMap.contains( item ))
       return;
 
    KKeyEntryMap::Iterator it = d->actionMap[item];
@@ -844,13 +908,12 @@ void KKeyChooser::setKey( int keyCode )
       // Update display
       toChange(item);
       emit keyChange();
-   } else
-      d->lInfo->setText( i18n("Attention : key already used") );
+   }
 }
 
 bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
 {
-    if (!kcode)
+    if (!kcode || !d->actionMap.contains( d->wList->currentItem() ))
         return false;
 
     // Search the global key codes to find if this keyCode is already used

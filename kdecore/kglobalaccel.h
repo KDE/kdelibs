@@ -285,6 +285,7 @@ protected:
 
 signals:
 	void activated();
+	void activated( int );
 
 protected:
 	int aAvailableId;

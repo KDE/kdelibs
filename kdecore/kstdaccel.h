@@ -197,6 +197,8 @@ public:
    * This does not take into account the user's configuration.
    */
   static uint defaultKey(StdAccel accel);
+  static uint defaultKey3(StdAccel accel);
+  static uint defaultKey4(StdAccel accel);
 };
 
 #endif

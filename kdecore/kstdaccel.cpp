@@ -114,6 +114,14 @@ QString KStdAccel::action(StdAccel id)
 
 uint KStdAccel::defaultKey(StdAccel id)
 {
+    if( KAccel::useFourModifierKeys() )
+        return defaultKey4( id );
+    else
+        return defaultKey3( id );
+}
+
+uint KStdAccel::defaultKey3(StdAccel id)
+{
     switch (id) {
      case Open:             return Qt::CTRL + Qt::Key_O;
      case New:              return Qt::CTRL + Qt::Key_N;
@@ -159,6 +167,14 @@ uint KStdAccel::defaultKey(StdAccel id)
     }
 
     return 0;
+}
+
+uint KStdAccel::defaultKey4(StdAccel id)
+{
+    if( id == Close )
+        return Qt::CTRL + Qt::Key_Escape;
+    else
+        return defaultKey3( id );
 }
 
 QString KStdAccel::description(StdAccel id)
