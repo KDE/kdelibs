@@ -46,7 +46,6 @@
 #include <qtimer.h>
 #include <kapp.h>
 
-#include <kurldrag.h>
 #include <kimageio.h>
 #include <kdebug.h>
 
