@@ -51,9 +51,9 @@ class KCrash
    * @li null in wich case signal-catching is disabled 
    *  (by calling signal(SIGSEGV, SIG_DFL))
    * @li if handler is omitted the default crash handler is installed.
-   * @li an user defined function in the form: HandlerType myCrashHandler { myFunctions(); }
+   * @li an user defined function in the form:
+   * static (if in a class) void myCrashHandler(int);
    */
-#warning the comment above needs to be checked if HandlerType myCrashHandler { myFunctions(); } works
    
   static void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
