@@ -162,7 +162,7 @@ void KCompletionBase::insertCompletionItems( QObject* parent, const char* member
         if( m_iCompletionMode != KGlobalSettings::completionMode() )
         {
             m_pCompletionMenu->insertSeparator();
-            m_pCompletionMenu->insertItem( i18n("Default"), parent, member, 0, KGlobalSettings::completionMode() );
+            m_pCompletionMenu->insertItem( i18n("Default"), parent, member, 0, 0 );
         }
     }
 }
