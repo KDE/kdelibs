@@ -115,7 +115,7 @@ int kdemain( int argc, char **argv )
   // Launch the cookiejar if not already running
   KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
   if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-	  !cookieConfig->hasGroup("Cookie Policy")
+	  !cookieConfig->hasGroup("Cookie Policy") )
   	cookieConfig->setGroup("Browser Settings/HTTP");
   else
   	cookieConfig->setGroup("Cookie Policy");
