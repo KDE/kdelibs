@@ -836,7 +836,6 @@ KJSProxy *KHTMLPart::jScript()
 
 QVariant KHTMLPart::executeScript( const QString &script )
 {
-    //kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
     return executeScript( DOM::Node(), script );
 }
 
@@ -2599,7 +2598,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
-    //kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
+  //kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
 
   // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
   // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
@@ -2652,10 +2651,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
     if ( child->m_type != khtml::ChildFrame::Object )
       partManager()->addPart( part, false );
-//     else
-//         kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
+//  else
+//      kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
+    assert( child->m_part );
 
     if ( child->m_type != khtml::ChildFrame::Object )
     {
@@ -2699,6 +2699,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   }
 
   checkEmitLoadEvent();
+  // Some JS code in the load event may have destroyed the part
+  // In that case, abort
+  if ( !child->m_part )
+    return false;
 
   if ( child->m_bPreloaded )
   {
@@ -2734,7 +2738,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   }
   else if ( !url.isEmpty() )
   {
-      //kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
+      //kdDebug( 6050 ) << "opening " << url.url() << " in frame " << child->m_part << endl;
       return child->m_part->openURL( url );
   }
   else
