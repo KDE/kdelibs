@@ -75,11 +75,11 @@ void KDirSize::startNextJob( const KURL & url )
              SLOT( slotEntries( KIO::Job*,
                                 const KIO::UDSEntryList& )));
     addSubjob( listJob );
-    m_totalSubdirs--; //decrement 1 to account for current directory
 }
 
 void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
+    static const QString& dot = KGlobal::staticQString( "." );
     static const QString& dotdot = KGlobal::staticQString( ".." );
     KIO::UDSEntryListConstIterator it = list.begin();
     KIO::UDSEntryListConstIterator end = list.end();
@@ -107,7 +107,9 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
               break;
           }
         }
-        if ( name != dotdot ) // i.e. name != ".."
+        if ( name == dot )
+            m_totalSize += size;
+        else if ( name != dotdot )
         {
             if (!isLink)
               m_totalSize += size;
