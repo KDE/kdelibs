@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.3  1997/04/21 22:37:23  kalle
+// Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
+// kcolordlg und kapp abgedated (von Martin Jones)
+//
 // Revision 1.2  1997/04/15 20:01:55  kalle
 // Kalles changes for 0.8
 //
@@ -149,6 +153,8 @@ class KIconLoader;
 	* @param pFilename The full path to the document you want to open.
   /// An X11 atom used for IPC
 	* pointer yourself, otherwise you have a memory leak.
+  /// An X11 atom used for reconfiguring the application
+  Atom __KDEChangeGeneral;                                        
   /// Get the X11 display
   /**
   /// Used by KDNDDropZone to register
@@ -212,6 +218,7 @@ private:
   void changePalette();
   void changeGeneral();
   void readSettings();
+  void KApplication::applyGUIStyle(GUIStyle newstyle);
   KIconLoader* pIconLoader; // the application's own icon loader
   KLocale* pLocale;  
   static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compability 

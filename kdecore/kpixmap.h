@@ -2,6 +2,9 @@
  * $Id$
  * Revision 1.1.1.3  1997/12/11 07:19:13  jacek
  * $Log$
+ * Eliminated static objects from KApplication and HTML-Widget
+ *
+ * Revision 1.2  1997/04/28 06:57:45  kalle
  * Various widgets moved from apps to libs
  * Added KSeparator
  * Several bugs fixed
@@ -35,6 +38,7 @@
 #error Declare functions needed from stdlib.h
 #endif
 
+#undef TrueColor
  * RCS header
 #include <qfile.h>
 #include <qtstream.h>
@@ -64,7 +68,6 @@ public:
   /// Load a pixmap from an .xpm file
   /** Load a pixmap from an .xpm file */
   virtual bool load( const char * );
-  virtual bool loadXPM( const char *);
   virtual bool loadXVPICS( const char *);
  *
 protected:

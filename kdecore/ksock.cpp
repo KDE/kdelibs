@@ -1,6 +1,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
  * Sources imported
  *
@@ -25,6 +28,12 @@
  * Kalle: new stopsign.xpm
  * 			KConfig: environment variables are resolved in readEntry()
  * 			Added KFloater
+
+#ifdef ALPHA
+#define ksize_t size_t
+#else
+#define ksize_t int
+#endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port )
 #include <errno.h>
@@ -130,7 +139,7 @@ void KSocket::slotWrite( int )
 	  return false;	
 long KSocket::getAddr()
   }
-  struct sockaddr_in name; int len = sizeof(name);
+
   return true;
 }
  */
@@ -191,14 +200,14 @@ bool KServerSocket::init( unsigned short int _port )
     {
 int KServerSocket::getPort()
 	  return false;
-  struct sockaddr_in name; int len = sizeof(name);
+    }
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
 long KServerSocket::getAddr()
   }
-  struct sockaddr_in name; int len = sizeof(name);
+    
   name.sin_family = AF_INET;
   name.sin_port = htons( _port );
   name.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -208,7 +217,7 @@ void KServerSocket::slotAccept( int _sock )
 	  warning("Could not bind to socket\n");
 	  ::close( sock );
 	  sock = -1;
-  int size = sizeof(clientname);
+	  return false;
     }
     
   if ( listen( sock, 1000 ) < 0 )

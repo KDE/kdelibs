@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.5  1997/04/21 22:37:23  kalle
+// Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
+// kcolordlg und kapp abgedated (von Martin Jones)
+//
 // Revision 1.4  1997/04/19 23:04:51  kalle
 // writeEntry with const char*
 //
@@ -126,6 +130,8 @@ private:
   void parseConfigFiles();
   void parseOneConfigFile( QTextStream*, KGroupDict* pGroup = NULL );
   void writeConfigFile( QFile& );
+
+friend class KApplication;
 
 protected:
 

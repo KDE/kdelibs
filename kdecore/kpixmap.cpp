@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
  * Sources imported
  *
@@ -35,166 +38,6 @@ KPixmap::KPixmap( const char *_file ) : QPixmap()
 {
   load( _file );
 }
-
-bool KPixmap::loadXPM( const char *_file ) {
-QFile f( _file );
-  
-    if ( !f.open( IO_ReadOnly ) )
-      return false;
-  
-    bool head_passed = false;
-    bool colors_passed = false;
-  
-    int x=-1;
-    int y=-1;
-    int ncolors=-1;
-    int chars_per_pixel=-1;
-    int colors_done = 0;
-  
-    char *color_chars = 0L;
-    QColor *colors = 0L;
-    int transparent = -1;
-  
-    int col = 0;
-  
-    QPainter painter;
-    QPainter maskpaint;
-    
-    while ( !f.atEnd() )
-      {
-	char str[ 1024 ];
-	f.readLine( str, 1024 );
-	if ( str[0] == '\"' )
-	  {
-	    if ( !head_passed )
-	      {
-		char *p = str + 1;
-		while (isspace(*p))p++;
-		x = atoi( p );
-		while (isdigit(*p))p++;
-		while (isspace(*p))p++;
-		y = atoi( p );
-		while (isdigit(*p))p++;
-		while (isspace(*p))p++;
-		ncolors = atoi( p );
-		while (isdigit(*p))p++;
-		while (isspace(*p))p++;
-		chars_per_pixel = atoi( p );
-			  
-		head_passed = true;
-			  
-		colors = new QColor[ ncolors ];
-		color_chars = new char[ ncolors ];
-			  
-		resize( x, y );
-		bitmap.resize( x, y );
-			  
-		painter.begin( this );
-		maskpaint.begin( &bitmap );
-			  
-		fill( white );
-		bitmap.fill( color0 );
-	      }
-	    else if ( !colors_passed )
-	      {
-		char *p = str + 1;
-		color_chars[ colors_done ] = *p;
-		do 
-		  p = strchr( p+1, 'c' );
-		while (p != 0L && 
-		       !isspace(*(p-1)) &&
-		       !isspace(*p+1));
-		if ( p == 0L )
-		  {
-		    painter.end();
-		    maskpaint.end();
-		    resize( 0, 0 );
-		    bitmap.resize( 0, 0 );
-		    delete colors;
-		    delete color_chars;
-		    return false;
-		  }
-		p+=2;
-			  
-		char *p2 = strchr( p, '\"' );
-		if ( p2 == 0L )
-		  {
-		    painter.end();
-		    maskpaint.end();
-		    resize( 0, 0 );
-		    bitmap.resize( 0, 0 );
-		    delete colors;
-		    delete color_chars;
-		    return false;
-		  }
-		*p2 = 0;
-			  
-		/* if ( *p == '#' && strlen( p ) == 6 )
-		   {
-		   }
-		   else if ( *p == '#' && strlen( p ) == 12 )
-		   {
-		   }
-		   else */
-			  
-		if ( strcasecmp( p, "None" ) == 0 )
-		  {
-		    transparent = colors_done;
-		    colors[ colors_done ].setRgb( 0, 0, 0 );
-		  }
-		else
-		  colors[ colors_done ].setNamedColor( p );
-			  
-		colors_done++;
-		if ( colors_done == ncolors )
-		  colors_passed = true;
-	      }
-	    else
-	      {
-		if ( col < y )
-		  {
-		    char *p = str + 1;
-				  
-		    for ( int i = 0; i < x; i++ )
-		      {
-			for ( int j = 0; j < ncolors; j++ )
-			  if ( *p == color_chars[ j ] )
-			    {
-			      painter.setPen( colors[ j ] );
-			      painter.drawPoint( i, col );
-			      if ( j == transparent )
-				maskpaint.setPen( color0 );
-			      else
-				maskpaint.setPen( color1 );
-			      maskpaint.drawPoint( i, col );
-			    }
-			p++;
-		      }
-		    col++;
-		  }
-	      }
-	  }
-      }
-
-    painter.end();
-    maskpaint.end();
-  
-    setMask( bitmap );
-  
-    if ( colors != 0 )
-      delete colors;
-    if ( color_chars != 0 )
-      delete color_chars;
-  
-    f.close();
-
-    return true;
-}
-
-#define M_PIXMAP_TYPE_UNKNOWN 0
-#define M_PIXMAP_TYPE_XPM     1
-#define M_PIXMAP_TYPE_XVPICS  2
-
 
 bool KPixmap::loadXVPICS( const char *_file ) {
 QFile f( _file );
@@ -294,26 +137,13 @@ QFile f( _file );
 
 bool KPixmap::load( const char *_file )
 {
-  //  int pixmap_type = M_PIXMAP_TYPE_UNKNOWN;
-
-  // Old strategie: _file does not end with .xpm, call QPixmap-loader.
-  // New strategie: use QPixmap::imageformat(const char *filename)!
-
 	if (_file) {
-//#ifdef DEBUG	
-//  printf("KPixmap::load(\"%s\"): type %s\n", 
-//	 _file, QPixmap::imageFormat(_file));
-//#endif
 
   // let QT find out if it can handle this, if so, call QPixmap
   if (QPixmap::imageFormat(_file) != NULL)
     return QPixmap::load( _file );
 
-  // otherwise call our readingfunctions.
-
-  // FIXME! This should of course not be decided on .xpm filename!
-  if (!strstr( _file, ".xpm" ) == 0 ) 
-    return loadXPM(_file);
+  // otherwise call ours 
 
   return loadXVPICS(_file);
   } else // if filename is NULL

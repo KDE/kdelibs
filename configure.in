@@ -62,8 +62,6 @@ AC_CHECK_BOOL
 
 dnl Checks for library functions. MISCOBJS is for kdecore
 AC_CHECK_FUNCS(socket)
-AC_CHECK_KSIZE_T
-AC_CHECK_SETENV
 
 dnl Perform program name transformation
 AC_ARG_PROGRAM

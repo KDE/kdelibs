@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.4  1997/04/23 16:45:14  kulow
+// fixed a bug in acinclude.m4 (Thanks to Paul)
+// solved some little problems with some gcc versions (no new code)
+//
 // Revision 1.3  1997/04/21 22:37:23  kalle
 // Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
 // kcolordlg und kapp abgedated (von Martin Jones)
@@ -62,12 +66,23 @@
 #endif
 
 #include <stdlib.h> // getenv()
+//   Now KApplication should work as promised in kapp.h :-)
+// Revision 1.66  1997/10/25 22:27:40  kalle
+// Revision 1.63  1997/10/21 20:44:41  kulow
+// removed all NULLs and replaced it with 0L or "".
+//
 // Revision 1.62  1997/10/17 15:46:22  stefan
 // compiler bug. I know - I should upgrade gcc, but for all the
 // poor folks that still have the old one ;-)
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
 QStrList KApplication::searchPaths;
 
+// prevents children from going zombie
+void reaper(int) 
+{
+  wait(0);
+}
+// Revision 1.60  1997/10/16 11:35:24  kulow
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
 //
@@ -92,8 +107,14 @@ QStrList KApplication::searchPaths;
 // Matthias: fixed an async reply problem with invokeHTMLHelp
 //
 // Revision 1.50  1997/10/10 22:09:17  ettrich
+  (void)signal(SIGCHLD, reaper);
+#include "kwm.h"
   KApp = this;
 #include <qtstream.h>
+  pConfigStream = NULL;
+
+  __KDEChangeGeneral = XInternAtom( qt_xdisplay(), "KDEChangeGeneral", False);
+
 #include "kprocctrl.h"
   if( char* pHome = getenv( "HOME" ) )
 
@@ -136,8 +157,32 @@ KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
 void KApplication::init()
 {
   // this is important since we fork() to launch the help (Matthias)
+  
+  // try to read a global application file
+  {
+    QString aConfigName;
+    aConfigName = kdedir();
+    aConfigName += "/config/.";
+    aConfigName += aAppName;
+    aConfigName += "rc";
+    QFile pConfigFile( aConfigName );
+    // try to open read-only
+    bSuccess = pConfigFile.open( IO_ReadOnly );
+    if( bSuccess )
+      {
+	// we succeeded to open an app-config file read-only
+	{
+	  QTextStream  pConfigStream( &pConfigFile );
+	  pConfig->parseOneConfigFile( &pConfigStream );
+	}
+	// parse the application file again to preserve priority
+	pConfig->parseOneConfigFile(pConfigStream);
+      }
+    pConfigFile.close();
+  }
+  rootDropZone = 0L;
 
-  display = XOpenDisplay( NULL );
+  // CC: install KProcess' signal handler
   // by creating the KProcController instance (if its not already existing)
   if ( theKProcessController == 0L) 
     theKProcessController = new KProcessController();
@@ -168,7 +213,8 @@ void KApplication::init()
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
 		  aMiniIconPixmap = aIconPixmap;
     case miniicon:
-  delete pConfigStream;
+  if( pConfigStream )
+	delete pConfigStream;
   pConfigFile->close();
   delete pConfigFile;
         aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
@@ -183,24 +229,38 @@ void KApplication::init()
 		QString aSessionConfigName;
 		if (argv[i+1][0] == '/')
 
-	  if ( getenv( "ENABLE_COLOR_FONT_SETUP" ) )
-	    {
-		  if ( cme->message_type == KDEChangePalette )
-			{
-			  readSettings();
-			  changePalette();
+  delete pCharsets;
+	  if ( cme->message_type == __KDEChangeGeneral )
+  delete pSearchPaths;
 
-			  return True;
-			}
-		  else if ( cme->message_type == KDEChangeGeneral )
-			{
-			  readSettings();
-			  changeGeneral();
-			  changePalette();
+  delete pConfig;
 
+  // Carefully shut down the process controller: It is very likely
+						 aCommand);
+  // (since we are in the process of shutting down, an opportunity
+  // at which child process are being killed). So we first mark
+  // the controller deleted (so that the SIGCHLD handler thinks it
+  // is already gone) before we actually delete it.
+  KProcessController* ctrl = theKProcessController;
+  theKProcessController = 0;
+  delete ctrl; // Stephan: "there can be only one" ;)
+}
+
+bool KApplication::x11EventFilter( XEvent *_event )
+{
+		  changePalette();
+  // This is to avoid this.
+  static int rootDropEventID = -1;
+    
+	  else if ( cme->message_type == KDEChangeGeneral )
+    {
+	  XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
+		  changeGeneral();
+			  changePalette();
+		{
 			  return True;
-			}
 			{
+			  if (!topWidget() || 
 			      cme->window != topWidget()->winId()){
 			    KWM::setWmCommand(cme->window, "");
 			    return true;
@@ -309,6 +369,33 @@ void KApplication::init()
 		{
 		  if ( rootDropEventID == (int)cme->data.l[1] )
 			return FALSE;
+	    
+		  rootDropEventID = (int)cme->data.l[1];
+
+		  if ( rootDropZone != 0L )
+			rootDropZone->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
+		  return TRUE;
+		}
+	
+	  KDNDDropZone *dz;
+	  KDNDDropZone *result = 0L;
+	
+	  /*
+		for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
+		{
+		QPoint p2 = dz->getWidget()->mapFromGlobal( p );
+		if ( dz->getWidget()->rect().contains( p2 ) )
+		result = dz;
+		}
+	  */
+
+	  QWidget *w = widgetAt( p.x(), p.y(), TRUE );
+
+	  while ( result == 0L && w != 0L )
+		{
+	      for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
+			{
+			  if ( dz->getWidget() == w )
 				result = dz;
 			}
 	      
@@ -580,7 +667,7 @@ void KApplication::changeGeneral()
       path.append("/doc/HTML/");
       path.append(filename);
 						backgroundColor.dark(), 
-	  if( topic.isEmpty() )
+	  if( !topic.isEmpty() )
 		{
 		  path.append( "#" );
 		  path.append(topic);
