@@ -1,15 +1,21 @@
 [Misc]
 Name=HighColor B2
+Name[de]=B2 64K-Farben
+Name[fi]=Monivärinen B2
 Name[he]=הובג עבצב B2
 Name[hu]=Sok-színű B2
 Name[it]=B2 con molti colori
+Name[no]=B2 med mange farger
 Name[no_NY]=B2 med mange fargar
 Name[sl]=Številne barve B2
 Comment=B2/KDE highcolor style
 Comment[ca]=Estil highcolor B2/KDE
+Comment[de]=B2/KDE-Stil in 64K-Farben
+Comment[fi]=B2/KDE monivärinen tyyli
 Comment[he]=הובג עבצב B2/KDE ןונגס
 Comment[hu]=B2/KDE sok színű stílus
 Comment[it]=Stile B2/KDE con molti colori
+Comment[no]=B2/KDE-stil med mange farger
 Comment[no_NY]=B2/KDE-stil med mange fargar
 Comment[sl]=Slog številni barv B2/KDE
 [KDE]
