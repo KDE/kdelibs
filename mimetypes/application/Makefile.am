@@ -23,7 +23,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-mswrite.desktop illustrator.desktop x-abiword.desktop \
 	x-gnumeric.desktop x-graphite.desktop x-karbon.desktop x-kchart.desktop \
 	x-kformula.desktop x-kivio.desktop x-kontour.desktop \
-	x-kpresenter.desktop x-krayon.desktop x-kspread-crypt.desktop \
+	x-kpresenter.desktop x-krita.desktop x-kspread-crypt.desktop \
 	x-kspread.desktop x-kugar.desktop x-kword-crypt.desktop x-kword.desktop \
 	x-quattropro.desktop x-amipro.desktop
 
