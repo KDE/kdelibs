@@ -11,8 +11,6 @@ TODO-List for the KFileDialog and associated classes (in order of importance)
 - implement KFile::PreviewInfo
 - signal KFileView::selectionCleared()
 
-- Allow filtering on MimeType (instead of extension).
-
 If anyone wants to implement some of those, please do. In case of questions,
 don't hesitate to ask me.
 
