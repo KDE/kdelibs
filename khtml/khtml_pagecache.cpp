@@ -50,7 +50,7 @@ public:
 
   void endData();
 
-  bool isValid() 
+  bool isValid()
    { return m_valid; }
 
   KHTMLPageCacheDelivery *fetchData(QObject *recvObj, const char *recvSlot);
@@ -71,32 +71,35 @@ public:
   bool deliveryActive;
 };
 
-KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_valid(false) 
-{ 
+KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_valid(false)
+{
   QString path = locateLocal("data", "khtml/cache");
   m_file = new KTempFile(path);
   m_file->unlink();
 }
 
-KHTMLPageCacheEntry::~KHTMLPageCacheEntry() 
-{ 
+KHTMLPageCacheEntry::~KHTMLPageCacheEntry()
+{
   delete m_file;
 }
 
 
-void 
+void
 KHTMLPageCacheEntry::addData(const QByteArray &data)
-{ 
-  if (m_file->status() == 0)
+{
+  if (m_file->status() == 0 && m_file->dataStream())
      m_file->dataStream()->writeRawBytes(data.data(), data.size());
 }
 
-void 
+void
 KHTMLPageCacheEntry::endData()
-{ 
-  m_valid = true; 
-  m_file->dataStream()->device()->flush();
-  m_file->dataStream()->device()->at(0);
+{
+  m_valid = true;
+  QDataStream* d;
+  if ( ( d = m_file->dataStream() ) ) {
+    d->device()->flush();
+    d->device()->at(0);
+  }
 }
 
 
@@ -104,7 +107,7 @@ KHTMLPageCacheDelivery *
 KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
 {
   // Duplicate fd so that entry can be safely deleted while delivering the data.
-  int fd = dup(m_file->handle()); 
+  int fd = dup(m_file->handle());
   lseek(fd, 0, SEEK_SET);
   KHTMLPageCacheDelivery *delivery = new KHTMLPageCacheDelivery(fd);
   recvObj->connect(delivery, SIGNAL(emitData(const QByteArray&)), recvSlot);
@@ -120,7 +123,7 @@ KHTMLPageCache *
 KHTMLPageCache::self()
 {
   if (!_self)
-     _self = pageCacheDeleter.setObject(new KHTMLPageCache);  
+     _self = pageCacheDeleter.setObject(new KHTMLPageCache);
   return _self;
 }
 
@@ -142,12 +145,12 @@ long
 KHTMLPageCache::createCacheEntry()
 {
   KHTMLPageCacheEntry *entry = new KHTMLPageCacheEntry(d->newId);
-  d->dict.insert(d->newId, entry);   
+  d->dict.insert(d->newId, entry);
   d->expireQueue.append(entry);
   if (d->expireQueue.count() > KHTML_PAGE_CACHE_SIZE)
   {
      KHTMLPageCacheEntry *entry = d->expireQueue.take(0);
-     d->dict.remove(entry->m_id); 
+     d->dict.remove(entry->m_id);
      delete entry;
   }
   return (d->newId++);
@@ -157,7 +160,7 @@ void
 KHTMLPageCache::addData(long id, const QByteArray &data)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
-  if (entry) 
+  if (entry)
      entry->addData(data);
 }
 
@@ -165,7 +168,7 @@ void
 KHTMLPageCache::endData(long id)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
-  if (entry) 
+  if (entry)
      entry->endData();
 }
 
@@ -173,7 +176,7 @@ void
 KHTMLPageCache::cancelEntry(long id)
 {
   KHTMLPageCacheEntry *entry = d->dict.take(id);
-  if (entry) 
+  if (entry)
   {
      d->expireQueue.removeRef(entry);
      delete entry;
@@ -184,7 +187,7 @@ bool
 KHTMLPageCache::isValid(long id)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
-  if (entry) 
+  if (entry)
      return entry->isValid();
   return false;
 }
@@ -221,7 +224,7 @@ KHTMLPageCache::cancelFetch(QObject *recvObj)
          d->delivery.removeRef(delivery);
          delete delivery;
       }
-  }   
+  }
 }
 
 void
@@ -244,7 +247,7 @@ KHTMLPageCache::sendData()
   {
      // try again later
      d->delivery.append( delivery );
-  } 
+  }
   else if (n <= 0)
   {
      // done.
@@ -261,25 +264,27 @@ KHTMLPageCache::sendData()
   QTimer::singleShot(20, this, SLOT(sendData()));
 }
 
-void 
+void
 KHTMLPageCache::saveData(long id, QDataStream *str)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   assert(entry);
 
   int fd = entry->m_file->handle();
+  if ( fd < 0 ) return;
+
   lseek(fd, 0, SEEK_SET);
 
   char buf[8192];
 
-  while(true) 
+  while(true)
   {
      int n = read(fd, buf, 8192);
      if ((n < 0) && (errno == EINTR))
      {
         // try again
         continue;
-     } 
+     }
      else if (n <= 0)
      {
         // done.
@@ -292,9 +297,9 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
   }
 }
 
-KHTMLPageCacheDelivery::~KHTMLPageCacheDelivery() 
-{ 
-  close(fd); 
+KHTMLPageCacheDelivery::~KHTMLPageCacheDelivery()
+{
+  close(fd);
 }
 
 #include "khtml_pagecache.moc"
