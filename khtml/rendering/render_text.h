@@ -68,7 +68,7 @@ private:
 public:
     void setSpaceAdd(int add) { m_width -= m_toAdd; m_toAdd = add; m_width += m_toAdd; }
     int spaceAdd() { return m_toAdd; }
-        
+
     virtual bool isInlineTextBox() const { return true; }
 
     void paintDecoration(QPainter *pt, const Font *f, int _tx, int _ty, int decoration);
@@ -207,8 +207,8 @@ public:
     // defaults to 0.
     int minXPos() const;
 
-    virtual int xPos() const;
-    virtual int yPos() const;
+    virtual int inlineXPos() const;
+    virtual int inlineYPos() const;
 
     bool hasReturn() const { return m_hasReturn; }
 

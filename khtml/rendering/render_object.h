@@ -441,6 +441,15 @@ public:
     virtual int xPos() const { return 0; }
     virtual int yPos() const { return 0; }
 
+    /** Leftmost coordinate of this inline element relative to containing
+     * block. Always zero for non-inline elements.
+     */
+    virtual int inlineXPos() const { return 0; }
+    /** Topmost coordinate of this inline element relative to containing
+     * block. Always zero for non-inline elements.
+     */
+    virtual int inlineYPos() const { return 0; }
+
     // calculate client position of box
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 

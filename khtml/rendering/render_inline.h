@@ -61,6 +61,9 @@ public:
     virtual short width() const;
     virtual int height() const;
 
+    virtual int inlineXPos() const;
+    virtual int inlineYPos() const;
+
     // used to calculate offsetWidth/Height.  Overridden by inlines (render_flow) to return
     // the remaining width on a given line (and the height of a single line).
     virtual int offsetLeft() const;

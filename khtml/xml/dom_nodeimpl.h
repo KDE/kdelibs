@@ -445,7 +445,6 @@ public:
     virtual void attach();
     virtual void detach();
 
-    virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
     bool getLowerRightCorner(int &xPos, int &yPos) const;
 
