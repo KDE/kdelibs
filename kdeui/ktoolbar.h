@@ -952,7 +952,13 @@ public:
 
     void updateRects( bool = false ) {}
 
+    /**
+     * Load state from an XML element, called by KXMLGUIBuilder
+     */
     void loadState( const QDomElement &e );
+    /*
+     * Save state into an XML element, called by KXMLGUIBuilder
+     */
     void saveState( QDomElement &e );
 
     /**
