@@ -1140,17 +1140,6 @@ void KEditToolbarWidget::slotChangeIcon()
     if ( (*xit).m_type == XmlData::Merged )
       continue;
 
-    if ( (*xit).m_type == XmlData::Shell ||
-         (*xit).m_type == XmlData::Part )
-    {
-      if ( d->m_currentXmlData.m_xmlFile == (*xit).m_xmlFile )
-      {
-        (*xit).m_isModified = true;
-        return;
-      }
-      continue;
-    }
-
     (*xit).m_isModified = true;
 
     // Get hold of ActionProperties tag
