@@ -74,7 +74,8 @@ public:
    KService::DCOPServiceType_t dcop_service_type;
    bool autoStart;
    QString errorMsg;
-   bool start_notify;
+   QCString startup_id; // "" is the default, "0" for none
+   QValueList<QCString> envs; // env. variables to be app's environment
 };
 
 struct serviceResult
@@ -106,12 +107,18 @@ protected:
    void requestDone(KLaunchRequest *request);
 
    void setLaunchEnv(const QCString &name, const QCString &value);
-   void exec_blind(const QCString &name, const QValueList<QCString> &arg_list);
-   bool start_service(KService::Ptr service, const QStringList &urls, bool blind = false, bool autoStart = false);
-   bool start_service_by_name(const QString &serviceName, const QStringList &urls);
-   bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls);
-   bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls);
-   bool kdeinit_exec(const QString &app, const QStringList &args, bool wait);
+   void exec_blind(const QCString &name, const QValueList<QCString> &arg_list,
+       const QValueList<QCString> &envs, const QCString& startup_id = "" );
+   bool start_service(KService::Ptr service, const QStringList &urls,
+       const QValueList<QCString> &envs, const QCString& startup_id = "",
+       bool blind = false, bool autoStart = false );
+   bool start_service_by_name(const QString &serviceName, const QStringList &urls,
+       const QValueList<QCString> &envs, const QCString& startup_id = "");
+   bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
+       const QValueList<QCString> &envs, const QCString& startup_id = "");
+   bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
+       const QValueList<QCString> &envs, const QCString& startup_id = "");
+   bool kdeinit_exec(const QString &app, const QStringList &args, const QValueList<QCString> &envs, bool wait);
 
    void autoStart();
 
@@ -130,6 +137,9 @@ protected:
 
 
    void queueRequest(KLaunchRequest *);
+   
+   QCString send_service_startup_info( KService::Ptr service, const QCString& startup_id,
+       const QValueList<QCString> &envs );
 
 public slots:
    void slotAutoStart();

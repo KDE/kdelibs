@@ -32,13 +32,11 @@ typedef struct
 /*
  * LAUNCHER_EXEC
  *
- * Start a new process.
+ * Start a new process. Try using LAUNCHER_EXEC_NEW instead.
+ * There will be no app startup notification.
  *
  * long argc: number of arguments
  * char *args: arguments, argument 0 is the program to start.
- * int avoid_loops : ( added, read only if present ) avoid using the first
- *    path in $PATH where this process binary is found in order to avoid
- *    infinite loop by binary->kdeinit_wrapper link in $PATH
  */
 
 
@@ -47,6 +45,8 @@ typedef struct
  * LAUNCHER_SETENV
  *
  * Change environment of future processes launched via kdeinit.
+ * DON'T use this if you want to change environment only for one
+ * application you're going to start.
  *
  * char *env_name;
  * char *env_value;
@@ -84,7 +84,7 @@ typedef struct
 /*
  * LAUNCHER_SHELL
  *
- * Start a new process and adjust enviroment.
+ * Start a new process and use given enviroment.
  * Starts app-startup notification.
  *
  * long argc: number of arguments
@@ -92,9 +92,11 @@ typedef struct
  * char *cwd: Working directory.
  * long envc: number of environment vars
  * char *envs: environment strings.
- * int avoid_loops : ( added, read only if present ) avoid using the first
- *    path in $PATH where this process binary is found in order to avoid
+ * int avoid_loops : avoid using the first path in $PATH where
+ *    this process binary is found in order to avoid
  *    infinite loop by binary->kdeinit_wrapper link in $PATH
+ * char* startup_id: app startup notification id, "0" for none,
+ *   "" ( empty string ) is the default
  */
 
 #define LAUNCHER_TERMINATE_KDE 7
@@ -120,14 +122,20 @@ typedef struct
 /*
  * LAUNCHER_EXT_EXEC
  *
- * Start a new process.
+ * Start a new process. The given environment variables will
+ * be added to its environment before starting it.
  * Starts app-startup notification.
  *
  * long argc: number of arguments
  * char *args: arguments, argument 0 is the program to start.
- * int avoid_loops : ( added, read only if present ) avoid using the first
- *    path in $PATH where this process binary is found in order to avoid
+ * long envc: number of environment vars
+ * char *envs: environment strings.
+ * int avoid_loops : avoid using the first path in $PATH where
+ *    this process binary is found in order to avoid
  *    infinite loop by binary->kdeinit_wrapper link in $PATH
+ * char* startup_id: app startup notification id, "0" for none,
+ *   "" ( empty string ) is the default
+ * 
  */
 
 
@@ -135,7 +143,7 @@ typedef struct
 /*
  * LAUNCHER_KWRAPPER
  *
- * Start a new process, adjust enviroment, pass signals and output.
+ * Start a new process, use given enviroment, pass signals and output.
  * Starts app-startup notification.
  *
  * long argc: number of arguments
@@ -144,8 +152,28 @@ typedef struct
  * long envc: number of environment vars
  * char *envs: environment strings.
  * char *tty: tty to redirect stdout/stderr to.
- * int avoid_loops : ( added, read only if present ) avoid using the first
- *    path in $PATH where this process binary is found in order to avoid
+ * int avoid_loops : avoid using the first path in $PATH where
+ *    this process binary is found in order to avoid
+ *    infinite loop by binary->kdeinit_wrapper link in $PATH
+ * char* startup_id: app startup notification id, "0" for none,
+ *   "" ( empty string ) is the default
+ */
+
+#define LAUNCHER_EXEC_NEW	12
+/*
+ * LAUNCHER_EXEC_NEW
+ *
+ * Start a new process. An improved version of LAUNCHER_EXEC.
+ * The given environment variables will be added
+ *  to its environment before starting it.
+ * There will be no app startup notification.
+ *
+ * long argc: number of arguments
+ * char *args: arguments, argument 0 is the program to start.
+ * long envc: number of environment vars
+ * char *envs: environment strings.
+ * int avoid_loops : avoid using the first path in $PATH where
+ *    this process binary is found in order to avoid
  *    infinite loop by binary->kdeinit_wrapper link in $PATH
  */
 
