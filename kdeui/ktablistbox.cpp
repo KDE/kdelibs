@@ -1011,6 +1011,8 @@ return (lbox.autoUpdate() && itemVisible(itemPosList(id)));
 void KTabListBox::changeMode(int col)
 {
   // Add optimization HERE!!!!
+  if(col >= lbox.numCols() || col < 0)
+    return;
   if(colList[col]->changeMode()) 
     reorderRows();
 }
