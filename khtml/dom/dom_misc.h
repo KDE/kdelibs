@@ -38,7 +38,7 @@ public:
   DomShared() : _ref( 0 ) {}
   virtual ~DomShared();
 
-  /* Overload this function if you wan't a different deletion behaviour
+  /* Overload this function if you want a different deletion behaviour
    */
   virtual bool deleteMe();
 
