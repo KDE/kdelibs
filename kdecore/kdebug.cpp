@@ -258,7 +258,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
           }
         case 3: // syslog
           {
-	      syslog( nPriority, data);
+	      syslog( nPriority, "%s", data);
           }
         case 4: // nothing
           {
