@@ -42,7 +42,7 @@
 * disabled.
 * @short KDialog
 * @author Thomas Tanghus <tanghus@earthling.net>
-* @version 0.1
+* @version 0.1.1
 */
 class KDialog : public QDialog
 {
@@ -54,7 +54,11 @@ public:
 */
 	KDialog(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
 protected:
-        bool eventFilter( QObject *, QEvent * );
+
+/**
+* @internal
+*/
+	virtual void keyPressEvent(QKeyEvent*);
 };
 
 struct KWizProtected;
@@ -133,7 +137,13 @@ public:
 */
         int addPage(KWizardPage *p);
 
+/**
+* Changes the QWidget on the page with id "id" to "w".
+*/
         void setPage(int id, QWidget *w);
+/**
+* Changes the title on the page with id "id" to "title".
+*/
         void setPage(int id, QString title);
 /**
 * En/disable a specified page. If a page is disable its content will be grayd out
@@ -364,9 +374,21 @@ protected:
         bool eventFilter( QObject *, QEvent * );
         void closeEvent(QCloseEvent *);
 
+/**
+* @internal
+*/
         QSize pageSize();
+/**
+* @internal
+*/
         void setSizes();
+/**
+* @internal
+*/
         void resizeEvent(QResizeEvent *);
+/**
+* @internal
+*/
         void paintEvent(QPaintEvent *);
 
         QList<KWizardPage> *pages;

@@ -50,7 +50,7 @@ struct KWizProtected
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
 {
-  //debug("KWizard creation");
+  //debug("KDialog creation");
 
   initMetaObject();
   setFocusPolicy(QWidget::StrongFocus);
@@ -58,19 +58,34 @@ KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
 }
 
 // Grab QDialogs keypresses if non-modal.
-bool KDialog::eventFilter( QObject *obj, QEvent *e )
+void KDialog::keyPressEvent(QKeyEvent *e)
 {
-  if ( e->type() == Event_KeyPress && obj == this && !testWFlags(WType_Modal))
+  if ( e->state() == 0 )
   {
-    QKeyEvent *k = (QKeyEvent*)e;
-    if(k->key() == Key_Escape || k->key() == Key_Return || k->key() == Key_Enter)
+    switch ( e->key() )
     {
-      debug("KDialog - Received keyevent");
-      return true;
+      case Key_Escape:
+      case Key_Enter:
+      case Key_Return:
+      {
+        if(testWFlags(WType_Modal))
+          QDialog::keyPressEvent(e);
+        else
+        {
+          //debug("KDialog - Eating keyevent");
+  	  e->ignore();
+        }
+      }
+      break;
+      default:
+	e->ignore();
+	return;
     }
   }
-
-  return false;
+  else
+  {
+    e->ignore();
+  }
 }
 
 KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
@@ -719,16 +734,18 @@ bool KWizard::eventFilter( QObject *obj, QEvent *e )
     QKeyEvent *k = (QKeyEvent*)e;
     if(k->key() == Key_PageUp)
     {
-      debug("Received keyevent PageUp");
+      //debug("Received keyevent PageUp");
       previousPage();
       return true;
     }
     else if(k->key() == Key_PageDown)
     {
-      debug("Received keyevent PageDown");
+      //debug("Received keyevent PageDown");
       nextPage();
       return true;
     }
+    else
+      return false;
   }
 
   return false;
