@@ -531,39 +531,34 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		{
 			bool horizontal = flags & Style_Horizontal;
 			QString name;
-			unsigned int count = 5;
+			unsigned int count = 3;
 
 			if ( horizontal )
 			{
-				if ( w < ( loader.pixmap( "scrollbar-hbar-slider1" ).width() +
-							loader.pixmap( "scrollbar-hbar-slider3" ).width() +
-							loader.pixmap( "scrollbar-hbar-slider5" ).width() + 2 ) )
-					if ( w > loader.pixmap( "scrollbar-hbar-small-slider1" ).width() )
-					{
-						name = "med-";
-						count = 3;
-					}
-					else
-					{
-						name = "small-";
-						count = 1;
-					}
-			}
-			else if ( h < ( loader.pixmap( "scrollbar-vbar-slider1" ).height() +
-						loader.pixmap( "scrollbar-vbar-slider3" ).height() +
-						loader.pixmap( "scrollbar-vbar-slider5" ).height() + 2 ) )
-				if ( h > loader.pixmap( "scrollbar-vbar-small-slider1" ).height() )
-				{
-					name = "med-";
-					count = 3;
-				}
-				else
+				if ( w < loader.pixmap( "scrollbar-hbar-small-slider1" ).width() )
 				{
 					name = "small-";
 					count = 1;
 				}
+			}
+			else if ( h < loader.pixmap( "scrollbar-vbar-small-slider1" ).height() )
+			{
+				name = "small-";
+				count = 1;
+			}
 
 			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h );
+			if ( horizontal )
+			{
+				if ( w > ( loader.pixmap( "scrollbar-hbar-slider1" ).width() +
+				           loader.pixmap( "scrollbar-hbar-slider2" ).width() +
+				           loader.pixmap( "scrollbar-hbar-slider3" ).width() ) )
+					Keramik::CenteredPainter( "scrollbar-hbar-slider4" ).draw( p, x, y, w, h );
+			}
+			else if ( h > ( loader.pixmap( "scrollbar-vbar-slider1" ).height() +
+			                loader.pixmap( "scrollbar-vbar-slider2" ).height() +
+			                loader.pixmap( "scrollbar-vbar-slider3" ).height() ) )
+					Keramik::CenteredPainter( "scrollbar-vbar-slider4" ).draw( p, x, y, w, h );
 			break;
 		}
 
