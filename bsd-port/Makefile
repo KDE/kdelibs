@@ -28,7 +28,7 @@ CONFIGURE_ARGS=	"--prefix=$(PREFIX)" \
 		"--with-extra-includes=$(PREFIX)/include/giflib"
 INSTALL_TARGET=	prefix=$(INSTALL_ROOT)$(PREFIX) install
 
-post-install:
+post-install-pre-lib:
 	${SETENV} OBJFORMAT=${PORTOBJFORMAT}
 	if [ "${PORTOBJFORMAT}" = "aout" ]; then \
 		${LN} -sf libjscript.so.0.90  ${PREFIX}/lib/libjscript.so; \

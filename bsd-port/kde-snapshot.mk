@@ -16,10 +16,14 @@ pre-configure:
 		cd $(WRKSRC);rm -f config.cache;$(GMAKE) -f Makefile.cvs
 		rm -f $(PLIST)
 post-install:
+		${SETENV} OBJFORMAT="${PORTOBJFORMAT}"
 		${MAKE} PREFIX=${PREFIX} make-plist
 		cp -Rp ${INSTALL_ROOT}/* /
 		rm -rf ${INSTALL_ROOT}
-		ldconfig -m ${PREFIX}/lib
+.if target(post-install-pre-lib)
+		${MAKE} post-install-pre-lib
+.endif
+		${LDCONFIG} -m ${PREFIX}/lib
 
 # This should finally work somewhat decently now
 make-plist:
