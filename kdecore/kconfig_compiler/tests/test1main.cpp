@@ -19,8 +19,11 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test1.h"
+#include "kinstance.h"
 
-int main( int, char ** )
+int main( int, char )
 {
-  Test1 t( QString(), QString() );
+  KInstance i("test");
+  Test1 *t = new Test1( QString::null, QString::null );
+  delete t;
 }

@@ -20,8 +20,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "test7.h"
+#include "kinstance.h"
 
 int main( int, char )
 {
-  Test7 t(42);
+  KInstance i("test");
+  Test7 *t = new Test7(42);
+  delete t;
 }
