@@ -10,7 +10,6 @@
 220	KToolBar (kdeui)
 250	kfile (kdelibs)
 264	iconloader (kdelibs)
-300	khtml
 750	kspell (kdelibs)
 800	kabapi (kdelibs)
 
@@ -39,6 +38,17 @@
 # kdenetwork
 5001	caitoo
 5002	kppp
+
+# libkhtml
+6000	khtml
+6010	khtml (dom)
+6020	khtml (xml)
+6030	khtml (html)
+6040	khtml (render)
+6050	khtml (part)
+6060	khtml (cache)
+6070	khtml (jscript)
+6080	khtml (css)
 
 # libkio
 7001	kio (KDirWatch)
