@@ -229,6 +229,11 @@ public:
    **/
   void updateLayout();
 
+  /**
+   * The popup direction changed.
+   **/
+  void popupDirectionChanged();
+
  public slots:
   /**
    * Don't reimplement, this is used internally
