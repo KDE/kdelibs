@@ -37,6 +37,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 // only there to allow testing on my system. Should be removed
 // when everything has proven to be working and stable
@@ -178,7 +179,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	QString	cmd = QString::fromLatin1("chmod -R go-rwx %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
+	QString	cmd = QString::fromLatin1("chmod -R o-rwx,g-w,g+rX %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
 	if (system(cmd.latin1()) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
@@ -524,8 +525,8 @@ bool KMLpdManager::createSpooldir(PrintcapEntry *entry)
 	QString	sd = entry->arg("sd");
 	if (!KStandardDirs::exists(sd))
 	{
-		// create directory and change permissions/owner
-		if (!KStandardDirs::makeDir(sd,0700)) return false;
+		if (!KStandardDirs::makeDir(sd,0750))
+			return false;
 		struct passwd	*lp_pw = getpwnam("lp");
 		if (lp_pw && chown(QFile::encodeName(sd),lp_pw->pw_uid,lp_pw->pw_gid) != 0)
 			return false;
