@@ -67,7 +67,7 @@ class KToolBarPrivate
 public:
   KToolBarPrivate()
   {
-    m_iconSize     = "Normal";
+    m_iconSize     = KIconLoader::Medium;
     m_iconText     = KToolBar::IconOnly;
     m_position     = KToolBar::Top;
     m_highlight    = true;
@@ -90,7 +90,7 @@ public:
   {
     delete m_items; m_items = 0;
   }
-  QString m_iconSize;
+  KIconLoader::Size m_iconSize;
   QString m_title;
   KToolBar::IconText    m_iconText;
   KToolBar::BarPosition m_position;
@@ -184,40 +184,77 @@ void KToolBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   QString group = config->group();
 
-  static QString grpToolbar = QString::fromLatin1("Toolbar style");
   static QString grpKDE     = QString::fromLatin1("KDE");
 
   static QString attrIconText  = QString::fromLatin1("IconText");
   static QString attrHighlight = QString::fromLatin1("Highlighting");
   static QString attrTrans     = QString::fromLatin1("TransparentMoving");
   static QString attrIconStyle = QString::fromLatin1("KDEIconStyle");
+  static QString attrSize      = QString::fromLatin1("IconSize");
 
-  // first, get the toolbar specific settings
+  // we actually do this in two steps.  first, we read in the global
+  // styles [Toolbar style].  then, if the toolbar is NOT
+  // 'mainToolBar', we will also try to read in [barname Toolbar style]
+  bool highlight;
+  int transparent;
+  IconText icontext;
+  KIconLoader::Size iconsize;
+
+  // this is the first iteration
+  QString grpToolbar(QString::fromLatin1("Toolbar style"));
   config->setGroup(grpToolbar);
-  bool highlight  = (bool)config->readNumEntry(attrHighlight, 1);
-  int transparent = config->readBoolEntry(attrTrans, true);
+
+  // first, get the generic settings
+  highlight   = config->readBoolEntry(attrHighlight, true);
+  transparent = config->readBoolEntry(attrTrans, true);
 
   // we read in the IconText property *only* if we intend on actually
   // honoring it
-  IconText icontext;
-  if (d->m_honorStyle)
+  if (d->m_honorStyle || name() == "mainToolBar")
     icontext = (IconText)config->readNumEntry(attrIconText, IconOnly);
   else
     icontext = IconOnly;
 
-  // now get the other global settings
-  config->setGroup(grpKDE);
-  QString iconstyle = config->readEntry(attrIconStyle, "Normal");
+  // now get the size conditionally
+  if (d->m_honorStyle || name() == "mainToolBar")
+    iconsize = (KIconLoader::Size)config->readNumEntry(attrSize,
+                                                       KIconLoader::Medium);
+  else
+    iconsize = KIconLoader::Medium;
+
+  // okay, that's done.  now we look for a toolbar specific entry
+  grpToolbar = name() + QString::fromLatin1(" Toolbar style");
+  if (config->hasGroup(grpToolbar))
+  {
+    config->setGroup(grpToolbar);
+
+    // first, get the generic settings
+    highlight   = config->readBoolEntry(attrHighlight, highlight);
+    transparent = config->readBoolEntry(attrTrans, transparent);
+
+    // now we always read in the IconText property
+    icontext = (IconText)config->readNumEntry(attrIconText, icontext);
+
+    // now get the size
+    iconsize = (KIconLoader::Size)config->readNumEntry(attrSize, iconsize);
+  }
 
   // the actual size of the toolbar will be dependent on the buttons..
   // but we can make some guesses now
-  if (iconstyle == "Large")
-    d->m_approxItemSize = 36;
-  else if (iconstyle == "Small")
+  switch (iconsize)
+  {
+  case KIconLoader::Small:
     d->m_approxItemSize = 20;
-  else
+    break;
+  case KIconLoader::Large:
+    d->m_approxItemSize = 36;
+    break;
+  case KIconLoader::Medium:
+  default:
     d->m_approxItemSize = 26;
-
+    break;
+  }
+ 
   // revert back to the old group
   config->setGroup(group);
 
@@ -231,9 +268,9 @@ void KToolBar::slotReadConfig()
   }
 
   // ...and check if the icon size has changed
-  if (iconstyle != d->m_iconSize)
+  if (iconsize != d->m_iconSize)
   {
-    d->m_iconSize = iconstyle;
+    d->m_iconSize = iconsize;
     doUpdate = true;
   }
 
@@ -2008,6 +2045,11 @@ void KToolBar::setIconText(IconText icontext)
 KToolBar::IconText KToolBar::iconText() const
 {
   return d->m_iconText;
+}
+
+KIconLoader::Size KToolBar::iconSize() const
+{
+  return d->m_iconSize;
 }
 
 bool KToolBar::enable(BarStatus stat)

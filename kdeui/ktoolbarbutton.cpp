@@ -255,12 +255,7 @@ void KToolBarButton::setText( const QString& text)
 
 void KToolBarButton::setIcon( const QString &icon )
 {
-  // if this toolbar does not honor styles (e.g., it's not the main
-  // toolbar), then we always load size Medium
-  if ( d->m_noStyle )
-    setPixmap( BarIcon(icon, KIconLoader::Medium) );
-  else
-    setPixmap( BarIcon(icon) );
+    setPixmap( BarIcon(icon, d->m_parent->iconSize()) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )

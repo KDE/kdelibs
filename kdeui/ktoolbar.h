@@ -24,6 +24,7 @@
 
 #include <qframe.h>
 #include <qcombobox.h>
+#include <kiconloader.h>
 
 class QSize;
 class QPixmap;
@@ -690,9 +691,14 @@ public:
   void setIconText(IconText it);
 
   /**
-   * @return The current kind of painting for buttons.
+   * @return The current text style for buttons.
    */
   IconText iconText() const;
+
+  /**
+   * @return The current icon size for buttons.
+   */
+  KIconLoader::Size iconSize() const;
 
   /**
    * This will inform a toolbar button to ignore certain style
