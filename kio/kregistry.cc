@@ -314,6 +314,7 @@ void KRegistry::dirDeleted( const QString& _path )
 
 KRegEntry* KRegistry::createEntry( QDataStream& _str, const QString& _file )
 {
+  kdebug( KDEBUG_INFO, 7011, "KRegistry: createEntry from datastream for %s", _file.ascii());
   KRegFactory *f;
   for( f = m_lstFactories.first(); f != 0L; f = m_lstFactories.next() )
   {

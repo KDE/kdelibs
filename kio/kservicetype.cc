@@ -17,7 +17,14 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
   s_lstServiceTypes->append( this );
   _cfg.setGroup( "KDE Desktop Entry" );
 
-  m_strName = _cfg.readEntry( "Name" );
+  // Is this a bug or an intentionnal change ? Currently mimetype files 
+  // contain "MimeType=", not "Name=" !  (David)
+  // m_strName = _cfg.readEntry( "Name" );
+
+  // -> reverted to "MimeType=" temporarily, but seems wrong since
+  // some servicetype are not mimetypes, if I got it correctly (any example, Torben ? ;) )
+  m_strName = _cfg.readEntry( "MimeType" ); 
+
   m_strComment = _cfg.readEntry( "Comment" );
   m_strIcon = _cfg.readEntry( "Icon" );
   // TODO: Properties
@@ -45,7 +52,7 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
     }
   }
   
-  m_bValid = true;
+  m_bValid = !m_strName.isEmpty();
 }
 
 KServiceType::KServiceType( const QString& _type, const QString& _icon, const QString& _comment )
@@ -56,7 +63,7 @@ KServiceType::KServiceType( const QString& _type, const QString& _icon, const QS
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;
-  m_bValid = true;
+  m_bValid = !m_strName.isEmpty();
 }
 
 KServiceType::~KServiceType()

@@ -80,8 +80,7 @@ void KMimeType::check()
 
 void KMimeType::errorMissingMimeType( const QString& _type )
 {
-  QString tmp = i18n( "Could not find mime type\n%s" );
-  tmp = tmp.arg( _type );
+  QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
     
   QMessageBox::critical( 0, i18n( "KFM Error" ), tmp, i18n("OK" ) );
 
@@ -200,6 +199,7 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
 {
   initStatic();
   
+  kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for _type = '%s'", _type.ascii());
   s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
@@ -212,7 +212,11 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
   if ( isValid() )
+  {
+    kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
     s_mapMimeTypes->insert( m_strName, this );
+  } else
+    kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
 KMimeType::KMimeType( QDataStream& _str ) : KServiceType( _str )

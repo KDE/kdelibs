@@ -17,6 +17,10 @@
 
 QString systemShareDir()
 {
+ /* This is really dirty. We can't use existing kapp functions because
+    we want to add anything after share/. We should have kde_sharedir()
+    but anyway we'll switch to KStdDirs one day ... until then : dirt ;) */
+
   QString tmp( "/opt/kde" );
   const char* env = getenv( "KDEDIR" );
   if ( env )
@@ -88,6 +92,7 @@ KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, const QSt
 
 KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
 {
+  kdebug(KDEBUG_INFO, 7012, "KServiceTypeFactory::create from datastream for %s",_file.ascii());
   // Read typecode
   Q_UINT32 u;
   _str >> u;
