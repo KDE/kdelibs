@@ -72,6 +72,7 @@ public:
   void setCopying( const KURL& from, const KURL& to );
   void setMoving( const KURL& from, const KURL& to );
   void setDeleting( const KURL& url );
+  void setTransferring( const KURL& url );
   void setCreatingDir( const KURL& dir );
   void setStating( const KURL& url );
   void setMounting( const QString & dev, const QString & point );
@@ -219,6 +220,7 @@ k_dcop:
   ASYNC copying( int id, KURL from, KURL to );
   ASYNC moving( int id, KURL from, KURL to );
   ASYNC deleting( int id, KURL url );
+  ASYNC transferring( int id, KURL url );
   ASYNC creatingDir( int id, KURL dir );
   ASYNC stating( int id, KURL url );
 

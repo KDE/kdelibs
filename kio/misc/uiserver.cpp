@@ -226,6 +226,14 @@ void ProgressItem::setDeleting( const KURL& url ) {
   defaultProgress->slotDeleting( 0, url );
 }
 
+void ProgressItem::setTransferring( const KURL& url ) {
+  setText( listProgress->lv_operation, i18n("Loading") );
+  setText( listProgress->lv_url, url.url() );
+  setText( listProgress->lv_filename, url.fileName() );
+
+  defaultProgress->slotTransferring( 0, url );
+}
+
 void ProgressItem::setStating( const KURL& url ) {
   setText( listProgress->lv_operation, i18n("Examining") );
   setText( listProgress->lv_url, url.url() );
@@ -619,6 +627,16 @@ void UIServer::deleting( int id, KURL url )
   ProgressItem *item = findItem( id );
   if ( item ) {
     item->setDeleting( url );
+  }
+}
+
+void UIServer::transferring( int id, KURL url )
+{
+  //kdDebug(7024) << "UIServer::transferring " << id << " " << url.url() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->setTransferring( url );
   }
 }
 
