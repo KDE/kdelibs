@@ -110,19 +110,27 @@ public:
     { return mConfigState; }
 
   /**
+   * Returns the filename as passed to the constructor.
    * @return the filename as passed to the constructor.
    */
   QString fileName() const { return mfileName; }
 
   /**
+   * Returns the resource type as passed to the constructor.
    * @return the resource type as passed to the constructor.
    */
   const char * resource() const { return resType; }
 
+  /**
+   * Set the locale string that defines the current language.
+   * @param _localeString the identifier of the language
+   * @see KLocale
+   */
   void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
 
   /**
    * Set the file mode for newly created files.
+   * @param mode the filemode (as in chmod)
    */
   void setFileWriteMode(int mode);
 
@@ -200,6 +208,10 @@ public:
 
   /**
    * Writes configuration data to file(s).
+   * @param bMerge Specifies whether the old config file already
+   *        on disk should be merged in with the data in memory.  If true,
+   *        data is read off the disk and merged.  If false, the on-disk
+   *        file is removed and only in-memory data is written out.
    */
   virtual void sync(bool bMerge = true);
 
