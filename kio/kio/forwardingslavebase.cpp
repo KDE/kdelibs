@@ -147,6 +147,21 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
             entry.append(atom);
         }
     }
+
+    if ( m_processedURL.isLocalFile() )
+    {
+        KURL new_url = m_processedURL;
+        if (listing)
+        {
+            new_url.addPath( name );
+        }
+
+        KIO::UDSAtom atom;
+        atom.m_uds = KIO::UDS_LOCAL_PATH;
+        atom.m_long = 0;
+        atom.m_str = new_url.path();
+        entry.append(atom);
+    }
 }
 
 void ForwardingSlaveBase::get(const KURL &url)
