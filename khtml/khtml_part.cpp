@@ -2545,6 +2545,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   // though -> the reference becomes invalid -> crash is likely
   KURL url( _url );
 
+  // khtmlrun called us this way to indicate a loading error
+  if ( url.isEmpty() && mimetype.isEmpty() )
+  {
+      child->m_bCompleted = true;
+      return; 
+  }
+
   if (child->m_bNotify)
   {
       child->m_bNotify = false;

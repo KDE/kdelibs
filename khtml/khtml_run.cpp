@@ -169,6 +169,8 @@ void KHTMLRun::slotStatResult( KIO::Job *job )
 
 void KHTMLRun::handleError()
 {
+    // pass an empty url and mimetype to indicate a loading error
+    m_part->processObjectRequest( m_child, KURL(), QString::null );
     m_job = 0;
     m_bFault = true;
     m_bFinished = true;
