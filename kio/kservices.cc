@@ -204,11 +204,7 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QProperty( m_bAllowAsDefault );
 
   if ( p )
-  {
-    // We are not interestes in these
-    p->deref();
-    return p;
-  }
+    return KService::PropertyPtr( p );
 
   QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -216,7 +212,8 @@ KService::PropertyPtr KService::property( const QString& _name ) const
 
   p = (QProperty*)(&(it.data()));
 
-  return p;
+  p->ref();
+  return KService::PropertyPtr( p );
 }
 
 QStringList KService::propertyNames() const

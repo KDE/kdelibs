@@ -20,18 +20,18 @@ struct KSharedPtr
 {
 public:
   KSharedPtr() { ptr = 0; }
-  KSharedPtr( T* t ) { ptr = t; ptr->ref(); }
-  KSharedPtr( const KSharedPtr& p ) { ptr = p.ptr; ptr->ref(); }
+  KSharedPtr( T* t ) { ptr = t; }
+  KSharedPtr( const KSharedPtr& p ) { ptr = p.ptr; if ( ptr ) ptr->ref(); }
   ~KSharedPtr() { if ( ptr && ptr->deref() ) delete ptr; }
 
   KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
     if ( ptr && ptr->deref() ) delete ptr;
-    ptr = p.ptr; ptr->ref();
+    ptr = p.ptr; if ( ptr ) ptr->ref();
     return *this;
   }
   KSharedPtr<T>& operator= ( T* p ) { 
     if ( ptr && ptr->deref() ) delete ptr;
-    ptr = p; ptr->ref();
+    ptr = p;
     return *this;
   }
   bool operator== ( const KSharedPtr<T>& p ) const { return ( ptr == p.ptr ); }

@@ -22,6 +22,7 @@ KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KSe
   : KRegEntry( _reg, _file )
 {
   m_pServiceType = _mime;
+  m_pServiceType->ref();
   m_pFactory = factory;
   m_pFactory->addEntryNotify( this );
 }
@@ -95,7 +96,6 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
   }
 
   KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e, this );
-  e->deref();
   res->load( _str );
 
   return res;
@@ -135,7 +135,6 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
   }
 
   KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e, this );
-  e->deref();
 
   return res;
 }
@@ -150,6 +149,7 @@ KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_
   : KRegEntry( _reg, _file )
 {
   m_pService = _service;
+  m_pService->ref();
   m_pFactory = factory;
   m_pFactory->addEntryNotify( this );
 }
@@ -213,7 +213,6 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QData
   }
 
   KServiceEntry* e = new KServiceEntry( _reg, _file, s, this );
-  s->deref();
 
   e->load( _str );
 
@@ -231,7 +230,6 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
   }
 
   KServiceEntry* e = new KServiceEntry( _reg, _file, service, this );
-  service->deref();
 
   return e;
 }

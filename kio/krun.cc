@@ -585,11 +585,9 @@ const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
     return 0L;
   }
 
-  // I think this is what Torben meant with "the semantics of KSharedPtr are shit" ;-) (Simon)
-  KService *s = new KService( *((*offers.begin()).service()) );
-  s->deref();
-  KSharedPtr<KService> sp = s;
-  return sp;
+  KService *s = ( *offers.begin() ).service();
+  s->ref();
+  return KSharedPtr<KService>( s );
 }
 
 #include "krun.moc"

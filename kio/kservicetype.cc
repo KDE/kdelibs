@@ -88,11 +88,7 @@ KServiceType::PropertyPtr KServiceType::property( const QString& _name ) const
     p = new QProperty( m_strComment );
 
   if ( p )
-  {
-    // We are not interestes in these
-    p->deref();
-    return p;
-  }
+    return KServiceType::PropertyPtr( p );
 
   QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -100,7 +96,8 @@ KServiceType::PropertyPtr KServiceType::property( const QString& _name ) const
 
   p = (QProperty*)(&(it.data()));
 
-  return p;
+  p->ref();
+  return KServiceType::PropertyPtr( p );
 }
 
 QStringList KServiceType::propertyNames() const
