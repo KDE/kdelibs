@@ -25,8 +25,8 @@
 #include <qapplication.h>
 #include <qstyle.h>
 #include <kglobalsettings.h>
-#include "kcolordlg.h"
-#include "kcolorbtn.h"
+#include "kcolordialog.h"
+#include "kcolorbutton.h"
 #include "kcolordrag.h"
 
 KColorButton::KColorButton( QWidget *parent, const char *name )
@@ -127,4 +127,4 @@ void KColorButton::chooseColor()
   emit changed( col );
 }
 
-#include "kcolorbtn.moc"
+#include "kcolorbutton.moc"

@@ -72,7 +72,7 @@ libkdeui_la_SOURCES = \
 		kstatusbar.cpp kmainwindow.cpp \
 		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
 		kseparator.cpp krestrictedline.cpp  \
-		kcolorbtn.cpp ksystemtray.cpp \
+		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
