@@ -690,25 +690,46 @@ dnl dependecies between AC_PROG_CPP and AC_PROG_CC (or is it automake?)
   if test $ac_cv_prog_gxx = yes; then
     GXX=yes
   else
+    AC_MSG_CHECKING(whether we are using SPARC CC)
     GXX=
-  fi
+    cat > conftest.C << EOF
+#ifdef __SUNPRO_CC
+   yes;
+#endif
+EOF
 
-  if test "$ac_use_debug_code" = "yes"; then
-    AC_PROG_CXX_G
-    if test $ac_cv_prog_cxx_g = yes; then
-      CXXFLAGS="-g"
-    fi
+  ac_try="$CXX -E conftest.C"
+  if { (eval echo configure:__online__: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; } | egrep yes >/dev/null 2>&1; then
+    ac_cv_prog_CC=yes
   else
-    if test "$GXX" = "yes"; then
-       CXXFLAGS="-O2"
-    else
-       CXXFLAGS=""
-    fi
+    ac_cv_prog_CC=no
   fi
+  AC_MSG_RESULT($ac_cv_prog_CC)
+  
+  fi  
 
-  if test "$GXX" = "yes"; then
-     CXXFLAGS="$CXXFLAGS -Wall"
-  fi
+  if test -z "$CXXFLAGS"; then 
+    if test "$ac_use_debug_code" = "yes"; then
+      AC_PROG_CXX_G
+      if test $ac_cv_prog_cxx_g = yes; then
+        CXXFLAGS="-g"
+      fi
+    else
+      if test "$GXX" = "yes"; then
+         CXXFLAGS="-O2"
+      else
+         if test "$ac_cv_prog_CC" = "yes"; then
+            CXXFLAGS="-pto -O2"
+         else
+            CXXFLAGS=""
+         fi
+      fi
+    fi
+
+    if test "$GXX" = "yes"; then
+       CXXFLAGS="$CXXFLAGS -Wall"
+    fi
+  fi  
 
 ])
 
