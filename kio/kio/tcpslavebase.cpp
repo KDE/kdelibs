@@ -628,6 +628,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
   if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
      KIO::AuthInfo ai;
+     bool showprompt = !checkCachedAuthentication(ai);
      do {
         QString pass;
         QByteArray authdata, authval;
@@ -638,7 +639,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         ai.setModified(true);
         ai.username = certname;
         ai.keepPassword = true;
-        if (!checkCachedAuthentication(ai)) {
+        if (showprompt) {
            qds << ai;
 
            if (!d->dcc) {
@@ -672,9 +673,10 @@ KSSLCertificateHome::KSSLAuthAction aa;
                                                      "new password?"),
                                                 i18n("SSL"));
               if (rc == KMessageBox::No) break;
+              showprompt = true;
         }
      } while (!pkcs);
-     cacheAuthentication(ai);
+     if (pkcs) cacheAuthentication(ai);
   }
 
    // If we could open the certificate, let's send it
