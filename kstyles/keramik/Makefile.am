@@ -17,7 +17,6 @@ genembed_SOURCES = genembed.cpp
 genembed_LDADD = ../../kdefx/libkdefx.la
 genembed_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-keramik.cpp: keramikrc.h
 pixmaploader.lo keramik.lo: pixmaps.keramik keramikrc.h
 
 pixmaps.keramik: pics/arrow.png pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-bc.png\
