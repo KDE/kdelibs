@@ -415,17 +415,13 @@ signals:
   void completed();
 
   /**
-   * Same as the above signal except besides indicating that the data has
-   * been completely loaded it also informs the host, by setting the flag,
-   * that a pending action has been generated as a result of completing the
-   * requested task (loading the data).  An example of this is meta-refresh
-   * tags on HTML pages which result in the page either being refreshed or
-   * the viewer being redirected to another page.  By emitting this signal
-   * after appropriately setting the flag, the part can tell the host of the
-   * pending scheduled action inorder to give it a chance to accept or cancel
-   * that action.
+   * Same as the above signal except it indicates whether there is
+   * a pending action to be executed on a delay timer. An example of
+   * this is the meta-refresh tags on web pages used to reload/redirect
+   * after a certain period of time. This signal is useful if you want
+   * to give the user the ability to cancel such pending actions.
    *
-   * @p pendingAction  if true, a pending action exists (ex: a scheduled refresh)
+   * @p pendingAction true if a pending action exists, false otherwise.
    */
   void completed( bool pendingAction );
 
