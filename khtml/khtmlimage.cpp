@@ -24,6 +24,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_elementimpl.h"
 #include "rendering/render_image.h"
+#include "misc/loader.h"
 
 #include <qvbox.h>
 #include <qtimer.h>
