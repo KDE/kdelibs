@@ -183,8 +183,11 @@ KLocale::KLocale( const char *catalogue )
     if (set_locale_vars){
         // set environment variables for all categories
 	// maybe we should treat LC_NUMERIC differently (netscape problem)
-        for(int i=0;_categories[i]!=0;i++)
- 	  putenv( QString(_categories[i])+ "=" + getLocale(_categories[i]) );
+	QString stmp;
+        for(int i=0;_categories[i]!=0;i++) {
+	  stmp = QString(_categories[i])+ "=" + getLocale(_categories[i]);
+ 	  putenv( stmp.data() );
+	}
     }
     // we should use LC_CTYPE, not LC_MESSAGES for charset
     // however in most cases it should be the same for messages
