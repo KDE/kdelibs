@@ -78,14 +78,14 @@ class ResourceManager : private ManagerImplListener
     Iterator begin()
     {
       Iterator it;
-      it.mIt = mManager->resourceList()->begin();
+      it.mIt = mImpl->resourceList()->begin();
       return it;
     }
   
     Iterator end()
     {
       Iterator it;
-      it.mIt = mManager->resourceList()->end();
+      it.mIt = mImpl->resourceList()->end();
       return it;
     }
 
@@ -141,9 +141,9 @@ class ResourceManager : private ManagerImplListener
     ActiveIterator activeBegin()
     {
       ActiveIterator it;
-      it.mIt = mManager->resourceList()->begin();
-      it.mList = mManager->resourceList();
-      if ( it.mIt != mManager->resourceList()->end() ) {
+      it.mIt = mImpl->resourceList()->begin();
+      it.mList = mImpl->resourceList();
+      if ( it.mIt != mImpl->resourceList()->end() ) {
         if ( !(*it)->isActive() ) it++;
       }
       return it;
@@ -152,33 +152,33 @@ class ResourceManager : private ManagerImplListener
     ActiveIterator activeEnd()
     {
       ActiveIterator it;
-      it.mIt = mManager->resourceList()->end();
-      it.mList = mManager->resourceList();
+      it.mIt = mImpl->resourceList()->end();
+      it.mList = mImpl->resourceList();
       return it;
     }
 
-    bool isEmpty() const { return mManager->resourceList()->isEmpty(); }
+    bool isEmpty() const { return mImpl->resourceList()->isEmpty(); }
   
     ResourceManager( const QString &family, const QString &config = QString::null )
     {
       mFactory = ResourceFactory::self( family );
       // The managerimpl will use the same Factory object as the manager
       // because of the ResourceFactory::self() pattern
-      mManager = new ResourceManagerImpl( family, config );
-      mManager->setListener( this );
+      mImpl = new ResourceManagerImpl( family, config );
+      mImpl->setListener( this );
       mListeners = new QPtrList<ManagerListener<T> >;
     }
 
     virtual ~ResourceManager()
     { 
-      mManager->setListener( 0 );
+      mImpl->setListener( 0 );
       delete mListeners;
-      delete mManager;
+      delete mImpl;
     }
 
     void sync()
     {
-      mManager->sync();
+      mImpl->sync();
     }
 
     /**
@@ -187,27 +187,27 @@ class ResourceManager : private ManagerImplListener
     */
     void add( Resource *resource )
     {
-      if ( resource ) mManager->add( resource );
+      if ( resource ) mImpl->add( resource );
     }
 
     void remove( Resource *resource )
     {
-      if ( resource ) mManager->remove( resource );
+      if ( resource ) mImpl->remove( resource );
     }
 
     T* standardResource()
     {
-      return static_cast<T *>( mManager->standardResource() );
+      return static_cast<T *>( mImpl->standardResource() );
     }
 
     void setStandardResource( T *resource )
     {
-      if ( resource ) mManager->setStandardResource( resource );
+      if ( resource ) mImpl->setStandardResource( resource );
     }
 
     void setActive( Resource *resource, bool active )
     {
-      if ( resource ) mManager->setActive( resource, active );
+      if ( resource ) mImpl->setActive( resource, active );
     }
 
     /**
@@ -216,7 +216,7 @@ class ResourceManager : private ManagerImplListener
     */
     QStringList resourceNames() const
     {
-      return mManager->resourceNames();
+      return mImpl->resourceNames();
     }
 
     ResourceConfigWidget *configWidget( const QString& type,
@@ -250,7 +250,7 @@ class ResourceManager : private ManagerImplListener
 
     void resourceChanged( T *resource )
     { 
-      mManager->resourceChanged( resource ); 
+      mImpl->resourceChanged( resource ); 
     }
 
     void addListener( ManagerListener<T> *listener )
@@ -294,11 +294,11 @@ class ResourceManager : private ManagerImplListener
 
     void load()
     {
-      mManager->load();
+      mImpl->load();
     }
 
   private:
-    ResourceManagerImpl *mManager;
+    ResourceManagerImpl *mImpl;
     ResourceFactory *mFactory;
     QPtrList<ManagerListener<T> > *mListeners;
 };
