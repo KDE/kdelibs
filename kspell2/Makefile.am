@@ -16,7 +16,7 @@ libkspell2base_la_SOURCES = settings.cpp broker.cpp \
 	backgroundthread.cpp backgroundengine.cpp \
 	defaultdictionary.cpp 
 
-libkspell2base_la_LDFLAGS = -no-undefined -version-info 1:0:0 $(all_libraries)
+libkspell2base_la_LDFLAGS = -no-undefined $(all_libraries)
 libkspell2base_la_LIBADD  = $(LIB_KPARTS) ../kutils/libkutils.la 
 
 servicetype_DATA = kspellclient.desktop
