@@ -245,6 +245,26 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
+KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
+{
+  KMimeMagicResult *result = KMimeMagic::self()->findBufferType(data);
+  QString type = (result && result->isValid())?
+    result->mimeType() : defaultMimeType();
+  if (accuracy)
+      *accuracy = result->accuracy();
+  return mimeType( result->mimeType() );
+}
+
+KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
+{
+  KMimeMagicResult *result = KMimeMagic::self()->findFileType(fileName);
+  QString type = (result && result->isValid())?
+    result->mimeType() : defaultMimeType();
+  if (accuracy)
+      *accuracy = result->accuracy();
+  return mimeType( result->mimeType() );
+}
+
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
                       const QString& _comment, const QStringList& _patterns )
   : KServiceType( _fullpath, _type, _icon, _comment )

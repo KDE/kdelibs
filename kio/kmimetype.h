@@ -228,6 +228,25 @@ public:
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
+  /**
+   * Tries to find out the MIME type of a data chunk by looking for
+   * certain magic numbers and characteristic strings in it.
+   * Returns application/octet-stream of the type can not be found
+   * this way.
+   * If accuracy is not a null pointer, *accuracy is set to the
+   * accuracy of the match (which is in the range 0..100).
+   */
+  static Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy=0 );
+  /**
+   * Tries to find out the MIME type of a file by looking for
+   * certain magic numbers and characteristic strings in it.
+   * This function is similar to the previous one. Note that the
+   * file name is not used for determining the file type, it is just
+   * used for loading the file's contents.
+   * If accuracy is not a null pointer, *accuracy is set to the
+   * accuracy of the match (which is in the range 0..100).
+   */
+  static Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy=0 );
 
   /**
    * Get all the mimetypes.
