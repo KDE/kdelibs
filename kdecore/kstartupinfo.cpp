@@ -114,7 +114,7 @@ KStartupInfo::~KStartupInfo()
 
 void KStartupInfo::got_message( const QString& msg_P )
     {
-//    kdDebug( 172 ) << "got:" << msg_P << endl;
+    kdDebug( 172 ) << "got:" << msg_P << endl;
     QString msg = msg_P.stripWhiteSpace();
     if( msg.startsWith( "new:" )) // must match length below
         got_startup_info( msg.mid( 4 ), false );
@@ -131,7 +131,7 @@ void KStartupInfo::window_added( WId w_P )
     switch( ret )
         {
         case Match:
-//            kdDebug( 172 ) << "new window match" << endl;
+            kdDebug( 172 ) << "new window match" << endl;
             remove_startup_info_internal( id );
           break;
         case NoMatch:
@@ -162,14 +162,14 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
         { // already reported, update
         d->startups[ id_P ].update( data_P );
         d->startups[ id_P ].age = 0; // CHECKME
-//        kdDebug( 172 ) << "updating" << endl;
+        kdDebug( 172 ) << "updating" << endl;
         emit gotStartupChange( id_P, d->startups[ id_P ] );
         return;
         }
     if( update_only_P )
         return;
     d->startups.insert( id_P, data_P );
-//    kdDebug( 172 ) << "adding" << endl;
+    kdDebug( 172 ) << "adding" << endl;
     emit gotNewStartup( id_P, data_P );
     d->cleanup->start( 1000 ); // 1 sec
     }
@@ -194,7 +194,7 @@ void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
     if (!d) return;
     if( !d->startups.contains( id_P ))
         return;
-//    kdDebug( 172 ) << "removing" << endl;
+    kdDebug( 172 ) << "removing" << endl;
     emit gotRemoveStartup( id_P, d->startups[ id_P ]);
     d->startups.remove( id_P );
     return;
@@ -239,7 +239,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-//    kdDebug( 172 ) << "sending " << msg << endl;
+    kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( KDE_STARTUP_INFO, msg );
     return true;
     }
@@ -264,7 +264,7 @@ bool KStartupInfo::sendChange( const KStartupInfoId& id_P, const KStartupInfoDat
     KXMessages msgs;
     QString msg = QString::fromLatin1( "change: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-//    kdDebug( 172 ) << "sending " << msg << endl;
+    kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( KDE_STARTUP_INFO, msg );
     return true;
     }
@@ -288,7 +288,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
         return false;
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
-//    kdDebug( 172 ) << "sending " << msg << endl;
+    kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( KDE_STARTUP_INFO, msg );
     return true;
     }
@@ -311,7 +311,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P, const KStartupInfoDat
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-//    kdDebug( 172 ) << "sending " << msg << endl;
+    kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( KDE_STARTUP_INFO, msg );
     return true;
     }
@@ -394,16 +394,6 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         && static_cast< WId >( transient_for ) != qt_xrootwin()
         && transient_for != None )
 	return NoMatch;
-#if 0 // CHECKME
-        Task* t = findTask((WId) transient_for);
-	if (t) {
-	    if (t->window() != w) {
-		t->addTransient(w);
-                // kdDebug() << "TM: Transient " << w << " added for Task: " << t->window() << endl;
-            }
-	    return;
-	}
-#endif
     // Strategy:
     //
     // Is this a compliant app ?
@@ -411,13 +401,13 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     //  - No - Is this a NET_WM compliant app ?
     //           - Yes - test for pid match
     //           - No - test for WM_CLASS match
-//    kdDebug( 172 ) << "check_startup" << endl;
+    kdDebug( 172 ) << "check_startup" << endl;
     QCString id = windowStartupId( w_P );
     if( !id.isNull())
         {
         if( id.isEmpty() || id == "0" ) // means ignore this window
             {
-//            kdDebug( 172 ) << "ignore" << endl;
+            kdDebug( 172 ) << "ignore" << endl;
             return NoMatch;
             }
         return find_id( id, id_O, data_O, remove_P ) ? Match : NoMatch;
@@ -438,7 +428,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         if( find_wclass( hint.res_name, hint.res_class, id_O, data_O, remove_P ))
             return Match;
         }
-//    kdDebug( 172 ) << "check_startup:cantdetect" << endl;
+    kdDebug( 172 ) << "check_startup:cantdetect" << endl;
     return CantDetect;
     }
 
@@ -446,7 +436,7 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O, bool remove_P )
     {
     if (!d) return false;
-//    kdDebug( 172 ) << "find_id:" << id_P << endl;
+    kdDebug( 172 ) << "find_id:" << id_P << endl;
     KStartupInfoId id;
     id.initId( id_P );
     if( d->startups.contains( id ))
@@ -457,7 +447,7 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
             *data_O = d->startups[ id ];
         if( remove_P )
             d->startups.remove( id );
-//        kdDebug( 172 ) << "check_startup_id:match" << endl;
+        kdDebug( 172 ) << "check_startup_id:match" << endl;
         return true;
         }
     return false;
@@ -467,7 +457,7 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
     KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove_P )
     {
     if (!d) return false;
-//    kdDebug( 172 ) << "find_pid:" << pid_P << endl;
+    kdDebug( 172 ) << "find_pid:" << pid_P << endl;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          ++it )
@@ -480,7 +470,7 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
                 *data_O = *it;
             if( remove_P )
                 d->startups.remove( it );
-//            kdDebug( 172 ) << "check_startup_pid:match" << endl;
+            kdDebug( 172 ) << "check_startup_pid:match" << endl;
             return true;
             }
         }
@@ -493,7 +483,7 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
     if (!d) return false;
     res_name = res_name.lower();
     res_class = res_class.lower();
-//    kdDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
+    kdDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          ++it )
@@ -507,7 +497,7 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
                 *data_O = *it;
             if( remove_P )
                 d->startups.remove( it );
-//            kdDebug( 172 ) << "check_startup_wclass:match" << endl;
+            kdDebug( 172 ) << "check_startup_wclass:match" << endl;
             return true;
             }
         }
@@ -603,7 +593,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-//            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
+            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
             remove_startup_info_internal( key );
             }
         else
@@ -625,7 +615,7 @@ void KStartupInfo::clean_all_noncompliant()
             }
         const KStartupInfoId& key = it.key();
         ++it;
-//        kdDebug( 172 ) << "entry cleaning:" << key.id() << endl;
+        kdDebug( 172 ) << "entry cleaning:" << key.id() << endl;
         remove_startup_info_internal( key );
         }
     }

@@ -36,6 +36,10 @@
 [125]
 InfoOutput=4
 
+# KStartupInfo debug info off
+[172]
+InfoOutput=4
+
 # KMainWindow debug info off
 [200]
 InfoOutput=4
