@@ -251,6 +251,12 @@ Value Reference2::getValue(ExecState *exec) const
 
 void Reference2::putValue(ExecState *exec, const Value& w)
 {
+  if (!isValid()) {
+    UString m = I18N_NOOP("Invalid left-hand side value");
+    Object err = Error::create(exec, ReferenceError, m.ascii());
+    exec->setException(err);
+    return;
+  }
 #ifdef KJS_VERBOSE
   printInfo(exec, (UString("setting property ")+
 		   propertyName()).cstring().c_str(), w);
