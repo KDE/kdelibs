@@ -354,4 +354,3 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
    return result;
 }
 
-

@@ -105,4 +105,5 @@ private:
    KMountPointPrivate *d;
 };
 
-#endif
+#endif // _KMOUNTPOINT_H_
+

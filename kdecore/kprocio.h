@@ -214,4 +214,5 @@ private:
   KProcIOPrivate *d;
 };
 
-#endif
+#endif // KPROCIO_H_
+
