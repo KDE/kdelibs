@@ -1112,7 +1112,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FormElements:        return getHTMLCollection(exec,form.elements());
     case FormLength:          return Number(form.length());
-    case FormName:            return getString(form.name());
+    case FormName:            return String(form.name()); // NOT getString (IE gives empty string)
     case FormAcceptCharset:   return getString(form.acceptCharset());
     case FormAction:          return getString(form.action());
     case FormEncType:         return getString(form.enctype());
@@ -1132,7 +1132,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case SelectOptions:         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
     case SelectDisabled:        return Boolean(select.disabled());
     case SelectMultiple:        return Boolean(select.multiple());
-    case SelectName:            return getString(select.name());
+    case SelectName:            return String(select.name());
     case SelectSize:            return Number(select.size());
     case SelectTabIndex:        return Number(select.tabIndex());
     }
@@ -1173,7 +1173,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputChecked:         return Boolean(input.checked());
     case InputDisabled:        return Boolean(input.disabled());
     case InputMaxLength:       return Number(input.maxLength());
-    case InputName:            return getString(input.name());
+    case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
     case InputSize:            return getString(input.size());
     case InputSrc:             return getString(input.src());
@@ -1192,7 +1192,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TextAreaAccessKey:       return getString(textarea.accessKey());
     case TextAreaCols:            return Number(textarea.cols());
     case TextAreaDisabled:        return Boolean(textarea.disabled());
-    case TextAreaName:            return getString(textarea.name());
+    case TextAreaName:            return String(textarea.name());
     case TextAreaReadOnly:        return Boolean(textarea.readOnly());
     case TextAreaRows:            return Number(textarea.rows());
     case TextAreaTabIndex:        return Number(textarea.tabIndex());
@@ -1207,7 +1207,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ButtonForm:            return getDOMNode(exec,button.form()); // type HTMLFormElement
     case ButtonAccessKey:       return getString(button.accessKey());
     case ButtonDisabled:        return Boolean(button.disabled());
-    case ButtonName:            return getString(button.name());
+    case ButtonName:            return String(button.name());
     case ButtonTabIndex:        return Number(button.tabIndex());
     case ButtonType:            return getString(button.type());
     case ButtonValue:           return getString(button.value());
@@ -1382,7 +1382,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorCoords:          return getString(anchor.coords());
     case AnchorHref:            return getString(anchor.href());
     case AnchorHrefLang:        return getString(anchor.hreflang());
-    case AnchorHash:            return getString('#'+KURL(anchor.href().string()).ref());
+    case AnchorHash:            return String('#'+KURL(anchor.href().string()).ref());
     case AnchorHost:            return getString(KURL(anchor.href().string()).host());
     case AnchorHostname: {
       KURL url(anchor.href().string());
@@ -1410,7 +1410,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_IMG: {
     DOM::HTMLImageElement image = element;
     switch (token) {
-    case ImageName:            return getString(image.name());
+    case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
     case ImageBorder:          return Number(image.border());
@@ -2659,7 +2659,12 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
   kdDebug() << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
 #endif
   if (propertyName == "length")
+  {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "  collection length is " << collection.length() << endl;
+#endif
     return Number(collection.length());
+  }
   else if (propertyName == "selectedIndex" &&
 	   collection.item(0).elementId() == ID_OPTION) {
     // NON-STANDARD options.selectedIndex
