@@ -1245,8 +1245,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     return;
   }
 
-  // Take into account the window frame - so that (width,height) is the external window size
-  kdDebug() << "resizing to " << width << "x" << height << endl;
+  kdDebug(6070) << "resizing to " << width << "x" << height << endl;
 
   emit ext->resizeTopLevelWidget( width, height );
 
