@@ -62,7 +62,7 @@ libkmid_FILES = *.h
 libkmid_LIBS = -lqt
 
 kutils_FILES = *.h
-kutils_LIBS = -lkdeui
+kutils_LIBS = -lkdeui -lkdecore -lqt
 
 interfaces_FILES = */*.h
 interfaces_LIBS = -lkparts -lkdeui -lkdecore -ldcop -lqt
