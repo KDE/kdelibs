@@ -237,7 +237,15 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    QImage img = pix.mask()->convertToImage();
+    QImage img;
+    if (pix.mask() != 0L)
+	img = pix.mask()->convertToImage();
+    else
+    {
+	img.create(pix.size(), 1, 2, QImage::BigEndian);
+	img.fill(0);
+    }
+
     for (int y=0; y<img.height(); y++)
     {
 	QRgb *line = (QRgb *) img.scanLine(y);
