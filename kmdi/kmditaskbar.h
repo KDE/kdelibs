@@ -48,7 +48,7 @@ class KMdiTaskBarButtonPrivate;
   * It's a special kind of QPushButton catching mouse clicks.
   * And you have the ability to abbreviate the text that it fits in the button.
   */
-class KMdiTaskBarButton : public QPushButton
+class KMDI_EXPORT KMdiTaskBarButton : public QPushButton
 {
 	Q_OBJECT
 	// methods

@@ -100,7 +100,7 @@ namespace KMDI
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDockWidgetAbstractHeader : public QFrame
+class KDEUI_EXPORT KDockWidgetAbstractHeader : public QFrame
 {
   Q_OBJECT
 public:
