@@ -27,6 +27,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
+#include <kstringhandler.h>
 #include <kdebug.h>
 
 #include "rendering/render_image.h"
@@ -162,7 +163,6 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         ismap = true;
         break;
     case ATTR_ALT:
-        alt = attr->value();
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
@@ -184,6 +184,26 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
+DOMString HTMLImageElementImpl::altText() const
+{
+    // lets figure out the alt text.. magic stuff
+    // http://www.w3.org/TR/1998/REC-html40-19980424/appendix/notes.html#altgen
+    // also heavily discussed by Hixie on bugzilla
+    DOMString alt( getAttribute( ATTR_ALT ) );
+    // fall back to title attribute
+    if ( alt.isNull() )
+        alt = getAttribute( ATTR_TITLE );
+    if ( alt.isNull() ) {
+        QString p = KURL( m_imageURL.string() ).prettyURL();
+        int pos;
+        if ( ( pos = p.findRev( '.' ) ) > 0 )
+            p.truncate( pos );
+        alt = DOMString( KStringHandler::csqueeze( p ) );
+    }
+
+    return alt;
+}
+
 void HTMLImageElementImpl::attach()
 {
     //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
@@ -192,7 +212,7 @@ void HTMLImageElementImpl::attach()
     if(r && m_style->display() != NONE) {
         RenderImage *renderImage = new RenderImage(this);
         renderImage->setStyle(m_style);
-        renderImage->setAlt(alt);
+        renderImage->setAlt(altText());
         m_render = renderImage;
         if(m_render) r->addChild(m_render, nextRenderer());
         renderImage->setImageUrl(m_imageURL,
@@ -204,22 +224,19 @@ void HTMLImageElementImpl::attach()
 
 void HTMLImageElementImpl::applyChanges(bool top, bool force)
 {
-    //kdDebug(0) << "Image::applyChanges(" << top << ", " << force <<")" << endl;
     if(force || changed()) {
         recalcStyle();
     }
+
     HTMLElementImpl::applyChanges(top,force);
     // ### perhaps not the most appropriate place for this.... here so it get's called after
     // a script has executed
-    if (m_render)
-	{
-        static_cast<RenderImage *>(m_render)
-            ->setImageUrl(m_imageURL,
-                          static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
-	    static_cast<RenderImage *>(m_render)
-            ->setAlt(alt);
+    if (m_render) {
+        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
+        renderImage->setImageUrl(m_imageURL, ownerDocument()->docLoader());
+        renderImage->setAlt(altText());
+    }
 
-	}
     setChanged(false);
 }
 

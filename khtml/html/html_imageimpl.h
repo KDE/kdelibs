@@ -62,13 +62,8 @@ public:
 protected:
     bool ismap;
 
-    /**
-     * The URL of this image.
-     */
+    DOMString altText() const;
     DOMString m_imageURL;
-
-    // text to display as long as the image isn't available
-    DOMString alt;
 
     DOMString usemap;
 };
