@@ -921,7 +921,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
              SLOT( toggleSpeedbar( bool )) );
 
     KToggleAction *showBookmarksAction =
-            new KToggleAction(i18n("Bookmarks"), 0, coll, "toggleBookmarks");
+            new KToggleAction(i18n("Show Bookmarks"), 0, coll, "toggleBookmarks");
+    showBookmarksAction->setCheckedState(i18n("Hide Bookmarks"));
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
