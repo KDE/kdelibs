@@ -33,7 +33,7 @@ namespace KNS {
 class Engine;
 class Entry;
 
-KAction* standardAction(const QString& what,
+KDE_EXPORT KAction* standardAction(const QString& what,
                         const QObject *recvr,
                         const char *slot,
                         KActionCollection* parent,
