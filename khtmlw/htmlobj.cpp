@@ -625,7 +625,14 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     max_width = _max_width;
     ascent = _height;
     descent = 0;
-    width = _width;
+    if ( percent > 0 )
+    {
+	width = (int)max_width * (int)percent / 100;
+    }
+    else
+    {
+        width = _width;
+    }
 
     absX = -1;
     absY = -1;
@@ -684,9 +691,9 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     // Is the image available ?
     if ( pixmap == 0 || pixmap->isNull() )
     {
-	if ( !predefinedWidth && !percent )
+	if ( !predefinedWidth && !percent)
 	    width = 32;
-	if ( !predefinedHeight && !percent )
+	if ( !predefinedHeight )
 	    ascent = 32;
     }
     else
