@@ -1258,7 +1258,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     reference = 0;
     actualURL = "";
     baseURL = "";
-    charsetName = "";
+    //charsetName = "";
 
     if ( _url != 0 )
     {

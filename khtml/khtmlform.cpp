@@ -40,6 +40,7 @@
 
 #include "khtmljscript.h"
 #include "khtml.h"
+#include "khtmlfont.h"
 
 //----------------------------------------------------------------------------
 
@@ -89,6 +90,14 @@ HTMLElement::~HTMLElement()
 }
 
 //----------------------------------------------------------------------------
+HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f = 0 ) 
+    : HTMLElement( n )
+{ 
+    _absX = 0; 
+    _absY = 0; 
+    widget = 0; 
+    font = f;
+}
 
 HTMLWidgetElement::~HTMLWidgetElement()
 {
@@ -119,8 +128,9 @@ void HTMLWidgetElement::calcAbsolutePos( int _x, int _y )
 }
 //----------------------------------------------------------------------------
 
-HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m )
-	: HTMLWidgetElement( n )
+HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m,
+			const HTMLFont *f )
+	: HTMLWidgetElement( n, f )
 {
 	_size = s;
 	_defSelected = 0;
@@ -147,6 +157,8 @@ HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m )
 		descent = 5;
 		ascent = size.height() - descent;
 	}
+	if( font )
+	    widget->setFont( *font );
 
 	connect( widget, SIGNAL( highlighted( int ) ),
 			SLOT( slotHighlighted( int ) ) );
@@ -273,12 +285,15 @@ void HTMLSelect::slotHighlighted( int indx )
 
 //----------------------------------------------------------------------------
 
-HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c )
-	: HTMLWidgetElement( n )
+HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
+			    const HTMLFont *f )
+	: HTMLWidgetElement( n, f )
 {
 	_defText = "";
 
 	widget = new QMultiLineEdit( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	QFontMetrics fm( widget->font() );
 
@@ -323,20 +338,22 @@ void HTMLTextArea::resetElement()
 
 //----------------------------------------------------------------------------
 
-HTMLInput::HTMLInput( const char *n, const char *v )
-	: HTMLWidgetElement( n )
+HTMLInput::HTMLInput( const char *n, const char *v, const HTMLFont *f )
+	: HTMLWidgetElement( n, f )
 {
 	_value = v;
 }
 
 //----------------------------------------------------------------------------
 
-HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_events )
-	: HTMLInput( "", v )
+HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_events, const HTMLFont *f )
+	: HTMLInput( "", v, f )
 {
     view = _parent;
     widget = new QPushButton( _parent );
-    
+    if( font )
+	widget->setFont( *font );
+
     if ( strlen( value() ) != 0 )
 	((QPushButton *)widget)->setText( value() );
     else if ( strlen( _name ) != 0 )
@@ -381,12 +398,14 @@ HTMLButton::~HTMLButton()
 //----------------------------------------------------------------------------
 
 HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
-		bool ch )
-	: HTMLInput( n, v )
+		bool ch, const HTMLFont *f )
+	: HTMLInput( n, v, f )
 {
 	_defCheck = ch;
 
 	widget = new QCheckBox( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	((QCheckBox *)widget)->setChecked( ch );
 
@@ -442,12 +461,14 @@ QString HTMLHidden::encoding()
 //----------------------------------------------------------------------------
 
 HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
-		bool ch )
-	: HTMLInput( n, v )
+		bool ch, const HTMLFont *f )
+	: HTMLInput( n, v, f )
 {
 	_defCheck = ch;
 
 	widget = new QRadioButton( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	((QRadioButton *)widget)->setChecked( ch );
 
@@ -497,10 +518,12 @@ void HTMLRadio::slotRadioSelected( const char *n, const char *v )
 
 //----------------------------------------------------------------------------
 
-HTMLReset::HTMLReset( QWidget *parent, const char *v )
-	: HTMLInput( "", v )
+HTMLReset::HTMLReset( QWidget *parent, const char *v, const HTMLFont *f )
+	: HTMLInput( "", v, f )
 {
 	widget = new QPushButton( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	if ( strlen( value() ) != 0 )
 		((QPushButton *)widget)->setText( value() );
@@ -524,10 +547,13 @@ void HTMLReset::slotClicked()
 
 //----------------------------------------------------------------------------
 
-HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v )
-	: HTMLInput( n, v )
+HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
+			const HTMLFont *f )
+	: HTMLInput( n, v, f )
 {
 	widget = new QPushButton( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	if ( strlen( value() ) != 0 )
 		((QPushButton *)widget)->setText( value() );
@@ -569,12 +595,14 @@ void HTMLSubmit::slotClicked()
 //----------------------------------------------------------------------------
 
 HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
-		int s, int ml, bool password )
-	: HTMLInput( n, v )
+		int s, int ml, bool password, const HTMLFont *f )
+	: HTMLInput( n, v, f )
 {
 	_defText = v;
 
 	widget = new QLineEdit( parent );
+	if( font )
+	    widget->setFont( *font );
 
 	if ( strlen( value() ) != 0 )
 		((QLineEdit *)widget)->setText( value() );
@@ -630,7 +658,7 @@ void HTMLTextInput::slotReturnPressed()
 
 HTMLImageInput::HTMLImageInput( KHTMLWidget *widget, const char *f,
 	const char *n )
-    : HTMLImage( widget, f, 0, 0), HTMLElement( n )
+    : QObject(), HTMLImage( widget, f, 0, 0), HTMLElement( n )
 {
     _xp = _yp = 0;
     pressed = false;

@@ -1285,7 +1285,7 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	const char *_url, const char *_target, int _width, int _height, 
 	int _percent, int bdr )
-    : QObject(), HTMLObject()
+    : HTMLObject()
 {
     // Width is set in setMaxWidth()
     lastWidth = UNDEFINED;

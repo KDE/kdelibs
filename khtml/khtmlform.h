@@ -30,6 +30,7 @@
 #include <qwidget.h>
 
 #include "khtmlobj.h"
+#include "khtmlfont.h"
 
 //
 // External Classes
@@ -98,9 +99,11 @@ private:
 class HTMLWidgetElement : public QObject, public HTMLObject, public HTMLElement
 {
 	Q_OBJECT
+protected:
+	const HTMLFont *font;
+
 public:
-	HTMLWidgetElement( const char *n ) : HTMLElement( n )
-	    { _absX = 0; _absY = 0; widget = 0; }
+	HTMLWidgetElement( const char *n, const HTMLFont *f = 0 ); 
 	virtual ~HTMLWidgetElement();
 
 	int absX() const
@@ -132,7 +135,8 @@ class HTMLSelect : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
-	HTMLSelect( QWidget *parent, const char *n, int s, bool m );
+	HTMLSelect( QWidget *parent, const char *n, int s, bool m,
+		    const HTMLFont *f );
 	virtual ~HTMLSelect() { }
 
 	void addOption( const char *o, bool sel );
@@ -166,7 +170,8 @@ class HTMLTextArea : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
-	HTMLTextArea( QWidget *parent, const char *n, int r, int c );
+	HTMLTextArea( QWidget *parent, const char *n, int r, int c,
+		      const HTMLFont *f = 0 );
 	virtual ~HTMLTextArea() { }
 
 	QString value();
@@ -187,7 +192,7 @@ class HTMLInput : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
-	HTMLInput( const char *n, const char *v );
+	HTMLInput( const char *n, const char *v, const HTMLFont *f = 0 );
 	virtual ~HTMLInput() { }
 
 	const QString &value() const
@@ -207,7 +212,8 @@ class HTMLCheckBox : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLCheckBox( QWidget *parent, const char *n, const char *v, bool ch );
+	HTMLCheckBox( QWidget *parent, const char *n, const char *v, bool ch,
+		      const HTMLFont *f = 0 );
 	virtual ~HTMLCheckBox() { }
 
 	virtual QString encoding();
@@ -239,7 +245,8 @@ class HTMLRadio : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLRadio( QWidget *parent, const char *n, const char *v, bool ch );
+	HTMLRadio( QWidget *parent, const char *n, const char *v, bool ch,
+		   const HTMLFont *f = 0 );
 	virtual ~HTMLRadio() { }
 
 	virtual QString encoding();
@@ -266,7 +273,7 @@ class HTMLReset : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLReset( QWidget *parent, const char *v );
+	HTMLReset( QWidget *parent, const char *v, const HTMLFont *f = 0 );
 	virtual ~HTMLReset() { }
 
     virtual const char * objectName() const { return "HTMLReset"; };
@@ -284,7 +291,8 @@ class HTMLSubmit : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLSubmit( QWidget *parent, const char *n, const char *v );
+	HTMLSubmit( QWidget *parent, const char *n, const char *v,
+		    const HTMLFont *f = 0 );
 	virtual ~HTMLSubmit() { }
 
 	virtual QString encoding();
@@ -308,7 +316,7 @@ class HTMLTextInput : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLTextInput( QWidget *parent, const char *n, const char *v, int s,
-		    int ml, bool password = false );
+		       int ml, bool password = false, const HTMLFont *f = 0 );
 	virtual ~HTMLTextInput() { }
 
 	virtual QString encoding();
@@ -329,7 +337,7 @@ private:
 
 //---------------------------------------------------------------------------
 
-class HTMLImageInput : public HTMLImage, public HTMLElement
+class HTMLImageInput : public QObject, public HTMLImage, public HTMLElement
 {
     Q_OBJECT
 public:
@@ -398,7 +406,8 @@ class HTMLButton : public HTMLInput
 {
     Q_OBJECT
 public:
-    HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_handlers );
+    HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, 
+		QList<JSEventHandler> *_handlers, const HTMLFont *f = 0 );
     virtual ~HTMLButton();
     
     virtual const char * objectName() const { return "HTMLButton"; };

@@ -617,9 +617,8 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-class HTMLImage : public QObject, public HTMLObject
+class HTMLImage : public HTMLObject
 {
-    Q_OBJECT
 public:
     HTMLImage( KHTMLWidget *widget, const char *, const char *_url,
 		const char *_target, 

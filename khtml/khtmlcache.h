@@ -44,6 +44,9 @@ class QMovie;
 
 class KHTMLWidget;
 
+/** 
+ * contains one cached image
+ */
 class KHTMLCachedImage : public QObject
 {
     Q_OBJECT
@@ -83,7 +86,14 @@ public:
     void clear();
 
 public slots:
+    /**
+     * gets called, whenever a QMovie changes frame
+     */
     void movieUpdated( const QRect &rect );
+    /** 
+     * needed to work around a bug in QMovie
+     * should be unused for qt > 1.41
+     */
     void statusChanged(int status);
 
 public:
@@ -151,7 +161,9 @@ public:
      */
     void requestImage( HTMLObject *obj, const char * _url );
 
+    /** sets the status of an URL */
     static void setStatus( const char * _url, Status s );
+    /** returns the current status of an image */
     static int status( const char *_url );
 
     /**
@@ -167,10 +179,17 @@ public:
      */
     static QPixmap *image( const char * _url );
 
+    /**
+     * sets the size of the cache
+     */
     static void setSize( int bytes );
+    /** returns the size of the cache */
     static int size() { return maxSize; };
 
+    /** prints some statistics to stdout */
     static void statistics();
+
+    /** clean up cache */
     static void flush();
 
     /**

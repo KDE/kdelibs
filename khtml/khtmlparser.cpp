@@ -2009,19 +2009,39 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 		}
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
-		if ( !httpequiv.isEmpty() &&
-		    strcasecmp(httpequiv.data(),"content-type") == 0)
+		if (!httpequiv.isEmpty())
 		{
+		    if(strcasecmp(httpequiv.data(),"content-type") == 0)
+		    {
 			stringTok->tokenize( content, " >;" );
 			while ( stringTok->hasMoreTokens() )
 	   		{
 				const char* token = stringTok->nextToken();
 				debugM("token: %s\n",token);
 				if ( strncasecmp( token, "charset=", 8 ) == 0)
-				  	setCharset(token+8);
+				    setCharset(token+8);
 			}                         
-		}
-			 
+		    }
+#ifdef BROKEN
+		    //Lars: this is still buggy....
+		    else if(strcasecmp(httpequiv.data(),"refresh") == 0)
+		    {
+			QString url;
+			int delay;
+			printf("content = %s\n",content.data());
+			stringTok->tokenize( content, " >;," );
+			const char* token = stringTok->nextToken();
+			sscanf(token,"%d", &delay);
+			while ( stringTok->hasMoreTokens() )
+	   		{
+			    if ( strncasecmp( token, "url=", 4 ) == 0)
+				setCharset(token+4);
+			}                         
+			// FIXME: have to do something with the scanned input
+			HTMLWidget->URLSelected(url, LeftButton, 0 );
+		    }
+#endif
+		} 
 	}
 }
 
@@ -2228,7 +2248,8 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 			}
 		}
 
-		formSelect = new HTMLSelect( HTMLWidget, name, size, multi );
+		formSelect = new HTMLSelect( HTMLWidget, name, size, multi,
+					     currentFont() );
 		formSelect->setForm( form );
 		form->addElement( formSelect );
 		if ( !flow )
@@ -2348,7 +2369,8 @@ void KHTMLParser::parseT( HTMLClue *_clue, const char *str )
 			}
 		}
 
-		formTextArea = new HTMLTextArea( HTMLWidget, name, rows, cols );
+		formTextArea = new HTMLTextArea( HTMLWidget, name, rows, cols,
+						 currentFont() );
 		formTextArea->setForm( form );
 		form->addElement( formTextArea );
 		if ( !flow )
@@ -3034,7 +3056,8 @@ const char *KHTMLParser::parseInput( const char *attr )
     {
 	case CheckBox:
 	    {
-		HTMLCheckBox *cb = new HTMLCheckBox( HTMLWidget,name,value,checked );
+		HTMLCheckBox *cb = new HTMLCheckBox( HTMLWidget,name,value,
+						     checked, currentFont() );
 		cb->setForm( form );
 		form->addElement( cb );
 		flow->append( cb );
@@ -3051,7 +3074,8 @@ const char *KHTMLParser::parseInput( const char *attr )
 
 	case Radio:
 	    {
-		HTMLRadio *radio = new HTMLRadio( HTMLWidget, name, value, checked );
+		HTMLRadio *radio = new HTMLRadio( HTMLWidget, name, value, 
+						  checked, currentFont() );
 		radio->setForm( form );
 		form->addElement( radio );
 		flow->append( radio );
@@ -3064,7 +3088,8 @@ const char *KHTMLParser::parseInput( const char *attr )
 
 	case Reset:
 	    {
-		HTMLReset *reset = new HTMLReset( HTMLWidget, value );
+		HTMLReset *reset = new HTMLReset( HTMLWidget, value, 
+						  currentFont() );
 		reset->setForm( form );
 		form->addElement( reset );
 		flow->append( reset );
@@ -3075,7 +3100,8 @@ const char *KHTMLParser::parseInput( const char *attr )
 
 	case Submit:
 	    {
-		HTMLSubmit *submit = new HTMLSubmit( HTMLWidget, name, value );
+		HTMLSubmit *submit = new HTMLSubmit( HTMLWidget, name, value,
+						     currentFont() );
 		submit->setForm( form );
 		form->addElement( submit );
 		flow->append( submit );
@@ -3086,7 +3112,8 @@ const char *KHTMLParser::parseInput( const char *attr )
 
 	case Button:
 	    {
-		HTMLButton *button = new HTMLButton( HTMLWidget,name,value,handlers);
+		HTMLButton *button = new HTMLButton( HTMLWidget,name,value,
+						     handlers, currentFont() );
 		button->setForm( form );
 		form->addElement( button );
 		flow->append( button );
@@ -3096,8 +3123,10 @@ const char *KHTMLParser::parseInput( const char *attr )
 	case Text:
 	case Password:
 	    {
-		HTMLTextInput *ti = new HTMLTextInput( HTMLWidget, name, value, size,
-			maxLen, (type == Password));
+		HTMLTextInput *ti = new HTMLTextInput( HTMLWidget, name, value, 
+						       size, maxLen, 
+						       (type == Password),
+						       currentFont() );
 		ti->setForm( form );
 		form->addElement( ti );
 		flow->append( ti );
@@ -3110,7 +3139,8 @@ const char *KHTMLParser::parseInput( const char *attr )
 	    if ( !imgSrc.isEmpty() )
 	    {
 		KURL kurl( HTMLWidget->getBaseURL(), imgSrc );
-		HTMLImageInput *ii = new HTMLImageInput( HTMLWidget, kurl.url(), name );
+		HTMLImageInput *ii = new HTMLImageInput( HTMLWidget, kurl.url(),
+							 name );
 		ii->setForm( form );
 		form->addElement( ii );
 		flow->append( ii );
