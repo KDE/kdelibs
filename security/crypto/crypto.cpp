@@ -89,7 +89,7 @@
 #include <kaboutdata.h>
 
 typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
-K_EXPORT_COMPONENT_FACTORY( libkcm_crypto, KryptoFactory );
+K_EXPORT_COMPONENT_FACTORY( libkcm_crypto, KryptoFactory("kcmcrypto") );
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
@@ -1450,7 +1450,7 @@ QDateTime qdt = x->getExpires();
    int rc = kdtd.exec();
    if (rc == KDialog::Accepted) {
       x->setExpires(kdtd.getDateTime());
-      untilDate->setText(x->getExpires().toString());
+      untilDate->setText(KGlobal::locale()->formatDateTime(x->getExpires()));
       configChanged();
    }
 }
@@ -1492,8 +1492,8 @@ QString iss = "";
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
-         untilDate->setText(x ? x->getExpires().toString()
-                              : QDateTime::currentDateTime().toString());
+         untilDate->setText(x ? KGlobal::locale()->formatDateTime(x->getExpires())
+                              : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime()));
          untilDate->setEnabled(x && !x->isPermanent());
          delete cert;
       } else {
