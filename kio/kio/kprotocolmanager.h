@@ -25,10 +25,11 @@
 #include <kapplication.h>
 #include <kio/global.h>
 
-// This value has been deprecated!! Use
-// KProtocolManager::defaultUserAgent() instead.
-#define DEFAULT_USERAGENT_STRING \
+/** @deprecated Use KProtocolManager::defaultUserAgent() instead. */
+#define DEFAULT_USERAGENT_STRING ""
+#if 0
 QString("Mozilla/5.0 (compatible; Konqueror/%1; X11").arg(KDE_VERSION_MAJOR)
+#endif
 
 class KConfig;
 class KPAC;
