@@ -51,7 +51,7 @@ QCursor KCursor::handCursor()
 				0xe0, 0x3f, 0xc0, 0x1f, 0x80, 0x0f, 0x00, 0x07, 0x00, 0x02};
 			QBitmap hand_bitmap(16, 16, HAND_BITS, true); 
 			QBitmap hand_mask(16, 16, HAND_MASK_BITS, true); 
-			hand_cursor = new QCursor(hand_bitmap, hand_mask);
+			hand_cursor = new QCursor(hand_bitmap, hand_mask, 0, 0);
 		}
 	}
 
