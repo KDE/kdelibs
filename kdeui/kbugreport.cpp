@@ -183,11 +183,11 @@ KBugReport::~KBugReport()
 void KBugReport::slotConfigureEmail()
 {
   m_process = new KProcess;
-  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("System/email");
+  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("Personalization/email");
   connect(m_process, SIGNAL(processExited(KProcess *)), this, SLOT(slotSetFrom()));
   if (!m_process->start())
   {
-    debug("Couldn't start kcmshell..");
+    qDebug("Couldn't start kcmshell..");
     delete m_process;
   }
 }
