@@ -22,6 +22,7 @@
 #include "ksycocadict.h"
 #include "kservicetype.h"
 #include "kmimetype.h"
+#include "kuserprofile.h"
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -57,6 +58,7 @@ KServiceTypeFactory::KServiceTypeFactory()
 KServiceTypeFactory::~KServiceTypeFactory()
 {
   _self = 0L;
+  KServiceTypeProfile::clear();
 }
 
 KServiceTypeFactory * KServiceTypeFactory::self()

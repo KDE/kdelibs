@@ -19,6 +19,7 @@
 #include "kuserprofile.h"
 #include "kservice.h"
 #include "kservicetype.h"
+#include "kservicetypefactory.h"
 
 #include <kconfig.h>
 #include <kapp.h>
@@ -43,6 +44,9 @@ void KServiceTypeProfile::initStatic()
 {
   if ( s_lstProfiles )
     return;
+
+  // Make sure that a KServiceTypeFactory gets created.
+  (void) KServiceTypeFactory::self();
 
   s_lstProfiles = new QList<KServiceTypeProfile>;
 
