@@ -575,8 +575,6 @@ private slots:
   void slotIncFontSizes();
   void slotDecFontSizes();
 
-    void slotPrint();
-    
   void slotLoadImages();
 
   /**
@@ -651,6 +649,7 @@ public:
 public slots:
   void copy();
   void reparseConfiguration();
+  void print();
 
 private:
   KHTMLPart *m_part;

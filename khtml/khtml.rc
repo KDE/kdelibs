@@ -1,9 +1,6 @@
 <!DOCTYPE kpartgui>
 <kpartgui name="khtmlpart">
 <MenuBar>
- <Menu name="file">
-  <Action name="printDocument" />
- </Menu>
  <Menu name="view">
   <Action name="viewDocumentSource" />
   <Action name="viewFrameSource" />
