@@ -24,14 +24,10 @@
 #ifndef KJAVAAPPLETWIDGET_H
 #define KJAVAAPPLETWIDGET_H
 
-#define EMBEDCLASS KJavaEmbed
-//#define EMBEDCLASS QXEmbed
-
 #include <qwidget.h>
 #ifndef Q_WS_QWS //FIXME(?) I don't think this is possible with Qt Embedded
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"
-#include "java/javaembed.h"
 #include <qxembed.h>
 #include <kwinmodule.h>
 
@@ -79,7 +75,7 @@
 
 class KJavaAppletWidgetPrivate;
 
-class KJavaAppletWidget : public EMBEDCLASS
+class KJavaAppletWidget : public QXEmbed
 {
     Q_OBJECT
 public:

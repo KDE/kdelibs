@@ -75,7 +75,7 @@ void KJavaAppletContext::create( KJavaApplet* applet )
 {
     static int appletId = 0;
 
-    server->createApplet( id, appletId,
+    server->createApplet( id, ++appletId,
                           applet->appletName(),
                           applet->appletClass(),
                           applet->baseURL(),
@@ -87,7 +87,6 @@ void KJavaAppletContext::create( KJavaApplet* applet )
 
     applet->setAppletId( appletId );
     d->applets.insert( appletId, applet );
-    appletId++;
 }
 
 void KJavaAppletContext::destroy( KJavaApplet* applet )

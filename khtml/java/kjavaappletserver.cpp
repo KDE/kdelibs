@@ -243,7 +243,12 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     //check for http proxies...
     if( KProtocolManager::useProxy() )
     {
-        QString httpProxy = KProtocolManager::proxyFor("http");
+        // only proxyForURL honours automatic proxy scripts
+        // we do not know the applet url here so we just use a dummy url
+        // this is a workaround for now
+        // FIXME
+        KURL dummyURL( "http://www.kde.org/" );
+        QString httpProxy = KProtocolManager::proxyForURL(dummyURL);
         kdDebug(6100) << "httpProxy is " << httpProxy << endl;
 
         KURL url( httpProxy );
