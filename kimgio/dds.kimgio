@@ -2,6 +2,7 @@
 Type=DDS
 Header=^DDS 
 Name=Direct Draw Surface
+Name[sv]=Direktrityta
 Read=true
 Write=false
 Suffices=dds,DDS
