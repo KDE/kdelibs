@@ -357,6 +357,7 @@ class KAccelAction
 //---------------------------------------------------------------------
 
 /**
+ * @internal
  * This class represents a collection of @ref KAccelAction objects.
  *
  * @short A collection of accelerator actions
