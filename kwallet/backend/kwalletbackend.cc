@@ -464,7 +464,7 @@ int Backend::sync(const QByteArray& password) {
 
 		md5.reset();
 		md5.update(i.key().utf8());
-		hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
+		hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		hashStream << static_cast<Q_UINT32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
@@ -478,7 +478,7 @@ int Backend::sync(const QByteArray& password) {
 
 				md5.reset();
 				md5.update(j.key().utf8());
-				hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
+				hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 				break;
 			default:
 				assert(0);
