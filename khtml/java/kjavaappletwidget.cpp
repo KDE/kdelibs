@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+#include <qmetaobject.h>
 #include <qlabel.h>
 
 #include <X11/X.h>
