@@ -1,5 +1,5 @@
 /*  This file is part of the KDE Libraries
- *  Copyright (C) 1999 Espen Sand (espensa@online.no)
+ *  Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 /*
 ****************************************************************************
 *
-* $Log:
+* $Log$
 *
 ****************************************************************************
 */
@@ -85,6 +85,10 @@ void KTextBrowser::setSource( const QString& name )
 void KTextBrowser::keyPressEvent(QKeyEvent *e)
 {
   if( e->key() == Key_Escape )
+  {
+    e->ignore();
+  }
+  else if( e->key() == Key_F1 )
   {
     e->ignore();
   }
