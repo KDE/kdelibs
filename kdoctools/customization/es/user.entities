@@ -9,6 +9,7 @@
 <!ENTITY Alt "<keycap>Alt</keycap>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
 <!ENTITY Ctrl "<keycap>Ctrl</keycap>">
+<!ENTITY Enter "<keycap>Intro</keycap>">
 <!ENTITY dpi    "<acronym>ppp</acronym>">
 <!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
 <!ENTITY Esc "<keycap>Esc</keycap>">
