@@ -1,0 +1,6 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=multipart/x-mixed-replace
+Patterns=
+Comment=Stream of data (server push)
