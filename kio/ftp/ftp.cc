@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kinstance.h>
+#include <kmimemagic.h>
 #include <ksock.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -1359,10 +1360,19 @@ void Ftp::get( const KURL & url, bool /*reload*/ )
   char buffer[ 2048 ];
   QByteArray array;
 
+  bool mimetypeEmitted = false;
+
   while( m_bytesLeft > 0 )
   {
     int n = ftpRead( buffer, 2048 );
+
     array.setRawData(buffer, n);
+    if ( !mimetypeEmitted )
+    {
+      KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( array, url.fileName() );
+      mimeType( result->mimeType() );
+      mimetypeEmitted = true;
+    }
     data( array );
     array.resetRawData(buffer, n);
 
