@@ -452,10 +452,10 @@ void KStartupInfo::startups_cleanup_no_age()
 void KStartupInfo::startups_cleanup()
     {
     if( d->startups.count() == 0 )
-    {
+        {
         d->cleanup->stop();
         return;
-    }
+        }
     startups_cleanup_internal( true );
     }
     
@@ -740,6 +740,13 @@ void KStartupInfoData::setName( const QString& name_P )
     d->name = name_P;
     }
     
+const QString& KStartupInfoData::findName() const
+    {
+    if( !name().isEmpty())
+        return name();
+    return bin();
+    }
+
 const QString& KStartupInfoData::name() const
     {
     return d->name;
@@ -750,6 +757,13 @@ void KStartupInfoData::setIcon( const QString& icon_P )
     d->icon = icon_P;
     }
     
+const QString& KStartupInfoData::findIcon() const
+    {
+    if( !icon().isEmpty())
+        return icon();
+    return bin();
+    }
+
 const QString& KStartupInfoData::icon() const
     {
     return d->icon;

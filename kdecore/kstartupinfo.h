@@ -124,8 +124,10 @@ class KStartupInfoData
         void setBin( const QString& bin );
         const QString& bin() const;
         void setName( const QString& name );
+        const QString& findName() const;
         const QString& name() const;
         void setIcon( const QString& icon );
+        const QString& findIcon() const;
         const QString& icon() const;
         void setDesktop( int desktop );
         int desktop() const;
