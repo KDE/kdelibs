@@ -664,7 +664,7 @@ int AutoTableLayout::calcEffectiveWidth()
 		    if ( !(layoutStruct[pos].width.type == Percent ) ) {
 			int percent = percentMissing * layoutStruct[pos].effMaxWidth / totalWidth;
 #ifdef DEBUG_LAYOUT
-			qDebug("   col %d: setting percent value %d effMaxWidth=%d totalWidth=%d", pos, percent, layoutStruct[i].effMaxWidth, totalWidth );
+			qDebug("   col %d: setting percent value %d effMaxWidth=%d totalWidth=%d", pos, percent, layoutStruct[pos].effMaxWidth, totalWidth );
 #endif
 			totalWidth -= layoutStruct[pos].effMaxWidth;
 			percentMissing -= percent;
@@ -839,6 +839,20 @@ void AutoTableLayout::layout()
         }
     }
 
+    // then allocate width to fixed cols
+    if ( available > 0 ) {
+	for ( int i = 0; i < nEffCols; ++i ) {
+	    Length &width = layoutStruct[i].effWidth;
+	    if ( width.type == Fixed && width.value > layoutStruct[i].calcWidth ) {
+		available += layoutStruct[i].calcWidth - width.value;
+		layoutStruct[i].calcWidth = width.value;
+            }
+	}
+    }
+#ifdef DEBUG_LAYOUT
+    qDebug("fixed satisfied: available is %d", available);
+#endif
+
     // then allocate width to percent cols
     if ( available > 0 && havePercent ) {
 	for ( int i = 0; i < nEffCols; i++ ) {
@@ -868,20 +882,6 @@ void AutoTableLayout::layout()
     }
 #ifdef DEBUG_LAYOUT
     qDebug("percent satisfied: available is %d", available);
-#endif
-
-    // then allocate width to fixed cols
-    if ( available > 0 ) {
-	for ( int i = 0; i < nEffCols; ++i ) {
-	    Length &width = layoutStruct[i].effWidth;
-	    if ( width.type == Fixed && width.value > layoutStruct[i].calcWidth ) {
-		available += layoutStruct[i].calcWidth - width.value;
-		layoutStruct[i].calcWidth = width.value;
-            }
-	}
-    }
-#ifdef DEBUG_LAYOUT
-    qDebug("fixed satisfied: available is %d", available);
 #endif
 
     // now satisfy relative
@@ -916,6 +916,24 @@ void AutoTableLayout::layout()
     qDebug("variable satisfied: available is %d",  available );
 #endif
 
+    // spread over fixed colums
+    if ( available > 0 && numFixed) {
+        // still have some width to spread, distribute to fixed columns
+        for ( int i = 0; i < nEffCols; i++ ) {
+            Length &width = layoutStruct[i].effWidth;
+            if ( width.isFixed() ) {
+                int w = available * layoutStruct[i].effMaxWidth / totalFixed;
+                available -= w;
+                totalFixed -= layoutStruct[i].effMaxWidth;
+                layoutStruct[i].calcWidth += w;
+            }
+        }
+    }
+
+#ifdef DEBUG_LAYOUT
+    qDebug("after fixed distribution: available=%d",  available );
+#endif
+
     // spread over percent colums
     if ( available > 0 && hasPercent && totalPercent < 100) {
         // still have some width to spread, distribute weighted to percent columns
@@ -933,25 +951,6 @@ void AutoTableLayout::layout()
 
 #ifdef DEBUG_LAYOUT
     qDebug("after percent distribution: available=%d",  available );
-#endif
-
-
-    // spread over fixed colums
-    if ( available > 0 && numFixed) {
-        // still have some width to spread, distribute to fixed columns
-        for ( int i = 0; i < nEffCols; i++ ) {
-            Length &width = layoutStruct[i].effWidth;
-            if ( width.isFixed() ) {
-                int w = available * layoutStruct[i].effMaxWidth / totalFixed;
-                available -= w;
-                totalFixed -= layoutStruct[i].effMaxWidth;
-                layoutStruct[i].calcWidth += w;
-            }
-        }
-    }
-
-#ifdef DEBUG_LAYOUT
-    qDebug("after fixed distribution: available=%d",  available );
 #endif
 
     // spread over the rest
