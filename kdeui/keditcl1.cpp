@@ -115,7 +115,7 @@ static QStringList split( QString &text , const char *sep )
     int old = 0;
 
     // Append words up to (not including) last
-    while ( (pos = text.find( sep , old )) != -1 )
+    while ( (pos = text.find( QString::fromLatin1(sep) , old )) != -1 )
     {
         tmp.append( text.mid(old,pos - old) );
         old = pos + 1;
@@ -148,11 +148,11 @@ KEdit::cleanWhiteSpace()
       if (line.isEmpty())
       {
          if (addSpace)
-            newText += "\n\n";
+            newText += QString::fromLatin1("\n\n");
          if (firstLine)
          {
             if (firstChar.isSpace())
-               newText += "\n";
+               newText += '\n';
             firstLine = false;
          }
          addSpace = false;
@@ -160,11 +160,11 @@ KEdit::cleanWhiteSpace()
       else
       {
          if (addSpace)
-            newText += " ";
+            newText += ' ';
          if (firstLine)
          {
             if (firstChar.isSpace())
-               newText += " ";
+               newText += ' ';
             firstLine = false;
          }
          newText += line;
@@ -175,9 +175,9 @@ KEdit::cleanWhiteSpace()
    if (addSpace)
    {
       if (lastChar == '\n')
-         newText += "\n";
+         newText += '\n';
       else if (lastChar.isSpace())
-         newText += " ";
+         newText += ' ';
    }
 
    if (oldText == newText) 
@@ -294,11 +294,11 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
 
     if(!killbufferstring.isEmpty() && !killtrue && !lastwasanewline){
-      killbufferstring += "\n";
+      killbufferstring += '\n';
     }
 
     if( (killstring.length() == 0) && !killtrue){
-      killbufferstring += "\n";
+      killbufferstring += '\n';
       lastwasanewline = true;
     }
 

@@ -21,6 +21,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/05/10 12:59:04  kulow
+ * applied 90% of Hans's patch and tried to fix other stuff. Some classes
+ * (KAccel is a good example - libkab is even worse) mix string types so
+ * dramacticly, that I bet 70% of the runtime is spent in string conversion ;(
+ *
  * Revision 1.8  1999/03/01 23:35:08  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -349,19 +354,19 @@ KRuler::setRulerStyle(metric_style style)
   }
   switch (style) {
   case pixel:
-    setEndLabel("pixel");
+    setEndLabel(QString::fromLatin1("pixel"));
     break;
   case inch:
-    setEndLabel("inch");
+    setEndLabel(QString::fromLatin1("inch"));
     break;
   case millimetres:
-    setEndLabel("mm");
+    setEndLabel(QString::fromLatin1("mm"));
     break;
   case centimetres:
-    setEndLabel("cm");
+    setEndLabel(QString::fromLatin1("cm"));
     break;
   case metres:
-    setEndLabel("m");
+    setEndLabel(QString::fromLatin1("m"));
   default: /* never reached, see above switch */
     /* empty command */;
   }

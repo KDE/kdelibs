@@ -57,7 +57,7 @@ void KProgress::initialize()
 	bar_text_color = colorGroup().highlightedText();
 	text_color = colorGroup().text();
 	setBackgroundMode( PaletteBase );
-	setFont(QFont("helvetica", 12, QFont::Bold));
+	setFont(QFont(QString::fromLatin1("helvetica"), 12, QFont::Bold));
         text_enabled = TRUE;
         if(kapp->kstyle()){
             QBrush b;
@@ -216,9 +216,9 @@ void KProgress::drawText(QPainter *p)
   // the current value and the maximum value respectively.
   QString s(format_);
 
-  s.replace(QRegExp("%p"), QString::number(recalcValue(100)));
-  s.replace(QRegExp("%v"), QString::number(value()));
-  s.replace(QRegExp("%m"), QString::number(maxValue()));
+  s.replace(QRegExp(QString::fromLatin1("%p")), QString::number(recalcValue(100)));
+  s.replace(QRegExp(QString::fromLatin1("%v")), QString::number(value()));
+  s.replace(QRegExp(QString::fromLatin1("%m")), QString::number(maxValue()));
 
 	p->setPen(text_color);
 	//p->setRasterOp(XorROP);

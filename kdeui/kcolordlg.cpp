@@ -378,7 +378,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
 		Ok, true )
 {
-  setHelp( "kcolordialog.html", QString::null );
+  setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
 
   QPushButton *button;
@@ -571,7 +571,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // add the HSV fields
   //
-  label = new QLabel( "H:", page );
+  label = new QLabel( QString::fromLatin1("H:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 0, 2);
   hedit = new QLineEdit( page );
@@ -579,7 +579,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_rbot->addWidget(hedit, 0, 3);
   connect( hedit, SIGNAL( returnPressed() ),SLOT( slotHSVChanged() ) );
 	
-  label = new QLabel( "S:", page );
+  label = new QLabel( QString::fromLatin1("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 1, 2);
   sedit = new QLineEdit( page );
@@ -587,7 +587,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_rbot->addWidget(sedit, 1, 3);
   connect( sedit, SIGNAL( returnPressed() ),SLOT( slotHSVChanged() ) );
 	
-  label = new QLabel( "V:", page );
+  label = new QLabel( QString::fromLatin1("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 2, 2);
   vedit = new QLineEdit( page );
@@ -598,7 +598,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // add the RGB fields
   //
-  label = new QLabel( "R:", page );
+  label = new QLabel( QString::fromLatin1("R:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 0, 4);
   redit = new QLineEdit( page );
@@ -606,7 +606,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_rbot->addWidget(redit, 0, 5);
   connect( redit, SIGNAL( returnPressed() ), SLOT( slotRGBChanged() ) );
 	
-  label = new QLabel( "G:", page );
+  label = new QLabel( QString::fromLatin1("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget( label, 1, 4);
   gedit = new QLineEdit( page );
@@ -614,7 +614,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_rbot->addWidget(gedit, 1, 5);
   connect( gedit, SIGNAL( returnPressed() ), SLOT( slotRGBChanged() ) );
 	
-  label = new QLabel( "B:", page );
+  label = new QLabel( QString::fromLatin1("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 2, 4);
   bedit = new QLineEdit( page );
@@ -625,7 +625,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // the entry fields should be wide enought to hold 88888
   //
-  int w = hedit->fontMetrics().width("888888");
+  int w = hedit->fontMetrics().width(QString::fromLatin1("888888"));
   hedit->setFixedWidth(w);
   sedit->setFixedWidth(w);
   vedit->setFixedWidth(w);
@@ -829,12 +829,12 @@ void KColorDialog::slotWriteSettings( void )
   KConfig* config = KGlobal::config();
 
   QString oldgroup = config->group();
-  config->setGroup( "Custom Colors");
+  config->setGroup( QString::fromLatin1("Custom Colors"));
 
   for ( int i = 0; i < custColorCells->numCells(); i++ )
   {
     color = custColorCells->color( i );
-    key = QString( "Color%1").arg( i );
+    key = QString::fromLatin1("Color%1").arg( i );
     if (color.isValid())
        config->writeEntry( key, color, true, true );
     else
@@ -852,11 +852,11 @@ void KColorDialog::readSettings( void )
   KConfig* config = KGlobal::config();
 
   QString oldgroup = config->group();
-  config->setGroup( "Custom Colors");
+  config->setGroup( QString::fromLatin1("Custom Colors"));
 
   for ( int i = 0; i < custColorCells->numCells(); i++ )
   {
-    key = QString( "Color%1").arg( i );
+    key = QString::fromLatin1("Color%1").arg( i );
     col = config->readColorEntry( key );
     custColorCells->setColor( i, col );
   }

@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14  1999/12/11 18:37:12  faure
+ * ../../../kdelibs/kdeui/kmessagebox.cpp:118: warning: control reaches
+ * end of non-void function `KMessageBox::questionYesNo(QWidget *,
+ * const QString &, const QStr...
+ *
+ * Better read warnings... You broke the return value...
+ *
  * Revision 1.13  1999/12/11 17:20:36  antlarr
  * Changed the QStringList questionYesNo method name to questionYesNoList
  * Also reimplemented the original questionYesNo to call questionYesNoList with
@@ -374,7 +381,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
     {
        config = kapp->config();
        originalConfigGroup = config->group();
-       config->setGroup("Notification Messages");
+       config->setGroup(QString::fromLatin1("Notification Messages"));
        showMsg = config->readBoolEntry( dontShowAgainName, true);
        if (!showMsg)
        {
@@ -434,14 +441,14 @@ KMessageBox::enableAllMessages()
 {
    KConfig *config = kapp->config();
    QString originalConfigGroup = config->group();
-   if (!config->hasGroup("Notification Messages"))
+   if (!config->hasGroup(QString::fromLatin1("Notification Messages")))
       return;
 
-   config->setGroup("Notification Messages");
+   config->setGroup(QString::fromLatin1("Notification Messages"));
 
    typedef QMap<QString, QString> configMap;
    
-   configMap map = config->entryMap("Notification Messages");
+   configMap map = config->entryMap(QString::fromLatin1("Notification Messages"));
 
    configMap::Iterator it;
    for (it = map.begin(); it != map.end(); ++it)

@@ -181,15 +181,15 @@ void KToolBar::slotReadConfig()
 {
   KConfig *config = KGlobal::config();
   QString group = config->group();
-  config->setGroup("Toolbar style");
+  config->setGroup(QString::fromLatin1("Toolbar style"));
   IconText icontext;
   if (honor_mode)
-    icontext = (IconText)config->readNumEntry("IconText", IconOnly);
+    icontext = (IconText)config->readNumEntry(QString::fromLatin1("IconText"), IconOnly);
   else
     icontext = IconOnly;
-  int tsize=config->readNumEntry("Size", 30);
-  int _highlight =config->readNumEntry("Highlighting", 1);
-  int _transparent = config->readBoolEntry("TransparentMoving", true);
+  int tsize=config->readNumEntry(QString::fromLatin1("Size"), 30);
+  int _highlight =config->readNumEntry(QString::fromLatin1("Highlighting"), 1);
+  int _transparent = config->readBoolEntry(QString::fromLatin1("TransparentMoving"), true);
   config->setGroup(group);
 
   bool doUpdate=false;
@@ -1750,12 +1750,12 @@ void KToolBar::setBarPos(BarPosition bpos)
 			XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 			KWM::setDecoration(winId(), 2);
 			KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
-			setCaption(""); // this triggers a qt bug
+			setCaption(QString::null); // this triggers a qt bug
 			if (!title.isNull()){
 				setCaption(title);
 			} else {
 				QString s = Parent->caption();
-				s.append(" [tools]");
+				s.append(QString::fromLatin1(" [tools]"));
 				setCaption(s);
 			}
 			context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);

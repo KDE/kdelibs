@@ -1012,7 +1012,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     KRootProp prop(widgetEntries[i]);
     QString tmpStr;
 
-    tmpStr = prop.readEntry("CopyWidget", "");
+    tmpStr = prop.readEntry(QString::fromLatin1("CopyWidget"));
     if(!tmpStr.isEmpty()){ // Duplicate another widget's config
         int sIndex;
         loadArray[i] = true;
@@ -1035,7 +1035,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     // the rest of what we handle).        
     for(tmpVal = DisArrowUp; tmpVal <= DisArrowRight; ++tmpVal){
         if(tmpVal == i){
-            tmpStr = prop.readEntry("Pixmap", "");
+            tmpStr = prop.readEntry(QString::fromLatin1("Pixmap"));
             if(tmpStr.isEmpty()){
                 copyWidgetConfig(ArrowUp+(tmpVal-DisArrowUp), i, pixnames,
                                  brdnames);
@@ -1045,26 +1045,26 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     }
     
     // Scale hint
-    scaleHints[i] = (ScaleHint)prop.readNumEntry("ScaleHint", (int)TileScale);
-    gradients[i] = (Gradient)prop.readNumEntry("Gradient", (int)GrNone);
+    scaleHints[i] = (ScaleHint)prop.readNumEntry(QString::fromLatin1("ScaleHint"), (int)TileScale);
+    gradients[i] = (Gradient)prop.readNumEntry(QString::fromLatin1("Gradient"), (int)GrNone);
     
     // Blend intensity
-    tmpStr = prop.readEntry("Blend", "0.0");
+    tmpStr = prop.readEntry(QString::fromLatin1("Blend"), QString::fromLatin1("0.0"));
     blends[i] = tmpStr.toFloat();
 
     // Bevel contrast
-    bContrasts[i] = prop.readNumEntry("BContrast", 0);
+    bContrasts[i] = prop.readNumEntry(QString::fromLatin1("BContrast"), 0);
 
     // Border width
-    borders[i] = prop.readNumEntry("Border", 1);
+    borders[i] = prop.readNumEntry(QString::fromLatin1("Border"), 1);
 
     // Highlight width
-    highlights[i] = prop.readNumEntry("Highlight", 1);
+    highlights[i] = prop.readNumEntry(QString::fromLatin1("Highlight"), 1);
 
     // Gradient low color or blend background
     if(gradients[i] != GrNone || blends[i] != 0.0)
         grLowColors[i] =
-            new QColor(prop.readColorEntry("GrLow",
+            new QColor(prop.readColorEntry(QString::fromLatin1("GrLow"),
                                            &kapp->palette().normal().
                                            background()));
     else
@@ -1073,7 +1073,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     // Gradient high color
     if(gradients[i] != GrNone)
         grHighColors[i] =
-            new QColor(prop.readColorEntry("GrHigh",
+            new QColor(prop.readColorEntry(QString::fromLatin1("GrHigh"),
                                            &kapp->palette().normal().
                                            background()));
     else
@@ -1081,8 +1081,8 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
 
     // Extended color attributes
     QColor fg, bg;
-    fg = prop.readColorEntry("Foreground", &fg);
-    bg = prop.readColorEntry("Background", &bg);
+    fg = prop.readColorEntry(QString::fromLatin1("Foreground"), &fg);
+    bg = prop.readColorEntry(QString::fromLatin1("Background"), &bg);
     if(fg.isValid() || bg.isValid()){
         if(!fg.isValid())
             fg = kapp->palette().normal().foreground();
@@ -1095,7 +1095,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     
     // Pixmap
     int existing;
-    tmpStr = prop.readEntry("Pixmap", "");
+    tmpStr = prop.readEntry(QString::fromLatin1("Pixmap"));
     pixnames[i] = tmpStr;
     duplicate[i] = false;
     pixmaps[i] = NULL;
@@ -1124,13 +1124,13 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     }
 
     // Pixmap border
-    tmpStr = prop.readEntry("PixmapBorder", "");
+    tmpStr = prop.readEntry(QString::fromLatin1("PixmapBorder"));
     brdnames[i] = tmpStr;
     pbDuplicate[i] = false;
     pbPixmaps[i] = NULL;
     pbWidth[i] = 0;
     if(!tmpStr.isEmpty()){
-        pbWidth[i] = prop.readNumEntry("PixmapBWidth", 0);
+        pbWidth[i] = prop.readNumEntry(QString::fromLatin1("PixmapBWidth"), 0);
         if(pbWidth[i] == 0){
             warning("KThemeBase: No border width specified for pixmapped border widget %s",
                     widgetEntries[i]);
@@ -1156,32 +1156,32 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     // Various widget specific settings. This was more efficent when bunched
     // together in the misc group, but this makes an easier to read config.
     if(i == SliderGroove)
-        roundedSlider = prop.readNumEntry("SmallGroove", false);
+        roundedSlider = prop.readNumEntry(QString::fromLatin1("SmallGroove"), false);
     else if(i == ActiveTab)
-        aTabLine = prop.readNumEntry("BottomLine", true);
+        aTabLine = prop.readNumEntry(QString::fromLatin1("BottomLine"), true);
     else if(i == InactiveTab)
-        iTabLine = prop.readNumEntry("BottomLine", true);
+        iTabLine = prop.readNumEntry(QString::fromLatin1("BottomLine"), true);
     else if(i == Splitter)
-        splitterWidth = prop.readNumEntry("Width", 10);
+        splitterWidth = prop.readNumEntry(QString::fromLatin1("Width"), 10);
     else if(i == ComboBox || i == ComboBoxDown){
-        tmpVal = prop.readNumEntry("Round", 5000);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("Round"), 5000);
         if(tmpVal != 5000)
             roundedCombo = tmpVal;
     }
     else if (i == PushButton || i == PushButtonDown){
-        tmpVal = prop.readNumEntry("XShift", 0);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("XShift"), 0);
         if(tmpVal != 5000)
             btnXShift = tmpVal;
-        tmpVal = prop.readNumEntry("YShift", 0);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("YShift"), 0);
         if(tmpVal != 5000)
             btnYShift = tmpVal;
-        tmpVal = prop.readNumEntry("3DFRect", false);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("3DFRect"), false);
         if(tmpVal != 5000)
             focus3D = tmpVal;
-        tmpVal = prop.readNumEntry("3DFOffset", 0);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("3DFOffset"), 0);
         if(tmpVal != 5000)
             focus3DOffset = tmpVal;
-        tmpVal = prop.readNumEntry("Round", false);
+        tmpVal = prop.readNumEntry(QString::fromLatin1("Round"), false);
         if(tmpVal != 5000)
             roundedButton = tmpVal;
     }

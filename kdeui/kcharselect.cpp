@@ -429,9 +429,9 @@ void KCharSelect::fillFontCombo()
 
 	    qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
 
-	    if ( !qfontname.contains( "open look", true ) )
+	    if ( !qfontname.contains( QString::fromLatin1("open look"), true ) )
 	    {
-		if ( qfontname != "nil" )
+		if ( qfontname != QString::fromLatin1("nil") )
 		{
 		    if ( !fontList.contains( qfontname ) )
 			fontList.append( qfontname );

@@ -59,7 +59,7 @@ KSplitListItem::KSplitListItem( const QString& s, int _id )
 	setText( s );
 	
 	QString str( s );
-	int i = str.find( ":" );
+	int i = str.find( ':' );
 	
 	actionName = str.left( i );
 	actionName.simplifyWhiteSpace();
@@ -417,17 +417,17 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   grid->addLayout( pushLayout, 4, 2 );
 	
   cShift = new QCheckBox( fCArea );
-  cShift->setText( "SHIFT" );
+  cShift->setText( QString::fromLatin1("SHIFT") );
   cShift->setEnabled( FALSE );
   connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
 	
   cCtrl = new QCheckBox( fCArea );
-  cCtrl->setText( "CTRL" );
+  cCtrl->setText( QString::fromLatin1("CTRL") );
   cCtrl->setEnabled( FALSE );
   connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
 	
   cAlt = new QCheckBox( fCArea );
-  cAlt->setText( "ALT" );
+  cAlt->setText( QString::fromLatin1("ALT") );
   cAlt->setEnabled( FALSE );
   connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
   
@@ -596,7 +596,7 @@ void KKeyChooser::toChange( int index )
 		
 	} else {
 		lNotConfig->setEnabled( FALSE );
-		lInfo->setText(""); lInfo->setEnabled( TRUE );
+		lInfo->setText(QString::null); lInfo->setEnabled( TRUE );
 		
 		uint kCode = pEntry->aConfigKeyCode;
 		uint kSCode = kCode & ~(SHIFT | CTRL | ALT);
@@ -807,7 +807,7 @@ const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 {
 	QString str = entryKey;
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);
-	str += " : ";
+	str += QString::fromLatin1(" : ");
 	str += KAccel::keyToString(keyCode, true);
 	str = str.leftJustify( MAX_FCTN_LENGTH + 3 +
 						   MAX_KEY_LENGTH+MAX_KEY_MODIFIER_LENGTH, ' ', TRUE );

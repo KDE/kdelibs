@@ -25,8 +25,8 @@
 KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
   : QWizard(parent, name, modal, f)
 {
-  backButton()->setText("< " + i18n("Back"));
-  nextButton()->setText(i18n("Next") + " >");
+  backButton()->setText(QString::fromLatin1("< ") + i18n("Back"));
+  nextButton()->setText(i18n("Next") + QString::fromLatin1(" >"));
   helpButton()->setText(i18n("Help"));
   finishButton()->setText(i18n("Finish"));
   cancelButton()->setText(i18n("Cancel"));

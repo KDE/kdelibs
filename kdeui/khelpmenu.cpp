@@ -72,7 +72,7 @@ QPopupMenu* KHelpMenu::menu( void )
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( "contents" ), i18n( "&Contents" ),
+    mMenu->insertItem( BarIcon( QString::fromLatin1("contents") ), i18n( "&Contents" ),
 		       menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::help(), menuHelpContents );
@@ -89,7 +89,7 @@ QPopupMenu* KHelpMenu::menu( void )
     mMenu->insertSeparator();
 
     mMenu->insertItem( kapp->miniIcon(),
-      i18n( "&About" ) + " " + kapp->name() + "...", menuAboutApp );
+      i18n( "&About" ) + ' ' + QString::fromLatin1(kapp->name()) + QString::fromLatin1("..."), menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
     mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
@@ -108,7 +108,7 @@ QPopupMenu* KHelpMenu::menu( void )
 
 void KHelpMenu::appHelpActivated( void )
 {
-  kapp->invokeHTMLHelp( QString(kapp->name()) + "/" + "index.html", "" );
+  kapp->invokeHTMLHelp( QString::fromLatin1(kapp->name()) + QString::fromLatin1("/index.html"), QString::fromLatin1("") );
 }
 
 
@@ -151,7 +151,7 @@ void KHelpMenu::aboutKDE( void )
 {
   if( mAboutKDE == 0 )
   {
-    mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, "KDE",
+    mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, QString::fromLatin1("KDE"),
       KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent,
       "aboutkde", false );
     connect( mAboutKDE, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
@@ -190,13 +190,13 @@ void KHelpMenu::aboutKDE( void )
       "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
       "will provide with what you need.");
 
-    mAboutKDE->setHelp( QString("khelpcenter/main.html"), QString::null );
+    mAboutKDE->setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
     mAboutKDE->setTitle(i18n("K Desktop Environment. Release %1").
-			arg(KDE_VERSION_STRING) );
+			arg(QString::fromLatin1(KDE_VERSION_STRING)) );
     mAboutKDE->addTextPage( i18n("&About"), text1, true );
     mAboutKDE->addTextPage( i18n("&Report bugs or wishes"), text2, true );
     mAboutKDE->addTextPage( i18n("&Join the KDE team"), text3, true );
-    mAboutKDE->setImage( locate( "data", "kdeui/pics/aboutkde.png") );
+    mAboutKDE->setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
     mAboutKDE->setImageBackgroundColor( white );
   }
 

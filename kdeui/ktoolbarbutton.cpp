@@ -73,7 +73,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   if (!txt.isNull())
   {
     btext = txt;
-    if (btext.right(3) == "...")
+    if (btext.right(3) == QString::fromLatin1("..."))
       btext.truncate(btext.length() - 3);
   }
   if ( ! pixmap.isNull() )
@@ -124,7 +124,7 @@ void KToolBarButton::toggle()
 void KToolBarButton::setText( const QString& text)
 {
   btext = text;
-  if (btext.right(3) == "...")
+  if (btext.right(3) == QString::fromLatin1("..."))
     btext.truncate(btext.length() - 3);
   modeChange();
   repaint (false);
@@ -487,7 +487,7 @@ void KToolBarButton::modeChange()
   {
     // we hard code the button font now... but this should be settable
     // sometime soon (e.g, KGlobal::buttonFont())
-    buttonFont.setFamily("Helvetica");
+    buttonFont.setFamily(QString::fromLatin1("Helvetica"));
     buttonFont.setPointSize(10);
     buttonFont.setBold(false);
     buttonFont.setItalic(false);

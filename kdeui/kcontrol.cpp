@@ -124,12 +124,16 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
 
 void KControlApplication::help()
 {
-  QString name("index.html");
+  QString name = QString::fromLatin1("index.html");
 
   if (dialog)
     name = helpNames.at(dialog->tabBar()->currentTab());
 
-  kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->name()+"/"+name, "");
+
+  kapp->invokeHTMLHelp(QString::fromLatin1("kcontrol/%1/%2")
+    .arg(QString::fromLatin1(kapp->name()))
+    .arg(name),
+    QString::fromLatin1(""));
 }
 
 

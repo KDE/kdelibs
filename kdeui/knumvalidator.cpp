@@ -61,7 +61,7 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   if (_base > 10)
     newStr = newStr.upper();
 
-  if (newStr == "-") // a special case
+  if (newStr == QString::fromLatin1("-")) // a special case
     if ((_min || _max) && _min >= 0)
       ok = false;
     else
@@ -167,12 +167,12 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
 
   newStr = str.stripWhiteSpace();
 
-  if (newStr == "-") // a special case
+  if (newStr == QString::fromLatin1("-")) // a special case
     if ((_min || _max) && _min >= 0)
       ok = false;
     else
       return QValidator::Acceptable;
-  else if (newStr == ".") // another special case
+  else if (newStr == QString::fromLatin1(".")) // another special case
     return QValidator::Acceptable;
   else if (newStr.length())
     val = newStr.toDouble(&ok);

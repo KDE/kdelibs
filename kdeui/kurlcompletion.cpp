@@ -49,7 +49,7 @@ void KURLCompletion::make_completion ()
 	bool ambigous;
 
 	// We do not complete URLs
-	if ( dir.left( 5 ) == "file:" )
+	if ( dir.left( 5 ) == QString::fromLatin1("file:") )
 	{
 	  KURL u( dir );
 	  dir = u.path();
@@ -126,10 +126,10 @@ void KURLCompletion::GetList (QString dir, QString & match)
 	QString guess;
 	
 	qual_dir = dir;
-	int pos = dir.findRev ("/");
+	int pos = dir.findRev ('/');
 	qual_dir = dir.left (pos);
 	if (qual_dir.isEmpty())
-		qual_dir = "/";
+		qual_dir = '/';
 	guess = dir.right (dir.length() - pos - 1);
 
 	possibilityList.clear();
@@ -164,7 +164,7 @@ void KURLCompletion::GetList (QString dir, QString & match)
 					ep->d_name [i] != 0 && 
 					max.at(i) == ep->d_name[i] ) 
 					i++;
-				max = (i > 0) ? max.left(i) : QString("");
+				max = (i > 0) ? max.left(i) : QString::fromLatin1("");
 				if (!multiple) {
 					QApplication::beep();
 					multiple = true;
@@ -189,10 +189,10 @@ void KURLCompletion::GetList (QString dir, QString & match)
 	
 bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 {
-	bool starts_with_file = (url.left(5) == "file:");
+	bool starts_with_file = (url.left(5) == QString::fromLatin1("file:"));
 	
 	if ( !starts_with_file && // no fileprotocol .. but
-	     url.find( ":/" ) != -1) // .. actually another protocol specified
+	     url.find( QString::fromLatin1(":/") ) != -1) // .. actually another protocol specified
 		return false;
 
 	// ambigous if there is no file: or / at the beginning

@@ -69,7 +69,7 @@ void KMenuBar::drawContents(QPainter *p)
                 QString s = mi->text();
                 w = fm.boundingRect(s).width() + 2*motifItemHMargin;
                 w -= s.contains('&')*fm.width('&');
-                w += s.contains("&&")*fm.width('&');
+                w += s.contains(QString::fromLatin1("&&"))*fm.width('&');
                 h = fm.height() + motifItemVMargin;
             }
 

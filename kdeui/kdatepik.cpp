@@ -72,10 +72,10 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   // -----
   setFontSize(10);
   line->setValidator(val);
-  yearForward->setPixmap(BarIcon("2rightarrow"));
-  yearBackward->setPixmap(BarIcon("2leftarrow"));
-  monthForward->setPixmap(BarIcon("1rightarrow"));
-  monthBackward->setPixmap(BarIcon("1leftarrow"));
+  yearForward->setPixmap(BarIcon(QString::fromLatin1("2rightarrow")));
+  yearBackward->setPixmap(BarIcon(QString::fromLatin1("2leftarrow")));
+  monthForward->setPixmap(BarIcon(QString::fromLatin1("1rightarrow")));
+  monthBackward->setPixmap(BarIcon(QString::fromLatin1("1leftarrow")));
   setDate(dt); // set button texts
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));

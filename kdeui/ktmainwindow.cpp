@@ -57,8 +57,8 @@ public:
 	QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
 	int n = 0;
 	KConfig* config = KApplication::kApplication()->sessionConfig();
-	config->setGroup("Number");
-	config->writeEntry("NumberOfWindows", KTMainWindow::memberList->count());
+	config->setGroup(QString::fromLatin1("Number"));
+	config->writeEntry(QString::fromLatin1("NumberOfWindows"), KTMainWindow::memberList->count());
 	for (it.toFirst(); it.current(); ++it){
 	    n++;
 	    it.current()->savePropertiesInternal(config, n);
@@ -361,25 +361,25 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
 
     QString s;
     s.setNum(number);
-    s.prepend("WindowProperties");
+    s.prepend(QString::fromLatin1("WindowProperties"));
     config->setGroup(s);
 
     // store the objectName for later restorating
-    config->writeEntry("ObjectName", name());
+    config->writeEntry(QString::fromLatin1("ObjectName"), name());
 
     // store the className for later restorating
-    config->writeEntry("ClassName", className());
+    config->writeEntry(QString::fromLatin1("ClassName"), className());
 
     //use KWM for window properties
-    //config->writeEntry("KTWGeometry", KWM::properties(winId()));
+    //config->writeEntry(QString::fromLatin1("KTWGeometry"), KWM::properties(winId()));
     entryList.clear();
 
     if (kstatusbar)
     {
         if (kstatusbar->isVisible())
-            config->writeEntry("StatusBar", QString("Enabled"));
+            config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Enabled"));
         else
-            config->writeEntry("StatusBar", QString("Disabled"));
+            config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Disabled"));
     }
 
     if (kmenubar)
@@ -405,7 +405,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 entryList.append("FloatingSystem");
 	  break;
         }                                              */
-        config->writeEntry("MenuBar", entryList, ';');
+        config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
         entryList.clear();
     }
 
@@ -438,7 +438,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 break;
         }
         toolKey.setNum(n);
-        toolKey.prepend("ToolBar");
+        toolKey.prepend(QString::fromLatin1("ToolBar"));
         config->writeEntry(toolKey, entryList, ';');
         entryList.clear();
         n++;
@@ -461,11 +461,11 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     int i = 0; // Number of entries in list
     QString s;
     s.setNum(number);
-    s.prepend("WindowProperties");
+    s.prepend(QString::fromLatin1("WindowProperties"));
     config->setGroup(s);
 
-    if ( config->hasKey("ObjectName" ) )
-	setName( config->readEntry("ObjectName").latin1() ); // latin1 is right here
+    if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
+	setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
 
 //     // Use KWM for window properties
@@ -476,15 +476,15 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 
     if (kstatusbar)
     {
-        entry = config->readEntry("StatusBar");
-        if (entry == "Enabled")
+        entry = config->readEntry(QString::fromLatin1("StatusBar"));
+        if (entry == QString::fromLatin1("Enabled"))
             enableStatusBar(KStatusBar::Show);
         else enableStatusBar(KStatusBar::Hide);
     }
 
     if (kmenubar)
     {
-        i = config->readListEntry ("MenuBar", entryList, ';');
+        i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
         if (i < 2)
         {
             //debug ("KTWreadProps: bad number of kmenubar args");
@@ -492,13 +492,13 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
         }
 	bool showmenubar = false;
         entry = entryList.first();
-        if (entry=="Enabled")
+        if (entry==QString::fromLatin1("Enabled"))
 	  showmenubar = True;
         else
 	  kmenubar->hide();
 	/*
         entry = entryList.next();
-        if (entry == "Top")
+        if (entry == QString::fromLatin1("Top"))
             kmenubar->setMenuBarPos(KMenuBar::Top);
         else if (entry == "Bottom")
             kmenubar->setMenuBarPos(KMenuBar::Bottom);
@@ -526,7 +526,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     {
         toolbar= it.current();
         toolKey.setNum(n);
-        toolKey.prepend("ToolBar");
+        toolKey.prepend(QString::fromLatin1("ToolBar"));
 
         i = config->readListEntry(toolKey, entryList, ';');
         if (i < 2)
@@ -537,21 +537,21 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 
 	bool showtoolbar = false;
         entry = entryList.first();
-        if (entry=="Enabled")
+        if (entry==QString::fromLatin1("Enabled"))
 	  showtoolbar = true;
         else
 	  toolbar->enable(KToolBar::Hide);
 
         entry = entryList.next();
-        if (entry == "Top")
+        if (entry == QString::fromLatin1("Top"))
             toolbar->setBarPos(KToolBar::Top);
-        else if (entry == "Bottom")
+        else if (entry == QString::fromLatin1("Bottom"))
             toolbar->setBarPos(KToolBar::Bottom);
-        else if (entry == "Left")
+        else if (entry == QString::fromLatin1("Left"))
             toolbar->setBarPos(KToolBar::Left);
-        else if (entry == "Right")
+        else if (entry == QString::fromLatin1("Right"))
             toolbar->setBarPos(KToolBar::Right);
-        else if (entry == "Floating")
+        else if (entry == QString::fromLatin1("Floating"))
         {
             toolbar->setBarPos(KToolBar::Floating);
             entry=entryList.next();
@@ -588,25 +588,25 @@ bool KTMainWindow::canBeRestored(int number){
   KConfig *config = kapp->sessionConfig();
   if (!config)
     return false;
-  config->setGroup("Number");
-  int n = config->readNumEntry("NumberOfWindows", 0);
+  config->setGroup(QString::fromLatin1("Number"));
+  int n = config->readNumEntry(QString::fromLatin1("NumberOfWindows"), 0);
   return (number >= 1 && number <= n);
 }
 
 const QString KTMainWindow::classNameOfToplevel(int number){
   if (!kapp->isRestored())
-    return "";
+    return QString::null;
   KConfig *config = kapp->sessionConfig();
   if (!config)
-    return QString();
+    return QString::null;
   QString s;
   s.setNum(number);
-  s.prepend("WindowProperties");
+  s.prepend(QString::fromLatin1("WindowProperties"));
   config->setGroup(s);
-  if (!config->hasKey("ClassName"))
-    return "";
+  if (!config->hasKey(QString::fromLatin1("ClassName")))
+    return QString::null;
   else
-    return config->readEntry("ClassName");
+    return config->readEntry(QString::fromLatin1("ClassName"));
 }
 
 

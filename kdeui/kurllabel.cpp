@@ -23,8 +23,8 @@ KURLLabel::KURLLabel(QWidget *parent, const char *name, WFlags f)
 	  m_transparent(false)
 {
 	/* set the defaults */
-	m_hc.setNamedColor("blue");
-	m_sc.setNamedColor("red");
+	m_hc.setNamedColor(QString::fromLatin1("blue"));
+	m_sc.setNamedColor(QString::fromLatin1("red"));
 	m_bc        = backgroundColor();
 
 
@@ -175,7 +175,7 @@ void KURLLabel::setText(const QString& text)
 	QLabel::setText(text);
 
 	/* if we don't have a decent URL, set it equal to our text */
-	if (m_url == 0)
+	if (m_url.isNull())
 		m_url = text;
 
 	/* show the tool tip if we are allowed to */

@@ -19,6 +19,9 @@
 /*
  *
  * $Log$
+ * Revision 1.23  1999/11/23 11:15:30  dfaure
+ * CVS_SILENT removing duplicate headers (with a script)
+ *
  * Revision 1.22  1999/10/10 08:18:57  bero
  * Code cleanup ((void) stuff)
  *
@@ -215,7 +218,7 @@ bool KTabCtl::isTabEnabled(const QString& name)
     unsigned int i;
     
     for(i = 0; i < pages.size(); i++)
-	if (pages[i]->name() == name)
+	if (QString::fromLatin1(pages[i]->name()) == name)
 	    return tabs->isTabEnabled(i);   /* return the enabled status */
     return false;     /* tab does not exist */
 }
@@ -228,7 +231,7 @@ void KTabCtl::setTabEnabled(const QString& name, bool state)
         return;
     
     for (i = 0; i < pages.size(); i++)
-	if (pages[i]->name() == name)
+	if (QString::fromLatin1(pages[i]->name()) == name)
 	    tabs->setTabEnabled(i, state);
 }
 

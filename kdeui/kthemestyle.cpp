@@ -268,7 +268,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      KToolButtonType type, const QString &btext,
                                      const QPixmap *pixmap, QFont *font)
 {
-    QFont tmp_font("Helvetica", 10);
+    QFont tmp_font(QString::fromLatin1("Helvetica"), 10);
     if (font)
         tmp_font = *font;
     QFontMetrics fm(tmp_font);

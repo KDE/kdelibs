@@ -20,6 +20,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.8  1999/11/19 21:09:34  pbrown
+* don't need to activate().
+*
 * Revision 1.7  1999/10/21 23:55:39  pbrown
 * Dfaure is right.  Select all text instead of putting cursor at beginning.
 *
@@ -157,7 +160,7 @@ KLineEditDlg::~KLineEditDlg()
 
 void KLineEditDlg::slotClear()
 {
-    edit->setText("");
+    edit->setText(QString::null);
 }
 
 void KLineEditDlg::slotBrowse()
@@ -165,7 +168,7 @@ void KLineEditDlg::slotBrowse()
   QString fn = QFileDialog::getOpenFileName(QString::null, QString::null,
 					    this);
   if (!fn.isNull())
-    edit->setText("file://" + fn);
+    edit->setText(QString::fromLatin1("file://") + fn);
 }
 
 #include "klineeditdlg.moc"

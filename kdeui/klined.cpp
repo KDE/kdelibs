@@ -212,7 +212,7 @@ void KLineEdit::slotShowContextMenu()
             subMenu = new QPopupMenu();
         subMenu->clear();
         // Dummy place holder so that "-->" is shown !!!
-        subMenu->insertItem( "" );
+        subMenu->insertItem( QString::null );
         subMenuID = contextMenu->insertItem( i18n("Completion Mode"), subMenu );
         contextMenu->insertSeparator();
     }

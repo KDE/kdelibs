@@ -73,8 +73,8 @@ static void get_fonts( QStringList &lst )
 
 	qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
 
-	if ( !qfontname.contains( "open look", TRUE ) ) {
-	    if( qfontname != "nil" ){
+	if ( !qfontname.contains( QString::fromLatin1("open look"), TRUE ) ) {
+	    if( qfontname != QString::fromLatin1("nil") ){
 		if( lst.find( qfontname ) == lst.end() )
 		    lst.append( qfontname );
 	    }
@@ -627,7 +627,7 @@ void KFontSizeAction::init()
     setEditable( TRUE );
     QStringList lst;
     for ( unsigned int i = 0; i < 100; ++i )
-	lst.append( QString( "%1" ).arg( i + 1 ) );
+	lst.append( QString().setNum( i + 1 ) );
 
     setItems( lst );
 }

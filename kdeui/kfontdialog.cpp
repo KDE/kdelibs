@@ -171,7 +171,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   };
   for(int i = 0; c[i] != 0; i++)
   {
-    sizeListBox->insertItem(c[i]);
+    sizeListBox->insertItem(QString::fromLatin1(c[i]));
   }
   sizeListBox->setMinimumWidth( minimumListWidth(sizeListBox) +
     sizeListBox->fontMetrics().maxWidth() );
@@ -196,7 +196,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sampleEdit = new QLineEdit( page, "sampleEdit");
   QFont tmpFont( KGlobal::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
-  sampleEdit->setText("The Quick Brown Fox Jumps Over The Lazy Dog");
+  sampleEdit->setText(i18n("The Quick Brown Fox Jumps Over The Lazy Dog"));
   sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
   sampleEdit->setAlignment(Qt::AlignCenter);
   gridLayout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
@@ -233,8 +233,8 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   vbox->activate();
 
   KConfig *config = KGlobal::config();
-  config->setGroup("General");
-  showXLFDArea(config->readBoolEntry("fontSelectorShowXLFD", false));
+  config->setGroup(QString::fromLatin1("General"));
+  showXLFDArea(config->readBoolEntry(QString::fromLatin1("fontSelectorShowXLFD"), false));
 
   topLayout->activate();
 }
@@ -249,7 +249,7 @@ QSize KFontChooser::sizeHint( void ) const
 void KFontChooser::charset_chosen_slot(const QString& chset)
 {
   KCharsets *charsets = KGlobal::charsets();
-  if (chset == "default") {
+  if (chset == QString::fromLatin1("default")) {
     charsets->setQFont(selFont, KGlobal::locale()->charset());
   } else {
     charsets->setQFont(selFont, chset);
@@ -433,13 +433,13 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
   if ( !ptr )
     return;
 
-  QString font = ptr + 1;
+  QString font = QString::fromLatin1(ptr + 1);
 
   int pos;
   if ( ( pos = font.find( '-' ) ) > 0 ) {
     font.truncate( pos );
 
-    if ( font.find( "open look", 0, false ) >= 0 )
+    if ( font.find( QString::fromLatin1("open look"), 0, false ) >= 0 )
       return;
 
     QStringList::Iterator it = list.begin();
@@ -521,6 +521,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.47  1999/10/31 11:39:55  reggie
+* KLineEdit -> QLineEdit
+*
 * Revision 1.46  1999/10/23 16:16:26  kulow
 * here comes KInstance - "KApplication light"
 * It's a new KLibGlobal and KGlobal only keeps a pointer to a global

@@ -236,8 +236,8 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 	pix = parent->dict().find(pixName);
 	if (!pix)
 	{
-	  debug(("KTabListBox "+QString(name())+
-		":\nno pixmap for\n`"+pixName+"' registered.").ascii());
+	  debug("KTabListBox %s"
+		":\nno pixmap for\n`%s' registered.", name(), pixName.latin1());
 	}
 	if (!pix->isNull()) paint->drawPixmap(x, 0, *pix);
 	x += pix->width()+1;
@@ -318,7 +318,7 @@ void KTabListBoxColumn::resetButton()
     {
       parent->lastSelectedColumn--;
       inumber=0;
-      if(mbut) mbut->setText(" ");
+      if(mbut) mbut->setText(QString::fromLatin1(" "));
       if(parent->lastSelectedColumn)
         parent->repaint();
       else
@@ -330,7 +330,7 @@ void KTabListBoxColumn::resetButton()
     {
       parent->adjustNumber(inumber);
       inumber=0;
-      if(mbut) mbut->setText(" ");
+      if(mbut) mbut->setText(QString::fromLatin1(" "));
       parent->reorderRows();
     }
   }
@@ -360,13 +360,13 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   initMetaObject();
 
-  f = locate("data", "khtml/pics/khtml_dnd.xpm");
+  f = locate("data", QString::fromLatin1("khtml/pics/khtml_dnd.xpm"));
   dndDefaultPixmap.load(f);
 
-  f = locate("toolbar", "up.png");
+  f = locate("toolbar", QString::fromLatin1("up.png"));
   upPix.load(f);
 
-  f = locate("toolbar", "down.png");
+  f = locate("toolbar", QString::fromLatin1("down.png"));
   downPix.load(f);
 
   QPalette pal = palette();
@@ -559,8 +559,8 @@ void KTabListBox::readConfig()
   int cols = numCols(),fixedmin=MINIMUM_SPACE;
   QString str, substr;
 
-  conf->setGroup(name());
-  str = conf->readEntry("colwidth");
+  conf->setGroup(QString::fromLatin1(name()));
+  str = conf->readEntry(QString::fromLatin1("colwidth"));
 
   if (!str.isEmpty())
     for (i=0, beg=0, end=0; i<cols;)
@@ -595,13 +595,13 @@ void KTabListBox::writeConfig()
   int t;
   QString str;
 
-  conf->setGroup(name());
+  conf->setGroup(QString::fromLatin1(name()));
   QString tmp;
   for(t=0;t<numCols();t++) {
     tmp.setNum(colList[t]->defaultWidth());
     str += tmp;
   }
-  conf->writeEntry("colwidth",str);
+  conf->writeEntry(QString::fromLatin1("colwidth"),str);
   conf->sync();
 }
 
@@ -1804,7 +1804,7 @@ KNumCheckButton::KNumCheckButton( QWidget *_parent, const char *name )
 {
   int t=fontMetrics().height();
   resize(t,t);
-  setText(" ");
+  setText(QString::fromLatin1(" "));
   raised = FALSE;
   setFocusPolicy( NoFocus );
 }

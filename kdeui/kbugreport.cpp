@@ -73,7 +73,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   // Program name
   tmpLabel = new QLabel( i18n("Application : "), parent );
   glay->addWidget( tmpLabel, 1, 0 );
-  tmpLabel = new QLabel( kapp->name(), parent );
+  tmpLabel = new QLabel( QString::fromLatin1(kapp->name()), parent );
   glay->addWidget( tmpLabel, 1, 1 );
 
   // Version : TODO : take it from the future kdelibs class containing it
@@ -82,7 +82,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   const KAboutData * aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
   if (aboutData) m_strVersion = aboutData->version();
    else m_strVersion = "no version set (programmer error!)";
-  m_strVersion += " (KDE " KDE_VERSION_STRING ")";
+  m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, 2, 1 );
   glay->addMultiCellWidget( m_version, 2, 2, 1, 2 );
@@ -177,7 +177,7 @@ KBugReport::~KBugReport()
 void KBugReport::slotConfigureEmail()
 {
   m_process = new KProcess;
-  *m_process << "kcmshell" << "System/email";
+  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("System/email");
   connect(m_process, SIGNAL(processExited(KProcess *)), this, SLOT(slotSetFrom()));
   if (!m_process->start())
   {
@@ -189,11 +189,11 @@ void KBugReport::slotConfigureEmail()
 void KBugReport::slotSetFrom()
 {
   delete m_process;
-  KConfig emailConf( "emaildefaults" );
-  emailConf.setGroup( "UserInfo" );
+  KConfig emailConf( QString::fromLatin1("emaildefaults") );
+  emailConf.setGroup( QString::fromLatin1("UserInfo") );
   struct passwd *p;
   p = getpwuid(getuid());
-  m_from->setText( emailConf.readEntry( "EmailAddress", p->pw_name ) );
+  m_from->setText( emailConf.readEntry( QString::fromLatin1("EmailAddress"), QString::fromLatin1(p->pw_name) ) );
 }
 
 void KBugReport::slotUrlClicked(const QString &urlText)
@@ -233,22 +233,22 @@ void KBugReport::slotOk( void )
 QString KBugReport::text()
 {
   // Prepend the pseudo-headers to the contents of the mail
-  QString severity = m_bgSeverity->selected()->name();
-  if (severity == "i18n")
+  QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
+  if (severity == QString::fromLatin1("i18n"))
     // Case 1 : i18n bug
-    return QString("Package: i18n")+"\n"+
-      "Severity: Normal\n"+
-      "\n"+
-      "Application: "+kapp->name()+"\n"+
-      "Version: "+m_strVersion+"\n"+ // not really i18n's version, so better here IMHO
-      "\n"+
+    return QString::fromLatin1("Package: i18n")+QString::fromLatin1("\n"
+      "Severity: Normal\n"
+      "\n"
+      "Application: %1\n"
+      "Version: %2\n" // not really i18n's version, so better here IMHO
+      "\n").arg(QString::fromLatin1(kapp->name())).arg(m_strVersion)+
       m_lineedit->text();
   else
     // Case 2 : normal bug
-    return QString("Package: ")+kapp->name()+"\n"+
-      "Version: "+m_strVersion+"\n"+
-      "Severity: "+severity+"\n"+
-      "\n"+
+    return QString::fromLatin1("Package: ")+QString::fromLatin1(kapp->name())+QString::fromLatin1("\n"
+      "Version: %1\n"
+      "Severity: %2\n"
+      "\n").arg(m_strVersion).arg(severity)+
       m_lineedit->text();
 }
 
@@ -256,14 +256,14 @@ QString KBugReport::text()
 
 bool KBugReport::sendBugReport()
 {
-  QString command = KStandardDirs::findExe( "sendmail", "/sbin:/usr/sbin:/usr/lib" )+" -oi -t";
+  QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") ) + QString::fromLatin1(" -oi -t");
   bool needHeaders = true;
   if ( command.isNull() )
   {
-    command = "mail -s \x22";
+    command = QString::fromLatin1("mail -s \x22");
     command.append(m_subject->text());
-    command.append("\x22 ");
-    command.append(RECIPIENT);
+    command.append(QString::fromLatin1("\x22 "));
+    command.append(QString::fromLatin1(RECIPIENT));
     needHeaders = false;
   }
 
@@ -277,11 +277,11 @@ bool KBugReport::sendBugReport()
   QString textComplete;
   if (needHeaders)
   {
-    textComplete += "From: " + m_from->text() + "\n";
-    textComplete += "To: " RECIPIENT "\n";
-    textComplete += "Subject: " + m_subject->text() + "\n";
+    textComplete += QString::fromLatin1("From: ") + m_from->text() + '\n';
+    textComplete += QString::fromLatin1("To: " RECIPIENT "\n");
+    textComplete += QString::fromLatin1("Subject: ") + m_subject->text() + '\n';
   }
-  textComplete += "\n"; // end of headers
+  textComplete += '\n'; // end of headers
   textComplete += text();
 
   fwrite(textComplete.ascii(),textComplete.length(),1,fd);

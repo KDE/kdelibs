@@ -529,7 +529,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
     return( 0 );
   }
 
-  QFrame *page = new QFrame( mPageTab, title );
+  QFrame *page = new QFrame( mPageTab, title.latin1() );
   page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );
@@ -570,14 +570,14 @@ void KAboutContainerBase::setTitle( const QString &title )
 }
 
 
-void KAboutContainerBase::setImage( const char *fileName )
+void KAboutContainerBase::setImage( const QString &fileName )
 {
   if( mImageLabel == 0 )
   {
     cout << "setImage: " << "Invalid layout" << endl;
     return;
   }
-  if( fileName == 0 )
+  if( fileName.isNull() )
   {
     return;
   }
@@ -635,7 +635,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
   mIconLabel->setPixmap( kapp->icon() );
 
   QString msg1 = i18n("Version: %1 %2 (KDE %3)").arg(appName).arg(version).
-    arg(KDE_VERSION_STRING);
+    arg(QString::fromLatin1(KDE_VERSION_STRING));
   QString msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
 
   mVersionLabel->setText( msg1 );
@@ -831,9 +831,9 @@ void KAboutContainer::addTitle( const QString &title, int alignment,
 }
 
 
-void KAboutContainer::addImage( const char *fileName, int alignment )
+void KAboutContainer::addImage( const QString &fileName, int alignment )
 {
-  if( fileName == 0 )
+  if( fileName.isNull() )
   {
     return;
   }
@@ -1614,7 +1614,7 @@ void KAboutDialog::setTitle( const QString &title )
 }
 
 
-void KAboutDialog::setImage( const char *fileName )
+void KAboutDialog::setImage( const QString &fileName )
 {
   if( mContainerBase == 0 ) { return; }
   mContainerBase->setImage( fileName );
@@ -1648,7 +1648,7 @@ void KAboutDialog::imageURL( QWidget *parent, const QString &caption,
 			     const QString &path, const QColor &imageColor,
 			     const QString &url )
 {
-  KAboutDialog a( AbtImageOnly, "", Close, Close, parent, "image", true );
+  KAboutDialog a( AbtImageOnly, QString::null, Close, Close, parent, "image", true );
   a.setPlainCaption( caption );
   a.setImage( path );
   a.setImageBackgroundColor( imageColor );

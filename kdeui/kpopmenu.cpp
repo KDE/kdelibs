@@ -15,13 +15,13 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     QString oldGroup = config->group();
     QString tmpStr;
 
-    config->setGroup("PopupTitle");
-    bgColor = config->readColorEntry("Color", &colorGroup().dark());
+    config->setGroup(QString::fromLatin1("PopupTitle"));
+    bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().dark());
     grHigh = bgColor.light(150);
     grLow = bgColor.dark(150);
-    fgColor = config->readColorEntry("TextColor", &colorGroup().highlightedText());
+    fgColor = config->readColorEntry(QString::fromLatin1("TextColor"), &colorGroup().highlightedText());
     
-    tmpStr = config->readEntry("Pixmap", "");
+    tmpStr = config->readEntry(QString::fromLatin1("Pixmap"));
     if(!tmpStr.isEmpty())
         fill.load(KGlobal::dirs()->findResource("wallpaper", tmpStr));
     if(!fill.isNull()){
@@ -29,25 +29,25 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
         return;
     }
     
-    tmpStr = config->readEntry("Gradient", "");
+    tmpStr = config->readEntry(QString::fromLatin1("Gradient"));
     if(tmpStr.isEmpty() && QPixmap::defaultDepth() >= 15)
-        tmpStr = "Diagonal";
+        tmpStr = QString::fromLatin1("Diagonal");
     else{
         useGradient = false;
         return;
     }
     
-    if(tmpStr == "Horizontal")
+    if(tmpStr == QString::fromLatin1("Horizontal"))
         grType = KPixmapEffect::HorizontalGradient;
-    else if(tmpStr == "Vertical")
+    else if(tmpStr == QString::fromLatin1("Vertical"))
         grType = KPixmapEffect::VerticalGradient;
-    else if(tmpStr == "Diagonal")
+    else if(tmpStr == QString::fromLatin1("Diagonal"))
         grType = KPixmapEffect::DiagonalGradient;
-    else if(tmpStr == "Pyramid")
+    else if(tmpStr == QString::fromLatin1("Pyramid"))
         grType = KPixmapEffect::PyramidGradient;
-    else if(tmpStr == "Rectangle")
+    else if(tmpStr == QString::fromLatin1("Rectangle"))
         grType = KPixmapEffect::RectangleGradient;
-    else if(tmpStr == "Elliptic")
+    else if(tmpStr == QString::fromLatin1("Elliptic"))
         grType = KPixmapEffect::EllipticGradient;
     else{
         warning("KPopupMenu: Unknown gradient type %s for title item",

@@ -67,7 +67,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     mTreeList = new KListView( splitter );
     if( mTreeList == 0 ) { return; }
 
-    mTreeList->addColumn( QString("") );
+    mTreeList->addColumn( QString::fromLatin1("") );
     mTreeList->header()->hide();
     mTreeList->setRootIsDecorated(true);
     mTreeList->setSorting( -1 );
@@ -90,7 +90,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     QVBoxLayout *vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
     if( vbox == 0 ) { return; }
 
-    mTitleLabel = new QLabel( QString("Empty page"), page );
+    mTitleLabel = new QLabel( QString::fromLatin1("Empty page"), page );
     vbox->addWidget( mTitleLabel );
     
     QFont titleFont( mTitleLabel->font() );

@@ -578,9 +578,9 @@ void KDialogBase::setButtonOKText( const QString &text,
     "If you press the <b>OK</b> button, all changes\n"
     "you made will be used to proceed.");
 
-  pb->setText( text == "" ? i18n("&OK") : text );
-  QToolTip::add( pb, tooltip=="" ? i18n("Accept settings") : tooltip );
-  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
+  pb->setText( text.isEmpty() ? i18n("&OK") : text );
+  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Accept settings") : tooltip );
+  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -601,9 +601,9 @@ void KDialogBase::setButtonApplyText( const QString &text,
     "will not be closed."
     "Use this to try different settings. ");
 
-  pb->setText( text == "" ? i18n("&Apply") : text );
-  QToolTip::add( pb, tooltip == "" ? i18n("Apply settings") : tooltip );
-  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
+  pb->setText( text.isEmpty() ? i18n("&Apply") : text );
+  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Apply settings") : tooltip );
+  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -624,9 +624,9 @@ void KDialogBase::setButtonCancelText( const QString& text,
     "The program will be in the state before\n"
     "opening the dialog.");
 
-  pb->setText( text == "" ? i18n("&Cancel") : text );
-  QToolTip::add( pb, tooltip == "" ? i18n("Cancel settings") : tooltip);
-  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
+  pb->setText( text.isEmpty() ? i18n("&Cancel") : text );
+  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Cancel settings") : tooltip);
+  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -1134,14 +1134,4 @@ void KDialogBaseTile::cleanup( void )
   delete mPixmap; mPixmap = 0;
 }
 
-
-
-
 #include "kdialogbase.moc"
-
-
-
-
-
-
-

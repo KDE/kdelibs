@@ -223,7 +223,7 @@ KIconLoaderDialog::~KIconLoaderDialog()
 
 void KIconLoaderDialog::needReload()
 {
-    i_filter->setText("");
+    i_filter->setText(QString::null);
 }
 
 void KIconLoaderDialog::initProgressBar( int steps )
@@ -308,7 +308,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
 	{
 	    if( !(pix_name = canvas->getCurrent()).isNull() )
 		// David : give a full path to loadIcon
-		pixmap = icon_loader->loadIcon( canvas->currentDir() + "/" + pix_name );
+		pixmap = icon_loader->loadIcon( canvas->currentDir() + '/' + pix_name );
 	}
     name = pix_name;
     return pixmap;
@@ -345,20 +345,20 @@ void KIconLoaderButton::setIconType(const QString& _resType)
 {
     resType = _resType;
     QStringList icon_dirs;
-    QStringList list(KGlobal::dirs()->resourceDirs(resType));
-    if (_resType == "icon")
+    QStringList list(KGlobal::dirs()->resourceDirs(resType.latin1()));
+    if (_resType == QString::fromLatin1("icon"))
 	{
 	    QStringList::Iterator iit = list.begin();
 	    for ( ; iit != list.end(); ++iit)
 		{
-		    icon_dirs.append((*iit) + "large/hicolor/apps");
-		    icon_dirs.append((*iit) + "large/locolor/apps");
-		    icon_dirs.append((*iit) + "medium/hicolor/apps");
-		    icon_dirs.append((*iit) + "medium/locolor/apps");
+		    icon_dirs.append((*iit) + QString::fromLatin1("large/hicolor/apps"));
+		    icon_dirs.append((*iit) + QString::fromLatin1("large/locolor/apps"));
+		    icon_dirs.append((*iit) + QString::fromLatin1("medium/hicolor/apps"));
+		    icon_dirs.append((*iit) + QString::fromLatin1("medium/locolor/apps"));
 		}
 	}
     else
-	icon_dirs = KGlobal::dirs()->resourceDirs(resType);
+	icon_dirs = KGlobal::dirs()->resourceDirs(resType.latin1());
 
     // strip off all directories that don't exist
     list = icon_dirs;
@@ -377,7 +377,7 @@ void KIconLoaderButton::setIconType(const QString& _resType)
 void KIconLoaderButton::slotChangeIcon()
 {
     QString name;
-    QPixmap pix = loaderDialog->selectIcon( name, "*" );
+    QPixmap pix = loaderDialog->selectIcon( name, QString::fromLatin1("*") );
     if( !pix.isNull() )
 	{
 	    setPixmap(pix);
@@ -389,10 +389,10 @@ void KIconLoaderButton::slotChangeIcon()
 void KIconLoaderButton::setIcon(const QString& _icon)
 {
     iconStr = _icon;
-    if (resType == "icon")
+    if (resType == QString::fromLatin1("icon"))
 	setPixmap( KGlobal::iconLoader()->loadIcon(iconStr) );
     else
-	setPixmap( locate(resType, iconStr) );
+	setPixmap( locate(resType.latin1(), iconStr) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()

@@ -32,10 +32,10 @@ KContextMenuManager* KContextMenuManager::manager = 0;
 KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
     : QObject( parent, name)
 {
-    KConfigGroupSaver saver ( KGlobal::config(), "Keys" ) ;
-    menuKey = KAccel::stringToKey( saver.config()->readEntry("PopupContextMenu", "Menu" ) );
-    saver.config()->setGroup( "ContextMenus" ) ;
-    showOnPress = saver.config()->readBoolEntry("ShowOnPress", TRUE );
+    KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Keys") ) ;
+    menuKey = KAccel::stringToKey( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) );
+    saver.config()->setGroup( QString::fromLatin1("ContextMenus") ) ;
+    showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), TRUE );
 }
 
 KContextMenuManager::~KContextMenuManager()

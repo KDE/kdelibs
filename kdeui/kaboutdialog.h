@@ -80,7 +80,7 @@ class KAboutContainer : public QFrame
 		    bool showBold = false );
     void addTitle(  const QString &title, int alignment=AlignLeft,
 		    bool showframe = false, bool showBold = false );
-    void addImage( const char *fileName, int alignment=AlignLeft );
+    void addImage( const QString &fileName, int alignment=AlignLeft );
 
     virtual QSize sizeHint( void ) const;
     virtual QSize minimumSizeHint( void ) const;
@@ -125,7 +125,7 @@ class KAboutContainerBase : public QWidget
     virtual QSize sizeHint( void ) const;
 
     void setTitle( const QString &title );
-    void setImage( const char *fileName );
+    void setImage( const QString &fileName );
     void setImageBackgroundColor( const QColor &color );
     void setImageFrame( bool state );
     void setProduct( const QString &appName, const QString &version,
@@ -433,7 +433,7 @@ class KAboutDialog : public KDialogBase
    *
    * @param fileName Path to image file.
    */
-  void setImage( const char *fileName );
+  void setImage( const QString &fileName );
 
   /**
    * (Constructor II only)

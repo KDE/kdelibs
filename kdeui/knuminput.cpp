@@ -103,7 +103,7 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
     main_label = new QLabel( spin, label, this, "KNumInput::QLabel" );
     
     if(!units.isEmpty())
-        spin->setSuffix(" " + units);
+        spin->setSuffix(' ' + units);
     
     if(use_slider) {
         slider = new QSlider(lower, upper, step, int_value, QSlider::Horizontal, this);
