@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24.4.1  1999/02/24 12:49:17  dfaure
+ * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
+ *
  * Revision 1.25  1999/02/24 12:47:34  dfaure
  * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
  *
@@ -566,8 +569,10 @@ KServerSocket::~KServerSocket()
 {
   if ( notifier )
 	delete notifier; 
-  
-  close( sock ); 
+  struct sockaddr_un name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  close( sock );
+  unlink(name.sun_path);                                                       
 }
 
 #include "ksock.moc"
