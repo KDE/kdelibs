@@ -47,7 +47,7 @@
 <!ENTITY nagelezen.xxx "<para>De vertaling werd nagelezen door &xxx;.</para>">
 -->
 
-<!ENTITY nagalezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
+<!ENTITY nagelezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
 <!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
 <!ENTITY nagelezen.frank   "<para>De vertaling werd nagelezen door &Frank.Mulder;.</para>">
