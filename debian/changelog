@@ -1,4 +1,4 @@
-kdelibs (4:2.1-20010115-2) unstable; urgency=low
+kdelibs (4:2.1-20010118-1) unstable; urgency=low
  
    * more upstream bug fixes
      fix mimetype configuration
