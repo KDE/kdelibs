@@ -41,7 +41,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 {
     toolTip = 0;
     setResizeMode( Adjust );
-    setAlignMode( South );
+    // setAlignMode( South );
     setItemTextPos( Right );
     setGridX( 120 );
     setWordWrapIconText( FALSE );

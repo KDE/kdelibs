@@ -43,7 +43,7 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
 {
     KFileIconView *dirs = new KFileIconView( (QSplitter*)this, "left" );
     dirs->KFileView::setViewMode( Directories );
-    dirs->setAlignMode( QIconView::East );
+    // dirs->setAlignMode( QIconView::East );
     left = dirs;
     dirs->setOperator(this);
 }
