@@ -1369,11 +1369,11 @@ WebStyle::drawSeparator
 
   if (w > h)
   {
-    p->drawLine(x, y + h / 2, x, y + h / 2);
+    p->drawLine(x, y + h / 2, x + w, y + h / 2);
   }
   else
   {
-    p->drawLine(x + w / 2, y, x + w / 2, y);
+    p->drawLine(x + w / 2, y, x + w / 2, y + h);
   }
 
   p->restore();
