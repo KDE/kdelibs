@@ -32,7 +32,7 @@
 #include <kapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder
+#include <kipc.h> 
 #endif
 
 #include <kcursor.h>
@@ -40,7 +40,7 @@
 #include <kpixmapeffect.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder still stuff to be fixed...
+#include <X11/Xlib.h> 
 #endif
 
 class KIconView::KIconViewPrivate

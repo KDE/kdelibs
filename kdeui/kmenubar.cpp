@@ -36,24 +36,24 @@
 #include <kapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwin.h> // schroder
-#include <kwinmodule.h> // schroder
+#include <kwin.h> 
+#include <kwinmodule.h> 
 #endif
 
 #include <kglobal.h>
 #include <kdebug.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <qxembed.h> // schroder
+#include <qxembed.h> 
 #endif
 
 #include <kmanagerselection.h>
 #include <qtimer.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
-#include <X11/Xutil.h> // schroder
-#include <X11/Xatom.h> // schroder
+#include <X11/Xlib.h> 
+#include <X11/Xutil.h> 
+#include <X11/Xatom.h> 
 #endif
 
 /*

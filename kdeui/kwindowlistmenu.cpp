@@ -28,8 +28,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY // only used in kicker and kdesktop
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwin.h> // schroder
-#include <kwinmodule.h> // schroder
+#include <kwin.h> 
+#include <kwinmodule.h> 
 #endif
 
 #include <klocale.h>
@@ -37,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifndef Q_WS_QWS //FIXME
-#include <netwm.h> // schroder
+#include <netwm.h> 
 #endif
 #include <kapplication.h>
 #include <kstyle.h>

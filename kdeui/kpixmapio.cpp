@@ -27,11 +27,11 @@
 #include "kpixmapio.h"
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/X.h> // schroder
-#include <X11/Xlib.h> // schroder
-#include <X11/Xutil.h> // schroder
+#include <X11/X.h> 
+#include <X11/Xlib.h> 
+#include <X11/Xutil.h> 
 #ifdef HAVE_MITSHM
-#include <X11/extensions/XShm.h> // schroder
+#include <X11/extensions/XShm.h> 
 #endif
 #ifdef __osf__
 extern "C" int XShmQueryExtension(Display *display);

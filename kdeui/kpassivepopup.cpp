@@ -20,7 +20,7 @@
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <netwm.h> // schroder
+#include <netwm.h> 
 #endif
 
 #include "kpassivepopup.h"

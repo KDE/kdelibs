@@ -28,7 +28,7 @@
 #include <kapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder
+#include <kipc.h> 
 #endif
 
 #include <kdebug.h>
@@ -45,7 +45,7 @@
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
 //#include <X11/X.h>
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 //#include <X11/Xutil.h>
 #endif
 

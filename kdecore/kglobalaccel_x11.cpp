@@ -17,7 +17,7 @@
 #include <kkeynative.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kxerrorhandler.h> // schroder
+#include <kxerrorhandler.h> 
 #endif
 
 #include <X11/X.h>

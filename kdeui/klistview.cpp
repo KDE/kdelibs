@@ -33,7 +33,7 @@
 #include <kapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder
+#include <kipc.h> 
 #endif
 
 #include <kdebug.h>
@@ -42,7 +42,7 @@
 #include "klistviewlineedit.h"
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 #endif
 
 class KListView::Tooltip : public QToolTip

@@ -33,8 +33,8 @@
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
-#include <X11/Xlib.h>	// For x11Event() // schroder
-#include <X11/keysymdef.h> // For XK_... // schroder is this still needed ?
+#include <X11/Xlib.h>	// For x11Event() 
+#include <X11/keysymdef.h> // For XK_... 
 
 #ifdef KeyPress
 const int XFocusOut = FocusOut;

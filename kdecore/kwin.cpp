@@ -45,14 +45,14 @@
 #include <klocale.h>
 #include <dcopclient.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> // schroder not needed at all ?
-#include <kxerrorhandler.h> // schroder
+#include <kstartupinfo.h> 
+#include <kxerrorhandler.h> 
 
-#include <X11/Xlib.h> // schroder
-#include <X11/Xatom.h> // schroder
-#include <X11/Xutil.h> // schroder
+#include <X11/Xlib.h> 
+#include <X11/Xatom.h> 
+#include <X11/Xutil.h> 
 
-#include "netwm.h" // schroder
+#include "netwm.h" 
 
 static bool atoms_created = false;
 extern Atom qt_wm_protocols;

@@ -75,7 +75,7 @@
 #include <kprotocolinfo.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> // schroder
+#include <kstartupinfo.h> 
 #endif
 
 #include <dcopclient.h>
@@ -100,7 +100,7 @@
 #include <netdb.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
-#include <netwm.h> // schroder
+#include <netwm.h> 
 #endif
 
 #include "kprocctrl.h"
@@ -126,7 +126,7 @@
 #endif
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder
+#include <kipc.h> 
 #endif
 
 #include "kappdcopiface.h"

@@ -52,14 +52,14 @@ DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <qtimer.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <netwm.h> // schroder
+#include <netwm.h> 
 #endif
 #include <kdebug.h>
 #include <kapplication.h>
 #include <signal.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwinmodule.h> // schroder
-#include <kxmessages.h> // schroder
+#include <kwinmodule.h> 
+#include <kxmessages.h> 
 #include <kwin.h>
 extern Time qt_x_time;
 #endif

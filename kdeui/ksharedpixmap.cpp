@@ -28,16 +28,16 @@
 #include <kdebug.h>
 #include <stdlib.h> // for abs
 
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 
 // Make sure to include all this X-based shit before we clean up the mess.
 // Needed for --enable-final. Not needed by this file itself!
-#include <X11/Xutil.h> // schroder
+#include <X11/Xutil.h> 
 #ifdef HAVE_MITSHM
-#include <X11/extensions/XShm.h> // schroder
+#include <X11/extensions/XShm.h> 
 #endif
 
-#include <netwm.h> // schroder
+#include <netwm.h> 
 
 // Clean up the mess
 

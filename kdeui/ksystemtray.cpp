@@ -27,21 +27,21 @@
 #include "klocale.h"
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwin.h> // schroder
-#include <kwinmodule.h> // schroder
+#include <kwin.h> 
+#include <kwinmodule.h> 
 #endif
 
 #include <kiconloader.h>
 #include <kconfig.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <qxembed.h> // schroder
+#include <qxembed.h> 
 #endif
 
 #include <qapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 #ifndef KDE_USE_FINAL
 const int XFocusOut = FocusOut;
 const int XFocusIn = FocusIn;

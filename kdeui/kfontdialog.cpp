@@ -54,7 +54,7 @@
 #include <kdebug.h>
 #include <knuminput.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder // remove it for the X11 case too,
+#include <X11/Xlib.h> 
 		    // not needed any more...
 #endif
 

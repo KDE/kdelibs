@@ -48,7 +48,7 @@
 #include <dcopclient.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 #endif
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;

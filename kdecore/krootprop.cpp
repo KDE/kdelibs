@@ -29,8 +29,8 @@
 #include "kapplication.h"
 #include <qtextstream.h>
 
-#include <X11/Xlib.h> // schroder
-#include <X11/Xatom.h> // schroder
+#include <X11/Xlib.h> 
+#include <X11/Xatom.h> 
 
 KRootProp::KRootProp(const QString& rProp )
 {

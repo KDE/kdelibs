@@ -30,9 +30,9 @@
 #include <qwindowdefs.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/X.h> // schroder
-#include <X11/Xlib.h> // schroder
-#include <kxerrorhandler.h> // schroder
+#include <X11/X.h> 
+#include <X11/Xlib.h> 
+#include <kxerrorhandler.h> 
 #endif
 
 #include <kipc.h>

@@ -66,7 +66,7 @@
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h> 
 
 // defined in qapplication_x11.cpp
 typedef int (*QX11EventFilter) (XEvent*);

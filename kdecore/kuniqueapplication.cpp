@@ -39,8 +39,8 @@
 #include <kaboutdata.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwin.h> // schroder
-#include <kstartupinfo.h> // schroder
+#include <kwin.h> 
+#include <kstartupinfo.h> 
 #endif
 
 #include <kconfig.h>
@@ -48,8 +48,8 @@
 #include "kuniqueapplication.h"
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <netwm.h> // schroder
-#include <X11/Xlib.h> // schroder
+#include <netwm.h> 
+#include <X11/Xlib.h> 
 #define DISPLAY "DISPLAY"
 #else
 #  ifdef Q_WS_QWS

@@ -57,7 +57,7 @@
 #include <kanimwidget.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder
+#include <kipc.h> 
 #endif
 
 #include <kwin.h>
