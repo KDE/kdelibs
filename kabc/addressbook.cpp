@@ -294,9 +294,8 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
 {
   kdDebug(5700) << "AddressBook::requestSaveTicket()" << endl;
 
-  if ( !resource ) {
-    resource = d->mResources.first();
-  }
+  if ( !resource )
+    resource = standardResource();
 
   if ( d->mResources.find( resource ) < 0 ) {
     return 0;
