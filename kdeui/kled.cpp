@@ -17,9 +17,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-/*************************************************************************
- * $Id$
- *************************************************************************/
 
 #define PAINT_BENCH
 #undef PAINT_BENCH
@@ -213,7 +210,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     if (width > this->height())
       width = this->height();
     width -= 2; // leave one pixel border
-    if (width < 0) 
+    if (width < 0)
       width = 0;
 
     // start painting widget
@@ -290,7 +287,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     QColor color;
     QBrush brush;
     QPen pen;
-				
+
     // First of all we want to know what area should be updated
     // Initialize coordinates, width, and height of the LED
     int	width = this->width();
@@ -299,7 +296,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     if (width > this->height())
       width = this->height();
     width -= 2; // leave one pixel border
-    if (width < 0) 
+    if (width < 0)
       width = 0;
 
     // maybe we could stop HERE, if width <=0 ?
@@ -332,7 +329,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     int light_width = width;
     light_width *= 2;
     light_width /= 3;
-	
+
     // Calculate the LED´s "light factor":
     int light_quote = (130*2/(light_width?light_width:1))+100;
 
@@ -366,7 +363,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 
     int angle = -720;
     color = colorGroup().light();
-    
+
     for ( int arc = 120; arc < 2880; arc += 240 ) {
       pen.setColor( color );
       paint.setPen( pen );

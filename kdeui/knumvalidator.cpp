@@ -1,6 +1,5 @@
 /**********************************************************************
 **
-** $Id$
 **
 ** KIntValidator, KFloatValidator:
 **   Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>

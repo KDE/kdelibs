@@ -20,7 +20,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
 #ifndef _KTOOLBARBUTTON_H
 #define _KTOOLBARBUTTON_H
 

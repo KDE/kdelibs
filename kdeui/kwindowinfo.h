@@ -34,7 +34,6 @@
  * pixmap and tooltip of the system window to display the message.
  *
  * @author Richard Moore, rich@kde.org
- * @version $Id$
  * @since 3.1
 */
 class KWindowInfo : public QObject
@@ -52,7 +51,7 @@ public:
      */
     virtual ~KWindowInfo();
 
-    /** 
+    /**
      * Returns true iff the object should delete itself when it resets.
      */
     bool autoDelete() const { return autoDel; }
@@ -63,13 +62,13 @@ public:
      */
     void setAutoDelete( bool enable ) { autoDel = enable; }
 
-    /** 
+    /**
      * Utility method to display a title bar message for the specified
      * window.
      */
     static void showMessage( QWidget *window, const QString &text, int timeout = -1 );
 
-    /** 
+    /**
      * Utility method to display a title bar message and icon for the
      * specified window.
      */
@@ -80,17 +79,17 @@ public slots:
     /**
      * Shows the specified text in the window title.
      */
-    void message( const QString &text ); 
+    void message( const QString &text );
 
     /**
      * Shows the specified text in the window title, and sets the window icon.
      */
-    void message( const QString &text, const QPixmap &pix ); 
+    void message( const QString &text, const QPixmap &pix );
 
     /**
      * Shows the specified text in the window title for the specified time.
      */
-    void message( const QString &text, int timeout ); 
+    void message( const QString &text, int timeout );
 
     /**
      * Shows the specified icon and text in the window title and WM
@@ -99,12 +98,12 @@ public slots:
      * values are -1 which means the default timeout should be used,
      * and 0 which means the message is permanent.
      */
-    void message( const QString &text, const QPixmap &pix, int timeout ); 
+    void message( const QString &text, const QPixmap &pix, int timeout );
 
     /**
      * Shows the specified text in the window title with no timeout.
      */
-    void permanent( const QString &text ); 
+    void permanent( const QString &text );
 
     /**
      * Shows the specified text and icon in the window title with no timeout.

@@ -15,7 +15,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 
-    $Id$
 
 */
 
@@ -126,11 +125,11 @@ public:
      * parent or not. DestructiveClose indicates that a main window is
      * automatically destroyed when its window is closed. Pass 0 if
      * you do not want this behavior.
-     * 
+     *
      * @see http://doc.trolltech.com/3.2/qt.html#WidgetFlags-enum
      *
      * KMainWindows must be created on the heap with 'new', like:
-     * \code 
+     * \code
      * KMainWindow *kmw = new KMainWindow (...);
      * \endcode
      **/
@@ -553,7 +552,7 @@ public:
      *      propagated to any parent layout.
      *     @li Now call adjustSize() in the mainwindow to resize the
      *      mainwindow such that the central widget will become the desired size.
-     * 
+     *
      */
     // KDE4 to be removed
     QSize sizeForCentralWidgetSize(QSize size) KDE_DEPRECATED;
@@ -857,7 +856,7 @@ protected slots:
     *   ..
     * }
     * \endcode
-    */ 
+    */
     void saveAutoSaveSettings();
 
 private slots:

@@ -1,6 +1,5 @@
 /*
  *
- * $Id$
  *
  * Implementation of KRestrictedLine
  *

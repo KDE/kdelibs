@@ -16,9 +16,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-/*
- * $Id$
-*/
 
 #include <qpainter.h>
 #include "kcolordrag.h"
@@ -75,7 +72,7 @@ QByteArray KColorDrag::encodedData ( const char * m ) const
      return QStoredDrag::encodedData(m);
 }
 
-bool 
+bool
 KColorDrag::canDecode( QMimeSource *e)
 {
      if (e->provides(color_mime_string))
@@ -103,7 +100,7 @@ KColorDrag::decode( QMimeSource *e, QColor &color)
 }
 
 
-KColorDrag* 
+KColorDrag*
 KColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 {
      return new KColorDrag( color, dragsource);

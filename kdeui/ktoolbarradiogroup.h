@@ -19,7 +19,6 @@
     Boston, MA 02111-1307, USA.
     */
 
-// $Id$
 #ifndef _KTOOLBARRADIOGROUP_H
 #define _KTOOLBARRADIOGROUP_H
 
