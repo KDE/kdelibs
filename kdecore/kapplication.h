@@ -246,9 +246,19 @@ public:
   QPixmap icon() const;
 
   /**
+   * Returns the name of the application icon.
+   */
+  QString iconName() const;
+
+  /**
    * Returns the mini-icon for the application as a @ref QPixmap.
    */
   QPixmap miniIcon() const;
+
+  /**
+   * Returns the name of the mini-icon for the application.
+   */
+  QString miniIconName() const;
 
   /**
    *   Sets the top widget of the application.
@@ -627,6 +637,8 @@ private:
   bool bSessionManagement;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
+  QString aIconName;
+  QString aMiniIconName;
   bool useStyles;
   QWidget *smw;
 

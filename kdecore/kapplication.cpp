@@ -1255,14 +1255,19 @@ void KApplication::parseCommandLine( )
     {
        const char *tmp = args->getOption("miniicon");
        aMiniIconPixmap = SmallIcon(tmp);
+       aMiniIconName = tmp;
     }
 
     if (args->isSet("icon"))
     {
        const char *tmp = args->getOption("icon");
        aIconPixmap = DesktopIcon( tmp );
+       aIconName = tmp;
        if (aMiniIconPixmap.isNull())
+       {
           aMiniIconPixmap = SmallIcon( tmp );
+          aMiniIconName = tmp;
+       }
     }
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
@@ -1317,6 +1322,11 @@ QPixmap KApplication::icon() const
   return aIconPixmap;
 }
 
+QString KApplication::iconName() const
+{
+  return aIconName.isNull() ? instanceName() : aIconName;
+}
+
 QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
@@ -1324,6 +1334,11 @@ QPixmap KApplication::miniIcon() const
       that->aMiniIconPixmap = SmallIcon( instanceName() );
   }
   return aMiniIconPixmap;
+}
+
+QString KApplication::miniIconName() const
+{
+  return aMiniIconName.isNull() ? instanceName() : aMiniIconName;
 }
 
 extern void kDebugCleanup();
