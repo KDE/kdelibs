@@ -234,7 +234,10 @@ QString KProtocolManager::proxyForURL( const KURL &url )
   if (pac())
     return pac()->proxyForURL( url );
   else
-    return proxyFor( url.protocol() );
+  {
+    QString proxy = proxyFor( url.protocol() );
+    return proxy.isEmpty() ? "DIRECT" : proxy;
+  }
 }
 
 void KProtocolManager::badProxy( const QString &proxy )
