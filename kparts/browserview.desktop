@@ -27,13 +27,14 @@ Name[he]=תצוגת דפדפן
 Name[hr]=Pogled za pretragu
 Name[hu]=Böngészőnézet
 Name[id]=View Browser
-Name[is]=VafrasÃ½n
+Name[is]=Vafrasýn
 Name[it]=Vista browser
 Name[ja]=ブラウズビュー
 Name[ko]=탐색기 보기
 Name[lt]=Rodyti naršyklėje
 Name[lv]=Pārlūka Skatījums
 Name[mk]=Разгледување
+Name[mn]=Хөтөч Харах
 Name[mt]=Dehra Browser
 Name[nb]=Nettleservisning
 Name[nl]=Browserweergave
@@ -69,6 +70,9 @@ Type=bool
 Type=bool
 
 [PropertyDef::X-KDE-BrowserView-LinkedView]
+Type=bool
+
+[PropertyDef::X-KDE-BrowserView-HierarchicalView]
 Type=bool
 
 [PropertyDef::X-KDE-BrowserView-PassiveMode]
