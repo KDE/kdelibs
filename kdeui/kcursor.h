@@ -122,6 +122,11 @@ public:
     static QCursor blankCursor();
 
     /**
+     * Returns a WhatsThis cursor (static function).
+     */
+    static QCursor whatsThisCursor();
+
+    /**
      * Sets auto-hiding the cursor for widget @p w. Enabling it will result in
      * the cursor being hidden when
      * @li a key-event happens

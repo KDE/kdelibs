@@ -90,61 +90,66 @@ QCursor KCursor::arrowCursor()
 
 QCursor KCursor::upArrowCursor()
 {
-        return Qt::upArrowCursor;
+    return Qt::upArrowCursor;
 }
 
 
 QCursor KCursor::crossCursor()
 {
-        return Qt::crossCursor;
+    return Qt::crossCursor;
 }
 
 
 QCursor KCursor::waitCursor()
 {
-        return Qt::waitCursor;
+    return Qt::waitCursor;
 }
 
 
 QCursor KCursor::ibeamCursor()
 {
-        return Qt::ibeamCursor;
+    return Qt::ibeamCursor;
 }
 
 
 QCursor KCursor::sizeVerCursor()
 {
-        return Qt::sizeVerCursor;
+    return Qt::sizeVerCursor;
 }
 
 
 QCursor KCursor::sizeHorCursor()
 {
-        return Qt::sizeHorCursor;
+    return Qt::sizeHorCursor;
 }
 
 
 QCursor KCursor::sizeBDiagCursor()
 {
-        return Qt::sizeBDiagCursor;
+    return Qt::sizeBDiagCursor;
 }
 
 
 QCursor KCursor::sizeFDiagCursor()
 {
-        return Qt::sizeFDiagCursor;
+    return Qt::sizeFDiagCursor;
 }
 
 
 QCursor KCursor::sizeAllCursor()
 {
-        return Qt::sizeAllCursor;
+    return Qt::sizeAllCursor;
 }
 
 
 QCursor KCursor::blankCursor()
 {
-        return Qt::blankCursor;
+    return Qt::blankCursor;
+}
+
+QCursor KCursor::whatsThisCursor()
+{
+    return Qt::whatsThisCursor;
 }
 
 // auto-hide cursor stuff
