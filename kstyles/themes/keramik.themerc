@@ -31,6 +31,7 @@ Comment[fr]=Le style par défaut utilisant l'alpha-blending
 Comment[hu]=A KDE új, alapértelmezett stílusa
 Comment[is]=Sjálfgefni stíllinn sem notar alfa-blöndun
 Comment[it]=Lo stile predefinito con effetti di trasparenza
+Comment[nb]=En standard stil som bruker alfablending
 Comment[nl]=De standaardstijl, welke gebruik maakt van alfatransparantie
 Comment[pt]=O estilo por omissão que utiliza 'alphablending'
 Comment[pt_BR]=O estilo padrão usando Mistura Alpha
@@ -44,6 +45,7 @@ Comment[uk]=Стиль з використанням плавного перех
 Comment[uz]=Alphablending'ли андоза услуб
 Comment[xx]=xxThe default style using alphablendingxx
 Comment[zh_CN]=使用 alpha 混和的默认风格
+Comment[zh_TW]=使用 alphablending 的預設風格
 
 [KDE]
 WidgetStyle=Keramik
