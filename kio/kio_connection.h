@@ -37,6 +37,8 @@ public:
 
 protected:
   void init( int _in_fd, int _out_fd, size_t _buf_len );
+
+public:
   /**
     * Return the default size of the buffer.  This is useful when
     * constructing a "Connection", but rarely useful otherwise.
