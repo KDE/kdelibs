@@ -48,7 +48,7 @@ messages:
 	rm -rf po.backup
 	(cd po && $(MAKE) -f Makefile.am merge)
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kdoc.rules
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/automoc -padmin

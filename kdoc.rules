@@ -4,19 +4,16 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = kdecore kdeui kdeutils kimgio kio kfile jscript khtml kformula kspell kab kom kpartsui kparts
+kde_MODULES = kdecore kdeui kimgio kfile khtmlw kspell kab 
 
-kdecore_FILES = *.h
-kdecore_LIBS = -lqt
+kdecore_FILES= *.h
+kdecore_LIBS= -lqt
 
-kdeui_FILES = *.h
-kdeui_LIBS = -lkdecore -lqt
+kdeui_FILES= *.h
+kdeui_LIBS= -lkdecore -lqt
 
-kdeutils_FILES = *.h
-kdeutils_LIBS = -lkdecore -lqt
-
-kab_FILES = kabapi.h
-kab_LIBS = -lkdecore -lkdeui -lqt
+kdeui_FILES= *.h
+kdeui_LIBS= -lkdecore -lqt
 
 kfile_FILES= *.h
 kfile_LIBS= -lkdecore -lkdeui -lqt
@@ -24,34 +21,12 @@ kfile_LIBS= -lkdecore -lkdeui -lqt
 kspell_FILES = kspell.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
 
-jscript_FILES = *.h
-jscript_LIBS = -lqt
-
-#khtml_FILES = khtml.h khtmlview.h
-khtml_FILES = *.h
-khtml_LIBS = -ljscript -lkdecore -lkdeui -lkimgio -lqt
-
-kio_FILES = *.h
-kio_LIBS = -lkdecore -lqt
+khtmlw_FILES = html.h htmlview.h
+khtmlw_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 
 kimgio_FILES = kimgio.h
 kimgio_LIBS = -lqt
 
-kformula_FILES = *.h
-kformula_LIBS = -lkdecore -lkdeui -lqt
+kab_FILES = kabapi.h
+kab_LIBS = -lkdecore -lkdeui -lqt
 
-kom_FILES = *.idl *.h
-kom_PATH = corba/kom
-kom_LIBS = -lkdecore -lqt
-
-kpartsui_FILES = *.idl *.h
-kpartsui_PATH = corba/partsui
-kpartsui_LIBS = -lkom -lkdecore -lqt
-
-kparts_FILES = *.idl *.h
-kparts_PATH = corba/parts
-kparts_LIBS = -lkom -lkdecore -lqt
-
-kded_FILES = *.idl *.h
-kded_PATH = corba/kded
-kded_LIBS = -lkom -lkdecore
