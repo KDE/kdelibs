@@ -942,7 +942,7 @@ int main( int argc, char **argv )
     QStringList values = e->paramValues();
     if ( !values.isEmpty() ) {
       if ( globalEnums ) {
-        h << "    enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "    enum { " << values.join( ", " ) << " };" << endl;
         h << "    static const char* const " << enumName(e->param()) << "ToString[];" << endl;
         cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "ToString[] = " +
             "{ \"" + values.join( "\", \"" ) + "\" };\n";
