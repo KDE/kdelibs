@@ -43,21 +43,34 @@ static struct sockaddr_in *parse_tcp_url(const char *url)
 	char *work = strdup(url);
 
 	char *type = strtok(work,":");
-	if(type == 0 || strcmp(type,"tcp") != 0) return 0;
+	if(type == 0 || strcmp(type,"tcp") != 0) {
+		free(work);
+		return 0;
+	}
 
 	char *host = strtok(NULL,":");
-	if(host == 0) return 0;
+	if(host == 0) {
+		free(work);
+		return 0;
+	}
 
 	char *port = strtok(NULL,":\n");
-	if(port == 0) return 0;
+	if(port == 0) {
+		free(work);
+		return 0;
+	}
 
 	long portno = atol(port);
-	if(portno < 1 || portno > 65535) return 0;
+	if(portno < 1 || portno > 65535) {
+		free(work);
+		return 0;
+	}
 
     struct hostent *server = gethostbyname(host);
    	if(server == 0)
 	{
 		arts_warning("parse_tcp_url: unknown host '%s'",host);
+		free(work);
 		return 0;
 	}
 
@@ -66,6 +79,7 @@ static struct sockaddr_in *parse_tcp_url(const char *url)
     addr.sin_addr.s_addr = *(u_long *)server->h_addr;
     addr.sin_port = htons(portno);
 
+	free(work);
 	return &addr;
 }
 
