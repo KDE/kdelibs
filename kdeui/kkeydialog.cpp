@@ -538,12 +538,11 @@ void KKeyChooser::readKeysInternal( QDict< int >* dict, const QString& group )
         continue;                                //  which is not enough
     kdDebug( 125 ) << gIt.key() << " " << *gIt << endl;
     QString tmp = *gIt;
-    if( tmp.startsWith( "default(" ))
-        {
-        unsigned int pos = tmp.findRev( ')' );
+    if( tmp.startsWith( "default(" )) {
+        int pos = tmp.findRev( ')' );
         if( pos >= 0 ) // this should be really done with regexp
             tmp = tmp.mid( 8, pos - 8 );
-        }
+    }
     keyCode = new int;
     *keyCode = KAccel::stringToKey( tmp );
     dict->insert( gIt.key(), keyCode);
