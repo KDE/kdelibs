@@ -146,6 +146,8 @@ void KBuildSycoca::save()
       (*m_str) << aOffset;
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
+   // Write KDEDIRS
+   (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();

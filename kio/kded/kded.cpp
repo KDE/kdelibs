@@ -191,9 +191,9 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded", 
-        I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."),
-        "$Id$");
+     KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
+        "$Id$",
+        I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."));
 
      KCmdLineArgs::init(argc, argv, &aboutData);
 
@@ -201,7 +201,8 @@ int main(int argc, char *argv[])
 
      KCmdLineArgs::addCmdLineOptions( options );
 
-     new KInstance(&aboutData);
+     KInstance *instance = new KInstance(&aboutData);
+     (void) instance->config(); // Enable translations.
 
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
      bool check = args->isSet("check");
@@ -215,7 +216,11 @@ int main(int argc, char *argv[])
         }
      }
 
-     Kded *kded = new Kded(false); // Build data base
+     QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
+     delete KSycoca::self();
+     QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
+
+     Kded *kded = new Kded(ksycoca_kfsstnd != current_kfsstnd); // Build data base
 
      kded->build();
      if (kded->needUpdate())
