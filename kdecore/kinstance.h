@@ -25,6 +25,7 @@ class KIconLoader;
 class KCharsets;
 class QFont;
 class KInstancePrivate;
+class KMimeSourceFactory;
 
 #include <qstring.h>
 
@@ -90,6 +91,13 @@ class KInstance
      * @return the instance name
      */
     QCString          instanceName() const;
+
+    /**
+     * @return the KMimeSourceFactory set as default for this application.
+     *
+     * Mainly added for API completeness and future extensibility.
+     */
+    KMimeSourceFactory* mimeSourceFactory () const;
 
 protected:
     /**

@@ -133,17 +133,11 @@ class KApplicationPrivate
 {
 public:
   KApplicationPrivate()
-	: mimeSourceFactory (new KMimeSourceFactory())
-  {
-	QMimeSourceFactory::setDefaultFactory (mimeSourceFactory);
-  }
+  {}
 
   ~KApplicationPrivate()
-  {
-	delete mimeSourceFactory;
-  }
+  {}
 
-  KMimeSourceFactory* mimeSourceFactory;
 };
 
 
@@ -198,14 +192,14 @@ static QTime* smModificationTime = 0;
 
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
                             bool allowStyles, bool GUIenabled ) :
-    QApplication( argc, argv, GUIenabled ), KInstance(rAppName)
+  QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
+  d (new KApplicationPrivate())
 {
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
-    pAppData = new KApplicationPrivate;
 
     init(GUIenabled);
     parseCommandLine( argc, argv );
@@ -214,13 +208,13 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
-  KInstance( KCmdLineArgs::about)
+  KInstance( KCmdLineArgs::about),
+  d (new KApplicationPrivate)
 {
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
     setName( instanceName() );
-    pAppData = new KApplicationPrivate;
 
     init(GUIenabled);
     parseCommandLine( );
@@ -228,7 +222,8 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 
 KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
                            bool allowStyles, bool GUIenabled ) :
-  QApplication( display ), KInstance(rAppName)
+  QApplication( display ), KInstance(rAppName),
+  d (new KApplicationPrivate())
 {
     if (!GUIenabled)
        allowStyles = false;
@@ -236,7 +231,6 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
 
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
-    pAppData = new KApplicationPrivate;
 
     init(GUIenabled);
     parseCommandLine( argc, argv );
@@ -555,95 +549,6 @@ void KApplication::saveState( QSessionManager& sm )
 }
 
 
-KMimeSourceFactory* KApplication::mimeSourceFactory () const
-{
-  return pAppData->mimeSourceFactory;
-}
-
-#if 0
-//
-// 1999-10-21 Espen Sand:
-// The functionality is moved to ktmainwindow. I have decided that I will
-// not remove the code from kapp yet. You should only uncomment this is you
-// really need to do so. In 99% of the cases it is simpler to modify the
-// code that depend on this See KDE2PORTING
-//
-// This code WILL be delected quite soon.
-//
-QPopupMenu* KApplication::helpMenu( bool /*bAboutQtMenu*/,
-	   const QString& aboutAppText )
-{
-  int id = 0;
-  QPopupMenu* pMenu = new QPopupMenu();
-
-  id = pMenu->insertItem( i18n( "&Contents" ) );
-  pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
-  pMenu->setAccel( Key_F1, id );
-
-  pMenu->insertSeparator();
-
-  id = pMenu->insertItem(i18n("&About %1...").arg(aAppName));
-  if( !aboutAppText.isNull() )
-	{
-	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
-	  aAppAboutString = aboutAppText;
-	}
-
-  id = pMenu->insertItem( i18n( "About &KDE..." ) );
-  pMenu->connectItem( id, this, SLOT( aboutKDE() ) );
-  /*
-	if( bAboutQtMenu )
-	{
-	id = pMenu->insertItem( i18n( "About Qt" ) );
-	pMenu->connectItem( id, this, SLOT( aboutQt() ) );
-	}
-  */
-  return pMenu;
-}
-
-
-void KApplication::appHelpActivated()
-{
-  invokeHelp("", "");
-}
-
-
-void KApplication::aboutKDE()
-{
-  QMessageBox about(i18n( "About KDE" ),
-		    i18n(
-			 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
-			 "a world-wide network of software engineers committed to\n"
-			 "free software development.\n\n"
-			 "Visit http://www.kde.org for more information on the KDE\n"
-			 "Project. Please consider joining and supporting KDE.\n\n"
-			 "Please report bugs at http://bugs.kde.org.\n"),
-		    QMessageBox::Information,
-		    QMessageBox::Ok + QMessageBox::Default, 0, 0,
-		    0, "aboutkde");
-  about.setButtonText(0, i18n("&OK"));
-  about.exec();
-}
-
-void KApplication::aboutApp()
-{
-  QWidget* w = activeWindow();
-  QString caption = i18n("About %1").arg(kapp->caption());
-  QMessageBox about(caption, aAppAboutString, QMessageBox::Information,
-		   QMessageBox::Ok + QMessageBox::Default, 0, 0, w, "aboutapp");
-  about.setButtonText(0, i18n("&OK"));
-  about.setIconPixmap(icon());
-  about.exec();
-}
-
-
-void KApplication::aboutQt(){
-   //  QWidget* w = activeWindow();
-  //  QMessageBox::aboutQt( w, caption() );
-}
-#endif
-
-
 void KApplication::dcopFailure(const QString &msg)
 {
   static int failureCount = 0;
@@ -863,7 +768,7 @@ KApplication::~KApplication()
   KProcessController::theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
 
-  delete pAppData;
+  delete d;
   KApp = 0;
 
   mySmcConnection = 0;

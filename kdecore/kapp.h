@@ -32,7 +32,6 @@
 class KConfig;
 class KCharsets;
 class KStyle;
-class KMimeSourceFactory;
 class QTDispatcher;
 class DCOPClient;
 class DCOPObject;
@@ -227,13 +226,6 @@ public:
      * @internal
      */
   void saveState( QSessionManager& sm );
-
-  /**
-   * @return the KMimeSourceFactory set as default for this application.
-   *
-   * Mainly added for API completeness and future extensibility.
-   */
-  KMimeSourceFactory* mimeSourceFactory () const;
 
   /**
    * Retrieve a pointer to a @ref DCOPClient for the application.
@@ -529,16 +521,6 @@ protected:
   static KApplication *KApp;
   int pArgc;
 
-public slots:
-    // See kapp.cpp for explanation
-    //void aboutKDE();
-    //void aboutApp();
-    //void aboutQt();
-
-protected slots:
-    // See kapp.cpp for explanation
-    //void appHelpActivated();
-
 private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
@@ -546,7 +528,7 @@ private slots:
   void kstyleDestroyed();
 
 private:
-  KApplicationPrivate* pAppData;
+  KApplicationPrivate* d;
   KConfig* pSessionConfig; //instance specific application config object
   DCOPClient *pDCOPClient; // instance specific application communication client
   QString aCaption; // the name for the window title
@@ -755,6 +737,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.164  2000/06/15 08:54:53  putzer
+// - added KMimeSourceFactory
+// - automatically set KMimeSourceFactory as the defaultFactory in KApplication
+//
 // Revision 1.163  2000/06/14 09:43:01  faure
 // Bumped version-string's date, for Chris and for bug reports.
 //
