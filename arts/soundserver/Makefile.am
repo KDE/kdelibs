@@ -30,7 +30,7 @@ libartswavplayobject_la_LDFLAGS = -no-undefined -module
 
 ###### "real" programs
 
-bin_PROGRAMS = artsd artsplay artscat artswrapper
+bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsd_SOURCES = soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc
@@ -42,6 +42,9 @@ artsplay_LDADD = libsoundserver_idl.la
 artsplay_SOURCES = artsplay.cc
 
 artswrapper_OBJS = artswrapper.o
+
+artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
+artsshell_SOURCES = artsshell.cc
 
 bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
 
