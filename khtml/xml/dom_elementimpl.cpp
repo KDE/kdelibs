@@ -409,6 +409,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 #endif
     if ( change >= Inherit || changed() ) {
         EDisplay oldDisplay = _style ? _style->display() : NONE;
+        EPosition oldPosition = _style ? _style->position() : STATIC;
 
         int dynamicState = StyleSelector::None;
         if ( m_render && m_render->mouseInside() )
@@ -422,7 +423,8 @@ void ElementImpl::recalcStyle( StyleChange change )
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
         if ( ch != NoChange ) {
-            if (oldDisplay != newStyle->display()) {
+            if (oldDisplay != newStyle->display()
+                || oldPosition != newStyle->position()) {
                 if (attached()) detach();
                 // ### uuhm, suboptimal. style gets calculated again
                 attach();
