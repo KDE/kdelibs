@@ -33,6 +33,7 @@
 
 #include <kapp.h>
 #include <kbuttonbox.h>
+#include <kcombobox.h>
 #include <kdesktopfile.h>
 #include <kdialog.h>
 #include <kglobal.h>
@@ -302,15 +303,24 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   QBoxLayout* l = new QHBoxLayout(topLayout);
 
-  edit = new KURLRequester( _value, this );
+  // init the history combo and insert it into the URL-Requester
+  KHistoryCombo *combo = new KHistoryCombo();
+  KConfig *kc = KGlobal::config();
+  KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
+  int max = kc->readNumEntry( QString::fromLatin1("Maximum history"), 15 );
+  combo->setMaxCount( max );
+  QStringList list = kc->readListEntry( QString::fromLatin1("History") );
+  combo->setHistoryItems( list );
+  list = kc->readListEntry( QString::fromLatin1("Commpletions") );
+  combo->completionObject()->setItems( list );
+
+  edit = new KURLRequester( combo, this );
+  edit->setURL( _value );
   l->addWidget(edit);
 
   KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
-  edit->lineEdit()->setCompletionObject( comp );
-  edit->lineEdit()->setAutoDeleteCompletionObject( true );
-
+  edit->comboBox()->setCompletionObject( comp );
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
-
 
   m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
@@ -449,10 +459,10 @@ void KOpenWithDlg::slotOK()
     {
       serviceName = keepExec.mid(keepExec.findRev('/') + 1);
       if (serviceName.isEmpty())
-      { 
+      {
         // Hmm, add a KMessageBox::error here after 2.0
         return;
-      } 
+      }
     }
     else
       serviceName = keepExec;
@@ -512,6 +522,20 @@ QString KOpenWithDlg::text()
     else
         return edit->url();
 }
+
+void KOpenWithDlg::accept()
+{
+    KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
+    combo->addToHistory( edit->url() );
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
+    kc->writeEntry( QString::fromLatin1("History"), combo->historyItems() );
+    kc->writeEntry( QString::fromLatin1("Commpletions"), 
+		    combo->completionObject()->items() );
+    
+    QDialog::accept();
+}
+
 
 ///////////////
 

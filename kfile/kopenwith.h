@@ -107,6 +107,12 @@ public slots:
     void slotHighlighted( const QString& _name, const QString& _exec );
     void slotOK();
 
+protected slots:
+    /**
+     * Reimplemented from QDialog::accept() to save history of the combobox
+     */
+    virtual void accept();
+    
 protected:
 
     /**
