@@ -63,7 +63,7 @@ public:
 
     static KLocale              *locale();
     static KCharsets	        *charsets();
-    
+
     /**
      * Create a static QString
      *
@@ -72,7 +72,7 @@ public:
      *
      * !!! Do _NOT_ use: !!!
      * static QString myString = KGlobal::staticQString("myText");
-     * This creates a static object (instead of a static reference) 
+     * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
      */
     static const QString        &staticQString(const char *);
@@ -117,4 +117,24 @@ public:
  * mandatory if you expect your application to behave nicely within the
  * KDE environment.
  */
+
+/**
+ * little helper class to clean up static objects that are
+ * held as pointer.
+ *
+ * A typical use is
+ * static KStaticDeleter<MyClass> sd;
+ *
+ * MyClass::self() {
+ *   if (!_self) { _self = new MyClass(); sd.deleteit = _self; }
+ * }
+ */
+template<class type> class KStaticDeleter {
+public:
+    type *deleteit;
+    KStaticDeleter() { deleteit = 0; }
+    ~KStaticDeleter() { delete deleteit; }
+};
+
 #endif // _KGLOBAL_H
+
