@@ -60,4 +60,4 @@ Comment[xxx]=xx
 Comment[zh_CN.GB2312]=内建的 SGI 风格
 Comment[zh_TW.Big5]=內建的 SGI 風格
 [KDE]
-widgetStyle=Qt SGI
+WidgetStyle=Qt SGI
