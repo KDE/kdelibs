@@ -42,6 +42,7 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
     pal.setInactive(pal.active());
     setPalette(pal);
   }
+  setBackgroundOrigin( WindowOrigin );
 
   _config = new KConfig(configFile, kapp && kapp->config()->isImmutable());
 }
