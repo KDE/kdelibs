@@ -37,6 +37,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qlayout.h>
+#include <kstdguiitem.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -502,7 +503,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "error", true, true,
-                       i18n("&OK"));
+                       KStdGuiItem::ok() );
 
     createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0);
 }
@@ -517,7 +518,7 @@ KMessageBox::detailedError(QWidget *parent,  const QString &text,
                        KDialogBase::Yes | KDialogBase::Details,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "error", true, true,
-                       i18n("&OK"));
+                       KStdGuiItem::ok() );
 
     createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0, details);
 }
@@ -531,7 +532,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "sorry", true, true,
-                       i18n("&OK"));
+                       KStdGuiItem::ok() );
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 }
@@ -546,7 +547,7 @@ KMessageBox::detailedSorry(QWidget *parent, const QString &text,
                        KDialogBase::Yes | KDialogBase::Details,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "sorry", true, true,
-                       i18n("&OK"));
+                       KStdGuiItem::ok() );
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, details);
 }
@@ -575,7 +576,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "information", true, true,
-                       i18n("&OK"));
+                       KStdGuiItem::ok() );
 
     bool checkboxResult;
 
