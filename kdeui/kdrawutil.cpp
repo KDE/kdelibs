@@ -53,7 +53,11 @@ void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
     int x2 = x+w-1;
     int y2 = y+h-1;
     p->setPen(g.dark());
-    p->drawRect(x, y, w, h);
+    p->drawLine(x+1, y, x2-1, y);
+    p->drawLine(x, y+1, x, y2-1);
+    p->drawLine(x+1, y2, x2-1, y2);
+    p->drawLine(x2, y+1, x2, y2-1);
+
 
     if(!sunken){
         p->setPen(g.light());
