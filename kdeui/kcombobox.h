@@ -202,41 +202,6 @@ public:
     virtual void setEnableContextMenu( bool showMenu );
 
     /**
-    * Marks the text in the line edit beginning
-    * from @p start for @p length characters long.
-    *
-    * Note that this method is only valid if the
-    * combo-box is editable, i.e. read-write mode.
-    *
-    * @param start  begin selection fron this point.
-    * @param length select this many characters.
-    */
-    virtual void setSelection( int start, int length );
-
-    /**
-    * Sets the cursor position.
-    *
-    * Note that this method is only valid if the
-    * combo-box is editable, i.e. read-write mode.
-    *
-    * @param pos places cursor at this position.
-    */
-    virtual void setCursorPosition( int pos ) { if( m_pEdit != 0 ) m_pEdit->setCursorPosition( pos ); }
-
-    /**
-    * Places the cursor at a new postion and marks
-    * the caracters between the indicated positions.
-    *
-    * Note that this method is only valid if the
-    * combo-box is editable, i.e. read-write mode.
-    *
-    * @param newPos place cursor at this position.
-    * @param bMark begin selection at this point.
-    * @param eMark end selection at this point.
-    */
-    virtual void setSelection( int newPos, int bMark, int eMark );
-
-    /**
     * Returns true when the context menu is enabled.
     *
     * @return true if context menu is enabled.
@@ -251,18 +216,6 @@ public:
     bool isEditable() const { return (m_pEdit!= 0); }
 
 signals:
-
-    /**
-    * This signal is emitted when the user presses
-    * the return key.  It is emitted if and only if
-    * the widget is editable (read-write).
-    *
-    * Note that this widget consumes the RETURN key
-    * event.  If you need to process this event be
-    * sure to connect to this signal or its cousin
-    * signal below.
-    */
-    void returnPressed();
 
     /**
     * This signal is emitted when the user presses
@@ -339,18 +292,6 @@ public slots:
     * a next match.
     */
     virtual void iterateDownInList();
-
-    /**
-    * Selects the text in the lined edit.  Does nothing
-    * if this widget is not editable.
-    */
-    virtual void selectText()     { if( m_pEdit != 0 ) m_pEdit->selectAll(); }
-
-    /**
-    * Un-marks all selected text in the lined edit.  Does
-    * nothing if this widget is not editable.
-    */
-    virtual void deselectText()   { if( m_pEdit != 0 ) m_pEdit->deselect(); }
 
 protected slots:
 
@@ -448,18 +389,6 @@ private :
     // Event Filter to trap events
     virtual bool eventFilter( QObject* o, QEvent* e );
 
-    /**
-    * Re-implemented from QComboBox.
-    *
-    * This function now always returns 0.  All the
-    * functions needed to manipulate the line edit
-    * with the execption of echomode are supplied
-    * here.  Methods that affect the funcationality
-    * of this widget are not made available.
-    *
-    * @return always a NULL pointer.
-    */
-    QLineEdit* lineEdit() const { return 0; }
 };
 
 #endif

@@ -117,23 +117,6 @@ void KComboBox::setEnableContextMenu( bool showMenu )
     }
 }
 
-void KComboBox::setSelection( int start, int length )
-{
-    if( m_pEdit != 0 && !currentText().isNull() )
-    {
-        m_pEdit->setSelection( start, length );
-    }
-}
-
-void KComboBox::setSelection( int newPos, int start, int end )
-{
-    if( m_pEdit != 0 && !currentText().isNull() )
-    {
-        m_pEdit->setCursorPosition( newPos );
-        m_pEdit->setSelection( start, end - start );
-    }
-}
-
 void KComboBox::aboutToShowMenu()
 {
     if( m_bShowModeChanger && m_pCompObj != 0 && m_iCompletionID == -1 )
@@ -147,11 +130,12 @@ void KComboBox::aboutToShowMenu()
 
 void KComboBox::setEditText( const QString& text )
 {
-    // Stops signals from being handles by completion while the text
-    // is manually set.
-    disconnect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
+    // Stops signals from being handles by completion
+    // while the text is being manually set.
+    bool lock = m_bEmitSignals;
+    m_bEmitSignals = false;
     QComboBox::setEditText( text );
-    connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
+    m_bEmitSignals = lock;
 }
 
 void KComboBox::entryChanged( const QString& text )
@@ -206,8 +190,7 @@ void KComboBox::rotateText( const QString& input )
     if( input.length() == 0 )
         return;
 
-    if( m_pEdit != 0 && m_pCompObj != 0 &&
-        m_pCompObj->hasMultipleMatches() )
+    if( m_pEdit != 0 && m_pCompObj != 0 )
     {
         if( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
@@ -234,15 +217,6 @@ void KComboBox::iterateUpInList()
 {
     if( m_pCompObj != 0 )
     {
-        // This clears KCompletion so that if the user
-        // deleted the current text and pressed the rotation
-        // keys,  KCompletion will properly rotate through
-        // all enteries.  Hack to the max :)
-        if( m_pEdit != 0 && m_pEdit->text().length() == 0 &&
-            m_pCompObj->lastMatch().length() != 0 )
-        {
-            m_pCompObj->makeCompletion( QString::null );
-        }
         rotateText( m_pCompObj->previousMatch() );
     }
 }
@@ -251,15 +225,6 @@ void KComboBox::iterateDownInList()
 {
     if( m_pCompObj != 0 )
     {
-        // This clears KCompletion so that if the user
-        // deleted the current text and pressed the rotation
-        // keys,  KCompletion will properly rotate through
-        // all enteries.  Hack to the max :)
-        if( m_pEdit != 0 && m_pEdit->text().length() == 0 &&
-            m_pCompObj->lastMatch().length() != 0 )
-        {
-            m_pCompObj->makeCompletion( QString::null );
-        }
         rotateText( m_pCompObj->nextMatch() );
     }
 }
@@ -295,12 +260,10 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
         if( ev->type() == QEvent::KeyPress )
         {
             QKeyEvent *e = (QKeyEvent *) ev;
-            // On Return pressed event.
+            // On Return pressed event, emit returnPressed( const QString& )
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-                emit returnPressed();
                 emit returnPressed( m_pEdit->text() );
-                return true;
             }
             int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : m_iCompletionKey;
             if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
@@ -308,7 +271,8 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
                 // Emit completion if the completion mode is NOT
                 // CompletionAuto and if the mode is CompletionShell,
                 // the cursor is at the end of the string.
-                if( m_iCompletionMode == KGlobalSettings::CompletionMan ||
+                if( (m_iCompletionMode == KGlobalSettings::CompletionMan &&
+                    (m_pCompObj != 0 && m_pCompObj->lastMatch() != m_pEdit->displayText()) ) ||
                     (m_iCompletionMode == KGlobalSettings::CompletionShell &&
                     m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ))
                 {
