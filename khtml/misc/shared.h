@@ -52,6 +52,6 @@ protected:
     type *m_parent;
 };
 
-};
+} // namespace
 
 #endif

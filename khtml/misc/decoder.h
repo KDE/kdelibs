@@ -99,5 +99,5 @@ protected:
     AutomaticDetectinonLanguage m_automaticDetectionLanguage;
 };
 
-};
+}
 #endif
