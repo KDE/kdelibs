@@ -103,14 +103,10 @@ int KDialog::spacingHint()
   return( mSpacingSize );
 }
 
-
+// KDE4: Remove me
 void KDialog::polish()
 {
   QDialog::polish();
-  QWidget *w = focusWidget();
-  if( w && w->isEnabled() && w->inherits( "QLineEdit" ) &&
-      !w->inherits( "KPasswordEdit" ))
-    ((QLineEdit*)w)->selectAll();
 }
 
 
