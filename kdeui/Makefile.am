@@ -38,7 +38,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h	\
 		kdbtn.h knotebook.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
-		klineeditdlg.h kurlcompletion.h
+		klineeditdlg.h kurlcompletion.h kwidgetid.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
