@@ -951,8 +951,8 @@ void Ftp::stat( const KURL &url)
   // Let's use KURL's function (even if building it as a local one)
   KURL tempurl( path );
   QString listarg = tempurl.directory(false /*keep trailing slash*/);
-  QString search = tempurl.fileName();
   QString filename = tempurl.fileName();
+  QString search = filename;
 
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)
@@ -992,7 +992,9 @@ void Ftp::stat( const KURL &url)
   bool bFound = false;
   while( ( e = ftpReadDir() ) )
   {
-    if ( !bFound && ( search == e->name ) ) {
+    // We look for search or filename, since some servers (e.g. ftp.tuwien.ac.at)
+    // return only the filename when doing "dir /full/path/to/file"
+    if ( !bFound && ( search == e->name || filename == e->name ) ) {
       bFound = true;
       UDSEntry entry;
       createUDSEntry( filename, e, entry );
