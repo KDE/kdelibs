@@ -573,6 +573,24 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
                 lastCookie->mProtocolVersion = Value.toInt();
             }
         }
+        // We have to default the path if the server did not
+        // provide one according to RFC 2109 sec 4.3.1 as well
+        // as the original Netscape spec.  Otherwise, we will
+        // definitetly send cookies where we should not in terms
+        // of the path. (DA)
+        if( lastCookie && lastCookie->mPath.isEmpty() )
+        {
+            QString dir = path;
+            if( dir != "/" )
+            {
+                int last_slash = dir.findRev('/');
+                if( last_slash != 0 )
+                    dir.truncate( last_slash );
+            }
+            lastCookie->mPath = dir;
+            kdDebug(7104) << "Set-Cookie did not specify path.  Setting path to: " << dir << endl;
+        }
+
         if (*cookieStr == '\0')
             break; // End of header
 
