@@ -1,11 +1,11 @@
 
-SUBDIRS = kfile kspell
+SUBDIRS = kdebug kfile kspell
 
-data_DATA = kdebug.html
+data_DATA = 
 
 datadir = $(kde_htmldir)/en/kdelibs
 
-EXTRA_DIST = kdebug.html
+EXTRA_DIST =
 
 install-data-local:
 	-rm -f $(DESTDIR)$(kde_htmldir)/default
