@@ -201,8 +201,8 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
                  no.text().isEmpty()  ? KStdGuiItem::no()  : no,
                  yes.text().isEmpty() ? KStdGuiItem::yes() : yes );
 
-  setButtonCancelText( cancel.text().isEmpty() ?
-                       KStdGuiItem::cancel().text() : cancel.text() );
+  setButtonCancel( cancel.text().isEmpty() ?
+                       KStdGuiItem::cancel() : cancel );
 
   mIsActivated = true;
   setupLayout();
@@ -1591,9 +1591,6 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 
   // accept the dialog when Ctrl-Return is pressed
   else if ( e->state() == ControlButton &&
-            qApp->focusWidget() &&
-            (qApp->focusWidget()->inherits( "QTextEdit" ) ||
-             qApp->focusWidget()->inherits( "QLineEdit" )) &&
             (e->key() == Key_Return || e->key() == Key_Enter) )
   {
     QPushButton *pb = actionButton( Ok );
