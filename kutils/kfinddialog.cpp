@@ -111,7 +111,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 
     topLayout = new QVBoxLayout(page);
     topLayout->setSpacing( KDialog::spacingHint() );
-    topLayout->setMargin( KDialog::marginHint() );
+    topLayout->setMargin( 0 );
 
     m_findGrp = new QGroupBox(0, Qt::Vertical, i18n("Find"), page);
     m_findGrp->layout()->setSpacing( KDialog::spacingHint() );
