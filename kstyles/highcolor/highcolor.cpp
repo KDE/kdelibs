@@ -189,7 +189,7 @@ void HighColorStyle::polish(QWidget* widget)
 	// Put in order of highest occurance to maximise hit rate
 	if (widget->inherits("QPushButton")) {
 		widget->installEventFilter(this);
-	} else if (widget->inherits("QMenuBar")) {
+	} else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
 	}
 
@@ -202,7 +202,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 	if (widget->inherits("QPushButton")) {
 		widget->removeEventFilter(this);
 	}
-	else if (widget->inherits("QMenuBar")) {
+	else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	}
 
@@ -216,7 +216,7 @@ void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg 
 	QColor col = cg.button();
 
 #ifdef Q_WS_X11 // Only draw menu gradients on TrueColor, X11 visuals
-	if ( QPaintDevice::x11AppDepth() >= 24 )
+	if ( type == HighColor && QPaintDevice::x11AppDepth() >= 24 )
 		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
 				KPixmapEffect::HorizontalGradient );
 	else
@@ -1085,7 +1085,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				
 				if ( btnDefault || button->autoDefault() ) {
 					// Compensate for default indicator
-					int di = pixelMetric( PM_ButtonDefaultIndicator );
+					static int di = pixelMetric( PM_ButtonDefaultIndicator );
 					br.addCoords( di, di, -di, -di );
 				}
 
@@ -1218,8 +1218,8 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool enabled    = mi->isEnabled();
 			bool checkable  = popupmenu->isCheckable();
 			bool active     = flags & Style_Active;
-			bool etchtext	= styleHint( SH_EtchDisabledText );
-			bool reverse	= QApplication::reverseLayout();
+			bool etchtext   = styleHint( SH_EtchDisabledText );
+			bool reverse    = QApplication::reverseLayout();
 
 			if ( checkable )
 				checkcol = QMAX( checkcol, 20 );
@@ -1236,14 +1236,14 @@ void HighColorStyle::drawControl( ControlElement element,
 			// Draw the menu item background
 			if ( active )
 				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
-						         &cg.brush(QColorGroup::Midlight) );
+				                 &cg.brush(QColorGroup::Midlight) );
 			// Draw the transparency pixmap
-			else if (widget->backgroundPixmap())
-				p->drawPixmap(x, y, *widget->backgroundPixmap(), 
-							  x, y, w, h);
+			else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+				p->drawPixmap( x, y, *widget->erasePixmap(), x, y, w, h );
+			// Draw a solid background
 			else
 				p->fillRect( r, cg.button() );
-			
+				
 			// Do we have an icon?
 			if ( mi->iconSet() ) {
 				QIconSet::Mode mode;
@@ -1260,14 +1260,10 @@ void HighColorStyle::drawControl( ControlElement element,
 				if ( checkable && !active && mi->isChecked() )
 					qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(),
 									 cg, true, 1, &cg.brush(QColorGroup::Midlight) );
-
 				// Draw the icon
 				QPixmap pixmap = mi->iconSet()->pixmap( QIconSet::Small, mode );
-				int pixw = pixmap.width();
-				int pixh = pixmap.height();
-				QRect pmr( 0, 0, pixw, pixh );
+				QRect pmr( 0, 0, pixmap.width(), pixmap.height() );
 				pmr.moveCenter( cr.center() );
-				p->setPen( cg.highlightedText() );
 				p->drawPixmap( pmr.topLeft(), pixmap );
 			}
 
@@ -1767,10 +1763,14 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			else {
 				if ( mi->pixmap() )
 					h = QMAX( h, mi->pixmap()->height() + 2*itemFrame );
-				else
+				else {
+					// Ensure that the minimum height for text-only menu items
+					// is the same as the icon size used by KDE.
+					h = QMAX( h, 16 + 2*itemFrame );
 					h = QMAX( h, popup->fontMetrics().height()
 							+ 2*itemVMargin + 2*itemFrame );
-
+				}
+					
 				if ( mi->iconSet() )
 					h = QMAX( h, mi->iconSet()->pixmap(
 								QIconSet::Small, QIconSet::Normal).height() +
