@@ -241,6 +241,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 
 	tp->end();
+	
+	drawContents(tp,ex,ey+py,ew,ph); // in case someone want to extend the widget
 	delete tp;
 
     	//printf("bitBlt x=%d,y=%d,sw=%d,sh=%d\n",ex,ey+py,ew,ph);
