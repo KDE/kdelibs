@@ -170,7 +170,7 @@ void KJavaProcess::invokeJVM()
 
    warning( "Invoking JVM now..." );
 
-   KProcess::Communication comms = ( KProcess::Communication ) KProcess::Stdin | KProcess::Stdout;
+   KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
    javaProcess->start( KProcess::NotifyOnExit, comms );
 }
 
