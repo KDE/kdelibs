@@ -203,13 +203,14 @@ void KSystemTray::maybeQuit()
 
     if (parentWidget())
     {
-        emit quitSelected();
         parentWidget()->close();
     }
     else
     {
         qApp->closeAllWindows();
     }
+
+    emit quitSelected();
 }
 
 void KSystemTray::toggleActive()
