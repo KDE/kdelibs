@@ -63,7 +63,7 @@ signals:
 private slots:
     void slotLoadFiles();
     void slotCurrentChanged(QIconViewItem *item);
-
+    
 private:
     QStringList mFiles;
     QTimer *mpTimer;
@@ -119,7 +119,7 @@ private slots:
     void slotStartLoading(int);
     void slotProgress(int);
     void slotFinished();
-
+    void slotAcceptIcons();
 private:
     void init();
     void showIcons();
