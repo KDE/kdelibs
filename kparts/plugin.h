@@ -48,20 +48,32 @@ class Plugin : public QObject, public KXMLGUIClient
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new KParts plugin.
+     */
     Plugin( QObject* parent = 0, const char* name = 0 );
-    ~Plugin();
+    /**
+     * Destructor
+     */
+    virtual ~Plugin();
 
     /**
      * Load the plugin libraries from the directories appropriate
-     * to @p instance.
+     * to @p instance and make the Plugin objects children of @p parent .
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
     /**
-     * Load the plugin libraries specified by the list @p docs.
+     * Load the plugin libraries specified by the list @p docs and make the
+     * Plugin objects children of @p parent .
      */
     static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
 
+    /**
+     * Returns a list of plugin objects loaded for @p parent . This functions basically
+     * calls the @ref queryList method of @ref QObject to retrieve the list of child objects
+     * inheritting @ref KParts::Plugin .
+     */
     static QValueList<KXMLGUIClient *> pluginClients( QObject *parent );
 
 protected:

@@ -68,7 +68,7 @@ public:
   virtual ~PartBase();
 
   /**
-   *  Sets the object. But for what is it good for ?
+   *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
    */
   void setObject( QObject *object );
 
@@ -113,7 +113,6 @@ private:
  * Those elements trigger actions, defined by the part (@ref action()).
  * The layout of the actions in the GUI is defined by an XML file (@ref setXMLFile()).
  *
- * This class is an abstract interface that you need to inherit from.
  * See also @ref PartReadOnly and @ref PartReadWrite, which define the
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
@@ -200,12 +199,33 @@ protected:
      */
     virtual void setWidget( QWidget * widget );
 
+    /**
+     * @internal
+     */
     virtual bool event( QEvent *event );
 
+    /**
+     * Convenience method which is called when the Part received a @ref PartActivateEvent .
+     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
+     * or even install an event filter.
+     */
     virtual void partActivateEvent( PartActivateEvent *event );
+    /**
+     * Convenience method which is called when the Part received a @ref PartSelectEvent .
+     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
+     * or even install an event filter.
+     */
     virtual void partSelectEvent( PartSelectEvent *event );
+    /**
+     * Convenience method which is called when the Part received a @ref GUIActivateEvent .
+     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
+     * or even install an event filter.
+     */
     virtual void guiActivateEvent( GUIActivateEvent *event );
 
+    /**
+     * Convenience method for @ref KXMLGUIFactory::container . Returns a container widget owned by the Part's GUI.
+     */
     QWidget *hostContainer( const QString &containerName );
 
 private slots:
@@ -449,6 +469,9 @@ protected:
   virtual bool saveToURL();
 
 protected slots:
+  /**
+   * @internal
+   */
   void slotUploadFinished( KIO::Job * job );
 
 private:

@@ -32,15 +32,15 @@ class Part;
 class PartManagerPrivate;
 
 /**
- * The part manager is an object which knows about all parts
+ * The part manager is an object which knows about a collection of parts
  * (even nested ones) and handles activation/deactivation.
  *
  * Applications that want to embed parts without merging GUIs
  * only use a @ref KPartManager. Those who want to merge GUIs use a
  * @ref KPartsMainWindow for example, in addition to a part manager.
  *
- * Parts know about the part manager, to add nested parts to it,
- * and get access to the window caption.
+ * Parts know about the part manager to add nested parts to it.
+ * See also @ref KParts::Part::manager and @ref KParts::Part::setManager .
  */
 class PartManager : public QObject
 {
@@ -57,7 +57,13 @@ public:
   PartManager( QWidget * parent, const char * name = 0L );
   virtual ~PartManager();
 
+  /**
+   * Set the selection policy of the partmanager.
+   */
   void setSelectionPolicy( SelectionPolicy policy );
+  /**
+   * Retrieve the current selection policy.
+   */
   SelectionPolicy selectionPolicy() const;
 
   /**
@@ -72,43 +78,68 @@ public:
   void setAllowNestedParts( bool allow );
   bool allowNestedParts() const;
 
+  /**
+   * @internal
+   */
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   /**
    * Add a Part to the manager.
    *
-   * Sets it to the active part automatically.
+   * Sets it to the active part automatically if @p setActive is true (default ).
    */
   virtual void addPart( Part *part, bool setActive = true );
+
   /**
-   * Remove a part.
+   * Remove a part from the manager (this does not delete the object) .
    *
-   * Sets the active part to 0 if @p part is the @ref activePart().
+   * Sets the active part to 0 if @p part is the @ref activePart() .
    */
   virtual void removePart( Part *part );
 
   /**
    * Set the active part.
    *
-   * The active part receives events.
-   **/
+   * The active part receives activation events.
+   *
+   * @p widget can be used to specify which widget was responsible for the activation.
+   * This is important if you have multiple views for a document/part , like in KOffice .
+   */
   virtual void setActivePart( Part *part, QWidget *widget = 0L );
+
   /**
    * Retrieve the active part.
    **/
   virtual Part *activePart() const;
 
+  /**
+   * Retrieve the active widget of the current active part (see @ref activePart ).
+   */
   virtual QWidget *activeWidget() const;
 
+  /**
+   * Set the selected part.
+   *
+   * The selected part receives selection events.
+   *
+   * @p widget can be used to specify which widget was responsible for the selection.
+   * This is important if you have multiple views for a document/part , like in KOffice .
+   */
   virtual void setSelectedPart( Part *part, QWidget *widget = 0L );
 
+  /**
+   * Retrieve the current selected part.
+   */
   virtual Part *selectedPart() const;
 
+  /**
+   * Retrieve the selected widget of the current selected part (see @ref selectedPart ).
+   */
   virtual QWidget *selectedWidget() const;
 
   /**
-   * Retrieve a list of parts managed being managed.
-   **/
+   * Retrieve the list of parts being managed by the partmanager.
+   */
   const QList<Part> *parts() const;
 
 signals:
@@ -129,11 +160,14 @@ signals:
   void activePartChanged( KParts::Part *newPart );
 
 protected slots:
-    /**
-     * Removes a part when it is destroyed.
-     **/
+  /**
+   * Removes a part when it is destroyed.
+   **/
   void slotObjectDestroyed();
 
+  /**
+   * @internal
+   */
   void slotWidgetDestroyed();
 
 private:
