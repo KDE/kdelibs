@@ -47,7 +47,7 @@
 #undef CLOBBER_IN6
 #include "netsupp.h"
 
-#ifdef __hpux
+#if defined(__hpux) || defined(_HPUX_SOURCE)
 extern int h_errno;
 #endif
 
