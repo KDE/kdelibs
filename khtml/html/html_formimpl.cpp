@@ -1222,6 +1222,8 @@ DOMString HTMLInputElementImpl::value() const
 void HTMLInputElementImpl::setValue(DOMString val)
 {
     switch (m_type) {
+    // keep this in sync with encoding()! It uses m_value for HIDDEN, TEXT and PASSWORD.
+    case HIDDEN:
     case TEXT:
     case PASSWORD:
         m_value = (val.isNull() ? DOMString("") : val);
