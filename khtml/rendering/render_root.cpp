@@ -122,8 +122,8 @@ void RenderRoot::layout()
         QSize s = m_view->viewportSize(m_view->visibleWidth(), m_view->visibleHeight());
         mw = s.width();
         mh = s.height();
-        qDebug("s.height: %d, visibleHeight: %d, viewport->height(): %d",
-               s.height(), m_view->visibleHeight(), m_view->viewport()->height());
+        //qDebug("s.height: %d, visibleHeight: %d, viewport->height(): %d",
+        //       s.height(), m_view->visibleHeight(), m_view->viewport()->height());
 
     }
     else if (!m_view) {
@@ -134,7 +134,7 @@ void RenderRoot::layout()
     m_width = m_view->visibleWidth();
     m_height = m_view->visibleHeight();
 
-    qDebug("height: %d",  m_height);
+    //qDebug("height: %d",  m_height);
 
 
     RenderFlow::layout();
