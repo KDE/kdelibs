@@ -1979,12 +1979,12 @@ void HTMLTextAreaElementImpl::reset()
 
 DOMString HTMLTextAreaElementImpl::value()
 {
-    if ( !m_render || m_value.isNull() ) return defaultValue().string();
-
-    if ( m_dirtyvalue ) {
-        m_value = static_cast<RenderTextArea*>( m_render )->text();
+    if ( m_dirtyvalue) {
+        if ( m_render )  m_value = static_cast<RenderTextArea*>( m_render )->text();
         m_dirtyvalue = false;
     }
+
+    if ( m_value.isNull() ) return "";
 
     return m_value;
 }

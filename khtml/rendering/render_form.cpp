@@ -979,6 +979,7 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
     setQWidget(edit, false);
     edit->installEventFilter(this);
+
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 }
 
@@ -1022,16 +1023,13 @@ void RenderTextArea::layout( )
 
 void RenderTextArea::close( )
 {
-    HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_element);
+    HTMLTextAreaElementImpl *e = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    QString state = f->ownerDocument()->registerElement( f );
+    e->setValue( e->defaultValue() );
+
+    QString state = e->ownerDocument()->registerElement( e );
     if ( !state.isEmpty() )
-        f->restoreState( state );
-
-    if(f->firstChild() && f->firstChild()->id() == ID_TEXT && state.isEmpty())
-        f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
-
-    layout();
+        e->restoreState( state );
 
     RenderFormElement::close();
 }
