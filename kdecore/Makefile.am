@@ -88,6 +88,7 @@ install-data-local: charsets.config
 	$(INSTALL_DATA) $(srcdir)/Royal.colors $(kde_confdir)/colors/Royal
 	# For compatibility with KDE 2.1 (remove in 3.0)
 	-rm -f $(includedir)/kio/kmdcodec.h
+	-mkdir $(includedir)/kio
 	$(LN_S) $(includedir)/kmdcodec.h $(includedir)/kio/kmdcodec.h
 
 uninstall-local:
