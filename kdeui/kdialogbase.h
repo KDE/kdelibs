@@ -612,7 +612,7 @@ class KDialogBase : public KDialog
 			const QPixmap &pixmap=QPixmap() );
    
     /**
-     * This is like @rerf addHBoxPage() just above, with the
+     * This is like @ref addHBoxPage() just above, with the
      * difference that the first element is a list of strings.
      *
      * These strings are used to form a path
@@ -1012,7 +1012,7 @@ class KDialogBase : public KDialog
     /**
      * Check whether the background tile is set or not.
      *
-     * @return @true if there is defined a background tile.
+     * @return @tt true if there is defined a background tile.
      */
     static bool haveBackgroundTile();
     
