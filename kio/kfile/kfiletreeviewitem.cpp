@@ -25,8 +25,6 @@
 
 /* --- KFileTreeViewItem --- */
 /*
- * hmm. Dont know, if it is good just to remember the UDS entry in order to save space.
- * the KFileItem is a relatively large thing and can be reproduced having the UDSEntry.
  */
 KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
 				      KFileItem* item,
@@ -47,6 +45,8 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
     m_kfileitem(item ),
     m_branch( brnch )
 {
+   setPixmap(0, item->pixmap( KIcon::SizeSmall ));
+   setText( 0, item->text());
 }
 
 KURL KFileTreeViewItem::url() const
