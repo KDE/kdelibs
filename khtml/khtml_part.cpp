@@ -1349,7 +1349,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
              (target != QString::fromLatin1("_self")) &&
              (target != QString::fromLatin1("_parent")))
     {
-       extra = i18n(" (In other window)");
+       extra = i18n(" (In other frame)");
     }
 
     emit setStatusBarText( u.prettyURL()+extra );
