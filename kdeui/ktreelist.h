@@ -666,6 +666,7 @@ public:
   void expanded(int index);
   void highlighted(int index);
   void selected(int index);
+  void singleSelected(int index); //ettrich
 protected:
   void paletteChange(const QPalette &);
   void addChildItem(KTreeListItem *theParent,

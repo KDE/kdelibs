@@ -1647,8 +1647,10 @@ void KTreeList::mousePressEvent(QMouseEvent *e)
   
   // hit test item
  
-  if(item->boundingRect(fontMetrics()).contains(cellCoord))
+  if(item->boundingRect(fontMetrics()).contains(cellCoord)){
     setCurrentItem(itemClicked);
+    emit singleSelected(itemClicked);    // ettrich
+  }
 
   // hit test expand button
   
