@@ -27,25 +27,23 @@
 class QPixmap;
 
 /**
- *  Displays a splash screen on program start up.
+ *  @short %KDE splash screen
  *
  *  This class is based on QSplashScreen and exists solely to make
  *  splash screens obey KDE's Xinerama settings.
- * 
+ *
  *  For documentation on how to use the class, see the documentation
  *  for QSplashScreen.
  *
- *  @short KDE splash screen
  *  @author Chris Howells (howells@kde.org)
- *  @version $Id$
  *  @since 3.2
  */
 class KDEUI_EXPORT KSplashScreen : public QSplashScreen
 {
   Q_OBJECT
-    
+
 public:
-  
+
   /**
    *  Constructs a splash screen.
    */

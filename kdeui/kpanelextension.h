@@ -32,7 +32,7 @@ class KPanelExtensionPrivate;
 #include <kdelibs_export.h>
 
 /**
- * Implements a panel extension.
+ * @short KDE Panel Extension class
  *
  * Panel extensions
  *   @li Are small applications living in the Window Manager dock managed by the panel.
@@ -93,7 +93,6 @@ class KPanelExtensionPrivate;
  * fail to load your extension.
  *
  * @author Matthias Elter <elter@kde.org>
- * @short KDE Panel Extension class
  **/
 class KDEUI_EXPORT KPanelExtension : public QFrame
 {

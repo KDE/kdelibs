@@ -41,6 +41,8 @@ class QListViewItem;
 class KGuiItem;
 
 /**
+ * @short Easy to use widget with many layouts
+ *
  * Provides a number of ready to use layouts (faces). It is used
  * as an internal widget in KDialogBase, but can also used as a
  * widget of its own.
@@ -60,7 +62,6 @@ class KGuiItem;
  * the QObject::deleteLater() function on the page as the main event loop
  * may have optimized UI update events of the page by scheduling them for later.
  *
- * @short Easy to use widget with many layouts
  * @author Espen Sand (espen@kde.org)
  */
 class KDEUI_EXPORT KJanusWidget : public QWidget
