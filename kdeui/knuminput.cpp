@@ -694,8 +694,8 @@ void KDoubleNumInput::setValue(double val)
     if(m_upper < m_value) m_value = m_upper;
 
     if(m_slider) {
-        int slvalue = (int)((m_value - m_lower)/(m_upper - m_lower))
-			* m_slider->maxValue();
+        int slvalue = (int)(m_slider->maxValue()
+							* (m_value - m_lower)/(m_upper - m_lower));
         m_slider->setValue(slvalue);
     }
 
