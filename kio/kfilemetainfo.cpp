@@ -7,8 +7,7 @@
 
 KFileMetaInfoItem::KFileMetaInfoItem( const QString& key,
                                       const QString& translatedKey,
-                                      const QVariant& value, 
-                                      QVariant::Type type,
+                                      const QVariant& value,
                                       bool editable,
                                       const QString& prefix,
                                       const QString& postfix )
@@ -20,7 +19,6 @@ KFileMetaInfoItem::KFileMetaInfoItem( const QString& key,
       m_editable( editable ),
       m_dirty( false )
 {
-    Q_ASSERT( value.type() == type );
 }
 
 KFileMetaInfoItem::~KFileMetaInfoItem()
@@ -29,10 +27,10 @@ KFileMetaInfoItem::~KFileMetaInfoItem()
 
 void KFileMetaInfoItem::setValue( const QVariant& value )
 {
-    if ( !isEditable() || value.type() != m_type )
+    if ( !isEditable() || value.type() != m_value.type() )
         return;
 
-    m_dirty = (value != m_value);
+    m_dirty = true;
     m_value = value;
 }
 
@@ -42,6 +40,10 @@ void KFileMetaInfoItem::remove()
     m_dirty = true;
 }
 
+bool KFileMetaInfoItem::isRemoved() const
+{
+    return (m_dirty && !m_value.isValid());
+}
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -72,7 +74,7 @@ bool KFileMetaInfo::supportsVariableKeys() const
     return false;
 }
 
-KFileMetaInfoItem * KFileMetaInfo::addItem( const QString& key, 
+KFileMetaInfoItem * KFileMetaInfo::addItem( const QString& key,
                                             const QVariant& value )
 {
     return 0L;

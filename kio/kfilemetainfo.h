@@ -15,8 +15,7 @@ class KFileMetaInfoItem
 {
 public:
     KFileMetaInfoItem( const QString& key, const QString& translatedKey,
-                       const QVariant& value, QVariant::Type type, 
-                       bool editable = false,
+                       const QVariant& value, bool editable = false,
                        const QString& prefix  = QString::null,
                        const QString& postfix = QString::null );
     virtual ~KFileMetaInfoItem();
@@ -26,10 +25,10 @@ public:
 
     const QVariant& value() const               { return m_value;         }
     virtual void setValue( const QVariant& value );
-    QVariant::Type type() const                 { return m_type;          }
+    QVariant::Type type() const                 { return m_value.type();  }
     bool isEditable() const                     { return m_editable;      }
     void remove();
-    bool isRemoved() const                      { return !m_value.isValid(); }
+    bool isRemoved() const;
     bool isModified() const                     { return m_dirty;         }
 
     const QString& prefix()  const              { return m_prefix;        }
@@ -43,7 +42,6 @@ protected:
     QString             m_postfix;
 
     QVariant            m_value;
-    QVariant::Type      m_type;
 
     bool m_editable :1;
     bool m_dirty    :1;
@@ -79,6 +77,7 @@ public:
     virtual QStringList preferredKeys() const;
     virtual bool supportsVariableKeys() const;
 
+    virtual QVariant::Type type( const QString& key ) const = 0;
     virtual KFileMetaInfoItem * addItem( const QString& key, 
                                          const QVariant& value );
     virtual void applyChanges();
