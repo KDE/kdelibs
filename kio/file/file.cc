@@ -28,6 +28,7 @@
 #include "../kio_skip_dlg.h"
 #include <kurl.h>
 #include <kprotocolmanager.h>
+#include <kinstance.h>
 
 #include <iostream.h>
 
@@ -46,6 +47,8 @@ int main( int , char ** )
   signal(SIGSEGV, IOProtocol::sigsegv_handler);
 #endif
   qDebug( "kio_file : Starting");
+
+  KInstance instance( "kio_file" );
 
   KIOConnection parent( 0, 1 );
   

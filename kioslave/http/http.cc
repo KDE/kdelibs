@@ -52,6 +52,7 @@
 #include <kprotocolmanager.h>
 #include <ksock.h>
 #include <kurl.h>
+#include <kinstance.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -70,6 +71,8 @@ int main( int, char ** )
 {
   signal(SIGCHLD, KIOProtocol::sigchld_handler);
 //  signal(SIGSEGV, IOProtocol::sigsegv_handler);
+
+  KInstance instance( "kio_http" );
 
   KIOConnection parent( 0, 1 );
 

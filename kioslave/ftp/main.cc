@@ -10,6 +10,7 @@
 #include <kio_skip_dlg.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
+#include <kinstance.h>
 
 #include "main.h"
 
@@ -29,6 +30,8 @@ int main( int, char ** )
   //  KProtocolManager manager;
 
   debug( "kio_ftp : Starting");
+
+  KInstance instance( "kio_ftp" );
 
   KIOConnection parent( 0, 1 );
   
