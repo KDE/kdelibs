@@ -18,9 +18,4 @@ being silently written to disk in some cases.
 done after 2.2.
 
 
-4)  The full SSL certificate chain is not being displayed for chain-verified
-sites.  The check is still being done but the user cannot see the chain of
-authentication.  This was not done yet due to message freeze.
-
-
 
