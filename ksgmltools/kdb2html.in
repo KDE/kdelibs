@@ -11,7 +11,7 @@ DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
 
 # This keeps all system and user variable settings untouched, but
 # consults them when needed - IMHO the best solution
-SP_C_SWITCHES=@SGML_CATALOGS@
+SP_C_SWITCHES="@SGML_CATALOGS@"
 
 output=HTML
 TMPDIR=DBTOHTML_OUTPUT_DIR$$
