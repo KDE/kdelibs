@@ -117,7 +117,6 @@ public:
     AttrImpl *removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
     NodeListImpl *getElementsByTagName ( const DOMString &name );
-    NodeListImpl *getElementsByNameAttr ( const DOMString &name );
 
     void normalize ( int &exceptioncode );
 

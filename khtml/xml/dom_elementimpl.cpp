@@ -34,6 +34,7 @@
 #include <kdebug.h>
 #include "css_valueimpl.h"
 #include "css_stylesheetimpl.h"
+#include "html/htmlparser.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -473,11 +474,6 @@ NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
     return new TagNodeListImpl( this, name );
 }
 
-NodeListImpl *ElementImpl::getElementsByNameAttr( const DOMString &name )
-{
-    return new NameNodeListImpl( this, name);
-}
-
 short ElementImpl::tabIndex() const
 {
   if (has_tabindex)
@@ -522,12 +518,11 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
-//#define SPEED_DEBUG
-
 void ElementImpl::attach(KHTMLView *w)
 {
+#if SPEED_DEBUG < 2
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 1
     if(_parent && _parent->renderer())
     {
         m_render = khtml::RenderObject::createObject(this);
@@ -536,6 +531,7 @@ void ElementImpl::attach(KHTMLView *w)
             _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
+#endif
 #endif
     NodeBaseImpl::attach(w);
 }
