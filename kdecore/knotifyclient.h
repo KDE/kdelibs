@@ -87,6 +87,13 @@ public: //static methods
 	 */
 	static bool userEvent(const QString &text=0, Presentation present=Default,
 	                      const QString &soundfile=0);
+	
+	/**
+	 * Gets the sound file associated with a certain event name
+	 * The control panel module will list all the event names
+	 * This has the potential for being slow
+	 */
+	static QString soundFileByName(const QString &eventname);
 
 private:
 	struct Event

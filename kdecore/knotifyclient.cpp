@@ -68,4 +68,9 @@ bool KNotifyClient::userEvent(const QString &text, Presentation present,
 	return c.send();
 }
 
+QString KNotifyClient::soundFileByName(const QString &eventname)
+{
+	return "";
+}
+
 #include "knotifyclient.moc"
