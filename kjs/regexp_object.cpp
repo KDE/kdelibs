@@ -219,7 +219,7 @@ bool RegExpObjectImp::implementsConstruct() const
 // ECMA 15.10.4
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
-  String p = args.isEmpty() ? UString("") : args[0].toString(exec);
+  UString p = args.isEmpty() ? UString("") : args[0].toString(exec);
   UString flags = args[1].toString(exec);
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());
@@ -235,7 +235,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   dat->put(exec, "ignoreCase", Boolean(ignoreCase));
   dat->put(exec, "multiline", Boolean(multiline));
 
-  dat->put(exec, "source", p);
+  dat->put(exec, "source", String(p));
   dat->put(exec, "lastIndex", Number(0), DontDelete | DontEnum);
 
   int reflags = RegExp::None;
@@ -245,7 +245,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
       reflags |= RegExp::IgnoreCase;
   if (multiline)
       reflags |= RegExp::Multiline;
-  dat->setRegExp(new RegExp(p.value(), reflags));
+  dat->setRegExp(new RegExp(p, reflags));
 
   return obj;
 }

@@ -52,32 +52,12 @@ Object& Object::operator=(const Object &v)
   return *this;
 }
 
-const ClassInfo *Object::classInfo() const
-{
-  return static_cast<ObjectImp*>(rep)->classInfo();
-}
-
-bool Object::inherits(const ClassInfo *cinfo) const
-{
-  return static_cast<ObjectImp*>(rep)->inherits(cinfo);
-}
-
 Object Object::dynamicCast(const Value &v)
 {
   if (!v.isValid() || v.type() != ObjectType)
     return Object(0);
 
   return Object(static_cast<ObjectImp*>(v.imp()));
-}
-
-Value Object::prototype() const
-{
-  return Value(static_cast<ObjectImp*>(rep)->prototype());
-}
-
-UString Object::className() const
-{
-  return static_cast<ObjectImp*>(rep)->className();
 }
 
 Value Object::get(ExecState *exec, const UString &propertyName) const
@@ -174,16 +154,6 @@ List Object::propList(ExecState *exec, bool recursive)
   return static_cast<ObjectImp*>(rep)->propList(exec,recursive);
 }
 
-Value Object::internalValue() const
-{
-  return static_cast<ObjectImp*>(rep)->internalValue();
-}
-
-void Object::setInternalValue(const Value &v)
-{
-  static_cast<ObjectImp*>(rep)->setInternalValue(v);
-}
-
 // ------------------------------ ObjectImp ------------------------------------
 
 ObjectImp::ObjectImp(const Object &proto)
@@ -215,11 +185,11 @@ ObjectImp::~ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::~ObjectImp %p\n",(void*)this);
   if (_proto)
-    _proto->inlinedSetGcAllowed();
+    _proto->setGcAllowed();
   if (_internalValue)
-    _internalValue->inlinedSetGcAllowed();
+    _internalValue->setGcAllowed();
   if (_scope)
-    _scope->inlinedSetGcAllowed();
+    _scope->setGcAllowed();
   delete _prop;
 }
 
@@ -515,7 +485,7 @@ const List ObjectImp::scope() const
 void ObjectImp::setScope(const List &s)
 {
   if (_scope)
-    _scope->inlinedSetGcAllowed();
+    _scope->setGcAllowed();
   _scope = static_cast<ListImp*>(s.imp());
 }
 

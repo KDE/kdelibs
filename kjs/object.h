@@ -83,7 +83,7 @@ namespace KJS {
 
     ObjectImp *imp() const;
 
-    virtual const ClassInfo *classInfo() const; // TODO: make non-virtual
+    const ClassInfo *classInfo() const;
     bool inherits(const ClassInfo *cinfo) const;
 
     /**
@@ -505,7 +505,7 @@ namespace KJS {
      * This doesn't take DontDelete into account, and isn't in the ECMA spec.
      * It's simply a quick way to remove everything before destroying.
      */
-    void deleteAllProperties( ExecState * );
+    void deleteAllProperties(ExecState *);
 
     /**
      * Implementation of the [[DefaultValue]] internal property (implemented by
@@ -552,6 +552,7 @@ namespace KJS {
 
     Value internalValue() const;
     void setInternalValue(const Value &v);
+    void setInternalValue(ValueImp *v);
 
     Value toPrimitive(ExecState *exec,
                       Type preferredType = UnspecifiedType) const;
@@ -613,6 +614,24 @@ namespace KJS {
   inline Object::Object(ObjectImp *v) : Value(v) { }
 
   inline ObjectImp *Object::imp() const { return static_cast<ObjectImp*>(rep); }
+
+  inline const ClassInfo *Object::classInfo() const
+    { return imp()->classInfo(); }
+
+  inline bool Object::inherits(const ClassInfo *cinfo) const
+    { return imp()->inherits(cinfo); }
+
+  inline Value Object::prototype() const
+    { return Value(imp()->prototype()); }
+
+  inline UString Object::className() const
+    { return imp()->className(); }
+
+  inline Value Object::internalValue() const
+    { return imp()->internalValue(); }
+
+  inline void Object::setInternalValue(const Value &v)
+    { imp()->setInternalValue(v); }
 
 }; // namespace
 

@@ -128,7 +128,7 @@ UChar UChar::toLower() const
   if (uc >= 256 || islower(uc))
     return *this;
 
-  return UChar((unsigned char)tolower(uc));
+  return (unsigned char)tolower(uc);
 }
 
 UChar UChar::toUpper() const
@@ -136,7 +136,7 @@ UChar UChar::toUpper() const
   if (uc >= 256 || isupper(uc))
     return *this;
 
-  return UChar((unsigned char)toupper(uc));
+  return (unsigned char)toupper(uc);
 }
 
 UCharReference& UCharReference::operator=(UChar c)
@@ -381,7 +381,7 @@ UString &UString::append(const UString &t)
 
 CString UString::cstring() const
 {
-  return CString(ascii());
+  return ascii();
 }
 
 char *UString::ascii() const

@@ -66,12 +66,13 @@ bool ValueImp::marked() const
   return (_flags & VI_MARKED);
 }
 
-// TODO: inline
+#if 0
 void ValueImp::setGcAllowed()
 {
   //fprintf(stderr,"ValueImp::setGcAllowed %p\n",(void*)this);
   _flags |= VI_GCALLOWED;
 }
+#endif
 
 void* ValueImp::operator new(size_t s)
 {
@@ -185,11 +186,6 @@ bool KJS::operator!=(const Value &v1, const Value &v2)
 
 // ------------------------------ Value ----------------------------------------
 
-Value::Value()
-{
-  rep = 0;
-}
-
 Value::Value(ValueImp *v)
 {
   rep = v;
@@ -197,7 +193,7 @@ Value::Value(ValueImp *v)
   {
     rep->ref();
     //fprintf(stderr, "Value::Value(%p) imp=%p ref=%d\n", this, rep, rep->refcount);
-    v->inlinedSetGcAllowed();
+    v->setGcAllowed();
   }
 }
 
@@ -233,21 +229,6 @@ Value& Value::operator=(const Value &v)
     //fprintf(stderr, "Value::operator=(%p)(copying %p) imp=%p ref=%d\n", this, &v, rep, rep->refcount);
   }
   return *this;
-}
-
-bool Value::isValid() const
-{
-  return rep;
-}
-
-bool Value::isNull() const
-{
-  return !isValid();
-}
-
-ValueImp *Value::imp() const
-{
-  return rep;
 }
 
 Type Value::type() const
@@ -315,9 +296,6 @@ Undefined::Undefined() : Value(UndefinedImp::staticUndefined)
 {
 }
 
-Undefined::~Undefined() {
-}
-
 Undefined::Undefined(const Undefined &v) : Value(v)
 {
 }
@@ -341,10 +319,6 @@ Undefined Undefined::dynamicCast(const Value &v)
 Null::Null() : Value(NullImp::staticNull)
 {
 }
-
-Null::~Null() {
-}
-
 
 Null::Null(const Null &v) : Value(v)
 {
@@ -370,10 +344,6 @@ Boolean::Boolean(bool b)
   : Value(b ? BooleanImp::staticTrue : BooleanImp::staticFalse)
 {
 }
-
-Boolean::~Boolean() { }
-
-
 
 Boolean::Boolean(const Boolean &v) : Value(v)
 {
@@ -405,8 +375,6 @@ Boolean Boolean::dynamicCast(const Value &v)
 String::String(const UString &s) : Value(new StringImp(UString(s)))
 {
 }
-
-String::~String() { }
 
 String::String(const String &v) : Value(v)
 {
@@ -448,8 +416,6 @@ Number::Number(long int l)
 
 Number::Number(long unsigned int l)
   : Value(new NumberImp(static_cast<double>(l))) { }
-
-Number::~Number() { }
 
 Number::Number(NumberImp *v) : Value(v)
 {

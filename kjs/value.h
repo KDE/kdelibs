@@ -100,8 +100,7 @@ namespace KJS {
      *
      * set by Object() so that the collector is allowed to delete us
      */
-    void setGcAllowed(); // TODO: inline, remove function below
-    void inlinedSetGcAllowed() { _flags |= VI_GCALLOWED; }
+    void setGcAllowed() { _flags |= VI_GCALLOWED; }
 
     virtual Type type() const = 0;
 
@@ -155,10 +154,10 @@ namespace KJS {
    */
   class Value {
   public:
-    Value();
+    Value() : rep(0) { }
     explicit Value(ValueImp *v);
     Value(const Value &v);
-    virtual ~Value(); 		// TODO: virtual makes no sense. just slower.
+    ~Value();
 
     Value& operator=(const Value &v);
     /**
@@ -167,13 +166,13 @@ namespace KJS {
      * any other operation than this check. Current use: as a
      * distinct return value signalling failing dynamicCast() calls.
      */
-    bool isValid() const;
+    bool isValid() const { return rep != 0; }
     /**
      * @deprecated
      * Use !isValid() instead.
      */
-    bool isNull() const;
-    ValueImp *imp() const;
+    bool isNull() const { return rep == 0; }
+    ValueImp *imp() const { return rep; }
 
     /**
      * Returns the type of value. This is one of UndefinedType, NullType,
@@ -225,7 +224,7 @@ namespace KJS {
     unsigned int toUInt32(ExecState *exec) const { return rep->toUInt32(exec); }
 
     /**
-     * Performs the ToUint16 type conversion operation on this value (ECMA 9.7)
+     * Performs the ToUInt16 type conversion operation on this value (ECMA 9.7)
      */
     unsigned short toUInt16(ExecState *exec) const { return rep->toUInt16(exec); }
 
@@ -283,7 +282,6 @@ namespace KJS {
   public:
     Undefined();
     Undefined(const Undefined &v);
-    virtual ~Undefined();
 
     Undefined& operator=(const Undefined &v);
 
@@ -312,7 +310,6 @@ namespace KJS {
   public:
     Null();
     Null(const Null &v);
-    virtual ~Null();
 
     Null& operator=(const Null &v);
 
@@ -338,7 +335,6 @@ namespace KJS {
   public:
     Boolean(bool b = false);
     Boolean(const Boolean &v);
-    virtual ~Boolean();
 
     Boolean& operator=(const Boolean &v);
 
@@ -366,7 +362,6 @@ namespace KJS {
   public:
     String(const UString &s = "");
     String(const String &v);
-    virtual ~String();
 
     String& operator=(const String &v);
 
@@ -401,7 +396,6 @@ namespace KJS {
     Number(long int l);
     Number(long unsigned int l);
     Number(const Number &v);
-    virtual ~Number();
 
     Number& operator=(const Number &v);
 
