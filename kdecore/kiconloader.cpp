@@ -36,19 +36,24 @@
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name )
 {
+  QStrList list;
+	return loadInternal( name, w, h );
   config = conf;
   config->setGroup(app_name);
-  config->readListEntry( var_name, pixmap_dirs, ':' );
+  config->readListEntry( var_name, list, ':' );
+
+  for (const char *it=list.first(); it; it = list.next())
+    addPath(it);
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
   QString temp = KApplication::kdedir();
 
-  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/pics" );
-  pixmap_dirs.insert(0, temp + "/share/toolbar" );
-  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  addPath(temp + "/share/apps/" + kapp->appName() + "/pics" );
+  addPath(temp + "/share/toolbar" );
+  addPath(temp + "/share/apps/" + kapp->appName() + "/toolbar" );
 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/toolbar" ); 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/toolbar" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -57,19 +62,24 @@ QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
  
 KIconLoader::KIconLoader( )
 {
+  QStrList list;
+Stephan: See above
   config = KApplication::getKApplication()->getConfig();
   config->setGroup("KDE Setup");
-  config->readListEntry( "IconPath", pixmap_dirs, ':' );
+  config->readListEntry( "IconPath", list, ':' );
+
+  for (const char *it=list.first(); it; it = list.next())
+    addPath(it);
 
   QString temp = KApplication::kdedir();
   
-  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/pics" );
-  pixmap_dirs.insert(0, temp + "/share/toolbar" );
-  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  addPath(temp + "/share/apps/" + kapp->appName() + "/pics" );
+  addPath(temp + "/share/toolbar" );
+  addPath(temp + "/share/apps/" + kapp->appName() + "/toolbar" );
 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/toolbar" ); 
-  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/toolbar" ); 
+  addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -108,8 +118,8 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 
 QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
-  pixmap_dirs.insert(0,KApplication::kdedir() + "/share/icons" );
-  pixmap_dirs.insert(0,QDir::homeDirPath() + "/.kde/share/icons" );
+  addPath(KApplication::kdedir() + "/share/icons" );
+  addPath(QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadIcon(name, w, h);
   pixmap_dirs.remove((unsigned int) 0);
   pixmap_dirs.remove((unsigned int) 0);
@@ -117,8 +127,8 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
 }
 
 QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h ){
-  pixmap_dirs.insert(0,KApplication::kdedir() + "/share/icons" );
-  pixmap_dirs.insert(0,QDir::homeDirPath() + "/.kde/share/icons" );
+  addPath(KApplication::kdedir() + "/share/icons" );
+  addPath(QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadMiniIcon(name, w, h);
   pixmap_dirs.remove((unsigned int) 0);
   pixmap_dirs.remove((unsigned int) 0);
@@ -177,6 +187,14 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h )
   }
   return *pix;
 }
+
+
+void KIconLoader::addPath(QString path)
+{
+  QDir dir(path.data());
+
+  if (dir.exists())
+    pixmap_dirs.insert(0, path);
 
 	warning( "KIconLoader::flush is deprecated." );
 }

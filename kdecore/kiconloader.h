@@ -147,6 +147,11 @@ protected:
   QStrList           pixmap_dirs;
   QList<QPixmap>     pixmap_list;
   QPixmap loadInternal(const QString &name, int w = 0, int h = 0 );
+
+private:
+
+  void addPath(QString path);
+
 };
 
 #endif // KICONLOADER_H
