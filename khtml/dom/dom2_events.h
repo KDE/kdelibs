@@ -27,6 +27,10 @@
 #include <dom/dom_node.h>
 #include <dom/dom_misc.h>
 
+namespace KJS {
+    class Image;
+}
+
 namespace DOM {
 
 class Event;
@@ -112,6 +116,7 @@ class Event {
     friend class Document;
     friend class NodeImpl;
     friend class DocumentImpl;
+    friend class KJS::Image;
 public:
     Event();
     Event(const Event &other);
