@@ -74,11 +74,13 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 	m_port->setValidator(new PortValidator(m_port));
 	m_login = new QLineEdit(m_loginbox);
 	QLabel	*m_loginlabel = new QLabel(i18n("&User:"), m_loginbox);
-	QLabel	*m_passwordlabel = new QLabel(i18n("&Password:"), m_loginbox);
+	QLabel	*m_passwordlabel = new QLabel(i18n("Pass&word:"), m_loginbox);
 	m_password = new QLineEdit(m_loginbox);
 	m_password->setEchoMode(QLineEdit::Password);
-	m_anonymous = new QCheckBox(i18n("&Use anonymous access"), m_loginbox);
+	m_anonymous = new QCheckBox(i18n("Use &anonymous access"), m_loginbox);
 	m_anonymous->setCursor(KCursor::handCursor());
+	m_loginlabel->setBuddy(m_login);
+	m_passwordlabel->setBuddy(m_password);
 
 	// layout creation
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
