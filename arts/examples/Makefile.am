@@ -10,7 +10,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 check_PROGRAMS = helloserver helloclient referenceinfo \
   irdemo x11commtest streamsound hellomain flow artsctest \
   dcasttest hellodynamic testasubsys testaggregation \
-  playtofile tradercheck
+  playtofile tradercheck testthreads testnothreads
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
 hellodynamic_SOURCES = hello.cc hellodynamic.cc hello_impl.cc
@@ -19,8 +19,16 @@ tradercheck_SOURCES = tradercheck.cc
 irdemo_SOURCES = irdemo.cc
 x11commtest_SOURCES = x11commtest.cc
 hellomain_SOURCES = hellomain.cc hello.cc hello_impl.cc
+
 testasubsys_SOURCES = testasubsys.cc
 testasubsys_LDFLAGS = $(FLOWLIBS)
+
+## testthreads/testnothreads:
+## if we link testthreads.cc against libmcop_mt, it will be able to use
+## real threading, if we don't, we won't
+testthreads_SOURCES = testthreads.cc
+testthreads_LDFLAGS = $(LDFLAGS) $(top_builddir)/arts/mcop_mt/libmcop_mt.la
+testnothreads_SOURCES = testthreads.cc
 
 testaggregation_SOURCES = aggregation.cc testaggregation.cc
 

@@ -24,7 +24,9 @@
 #endif
 
 #include "iomanager.h"
+#include "dispatcher.h"
 #include "notification.h"
+#include "thread.h"
 #include <stdio.h>
 #include <fcntl.h>
 
@@ -99,7 +101,13 @@ StdIOManager::StdIOManager()
 
 void StdIOManager::processOneEvent(bool blocking)
 {
+	assert(SystemThreads::the()->isMainThread());
+
 	level++;
+
+	// we release and acquire the lock only on level 1
+	if(level == 1)
+		Dispatcher::lock();
 
 	// notifications not carried out reentrant
 	if(level == 1)
@@ -194,7 +202,15 @@ void StdIOManager::processOneEvent(bool blocking)
 
 	if(level == 1) iomanager_debug_latency_end();
 
+	// we release and acquire the lock only on level 1
+	if(level == 1)
+		Dispatcher::unlock();
+
 	int retval = select(maxfd+1,&rfd,&wfd,&efd,&select_timeout);
+
+	// we release and acquire the lock only on level 1
+	if(level == 1)
+		Dispatcher::lock();
 
 	if(level == 1) iomanager_debug_latency_start();
 
@@ -265,11 +281,18 @@ void StdIOManager::processOneEvent(bool blocking)
 	if(level == 1)
 		NotificationManager::the()->run();
 
+	// we release and acquire the lock only on level 1
+	if(level == 1)
+		Dispatcher::unlock();
+
 	level--;
 }
 
 void StdIOManager::run()
 {
+	assert(SystemThreads::the()->isMainThread());
+	assert(level == 0);
+
 	terminated = false;
 	while(!terminated)
 		processOneEvent(true);

@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-   
+  
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -24,6 +24,7 @@
 #include "giomanager.h"
 #include "notification.h"
 #include "debug.h"
+#include "dispatcher.h"
 #include <glib.h>
 
 using namespace Arts;
@@ -299,6 +300,9 @@ gboolean GIOManager::prepare(gint *timeout)
 
 	level++;
 
+	if(level == 1)
+		Dispatcher::lock();
+
 	/* handle timers - only at level 1 */
 	if(level == 1 && timeList.size())
 	{
@@ -327,6 +331,9 @@ gboolean GIOManager::prepare(gint *timeout)
 	if(level == 1 && NotificationManager::the()->pending())
 		*timeout = 0;
 
+	if(level == 1)
+		Dispatcher::unlock();
+
 	level--;
 
 	return (*timeout == 0);
@@ -336,6 +343,9 @@ gboolean GIOManager::check()
 {
 	gboolean result = false;
 	level++;
+
+	if(level == 1)
+		Dispatcher::lock();
 
 	/*
 	 * handle timers - only at level 1
@@ -380,6 +390,9 @@ gboolean GIOManager::check()
 	if(level == 1 && NotificationManager::the()->pending())
 		result = true;
 
+	if(level == 1)
+		Dispatcher::unlock();
+
 	level--;
 
 	return result;
@@ -388,6 +401,9 @@ gboolean GIOManager::check()
 gboolean GIOManager::dispatch(GSourceFunc /* func */, gpointer /* user_data */)
 {
 	level++;
+
+	if(level == 1)
+		Dispatcher::lock();
 
 	// notifications not carried out reentrant
 	if(level == 1)
@@ -452,6 +468,9 @@ gboolean GIOManager::dispatch(GSourceFunc /* func */, gpointer /* user_data */)
 	// notifications not carried out reentrant
 	if(level == 1)
 		NotificationManager::the()->run();
+	
+	if(level == 1)
+		Dispatcher::unlock();
 	level--;
 
 	return true;

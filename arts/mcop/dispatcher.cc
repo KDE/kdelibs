@@ -33,6 +33,7 @@
 #include "loopback.h"
 #include "debug.h"
 #include "ifacerepo_impl.h"
+#include "thread.h"
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -63,6 +64,8 @@ public:
 	LoopbackConnection *loopbackConnection;
 	DelayedReturn *delayedReturn;
 	bool allowNoAuthentication;
+	Mutex mutex;
+	bool mutexLocked;
 };
 
 };
@@ -73,9 +76,12 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 {
 	assert(!_instance);
 	_instance = this;
-
+	
 	/* private data pointer */
 	d = new DispatcherPrivate();
+	d->mutexLocked = false;
+
+	lock();
 
 	generateServerID();
 
@@ -177,10 +183,14 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	md5_auth_set_cookie(secretCookie.c_str());
 	string::iterator i;	// try to keep memory clean from secret cookie
 	for(i=secretCookie.begin();i != secretCookie.end();i++) *i = 'y';
+
+	unlock();
 }
 
 Dispatcher::~Dispatcher()
 {
+	lock();
+
 	/* no interaction possible now anymore - remove our global references */
 	if(objectManager)
 		objectManager->removeGlobalReferences();
@@ -277,7 +287,7 @@ Dispatcher::~Dispatcher()
 			 << GenericDataPacket::_dataPacketCount()
 			 << " data packets alive." << endl;
 	}
-
+	unlock();
 
 	/* private data pointer */
 	assert(d);
@@ -372,6 +382,8 @@ Buffer *Dispatcher::createOnewayRequest(long objectID, long methodID)
 
 void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 {
+	assert(d->mutexLocked);
+
 	_activeConnection = conn;
 
 #ifdef DEBUG_IO
@@ -769,6 +781,8 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 
 void Dispatcher::run()
 {
+	assert(SystemThreads::the()->isMainThread());
+
 	_ioManager->run();
 }
 
@@ -869,4 +883,18 @@ DelayedReturn *Dispatcher::delayReturn()
 	assert(!d->delayedReturn);
 
 	return d->delayedReturn = new DelayedReturn();
+}
+
+void Dispatcher::lock()
+{
+	_instance->d->mutex.lock();
+	assert(!_instance->d->mutexLocked);
+	_instance->d->mutexLocked = true;
+}
+
+void Dispatcher::unlock()
+{
+	assert(_instance->d->mutexLocked);
+	_instance->d->mutexLocked = false;
+	_instance->d->mutex.unlock();
 }

@@ -1,0 +1,129 @@
+<HTML>
+<TITLE>
+Threads in aRts
+</TITLE>
+<BODY bgcolor="#EAEEEE">
+<h3>Threads in aRts</h3>
+<p>
+<h4>Basics</h4>
+<p>
+Using threads isn't possible on all platforms. This is why aRts was originally
+written without using threading at all. For almost all problems, for each
+threaded solution to the problem, there is a non-threaded solution that does
+the same. For instance, instead of putting audio output in a seperate thread,
+and make it blocking, aRts uses non-blocking audio output, and figures out
+when to write the next chunk of data using select().
+<p>
+However, aRts (in very recent versions) at least provides support for people
+who do want to implement their objects using threads. For instance, if you
+already have code for an mp3 player, and the code expects the mp3 decoder to
+run in a seperate thread, it's usally the easiest thing to do to keep this
+design.
+<p>
+The aRts/MCOP implementation is built along sharing state between seperate
+objects in obvious and non-obvious ways. A small list of shared state includes:
+<p>
+<ul>
+<li>the Dispatcher object which does MCOP communication
+<li>the Reference counting (Smartwrappers)
+<li>the IOManager which does timer and fd watches
+<li>the ObjectManager which creates objects and dynamically loads plugins
+<li>the FlowSystem which calls calculateBlock in the appropriate situations
+</ul>
+<p>
+All of the above objects don't expect to be used concurrently (i.e. called
+from seperate threads at the same time). Generally there are two ways of
+solving this:
+<ul>
+<li>Require the caller of any functions on this objects to acquire a lock
+    before using them
+<li>Making these objects really threadsafe and/or create per-thread instances
+    of them
+</ul>
+aRts follows the first approach: <b>You will need a lock whenever you talk to
+any of these objects</b>. The second approach is harder to do. A hack which
+tries to achieve this is available at
+<a href=http://space.twc.de/~stefan/kde/download/arts-mt.tar.gz>
+http://space.twc.de/~stefan/kde/download/arts-mt.tar.gz</a>, but for the
+current point in time, a minimalistic approach will probably work better,
+and cause less problems with existing applications.
+<p>
+<h4>When/how to acquire the lock?</h4>
+<p>
+You can get/release the lock with the two functions:
+<p>
+<ul>
+<li><a href=http://space.twc.de/~stefan/kde/arts-mcop-doc/arts-reference/headers/Arts__Dispatcher.html#lock>Arts::Dispatcher::lock()</a>
+<li><a href=http://space.twc.de/~stefan/kde/arts-mcop-doc/arts-reference/headers/Arts__Dispatcher.html#unlock>Arts::Dispatcher::unlock()</a>
+</ul>
+Generally, you don't need to acquire the lock (and you shouldn't try to do
+so), if it is already held. A list of conditions when this is the case is:
+<ul>
+<li>you receive a callback from the IOManager (timer or fd)
+<li>you get call due to some MCOP request
+<li>you are called from the NotificationManager
+<li>you are called from the FlowSystem (calculateBlock) 
+</ul>
+<p>
+There are also some exceptions of functions. which you can only call in the
+main thread, and for that reason you will never need a lock to call them:
+<p>
+<ul>
+<li>constructor/destructor of Dispatcher/IOManager
+<li>Dispatcher::run() / IOManager::run()
+<li>IOManager::processOneEvent()
+</ul>
+<p>
+But that is it. For everything else that is somehow related to aRts, you will
+need to get the lock, and release it again when done. Always. Here is a simple
+example:
+<p>
+<pre>
+class SuspendTimeThread : Arts::Thread {
+public:
+    void run() {
+        /*
+         * you need this lock because:
+         *  - constructing a reference needs a lock (as global: will go to
+         *    the object manager, which might in turn need the GlobalComm
+         *    object to look up where to connect to)
+         *  - assigning a smartwrapper needs a lock
+         *  - constructing an object from reference needs a lock (because it
+         *    might need to connect a server)
+         */
+        Arts::Dispatcher::lock();
+        Arts::SoundServer server = Arts::Reference("global:Arts_SoundServer");
+        Arts::Dispatcher::unlock();
+
+        for(;;) {
+            /*
+             * you need a lock here, because
+             *  - dereferencing a smartwrapper needs a lock (because it might
+             *    do lazy creation)
+             *  - doing an MCOP invocation needs a lock
+             */
+            Arts::Dispatcher::lock();
+            long seconds = server.secondsUntilSuspend();
+            Arts::Dispatcher::unlock();
+
+            printf("seconds until suspend = %d",seconds);
+            sleep(1);
+        }
+    }
+}
+</pre>
+<p>
+<p>
+<h4>Threading related classes</h4>
+<p>
+The following threading related classes currently available:
+<ul>
+<li><a href=http://space.twc.de/~stefan/kde/arts-mcop-doc/arts-reference/headers/Arts__Thread.html>Arts::Thread</a> - which encapsulates a thread
+<li><a href=http://space.twc.de/~stefan/kde/arts-mcop-doc/arts-reference/headers/Arts__Mutex.html>Arts::Mutex</a> - which encapsulates a mutex
+<li><a href=http://space.twc.de/~stefan/kde/arts-mcop-doc/arts-reference/headers/Arts__SystemThreads.html>Arts::SystemThreads</a> - which encapsulates the operating system threading layer (which offers a few helpful functions to application programmers)
+</ul>
+See the links for documentation.
+<hr>
+<a href=index.html>back to index</a>
+</body>
+</html>

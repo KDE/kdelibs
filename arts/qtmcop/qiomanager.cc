@@ -26,6 +26,7 @@
 #include <qapplication.h>
 #include "debug.h"
 #include "dispatcher.h"
+#include "thread.h"
 
 using namespace std;
 using namespace Arts;
@@ -150,14 +151,24 @@ QIOManager::~QIOManager()
 
 void QIOManager::processOneEvent(bool blocking)
 {
+	assert(SystemThreads::the()->isMainThread());
+
 	if(qioBlocking)
 	{
+		qioLevel++;
+		if(qioLevel == 1)
+			Dispatcher::lock();
+
 		/*
-		 * we explicitely set level 2 here, so that qioManagerBlocking will
-		 * process reentrant watchFDs only
+		 * we explicitely take the level to qioManagerBlocking, so that it
+		 * will process reentrant watchFDs only
 		 */
-		qioManagerBlocking->setLevel(2);
+		qioManagerBlocking->setLevel(qioLevel);
 		qioManagerBlocking->processOneEvent(blocking);
+
+		if(qioLevel == 1)
+			Dispatcher::unlock();
+		qioLevel--;
 	}
 	else
 	{
@@ -251,6 +262,8 @@ void QIOManager::removeTimer(TimeNotify *notify)
 void QIOManager::dispatch(QIOWatch *ioWatch)
 {
 	qioLevel++;
+	if(qioLevel == 1)
+		Dispatcher::lock();
 
 	/*
 	 * FIXME: there is main loop pollution for (qioBlocking == false) here:
@@ -262,17 +275,23 @@ void QIOManager::dispatch(QIOWatch *ioWatch)
 	if(qioLevel == 1 || ioWatch->reentrant())
 		ioWatch->client()->notifyIO(ioWatch->fd(),ioWatch->type());
 	
+	if(qioLevel == 1)
+		Dispatcher::unlock();
 	qioLevel--;
 }
 
 void QIOManager::dispatch(QTimeWatch *timeWatch)
 {
 	qioLevel++;
+	if(qioLevel == 1)
+		Dispatcher::lock();
 
 	// timers are never done reentrant
 	if(qioLevel == 1)
 		timeWatch->client()->notifyTime();
 	
+	if(qioLevel == 1)
+		Dispatcher::unlock();
 	qioLevel--;
 }
 

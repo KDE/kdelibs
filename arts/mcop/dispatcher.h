@@ -187,6 +187,28 @@ public:
 	void handleConnectionClose(Connection *connection);
 
 	/**
+	 * Locks the dispatcher. Whenever you want to do anything with any kind
+	 * of aRts object, you will hold a lock on Arts::Dispatcher. There is
+	 * only one exception to the rule, and that is: you don't have to lock
+	 * the dispatcher when the lock is already held.
+	 *
+	 * Generally, that is very often the case. Typical situations where you
+	 * don't need to lock() the Dispatcher are:
+	 *
+	 *  @li you receive a callback from the IOManager (timer or fd)
+	 *  @li you get call due to some MCOP request
+	 *  @li you are called from the NotificationManager
+	 *  @li you are called from the FlowSystem (calculateBlock)
+	 */
+	static void lock();
+
+	/**
+	 * Unlocks the dispatcher. Do this to release a lock you hold on
+	 * the Arts::Dispatcher.
+	 */
+	static void unlock();
+
+	/**
 	 * - internal usage only -
 	 *
 	 * this will return the Connection the last request came from

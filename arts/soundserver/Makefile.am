@@ -32,7 +32,8 @@ libartswavplayobject_la_LDFLAGS = -no-undefined -module
 
 bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell
 
-artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
+artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) \
+              $(top_builddir)/arts/mcop_mt/libmcop_mt.la
 artsd_SOURCES = soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
