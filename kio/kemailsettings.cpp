@@ -34,6 +34,8 @@
 
 class KEMailSettingsPrivate {
 public:
+    KEMailSettingsPrivate() : m_pConfig( 0 ) {}
+    ~KEMailSettingsPrivate() { delete m_pConfig; }
 	KConfig *m_pConfig;
 	QStringList profiles;
 	QString m_sDefaultProfile, m_sCurrentProfile;
@@ -268,4 +270,5 @@ KEMailSettings::KEMailSettings()
 
 KEMailSettings::~KEMailSettings()
 {
+    delete p;
 }
