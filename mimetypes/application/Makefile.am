@@ -28,7 +28,9 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-quattropro.desktop x-amipro.desktop x-tgif.desktop \
 	x-lyx.desktop x-zerosize.desktop x-kpovmodeler.desktop x-cda.desktop \
 	pkcs7-mime.desktop pkcs10.desktop sieve.desktop \
-	x-hancomword.desktop
+	x-hancomword.desktop \
+	x-font-bdf.desktop x-font-pcf.desktop x-font-speedo.desktop x-font-type1.desktop \
+	x-font-ghostscript.desktop x-font-snf.desktop x-font-ttf.desktop
 
 datadir = $(kde_mimedir)/application
 
