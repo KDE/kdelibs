@@ -553,7 +553,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
     printf("reorderLine: lineLow = %d, lineHigh = %d\n", levelLow, levelHigh);
 #endif
 
-    int count = d->line.count();
+    int count = d->line.count() - 1;
 
     while(levelHigh >= levelLow)
     {
@@ -569,7 +569,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	
 	    if(start != end)
 	    {
-		//printf("reversing from %d to %d\n", start, end);
+		printf("reversing from %d to %d\n", start, end);
 		for(int j = 0; j < (end-start)/2; j++)
 		{
 		    BiDiWord *first = d->line.take(start+j);

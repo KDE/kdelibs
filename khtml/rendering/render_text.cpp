@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-//#define DEBUG_LAYOUT
-//#define BIDI_DEBUG
+#define DEBUG_LAYOUT
+#define BIDI_DEBUG
 
 #include "render_text.h"
 #include "dom_stringimpl.h"
@@ -398,16 +398,14 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	len = aStr.length();
 	ch = new QChar[len];
 	int half =  len/2;
-	for(int i = 0; i < half; i++)
+	for(int i = 0; i <= half; i++)
 	{
 	    ch[len-1-i] = str->s[from+i];
 	    ch[i] = str->s[from+len-1-i];
-#ifdef NEW_UNICODE_TABLES	
 	    if(ch[i].mirrored())
 		ch[i] = ch[i].mirroredChar();
 	    if(ch[len-i].mirrored())
 		ch[len-i] = ch[len-i].mirroredChar();
-#endif
 	}
     }
     else

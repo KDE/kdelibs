@@ -40,7 +40,7 @@ Settings::Settings()
     memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
     standardFamilies = new QString[6];
 
-    charset	  = QFont::Latin1;
+    charset	  = KGlobal::generalFont().charSet();
 
     resetStandardFamilies();
 }
@@ -91,12 +91,12 @@ const Settings &Settings::operator=( const Settings &s )
 
 void Settings::resetStandardFamilies()
 {
-    standardFamilies[0] = "helvetica";
+    standardFamilies[0] = KGlobal::generalFont().family();
     standardFamilies[1] = "times";
     standardFamilies[2] = "helvetica";
     standardFamilies[3] = "times";
     standardFamilies[4] = "comic";
-    standardFamilies[5] = "fixed";
+    standardFamilies[5] = KGlobal::fixedFont().family();
 }
 
 void Settings::setDefaultFamily(const QString& family)

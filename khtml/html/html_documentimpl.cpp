@@ -26,7 +26,6 @@
 
 #include "htmlparser.h"
 #include "htmltokenizer.h"
-//#include "khtmlfont.h"
 #include "khtmldata.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -48,6 +47,7 @@
 
 #include <stdio.h>
 #include <kurl.h>
+#include <kglobal.h>
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_style.h"
@@ -292,6 +292,8 @@ void HTMLDocumentImpl::attach(KHTMLWidget *w)
     if(!m_styleSelector) createSelector();
     m_style = new RenderStyle();
     m_style->setDisplay(BLOCK);
+    // ### make the font stuff _really_ work!!!!
+    m_style->setFont(KGlobal::generalFont());
     m_render = new RenderRoot(m_style, w);
     m_render->ref();
     m_render->layout(true);
