@@ -20,6 +20,7 @@
 #include <dom_string.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 #include <kjs/types.h>
 #include <kjs/function.h>
@@ -75,6 +76,8 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "appVersion"){
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
+  } else if (p == "language") {
+    return String(KGlobal::locale()->language() == "C" ? "en" : KGlobal::locale()->language());
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
