@@ -247,7 +247,9 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
 
     // first, lets see if we have existing properties
     QDomElement elem;
-    QDomElement it = doc.firstChild().firstChild().toElement();
+    QDomElement it = doc.documentElement();
+    KXMLGUIFactory::removeDOMComments( it );
+    it = it.firstChild().toElement();
     for ( ; !it.isNull(); it = it.nextSibling().toElement() )
         if ( it.tagName() == tagActionProp ) {
             elem = it;

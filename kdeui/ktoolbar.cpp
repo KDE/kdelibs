@@ -1051,6 +1051,7 @@ void KToolBar::saveState()
         // make sure we don't append if this toolbar already exists locally
         bool just_append = true;
         elem = local.documentElement().toElement();
+        KXMLGUIFactory::removeDOMComments( elem );
         elem = elem.firstChild().toElement();
         for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
             if ( elem.tagName().lower() != "toolbar" )

@@ -390,6 +390,26 @@ QString KXMLGUIFactory::elementToXML( const QDomElement& elem )
   return str;
 }
 
+void KXMLGUIFactory::removeDOMComments( QDomNode &node )
+{
+    QDomNode n = node.firstChild();
+    while ( !n.isNull() )
+    {
+        if ( n.nodeType() == QDomNode::CommentNode )
+        {
+            QDomNode tmp = n;
+            n = n.nextSibling();
+            node.removeChild( tmp );
+        }
+        else
+        {
+            QDomNode tmp = n;
+            n = n.nextSibling();
+            removeDOMComments( tmp );
+        }
+    }
+}
+
 KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const char *name )
 : QObject( parent, name )
 {

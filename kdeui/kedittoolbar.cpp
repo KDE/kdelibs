@@ -239,6 +239,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   local.m_type    = XmlData::Local;
   local.m_document.setContent(d->loadXMLFile(file));
   elem = local.m_document.documentElement().toElement();
+  KXMLGUIFactory::removeDOMComments( elem );
   local.m_barList = d->findToolbars(elem);
   d->m_xmlFiles.append(local);
 
@@ -287,6 +288,7 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
 //    data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
     data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->instance() ) );
     elem = data.m_document.documentElement().toElement();
+    KXMLGUIFactory::removeDOMComments( elem );
     data.m_barList = d->findToolbars(elem);
     d->m_xmlFiles.append(data);
 

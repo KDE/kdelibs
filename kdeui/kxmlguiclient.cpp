@@ -207,8 +207,11 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   {
     QDomElement base = d->m_doc.documentElement();
 
+    QDomElement e = document.documentElement();
+    KXMLGUIFactory::removeDOMComments( e );
+
     // merge our original (global) xml with our new one
-    mergeXML(base, document.documentElement(), actionCollection());
+    mergeXML(base, e, actionCollection());
 
     // reassign our pointer as mergeXML might have done something
     // strange to it
@@ -219,7 +222,10 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
       d->m_doc = document;
   }
   else
+  {
     d->m_doc = document;
+    KXMLGUIFactory::removeDOMComments( d->m_doc );
+  }
 
   setXMLGUIBuildDocument( QDomDocument() );
 }

@@ -76,6 +76,11 @@ class KXMLGUIFactory : public QObject
   static QString elementToXML( const QDomElement& elem );
 
   /**
+   * Removes all QDomComment objects from the specified node and all its children.
+   */
+  static void removeDOMComments( QDomNode &node );
+
+  /**
    * Creates the GUI described by the QDomDocument of the client,
    * using the client's actions, and merges it with the previously
    * created GUI.
