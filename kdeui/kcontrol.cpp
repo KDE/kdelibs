@@ -41,7 +41,7 @@ void KControlDialog::done(int result)
   kapp->quit();
 }
 
-KControlApplication::KControlApplication(int &argc, char **argv, const QString &name)
+KControlApplication::KControlApplication(int &argc, char **argv, const QCString &name)
   : KApplication(argc, argv, name)
 {
   dialog = 0;

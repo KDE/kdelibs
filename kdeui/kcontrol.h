@@ -132,7 +132,7 @@ public:
    *  @param argv  Commandline arguments
    *  @param _name Name of the application
    */
-  KControlApplication( int& argc, char** argv, const QString& _name );
+   KControlApplication( int& argc, char** argv, const QCString& _name );
 
   /**
    * Destructor. Cleans up.
