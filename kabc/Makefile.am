@@ -1,7 +1,8 @@
 SUBDIRS = vcard . vcardparser formats plugins
 
+# Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
-  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes) -I$(srcdir)/vcardparser
+  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab -I$(srcdir)/vcardparser $(all_includes)
 
 addressee.h addressee.cpp field.cpp: $(srcdir)/scripts/makeaddressee \
 				$(srcdir)/scripts/addressee.src.cpp \
