@@ -59,6 +59,10 @@ public:
     bool put( const unsigned long, const QString & field, const QString & value );
     bool call( const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
     void unregister( const unsigned long objid );
+
+    void sendEvent(const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args ) {
+        emit partEvent(objid, event, args);
+    }
 signals:
 
   virtual void partEvent( const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args );

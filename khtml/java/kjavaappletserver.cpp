@@ -34,7 +34,7 @@
 #define KJAS_GET_URLDATA       (char)12
 #define KJAS_URLDATA           (char)13
 #define KJAS_SHUTDOWN_SERVER   (char)14
-#define KJAS_EVALUATE_JAVASCRIPT   (char)15
+#define KJAS_JAVASCRIPT_EVENT   (char)15
 #define KJAS_GET_MEMBER        (char)16
 #define KJAS_CALL_MEMBER       (char)17
 #define KJAS_PUT_MEMBER        (char)18
@@ -44,6 +44,14 @@
 #define KJAS_AUDIOCLIP_STOP    (char)22
 
 
+class JSStackNode {
+public:
+    JSStackNode(JSStackNode *u) : ready(false), size(u ? u->size+1: 1), up(u) {}
+    bool ready;
+    QStringList args;
+    int size;
+    JSStackNode *up;
+};
 
 // For future expansion
 class KJavaAppletServerPrivate
@@ -53,8 +61,7 @@ private:
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
-   char wait_command;
-   QStringList wait_args;
+   JSStackNode *jsstack;
 };
 
 static KJavaAppletServer* self = 0;
@@ -62,7 +69,7 @@ static KJavaAppletServer* self = 0;
 KJavaAppletServer::KJavaAppletServer()
 {
     d = new KJavaAppletServerPrivate;
-    d->wait_command = '\0';
+    d->jsstack = 0L;
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),
@@ -379,14 +386,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         while( qb[index] != 0 )
             tmp += qb[ index++ ];
 
+        kdDebug(6100) << "KJavaAppletServer::slotJavaRequest: "<< tmp << endl;
         args.append( tmp );
 
         ++index; //skip the sep
-    }
-    if (cmd_code == d->wait_command) {
-        d->wait_args = args;
-        d->wait_command = 0;
-        return;
     }
     //here I should find the context and call the method directly
     //instead of emitting signals
@@ -413,15 +416,20 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdDebug(6100) << "GetURLData from classloader: "<< contextID
                           << " for url: " << args[0] << endl;
             break;
-        case KJAS_EVALUATE_JAVASCRIPT:
-            //here we need to get some data for a class loader and send it back...
+        case KJAS_JAVASCRIPT_EVENT:
+            cmd = QString::fromLatin1( "JS_Event" );
             kdDebug(6100) << "Javascript request: "<< contextID
                           << " code: " << args[0] << endl;
             break;
         case KJAS_GET_MEMBER:
         case KJAS_PUT_MEMBER:
         case KJAS_CALL_MEMBER:
-            kdDebug(6100) << "Error: Missed return member data" << endl;
+            if (d->jsstack) {
+                d->jsstack->args = args;
+                d->jsstack->ready = true;
+                d->jsstack = d->jsstack->up;
+            } else
+                kdDebug(6100) << "Error: Missed return member data" << endl;
             break;
         case KJAS_AUDIOCLIP_PLAY:
             cmd = QString::fromLatin1( "audioclip_play" );
@@ -444,22 +452,6 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     if( cmd_code == KJAS_GET_URLDATA )
     {
         new KJavaDownloader( contextID, args[0] );
-    }
-    else if (cmd_code == KJAS_EVALUATE_JAVASCRIPT)
-    {
-        /* TODO: implement accessing JS objects from 
-         *       netscape.javascript.JSObject
-         *       Solution: implement LiveConnectExtension in KHTMLPart
-         */
-        int contextID_num = contextID.toInt();
-        KJavaAppletContext * tmp = d->contexts[contextID_num];
-	kdDebug(6100) << "KJavaAppletContext: "<< (void*) tmp << endl;
-        if (tmp) {
-            QString result("");
-            QStringList sendargs;
-            sendargs.append(result);
-            process->send(KJAS_EVALUATE_JAVASCRIPT, sendargs);
-        }
     }
     else
     {
@@ -508,38 +500,36 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
     args.append( QString::number(appletId) );
     args.append( name );
 
-    //dirty sync
-    extern QApplication *qApp;
-    int count = 0;
-    while (d->wait_command && ++count < 100) {
-        usleep(50000); 
-        qApp->processEvents(50);
-    }
-    if (d->wait_command)
-        kdError(6100) << "Error: something still waiting for member return data" << endl;
-    count = 0;
+    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    d->wait_command = KJAS_GET_MEMBER;
     process->send( KJAS_GET_MEMBER, args );
 
-    while (d->wait_command && ++count < 100) {
+    //dirty sync
+    extern QApplication *qApp;
+    int count = 100 + frame->size;
+    while (!frame->ready && --count > 0) {
         usleep(50000); 
         qApp->processEvents(100);
     }
-    if (d->wait_command) {
+
+    bool retval = frame->ready;
+    if (retval) {
+        value = frame->args[0];
+        bool ok;
+        int t = frame->args[1].toInt(&ok);
+        if (ok && t /*!JError*/) {
+            type = convertJType(t);
+            rid = 0;
+        } else
+            retval = false;
+    } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
-        d->wait_command = 0;
-        return false;
+        d->jsstack = frame->up; // FIXME: if(d->jsstack != frame)
     }
 
-    value = d->wait_args[0];
-    bool ok;
-    int t = d->wait_args[1].toInt(&ok);
-    if (!ok || !t /*JError*/)
-        return false;
-    type = convertJType(t);
-    rid = 0;
-    return true;
+    delete frame;
+
+    return retval;
 }
 
 bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QString & value) {
@@ -549,35 +539,31 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
     args.append( name );
     args.append( value );
 
-    //dirty sync
-    extern QApplication *qApp;
-    int count = 0;
-    while (d->wait_command && ++count < 100) {
-        usleep(50000); 
-        qApp->processEvents(50);
-    }
-    if (d->wait_command)
-        kdError(6100) << "Error: something still waiting for member return data" << endl;
-    count = 0;
+    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    d->wait_command = KJAS_PUT_MEMBER;
     process->send( KJAS_PUT_MEMBER, args );
 
-    while (d->wait_command && ++count < 100) {
+    extern QApplication *qApp;
+    int count = 100 + frame->size;
+    while (!frame->ready && --count > 0) {
         usleep(50000); 
         qApp->processEvents(100);
     }
-    if (d->wait_command) {
+
+    bool retval = frame->ready;
+    if (retval) {
+        bool ok;
+        int ret = frame->args[0].toInt(&ok);
+        if (!ok || !ret)
+            retval = false;
+    } else {
         kdError(6100) << "Error: timeout on Java member return data" << endl;
-        d->wait_command = 0;
-        return false;
+        d->jsstack = frame->up;
     }
 
-    bool ok;
-    int ret = d->wait_args[0].toInt(&ok);
-    if (!ok)
-        return false;
-    return !!ret;
+    delete frame;
+
+    return retval;
 }
 
 bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QStringList & fargs, int & type, unsigned long & rid, QString & value) {
@@ -588,38 +574,35 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
     for (QStringList::const_iterator it = fargs.begin(); it != fargs.end(); it++)
         args.append(*it);
 
-    //dirty sync
-    extern QApplication *qApp;
-    int count = 0;
-    while (d->wait_command && ++count < 100) {
-        usleep(50000); 
-        qApp->processEvents(50);
-    }
-    if (d->wait_command)
-        kdError(6100) << "Error: something still waiting for member return data" << endl;
-    count = 0;
+    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
 
-    d->wait_command = KJAS_CALL_MEMBER;
     process->send( KJAS_CALL_MEMBER, args );
 
-    while (d->wait_command && ++count < 100) {
+    extern QApplication *qApp;
+    int count = 100 + frame->size;
+    while (!frame->ready && --count > 0) {
         usleep(50000); 
         qApp->processEvents(100);
     }
-    if (d->wait_command) {
+
+    bool retval = frame->ready;
+    if (retval) {
+        value = frame->args[0];
+        bool ok;
+        int t = frame->args[1].toInt(&ok);
+        if (ok && t /*!JError*/) {
+            type = convertJType(t);
+            rid = 0;
+        } else
+            retval = false;
+    } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
-        d->wait_command = 0;
-        return false;
+        d->jsstack = frame->up;
     }
-    value = d->wait_args[0];
-    bool ok;
-    kdDebug(6100) << "KJavaAppletServer::getMember: " << d->wait_args.size() << value << endl;
-    int t = d->wait_args[1].toInt(&ok);
-    if (!ok || !t /*JError*/)
-        return false;
-    type = convertJType(t);
-    rid = 0;
-    return true;
+
+    delete frame;
+
+    return retval;
 }
 
 void KJavaAppletServer::derefObject(int contextId, int appletId, const unsigned long objid) {

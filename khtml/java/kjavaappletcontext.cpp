@@ -146,6 +146,30 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     else if (cmd.startsWith(QString::fromLatin1("audioclip_"))) {
         kdDebug(6002) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
     }
+    else if ( cmd == QString::fromLatin1( "JS_Event" )
+              && arg.count() > 2 )
+    {
+        bool ok;
+        int appletID = arg[0].toInt(&ok);
+        unsigned long objid = arg[1].toInt(&ok);
+        if (ok) 
+        {
+            KJavaApplet * applet = d->applets[appletID];
+            if (applet) 
+            {
+                KParts::LiveConnectExtension::ArgList arglist;
+                for (unsigned i = 3; i < arg.count(); i += 2)
+                    // take a deep breath here
+                    arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) arg[i].toInt(), arg[i+1]));
+
+                emit static_cast<KJavaLiveConnect*>(applet->getLiveConnectExtension())->sendEvent(objid, arg[2], arglist);
+            } 
+            else
+                kdError(6002) << "could find applet for JS event" << endl;
+        } 
+        else
+            kdError(6002) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
+    } 
 }
 
 bool KJavaAppletContext::getMember(KJavaApplet * applet, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
