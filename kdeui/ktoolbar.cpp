@@ -22,10 +22,15 @@ KToolBarItem::KToolBarItem( QPixmap& pixmap, int ID,
 {
     resize(24,24);
     id = ID;
-    enabledPixmap = pixmap;
+    if ( pixmap.isNull() ) 
+    	enabledPixmap = pixmap;
+    else {
+	warning("KToolBarItem: pixmap is null, perhaps some missing file");
+        enabledPixmap = QPixmap(ToolbarWidth, ToolbarWidth);
+    };
     makeDisabledPixmap();
     setPixmap( enabledPixmap );
-    connect( (KButton*) this, SIGNAL( clicked() ), 
+    connect( this, SIGNAL( clicked() ), 
 	    this, SLOT( ButtonClicked() ) );
     connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
     connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
@@ -38,10 +43,16 @@ void KToolBarItem::makeDisabledPixmap()
 	
 	// Find the outline of the colored portion of the normal pixmap
 	
-	QBitmap pmm( *enabledPixmap.mask() );
-	pmm.setMask( *((QBitmap *) &pmm) );
-	QPixmap pm = pmm;
-	
+	QBitmap *pmm = (QBitmap*) enabledPixmap.mask();
+        QPixmap pm;
+        if (pmm != NULL) {
+	   pmm->setMask( *pmm );
+	   pm = *pmm;
+        } else {
+           pm = QPixmap(ToolbarWidth, ToolbarWidth);
+           warning("KToolBarItem::makeDisabledPixmap: mask is null.");
+        };
+    else
 	// Prepare the disabledPixmap for drawing
 	
 	disabledPixmap.resize(22,22);
