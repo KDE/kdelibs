@@ -5,6 +5,6 @@ input=none
 output=filesystem
 reading=true
 defaultMimetype=text/html
-mimetypesExcludedFromFastMode=application/x-executable,application/x-perl,application/x-python,application/x-python-bytecode,application/x-shellscript
+mimetypesExcludedFromFastMode=application/x-executable,application/x-perl,application/x-python,application/x-python-bytecode,application/x-shellscript,application/x-troff-man
 patternsExcludedFromFastMode=*.stm,*.rpm
 Icon=www
