@@ -1320,7 +1320,7 @@ void KFormulaEdit::do_cut(QString oldText, int oldc)
   return;
 }
 
-void KFormulaEdit::do_copy(QString oldText, int oldc)
+void KFormulaEdit::do_copy(QString , int )
 {
   if(textSelected) {
     clipText =
