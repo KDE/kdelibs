@@ -301,7 +301,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			               "viewer (KGhostView) nor any other external PostScript "
 			               "viewer could be found.");
 			else
-				msg = i18n( "Preview failed: KDE could not found any application "
+				msg = i18n( "Preview failed: KDE could not find any application "
 						    "to preview files of type %1." ).arg( mime->name() );
 
 			return continuePrint(msg, parentW, previewOnly);

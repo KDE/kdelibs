@@ -214,7 +214,7 @@ void KMInstancePage::slotSettings()
 		if ( !pr )
 			KMessageBox::error( this, i18n( "Unable to find instance %1." ).arg( m_view->currentText() ) );
 		else if ( !pr->isSpecial() && !KMFactory::self()->manager()->completePrinterShort( pr ) )
-			KMessageBox::error( this, i18n( "Unable to retrieve printer informations. Message from printing system: %1." ).arg( KMFactory::self()->manager()->errorMsg() ) );
+			KMessageBox::error( this, i18n( "Unable to retrieve printer information. Message from printing system: %1." ).arg( KMFactory::self()->manager()->errorMsg() ) );
 		else
 		{
 			int oldAppType = KMFactory::self()->settings()->application;

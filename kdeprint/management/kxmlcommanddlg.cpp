@@ -292,7 +292,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	QWhatsThis::add( m_typelab, QWhatsThis::textFor( m_type ) );
 	QWhatsThis::add( m_format, i18n( 
 				"The format of the option. This determines how the option is formatted "
-				"for includion in the global command line. The tag <b>%value</b> can be used "
+				"for inclusion in the global command line. The tag <b>%value</b> can be used "
 				"to represent the user selection. This tag will be replaced at run-time by a "
 				"string representation of the option value." ) );
 	QWhatsThis::add( m_formatlab, QWhatsThis::textFor( m_format ) );

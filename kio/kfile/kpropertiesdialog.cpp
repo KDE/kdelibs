@@ -1349,9 +1349,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gl->addMultiCellWidget(l, 1, 1, 4, 5);
   QString specialWhatsThis;
   if (isDir)
-    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact meaning of the flag can be seen in the right column.");
+    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact meaning of the flag can be seen in the right hand column.");
   else
-    specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen in the right column.");
+    specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen in the right hand column.");
   QWhatsThis::add(l, specialWhatsThis);
 
   cl[0] = new QLabel( i18n("User"), gb );
