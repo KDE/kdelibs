@@ -77,11 +77,7 @@ static const char*not_close_xpm[]={
  * @version $Id$
 */
 KDockMainWindow::KDockMainWindow( QWidget* parent, const char *name, WFlags f)
-#ifndef NO_KDE2
 :KMainWindow( parent, name, f )
-#else
-:QMainWindow( parent, name, f )
-#endif
 {
   QString new_name = QString(name) + QString("_DockManager");
   dockManager = new KDockManager( this, new_name.latin1() );
@@ -1203,7 +1199,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   QStrList findList;
   QObjectListIt it( *childDock );
   KDockWidget * obj;
-  
+
   // collect KDockWidget's name
   QStrList nList;
   while ( (obj=(KDockWidget*)it.current()) ) {

@@ -999,15 +999,9 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-#ifdef NO_KDE2
- #define KMainWindow QMainWindow
-#endif
 class KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
-#ifdef NO_KDE2
- #undef KMainWindow
-#endif
 
 public:
 
@@ -1072,7 +1066,7 @@ public:
    */
   void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
   
-  /** 
+  /**
    * It reads the current dock state from the given section of KConfig.
    * 
    * @param c     KDE class for saving configurations
