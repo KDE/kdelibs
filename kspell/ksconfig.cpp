@@ -120,9 +120,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("UTF-8");
   encodingcombo->insertItem ("KOI8-R");
   encodingcombo->insertItem ("KOI8-U");
-#if QT_VERSION >= 224
   encodingcombo->insertItem ("CP1251");
-#endif
 
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
@@ -283,7 +281,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
   else if (fname=="francais" || fname=="french") {
     lname="fr"; hname=i18n("French");
-  } 
+  }
   else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
     lname="be"; hname=i18n("Belarusian");
   }
@@ -366,7 +364,7 @@ void KSpellConfig::getAvailDictsIspell () {
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/ispell");
   /* TODO get them all instead of just one of them.
-   * If /usr/local/lib exists, it skips the rest 
+   * If /usr/local/lib exists, it skips the rest
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/lib");
   */
