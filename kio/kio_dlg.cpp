@@ -3,7 +3,7 @@
 
 #include "kio_dlg.h"
 
-bool open_CriticalDlg( const char *_title, const char *_message, const char *_but1, const char *_but2 )
+bool open_CriticalDlg( const QString &_title, const QString &_message, const QString &_but1, const QString &_but2 )
 {
   if ( kapp == 0L )
   {
