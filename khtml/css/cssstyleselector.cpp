@@ -1244,7 +1244,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
-            style->setPosition(e->parentNode()->style()->position());
+            style->setOverflow(e->parentNode()->style()->overflow());
             return;
         }
         if(!primitiveValue) return;
