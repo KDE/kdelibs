@@ -130,7 +130,6 @@ void KAnimWidget::setIcons( const QString& icons )
 
 void KAnimWidget::hideEvent(QHideEvent* e)
 {
-  stop();
   QFrame::hideEvent(e);
 }
 
