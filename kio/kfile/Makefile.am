@@ -52,7 +52,7 @@ libkfile_la_SOURCES = \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
-	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
+	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
 	kfilemetapreview.cpp
 libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
