@@ -447,7 +447,9 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length)
 
   if (parseError) {
     fprintf(stderr, "JavaScript parse error.\n");
-    Node::deleteAllNodes();
+    /* TODO: either clear everything or keep previously
+       parsed function definitions */
+    //    Node::deleteAllNodes();
     return false;
   }
 
