@@ -74,6 +74,7 @@ private:
     KTempFile* m_tempFile;
     KLineParser* m_lineParser;
     bool m_bParsingHeader;
+    bool m_bGotAnyHeader;
 };
 
 #if 0

@@ -124,6 +124,7 @@ bool KMultiPart::openURL( const KURL &url )
     m_url = url;
     m_lineParser->reset();
     m_bParsingHeader = true; // we expect a header to come first
+    m_bGotAnyHeader = false;
 
     //KParts::URLArgs args = m_ext->urlArgs();
     //m_mimeType = args.serviceType;
@@ -156,6 +157,8 @@ void KMultiPart::slotData( KIO::Job *, const QByteArray &data )
             kdDebug() << "[" << m_bParsingHeader << "] line='" << line << "'" << endl;
             if ( m_bParsingHeader )
             {
+                if ( !line.isEmpty() )
+                    m_bGotAnyHeader = true;
                 // ### HACK set the multipart boundary to the first line
                 // TODO: get it as metadata from kio_http (part of Content-type field)
                 if ( m_boundary.isNull() )
@@ -173,14 +176,14 @@ void KMultiPart::slotData( KIO::Job *, const QByteArray &data )
                     m_nextMimeType = QString::fromLatin1( line.data() + 14 ).stripWhiteSpace();
                     kdDebug() << "m_nextMimeType=" << m_nextMimeType << endl;
                 }
-                // Empty line, end of headers
-                else if ( line.isEmpty() )
+                // Empty line, end of headers (if we had any header line before)
+                else if ( line.isEmpty() && m_bGotAnyHeader )
                 {
                     m_bParsingHeader = false;
                     kdDebug() << "end of headers" << endl;
                     startOfData();
                 }
-                else
+                else if ( !line.isEmpty() )
                     kdWarning() << "Ignoring header " << line << endl;
             } else {
                 if ( !qstrncmp( line, m_boundary, m_boundaryLength ) )
@@ -200,6 +203,7 @@ void KMultiPart::slotData( KIO::Job *, const QByteArray &data )
                         if ( nextChar == '\n' || nextChar == '\r' ) {
                             endOfData();
                             m_bParsingHeader = true;
+                            m_bGotAnyHeader = false;
                         }
                         else {
                             // otherwise, false hit, it has trailing stuff
@@ -248,6 +252,8 @@ void KMultiPart::startOfData()
 {
     kdDebug() << "KMultiPart::startOfData" << endl;
     Q_ASSERT( !m_nextMimeType.isNull() );
+    if( m_nextMimeType.isNull() )
+        return;
     if ( m_mimeType != m_nextMimeType )
     {
         // Need to switch parts (or create the initial one)
