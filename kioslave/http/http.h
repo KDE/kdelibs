@@ -150,9 +150,13 @@ public:
   virtual void copy ( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
   virtual void del( const KURL& url, bool _isfile );
 
+  // Send requests to lock and unlock resources
   void davLock( const KURL& url, const QString& scope,
                 const QString& type, const QString& owner );
   void davUnlock( const KURL& url );
+
+  // Handle error conditions
+  QString davError( int code = -1, QString url = QString::null );
 //---------------------------- End WebDAV -----------------------
 
   /**
@@ -161,8 +165,8 @@ public:
    * 2 - Cache has been updated
    * 3 - SSL Certificate Cache has been updated
    * 4 - HTTP multi get
-   * 5 - DAV LOCK
-   * 6 - DAV UNLOCK
+   * 5 - DAV LOCK     (see
+   * 6 - DAV UNLOCK     README.webdav)
    */
   virtual void special( const QByteArray &data );
 
@@ -240,6 +244,8 @@ protected:
    */
   void davStatList( const KURL& url, bool stat = true );
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
+  void davParseActiveLocks( const QDomNodeList& activeLocks,
+                            uint& lockCount );
 
   /**
    * Parses a date & time string
@@ -247,10 +253,15 @@ protected:
   long parseDateTime( const QString& input, const QString& type );
 
   /**
+   * Returns the error code from a "HTTP/1.1 code Code Name" string
+   */
+  int codeFromResponse( const QString& response );
+
+  /**
    * Extracts locks from metadata
    * Returns the appropriate If: header
    */
-  QString processLocks();
+  QString davProcessLocks();
 
   /**
    * Send a cookie to the cookiejar
