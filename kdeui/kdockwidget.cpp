@@ -1557,6 +1557,9 @@ void KDockManager::cancelDrop()
 
 void KDockManager::drop()
 {
+  d->dragRect = QRect();  // cancel drawing
+  drawDragRectangle();    // only the old rect will be deleted
+
   QApplication::restoreOverrideCursor();
 
   delete childDockWidgetList;
