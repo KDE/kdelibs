@@ -49,8 +49,6 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
     : KIconView( parent, name )
 {
     setGridX( 65 );
-    connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
-	     this, SIGNAL( doubleClicked() ) );
     loadTimer = new QTimer( this );
     connect( loadTimer, SIGNAL( timeout() ),
 	     this, SLOT( slotLoadDir() ) );
@@ -110,7 +108,6 @@ void KIconLoaderCanvas::slotLoadDir()
 	    item->setRenameEnabled( FALSE );
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
-	    item->setSelectable( FALSE );
 	}
 	QApplication::restoreOverrideCursor();
 	emit finished();
@@ -202,7 +199,7 @@ void KIconLoaderDialog::init( void )
     progressBar = new KProgress( page );
     topLayout->addWidget( progressBar );
 
-    connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
+    connect( canvas, SIGNAL(executed( QIconViewItem * )), this, SLOT(accept()) );
     connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
     connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
     connect( cb_types, SIGNAL(activated(int)), this, SLOT(typeChanged(int)) );
