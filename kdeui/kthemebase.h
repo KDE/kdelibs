@@ -368,7 +368,6 @@ private:
     bool smallGroove, roundedButton, roundedCombo, roundedSlider;
     KThemeCache *cache;
     KConfig *config;
-    QString localDir, globalDir;
     int cacheSize;
 
     /**

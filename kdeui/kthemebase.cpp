@@ -257,8 +257,7 @@ KThemeBase::KThemeBase(const QString &configFile)
         config = KGlobal::config();
     else
         config = new KConfig(configFile, configFile);
-    localDir = kapp->localkdedir()+"/share/apps/kstyle/pixmaps/";
-    globalDir = locate("data", "kstyle/pixmaps/");
+    KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_data_relative() + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
 }                            
@@ -400,10 +399,8 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
 QImage* KThemeBase::loadImage(QString &name)
 {
     QImage *image = new QImage;
-    image->load(localDir+name);
-    if(!image->isNull())
-        return(image);
-    image->load(globalDir+name);
+    QString path = locate("kstyle_pixmap", name);
+    image->load(path);
     if(!image->isNull())
         return(image);
     warning("KThemeStyle: Unable to load image %s.", name.ascii());
@@ -414,12 +411,10 @@ QImage* KThemeBase::loadImage(QString &name)
 KPixmap* KThemeBase::loadPixmap(QString &name)
 {
     KPixmap *pixmap = new KPixmap;
-    pixmap->load(localDir+name);
-    if(!pixmap->isNull())
-        return(pixmap);
-    pixmap->load(globalDir+name);
-    if(!pixmap->isNull())
-        return(pixmap);
+    QString path = locate("kstyle_pixmap", name);
+    pixmap->load(path);
+    if (!pixmap->isNull())
+       return pixmap;
     warning("KThemeStyle: Unable to load pixmap %s.", name.ascii());
     delete pixmap;
     return(NULL);
