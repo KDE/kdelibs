@@ -123,10 +123,12 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_BORDER:
         // border="noborder" -> border="0"
-        if(attr->value().toInt())
-        {
+        if(attr->value().toInt()) {
             addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+            addCSSProperty( CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID );
+            addCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID );
+            addCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID );
+            addCSSProperty( CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID );
         }
         break;
     case ATTR_VSPACE:
