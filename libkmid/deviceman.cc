@@ -114,6 +114,8 @@ DeviceManager::DeviceManager(int def)
 
     config->setGroup("Configuration");
     default_dev=config->readNumEntry("midiDevice",0);
+    if ( default_dev < 0 )
+       default_dev=0;
     QString mapurl(config->readEntry("mapFilename",""));
     if ((config->readBoolEntry("useMidiMapper", false))&&(!mapurl.isEmpty()))
     {
