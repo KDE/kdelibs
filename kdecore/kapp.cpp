@@ -20,6 +20,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.115  1998/11/08 19:06:43  esken
+// Several security fixes by adding checkAccess() tests before the creation
+// of files and directorys. This is neccesary for SUID programs. Added
+// checkAccess(), which checks if the user may write a file.
+//
+// checkAccess() is a global function, perhaps it should be moved to some
+// KTools class as static member funtion later.
+//
 // Revision 1.114  1998/10/12 13:22:54  ettrich
 // Matthias: small fix
 //
@@ -787,13 +795,13 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		  if( bSuccess ){
                         // Set uid/gid (neccesary for SUID programs)
                         chown(aConfigFile.name(), getuid(), getgid());
- 
+
 			aConfigFile.close();
 			pSessionConfig = new KConfig(0L, aSessionConfigName);
 			
 			// do not write back. the application will get
 			// a new one if demanded.
-			pSessionConfig->rollback(); 
+			pSessionConfig->rollback();
 			
 			if (pSessionConfig){
 			  bIsRestored = True;
@@ -1696,7 +1704,7 @@ bool checkAccess(const char *pathname, int mode)
   // user may write to the directory to create the file.
   if ( mode & W_OK == 0 )
     return false;   // Check for write access is not part of mode => bail out
-    
+
 
   //strip the filename (everything until '/' from the end
   QString dirName(pathname);
@@ -1706,7 +1714,7 @@ bool checkAccess(const char *pathname, int mode)
 
   dirName.resize(pos+1); // strip everything starting from the last '/'
 
-  accessOK = access( dirName, W_OK );  
+  accessOK = access( dirName, W_OK );
   // -?- Can I write to the accessed diretory
   if ( accessOK == 0 )
     return true;  // Yes
@@ -1722,6 +1730,8 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the specified icons
     KWM::setIcon(topWidget->winId(), getIcon());
     KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
+    // set a short icon text 
+    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption() );
     if (bSessionManagement)
       enableSessionManagement(bSessionManagementUserDefined);
     else

@@ -41,6 +41,8 @@ KTMainWindow::KTMainWindow( const char *name )
     // set the specified icons
     KWM::setIcon(winId(), kapp->getIcon());
     KWM::setMiniIcon(winId(), kapp->getMiniIcon());
+    // set a short icon text 
+    XSetIconName( qt_xdisplay(), winId(), kapp->getCaption() );
 
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
@@ -216,7 +218,7 @@ void KTMainWindow::updateRects()
   int flatX=0;
   int flatY=0;
   int FlatHeight=0;
-  
+
 #define vSpace 2
 
   if (kmainwidget && kmainwidget->minimumSize().height() ==
@@ -306,7 +308,7 @@ void KTMainWindow::updateRects()
 
       if (FlatHeight)
         t+=FlatHeight;
-      
+
       // Top toolbars
       for ( toolbar = toolbars.first() ;
 	    toolbar != 0L ; toolbar = toolbars.next() )
@@ -425,7 +427,7 @@ void KTMainWindow::updateRects()
 
       if (FlatHeight)
         t+=FlatHeight;
-      
+
       // top toolbars
       for (toolbar = toolbars.first(); toolbar != 0L ; toolbar = toolbars.next())
         if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
