@@ -103,6 +103,8 @@ Global::Global()
   put("Infinity", Inf, DontEnum | DontDelete);
   put("undefined", zeroRef(newUndefined()), DontEnum | DontDelete);
   put("eval", zeroRef(new GlobalFunc(GlobalFunc::Eval)));
+  put("parseInt", zeroRef(new GlobalFunc(GlobalFunc::ParseInt)));
+  put("parseFloat", zeroRef(new GlobalFunc(GlobalFunc::ParseFloat)));
 
   // other properties
   put("Math", zeroRef(new Math()), DontEnum);
@@ -110,8 +112,9 @@ Global::Global()
 
 KJSO *GlobalFunc::execute(const List &args)
 {
+  Ptr res;
+
   if (id == Eval) { // eval()
-    Ptr res;
     Ptr x = args[0];
     if (x->type() != StringType)
       res = x;
@@ -133,9 +136,25 @@ KJSO *GlobalFunc::execute(const List &args)
 
       res = newUndefined();
     }
-
-    return newCompletion(Normal, res);
+  } else if (id == ParseInt) {
+    Ptr str = toString(args[0]);
+    int radix = toInt32(args[1]);
+    if (radix == 0)
+      radix = 10;
+    else if (radix < 2 || radix > 36) {
+      res = newNumber(NaN);
+      return newCompletion(Normal, res);
+    }
+    /* TODO: use radix */
+    int i = 0;
+    sscanf(str->stringVal().ascii(), "%d", &i);
+    res = newNumber(i);
+  } else if (id == ParseFloat) {
+    Ptr str = toString(args[0]);
+    double d = 0.0;
+    sscanf(str->stringVal().ascii(), "%lf", &d);
+    res = newNumber(d);
   }
 
-  return 0L;
+  return newCompletion(Normal, res);
 }

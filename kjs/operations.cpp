@@ -114,6 +114,8 @@ KJSO *KJS::toNumber(KJSO *obj)
 // helper function for toInteger, toInt32, toUInt32 and toUInt16
 double KJS::round(KJSO *obj)
 {
+  if (obj->isA(UndefinedType)) /* TODO: see below */
+    return 0.0;       
   Ptr n = toNumber(obj);
   if (n->doubleVal() == 0.0)   /* TODO: -0, NaN, Inf */
     return 0.0;
