@@ -1044,9 +1044,15 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   // Complete the URL using the "active part" (running interpreter)
   if (active->part()) {
     QString dstUrl = active->part()->htmlDocument().completeURL(url).string();
-    kdDebug() << "Window::goURL dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
+    KURL dst( dstUrl );
+    KURL partURL( m_part->url() );
+    // Remove refs for the comparison
+    dst.setRef( QString::null );
+    partURL.setRef( QString::null );
+    kdDebug(6070) << "Window::goURL dstUrl=" << dst.prettyURL() << " partURL=" << partURL.prettyURL()
+                   << " identical: " << partURL.equals( dst, true ) << endl;
     // Check if the URL is the current one. No [infinite] redirect in that case.
-    if ( m_part->url().equals( KURL(dstUrl), true ) )
+    if ( partURL.equals( dst, true ) )
         return;
 
     // check if we're allowed to inject javascript

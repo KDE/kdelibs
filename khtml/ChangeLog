@@ -1,5 +1,8 @@
 2003-10-28  David Faure  <faure@kde.org>
 
+	* ecma/kjs_window.cpp (goURL): Compare the URLs without the ref, fixes
+	wrong reload when opening a tree-like structure (#54358).
+
 	* ecma/kjs_html.cpp (getValueProperty): (#54929)
 	Fixes for HTMLAnchorElement properties, return empty strings instead
 	of null, and let "text" return plain text instead of HTML.
