@@ -12,12 +12,16 @@ import java.security.*;
  * <P>
  * NOTE: The class loader extends Java 1.2 specific class.
  */
-public class KJASAppletClassLoader
+public final class KJASAppletClassLoader
     extends URLClassLoader
 {
     private static Hashtable loaders = new Hashtable();
-    public static KJASAppletClassLoader getLoader( String docBase, String codeBase )
+    public static synchronized KJASAppletClassLoader getLoader( String docBase, String codeBase )
     {
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) {
+            security.checkCreateClassLoader();
+        }
         URL docBaseURL;
         KJASAppletClassLoader loader = null;
         try
@@ -37,7 +41,6 @@ public class KJASAppletClassLoader
             else
             {
                 Main.debug( "CL: reusing classloader" );
-                loader.setActive();
             }
         } catch( MalformedURLException e ) { Main.kjas_err( "bad DocBase URL", e ); }
         return loader;
@@ -93,6 +96,10 @@ public class KJASAppletClassLoader
 
     public static KJASAppletClassLoader getLoader( String key )
     {
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) {
+            security.checkCreateClassLoader();
+        }
         if( loaders.containsKey( key ) )
             return (KJASAppletClassLoader) loaders.get( key );
         
@@ -105,12 +112,7 @@ public class KJASAppletClassLoader
     private URL docBaseURL;
     private URL codeBaseURL;
     private Vector archives;
-    private Hashtable rawdata;
-    private Hashtable certificates;
-    private boolean archives_loaded;
-    private int archive_count;
     private String dbgID;
-    private boolean active;
     private KJASAppletContext appletContext = null;
     
     public KJASAppletClassLoader( URL[] urlList, URL _docBaseURL, URL _codeBaseURL)
@@ -119,12 +121,7 @@ public class KJASAppletClassLoader
         docBaseURL   = _docBaseURL;
         codeBaseURL  = _codeBaseURL;
         archives     = new Vector();
-        rawdata      = new Hashtable();
-        certificates = new Hashtable();
         
-        archives_loaded = false;
-        archive_count   = 0;
-        active          = true;
         appletContext   = null;
         dbgID = "CL(" + codeBaseURL.toString() + "): ";
     }
@@ -137,39 +134,25 @@ public class KJASAppletClassLoader
     public void setAppletContext(KJASAppletContext context) {
         appletContext = context;
     }
-
-    public void setActive()
-    {
-        active = true;
-    }
-
-    public void setInactive()
-    {
-        active = false;
-    }
-
+    
     public void paramsDone() {
         // simply builds up the search path
         // put the archives first because they are 
         // cached.
-        if( !archives_loaded ) {
-            for( int i = 0; i < archives.size(); ++i ) {
-                String jar = (String)archives.elementAt( i );
-                try {
-                    URL jarURL = new URL(codeBaseURL, jar);
-                    addURL(jarURL);
-                    Main.debug("added archive URL \"" + jarURL + "\" to KJASAppletClassLoader");
-                 } catch (MalformedURLException e) {
-                    Main.kjas_err("Could not construct URL for jar file: " + codeBaseURL + " + " + jar, e);
-                 }
+        for( int i = 0; i < archives.size(); ++i ) {
+            String jar = (String)archives.elementAt( i );
+            try {
+                URL jarURL = new URL(codeBaseURL, jar);
+                addURL(jarURL);
+                Main.debug("added archive URL \"" + jarURL + "\" to KJASAppletClassLoader");
+            } catch (MalformedURLException e) {
+                Main.kjas_err("Could not construct URL for jar file: " + codeBaseURL + " + " + jar, e);
             }
-            archives_loaded = true;
         }
-        else archives_loaded = true;
         // finally add code base url and docbase url
         addURL(codeBaseURL);
         
-        // but first the docBaseURL has to be fixed.
+        // the docBaseURL has to be fixed.
         // strip file part from end otherwise this
         // will be interpreted as an archive
         // (should this perhaps be done generally ??)       
@@ -194,7 +177,6 @@ public class KJASAppletClassLoader
         if( !archives.contains( jarname ) )
         {
             archives.add( jarname );
-            archives_loaded = false;
         }
     }
     
@@ -212,16 +194,13 @@ public class KJASAppletClassLoader
     /***************************************************************************
      **** Class Loading Methods
      **************************************************************************/
-    public Class findClass( String name ) throws ClassNotFoundException
+    public synchronized Class findClass( String name ) throws ClassNotFoundException
     {
-        Class rval;
-        
+        Class rval = null;
         try
         {
             //check for a system class
             rval = findSystemClass( name );
-            if( rval != null )
-                return rval;
         } catch (ClassNotFoundException e )
         {
             if (appletContext != null) {
@@ -236,19 +215,21 @@ public class KJASAppletClassLoader
             }
             //check the loaded classes 
             rval = findLoadedClass( name );
-            if( rval != null )
-                return rval;
-            return super.findClass(name);
+            if( rval == null ) {
+                rval =  super.findClass(name);
+            }
         }
-        throw new ClassNotFoundException("Class:" + name);
+        if (rval == null) {
+            throw new ClassNotFoundException("Class:" + name);
+        }
+        return rval;
     }
     
-    public Class loadClass( String name ) throws ClassNotFoundException
+    public synchronized Class loadClass( String name ) throws ClassNotFoundException
     {
         Main.debug( dbgID + "loadClass, class name = " + name );
         //We need to be able to handle foo.class, so strip off the suffix
         String fixed_name = name;
-        Class rval = null;
         if( name.endsWith( ".class" ) )
         {
             fixed_name = name.substring( 0, name.lastIndexOf( ".class" ) );
