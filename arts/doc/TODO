@@ -11,6 +11,9 @@
 - try to fix autoSuspend in conjunction with full duplex
 - obsoleting: use V2 implementations even if user requests a normal
   implementation, since they have a newer version
+- error notification for connection breaks - this would enable intelligent
+  clients to immediately know when something goes wrong, so they can terminate
+  sanely instead of crashing
 - mcopidl: use unsigned char arrays instead of strings for inline marshalled
   data in idl files - this will fix the "maximum string length" warnings and
   while doing this improve space and speed
@@ -30,6 +33,9 @@
   artscontrol, or better ;)
 - make it possible to share a cookie between multiple hosts (like storing it
   in nfs mounted home directory)
+- ARTS_COOKIE, OSS_DEVICE
+- calling artsd -n -u -p12345 repeatedly doesn't clean stale references
+  properly
 
 ## KMedia2
 
