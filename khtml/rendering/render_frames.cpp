@@ -667,14 +667,13 @@ void RenderPartObject::updateWidget()
           if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
               params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
 
-          if (url.isEmpty() && objbase->classId.startsWith("java:")) {
-              serviceType = "application/x-java-applet";
-              url = objbase->classId.mid(5);
-          }
           if ( embed ) {
               // render embed object
               url = embed->url;
               serviceType = embed->serviceType;
+          } else if (url.isEmpty() && objbase->classId.startsWith("java:")) {
+              serviceType = "application/x-java-applet";
+              url = objbase->classId.mid(5);
           } else
               serviceType = objbase->serviceType;
           if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
