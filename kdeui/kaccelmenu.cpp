@@ -102,7 +102,7 @@ char *KAccelMenu::stripAnd(const char *str)
   QString s = str;
 
   s.replace(QRegExp("&"),"");
-  return strdup(s.data());
+  return strdup(s.ascii());
 }
 
 void KAccelMenu::popMsg () {
