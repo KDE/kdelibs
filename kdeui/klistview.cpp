@@ -761,6 +761,15 @@ QList<QListViewItem> KListView::selectedItems() const
 
 void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after)
 {
+  // sanity check - don't move a item into it's own child structure
+  QListViewItem *i = parent;
+  while(i)
+    {
+      if(i == item)
+	return;
+      i = i->parent();
+    }
+
   // Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
   // in here, without ever deleting the item.
   if (item->parent())
