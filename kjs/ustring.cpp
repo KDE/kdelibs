@@ -284,9 +284,10 @@ char *UString::ascii() const
     delete [] statBuffer;
 
   statBuffer = new char[size()+1];
+  const UChar *dat = data();
   for(int i = 0; i < size(); i++)
-    statBuffer[i] = data()[i].low();
-  statBuffer[size()] = '\0';
+    *statBuffer++ = (dat++)->low();
+  *statBuffer = '\0';
 
   return statBuffer;
 }
@@ -297,7 +298,7 @@ UString &UString::operator=(const char *c)
   int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
-    d[i].uc = c[i];
+    (d++)->uc = *c++;
   rep = Rep::create(d, l);
 
   return *this;
