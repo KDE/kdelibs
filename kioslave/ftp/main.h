@@ -1,9 +1,10 @@
 #ifndef __main_h__
 #define __main_h__
 
-#include <list>
 #include <kio_interface.h>
 #include <kio_base.h>
+
+#include <list>
 
 #include "ftp.h"
 
@@ -20,8 +21,8 @@ public:
 
   virtual void slotMkdir( const char *_url, int _mode );
 
-  virtual void slotCopy( const char*, const char *_dest );
-  virtual void slotCopy( list<string>&, const char *_dest );
+  virtual void slotCopy( const char* _source, const char *_dest );
+  virtual void slotCopy( list<string>& _source, const char *_dest );
 
   virtual void slotMove( const char *_source, const char *_dest );
   virtual void slotMove( list<string>& _source, const char *_dest );
@@ -57,9 +58,10 @@ protected:
     mode_t m_type;
   };
 
-  void doCopy( list<string>&, const char *_dest, bool _rename, bool _move = false );
+  void doCopy( list<string>& _source, const char *_dest, bool _rename, bool _move = false );
 
-  long listRecursive( const char *_path, list<Copy>& _files, list<CopyDir>& _dirs, bool _rename );
+  long listRecursive( const char *_path, list<Copy>& _files,
+		      list<CopyDir>& _dirs, bool _rename );
   long listRecursive2( const char *_abs_path, const char *_rel_path,
 		       list<Copy>& _files, list<CopyDir>& _dirs );
 
@@ -76,7 +78,7 @@ protected:
 class FtpIOJob : public IOJob
 {
 public:
-  FtpIOJob( Connection *_conn, FtpProtocol *_gzip );
+  FtpIOJob( Connection *_conn, FtpProtocol *_Ftp );
   
   virtual void slotError( int _errid, const char *_txt );
 
