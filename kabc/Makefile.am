@@ -18,7 +18,7 @@ libkabc_la_SOURCES = \
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h geo.h phonenumber.h \
-  stdaddressbook.h timezone.h resource.h \
+  stdaddressbook.h timezone.h resource.h resourcefile.h \
   vcard21parser.h field.h resourcefactory.h \
   resourceconfigwidget.h
 
@@ -106,7 +106,6 @@ kabc_sql_la_LDFLAGS     = $(all_libraries) $(KDE_PLUGIN) -module
 
 
 noinst_HEADERS = \
-    resourcefile.h \
     binaryformat.h \
     simpleformat.h \
     vcardformat.h \
