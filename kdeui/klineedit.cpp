@@ -200,7 +200,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( !hasSelectedText() && len && cursorPosition() == len )
                 {
-                    kdDebug(293) << "Automatic Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -221,7 +220,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             if ( txt != old_txt && len && cursorPosition() == len )
             {
-                kdDebug(293) << "Popup Completion" << endl;
                 if ( emitSignals() )
                     emit completion( txt ); // emit when requested...
                 if ( handleSignals() )
