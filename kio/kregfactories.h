@@ -91,7 +91,7 @@ public:
   void save( QDataStream& _str ) const;
   
 protected:
-  KService* m_pService;
+  KSharedPtr<KService> m_pService;
 };
 
 
