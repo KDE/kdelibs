@@ -843,6 +843,16 @@ Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromString(std::string obje
 	return 0;
 }
 
+Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::InterfaceRepo_base *castedObject = (Arts::InterfaceRepo_base *)object._base()->_cast(Arts::InterfaceRepo_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
+}
+
 Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromReference(Arts::ObjectReference r, bool needcopy)
 {
 	Arts::InterfaceRepo_base *result;
@@ -1201,6 +1211,16 @@ Arts::InterfaceRepoV2_base *Arts::InterfaceRepoV2_base::_fromString(std::string 
 	return 0;
 }
 
+Arts::InterfaceRepoV2_base *Arts::InterfaceRepoV2_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::InterfaceRepoV2_base *castedObject = (Arts::InterfaceRepoV2_base *)object._base()->_cast(Arts::InterfaceRepoV2_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
+}
+
 Arts::InterfaceRepoV2_base *Arts::InterfaceRepoV2_base::_fromReference(Arts::ObjectReference r, bool needcopy)
 {
 	Arts::InterfaceRepoV2_base *result;
@@ -1337,6 +1357,16 @@ Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromString(std::strin
 	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
 		return Arts::FlowSystemSender_base::_fromReference(r,true);
 	return 0;
+}
+
+Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::FlowSystemSender_base *castedObject = (Arts::FlowSystemSender_base *)object._base()->_cast(Arts::FlowSystemSender_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
 }
 
 Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromReference(Arts::ObjectReference r, bool needcopy)
@@ -1482,6 +1512,16 @@ Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromString(std::s
 	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
 		return Arts::FlowSystemReceiver_base::_fromReference(r,true);
 	return 0;
+}
+
+Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::FlowSystemReceiver_base *castedObject = (Arts::FlowSystemReceiver_base *)object._base()->_cast(Arts::FlowSystemReceiver_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
 }
 
 Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromReference(Arts::ObjectReference r, bool needcopy)
@@ -1634,6 +1674,16 @@ Arts::FlowSystem_base *Arts::FlowSystem_base::_fromString(std::string objectref)
 	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
 		return Arts::FlowSystem_base::_fromReference(r,true);
 	return 0;
+}
+
+Arts::FlowSystem_base *Arts::FlowSystem_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::FlowSystem_base *castedObject = (Arts::FlowSystem_base *)object._base()->_cast(Arts::FlowSystem_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
 }
 
 Arts::FlowSystem_base *Arts::FlowSystem_base::_fromReference(Arts::ObjectReference r, bool needcopy)
@@ -1978,6 +2028,16 @@ Arts::GlobalComm_base *Arts::GlobalComm_base::_fromString(std::string objectref)
 	return 0;
 }
 
+Arts::GlobalComm_base *Arts::GlobalComm_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::GlobalComm_base *castedObject = (Arts::GlobalComm_base *)object._base()->_cast(Arts::GlobalComm_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
+}
+
 Arts::GlobalComm_base *Arts::GlobalComm_base::_fromReference(Arts::ObjectReference r, bool needcopy)
 {
 	Arts::GlobalComm_base *result;
@@ -2170,6 +2230,16 @@ Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromString(std::string obje
 	return 0;
 }
 
+Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::TmpGlobalComm_base *castedObject = (Arts::TmpGlobalComm_base *)object._base()->_cast(Arts::TmpGlobalComm_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
+}
+
 Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromReference(Arts::ObjectReference r, bool needcopy)
 {
 	Arts::TmpGlobalComm_base *result;
@@ -2278,6 +2348,16 @@ Arts::TraderOffer_base *Arts::TraderOffer_base::_fromString(std::string objectre
 	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
 		return Arts::TraderOffer_base::_fromReference(r,true);
 	return 0;
+}
+
+Arts::TraderOffer_base *Arts::TraderOffer_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::TraderOffer_base *castedObject = (Arts::TraderOffer_base *)object._base()->_cast(Arts::TraderOffer_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
 }
 
 Arts::TraderOffer_base *Arts::TraderOffer_base::_fromReference(Arts::ObjectReference r, bool needcopy)
@@ -2443,6 +2523,16 @@ Arts::TraderQuery_base *Arts::TraderQuery_base::_fromString(std::string objectre
 	return 0;
 }
 
+Arts::TraderQuery_base *Arts::TraderQuery_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::TraderQuery_base *castedObject = (Arts::TraderQuery_base *)object._base()->_cast(Arts::TraderQuery_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
+}
+
 Arts::TraderQuery_base *Arts::TraderQuery_base::_fromReference(Arts::ObjectReference r, bool needcopy)
 {
 	Arts::TraderQuery_base *result;
@@ -2604,6 +2694,16 @@ Arts::Loader_base *Arts::Loader_base::_fromString(std::string objectref)
 	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
 		return Arts::Loader_base::_fromReference(r,true);
 	return 0;
+}
+
+Arts::Loader_base *Arts::Loader_base::_fromDynamicCast(const Arts::Object& object)
+{
+	if(object.isNull()) return 0;
+
+	Arts::Loader_base *castedObject = (Arts::Loader_base *)object._base()->_cast(Arts::Loader_base::_IID);
+	if(castedObject) return castedObject->_copy();
+
+	return _fromString(object._toString());
 }
 
 Arts::Loader_base *Arts::Loader_base::_fromReference(Arts::ObjectReference r, bool needcopy)

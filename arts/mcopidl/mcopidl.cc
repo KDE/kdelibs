@@ -1358,6 +1358,9 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tstatic %s_base *_fromReference(Arts::ObjectReference ref,"
 		                                " bool needcopy);\n\n",iname.c_str());
 
+		fprintf(header,"\tstatic %s_base *_fromDynamicCast(const Arts::Object&"
+										" object);\n", iname.c_str());
+
 		/* reference counting: _copy */
 		fprintf(header,"\tinline %s_base *_copy() {\n"
 					   "\t\tassert(_refCnt > 0);\n"
@@ -1635,7 +1638,7 @@ void doInterfacesHeader(FILE *header)
 			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
 			iname.c_str(),iname.c_str(), iname.c_str());
 		fprintf(header,"\tinline %s(const Arts::DynamicCast& c) : "
-			"Arts::Object(%s_base::_fromString(c.object().toString())), "
+			"Arts::Object(%s_base::_fromDynamicCast(c.object())), "
 			"_cache(0) {}\n", iname.c_str(),iname.c_str());
 
 		// copy constructors
@@ -1958,6 +1961,16 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t\treturn %s_base::_fromReference(r,true);\n",
 															d.name.c_str());
 		fprintf(source,"\treturn 0;\n");
+		fprintf(source,"}\n\n");
+
+		fprintf(source,"%s_base *%s_base::_fromDynamicCast(const Arts::Object& object)\n",
+											d.name.c_str(),d.name.c_str());
+		fprintf(source,"{\n");
+		fprintf(source,"\tif(object.isNull()) return 0;\n\n");
+		fprintf(source,"\t%s_base *castedObject = (%s_base *)object._base()->_cast(%s_base::_IID);\n",
+											d.name.c_str(), d.name.c_str(), d.name.c_str());
+		fprintf(source,"\tif(castedObject) return castedObject->_copy();\n\n");
+		fprintf(source,"\treturn _fromString(object._toString());\n");
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"%s_base *%s_base::_fromReference(Arts::ObjectReference r,"

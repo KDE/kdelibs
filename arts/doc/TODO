@@ -5,7 +5,6 @@
   in a similar uniform way KDE does with KStandardDirs)
 - dynamic implementation of classes/attributes
 - recursive scheduling again (with loops & cycles)
-- ensure DynamicCast(<some null object>) == Object::null()
 - try to fix autoSuspend in conjunction with full duplex
 - obsoleting: use V2 implementations even if user requests a normal
   implementation, since they have a newer version

@@ -326,6 +326,7 @@ public:
 	static InterfaceRepo_base *_fromString(std::string objectref);
 	static InterfaceRepo_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static InterfaceRepo_base *_fromDynamicCast(const Arts::Object& object);
 	inline InterfaceRepo_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -405,7 +406,7 @@ public:
 		Arts::Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
 	inline InterfaceRepo(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline InterfaceRepo(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepo_base::_fromString(c.object().toString())), _cache(0) {}
+	inline InterfaceRepo(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepo_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline InterfaceRepo(const InterfaceRepo& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline InterfaceRepo(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static InterfaceRepo null() {return InterfaceRepo((InterfaceRepo_base*)0);}
@@ -439,6 +440,7 @@ public:
 	static InterfaceRepoV2_base *_fromString(std::string objectref);
 	static InterfaceRepoV2_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static InterfaceRepoV2_base *_fromDynamicCast(const Arts::Object& object);
 	inline InterfaceRepoV2_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -502,7 +504,7 @@ public:
 		Arts::Object(InterfaceRepoV2_base::_create(s.string())), _cache(0) {}
 	inline InterfaceRepoV2(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(InterfaceRepoV2_base::_fromString(r.string())):(InterfaceRepoV2_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline InterfaceRepoV2(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepoV2_base::_fromString(c.object().toString())), _cache(0) {}
+	inline InterfaceRepoV2(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepoV2_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline InterfaceRepoV2(const InterfaceRepoV2& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline InterfaceRepoV2(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static InterfaceRepoV2 null() {return InterfaceRepoV2((InterfaceRepoV2_base*)0);}
@@ -538,6 +540,7 @@ public:
 	static FlowSystemSender_base *_fromString(std::string objectref);
 	static FlowSystemSender_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static FlowSystemSender_base *_fromDynamicCast(const Arts::Object& object);
 	inline FlowSystemSender_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -603,7 +606,7 @@ public:
 		Arts::Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemSender(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemSender(const Arts::DynamicCast& c) : Arts::Object(FlowSystemSender_base::_fromString(c.object().toString())), _cache(0) {}
+	inline FlowSystemSender(const Arts::DynamicCast& c) : Arts::Object(FlowSystemSender_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline FlowSystemSender(const FlowSystemSender& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystemSender(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemSender null() {return FlowSystemSender((FlowSystemSender_base*)0);}
@@ -630,6 +633,7 @@ public:
 	static FlowSystemReceiver_base *_fromString(std::string objectref);
 	static FlowSystemReceiver_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static FlowSystemReceiver_base *_fromDynamicCast(const Arts::Object& object);
 	inline FlowSystemReceiver_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -701,7 +705,7 @@ public:
 		Arts::Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemReceiver(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemReceiver(const Arts::DynamicCast& c) : Arts::Object(FlowSystemReceiver_base::_fromString(c.object().toString())), _cache(0) {}
+	inline FlowSystemReceiver(const Arts::DynamicCast& c) : Arts::Object(FlowSystemReceiver_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline FlowSystemReceiver(const FlowSystemReceiver& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystemReceiver(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemReceiver null() {return FlowSystemReceiver((FlowSystemReceiver_base*)0);}
@@ -728,6 +732,7 @@ public:
 	static FlowSystem_base *_fromString(std::string objectref);
 	static FlowSystem_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static FlowSystem_base *_fromDynamicCast(const Arts::Object& object);
 	inline FlowSystem_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -803,7 +808,7 @@ public:
 		Arts::Object(FlowSystem_base::_create(s.string())), _cache(0) {}
 	inline FlowSystem(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystem(const Arts::DynamicCast& c) : Arts::Object(FlowSystem_base::_fromString(c.object().toString())), _cache(0) {}
+	inline FlowSystem(const Arts::DynamicCast& c) : Arts::Object(FlowSystem_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline FlowSystem(const FlowSystem& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystem(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystem null() {return FlowSystem((FlowSystem_base*)0);}
@@ -835,6 +840,7 @@ public:
 	static GlobalComm_base *_fromString(std::string objectref);
 	static GlobalComm_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static GlobalComm_base *_fromDynamicCast(const Arts::Object& object);
 	inline GlobalComm_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -902,7 +908,7 @@ public:
 		Arts::Object(GlobalComm_base::_create(s.string())), _cache(0) {}
 	inline GlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline GlobalComm(const Arts::DynamicCast& c) : Arts::Object(GlobalComm_base::_fromString(c.object().toString())), _cache(0) {}
+	inline GlobalComm(const Arts::DynamicCast& c) : Arts::Object(GlobalComm_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline GlobalComm(const GlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline GlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static GlobalComm null() {return GlobalComm((GlobalComm_base*)0);}
@@ -930,6 +936,7 @@ public:
 	static TmpGlobalComm_base *_fromString(std::string objectref);
 	static TmpGlobalComm_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static TmpGlobalComm_base *_fromDynamicCast(const Arts::Object& object);
 	inline TmpGlobalComm_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -991,7 +998,7 @@ public:
 		Arts::Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
 	inline TmpGlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TmpGlobalComm(const Arts::DynamicCast& c) : Arts::Object(TmpGlobalComm_base::_fromString(c.object().toString())), _cache(0) {}
+	inline TmpGlobalComm(const Arts::DynamicCast& c) : Arts::Object(TmpGlobalComm_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline TmpGlobalComm(const TmpGlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline TmpGlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static TmpGlobalComm null() {return TmpGlobalComm((TmpGlobalComm_base*)0);}
@@ -1020,6 +1027,7 @@ public:
 	static TraderOffer_base *_fromString(std::string objectref);
 	static TraderOffer_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static TraderOffer_base *_fromDynamicCast(const Arts::Object& object);
 	inline TraderOffer_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -1091,7 +1099,7 @@ public:
 		Arts::Object(TraderOffer_base::_create(s.string())), _cache(0) {}
 	inline TraderOffer(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(TraderOffer_base::_fromString(r.string())):(TraderOffer_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TraderOffer(const Arts::DynamicCast& c) : Arts::Object(TraderOffer_base::_fromString(c.object().toString())), _cache(0) {}
+	inline TraderOffer(const Arts::DynamicCast& c) : Arts::Object(TraderOffer_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline TraderOffer(const TraderOffer& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline TraderOffer(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static TraderOffer null() {return TraderOffer((TraderOffer_base*)0);}
@@ -1118,6 +1126,7 @@ public:
 	static TraderQuery_base *_fromString(std::string objectref);
 	static TraderQuery_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static TraderQuery_base *_fromDynamicCast(const Arts::Object& object);
 	inline TraderQuery_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -1183,7 +1192,7 @@ public:
 		Arts::Object(TraderQuery_base::_create(s.string())), _cache(0) {}
 	inline TraderQuery(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(TraderQuery_base::_fromString(r.string())):(TraderQuery_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TraderQuery(const Arts::DynamicCast& c) : Arts::Object(TraderQuery_base::_fromString(c.object().toString())), _cache(0) {}
+	inline TraderQuery(const Arts::DynamicCast& c) : Arts::Object(TraderQuery_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline TraderQuery(const TraderQuery& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline TraderQuery(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static TraderQuery null() {return TraderQuery((TraderQuery_base*)0);}
@@ -1210,6 +1219,7 @@ public:
 	static Loader_base *_fromString(std::string objectref);
 	static Loader_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
+	static Loader_base *_fromDynamicCast(const Arts::Object& object);
 	inline Loader_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
@@ -1285,7 +1295,7 @@ public:
 		Arts::Object(Loader_base::_create(s.string())), _cache(0) {}
 	inline Loader(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(Loader_base::_fromString(r.string())):(Loader_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline Loader(const Arts::DynamicCast& c) : Arts::Object(Loader_base::_fromString(c.object().toString())), _cache(0) {}
+	inline Loader(const Arts::DynamicCast& c) : Arts::Object(Loader_base::_fromDynamicCast(c.object())), _cache(0) {}
 	inline Loader(const Loader& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline Loader(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static Loader null() {return Loader((Loader_base*)0);}

@@ -167,6 +167,20 @@ struct TestWrapper : public TestCase
 		testEquals(42, b.value());
 		testEquals(42, d.value());
 	}
+
+	TEST(dynamicCastNull) {
+		D normalD;
+		D nullD = D::null();
+		A aNormalD = normalD;
+		A aNullD = nullD;
+		D d;
+
+		d = DynamicCast(aNormalD);
+		testEquals(false, d.isNull());
+
+		d = DynamicCast(aNullD);
+		testEquals(true, d.isNull());
+	}
 };
 
 TESTMAIN(TestWrapper);
