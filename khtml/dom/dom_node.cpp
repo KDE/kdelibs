@@ -362,6 +362,9 @@ bool Node::dispatchEvent(const Event &evt)
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
+    if (!evt.handle())
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+
     int exceptioncode = 0;
     bool r = impl->dispatchEvent(evt.handle(),exceptioncode);
     if (exceptioncode)

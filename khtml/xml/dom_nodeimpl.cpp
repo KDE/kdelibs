@@ -458,12 +458,6 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
 
 bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
-    // Not mentioned in spec: throw NOT_FOUND_ERR if evt is null
-    if (!evt) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return false;
-    }
-
     evt->setTarget(this);
 
     // Since event handling code could cause this object to be deleted, grab a reference to the view now
