@@ -103,6 +103,9 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
   for (; pIt != pEnd; ++pIt )
   {
       QFileInfo fInfo( *pIt );
+      if ( fInfo.extension() == QString::fromLatin1( ".desktop" ) )
+          continue;
+
       QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );
       if ( mapIt == sortedPlugins.end() )
           mapIt = sortedPlugins.insert( fInfo.fileName(), QStringList() );
@@ -117,16 +120,18 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
       PluginInfo info;
       QString doc;
       info.m_absXMLFileName = KXMLGUIClient::findMostRecentXMLFile( mapIt.data(), doc );
-      if ( !info.m_absXMLFileName.isEmpty() )
-      {
-          kdDebug( 1000 ) << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
-          info.m_relXMLFileName = "kpartplugins/";
-          info.m_relXMLFileName += mapIt.key();
+      if ( info.m_absXMLFileName.isEmpty() )
+          continue;
 
-          info.m_document.setContent( doc );
-          if ( !info.m_document.documentElement().isNull() )
-            plugins.append( info );
-      }
+      kdDebug( 1000 ) << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
+      info.m_relXMLFileName = "kpartplugins/";
+      info.m_relXMLFileName += mapIt.key();
+
+      info.m_document.setContent( doc );
+      if ( info.m_document.documentElement().isNull() )
+          continue;
+
+      plugins.append( info );
   }
 
   return plugins;
