@@ -1,0 +1,6 @@
+allMimeTypes                                        (easy)
+No mimetype installed ? (for KMimeType::check())    (easy)
+matchFileName [without creating the mimetypes]      (difficult)
+
+and then move back to libkio
+

@@ -168,7 +168,7 @@ public:
    * available mimetypes.  The returned dict contains a subset of the
    * entries returned by @ref KServiceType::serviceTypes 
    */
-  // TODO static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; } 
+  // TODO static const QDict<KMimeType>& allMimeTypes() { return *s_mapMimeTypes; } 
 
 protected:
   /**

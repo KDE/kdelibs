@@ -566,6 +566,7 @@ bool KDEDesktopMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
 bool KDEDesktopMimeType::runMimeType( const QString& , KSimpleConfig & )
 {
   // HACK: TODO
+  // How ? (David) Showing up the properties dialog ? That's in libkonq !
   return false;
 }
 
