@@ -19,6 +19,7 @@
 #include "karrowbutton.h"
 
 #include <qstyle.h>
+#include <qpainter.h>
 
 class KArrowButton::Private
 {
@@ -63,9 +64,7 @@ void KArrowButton::drawButton(QPainter *p)
 	style().drawPanel(p, 0, 0, width(), height(), colorGroup(),
 			isDown(), 2, &colorGroup().brush(QColorGroup::Background));
 #else
-#if defined(Q_CC_GNU)
-#warning beta3's qstyle API doesn't allow to specify the background fill brush!
-#endif
+        p->fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
 	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
 			       colorGroup(), 
 			       isDown() ? QStyle::Style_Sunken : QStyle::Style_Default,
