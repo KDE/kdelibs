@@ -572,10 +572,12 @@ bool ReadWritePart::saveAs( const KURL & kurl )
     }
     // otherwise, we already had a temp file
   }
-  emit setWindowCaption( m_url.prettyURL() );
   bool result = save(); // Save local file and upload local file
-  if (!result)
+  if (result)
+    emit setWindowCaption( m_url.prettyURL() );
+  else
     m_url = oldURL;
+      
   return result;    
 }
 
