@@ -308,14 +308,18 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     setDelegate( d->klineEdit );
 
     // forward some signals. We only emit returnPressed() ourselves.
-    if ( d->klineEdit ) {
+    if ( d->klineEdit ) 
+    {
         connect( d->klineEdit, SIGNAL( completion( const QString& )),
                  SIGNAL( completion( const QString& )) );
+        
         connect( d->klineEdit, SIGNAL( substringCompletion( const QString& )),
                  SIGNAL( substringCompletion( const QString& )) );
+        
         connect( d->klineEdit,
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )),
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )) );
+        
         connect( d->klineEdit,
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion )),
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
@@ -323,6 +327,10 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         connect( d->klineEdit,
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
+                 
+        connect( d->klineEdit,
+                 SIGNAL( completionBoxActivated( const QString& )),
+                 SIGNAL( activated( const QString& )) );
     }
 }
 
