@@ -208,8 +208,8 @@ namespace KParts
                 return 0;
             }
 
-            return createInstanceFromLibrary<T>( library.local8Bit(), parent, name, 
-                                                 args, error );
+            return createInstanceFromLibrary<T>( library.local8Bit().data(), parent, 
+	    					 name, args, error );
         }
 
         template <class T>
@@ -363,7 +363,7 @@ namespace KParts
                                                       parent, name, args, error );
         }
  
-    };
+    }
 
 };
 
