@@ -1283,6 +1283,11 @@ class KDialogBase : public KDialog
      * @param anchor Defined anchor in your docbook sources
      * @param appname Defines the appname the help belongs to
      *                If empty it's the current one
+     *
+     * @note The help button works differently for the class 
+     * KCMultiDialog, so it does not make sense to call this
+     * function for Dialogs of that type.  See 
+     * KCMultiDialog::slotHelp() for more information.
      */
     void setHelp( const QString &anchor,
 		  const QString &appname = QString::null );
