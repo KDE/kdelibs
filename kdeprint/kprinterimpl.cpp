@@ -408,7 +408,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 
 int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool flag)
 {
-	PluginInfo	info = KMFactory::self()->pluginInfo(KMFactory::self()->printSystem());
+	KMFactory::PluginInfo	info = KMFactory::self()->pluginInfo(KMFactory::self()->printSystem());
 	int		status(0), result;
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); )
 	{

@@ -42,22 +42,22 @@ class KLibFactory;
 class KConfig;
 class KPReloadObject;
 
-struct PluginInfo
-{
-	QString		name;
-	QString		comment;
-	QStringList	detectUris;
-	int		detectPrecedence;
-	QStringList	mimeTypes;
-	QString		primaryMimeType;
-};
-
 class KMFactory : public QObject, public DCOPObject
 {
 	Q_OBJECT
 	K_DCOP
 
 public:
+	struct PluginInfo
+	{
+		QString		name;
+		QString		comment;
+		QStringList	detectUris;
+		int		detectPrecedence;
+		QStringList	mimeTypes;
+		QString		primaryMimeType;
+	};
+
 	static KMFactory* self();
 	static void release();
 

@@ -40,9 +40,9 @@ PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 	l0->addWidget(m_combo, 0, 1);
 	l0->addWidget(m_plugininfo, 1, 1);
 
-	QValueList<PluginInfo>	list = KMFactory::self()->pluginList();
+	QValueList<KMFactory::PluginInfo>	list = KMFactory::self()->pluginList();
 	QString			currentPlugin = KMFactory::self()->printSystem();
-	for (QValueList<PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (QValueList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		m_combo->insertItem((*it).comment);
 		if ((*it).name == currentPlugin)
