@@ -24,9 +24,7 @@ AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
 dnl Checks for programs.
 AC_CHECK_COMPILERS
-
 AC_LIBLTDL_CONVENIENCE
-AC_OUTPUT_SUBDIRS(libltdl)
 
 AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
@@ -184,6 +182,8 @@ DCOPIDL='$(top_builddir)/dcop/dcopidl/dcopidl'
 DCOPIDL2CPP='$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp'
 AC_SUBST(DCOPIDL)
 AC_SUBST(DCOPIDL2CPP)
+
+AC_CONFIG_SUBDIRS(libltdl)
 
 CXXFLAGS="$CXXFLAGS "'$(USE_RTTI)'
 
