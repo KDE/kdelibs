@@ -92,7 +92,7 @@ libkdeui_la_SOURCES = \
 		kcolorcombo.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
-		kdialogbase_priv.h kaboutdialog_private.h kjanuswidget_private.h
+		kdialogbase_priv.h kaboutdialog_private.h 
 
 libkdeui_la_METASOURCES = AUTO
 

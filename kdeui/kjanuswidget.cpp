@@ -38,7 +38,6 @@
 #include <kseparator.h>
 #include <kdebug.h>
 #include "kjanuswidget.h"
-#include "kjanuswidget_private.h"
 #include <klistview.h>
 
 class IconListItem : public QListBoxItem
@@ -64,32 +63,12 @@ class IconListItem : public QListBoxItem
 template class QList<QListViewItem>;
 
 
-
-KJanusWidget::KJanusWidgetPrivate::KJanusWidgetPrivate()
-{
-}
-
-KJanusWidget::KJanusWidgetPrivate::~KJanusWidgetPrivate()
-{
-}
-
-// MOVE ME TO KJanusWidget::slotItemClicked() !!!
-// makes the treelist behave like the list of kcontrol
-void KJanusWidget::KJanusWidgetPrivate::slotItemClicked(QListViewItem *it)
-{
-  if(it && (it->childCount()>0))
-    it->setOpen(!it->isOpen());
-}
-
-
-
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   : QWidget( parent, name, 0 ),
     mValid(false), mPageList(0),
     mTitleList(0), mFace(face), mTitleLabel(0), mActivePageWidget(0),
-    mShowIconsInTreeList(false)
+    mShowIconsInTreeList(false), d(0)
 {
-  d = new KJanusWidgetPrivate();
   QVBoxLayout *topLayout = new QVBoxLayout( this );
 
   if( mFace == TreeList || mFace == IconList )
@@ -110,7 +89,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mTreeList->setRootIsDecorated(true);
       mTreeList->setSorting( -1 );
       connect( mTreeList, SIGNAL(selectionChanged()), SLOT(slotShowPage()) );
-      connect( mTreeList, SIGNAL(clicked(QListViewItem *)), d, SLOT(slotItemClicked(QListViewItem *)));
+      connect( mTreeList, SIGNAL(clicked(QListViewItem *)), SLOT(slotItemClicked(QListViewItem *)));
 
       //
       // Page area. Title at top with a separator below and a pagestack using
@@ -193,7 +172,6 @@ KJanusWidget::~KJanusWidget()
 {
   delete mPageList;
   delete mTitleList;
-  delete d;
 }
 
 
@@ -704,6 +682,13 @@ void KJanusWidget::slotFontChanged()
   }
 }
 
+// makes the treelist behave like the list of kcontrol
+void KJanusWidget::slotItemClicked(QListViewItem *it)
+{
+  if(it && (it->childCount()>0))
+    it->setOpen(!it->isOpen());
+}
+
 void KJanusWidget::setFocus()
 {
   if( mValid == false ) { return; }
@@ -1027,5 +1012,4 @@ int IconListItem::width( const QListBox *lb ) const
 
 
 #include "kjanuswidget.moc"
-#include "kjanuswidget_private.moc"
 

@@ -434,6 +434,7 @@ class KJanusWidget : public QWidget
   private slots:
     bool slotShowPage();
     void slotFontChanged();
+    void slotItemClicked(QListViewItem *it);
 
   protected:
     bool showPage( QWidget *w );
@@ -465,7 +466,6 @@ class KJanusWidget : public QWidget
     QMap<QString, QPixmap> mFolderIconMap;
     QMap<QString, QStringList> mChildrenNames;
     QMap<QString, QWidget *> mChildPages;
-
 
     class KJanusWidgetPrivate;
     KJanusWidgetPrivate *d;
