@@ -257,6 +257,7 @@ void KURLRequester::slotOpenDialog()
 
 void KURLRequester::setMode(unsigned int mode)
 {
+    Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;
     if (myFileDialog)
        myFileDialog->setMode( d->fileDialogMode );
