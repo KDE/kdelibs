@@ -410,6 +410,9 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     {
         mMinSize = config->readNumEntry("MinSize", mSize);
         mMaxSize = config->readNumEntry("MaxSize", mSize);
+    } else {
+	mMinSize = 1;  // just set the variables to something
+	mMaxSize = 50; // meaningful in case someone calls minSize or maxSize
     }
     mbValid = true;
 }
