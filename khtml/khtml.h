@@ -76,6 +76,13 @@ public:
   QList<HTMLObject> m_lstClients;
 };
 
+struct HTMLPageInfo
+{
+public:
+  QStrList imageURLs;
+  QStrList hrefURLs;
+};
+
 class SavedPage;
 
 /**
@@ -503,6 +510,12 @@ public:
     void setGranularity( int g )
 	{   granularity = g; }
 
+
+    /** 
+     * if an href is encountered it is registered here for 
+     * informational purposes.
+     */
+    void addHref( const char *_url );
 
     /** if an HTMLObject needs an image, it calls this function.
      */
@@ -1256,8 +1269,24 @@ protected:
      * caches images.
      */
     KHTMLCache *cache;
+    
+    /**
+     * info about current page: used images
+     */
+    QStrList usedImageURLs;
+
+    /**
+     * info about current page: href's
+     */
+    QStrList usedHrefURLs;
 
 public:
+    /**
+     * Get info about the current page
+     * Caller should delete the returned pageinfo structure.
+     */
+    HTMLPageInfo *getPageInfo();
+
     /**
      * Loads an image into the cache and makes it persistant
      */

@@ -1031,6 +1031,7 @@ void KHTMLParser::parseTagA(void)
 	    currentStyle->font.decoration = CSSStyleFont::decUnderline;
 	setFont();
         url = ht->newString( tmpurl.data(), tmpurl.length() );
+        HTMLWidget->addHref(tmpurl.data());
     }
 }
 
@@ -1163,6 +1164,9 @@ void KHTMLParser::parseTagArea(void)
 	    }
 	    break;
     }
+    if (strlen(href))
+        HTMLWidget->addHref(href);
+        
     if ( area )
         imageMap->addArea( area );
 }

@@ -162,6 +162,15 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
     textFindIter = 0;
 }
+     
+void KHTMLWidget::addHref( const char *_url )
+{ 
+    if (!usedHrefURLs.contains( _url))
+    {
+        usedHrefURLs.inSort( _url);
+    }
+}
+
 
 //
 // Cache handling
@@ -173,6 +182,10 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 void KHTMLWidget::requestImage( HTMLObject *obj, const char *_url )
 { 
     cache->requestImage( obj, _url); 
+    if (!usedImageURLs.contains( _url))
+    {
+        usedImageURLs.inSort( _url);
+    }
 }
 
 void KHTMLWidget::preloadImage( const char *_filename)
@@ -1224,13 +1237,14 @@ void KHTMLWidget::print()
 
 void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 {
-    
     bIsFrameSet = FALSE;
     // bIsFrame = FALSE;
     bFramesComplete = FALSE;
     framesetList.clear();
     frameList.clear();
     embededFrameList.clear();
+    usedImageURLs.clear();
+    usedHrefURLs.clear();
     
     findTextEnd();
 
@@ -2840,6 +2854,15 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
 	}
     }    
     *s += "</frameset>";
+}
+
+HTMLPageInfo *
+KHTMLWidget::getPageInfo()
+{
+    HTMLPageInfo *pageInfo = new HTMLPageInfo();
+    pageInfo->imageURLs = usedImageURLs;
+    pageInfo->hrefURLs = usedHrefURLs;
+    return pageInfo;
 }
 
 #include "khtml.moc"
