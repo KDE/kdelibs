@@ -985,8 +985,10 @@ public:
     {}
 
     // wee use this one for the streaming operators
-    Data() { mimeTypeInfo = 0; }
-    ~Data() { delete mimeTypeInfo; }
+    Data() {
+        if ( this == null )
+            delete mimeTypeInfo;
+    };
 
     QString                             name;
     QMap<QString, KFileMetaInfoItem>    items;
