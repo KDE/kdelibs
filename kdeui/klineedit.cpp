@@ -132,7 +132,7 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
        // Skip rotation if previous/next match is null or the same tex
        if ( input.isNull() || input == displayText() )
             return;
-       setCompletedText( input, hasMarkedText() );
+       setCompletedText( input, hasSelectedText() );
     }
 }
 
@@ -198,7 +198,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 int len = txt.length();
-                if ( !hasMarkedText() && len && cursorPosition() == len )
+                if ( !hasSelectedText() && len && cursorPosition() == len )
                 {
                     kdDebug(293) << "Automatic Completion" << endl;
                     if ( emitSignals() )
@@ -306,11 +306,15 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
 QPopupMenu *KLineEdit::createPopupMenu()
 {
+    qDebug( "KLineEdit::createPopupMenu!" );
+
     // Return if popup menu is not enabled !!
     if ( !m_bEnableMenu )
         return 0;
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
+
+    qDebug( "before completion" );
 
     // completion object is present.
     if ( compObj() )
@@ -550,13 +554,13 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 void KLineEdit::deleteWordForward()
 {
     cursorWordForward(TRUE);
-    if ( hasMarkedText() )
+    if ( hasSelectedText() )
         del();
 }
 
 void KLineEdit::deleteWordBack()
 {
     cursorWordBackward(TRUE);
-    if ( hasMarkedText() )
+    if ( hasSelectedText() )
         del();
 }

@@ -38,7 +38,7 @@
 #include <kstddirs.h>
 
 /*
- * TODO:     - make more use of QValueList instead of QList
+ * TODO:     - make more use of QValueList instead of QPtrList
  */
 
 /*
@@ -56,16 +56,16 @@
 struct KXMLGUIContainerClient
 {
     KXMLGUIClient *client;
-    QList<KAction> actions;
+    QPtrList<KAction> actions;
     QValueList<int> customElements;
     QString groupName; //is empty if no group client
-    QMap<QString, QList<KAction> > actionLists;
+    QMap<QString, QPtrList<KAction> > actionLists;
     QString mergingName;
 };
 
-template class QList<KXMLGUIContainerClient>;
+template class QPtrList<KXMLGUIContainerClient>;
 class KXMLGUIContainerNode;
-template class QList<KXMLGUIContainerNode>;
+template class QPtrList<KXMLGUIContainerNode>;
 
 struct MergingIndex
 {
@@ -117,8 +117,8 @@ struct KXMLGUIContainerNode
 
     QString groupName; //is empty if the container is in no group
 
-    QList<KXMLGUIContainerClient> clients;
-    QList<KXMLGUIContainerNode> children;
+    QPtrList<KXMLGUIContainerClient> clients;
+    QPtrList<KXMLGUIContainerNode> children;
 
     int index;
     QValueList<MergingIndex> mergingIndices;
@@ -129,7 +129,7 @@ struct KXMLGUIContainerNode
     KXMLGUIContainerNode *findContainerNode( QWidget *container );
     KXMLGUIContainerNode *findContainer( const QString &_name, bool tag );
     KXMLGUIContainerNode *findContainer( const QString &name, const QString &tagName,
-                                         const QList<QWidget> *excludeList,
+                                         const QPtrList<QWidget> *excludeList,
                                          KXMLGUIClient *currClient );
 };
 
@@ -172,7 +172,7 @@ public:
     /*
      * List of all clients
      */
-    QList<KXMLGUIClient> m_clients;
+    QPtrList<KXMLGUIClient> m_clients;
 
     /*
      * Contains the name of the actionlist currently plugged/unplugged in ::plugActionList
@@ -182,7 +182,7 @@ public:
     /*
      * Similar to m_actionListName.
      */
-    QList<KAction> m_actionList;
+    QPtrList<KAction> m_actionList;
 
     QString tagActionList;
 
@@ -252,7 +252,7 @@ QValueList<MergingIndex>::Iterator KXMLGUIContainerNode::findIndex( const QStrin
  */
 KXMLGUIContainerNode *KXMLGUIContainerNode::findContainerNode( QWidget *container )
 {
-    QListIterator<KXMLGUIContainerNode> it( children );
+    QPtrListIterator<KXMLGUIContainerNode> it( children );
 
     for (; it.current(); ++it )
         if ( it.current()->container == container )
@@ -272,7 +272,7 @@ KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &_name,
          ( !tag && name == _name ) )
         return this;
 
-    QListIterator<KXMLGUIContainerNode> it( children );
+    QPtrListIterator<KXMLGUIContainerNode> it( children );
     for (; it.current(); ++it )
     {
         KXMLGUIContainerNode *res = it.current()->findContainer( _name, tag );
@@ -289,11 +289,11 @@ KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &_name,
  * belongs to currClient.
  */
 KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &name, const QString &tagName,
-                                                           const QList<QWidget> *excludeList,
+                                                           const QPtrList<QWidget> *excludeList,
                                                            KXMLGUIClient *currClient )
 {
     KXMLGUIContainerNode *res = 0L;
-    QListIterator<KXMLGUIContainerNode> nIt( children );
+    QPtrListIterator<KXMLGUIContainerNode> nIt( children );
 
     if ( !name.isEmpty() )
     {
@@ -550,8 +550,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // build child clients
     if ( client->childClients()->count() > 0 )
     {
-        const QList<KXMLGUIClient> *children = client->childClients();
-        QListIterator<KXMLGUIClient> childIt( *children );
+        const QPtrList<KXMLGUIClient> *children = client->childClients();
+        QPtrListIterator<KXMLGUIClient> childIt( *children );
         for (; childIt.current(); ++childIt )
             addClient( childIt.current() );
     }
@@ -571,8 +571,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // remove child clients first
     if ( client->childClients()->count() > 0 )
     {
-        const QList<KXMLGUIClient> *children = client->childClients();
-        QListIterator<KXMLGUIClient> childIt( *children );
+        const QPtrList<KXMLGUIClient> *children = client->childClients();
+        QPtrListIterator<KXMLGUIClient> childIt( *children );
         for (; childIt.current(); ++childIt )
             removeClient( childIt.current() );
     }
@@ -608,7 +608,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     emit clientRemoved( client );
 }
 
-QList<KXMLGUIClient> KXMLGUIFactory::clients() const
+QPtrList<KXMLGUIClient> KXMLGUIFactory::clients() const
 {
     return d->m_clients;
 }
@@ -627,7 +627,7 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
     return result;
 }
 
-QList<QWidget> KXMLGUIFactory::containers( const QString &tagName )
+QPtrList<QWidget> KXMLGUIFactory::containers( const QString &tagName )
 {
     return findRecursive( d->m_rootNode, tagName );
 }
@@ -660,7 +660,7 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
 
 void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
 {
-    QListIterator<KXMLGUIContainerNode> childIt( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> childIt( node->children );
     for (; childIt.current(); ++childIt )
         resetInternal( childIt.current() );
 
@@ -692,7 +692,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
      * containers having no proper name attribute to distinct them.
      * ### still needed?
      */
-    QList<QWidget> containerList;
+    QPtrList<QWidget> containerList;
 
     KXMLGUIContainerClient *containerClient = 0L;
 
@@ -933,7 +933,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode *node )
 {
     // process all child containers first
-    QListIterator<KXMLGUIContainerNode> childIt( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> childIt( node->children );
     while ( childIt.current() )
     {
         KXMLGUIContainerNode *childNode = childIt.current();
@@ -961,7 +961,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
     QValueList<MergingIndex>::Iterator mergingIt = node->mergingIndices.end();
 
-    QListIterator<KXMLGUIContainerClient> clientIt( node->clients );
+    QPtrListIterator<KXMLGUIContainerClient> clientIt( node->clients );
 
     if ( node->container )
     {
@@ -985,7 +985,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
                 for (; custIt != custEnd; ++custIt )
                     node->builder->removeCustomElement( node->container, *custIt );
 
-                QListIterator<KAction> actionIt( clientIt.current()->actions );
+                QPtrListIterator<KAction> actionIt( clientIt.current()->actions );
                 for (; actionIt.current(); ++actionIt )
                     actionIt.current()->unplug( node->container );
 
@@ -999,11 +999,11 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
                 // unplug all actionslists
 
-                QMap<QString, QList<KAction> >::ConstIterator alIt = clientIt.current()->actionLists.begin();
-                QMap<QString, QList<KAction> >::ConstIterator alEnd = clientIt.current()->actionLists.end();
+                QMap<QString, QPtrList<KAction> >::ConstIterator alIt = clientIt.current()->actionLists.begin();
+                QMap<QString, QPtrList<KAction> >::ConstIterator alEnd = clientIt.current()->actionLists.end();
                 for (; alIt != alEnd; ++alIt )
                 {
-                    actionIt = QListIterator<KAction>( alIt.data() );
+                    actionIt = QPtrListIterator<KAction>( alIt.data() );
                     for (; actionIt.current(); ++actionIt )
                         actionIt.current()->unplug( node->container );
 
@@ -1138,7 +1138,7 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )
          ( !m_client || node->client == m_client ) )
         return node->container;
 
-    QListIterator<KXMLGUIContainerNode> it( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> it( node->children );
     for (; it.current(); ++it )
     {
         QWidget *cont = findRecursive( it.current(), tag );
@@ -1149,18 +1149,18 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )
     return 0L;
 }
 
-QList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, const QString &tagName )
+QPtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, const QString &tagName )
 {
-    QList<QWidget> res;
+    QPtrList<QWidget> res;
 
     if ( node->tagName == tagName.lower() )
         res.append( node->container );
 
-    QListIterator<KXMLGUIContainerNode> it( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> it( node->children );
     for (; it.current(); ++it )
     {
-        QList<QWidget> lst = findRecursive( it.current(), tagName );
-        QListIterator<QWidget> wit( lst );
+        QPtrList<QWidget> lst = findRecursive( it.current(), tagName );
+        QPtrListIterator<QWidget> wit( lst );
         for (; wit.current(); ++wit )
             res.append( wit.current() );
     }
@@ -1206,7 +1206,7 @@ KXMLGUIContainerClient *KXMLGUIFactory::findClient( KXMLGUIContainerNode *node,
 {
     if ( !node->clients.isEmpty() )
     {
-        QListIterator<KXMLGUIContainerClient> clientIt( node->clients );
+        QPtrListIterator<KXMLGUIContainerClient> clientIt( node->clients );
 
         for (; clientIt.current(); ++clientIt )
             if ( clientIt.current()->client == m_client )
@@ -1232,7 +1232,7 @@ KXMLGUIContainerClient *KXMLGUIFactory::findClient( KXMLGUIContainerNode *node,
 }
 
 void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
-                                     const QList<KAction> &actionList )
+                                     const QPtrList<KAction> &actionList )
 {
     m_client = client;
     d->m_actionListName = name;
@@ -1243,7 +1243,7 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
 
     m_client = 0;
     d->m_actionListName = QString::null;
-    d->m_actionList = QList<KAction>();
+    d->m_actionList = QPtrList<KAction>();
     d->m_clientName = QString::null;
 }
 
@@ -1285,14 +1285,14 @@ void KXMLGUIFactory::plugActionListRecursive( KXMLGUIContainerNode *node )
 
         client->actionLists.insert( k, d->m_actionList );
 
-        QListIterator<KAction> aIt( d->m_actionList );
+        QPtrListIterator<KAction> aIt( d->m_actionList );
         for (; aIt.current(); ++aIt )
             aIt.current()->plug( node->container, idx++ );
 
         adjustMergingIndices( node, d->m_actionList.count(), mIt );
     }
 
-    QListIterator<KXMLGUIContainerNode> childIt( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> childIt( node->children );
     for (; childIt.current(); ++childIt )
         plugActionListRecursive( childIt.current() );
 }
@@ -1318,11 +1318,11 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUIContainerNode *node )
 
         KXMLGUIContainerClient *client = findClient( node, QString::null, node->mergingIndices.end() );
 
-        QMap<QString, QList<KAction> >::Iterator lIt( client->actionLists.find( k ) );
+        QMap<QString, QPtrList<KAction> >::Iterator lIt( client->actionLists.find( k ) );
         if ( lIt == client->actionLists.end() )
             continue;
 
-        QListIterator<KAction> aIt( lIt.data() );
+        QPtrListIterator<KAction> aIt( lIt.data() );
         for (; aIt.current(); ++aIt )
             aIt.current()->unplug( node->container );
 
@@ -1332,7 +1332,7 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUIContainerNode *node )
     }
 
 
-    QListIterator<KXMLGUIContainerNode> childIt( node->children );
+    QPtrListIterator<KXMLGUIContainerNode> childIt( node->children );
     for (; childIt.current(); ++childIt )
         unplugActionListRecursive( childIt.current() );
 }

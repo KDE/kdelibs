@@ -163,7 +163,7 @@ KFontCombo::KFontCombo(QWidget *parent, const char *name)
 {
     init();
     QFontDatabase fontdb;
-    setFonts(fontdb.families(false));
+    setFonts(fontdb.families());
 }
 
 KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent, const char *name)

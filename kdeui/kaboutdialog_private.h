@@ -124,7 +124,7 @@ class KAboutContainerBase : public QWidget
     void mailClick( const QString &name, const QString &address );
 
   private:
-    QArray<QWidget*>  mContainerList;
+    QMemArray<QWidget*>  mContainerList;
 
     QVBoxLayout *mTopLayout;
     KImageTrackLabel *mImageLabel;

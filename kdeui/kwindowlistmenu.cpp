@@ -39,17 +39,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kwindowlistmenu.moc"
 
 // helper class
-class NameSortedInfoList : public QList<KWin::Info>
+class NameSortedInfoList : public QPtrList<KWin::Info>
 {
 public:
     NameSortedInfoList() { setAutoDelete(true); };
     ~NameSortedInfoList() {};
 
 private:
-    int compareItems( QCollection::Item s1, QCollection::Item s2 );
+    int compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 );
 };
 
-int NameSortedInfoList::compareItems( QCollection::Item s1, QCollection::Item s2 )
+int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 )
 {
 #ifndef Q_WS_QWS //FIXME
     KWin::Info *i1 = static_cast<KWin::Info *>(s1);

@@ -809,14 +809,14 @@ KToolBar *KMainWindow::toolBar( const char * name )
     if ( builderClient() )
         return new KToolBar(this, name, honor_mode); // XMLGUI constructor
     else
-        return new KToolBar(this, Top, false, name, honor_mode ); // non-XMLGUI
+        return new KToolBar(this, DockTop, false, name, honor_mode ); // non-XMLGUI
 }
 
 QPtrListIterator<KToolBar> KMainWindow::toolBarIterator()
 {
     toolbarList.clear();
     QPtrList<QToolBar> lst;
-    for ( int i = (int)QMainWindow::Unmanaged; i <= (int)Minimized; ++i ) {
+    for ( int i = (int)QMainWindow::DockUnmanaged; i <= (int)DockMinimized; ++i ) {
         lst = toolBars( (ToolBarDock)i );
         for ( QToolBar *tb = lst.first(); tb; tb = lst.next() ) {
             if ( !tb->inherits( "KToolBar" ) )

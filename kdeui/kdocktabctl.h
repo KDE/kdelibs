@@ -41,7 +41,7 @@
 #define KDOCKTABCTL_H
 
 #include <qwidget.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qpixmap.h>
 #include <qtooltip.h>
 
@@ -61,8 +61,8 @@ class KDockTabBarPainter;
 class KDockDynTabBarToolTip;
 
 /**
- * Actually an internal struct. But it is used in a QList of KDockTabCtl (see below).
- * So we cannot use class forward declaration since QList demands to know the destructor method.
+ * Actually an internal struct. But it is used in a QPtrList of KDockTabCtl (see below).
+ * So we cannot use class forward declaration since QPtrList demands to know the destructor method.
  */
 struct KDockTabCtl_PrivateStruct
 {
@@ -297,7 +297,7 @@ private:
 
   TabPos tabPos;
   KDockTabBarPainter* barPainter;
-  QList<KDockTabBar_PrivateStruct> *mainData;
+  QPtrList<KDockTabBar_PrivateStruct> *mainData;
   int _currentTab;
   int leftTab;
 
@@ -719,7 +719,7 @@ protected:
    * An data item is of type KDockTabCtl_PrivateStruct (a struct) that contains the widget, its id and information
    * about whether it is enabled or disabled.
    */
-  QList<KDockTabCtl_PrivateStruct> *mainData;
+  QPtrList<KDockTabCtl_PrivateStruct> *mainData;
 
   /**
    * A pointer to the widget that is the current tab page in the covered tab bar.

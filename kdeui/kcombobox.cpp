@@ -291,14 +291,14 @@ void KComboBox::setLineEdit( QLineEdit *edit )
 void KComboBox::deleteWordForward()
 {
     lineEdit()->cursorWordForward(TRUE);
-    if ( lineEdit()->hasMarkedText() )
+    if ( lineEdit()->hasSelectedText() )
         lineEdit()->del();
 }
 
 void KComboBox::deleteWordBack()
 {
     lineEdit()->cursorWordBackward(TRUE);
-    if ( lineEdit()->hasMarkedText() )
+    if ( lineEdit()->hasSelectedText() )
         lineEdit()->del();
 }
 

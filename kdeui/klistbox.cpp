@@ -142,7 +142,7 @@ void KListBox::slotAutoSelect()
 	clearSelection(); 
 #endif
 
-      bool select = !m_pCurrentItem->selected();
+      bool select = !m_pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
       viewport()->setUpdatesEnabled( false );
 
@@ -171,13 +171,13 @@ void KListBox::slotAutoSelect()
     }
 #ifndef Q_WS_QWS //FIXME
     else if( (keybstate & ControlMask) )
-      setSelected( m_pCurrentItem, !m_pCurrentItem->selected() );
+      setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
 #endif
     else {
       bool block = signalsBlocked();
       blockSignals( true );
 
-      if( !m_pCurrentItem->selected() )
+      if( !m_pCurrentItem->isSelected() )
 	clearSelection(); 
 
       blockSignals( block );

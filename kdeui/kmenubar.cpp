@@ -82,7 +82,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       bool wasVisible = isVisibleTo(0);
       d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
-      reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
+      reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false  );
       hide(); // worakround for a qt < 2.2.2  bug
 #ifndef Q_WS_QWS //FIXME
       KWin::setType( winId(), NET::Menu );
@@ -128,7 +128,7 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
         QMenuBar::drawContents(p);
     else{
         int i, x, y, nlitems;
-        int dw = stylePtr->defaultFrameWidth();
+        int dw = stylePtr->pixelMetric( QStyle::PM_DefaultFrameWidth );
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
                                d->topLevel, NULL);
@@ -166,7 +166,7 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
             }
 
             stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
-                                    palette().normal() : palette().disabled(),
+                                    palette().active() : palette().disabled(),
                                     i == actItem,
                                     mi, NULL);
 

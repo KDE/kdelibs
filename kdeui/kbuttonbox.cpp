@@ -59,7 +59,7 @@ public:
   unsigned short actual_size;
 };
 
-template class QList<KButtonBox::Item>;
+template class QPtrList<KButtonBox::Item>;
 
 class KButtonBox::PrivateData {
 public:
@@ -67,7 +67,7 @@ public:
   unsigned short autoborder;
   unsigned short orientation;
   bool activated;
-  QList<KButtonBox::Item> buttons;
+  QPtrList<KButtonBox::Item> buttons;
 };
 
 KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,

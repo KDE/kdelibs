@@ -2548,7 +2548,7 @@ public:
   }
   KInstance *m_instance;
   QAsciiDict<KAction> m_actionDict;
-  QPtrDict< QList<KAction> > m_dctHighlightContainers;
+  QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
   KKeyEntryMap m_keyMap;
   KAction *m_currentHighlightAction;
@@ -2774,11 +2774,11 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   if ( !d->m_highlight )
     return;
 
-  QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
 
   if ( !actionList )
   {
-    actionList = new QList<KAction>;
+    actionList = new QPtrList<KAction>;
 
     if ( container->inherits( "QPopupMenu" ) )
     {
@@ -2807,7 +2807,7 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
   if ( !d->m_highlight )
     return;
 
-  QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
 
   if ( !actionList )
     return;
@@ -2890,12 +2890,12 @@ void KActionCollection::slotDestroyed()
 
 KAction *KActionCollection::findAction( QWidget *container, int id )
 {
-  QList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
+  QPtrList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
 
   if ( !actionList )
     return 0;
 
-  QListIterator<KAction> it( *actionList );
+  QPtrListIterator<KAction> it( *actionList );
   for (; it.current(); ++it )
     if ( it.current()->isPlugged( container, id ) )
       return it.current();

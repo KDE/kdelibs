@@ -22,7 +22,7 @@
 #include <qtimer.h>
 #include <qheader.h>
 #include <qcursor.h>
-#include <qstack.h>
+#include <qptrstack.h>
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <qpainter.h>
@@ -1770,7 +1770,7 @@ const QColor &KListViewItem::backgroundColor()
   if (lv && lv->alternateBackground().isValid())
   {
     KListViewItem *above = 0;
-    QStack<KListViewItem> items;
+    QPtrStack<KListViewItem> items;
     for (KListViewItem *item = this; item; item = above)
     {
       items.push(item);

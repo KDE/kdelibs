@@ -802,12 +802,12 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
         lowlightVal=100+((2*KGlobalSettings::contrast()+4)*10);
         return(new QColorGroup(fg, bg, bg.light(highlightVal),
                                bg.dark(lowlightVal), bg.dark(120),
-                               fg, kapp->palette().normal().base()));
+                               fg, kapp->palette().active().base()));
     }
     else
         return(new QColorGroup( fg, bg, bg.light(150), bg.dark(),
                                 bg.dark(120), fg,
-                                kapp->palette().normal().base()));
+                                kapp->palette().active().base()));
 }
 
 void KThemeBase::applyMiscResourceGroup(KConfig *config)
@@ -946,12 +946,12 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
     // Gradient low color or blend background
     if(config->hasKey("GradientLow"))
         prop.writeEntry("GrLow", config->readColorEntry("GradientLow",
-            &kapp->palette().normal().background()));
+            &kapp->palette().active().background()));
 
     // Gradient high color
     if(config->hasKey("GradientHigh"))
         prop.writeEntry("GrHigh", config->readColorEntry("GradientHigh",
-            &kapp->palette().normal().foreground()));
+            &kapp->palette().active().foreground()));
 
     // Extended color attributes
     if(config->hasKey("Foreground") || config->hasKey("Background")){
@@ -1089,7 +1089,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     if(gradients[i] != GrNone || blends[i] != 0.0)
         grLowColors[i] =
             new QColor(prop.readColorEntry(QString::fromLatin1("GrLow"),
-                                           &kapp->palette().normal().
+                                           &kapp->palette().active().
                                            background()));
     else
         grLowColors[i] = NULL;
@@ -1098,7 +1098,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     if(gradients[i] != GrNone)
         grHighColors[i] =
             new QColor(prop.readColorEntry(QString::fromLatin1("GrHigh"),
-                                           &kapp->palette().normal().
+                                           &kapp->palette().active().
                                            background()));
     else
         grHighColors[i] = NULL;
@@ -1109,9 +1109,9 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     bg = prop.readColorEntry(QString::fromLatin1("Background"), &bg);
     if(fg.isValid() || bg.isValid()){
         if(!fg.isValid())
-            fg = kapp->palette().normal().foreground();
+            fg = kapp->palette().active().foreground();
         if(!bg.isValid())
-            bg = kapp->palette().normal().background();
+            bg = kapp->palette().active().background();
         colors[i] = makeColorGroup(fg, bg, Qt::WindowsStyle);
     }
     else

@@ -40,7 +40,7 @@
 #include <kaboutdialog_private.h>
 #include <kdebug.h>
 
-template class QArray<QWidget*>;
+template class QMemArray<QWidget*>;
 template class QPtrList<KAboutContributor>;
 
 #define WORKTEXT_IDENTATION 16

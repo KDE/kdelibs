@@ -33,7 +33,7 @@
 int KDialog::mMarginSize = 6;
 int KDialog::mSpacingSize = 6;
 
-template class QList<QLayoutItem>;
+template class QPtrList<QLayoutItem>;
 
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
@@ -57,7 +57,7 @@ void KDialog::keyPressEvent(QKeyEvent *e)
       case Key_Enter:
       case Key_Return:
       {
-        if(testWFlags(WType_Modal))
+        if(testWFlags(WType_Dialog | WShowModal))
 	{
           QDialog::keyPressEvent(e);
 	}

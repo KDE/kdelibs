@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2000/06/15 06:35:12  kalle
+ * Replaced #include "qtheader.h" with #include <qtheader.h> as it is supposed to be
+ *
  * Revision 1.10  1999/10/10 08:18:57  bero
  * Code cleanup ((void) stuff)
  *
@@ -43,7 +46,7 @@
 
 #include <qwidget.h>
 #include <qtabbar.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 /** 
  * Tabbed dialog with extended features.
@@ -95,7 +98,7 @@ protected:
     QRect getChildRect() const;
 
     QTabBar * tabs;
-    QArray<QWidget *> pages;
+    QMemArray<QWidget *> pages;
     int bh;
     bool blBorder;
 };

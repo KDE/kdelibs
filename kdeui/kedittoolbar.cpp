@@ -297,8 +297,8 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
   setFactory( factory );
 
   // add all of the client data
-  QList<KXMLGUIClient> clients(factory->clients());
-  QListIterator<KXMLGUIClient> it( clients );
+  QPtrList<KXMLGUIClient> clients(factory->clients());
+  QPtrListIterator<KXMLGUIClient> it( clients );
   for( ; it.current(); ++it)
   {
     KXMLGUIClient *client = it.current();
@@ -356,7 +356,7 @@ bool KEditToolbarWidget::save()
   if ( !factory() )
     return true;
 
-  QList<KXMLGUIClient> clients(factory()->clients());
+  QPtrList<KXMLGUIClient> clients(factory()->clients());
 
   // remove the elements starting from the last going to the first
   KXMLGUIClient *client = clients.last();

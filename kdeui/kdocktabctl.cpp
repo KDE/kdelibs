@@ -188,7 +188,7 @@ void KDockTabBarPainter::drawBuffer()
   int broken = -1;
   bool iconShow = tabBar->iconShow;
 
-  QList<KDockTabBar_PrivateStruct> *mainData = tabBar->mainData;
+  QPtrList<KDockTabBar_PrivateStruct> *mainData = tabBar->mainData;
   for ( uint k = 0; k < mainData->count(); k++ ){
     int x1 = x;
     int y1 = 2;
@@ -369,7 +369,7 @@ int KDockTabBarPainter::findBarByPos( int x, int y ) const
 
   KDockTabBar* bar = (KDockTabBar*)parent();
 
-  QList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
+  QPtrList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
   if ( mainData->isEmpty() ) return -1;
 
   int end = 0;
@@ -428,7 +428,7 @@ QRect KDockTabBarPainter::findBarRectByPos( int x, int y) const
 
   KDockTabBar* bar = (KDockTabBar*)parent();
 
-  QList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
+  QPtrList<KDockTabBar_PrivateStruct> *mainData = bar->mainData;
   if ( mainData->isEmpty() ) return QRect();
 
   int end = 0;
@@ -515,7 +515,7 @@ QString KDockTabBarPainter::tip( const QPoint & p ) const
 KDockTabCtl::KDockTabCtl(QWidget *parent, const char *name)
 : QWidget(parent, name )
 {
-  mainData = new QList<KDockTabCtl_PrivateStruct>;
+  mainData = new QPtrList<KDockTabCtl_PrivateStruct>;
   mainData->setAutoDelete( true );
 
   m_autoSetCaption = false;
@@ -918,7 +918,7 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
   barPainter = new KDockTabBarPainter( this );
   move( 0, 0 );
 
-  mainData = new QList<KDockTabBar_PrivateStruct>;
+  mainData = new QPtrList<KDockTabBar_PrivateStruct>;
   mainData->setAutoDelete( true );
   _currentTab = -1;
   leftTab = 0;

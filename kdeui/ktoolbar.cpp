@@ -93,7 +93,7 @@ public:
         m_configurePlugged = false;
         //hasRealPos = FALSE;
 
-        oldPos = QMainWindow::Unmanaged;
+        oldPos = QMainWindow::DockUnmanaged;
 
         positioned = FALSE;
     }
@@ -122,7 +122,7 @@ public:
 
     struct ToolBarInfo
     {
-        ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( QMainWindow::Top ) {}
+        ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( QMainWindow::DockTop ) {}
         ToolBarInfo( QMainWindow::ToolBarDock d,
                      int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
         }
@@ -837,12 +837,12 @@ KToolBar::BarPosition KToolBar::barPos() const
     int dm1, dm2;
     bool dm3;
     this->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
-    if ( dock == QMainWindow::Unmanaged ) {
+    if ( dock == QMainWindow::DockUnmanaged ) {
 #if 0
         if ( d->hasRealPos )
             return (KToolBar::BarPosition)d->realPos;
 #endif
-        return (KToolBar::BarPosition)QMainWindow::Top;
+        return (KToolBar::BarPosition)QMainWindow::DockTop;
     }
     return (BarPosition)dock;
 }
@@ -998,9 +998,9 @@ void KToolBar::setFlat (bool flag)
     if ( !mainWindow() )
         return;
     if ( flag )
-        mainWindow()->moveToolBar( this, QMainWindow::Minimized );
+        mainWindow()->moveToolBar( this, QMainWindow::DockMinimized );
     else
-        mainWindow()->moveToolBar( this, QMainWindow::Top );
+        mainWindow()->moveToolBar( this, QMainWindow::DockTop );
     // And remember to save the new look later
     if ( mainWindow()->inherits( "KMainWindow" ) )
         static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
@@ -1163,21 +1163,21 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
             case -1:
                 return; // popup cancelled
             case CONTEXT_LEFT:
-                mw->moveToolBar( this, QMainWindow::Left );
+                mw->moveToolBar( this, QMainWindow::DockLeft );
                 break;
             case CONTEXT_RIGHT:
-                mw->moveToolBar( this, QMainWindow::Right );
+                mw->moveToolBar( this, QMainWindow::DockRight );
                 break;
             case CONTEXT_TOP:
-                mw->moveToolBar( this, QMainWindow::Top );
+                mw->moveToolBar( this, QMainWindow::DockTop );
                 break;
             case CONTEXT_BOTTOM:
-                mw->moveToolBar( this, QMainWindow::Bottom );
+                mw->moveToolBar( this, QMainWindow::DockBottom );
                 break;
             case CONTEXT_FLOAT:
                 break;
             case CONTEXT_FLAT:
-                mw->moveToolBar( this, QMainWindow::Minimized );
+                mw->moveToolBar( this, QMainWindow::DockMinimized );
                 break;
             case CONTEXT_ICONS:
                 setIconText( IconOnly );
@@ -1210,7 +1210,7 @@ void KToolBar::paintEvent(QPaintEvent *e)
     QColorGroup g = QWidget::colorGroup();
     QPainter paint;
     paint.begin( this );
-    
+
     if ( widgets.isEmpty() ) {
         //hide(); // don't hide! e.g. it breaks the taskbar mechanism in KDevelop
         paint.fillRect( 0, 0, width(), height(), QBrush( g.background() ) );// , false, 1 );
@@ -1472,8 +1472,8 @@ void KToolBar::hide()
         QMainWindow::ToolBarDock dock;
         mainWindow()->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
         //kdDebug(220) << "KToolBar::hide " << name() << " realNl set to " << d->realNl << endl;
-        mainWindow()->moveToolBar( this, QMainWindow::Unmanaged );
-        if ( dock != QMainWindow::Unmanaged ) {
+        mainWindow()->moveToolBar( this, QMainWindow::DockUnmanaged );
+        if ( dock != QMainWindow::DockUnmanaged ) {
             d->hasRealPos = TRUE;
             d->realPos = dock;
         }
@@ -1487,7 +1487,7 @@ void KToolBar::show()
     //kdDebug(220) << "KToolBar::show " << name() << endl;
 #if 0
     // Reggie: Ugly hack, I hate it
-    if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && mainWindow() ) {
+    if ( d->hasRealPos && d->realPos != QMainWindow::DockUnmanaged && mainWindow() ) {
         d->hasRealPos = FALSE;
         //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realPos=" << d->realPos << " realNl=" << d->realNl << endl;
         mainWindow()->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
@@ -1796,7 +1796,7 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 {
     if ( tb != this )
         return;
-    if ( d->oldPos == QMainWindow::Minimized )
+    if ( d->oldPos == QMainWindow::DockMinimized )
         rebuildLayout();
     d->oldPos = (QMainWindow::ToolBarDock)barPos();
     if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
@@ -1834,7 +1834,7 @@ void KToolBar::loadState( const QDomElement &element )
             setFullSize( FALSE );
     }
 
-    QMainWindow::ToolBarDock dock = QMainWindow::Top;
+    QMainWindow::ToolBarDock dock = QMainWindow::DockTop;
 #if QT_VERSION < 300
     int index = 0xffffff /*append by default*/, offset = -1;
 #else
@@ -1845,17 +1845,17 @@ void KToolBar::loadState( const QDomElement &element )
     //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
     if ( !attrPosition.isEmpty() ) {
         if ( attrPosition == "top" )
-            dock = QMainWindow::Top;
+            dock = QMainWindow::DockTop;
         else if ( attrPosition == "left" )
-            dock = QMainWindow::Left;
+            dock = QMainWindow::DockLeft;
         else if ( attrPosition == "right" )
-            dock = QMainWindow::Right;
+            dock = QMainWindow::DockRight;
         else if ( attrPosition == "bottom" )
-            dock = QMainWindow::Bottom;
+            dock = QMainWindow::DockBottom;
         else if ( attrPosition == "floating" )
-            dock = QMainWindow::TornOff;
+            dock = QMainWindow::DockTornOff;
         else if ( attrPosition == "flat" )
-            dock = QMainWindow::Minimized;
+            dock = QMainWindow::DockMinimized;
     }
 
     if ( !attrIndex.isEmpty() )

@@ -449,7 +449,7 @@ void KFontChooser::setupDisplay()
 void KFontChooser::getFontList( QStringList &list, bool fixed )
 {
   QFontDatabase dbase;
-  QStringList lstSys(dbase.families( false ));
+  QStringList lstSys(dbase.families());
 
   // Since QFontDatabase doesn't have any easy way of returning just
   // the fixed width fonts, we'll do it in a very hacky way
@@ -601,6 +601,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.68  2001/08/29 15:25:38  bero
+* _WS_X11_ -> Q_WS_X11
+* _WS_QWS_ -> Q_WS_QWS
+*
 * Revision 1.67  2001/08/26 20:14:19  lunakl
 * Ok, watch closely :
 * const is your friend !
