@@ -112,8 +112,8 @@ KColor::KColor( const KColor &col)
 KColor::KColor( const QColor &col)
 : QColor( col )
 {
-  QColor::rgb(&r, &g, &b);
-  QColor::hsv(&h, &s, &v);
+  QColor::getRgb(&r, &g, &b);
+  QColor::getHsv(&h, &s, &v);
 }
 
 bool KColor::operator==(const KColor& col) const
