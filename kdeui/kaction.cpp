@@ -241,6 +241,9 @@ KAction::KAction( QObject* parent, const char* name )
 {
     d = new KActionPrivate;
     m_parentCollection = parentCollection();
+    if ( m_parentCollection ) {
+        m_parentCollection->insert( this );
+    }
 }
 
 KAction::~KAction()
