@@ -372,12 +372,11 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 
       if ( rspbuf[0] == '2' )
         return true; /* no password required */
-      return false;
     }
 
     if ( pass.isEmpty() ) {
       QString tmp = m_user + "@" + m_host;
-      if ( !open_PassDlg( tmp, m_user, pass ) )
+      if ( !openPassDlg( tmp, m_user, pass ) )
 	return false;
     }
     kDebugInfo( 7102, "New pass is '%s'", pass.ascii());

@@ -1,14 +1,14 @@
 ## Makefile.am of kdebase/kioslave/ftp
 
-INCLUDES=	$(all_includes)
+INCLUDES=	$(all_includes) -I$(srcdir)/../.. -I$(srcdir)/..
 
 ####### Files
 
 lib_LTLIBRARIES = kio_ftp.la
 
 kio_ftp_la_SOURCES = ftp.cc
-kio_ftp_la_LIBADD  = $(LIB_KIO) #-lkioslave
-kio_ftp_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kio_ftp_la_LIBADD  = ../libkio.la #-lkioslave
+kio_ftp_la_LDFLAGS = -module -avoid-version
 
 noinst_HEADERS = ftp.h
 

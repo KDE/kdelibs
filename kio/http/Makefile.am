@@ -3,7 +3,7 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES=	$(all_includes) $(SSL_INCLUDES)
+INCLUDES=	$(all_includes) -I $(srcdir)/.. -I $(srcdir)/../.. $(SSL_INCLUDES)
 LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS)
 
 ####### Files
@@ -12,7 +12,7 @@ bin_PROGRAMS = kio_http_cache_cleaner
 lib_LTLIBRARIES = kio_http.la libkio_http_cache_cleaner.la
 
 kio_http_la_SOURCES = http.cc extern_md5.c
-kio_http_la_LIBADD = $(LIB_KIO) $(LIBZ) $(LIBSSL)
+kio_http_la_LIBADD = ../libkio.la $(LIBZ) $(LIBSSL)
 kio_http_la_LDFLAGS = -module -avoid-version
 
 check_PROGRAMS = linktest

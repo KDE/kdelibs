@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <kio/passdlg.h>
 
 using namespace KIO;
 
@@ -179,10 +180,31 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	
 	emit warning( str1 );
 	break;
+    case ERR_NEED_PASSWD:
+	{
+	    QString user, pass;
+	    stream >> str1 >> user >> pass;
+	    openPassDlg(str1, user, pass);
+	}
+	break;
     default:
 	assert( 0 );
     }
 };
+
+void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
+{
+    PassDlg dlg( 0L, 0L, true, 0, head, user, pass );
+    QByteArray packedArgs;
+
+    if ( dlg.exec() ) {
+	QDataStream stream( packedArgs, IO_WriteOnly );
+	stream <<  dlg.user()<< dlg.password();
+	m_pConnection->send( CMD_USERPASS, packedArgs );
+    }
+    else
+	m_pConnection->send( CMD_NONE, packedArgs );
+}
 
 #include "slaveinterface.moc"
 

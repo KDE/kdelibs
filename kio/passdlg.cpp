@@ -100,19 +100,4 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
    resize( sizeHint() );
 }
 
-bool KIO::open_PassDlg( const QString& _head, QString& _user, QString& _pass )
-{
-  ASSERT(kapp);
-
-  PassDlg dlg( 0L, 0L, true, 0, _head, _user, _pass );
-  if ( dlg.exec() )
-  {
-    _user = dlg.user();
-    _pass = dlg.password();
-    return true;
-  }
-  else
-    return false;
-}
-
 #include "passdlg.moc"

@@ -1086,7 +1086,7 @@ bool HTTPProtocol::readHeader()
     if (m_strRealm.isEmpty())
       m_strRealm = m_state.hostname;
 
-    if (!open_PassDlg(m_strRealm, m_request.user, m_request.passwd)) {
+    if (!openPassDlg(m_strRealm, m_request.user, m_request.passwd)) {
       error(ERR_ACCESS_DENIED, m_state.hostname);
       return false;
     }

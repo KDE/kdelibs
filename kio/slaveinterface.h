@@ -110,7 +110,6 @@ public:
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
 
-
     static void sigchld_handler(int);
 
  signals:
@@ -160,6 +159,7 @@ public:
  protected:
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
+    void openPassDlg( const QString& head, const QString& user, const QString& pass );
 
 protected:
     Connection * m_pConnection;

@@ -261,13 +261,14 @@ bool SlaveBase::dispatch()
 
 bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
 {
-    KIO_DATA << head;
+    KIO_DATA << head << user << pass;
     m_pConnection->send( ERR_NEED_PASSWD, data );
     int cmd;
     if ( m_pConnection->read( &cmd, data ) == -1 )
       return false;
     if (cmd != CMD_USERPASS) {
-      dispatch( cmd, data );
+	if (cmd != CMD_NONE)
+	    dispatch( cmd, data );
       return false;
     } else {
       QDataStream stream( data, IO_ReadOnly );
