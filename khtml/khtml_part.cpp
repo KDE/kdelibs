@@ -985,8 +985,11 @@ void KHTMLPart::slotFinishedParsing()
   if (!d->m_view)
     return; // We are probably being destructed.
   
+  // check if the scrollbars are really needed for the content
+  // if not, remove them, relayout, and repaint
   int ow = d->m_view->visibleWidth();
-  d->m_view->setVScrollBarMode(QScrollView::Auto);
+  if (d->m_view->vScrollBarMode()==QScrollView::AlwaysOn)
+    d->m_view->setVScrollBarMode(QScrollView::Auto);
   if (d->m_view->visibleWidth() != ow)
   {
     d->m_view->layout();
