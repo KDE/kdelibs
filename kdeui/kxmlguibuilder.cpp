@@ -114,12 +114,16 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
     popup->setFont(KGlobal::menuFont());
 
-    QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
-    if (text.isEmpty())  // try with capital T
-      text = i18n(element.namedItem( "Text" ).toElement().text().utf8());
-    if (text.isEmpty())  // still no luck
-      text = i18n("No text!");
-
+    QString i18nText;
+    QCString text = element.namedItem( "text" ).toElement().text().utf8();
+    if ( text.isEmpty() ) // try with capital T
+      text = element.namedItem( "Text" ).toElement().text().utf8();
+    
+    if ( text.isEmpty() ) // still no luck
+      i18nText = i18n( "No text!" );
+    else
+      i18nText = i18n( text );
+		    
     QString icon = element.attribute( "icon" );
     QPixmap pix;
 
@@ -135,16 +139,16 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if ( parent && parent->inherits( "KMenuBar" ) )
     {
       if ( !icon.isEmpty() )
-        id = static_cast<KMenuBar *>(parent)->insertItem( pix, text, popup, -1, index );
+        id = static_cast<KMenuBar *>(parent)->insertItem( pix, i18nText, popup, -1, index );
       else
-        id = static_cast<KMenuBar *>(parent)->insertItem( text, popup, -1, index );
+        id = static_cast<KMenuBar *>(parent)->insertItem( i18nText, popup, -1, index );
     }
     else if ( parent && parent->inherits( "QPopupMenu" ) )
     {
       if ( !icon.isEmpty() )
-        id = static_cast<QPopupMenu *>(parent)->insertItem( pix, text, popup, -1, index );
+        id = static_cast<QPopupMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
       else
-        id = static_cast<QPopupMenu *>(parent)->insertItem( text, popup, -1, index );
+        id = static_cast<QPopupMenu *>(parent)->insertItem( i18nText, popup, -1, index );
     }
 
     return popup;
@@ -155,12 +159,13 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
 
     KToolBar *bar = new KToolBar( d->m_widget, element.attribute( "name" ).utf8(), honor);
-    
-    QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
+
+    QCString text = element.namedItem( "text" ).toElement().text().utf8();
     if (text.isEmpty())  // try with capital T
-      text = i18n(element.namedItem( "Text" ).toElement().text().utf8());
+      text = element.namedItem( "Text" ).toElement().text().utf8();
+    
     if (!text.isEmpty())
-      bar->setText( text );
+      bar->setText( i18n( text ) );
 
     if ( d->m_widget->inherits( "KTMainWindow" ) )
       static_cast<KTMainWindow *>(d->m_widget)->addToolBar( bar );
