@@ -1,6 +1,14 @@
 dnl Compile in the exec prefix to help kstddirs in finding dynamic libs
 AC_DEFINE_UNQUOTED(__KDE_EXECPREFIX, "$exec_prefix", [execprefix or NONE if not set, for libloading])
 
+dnl Compile in kde_bindir to safely find kdesu_stub.
+if test "$exec_prefix" = "NONE"; then
+    bindir_str="\"$prefix/bin\""
+else
+    bindir_str="\"$exec_prefix/bin\""
+fi
+AC_DEFINE_UNQUOTED(__KDE_BINDIR, $bindir_str, [KDE bindir])
+
 dnl --------
 dnl KSocketAddress/KExtendedSocket extra configuration
 dnl --------
