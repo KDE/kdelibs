@@ -159,6 +159,7 @@ KListViewLineEdit::KListViewLineEdit(KListView *parent)
 {
         setFrame( false );
         hide();
+        connect( parent, SIGNAL( selectionChanged() ), SLOT( slotSelectionChanged() ));
 }
 
 KListViewLineEdit::~KListViewLineEdit()
@@ -196,9 +197,6 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         setGeometry(fieldX, rect.y() - 1, fieldW, rect.height() + 2);
         show();
         setFocus();
-//        qApp->processEvents(0);
-//        QApplication::flushX();
-//        grabMouse();
 }
 
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
@@ -228,7 +226,6 @@ void KListViewLineEdit::terminate(bool commit)
         col=0;
         item=0;
         hide(); // will call focusOutEvent, that's why we set item=0 before
-        releaseMouse();
         emit done(i,c);
     }
 }
@@ -250,6 +247,16 @@ void KListViewLineEdit::paintEvent( QPaintEvent *e )
         p.setClipRegion( e->region() );
         p.drawRect( rect() );
     }
+}
+
+// selection changed -> terminate. As our "item" can be already deleted,
+// we can't call terminate(false), because that would emit done() with
+// a dangling pointer to "item".
+void KListViewLineEdit::slotSelectionChanged()
+{
+    item = 0;
+    col = 0;
+    hide();
 }
 
 
