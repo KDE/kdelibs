@@ -127,6 +127,15 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    argc = _argc;
    argv = _argv;
 
+   if (!argv)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Passing null-pointer to 'argv' is not allowed.\n\n");
+
+      assert( 0 );
+      exit(255);
+   }
+
    // Strip path from argv[0]
    if (argc) {
      char *p = strrchr( argv[0], '/');
@@ -496,6 +505,14 @@ KCmdLineArgs::qt_argc()
    KCmdLineArgs *args = parsedArgs("qt");
 
    assert(args); // No qt options have been added!
+   if (!argv)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Application has not called KCmdLineArgs::init(...).\n\n");
+
+      assert( 0 );
+      exit(255);
+   }
 
    assert(argc >= (args->count()+1));
    argc = args->count() +1;
@@ -515,6 +532,14 @@ KCmdLineArgs::qt_argv()
 
    KCmdLineArgs *args = parsedArgs("qt");
    assert(args); // No qt options have been added!
+   if (!argv)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Application has not called KCmdLineArgs::init(...).\n\n");
+
+      assert( 0 );
+      exit(255);
+   }
 
    int i = 0;
    for(; i < args->count(); i++)
