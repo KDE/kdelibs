@@ -75,7 +75,7 @@ install-data-local: charsets.config
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 	$(mkinstalldirs) $(kde_confdir)/colors
-	$(INSTALL_DATA) $(srcdir)/40.colors "$(DESTDIR)/$(kde_confdir)/colors/40 Colors"
+	$(INSTALL_DATA) $(srcdir)/40.colors "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 	$(INSTALL_DATA) $(srcdir)/Web.colors $(kde_confdir)/colors/Web
 	$(INSTALL_DATA) $(srcdir)/Royal.colors $(kde_confdir)/colors/Royal
 

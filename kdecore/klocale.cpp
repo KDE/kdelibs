@@ -283,6 +283,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
       break;
 
     splitLocale(_lang,ln,ct,chrset);	
+    _lang = QString::null;
 
     QString lng[4];
     int counter = 0;
@@ -298,6 +299,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
       if (!locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/") + catalogue + QString::fromLatin1(".mo")).isNull() &&
 	  !locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/" SYSTEM_MESSAGES ".mo")).isNull())
 	{
+	    debug("setLang %s", lng[i].ascii());
 	  _lang = lng[i];
 	  break;
 	}
@@ -305,7 +307,11 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     if (i != 3)
       break;
   }
-  lang = _lang; // taking deep copy
+
+  if (_lang.isEmpty())
+      lang = QString::fromLatin1("C");
+  else
+      lang = _lang; // taking deep copy
 
   setEncodingLang(lang);
 #ifdef HAVE_SETLOCALE
