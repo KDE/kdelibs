@@ -396,9 +396,9 @@ public:
    * This is an alternative to openURL, which allows the user of the part
    * to load the data itself, and send it progressively to the part.
    *
+   * @param mimeType the type of data that is going to be sent to this part.
    * @param url the URL representing this data. Although not directly used,
    * every ReadOnlyPart has a URL (see url()), so this simply sets it.
-   * @param mimeType the type of data that is going to be sent to this part.
    * @return true if the part supports progressive loading and accepts data, false otherwise.
    */
   bool openStream( const QString& mimeType, const KURL& url );
@@ -623,7 +623,7 @@ signals:
     * @since 3.2, remove in KDE 4, when queryClose is made virtual
     *
     * set handled to true, if you don't want the default handling
-    * set abortClosing to true, if you handled the request, 
+    * set abortClosing to true, if you handled the request,
     * but for any reason don't  want to allow closing the document
     */
    void sigQueryClose(bool *handled, bool* abortClosing);

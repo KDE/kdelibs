@@ -336,9 +336,9 @@ class KDialogBase : public KDialog
      * Constructor for the predefined layout mode where you specify the
      * kind of layout (face).
      *
-     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
+     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
      * @param parent Parent of the dialog.
@@ -1003,7 +1003,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the KGuiItem directly for the button instead of using 3 methods to
      * set the text, tooltip and whatsthis strings. This also allows to set an
-     * icon for the button which is otherwise not possible for the extra 
+     * icon for the button which is otherwise not possible for the extra
      * buttons beside Ok, Cancel and Apply.
      *
      * @param id The button identifier.
@@ -1284,9 +1284,9 @@ class KDialogBase : public KDialog
      * @param appname Defines the appname the help belongs to
      *                If empty it's the current one
      *
-     * @note The help button works differently for the class 
+     * @note The help button works differently for the class
      * KCMultiDialog, so it does not make sense to call this
-     * function for Dialogs of that type.  See 
+     * function for Dialogs of that type.  See
      * KCMultiDialog::slotHelp() for more information.
      */
     void setHelp( const QString &anchor,
