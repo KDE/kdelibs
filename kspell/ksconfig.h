@@ -41,7 +41,7 @@ class KSpellConfig : public QWidget
 {
 
   Q_OBJECT;
-  const sizehint_x=490, sizehint_y=317;
+  enum { sizehint_x=490, sizehint_y=317};
 public:
   
   /**
