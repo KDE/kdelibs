@@ -1,5 +1,5 @@
 
-data_DATA = marble.themerc qtplatinum.themerc \
+data_DATA = marble.themerc qtplatinum.themerc b2.themerc \
 	qtcde.themerc qtmotif.themerc qtwindows.themerc kstep.themerc \
 	system.themerc systemtest.themerc pillbox.themerc coldions.themerc
 datadir = $(kde_datadir)/kstyle/themes

@@ -1,0 +1,5 @@
+[Misc]
+Name=B2/KDE
+Comment=B2/KKDE unthemed style
+[KDE]
+widgetStyle=b2style.la
