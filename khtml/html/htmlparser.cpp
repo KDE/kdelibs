@@ -270,7 +270,6 @@ void KHTMLParser::reset()
 
     discard_until = 0;
     nested_html = 0;
-    headLoaded = false;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -290,29 +289,6 @@ void KHTMLParser::parseToken(Token *t)
 	return;
     }	
 
-    if(inBody && !headLoaded && !document->headLoaded())
-    {
-	//kdDebug(300) << "enqueunig " << t->id << endl;
-	tokenQueue.enqueue(t);
-	return;
-    }
-    else if(inBody)
-    {
-	headLoaded = true;
-	processQueue();
-    }
-    processOneToken(t);
-}
-
-void KHTMLParser::processQueue()
-{
-    while(!tokenQueue.isEmpty())
-	processOneToken(tokenQueue.dequeue());
-    headLoaded = true;
-}
-
-void KHTMLParser::processOneToken(Token *t)
-{
 #ifdef PARSER_DEBUG
     kdDebug(300) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
 #endif

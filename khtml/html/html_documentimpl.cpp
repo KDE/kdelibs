@@ -132,11 +132,8 @@ void HTMLDocumentImpl::close(  )
     if (m_render)
     	m_render->close();
 
-    if(parser && !parser->hasQueued())
-    {
-	delete parser;
-	parser = 0;
-    }
+    if(parser) delete parser;
+    parser = 0;
     if(tokenizer) delete tokenizer;
     tokenizer = 0;
 }
@@ -336,22 +333,7 @@ void HTMLDocumentImpl::setVisuallyOrdered()
 
 void HTMLDocumentImpl::createSelector()
 {
-    //kdDebug(300) << "document::createSelector" << endl;
-    if(!headLoaded()) return;
-    //kdDebug(300) << "document::createSelector2" << endl;
-
-    if(m_styleSelector) delete m_styleSelector;
-    m_styleSelector = new CSSStyleSelector(this);
-
-    if(!parser) return;
-    //kdDebug(300) << "document::createSelector3" << endl;
-    parser->processQueue();
-    // parsing is finished if the tokenizer is already deleted
-    if(!tokenizer)
-    {
-	delete parser;
-	parser = 0;
-    }
+    applyChanges();
 }
 
 // ### this function should not be needed in the long run. The one in
@@ -384,53 +366,6 @@ void HTMLDocumentImpl::applyChanges()
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
     m_render->repaint();
-}
-
-
-bool HTMLDocumentImpl::headLoaded()
-{
-    kdDebug(300) << "checking for headLoaded()" << endl;
-    if(parser && !parser->parsingBody()) return false;
-    //if(m_loadingSheet) return false;
-
-    NodeImpl *test = _first;
-    if(!test) return true;
-    test = test->firstChild();
-    while(test && (test->id() != ID_HEAD))
-	test = test->nextSibling();
-    if(!test) return true; // no head element, so nothing than can be loaded in there
-    HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
-
-    // all LINK and STYLE elements have to be direct children of the HEAD element
-    test = head->firstChild();
-    while(test)
-    {
-	//kdDebug(300) << "searching link" << endl;
-
-	if(test->id() == ID_LINK)
-	{
-	    kdDebug(300) << "found link" << endl;
-	    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
-	    if(link->isLoading())
-	    {
-		kdDebug(300) << "--> not loaded" << endl;
-		return false;
-	    }
-	}
-	else if(test->id() == ID_STYLE)
-	{
-	    kdDebug(300) << "found style" << endl;
-	    HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
-	    if(style->isLoading()) // can still load because of @import rules
-	    {
-		kdDebug(300) << "--> not loaded" << endl;
-		return false;
-	    }
-	}
-	test = test->nextSibling();
-    }
-    kdDebug(300) << "head loaded" << endl;
-    return true;
 }
 
 void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)

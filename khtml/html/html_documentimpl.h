@@ -93,8 +93,6 @@ public:
     virtual void createSelector();
     virtual void applyChanges();
 
-    bool headLoaded();
-
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
 

@@ -29,8 +29,6 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
-#include <qqueue.h>
-
 #include "dom/dom_string.h"
 
 class KHTMLView;
@@ -69,14 +67,9 @@ public:
      */
     void reset();
 
-    void processQueue();
-
-    bool hasQueued() { return !tokenQueue.isEmpty(); }
-
     bool parsingBody() { return inBody; }
 
 protected:
-    void processOneToken(Token *t);
 
     KHTMLView *HTMLWidget;
     DOM::HTMLDocumentImpl *document;
@@ -139,8 +132,6 @@ protected:
     int nested_html;
 
     bool headLoaded;
-
-    QQueue<Token> tokenQueue;
 };
 
 #endif // HTMLPARSER_H
