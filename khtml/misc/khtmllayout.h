@@ -96,9 +96,9 @@ namespace khtml
 
         union {
             struct {
-                int value : 28;
+                signed int value : 28;
                 LengthType type : 3;
-                int quirk : 1;
+                bool quirk : 1;
             } l;
             Q_UINT32 _length;
         };
