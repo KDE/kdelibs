@@ -86,6 +86,7 @@ public:
 
   virtual void get( const QString& path, const QString& query, bool reload );
   virtual void put( const QString& path, int permissions, bool overwrite, bool resume);
+  //virtual void mimetype( const QString& path );
 
   virtual void slave_status();
 
@@ -112,13 +113,7 @@ private:
    */
   void disconnect( bool really = false );
 
-  bool open( const QString & path, unsigned long offset = 0 );
-
-  bool close();
-
-protected:
  // virtual void redirection( const char* /* _url */ ) { }
-
 
   /**
    * Called by @ref openConnection. It logs us in.
@@ -143,17 +138,6 @@ protected:
   bool ftpSendCmd( const QCString& cmd, char expresp = '\0', int maxretries = 1 );
 
   /**
-   * Get information about a file or directory, from its URL
-   * @param _url full URL
-   * @param bFullDetails if true, a complete FtpEntry is returned.
-   * If false, the functions returns as soon as it knows whether it's
-   * a file or a directory. Don't use the other fields in this case !
-   * This is because getting the full details, on a directory, is a long
-   * operation (involves listing the parent dir). For a file, it's fast, though.
-   */
-  //FtpEntry* ftpStat( const QString & path /*, bool bFullDetails*/ );
-
-  /**
    * Use the SIZE command to get the file size.
    * @param mode the size depends on the transfer mode, hence this arg.
    * @return true on success
@@ -172,10 +156,20 @@ protected:
    *
    * @return true if the command was accepted by the server.
    */
-  bool openCommand( const char *command, const QString & path, char mode,
-                    int errorcode, unsigned long offset = 0 );
+  bool ftpOpenCommand( const char *command, const QString & path, char mode,
+                       int errorcode, unsigned long offset = 0 );
 
-private:
+  /**
+   * The counterpart to @ref openCommand.
+   * Closes data sockets and then reads line sent by server at
+   * end of command.
+   * @return false on error (line doesn't start with '2')
+   */
+  bool ftpCloseCommand();
+
+  void closeSockets();
+
+  //void ftpAbortTransfer();
 
   /**
    * Used by @ref openCommand
@@ -192,13 +186,6 @@ private:
    * otherwise returns socket descriptor
    */
   int ftpAcceptConnect();
-  /**
-   * The counterpart to @ref openCommand.
-   * Closes data sockets and then reads line sent by server at
-   * end of command.
-   * @return false on error (line doesn't start with '2')
-   */
-  bool ftpCloseCommand();
 
   size_t ftpRead( void *buffer, long len );
   size_t ftpWrite( void *buffer, long len );
@@ -222,13 +209,12 @@ private:
   int ftpReadline( char *buf, int max, netbuf *ctl );
 
   /**
-   * read a response from the server
-   *
-   * @param expresp expected response ('\0' for disabling builtin check)
-   * @return false if first char doesn't match @p expresp
-   *  true if first char matches @p expresp
+   * read a response from the server, into rspbuf
+   * @return first char of response (rspbuf[0]), '\0' if we couldn't read the response
    */
-  bool readresp( char expresp );
+  char readresp();
+
+private: // data members
 
   /**
    * Connected to the socket from which we read a directory listing.

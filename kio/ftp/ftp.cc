@@ -171,13 +171,10 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
 }
 
 /**
- * read a response from the server
- *
- * @param expresp expected response ('\0' for disabling builtin check)
- * @return false if first char doesn't match @p expresp
- *  true if first char matches @p expresp
+ * read a response from the server, into rspbuf
+ * @return first char of response (rspbuf[0]), '\0' if we couldn't read the response
  */
-bool Ftp::readresp(char expresp)
+char Ftp::readresp()
 {
   char match[5];
   if ( ftpReadline( rspbuf, 256, nControl ) == -1 )
@@ -185,7 +182,7 @@ bool Ftp::readresp(char expresp)
     // This can happen after the server closed the connection (after a timeout)
     kdWarning(7102) << "Could not read" << endl;
     //error( ERR_COULD_NOT_READ, "" );
-    return false;
+    return '\0';
   }
   kdDebug(7102) << "resp> " << rspbuf << endl;
   if ( rspbuf[3] == '-' )  {
@@ -194,18 +191,16 @@ bool Ftp::readresp(char expresp)
     match[4] = '\0';
     do {
       if ( ftpReadline( rspbuf, 256, nControl ) == -1 ) {
-        error( ERR_COULD_NOT_READ, "" );
-	return false;
+          kdWarning(7102) << "Could not read" << endl;
+          //error( ERR_COULD_NOT_READ, "" );
+          return '\0';
       }
       kdDebug(7102) << rspbuf << endl;
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
     	
-  if ( rspbuf[0] == expresp || !expresp )
-    return true;
-
-  return false;
+  return rspbuf[0];
 }
 
 void Ftp::closeConnection()
@@ -340,11 +335,12 @@ bool Ftp::connect( const QString &host, unsigned short int port )
   }
   nControl->handle = sControl;
 
-  if ( ! readresp( '2' ) )
+  if ( readresp() != '2' )
   {
     ::close( sControl );
     free( nControl );
-    return false; // error emitted by readresp
+    error( ERR_COULD_NOT_CONNECT, host );
+    return false;
   }
 
   return true;
@@ -464,7 +460,8 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
     return false;
   }
 
-  if (!readresp( expresp ))
+  char rsp = readresp();
+  if (!rsp) // TODO: or if we got "421 No Transfer Timeout (300 seconds): closing control connection"
   {
     if ( maxretries > 0 )
     {
@@ -486,7 +483,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       return false;
     }
   }
-  return true;
+  return rsp == expresp;
 }
 
 /*
@@ -634,7 +631,7 @@ bool Ftp::ftpOpenDataConnection()
 
 /*
  * ftpAcceptConnect - wait for incoming connection
- * Used by @ref openCommand
+ * Used by @ref ftpOpenCommand
  *
  * return -2 on error or timeout
  * otherwise returns socket descriptor
@@ -665,8 +662,8 @@ int Ftp::ftpAcceptConnect()
   return -2;
 }
 
-bool Ftp::openCommand( const char *_command, const QString & _path, char _mode,
-                       int errorcode, unsigned long _offset )
+bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mode,
+                          int errorcode, unsigned long _offset )
 {
   QCString buf = "type ";
   buf += _mode;
@@ -718,10 +715,8 @@ bool Ftp::openCommand( const char *_command, const QString & _path, char _mode,
 }
 
 
-bool Ftp::ftpCloseCommand()
+void Ftp::closeSockets()
 {
-  // first close data sockets (if opened), then read response that
-  // we got for whatever was used in ftpOpenCommand ( should be 226 )
   if( sData != 0 )
   {
     shutdown( sData, 2 );
@@ -734,7 +729,14 @@ bool Ftp::ftpCloseCommand()
     ::close( sDatal );
     sDatal = 0;
   }
-  if ( !readresp( '2' ) )
+}
+
+bool Ftp::ftpCloseCommand()
+{
+  // first close data sockets (if opened), then read response that
+  // we got for whatever was used in ftpOpenCommand ( should be 226 )
+  closeSockets();
+  if ( readresp() != '2' )
   {
     kdDebug(7102) << "Did not get transfer complete message" << endl;
     return false;
@@ -940,7 +942,7 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
     search = path;
   }
 
-  if( !openCommand( "list", listarg, 'A', ERR_DOES_NOT_EXIST ) )
+  if( !ftpOpenCommand( "list", listarg, 'A', ERR_DOES_NOT_EXIST ) )
   {
     kdError(7102) << "COULD NOT LIST" << endl;
     return;
@@ -1066,7 +1068,7 @@ bool Ftp::ftpOpenDir( const QString & path )
 
   // don't use the path in the list command
   // we changed into this directory anyway ("cwd"), so it's enough just to send "list"
-  if( !openCommand( "list", 0L, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  if( !ftpOpenCommand( "list", 0L, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
     return false;
 
   dirfile = fdopen( sData, "r" );
@@ -1295,7 +1297,7 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
   unsigned long offset = 0; // looks like this was never set to something else...
   // Don't we want support for getting a file from a certain offset ? Hmm...
 
-  if ( !openCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
+  if ( !ftpOpenCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
     return;
   }
@@ -1357,6 +1359,71 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
 
   finished();
 }
+
+/*
+void Ftp::mimetype( const QString& path )
+{
+  if (!m_bLoggedOn)
+     openConnection();
+
+  if ( !ftpOpenCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
+    kdWarning(7102) << "Can't open for reading" << endl;
+    return;
+  }
+  char buffer[ 2048 ];
+  QByteArray array;
+  // Get one chunk of data only and send it, KIO::Job will determine the
+  // mimetype from it using KMimeMagic
+  int n = ftpRead( buffer, 2048 );
+  array.setRawData(buffer, n);
+  data( array );
+  array.resetRawData(buffer, n);
+
+  kdDebug(7102) << "aborting" << endl;
+  ftpAbortTransfer();
+
+  kdDebug(7102) << "finished" << endl;
+  finished();
+  kdDebug(7102) << "after finished" << endl;
+}
+
+void Ftp::ftpAbortTransfer()
+{
+  // RFC 959, page 34-35
+  // IAC (interpret as command) = 255 ; IP (interrupt process) = 254
+  // DM = 242 (data mark)
+   char msg[4];
+   // 1. User system inserts the Telnet "Interrupt Process" (IP) signal
+   //   in the Telnet stream.
+   msg[0] = (char) 255; //IAC
+   msg[1] = (char) 254; //IP
+   (void) send(sControl, msg, 2, 0);
+   // 2. User system sends the Telnet "Sync" signal.
+   msg[0] = (char) 255; //IAC
+   msg[1] = (char) 242; //DM
+   if (send(sControl, msg, 2, MSG_OOB) != 2)
+     ; // error...
+
+   // Send ABOR
+   kdDebug(7102) << "send ABOR" << endl;
+   QCString buf = "ABOR\r\n";
+   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
+     error( ERR_COULD_NOT_WRITE, "" );
+     return;
+   }
+
+   //
+   kdDebug(7102) << "read resp" << endl;
+   if ( readresp() != '2' )
+   {
+     error( ERR_COULD_NOT_READ, "" );
+     return;
+   }
+
+  kdDebug(7102) << "close sockets" << endl;
+  closeSockets();
+}
+*/
 
 void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool resume )
 {
@@ -1444,7 +1511,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
     kdDebug(7102) << "Offset = " << offset << "d" << endl;
   }
 
-  if (! openCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
+  if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
     return;
 
   int result;
@@ -1549,16 +1616,6 @@ bool Ftp::ftpSize( const QString & path, char mode )
   return true;
 }
 
-
-bool Ftp::close()
-{
-  if ( !ftpCloseCommand() )
-    return false;
-
-  //disconnect();
-
-  return true;
-}
 
 size_t Ftp::ftpRead(void *buffer, long len)
 {
