@@ -109,6 +109,7 @@
 7107	kio_man
 7108	kio_info
 7109	kio_tar
+7110	kio_gzip
 
 # old stuff
 8000	corba
