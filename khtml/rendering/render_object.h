@@ -404,7 +404,8 @@ public:
         BSTop, BSBottom, BSLeft, BSRight
     };
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
-                    QColor c, const QColor& textcolor, EBorderStyle style, bool sb1, bool sb2);
+                    QColor c, const QColor& textcolor, EBorderStyle style, bool sb1, bool sb2,
+                    int adjbw1, int adjbw2);
 
     virtual void setTable(RenderTable*) {};
 
