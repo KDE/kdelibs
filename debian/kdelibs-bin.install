@@ -18,6 +18,7 @@ debian/tmp/usr/bin/kconf_update
 debian/tmp/usr/bin/kcookiejar
 debian/tmp/usr/bin/kdb2html
 debian/tmp/usr/bin/kde-config
+debian/tmp/usr/bin/kde-menu
 debian/tmp/usr/bin/kded
 debian/tmp/usr/bin/kdeinit
 debian/tmp/usr/bin/kdeinit_shutdown
@@ -46,7 +47,6 @@ debian/tmp/usr/bin/lnusertemp
 debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
-debian/tmp/usr/bin/xml2man
 debian/tmp/usr/lib/libkdeinit_dcopserver.*
 debian/tmp/usr/lib/libkdeinit_kaddprinterwizard.*
 debian/tmp/usr/lib/libkdeinit_kbuildsycoca.*
