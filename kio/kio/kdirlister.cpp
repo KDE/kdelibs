@@ -1530,7 +1530,7 @@ void KDirLister::emitChanges()
       if ( (*kit)->text() == dot || (*kit)->text() == dotdot )
         continue;
 
-      bool oldMime, newMime;
+      bool oldMime = newMime = true;
 
       if ( d->changes & MIME_FILTER )
       {
