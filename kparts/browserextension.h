@@ -311,6 +311,9 @@ public:
    * ShowBookmark: show "add to bookmarks" (usually not done on the local filesystem)
    * ShowCreateDirectory: show "create directory" (usually only done on the background of the view, or
    *                      in hierarchical views like directory trees, where the new dir would be visible)
+   * ShowTextSelectionItems: set when selecting text, for a popup that only contains text-related items.
+   * NoDeletion: deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
+   *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP)
    *
    * KDE4 TODO: add IsLink flag, for "Bookmark This Link" and linkactions merging group.
    *                    [currently it depends on which signal is emitted]
@@ -318,7 +321,8 @@ public:
    */
   enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
-         ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020};
+         ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020,
+         NoDeletion=0x0040 };
 
 
   /**
