@@ -134,6 +134,8 @@ void kimgio_ico_read(QImageIO *io)
 	uint preferred = 0;
 	for (uint i = 0; i < hdr.count; ++i)
 	{
+		if (ico.atEnd())
+                   return;
 		IconRec rec;
 		ico >> rec.width >> rec.height >> rec.colors
 			>> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
@@ -148,16 +150,30 @@ void kimgio_ico_read(QImageIO *io)
 			preferred = i;
 	}
 	IconRec header = iconList[preferred];
+
+    if (ico.device()->size() < header.dibOffset + BMP_WIN)
+       return;
+
     ico.device()->at(header.dibOffset);
     BMP_INFOHDR dibHeader;
     ico >> dibHeader;
-    QByteArray dibData(header.dibSize - dibHeader.biSize + BMP_WIN);
+    if ((dibHeader.biSize != BMP_WIN) &&
+        (dibHeader.biSize != BMP_OLD) &&
+        (dibHeader.biSize != BMP_OS2))
+       return;
+    int dibDataSize = header.dibSize - dibHeader.biSize;
+    if ((dibDataSize < 0) || 
+        (ico.device()->size() < header.dibOffset + dibHeader.biSize + dibDataSize))
+       return;
+    ico.device()->at(header.dibOffset + dibHeader.biSize);
+
+    QByteArray dibData(dibDataSize + BMP_WIN);
     QDataStream dib(dibData, IO_ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
     dibHeader.biSize = BMP_WIN;
     dibHeader.biHeight = header.height;
     dib << dibHeader;
-    ico.device()->readBlock(dibData.data() + BMP_WIN, dibData.size() - BMP_WIN);
+    ico.device()->readBlock(dibData.data() + BMP_WIN, dibDataSize);
     dib.device()->at(0);
     
     QImage icon;
