@@ -306,7 +306,6 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
   if(doExpandButton && child) {
     expandButton.setRect(parentLeaderX - 4, cellCenterY - 4,
 			 9, 9);
-    p->setBrush(white);
     p->drawRect(expandButton);
     if(expanded) 
       p->drawLine(parentLeaderX - 2, cellCenterY, 

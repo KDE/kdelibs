@@ -339,7 +339,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   ok_button = new QPushButton( klocale->translate("Ok"), this );
   ok_button->setGeometry( 3*XOFFSET, OKBUTTONY +40,80, BUTTONHEIGHT );
   connect( ok_button, SIGNAL( clicked() ), SLOT( accept() ) );	
-  example_label->setBackgroundColor(white);
+
   example_label = new QLabel(this,"examples");
 
   example_label->setFont(selFont);

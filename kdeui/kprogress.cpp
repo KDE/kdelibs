@@ -56,7 +56,7 @@ void KProgress::initialize()
 	bar_text_color = kapp->selectTextColor;
 	text_color = kapp->textColor;
 	setBackgroundColor( kapp->windowColor );
-	setFont(QFont("helvetica", 12, QFont::Normal));
+	setFont(QFont("helvetica", 12, QFont::Bold));
 	text_enabled = TRUE;
 	adjustStyle();
 }
