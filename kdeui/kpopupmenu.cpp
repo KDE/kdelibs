@@ -486,7 +486,12 @@ QPopupMenu* KPopupMenu::contextMenu()
     return d->m_ctxMenu;
 }
 
-void KPopupMenu::cancelContextMenuShow()
+const QPopupMenu* KPopupMenu::contextMenu() const
+{
+    return contextMenu();
+}
+
+void KPopupMenu::hideContextMenu()
 {
     KPopupMenuPrivate::s_continueCtxMenuShow = false;
 }

@@ -185,7 +185,7 @@ bool KBookmarkMenu::invalid( int val )
 
   if (s_highlightedAddress.isNull()) 
   {
-    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    KPopupMenu::contextMenuFocus()->hideContextMenu();
     valid = false;
   }
 
@@ -197,7 +197,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
   //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull()) 
   {
-    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    KPopupMenu::contextMenuFocus()->hideContextMenu();
     return; 
   }
   contextMenu->clear();

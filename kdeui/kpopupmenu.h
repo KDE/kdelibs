@@ -203,10 +203,16 @@ public:
     QPopupMenu* contextMenu();
 
     /**
+     * Returns the context menu associated with this menu
+     * @since 3.2
+     */
+    const QPopupMenu* contextMenu() const;
+
+    /**
      * Hides the context menu if shown
      * @since 3.2
      */
-    void cancelContextMenuShow();
+    void hideContextMenu();
 
     /**
      * Returns the KPopupMenu associated with the current context menu
