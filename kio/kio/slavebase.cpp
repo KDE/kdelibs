@@ -246,61 +246,69 @@ void SlaveBase::dispatchLoop()
     fd_set rfds;
     int retval;
 
-    while (true) {
-    if (d->timeout && (d->timeout < time(0)))
+    while (true)
     {
-       QByteArray data = d->timeoutData;
-       d->timeout = 0;
-       d->timeoutData = QByteArray();
-       special(data);
-    }
-    FD_ZERO(&rfds);
+       if (d->timeout && (d->timeout < time(0)))
+       {
+          QByteArray data = d->timeoutData;
+          d->timeout = 0;
+          d->timeoutData = QByteArray();
+          special(data);
+       }
+       FD_ZERO(&rfds);
 
-    assert(appconn->inited());
-    FD_SET(appconn->fd_from(), &rfds);
+       assert(appconn->inited());
+       FD_SET(appconn->fd_from(), &rfds);
 
-    struct timeval tv;
-    tv.tv_sec = 1;
-    tv.tv_usec = 0; // 1 second timeout
-    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
-    if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
-    { // dispatch application messages
-        int cmd;
-        QByteArray data;
-        if ( appconn->read(&cmd, data) != -1 )
-        {
-          dispatch(cmd, data);
-        }
-        else // some error occurred, perhaps no more application
-        {
-          // When the app exits, should the slave be put back in the pool ?
-          if (mConnectedToApp && !mPoolSocket.isEmpty())
+       if (!d->timeout) // we can wait forever
+       {
+          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, NULL);
+       }
+       else
+       {
+          struct timeval tv;
+          tv.tv_sec = kMax(d->timeout-time(0),(time_t) 1);
+          tv.tv_usec = 0;
+          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
+       }
+       if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
+       { // dispatch application messages
+          int cmd;
+          QByteArray data;
+          if ( appconn->read(&cmd, data) != -1 )
           {
-            disconnectSlave();
-            mConnectedToApp = false;
-            closeConnection();
-            connectSlave(mPoolSocket);
+             dispatch(cmd, data);
           }
-          else
+          else // some error occurred, perhaps no more application
           {
-            return;
+             // When the app exits, should the slave be put back in the pool ?
+             if (mConnectedToApp && !mPoolSocket.isEmpty())
+             {
+                disconnectSlave();
+                mConnectedToApp = false;
+                closeConnection();
+                connectSlave(mPoolSocket);
+             }
+             else
+             {
+                return;
+             }
           }
-        }
+       }
+       else if ((retval<0) && (errno != EINTR))
+       {
+          kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
+            << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
+            << " (" << errno << ")" << endl;
+          return;
+       }
+       //I think we get here when we were killed in dispatch() and not in select()
+       if (wasKilled())
+       {
+          kdDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
+          return;
+       }
     }
-    else if ((retval<0) && (errno != EINTR))
-    {
-       kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
-          << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
-          << " (" << errno << ")" << endl;
-       return;
-    }
-    //I think we get here when we were killed in dispatch() and not in select()
-    if (wasKilled())
-    {
-       kdDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
-       return;
-    }
-  }
 }
 
 void SlaveBase::connectSlave(const QString& path)
