@@ -63,6 +63,7 @@ public:
     
     static QFont                generalFont();
     static QFont                fixedFont();
+    static QFont                buttonFont();
 
     /**
      * Returns a treshold in pixels for drag & drop operations.
@@ -142,6 +143,7 @@ public:
     
     static  QFont               *_generalFont;
     static  QFont               *_fixedFont;
+    static  QFont               *_buttonFont;
 };
 
 /**

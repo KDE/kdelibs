@@ -128,6 +128,20 @@ QFont KGlobal::fixedFont()
     return *_fixedFont;
 }
 
+QFont KGlobal::buttonFont()
+{
+    if(_buttonFont)
+        return *_buttonFont;
+
+    _buttonFont = new QFont("helvetica", 10, QFont::Normal);
+    charsets()->setQFont(*_buttonFont, charsets()->charsetForLocale());
+    KConfig *c = KGlobal::config();
+    c->setGroup( QString::fromLatin1("General") );
+    *_buttonFont = c->readFontEntry(QString::fromLatin1("buttonFont"),
+                                    _buttonFont);
+    return *_buttonFont;
+}
+
 int KGlobal::dndEventDelay()
 {
     static int delay = -1;
@@ -207,3 +221,4 @@ KCharsets       *KGlobal::_charsets	= 0;
 
 QFont           *KGlobal::_generalFont  = 0;
 QFont           *KGlobal::_fixedFont    = 0;
+QFont           *KGlobal::_buttonFont   = 0;
