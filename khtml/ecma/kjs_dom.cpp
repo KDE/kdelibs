@@ -49,7 +49,7 @@ QPtrDict<DOMDOMImplementation> domImplementations;
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeProtoTable. Use "make hashtables" to regenerate.
-@begin DOMNodeProtoTable 11
+@begin DOMNodeProtoTable 13
   insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
   replaceChild	DOMNode::ReplaceChild	DontDelete|Function 2
   removeChild	DOMNode::RemoveChild	DontDelete|Function 1
@@ -57,8 +57,9 @@ QPtrDict<DOMDOMImplementation> domImplementations;
   hasAttributes	DOMNode::HasAttributes	DontDelete|Function 0
   hasChildNodes	DOMNode::HasChildNodes	DontDelete|Function 0
   cloneNode	DOMNode::CloneNode	DontDelete|Function 1
-#normalize // moved here from Element in DOM2 DOMNode::Normalize
-#supports // new for DOM2 - not yet in khtml  DOMNode::Supports
+# DOM2
+  normalize	DOMNode::Normalize	DontDelete|Function 0
+  isSupported   DOMNode::IsSupported	DontDelete|Function 2
 # from the EventTarget interface
   addEventListener	DOMNode::AddEventListener	DontDelete|Function 3
   removeEventListener	DOMNode::RemoveEventListener	DontDelete|Function 3
@@ -106,6 +107,7 @@ bool DOMNode::toBoolean(ExecState *) const
   nextSibling	DOMNode::NextSibling	DontDelete|ReadOnly
   attributes	DOMNode::Attributes	DontDelete|ReadOnly
   namespaceURI	DOMNode::NamespaceURI	DontDelete|ReadOnly
+# DOM2
   prefix	DOMNode::Prefix		DontDelete
   localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
@@ -408,45 +410,38 @@ List DOMNode::eventHandlerScope(ExecState *) const
 Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
-  Value result;
   switch (id) {
     case DOMNode::HasAttributes:
-      result = Boolean(node.hasAttributes());
-      break;
+      return Boolean(node.hasAttributes());
     case DOMNode::HasChildNodes:
-      result = Boolean(node.hasChildNodes());
-      break;
+      return Boolean(node.hasChildNodes());
     case DOMNode::CloneNode:
-      result = getDOMNode(exec,node.cloneNode(args[0].toBoolean(exec)));
-      break;
+      return getDOMNode(exec,node.cloneNode(args[0].toBoolean(exec)));
+    case DOMNode::Normalize:
+      node.normalize();
+      return Undefined();
+    case DOMNode::IsSupported:
+      return Boolean(node.isSupported(args[0].toString(exec).string(),args[1].toString(exec).string()));
     case DOMNode::AddEventListener: {
-//        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         node.addEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
-        result = Undefined();
-      }
-      break;
+        return Undefined();
+    }
     case DOMNode::RemoveEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         node.removeEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
-        result = Undefined();
-      }
-      break;
+        return Undefined();
+    }
     case DOMNode::DispatchEvent:
-      result = Boolean(node.dispatchEvent(toEvent(args[0])));
-      break;
+      return Boolean(node.dispatchEvent(toEvent(args[0])));
     case DOMNode::AppendChild:
-      result = getDOMNode(exec,node.appendChild(toNode(args[0])));
-      break;
+      return getDOMNode(exec,node.appendChild(toNode(args[0])));
     case DOMNode::RemoveChild:
-      result = getDOMNode(exec,node.removeChild(toNode(args[0])));
-      break;
+      return getDOMNode(exec,node.removeChild(toNode(args[0])));
     case DOMNode::InsertBefore:
-      result = getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1])));
-      break;
+      return getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1])));
     case DOMNode::ReplaceChild:
-      result = getDOMNode(exec,node.replaceChild(toNode(args[0]), toNode(args[1])));
-      break;
+      return getDOMNode(exec,node.replaceChild(toNode(args[0]), toNode(args[1])));
     case DOMNode::Contains:
     {
         int exceptioncode=0;
@@ -455,12 +450,12 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 	{
 	    DOM::NodeBaseImpl *impl = static_cast<DOM::NodeBaseImpl *>(node.handle());
 	    bool retval = !impl->checkNoOwner(other.handle(),exceptioncode);
-	    result = Boolean(retval && exceptioncode == 0);
+	    return Boolean(retval && exceptioncode == 0);
 	}
     }
   }
 
-  return result;
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------
@@ -728,13 +723,15 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     return getDOMNode(exec,doc.createEntityReference(args[0].toString(exec).string()));
   case DOMDocument::GetElementsByTagName:
     return getDOMNodeList(exec,doc.getElementsByTagName(s));
-    /* TODO */
-//  case DOMDocument::ImportNode: // new for DOM2 - not yet in khtml
-  case DOMDocument::CreateElementNS: // new for DOM2
+  case DOMDocument::ImportNode: // DOM2
+    return getDOMNode(exec,doc.importNode(toNode(args[0]), args[1].toBoolean(exec)));
+  case DOMDocument::CreateElementNS: // DOM2
     return getDOMNode(exec,doc.createElementNS(args[0].toString(exec).string(), args[1].toString(exec).string()));
-  case DOMDocument::CreateAttributeNS: // new for DOM2
+  case DOMDocument::CreateAttributeNS: // DOM2
     return getDOMNode(exec,doc.createAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
-/*  case DOMDocument::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml */
+  case DOMDocument::GetElementsByTagNameNS: // DOM2
+    return getDOMNodeList(exec,doc.getElementsByTagNameNS(args[0].toString(exec).string(),
+                                                          args[1].toString(exec).string()));
   case DOMDocument::GetElementById:
     return getDOMNode(exec,doc.getElementById(args[0].toString(exec).string()));
   case DOMDocument::CreateRange:
@@ -782,7 +779,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 // -------------------------------------------------------------------------
 
 /* Source for DOMElementProtoTable. Use "make hashtables" to regenerate.
-@begin DOMElementProtoTable 11
+@begin DOMElementProtoTable 17
   getAttribute		DOMElement::GetAttribute	DontDelete|Function 1
   setAttribute		DOMElement::SetAttribute	DontDelete|Function 2
   removeAttribute	DOMElement::RemoveAttribute	DontDelete|Function 1
@@ -791,17 +788,13 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
   removeAttributeNode	DOMElement::RemoveAttributeNode	DontDelete|Function 1
   getElementsByTagName	DOMElement::GetElementsByTagName	DontDelete|Function 1
   hasAttribute		DOMElement::HasAttribute	DontDelete|Function 1
-# this is moved to Node in DOM2
-  normalize		DOMElement::Normalize		DontDelete|Function 0
-#### new for DOM2 - not yet in khtml
-#  getAttributeNS	DOMElement::GetAttributeNS	DontDelete|Function 2?
-#  setAttributeNS	DOMElement::SetAttributeNS	DontDelete|Function 3?
-#  removeAttributeNS	DOMElement::RemoveAttributeNS	DontDelete|Function 2?
-#  getAttributeNodeNS	DOMElement::GetAttributeNodeNS	DontDelete|Function 2?
-#  setAttributeNodeNS	DOMElement::SetAttributeNodeNS	DontDelete|Function 3?
-#  removeAttributeNodeNS DOMElement::RemoveAttributeNodeNS	DontDelete|Function 2?
-#  getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2?
-#  hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2?
+  getAttributeNS	DOMElement::GetAttributeNS	DontDelete|Function 2
+  setAttributeNS	DOMElement::SetAttributeNS	DontDelete|Function 3
+  removeAttributeNS	DOMElement::RemoveAttributeNS	DontDelete|Function 2
+  getAttributeNodeNS	DOMElement::GetAttributeNodeNS	DontDelete|Function 2
+  setAttributeNodeNS	DOMElement::SetAttributeNodeNS	DontDelete|Function 1
+  getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2
+  hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
 @end
 */
 DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
@@ -873,16 +866,22 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
       return getDOMNodeList(exec,element.getElementsByTagName(args[0].toString(exec).string()));
     case DOMElement::HasAttribute: // DOM2
       return Boolean(element.hasAttribute(args[0].toString(exec).string()));
-    case DOMElement::Normalize: // this is moved to Node in DOM2
-      element.normalize();
+    case DOMElement::GetAttributeNS: // DOM2
+      return String(element.getAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+    case DOMElement::SetAttributeNS: // DOM2
+      element.setAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string(),args[2].toString(exec).string());
       return Undefined();
-/*    case DOMElement::GetAttributeNS: // new for DOM2 - not yet in khtml
-    case DOMElement::SetAttributeNS: // new for DOM2 - not yet in khtml
-    case DOMElement::RemoveAttributeNS: // new for DOM2 - not yet in khtml
-    case DOMElement::GetAttributeNodeNS: // new for DOM2 - not yet in khtml
-    case DOMElement::SetAttributeNodeNS: // new for DOM2 - not yet in khtml
-    case DOMElement::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
-    case DOMElement::HasAttributeNS: // new for DOM2 - not yet in khtml*/
+    case DOMElement::RemoveAttributeNS: // DOM2
+      element.removeAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string());
+      return Undefined();
+    case DOMElement::GetAttributeNodeNS: // DOM2
+      return getDOMNode(exec,element.getAttributeNodeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+    case DOMElement::SetAttributeNodeNS: // DOM2
+      return getDOMNode(exec,element.setAttributeNodeNS((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+    case DOMElement::GetElementsByTagNameNS: // DOM2
+      return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+    case DOMElement::HasAttributeNS: // DOM2
+      return Boolean(element.hasAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
   default:
     return Undefined();
   }
@@ -891,12 +890,12 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 // -------------------------------------------------------------------------
 
 /* Source for DOMDOMImplementationProtoTable. Use "make hashtables" to regenerate.
-@begin DOMDOMImplementationProtoTable 3
+@begin DOMDOMImplementationProtoTable 4
   hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
+# DOM2
   createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
-###new for DOM2 - not yet in khtml
-#  createDocumentType	DOMDOMImplementation::CreateDocumentType	DontDelete|Function ?
-#  createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function ?
+  createDocumentType	DOMDOMImplementation::CreateDocumentType	DontDelete|Function 3
+  createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function 3
 @end
 */
 DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
@@ -918,16 +917,17 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
   DOM::DOMImplementation implementation = static_cast<DOMDOMImplementation *>( thisObj.imp() )->toImplementation();
 
   switch(id) {
-    case DOMDOMImplementation::HasFeature:
-      return Boolean(implementation.hasFeature(args[0].toString(exec).string(),args[1].toString(exec).string()));
-/*    case DOMDOMImplementation::CreateDocumentType: // new for DOM2 - not yet in khtml
-    case DOMDOMImplementation::CreateDocument: // new for DOM2 - not yet in khtml*/
-    case DOMDOMImplementation::CreateCSSStyleSheet:
-      return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));
-    default:
-      break;
+  case DOMDOMImplementation::HasFeature:
+    return Boolean(implementation.hasFeature(args[0].toString(exec).string(),args[1].toString(exec).string()));
+  case DOMDOMImplementation::CreateDocumentType: // DOM2
+    return getDOMNode(exec,implementation.createDocumentType(args[0].toString(exec).string(),args[1].toString(exec).string(),args[2].toString(exec).string()));
+  case DOMDOMImplementation::CreateDocument: // DOM2
+    return getDOMNode(exec,implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2])));
+  case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2
+    return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));
+  default:
+    break;
   }
-
   return Undefined();
 }
 
@@ -936,14 +936,14 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
 const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDocumentTypeTable, 0 };
 
 /* Source for DOMDocumentTypeTable. Use "make hashtables" to regenerate.
-@begin DOMDocumentTypeTable 3
+@begin DOMDocumentTypeTable 6
   name			DOMDocumentType::Name		DontDelete|ReadOnly
   entities		DOMDocumentType::Entities	DontDelete|ReadOnly
   notations		DOMDocumentType::Notations	DontDelete|ReadOnly
-###new for DOM2 - not yet in khtml
-#  publicId		DOMDocumentType::PublicId	DontDelete|ReadOnly
-#  systemId		DOMDocumentType::SystemId	DontDelete|ReadOnly
-#  internalSubset	DOMDocumentType::InternalSubset	DontDelete|ReadOnly
+# DOM2
+  publicId		DOMDocumentType::PublicId	DontDelete|ReadOnly
+  systemId		DOMDocumentType::SystemId	DontDelete|ReadOnly
+  internalSubset	DOMDocumentType::InternalSubset	DontDelete|ReadOnly
 @end
 */
 DOMDocumentType::DOMDocumentType(ExecState *exec, DOM::DocumentType dt)
@@ -964,12 +964,12 @@ Value DOMDocumentType::getValue(ExecState *exec, int token) const
     return getDOMNamedNodeMap(exec,type.entities());
   case Notations:
     return getDOMNamedNodeMap(exec,type.notations());
-//  case PublicId: // new for DOM2 - not yet in khtml
-//    return getString(type.publicId());
-//  case SystemId: // new for DOM2 - not yet in khtml
-//    return getString(type.systemId());
-//  case InternalSubset: // new for DOM2 - not yet in khtml
-//    return getString(type.internalSubset());
+  case PublicId: // DOM2
+    return getString(type.publicId());
+  case SystemId: // DOM2
+    return getString(type.systemId());
+  case InternalSubset: // DOM2
+    return getString(type.internalSubset());
   default:
     kdWarning() << "DOMDocumentType::getValue unhandled token " << token << endl;
     return Value();
@@ -979,15 +979,15 @@ Value DOMDocumentType::getValue(ExecState *exec, int token) const
 // -------------------------------------------------------------------------
 
 /* Source for DOMNamedNodeMapProtoTable. Use "make hashtables" to regenerate.
-@begin DOMNamedNodeMapProtoTable 5
+@begin DOMNamedNodeMapProtoTable 7
   getNamedItem		DOMNamedNodeMap::GetNamedItem		DontDelete|Function 1
   setNamedItem		DOMNamedNodeMap::SetNamedItem		DontDelete|Function 1
   removeNamedItem	DOMNamedNodeMap::RemoveNamedItem	DontDelete|Function 1
   item			DOMNamedNodeMap::Item			DontDelete|Function 1
-### new for DOM2 - not yet in khtml
-#  getNamedItemNS	DOMNamedNodeMap::GetNamedItemNS		DontDelete|Function 1
-#  setNamedItemNS	DOMNamedNodeMap::SetNamedItemNS		DontDelete|Function 1
-#  removeNamedItemNS	DOMNamedNodeMap::RemoveNamedItemNS	DontDelete|Function 1
+# DOM2
+  getNamedItemNS	DOMNamedNodeMap::GetNamedItemNS		DontDelete|Function 2
+  setNamedItemNS	DOMNamedNodeMap::SetNamedItemNS		DontDelete|Function 1
+  removeNamedItemNS	DOMNamedNodeMap::RemoveNamedItemNS	DontDelete|Function 2
 @end
 */
 DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
@@ -1034,16 +1034,19 @@ Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
 
   switch(id) {
     case DOMNamedNodeMap::GetNamedItem:
-      return getDOMNode(exec,map.getNamedItem(args[0].toString(exec).string()));
+      return getDOMNode(exec, map.getNamedItem(args[0].toString(exec).string()));
     case DOMNamedNodeMap::SetNamedItem:
-      return getDOMNode(exec,map.setNamedItem((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+      return getDOMNode(exec, map.setNamedItem((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
     case DOMNamedNodeMap::RemoveNamedItem:
-      return getDOMNode(exec,map.removeNamedItem(args[0].toString(exec).string()));
+      return getDOMNode(exec, map.removeNamedItem(args[0].toString(exec).string()));
     case DOMNamedNodeMap::Item:
       return getDOMNode(exec, map.item(args[0].toInt32(exec)));
-/*    case DOMNamedNodeMap::GetNamedItemNS: // new for DOM2 - not yet in khtml
-    case DOMNamedNodeMap::SetNamedItemNS: // new for DOM2 - not yet in khtml
-    case DOMNamedNodeMap::RemoveNamedItemNS: // new for DOM2 - not yet in khtml*/
+    case DOMNamedNodeMap::GetNamedItemNS: // DOM2
+      return getDOMNode(exec, map.getNamedItemNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+    case DOMNamedNodeMap::SetNamedItemNS: // DOM2
+      return getDOMNode(exec, map.setNamedItemNS(toNode(args[0])));
+    case DOMNamedNodeMap::RemoveNamedItemNS: // DOM2
+      return getDOMNode(exec, map.removeNamedItemNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
     default:
       break;
   }

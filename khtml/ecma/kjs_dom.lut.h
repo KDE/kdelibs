@@ -4,23 +4,24 @@ namespace KJS {
 
 const struct HashEntry DOMNodeProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "insertBefore", DOMNode::InsertBefore, DontDelete|Function, 2, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "hasAttributes", DOMNode::HasAttributes, DontDelete|Function, 0, &DOMNodeProtoTableEntries[13] },
-   { "removeChild", DOMNode::RemoveChild, DontDelete|Function, 1, &DOMNodeProtoTableEntries[11] },
-   { "replaceChild", DOMNode::ReplaceChild, DontDelete|Function, 2, &DOMNodeProtoTableEntries[12] },
-   { "hasChildNodes", DOMNode::HasChildNodes, DontDelete|Function, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "dispatchEvent", DOMNode::DispatchEvent, DontDelete|Function, 1, 0 },
-   { "addEventListener", DOMNode::AddEventListener, DontDelete|Function, 3, 0 },
-   { "appendChild", DOMNode::AppendChild, DontDelete|Function, 1, &DOMNodeProtoTableEntries[14] },
-   { "cloneNode", DOMNode::CloneNode, DontDelete|Function, 1, 0 },
+   { "hasAttributes", DOMNode::HasAttributes, DontDelete|Function, 0, 0 },
+   { "normalize", DOMNode::Normalize, DontDelete|Function, 0, 0 },
+   { "isSupported", DOMNode::IsSupported, DontDelete|Function, 2, 0 },
    { "removeEventListener", DOMNode::RemoveEventListener, DontDelete|Function, 3, 0 },
+   { "hasChildNodes", DOMNode::HasChildNodes, DontDelete|Function, 0, &DOMNodeProtoTableEntries[15] },
+   { 0, 0, 0, 0, 0 },
+   { "replaceChild", DOMNode::ReplaceChild, DontDelete|Function, 2, &DOMNodeProtoTableEntries[13] },
+   { "insertBefore", DOMNode::InsertBefore, DontDelete|Function, 2, 0 },
+   { "cloneNode", DOMNode::CloneNode, DontDelete|Function, 1, 0 },
+   { "dispatchEvent", DOMNode::DispatchEvent, DontDelete|Function, 1, 0 },
+   { "appendChild", DOMNode::AppendChild, DontDelete|Function, 1, &DOMNodeProtoTableEntries[14] },
+   { 0, 0, 0, 0, 0 },
+   { "removeChild", DOMNode::RemoveChild, DontDelete|Function, 1, 0 },
+   { "addEventListener", DOMNode::AddEventListener, DontDelete|Function, 3, 0 },
    { "contains", DOMNode::Contains, DontDelete|Function, 1, 0 }
 };
 
-const struct HashTable DOMNodeProtoTable = { 2, 15, DOMNodeProtoTableEntries, 11 };
+const struct HashTable DOMNodeProtoTable = { 2, 16, DOMNodeProtoTableEntries, 13 };
 
 }; // namespace
 
@@ -169,22 +170,28 @@ const struct HashTable DOMDocumentTable = { 2, 5, DOMDocumentTableEntries, 4 };
 namespace KJS {
 
 const struct HashEntry DOMElementProtoTableEntries[] = {
+   { "getAttributeNodeNS", DOMElement::GetAttributeNodeNS, DontDelete|Function, 2, 0 },
+   { "getAttributeNS", DOMElement::GetAttributeNS, DontDelete|Function, 2, 0 },
    { 0, 0, 0, 0, 0 },
    { "removeAttributeNode", DOMElement::RemoveAttributeNode, DontDelete|Function, 1, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "getAttribute", DOMElement::GetAttribute, DontDelete|Function, 1, &DOMElementProtoTableEntries[11] },
+   { "removeAttribute", DOMElement::RemoveAttribute, DontDelete|Function, 1, &DOMElementProtoTableEntries[17] },
    { "setAttribute", DOMElement::SetAttribute, DontDelete|Function, 2, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "removeAttribute", DOMElement::RemoveAttribute, DontDelete|Function, 1, 0 },
-   { "getAttributeNode", DOMElement::GetAttributeNode, DontDelete|Function, 1, 0 },
-   { "setAttributeNode", DOMElement::SetAttributeNode, DontDelete|Function, 2, &DOMElementProtoTableEntries[12] },
    { "hasAttribute", DOMElement::HasAttribute, DontDelete|Function, 1, 0 },
+   { "getElementsByTagNameNS", DOMElement::GetElementsByTagNameNS, DontDelete|Function, 2, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "getAttributeNode", DOMElement::GetAttributeNode, DontDelete|Function, 1, 0 },
+   { "getAttribute", DOMElement::GetAttribute, DontDelete|Function, 1, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "removeAttributeNS", DOMElement::RemoveAttributeNS, DontDelete|Function, 2, &DOMElementProtoTableEntries[18] },
+   { "setAttributeNS", DOMElement::SetAttributeNS, DontDelete|Function, 3, 0 },
+   { "hasAttributeNS", DOMElement::HasAttributeNS, DontDelete|Function, 2, 0 },
+   { 0, 0, 0, 0, 0 },
    { "getElementsByTagName", DOMElement::GetElementsByTagName, DontDelete|Function, 1, 0 },
-   { "normalize", DOMElement::Normalize, DontDelete|Function, 0, 0 }
+   { "setAttributeNode", DOMElement::SetAttributeNode, DontDelete|Function, 2, 0 },
+   { "setAttributeNodeNS", DOMElement::SetAttributeNodeNS, DontDelete|Function, 1, 0 }
 };
 
-const struct HashTable DOMElementProtoTable = { 2, 13, DOMElementProtoTableEntries, 11 };
+const struct HashTable DOMElementProtoTable = { 2, 19, DOMElementProtoTableEntries, 17 };
 
 }; // namespace
 
@@ -204,38 +211,49 @@ namespace KJS {
 
 const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
    { "hasFeature", DOMDOMImplementation::HasFeature, DontDelete|Function, 2, 0 },
+   { "createDocumentType", DOMDOMImplementation::CreateDocumentType, DontDelete|Function, 3, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, 0 }
+   { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, &DOMDOMImplementationProtoTableEntries[4] },
+   { "createDocument", DOMDOMImplementation::CreateDocument, DontDelete|Function, 3, 0 }
 };
 
-const struct HashTable DOMDOMImplementationProtoTable = { 2, 3, DOMDOMImplementationProtoTableEntries, 3 };
+const struct HashTable DOMDOMImplementationProtoTable = { 2, 5, DOMDOMImplementationProtoTableEntries, 4 };
 
 }; // namespace
 
 namespace KJS {
 
 const struct HashEntry DOMDocumentTypeTableEntries[] = {
-   { "name", DOMDocumentType::Name, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
    { "notations", DOMDocumentType::Notations, DontDelete|ReadOnly, 0, 0 },
-   { "entities", DOMDocumentType::Entities, DontDelete|ReadOnly, 0, 0 }
+   { "publicId", DOMDocumentType::PublicId, DontDelete|ReadOnly, 0, 0 },
+   { "name", DOMDocumentType::Name, DontDelete|ReadOnly, 0, &DOMDocumentTypeTableEntries[6] },
+   { "systemId", DOMDocumentType::SystemId, DontDelete|ReadOnly, 0, 0 },
+   { "entities", DOMDocumentType::Entities, DontDelete|ReadOnly, 0, 0 },
+   { "internalSubset", DOMDocumentType::InternalSubset, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMDocumentTypeTable = { 2, 3, DOMDocumentTypeTableEntries, 3 };
+const struct HashTable DOMDocumentTypeTable = { 2, 7, DOMDocumentTypeTableEntries, 6 };
 
 }; // namespace
 
 namespace KJS {
 
 const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
+   { "getNamedItem", DOMNamedNodeMap::GetNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[8] },
    { 0, 0, 0, 0, 0 },
-   { "setNamedItem", DOMNamedNodeMap::SetNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[5] },
    { 0, 0, 0, 0, 0 },
-   { "removeNamedItem", DOMNamedNodeMap::RemoveNamedItem, DontDelete|Function, 1, 0 },
-   { "getNamedItem", DOMNamedNodeMap::GetNamedItem, DontDelete|Function, 1, 0 },
-   { "item", DOMNamedNodeMap::Item, DontDelete|Function, 1, 0 }
+   { 0, 0, 0, 0, 0 },
+   { "item", DOMNamedNodeMap::Item, DontDelete|Function, 1, 0 },
+   { "setNamedItem", DOMNamedNodeMap::SetNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[7] },
+   { 0, 0, 0, 0, 0 },
+   { "removeNamedItem", DOMNamedNodeMap::RemoveNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[9] },
+   { "getNamedItemNS", DOMNamedNodeMap::GetNamedItemNS, DontDelete|Function, 2, 0 },
+   { "setNamedItemNS", DOMNamedNodeMap::SetNamedItemNS, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[10] },
+   { "removeNamedItemNS", DOMNamedNodeMap::RemoveNamedItemNS, DontDelete|Function, 2, 0 }
 };
 
-const struct HashTable DOMNamedNodeMapProtoTable = { 2, 6, DOMNamedNodeMapProtoTableEntries, 5 };
+const struct HashTable DOMNamedNodeMapProtoTable = { 2, 11, DOMNamedNodeMapProtoTableEntries, 7 };
 
 }; // namespace
 

@@ -57,7 +57,7 @@ namespace KJS {
            ChildNodes, FirstChild, LastChild, PreviousSibling, NextSibling,
            Attributes, NamespaceURI, Prefix, LocalName, OwnerDocument, InsertBefore,
            ReplaceChild, RemoveChild, AppendChild, HasAttributes, HasChildNodes,
-           CloneNode, Normalize, Supports, AddEventListener, RemoveEventListener,
+           CloneNode, Normalize, IsSupported, AddEventListener, RemoveEventListener,
            DispatchEvent, Contains,
            OnAbort, OnBlur, OnChange, OnClick, OnDblClick, OnDragDrop, OnError,
            OnFocus, OnKeyDown, OnKeyPress, OnKeyUp, OnLoad, OnMouseDown,
@@ -144,8 +144,7 @@ namespace KJS {
            GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
-           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
-           Normalize };
+           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
   };
 
   class DOMDOMImplementation : public DOMObject {
