@@ -222,7 +222,7 @@ Attr Element::removeAttributeNode( const Attr &oldAttr )
     if (impl->isReadOnly())
         throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 
-    if (static_cast<ElementImpl*>(impl)->attributes(true))
+    if (!static_cast<ElementImpl*>(impl)->attributes(true))
         throw DOMException(DOMException::NOT_FOUND_ERR);
 
     NamedAttrMapImpl *attributes = static_cast<ElementImpl*>(impl)->attributes(false);
