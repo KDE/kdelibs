@@ -177,8 +177,6 @@ public:
 
     virtual const char *renderName() const { return "RenderImageButton"; }
 
-    virtual void layout(bool deep);
-
     HTMLInputElementImpl *m_element;
 
 };

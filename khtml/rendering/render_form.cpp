@@ -199,13 +199,13 @@ void RenderSubmitButton::slotClicked()
 void RenderSubmitButton::layout(bool deep)
 {
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isNull() ?
-                    defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
+        defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
     static_cast<QPushButton*>(m_widget)->setText(value);
     RenderButton::layout(deep);
 }
 
 QString RenderSubmitButton::defaultLabel() {
-  return i18n("Submit");
+    return i18n("Submit");
 }
 
 
@@ -223,18 +223,6 @@ RenderImageButton::RenderImageButton(QScrollView *view,
 
 RenderImageButton::~RenderImageButton()
 {
-}
-
-void RenderImageButton::layout(bool deep)
-{
-/*    m_widget->resize(m_widget->sizeHint());
-    m_width = m_widget->width();
-    m_height = m_widget->height();
-    //RenderButton::layout(deep);
-*/
-
-    // #### use the predefined width and height.
-    RenderImage::layout(deep);
 }
 
 // -------------------------------------------------------------------------------
@@ -256,7 +244,7 @@ void RenderResetButton::slotClicked()
 }
 
 QString RenderResetButton::defaultLabel() {
-  return i18n("Reset");
+    return i18n("Reset");
 }
 
 
@@ -278,8 +266,8 @@ void RenderPushButton::slotClicked()
 
 
 QString RenderPushButton::defaultLabel() {
-  QString s;
-  return s;
+    QString s;
+    return s;
 }
 
 // -------------------------------------------------------------------------------
@@ -674,8 +662,8 @@ void RenderSelect::close()
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-       kdDebug( 6040 ) << "Restoring SelectElem state=" << state << endl;
-       restoreState( state );
+        kdDebug( 6040 ) << "Restoring SelectElem state=" << state << endl;
+        restoreState( state );
     }
     setLayouted(false);
 
@@ -745,8 +733,8 @@ QCString RenderSelect::encoding()
 
                 if (first)
                 {
-                   first = false;
-                   prefix = '&' + prefix;
+                    first = false;
+                    prefix = '&' + prefix;
                 }
             }
         }
@@ -782,10 +770,10 @@ QString RenderSelect::state()
         while(current) {
             if (current->id() == ID_OPTION)
             {
-               if( w->isSelected(i))
-                  state += 'X';
-               else
-                  state += 'O';
+                if( w->isSelected(i))
+                    state += 'X';
+                else
+                    state += 'O';
             }
             current = current->nextSibling();
             i++;
@@ -801,10 +789,10 @@ QString RenderSelect::state()
         while(current) {
             if (current->id() == ID_OPTION )
             {
-               if( i == w->currentItem())
-                  state += 'X';
-               else
-                  state += 'O';
+                if( i == w->currentItem())
+                    state += 'X';
+                else
+                    state += 'O';
             }
             current = current->nextSibling();
             i++;
@@ -827,7 +815,7 @@ void RenderSelect::restoreState(const QString &state)
         while(current) {
             if (current->id() == ID_OPTION)
             {
-               w->setSelected(i, (state[i] == 'X'));
+                w->setSelected(i, (state[i] == 'X'));
             }
             current = current->nextSibling();
             i++;
@@ -843,8 +831,8 @@ void RenderSelect::restoreState(const QString &state)
         while(current) {
             if (current->id() == ID_OPTION )
             {
-               if (state[i] == 'X')
-                  w->setCurrentItem(i);
+                if (state[i] == 'X')
+                    w->setCurrentItem(i);
             }
             current = current->nextSibling();
             i++;
@@ -897,7 +885,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-        : QMultiLineEdit(parent)
+    : QMultiLineEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
 	setWordWrap(QMultiLineEdit::WidgetWidth);
