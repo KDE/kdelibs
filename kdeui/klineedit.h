@@ -289,10 +289,11 @@ public:
      * Enable text squeezing whenever the supplied text is too long.
      * Only works for "read-only" mode.
      *
-     * Note that once text squeezing is enabled, @ref QLineEdit::text
-     * and @ref QLineEdit::displayText return the squeezed text. If
+     * Note that once text squeezing is enabled, QLineEdit::text()
+     * and QLineEdit::displayText() return the squeezed text. If
      * you want the original text, use @ref originalText.
      *
+     * @see QLineEdit
      * @since 3.2
      */    
     void setEnableSqueezedText( bool enable );
@@ -306,10 +307,11 @@ public:
     bool isSqueezedTextEnabled() const;
     
     /**
-     * Returns the original text if text squeezing is enabled 
+     * Returns the original text if text squeezing is enabled.
      * If the widget is not in "read-only" mode, this function
-     * returns the same thing as @ref QLineEdit::text().
+     * returns the same thing as QLineEdit::text().
      * 
+     * @see QLineEdit
      * @since 3.2
      */
     QString originalText() const;
