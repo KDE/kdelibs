@@ -51,7 +51,7 @@ HTMLSettings::HTMLSettings()
     bgColor       = Qt::lightGray;
 
     charset	  = KApplication::getKApplication()->getCharsets()->defaultCh();
-
+    
     underlineLinks = true;
 }
 

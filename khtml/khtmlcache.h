@@ -24,8 +24,9 @@
 //
 // $Id$
 
-#ifndef KHTMLIO_H
-#define KHTMLIO_H
+#ifndef KHTMLCACHE_H
+#define KHTMLCACHE_H
+
 #include "khtmlobj.h"
 
 // up to which size is a picture for sure cacheable
@@ -40,6 +41,7 @@ class QPixmap;
 class QMovie;
 #include <qdict.h>
 #include <qobject.h>
+#include <qstringlist.h>
 
 class KHTMLWidget;
 
@@ -75,7 +77,7 @@ public:
     /**
      * load a local file
      */
-    void load( const char *_filename );
+    void load( QString _filename );
 
     /**
      * update the object from the buffer
@@ -107,27 +109,27 @@ public:
     bool gotFrame;
 };
 
-class ImageList : public QStrList
+class ImageList : public QStringList
 {
 public:
     /**
      * implements the LRU list
      * The least recently used item is at the beginning of the list.
      */
-    void touch( const char *url )
+    void touch( QString url )
     {
 	remove( url );
 	append( url );
     }
 };
 
-class KHTMLCache : public HTMLObject
+class KHTMLCache : public HTMLFileRequester
 {
 public:
     KHTMLCache( KHTMLWidget *w );
     virtual ~KHTMLCache();
 
-    enum Status { NotCached,    // this URL is not cached
+    enum CacheStatus { NotCached,    // this URL is not cached
 		  Unknown,      // let imagecache decide what to do with it
 		  New,          // inserting new image
 		  Persistent,   // never delete this pixmap
@@ -140,43 +142,43 @@ public:
      * called from the KHTMLWidget to say that new data has arrived
      * if eof it TRUE, the url is completely loaded.
      */
-    virtual bool fileLoaded( const char *_url, QBuffer &buffer, 
+    virtual bool fileLoaded( QString _url, QBuffer &buffer, 
 			     bool eof = false);
     /**
      * called from KHTMLWidget to say, that the image is loaded
      */
-    virtual void fileLoaded( const char *_url, const char *localfile );
+    virtual void fileLoaded( QString _url, QString localfile );
 
     /** 
      * if an htmlimage is destructed it calls
      * this function, to tell the cache, the image is not used
      * anymore.
      */
-    void free( const char *_url, HTMLObject *o = 0);
+    void free( HTMLString _url, HTMLObject *o = 0);
 
     /** 
      * this is called from the KHTMLWidget to indicate that a
      * HTMLObject needs an Image
      */
-    void requestImage( HTMLObject *obj, const char * _url );
+    void requestImage( HTMLObject *obj, QString _url );
 
     /** sets the status of an URL */
-    static void setStatus( const char * _url, Status s );
+    static void setStatus( QString _url, CacheStatus s );
     /** returns the current status of an image */
-    static int status( const char *_url );
+    static int status( QString _url );
 
     /**
      * preload an image into the cache. 
      * Set Status to Persistent, if you don't wan't it to be 
      * removed in any case.
      */
-    static void preload( const char *_url, Status s = Unknown );
+    static void preload( QString _url, CacheStatus s = Unknown );
 
     /**
      * get the pixmap belonging to an url. 
      * @return 0 if the image is not cached.
      */
-    static QPixmap *image( const char * _url );
+    static QPixmap *image( QString _url );
 
     /**
      * sets the size of the cache

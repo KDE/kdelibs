@@ -20,11 +20,12 @@
 #AM_CXXFLAGS += -DTABLE_DEBUG
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtmlparser.cpp khtmljscript.cpp khtml.cpp \
-	khtmlobj.cpp khtmlfont.cpp khtmlform.cpp khtmltoken.cpp \
+libkhtml_la_SOURCES = khtmlcache.cpp khtmlparser.cpp khtmljscript.cpp \
+	khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlform.cpp khtmltoken.cpp \
 	khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp \
-	khtmldata.cpp khtmltable.cpp khtmliter.cpp khtmlcache.cpp \
-	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp
+	khtmldata.cpp khtmltable.cpp khtmliter.cpp \
+	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp khtmldecoder.cpp \
+	khtmlstring.cpp
 
 libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
 	khtmlform.moc khtmlframe.moc khtmlview.moc
@@ -32,7 +33,8 @@ libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
 include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h 
 noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h \
 	khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h \
-	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h
+	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h \
+	khtmldecoder.cpp khtmlstring.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
 libkhtml_la_LIBADD = ../jscript/libjscript.la ../kimgio/libkimgio.la
@@ -56,3 +58,7 @@ kcssprop_DIST = kcssprop.c kcssprop.h kcssprop.in
 EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
 	CHANGES DESIGN README.HTMLWidget README.tags $(kcssprop_DIST)
 
+#bin_PROGRAMS = debugkhtml
+#debugkhtml_LDADD = -lkhtml -lkdecore -lqt
+
+#debugkhtml_SOURCES = debugkhtml.cpp

@@ -1,0 +1,20 @@
+Author: Waldo Bastian                           Date: 2-6-1999
+
+Introduced a sort of zone-allocator (HTMLAllocator)
+
+All objects derived from HTMLObject are now allocated by the
+HTMLAllocator. HTMLTextSlaves are an exception as they have a 
+more dynamic life cycle: They get often allocated and freed again.
+Having a seperate allocator for them would be beneficial.
+
+The memory occupied by the HTMLObjects is not freed upon destruction
+but when the HTMLAllocator is destructed.
+
+Strings (not related to the tokenizer) where previously managed
+by the tokenizer. They are now allocated by the HTMLAllocator in
+the same way as HTMLObjects.
+
+The allocator allocates blocks of memory in chunks of 128Kb. Chunks
+of this size are (at least on Linux 2.2.5) returned to the OS
+for reuse when they are freed.
+

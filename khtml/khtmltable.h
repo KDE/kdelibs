@@ -30,7 +30,7 @@
 
 #include <qpainter.h>
 #include <qlist.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qarray.h>
 #include <qpixmap.h>
 #include <qstack.h>
@@ -124,7 +124,7 @@ public:
     virtual void setMaxAscent( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
-    virtual void selectByURL( KHTMLWidget *, HTMLChain *, const char *, bool, int _tx, int _ty );
+    virtual void selectByURL( KHTMLWidget *, HTMLChain *, QString, bool, int _tx, int _ty );
     virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );
     virtual void select( KHTMLWidget *, HTMLChain *,  bool, int _tx, int _ty );
@@ -136,7 +136,7 @@ public:
     virtual void select( bool );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void getSelected( QStrList & );
+    virtual void getSelected( QStringList & );
     virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
@@ -145,7 +145,7 @@ public:
     virtual ObjectType getObjectType() const
 	    {	return Clue; }
 
-    virtual HTMLAnchor *findAnchor( const char *_name, int &_x, int &_y );
+    virtual HTMLAnchor *findAnchor( QString _name, int &_x, int &_y );
 
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,

@@ -1,0 +1,37 @@
+Here's what's still missing (roughly in order of importance):
+
+* check the remaining ascii() calls
+
+* move the attribute parsing into the objects
+
+* simplify the KHTMLWidget/KHTMLView api, perhaps add a widget, which
+  is almost a browser (move some stuff from konqueror here...)
+
+* use KURL instead of QString url everywhere for URL's. This
+  would avoid quite some QString<-->KURL conversions
+
+* many functions using QString now could be changed to use references,
+  to avoid copying of the string
+
+* move the parsing of table tags into the main parser
+
+* get rid of the blockingTokens in the tokenizer
+
+* incremental table layout
+
+* make the object tree reflect the real document structure.
+  Needed for dynamic html
+
+* perhaps split up htmlobj.* into several files
+
+* charset support (--> kcharsets)
+
+* some html-4 elements are still not supported
+
+* add (use) more attributes
+
+* BiDi support
+
+* jscript
+
+* java

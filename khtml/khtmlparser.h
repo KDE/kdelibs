@@ -49,8 +49,6 @@
 //
 ///////////////////
 
-// ../kdecore/kcharset.h
-class KCharsetConverter;
 
 // khtml.h
 class KHTMLWidget;
@@ -79,6 +77,9 @@ class HTMLTextArea;
 // khtmlframe.h
 class HTMLFrameSet;
 
+// khtmlobj.h
+class HTMLAllocator;
+
 //
 // Internal Classes
 //
@@ -99,7 +100,8 @@ public:
     			 HTMLTokenizer *_ht, 
     			 QPainter *_painter,
     			 HTMLSettings *_settings,
-    			 QStrList *_formData);
+    			 QStrList *_formData,
+    			 HTMLAllocator *_allocator);
     virtual ~KHTMLParser();
 
     /*
@@ -113,17 +115,7 @@ public:
      * You can specify two tokens, for example &lt;/li&gt; and &lt;/menu&gt;.
      * You may even set the second one to "" if you dont need it.
      */
-    int parseBody( HTMLClue *_clue, const int *_end, bool toplevel = FALSE );
-
-   /**
-    * Set document charset.
-    *
-    * Any <META ...> setting charsets overrides this setting
-    *
-    * @return TRUE if successfull
-    *
-    */
-    bool setCharset(const char *name);
+    uint parseBody( HTMLClue *_clue, const uint *_end, bool toplevel = FALSE );
 
 protected:
 	KHTMLWidget *HTMLWidget;
@@ -131,19 +123,19 @@ protected:
     enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
 
-	/*
-	 * This function creates a new flow adds it to '_clue' and sets 'flow'
-	 */
-	void newFlow();
-
-	void insertText(char *str, const HTMLFont * fp);
+    /*
+     * This function creates a new flow adds it to '_clue' and sets 'flow'
+     */
+    void newFlow();
+    
+    void insertText(HTMLString str, const HTMLFont * fp);
 
     /*
      * tagID
      *
      * The ID of the tag currently being parsed
      */
-    int tagID;  
+    uint tagID;  
 
     /*
      * Parses the tag set in tagID with options tagOptions
@@ -170,7 +162,6 @@ protected:
     void parseTagBody(void); 
     void parseTagBr(void);
     void parseTagButton(void);
-    void parseTagCell(void);
     void parseTagCenter(void);
     void parseTagCite(void);
     void parseTagCode(void);
@@ -239,6 +230,9 @@ protected:
     void parseTagU(void); 	
     void parseTagUL(void); 	
     void parseTagVar(void); 	
+    void parsePlain(void); 	
+
+    bool plainText;
 	
     /*
      * This function is used for convenience only. It inserts a vertical space
@@ -260,13 +254,13 @@ protected:
      * If we are in an <a href=..> ... </a> tag then the href
      * is stored in this string.
      */
-    char *url;
+    HTMLString url;
 
     /*
      * If we are in an <a target=..> ... </a> tag then this points to the
      * target.
      */
-    const char *target;
+    HTMLString target;
 
     /*
      * This painter is created at need, for example to draw
@@ -331,32 +325,32 @@ protected:
     /*
      * from <BASE TARGET="...">
      */
-    const char *baseTarget;
+    HTMLString baseTarget;
 
 
-	HTMLStackElem *blockStack; 
+    HTMLStackElem *blockStack; 
 
     void pushBlock( int _id, int _level, 
-    				  blockFunc _exitFunc = 0, 
-    				  int _miscData1 = 0);
+		    blockFunc _exitFunc = 0, 
+		    int _miscData1 = 0);
     					  
     void popBlock( int _id );
  
-	void freeBlock( void);
+    void freeBlock( void);
     
-	 /*
-	  * Code for closing-tag to restore block
-	  */
+    /*
+     * Code for closing-tag to restore block
+     */
     void blockEnd(HTMLStackElem *stackElem);
 
-	 /*
-	  * Code for closing-tag to close anchor
-	  */
+    /*
+     * Code for closing-tag to close anchor
+     */
     void blockEndAnchor(HTMLStackElem *stackElem);
 
-	 /*
-	  * Code for closing-tag to end PRE tag
-	  */
+    /*
+     * Code for closing-tag to end PRE tag
+     */
     void blockEndPre(HTMLStackElem *stackElem);
 
 	 /*
@@ -532,8 +526,10 @@ protected:
      */
     QStrList *formData;
 
-    KCharsetConverter *charsetConverter;
-
+    /* 
+     * Memory allocator
+     */
+    HTMLAllocator *allocator;
 };
 
 #endif // HTMLPARSER_H

@@ -1,0 +1,2 @@
+#! /bin/sh
+gperf -a -L 'ANSI-C' -E -C -c -o -t -k '*' -NfindEntity -Hhash_Entity -Wwordlist_Entity -D -s 2 khtmlentities.gperf > khtmlentities.c

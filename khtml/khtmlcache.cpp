@@ -101,10 +101,18 @@ KHTMLCachedImage::clear()
 }
 
 void
-KHTMLCachedImage::load( const char * _file )
+KHTMLCachedImage::load( QString _f )
 {
+    printf("in KHTMLCache::load()\n");
+
     clear();
 
+    // remove "file:" prefix
+    QString prefix("file:");
+    if(_f.find(prefix) == 0)
+	_f = _f.mid(5);
+
+    const char *_file = _f.ascii();
     // Workaround for bug in QMovie
     // Load the image in memory to avoid vasting file handles
     struct stat buff;
@@ -160,6 +168,8 @@ KHTMLCachedImage::load( const char * _file )
 bool
 KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 {
+    printf("in KHTMLCache::data()\n");
+    // ######## FIXME
     // no incremental loading for the moment
     if( !eof ) return false;
 
@@ -256,7 +266,7 @@ int KHTMLCache::maxSize = DEFCACHESIZE;
 int KHTMLCache::actSize = 0;
 
 
-KHTMLCache::KHTMLCache( KHTMLWidget *w ) : HTMLObject()
+KHTMLCache::KHTMLCache( KHTMLWidget *w )
 {
     htmlWidget = w;
     init();
@@ -277,40 +287,38 @@ KHTMLCache::init()
     if(!lru)
     {
 	lru = new ImageList;
-	// not to delete the image twice...
-	lru->setAutoDelete(false);
     }
 }
 
 void
-KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
+KHTMLCache::requestImage( HTMLObject *obj, QString _url)
 {
     // this brings the _url to a standard form...
     KURL kurl( _url );
     if( kurl.isMalformed() )
     {
-      printf("Cache: Malformed url: %s\n", _url );
+      printf("Cache: Malformed url: %s\n", _url.latin1() );
       return;
     }
     KHTMLCachedImage *im = cache->find(kurl.url());
     if(!im)
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: new: %s\n", _url);
+	printf("Cache: new: %s\n", _url.latin1());
 #endif
 	im = new KHTMLCachedImage();
 	im->status = Pending;
 	im->append(obj);
 	cache->insert( kurl.url(), im );
-	lru->append( kurl.url().ascii() );
+	lru->append( kurl.url() );
 	    
 	if ( kurl.isLocalFile() )
 	{
-	    im->load( kurl.path() );
+	    im->load( kurl.url() );
 	    actSize += im->size;
 	}
 	else 
-	    htmlWidget->requestFile( this, kurl.url() );
+	    htmlWidget->requestFile( this, kurl.url().ascii() );
 	return;
     }
 
@@ -326,21 +334,21 @@ KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
 }
 
 void
-KHTMLCache::fileLoaded( const char * _url, const char *_file )
+KHTMLCache::fileLoaded( QString _url, QString _file )
 { 
     KHTMLCachedImage *im = cache->find(_url);
 
     if(!im) 
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: ERROR loading: %s not found.\n", _url);
+	printf("Cache: ERROR loading: %s not found.\n", _url.latin1());
 #endif
 	return;
     }
 
     // convert file to pixmap or movie
 #ifdef CACHE_DEBUG
-    printf("Cache: Loaded %s %s\n", _url, _file );
+    printf("Cache: Loaded %s %s\n", _url.latin1(), _file.latin1() );
 #endif
     
     im->load( _file );
@@ -348,10 +356,10 @@ KHTMLCache::fileLoaded( const char * _url, const char *_file )
 }
 
 bool
-KHTMLCache::fileLoaded( const char *_url, QBuffer & _buffer, bool eof )
+KHTMLCache::fileLoaded( QString _url, QBuffer & _buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-  printf("FileLoaded %s\n",_url);
+  printf("FileLoaded %s\n",_url.latin1());
 #endif
 
     KHTMLCachedImage *im = cache->find(_url);
@@ -359,7 +367,7 @@ KHTMLCache::fileLoaded( const char *_url, QBuffer & _buffer, bool eof )
     if(!im) return false;
 
 #ifdef CACHE_DEBUG
-  printf("Processing %s\n",_url);
+  printf("Processing %s\n",_url.latin1());
 #endif
 
     // convert file to pixmap or movie
@@ -369,9 +377,9 @@ KHTMLCache::fileLoaded( const char *_url, QBuffer & _buffer, bool eof )
 }
 
 void 
-KHTMLCache::free( const char * _url, HTMLObject *obj )
+KHTMLCache::free( HTMLString _url, HTMLObject *obj )
 {
-    if(!_url) return;
+    if(!_url.length()) return;
     KURL kurl( _url );
     KHTMLCachedImage *im = cache->find( kurl.url() );
 
@@ -379,7 +387,8 @@ KHTMLCache::free( const char * _url, HTMLObject *obj )
     im->remove( obj );
 
 #ifdef CACHE_DEBUG
-    printf("Cache: references( %s ) = %d\n", _url, im->count());
+    printf("Cache: references( %s ) = %d\n", _url.string().latin1(), 
+	   im->count());
 #endif
 
     if(im->count() == 0 && (im->status == Pending ||
@@ -390,7 +399,7 @@ KHTMLCache::free( const char * _url, HTMLObject *obj )
 	lru->remove( kurl.url() );
 	cache->remove( kurl.url() );
 #ifdef CACHE_DEBUG
-	printf("Cache: deleted %s\n", kurl.url().data());
+	printf("Cache: deleted %s\n", kurl.url().latin1());
 #endif
     }
 
@@ -410,14 +419,14 @@ KHTMLCache::flush()
 #endif
     if( actSize < maxSize ) return;
     
-    for( url = lru->first(); !url.isEmpty(); url = lru->next() )
+    for ( QStringList::Iterator it = lru->begin(); it != lru->end(); ++it )
     {
-	im = cache->find( url );
+	im = cache->find( *it );
 	if( im->count() || im->status == Persistent ) 
 	    continue; // image is still used or cached permanently
 
 #ifdef CACHE_DEBUG
-	printf("Cache: removing %s\n", url.data());
+	printf("Cache: removing %s\n", url.latin1());
 #endif
 	actSize -= im->size;
 	lru->remove( url );
@@ -431,7 +440,7 @@ KHTMLCache::flush()
 }
 
 void 
-KHTMLCache::preload( const char * _url, Status s)
+KHTMLCache::preload( QString _url, CacheStatus s)
 {
     // better be careful, since this function is static
     init();
@@ -439,13 +448,13 @@ KHTMLCache::preload( const char * _url, Status s)
     KURL kurl( _url );
     if ( kurl.isMalformed() )
     {
-	warning("Malformed URL '%s'\n", _url );
+	warning("Malformed URL '%s'\n", _url.latin1() );
 	return;
     }	    
     if ( !kurl.isLocalFile() )
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: image to cache is not local file %s\n", _url);
+	printf("Cache: image to cache is not local file %s\n", _url.latin1());
 #endif
 	return;
     }
@@ -458,7 +467,7 @@ KHTMLCache::preload( const char * _url, Status s)
 	printf("Cache: *** new cached image %s\n", kurl.path().data());
 #endif
 	im = new KHTMLCachedImage();
-	im->load( kurl.path() );
+	im->load( kurl.path().ascii() );
 	actSize += im->size;
 	if( s != Unknown )  // specific status required
 	    im->status = s;
@@ -469,14 +478,14 @@ KHTMLCache::preload( const char * _url, Status s)
 
 
 QPixmap *
-KHTMLCache::image( const char * _url )
+KHTMLCache::image( QString _url )
 {
     KHTMLCachedImage *im = cache->find(_url);
 
     if(!im)
     {
 #ifdef CACHE_DEBUG
-	printf("CACHE: Image not cached: %s\n", _url);
+	printf("CACHE: Image not cached: %s\n", _url.latin1());
 #endif
 	return 0;
     }

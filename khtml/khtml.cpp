@@ -66,10 +66,10 @@
 #include <qprinter.h>
 #include <qdrawutil.h>
 #include <qdragobject.h>
+#include <qstrlist.h>
 
 #include <kurl.h>
 #include <kapp.h>
-#include <kcharsets.h>
 #include <kimgio.h>
 
 #include <X11/Xlib.h>
@@ -85,7 +85,7 @@ HTMLPendingFile::HTMLPendingFile()
 {
 }
 
-HTMLPendingFile::HTMLPendingFile( const char *_url, HTMLObject *_obj )
+HTMLPendingFile::HTMLPendingFile( QString _url, HTMLFileRequester *_obj )
 {
   m_strURL = _url;
   m_lstClients.append( _obj );
@@ -108,13 +108,14 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     y_offset      = 0;
     clue          = 0;
     ht            = 0;
+    allocator     = 0;
     settings      = 0;
     colorContext  = 0;
     pressed       = false;
-    pressedURL    = "";
-    pressedTarget = "";
-    actualURL     = "";
-    baseURL       = "";
+    //pressedURL    = "";
+    //pressedTarget = "";
+    //actualURL     = "";
+    //baseURL       = "";
     bIsSelected   = false;
     selectedFrame = 0;
     htmlView      = 0;
@@ -123,7 +124,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     frameSet      = 0;
     bFramesComplete = false;
     painter       = 0;
-    overURL       = "";
+    //overURL       = "";
     granularity   = 1000;
     linkCursor    = arrowCursor;
     bIsTextSelected = false;
@@ -164,11 +165,11 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     textFindIter = 0;
 }
      
-void KHTMLWidget::addHref( const char *_url )
+void KHTMLWidget::addHref( QString _url )
 { 
     if (!usedHrefURLs.contains( _url))
     {
-        usedHrefURLs.inSort( _url);
+        usedHrefURLs.append( _url );
     }
 }
 
@@ -180,16 +181,16 @@ void KHTMLWidget::addHref( const char *_url )
 
 
 
-void KHTMLWidget::requestImage( HTMLObject *obj, const char *_url )
+void KHTMLWidget::requestImage( HTMLObject *obj, QString _url )
 { 
-    cache->requestImage( obj, _url); 
-    if (!usedImageURLs.contains( _url))
+    cache->requestImage( obj, _url ); 
+    if (!usedImageURLs.contains( _url ))
     {
-        usedImageURLs.inSort( _url);
+        usedImageURLs.append( _url );
     }
 }
 
-void KHTMLWidget::preloadImage( const char *_filename)
+void KHTMLWidget::preloadImage( QString _filename)
 {
     KHTMLCache::preload( _filename, KHTMLCache::Persistent );
 }
@@ -210,10 +211,10 @@ int KHTMLWidget::cacheSize()
 //
 /////////////////////////////////////////////////// 
                                               
-void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url, 
+void KHTMLWidget::requestFile( HTMLFileRequester *_obj, QString _url, 
 			       bool )
 {
-  printf("==== REQUEST %s  ====\n", _url );
+  printf("==== REQUEST %s  ====\n", _url.latin1() );
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( p )
@@ -228,27 +229,21 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url,
   emit fileRequest( _url );
 }
 
-void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
+void KHTMLWidget::cancelRequestFile( HTMLFileRequester *_obj )
 {
-  QStrList lst;
-  
   QDictIterator<HTMLPendingFile> it( mapPendingFiles );
   for( ; it.current(); ++it )
   {
     it.current()->m_lstClients.removeRef( _obj );
     if ( it.current()->m_lstClients.count() == 0 )
     {
-      emit cancelFileRequest( it.current()->m_strURL.ascii() );
-      lst.append( it.currentKey().ascii() );
+      emit cancelFileRequest( it.current()->m_strURL );
+      mapPendingFiles.remove( it.currentKey() );
     }
   }
-  
-  const char* u;
-  for( u = lst.first(); u != 0L; u = lst.next() )
-    mapPendingFiles.remove( u );
 }
 
-void KHTMLWidget::cancelRequestFile( const char *_url )
+void KHTMLWidget::cancelRequestFile( QString _url )
 {
   mapPendingFiles.remove( _url );
   emit cancelFileRequest( _url );
@@ -258,17 +253,17 @@ void KHTMLWidget::cancelAllRequests()
 {
   QDictIterator<HTMLPendingFile> it( mapPendingFiles );
   for( ; it.current(); ++it )
-    emit cancelFileRequest( it.current()->m_strURL.ascii() );
+    emit cancelFileRequest( it.current()->m_strURL );
   mapPendingFiles.clear();
 }
 
-void KHTMLWidget::requestBackgroundImage( const char *_url )
+void KHTMLWidget::requestBackgroundImage( QString _url )
 {
     bgPixmapURL = _url;
     emit fileRequest( _url );
 }
 
-void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof )
+void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
 {
   bool do_update = false;
   
@@ -283,7 +278,7 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
   {    
     p->m_buffer.close();
 
-    HTMLObject* o;
+    HTMLFileRequester* o;
     for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
       if ( o->fileLoaded( _url, p->m_buffer, true ) )
 	do_update = true;
@@ -307,9 +302,10 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
   }
 }
 
-void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
+void KHTMLWidget::slotFileLoaded( QString _url, QString _filename )
 {
-  printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
+  printf("khtml: FileLoaded %s %s\n",
+	 _url.latin1(), _filename.latin1() );
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
@@ -329,7 +325,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 
   assert( !p->m_buffer.isOpen() );
   
-  HTMLObject* o;
+  HTMLFileRequester* o;
   for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
     o->fileLoaded( _url, _filename );
   
@@ -342,7 +338,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   }
 }
 
-void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data, const char *_target )
+void KHTMLWidget::slotFormSubmitted( QString _method, QString _url, const char *_data, QString _target )
 {
     emit formSubmitted( _method, _url, _data, _target );
 }
@@ -393,32 +389,29 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 
     if ( obj != 0)
     {
-	if ( obj->getURL() != 0 )
+	if ( obj->getURL().length() )
 	{
-	    if (obj->getURL()[0] != 0)
+	    // Save data. Perhaps the user wants to start a drag.
+	    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
 	    {
-		// Save data. Perhaps the user wants to start a drag.
-		if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
-		{
-		    pressedURL = obj->getURL();
-		    pressedTarget = obj->getTarget();
-		}
-		
-		// Does the parent want to process the event now ?
-	        if ( htmlView )	
-		{
-		    if ( htmlView->mousePressedHook( obj->getURL(),
-		    	    obj->getTarget(), _mouse, obj->isSelected() ) )
-			return;
-		}
-
-		if ( _mouse->button() == RightButton )
-		{
-		    emit popupMenu(obj->getURL(),mapToGlobal( _mouse->pos() ));
+		pressedURL = obj->getURL();
+		pressedTarget = obj->getTarget();
+	    }
+	    
+	    // Does the parent want to process the event now ?
+	    if ( htmlView )	
+	    {
+		if ( htmlView->mousePressedHook( obj->getURL(), obj->getTarget(), 
+						 _mouse, obj->isSelected() ) )
 		    return;
-		}
+	    }
+	    
+	    if ( _mouse->button() == RightButton )
+	    {
+		emit popupMenu(obj->getURL(),mapToGlobal( _mouse->pos() ));
 		return;
 	    }
+	    return;
 	}
     }
     
@@ -440,8 +433,7 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
 	_mouse->pos().y() + y_offset - topBorder );
     
     if ( obj != 0)
-	if ( obj->getURL() != 0 )
-	    if (obj->getURL()[0] != 0)
+	if ( obj->getURL().length() )
 		emit doubleClick( obj->getURL(), _mouse->button() );
 }
 
@@ -457,13 +449,13 @@ void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 	    _mouse->pos().y() + y_offset - topBorder );
 	if ( obj != 0 )
 	{
-	    if ( obj->getURL() && obj->getURL()[0] != 0 )
+	    if ( obj->getURL().length() )
 	    {
 		if ( overURL != obj->getURL() )
 		{
 		    setCursor( linkCursor );
 		    overURL = obj->getURL();
-		    emit onURL( overURL.ascii() );
+		    emit onURL( overURL );
 		}
 	    }
 	    else if ( overURL != "" )
@@ -629,7 +621,7 @@ void KHTMLWidget::mouseReleaseEvent( QMouseEvent * _mouse )
  * Checks out wether there is a URL under the point p and returns a pointer
  * to this URL or 0 if there is none.
  */
-const char* KHTMLWidget::getURL( QPoint &p )
+QString KHTMLWidget::getURL( QPoint &p )
 {
     if ( clue == 0 )
 	return 0;
@@ -639,7 +631,7 @@ const char* KHTMLWidget::getURL( QPoint &p )
     obj = clue->checkPoint( p.x() + x_offset, p.y() + y_offset );
     
     if ( obj != 0)
-	if ( obj->getURL() && obj->getURL()[0] != 0 )
+	if ( obj->getURL().length() )
 	    return obj->getURL();
     
     return 0;
@@ -807,42 +799,14 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 {
     switch ( _ke->key() )
     {
-      //-------------------------------------
-      // KFM Extension
-      //-------------------------------------
-        case Key_Space:
-	  {
-	    cellSelected();
-	    flushKeys();
-	  }
-	break;
-        case Key_Escape:
-	  {
-	    cellContextMenu();
-	    flushKeys();
-	  }
-	break;
-        case Key_Return:
-	  {
-	    cellActivated();
-	    flushKeys();
-	  }
-	break;	
-      //-------------------------------------
-      // End KFM Extension
-      //-------------------------------------
 	case Key_Down:
 	    {
-	        // KFM Extension
-	        if ( !cellDown() )
-		{    
-		  if ( docHeight() < height() ) break;
-		  int newY = y_offset + 20;
-		  if ( newY > docHeight() - height() )
+		if ( docHeight() < height() ) break;
+		int newY = y_offset + 20;
+		if ( newY > docHeight() - height() )
 		    newY = docHeight() - height();
-		  slotScrollVert( newY );
-		  emit scrollVert( newY );
-		}
+		slotScrollVert( newY );
+		emit scrollVert( newY );
 		
 		flushKeys();
 	    }
@@ -863,23 +827,14 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Up:
 	    {
-	      // KFM Extension
-	      if ( _ke->state() & AltButton )
-	      {
-		emit goUp();
-              }
-	      // KFM Extension
-	      else if ( !cellUp() )
-	      {  
 		if ( docHeight() < height() ) break;
 		int newY = y_offset - 20;
 		if ( newY < 0 )
-		  newY = 0;
+		    newY = 0;
 		slotScrollVert( newY );
 		emit scrollVert( newY );
-	      }
 	      
-	      flushKeys();
+		flushKeys();
 	    }
 	    break;
 
@@ -898,45 +853,27 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Right:
 	    {
-	        // KFM Extension
-	        if ( _ke->state() & AltButton )
-	        {
-		  emit goRight();
-                }
-		// KFM Extension
-		else if ( !cellRight() )
-		{  
-		  if ( docWidth() < width() ) break;
-		  int newX = x_offset + 20;
-		  if ( newX > docWidth() - width() )
+		if ( docWidth() < width() ) break;
+		int newX = x_offset + 20;
+		if ( newX > docWidth() - width() )
 		    newX = docWidth() - width();
-		  slotScrollHorz( newX );
-		  emit scrollHorz( newX );
-		}
-	      
+		slotScrollHorz( newX );
+		emit scrollHorz( newX );
+		
 		flushKeys();
 	    }
 	    break;
 
 	case Key_Left:
 	    {
-	      // KFM Extension
-	      if ( _ke->state() & AltButton )
-	      {
-		emit goLeft();
-	      }
-	      // KFM Extension
-	      else if ( !cellLeft() )
-	      {  
 		if ( docWidth() < width() ) break;
 		int newX = x_offset - 20;
 		if ( newX < 0 )
 		  newX = 0;
 		slotScrollHorz( newX );
 		emit scrollHorz( newX );
-	      }
-	      
-	      flushKeys();
+
+		flushKeys();
 	    }
 	    break;
 
@@ -1068,7 +1005,7 @@ void KHTMLWidget::calcAbsolutePos()
 	clue->calcAbsolutePos( 0, 0 );
 }
 
-void KHTMLWidget::getSelected( QStrList &_list )
+void KHTMLWidget::getSelected( QStringList &_list )
 {
     if ( clue == 0 )
 	return;
@@ -1223,7 +1160,7 @@ void KHTMLWidget::print()
 //
 ////////////////////////////
 
-void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
+void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
 {
     debug("KHTMLWidget::begin(....)");
 
@@ -1257,7 +1194,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     emit scrollVert( y_offset );
     
     if ( !bgPixmapURL.isEmpty() )
-	emit cancelFileRequest( bgPixmapURL.ascii() );
+	emit cancelFileRequest( bgPixmapURL );
     bgPixmapURL = QString::null;
     
     stopParser();
@@ -1265,7 +1202,6 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     reference = QString::null;
     actualURL = "";
     baseURL = "";
-    //charsetName = "";
 
     if ( _url != 0 )
     {
@@ -1299,6 +1235,13 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     if (clue)
 	delete clue;
 
+    // Free their storage
+    if ( allocator )
+    {
+	delete allocator;
+	allocator = 0;
+    }
+
     // Delete the tokenizer including all tokens and strings.                              
     if ( ht )
 	delete ht;
@@ -1306,6 +1249,9 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     // Lets start again
     ht = new HTMLTokenizer( );
     ht->begin( );
+    
+//HIGHLY experimental
+    //ht->setPlainText();
 
     emit documentStarted();
 
@@ -1372,16 +1318,13 @@ void KHTMLWidget::parse()
 
     settings = new HTMLSettings( *defaultSettings);
 
+    allocator = new HTMLAllocator( 128*1024 ); // Allocate in chunks of 128K
 
-    clue = new HTMLClueV(); 
+    clue = new(allocator) HTMLClueV(); 
     clue->setVAlign( HTMLClue::Top );
     clue->setHAlign( HTMLClue::Left );
 
-
-    parser = new KHTMLParser( this, ht, painter, settings, 0 /* &formData */ );
-
-    if (!charsetName.isEmpty())
-    	parser->setCharset( charsetName.data() );
+    parser = new KHTMLParser( this, ht, painter, settings, 0 /* &formData */, allocator );
 
     if ( !bgPixmap.isNull() )
 	bgPixmap.resize( -1, -1 );
@@ -1413,7 +1356,8 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
   printf("############### timerEvent ##############\n");
   /*** END DEBUG ***/
 
-    static const int end[] = { ID_BODY + ID_CLOSE_TAG, 0 }; 
+    static const uint end[] = { ID_BODY + ID_CLOSE_TAG, 
+				ID_HTML + ID_CLOSE_TAG, 0 }; 
 
     if ( !painter )
     {
@@ -1744,7 +1688,7 @@ bool KHTMLWidget::gotoAnchor( )
     if ( clue == 0 )
 	return FALSE;
 
-    HTMLAnchor *anchor = clue->findAnchor( reference.data(), _x, _y );
+    HTMLAnchor *anchor = clue->findAnchor( reference, _x, _y );
     if ( anchor == 0 )
 	return FALSE;
 
@@ -1774,7 +1718,7 @@ bool KHTMLWidget::gotoXY( int _x_offset, int _y_offset )
 }
 
 
-bool KHTMLWidget::gotoAnchor( const char *_name )
+bool KHTMLWidget::gotoAnchor( QString _name )
 {
     reference = _name;
     
@@ -1866,7 +1810,7 @@ void KHTMLWidget::select( QPainter *, bool _select )
     clue->select( this, &chain, _select, tx, ty );
 }
 
-void KHTMLWidget::selectByURL( QPainter *, const char *_url, bool _select )
+void KHTMLWidget::selectByURL( QPainter *, QString _url, bool _select )
 {
     if ( clue == 0 )
 	return;
@@ -1999,6 +1943,8 @@ KHTMLWidget::~KHTMLWidget()
 	delete clue;
     if (ht)
 	delete ht;
+    if (allocator)
+	delete allocator;
     
 
 /*
@@ -2035,13 +1981,13 @@ KHTMLWidget::resetFontSizes(void)
 }
 
 void 
-KHTMLWidget::setStandardFont( const char *name )
+KHTMLWidget::setStandardFont( QString name )
 {	
     defaultSettings->fontBaseFace = name; 
 }
 
 void 
-KHTMLWidget::setFixedFont( const char *name )
+KHTMLWidget::setFixedFont( QString name )
 {	
     defaultSettings->fixedFontFace = name; 
 }
@@ -2067,431 +2013,13 @@ KHTMLWidget::setUnderlineLinks( bool ul )
     defaultSettings->underlineLinks = ul; 
 }
 
-//-----------------------------------------------------------
-// FUNCTIONS used for KFM Extension
-//-----------------------------------------------------------
-
-bool KHTMLWidget::cellUp()
-{
-  if ( clue == 0 || parser )
-    return true;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  // A usual HTML page ?
-  if ( list.isEmpty() )
-    return false;
-  
-  HTMLCellInfo *curr = 0;
-  HTMLCellInfo *next = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    next = list.first();
-  else
-  { 
-    while( list.current() )
-    {
-      if ( list.current()->baseAbs < curr->baseAbs )
-	break;
-      list.prev();
-    }
-
-    if ( list.current() == 0 )
-      return true;
-    
-    HTMLCellInfo *inf; 
-    int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0; inf = list.prev() )
-    {
-      int i = curr->xAbs - inf->xAbs;
-      if ( i < 0 ) i *= -1;
-      if ( i < diff )
-      {
-	diff = i;
-	next = inf;
-      }
-    }
-  }
-  
-  if ( next == 0 )
-    return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
-  if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
-  {
-    painter->end();
-    delete painter;
-    painter = 0;
-  }
-
-  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
-    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
-
-  emit onURL( next->pCell->getURL() );
-
-  return true;
-}
-
-bool KHTMLWidget::cellDown()
-{
-  if ( clue == 0 || parser )
-    return true;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  // A usual HTML page ?
-  if ( list.isEmpty() )
-    return false;
-  
-  HTMLCellInfo *curr = 0;
-  HTMLCellInfo *next = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    next = list.first();
-  else
-  { 
-    while( list.current() )
-    {
-      if ( list.current()->baseAbs > curr->baseAbs )
-	break;
-      list.next();
-    }
-
-    if ( list.current() == 0 )
-      return false;
-    
-    HTMLCellInfo *inf; 
-    int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0; inf = list.next() )
-    {
-      int i = curr->xAbs - inf->xAbs;
-      if ( i < 0 ) i *= -1;
-      if ( i < diff )
-      {
-	diff = i;
-	next = inf;
-      }
-    }
-  }
-  
-  if ( next == 0 )
-    return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
-  if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
-  {
-    painter->end();
-    delete painter;
-    painter = 0;
-  }
-
-  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
-    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
-
-  emit onURL( next->pCell->getURL() );
-
-  return true;
-}
-
-bool KHTMLWidget::cellLeft()
-{
-  if ( clue == 0 || parser )
-    return true;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  if ( list.isEmpty() )
-    return false;
-  
-  HTMLCellInfo *curr = 0;
-  HTMLCellInfo *next = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    next = list.first();
-  else
-    next = list.prev();
-  
-  if ( next == 0 )
-    return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
-  if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
-  {
-    painter->end();
-    delete painter;
-    painter = 0;
-  }
-
-  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
-    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
-
-  emit onURL( next->pCell->getURL() );
-
-  return true;
-}
-
-bool KHTMLWidget::cellRight()
-{
-  if ( clue == 0 || parser )
-    return true;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  if ( list.isEmpty() )
-    return false;
-  
-  HTMLCellInfo *curr = 0;
-  HTMLCellInfo *next = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    next = list.first();
-  else
-    next = list.next();
-  
-  if ( next == 0 )
-    return false;
-  
-  bool new_painter = false;
-  if ( painter == 0 )
-  {
-    new_painter = true;
-    painter = new QPainter;
-    painter->begin( this );
-  }
-
-  if ( curr )
-    curr->pCell->setMarker( painter, next->tx, next->ty, false );
-  next->pCell->setMarker( painter, next->tx, next->ty, true );
-
-  if ( new_painter )
-  {
-    painter->end();
-    delete painter;
-    painter = 0;
-  }
-
-  emit onURL( next->pCell->getURL() );
-  
-  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
-    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
-
-  return true;
-}
-
-void KHTMLWidget::cellSelected()
-{
-  if ( clue == 0 || parser )
-    return;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  if ( list.isEmpty() )
-    return;
-  
-  HTMLCellInfo *curr = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    return;
-  if ( curr->pCell->getURL() == 0 )
-    return;
-  
-  QStrList urllist;
-  getSelected( urllist );
-
-  bool mode = true;
-  if ( urllist.find( curr->pCell->getURL() ) != -1 )
-    mode = false;
-  
-  selectByURL( 0, curr->pCell->getURL(), mode );
-}
-
-void KHTMLWidget::cellActivated()
-{
-  if ( clue == 0 || parser )
-    return;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  if ( list.isEmpty() )
-    return;
-  
-  HTMLCellInfo *curr = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    return;
-  if ( curr->pCell->getURL() == 0 )
-    return;
-
-  emit URLSelected( curr->pCell->getURL(), LeftButton, curr->pCell->getTarget() );
-}
-
-void KHTMLWidget::cellContextMenu()
-{
-  if ( clue == 0 || parser )
-    return;
-  
-  QList<HTMLCellInfo> list;
-  list.setAutoDelete( true );
-  
-  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
-
-  if ( list.isEmpty() )
-    return;
-  
-  HTMLCellInfo *curr = 0;
-  
-  // Find current marker
-  HTMLCellInfo *info;
-  for ( info = list.first(); info != 0; info = list.next() )
-  {
-    if ( info->pCell->isMarked() )
-    {
-      curr = info;
-      break;
-    }
-  }
-
-  if ( curr == 0 )
-    return;
-
-//  printf("curr->url='%s'\n",curr->pCell->getURL());
-  
-  if ( curr->pCell->getURL() == 0 )
-    return;
-
-  QPoint p( curr->tx, curr->ty );
-  
-  emit popupMenu( curr->pCell->getURL(), mapToGlobal( p ) );
-}
-
-//-----------------------------------------------------------
-// End KFM Extensions
-//-----------------------------------------------------------
-
-HTMLMap *KHTMLWidget::getMap( const char *mapurl )
+HTMLMap *KHTMLWidget::getMap( QString mapurl )
 {
     HTMLMap *map;
 
     for ( map = mapList.first(); map != 0; map = mapList.next() )
     {
-        if ( strcasecmp( map->mapURL(), mapurl ) == 0 )
+        if ( map->mapURL() == mapurl )
             return map;
     }
     return 0;
@@ -2501,7 +2029,7 @@ HTMLMap *KHTMLWidget::getMap( const char *mapurl )
  * Add a image map
  */
 
-void KHTMLWidget::addMap( const char *mapUrl)
+void KHTMLWidget::addMap( QString mapUrl)
 {
     mapList.append( new HTMLMap( this, mapUrl) );
 }
@@ -2523,7 +2051,7 @@ HTMLMap * KHTMLWidget::lastMap()
 //
 /////////////////////////////
 
-bool KHTMLWidget::URLVisited( const char *_url )
+bool KHTMLWidget::URLVisited( QString _url )
 {
     if ( htmlView )
 	return htmlView->URLVisited( _url );
@@ -2531,7 +2059,7 @@ bool KHTMLWidget::URLVisited( const char *_url )
     return false;
 }
 
-void KHTMLWidget::setBaseURL( const char *_url)
+void KHTMLWidget::setBaseURL( QString _url)
 {
     baseURL = _url;
     baseURL.setRef( QString::null );
@@ -2572,11 +2100,11 @@ void KHTMLWidget::showFrameSet( HTMLFrameSet *_frameSet )
     _frameSet->show();
 }
 
-void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, const char *_name,
+void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, QString _name,
                             bool _scrolling, bool _resize,
                             int _frameborder, 
                             int _marginwidth, int _marginheight,
-                            const char *_src)
+                            QString _src)
 {
     // Create the frame,
     KHTMLView *frame = htmlView->newView( _frameSet, _name );
@@ -2588,7 +2116,7 @@ void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, const char *_name,
     frame->setMarginHeight( _marginheight );
     _frameSet->append( frame );
 
-    if ( _src )
+    if ( !_src.isEmpty() )
     {
         // Determine the complete URL for this widget
 	KURL u( baseURL, _src );
@@ -2597,7 +2125,7 @@ void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, const char *_name,
 
         selectedFrame = frame;
 	// Tell the new widget what it should show
-	// frame->openURL( u.url() );
+	// frame->openURL( u.url().data() );
 	frame->setCookie( u.url().data() );   
 
 	KHTMLView *top = frame->findView( "_top" );
@@ -2625,20 +2153,20 @@ void KHTMLWidget::addForm( HTMLForm *_form )
 {
     formList.append( _form );
     connect( _form, 
-             SIGNAL( submitted( const char *, const char *, 
-				const char *, const char * ) ),
-             SLOT( slotFormSubmitted( const char *, const char *, 
-				      const char *, const char * ) ) 
+             SIGNAL( submitted( QString, QString, 
+				const char *, QString ) ),
+             SLOT( slotFormSubmitted( QString, QString, 
+				      const char *, QString ) ) 
            );
 }
 
-void KHTMLWidget::setNewTitle( const char *_title)
+void KHTMLWidget::setNewTitle( QString _title)
 {
     emit setTitle( _title );
 }
      
 
-void KHTMLWidget::setBGImage( const char *_url)
+void KHTMLWidget::setBGImage( QString _url)
 {
     KURL kurl( baseURL, _url );
 
@@ -2672,10 +2200,9 @@ void KHTMLWidget::setBGColor( const QColor &_bgColor)
     }
 }                   
 
-bool KHTMLWidget::setCharset(const char *name, bool override){
-    charsetName = name;
-    overrideCharset = override;
-    return true; // Always true
+bool KHTMLWidget::setCharset(QString /*name*/, bool /*override*/){
+    // ###### FIXME: decoder
+
 }
 
 
@@ -2711,7 +2238,7 @@ KHTMLWidget::saveYourself(SavedPage *p)
     p->url = getDocumentURL().url();
     p->xOffset = x_offset;
     p->yOffset = y_offset;
-    p->forms = new QStrList();
+    p->forms = new QStringList();
     for ( HTMLForm *f = formList.first(); f != 0; f = formList.next() )
     {
 	f->saveForm( p->forms );
@@ -2785,13 +2312,13 @@ KHTMLWidget::restore(SavedPage *p)
 	else
 	{
 	    printf("NO VIEW!!!!\n");
-	    emit URLSelected( p->url.ascii(), LeftButton, 0L );
+	    emit URLSelected( p->url, LeftButton, 0L );
 	}
     }
     else
     {
 	// dirty hack, to get kfm to display the right url in the lineedit...
-	htmlView->openURL( "restored:" + p->url );
+	htmlView->openURL( ("restored:" + p->url) );
 
 	// we construct a html sequence, which represents the frameset to see
 	QString s = "<html><head><title>\n";
@@ -2803,7 +2330,7 @@ KHTMLWidget::restore(SavedPage *p)
 	printf("restoring frameset:\n%s\n", s.data());
 	begin();
 	parse();
-	write(s);
+	write(s.latin1());
 	end();
 	
 	actualURL = p->url;

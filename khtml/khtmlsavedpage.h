@@ -21,7 +21,7 @@
 #ifndef KHTMLPAGE_H
 #define KHTMLPAGE_H
 
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qstring.h>
 #include <qlist.h>
 
@@ -49,7 +49,7 @@ struct SavedPage
     QString title;
     int xOffset;
     int yOffset;
-    QStrList *forms;
+    QStringList *forms;
     FrameLayout *frameLayout;
     QList<SavedPage> *frames;
 };

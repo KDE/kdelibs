@@ -14,7 +14,6 @@ body
 br
 button
 caption
-cell
 center
 cite
 code
@@ -42,6 +41,7 @@ h5
 h6
 head
 hr
+html
 i
 iframe
 img
@@ -51,8 +51,8 @@ isindex
 kbd
 label
 legend
-listing
 li
+listing
 link
 map
 menu

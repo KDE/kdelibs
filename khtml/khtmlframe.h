@@ -78,7 +78,7 @@ class HTMLFrameSet : public QWidget
     friend class KHTMLWidget;
 public:
     HTMLFrameSet( QWidget *_parent,
-                  const char *_cols, const char *_rows,
+                  QString _cols, QString _rows,
                   int _frameBorder, bool _bAllowResize);
     ~HTMLFrameSet();
     

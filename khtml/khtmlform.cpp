@@ -48,7 +48,7 @@
 //----------------------------------------------------------------------------
 
 
-QString HTMLElement::encodeString( const QString &e )
+QString HTMLElement::encodeString( HTMLString e )
 {
 	static char *safe = "$-._!*(),"; /* RFC 1738 */
 	unsigned pos = 0;
@@ -86,23 +86,22 @@ QString HTMLElement::encodeString( const QString &e )
 	return encoded;
 }
 
-QString HTMLElement::decodeString( const char *e )
+QString HTMLElement::decodeString( HTMLString e )
 {
 	unsigned int pos = 0;
-	unsigned int len = strlen(e);
-	char buffer[3];
+	unsigned int len = e.length();
 	QString decoded;
 
 	while ( pos < len )
 	{
-	     if (e[pos] == '%')
+	     if (e[pos] == QChar('%'))
 	     {
 	         if (pos+2 < len)
 	         {
-	             buffer[0] = e[pos+1];
-	             buffer[1] = e[pos+2];
-	             buffer[2] = '\0';
-	             unsigned char val = strtol(buffer, NULL, 16);
+		     HTMLString buffer = e+pos+1;
+		     buffer.setLength(2);
+		     bool ok;
+	             unsigned char val = buffer.string().toInt(&ok, 16);
 	             if (((char) val) != '\r')
 	             {
 	                 decoded += (char) val;     
@@ -136,7 +135,7 @@ HTMLElement::~HTMLElement()
 
 HTMLWidgetElement *HTMLWidgetElement::currentFormFocusWidget = 0L;
 
-HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f) 
+HTMLWidgetElement::HTMLWidgetElement( HTMLString n, const HTMLFont *f) 
     : HTMLElement( n )
 { 
     _absX = 0; 
@@ -275,7 +274,7 @@ void HTMLWidgetElement::setWidget( QWidget *_w )
 }
 //----------------------------------------------------------------------------
 
-HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m,
+HTMLSelect::HTMLSelect( QWidget *parent, HTMLString n, int s, bool m,
 			const HTMLFont *f )
 	: HTMLWidgetElement( n, f )
 {
@@ -318,7 +317,7 @@ HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool m,
 	setWidget( w );
 }
 
-void HTMLSelect::addOption( const char *v, bool sel )
+void HTMLSelect::addOption( HTMLString v, bool sel )
 {
 	if ( _size > 1 )
 	{
@@ -348,10 +347,10 @@ void HTMLSelect::addOption( const char *v, bool sel )
 		width = size.width();
 	}
 
-	if ( v )
+	if ( v.length() )
 		_values.append( new QString( v ) );
 	else
-		_values.append( new QString( (char*)0L ) );
+		_values.append( new QString() );
 }
 
 const QString &HTMLSelect::value( int item )
@@ -359,15 +358,14 @@ const QString &HTMLSelect::value( int item )
 	return *_values.at( item );
 }
 
-void HTMLSelect::setValue( const char *v, int indx )
+void HTMLSelect::setValue( QString v, int indx )
 {
 	*_values.at( indx ) = v;
 }
 
-void HTMLSelect::setText( const char *text )
+void HTMLSelect::setText( QString t )
 {
 	int item;
-	QString t = text;
 	t = t.stripWhiteSpace();
 
 	if ( _size > 1 )
@@ -384,7 +382,7 @@ void HTMLSelect::setText( const char *text )
 	}
 
         if ( value( item ).isNull() )
-		setValue( t.ascii(), item );
+	    setValue( t, item );
 }
 
 QString HTMLSelect::encoding()
@@ -420,7 +418,7 @@ QString HTMLSelect::encoding()
     return _encoding;
 }
 
-void HTMLSelect::resetElement(const char *)
+void HTMLSelect::resetElement(QString)
 {
 	if ( _size > 1 )
 		((QListBox *)widget())->setCurrentItem( _defSelected );
@@ -435,14 +433,14 @@ void HTMLSelect::slotHighlighted( int indx )
 
 //----------------------------------------------------------------------------
 
-HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
+HTMLTextArea::HTMLTextArea( QWidget *parent, HTMLString n, int r, int c,
 			    const HTMLFont *f )
 	: HTMLWidgetElement( n, f )
 {
     QWidget *w;
 	_defText = "";
 
-printf("New HTMLTextArea element! Text = \"%s\"\n", n);
+printf("New HTMLTextArea element! Text = \"%s\"\n", n.string().latin1());
 
         w = new HTMLMultiLineEditWidget( this, parent );
 	if( font )
@@ -465,7 +463,7 @@ QString HTMLTextArea::value()
 	return ((QMultiLineEdit *)widget())->text();
 }
 
-void HTMLTextArea::setText( const char *t )
+void HTMLTextArea::setText( QString t )
 {
 	_defText = t;
 	((QMultiLineEdit *)widget())->setText( t );
@@ -485,9 +483,9 @@ QString HTMLTextArea::encoding()
 	return _encoding;
 }
 
-void HTMLTextArea::resetElement(const char *data)
+void HTMLTextArea::resetElement(QString data)
 {
-	if (!data)
+	if (data.isEmpty())
 	{
 		((QMultiLineEdit *)widget())->setText( _defText );
 	}
@@ -499,7 +497,7 @@ void HTMLTextArea::resetElement(const char *data)
 
 //----------------------------------------------------------------------------
 
-HTMLInput::HTMLInput( const char *n, const char *v, const HTMLFont *f )
+HTMLInput::HTMLInput( HTMLString n, HTMLString v, const HTMLFont *f )
 	: HTMLWidgetElement( n, f )
 {
 	_value = v;
@@ -507,8 +505,9 @@ HTMLInput::HTMLInput( const char *n, const char *v, const HTMLFont *f )
 
 //----------------------------------------------------------------------------
 
-HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_events, const HTMLFont *f )
-	: HTMLInput( "", v, f )
+HTMLButton::HTMLButton( KHTMLWidget *_parent, HTMLString _name, HTMLString v, 
+			QList<JSEventHandler> *_events, const HTMLFont *f )
+	: HTMLInput( 0, v, f )
 {
     QWidget *w;
     view = _parent;
@@ -517,9 +516,9 @@ HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, 
     if( font )
 	w->setFont( *font );
 
-    if ( !value().isEmpty() )
+    if ( value().length() )
 	((QPushButton *)w)->setText( value() );
-    else if ( strlen( _name ) != 0 )
+    else if ( _name.length() )
 	((QPushButton *)w)->setText( _name );
     else
 	((QPushButton *)w)->setText( "" );
@@ -561,9 +560,9 @@ HTMLButton::~HTMLButton()
 
 //----------------------------------------------------------------------------
 
-HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
+HTMLCheckBox::HTMLCheckBox( QWidget *parent, HTMLString n, HTMLString v,
 		bool ch, const HTMLFont *f )
-	: HTMLInput( n, v, f )
+    : HTMLInput( n, v, f )
 {
     QCheckBox *w;
 	_defCheck = ch;
@@ -600,14 +599,14 @@ QString HTMLCheckBox::encoding()
 	return _encoding;
 }
 
-void HTMLCheckBox::resetElement(const char *)
+void HTMLCheckBox::resetElement(QString)
 {
 	((QCheckBox *)widget())->setChecked( _defCheck );
 }
 
 //----------------------------------------------------------------------------
 
-HTMLHidden::HTMLHidden( const char *n, const char *v )
+HTMLHidden::HTMLHidden( HTMLString n, HTMLString v )
 	: HTMLInput( n, v )
 {
 }
@@ -628,7 +627,7 @@ QString HTMLHidden::encoding()
 
 //----------------------------------------------------------------------------
 
-HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
+HTMLRadio::HTMLRadio( QWidget *parent, HTMLString n, HTMLString v,
 		bool ch, const HTMLFont *f )
 	: HTMLInput( n, v, f )
 {
@@ -668,36 +667,36 @@ QString HTMLRadio::encoding()
 	return _encoding;
 }
 
-void HTMLRadio::resetElement(const char *)
+void HTMLRadio::resetElement(QString)
 {
 	((QRadioButton *)widget())->setChecked( _defCheck );
 }
 
 void HTMLRadio::slotClicked()
 {
-	emit radioSelected( elementName().ascii(), value().ascii() );
+	emit radioSelected( elementName(), value() );
 }
 
-void HTMLRadio::slotRadioSelected( const char *n, const char *v )
+void HTMLRadio::slotRadioSelected( QString n, QString v )
 {
-	if ( strcasecmp( n, elementName().data() ) != 0 )
+	if ( n != elementName() )
 		return;
 
-	if ( strcasecmp( v, value().data() ) != 0 )
+	if ( v != value() )
 		((QRadioButton *)widget())->setChecked( false );
 }
 
 //----------------------------------------------------------------------------
 
-HTMLReset::HTMLReset( QWidget *parent, const char *v, const HTMLFont *f )
-	: HTMLInput( "", v, f )
+HTMLReset::HTMLReset( QWidget *parent, HTMLString v, const HTMLFont *f )
+	: HTMLInput( 0, v, f )
 {
     QWidget *w;
     w = new HTMLPushButtonWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
-	if ( !value().isEmpty() )
+	if ( strlen( value().ascii() ) != 0 )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Reset" );
@@ -721,7 +720,7 @@ void HTMLReset::slotClicked()
 
 //----------------------------------------------------------------------------
 
-HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
+HTMLSubmit::HTMLSubmit( QWidget *parent, HTMLString n, HTMLString v,
 			const HTMLFont *f )
 	: HTMLInput( n, v, f )
 {
@@ -730,7 +729,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( value().isEmpty() )
+	if ( strlen( value().ascii() ) != 0 )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Submit Query" );
@@ -771,7 +770,7 @@ void HTMLSubmit::slotClicked()
 
 //----------------------------------------------------------------------------
 
-HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
+HTMLTextInput::HTMLTextInput( QWidget *parent, HTMLString n, HTMLString v,
 		int s, int ml, bool password, const HTMLFont *f )
 	: HTMLInput( n, v, f )
 {
@@ -782,7 +781,7 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( !value().isEmpty() )
+	if ( strlen( value().ascii() ) != 0 )
 		((QLineEdit *)w)->setText( value() );
 	if ( password )
 	    ((QLineEdit *)w)->setEchoMode ( QLineEdit::Password );
@@ -798,8 +797,8 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	ascent = size.height() - descent;
 	width = size.width();
 
-	connect( w, SIGNAL( textChanged( const char * ) ),
-			SLOT( slotTextChanged( const char * ) ) );
+	connect( w, SIGNAL( textChanged( const QString & ) ),
+			SLOT( slotTextChanged( const QString & ) ) );
 	connect( w, SIGNAL( returnPressed() ),
 			SLOT( slotReturnPressed() ) );
 
@@ -820,9 +819,9 @@ QString HTMLTextInput::encoding()
 	return _encoding;
 }
 
-void HTMLTextInput::resetElement(const char *data)
+void HTMLTextInput::resetElement(QString data)
 {
-	if (!data)
+	if (data.isEmpty())
 	{
 		((QLineEdit *)widget())->setText( _defText );
 	}
@@ -832,7 +831,7 @@ void HTMLTextInput::resetElement(const char *data)
 	}
 }
 
-void HTMLTextInput::slotTextChanged( const char *t )
+void HTMLTextInput::slotTextChanged( const QString &t )
 {
 	setValue( t );
 }
@@ -844,8 +843,7 @@ void HTMLTextInput::slotReturnPressed()
 
 //----------------------------------------------------------------------------
 
-HTMLImageInput::HTMLImageInput( KHTMLWidget *widget, const char *f,
-	const char *n )
+HTMLImageInput::HTMLImageInput( KHTMLWidget *widget, HTMLString f, HTMLString n )
     : QObject(), HTMLImage( widget, f, 0, 0), HTMLElement( n )
 {
     _xp = _yp = 0;
@@ -908,7 +906,7 @@ HTMLObject *HTMLImageInput::mouseEvent( int _x, int _y, int button, int state )
 
 //----------------------------------------------------------------------------
 
-HTMLForm::HTMLForm( const char *a, const char *m, const char *t )
+HTMLForm::HTMLForm( QString a, QString m, HTMLString t )
 {
     _action = a;
     _method = m;
@@ -974,32 +972,32 @@ void HTMLForm::slotSubmit()
 
 	QString url = action();
 
-	emit submitted( method(), url.ascii(), encoding.ascii(), _target.ascii() );
+	emit submitted( method(), url, encoding.latin1(), _target );
 }
 
-void HTMLForm::slotRadioSelected( const char *n, const char *v )
+void HTMLForm::slotRadioSelected( QString n, QString v )
 {
     emit radioSelected( n, v );
 }
 
-void HTMLForm::saveForm(QStrList *saveList)
+void HTMLForm::saveForm(QStringList *saveList)
 {
     for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
     {
-	saveList->append( e->encoding().ascii() );
+	saveList->append( e->encoding() );
     }
 }
 
-void HTMLForm::restoreForm(QStrList *saveList)
+void HTMLForm::restoreForm(QStringList *saveList)
 {
+    QStringList::Iterator it = saveList->begin();
+
     for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
     {
-        if(!saveList->current())
-        {
+	e->resetElement( *it );
+        if(it == saveList->end())
             break;
-        }
-	e->resetElement( saveList->current() );
-	(void) saveList->next();
+	++it;
     }
 }
 

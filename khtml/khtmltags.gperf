@@ -24,7 +24,6 @@ body, ID_BODY
 br, ID_BR
 button, ID_BUTTON
 caption, ID_CAPTION
-cell, ID_CELL
 center, ID_CENTER
 cite, ID_CITE
 code, ID_CODE
@@ -52,6 +51,7 @@ h5, ID_H5
 h6, ID_H6
 head, ID_HEAD
 hr, ID_HR
+html, ID_HTML
 i, ID_I
 iframe, ID_IFRAME
 img, ID_IMG
@@ -61,8 +61,8 @@ isindex, ID_ISINDEX
 kbd, ID_KBD
 label, ID_LABEL
 legend, ID_LEGEND
-listing, ID_LISTING
 li, ID_LI
+listing, ID_LISTING
 link, ID_LINK
 map, ID_MAP
 menu, ID_MENU

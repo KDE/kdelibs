@@ -25,11 +25,15 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
+//#define TOKEN_DEBUG
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "khtmltoken.h"
+#include "khtmldecoder.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,23 +42,21 @@
 #include <strings.h>
 
 #include "khtmltags.c"
-
-#include <kcharsets.h>
-#include <kapp.h>
+#include "khtmlattrs.c"
 
 // Include Java Script
 #include <jsexec.h>
 
 // Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
-#define TOKEN_BUFFER_SIZE ((32*1024)-1)
+#define TOKEN_BUFFER_SIZE ((128*1024)-1)
 
 // String buffers are allocated in units of STRING_BUFFER_SIZE bytes.
-#define STRING_BUFFER_SIZE ((32*1024)-1)
+#define STRING_BUFFER_SIZE ((128*1024)-1)
 
-static const char *commentStart = "<!--";
-static const char *scriptEnd = "</script>";
-static const char *styleEnd = "</style>";
-static const char *listingEnd = "</listing>";
+static const QChar commentStart [] = { '<','!','-','-' };
+static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
+static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>' };
+static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
 
 
 int getTagID(const char *tagStr, int len)
@@ -74,6 +76,8 @@ HTMLTokenizer::HTMLTokenizer( )
     jsEnvironment = 0L;
     buffer = 0;
     scriptCode = 0;
+    decoder = 0;
+
     reset();
 }
 
@@ -81,13 +85,7 @@ void HTMLTokenizer::reset()
 {
     while (!tokenBufferList.isEmpty())
     {
-    	char *oldBuffer = (char *) tokenBufferList.take(0);
-        delete [] oldBuffer;
-    }
-
-    while (!stringBufferList.isEmpty())
-    {
-    	char *oldBuffer = (char *) stringBufferList.take(0);
+    	QChar *oldBuffer = (QChar *) tokenBufferList.take(0);
         delete [] oldBuffer;
     }
 
@@ -96,9 +94,6 @@ void HTMLTokenizer::reset()
     curr = 0;
     tokenBufferSizeRemaining = 0; // No space allocated at all
 
-    nextString = 0;
-    stringBufferSizeRemaining = 0; // No space allocated at all
-
     if ( buffer )
 	delete [] buffer;
     buffer = 0;
@@ -106,6 +101,12 @@ void HTMLTokenizer::reset()
     if ( scriptCode )
     	delete [] scriptCode;
     scriptCode = 0;
+
+    if( decoder ) {
+	delete decoder;
+	decoder = 0;
+    }
+
 }
 
 void HTMLTokenizer::begin()
@@ -113,13 +114,14 @@ void HTMLTokenizer::begin()
     reset();
     blocking.clear();
     size = 1000;
-    buffer = new char[ 1024 ];
+    buffer = new QChar[ 1024 ];
     dest = buffer;
-    tag = false;
+    tag = NoTag;
     pending = NonePending;
     discard = NoneDiscard;
     pre = false;
     prePos = 0;
+    plaintext = 0;
     listing = false;
     script = false;
     style = false;
@@ -132,9 +134,11 @@ void HTMLTokenizer::begin()
     searchCount = 0;
     title = false;
     charEntity = false;
+    decoder = new KHTMLDecoder;
+
 }
 
-void HTMLTokenizer::addListing(const char *list)
+void HTMLTokenizer::addListing(HTMLString list)
 {
     bool old_pre = pre;
     // This function adds the listing 'list' as
@@ -143,29 +147,21 @@ void HTMLTokenizer::addListing(const char *list)
     pre = true;
     prePos = 0;
 
-    while ( *list != 0 )
+    while ( list.length() )
     {
-	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
+	checkBuffer();
 	
-	if (skipLF && (*list != '\n'))
+	if (skipLF && ( list[0] != QChar('\n') ))
 	{
 	    skipLF = false;
 	}
 
 	if (skipLF)
 	{
-	    list++;
+            skipLF = false;
+	    ++list;
 	} 
-	else if (( *list == '\n' ) || ( *list == '\r' ))
+	else if (( list[0] == QChar('\n') ) || ( list[0] == QChar('\r') ))
 	{
 	    if (discard == LFDiscard) 
 	    {
@@ -180,21 +176,21 @@ void HTMLTokenizer::addListing(const char *list)
 	        pending = LFPending;
 	    }
 	    /* Check for MS-DOS CRLF sequence */
-	    if (*list == '\r')
+	    if (list[0] == QChar('\r'))
 	    {
 		skipLF = true;
 	    }
-	    list++;
+	    ++list;
 	}
-	else if (( *list == ' ' ) || ( *list == '\t'))
+	else if (( list[0] == QChar(' ') ) || ( list[0] == QChar('\t')))
 	{
 	    if (pending)
 	        addPending();
-	    if (*list == ' ')
+	    if (list[0] == QChar(' '))
 	        pending = SpacePending;
 	    else 
 	        pending = TabPending;
-	    list++;
+	    ++list;
 	}
 	else
 	{
@@ -203,7 +199,8 @@ void HTMLTokenizer::addListing(const char *list)
 	    	addPending();
 
 	    prePos++;
-	    *dest++ = *list++;
+	    *dest++ = list[0];
+	    ++list;
 	}
 
     }
@@ -224,9 +221,9 @@ void HTMLTokenizer::addListing(const char *list)
 
     // Add </listing> tag
     
-    *dest = TAG_ESCAPE;
+    *dest = QChar(TAG_ESCAPE);
     dest++;
-    *((unsigned char *)dest) = ID_LISTING + ID_CLOSE_TAG;
+    *dest = QChar(ID_LISTING + ID_CLOSE_TAG);
     dest++;
     *dest = 0;
     appendToken( buffer, dest-buffer );
@@ -235,38 +232,31 @@ void HTMLTokenizer::addListing(const char *list)
     pre = old_pre;    
 }
 
-void HTMLTokenizer::parseListing( const char * &src)
+void HTMLTokenizer::parseListing( HTMLString &src)
 {
     // We are inside of the <script> or <style> tag. Look for the end tag
     // which is either </script> or </style>,
     // otherwise print out every received character
 
-    while ( *src != 0 )
+    while ( src.length() )
     {
 	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
+	checkBuffer();
+
         // Allocate memory to store the script. We will write maximal
         // 10 characers.
         if ( scriptCodeSize + 11 > scriptCodeMaxSize )
         {
-            char *newbuf = new char [ scriptCodeSize + 1024 ];
+            QChar *newbuf = new QChar [ scriptCodeSize + 1024 ];
 	    memcpy( newbuf, scriptCode, scriptCodeSize );
 	    delete [] scriptCode;
 	    scriptCode = newbuf;
 	    scriptCodeMaxSize += 1024;
         }
 
-        if ( ( *src == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( ( src[0] == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
-	    src++;
+	    ++src;
 	    scriptCode[ scriptCodeSize ] = 0;
 	    scriptCode[ scriptCodeSize + 1 ] = 0;
 	    if (script) 
@@ -283,7 +273,7 @@ void HTMLTokenizer::parseListing( const char * &src)
 	    {
 	        //
 	        // Add scriptcode to the buffer
-	        addListing(scriptCode);
+	        addListing(HTMLString(scriptCode, scriptCodeSize));
 	    }
             script = style = listing = false;
 	    delete [] scriptCode;
@@ -295,549 +285,596 @@ void HTMLTokenizer::parseListing( const char * &src)
         // may still be on their way thru the web!
         else if ( searchCount > 0 )
         {
-	    if ( tolower(*src) == searchFor[ searchCount ] )
+	    QChar cmp = src[0];
+	    if ( cmp == searchFor[ searchCount ] )
 	    {
-	        searchBuffer[ searchCount ] = *src;
+	        searchBuffer[ searchCount ] = src[0];
 	        searchCount++;
-	        src++;
+	        ++src;
 	    }
 	    // We were wrong => print all buffered characters and the current one;
 	    else
 	    {
 	        searchBuffer[ searchCount ] = 0;
-	        char *p = searchBuffer;
+	        QChar *p = searchBuffer;
 	        while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
-	        scriptCode[ scriptCodeSize++ ] = *src++;
+	        scriptCode[ scriptCodeSize++ ] = src[0];
+		++src;
 	        searchCount = 0;
 	    }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( *src == '<' )
+        else if ( src[0] == '<' )
         {
 	    searchCount = 1;
 	    searchBuffer[ 0 ] = '<';
-	    src++;
+	    ++src;
         }
         else
         {
-	    scriptCode[ scriptCodeSize++ ] = *src++;
+	    scriptCode[ scriptCodeSize++ ] = src[0];
+	    ++src;
 	}
     }
 }
 
-void HTMLTokenizer::parseScript( const char * &src)
+void HTMLTokenizer::parseScript(HTMLString &src)
 {
     parseListing(src);
 }
-void HTMLTokenizer::parseStyle( const char * &src)
+void HTMLTokenizer::parseStyle(HTMLString &src)
 {
     parseListing(src);
 }
 
-void HTMLTokenizer::parseComment( const char * &src)
+void HTMLTokenizer::parseComment(HTMLString &src)
 {
-    while ( *src != 0 )
+    while ( src.length() )
     {
 	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
+	checkBuffer();
 
 	// Look for '-->'
-	if (*src == '-') 
+	if ( src[0] == QChar('-') ) 
 	{
 	    if (searchCount < 2)	// Watch out for '--->'
 	        searchCount++;
 	}
-	else if ((searchCount == 2) && (*src == '>'))
+	else if ((searchCount == 2) && (src[0] == QChar('>')))
 	{
 	    // We got a '-->' sequence
 	    comment = false;
-	    src++;
+	    ++src;
 	    return; // Finished parsing comment!
 	}
 	else
 	{
 	    searchCount = 0;
 	}
-        src++;
+        ++src;
     }
 }
 
-void HTMLTokenizer::parseEntity( const char * &src)
+void HTMLTokenizer::parseText(HTMLString &src)
 {
-    KCharsets *charsets=KApplication::getKApplication()->getCharsets();
-
-    while ( *src != 0 )
+    while ( src.length() )
     {
 	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
+	checkBuffer();
 
-        unsigned long entityValue = 0;
-	QString res;
-	int bytesConverted = 0; // 0 bytes --> all converted
-
-	searchBuffer[ searchCount+1] = *src;
-	searchBuffer[ searchCount+2] = '\0';
-	    
-	// Check for '&#000' or '&#x0000' sequence
-	if (searchBuffer[2] == '#')
-	{
-	    if ((searchCount > 1) && 
-	        (!isdigit(*src)) &&
-	        (searchBuffer[3] != 'x'))    
-	    {	
-	        // '&#000'
-	        searchBuffer[ searchCount+1] = '\0';
-	        entityValue = strtoul( &(searchBuffer[3]), 
-	    	    			NULL, 10 );
-	        charEntity = false;
-	    } 
-	    if ((searchCount > 1) && 
-	        (!isalnum(*src)) &&
-	        (searchBuffer[3] == 'x'))    
-	    {
-	        // '&#x0000'	
-	        searchBuffer[ searchCount+1] = '\0';
-	        entityValue = strtoul( &(searchBuffer[4]), 
-	    	    			NULL, 16 );
-	        charEntity = false;
-	    }
-	}
-	else
-	{
-	    // Check for &abc12 sequence
-	    if (!isalnum(*src))
-	    {
-	        charEntity = false;
-	        searchBuffer[ searchCount+1] = '\0';
-	        res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
-	        if (bytesConverted <= 0)
-	        {
-	            bytesConverted = 0;
-	            res = QString::null;
-	        }
-	    }
-	}
-	    
-	if (searchCount > 8)
-	{
-	    // This sequence is too long.. we ignore it
-	    charEntity = false;
-            memcpy(dest,searchBuffer+1, searchCount);
-	    dest += searchCount;
-	    // *dest++ = *src++;
-	    if ( pre )
-	        prePos += searchCount;	    
-	    searchCount = 0;
-	    return;
-	}
-	else if (charEntity)
-	{
-	    // Keep searching for end of character entity 	
-	    searchCount++;
-	    src++;
-	}
-	else
-	{
-	    // We have a complete sequence
-	    if (!res.isNull() && (res.length() == 1))
-	    {
-	        entityValue = *((unsigned char *)res.data());
-	    }
-
-	    if (tag && 
-	        ( (*src != ';') || (bytesConverted != searchCount) )
-	       )
-	    {
-	        // Don't translate entities in tags with a missing ';'
-	        entityValue = 0;
-	        res = QString::null;
-	    }
-	    
-	    if (
-	        (
-	         (entityValue < 128) &&
-	         (entityValue > 0)
-	        ) 
-	         ||
-	         (entityValue == 160)
-	       )
-	    {
-	        // Just insert plain ascii
-	        *dest++ = (char) entityValue;
-	        if (pre)
-	            prePos++;
-		if (*src == ';')
-		    src++;
-	    }	    	
-	    else if (!entityValue && !res)
-	    {
-	        // ignore the sequence, add it to the buffer as plaintext
-	        *dest++ = '&';
-	        memcpy(dest,searchBuffer+2, searchCount-1);
-	        dest += searchCount-1;
-	        if (pre)
-	            prePos += searchCount;
-		bytesConverted = 0;
-	    }
-	    else if (!tag && !textarea && !select && !title) 
-	    {
-	        // add current token first
-	        if (dest > buffer)
-	        {
-		    *dest=0;
-		    appendToken(buffer,dest-buffer);
-		    dest = buffer;
-		}
-		    
-		// add token with the amp-sequence for further conversion
-		((unsigned char *)searchBuffer)[1] = ID_ENTITY; 
-		if (bytesConverted > 0)
-		    appendToken(searchBuffer, bytesConverted+1);
-		else
-		    appendToken(searchBuffer, searchCount+1);
-		dest = buffer;
-		// Assume a width of 1
-		if (pre)
-		    prePos++;
-		if (*src == ';')
-		    src++;
-	    }
-	    else if (!res.isNull())
-	    {
-	        // insert the characters, assuming iso-8859-1
-	        memcpy(dest, res.data(), res.length());
-	        dest += res.length();
-	        if (pre)
-	            prePos += res.length();
-		if (*src == ';')
-		    src++;
-	    }
-	    else if (entityValue > 0) 
-	    {
-	        // insert the character, assuming iso-8859-1
-	        *dest++ = (char) entityValue;
-	        if (pre)
-	            prePos++;
-		if (*src == ';')
-		    src++;
-	    }
-	    if (bytesConverted > 0)
-	    {
-	        memcpy(dest, searchBuffer+1+bytesConverted, searchCount-bytesConverted);
-	        dest += searchCount-bytesConverted;
-                if ( pre )
-                    prePos += searchCount-bytesConverted;
-	    }
-	    searchCount = 0;
-	    return;
-	 }
-    }
-}
-
-void HTMLTokenizer::parseTag( const char * &src)
-{
-    // TODO:
-    // &-entities can occur in attributes! We should take care of that!
-    // Best thing is probably moving the entity-stuff to a seperate function
-    // as well.
-    //
-    // Waba
-    if (charEntity)
-        parseEntity(src);
-
-    while ( *src != 0 )
-    {
-	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
-
-	if (skipLF && (*src != '\n'))
+	if (skipLF && ( src[0] != QChar('\n') ))
 	{
 	    skipLF = false;
 	}
+
 	if (skipLF)
 	{
-	    src++;
+            skipLF = false;
+	    ++src;
 	} 
-	else if ( *src == '>' && !tquote )
+	else if (( src[0] == QChar('\n') ) || ( src[0] == QChar('\r') ))
 	{
-	    int tagID;
-	    bool startTag;
-	    const char *tagStr;
-
-            searchCount = 0; // Stop looking for '<!--' sequence
-	    tag = false;
-	    pending = NonePending; // Ignore pending spaces
-	    src++;
-
-	    *dest = '\0';
-
-	    // make the tag lower case
-	    char *ptr = buffer+2;
-	    if (*ptr == '/')
-	    { 
-	    	// End Tag
-	    	startTag = false;
-	    	ptr++;
-	    	discard = NoneDiscard;
-	    }
-	    else
+	    if ( dest > buffer )
 	    {
-	    	// Start Tag
-	    	startTag = true;
-	    	// Ignore CR/LF's after a start tag
-	    	discard = LFDiscard;
+		*dest = 0;
+		appendToken( buffer, dest-buffer );
 	    }
-
-	    tagStr = ptr;
-	    while (  
-	             ((*ptr >= 'a') && (*ptr <= 'z')) ||
-	             ((*ptr >= 'A') && (*ptr <= 'Z')) ||
-	             ((*ptr >= '0') && (*ptr <= '9'))
-	          )
-	    {
-		*ptr = tolower( *ptr );
-		ptr++;
-	    }
-	    *ptr = '\0';
-	    // tagStr : Tag
-	    // ptr : first argument
-
-	    const struct tags *tagPtr = findTag(tagStr, ptr-tagStr);
-            if (!tagPtr)
-            {
-printf("Unknown tag: \"%s\"\n", tagStr);
-               dest = buffer;
-               return; // Unknown tag, ignore
-            }
-            
-            if (dest <= ptr)
-            {
-                dest = ptr+1;
-                *dest = '\0';
-            }
-
-            tagID = tagPtr->id;
-            if (startTag)
-                *((unsigned char *)ptr) = tagID;
-            else
-                *((unsigned char *)ptr) = tagID + ID_CLOSE_TAG;
-            
-            ptr--;
-            *ptr = TAG_ESCAPE;  
-	    appendToken( ptr, dest-ptr );
 	    dest = buffer;
 
-	    if ( tagID == ID_PRE )
-	    {
-                prePos = 0;
-	        pre = startTag;
-	    }
-	    else if ( tagID == ID_TEXTAREA )
-	    {
-		textarea = startTag;
-	    }
-	    else if ( tagID == ID_TITLE )
-	    {
-		title = startTag;
-	    }
-	    else if ( tagID == ID_SCRIPT )
-	    {
-	        if (startTag)
-	        {
-		    script = true;
-                    searchCount = 0;
-                    searchFor = scriptEnd;		
-		    scriptCode = new char[ 1024 ];
-		    scriptCodeSize = 0;
-		    scriptCodeMaxSize = 1024;
-		    parseScript(src);
-		}
-	    }
-	    else if ( tagID == ID_STYLE )
-	    {
-	        if (startTag)
-	        {
-		    style = true;
-                    searchCount = 0;		
-                    searchFor = styleEnd;		
-		    scriptCode = new char[ 1024 ];
-		    scriptCodeSize = 0;
-		    scriptCodeMaxSize = 1024;
-		    parseStyle(src);
-		}
-	    }
-	    else if ( tagID == ID_LISTING )
-	    {
-	        if (startTag)
-	        {
-		    listing = true;
-                    searchCount = 0;		
-                    searchFor = listingEnd;		
-		    scriptCode = new char[ 1024 ];
-		    scriptCodeSize = 0;
-		    scriptCodeMaxSize = 1024;
-		    parseListing(src);
-		}
-	    }
-	    else if ( tagID == ID_SELECT )
-	    {
-		select = startTag;
-	    }
-	    else if (( tagID == ID_FRAMESET ) ||
-           	     ( tagID == ID_CELL ) ||
-                     ( tagID == ID_TABLE ))
-	    {
-	        if (startTag)
-	        {
-		    blocking.append( new BlockingToken(tagID, last) );
-		}
-		else
-		{
-	            if ( !blocking.isEmpty() &&  
-	                 (blocking.getLast()->tokenId() == tagID) )
-                    {
-		        blocking.removeLast();
-	            }
-	        }
-	    }
-	    return; // Finished parsing tag!
-	}
-	else if (( *src == '\n' ) || ( *src == '\r' ))
-	{
-            searchCount = 0; // Stop looking for '<!--' sequence
-	    if (discard == NoneDiscard)
-	        pending = SpacePending; // Treat LFs inside tags as spaces
-
 	    /* Check for MS-DOS CRLF sequence */
-	    if (*src == '\r')
+	    if (src[0] == QChar('\r'))
 	    {
 		skipLF = true;
 	    }
-	    src++;
+	    ++src;
 	}
-	else if (( *src == ' ' ) || ( *src == '\t'))
+        else
+        {
+	    *dest++ = src[0];
+	    ++src;
+        }
+    }
+}
+
+void HTMLTokenizer::parseEntity(HTMLString &src, bool start)
+{
+    if( start ) 
+    {
+	entityPos = 0;
+	charEntity = true;
+    }
+
+    while( src.length() )
+    {
+	if(entityPos > 8) {
+	    checkBuffer(10);
+	    // entity too long, ignore and insert as is
+	    *dest++ = QChar('&');
+	    memcpy(dest, entityBuffer, entityPos*sizeof(QChar));
+	    dest += entityPos;
+	    if ( pre )
+		prePos += entityPos+1;
+	    charEntity = false;
+	    return;
+	}
+	if( (src[0] >= 'A' && src[0] <= 'Z') || 
+	    (src[0] >= 'a' && src[0] <= 'z') || 
+	    (src[0] >= '0' && src[0] <= '9') ||
+	    src[0] == '#' ) 
 	{
-            searchCount = 0; // Stop looking for '<!--' sequence
-            if (discard == NoneDiscard)
-                pending = SpacePending;
-	    src++;
+	    entityBuffer[entityPos] = src[0];
+	    entityPos++;
+	    ++src;
 	}
-	else if ( *src == '\"' || *src == '\'')
+	else // end of entity... try to decode it 
+	{
+	    QConstString cStr(entityBuffer, entityPos);
+	    QChar res = decoder->decodeEntity(cStr.string());
+	    
+	    if (tag && src[0] != QChar(';') ) {
+		// Don't translate entities in tags with a missing ';'
+		res = QChar::null;
+	    }
+    
+	    if ( res != QChar::null ) {
+		checkBuffer();
+		// Just insert it
+		*dest++ = res;
+		if (pre)
+		    prePos++;
+		if (src[0] == QChar(';'))
+		    ++src;
+	    } else {
+		printf("unknown entity!\n");
+
+		checkBuffer(10);
+		// ignore the sequence, add it to the buffer as plaintext
+		*dest++ = QChar('&');
+		memcpy(dest, entityBuffer, entityPos*sizeof(QChar));
+		dest += entityPos;
+		charEntity = false;
+		if (pre)
+		    prePos += entityPos+1;
+	    }
+	    charEntity = false;
+	    return;
+	}
+    }
+}
+
+void HTMLTokenizer::parseTag(HTMLString &src)
+{
+    if (charEntity)
+        parseEntity(src);
+
+    while ( src.length() )
+    {
+	checkBuffer();
+
+	// decide if quoted or not....
+	if ( src[0] == QChar('\"') || src[0] == QChar('\'') )
 	{ // we treat " & ' the same in tags
-    	    discard = NoneDiscard;
-	    if ( *(dest-1) == '=' && !tquote )
+	    discard = NoneDiscard;
+	    if ( !tquote )
 	    {
-                // according to HTML4 DTD, we can simplify
+		// according to HTML4 DTD, we can simplify
 		// strings like "  my \nstring " to "my string"
 		discard = SpaceDiscard; // ignore leading spaces
 		pending = NonePending;
-		if (*src == '\'')
+		if (src[0] == QChar('\''))
 		    tquote = SingleQuote;
 		else
 		    tquote = DoubleQuote;
 	    }
-	    else if ( (( tquote == SingleQuote ) && ( *src == '\'')) ||
-                      (( tquote == DoubleQuote ) && ( *src == '\"')))
+	    else if ( (( tquote == SingleQuote )&&( src[0] == QChar('\''))) ||
+		      (( tquote == DoubleQuote )&&( src[0] == QChar('\"'))) )
 	    {
-                tquote = NoQuote;
-		pending = SpacePending; // Add space automatically
-	    }
-	    else if (tquote)
-	    {
-	        *dest++ = *src;
+		tquote = NoQuote;
+		pending = NonePending; // remove space at the end of value
 	    }
 	    else
 	    {
-	        // Ignore stray "\'"
+		*dest++ = src[0];
 	    }
-            src++;
-	}
-	else if ( *src == '=' )
+	    ++src;
+	} 
+	else if ( discard != NoneDiscard &&
+		  ( src[0] == QChar(' ') || src[0] == QChar('\t') ||
+		    src[0] == QChar('\n') || src[0] == QChar('\r') ) )
 	{
-	    src++;
-	    discard = NoneDiscard;
-            searchCount = 0; // Stop looking for '<!--' sequence
-            *dest++ = '=';
-	    if ( !tquote )
-	    {
-	        pending = NonePending; // Discard spaces before '='
-	        discard = SpaceDiscard; // Ignore following spaces
-	    }
-	}
-	else if ( *src == '&' ) 
-	{
-            src++;
-	    
-	    discard = NoneDiscard; 
-	    if (pending)
-	    	addPending();
-	    
-	    charEntity = true;
-            searchBuffer[0] = TAG_ESCAPE;
-            searchBuffer[1] = '&';
-            searchCount = 1;
-            parseEntity(src);
+	    pending = SpacePending;
+	    ++src;
 	}
 	else
 	{
-	    discard = NoneDiscard;
-	    if (pending)
+	    switch(tag) {
+	    case NoTag:
 	    {
-	        if (tquote)
-	           *dest++ = ' ';
-	        else
-	           *dest++ = TAG_ESCAPE; // Field delimiter
-                pending = NonePending;
+		return;
 	    }
-
-	    if (searchCount > 0)
+	    case TagName:
 	    {
-	        if (*src == commentStart[searchCount])
-	        {
-	            searchCount++;
-	    	    if (searchCount == 4)
-	    	    {
-	    	        // Found '<!--' sequence
-	    	        comment = true;
-		        dest = buffer; // ignore the previous part of this tag
-		        tag = false;
-		        searchCount = 0;
-		        parseComment(src);
-                        return; // Finished parsing tag!
-	    	    }
-	    	}
-	    	else
-	    	{
-	            searchCount = 0; // Stop looking for '<!--' sequence
-                }  
-            }
-	    *dest++ = *src++;
+		if( tquote ) 
+		{
+		    printf("bad HTML in parseTag: TagName\n");
+		    searchCount = 0;
+		    ++src;
+		    break;
+		}
+		if (searchCount > 0)
+		{
+		    if (src[0] == commentStart[searchCount])
+		    {
+			searchCount++;
+			if (searchCount == 4)
+			{
+			    // Found '<!--' sequence
+			    comment = true;
+			    dest = buffer; // ignore the previous part of this tag
+			    tag = NoTag;
+			    searchCount = 0;
+			    parseComment(src);
+			    return; // Finished parsing tag!
+			}
+		    }
+		    else
+		    {
+			searchCount = 0; // Stop looking for '<!--' sequence
+		    }  
+		}
+		if( ((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) ||
+		    ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) ||
+		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
+		    src[0] == QChar('/') ) 
+		{
+		    *dest = tolower( src[0] );
+		    dest++;
+		    ++src;
+		} 
+		else 
+		{
+		    int len;
+		    QChar *ptr = buffer+1;
+		    if (*ptr == QChar('/')) 
+		    { 
+			// End Tag
+			startTag = false;
+			ptr++;
+			discard = NoneDiscard;
+			len = dest - buffer - 2;
+		    } 
+		    else 
+		    {
+			// Start Tag
+			startTag = true;
+			// Ignore CR/LF's after a start tag
+			discard = LFDiscard;
+			len = dest - buffer - 1;
+		    }
+		    
+		    QConstString tmp(ptr, len); 
+		    const struct tags *tagPtr = findTag(tmp.string().ascii(), len);
+		    if (!tagPtr) {
+			printf("Unknown tag: \"%s\"\n", tmp.string().ascii());
+			dest = buffer;
+			tag = SearchEnd; // ignore the tag
+		    }
+		    else
+		    {
+			dest = buffer + 1;
+			uint tagID = tagPtr->id;
+#ifdef TOKEN_DEBUG
+			printf("found tag id=%d\n", tagID);
+#endif
+			if (startTag)
+			    *dest = QChar(tagID);
+			else
+			    *dest = QChar(tagID + ID_CLOSE_TAG);
+			
+			dest++;
+			*dest++ = TAG_ESCAPE;
+			tag = SearchAttribute;
+		    }
+		}
+		break;
+	    }
+	    case SearchAttribute:
+	    {
+		if( tquote )
+		{
+		    printf("broken HTML in parseTag: SearchAttribute \n");
+		    ++src;
+		    break;
+		}		
+		if( src[0] == QChar('>') )
+		{
+		    tag = SearchEnd; // we reached the end
+		    break;
+		}
+		if( src[0].row() ) // we ignore everything that isn't ascii
+		{
+		    ++src;
+		    break;
+		}
+		char c = src[0].cell();
+		if( ((c >= QChar('a')) && (c <= QChar('z'))) ||
+		    ((c >= QChar('A')) && (c <= QChar('Z'))) ||
+		    ((c >= QChar('0')) && (c <= QChar('9'))) ||
+		    c == QChar('-') )
+		{
+		    tag = AttributeName;
+		    discard = NoneDiscard;
+		    break;
+		}
+		++src; // ignore
+		break;
+	    }
+	    case AttributeName:
+	    {
+		if( (((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) ||
+		    ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) ||
+		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
+		    src[0] == '-') && !tquote ) 
+		{
+		    *dest = src[0].lower();
+		    dest++;
+		    ++src;
+		} 
+		else 
+		{
+		    // find beginning
+		    int len = 0;
+		    QChar *ptr = dest-1;
+		    while(*ptr != QChar(TAG_ESCAPE) ) ptr--, len++;
+		    
+		    QConstString tmp(ptr+1, len); 
+		    const struct attrs *a = findAttr(tmp.string().ascii(),len);
+		    if (!a) {
+			printf("Unknown attribute: \"%s\"\n", 
+			       tmp.string().ascii());
+			dest = ptr + 1; // unknown attribute, ignore
+			tag = SearchAttribute; // go to next attribute
+		    } 
+		    else
+		    {
+			dest = ptr + 1;
+			*dest++ = a->id;
+			
+			tag = SearchEqual;
+		    }		
+		}
+		break;
+	    }
+	    case SearchEqual:
+	    {
+		if(tquote)
+		{
+		    printf("bad HTML in parseTag: SearchEqual\n");
+		    ++src;
+		    break;
+		}
+		if( src[0] == QChar('=') )
+		{
+		    tag = SearchValue;
+		    pending = NonePending; // ignore spaces before '='
+		    discard = SpaceDiscard; // discard spaces after '='
+		    ++src;
+		}
+		else if( src[0] == QChar('>') )
+		    tag = SearchEnd;
+		else // other chars indicate a new attribte
+		{
+		    *dest++ = QChar(TAG_ESCAPE);
+		    tag = SearchAttribute;
+		    discard = SpaceDiscard;
+		    pending = NonePending;
+		}
+		break;
+	    }
+	    case SearchValue:
+	    {
+		if(tquote)
+		{
+		    tag = QuotedValue;
+		}
+		else
+		{
+		    tag = Value;
+		}
+		pending = NonePending;
+		discard = SpaceDiscard;
+		break;
+
+	    case QuotedValue:
+	    {
+		if ( src[0] == QChar('&') ) 
+		{
+		    ++src;
+		    
+		    discard = NoneDiscard; 
+		    if (pending)
+			addPending();
+		    
+		    charEntity = true;
+		    parseEntity(src, true);
+		    ++src;
+		}
+		else if ( !tquote )
+		{
+		    // end of attribute
+		    *dest++ = QChar(TAG_ESCAPE);
+		    tag = SearchAttribute;
+		    discard = SpaceDiscard;
+		    pending = NonePending;
+		    break;
+		}
+		if( pending ) addPending();
+		
+		discard = NoneDiscard;
+		*dest++ = src[0];
+		++src;
+		break;
+	    }
+	    case Value:
+		if( tquote )
+		{
+		    printf("bad HTML in parseTag: Value\n");
+		    ++src;
+		    break;
+		}
+		else if ( pending || src[0] == QChar('>') )
+		{
+		    // no quotes. Every space means end of value
+		    *dest++ = QChar(TAG_ESCAPE);
+		    tag = SearchAttribute;
+		    discard = SpaceDiscard;
+		    pending = NonePending;
+		    break;
+		}
+		*dest++ = src[0];
+		++src;
+		break;
+	    }
+	    case SearchEnd:
+	    {
+		if ( tquote || src[0] != QChar('>'))
+		{
+		    ++src; // discard everything, until we found the end
+		    break;
+		    
+		}
+		
+		searchCount = 0; // Stop looking for '<!--' sequence
+		tag = NoTag;
+		pending = NonePending; // Ignore pending spaces
+		++src;
+
+		if( *(dest-1) == QChar(TAG_ESCAPE) ) dest--; 
+
+		uint tagID = (buffer+1)->unicode();
+#ifdef TOKEN_DEBUG
+		printf("appending Tag: %d, len = %d\n", tagID, dest-buffer);
+#endif
+		if(!startTag) tagID -= ID_CLOSE_TAG;
+		
+		*dest = QChar::null;
+		appendToken( buffer, dest-buffer );
+		dest = buffer;
+		
+		if ( tagID == ID_PRE )
+		{
+		    prePos = 0;
+		    pre = startTag;
+		}
+		else if ( tagID == ID_TEXTAREA )
+		{
+		    textarea = startTag;
+		}
+		else if ( tagID == ID_TITLE )
+		{
+		    title = startTag;
+		}
+		else if ( tagID == ID_SCRIPT )
+		{
+		    if (startTag)
+		    {
+			script = true;
+			searchCount = 0;
+			searchFor = scriptEnd;		
+			scriptCode = new QChar[ 1024 ];
+			scriptCodeSize = 0;
+			scriptCodeMaxSize = 1024;
+			parseScript(src);
+		    }
+		}
+		else if ( tagID == ID_STYLE )
+		{
+		    if (startTag)
+		    {
+			style = true;
+			searchCount = 0;		
+			searchFor = styleEnd;		
+			scriptCode = new QChar[ 1024 ];
+			scriptCodeSize = 0;
+			scriptCodeMaxSize = 1024;
+			parseStyle(src);
+		    }
+		}
+		else if ( tagID == ID_LISTING )
+		{
+		    if (startTag)
+		    {
+			listing = true;
+			searchCount = 0;		
+			searchFor = listingEnd;		
+			scriptCode = new QChar[ 1024 ];
+			scriptCodeSize = 0;
+			scriptCodeMaxSize = 1024;
+			parseListing(src);
+		    }
+		}
+		else if ( tagID == ID_SELECT )
+		{
+		    select = startTag;
+		}
+		else if (( tagID == ID_FRAMESET ) ||
+			 ( tagID == ID_TABLE ))
+		{
+		    if (startTag)
+		    {
+			blocking.append( new BlockingToken(tagID, last) );
+#ifdef TOKEN_DEBUG
+			printf("appending blockingToken\n");
+#endif
+		    }
+		    else
+		    {
+			if ( !blocking.isEmpty() &&  
+			     (blocking.getLast()->tokenId() == (int)tagID) )
+			{
+#ifdef TOKEN_DEBUG
+			    printf("removing blockingToken\n");
+#endif
+			    blocking.removeLast();
+			}
+#ifdef TOKEN_DEBUG
+			else 
+			    printf("unmatched blockingTocken\n");
+#endif
+		    }
+		}
+		return; // Finished parsing tag!
+	    }
+	    default:
+	    {
+		printf("error in parseTag! %d\n", __LINE__);
+		return;
+	    }
+	    
+	    } // end switch
 	}
     }
+    return;
 }
 
 void HTMLTokenizer::addPending()
@@ -849,9 +886,9 @@ void HTMLTokenizer::addPending()
     else if ( textarea )
     {
 	if (pending == LFPending)
-	    *dest++ = '\n';
+	    *dest++ = QChar('\n');
 	else
-	    *dest++ = ' ';    	
+	    *dest++ = QChar(' ');    	
     }
     else if ( pre )
     {
@@ -859,52 +896,68 @@ void HTMLTokenizer::addPending()
 
 	switch (pending)
 	{
-	  case SpacePending:
-		// Insert a non-breaking space
-		*(unsigned char *)dest++ = 0xa0; 
-	  	prePos++;
-	  	break;
+	case SpacePending:
+	    // Insert a non-breaking space
+	    *dest++ = QChar(0xa0); 
+	    prePos++;
+	    break;
 
-	  case LFPending:
-		if ( dest > buffer )
-		{
-		    *dest = 0;
-		    appendToken( buffer, dest-buffer );
-		}
-		dest = buffer;
-		*dest++ = TAG_ESCAPE;
-		*((unsigned char *)dest) = ID_NEWLINE;
-		dest++;
+	case LFPending:
+	    if ( dest > buffer )
+	    {
 		*dest = 0;
-		appendToken( buffer, 2 );
-		dest = buffer;
-		prePos = 0; 
-	  	break;
+		appendToken( buffer, dest-buffer );
+	    }
+	    dest = buffer;
+	    *dest++ = QChar(TAG_ESCAPE);
+	    *dest = QChar(ID_NEWLINE);
+	    dest++;
+	    *dest = 0;
+	    appendToken( buffer, 2 );
+	    dest = buffer;
+	    prePos = 0; 
+	    break;
 	  	
-	  case TabPending:
-		p = TAB_SIZE - ( prePos % TAB_SIZE );
-		for ( int x = 0; x < p; x++ )
-		{
-		    *dest = ' ';
-		    dest++;
-		}
-		prePos += p;
-	  	break;
+	case TabPending:
+	    p = TAB_SIZE - ( prePos % TAB_SIZE );
+	    for ( int x = 0; x < p; x++ )
+	    {
+		*dest = QChar(' ');
+		dest++;
+	    }
+	    prePos += p;
+	    break;
 	  	
-	  default:
-	  	printf("Assertion failed: pending = %d\n", (int) pending);
-	  	break;
+	default:
+	    printf("Assertion failed: pending = %d\n", (int) pending);
+	    break;
 	}
     }
     else
     {
-    	*dest++ = ' ';
+    	*dest++ = QChar(' ');
     }
 
     pending = NonePending;
 }
 
-void HTMLTokenizer::write( const char *str )
+void HTMLTokenizer::setPlainText()
+{
+    if (!plaintext)
+    {
+       // Do this only once!
+       plaintext = true;    
+       dest = buffer;
+       *dest++ = QChar(TAG_ESCAPE);
+       *dest = QChar(ID_PLAIN);
+       dest++;
+       *dest = 0;
+       appendToken( buffer, 2 );
+       dest = buffer;
+    }
+}
+
+void HTMLTokenizer::write( const char *str)
 {
     // If this pointer is not 0L then we allocated some memory to store HTML
     // code in. This may happen while parsing the <script> tag, since the output
@@ -912,15 +965,17 @@ void HTMLTokenizer::write( const char *str )
     // the HTML code on the fly by inserting new HTML stuff.
     // If this pointer is not null, one has to free the memory before leaving
     // this function.
-    char *srcPtr = 0L;
+    QChar *srcPtr = 0L;
 
-    
     if ( str == 0L || buffer == 0L )
 	return;
-    
-    const char *src = str;
 
-    if (comment)
+    QString _src = decoder->decode(str);
+    HTMLString src = HTMLString(_src);
+
+    if (plaintext)
+        parseText(src);
+    else if (comment)
         parseComment(src);
     else if (script)
         parseScript(src);
@@ -929,59 +984,57 @@ void HTMLTokenizer::write( const char *str )
     else if (listing)
         parseListing(src);
     else if (tag)
+    {
         parseTag(src);
+	startTag = false;
+	searchCount = 0;
+    }
     else if (charEntity)
         parseEntity(src);
 
-    while ( *src != 0 )
+    while ( src.length() )
     {
 	// do we need to enlarge the buffer?
-	if ( (dest - buffer) > size )
-	{
-	    char *newbuf = new char [ size + 1024 + 20 ];
-	    memcpy( newbuf, buffer, dest - buffer + 1 );
-	    dest = newbuf + ( dest - buffer );
-	    delete [] buffer;
-	    buffer = newbuf;
-	    size += 1024;
-	}
+	checkBuffer();
 
-	if (skipLF && (*src != '\n'))
+	if (skipLF && (src[0] != QChar('\n')))
 	{
 	    skipLF = false;
 	}
 	if (skipLF)
 	{
-	    src++;
+            skipLF = false;
+	    ++src;
 	} 
-	else if ( startTag)
+	else if ( startTag )
 	{
 	    startTag = false;
-	    if (*src == '/') 
+	    if (src[0] == '/') 
 	    {
-	       // Start of an End-Tag 
-	       if (pending == LFPending)
-	           pending = NonePending; // Ignore leading LFs
+		// Start of an End-Tag 
+		if (pending == LFPending)
+		    pending = NonePending; // Ignore leading LFs
 	    }
-	    else if ( ((*src >= 'a') && (*src <='z')) || 
-	    	      ((*src >= 'A') && (*src <='Z')) )	    	    
+	    else if ( ((src[0] >= 'a') && (src[0] <='z')) || 
+	    	      ((src[0] >= 'A') && (src[0] <='Z')) )	    	    
 	    {
-	       // Start of a Start-Tag
+		// Start of a Start-Tag
 	    }
-	    else if ( *src == '!')
+	    else if ( src[0] == '!')
 	    {
-	       // <!-- comment -->
+		// <!-- comment -->
 	    }
 	    else
 	    {
-	       // Invalid tag
-	       // Add as is
-	       if (pending)
-	           addPending();
-	       *dest = '<';
-	       dest++;
-	       *dest++ = *src++;
-               continue;	        
+		// Invalid tag
+		// Add as is
+		if (pending)
+		    addPending();
+		*dest = '<';
+		dest++;
+		*dest++ = src[0];
+		++src;
+		continue;	        
 	    }
 
             if (pending)
@@ -995,34 +1048,30 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    *dest = TAG_ESCAPE;
 	    dest++;
-	    *dest = '<';
-	    dest++;
-	    tag = true;
 	    searchCount = 1; // Look for '<!--' sequence to start comment
-	    // No 'src++' add '*src' in a second pass with 'startTag=false'
+	    tag = TagName;
 	    parseTag(src);
+	    startTag = false;
+	    searchCount = 0;
 	}
-	else if ( *src == '&' ) 
+	else if ( src[0] == QChar('&') ) 
 	{
-            src++;
+            ++src;
 	    
 	    discard = NoneDiscard; 
 	    if (pending)
 	    	addPending();
 	    
 	    charEntity = true;
-            searchBuffer[0] = TAG_ESCAPE;
-            searchBuffer[1] = '&';
-            searchCount = 1;
-            parseEntity(src);
+            parseEntity(src, true);
 	}
-	else if ( *src == '<')
+	else if ( src[0] == QChar('<'))
 	{
-	    src++;
+	    ++src;
 	    startTag = true;
 	    discard = NoneDiscard;
 	}
-	else if (( *src == '\n' ) || ( *src == '\r' ))
+	else if (( src[0] == QChar('\n') ) || ( src[0] == QChar('\r') ))
 	{
 	    if ( pre || textarea)
 	    {
@@ -1054,19 +1103,19 @@ void HTMLTokenizer::write( const char *str )
 		}
 	    }
 	    /* Check for MS-DOS CRLF sequence */
-	    if (*src == '\r')
+	    if (src[0] == QChar('\r'))
 	    {
 		skipLF = true;
 	    }
-	    src++;
+	    ++src;
 	}
-	else if (( *src == ' ' ) || ( *src == '\t'))
+	else if (( src[0] == QChar(' ') ) || ( src[0] == QChar('\t') ))
 	{
 	    if ( pre || textarea)
 	    {
 	    	if (pending)
 	    	    addPending();
-	    	if (*src == ' ')
+	    	if (src[0] == QChar(' '))
 	    	    pending = SpacePending;
 	    	else 
 	    	    pending = TabPending;
@@ -1075,7 +1124,7 @@ void HTMLTokenizer::write( const char *str )
 	    {
 	    	pending = SpacePending;
 	    }
-	    src++;
+	    ++src;
 	}
 	else
 	{
@@ -1088,7 +1137,8 @@ void HTMLTokenizer::write( const char *str )
 		prePos++;
 	    }
 	    
-	    *dest++ = *src++;
+	    *dest++ = src[0];
+	    ++src;
 	}
     }
 
@@ -1115,6 +1165,27 @@ void HTMLTokenizer::end()
     blocking.clear();
 }
 
+void HTMLTokenizer::appendToken( const QChar *t, int len )
+{
+    if ( len < 1 )
+        return;
+
+    if (len >= tokenBufferSizeRemaining)
+    {
+       // We need a new buffer
+       appendTokenBuffer( len);
+    }
+
+    last = next; // Last points to the start of the token we are going to append
+    tokenBufferSizeRemaining -= len+1; // One for the null-termination
+    while (len--)
+    {
+        *next++ = *t++;
+    }
+    *next++ = '\0';
+}
+
+
 void HTMLTokenizer::appendTokenBuffer( int min_size)
 {
     int newBufSize = TOKEN_BUFFER_SIZE; 
@@ -1122,8 +1193,8 @@ void HTMLTokenizer::appendTokenBuffer( int min_size)
     // If we were using a buffer, mark it's end
     if (next)
     {
-       // Mark current buffer end
-       *next = '\0';
+	// Mark current buffer end
+	*next = QChar::null;
     }
 
     if (min_size > newBufSize)
@@ -1131,30 +1202,15 @@ void HTMLTokenizer::appendTokenBuffer( int min_size)
         // Wow! This surely is a big token...
         newBufSize += min_size; 
     }
-    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize + 1];
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new QChar [ newBufSize + 1];
     tokenBufferList.append( newBuffer);
     next = newBuffer->first();
     tokenBufferSizeRemaining = newBufSize;
     if (!curr)
     {
-       curr = tokenBufferList.at(0)->first();
-       tokenBufferCurrIndex = 0;
+	curr = tokenBufferList.at(0)->first();
+	tokenBufferCurrIndex = 0;
     }
-}                                                                                         
-
-void HTMLTokenizer::appendStringBuffer( int min_size)
-{
-    int newBufSize = STRING_BUFFER_SIZE; 
-
-    if (min_size > newBufSize)
-    {
-        // Wow! This surely is a big string...
-        newBufSize += min_size; 
-    }
-    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize + 1];
-    stringBufferList.append( newBuffer);
-    nextString = newBuffer->first();
-    stringBufferSizeRemaining = newBufSize;
 }                                                                                         
 
 void HTMLTokenizer::nextTokenBuffer()
@@ -1167,7 +1223,7 @@ void HTMLTokenizer::nextTokenBuffer()
     else 
     {
         // Should never occur.
-        printf("ERROR in HTMLTokenize::nextToken()\n");
+        printf("ERROR in HTMLTokenize::nextTokenBuffer()\n");
     }
 }
 
@@ -1185,9 +1241,95 @@ void HTMLTokenizer::first()
     }
 }
 
+
+
 HTMLTokenizer::~HTMLTokenizer()
 {
     reset();
+}
+
+HTMLString HTMLTokenizer::nextToken()
+{
+    if (!curr)
+    {
+        nextOptionPtr = 0;
+        return HTMLString();
+    }
+    
+    QChar *t = (QChar *) curr;
+    int len = ustrlen(curr);
+    curr += len+1;
+
+    if ((curr != next) && (*curr == QChar::null))
+    {
+    	// End of HTMLTokenBuffer, go to next buffer.
+	    nextTokenBuffer();
+    }
+
+    if(*(t+2) == QChar::null)
+	nextOptionPtr = 0;
+    else
+	nextOptionPtr = t+3; // Skip: TAG_ESCAPE / ID_xxx / TAG_ESCAPE
+
+    return HTMLString(t, len);
+}
+
+const Attribute *HTMLTokenizer::nextOption()
+{
+    QChar *t = nextOptionPtr;
+    
+    if (!t)
+        return 0;
+        
+    if (*t == QChar::null)
+    {
+        nextOptionPtr = 0;
+        return 0;
+    }
+    
+    while( *nextOptionPtr != QChar(TAG_ESCAPE) && 
+	   *nextOptionPtr != QChar::null ) 
+	nextOptionPtr++;
+
+    uint len = nextOptionPtr - t - 1;
+    if ( *nextOptionPtr == QChar::null )
+	nextOptionPtr = 0;
+    else 
+	*nextOptionPtr++ = QChar('\0');
+
+    currAttr.id = t->unicode();
+    currAttr.setValue(t+1, len);
+#ifdef TOKEN_DEBUG
+    printf("attribute: %d, %s, len=%d\n", currAttr.id, 
+	   currAttr.value().string().latin1(), len);
+#endif
+
+    return &currAttr;
+}
+
+bool HTMLTokenizer::hasMoreTokens()
+{
+    if ( !blocking.isEmpty() &&
+	    blocking.getFirst()->token() == curr )
+	{
+       	return false;
+    }
+
+    return ( ( curr != 0 ) && (curr != next) );
+}
+
+inline void HTMLTokenizer::checkBuffer(int len)
+{
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size-len )
+	{
+	    QChar *newbuf = new QChar [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1200,36 +1342,35 @@ StringTokenizer::StringTokenizer()
     bufLen = 0;
 }
 
-void StringTokenizer::tokenize( const char *str, const char *_separators )
+void StringTokenizer::tokenize( HTMLString str, const QChar *_separators )
 {
-    if ( *str == '\0' )
+    if ( str.unicode() == 0 )
     {
 	pos = 0;
 	return;
     }
 
-    int strLength = strlen( str ) + 1;
+    int strLength = str.length();
 
     if ( bufLen < strLength )
     {
 	delete [] buffer;
-	buffer = new char[ strLength ];
+	buffer = new QChar[ strLength ];
 	bufLen = strLength;
     }
 
-    const char *src = str;
     end = buffer;
     bool quoted = false;
     
-    for ( ; *src != '\0'; src++ )
+    for ( ; str.length(); ++str )
     {
-	char *x = strchr( _separators, *src );
-	if ( *src == '\"' )
+	QChar *x = ustrchr( _separators, str[0] );
+	if ( str[0] == '\"' )
 	    quoted = !quoted;
 	else if ( x && !quoted )
 	    *end++ = 0;
 	else
-	    *end++ = *src;
+	    *end++ = str[0];
     }
 
     *end = 0;
@@ -1240,17 +1381,18 @@ void StringTokenizer::tokenize( const char *str, const char *_separators )
 	pos = buffer;
 }
 
-const char* StringTokenizer::nextToken()
+HTMLString StringTokenizer::nextToken()
 {
     if ( pos == 0 )
-	return 0;
+	return HTMLString();
 
-    char *ret = pos;
-    pos += strlen( ret ) + 1;
+    QChar *ret = pos;
+    int len = ustrlen(ret);
+    pos += len + 1;
     if ( pos >= end )
 	pos = 0;
 
-    return ret;
+    return HTMLString(ret, len);
 }
 
 StringTokenizer::~StringTokenizer()
@@ -1258,3 +1400,4 @@ StringTokenizer::~StringTokenizer()
     if ( buffer != 0 )
 	delete [] buffer;
 }
+

@@ -28,12 +28,14 @@
 #ifndef HTMLTOKEN_H
 #define HTMLTOKEN_H
 
+
 //
 // External Classes
 //
 ///////////////////
 
 class JSEnvironment;
+class KHTMLDecoder;
 
 //
 // Internal Classes
@@ -46,18 +48,25 @@ class HTMLTokenizer;
 #include <qlist.h>
 #include <qstrlist.h>
 #include <qarray.h>
+#include <qstring.h>
+
+#include "khtmlstring.h"
 
 int getTagID(const char *tagStr, int len);
 
 // Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
 // you can devide between tags and words.
-#define TAG_ESCAPE 13
+#define TAG_ESCAPE 0xE000
+// this is only used iternally in the tokenizer. All entities are mapped
+// to the corresponding unicode values in the tokenizer.
+#define TAG_ENTITY 0xEFFF
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
-typedef char * TokenPtr;
+typedef QChar * TokenPtr;
 //-----------------------------------------------------------------------------
+
 
 class BlockingToken
 {
@@ -83,9 +92,30 @@ public:
 	TokenPtr first() 
 	{ return (TokenPtr) data; }
 protected:
-	char data[1];
+	QChar data[1];
 };
 
+class Attribute
+{
+public:
+    Attribute() { id = 0, s = HTMLString(); }
+    void setValue(QChar *_s, int _l) { 
+	s = HTMLString(_s, _l);
+    }
+    HTMLString value() const { return s; }
+
+    ushort id;
+    HTMLString s;
+};
+
+// makes code in the parser nicer
+inline bool operator==( const Attribute &a, const int &i )
+{ return a.id == i; }
+
+inline bool operator==( const Attribute &a, const QString &s )
+{ return a.value() == s; }
+
+//---------------------------------------------------------------------------
 
 class HTMLTokenizer
 {
@@ -94,50 +124,54 @@ public:
     ~HTMLTokenizer();
 
     void begin();
+    void setPlainText();
     void write( const char * );
     void end();
 
-    char* nextToken();
+    HTMLString nextToken();
     bool hasMoreTokens();
 
-    char* nextOption();
+    const Attribute *nextOption();
 
     void first();
 
-    char* newString( const char *str, int len=0);
-
 protected:
     void reset();
-	void addPending();
-    void appendToken( const char *t, int len );
+    void addPending();
+    void appendToken( const QChar *t, int len );
     void appendTokenBuffer( int min_size);
     void nextTokenBuffer(); // Move curr to next tokenBuffer
 
-    void appendStringBuffer( int min_size);
-    
-    void addListing(const char *list);
+    void addListing(HTMLString list);
 
-    void parseComment(const char * &str);
-    void parseStyle(const char * &str);
-    void parseScript(const char * &str);
-    void parseListing(const char * &str);
-    void parseTag(const char * &str);
-    void parseEntity(const char * &str);
-    
+    void parseComment(HTMLString &str);
+    void parseText(HTMLString &str);
+    void parseStyle(HTMLString &str);
+    void parseScript(HTMLString &str);
+    void parseListing(HTMLString &str);
+    void parseTag(HTMLString &str);
+    void parseEntity(HTMLString &str, bool start = false);
+
+    // check if we have enough space in the buffer.
+    // if not enlarge it
+    void checkBuffer(int len = 1);
 protected:
     // Internal buffers
     ///////////////////
-    char *buffer;
-    char *dest;
+    QChar *buffer;
+    QChar *dest;
 
     // the size of buffer
     int size;
 
     // Token List
     /////////////
-	QList<HTMLTokenBuffer> tokenBufferList;
+    QList<HTMLTokenBuffer> tokenBufferList;
+
+    // decodes the input stream to unicode
+    KHTMLDecoder *decoder;
     
-	TokenPtr last;  // Last token appended
+    TokenPtr last;  // Last token appended
 
     TokenPtr next;  // Token written next
     int tokenBufferSizeRemaining; // The size remaining in the buffer written to
@@ -145,20 +179,10 @@ protected:
     TokenPtr curr;  // Token read next 
     unsigned int tokenBufferCurrIndex; // Index of HTMLTokenBuffer used by next read.
 
-    char *nextOptionPtr;
+    QChar *nextOptionPtr;
 
-	// String List
-	//////////////
-	QList<HTMLTokenBuffer> stringBufferList;
-
-	TokenPtr nextString; // String written next;
-	int stringBufferSizeRemaining; // The size remaining in the buffer written to
-    
     // Tokenizer flags
     //////////////////
-    // are we in a html tag
-    bool tag;
-
     // are we in quotes within a html tag
     typedef enum
     {
@@ -169,23 +193,23 @@ protected:
         
     HTMLQuote tquote;
     
-	typedef enum 
-	{ 
-		NonePending = 0, 
-		SpacePending, 
-		LFPending, 
-		TabPending 
-	} HTMLPendingType;
+    typedef enum 
+    { 
+	NonePending = 0, 
+	SpacePending, 
+	LFPending, 
+	TabPending 
+    } HTMLPendingType;
 
     // To avoid multiple spaces
     HTMLPendingType pending;
 
-	typedef enum 
-	{ 
-		NoneDiscard = 0, 
-		SpaceDiscard, 
-		LFDiscard
-	} HTMLDiscardType;
+    typedef enum 
+    { 
+	NoneDiscard = 0, 
+	SpaceDiscard, 
+	LFDiscard
+    } HTMLDiscardType;
 
     // Discard line breaks immediately after start-tags
     // Discard spaces after '=' within tags
@@ -200,10 +224,29 @@ protected:
     // In case of a <TAG> we add any pending LF as a space.
     // If the character following is not '/', 'a..z', 'A..Z' or '!' 
     // the tag is inserted as text
-	bool startTag;
+    bool startTag;
 
-	// Are we in a <title> ... </title> block
-	bool title;
+
+    typedef enum {
+	NoTag = 0,
+	TagName,
+	SearchAttribute,
+	AttributeName,
+	SearchEqual,
+	SearchValue,
+	QuotedValue,
+	Value,
+	SearchEnd
+    } HTMLTagParse;
+    // Flag to say, we are just parsing a tag, meaning, we are in the middle
+    // of <tab... 
+    HTMLTagParse tag;
+
+    // Flag to say that we are just parsing an attribute
+    bool parseAttr;
+
+    // Are we in a <title> ... </title> block
+    bool title;
     
     // Are we in a <pre> ... </pre> block
     bool pre;
@@ -220,11 +263,14 @@ protected:
     // Are we in a <select> ... </select> block
     bool select;
 
-	// Are we in a <listing> ... </listing> block
-	bool listing;
+    // Are we in a <listing> ... </listing> block
+    bool listing;
 
-	 // Are we in a &... character entity description?
-	 bool charEntity;
+    // Are we in lain textmode ?
+    bool plaintext;
+    
+    // Are we in a &... character entity description?
+    bool charEntity;
 
     // Area we in a <!-- comment --> block
     bool comment;
@@ -233,18 +279,18 @@ protected:
     bool textarea;
 
     // Used to store the code of a srcipting sequence
-    char *scriptCode;
+    QChar *scriptCode;
     // Size of the script sequenze stored in @ref #scriptCode
     int scriptCodeSize;
     // Maximal size that can be stored in @ref #scriptCode
     int scriptCodeMaxSize;
     
     // Stores characters if we are scanning for a string like "</script>"
-    char searchBuffer[ 10 ];
+    QChar searchBuffer[ 10 ];
     // Counts where we are in the string we are scanning for 
     int searchCount;
     // The string we are searching for
-    const char *searchFor;
+    const QChar *searchFor;
     
     /**
      * This pointer is 0L until used. The @ref KHTMLWidget has an instance of
@@ -255,105 +301,12 @@ protected:
     
     // These are tokens for which we are awaiting ending tokens
     QList<BlockingToken> blocking;
+
+    Attribute currAttr;
+
+    QChar entityBuffer[10];
+    uint entityPos;
 };
-
-inline void HTMLTokenizer::appendToken( const char *t, int len )
-{
-    if ( len < 1 )
-        return;
-
-    if (len >= tokenBufferSizeRemaining)
-    {
-       // We need a new buffer
-       appendTokenBuffer( len);
-    }
-
-    last = next; // Last points to the start of the token we are going to append
-    tokenBufferSizeRemaining -= len+1; // One for the null-termination
-    while (len--)
-    {
-        *next++ = *t++;
-    }
-    *next++ = '\0';
-}
-
-inline char *HTMLTokenizer::newString( const char *str, int len )
-{
-	char * lastString;
-    if ( !len )
-        len = strlen(str);
-
-    if (len >= stringBufferSizeRemaining)
-    {
-       // We need a new buffer
-       appendStringBuffer( len);
-    }
-
-    lastString = nextString; // Last points to the start of the string we are going to append
-    stringBufferSizeRemaining -= len+1; // One for the null-termination
-    while (len--)
-    {
-        *nextString++ = *str++;
-    }
-    *nextString++ = '\0';
-
-    return lastString;
-}
-
-inline char* HTMLTokenizer::nextToken()
-{
-    if (!curr)
-    {
-        nextOptionPtr = 0;
-        return 0;
-    }
-    
-    char *t = (char *) curr;
-    curr += strlen(curr)+1;
-
-    if ((curr != next) && (*curr == '\0'))
-    {
-    	// End of HTMLTokenBuffer, go to next buffer.
-	    nextTokenBuffer();
-    }
-
-    nextOptionPtr = t+2; // Skip: TAG_ESCAPE / ID_xxx
-
-    return t;
-}
-
-inline char* HTMLTokenizer::nextOption()
-{
-    char *t = nextOptionPtr;
-    
-    if (!t)
-        return 0;
-        
-    if (!*t)
-    {
-        nextOptionPtr = 0;
-        return 0;
-    }
-    
-    nextOptionPtr = strchr(t, TAG_ESCAPE);
-    if (nextOptionPtr)
-    {
-        *nextOptionPtr++ = '\0';
-    }
-
-    return t;
-}
-
-inline bool HTMLTokenizer::hasMoreTokens()
-{
-    if ( !blocking.isEmpty() &&
-	    blocking.getFirst()->token() == curr )
-	{
-       	return false;
-    }
-
-    return ( ( curr != 0 ) && (curr != next) );
-}
 
 //-----------------------------------------------------------------------------
 
@@ -363,14 +316,15 @@ public:
     StringTokenizer();
     ~StringTokenizer();
 
-    void tokenize( const char *, const char * );
-    const char* nextToken();
+    // FIXME 2nd argument is 0 terminated!!!
+    void tokenize( HTMLString, const QChar * );
+    HTMLString nextToken();
     bool hasMoreTokens() { return ( pos != 0 ); }
 
 protected:
-    char *pos;
-    char *end;
-    char *buffer;
+    QChar *pos;
+    QChar *end;
+    QChar *buffer;
     int  bufLen;
 };
 

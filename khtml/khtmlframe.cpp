@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 HTMLFrameSet::HTMLFrameSet( QWidget *_parent, 
-			    const char *_cols, const char *_rows,
+			    QString _cols, QString _rows,
 			    int _frameBorder, bool _bAllowResize)
     : QWidget( _parent ), size(0)
 {
@@ -42,8 +42,8 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
     
     frameBorder = _frameBorder;
     bAllowResize = _bAllowResize;
-    cols = _cols;
-    rows = _rows;
+    cols = _cols.ascii();
+    rows = _rows.ascii();
     
     widgetList.setAutoDelete( TRUE );
     
@@ -55,7 +55,7 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
     if ( !cols.isEmpty() )
     {
         nrCols++;
-	const char *p = cols.data();
+	const char *p = cols.latin1();
         while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrCols++; }
     }
     int nrRows = 0;
@@ -63,7 +63,7 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
     if ( !rows.isEmpty() )
     {
         nrRows++;
-	const char *p = rows.data();
+	const char *p = rows.latin1();
         while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrRows++; }
     }
 
@@ -83,6 +83,8 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
 HTMLFrameSet::~HTMLFrameSet()
 {
     widgetList.clear();
+    if ( size )
+	delete []size;
 }
 
 void HTMLFrameSet::append( QWidget *_w )
@@ -224,23 +226,25 @@ int HTMLFrameSet::calcSize( QString s, int _max )
     if (!s.isEmpty())
     {
       StringTokenizer st;
-      st.tokenize( s.ascii(), "," );
+      QChar separ [] = { ',', 0x0 };
+      st.tokenize( HTMLString( s ), separ );
       while ( st.hasMoreTokens() )
       {
 	if ( i == elements )
 	    break;
 	
-	const char* token = st.nextToken();
-	if ( token[0] != 0 )
+	HTMLString token = st.nextToken();
+	if ( token.length() )
 	{
-	    printf("WIDTH='%s'\n",token);
-	    value[i] = atoi( token );
-	    if ( strchr( token, '%' ) != 0 )
+            int percent;
+	    printf("WIDTH='%s'\n",token.string().ascii());
+	    value[i] = token.toInt();
+	    if ( token.percentage(percent) )
 	    {
 		mode[i] = 1;
-		value[i] = ( value[i] * _max ) / 100;
+		value[i] = ( percent * _max ) / 100;
 	    }
-	    else if ( strchr( token, '*' ) != 0 )
+	    else if ( ustrchr( token.unicode(), '*' ) )
 	    {
 		if ( value[i] == 0 )
 		    value[i] = 1;

@@ -18,7 +18,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-~*/
+*/
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Objects
@@ -36,15 +36,6 @@
 #include "khtmlcache.h"
 #include "khtmltoken.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <strings.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <assert.h>
-
 #include <qfile.h>
 #include <qimage.h>
 #include <qdrawutil.h>
@@ -53,6 +44,54 @@
 // Debug function
 void debugM( const char *msg , ...);
 
+
+HTMLAllocator::HTMLAllocator(long _blockSize)
+: blockSize(_blockSize), blockOffset(0)
+{
+    currentBlock = new char[_blockSize];
+    memoryBlocks.append(currentBlock);
+}
+
+HTMLAllocator::~HTMLAllocator()
+{
+    while (!memoryBlocks.isEmpty())
+    {
+        char *oldBuffer = (char *) memoryBlocks.take(0);
+        delete [] oldBuffer;
+    }
+}
+
+void *
+HTMLAllocator::allocate(size_t _size)
+{
+   if ((long) _size + blockOffset > blockSize)
+   {
+      currentBlock = new char[blockSize];
+      memoryBlocks.append(currentBlock);
+      blockOffset = 0;
+printf("Allocating block #%d\n", memoryBlocks.count());
+   } 
+   void *result = (void *)(currentBlock+blockOffset);
+   blockOffset += _size;
+   return result;
+}
+
+HTMLString 
+HTMLAllocator::newString( const QString &str)
+{
+    int len = str.length();
+    const QChar *sourceString = str.unicode();
+    QChar *resultString = (QChar *) allocate( 4*((len + 3) / 4));
+
+    int l = len;
+    while (l--)
+    {
+        *resultString++ = *sourceString++;
+    }
+
+    return HTMLString(resultString, len);
+}
+ 
 
 // This will be constructed once and NEVER deleted.
 int HTMLObject::objCount = 0;
@@ -97,45 +136,44 @@ void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain, QRect &_rect,
 	select( _htmlw, _chain, s2, _tx, _ty );
 }
 
-void HTMLObject::getSelected( QStrList &_list )
+void HTMLObject::getSelected( QStringList &_list )
 {
     if ( &_list == 0L )
     {
 	return;
     }
 
-    const char *u = getURL();
+    QString u = getURL();
 
-    if ( u != 0 && *u != '\0' && isSelected() )
+    if ( !u.isEmpty() && isSelected() )
     {
-	char *s;
-	
-	for ( s = _list.first(); s != 0L; s = _list.next() )
-	    if ( strcmp( u, s ) == 0 )
+	for(QStringList::Iterator it = _list.begin(); it != _list.end(); ++it)
+	{
+	    if ( *it == u )
 		return;
-	
+	}
 	_list.append( u );
     }
 }
 
 void HTMLObject::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
-    const char *_url, bool _select, int _tx, int _ty )
+    QString _url, bool _select, int _tx, int _ty )
 {
-    const char *u = getURL();
+    QString u = getURL();
 
     if ( u == 0 )
 	return;
 
-    if ( strcmp( _url, u ) == 0 )
+    if ( _url == u )
 	select( _htmlw, _chain, _select, _tx, _ty );
 }
 
 void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    const char *u = getURL();
+    HTMLString u = getURL();
 
-    if ( u == 0 || *u == '\0' )
+    if ( !u.length() )
 	return;
 
     KURL ku( u );
@@ -148,8 +186,8 @@ void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
 void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     bool _select, int _tx, int _ty )
 {
-    const char *u = getURL();
-    if ( (u == 0) || (*u == '\0') || (_select == isSelected()) )
+    HTMLString u = getURL();
+    if ( !u.length() || (_select == isSelected()) )
 	return;
 	
     setSelected( _select );
@@ -235,10 +273,10 @@ HTMLObject::printDebug( bool, int indent, bool printObjects )
     // return if printing out the objects is not desired
     if(!printObjects) return;
 
-    QString str = "    ";
+    const char *str = "    ";
     int i;
     for( i=0; i<indent; i++)
-	printf(str.ascii());
+	printf(str);
 
     printf(objectName());
     printf("\n");
@@ -335,21 +373,21 @@ void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter)
+HTMLText::HTMLText(HTMLString _text, const HTMLFont *_font, QPainter *_painter)
     : HTMLObject()
 {
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent()+1;
-    width = _painter->fontMetrics().width( (const char*)_text );
+    width = _painter->fontMetrics().width( _text );
     selStart = 0;
     selEnd = 0;
 }
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 {
-    text = "";
+    text = HTMLString();
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent() + 1;
@@ -388,7 +426,7 @@ bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	    selStart = 0;
 	    if ( _x1 > x )
 		selStart = getCharIndex( _x1 - x );
-	    selEnd = strlen( text );
+	    selEnd = text.length();
 	    if ( _x2 < x + width )
 		selEnd = getCharIndex( _x2 - x );
 	}
@@ -402,7 +440,7 @@ bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	    selStart = 0;
 	    if ( _x1 > x )
 		selStart = getCharIndex( _x1 - x );
-	    selEnd = strlen( text );
+	    selEnd = text.length();
 	}
     }
     // starts before this line and ends on it.
@@ -412,7 +450,7 @@ bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	{
 	    selectIt = true;
 	    selStart = 0;
-	    selEnd = strlen( text );
+	    selEnd = text.length();
 	    if ( _x2 < x + width )
 		selEnd = getCharIndex( _x2 - x );
 	}
@@ -422,7 +460,7 @@ bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
     {
 	selectIt = true;
 	selStart = 0;
-	selEnd = strlen( text );
+	selEnd = text.length();
     }
 
     if ( selectIt && (selStart == selEnd) )
@@ -459,7 +497,7 @@ bool HTMLText::selectText( const QRegExp &exp )
 //
 int HTMLText::getCharIndex( int _xpos )
 {
-    int charWidth, index = 0, xp = 0, len = strlen( text );
+    int charWidth, index = 0, xp = 0, len = text.length();
 
     QFontMetrics fm( *font );
 
@@ -507,7 +545,7 @@ void HTMLText::recalcBaseSize( QPainter *_painter )
     _painter->setFont( *font );
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent() + 1;
-    width = _painter->fontMetrics().width( (const char*)text );
+    width = _painter->fontMetrics().width( text );
     _painter->setFont( oldFont );
 }
 
@@ -583,23 +621,24 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
 
 
 //-----------------------------------------------------------------------------
-HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
+HTMLTextMaster::HTMLTextMaster( HTMLString _text, const HTMLFont *_font,
                                 QPainter *_painter)
   : HTMLText( _text, _font, _painter)
 {
     int runWidth = 0;
-    const char *textPtr = _text;
+    strLen = _text.length();
     QFontMetrics fm(*_font);
 
-    prefWidth = fm.width( (const char*)text );
+    prefWidth = fm.width( text );
     width = 0;
     minWidth = 0;
 
-    while (*textPtr)
+    int i = 0;
+    while ( i < strLen )
     {
-         if (*textPtr != ' ')
+         if (_text[i] != ' ')
          {
-             runWidth += fm.width( *textPtr);
+             runWidth += fm.width( _text[i] );
          }
          else
          {
@@ -609,14 +648,12 @@ HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
              }
              runWidth = 0;
          }
-         textPtr++;
+         i++;
     }
     if (runWidth > minWidth)
     {
         minWidth = runWidth;
     }
-
-    strLen = strlen(text);
 }
 
 
@@ -654,7 +691,7 @@ HTMLTextSlave::HTMLTextSlave( HTMLTextMaster *_owner,
     QFontMetrics fm (*(_owner->font));
     ascent = _owner->getAscent();
     descent = _owner->getDescent();
-    width = fm.width( (const char*) &(_owner->text[_posStart]), _posLen );
+    width = fm.width( _owner->text + _posStart, _posLen );
 }
 
 HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
@@ -662,9 +699,9 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
 {
     int newLen;
     int newWidth;
-    char *splitPtr;
+    HTMLString splitPtr;
 
-    const char *text = owner->text;
+    HTMLString text = owner->text;
     // Set font settings in painter for correct width calculation
     QFontMetrics fm( *(owner->font) );
 
@@ -682,18 +719,18 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
     	    next_obj = next();
         }
         while (next_obj && next_obj->isSlave());
-        posLen = owner->strLen-posStart;
     }
 
     if (startOfLine && (text[posStart] == ' ') && (widthLeft >= 0) )
     {
     	// Skip leading space
     	posStart++;
-    	posLen--;
+	posLen--;
     }
     text += posStart;
 
-    width = fm.width( text, posLen );
+    int splitPos;
+    width = fm.width( text, text.length() );
     if ((width <= widthLeft) || (posLen <= 1) || (widthLeft < 0) )
     {
         // Text fits completely
@@ -701,23 +738,30 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
 	    return HTMLCompleteFit;
 	
 	// Text is followed by more text... break it before the last word.
-	splitPtr = rindex( text+1 , ' ');
-	if (!splitPtr)
-	    return HTMLCompleteFit;
+        QString helpStr( (text+1).string() );
+	splitPos = helpStr.findRev( QChar (' ') );
+	if(splitPos == -1) return HTMLCompleteFit;
+	splitPtr = text + 1 + splitPos;
     }
     else
     {
-        splitPtr = strchr( text+1, ' ');
+	splitPos = (text+1).string().find( QChar(' ') );
+	if( splitPos != -1 )
+	{
+	    splitPtr = text + splitPos + 1;
+	}
+	else
+	    splitPos = 0;
     }
 
-    if (splitPtr)
+    if (splitPtr.length())
     {
-    	newLen = splitPtr - text;
+    	newLen = splitPtr.unicode() - text.unicode();
     	newWidth = fm.width( text, newLen);
     	if (newWidth > widthLeft)
     	{
     	    // Splitting doesn't make it fit
-    	    splitPtr = 0;
+    	    splitPtr = HTMLString();
     	}
     	else
     	{
@@ -726,10 +770,11 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
 
             for(;;)
             {
-                char *splitPtr2 = index( splitPtr+1, ' ');
-                if (!splitPtr2)
+                HTMLString splitPtr2 = splitPtr + 1;
+		splitPtr2.find( QChar(' ') );
+                if (!splitPtr2.length())
                     break;
-	    	extraLen = splitPtr2 - splitPtr;
+	    	extraLen = splitPtr2.unicode() - splitPtr.unicode();
                 extraWidth = fm.width( splitPtr, extraLen);
                 if (extraWidth+newWidth <= widthLeft)
                 {
@@ -752,7 +797,7 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
     	newWidth = width;
     }
 
-    if (!splitPtr)
+    if (!splitPtr.length())
     {
     	// No seperator available
     	if (firstRun == false)
@@ -814,7 +859,7 @@ bool HTMLTextSlave::selectText( const QRegExp &exp )
 int HTMLTextSlave::getCharIndex( int _xpos )
 {
     int charWidth, index = 0, xp = 0;
-    const char *text = &(owner->text[ posStart]);
+    HTMLString text = (owner->text) + posStart;
 
     QFontMetrics fm( *(owner->font) );
 
@@ -1071,10 +1116,10 @@ bool HTMLTextSlave::print( QPainter *_painter,
 
 void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 {
-    const char *text;
+    HTMLString text;
     const HTMLFont *font;
 
-    text = &(owner->text[posStart]);
+    text = owner->text + posStart;
     font = owner->font;
 
     _painter->setPen( font->textColor() );
@@ -1283,8 +1328,8 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
-	const char *_url, const char *_target, int _width, int _height,
+HTMLImage::HTMLImage( KHTMLWidget *widget, HTMLString _filename,
+	HTMLString _url, HTMLString _target, int _width, int _height,
 	int _percent, int bdr )
     : HTMLObject()
 {
@@ -1326,20 +1371,20 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     absY = -1;
 
     // A HTMLJSImage ?
-    if ( _filename == 0L )
+    if ( !_filename.length() )
     {
       // Do not load an image yet
-      imageURL = "";
+      imageURL = 0;
       bComplete = false;
       return;
     }
 
-    printf("********* IMAGE %s ******\n",_filename );
+    printf("********* IMAGE %s ******\n",_filename.string().latin1() );
 
     htmlWidget->requestImage( this, imageURL );
 }
 
-void HTMLImage::changeImage( const char *_url )
+void HTMLImage::changeImage( HTMLString _url )
 {
   htmlWidget->imageCache()->free( imageURL, this);
   imageURL = _url;
@@ -1351,11 +1396,12 @@ void HTMLImage::changeImage( const char *_url )
 
 void HTMLImage::setPixmap( QPixmap *p )
 {
+    printf("KHTMLImage::setPixmap()\n");
     pixmap = p;
 
     if (width == 0)
         return; // setMaxSize has not yet been called. Do nothing.
-
+    printf("KHTMLImage::setPixmap() 1\n");
     if (  (
            (predefinedWidth) ||
            (percent != UNDEFINED) ||
@@ -1371,13 +1417,14 @@ void HTMLImage::setPixmap( QPixmap *p )
 	// Image dimension are predefined or have not changed:
 	// draw ourselves.
 	htmlWidget->paintSingleObject( this );
-    }
+	printf("KHTMLImage::setPixmap() painted\n");    }
     else
     {
         // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
 	htmlWidget->scheduleUpdate( true );
+	printf("KHTMLImage::setPixmap() paint scheduled\n");
     }
 }
 
@@ -1387,7 +1434,7 @@ void HTMLImage::pixmapChanged(QPixmap *p)
 	setPixmap( p );
 }
 
-void HTMLImage::setOverlay( const char *_ol )
+void HTMLImage::setOverlay( HTMLString _ol )
 {
     // overlays must be cached
     overlay = KHTMLCache::image( _ol );
@@ -1613,23 +1660,23 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
 
 //----------------------------------------------------------------------------
 
-HTMLArea::HTMLArea( const QPointArray &_points, const char *_url,
-	const char *_target )
+HTMLArea::HTMLArea( const QPointArray &_points, HTMLString _url,
+	HTMLString _target )
 {
 	region = QRegion( _points );
 	url = _url;
 	target = _target;
 }
 
-HTMLArea::HTMLArea( const QRect &_rect, const char *_url, const char *_target )
+HTMLArea::HTMLArea( const QRect &_rect, HTMLString _url, HTMLString _target )
 {
 	region = QRegion( _rect );
 	url = _url;
 	target = _target;
 }
 
-HTMLArea::HTMLArea( int _x, int _y, int _r, const char *_url,
-	const char *_target )
+HTMLArea::HTMLArea( int _x, int _y, int _r, HTMLString _url,
+	HTMLString _target )
 {
 	QRect r( _x - _r, _y - _r, _r * 2, _y * 2 );
 
@@ -1640,24 +1687,25 @@ HTMLArea::HTMLArea( int _x, int _y, int _r, const char *_url,
 
 //----------------------------------------------------------------------------
 
-HTMLMap::HTMLMap( KHTMLWidget *w, const char *_url )
-	: HTMLObject()
+HTMLMap::HTMLMap( KHTMLWidget *w, HTMLString _url )
 {
     areas.setAutoDelete( true );
     mapurl = _url;
     htmlWidget = w;
-
-    if ( strchr ( mapurl, ':' ) )
+    
+    KURL u(mapurl);
+    if ( !u.isLocalFile() )
 	htmlWidget->requestFile( this, mapurl );
 }
 
 HTMLMap::~HTMLMap()
 {
-    if ( strchr ( mapurl, ':' ) )
+    KURL u(mapurl);
+    if ( !u.isLocalFile() )
 	htmlWidget->cancelRequestFile( this );
 }
 
-bool HTMLMap::fileLoaded( const char*, QBuffer& _buffer, bool )
+bool HTMLMap::fileLoaded( QString, QBuffer& _buffer, bool )
 {
   if ( !_buffer.open( IO_ReadOnly ) )
   {
@@ -1673,12 +1721,12 @@ bool HTMLMap::fileLoaded( const char*, QBuffer& _buffer, bool )
 }
 
 // The external map has been downloaded
-void HTMLMap::fileLoaded( const char *, const char *_filename )
+void HTMLMap::fileLoaded( QString, QString _filename )
 {
   QFile file( _filename );
   if ( !file.open( IO_ReadOnly ) )
   {
-    warning("Could not open %s for reading a map\n", _filename );
+    warning("Could not open %s for reading a map\n", _filename.ascii() );
     return;
   }
 
@@ -1712,28 +1760,30 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	continue;
 
       StringTokenizer st;
-      st.tokenize( buffer.ascii(), " " );
+      QChar separ [] = { ' ', 0x0 };
+      st.tokenize( HTMLString((QChar *)buffer.unicode(), 
+			      buffer.length()), separ );
 
       // get shape
-      const char *p = st.nextToken();
+      HTMLString p = st.nextToken();
 
-      if ( strncasecmp( p, "rect", 4 ) == 0 )
+      if ( ustrcasecmp( p, "rect" ) == 0 )
 	shape = HTMLArea::Rect;
-      else if ( strncasecmp( p, "poly", 4 ) == 0 )
+      else if ( ustrcasecmp( p, "poly" ) == 0 )
 	shape = HTMLArea::Poly;
-      else if ( strncasecmp( p, "circle", 6 ) == 0 )
+      else if ( ustrcasecmp( p, "circle" ) == 0 )
 	shape = HTMLArea::Circle;
 
       // get url
       p = st.nextToken();
 	
-      if ( *p == '#' )
+      if ( p[0] == '#' )
       {// reference
 	KURL u( htmlWidget->getDocumentURL() );
 	u.setRef( p + 1 );
 	href = u.url();
       }
-      else if ( strchr( p, ':' ) )
+      else if ( ustrchr( p.unicode(), ':' ) )
       {// full URL
 	href =  p;
       }
@@ -1752,9 +1802,9 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	{
 	  p = st.nextToken();
 	  int x1, y1, x2, y2;
-	  sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+	  sscanf( p.string().latin1(), "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 	  QRect rect( x1, y1, x2-x1, y2-y1 );
-	  area = new HTMLArea( rect, href, "" );
+	  area = new HTMLArea( rect, href, 0 );
 	  printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 	}
       break;
@@ -1763,8 +1813,8 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	{
 	  p = st.nextToken();
 	  int xc, yc, rc;
-	  sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
-	  area = new HTMLArea( xc, yc, rc, href, "" );
+	  sscanf( p.string().latin1(), "%d,%d,%d", &xc, &yc, &rc );
+	  area = new HTMLArea( xc, yc, rc, href, 0 );
 	  printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
 	}
       break;
@@ -1777,7 +1827,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  while ( st.hasMoreTokens() )
 	    {
 	      p = st.nextToken();
-	      sscanf( p, "%d,%d", &x, &y );
+	      sscanf( p.string().latin1(), "%d,%d", &x, &y );
 	      parray.resize( count + 1 );
 	      parray.setPoint( count, x, y );
 	      printf( "%d, %d  ", x, y );
@@ -1785,7 +1835,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	    }
 	  printf( "\n" );
 	  if ( count > 2 )
-	    area = new HTMLArea( parray, href, "" );
+	    area = new HTMLArea( parray, href, 0 );
 	}
       break;
       }
@@ -1813,8 +1863,8 @@ const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 
 //----------------------------------------------------------------------------
 
-HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
-	                    const char *_url, const char *_target,
+HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, HTMLString _filename,
+	                    HTMLString _url, HTMLString _target,
 	                    int _width, int _height, int _percent, int bdr )
     : HTMLImage( widget, _filename,
                  _url, _target,
@@ -1867,9 +1917,9 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 
 //-----------------------------------------------------------------------------
 
-HTMLAnchor* HTMLAnchor::findAnchor( const char *_name, int &_x, int &_y )
+HTMLAnchor* HTMLAnchor::findAnchor( QString _name, int &_x, int &_y )
 {
-    if ( strcmp( _name, name ) == 0 )
+    if ( name == _name )
     {
     	_x += x;
     	_y += y;

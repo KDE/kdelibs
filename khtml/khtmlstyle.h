@@ -174,6 +174,7 @@ typedef QList<CSSSelector> CSSSelecList;
 
 class CSSStyleSheet
 {
+
 public:
     CSSStyleSheet(const HTMLSettings *);
     ~CSSStyleSheet();

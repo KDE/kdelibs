@@ -103,7 +103,7 @@ void HTMLClue::calcAbsolutePos( int _x, int _y )
 	obj->calcAbsolutePos( lx, ly );
 }
 
-HTMLAnchor* HTMLClue::findAnchor( const char *_name, int &_x, int &_y)
+HTMLAnchor* HTMLClue::findAnchor( QString _name, int &_x, int &_y)
 {
     HTMLObject *obj;
     HTMLAnchor *ret;
@@ -143,7 +143,7 @@ bool HTMLClue::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
     return false;
 }
 
-void HTMLClue::getSelected( QStrList &_list )
+void HTMLClue::getSelected( QStringList &_list )
 {
     HTMLObject *obj;
 
@@ -233,7 +233,7 @@ void HTMLClue::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
 }
 
 void HTMLClue::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
-    const char *_url, bool _select, int _tx, int _ty )
+    QString _url, bool _select, int _tx, int _ty )
 {
     HTMLObject *obj;
 
@@ -510,8 +510,6 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     }
     else if(str == "HTMLClueAligned")
 	pen.setColor( QColor( "yellow" ));
-    else if(str == "HTMLCell")
-	pen.setColor( QColor( "gray" ));
     else
 	pen.setColor( QColor( "cyan" ));
     _painter->setPen(pen);
@@ -1233,110 +1231,6 @@ HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
     for ( obj = head; obj != 0; obj = obj->next() )
 	obj->printDebug( propagate, indent, printObjects);
 
-}
-
-//-----------------------------------------------------------------------------
-
-HTMLCell::HTMLCell( const char *_url, const char *_target ) :
-  HTMLClueV()
-{
-  url = _url;
-  target = _target;
-  bIsMarked = false;
-}
-
-void HTMLCell::select( KHTMLWidget *_htmlw, HTMLChain *_chain, QRect & _rect, int _tx, int _ty )
-{
-    HTMLObject *obj;
-
-    QRect r( x + _tx, y - ascent + _ty, width, ascent + descent );
-
-    _tx += x;
-    _ty += y - ascent;
-
-    bool sel = false;
-
-    if ( _rect.contains( r ) )
-    {
-	sel = true;
-    }
-    else if ( !_rect.intersects( r ) )
-    {
-	sel = false;
-    }
-    else
-    {
-	QRect isect = _rect.intersect( r );
-	if ( isect.width() > r.width()/2 && isect.height() > r.height()/2 )
-	    sel = true;
-    }
-
-    _chain->push( this );
-
-    for ( obj = head; obj != 0; obj = obj->next() )
-	obj->select( _htmlw, _chain, sel, _tx, _ty );
-
-    _chain->pop();
-}
-
-bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
-{
-  bool rv = HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
-  
-  // print aligned objects
-  if ( (_y + _height < y - ascent) || (_y > y + descent) )
-    return rv;
-  
-  _tx += x;
-  _ty += y - ascent;
-  
-  if ( !toPrinter && bIsMarked )
-  {
-    QPen pen( _painter->pen() );
-    _painter->setPen( Qt::black );
-    _painter->drawRect( _tx, _ty, width, ascent + descent );
-    _painter->setPen( pen );
-  }
-    
-  return rv;
-}
-
-void HTMLCell::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
-{
-    int old_ty = _ty;
-    int old_tx = _tx;
-  
-    _tx += x;
-    _ty += y - ascent;
-
-    HTMLObject *obj;
-
-    HTMLCellInfo *p = new HTMLCellInfo;
-    p->pCell = this;
-    p->xAbs = _tx;
-    p->baseAbs = old_ty + y;
-    p->tx = old_tx;
-    p->ty = old_ty;
-    
-    _list.append( p );
-
-    for ( obj = head; obj != 0; obj = obj->next() )
-	obj->findCells( _tx, _ty, _list );
-}
-
-void HTMLCell::setMarker( QPainter *_painter, int _tx, int _ty, bool _mode )
-{
-  if ( bIsMarked == _mode )
-    return;
- 
-  bIsMarked = _mode;
-  
-  if ( bIsMarked )
-    _painter->setPen( Qt::black );
-  else
-    _painter->setPen( _painter->backgroundColor() );
-
-  _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
 }
 
 //-----------------------------------------------------------------------------

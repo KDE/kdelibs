@@ -36,9 +36,7 @@
 
 #include "khtmltoken.h"
 #include "khtmlstyle.h"
-
-
-static const int UNDEFINED= -1;
+#include "khtmlobj.h"
 
 //
 // Classes for internal use only

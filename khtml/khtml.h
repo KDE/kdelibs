@@ -31,7 +31,7 @@
 #define KHTMLW_VERSION  2000		// 00.20.00
 
 #include <qpainter.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qpixmap.h>
 #include <qstack.h>
 #include <qfont.h>
@@ -44,8 +44,6 @@
 
 #include "kurl.h"
 
-class KCharsetConverter;
-
 class KHTMLCache;
 class HTMLObject;
 class HTMLClue;
@@ -56,6 +54,8 @@ class HTMLTokenizer;
 class HTMLSettings;
 class HTMLForm;
 class HTMLFrameSet;
+class HTMLAllocator;
+class HTMLFileRequester;
 
 class JSEnvironment;
 class JSWindowObject;
@@ -69,18 +69,18 @@ struct HTMLPendingFile
 {
 public:
   HTMLPendingFile();
-  HTMLPendingFile( const char *_url, HTMLObject *_obj );
+  HTMLPendingFile( const QString _url, HTMLFileRequester *_obj );
 
   QBuffer m_buffer;
   QString m_strURL;
-  QList<HTMLObject> m_lstClients;
+  QList<HTMLFileRequester> m_lstClients;
 };
 
 struct HTMLPageInfo
 {
 public:
-  QStrList imageURLs;
-  QStrList hrefURLs;
+  QStringList imageURLs;
+  QStringList hrefURLs;
 };
 
 class SavedPage;
@@ -109,7 +109,7 @@ class SavedPage;
 class KHTMLWidget : public QWidget
 {
     Q_OBJECT
-	friend KHTMLParser;
+        friend KHTMLParser;
 public:
     /**
      * Create a new HTML widget.  The widget is empty by default.
@@ -125,6 +125,7 @@ public:
      * Note: pixdir should not be used - it is provided only for backward
      * compatability and has no effect.
      */
+    // ###### FIXME: remove 3rd argument
     KHTMLWidget( QWidget *parent = 0L, const char *name = 0L,
 		const char *pixdir = 0L );
     virtual ~KHTMLWidget();
@@ -146,7 +147,7 @@ public:
      * @param _dy is the initial vertical scrollbar value. Usually you don't
      * want to use this.
      */
-    void begin( const char *_url = 0L, int _x_offset = 0, int _y_offset = 0 );
+    void begin( QString _url = 0L, int _x_offset = 0, int _y_offset = 0 );
 
     /**
      * Writes another part of the HTML code to the widget. You may call
@@ -191,7 +192,7 @@ public:
      * Selects all objects which refer to _url. All selected ojects
      * are redrawn if they changed their selection mode.
      */
-    virtual void selectByURL( QPainter *_painter, const char *_url, bool _select );
+    virtual void selectByURL( QPainter *_painter, QString _url, bool _select );
     /**
      * Selects/Unselects all objects with an associated URL.
      * This is usually used to disable
@@ -222,7 +223,7 @@ public:
      * Gets a list of all selected URLs. The list may be Null.
      * You can test this using list.isNull().
      */
-    virtual void getSelected( QStrList &_list );
+    virtual void getSelected( QStringList &_list );
 
     /**
      * Selects all text between ( _x1, _y1 ) and ( _x2, y2 ).  The selection
@@ -270,7 +271,7 @@ public:
      * @param _point the point to test for the presence of a URL.  The
      * point is relative to this widget.
      */
-    const char* getURL( QPoint &_point );
+    QString getURL( QPoint &_point );
 
     /**
      * @return the width of the parsed HTML code. Remember that
@@ -319,7 +320,7 @@ public:
      * been found. If the anchor could not be found it is retried when a
      * new part of the document arrives.
      */
-    bool gotoAnchor( const char *_name );
+    bool gotoAnchor( QString _name );
 
     /**
      * Jumps to position _x_offset, _y_offset.
@@ -468,7 +469,7 @@ public:
      *
      * @param name is the font name to use for standard text.
      */
-    void setStandardFont( const char *name );
+    void setStandardFont( QString name );
 
     /**
      * Sets the fixed font style.
@@ -476,7 +477,7 @@ public:
      * @param name is the font name to use for fixed text, e.g.
      * the <tt>&lt;pre&gt;</tt> tag.
      */
-    void setFixedFont( const char *name );
+    void setFixedFont( QString name );
 
     /**
      * Sets the default background color to use when one isn't specified
@@ -520,11 +521,11 @@ public:
      * if an href is encountered it is registered here for 
      * informational purposes.
      */
-    void addHref( const char *_url );
+    void addHref( QString _url );
 
     /** if an HTMLObject needs an image, it calls this function.
      */
-    void requestImage( HTMLObject *obj, const char *_url );
+    void requestImage( HTMLObject *obj, QString _url );
 
     /*
      * If a HTMLObject object needs a file from the web, it
@@ -532,14 +533,15 @@ public:
      * if update is true, the htmlobj will be continously updated
      * as the file is loaded (via the data function)
      */
-    void requestFile( HTMLObject *_obj, const char *_url, 
+    // ########## implement update
+    void requestFile( HTMLFileRequester *_obj, QString _url, 
 		      bool update = false );
 
     /*
      * Cancels a previous @ref requestFile.
      */
-    void cancelRequestFile( HTMLObject *_obj );
-    void cancelRequestFile( const char *_url );
+    void cancelRequestFile( HTMLFileRequester *_obj );
+    void cancelRequestFile( QString _url );
 
     /*
      * Cancels all @ref requestFile.
@@ -547,7 +549,7 @@ public:
     void cancelAllRequests();
 
     // This function is called to download the background image from the web
-    void requestBackgroundImage( const char *_url );
+    void requestBackgroundImage( QString _url );
 
     /*
      * This function is used to repaint images that have been loaded from the
@@ -576,7 +578,7 @@ public:
     /*
      * Set background image
      */
-    void setBGImage( const char *_url); 
+    void setBGImage( QString _url); 
 
     /*
      * Set background color
@@ -602,7 +604,7 @@ public:
     /*
      * return the image map matching mapurl
      */
-    HTMLMap *getMap( const char *mapurl );
+    HTMLMap *getMap( QString mapurl );
 
                   
     /**
@@ -619,24 +621,11 @@ public:
      * as long as override isn't true.
      * @return TRUE if successfull
      */
-    bool setCharset(const char *name, bool override = false); 
-
-    //-----------------------------------------------------------
-    // FUNCTIONS used for KFM Extension
-    // -----------------------------------------------------------
-    bool cellDown();
-    bool cellUp();
-    bool cellLeft();
-    bool cellRight();
-    void cellSelected();
-    void cellActivated();
-    void cellContextMenu();
-    //-----------------------------------------------------------
-    // End KFM Extensions
-    // -----------------------------------------------------------
+    // ##### FIXME: remove override
+    bool setCharset(QString name, bool override = false); 
 
     // Another option to feed image data into the HTML Widget
-    void data( const char *_url, const char *_data, int _len, bool _eof );
+    void data( QString _url, const char *_data, int _len, bool _eof );
 
     /**
      * Function used to save the current html-page into a struct
@@ -662,28 +651,15 @@ signals:
      * change the window's title. Usually this is the text
      * enclosed in <tt>&lt;title&gt;....&lt;/title&gt;</tt>.
      */
-    void setTitle( const char * );
+    void setTitle( QString );
 
-    /**
-     * The user pressed ALT + Up
-     */
-    void goUp();
-    /**
-     * The user pressed ALT + Left
-     */
-    void goLeft();
-    /**
-     * The user pressed ALT + Right
-     */
-    void goRight();
-  
     /**
      * The user double clicked on a URL.
      *
      * @param _url the URL that the user clicked on.
      * @param _button the mouse button that was used.
      */
-    void doubleClick( const char * _url, int _button);
+    void doubleClick( QString _url, int _button);
 
     /**
      * Tells the parent, that the widget has scrolled. This may happen if
@@ -697,13 +673,14 @@ signals:
      */
     void scrollHorz( int _x );
 
+    // ####### FIXME: remove one of the two
     /**
      * Signals that a URL has been selected using a single click.
      *
      * @param _url is the URL clicked on.
      * @param _button is the mouse button clicked.
      */
-    void URLSelected( const char *_url, int _button );
+    void URLSelected( QString _url, int _button );
 
     /**
      * Signals that a URL has been selected using a single click.
@@ -713,7 +690,7 @@ signals:
      * @param _target is the target window or 0L if there is none.
      * ( Used to implement frames ).
      */
-    void URLSelected( const char *_url, int _button, const char *_target );
+    void URLSelected( QString _url, int _button, QString _target );
 
     /**
      * Signals that the mouse cursor has moved on or off a URL.
@@ -721,7 +698,7 @@ signals:
      * @param _url is the URL that the mouse cursor has moved onto.
      * _url is null if the cursor moved off a URL.
      */
-    void onURL( const char *_url );
+    void onURL( QString _url );
 
     /**
      * Signal that the user has selected text or the existing selection has
@@ -732,7 +709,8 @@ signals:
      * @param _selected is true if the user has selected text or false if
      * the current selection has been removed.
      */
-	void textSelected( bool _selected );
+    void textSelected( bool _selected );
+
     /**
      * Indicates the document has changed due to new URL loaded
      * or progressive update.  This signal may be emitted several times
@@ -766,7 +744,7 @@ signals:
      * points to this URL, otherwise _url will be null.
      * The position is in global coordinates.
      */
-    void popupMenu( const char *_url, const QPoint & );
+    void popupMenu( QString _url, const QPoint & );
 
     /**
      * This signal is emitted if the user presses the mouse. If he clicks on
@@ -776,7 +754,7 @@ signals:
      * @param _target is the target frame if one is mentioned otherwise 0L.
      * @param _ev the @ref QMouseEvent.
      */
-    void mousePressed( const char *_url, const char *_target, QMouseEvent *_ev );
+    void mousePressed( QString _url, QString _target, QMouseEvent *_ev );
   
     // The widget requests to load a file
     /**
@@ -789,14 +767,14 @@ signals:
      *
      * @param _url is the URL of the image that needs to be loaded.
      */
-    void fileRequest( const char *_url );
+    void fileRequest( QString _url );
     
     // Cancels a file that has been requested.
-    void cancelFileRequest( const char *_url );
+    void cancelFileRequest( QString _url );
 
     // signal when user has submitted a form
-    void formSubmitted( const char *_method, const char *_url, 
-			const char *_data, const char *_target );
+    void formSubmitted( QString _method, QString _url, 
+			const char *_data, QString _target );
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
@@ -806,7 +784,7 @@ signals:
      * (<meta http-equiv="refresh" ...>) tag is encountered
      * delay is the delay in seconds; 0 means immediate redirect,
      */
-    void redirect(int delay, const char *url);
+    void redirect(int delay, QString url);
       
 public slots:
     /**
@@ -830,11 +808,9 @@ public slots:
      * @param _filename is the name of the file that has been stored on
      * the local filesystem.
      */
-    void slotFileLoaded( const char *_url, const char *_filename );
+    void slotFileLoaded( QString _url, QString _filename );
   
 protected slots:
-//    void slotTimeout();
-
     /*
      * INTERNAL
      *
@@ -862,8 +838,8 @@ protected slots:
      *
      * Called when the user submitted a form.
      */
-    void slotFormSubmitted( const char *_method, const char *_url, 
-			    const char *_data, const char *_target );
+    void slotFormSubmitted( QString _method, QString _url, 
+			    const char *_data, QString _target );
 
     /*
      * INTERNAL
@@ -878,9 +854,6 @@ protected:
 
     KHTMLParser *parser;
     
-    QString charsetName;
-    bool overrideCharset;
-
     virtual void mousePressEvent( QMouseEvent * );
 
     /**
@@ -907,7 +880,7 @@ protected:
      * returned the URL will be rendered in the vlink color.  If false
      * is returned the URL will be rendered in the link color.
      */
-    virtual bool URLVisited( const char *_url );
+    virtual bool URLVisited( QString _url );
 
     virtual void paintEvent( QPaintEvent * );
 
@@ -992,6 +965,13 @@ protected:
      * pointing to.
      */
     HTMLTokenizer *ht;
+
+    /*
+     * This object allocates all our HTMLObjects.
+     * We free these objects in one go when the HTML page gets discarded.
+     *
+     */
+    HTMLAllocator *allocator;
 	
     /*
      * Used for drag and drop.
@@ -1043,10 +1023,10 @@ protected:
     KURL baseURL;	// this will do for now - MRJ
 			// actually we need something like this to implement
 			// <base ...>
-	/*
-	 * This sets the baseURL given a URL. It strips of any filename.
-	 */
-    void setBaseURL( const char *_url);
+    /*
+     * This sets the baseURL given a URL. It strips of any filename.
+     */
+    void setBaseURL( QString _url);
 
     /*
      * A color context for the current page so that we can free the colors
@@ -1082,10 +1062,10 @@ protected:
      */
     HTMLSettings *defaultSettings;
 
-	/*
-	 * Current settings for page
-	 */
-	HTMLSettings *settings; 
+    /*
+     * Current settings for page
+     */
+    HTMLSettings *settings; 
 	 
     // should the background be painted?
     bool bDrawBackground;
@@ -1102,10 +1082,10 @@ protected:
     // List of forms in the page
     QList<HTMLForm> formList;
 
-	/*
-	 * Adds a new form to the formList
-	 */
-	void addForm( HTMLForm *_form );  
+    /*
+     * Adds a new form to the formList
+     */
+    void addForm( HTMLForm *_form );  
 
     // List of Image maps in the page
     QList<HTMLMap> mapList;
@@ -1113,7 +1093,7 @@ protected:
     /*
      * Add an image map
      */
-    void addMap( const char *mapUrl);
+    void addMap( QString mapUrl);
 
     /*
      * Get last image map
@@ -1124,7 +1104,7 @@ protected:
      * Sets new title
      * (Called by parser only)
      */
-    void setNewTitle( const char *_title);
+    void setNewTitle( QString _title);
 
     /*
      * Adds a new frame set
@@ -1164,10 +1144,10 @@ protected:
     /**
      * Adds a new frame
      */
-    void addFrame( HTMLFrameSet *_frameSet, const char *_name, 
+    void addFrame( HTMLFrameSet *_frameSet, QString _name, 
 		   bool _scrolling, bool _resize, 
 		   int _frameborder, int _marginwidth, int _marginheight,
-		   const char *_src);  
+		   QString _src);  
 
     /**
      * Adds a new embeded frame.
@@ -1275,12 +1255,12 @@ protected:
     /**
      * info about current page: used images
      */
-    QStrList usedImageURLs;
+    QStringList usedImageURLs;
 
     /**
      * info about current page: href's
      */
-    QStrList usedHrefURLs;
+    QStringList usedHrefURLs;
 
 public:
     /**
@@ -1292,7 +1272,7 @@ public:
     /**
      * Loads an image into the cache and makes it persistant
      */
-    static void preloadImage( const char *_filename );
+    static void preloadImage( QString _filename );
 
     /** returns the imageCache object */
     KHTMLCache *imageCache() { return cache; }

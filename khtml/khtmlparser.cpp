@@ -47,6 +47,7 @@
 #include "khtmlframe.h"
 #include "khtmljscript.h"
 #include "khtmlview.h"
+#include "khtmlattrs.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -64,7 +65,6 @@
 
 #include <kurl.h>
 #include <kapp.h>
-#include <kcharsets.h>
 
 #include <X11/Xlib.h>
 
@@ -73,14 +73,20 @@ void debugM( const char *msg , ...);
 
 #define INDENT_SIZE		30
 
+#define NEW new(allocator)
+#define NEWSTRING(x) (allocator->newString(x))
+
+static QChar spaceChar[] = { ' ' };
+static HTMLString space( spaceChar, 1 );
+
 //----------------------------------------------------------------------------
 // convert number to roman numerals
 QString toRoman( int number, bool upper )
 {
     QString roman;
-    char ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
-    char udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-    char *digits = upper ? udigits : ldigits;
+    QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
+    QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
+    QChar *digits = upper ? udigits : ldigits;
     int i, d = 0;
 
     do
@@ -108,11 +114,12 @@ QString toRoman( int number, bool upper )
     return roman;
 }
 
-void setNamedColor(QColor &color, const char *name)
+void setNamedColor(QColor &color, const QString name)
 {
-    char *endP;
-    if ((*name != '#') && (strlen(name) == 6) &&
-        (strtoul(name, &endP, 16), (endP == name+6)) )
+    bool ok;
+    // also recognize "color=ffffff"
+    if (name[0] != QChar('#') && name.length() == 6 &&
+        name.toInt(&ok, 16) )
     {
         QString col("#");
         col += name;
@@ -121,7 +128,7 @@ void setNamedColor(QColor &color, const char *name)
     else
     {
         color.setNamedColor(name);
-    }
+    }   
 }
 
 //----------------------------------------------------------------------------
@@ -154,7 +161,6 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagBr,		0,			// ID_BR
 &KHTMLParser::parseTagButton,		0,			// ID_BUTTON
 	0,		0,	// ID_CAPTION ( Tables only )
-&KHTMLParser::parseTagCell,		0,			// ID_CELL
 &KHTMLParser::parseTagCenter,	&KHTMLParser::parseTagEnd,	// ID_CENTER
 &KHTMLParser::parseTagCite,	&KHTMLParser::parseTagEnd,	// ID_CITE
 &KHTMLParser::parseTagCode,	&KHTMLParser::parseTagEnd,	// ID_CODE
@@ -182,6 +188,7 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagHeader,	&KHTMLParser::parseTagHeaderEnd, // ID_H6
 &KHTMLParser::parseTagHead,		0,			// ID_HEAD
 &KHTMLParser::parseTagHR,		0,			// ID_HR
+	0,		                0,			// ID_HTML
 &KHTMLParser::parseTagI,	&KHTMLParser::parseTagEnd,	// ID_I
 &KHTMLParser::parseTagIframe,		0,			// ID_IFRAME
 &KHTMLParser::parseTagImg,		0,			// ID_IMG
@@ -191,8 +198,8 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagKbd,	&KHTMLParser::parseTagEnd,	// ID_KBD
 &KHTMLParser::parseTagLabel,		0,			// ID_LABEL
 &KHTMLParser::parseTagLegend,		0,			// ID_LEGEND
-&KHTMLParser::parseTagPre,	&KHTMLParser::parseTagEnd,	// ID_LISTING
 &KHTMLParser::parseTagLi,		0,			// ID_LI
+&KHTMLParser::parseTagPre,	&KHTMLParser::parseTagEnd,	// ID_LISTING
 &KHTMLParser::parseTagLink,		0,			// ID_LINK
 &KHTMLParser::parseTagMap,		0,			// ID_MAP
 &KHTMLParser::parseTagUL,	&KHTMLParser::parseTagEnd,	// ID_MENU
@@ -231,7 +238,8 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagTT,	&KHTMLParser::parseTagEnd,	// ID_TT
 &KHTMLParser::parseTagU,	&KHTMLParser::parseTagEnd,	// ID_U
 &KHTMLParser::parseTagUL,	&KHTMLParser::parseTagEnd,	// ID_UL
-&KHTMLParser::parseTagVar,	&KHTMLParser::parseTagEnd	// ID_VAR
+&KHTMLParser::parseTagVar,	&KHTMLParser::parseTagEnd,	// ID_VAR
+&KHTMLParser::parsePlain,		0			// ID_PLAIN
 };
 
 
@@ -239,13 +247,17 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 			  HTMLTokenizer *_ht, 
 			  QPainter *_painter,
 			  HTMLSettings *_settings,
-			  QStrList *_formData) 			
+			  QStrList *_formData,
+			  HTMLAllocator *_allocator) 			
 {
+    printf("parser constructor\n");
+
     HTMLWidget    = _parent;
     ht            = _ht;
     painter       = _painter;
     settings      = _settings;
     formData      = _formData;
+    allocator     = _allocator;
     if (formData)
     {
         (void) formData->first();
@@ -264,10 +276,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     if (!pFontManager)
     	pFontManager = new HTMLFontManager();
 
-    charsetConverter = 0;
-    
     // Style stuff
-    
     styleSheet = new CSSStyleSheet(_settings);
 
 #ifdef CSS_TEST
@@ -287,10 +296,11 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     inPre = false;
     inTitle = false;
     bodyParsed = false;
+    plainText = false;
 
-    baseTarget = 0;
-    target = 0;
-    url = 0;
+    baseTarget = HTMLString();
+    target = HTMLString();
+    url = HTMLString();
     inNoframes = false;
 
     flow = 0;
@@ -439,8 +449,8 @@ void KHTMLParser::blockEnd( HTMLStackElem *)
 
 void KHTMLParser::blockEndAnchor( HTMLStackElem *)
 {  
-    url = 0;
-    target = 0;
+    url = HTMLString();
+    target = HTMLString();
 }
 
 void KHTMLParser::blockEndPre( HTMLStackElem *)
@@ -450,7 +460,7 @@ void KHTMLParser::blockEndPre( HTMLStackElem *)
     if (!flow)
     	newFlow();
    
-    flow->append(new HTMLHSpace( currentFont(), painter, true ));
+    flow->append(NEW HTMLHSpace( currentFont(), painter, true ));
 
     vspace_inserted = insertVSpace( vspace_inserted );
     flow = 0;
@@ -514,9 +524,9 @@ bool KHTMLParser::insertVSpace( bool _vspace_inserted )
 {
     if ( !_vspace_inserted )
     {
-	HTMLClueFlow *f = new HTMLClueFlow();
+	HTMLClueFlow *f = NEW HTMLClueFlow();
 	_clue->append( f );
-	HTMLVSpace *t = new HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
+	HTMLVSpace *t = NEW HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
 	f->append( t );
 	flow = 0;
     }
@@ -527,9 +537,9 @@ bool KHTMLParser::insertVSpace( bool _vspace_inserted )
 void KHTMLParser::newFlow()
 {
     if (inPre)
-         flow = new HTMLClueH();
+         flow = NEW HTMLClueH();
 	    else
-         flow = new HTMLClueFlow();
+         flow = NEW HTMLClueFlow();
 
     flow->setIndent( currentStyle->text.indent );
     flow->setHAlign( divAlign );
@@ -550,19 +560,19 @@ void KHTMLParser::newFlow()
 //
 // The hard part is to make several objects if the text contains both
 // normal spaces and non-breaking spaces.
-void KHTMLParser::insertText(char *str, const HTMLFont * fp)
+void KHTMLParser::insertText(HTMLString str, const HTMLFont * fp)
 {
     enum { unknown, fixed, variable} textType = unknown; 
     	// Flag, indicating whether text may be broken
-    int i = 0;
-    char *remainingStr = 0;
+    uint i = 0;
+    HTMLString remainingStr;
     bool insertSpace = false;
     bool insertNBSP = false;
     bool insertBlock = false;
     
     for(;;)
     {
-        if (((unsigned char *)str)[i] == 0xa0)
+        if (str[i] == QChar(0xa0))
         {
             // Non-breaking space
             if (textType == variable)
@@ -570,8 +580,9 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
                 // We have a non-breaking space in a block of variable text
                 // We need to split the text and insert a seperate
                 // non-breaking space object
-                str[i] = 0x00; // End of string
-                remainingStr = &(str[i+1]);
+                //str[i] = 0x00; // End of string
+                remainingStr = str + (i+1);
+		str.setLength(i); // truncate here...
                 insertBlock = true; 
                 insertNBSP = true;
             }
@@ -582,7 +593,7 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
                 textType = fixed;
             }
         }
-        else if (str[i] == 0x20)
+        else if (str[i] == QChar(0x20))
         {
             // Normal space
             if (textType == fixed)
@@ -590,8 +601,9 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
             	// We have a normal space in a block of fixed text.
             	// We need to split the text and insert a seperate normal
             	// space.
-            	str[i] = 0x00; // End of string
-            	remainingStr = &(str[i+1]);
+            	//str[i] = 0x00; // End of string
+            	remainingStr = str + (i+1);
+		str.setLength(i);
             	insertBlock = true;
             	insertSpace = true;
             }
@@ -601,25 +613,25 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
             	// we insert a normal space and continue
             	if (i == 0)
             	{
-            	    if (str[i+1] == 0x00)
+            	    if (str.length() == 1)
             	    {
-            	    	str++;
-            	    	remainingStr = 0;
+            	    	++str;
+            	    	remainingStr = HTMLString();
             	    }
             	    else
             	    {
-            	        str[i] = 0x00; // End of string
             	        remainingStr = str+1;
+			str.setLength(0);
             	    }
                     insertBlock = true; // Block is zero-length, no actual insertion
             	    insertSpace = true;
             	}
-            	else if (str[i+1] == 0x00)
+            	else if (i == str.length())
             	{
             	    // Last character is a space: Insert the block and 
             	    // a normal space
-            	    str[i] = 0x00; // End of string
-            	    remainingStr = 0;
+            	    remainingStr = HTMLString();
+		    str.setLength(i-1);
             	    insertBlock = true;
             	    insertSpace = true;
             	}
@@ -629,66 +641,66 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
             	}
             }
         } 
-        else if (str[i] == 0x00)
+        else if (str[i] == QChar(0x00))
         {
             // End of string
             insertBlock = true;
-            remainingStr = 0;
+            remainingStr = HTMLString();
         }
         
         if (insertBlock)
         {
-            if (*str)
+            if (str.length())
             {
                 if (textType == variable)
                 {
-		    if ( url || target )
-	       		flow->append( new HTMLLinkTextMaster( str, 
+		    if ( url.length() || target.length() )
+	       		flow->append( NEW HTMLLinkTextMaster( str, 
 	       			      fp, painter, url, target) );
 	            else
-		       	flow->append( new HTMLTextMaster( str, fp, painter ) );
+		       	flow->append( NEW HTMLTextMaster( str, fp, painter ) );
                 }
                 else
                 {
-	            if ( url || target )
-	       	        flow->append( new HTMLLinkText( str, 
+	            if ( url.length() || target.length() )
+	       	        flow->append( NEW HTMLLinkText( str, 
 	       	                      fp, painter, url, target ) );
 		    else
-		        flow->append( new HTMLText( str, fp, painter ) );
+		        flow->append( NEW HTMLText( str, fp, painter ) );
 		}
             }
             if (insertSpace)
             {
-                if ( url || target)
+                if ( url.length() || target.length())
                 {
-		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
-			url, target );
+		    HTMLLinkText *sp = NEW HTMLLinkText( space, fp, painter,
+							 url, target );
 		    sp->setSeparator( true );
 		    flow->append( sp );
 		}
                 else
                 {
-   	            flow->append( new HTMLHSpace( fp, painter));
+   	            flow->append( NEW HTMLHSpace( fp, painter));
    	        }
             }
             else if (insertNBSP)
             {
-                if ( url || target)
+                if ( url.length() || target.length())
                 {
-		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
+		    HTMLLinkText *sp = NEW HTMLLinkText( space, fp, painter,
 			url, target );
 		    sp->setSeparator( false );
 		    flow->append( sp );
 		}
                 else
                 {
-                    HTMLHSpace *sp = new HTMLHSpace( fp, painter);
+                    HTMLHSpace *sp = NEW HTMLHSpace( fp, painter);
                     sp->setSeparator(false);
    	            flow->append( sp );
    	        }
             }
             str = remainingStr;
-            if ((str == 0) || (*str == 0x00))
+            if (!str.length())
                return; // Finished
 	    i = 0;
 	    textType = unknown;
@@ -703,9 +715,9 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
     }
 }                                         
 
-int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
+uint KHTMLParser::parseBody( HTMLClue *__clue, const uint *_end, bool toplevel )
 {
-    const char *str;
+    HTMLString token;
     
     // Before one can write any objects in the body he usually adds a FlowBox
     // to _clue. Then put all texts, images etc. in the FlowBox.
@@ -720,28 +732,38 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 	// Be sure to set the painter to the current font.
         restoreFont();
     }
+    if (plainText)
+    {
+       parsePlain();
+       tagID = 0;
+       return (tagID);
+    }
 
     while ( ht->hasMoreTokens() )
     {
-	str = ht->nextToken();
+	token = ht->nextToken();
+#ifdef TOKEN_DEBUG
+	printf("parsing token:");
+	printf(" %x %d %s\n", token[0].unicode(), token[1].unicode(), token.string().latin1());
+#endif	
 
 	// ignore stuff inbetween <noframes> and </noframes> if
 	// this has a htmlView
 	if(inNoframes)
 	{
-	    if (*str++ != TAG_ESCAPE)
+	    if (token[0] != QChar(TAG_ESCAPE))
 	        continue;
-            tagID = *((unsigned char *) str);
+            tagID = token[1].unicode();
 	    if (tagID == (ID_NOFRAMES + ID_CLOSE_TAG))
 		inNoframes = false;
 	    
 	    continue;
 	}
 
-	if ( *str == '\0' )
+	if ( token[0] == QChar::null )
 	    continue;
 
-	if ( *str == ' ' && *(str+1) == '\0' )
+	if ( token[0] == QChar(' ') && token[1] == QChar::null )
 	{
 	    // if in* is set this text belongs in a form element
 	    if ( inOption || inTextArea )
@@ -750,19 +772,19 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 		title += " ";
 	    else if ( flow != 0)
 	    {
-	    	insertText( " ", currentFont());
+	    	insertText( space, currentFont());
 	    }
 	}
-	else if ( *str != TAG_ESCAPE )
+	else if ( token[0] != QChar(TAG_ESCAPE) )
 	{
 	    // if in* is set this text belongs in a form element
 	    if ( inOption || inTextArea )
 	    {
-		formText += str;
+		formText += token;
 	    }
 	    else if ( inTitle )
 	    {
-		title += str;
+		title += token;
 	    }
 	    else
 	    {
@@ -771,45 +793,14 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 	    	if (!flow)
 	            newFlow();
 		
-    	        if (charsetConverter){
-		   debugM("Using charset converter...");
-		   QList<KCharsetConversionResult> rl=
-		           charsetConverter->multipleConvert(str);
-		   debugM("OK\n");
-		   KCharsetConversionResult *r;
-		   for(r=rl.first();r;r=rl.next()){ 
-		        debugM("Getting result string...");
-			char *tmp = r->copy();
-		      	char *str1= ht->newString(tmp);
-			delete tmp;
-		        debugM("Got: %s",str1);
-			debugM("Getting current font...");
-		        HTMLFont f=*currentFont();
-			debugM("OK\n");
-			debugM("Setting charset to %s...",(const char *)r->charset());
-			f.setCharset(r->charset());
-			debugM("OK\n");
-			debugM("Getting preloaded font...");
-	                const HTMLFont *fp = pFontManager->getFont( f );
-			debugM("OK\n");
-		       
-			debugM("Adding string to flow...");
-
-			insertText(str1 , fp);
-			
-			debugM("OK\n");
-		  }		
-		}
-		else{
-		  insertText((char *)str, currentFont() ); // Override constness
-		}      
+		insertText(token, currentFont() ); // Override constness
 	    }
 	}
 	else
 	{
-	    str++;
-
-	    tagID = *((unsigned char *) str++);
+	    ++token;
+	    tagID = token[0].unicode();
+	    ++token;
 
             for(int j=0; _end[j]; j++)
             {
@@ -825,48 +816,11 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 		    newFlow();
 
 		// Add a hidden space to get the line-height right.
-		flow->append(new HTMLHSpace( currentFont(), painter, true ));
+		flow->append(NEW HTMLHSpace( currentFont(), painter, true ));
 		vspace_inserted = false;
 	
 		newFlow(); // Explicitly make a new flow! 
 	    }
-	    else if (tagID == ID_ENTITY)
-	    {
-		int l;
-		const char *str1;
-
-		if (!flow)
-		    newFlow();
-
-	    	const HTMLFont *fp = currentFont();
-		// Handling entities
-		char *buffer=new char[strlen(str)+2]; // buffer will never
-		                                      // have to be longer
-
-		KCharsets *charsets=
-			KApplication::getKApplication()->getCharsets();
-
-		const KCharsetConversionResult &r=charsets->convertTag(str,l);
-		
-		str1=r.copy();
-		
-		if (str1 && l){
-		    HTMLFont f=*fp;
-		    if (r.charset().ok()){
-		        f.setCharset(r.charset());
-	                fp = pFontManager->getFont( f );
-		    } 
-		    strcpy(buffer,str1);
-		    strcat(buffer,str+l);
-
-		    insertText(ht->newString(buffer), fp); // Override constness
-		}
-		else
-		{
-		    insertText((char *)str, currentFont());
-		}
-		delete str1;
-	    }	    
 	    else
 	    {
 		parseOneToken();
@@ -888,9 +842,49 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
     return (tagID);
 }
 
+
+void KHTMLParser::parsePlain()
+{
+    HTMLString token;
+
+    if (!plainText)
+    { 
+       plainText = true;
+       vspace_inserted = insertVSpace( vspace_inserted );
+
+       pushBlock(tagID, 2, &KHTMLParser::blockEndPre);
+
+       currentStyle->font.family = settings->fixedFontFace;
+       currentStyle->font.fixed = true;
+       currentStyle->font.style = CSSStyleFont::stNormal;
+       currentStyle->font.weight = CSSStyleFont::Normal;
+       setFont();    
+
+       flow = 0;
+    } 
+    
+    while ( ht->hasMoreTokens() )
+    {
+	token = ht->nextToken();
+#ifdef TOKEN_DEBUG
+	printf("parsing token:");
+	printf(" %x %d %s\n", token[0].unicode(), token[1].unicode(), token.string().latin1());
+#endif	
+
+	if ( token[0] == QChar::null )
+	    continue;
+
+	if ( token[0] != QChar(TAG_ESCAPE) )
+	{
+	    _clue->append( NEW HTMLText( token, currentFont(), painter ));
+	}
+    }
+}
+
+
 void KHTMLParser::parseOneToken()
 {
-    if ((tagID < 0) || (tagID > ID_MAX))
+    if (tagID > ID_MAX)
     {
       printf("Unknown tag!! tagID = %d\n", tagID);
       return;
@@ -900,66 +894,6 @@ void KHTMLParser::parseOneToken()
         (this->*(func))();
 }
 
-/* the following attributes are standard sets used quite often for specific
-   tags. There parsing can be done in functions, and return a struct defining 
-   the atributes.
-
-<!ENTITY % coreattrs
-"id          ID             #IMPLIED  -- document-wide unique id --
-class       CDATA          #IMPLIED  -- space separated list of classes --
-style       %StyleSheet;   #IMPLIED  -- associated style info --
-title       %Text;         #IMPLIED  -- advisory title/amplification --"
->
-
-struct coreattrs
-{
-    QString id;
-    QString class;
-    StyleSheet style;
-    QString title;
-};
-
-<!ENTITY % i18n
-"lang        %LanguageCode; #IMPLIED  -- language code --
-dir         (ltr|rtl)      #IMPLIED  -- direction for weak/neutral text --"
->
-
-struct i18n
-{
-    Language lang;
-    Direction dir;
-};
-
-<!ENTITY % events
-"onclick     %Script;       #IMPLIED  -- a pointer button was clicked --
-ondblclick  %Script;       #IMPLIED  -- a pointer button was double clicked--
-onmousedown %Script;       #IMPLIED  -- a pointer button was pressed down --
-onmouseup   %Script;       #IMPLIED  -- a pointer button was released --
-onmouseover %Script;       #IMPLIED  -- a pointer was moved onto --
-onmousemove %Script;       #IMPLIED  -- a pointer was moved within --
-onmouseout  %Script;       #IMPLIED  -- a pointer was moved away --
-onkeypress  %Script;       #IMPLIED  -- a key was pressed and released --
-onkeydown   %Script;       #IMPLIED  -- a key was pressed down --
-onkeyup     %Script;       #IMPLIED  -- a key was released --"
->
-
-struct events
-{
-    JScript onclick;
-    JScript ondblclick;
-    JScript onmousedown;
-    JScript onmouseup;
-    JScript onmouseover;
-    JScript onmousemove;
-    JScript onmouseout;
-    JScript onkeypress;
-    JScript onkeydown;
-    JScript onkeyup;
-};
-
-<!ENTITY % attrs "%coreattrs; %i18n; %events;">
-
-*/
 
 void KHTMLParser::parseTagEnd(void)
 {
@@ -978,42 +912,41 @@ void KHTMLParser::parseTagA(void)
     popBlock(ID_A); // Close still open tags.
     
     QString tmpurl;
-    target = 0;
+    target = HTMLString();
     bool visited = false;
-    const char *p;
+    const Attribute *p;
 
     while ( ( p = ht->nextOption() ) != 0 )
     {
-	if ( strncasecmp( p, "href=", 5 ) == 0 )
+	if ( p->id == ATTR_HREF )
 	{
-	    p += 5;
-	    if ( *p == '#' )
+	    if ( p->value()[0] == '#' )
 	    {// reference
 		KURL u( HTMLWidget->getDocumentURL() );
-		u.setRef( p + 1 );
+		u.setRef( p->value() );
 	        tmpurl = u.url();
 	    }
 	    else
 	    {
-                KURL u( HTMLWidget->getBaseURL(), p );
+                KURL u( HTMLWidget->getBaseURL(), p->value() );
 	        tmpurl = u.url();
 	    }		
-            visited = HTMLWidget->URLVisited( tmpurl );
+            visited = HTMLWidget->URLVisited( tmpurl ); 
 	}
-	else if ( strncasecmp( p, "name=", 5 ) == 0 )
+	else if ( p->id == ATTR_NAME )
 	{
 	    if ( flow == 0 )
-	        _clue->append( new HTMLAnchor( p+5 ) );
+	        _clue->append( NEW HTMLAnchor( p->value() ) );
 	    else
-	        flow->append( new HTMLAnchor( p+5 ) );
+	        flow->append( NEW HTMLAnchor( p->value() ) );
 	}
-	else if ( strncasecmp( p, "target=", 7 ) == 0 )
+	else if ( p->id == ATTR_TARGET )
 	{
-	    target = p+7;
+	    target = p->value();
 	}
     }
 
-    if ( !target )
+    if ( !target.length() )
         target = baseTarget;
 	
     if ( !tmpurl.isEmpty() )
@@ -1027,8 +960,8 @@ void KHTMLParser::parseTagA(void)
 	if ( settings->underlineLinks )
 	    currentStyle->font.decoration = CSSStyleFont::decUnderline;
 	setFont();
-        url = ht->newString( tmpurl.data(), tmpurl.length() );
-        HTMLWidget->addHref(tmpurl.data());
+        url = NEWSTRING( tmpurl );
+        HTMLWidget->addHref( tmpurl ); 
     }
 }
 
@@ -1065,50 +998,49 @@ void KHTMLParser::parseTagArea(void)
     if (!imageMap) 
         return;
 
-    char * href = "";
-    QString coords;
-    const char * atarget = baseTarget;
+    HTMLString href;
+    HTMLString coords;
+    QString atarget = baseTarget;
     HTMLArea::Shape shape = HTMLArea::Rect;
 
-    const char* p;
+    const Attribute * p;
     
     while ( 0 != (p = ht->nextOption()) )
     {
-	if ( strncasecmp( p, "shape=", 6 ) == 0 )
+	if ( p->id == ATTR_SHAPE )
 	{
-	    if ( strncasecmp( p+6, "rect", 4 ) == 0 )
+	    if ( ustrcasecmp( p->value(), QString("rect")) == 0 )
 	        shape = HTMLArea::Rect;
-	    else if ( strncasecmp( p+6, "poly", 4 ) == 0 )
+	    else if ( ustrcasecmp( p->value(), QString("poly")) == 0 )
 	        shape = HTMLArea::Poly;
-	    else if ( strncasecmp( p+6, "circle", 6 ) == 0 )
+	    else if ( ustrcasecmp( p->value(), QString("circle")) == 0 )
 	        shape = HTMLArea::Circle;
 	}
-	else if ( strncasecmp( p, "href=", 5 ) == 0 )
+	else if ( p->id == ATTR_HREF )
 	{
-	    p += 5;
-	    if ( *p == '#' )
+	    if ( p->value()[0] == '#' )
 	    {// reference
 	        KURL u( HTMLWidget->getDocumentURL() );
-	        u.setRef( p + 1 );
-	        href = ht->newString(u.url().data());
+	        u.setRef( p->value() );
+	        href = NEWSTRING( u.url() );
             }
             else 
 	    {
-	        KURL u( HTMLWidget->getBaseURL(), p );
-	        href = ht->newString(u.url().data());
+	        KURL u( HTMLWidget->getBaseURL(), p->value() );
+	        href = NEWSTRING( u.url() );
 	    }
 	}
-	else if ( strncasecmp( p, "target=", 7 ) == 0 )
+	else if ( p->id == ATTR_TARGET )
 	{
-	    atarget = p+7;
+	    atarget = p->value();
 	}
-	else if ( strncasecmp( p, "coords=", 7 ) == 0 )
+	else if ( p->id == ATTR_COORDS )
 	{
-	    coords = p+7;
+	    coords = p->value();
 	}
     }
 
-    if ( coords.isEmpty() )
+    if ( coords.length() == 0 )
     	return;
     	
     HTMLArea *area = 0;
@@ -1118,7 +1050,8 @@ void KHTMLParser::parseTagArea(void)
         case HTMLArea::Rect:
 	    {
 		int x1, y1, x2, y2;
-		sscanf( coords, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+		sscanf( coords.string().ascii(), 
+			"%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 		QRect rect( x1, y1, x2-x1, y2-y1 );
 		area = new HTMLArea( rect, href, atarget );
 		debugM( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
@@ -1128,7 +1061,7 @@ void KHTMLParser::parseTagArea(void)
         case HTMLArea::Circle:
 	    {
 		int xc, yc, rc;
-		sscanf( coords, "%d,%d,%d", &xc, &yc, &rc );
+		sscanf( coords.string().ascii(), "%d,%d,%d", &xc, &yc, &rc );
 		area = new HTMLArea( xc, yc, rc, href, atarget );
 		debugM( "Area Circle %d, %d, %d\n", xc, yc, rc );
 	    }
@@ -1137,22 +1070,23 @@ void KHTMLParser::parseTagArea(void)
   	case HTMLArea::Poly:
 	    {
 		debugM( "Area Poly " );
-		int count = 0, x, y;
+		int count = 0, x = 0, y = 0;
 		QPointArray parray;
-		const char *ptr = coords;
-		while ( ptr )
+		HTMLString ptr = coords;
+		while ( ptr.length() )
 		{
-		    x = atoi( ptr );
-		    ptr = strchr( ptr, ',' );
-		    if ( ptr )
+		    x = ptr.toInt();
+		    ptr.find( ',' );
+		    if ( ptr.length() )
 		    {
-			y = atoi( ++ptr );
+			++ptr;
+			y = ptr.toInt();
 			parray.resize( count + 1 );
 			parray.setPoint( count, x, y );
 			debugM( "%d, %d  ", x, y );
 			count++;
-			ptr = strchr( ptr, ',' );
-			if ( ptr ) ptr++;
+			ptr.find( ',' );
+			if ( ptr.length() ) ++ptr;
 		    }
 		}
 		debugM( "\n" );
@@ -1161,8 +1095,8 @@ void KHTMLParser::parseTagArea(void)
 	    }
 	    break;
     }
-    if (strlen(href))
-        HTMLWidget->addHref(href);
+    if (href.length())
+        HTMLWidget->addHref(href.string().ascii());
         
     if ( area )
         imageMap->addArea( area );
@@ -1178,16 +1112,16 @@ void KHTMLParser::parseTagB(void)
 
 void KHTMLParser::parseTagBase(void)
 {
-    const char *token;
-    while ( (token = ht->nextOption()) != 0 )
+    const Attribute *p;
+    while ( (p = ht->nextOption()) != 0 )
     {
-        if ( strncasecmp( token, "target=", 7 ) == 0 )
+        if ( p->id == ATTR_TARGET )
         {
-            baseTarget = token+7;
+            baseTarget = p->value();
 	}
-	else if ( strncasecmp( token, "href=", 5 ) == 0 )
+	else if ( p->id == ATTR_HREF )
 	{
-	    HTMLWidget->setBaseURL( token + 5);
+	    HTMLWidget->setBaseURL( p->value().string().ascii() );
 	}
     }
 }
@@ -1229,32 +1163,32 @@ void KHTMLParser::parseTagBody(void)
 
     bodyParsed = true;
 
-    char *token;
-    while ( 0 != (token = ht->nextOption()) )
+    const Attribute *token;
+    while ( (token = ht->nextOption()) != 0 )
     {
-	if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	if ( token->id == ATTR_BGCOLOR )
 	{
 	    QColor bgColor;
-	    setNamedColor( bgColor, token+8 );
+	    setNamedColor( bgColor, token->value() );
 	    HTMLWidget->setBGColor( bgColor );
 	}
-	else if ( strncasecmp( token, "background=", 11 ) == 0 )
+	else if ( token->id == ATTR_BACKGROUND )
 	{
-	    HTMLWidget->setBGImage( token + 11 );
+	    HTMLWidget->setBGImage( token->value().string().ascii() );
         }
-	else if ( strncasecmp( token, "text=", 5 ) == 0 )
+	else if ( token->id == ATTR_TEXT )
 	{
-	    setNamedColor( settings->fontBaseColor, token+5 );
+	    setNamedColor( settings->fontBaseColor, token->value() );
 	    currentStyle->font.color = settings->fontBaseColor;
 	    setFont();
 	}
-	else if ( strncasecmp( token, "link=", 5 ) == 0 )
+	else if ( token->id == ATTR_LINK )
 	{
-	    setNamedColor( settings->linkColor, token+5 );
+	    setNamedColor( settings->linkColor, token->value() );
 	}
-	else if ( strncasecmp( token, "vlink=", 6 ) == 0 )
+	else if ( token->id == ATTR_VLINK )
 	{
-	    setNamedColor( settings->vLinkColor, token+6 );
+	    setNamedColor( settings->vLinkColor, token->value() );
 	}
     }
 }
@@ -1265,16 +1199,16 @@ void KHTMLParser::parseTagBr(void)
 
     HTMLVSpace::Clear clear = HTMLVSpace::CNone;
 
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "clear=", 6 ) == 0 )
+	if ( token->id == ATTR_CLEAR )
 	{
-	    if ( strcasecmp( token+6, "left" ) == 0 )
+	    if ( ustrcasecmp( token->value(), "left" ) == 0 )
 	        clear = HTMLVSpace::Left;
-	    else if ( strcasecmp( token+6, "right" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "right" ) == 0 )
 	        clear = HTMLVSpace::Right;
-	    else if ( strcasecmp( token+6, "all" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "all" ) == 0 )
 	        clear = HTMLVSpace::All;
         }
     }
@@ -1282,75 +1216,13 @@ void KHTMLParser::parseTagBr(void)
     if (!flow)
         newFlow();
 
-    flow->append( new HTMLVSpace( currentFont()->pointSize(), clear ));
+    flow->append( NEW HTMLVSpace( currentFont()->pointSize(), clear ));
     vspace_inserted = false;
 }
 
 void KHTMLParser::parseTagButton(void)
 {
     // forms... HTML4 unimplemented
-}
-
-void KHTMLParser::parseTagCell(void)
-{
-    if (!flow)
-        newFlow();
-
-    static const int end[] = { ID_CELL + ID_CLOSE_TAG, 0 }; 
-    HTMLClue::HAlign olddivalign = divAlign;
-    HTMLClue *oldFlow = flow;
-    HTMLClue *__clue = flow;
-    HTMLClue *oldClue = _clue;
-    int oldindent = currentStyle->text.indent;
-
-    HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
-    int cell_width = 90;
-
-    const char *token;
-    while ( (token = ht->nextOption()) != 0)
-    {
-	if ( strncasecmp( token, "width=", 6 ) == 0 )
-	{
-	    cell_width = atoi( token + 6 );
-	}
-	else if ( strncasecmp( token, "align=", 6 ) == 0 )
-	{
-	    if ( strcasecmp( token + 6, "left" ) == 0 )
-		gridHAlign = HTMLClue::Left;
-	    else if ( strcasecmp( token + 6, "right" ) == 0 )
-		gridHAlign = HTMLClue::Right;
-	}
-    }
-    
-    HTMLClue::VAlign valign = HTMLClue::Top;
-    HTMLClue::HAlign halign = gridHAlign;
-    
-    HTMLClueV *vc = new HTMLCell( url, target );     
-    __clue->append( vc );
-    vc->setFixedWidth( cell_width ); // fixed width
-    vc->setVAlign( valign );
-    vc->setHAlign( halign );
-
-    flow = 0;
-    currentStyle->text.indent = 0;
-    divAlign = HTMLClue::Left;
-    _clue = vc;             
-    
-    pushBlock( ID_CELL, 3 );
-    (void) parseBody( _clue, end );
-    popBlock( ID_CELL );
-
-// @@WABA What does this do?
-//    vc = new HTMLClueV( 0, 0 ); // fixed width
-//    _clue->append( vc );
-
-    currentStyle->text.indent = oldindent;
-    divAlign = olddivalign;
-    flow = oldFlow;
-    _clue = oldClue;
-
-    // Add a hidden space
-    flow->append( new HTMLHSpace( currentFont(), painter, true ) );
 }
 
 void KHTMLParser::parseTagCenter(void)
@@ -1410,17 +1282,17 @@ void KHTMLParser::parseTagDiv(void)
 {
     pushBlock(tagID, 2, &KHTMLParser::blockEndAlign, divAlign);
 
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {
         // attrs: %attrs
-        if ( strncasecmp( token, "align=", 6 ) == 0 )
+        if ( token->id == ATTR_ALIGN )
         {
-            if ( strcasecmp( token + 6, "right" ) == 0 )
+            if ( ustrcasecmp( token->value(), "right" ) == 0 )
 	        divAlign = HTMLClue::Right;
-	    else if ( strcasecmp( token + 6, "center" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "center" ) == 0 )
 	        divAlign = HTMLClue::HCenter;
-	    else if ( strcasecmp( token + 6, "left" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "left" ) == 0 )
                 divAlign = HTMLClue::Left;
 	}
     }
@@ -1505,26 +1377,28 @@ void KHTMLParser::parseTagFieldset(void)
 void KHTMLParser::parseTagFont(void)
 {
     pushBlock(tagID, 1 );
-    char *token;
+    const Attribute *token;
     while ( 0 != (token = ht->nextOption()) )
     {
-	if ( strncasecmp( token, "size=", 5 ) == 0 )
+	if ( token->id == ATTR_SIZE )
 	{
-	    int num = atoi( token + 5 );
-	    if ( *(token + 5) == '+' || *(token + 5) == '-' )
+	    int num = token->value().toInt();
+	    if ( *token->value().unicode() == '+' || 
+		 *token->value().unicode() == '-' )
 		currentStyle->font.size = settings->fontBaseSize + num;
 	    else
 		currentStyle->font.size = num;
 	}
-	else if ( strncasecmp( token, "color=", 6 ) == 0 )
+	else if ( token->id == ATTR_COLOR )
 	{
-            setNamedColor( currentStyle->font.color, token+6 );
+            setNamedColor( currentStyle->font.color, token->value() );
 	}
-	else if ( strncasecmp( token, "face=", 5 ) == 0 )
+	else if ( token->id == ATTR_FACE )
 	{
 	    // try to find a matching font in the font list.
 	    StringTokenizer st;
-            st.tokenize( token+5, " ," );
+	    const QChar separ[] = { ' ', ',', 0x0 };
+            st.tokenize( token->value(), separ );
 	    while ( st.hasMoreTokens() )
 	    {
                 QString fname(st.nextToken());
@@ -1549,22 +1423,22 @@ void KHTMLParser::parseTagForm(void)
     QString method = "GET";
     QString target = "";
 
-    const char* token;
+    const Attribute * token;
     while ( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "action=", 7 ) == 0 )
+	if ( token->id == ATTR_ACTION )
 	{
-            KURL u( HTMLWidget->getBaseURL(), token + 7 );
+            KURL u( HTMLWidget->getBaseURL(), token->value() );
             action = u.url();
 	}
-	else if ( strncasecmp( token, "method=", 7 ) == 0 )
+	else if ( token->id == ATTR_METHOD )
 	{
-            if ( strncasecmp( token + 7, "post", 4 ) == 0 )
+            if ( ustrcasecmp( token->value(), QString("post") ) == 0 )
 		method = "POST";
 	}
-	else if ( strncasecmp( token, "target=", 7 ) == 0 )
+	else if ( token->id == ATTR_TARGET )
 	{
-	    target = token+7;
+	    target = token->value();
 	}
     }
 
@@ -1594,8 +1468,8 @@ void KHTMLParser::parseTagFrame(void)
     if ( !frameSet)
     	return; // Frames need a frameset
 
-    const char *src = 0;
-    const char *name = 0;
+    HTMLString src = HTMLString();
+    QString name = 0;
     int marginwidth = leftBorder;
     int marginheight = rightBorder;
 
@@ -1606,38 +1480,38 @@ void KHTMLParser::parseTagFrame(void)
     // -1 = default ( 5 )
     int frameborder = -1;
 	      
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     { 
-	if ( strncasecmp( token, "SRC=", 4 ) == 0 )
-	    src = token + 4;
+	if ( token->id == ATTR_SRC )
+	    src = token->value();
 
-	else if ( strncasecmp( token, "NAME=", 5 ) == 0 )
-	    name = token + 5;
+	else if ( token->id == ATTR_NAME )
+	    name = token->value().string().copy();
 
-	else if ( strncasecmp( token, "MARGINWIDTH=", 12 ) == 0 )
-	    marginwidth = atoi( token + 12 );
+	else if ( token->id == ATTR_MARGINWIDTH )
+	    marginwidth = token->value().toInt();
 
-	else if ( strncasecmp( token, "MARGINHEIGHT=", 13 ) == 0 )
-	    marginheight = atoi( token + 13 );
+	else if ( token->id == ATTR_MARGINHEIGHT )
+	    marginheight = token->value().toInt();
 
-	else if ( strncasecmp( token, "FRAMEBORDER=", 12 ) == 0 )
+	else if ( token->id == ATTR_FRAMEBORDER )
 	{
-	    frameborder = atoi( token + 12 );
+	    frameborder = token->value().toInt();
 	    if ( frameborder < 0 )
 	        frameborder = -1;
 	}
 
-	else if ( strncasecmp( token, "NORESIZE", 8 ) == 0 )
+	else if ( token->id == ATTR_NORESIZE )
 	    noresize = TRUE;
 
-	else if ( strncasecmp( token, "SCROLLING=", 10 ) == 0 )
+	else if ( token->id == ATTR_SCROLLING )
         {
-	    if ( strncasecmp( token + 10, "yes", 3 ) == 0 )
+	    if ( ustrcasecmp( token->value(), QString("yes") ) == 0 )
 	        scrolling = 1;
-	    if ( strncasecmp( token + 10, "no", 2 ) == 0 )
+	    if ( ustrcasecmp( token->value(), QString("no") ) == 0 )
 		scrolling = 0;
-	    if ( strncasecmp( token + 10, "auto", 4 ) == 0 )
+	    if ( ustrcasecmp( token->value(), QString("auto") ) == 0 )
 		scrolling = -1;
 	}
     }	      
@@ -1653,62 +1527,64 @@ void KHTMLParser::parseTagEmbed(void)
   if ( !frameSet)
     return; // Frames need a frameset
 
-  QString src;
-  QString name;
-  QString type;
+  HTMLString src;
+  HTMLString name;
+  HTMLString type;
   int marginwidth = leftBorder;
   int marginheight = rightBorder;
   bool noresize = FALSE;
   // -1 = default ( 5 )
   int frameborder = -1;
 	
-  const char *token;
+  const Attribute *token;
   while ( ( token = ht->nextOption() ) != 0 )
   {
-    if ( strncasecmp( token, "SRC=", 4 ) == 0 )
+    if ( token->id == ATTR_SRC )
     {
-      src = token + 4;
+      src = token->value();
     }
-    else if ( strncasecmp( token, "NAME=", 5 ) == 0 )
+    else if ( token->id == ATTR_NAME )
     {
-      name = token + 5;
+      name = token->value();
     }
-    else if ( strncasecmp( token, "TYPE=", 4 ) == 0 )
+    else if ( token->id == ATTR_TYPE )
     {
-      type = token + 4;
+      type = token->value();
     }
-    else if ( strncasecmp( token, "MARGINWIDTH=", 12 ) == 0 )
+    else if ( token->id == ATTR_MARGINWIDTH )
     {
-      marginwidth = atoi( token + 12 );
+      marginwidth = token->value().toInt();
     }
-    else if ( strncasecmp( token, "MARGINHEIGHT=", 13 ) == 0 )
+    else if ( token->id == ATTR_MARGINHEIGHT )
     {
-      marginheight = atoi( token + 13 );
+      marginheight = token->value().toInt();
     }
-    else if ( strncasecmp( token, "FRAMEBORDER=", 12 ) == 0 )
+    else if ( token->id == ATTR_FRAMEBORDER )
     {
-      frameborder = atoi( token + 12 );
+      frameborder = token->value().toInt();
       if ( frameborder < 0 )
 	frameborder = -1;
     }
-    else if ( strncasecmp( token, "NORESIZE", 8 ) == 0 )
+    else if ( token->id == ATTR_NORESIZE )
       noresize = TRUE;
   }	      
 
   // Create the widget
-  KHTMLEmbededWidget *embed = HTMLWidget->getView()->newEmbededWidget( frameSet, name,
-								       src, type,
-								       marginwidth,
-								       marginheight, 
-								       frameborder,
-								       !noresize );
+  KHTMLEmbededWidget *embed = 
+      HTMLWidget->getView()->newEmbededWidget( frameSet, name.string().ascii(),
+					       src.string().ascii(), 
+					       type.string().ascii(),
+					       marginwidth,
+					       marginheight, 
+					       frameborder,
+					       !noresize );
   HTMLWidget->addEmbededFrame( frameSet, embed );
 }
 
 void KHTMLParser::parseTagFrameset(void)
 {
-    const char *cols = 0;
-    const char *rows = 0;
+    HTMLString cols = HTMLString();
+    HTMLString rows = HTMLString();
     int frameBorder = 1;
     bool bAllowResize = true;
 
@@ -1716,22 +1592,22 @@ void KHTMLParser::parseTagFrameset(void)
     if ( !HTMLWidget->getView())
     	return;
 
-    const char *token;
+    const Attribute *token;
     while( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "cols=", 5 ) == 0 )
+	if ( token->id == ATTR_COLS )
 	{
-	    cols = token + 5;
+	    cols = token->value();
 	}
-	else if ( strncasecmp( token, "rows=", 5 ) == 0 )
+	else if ( token->id == ATTR_ROWS )
 	{
-	    rows = token + 5;
+	    rows = token->value();
 	}
-	else if ( strncasecmp( token, "frameborder=", 12 ) == 0 )
+	else if ( token->id == ATTR_FRAMEBORDER )
 	{
-	    frameBorder = atoi( token + 12 );
+	    frameBorder = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "noresize", 8 ) == 0 )
+	else if ( token->id == ATTR_NORESIZE )
 	{
             bAllowResize = false;
 	}
@@ -1760,19 +1636,19 @@ void KHTMLParser::parseTagHeader(void)
 {
     pushBlock(ID_H1, 2, &KHTMLParser::blockEnd );
 
-    char *token;
+    const Attribute *token;
     vspace_inserted = insertVSpace( vspace_inserted );
     HTMLClue::HAlign align = divAlign;
 
     while( 0 != (token = ht->nextOption()) )
     {
-	if ( strncasecmp( token, "align=", 6 ) == 0 )
+	if ( token->id == ATTR_ALIGN )
 	{
-            if ( strcasecmp( token + 6, "center" ) == 0 )
+            if ( ustrcasecmp( token->value(), QString("center") ) == 0 )
 		align = HTMLClue::HCenter;
-            else if ( strcasecmp( token + 6, "right" ) == 0 )
+            else if ( ustrcasecmp( token->value(), QString("right") ) == 0 )
 		align = HTMLClue::Right;
-            else if ( strcasecmp( token + 6, "left" ) == 0 )
+            else if ( ustrcasecmp( token->value(), QString("left") ) == 0 )
 		align = HTMLClue::Left;
 	}
     }
@@ -1845,37 +1721,38 @@ void KHTMLParser::parseTagHR(void)
     if ( flow )
         oldAlign = align = flow->getHAlign();
 
-    const char* token;
+    const Attribute * token;
     
     while ( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "align=", 6 ) == 0 )
+	if ( token->id == ATTR_ALIGN )
 	{
-            if ( strcasecmp( token + 6, "left" ) == 0 )
+            if ( ustrcasecmp( token->value(), "left" ) == 0 )
 		align = HTMLRule::Left;
-            else if ( strcasecmp( token + 6, "right" ) == 0 )
+            else if ( ustrcasecmp( token->value(), "right" ) == 0 )
 		align = HTMLRule::Right;
-	    else if ( strcasecmp( token + 6, "center" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "center" ) == 0 )
 		align = HTMLRule::HCenter;
 	}
-	else if ( strncasecmp( token, "size=", 5 ) == 0 )
+	else if ( token->id == ATTR_SIZE )
 	{
-	    size = atoi( token+5 );
+	    size = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	else if ( token->id == ATTR_WIDTH )
 	{
-            if ( strchr( token+6, '%' ) )
-            {
+            if ( token->value().percentage(percent) )
+            {   
+                // Percent set
                 length = UNDEFINED;
-		percent = atoi( token+6 );
 	    }
 	    else
 	    {
-		length = atoi( token+6 );
-		percent = UNDEFINED; // fixed width
+		// Fixed width
+		length = token->value().toInt();
+                percent = UNDEFINED; // assume fixed width
 	    }
 	}
-	else if ( strncasecmp( token, "noshade", 6 ) == 0 )
+	else if ( token->id == ATTR_NOSHADE )
 	{
             shade = FALSE;
 	}
@@ -1884,7 +1761,7 @@ void KHTMLParser::parseTagHR(void)
     divAlign = align;
     newFlow();
 
-    flow->append( new HTMLRule( length, percent, size, shade ) );
+    flow->append( NEW HTMLRule( length, percent, size, shade ) );
 printf("HR: length = %d, percent = %d, size = %d, shade = %d\n",
 	length, percent, size, shade);
 
@@ -1913,65 +1790,64 @@ void KHTMLParser::parseTagImg(void)
     vspace_inserted = FALSE;
 
     // Parse all arguments but delete '<' and '>' and skip 'cell'
-    const char* filename = 0;
-    const char *overlay = 0;
-    QString fullfilename;
+    HTMLString filename;
+    HTMLString overlay;
     QString usemap;
     bool    ismap = false;
     int width = UNDEFINED;
     int height = UNDEFINED;
     int percent = UNDEFINED;
-    int border = url == 0 ? 0 : 2;
+    int border = url.length() ? 0 : 2;
     HTMLClue::HAlign align = HTMLClue::HNone;
     HTMLClue::VAlign valign = HTMLClue::VNone;
 
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {
-        if (strncasecmp( token, "src=", 4 ) == 0)
-	    filename = token + 4;
-	else if (strncasecmp( token, "oversrc=", 8 ) == 0)
-	    overlay = token + 8;
-	else if (strncasecmp( token, "width=", 6 ) == 0)
+        if ( token->id == ATTR_SRC )
+	    filename = token->value();
+	else if ( token->id == ATTR_OVERSRC )
+	    // what is this attribute???? It doesn't appear in the dtd!
+	    overlay = token->value();
+	else if ( token->id == ATTR_WIDTH )
 	{
-	    if ( strchr( token + 6, '%' ) )
-		percent = atoi( token + 6 );
-	    else {
-	        width = atoi( token + 6 );
+	    if ( ! token->value().percentage(percent) )
+            {
+	        width = token->value().toInt();
 	        percent = UNDEFINED;
 	    }
 	}
-	else if (strncasecmp( token, "height=", 7 ) == 0)
-	    height = atoi( token + 7 );
-	else if (strncasecmp( token, "border=", 7 ) == 0)
-	    border = atoi( token + 7 );
-	else if (strncasecmp( token, "align=", 6 ) == 0)
+	else if ( token->id == ATTR_HEIGHT )
+	    height = token->value().toInt();
+	else if ( token->id == ATTR_BORDER )
+	    border = token->value().toInt();
+	else if (token->id == ATTR_ALIGN )
 	{
-	    if ( strcasecmp( token + 6, "left" ) == 0 )
+	    if ( ustrcasecmp( token->value(), "left" ) == 0 )
 	        align = HTMLClue::Left;
-	    else if ( strcasecmp( token + 6, "right" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "right" ) == 0 )
 	        align = HTMLClue::Right;
-	    else if ( strcasecmp( token + 6, "top" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "top" ) == 0 )
 	        valign = HTMLClue::Top;
-	    else if ( strcasecmp( token + 6, "middle" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "middle" ) == 0 )
 	        valign = HTMLClue::VCenter;
-	    else if ( strcasecmp( token + 6, "bottom" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "bottom" ) == 0 )
 	        valign = HTMLClue::Bottom;
         }
-	else if ( strncasecmp( token, "usemap=", 7 ) == 0 )
+	else if ( token->id == ATTR_USEMAP )
 	{
-	    if ( *(token + 7 ) == '#' )
+	    if ( *token->value().unicode() == '#' )
 	    {
 	        // Local map. Format: "#name"
-                usemap = token + 7;
+                usemap = token->value();
 	    }
 	    else
 	    {
-	        KURL u( HTMLWidget->getBaseURL(), token + 7 );
+	        KURL u( HTMLWidget->getBaseURL(), token->value() );
                 usemap = u.url();
 	    }
 	}
-	else if ( strncasecmp( token, "ismap", 5 ) == 0 )
+	else if ( token->id == ATTR_ISMAP )
 	{
 	    ismap = true;
 	}
@@ -1979,7 +1855,7 @@ void KHTMLParser::parseTagImg(void)
     // if we have a file name do it...
     if ( filename != 0 )
     {
-        printf("**************** IMAGE Parsing URL=%s\n", filename );
+        printf("**************** IMAGE Parsing URL=%s\n", filename.string().ascii() );
       
         KURL kurl( HTMLWidget->getBaseURL(), filename );
         // Do we need a new FlowBox ?
@@ -1990,23 +1866,25 @@ void KHTMLParser::parseTagImg(void)
 
 	if ( usemap.isEmpty() && !ismap )
 	{
-	    image =  new HTMLImage( HTMLWidget, kurl.url(), url, target,
-			                width, height, percent, border );
+	    image =  NEW HTMLImage( HTMLWidget, NEWSTRING(kurl.url()), 
+				    url, target,
+				    width, height, percent, border );
 	}
 	else
 	{
-	    image =  new HTMLImageMap( HTMLWidget, kurl.url(), url, target,
-			                   width, height, percent, border );
+	    image =  NEW HTMLImageMap( HTMLWidget, NEWSTRING(kurl.url()),
+				       url, target,
+				       width, height, percent, border );
 	    if ( !usemap.isEmpty() )
 	    {
-	        ((HTMLImageMap *)image)->setMapURL( ht->newString( usemap.data() ) );
+	        ((HTMLImageMap *)image)->setMapURL( usemap );
 	    }
 	    else
 	        ((HTMLImageMap *)image)->setMapType( HTMLImageMap::ServerSide );
 	}
 
 	// used only by kfm to overlay links, readonly etc.
-	if ( overlay )
+	if ( overlay.length() )
 	    image->setOverlay( overlay );
 
 	image->setBorderColor( currentStyle->box.borderColor );
@@ -2024,7 +1902,7 @@ void KHTMLParser::parseTagImg(void)
 		}
                 else
 	    	{
-		    HTMLClueH *valigned = new HTMLClueH();
+		    HTMLClueH *valigned = NEW HTMLClueH();
 		    valigned->setVAlign( valign );
 		    valigned->append( image );
 		    flow->append( valigned );
@@ -2034,7 +1912,7 @@ void KHTMLParser::parseTagImg(void)
 	// we need to put the image in a HTMLClueAligned
 	else
 	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned( flow );
+	    HTMLClueAligned *aligned = NEW HTMLClueAligned( flow );
 	    aligned->setHAlign( align );
 	    aligned->append( image );
 	    flow->append( aligned );
@@ -2052,74 +1930,75 @@ void KHTMLParser::parseTagInput(void)
 
     enum InputType { CheckBox, Hidden, Radio, Reset, Submit, Text, Image,
 	    Button, Password, Undefined };
-    const char *p;
+    HTMLString p;
     InputType type = Text;
-    QString name = "";
-    QString value = "";
-    QString imgSrc;
+    HTMLString name;
+    HTMLString value;
+    HTMLString imgSrc;
     bool checked = false;
     int size = 20;
     int maxLen = -1;
     QList<JSEventHandler> *handlers = 0;
 
-    const char* token;
+    const Attribute * token;
     while( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "type=", 5 ) == 0 )
+	if ( token->id == ATTR_TYPE )
 	{
-	    p = token + 5;
-	    if ( strncasecmp( p, "checkbox", 8 ) == 0 )
+	    p = token->value();
+
+	    if ( ustrcasecmp( p, QString("checkbox") ) == 0 )
 		type = CheckBox;
-	    else if ( strncasecmp( p, "password", 8 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("password") ) == 0 )
 		type = Password;
-	    else if ( strncasecmp( p, "hidden", 6 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("hidden") ) == 0 )
 		type = Hidden;
-	    else if ( strncasecmp( p, "radio", 5 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("radio") ) == 0 )
 		type = Radio;
-	    else if ( strncasecmp( p, "reset", 5 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("reset") ) == 0 )
 		type = Reset;
-	    else if ( strncasecmp( p, "submit", 5 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("submit") ) == 0 )
 		type = Submit;
-	    else if ( strncasecmp( p, "button", 6 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("button") ) == 0 )
 		type = Button;      
-	    else if ( strncasecmp( p, "text", 5 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("text") ) == 0 )
 		type = Text;
-	    else if ( strncasecmp( p, "Image", 5 ) == 0 )
+	    else if ( ustrcasecmp( p, QString("Image") ) == 0 )
 		type = Image;
 	}
-	else if ( strncasecmp( token, "name=", 5 ) == 0 )
+	else if ( token->id == ATTR_NAME )
 	{
-	    name = token + 5;
+	    name = token->value();
 	}
-	else if ( strncasecmp( token, "value=", 6 ) == 0 )
+	else if ( token->id == ATTR_VALUE )
 	{
-	    value = token + 6;
+	    value = token->value();
 	}
-	else if ( strncasecmp( token, "size=", 5 ) == 0 )
+	else if ( token->id == ATTR_SIZE )
 	{
-	    size = atoi( token + 5 );
+	    size = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "maxlength=", 10 ) == 0 )
+	else if ( token->id == ATTR_MAXLENGTH )
 	{
-	    maxLen = atoi( token + 10 );
+	    maxLen = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "checked", 7 ) == 0 )
+	else if ( token->id == ATTR_CHECKED )
 	{
 	    checked = true;
 	}
-	else if ( strncasecmp( token, "src=", 4 ) == 0 )
+	else if ( token->id == ATTR_SRC )
 	{
-	    imgSrc = token + 4;
+	    imgSrc = token->value();
 	}
-	else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
+	else if ( token->id == ATTR_ONCLICK )
 	{
-	    QString code( token + 8 );
+	    HTMLString code( token->value() );
 	    if ( handlers == 0 )
 	    {
 		handlers = new QList<JSEventHandler>;
 		handlers->setAutoDelete( TRUE );
 	    }
-	    handlers->append( new JSEventHandler( HTMLWidget->getJSEnvironment(), "onClick", code ) );
+	    handlers->append( new JSEventHandler( HTMLWidget->getJSEnvironment(), "onClick", code.string().ascii() ) );
 	}     
     }
 
@@ -2127,7 +2006,7 @@ void KHTMLParser::parseTagInput(void)
     {
 	case CheckBox:
 	    {
-		HTMLCheckBox *cb = new HTMLCheckBox( HTMLWidget,name,value,
+		HTMLCheckBox *cb = NEW HTMLCheckBox( HTMLWidget, name, value,
 						     checked, currentFont() );
 		cb->setForm( form );
 		form->addElement( cb );
@@ -2137,7 +2016,7 @@ void KHTMLParser::parseTagInput(void)
 
 	case Hidden:
 	    {
-		HTMLHidden *hidden = new HTMLHidden( name, value );
+		HTMLHidden *hidden = NEW HTMLHidden( name, value );
 		hidden->setForm( form );
 		form->addHidden( hidden );
 	    }
@@ -2145,21 +2024,21 @@ void KHTMLParser::parseTagInput(void)
 
 	case Radio:
 	    {
-		HTMLRadio *radio = new HTMLRadio( HTMLWidget, name, value, 
+		HTMLRadio *radio = NEW HTMLRadio( HTMLWidget, name, value, 
 						  checked, currentFont() );
 		radio->setForm( form );
 		form->addElement( radio );
 		flow->append( radio );
-		QObject::connect(radio,SIGNAL(radioSelected(const char *,const char *)),
-		    form, SLOT(slotRadioSelected(const char *, const char *)));
-		QObject::connect(form,SIGNAL( radioSelected(const char*,const char *) ),
-		    radio, SLOT(slotRadioSelected(const char *, const char *)));
+		QObject::connect(radio,SIGNAL(radioSelected(const QChar *,const QChar *)),
+		    form, SLOT(slotRadioSelected(const QChar *, const QChar *)));
+		QObject::connect(form,SIGNAL( radioSelected(const QChar*,const QChar *) ),
+		    radio, SLOT(slotRadioSelected(const QChar *, const QChar *)));
 	    }
 	    break;
 
 	case Reset:
 	    {
-		HTMLReset *reset = new HTMLReset( HTMLWidget, value, 
+		HTMLReset *reset = NEW HTMLReset( HTMLWidget, value, 
 						  currentFont() );
 		reset->setForm( form );
 		form->addElement( reset );
@@ -2171,7 +2050,7 @@ void KHTMLParser::parseTagInput(void)
 
 	case Submit:
 	    {
-		HTMLSubmit *submit = new HTMLSubmit( HTMLWidget, name, value,
+		HTMLSubmit *submit = NEW HTMLSubmit( HTMLWidget, name, value,
 						     currentFont() );
 		submit->setForm( form );
 		form->addElement( submit );
@@ -2183,7 +2062,7 @@ void KHTMLParser::parseTagInput(void)
 
 	case Button:
 	    {
-		HTMLButton *button = new HTMLButton( HTMLWidget,name,value,
+		HTMLButton *button = NEW HTMLButton( HTMLWidget,name,value,
 						     handlers, currentFont() );
 		button->setForm( form );
 		form->addElement( button );
@@ -2194,7 +2073,7 @@ void KHTMLParser::parseTagInput(void)
 	case Text:
 	case Password:
 	    {
-		HTMLTextInput *ti = new HTMLTextInput( HTMLWidget, name, value, 
+		HTMLTextInput *ti = NEW HTMLTextInput( HTMLWidget, name, value, 
 						       size, maxLen, 
 						       (type == Password),
 						       currentFont() );
@@ -2207,10 +2086,11 @@ void KHTMLParser::parseTagInput(void)
 	    break;
 
 	case Image:
-	    if ( !imgSrc.isEmpty() )
+	    if ( !imgSrc.length() )
 	    {
 		KURL kurl( HTMLWidget->getBaseURL(), imgSrc );
-		HTMLImageInput *ii = new HTMLImageInput( HTMLWidget, kurl.url(),
+		HTMLImageInput *ii = NEW HTMLImageInput( HTMLWidget, 
+							 NEWSTRING(kurl.url()),
 							 name );
 		ii->setForm( form );
 		form->addElement( ii );
@@ -2273,16 +2153,16 @@ void KHTMLParser::parseTagLi(void)
         listLevel = listStack.count();
         indentSize = currentStyle->text.indent;
     }
-    HTMLClueFlow *f = new HTMLClueFlow();
+    HTMLClueFlow *f = NEW HTMLClueFlow();
     _clue->append( f );
-    HTMLClueH *c = new HTMLClueH();
+    HTMLClueH *c = NEW HTMLClueH();
     c->setVAlign( HTMLClue::Top );
     f->append( c );
 
 //@@WABA: This should be handled differently
 
     // fixed width spacer
-    HTMLClueV *vc = new HTMLClueV();
+    HTMLClueV *vc = NEW HTMLClueV();
     vc->setFixedWidth( indentSize ); // Fixed width clue
     vc->setVAlign( HTMLClue::Top );
     c->append( vc );
@@ -2290,15 +2170,15 @@ void KHTMLParser::parseTagLi(void)
     switch ( listType )
     {
     case Unordered:
-	flow = new HTMLClueFlow();
+	flow = NEW HTMLClueFlow();
 	flow->setHAlign( HTMLClue::Right );
 	vc->append( flow );
-	flow->append( new HTMLBullet( currentStyle->font.fp->pointSize(),
+	flow->append( NEW HTMLBullet( currentStyle->font.fp->pointSize(),
 		listLevel, settings->fontBaseColor ) );
 	break;
 
     case Ordered:
-	flow = new HTMLClueFlow();
+	flow = NEW HTMLClueFlow();
 	flow->setHAlign( HTMLClue::Right );
 	vc->append( flow );
 	switch ( listNumType )
@@ -2312,11 +2192,11 @@ void KHTMLParser::parseTagLi(void)
 		break;
 
 	    case LowAlpha:
-		item += (char) ('a' + itemNumber - 1);
+		item += (QChar) ('a' + itemNumber - 1);
 		break;
 
 	    case UpAlpha:
-		item += (char) ('A' + itemNumber - 1);
+		item += (QChar) ('A' + itemNumber - 1);
 		break;
 
 	    default:
@@ -2324,20 +2204,19 @@ void KHTMLParser::parseTagLi(void)
 	}
 	item += ". ";
 	flow->append(
-		new HTMLText( ht->newString( item.data(), 
-					     item.length() ),
-			      currentFont(),
-			      painter) 
-		);
+	    NEW HTMLText( NEWSTRING( item ),
+			  currentFont(),
+			  painter) 
+	    );
 	break;
 
     default:
 	break;
     }
 
-    vc = new HTMLClueV();
+    vc = NEW HTMLClueV();
     c->append( vc );
-    flow = new HTMLClueFlow();
+    flow = NEW HTMLClueFlow();
     vc->append( flow );
     if ( listStack.count() > 0 )
 	listStack.top()->itemNumber++;
@@ -2350,78 +2229,67 @@ void KHTMLParser::parseTagLink(void)
 
 void KHTMLParser::parseTagMap(void)
 {
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "name=", 5 ) == 0)
+	if ( token->id == ATTR_NAME )
 	{
 	    QString mapurl = "#";
-	    mapurl += token+5;
-	    HTMLWidget->addMap( ht->newString( mapurl.data() ) );
+	    mapurl += token->value();
+	    HTMLWidget->addMap( mapurl );
 	}
     }
 }
 
 void KHTMLParser::parseTagMeta(void)
 {
-    QString httpequiv;
-    QString name;
-    QString content;
+    HTMLString httpequiv;
+    HTMLString name;
+    HTMLString content;
     
-    const char *token;
+    const Attribute *token;
     
     while( (token = ht->nextOption()) != 0)
     {
 	debugM("token: %s\n",token);
-	if ( strncasecmp( token, "name=", 5 ) == 0)
-	    name=token+5;
-	else if ( strncasecmp( token, "http-equiv=", 11 ) == 0)
- 	    httpequiv=token+11;
- 	else if ( strncasecmp( token, "content=", 8 ) == 0)
-	    content=token+8;
+	if ( token->id == ATTR_NAME )
+	    name=token->value();
+	else if ( token->id == ATTR_HTTP_EQUIV )
+ 	    httpequiv=token->value();
+ 	else if ( token->id == ATTR_CONTENT )
+	    content=token->value();
     }
     debugM( "Meta: name=%s httpequiv=%s content=%s\n",
-                          (const char *)name,(const char *)httpequiv,(const char *)content );
-    if (!httpequiv.isEmpty() && !content.isNull())
+	    name.string().latin1(),httpequiv.string().latin1(),
+	    content.string().latin1() );
+    if (!httpequiv.length())
     {
-        if(strcasecmp(httpequiv.data(),"content-type") == 0)
-        {
-	    stringTok->tokenize( content, " >;" );
-	    while ( stringTok->hasMoreTokens() )
-	    {
-		const char* token = stringTok->nextToken();
-		debugM("token: %s\n",token);
-		if ( strncasecmp( token, "charset=", 8 ) == 0)
-		    if( !HTMLWidget->overrideCharset )
-			setCharset(token+8);
-            }                         
-	}
-	if ( strcasecmp(httpequiv.data(), "refresh") == 0 )
+	if ( ustrcasecmp(httpequiv, "refresh") == 0 )
 	{
-	    stringTok->tokenize( content, " >;" );
-	    QString t = stringTok->nextToken();
-	    bool ok;
-            int delay = t.toInt( &ok );
+	    const QChar separ[] = { ' ', '>', ';', 0x0 };
+	    stringTok->tokenize( content, separ );
+	    HTMLString t = stringTok->nextToken();
+            int delay = t.toInt();
 	    QString url = HTMLWidget->actualURL.url();
-	    if ( !ok ) delay = 0;
 	    while ( stringTok->hasMoreTokens() )
 	    {
-	        const char* token = stringTok->nextToken();
-	        debugM("token: %s\n",token);
-		if ( strncasecmp( token, "url=", 4 ) == 0 )
+	        HTMLString token = stringTok->nextToken();
+	        debugM("token: %s\n",token.string().latin1());
+		QChar urlchars [] = { 'u', 'r', 'l', '=' };
+		if ( ustrncasecmp( token.unicode(), urlchars, 4 ) == 0 )
 		{
-		     token += 4;
-		     if ( *token == '#' )
-		     {// reference
-		         KURL u( HTMLWidget->actualURL );
-		         u.setRef( token + 1 );
-		         url = u.url();
-		     }
-		     else 
-		     {
-		         KURL u( HTMLWidget->baseURL, token );
-		         url = u.url();
-		     }
+		    token += 4;
+		    if ( token[0] == '#' )
+		    {// reference
+			KURL u( HTMLWidget->actualURL );
+			u.setRef( token );
+			url = u.url();
+		    }
+		    else 
+		    {
+			KURL u( HTMLWidget->baseURL, token );
+			url = u.url();
+		    }
 		}
 	    }
 	    // set up the redirect...
@@ -2467,12 +2335,12 @@ void KHTMLParser::parseTagOl(void)
 
     ListNumType listNumType = Numeric;
 
-    const char *token;
+    const Attribute *token;
     while( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "type=", 5 ) == 0 )
+	if ( token->id == ATTR_TYPE )
 	{
-	    switch ( *(token+5) )
+	    switch ( *(token->value().unicode()) )
 	    {
 		case 'i':
 			listNumType = LowRoman;
@@ -2507,18 +2375,17 @@ void KHTMLParser::parseTagOption(void)
     if ( !formSelect )
  	return;
 
-    QString value = "";
+    HTMLString value;
     bool selected = false;
 
-    const char *token;
+    const Attribute *token;
     while( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "value=", 6 ) == 0 )
+	if ( token->id == ATTR_VALUE )
 	{
-		const char *p = token + 6;
-		value = p;
+		value = token->value();
 	}
-	else if ( strncasecmp( token, "selected", 8 ) == 0 )
+	else if ( token->id == ATTR_SELECTED )
 	{
 		selected = true;
 	}
@@ -2546,16 +2413,16 @@ void KHTMLParser::parseTagP(void)
     vspace_inserted = insertVSpace( vspace_inserted );
     HTMLClue::HAlign align = divAlign;
 
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {    
-	if ( strncasecmp( token, "align=", 6 ) == 0 )
+	if ( token->id == ATTR_ALIGN )
 	{
-	    if ( strcasecmp( token + 6, "center") == 0 )
+	    if ( ustrcasecmp( token->value(), "center") == 0 )
 		align = HTMLClue::HCenter;
-	    else if ( strcasecmp( token + 6, "right") == 0 )
+	    else if ( ustrcasecmp( token->value(), "right") == 0 )
 		align = HTMLClue::Right;
-	    else if ( strcasecmp( token + 6, "left") == 0 )
+	    else if ( ustrcasecmp( token->value(), "left") == 0 )
 		align = HTMLClue::Left;
 	}
     }
@@ -2622,29 +2489,28 @@ void KHTMLParser::parseTagSelect()
     if ( !form )
         return;
 
-    QString name = "";
+    HTMLString name;
     int size = 0;
     bool multi = false;
 
-    const char *token;
+    const Attribute *token;
     while( (token = ht->nextOption()) != 0)
     {
-    	if ( strncasecmp( token, "name=", 5 ) == 0 )
+    	if ( token->id == ATTR_NAME )
 	{
-	    const char *p = token + 5;
-	    name = p;
+	    name = token->value();
 	}
-	else if ( strncasecmp( token, "size=", 5 ) == 0 )
+	else if ( token->id == ATTR_SIZE )
 	{
-	    size = atoi( token + 5 );
+	    size = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "multiple", 8 ) == 0 )
+	else if ( token->id == ATTR_MULTIPLE )
 	{
 	    multi = true;
 	}
     }
 
-    formSelect = new HTMLSelect( HTMLWidget, name, size, multi,
+    formSelect = NEW HTMLSelect( HTMLWidget, name, size, multi,
 				     currentFont() );
     formSelect->setForm( form );
     form->addElement( formSelect );
@@ -2719,19 +2585,19 @@ void KHTMLParser::parseTagTable(void)
     // <col> <colgroup> </colgroup>
     // <thead> </thead> <tbody> </tbody> <tfoot> </tfoot>
  
-    static const int endthtd[] = { ID_TH + ID_CLOSE_TAG, 
+    static const uint endthtd[] = { ID_TH + ID_CLOSE_TAG, 
     				    ID_TD + ID_CLOSE_TAG,
     				    ID_TR + ID_CLOSE_TAG,
     				    ID_TH, ID_TD, ID_TR,
     				    ID_TABLE + ID_CLOSE_TAG, 
     				    ID_BODY + ID_CLOSE_TAG, 
     				    0 };
-    static const int endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
+    static const uint endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
     				   ID_TR, ID_TD, ID_TH,
    				   ID_BODY + ID_CLOSE_TAG, 
     				   0 };    
-    static const int endall[] = { ID_CAPTION + ID_CLOSE_TAG,
+    static const uint endall[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
 				   ID_TH + ID_CLOSE_TAG, 
     				   ID_TD + ID_CLOSE_TAG,
@@ -2740,7 +2606,7 @@ void KHTMLParser::parseTagTable(void)
    				   ID_BODY + ID_CLOSE_TAG, 
     				   0 };    
 
-    const char* str = 0;
+    HTMLString str;
     bool firstRow = true;
     bool tableTag = true;
     bool noCell = true;
@@ -2749,7 +2615,7 @@ void KHTMLParser::parseTagTable(void)
     int width = 0;
     int percent = UNDEFINED;
     int border = 0;
-    char has_cell = 0;
+    bool has_cell = 0;
     HTMLClue::VAlign rowvalign = HTMLClue::VNone;
     HTMLClue::HAlign rowhalign = HTMLClue::HNone;
     HTMLClue::HAlign align = HTMLClue::HNone;
@@ -2764,50 +2630,50 @@ void KHTMLParser::parseTagTable(void)
     QColor tableColor;
     QColor rowColor;
 
-    const char *token;
+    const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "cellpadding=", 12 ) == 0 )
+	if ( token->id == ATTR_CELLPADDING )
 	{
-	    padding = atoi( token + 12 );
+	    padding = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "cellspacing=", 12 ) == 0 )
+	else if ( token->id == ATTR_CELLSPACING )
 	{
-	    spacing = atoi( token + 12 );
+	    spacing = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "border", 6 ) == 0 )
+	else if ( token->id == ATTR_BORDER )
 	{
-	    if ( *(token + 6) == '=' )
-		border = atoi( token + 7 );
+	    if ( token->value().length() )
+		border = token->value().toInt();
 	    else
 		border = 1;
 	}
-	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	else if ( token->id == ATTR_WIDTH )
 	{
-	    if ( strchr( token+6, '%' ) )
-		percent = atoi( token + 6 );
-	    else if ( strchr( token+6, '*' ) )
+	    if ( token->value().percentage(percent) )
+            { /* Percent set */ }
+	    else if ( ustrchr( token->value().unicode(), '*' ) )
 	    { /* ignore */ }
 	    else {
-		width = atoi( token + 6 );
+		width = token->value().toInt();
 		percent = 0; // fixed width
 	    }
 	}
-	else if (strncasecmp( token, "align=", 6 ) == 0)
+	else if ( token->id == ATTR_ALIGN )
 	{
-	    if ( strcasecmp( token + 6, "left" ) == 0 )
+	    if ( ustrcasecmp( token->value(), "left" ) == 0 )
 		align = HTMLClue::Left;
-	    else if ( strcasecmp( token + 6, "right" ) == 0 )
+	    else if ( ustrcasecmp( token->value(), "right" ) == 0 )
 		align = HTMLClue::Right;
 	}
-	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	else if ( token->id == ATTR_BGCOLOR )
 	{
-	    setNamedColor( tableColor, token+8 );
+	    setNamedColor( tableColor, token->value() );
 	    rowColor = tableColor;
 	}
     }
 
-    HTMLTable *table = new HTMLTable( percent, width, padding, spacing, border );
+    HTMLTable *table = NEW HTMLTable( percent, width, padding, spacing, border );
     //       __clue->append( table ); 
     // CC: Moved at the end since we might decide to discard the table while parsing...
 
@@ -2820,26 +2686,26 @@ void KHTMLParser::parseTagTable(void)
 	str = ht->nextToken();
 
 	// Every tag starts with an escape character
-	if ( str[0] == TAG_ESCAPE )
+	if ( *str.unicode() == QChar(TAG_ESCAPE) )
 	{
-	    str++;
+	    ++str;
 
 	    tableTag = true;
 
-	    tagID = *((unsigned char *)str++);
+	    tagID = str[0].unicode();
 	    for(;;) 
 	    {
 		if ( tagID == ID_CAPTION )
 		{
 		    while ( (token = ht->nextOption()) != 0)
 		    {
-			if ( strncasecmp( token, "align=", 6 ) == 0)
+			if ( token->id == ATTR_ALIGN )
 			{
-			    if ( strncasecmp( token+6, "top", 3 ) == 0)
+			    if ( ustrcasecmp( token->value(), QString("top")) == 0)
 				capAlign = HTMLClue::Top;
 			}
 		    }
-		    caption = new HTMLClueV();
+		    caption = NEW HTMLClueV();
 		    divAlign = HTMLClue::HCenter;
 		    flow = 0;
 		    _clue = caption;
@@ -2889,27 +2755,27 @@ void KHTMLParser::parseTagTable(void)
 
 		    while ( (token = ht->nextOption()) != 0)
 		    {
-			if ( strncasecmp( token, "valign=", 7 ) == 0)
+			if ( token->id == ATTR_VALIGN )
 			{
-			    if ( strncasecmp( token+7, "top", 3 ) == 0)
+			    if ( ustrcasecmp( token->value(), "top" ) == 0)
 				rowvalign = HTMLClue::Top;
-			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+			    else if ( ustrcasecmp( token->value(), "bottom" ) == 0)
 				rowvalign = HTMLClue::Bottom;
 			    else
 				rowvalign = HTMLClue::VCenter;
 			}
-			else if ( strncasecmp( token, "align=", 6 ) == 0)
+			else if ( token->id == ATTR_ALIGN )
 			{
-			    if ( strcasecmp( token+6, "left" ) == 0)
+			    if ( ustrcasecmp( token->value(), "left" ) == 0)
 				rowhalign = HTMLClue::Left;
-			    else if ( strcasecmp( token+6, "right" ) == 0)
+			    else if ( ustrcasecmp( token->value(), "right" ) == 0)
 				rowhalign = HTMLClue::Right;
-			    else if ( strcasecmp( token+6, "center" ) == 0)
+			    else if ( ustrcasecmp( token->value(), "center" ) == 0)
 				rowhalign = HTMLClue::HCenter;
 			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+			else if ( token->id == ATTR_BGCOLOR )
 			{
-			    setNamedColor( rowColor, token+8 );
+			    setNamedColor( rowColor, token->value() );
 			}
 		    }
 		    break; // Get next token from 'ht'
@@ -2931,7 +2797,7 @@ void KHTMLParser::parseTagTable(void)
 		    bool heading = false;
 		    noCell = false;
 
-		    // if ( strncasecmp( str, "<th", 3 ) == 0 )
+		    // if ( ustrncasecmp( str, "<th", 3 ) == 0 )
 		    if (tagID == ID_TH)
 			    heading = true;
 		    // <tr> may not be specified for the first row
@@ -2960,56 +2826,56 @@ void KHTMLParser::parseTagTable(void)
 		    {
  		      while ( (token = ht->nextOption()) != 0)
 		      {
-			if ( strncasecmp( token, "rowspan=", 8 ) == 0)
+			if ( token->id == ATTR_ROWSPAN )
 			{
-			    rowSpan = atoi( token+8 );
+			    rowSpan = token->value().toInt();
 			    if ( rowSpan < 1 )
 				rowSpan = 1;
 			}
-			else if ( strncasecmp( token, "colspan=", 8 ) == 0)
+			else if ( token->id == ATTR_COLSPAN )
 			{
-			    colSpan = atoi( token+8 );
+			    colSpan = token->value().toInt();
 			    if ( colSpan < 1 )
 				colSpan = 1;
 			}
-			else if ( strncasecmp( token, "valign=", 7 ) == 0)
+			else if ( token->id == ATTR_VALIGN )
 			{
-			    if ( strncasecmp( token+7, "top", 3 ) == 0)
+			    if ( ustrcasecmp( token->value(), "top") == 0)
 				valign = HTMLClue::Top;
-			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+			    else if ( ustrcasecmp( token->value(), "bottom") == 0)
 				valign = HTMLClue::Bottom;
 			    else
 				valign = HTMLClue::VCenter;
 			}
-			else if ( strncasecmp( token, "align=", 6 ) == 0)
+			else if ( token->id == ATTR_ALIGN )
 			{
-			    if ( strcasecmp( token+6, "center" ) == 0)
+			    if ( ustrcasecmp( token->value(), "center" ) == 0)
 				divAlign = HTMLClue::HCenter;
-			    else if ( strcasecmp( token+6, "right" ) == 0)
+			    else if ( ustrcasecmp( token->value(), "right" ) == 0)
 				divAlign = HTMLClue::Right;
-			    else if ( strcasecmp( token+6, "left" ) == 0)
+			    else if ( ustrcasecmp( token->value(), "left" ) == 0)
 				divAlign = HTMLClue::Left;
 			}
-			else if ( strncasecmp( token, "width=", 6 ) == 0 )
+			else if ( token->id == ATTR_WIDTH )
 			{
-			    if ( strchr( token + 6, '%' ) )
-				percent = atoi( token + 6 );
-			    else if ( strchr( token+6, '*' ) )
+			    if ( token->value().percentage(percent) )
+			    { /* percent set */ }
+			    else if ( ustrchr( token->value().unicode(), '*' ) )
 			    { /* ignore */ }
 			    else
 			    {
-				cellWidth = atoi( token + 6 );
+				cellWidth = token->value().toInt();
 				percent = 0; // Fixed with
 			    }
 			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+			else if ( token->id == ATTR_BGCOLOR )
 			{
-			    setNamedColor( bgcolor, token+8 );
+			    setNamedColor( bgcolor, token->value() );
 			}
 		      } // while (ht->nextOption)
 		    } // if(tableEntry)
 
-		    HTMLTableCell *cell = new HTMLTableCell( percent, cellWidth,
+		    HTMLTableCell *cell = NEW HTMLTableCell( percent, cellWidth,
 			rowSpan, colSpan, padding );
 		    if ( bgcolor.isValid() )
 			cell->setBGColor( bgcolor );
@@ -3091,7 +2957,7 @@ void KHTMLParser::parseTagTable(void)
 			if ( !tmpCell )
 			{
 			    // Variable width cell
-			    tmpCell = new HTMLTableCell( UNDEFINED, UNDEFINED, 1, 1, padding );
+			    tmpCell = NEW HTMLTableCell( UNDEFINED, UNDEFINED, 1, 1, padding );
 			    if ( tableColor.isValid() )
 				tmpCell->setBGColor( tableColor );
 			}
@@ -3141,7 +3007,7 @@ void KHTMLParser::parseTagTable(void)
 	}
 	else
 	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned( __clue );
+	    HTMLClueAligned *aligned = NEW HTMLClueAligned( __clue );
 	    aligned->setHAlign( align );
 	    aligned->append( table );
 	    __clue->append( aligned );
@@ -3166,27 +3032,27 @@ void KHTMLParser::parseTagTextarea(void)
     if ( !form )
 	return;
 
-    QString name = "";
+    HTMLString name;
     int rows = 5, cols = 40;
 
-    const char *token;
+    const Attribute *token;
     while( (token = ht->nextOption()) != 0)
     {
-	if ( strncasecmp( token, "name=", 5 ) == 0 )
+	if ( token->id == ATTR_NAME )
 	{
-	    name = token + 5;
+	    name = token->value();
 	}
-	else if ( strncasecmp( token, "rows=", 5 ) == 0 )
+	else if ( token->id == ATTR_ROWS )
 	{
-	    rows = atoi( token + 5 );
+	    rows = token->value().toInt();
 	}
-	else if ( strncasecmp( token, "cols=", 5 ) == 0 )
+	else if ( token->id == ATTR_COLS )
 	{
-	    cols = atoi( token + 5 );
+	    cols = token->value().toInt();
 	}
     }
 
-    formTextArea = new HTMLTextArea( HTMLWidget, name, rows, cols,
+    formTextArea = NEW HTMLTextArea( HTMLWidget, name, rows, cols,
 						 currentFont() );
     formTextArea->setForm( form );
     form->addElement( formTextArea );
@@ -3240,11 +3106,11 @@ void KHTMLParser::parseTagUL(void)
 
     ListType type = Unordered;
 
-    const char *token;
+    const Attribute *token;
     
     while( (token = ht->nextOption()) != 0)
     {
-        if ( strncasecmp( token, "plain", 5 ) == 0 )
+        if ( token->id == ATTR_PLAIN )
 	    type = UnorderedPlain;
     }
 
@@ -3259,44 +3125,3 @@ void KHTMLParser::parseTagVar(void)
     currentStyle->font.style = CSSStyleFont::stItalic;
     setFont();
 }
-
-
-bool KHTMLParser::setCharset(const char *name)
-{
-	KCharsets *charsets=kapp->getCharsets();
-	KCharset charset;
-        if (!name || !name[0])
-          charset=charsets->defaultCharset();
-	else
-	  charset=KCharset(name);
-	if (!charset.isDisplayable()){
-		if (charsetConverter) delete charsetConverter;
-	        charsetConverter=0;
-		if (!charset.isAvailable()){
-			warning("Charset %s not available",name);
-			return FALSE;
-		}
-		debugM("Initializing conversion from %s\n",charset.name());
-		charsetConverter=new KCharsetConverter(charset
-				,KCharsetConverter::AMP_SEQUENCES);
-		if (!charsetConverter->ok()){
-			warning("Couldn't initialize converter from %s",
-			          name);
-			delete charsetConverter;
-			charsetConverter=0;
-			return FALSE;
-		}
-	        charset=charsetConverter->outputCharset();
-	}
-	else{
-	  if (charsetConverter) delete charsetConverter;
-	  charsetConverter=0;
-	}  
- 	debugM("Setting charset to: %s\n",charset.name());
-	settings->charset=charset;
-        if (currentFont()!=0){	
-          setFont();
-	}
-	return TRUE;
-}
-

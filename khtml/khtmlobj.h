@@ -32,7 +32,7 @@
 
 #include <qpainter.h>
 #include <qlist.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qarray.h>
 #include <qpixmap.h>
 #include <qstack.h>
@@ -40,6 +40,7 @@
 #include <qtimer.h>
 
 #include <kurl.h>
+#include "khtmlstring.h"
 
 //
 // External Classes
@@ -55,7 +56,7 @@ class HTMLClueAligned;
 class HTMLChain;
 class HTMLIterator;
 class KHTMLWidget;
-
+class HTMLAnchor;
 class HTMLCell;
 
 /**
@@ -71,7 +72,21 @@ public:
   int ty;
 };
 
-class HTMLAnchor;
+class HTMLAllocator
+{
+public:
+    HTMLAllocator(long _blockSize);
+    ~HTMLAllocator();
+    void* allocate(size_t _size);
+    HTMLString newString( const QString &str );
+                
+protected:    
+    long blockSize;
+    QList<char> memoryBlocks;
+    char *currentBlock;
+    long blockOffset;
+};
+
 
 typedef enum { HTMLNoFit, HTMLPartialFit, HTMLCompleteFit } HTMLFitType;
 
@@ -83,6 +98,10 @@ const int UNDEFINED = -1;
 class HTMLObject
 {
 public:
+    static void * operator new(size_t _size, HTMLAllocator *allocator)
+    { return allocator->allocate(_size); }
+    static void operator delete(void *) { /* empty! */ }
+    
     HTMLObject();
     virtual ~HTMLObject() { objCount--; }
 
@@ -152,7 +171,7 @@ public:
 
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int ) { return 0; }
-    virtual void selectByURL(KHTMLWidget *, HTMLChain *, const char *, bool,
+    virtual void selectByURL(KHTMLWidget *, HTMLChain *, QString, bool,
 	int _tx, int _ty);
     virtual void select( KHTMLWidget *, HTMLChain *, bool, int _tx, int _ty );
 
@@ -177,7 +196,7 @@ public:
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
 
-    virtual void getSelected( QStrList & );
+    virtual void getSelected( QStringList & );
     virtual void getSelectedText( QString & ) {}
 
     /**
@@ -195,16 +214,6 @@ public:
 
     virtual void reset() { setPrinted( false ); }
 
-    /********************************
-     * These two functions are overloaded by objects that need to have a remote
-     * file downloaded, e.g. HTMLMap.
-     *
-     * fileLoaded is called when the requested file has arrived.
-     */
-    virtual void fileLoaded( const char * /*_url*/, 
-			     const char * /*localfile*/ ) { }
-    virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */, 
-			     bool /* eof */ = false ) { return false; }
 
     /**
      * This function is called from the imagecache, when it can deliver
@@ -247,8 +256,8 @@ public:
     /**
      * return the URL associated with this object if available, else 0.
      */
-    virtual const char* getURL() const { return 0; }
-    virtual const char* getTarget() const { return 0; }
+    virtual HTMLString getURL() const { return 0; }
+    virtual HTMLString getTarget() const { return 0; }
 
     void setPos( int _x, int _y ) { y=_y; x=_x; }
     void setXPos( int _x ) { x=_x; }
@@ -283,7 +292,7 @@ public:
      * '_point' is modified so that it holds the position of the anchor relative
      * to the parent.
      */
-    virtual HTMLAnchor* findAnchor( const char * /*_name*/, int &/* x */, int &/* y*/)
+    virtual HTMLAnchor* findAnchor( QString /*_name*/, int &/* x */, int &/* y*/)
 			{ return 0L; }
 
     /**
@@ -335,6 +344,21 @@ protected:
     short flags;
     HTMLObject *nextObj;
     static int objCount;
+};
+
+class HTMLFileRequester 
+{
+public:
+    /********************************
+     * These two functions are overloaded by objects that need to have a remote
+     * file downloaded, e.g. HTMLMap.
+     *
+     * fileLoaded is called when the requested file has arrived.
+     */
+    virtual void fileLoaded( QString /*_url*/, 
+			     QString /*localfile*/ ) = 0;
+    virtual bool fileLoaded( QString /* _url */, QBuffer& /* _buffer */, 
+			     bool /* eof */ = false ) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -396,7 +420,7 @@ class HTMLText : public HTMLObject
 {
 	friend HTMLTextSlave;
 public:
-    HTMLText( const char*, const HTMLFont *, QPainter *);
+    HTMLText( HTMLString, const HTMLFont *, QPainter *);
     HTMLText( const HTMLFont *, QPainter * );
     virtual ~HTMLText();
 
@@ -418,7 +442,7 @@ protected:
     int getCharIndex( int _xpos );
 
 protected:
-    const char* text;
+    HTMLString text;
     const HTMLFont *font;
     short selStart;
     short selEnd;
@@ -428,7 +452,7 @@ class HTMLTextMaster : public HTMLText
 {
 	friend HTMLTextSlave;
 public:
-    HTMLTextMaster( const char* _text, const HTMLFont *_font, 
+    HTMLTextMaster( HTMLString _text, const HTMLFont *_font, 
     				QPainter *_painter);
     	             
     virtual int  calcMinWidth() { return minWidth; }
@@ -457,6 +481,9 @@ protected:
 class HTMLTextSlave : public HTMLObject
 {
 public:
+    static void * operator new(size_t _size)
+    { return malloc(_size); }
+    static void operator delete(void *p) { free(p); }
     HTMLTextSlave( HTMLTextMaster *_owner, short _posStart, short _posLen);
     virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
@@ -471,8 +498,8 @@ public:
     virtual bool selectText( const QRegExp &exp );
     virtual bool isSlave() const { return 1; }
 
-    virtual const char* getURL() const { return owner->getURL(); }
-    virtual const char* getTarget() const { return owner->getTarget(); }
+    virtual HTMLString getURL() const { return owner->getURL(); }
+    virtual HTMLString getTarget() const { return owner->getTarget(); }
 
     virtual const char * objectName() const { return "HTMLTextSlave"; }
 
@@ -480,7 +507,7 @@ protected:
     int getCharIndex( int _xpos );
 
 protected:
-	HTMLTextMaster *owner;
+    HTMLTextMaster *owner;
     short posStart;
     short posLen;
 };
@@ -493,20 +520,20 @@ protected:
 class HTMLLinkText : public HTMLText
 {
 public:
-    HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    char *_url, const char *_target)
+    HTMLLinkText( HTMLString _str, const HTMLFont *_font, QPainter *_painter,
+	    HTMLString _url, HTMLString _target)
 	: HTMLText( _str, _font, _painter)
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkText() { }
 
-    virtual const char* getURL() const { return url; }
-    virtual const char* getTarget() const { return target; }
+    virtual HTMLString getURL() const { return url; }
+    virtual HTMLString getTarget() const { return target; }
 
     virtual const char * objectName() const { return "HTMLLinkText"; };
 
 protected:
-    const char *url;
-    const char *target;
+    HTMLString url;
+    HTMLString target;
 };
 
 //-----------------------------------------------------------------------------
@@ -517,20 +544,20 @@ protected:
 class HTMLLinkTextMaster : public HTMLTextMaster
 {
 public:
-    HTMLLinkTextMaster( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    const char *_url, const char *_target)
+    HTMLLinkTextMaster( HTMLString _str, const HTMLFont *_font, QPainter *_painter,
+			HTMLString _url, HTMLString _target)
 	: HTMLTextMaster( _str, _font, _painter)
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkTextMaster() { }
 
-    virtual const char* getURL() const { return url; }
-    virtual const char* getTarget() const { return target; }
+    virtual HTMLString getURL() const { return url; }
+    virtual HTMLString getTarget() const { return target; }
 
     virtual const char * objectName() const { return "HTMLLinkTextMaster"; };
 
 protected:
-    const char *url;
-    const char *target;
+    HTMLString url;
+    HTMLString target;
 };
 
 //-----------------------------------------------------------------------------
@@ -604,18 +631,18 @@ private:
 class HTMLAnchor : public HTMLObject
 {
 public:
-    HTMLAnchor( const char *_name ) : name( _name ) {}
+    HTMLAnchor( HTMLString _name ) : name( _name ) {}
     virtual ~HTMLAnchor() { }
 
-    const char* getName() { return name.ascii(); }
+    const QString getName() { return name; }
 
     virtual VAlign isVAligned( void ) { return Top; }
-    virtual HTMLAnchor* findAnchor( const char *_name, int &_x, int &_y );
+    virtual HTMLAnchor* findAnchor( QString _name, int &_x, int &_y );
 
     virtual const char * objectName() const { return "HTMLAnchor"; };
 
 protected:
-    QString name;
+    HTMLString name;
 };
 
 //-----------------------------------------------------------------------------
@@ -623,8 +650,8 @@ protected:
 class HTMLImage : public HTMLObject
 {
 public:
-    HTMLImage( KHTMLWidget *widget, const char *, const char *_url,
-		const char *_target, 
+    HTMLImage( KHTMLWidget *widget, HTMLString /*ImageURL*/, HTMLString _url,
+		HTMLString _target, 
 		int _width = UNDEFINED, int _height = UNDEFINED, 
 		int _percent = UNDEFINED, int bdr = 0 );
     virtual ~HTMLImage();
@@ -644,15 +671,16 @@ public:
     virtual int  getAbsX();
     virtual int  getAbsY();
 
-    virtual void changeImage( const char *_url );
+    // ####### seems to be unused, but possibly useful for jscript
+    virtual void changeImage( HTMLString _url );
 
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * = 0 );
 
-    void setOverlay( const char *ol );
+    void setOverlay( HTMLString ol );
 
-    virtual const char* getURL() const { return url; }
-    virtual const char* getTarget() const { return target; }
+    virtual HTMLString  getURL() const { return url; }
+    virtual HTMLString  getTarget() const { return target; }
 
     void setBorderColor( const QColor &color )
 	{   borderColor = color; }
@@ -663,9 +691,9 @@ public:
 protected:
 
     int percent;
-	/*
-	 * The desired dimensions of the image. If -1, the actual image will
-	 * determine this value when it is loaded.
+    /*
+     * The desired dimensions of the image. If -1, the actual image will
+     * determine this value when it is loaded.
      */
     int predefinedWidth;
     int predefinedHeight;
@@ -677,13 +705,13 @@ protected:
 
     QColor borderColor;
 
-	/*
-	 * The dimensions of the image during the last 'setMaxWidth'.
-	 * If a new image is set with different dimensions, we need to 
-	 * recalculate the layout.
-	 */
-	int lastWidth;
-	int lastHeight;
+    /*
+     * The dimensions of the image during the last 'setMaxWidth'.
+     * If a new image is set with different dimensions, we need to 
+     * recalculate the layout.
+     */
+    int lastWidth;
+    int lastHeight;
  
     /*
      * Some stuff for vertical alignment
@@ -705,13 +733,15 @@ protected:
     /**
      * The URL of this image.
      */
-    QString imageURL;
+    HTMLString imageURL;
     
     KHTMLWidget *htmlWidget;
     
-
-    const char *url;
-    const char *target;
+    /*
+     * The URL this image points to 
+     */
+    HTMLString url;
+    HTMLString target;
 
     // The absolute position of this object on the page
     int absX;
@@ -727,26 +757,27 @@ protected:
 class HTMLArea
 {
 public:
-    HTMLArea( const QPointArray &_points, const char *_url,
-	    const char *_target = 0 );
-    HTMLArea( const QRect &_rect, const char *_url, const char *_target = 0 );
-    HTMLArea( int _x, int _y, int _r, const char *_url,
-	    const char *_target = 0 );
+    HTMLArea( const QPointArray &_points, HTMLString _url,
+	    HTMLString _target = 0 );
+    HTMLArea( const QRect &_rect, HTMLString _url, 
+	      HTMLString _target = 0 );
+    HTMLArea( int _x, int _y, int _r, HTMLString _url,
+	      HTMLString _target = 0 );
 
     enum Shape { Poly, Rect, Circle };
 
     bool contains( const QPoint &_point ) const
 	    {	return region.contains( _point ); }
 
-    const char *getURL() const
+    HTMLString getURL() const
 	    {	return url; }
-    const char *getTarget() const
+    HTMLString getTarget() const
 	    {	return target; }
 
 protected:
     QRegion region;
-    const char *url;
-    const char *target;
+    HTMLString url;
+    HTMLString target;
 };
 
 //----------------------------------------------------------------------------
@@ -757,22 +788,22 @@ protected:
  * This object is derived from HTMLObject so that it can make use of
  * URLLoaded().
  */
-class HTMLMap : public HTMLObject
+class HTMLMap : public HTMLFileRequester
 {
 public:
-    HTMLMap( KHTMLWidget *w, const char *_url );
+    HTMLMap( KHTMLWidget *w, HTMLString _url );
     virtual ~HTMLMap();
 
-    virtual void fileLoaded( const char*, 
-			     const char* _filename );
-    virtual bool fileLoaded( const char* _url, QBuffer& _buffer, 
+    virtual void fileLoaded( QString, 
+			     QString _filename );
+    virtual bool fileLoaded( QString _url, QBuffer& _buffer, 
 			     bool = false );
 
     void addArea( HTMLArea *_area )
 	    {	areas.append( _area ); }
     const HTMLArea *containsPoint( int, int );
 
-    const char *mapURL() const
+    HTMLString mapURL() const
 	    {	return mapurl; }
 
     virtual const char * objectName() const { return "HTMLMap"; };
@@ -782,7 +813,7 @@ protected:
   
     QList<HTMLArea> areas;
     KHTMLWidget *htmlWidget;
-    const char *mapurl;
+    HTMLString mapurl;
 };
 
 //----------------------------------------------------------------------------
@@ -790,20 +821,20 @@ protected:
 class HTMLImageMap : public HTMLImage
 {
 public:
-    HTMLImageMap( KHTMLWidget *widget, const char*, 
-                  const char *_url, const char *_target, 
+    HTMLImageMap( KHTMLWidget *widget, HTMLString, 
+                  HTMLString _url, HTMLString _target, 
                   int _width = UNDEFINED, int _height = UNDEFINED, 
                   int _percent = UNDEFINED, int brd = 0 );
     virtual ~HTMLImageMap() {}
 
     virtual HTMLObject* checkPoint( int, int );
 
-    virtual const char* getURL() const { return dynamicURL.data(); }
-    virtual const char* getTarget() const { return dynamicTarget.data(); }
+    virtual HTMLString getURL() const { return dynamicURL; }
+    virtual HTMLString getTarget() const { return dynamicTarget; }
      
-    void setMapURL( const char *_url )
+    void setMapURL( HTMLString _url )
 	    {	mapurl = _url; }
-    const char *mapURL() const
+    HTMLString mapURL() const
 	    {	return mapurl; }
 
     enum Type { ClientSide, ServerSide };
@@ -834,7 +865,7 @@ protected:
     /*
      * The URL set by <img ... USEMAP=mapurl> for client side maps
      */
-    const char *mapurl;
+    HTMLString mapurl;
 
     /*
      * ClientSide or ServerSide

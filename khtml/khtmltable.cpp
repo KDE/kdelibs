@@ -25,6 +25,8 @@
 // KDE HTML Widget -- Tables
 // $Id$
 
+//#define TABLE_DEBUG
+
 #include <kurl.h>
 
 #include "khtmlchain.h"
@@ -311,7 +313,7 @@ bool HTMLTable::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
     return false;
 }
 
-HTMLAnchor* HTMLTable::findAnchor( const char *_name, int &_x, int &_y )
+HTMLAnchor* HTMLTable::findAnchor( QString _name, int &_x, int &_y )
 {
     HTMLAnchor *ret;
     HTMLTableCell *cell;
@@ -518,9 +520,11 @@ int HTMLTable::addColInfo(int _startCol, int _colSpan,
 }
 
 void HTMLTable::addColMinWidth(int k, int delta, ColType t)
-{                   	    
+{     
+#ifdef TABLE_DEBUG              	    
 printf("Adding %d pixels to col %d: %d --> %d\n",
      delta, k, columnPos[k], columnPos[k]+delta);
+#endif
 
     columnPos[k] += delta;
 
@@ -588,8 +592,10 @@ int HTMLTable::addColsMinWidthPref(int kol, int span, int tooAdd)
     prefDiff = 0;
     for (int k = span; k; k--)
     {
+#ifdef TABLE_DEBUG
 printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
    kol+k, colType[kol+k], columnPos[kol+k], columnPrefPos[kol+k]);
+#endif
         if ( colType[kol + k ] == Percent )
         {
             prefDiff += columnPrefPos[kol+k] - columnPos[kol+k];
@@ -602,7 +608,9 @@ printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
         prefTooAdd = prefDiff;
     }
     // extra width across all percent columns 
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels to percent columns according to pref\n", prefTooAdd);
+#endif
     for (int k = span; k; k--)
     {
         if (prefDiff == 0)
@@ -623,8 +631,11 @@ printf("Spreading %d pixels to percent columns according to pref\n", prefTooAdd)
     prefDiff = 0;
     for (int k = span; k; k--)
     {
+#ifdef TABLE_DEBUG
+
 printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
    kol+k, colType[kol+k], columnPos[kol+k], columnPrefPos[kol+k]);
+#endif
         if ( colType[kol + k ] == Variable )
         {
             prefDiff += columnPrefPos[kol+k] - columnPos[kol+k];
@@ -637,7 +648,9 @@ printf("  Col = %d, type = %d, pos = %d, pref = %d\n",
         prefTooAdd = prefDiff;
     }
     // extra width across all variable columns 
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels to variable columns according to pref\n", prefTooAdd);
+#endif
     for (int k = span; k; k--)
     {
         if (prefDiff == 0)
@@ -712,7 +725,9 @@ void HTMLTable::calcColInfoI( void )
     unsigned int r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
+#ifdef TABLE_DEBUG
 printf("START calcColInfoI() this = %p\n", this);
+#endif
 
     // Allocate some memory for column info
     colInfo.resize( totalCols*2 );
@@ -928,7 +943,7 @@ printf("START calcColInfoI() this = %p\n", this);
     if (pref_width < min_width)
         pref_width = min_width;
 
-#if 1
+#ifdef TABLE_DEBUG
     printf("--PASS 1 : Calculating width advice --\n");
     printf("---- %d ----\n", totalColInfos);
     for(i = 0; i < totalColInfos; i++)
@@ -963,7 +978,9 @@ void HTMLTable::calcColInfoII(void)
     unsigned int r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
+#ifdef TABLE_DEBUG
 printf("START calcColInfoII() this = %p\n", this);
+#endif
     // Allocate some memory for column info
     colInfo.resize( totalCols*2 );
     rowInfo = (RowInfo_t *) malloc( totalRows * sizeof(RowInfo_t) );
@@ -1082,7 +1099,7 @@ printf("START calcColInfoII() this = %p\n", this);
 	        maxColSpan = colInfo[index].colSpan;
 	}
     }
-#if 1
+#ifdef TABLE_DEBUG
     printf("--PASS II --\n");
     printf("---- %d ----\n", totalColInfos);
     for(i = 0; i < totalColInfos; i++)
@@ -1105,8 +1122,8 @@ printf("START calcColInfoII() this = %p\n", this);
         } 
         printf("\n");
     }
-#endif
     printf("maxColSpan = %d\n", maxColSpan);
+#endif
 
     columnPos.resize( totalCols + 1 );
     columnPrefPos.resize( totalCols + 1 );
@@ -1152,21 +1169,27 @@ printf("START calcColInfoII() this = %p\n", this);
                         break;
                     } 
 		}                
+#ifdef TABLE_DEBUG
 printf("Col = %d span = %d, fix = %d, perc = %d, var = %d\n",
-    kol, col_span, fixedCount, percentCount, varCount); 
+    kol, col_span, fixedCount, percentCount, varCount);
+#endif 
 		if (currMinSize < colInfo[index].minSize)
 		{
 		    int tooAdd = colInfo[index].minSize - currMinSize;
 		    if ( (fixedCount == col_span) || 
 		         (varCount == col_span) )
 		    {
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels equally\n", tooAdd);
+#endif
 		    	// Spread extra width across all columns equally
                         addColsMinWidthEqual(kol, col_span, tooAdd, isFixed);
             	    }
 		    else
 		    {
+#ifdef TABLE_DEBUG
 printf("Spreading %d pixels\n", tooAdd);
+#endif
                         // Look at the pref. widths first
                         tooAdd = addColsMinWidthPref(kol, col_span, tooAdd);            	        
             	        if (varCount > 0)
@@ -1238,13 +1261,17 @@ printf("Spreading %d pixels\n", tooAdd);
              int tooAdd = width - currMinSize - columnPos[0] - border;
              if (fixedCount == totalCols)
              {
+#ifdef TABLE_DEBUG
 printf("Final: Spreading %d pixels equally\n", tooAdd);
+#endif
                  // Spread extra width across all columns equally
                  addColsMinWidthEqual(0, totalCols, tooAdd, Variable);
              }
              else
              {
+#ifdef TABLE_DEBUG
 printf("Final: Spreading %d pixels\n", tooAdd);
+#endif
                  // Look at the pref. widths first
                  tooAdd = addColsMinWidthPref(0, totalCols, tooAdd);            	        
                  if (varCount > 0)
@@ -1259,24 +1286,27 @@ printf("Final: Spreading %d pixels\n", tooAdd);
             	 }
              }
          }
+#ifdef TABLE_DEBUG
 printf("Done!\n");         
+#endif
     }
 
     // Cummulate
     for(i = 1; i <= totalCols; i++)
     {
+#ifdef TABLE_DEBUG
 printf("Actual width col %d: %d\n", i, columnPos[i]);
+#endif
     	columnPos[i] += columnPos[i-1];
     	columnPrefPos[i] += columnPrefPos[i-1];
     }
 
+#ifdef TABLE_DEBUG
     printf("Predicted minimum width: %d\n", min_width);
     printf("Predicted pref width: %d\n", pref_width);
     printf("Width set: %d\n", width);
     printf("Actual width: %d\n", columnPos[totalCols]);
-
     // DEBUG: Show the results :)
-#if 1
     printf("min = %d, pref = %d\n", min_width, pref_width);
 #endif
 }
@@ -1438,7 +1468,7 @@ HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
 }
 
 void HTMLTable::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
-    const char *_url, bool _select, int _tx, int _ty )
+    QString _url, bool _select, int _tx, int _ty )
 {
     unsigned int r, c;
     HTMLTableCell *cell;
@@ -1638,7 +1668,7 @@ bool HTMLTable::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
     return isSel;
 }
 
-void HTMLTable::getSelected( QStrList &_list )
+void HTMLTable::getSelected( QStringList &_list )
 {
     unsigned int r, c;
     HTMLTableCell *cell;

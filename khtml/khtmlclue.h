@@ -30,7 +30,6 @@
 
 #include <qpainter.h>
 #include <qlist.h>
-#include <qstrlist.h>
 #include <qarray.h>
 #include <qpixmap.h>
 #include <qstack.h>
@@ -107,7 +106,7 @@ public:
     virtual void setMaxDescent( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
-    virtual void selectByURL( KHTMLWidget *, HTMLChain *,const char *,bool, int _tx, int _ty );
+    virtual void selectByURL( KHTMLWidget *, HTMLChain *,QString,bool, int _tx, int _ty );
     virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );
     virtual void select( KHTMLWidget *, HTMLChain *, bool, int _tx, int _ty );
@@ -117,7 +116,7 @@ public:
      */
     virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
-    virtual void getSelected( QStrList & );
+    virtual void getSelected( QStringList & );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
@@ -174,7 +173,7 @@ public:
     VAlign getVAlign() { return valign; }
     HAlign getHAlign() { return halign; }
 
-    virtual HTMLAnchor* findAnchor( const char *_name, int &_x, int &_y );
+    virtual HTMLAnchor* findAnchor( QString _name, int &_x, int &_y );
 
     virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
 
@@ -312,38 +311,6 @@ protected:
     short indent;
 };
 
-
-//-----------------------------------------------------------------------------
-// Used for KFMs HTML extension
-//
-// Sizes supported: Variable, Fixed
-// Sizes unsupported: Percentage
-class HTMLCell : public HTMLClueV
-{
-public:
-  HTMLCell( const char *_url = 0L, const char *_target = 0L );
-  virtual ~HTMLCell() { }
-  
-  virtual const char* getURL() const { return url; }
-  virtual const char* getTarget() const { return target; }
-
-  virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx, int _ty );
-
-  virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-		      int _height, int _tx, int _ty, bool toPrinter );
-
-  virtual bool isMarked() { return bIsMarked; }
-  virtual void setMarker( QPainter *_painter, int _tx, int _ty, bool _mode );
-  virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
-
-  virtual const char * objectName() const { return "HTMLCell"; };
-
-protected:
-  const char *url;
-  const char *target;
-
-  bool bIsMarked;
-};
 
 //-----------------------------------------------------------------------------
 // Align objects across the page, without wrapping.
