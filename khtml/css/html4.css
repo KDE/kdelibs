@@ -106,7 +106,7 @@
       LI > DIV        { margin-top: 0; margin-bottom: 0 }
       U, INS          { text-decoration: underline }
       CENTER          { text-align: center; }
-      CENTER > *      { margin-left: auto; margin-right: auto; text-align: justify; } /* center all children of CENTER */
+      CENTER > *      { margin-left: auto; margin-right: auto; } /* center all children of CENTER */
 
       /* ### :before is not supported at the moment */
       BR:before       { content: "\n" }
