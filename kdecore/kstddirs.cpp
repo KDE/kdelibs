@@ -139,7 +139,9 @@ QString KStandardDirs::findResourceDir( const QString& type,
     return QString::null;
 }
 
-QStringList KStandardDirs::findAllResources( const QString& type, bool recursive) const
+QStringList KStandardDirs::findAllResources( const QString& type, 
+					     const QString& filter, 
+					     bool recursive) const
 {
     assert(!recursive);
 
@@ -155,7 +157,8 @@ QStringList KStandardDirs::findAllResources( const QString& type, bool recursive
 	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
 	for (QStringList::ConstIterator it2 = entries.begin();
 	     it2 != entries.end(); it2++) {
-	  list.append(*it + *it2);
+	  if (filter.isEmpty() || (*it2) == filter)
+	    list.append(*it + *it2);
 	}
     }
     return list;
@@ -289,7 +292,11 @@ QString KStandardDirs::kde_data_relative()
     return "share/apps/";
 }
 
-QString KStandardDirs::getSaveLocation(const QString& type) const
+#warning Stephan: Harri, the new parameters are in place :)
+
+QString KStandardDirs::getSaveLocation(const QString& type,
+				       const QString&, 
+				       bool) const
 {
     QString local = QDir::homeDirPath() + "/.kde/";
     int length = local.length();

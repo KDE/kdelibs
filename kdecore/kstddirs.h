@@ -155,9 +155,13 @@ public:
 	 * @param type the type of resource to locate directories for.
 	 * @param recursive specifies if the function should decend
 	 *        into subdirectories.
+	 * @param only accept filenames that fit to filter. Currently
+	 *        only full match is implemented, but it may be extended
+	 *        for regular expressions
 	 * @return a list of directories matching the resource specified.
 	 */
 	QStringList findAllResources( const QString& type, 
+				      const QString& filter = QString::null,
 				      bool recursive = false) const;
 
 	/** 
@@ -216,7 +220,17 @@ public:
 	 */
 	QStringList getResourceDirs(const QString& type) const;
 
-	QString getSaveLocation(const QString& type) const;
+	/**
+	 * Finds a location to save files into for the given type
+	 * in the user's home directory.
+	 * 
+	 * @param suffix makes it easier for you to create subdirectories
+	 * @param create if set, getSaveLocation will create the directories
+	 *        needed (including those given by suffix)
+	 */
+	 QString getSaveLocation(const QString& type,
+				 const QString& suffix = QString::null, 
+				 bool create = true) const;
 
 	static QString kde_data_relative();
 
