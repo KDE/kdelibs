@@ -319,7 +319,11 @@ int KEdit::loadFile(QString name, int mode){
     }
 
     setAutoUpdate(TRUE);
+#if QT_VERSION < 142
     repaint();
+#else
+    repaint( FALSE );
+#endif
 
     connect(this, SIGNAL(textChanged()), this, SLOT(setModified()));
 
@@ -710,7 +714,11 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	// setCursorPosition(templine,tempcol); Matthias: do the next line instead
 	setCursorPosition(cursorline, cursorcol); //Matthias
 
+#if QT_VERSION < 142
 	repaint();
+#else
+	repaint( FALSE );
+#endif
 
 	computePosition();
 	setModified();
@@ -803,6 +811,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	// printf("NUMOFROWS %d\n",num_of_rows);
 
 	if(did_break){
+#if QT_VERSION < 142
 	  int y1  = -1;
 	  int y2  = -1;
 
@@ -816,6 +825,9 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	    y2 = this->height();
 
 	  repaint(0,y1,this->width(),y2);
+#else
+	  repaint( FALSE );
+#endif
 	}
 
 	computePosition();
