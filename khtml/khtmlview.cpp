@@ -145,7 +145,7 @@ private:
     KHTMLViewPrivate* m_viewprivate;
 };
 
-void KHTMLToolTip::maybeTip(const QPoint& p)
+void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
 {
     DOM::NodeImpl *node = m_viewprivate->underMouse;
     while ( node ) {
@@ -1026,6 +1026,22 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool shiftKey = (_mouse->state() & ShiftButton);
     bool metaKey = false; // ### qt support?
 
+    // Also send the DOMFOCUSIN_EVENT when clicking on a node (Niko)
+    // usually done in setFocusNode()
+    // Allow LMB, MMB and RMB (correct?)
+    if(button != -1 && targetNode)
+    {
+	UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
+				          true,false,m_part->xmlDocImpl()->defaultView(),
+					  0);
+							
+	ue->ref();
+	targetNode->dispatchEvent(ue,exceptioncode);
+	ue->deref();
+    }
+
+
+
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
     	NodeImpl *oldUnder = 0;
@@ -1053,6 +1069,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 	    // send mouseover event to the new node
 	    if (targetNode) {
+	
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
 							0,screenX,screenY,clientX,clientY,
