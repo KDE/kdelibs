@@ -3785,7 +3785,7 @@ NETStrut NETWinInfo::strut() const {
     return p->strut;
 }
 
-NET::WindowType NETWinInfo::windowType( int supported_types ) const {
+NET::WindowType NETWinInfo::windowType( unsigned long supported_types ) const {
     for( int i = 0;
 	 i < p->types.size();
 	 ++i ) {

@@ -868,7 +868,7 @@ public:
 
        @return the type of the window
     **/
-    WindowType windowType( int supported_types ) const;
+    WindowType windowType( unsigned long supported_types ) const;
 
     /**
        @deprecated
