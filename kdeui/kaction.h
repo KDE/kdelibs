@@ -44,6 +44,9 @@ public:
 
     virtual void setChecked( bool );
 
+protected slots:
+    void slotActivated2();
+    
 };
 
 #endif

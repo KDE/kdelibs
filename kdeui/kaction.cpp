@@ -159,8 +159,8 @@ int KToggleAction::plug( QWidget* widget )
 	KToolBar *bar = (KToolBar *)widget;
 
 	int id_ = get_toolbutton_id();
-	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-			   isEnabled(), text() );
+ 	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated2() ),
+ 			   isEnabled(), text() );
 
 	KToolBarButton *but = bar->getButton( id_ );
 
@@ -237,9 +237,23 @@ void KToggleAction::setChecked( bool checked )
     emit toggled( isChecked() );
 }
 
-
-
-
+void KToggleAction::slotActivated2()
+{
+    if ( parent() && !exclusiveGroup().isEmpty() )
+    {
+	const QObjectList *list = parent()->children();
+	if ( list )
+	{
+	    QObjectListIt it( *list );
+	    for( ; it.current(); ++it )
+	    {
+		if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
+		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() )
+		    ((KToggleAction*)it.current())->setChecked( FALSE );
+	    }
+	}
+    }
+}
 
 #include "kaction.moc"
 
