@@ -468,7 +468,7 @@ void KKeyChooser::updateButtons()
 		m_prbDef->setEnabled( false );
 		m_prbCustom->setEnabled( false );
 		d->pbtnShortcut->setEnabled( false );
-		d->pbtnShortcut->setShortcut( KShortcut() );
+		d->pbtnShortcut->setShortcut( KShortcut(), false );
 	} else {
 		bool bConfigurable = pItem->isConfigurable();
 		bool bQtShortcut = (m_type == Application || m_type == Standard);
