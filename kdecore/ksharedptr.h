@@ -130,7 +130,7 @@ public:
   const T* operator->() const { return ptr; }
   T* operator->() { return ptr; }
 
-  uint count() const { return ptr->_KShared_count(); } // for debugging purposes
+  int count() const { return ptr->_KShared_count(); } // for debugging purposes
 private:
   T* ptr;
 };
