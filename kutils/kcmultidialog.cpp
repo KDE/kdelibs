@@ -165,14 +165,14 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
 {
-    kdDebug(1208) << "KCMultiDialog::addModule " << moduleinfo.moduleName() << " for ParentComponents=" << moduleinfo.parentComponents() << endl;
+    kdDebug(1208) << "KCMultiDialog::addModule " << moduleinfo.moduleName() <<
+        " for ParentComponents=" << moduleinfo.parentComponents() << endl;
 
     QHBox* page = 0;
     if (!moduleinfo.service()->noDisplay())
         if( createTreeList )
             page = addHBoxPage(moduleinfo.moduleNames(), moduleinfo.comment(),
-                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
-                        KIcon::Desktop, KIcon::SizeMedium));
+                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(), KIcon::Small));
         else
             page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
                     KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
