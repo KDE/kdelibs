@@ -63,7 +63,8 @@ include_HEADERS = \
 	addressbook.h \
 	configDB.h \
 	keyvaluemap.h \
-	sections.h
+	sections.h \
+	jpeginc.h
 #	PrintDialog.h \
 #	PrintDialogData.h \
 #	SearchDialog.h \
