@@ -20,8 +20,8 @@
 */
 
 #include "config.h"
-#include <stdlib.h>
 
+#include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 
@@ -122,9 +122,8 @@ bool KConfigINIBackEnd::parseConfigFiles()
       QString aFileName = globalConfigFileNames[i];
       // replace a leading tilde with the home directory
       // is there a more portable way to find out the home directory?
-      char* pHome = getenv( "HOME" );
-      if( (aFileName[0] == '~') && pHome )
-	aFileName.replace( 0, 1, pHome );
+      if (aFileName[0] == '~')
+	aFileName.replace( 0, 1, QDir::homeDirPath() );
 
       QFile aConfigFile( aFileName );
       QFileInfo aInfo( aConfigFile );
@@ -279,9 +278,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
       QString aFileName = globalConfigFileNames[i];
       // replace a leading tilde with the home directory
       // is there a more portable way to find out the home directory?
-      char* pHome = getenv( "HOME" );
-      if ((aFileName[0] == '~') && pHome)
-	aFileName.replace(0, 1, pHome);
+      if (aFileName[0] == '~')
+	aFileName.replace(0, 1, QDir::homeDirPath());
 
       QFile aConfigFile( aFileName );
       QFileInfo aInfo( aConfigFile );
