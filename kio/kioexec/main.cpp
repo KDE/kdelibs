@@ -19,6 +19,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -47,8 +48,6 @@
 
 static const char description[] =
         I18N_NOOP("KIO Exec - Opens remote files, watches modifications, asks for upload");
-
-static const char version[] = "v0.0.2";
 
 static KCmdLineOptions options[] =
 {
@@ -260,7 +259,7 @@ void KIOExec::slotRunApp()
 int main( int argc, char **argv )
 {
     KAboutData aboutData( "kioexec", I18N_NOOP("KIOExec"),
-        version, description, KAboutData::License_GPL,
+        VERSION, description, KAboutData::License_GPL,
         "(c) 1998-2000,2003 The KFM/Konqueror Developers");
     aboutData.addAuthor("David Faure",0, "faure@kde.org");
     aboutData.addAuthor("Stephan Kulow",0, "coolo@kde.org");
