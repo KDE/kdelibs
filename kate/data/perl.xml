@@ -379,7 +379,7 @@
              <RegExpr attribute="Pattern Internal Operator" context="#stay" String="\\[ABbEGLlNUuQdQZz]" />
              <RegExpr attribute="Special Variable" context="#stay" String="\\[\d]+" />
              <RegExpr attribute="Pattern" context="#stay" String="\\." />
-             
+
              <RegExpr attribute="Data Type" context="#stay" String="[\$@]#?[a-zA-Z_]+[a-zA-Z0-9_]*" />
              <Detect2Chars attribute="Pattern Internal Operator" context="pat_ext" char="(" char1="?" />
              <DetectChar attribute="Pattern Internal Operator" context="pat_char_class" char="[" />
@@ -393,7 +393,7 @@
              <Detect2Chars attribute="String" context="#stay" char="\" char1="\" />
              <Detect2Chars attribute="String (interpolated)" context="#stay" char="\" char1="&quot;" />
              <DetectChar attribute="String (interpolated)" context="#pop" char="&quot;"/>
-             <IncludeRules context="ipstring_internal" />
+             <IncludeRules context="2" />
          </context>
          <context attribute="String" lineEndContext="#stay" name="string">
              <LineContinue attribute="String" context="#stay"/>
@@ -407,7 +407,7 @@
              <Detect2Chars attribute="String (interpolated)" context="#stay" char="\" char1=")" />
              <RangeDetect attribute="String (interpolated)" context="#stay" char="(" char1=")" />
              <DetectChar attribute="String (interpolated)" context="#pop" char=")" />
-             <IncludeRules context="ipstring_internal" />
+             <IncludeRules context="2" />
          </context>
          <context attribute="String (interpolated)" lineEndContext="#stay" name="ip_string_3">
              <LineContinue attribute="String (interpolated)" context="#stay" />
@@ -415,7 +415,7 @@
              <Detect2Chars attribute="String (interpolated)" context="#stay" char="\" char1="}" />
              <RangeDetect attribute="String (interpolated)" context="#stay" char="{" char1="}" />
              <DetectChar attribute="String (interpolated)" context="#pop" char="}" />
-             <IncludeRules context="ipstring_internal" />
+             <IncludeRules context="2" />
          </context>
          <context attribute="String (interpolated)" lineEndContext="#stay" name="ip_string_4">
              <LineContinue attribute="String (interpolated)" context="#stay" />
@@ -423,7 +423,7 @@
              <Detect2Chars attribute="String (interpolated)" context="#stay" char="\" char1="]" />
              <RangeDetect attribute="String (interpolated)" context="#stay" char="[" char1="]" />
              <DetectChar attribute="String (interpolated)" context="#pop" char="]" />
-             <IncludeRules context="ipstring_internal" />
+             <IncludeRules context="2" />
          </context>
          <context attribute="String (interpolated)" lineEndContext="#stay" name="ip_string_5">
              <LineContinue attribute="String (interpolated)" context="#stay" />
@@ -431,7 +431,7 @@
              <Detect2Chars attribute="String (interpolated)" context="#stay" char="\" char1="&gt;" />
              <RangeDetect attribute="String (interpolated)" context="#stay" char="&lt;" char1="&gt;" />
              <DetectChar attribute="String (interpolated)" context="#pop" char="&gt;" />
-             <IncludeRules context="ipstring_internal" />
+             <IncludeRules context="2" />
          </context>
          <context attribute="String" lineEndContext="#stay" name="string_2">
              <LineContinue attribute="String" context="#stay" />
@@ -466,7 +466,7 @@
              <RegExpr attribute="Comment" context="#stay" String="\s+#.*$" />
              <Detect2Chars attribute="Pattern" context="#stay" char="\" char1="{" />
              <Detect2Chars attribute="Pattern" context="#stay" char="\" char1="}" />
-             <IncludeRules context="regex_pattern_internal" />
+             <IncludeRules context="3" />
              <DetectChar attribute="Pattern" context="op_s_replace" char="}" />
          </context>
          <context attribute="Normal Text" lineEndContext="#stay" name="op_s_replace">
@@ -476,7 +476,7 @@
              <RegExpr attribute="Special Variable" context="#stay" String="\$[0-9]+" />
              <RegExpr attribute="Data Type" context="#stay" String="\$+#?[a-zA-Z_]+[a-zA-Z0-9_]*" />
              <RegExpr attribute="Data Type" context="#stay" String="[@%][\$a-zA-Z_]+[a-zA-Z0-9_]*" />
-             <!-- rodda: not too sure about the next three contexts... they were originally "context 0" -->
+             
              <keyword attribute="Keyword" context="#stay" String="keywords" />
              <keyword attribute="Operator" context="#stay" String="operators" />
              <keyword attribute="Function" context="#stay" String="functions" />
@@ -495,7 +495,7 @@
          <context attribute="Pattern" lineEndContext="#stay" name="pattern_slash">
              <RegExpr attribute="Comment" context="#stay" String="^\s*#.*$" />
              <LineContinue attribute="Pattern" context="#stay" />
-             <IncludeRules context="regex_pattern_internal" />
+             <IncludeRules context="3" />
              <DetectChar attribute="Pattern" context="#pop" char="/" />
          </context>
          <context attribute="Data" lineEndContext="#stay" name="data_handle">
@@ -568,7 +568,7 @@
              <RegExpr attribute="Note" context="#stay" String="(?:FIXME|TODO|NOTE):?" />
          </context>
          <context attribute="String (interpolated)" name="Backticked">
-             <IncludeRules context="ipstring_internal"/>
+             <IncludeRules context="2"/>
              <DetectChar attribute="Operator" context="#pop" char="`"/>
          </context>
      </contexts>
