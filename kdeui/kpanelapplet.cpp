@@ -72,4 +72,6 @@ void KPanelApplet::action( Action a )
 	help();
     if ( (a & Preferences) != 0 )
 	preferences();
+    if ( (a & ReportBug) != 0 )
+    reportBug();
 }

@@ -191,8 +191,8 @@ public:
      *
      * Reimplement this function to handle actions.
      *
-     * For About, Help and Preferences, use the convenience handlers
-     * ref about(), help(), preferences()
+     * For About, Help, Preferences and ReportBug, use the convenience handlers
+     * ref about(), help(), preferences(), reportBug()
      *
      **/
     virtual void action( Action a );
@@ -234,7 +234,7 @@ public slots:
 protected:
 
     /**
-     * Is called when the user selects "About" from the applets RMB menu.
+     * Is called when the user selects "About" from the applet's RMB menu.
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your applet supports the About action.
@@ -243,7 +243,7 @@ protected:
     virtual void about() {}
 
     /**
-     * Is called when the user selects "Help" from the applets RMB menu.
+     * Is called when the user selects "Help" from the applet's RMB menu.
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your applet supports the Help action.
@@ -252,13 +252,23 @@ protected:
     virtual void help() {}
 
     /**
-     * Is called when the user selects "Preferences" from the applets RMB menu.
+     * Is called when the user selects "Preferences" from the applet's RMB menu.
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your applet supports the preferences action.
      * See @ref Action and @ref KPanelApplet().
      **/
     virtual void preferences() {}
+ 
+    /**
+     * Is called when the user selects "Report bug" from the applet's RMB menu.
+     * Reimplement this function to launch a bug reporting dialog.
+     *
+     * Note that this is called only when your applet supports the ReportBug
+     * action.
+     * See @ref Action and @ref KPanelApplet()
+     **/
+   virtual void reportBug() {}
 
     /**
      * @return the applet's orientation. (horizontal or vertical)

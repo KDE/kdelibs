@@ -100,7 +100,7 @@ class KPanelExtension : public QFrame
 public:
 
     enum Type { Normal = 0, Stretch };
-    enum Action { About = 1, Help = 2, Preferences = 4, ReportBug =8 };
+    enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
 
     /**
@@ -160,8 +160,8 @@ public:
      *
      * Reimplement this function to handle actions.
      *
-     * For About, Help and Preferences, use the convenience handlers
-     * ref about(), help(), preferences()
+     * For About, Help, Preferences and ReportBug use the convenience handlers
+     * ref about(), help(), preferences(), reportBug()
      *
      **/
     virtual void action( Action a );
@@ -217,6 +217,16 @@ protected:
      * See @ref Action and @ref KPanelExtension().
      **/
     virtual void preferences() {}
+	
+    /**
+     * Is called when the user selects "Report bug" from the applet's RMB menu.
+     * Reimplement this function to launch a bug reporting dialog.
+     *
+     * Note that this is called only when your applet supports the ReportBug
+     * action.
+     * See @ref Action and @ref KPanelApplet()
+     **/
+    virtual void reportBug() {}
 
     /**
      * @return the extension's position. (left, right, top, bottom)
