@@ -175,7 +175,7 @@ namespace KWallet
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
  * @version $Id$
- * 
+ *
  */
 class KHTMLPart : public KParts::ReadOnlyPart
 {
@@ -690,7 +690,7 @@ public:
    * Returns the selected part of the HTML.
    */
   DOM::Range selection() const;
-  
+
   /**
    * Returns the selected part of the HTML by returning the starting and end
    * position.
@@ -1016,17 +1016,17 @@ protected:
   void setPageSecurity( PageSecurity sec );
 
   /**
-   * Implements the streaming API of KParts::ReadOnlyPart. 
+   * Implements the streaming API of KParts::ReadOnlyPart.
    */
   virtual bool doOpenStream( const QString& mimeType );
 
   /**
-   * Implements the streaming API of KParts::ReadOnlyPart. 
+   * Implements the streaming API of KParts::ReadOnlyPart.
    */
   virtual bool doWriteStream( const QByteArray& data );
 
   /**
-   * Implements the streaming API of KParts::ReadOnlyPart. 
+   * Implements the streaming API of KParts::ReadOnlyPart.
    */
   virtual bool doCloseStream();
 
@@ -1055,7 +1055,7 @@ public slots:
    *
    * Returns @p true if JavaScript was enabled, no error occurred
    * and the code returned true itself or @p false otherwise.
-   * @deprecated, use the one below.
+   * @deprecated, use executeString( DOM::Node(), script)
    */
   QVariant executeScript( const QString &script ) KDE_DEPRECATED;
 
