@@ -59,7 +59,8 @@
 2000	kfind
 
 # kdeadmin
-3000	ksysv (kdeadmin)
+3000	ksysv 
+3100    ksysv (model)
 
 # kdegraphics
 4300	kdvi (kdegraphics)
