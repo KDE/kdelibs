@@ -261,13 +261,17 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     // ###
     //stopParser();
+    m_strURL = _url;
 
     if ( !_url.isEmpty() )
     {
-	m_strWorkingURL = _url;
     
+	KURL::List lst = KURL::split( m_strURL );
+	assert ( !lst.isEmpty() );
+	QString baseurl = (*lst.begin()).url();
+
         // Set a default title
-        KURL title(_url);
+        KURL title(baseurl);
         title.setRef(QString::null);
         title.setQuery(QString::null);
         emit setTitle( title.url().data() );
@@ -432,14 +436,9 @@ void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
   {
     kdebug(0,1202,"BEGIN...");
     m_lstChildren.clear();
-    m_strURL = m_strWorkingURL;
-    m_strWorkingURL = "";
-    KURL::List lst = KURL::split( m_strURL );
-    assert ( !lst.isEmpty() );
-    QString baseurl = (*lst.begin()).url();
-
     m_bParsing = true;
-    begin( baseurl, m_iNextXOffset, m_iNextYOffset );
+    begin( m_strWorkingURL, m_iNextXOffset, m_iNextYOffset );
+    m_strWorkingURL = "";
   }
 
   write( _p );

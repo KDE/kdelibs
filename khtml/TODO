@@ -27,7 +27,7 @@ JScript:
 	* still need to add hooks in the tokenizer
 	* return value for events/ event propagation
 
-Java:ksy	
+Java:
 	* support for the object element
 	* Java <--> HTMLWidget communication
 
@@ -48,7 +48,7 @@ Memory usage:
 	 information from there (something like document->styleSheet()->XXX()).
 
 Elements:
-most are still missing. Here comes a list.
+some are still missing. Here comes a list.
 
 a	        mostly done
 abbr
