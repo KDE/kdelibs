@@ -67,6 +67,7 @@ k_dcop:
 
 	void reconfigure();
 	void setVolume( int volume );
+        void sessionReady(); // from ksmserver
 
 private:
 	bool notifyBySound(const QString &sound, const QString &appname, int eventId);

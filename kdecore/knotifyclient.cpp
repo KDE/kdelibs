@@ -33,6 +33,40 @@
 
 static const char daemonName[] = "knotify";
 
+static bool canAvoidStartupEvent( const QString& event, const QString& appname, int present )
+{
+    static int checkAvoid = -1;
+    if(( appname != "kwin" && appname != "ksmserver" ) || present > 0 ) {
+        checkAvoid = 0;
+        return false;
+    }
+    if( checkAvoid == -1 ) {
+        KConfig cfg( "knotifyrc", true );
+        cfg.setGroup( "Startup" );
+        checkAvoid = cfg.readBoolEntry( "DelayedStartup", false ) ? 1 : 0;
+    }
+    if( checkAvoid != 1 )
+        return false;
+    // startkde event is in global events file
+    static KConfig* configfile = appname != "ksmserver"
+        ? new KConfig( appname + ".eventsrc", true, false )
+        : new KConfig( "knotify.eventsrc", true, false );
+    static KConfig* eventsfile = appname != "ksmserver"
+        ? new KConfig( appname + "/eventsrc", true, false, "data" )
+        : new KConfig( "knotify/eventsrc", true, false, "data" );
+    configfile->setGroup( event );
+    eventsfile->setGroup( event );
+    int ev1 = configfile->readNumEntry( "presentation", -2 );
+    int ev2 = eventsfile->readNumEntry( "default_presentation", -2 );
+    if(( ev1 == -2 && ev2 == -2 ) // unknown
+        || ev1 > 0 // configured to have presentation
+        || ( ev1 == -2 && ev2 > 0 )) { // not configured, has default presentation
+        checkAvoid = 0;
+        return false;
+    }
+    return true;
+}
+
 static int sendNotifyEvent(const QString &message, const QString &text,
                             int present, int level, const QString &sound,
                             const QString &file, int winId )
@@ -47,7 +81,12 @@ static int sendNotifyEvent(const QString &message, const QString &text,
       return 0;
   }
 
+  QString appname = KNotifyClient::instance()->instanceName();
+
   int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
+
+  if( canAvoidStartupEvent( message, appname, present ))
+      return uniqueId; // done "successfully" - there will be no event presentation
 
   // knotify daemon needs toplevel window
   QWidget* widget = QWidget::find( (WId)winId );
@@ -56,7 +95,6 @@ static int sendNotifyEvent(const QString &message, const QString &text,
 
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
-  QString appname = KNotifyClient::instance()->instanceName();
   ds << message << appname << text << sound << file << present << level
      << winId << uniqueId;
 

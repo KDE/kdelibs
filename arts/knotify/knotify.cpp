@@ -82,6 +82,8 @@ public:
     int volume;
     QTimer *playTimer;
     KAudioManagerPlay *audioManager;
+    bool inStartup;
+    QString startupEvents;
 };
 
 // Yes, it's ugly to put this here, but this facilitates the cautious startup
@@ -221,6 +223,7 @@ KNotify::KNotify( bool useArts )
     d->useArts = useArts;
     d->playObjects.setAutoDelete(true);
     d->audioManager = 0;
+    d->inStartup = true;
     if( useArts )
     {
         connect( soundServer, SIGNAL( restartedServer() ), this, SLOT( restartedArtsd() ) );
@@ -303,7 +306,10 @@ void KNotify::notify(const QString &event, const QString &fromApp,
                      int present, int level, int winId, int eventId )
 {
     // kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
-    //    " file=" << file << " present=" << present << " level=" << level <<  " winId=" << winId << " eventId=" << eventId endl;
+    //    " file=" << file << " present=" << present << " level=" << level <<  " winId=" << winId << " eventId=" << eventId << endl;
+    if( d->inStartup ) {
+        d->startupEvents += "(" + event + ":" + fromApp + ")";
+    }
 
     QString commandline;
 
@@ -744,6 +750,13 @@ void KNotify::restartedArtsd()
     d->audioManager = new KAudioManagerPlay( soundServer );
     d->audioManager->setTitle( i18n( "KDE System Notifications" ) );
     d->audioManager->setAutoRestoreID( "KNotify Aman Play" );
+}
+
+void KNotify::sessionReady()
+{
+    if( d->inStartup && !d->startupEvents.isEmpty())
+        kdDebug() << "There were knotify events while startup:" << d->startupEvents << endl;
+    d->inStartup = false;
 }
 
 // vim: sw=4 sts=4 ts=8 et
