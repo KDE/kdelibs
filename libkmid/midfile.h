@@ -27,6 +27,7 @@
 #include <libkmid/dattypes.h>
 #include <libkmid/track.h>
 #include <stdio.h>
+#include <kdelibs_export.h>
 
 /**
  * Contains all the information about a MIDI file.
@@ -77,7 +78,7 @@ struct MidiFileInfo
 
 };
 
-double tempoToMetronomeTempo(ulong x);
+double KMID_EXPORT tempoToMetronomeTempo(ulong x);
 double metronomeTempoToTempo(ulong x);
 
 /**

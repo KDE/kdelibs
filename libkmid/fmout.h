@@ -40,7 +40,7 @@
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
-class FMOut : public MidiOut
+class KMID_EXPORT FMOut : public MidiOut
 {
   private:
     class FMOutPrivate;

@@ -257,7 +257,7 @@ struct PlayerController
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
-class MidiPlayer
+class KMID_EXPORT MidiPlayer
 {
   class MidiPlayerPrivate;
   MidiPlayerPrivate *d;

@@ -27,6 +27,8 @@
 
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 class KArtsServer;
 namespace Arts { class StereoEffectStack; }
 
@@ -36,7 +38,7 @@ namespace Arts { class StereoEffectStack; }
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
 */
-class KAudioRecordStream : public QObject
+class ARTS_EXPORT KAudioRecordStream : public QObject
 {
 	Q_OBJECT
 

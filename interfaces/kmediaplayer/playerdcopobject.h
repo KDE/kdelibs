@@ -30,7 +30,7 @@
 namespace KMediaPlayer
 {
 
-class PlayerDCOPObject : public DCOPObject
+class KDE_EXPORT PlayerDCOPObject : public DCOPObject
 {
 K_DCOP
 

@@ -25,6 +25,7 @@
 #define NOTEARRAY_H
 
 #include <libkmid/dattypes.h>
+#include <kdelibs_export.h>
 
 /**
  * Holds a resizeable array of note on/off and patch change events. It can
@@ -34,7 +35,7 @@
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
-class NoteArray
+class KMID_EXPORT NoteArray
 {
   private:
     class NoteArrayPrivate;

@@ -18,7 +18,7 @@
 #include <kxmlguiclient.h>
 
 
-class KVideoWidget : public QWidget, virtual public KXMLGUIClient
+class ARTS_EXPORT KVideoWidget : public QWidget, virtual public KXMLGUIClient
 {
 Q_OBJECT
 

@@ -25,6 +25,8 @@
 #include <qcstring.h>
 #include <stdsynthmodule.h>
 
+#include <kdelibs_export.h>
+
 class KArtsServer;
 namespace Arts { class StereoEffectStack; }
 
@@ -37,7 +39,7 @@ class KAudioPlayStreamPrivate;
  * @since 3.2
 */
 
-class KAudioPlayStream : public QObject {
+class ARTS_EXPORT KAudioPlayStream : public QObject {
    Q_OBJECT
 public:
 	/**

@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <libkmid/dattypes.h>
+#include <kdelibs_export.h>
 
 #define KM_NAME_SIZE 30
 
@@ -55,7 +56,7 @@
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>  
  */
-class MidiMapper
+class KMID_EXPORT MidiMapper
 {
   private:
     class MidiMapperPrivate;
