@@ -1786,6 +1786,16 @@ void KListView::setSorting(int column, bool ascending)
   QListView::setSorting(column, ascending);
 }
 
+int KListView::columnSorted(void) const
+{
+  return d->sortColumn;
+}
+
+bool KListView::ascendingSort(void) const
+{
+  return d->sortAscending;
+}
+
 KListViewItem::KListViewItem(QListView *parent)
   : QListViewItem(parent)
 {

@@ -285,6 +285,16 @@ public:
    */
   virtual void setSorting(int column, bool ascending = true);
 
+  /**
+   * @return the currently sorted column, or -1 if none is sorted
+   */
+  int columnSorted(void) const;
+
+  /**
+   * @return whether the current sort is ascending (or descending)
+   */
+  bool ascendingSort(void) const;
+
 signals:
 
   /**
