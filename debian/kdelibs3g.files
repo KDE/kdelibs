@@ -1,0 +1,5 @@
+usr/X11R6/lib/lib*.so.*
+etc/kde/charsets
+usr/doc/kde
+usr/share
+usr/doc/kdelibs
