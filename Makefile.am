@@ -4,5 +4,7 @@
 
 SUBDIRS = kdecore kdeui jscript khtmlw kfmlib mediatool po
 
+DISTCLEANFILES = kdedoc/Makefile kdetest/Makefile
+
 tests:
 	(cd kdetest && $(MAKE) all)
