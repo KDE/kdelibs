@@ -52,11 +52,12 @@ int gethostname (char *Name, int Namelen);
  */
 #ifndef HAVE_RANDOM
 #define HAVE_RANDOM
-#define RANDOM_MAX 2^31 // random() is lrand48()
-long int random(void); // defined in fakes.cpp
+#define RANDOM_MAX 2^31 
+long int random(void); /* defined in fakes.cpp */
 void srandom(unsigned int seed);
 #else
-#define RANDOM_MAX RAND_MAX // normal random()
+/* normal random() */
+#define RANDOM_MAX RAND_MAX 
 #endif
 
 #ifndef HAVE_S_ISSOCK
