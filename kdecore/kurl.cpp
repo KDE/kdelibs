@@ -590,8 +590,10 @@ QString KURL::path( int _trailing ) const
       result.truncate( len - 1 );
     return result;
   }
-  else
+  else {
     assert( 0 );
+    return QString::null;
+  }
 }
 
 bool KURL::isLocalFile() const
