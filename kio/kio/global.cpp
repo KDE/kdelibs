@@ -113,16 +113,16 @@ QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t proces
 
 QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
-    QString text = i18n( "One Item", "%n Items", items );
+    QString text = items == 0 ? i18n( "No Items" ) : i18n( "One Item", "%n Items", items );
     text += " - ";
-    text += i18n( "One File", "%n Files", files );
+    text += files == 0 ? i18n( "No Files" ) : i18n( "One File", "%n Files", files );
     if ( showSize && files > 0 )
     {
         text += " ";
         text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
     }
     text += " - ";
-    text += i18n("One Folder", "%n Folders", dirs);
+    text += dirs == 0 ? i18n( "No Folders" ) : i18n("One Folder", "%n Folders", dirs);
     return text;
 }
 
