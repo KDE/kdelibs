@@ -86,6 +86,9 @@ AC_CHECK_FUNC(getaddrinfo,
     [
       AC_MSG_RESULT(no)
       AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken and should be replaced])
+    ],
+    [
+      AC_MSG_RESULT(cross compiling. We hope so)
     ])
 
     if $kde_gai_ok ; then

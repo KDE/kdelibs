@@ -81,7 +81,7 @@ bool tryLookup(const char* node, const char *serv)
   QString _serv = QString::fromLatin1(serv);
 
   printf("\tTrying to lookup %s|%s... ", node, serv);
-  QList<KAddressInfo> list = KExtendedSocket::lookup(_node, _serv, 0, &error);
+  QPtrList<KAddressInfo> list = KExtendedSocket::lookup(_node, _serv, 0, &error);
   list.setAutoDelete(true);
   if (!list.isEmpty())
     {
@@ -144,7 +144,7 @@ bool tryLookup6(const char *node, const char *serv)
   QString _serv = QString::fromLatin1(serv);
 
   printf("\tTrying to lookup IPv6 of %s|%s... ", node, serv);
-  QList<KAddressInfo> list = KExtendedSocket::lookup(_node, _serv, KExtendedSocket::ipv6Socket, &error);
+  QPtrList<KAddressInfo> list = KExtendedSocket::lookup(_node, _serv, KExtendedSocket::ipv6Socket, &error);
   list.setAutoDelete(true);
   if (!list.isEmpty())
     {
