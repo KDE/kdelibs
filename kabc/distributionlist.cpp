@@ -19,6 +19,8 @@
 */
 
 #include <qapplication.h>
+#include <qpair.h>
+#include <qvaluelist.h>
 
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
@@ -106,16 +108,28 @@ DistributionList::Entry::List DistributionList::entries() const
   return mEntries;
 }
 
+typedef QValueList< QPair<QString, QString> > MissingEntryList;
 
-DistributionListManager::DistributionListManager( AddressBook *ab ) :
-  mAddressBook( ab )
+class DistributionListManager::DistributionListManagerPrivate
 {
+  public:
+    AddressBook *mAddressBook;
+    QMap< QString, MissingEntryList > mMissingEntries;
+};
+
+DistributionListManager::DistributionListManager( AddressBook *ab )
+  : d( new DistributionListManagerPrivate )
+{
+  d->mAddressBook = ab;
   mLists.setAutoDelete( true );
 }
 
 DistributionListManager::~DistributionListManager()
 {
   mLists.clear();
+
+  delete d;
+  d = 0;
 }
 
 DistributionList *DistributionListManager::list( const QString &name )
@@ -173,16 +187,12 @@ bool DistributionListManager::load()
 {
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
-  QMap<QString,QString> entryMap = cfg.entryMap( mAddressBook->identifier() );
-  if ( entryMap.isEmpty() ) {
-    kdDebug(5700) << "No distlists for '" << mAddressBook->identifier() << "'" << endl;
-    return false;
-  }
-
-  cfg.setGroup( mAddressBook->identifier() );
+  QMap<QString,QString> entryMap = cfg.entryMap( "DistributionLists" );
+  cfg.setGroup( "DistributionLists" );
 
   // clear old lists
   mLists.clear();
+  d->mMissingEntries.clear();
 
   QMap<QString,QString>::ConstIterator it;
   for( it = entryMap.begin(); it != entryMap.end(); ++it ) {
@@ -193,21 +203,27 @@ bool DistributionListManager::load()
 
     DistributionList *list = new DistributionList( this, name );
 
-    QStringList::ConstIterator it2 = value.begin();
-    while( it2 != value.end() ) {
-      QString id = *it2++;
-      QString email = *it2;
+    MissingEntryList missingEntries;
+    QStringList::ConstIterator entryIt = value.begin();
+    while( entryIt != value.end() ) {
+      QString id = *entryIt++;
+      QString email = *entryIt;
 
       kdDebug(5700) << "----- Entry " << id << endl; 
       
-      Addressee a = mAddressBook->findByUid( id );
+      Addressee a = d->mAddressBook->findByUid( id );
       if ( !a.isEmpty() ) {
         list->insertEntry( a, email );
+      } else {
+        missingEntries.append( qMakePair( id, email ) );
       }
       
-      if ( it2 == value.end() ) break;
-      ++it2;
+      if ( entryIt == value.end() )
+        break;
+      ++entryIt;
     }
+
+    d->mMissingEntries.insert( name, missingEntries );
   }
   
   return true;
@@ -219,12 +235,13 @@ bool DistributionListManager::save()
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
-  cfg.deleteGroup( mAddressBook->identifier() );
-  cfg.setGroup( mAddressBook->identifier() );
+  cfg.deleteGroup( "DistributionLists" );
+  cfg.setGroup( "DistributionLists" );
   
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {
     kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
+
     QStringList value;
     DistributionList::Entry::List entries = list->entries();
     DistributionList::Entry::List::ConstIterator it;
@@ -232,9 +249,19 @@ bool DistributionListManager::save()
       value.append( (*it).addressee.uid() );
       value.append( (*it).email );
     }
+
+    if ( d->mMissingEntries.find( list->name() ) != d->mMissingEntries.end() ) {
+      MissingEntryList missList = d->mMissingEntries[ list->name() ];
+      MissingEntryList::ConstIterator missIt;
+      for ( missIt = missList.begin(); missIt != missList.end(); ++missIt ) {
+        value.append( (*missIt).first );
+        value.append( (*missIt).second );
+      }
+    }
+
     cfg.writeEntry( list->name(), value );
   }
-  
+
   cfg.sync();
   
   return true;

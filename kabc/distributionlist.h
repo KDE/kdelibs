@@ -165,7 +165,8 @@ class DistributionListManager
     bool save();
 
   private:
-    AddressBook *mAddressBook;
+    class DistributionListManagerPrivate;
+    DistributionListManagerPrivate *d;
 
     QPtrList<DistributionList> mLists;
 };
