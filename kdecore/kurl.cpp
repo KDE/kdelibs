@@ -312,25 +312,7 @@ bool KURL::isRelativeURL(const QString &_url)
   {
      char c = str[i].latin1(); // Note: non-latin1 chars return 0!
      if (c == ':')
-     {
-        // URL starts with "xxx:/" -> absolute URL
-        i++;
-        if ((i < len) && (str[i].latin1() == '/'))
-           return false;
-        // Make an expection for mailto:user@host
-        if ((i == 7) && (_url.left(7).lower() == "mailto:"))
-           return false;
-        // Make another expection for news:comp.os.newsgroup
-        if ((i == 5) && (_url.left(5).lower() == "news:"))
-           return false;
-        // Make another expection for man:(3)
-        if ((i == 4) && (_url.left(4).lower() == "man:"))
-           return false;
-        // Make another expection for javascript:blah
-        if ((i == 11) && (_url.left(11).lower() == "javascript:"))
-           return false;
-        return true; // "xxx:" or "xxx::yyy"
-     }
+        return false; // Absolute URL
 
      // Protocol part may only contain alpha, digit, + or -
      if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-'))
@@ -1032,9 +1014,13 @@ bool KURL::hasSubURL() const
     return false;
   if (m_strRef_encoded.isEmpty())
      return false;
-  if (isRelativeURL(m_strRef_encoded))
-     return false;
-  return true;
+  if (m_strRef_encoded.startsWith("gzip:"))
+     return true;
+  if (m_strRef_encoded.startsWith("bzip:"))
+     return true;
+  if (m_strRef_encoded.startsWith("bzip2:"))
+     return true;
+  return false;
 }
 
 // BCI: Should be removed, and the other one should have '= 0' for both args.
