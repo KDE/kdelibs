@@ -743,6 +743,8 @@ void KHTMLView::print()
         m_part->setFontSizes(fontSizes);
         m_part->xmlDocImpl()->applyChanges();
 
+        root->updateSize();
+
         // ok. now print the pages.
         kdDebug(6000) << "printing: html page width = " << root->docWidth()
                       << " height = " << root->docHeight() << endl;
