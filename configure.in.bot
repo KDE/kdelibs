@@ -45,6 +45,18 @@ if test -z "$HELP_SUBDIR"; then
   all_tests=bad
 fi
 
+if test -z "$jpeg_incdir" || test -z "$LIBJPEG" ; then
+  echo ""
+  echo "You're missing libjpeg 6 or later."
+  echo "KDE won't be able to display JPEG and many web pages won't"
+  echo "work because of this.
+  echo "You may need to either provide correct --with-extra-... options,"
+  echo "or the development package of libjpeg6b. You can get a source "
+  echo "package of libjpeg from http://www.ijg.org/"
+  echo ""
+  all_tests=bad
+fi 
+
 if test "$all_tests" = "fine"; then
   echo ""
   echo "Good - your configure finished. Start make now"
