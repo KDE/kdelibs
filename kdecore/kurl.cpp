@@ -1,16 +1,16 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Torben Weis <weis@kde.org>
- 
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -30,7 +30,7 @@
 // Reference: RFC 1738 Uniform Resource Locators
 
 KURL::KURL()
-{ 
+{
   reset();
   m_bIsMalformed = TRUE;
 }
@@ -111,7 +111,7 @@ void KURL::parse( const QString& _url )
   QChar* buf = new QChar[ len + 1 ];
   QChar* orig = buf;
   memcpy( buf, _url.unicode(), len * sizeof( QChar ) );
-  
+
   uint pos = 0;
   // Node 1: Accept alpha or slash
   QChar x = buf[pos++];
@@ -264,18 +264,18 @@ void KURL::parse( const QString& _url )
   if ( m_strProtocol != "file" && !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
   {
     debug("Unknown protocol %s", m_strProtocol.data() );
-    m_bIsMalformed = TRUE;  
+    m_bIsMalformed = TRUE;
   }
   return;
  NodeErr:
   debug("Error in parsing\n");
   delete []orig;
-  m_bIsMalformed = TRUE;  
+  m_bIsMalformed = TRUE;
 }
 
 KURL& KURL::operator=( const QString& _url )
 {
-  reset();  
+  reset();
   parse( _url );
 
   return *this;
@@ -300,7 +300,7 @@ bool KURL::operator==( const KURL& _u ) const
 {
   if ( isMalformed() || _u.isMalformed() )
     return FALSE;
-  
+
   if ( m_strProtocol == _u.m_strProtocol &&
        m_strUser == _u.m_strUser &&
        m_strPass == _u.m_strPass &&
@@ -311,7 +311,7 @@ bool KURL::operator==( const KURL& _u ) const
        m_bIsMalformed == _u.m_bIsMalformed &&
        m_iPort == _u.m_iPort )
     return TRUE;
-  
+
   return FALSE;
 }
 
@@ -342,7 +342,7 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
 
     return FALSE;
   }
-  
+
   return ( *this == _u );
 }
 
@@ -355,7 +355,7 @@ void KURL::setFileName( const QString& _txt )
     tmp = _txt.mid( i );
   else
     tmp = _txt;
-  
+
   QString path = m_strPath;
   if ( path.isEmpty() )
     path = "/";
@@ -381,34 +381,34 @@ void KURL::cleanPath() // taken from the old KURL
 {
   if ( m_strPath.isEmpty() )
     return;
- 
+
   // Did we have a trailing '/'
   int len = m_strPath.length();
   bool slash = false;
   if ( len > 0 && m_strPath.right(1)[0] == '/' )
     slash = true;
- 
+
   m_strPath = QDir::cleanDirPath( m_strPath );
- 
+
   // Restore the trailing '/'
   len = m_strPath.length();
   if ( len > 0 && m_strPath.right(1)[0] != '/' && slash )
     m_strPath += "/";
-} 
+}
 
 QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path )
 {
   QString tmp = path( _trailing );
   if ( _no_empty_path && tmp.isEmpty() )
     tmp = "/";
-  
+
   encode( tmp );
   if ( !m_strQuery_encoded.isEmpty() )
   {
     tmp += "?";
     tmp += m_strQuery_encoded;
   }
-  
+
   return tmp;
 }
 
@@ -421,7 +421,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
     m_strQuery_encoded = "";
   }
   else
-  { 
+  {
     m_strPath = _txt.left( pos );
     m_strQuery_encoded = _txt.data() + pos + 1;
   }
@@ -507,19 +507,19 @@ QString KURL::url( int _trailing ) const
     tmp = path( _trailing );
   encode( tmp );
   u += tmp;
-    
+
   if ( !m_strQuery_encoded.isEmpty() )
   {
     u += "?";
     u += m_strQuery_encoded;
   }
-  
+
   if ( hasRef() )
   {
     u += "#";
     u += m_strRef_encoded;
   }
-  
+
   return u;
 }
 
@@ -532,13 +532,13 @@ KURL::List KURL::split( const QString& _url )
 {
   KURL::List lst;
   QString tmp = _url;
-  
+
   do
   {
     KURL u( tmp );
     if ( u.isMalformed() )
       return KURL::List();
-    
+
     // Continue with recursion ?
     if ( u.hasSubURL() )
     {
@@ -574,27 +574,27 @@ QString KURL::join( const KURL::List & lst )
 {
   QString dest = "";
   QString ref;
-  
+
   KURL::List::ConstIterator it;
   for( it = lst.begin() ; it != lst.end(); ++it )
   {
     if ( it == lst.begin() )
       ref = it->ref();
-    else 
+    else
       ASSERT( !it->hasRef() );
-    
+
     QString tmp = it->url();
     dest += tmp;
-    if ( it != lst.last() )
+    if ( it.node->data != lst.last() )
       dest += "#";
   }
 
   if ( !ref.isEmpty() )
   {
-    dest += "#";    
+    dest += "#";
     dest += ref;
   }
-  
+
   return dest;
 }
 
@@ -605,25 +605,25 @@ QString KURL::filename( bool _strip_trailing_slash ) const
   int len = m_strPath.length();
   if ( len == 0 )
     return fname;
-  
+
   if ( _strip_trailing_slash )
-  {    
+  {
     while ( len >= 1 && m_strPath[ len - 1 ] == '/' )
       len--;
   }
   else if ( m_strPath[ len - 1 ] == '/' )
     return fname;
-  
+
   // Does the path only consist of '/' characters ?
   if ( len == 1 && m_strPath[ 1 ] == '/' )
     return fname;
-  
+
   int i = m_strPath.findRev( '/', len - 1 );
   // If ( i == -1 ) => The first character is not a '/' ???
   // This looks like an error to me.
   if ( i == -1 )
     return fname;
-  
+
   fname = m_strPath.mid( i + 1, len - i - 1 ); // TO CHECK
   // fname.assign( m_strPath, i + 1, len - i - 1 );
   return fname;
@@ -633,20 +633,20 @@ void KURL::addPath( const QString& _txt )
 {
   if ( _txt.isEmpty() )
     return;
-  
+
   int len = m_strPath.length();
   // Add the trailing '/' if it is missing
   if ( _txt[0] != '/' && ( len == 0 || m_strPath[ len - 1 ] != '/' ) )
     m_strPath += "/";
-    
+
   // No double '/' characters
   int i = 0;
   if ( len != 0 && m_strPath[ len - 1 ] == '/' )
-  {    
+  {
     while( _txt[i] == '/' )
       ++i;
   }
-  
+
   m_strPath += _txt.mid( i );
 }
 
@@ -661,17 +661,17 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 
   if ( result.isEmpty() || result == "/" )
     return result;
-    
+
   int i = result.findRev( "/" );
   if ( i == -1 )
     return result;
-  
+
   if ( i == 0 )
   {
     result = "/";
     return result;
   }
-  
+
   if ( _strip_trailing_slash_from_result )
     result = m_strPath.left( i );
   else
@@ -688,13 +688,13 @@ void KURL::encode( QString& _url )
 
   if ( !old_length )
     return;
-   
+
   // a worst case approximation
   char *new_url = new char[ old_length * 3 + 1 ];
   int new_length = 0;
 
   // The (char)(QChar) casts below should use QChar::latin1() instead.
-     
+
   for ( int i = 0; i < old_length; i++ )
   {
     // 'unsave' and 'reserved' characters
@@ -712,7 +712,7 @@ void KURL::encode( QString& _url )
       c = (char)(QChar)_url[ i ] % 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_url[ new_length++ ] = c;
-	    
+	
     }
     else
       new_url[ new_length++ ] = (char)(QChar)_url[i];
@@ -741,7 +741,7 @@ void KURL::decode( QString& _url )
   int old_length = _url.length();
   if ( !old_length )
     return;
-    
+
   int new_length = 0;
 
   // make a copy of the old one
@@ -772,9 +772,9 @@ bool KURL::cd( const QString& _dir, bool zapRef )
 {
   if ( _dir.isEmpty() )
     return FALSE;
- 
+
   // absolute path ?
-  if ( _dir[0] == '/' ) 
+  if ( _dir[0] == '/' )
   {
     m_strPath = _dir;
     if ( zapRef )
@@ -792,7 +792,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
       setHTMLRef( QString::null );
     return TRUE;
   }
-  
+
   // relative path
   // we always work on the past of the first url.
   // Sub URLs are not touched.
@@ -813,7 +813,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
 KURL KURL::upURL( bool _zapRef ) const
 {
   QString old = m_strPath;
-  
+
   KURL u( *this );
   u.cd("..");
 
@@ -822,43 +822,43 @@ KURL KURL::upURL( bool _zapRef ) const
   {
     if ( _zapRef )
       u.setHTMLRef( QString::null );
-    
+
     return u;
   }
-  
+
   // So we have to strip protocols.
   // Example: tar:/#gzip:/decompress#file:/home/weis/test.tgz will be changed
   // to file:/home/weis/
   KURL::List lst = split( u );
-  
+
   QString ref = lst.begin()->ref();
-  
+
   // Remove first protocol
   lst.remove( lst.begin() );
-  
+
   // Remove all stream protocols
   while( lst.begin() != lst.end() )
-  {    
+  {
     if ( KProtocolManager::self().inputType( lst.begin()->protocol() ) == KProtocolManager::T_STREAM )
       lst.remove( lst.begin() );
     else
       break;
   }
-  
+
   // No source protocol at all ?
   if ( lst.begin() == lst.end() )
     return KURL();
-  
+
   // Remove the filename. Example: We start with
   // tar:/#gzip:/decompress#file:/home/x.tgz
   // and end with file:/home/x.tgz until now. Yet we
   // just strip the filename at the end of the leftmost
   // url.
   lst.begin()->setPath( lst.begin()->directory( FALSE ) );
-  
+
   if ( !_zapRef )
     lst.begin()->setRef( ref );
-  
+
   return join( lst );
 }
 
@@ -870,11 +870,11 @@ QString KURL::htmlRef() const
     decode( tmp );
     return tmp;
   }
-  
+
   List lst = split( *this );
   QString tmp = lst.begin()->ref();
   decode( tmp );
-  
+
   return tmp;
 }
 
@@ -886,12 +886,12 @@ void KURL::setHTMLRef( const QString& _ref )
     encode( m_strRef_encoded );
     return;
   }
-  
+
   List lst = split( *this );
   QString tmp = _ref;
   encode( tmp );
   lst.begin()->setRef( tmp );
-  
+
   *this = join( lst );
 }
 
@@ -901,7 +901,7 @@ bool KURL::hasHTMLRef() const
   {
     return hasRef();
   }
-  
+
   List lst = split( *this );
   return lst.begin()->hasRef();
 }
@@ -946,11 +946,11 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
     return FALSE;
 
   if ( _ignore_ref )
-  {    
+  {
     list1.begin()->setRef("");
     list2.begin()->setRef("");
   }
-  
+
   KURL::List::Iterator it1 = list1.begin();
   KURL::List::Iterator it2 = list2.begin();
   for( ; it1 != list1.end() ; ++it1, ++it2 )
