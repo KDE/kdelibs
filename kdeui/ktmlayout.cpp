@@ -72,10 +72,6 @@ KTMLayout::setGeometry(const QRect& rect)
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver( config, "KDE" );
     bool mac_mode = config->readBoolEntry( "macStyle", false );
-    mac_mode = FALSE; // disabled until somebody implements it
-    // correctly. If you have questions about thxis, write to
-    // ettrich@kde.org, subject "macMode".
-
 	/* position top menu bar */
 	if (topMenuBar && !mac_mode)
 	{

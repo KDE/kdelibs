@@ -79,6 +79,7 @@ protected:
     void drawContents(QPainter *p);
     void enterEvent(QEvent *ev);
     void leaveEvent(QEvent *ev);
+    void showEvent( QShowEvent* );
     bool eventFilter(QObject *, QEvent *);
 
     bool mouseActive;

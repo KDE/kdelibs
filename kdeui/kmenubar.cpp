@@ -58,19 +58,17 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
 class KMenuBar::KMenuBarPrivate
 {
 public:
-    KMenuBarPrivate(QWidget *parent)
+    KMenuBarPrivate()
     {
-      m_macMode = false;
-      m_parent  = parent;
+      topLevel = false;
     }
-    bool m_macMode;
-    QWidget *m_parent;
+    bool topLevel;
 };
 
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
-    d = new KMenuBarPrivate(parent);
+    d = new KMenuBarPrivate;
 
     mouseActive = false;
     setFont(KGlobalSettings::menuFont());
@@ -87,12 +85,29 @@ KMenuBar::~KMenuBar()
 
 void KMenuBar::setTopLevelMenu(bool top_level)
 {
-  d->m_macMode = top_level;
+    if ( isTopLevelMenu() == top_level )
+	return;
+  d->topLevel = top_level;
+  if ( isTopLevelMenu() ) {
+      removeEventFilter( topLevelWidget() );
+      reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
+      KWin::setType( winId(), NET::Menu );
+      KWin::setOnAllDesktops( winId(), true );
+      setBackgroundMode( NoBackground );
+      if ( !parentWidget() || parentWidget()->isVisibleTo( 0 ) )
+	  show();
+  } else {
+      if ( parentWidget() ) {
+	  reparent( parentWidget(), QPoint(0,0), TRUE );
+	  setBackgroundMode( PaletteButton );
+	  installEventFilter( topLevelWidget() );
+      }
+  }
 }
 
 bool KMenuBar::isTopLevelMenu() const
 {
-  return d->m_macMode;
+  return d->topLevel;
 }
 
 void KMenuBar::slotReadConfig()
@@ -102,10 +117,7 @@ void KMenuBar::slotReadConfig()
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );
-  d->m_macMode = config->readBoolEntry( keyMac, false );
-  d->m_macMode = FALSE; // disabled until somebody implements it
- // correctly. If you have questions about thxis, write to
- // ettrich@kde.org, subject "macMode".
+  setTopLevelMenu( config->readBoolEntry( keyMac, false ) );
 }
 
 void KMenuBar::drawContents(QPainter *p)
@@ -117,7 +129,7 @@ void KMenuBar::drawContents(QPainter *p)
         int i, x, y, nlitems;
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
-                               d->m_macMode, NULL);
+                               d->topLevel, NULL);
 
         for(i=0, nlitems=0, x=2, y=2; i < (int)mitems->count(); ++i, ++nlitems)
         {
@@ -166,59 +178,36 @@ void KMenuBar::leaveEvent(QEvent *ev)
 
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 {
-  // we only do this if we are in Mac mode
-  if ( d->m_macMode == false )
-    return false;
 
-  // we also demand that the object be our parent
-  if ( obj != d->m_parent )
-    return false;
-
-
-  // finally, ensure that this is a Show event
-  if ( ev->type() != QEvent::Show )
-    return false;
-
-  hide();
-
-  QString title(d->m_parent->caption());
-  title.append(" [menu]");
-  setCaption( title );
-
-  reparent(0, 0, mapToGlobal(QPoint(0,0)), false);
-  XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->
-                        topLevelWidget()->winId());
-  KWin::setType( winId(), NET::Menu );
-  
-//###   QRect r =  KWM::windowRegion(KWM::currentDesktop());
-  QRect r = qApp->desktop()->geometry();
-  
-  setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(),
-              heightForWidth(r.width()) - 9);
-  
-  setFixedWidth(r.width());
-
-  setFrameStyle( NoFrame );
-
-  // Tell the window manager we want to be avoided.
-  KWin::setStrut( winId(), 0, 0, height(), 0 );
-  
-  
-  show();
-
-  // in theory, this should reassign our top-level accelerators to our
-  // parent.  in practice, this doesn't seem to do anything.  however,
-  // I'm keeping it here since it *did* work in KDE 1.x and the
-  // accelerators *don't* work now :-(
-  QObjectList   *accelerators = queryList( "QAccel" );
-  QObjectListIt it( *accelerators );
-  for ( ; it.current(); ++it )
-  {
-    QObject *obj = it.current();
-    removeEventFilter(obj);
-    d->m_parent->installEventFilter(obj);
-  }
-
-  return false;
+    if ( d->topLevel && parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
+	if ( ev->type() == QEvent::Show  && isHidden() )
+	    show();
+	else if ( ev->type() == QEvent::WindowActivate )
+	    raise();
+    }
+    if ( d->topLevel && ev->type() == QEvent::Resize )
+	return FALSE; // hinder QMenubar to adjust its size
+    
+  return QMenuBar::eventFilter( obj, ev );
 }
+
+void KMenuBar::showEvent( QShowEvent* )
+{
+    if ( d->topLevel ) {
+	int w = QApplication::desktop()->width();
+	setGeometry(0, -frameWidth()-2, w, heightForWidth( w ) );
+	KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
+	if ( parentWidget() ) {
+	    QObjectList   *accelerators = queryList( "QAccel" );
+	    QObjectListIt it( *accelerators );
+	    for ( ; it.current(); ++it ) {
+		QObject *obj = it.current();
+		parentWidget()->topLevelWidget()->removeEventFilter(obj);
+		parentWidget()->topLevelWidget()->installEventFilter(obj);
+	    }	
+	    delete accelerators;
+	}
+    }
+}
+
 #include "kmenubar.moc"
