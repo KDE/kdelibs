@@ -118,7 +118,7 @@ public:
     DOMString valueForId(uint id)
 	{
 	    int i = find(id);
-	    if(i == 1) return 0;
+	    if(i == -1) return 0;
 	    return value(i);
 	}
     // adds the attribute. If it exists, replaces it.

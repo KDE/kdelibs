@@ -395,36 +395,6 @@ void HTMLPreElementImpl::setWidth( long w )
     HTMLBlockElementImpl::width = w;
 }
 
-#if 0
-void HTMLPreElementImpl::layout( bool )
-{
-#ifdef DEBUG_LAYOUT
-     printf("%s(Pre)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), HTMLPositionedElementImpl::width, layouted());
-#endif
-
-    ascent = 3;
-    descent = 0;
-
-    HTMLPositionedElementImpl::width = availableWidth;
-
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-#ifdef DEBUG
-	if(!child->isInline())
-	{
-	  printf("error: non inline element in <pre>\n");
-	  child = child->nextSibling();
-	}
-	else
-#endif
-	    child = calcParagraph(child);
-    }
-    descent += 3;
-    setLayouted();
-}
-#endif
-
 void HTMLPreElementImpl::setStyle(CSSStyle *s)
 {
     s->font.family = pSettings->fixedFontFace;

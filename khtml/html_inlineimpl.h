@@ -105,6 +105,8 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
     virtual void setStyle(CSSStyle *currentStyle);
+    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
+		       int _tx, int _ty);
 
 };
 

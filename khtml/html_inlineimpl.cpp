@@ -265,6 +265,7 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
     case ATTR_SIZE:
     case ATTR_COLOR:
     case ATTR_FACE:
+      // handled in setStyle...
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
@@ -276,21 +277,26 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     DOMString s = attributeMap.valueForId(ATTR_SIZE);
     if(s != 0)
     {
+      printf("setting size\n");
 	int num = s.toInt();
 	if ( *s.unicode() == '+' ||
 	     *s.unicode() == '-' )
-	    currentStyle->font.size = pSettings->fontBaseSize + num;
+	    currentStyle->font.size += num;
 	else
 	    currentStyle->font.size = num;
+	if(currentStyle->font.size > 7) currentStyle->font.size = 7;
+	if(currentStyle->font.size < 1) currentStyle->font.size = 1;
     }
     s = attributeMap.valueForId(ATTR_COLOR);
     if(s != 0)
     {
+      printf("setting color\n");
 	setNamedColor( currentStyle->font.color, s.string() );
     }
     s = attributeMap.find(ATTR_FACE);
     if(s != 0)
     {
+      printf("setting face\n");
 	// try to find a matching font in the font list.
 	StringTokenizer st;
 	const QChar separ[] = { ' ', ',', 0x0 };
@@ -313,6 +319,11 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
 
 }
 
+void HTMLFontElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
+				  int _tx, int _ty)
+{
+  HTMLElementImpl::print(p, _x, _y, _w, _h, _tx, _ty);
+}
 
 // -------------------------------------------------------------------------
 

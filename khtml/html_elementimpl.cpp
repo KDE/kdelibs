@@ -1457,7 +1457,10 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
 	}	
     }
 
-    return newChild;
+    if(newChild->id() != ID_TEXT)
+      return newChild;
+    else
+      return this;
 }
 
 void HTMLBlockElementImpl::calcMinMaxWidth()
