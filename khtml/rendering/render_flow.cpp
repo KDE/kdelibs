@@ -236,8 +236,6 @@ void RenderFlow::layout()
 
     clearFloats();
 
-    // Block elements usually just have descent.
-    // ascent != 0 will give a separation.
     m_height = 0;
     m_clearStatus = CNONE;
 
@@ -255,17 +253,17 @@ void RenderFlow::layout()
 
     calcHeight();
 
-    if(floatBottom() > m_height)
+    if(hasOverhangingFloats())
     {
         if(isFloating() || isTableCell())
         {
             m_height = floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
-        else if( m_next)        {
+        else if( m_next) 
+        {
             assert(!m_next->isInline());
             m_next->setLayouted(false);
-            //m_next->layout();
         }
     }
 
@@ -357,7 +355,7 @@ void RenderFlow::layoutBlockChildren()
         child->layout();
 
         int chPos = xPos + child->marginLeft();
-        if( m_style->textAlign() == KONQ_CENTER ) {
+        if( m_style->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
             //kdDebug() << "should align to center" << endl;
             chPos += ( width() - child->width() )/2;
         } else if(m_style->direction() == LTR) {
@@ -568,37 +566,51 @@ void RenderFlow::positionNewFloats()
         f->endY = f->startY + _height;
 
 
-
-        // html blocks flow around floats, to do this add floats to parent too
+        // Copy float to the containing block 
+        // In case of anonymous box, copy to containing block _and_ it's containing block,
+        // so the creation of anonymous box does not prevent elements dom parent
+        // of getting the float.
+        //
+        // The whole thing is a hack to support html behaviour, where certain block
+        // elements (tables, lists) flow around floats as if they were inlines.
+        // Khtml float layouting is modeled after css2, and implementing this has 
+        // been somewhat messy
+        //
         if(style()->htmlHacks() && childrenInline() && !style()->flowAroundFloats())
         {
-            RenderObject* obj = parent();
-            while ( obj && obj->childrenInline() ) obj=obj->parent();
-            if (obj && obj->isFlow() )
+            RenderObject* obj = this;
+                        
+            for (int n = 0 ; n < (isAnonymousBox()?2:1); n++ )
             {
-                RenderFlow* par = static_cast<RenderFlow*>(obj);
-
-                if (!par->isFloating())
+                obj = obj->containingBlock();                       
+            
+                if (obj && obj->isFlow() )
                 {
+                    RenderFlow* par = static_cast<RenderFlow*>(obj);
 
-                    if(!par->specialObjects) {
-                        par->specialObjects = new QSortedList<SpecialObject>;
-                        par->specialObjects->setAutoDelete(true);
-                    }
-
-                    QListIterator<SpecialObject> it(*par->specialObjects);
-                    SpecialObject* tt;
-                    while ( (tt = it.current()) ) {
-                        if (tt->node == o) break;
-                        ++it;
-                    }
-                    if (!tt || tt->node==o)
+                    if (par->isFloating())
+                        break;
+                    else
                     {
-                        SpecialObject* so = new SpecialObject(*f);
-                        so->count = specialObjects->count();
-                        so->startY = so->startY + m_y;
-                        so->endY = so->endY + m_y;
-                        par->specialObjects->append(so);
+                        if(!par->specialObjects) {
+                            par->specialObjects = new QSortedList<SpecialObject>;
+                            par->specialObjects->setAutoDelete(true);
+                        }
+
+                        QListIterator<SpecialObject> it(*par->specialObjects);
+                        SpecialObject* tt;
+                        while ( (tt = it.current()) ) {
+                            if (tt->node == o) break;
+                            ++it;
+                        }
+                        if (!tt || tt->node==o)
+                        {
+                            SpecialObject* so = new SpecialObject(*f);
+                            so->count = specialObjects->count();
+                            so->startY = so->startY + m_y;
+                            so->endY = so->endY + m_y;
+                            par->specialObjects->append(so);
+                        }
                     }
                 }
             }
@@ -800,7 +812,12 @@ RenderFlow::clearFloats()
 
     RenderObject *prev = m_previous;
 
-    while (prev && !prev->isFlow())
+    // find the element to copy the floats from
+    // pass non-flows
+    // pass fAF's unless they contain overhanging stuff 
+    while (prev && (!prev->isFlow() || 
+        (prev->style()->flowAroundFloats() && 
+            (static_cast<RenderFlow *>(prev)->floatBottom()+prev->yPos() < m_y ))))
             prev = prev->previousSibling();
 
     int offset = m_y;

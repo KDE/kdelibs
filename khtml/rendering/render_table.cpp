@@ -992,10 +992,11 @@ void RenderTable::calcColWidth(void)
     toAdd = distributeRest(toAdd,Variable,maxVar);
     toAdd = distributeRest(toAdd,Relative,maxRel);
     toAdd = distributeRest(toAdd,Percent,maxPercent);
-
-#ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "final toAdd " << toAdd << endl;
-#endif
+    
+    /* 
+     * If something remains, put it to the last column
+     */    
+    actColWidth[totalCols-1] += toAdd;
 
     /*
      * Calculate the placement of colums

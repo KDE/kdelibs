@@ -113,7 +113,10 @@ public:
     void positionNewFloats();
     void clearFloats();
     virtual void calcMinMaxWidth();
-
+    
+    virtual bool containsSpecial() { return specialObjects!=0; }
+    virtual bool hasOverhangingFloats() { return floatBottom() > m_height; }
+    
     // implementation of the following functions is in bidi.cpp
     void appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
                    BidiContext *context, QChar::Direction dir);

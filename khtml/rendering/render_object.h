@@ -110,6 +110,7 @@ public:
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
+        
         // absolute relative or fixed positioning
 
     void setContainsPositioned(bool p);
@@ -316,6 +317,9 @@ public:
      * but draw themselves (i.e. have content)
      */
     bool isSpecial() const;
+    virtual bool containsSpecial() { return false; }
+    virtual bool hasOverhangingFloats() { return false; }
+    
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
 
@@ -359,11 +363,11 @@ protected:
     bool m_parsing        : 1;
     bool m_minMaxKnown    : 1;
     bool m_floating       : 1;
+
     bool m_positioned     : 1;
     bool m_containsPositioned     : 1;
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
-
     bool m_isAnonymous    : 1;
     bool m_visible        : 1;
     bool m_isText         : 1;

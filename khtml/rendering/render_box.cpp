@@ -347,7 +347,7 @@ void RenderBox::updateSize()
     setMinMaxKnown(false);
     calcMinMaxWidth();
 
-    if ((isInline() || isFloating()) && parent())
+    if ((isInline() || isFloating() || containsSpecial()) && parent())
     {
         if (!isInline())
             setLayouted(false);
@@ -383,6 +383,11 @@ void RenderBox::updateHeight()
     {
         int oldHeight = m_height;
         setLayouted(false);
+        
+        if (hasOverhangingFloats()) {
+            if(containingBlock() != this) containingBlock()->updateHeight();
+        }
+            
         layout();
 
         if(m_height != oldHeight) {
@@ -535,6 +540,8 @@ void RenderBox::calcWidth()
             {
                 m_width = w.width(cw);
                 m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+                
+                if(m_width < m_minWidth) m_width = m_minWidth;
             }
 
             return;
