@@ -183,6 +183,7 @@ public:
     bool active() const     { return m_active; }
     bool focused() const { return m_focused; }
     bool attached() const   { return m_attached; }
+    bool closed() const     { return m_closed; }
     bool changed() const    { return m_changed; }
     bool hasChangedChild() const { return m_hasChangedChild; }
     bool hasAnchor() const { return m_hasAnchor; }
@@ -312,6 +313,11 @@ public:
      */
     virtual void detach();
 
+    /**
+     * Notifies the node that no more children will be added.
+     */
+    virtual void close();
+
     void closeRenderer();
 
     // -----------------------------------------------------------------------------
@@ -386,6 +392,7 @@ protected:
     bool m_hasId : 1;
     bool m_hasStyle : 1;
     bool m_attached : 1;
+    bool m_closed : 1;
     bool m_changed : 1;
     bool m_hasChangedChild : 1;
     bool m_inDocument : 1;

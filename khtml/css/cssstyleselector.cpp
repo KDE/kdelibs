@@ -1081,9 +1081,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 // 	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	switch (sel->pseudoType()) {
 	case CSSSelector::PseudoEmpty:
-	    if (!e->firstChild())
-		return true;
-	    break;
+            // If e is not closed yet we don't know the number of children
+            if (!e->closed()) {
+                e->setRestyleSelfLate();
+                return false;
+            }
+            if (!e->firstChild())
+                return true;
+            break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
@@ -1095,12 +1100,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-        // FIXME: LastChild, OnlyChild and NthLastChild only works reliably on tables,
-        // on other containers, the children are added and checked one at a time,
-        // so the current element is always the last.
         case CSSSelector::PseudoLastChild: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 DOM::NodeImpl* n = e->nextSibling();
                 while ( n && !n->isElementNode() )
                     n = n->nextSibling();
@@ -1112,6 +1119,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoOnlyChild: {
             // If both first-child and last-child apply, then only-child applies.
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 DOM::NodeImpl* n = e->previousSibling();
                 while ( n && !n->isElementNode() )
                     n = n->previousSibling();
@@ -1142,13 +1154,18 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoNthLastChild: {
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 int count = 1;
                 DOM::NodeImpl* n = e->nextSibling();
                 while ( n ) {
                     if (n->isElementNode()) count++;
                     n = n->nextSibling();
                 }
-                kdDebug(6080) << "NthLastChild " << count << "=" << sel->string_arg << endl;
+//                kdDebug(6080) << "NthLastChild " << count << "=" << sel->string_arg << endl;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1172,6 +1189,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoLastOfType: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 const DOMString& type = e->tagName();
                 DOM::NodeImpl* n = e->nextSibling();
                 while ( n ) {
@@ -1187,6 +1209,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoOnlyOfType: {
             // If both first-of-type and last-of-type apply, then only-of-type applies.
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 const DOMString& type = e->tagName();
                 DOM::NodeImpl* n = e->previousSibling();
                 while ( n && !(n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type))
@@ -1219,6 +1246,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoNthLastOfType: {
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                if (!e->parentNode()->closed()) {
+                    e->setRestyleLate();
+                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+                    return false;
+                }
                 int count = 1;
                 const DOMString& type = e->tagName();
                 DOM::NodeImpl* n = e->nextSibling();
@@ -1226,7 +1258,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                     if (n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type) count++;
                     n = n->nextSibling();
                 }
-                kdDebug(6080) << "NthLastOfType " << count << "=" << sel->string_arg << endl;
+//                kdDebug(6080) << "NthLastOfType " << count << "=" << sel->string_arg << endl;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1332,8 +1364,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
                 return !form->disabled();
             }
-            else
-	       return false;
+            break;
         }
         case CSSSelector::PseudoDisabled: {
             if (e->isGenericFormElement()) {
@@ -1341,8 +1372,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
                 return form->disabled();
             }
-            else
-                return false;
+            break;
         }
 
 	case CSSSelector::PseudoNotParsed:

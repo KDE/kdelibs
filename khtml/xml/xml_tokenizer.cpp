@@ -204,7 +204,7 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
 
     NodeImpl *node = popNode();
     if ( node ) {
-        node->closeRenderer();
+        node->close();
         while ( currentNode()  && currentNode()->implicitNode() ) //for the implicit HTMLTableSectionElementImpl
             popNode();
     } else

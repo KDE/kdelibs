@@ -295,6 +295,9 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
+    m_restyleLate = false;
+    m_restyleSelfLate = false;
+    m_restyleChildrenLate = false;
 }
 
 ElementImpl::~ElementImpl()
@@ -483,6 +486,29 @@ void ElementImpl::attach()
 #endif
 
     NodeBaseImpl::attach();
+}
+
+void ElementImpl::close()
+{
+    NodeImpl::close();
+
+    if (m_restyleChildrenLate) {
+        NodeImpl *e = firstChild();
+        while(e) {
+            if (e->isElementNode()) {
+                if (static_cast<ElementImpl*>(e)->restyleLate()) {
+                    static_cast<ElementImpl*>(e)->recalcStyle(Force);
+                    static_cast<ElementImpl*>(e)->setRestyleLate(false);
+                }
+            }
+            e = e->nextSibling();
+        }
+        m_restyleChildrenLate = false;
+    }
+    if (m_restyleSelfLate) {
+        recalcStyle(Force);
+        m_restyleSelfLate = false;
+    }
 }
 
 void ElementImpl::recalcStyle( StyleChange change )

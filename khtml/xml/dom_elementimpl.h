@@ -183,6 +183,7 @@ public:
     virtual QString state() { return QString::null; }
 
     virtual void attach();
+    virtual void close();
     virtual void recalcStyle( StyleChange = NoChange );
 
     virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {}
@@ -203,6 +204,11 @@ public:
     virtual bool contentEditable() const;
     void setContentEditable(bool enabled);
 
+    bool restyleLate() { return m_restyleLate; };
+    void setRestyleLate(bool b=true) { m_restyleLate = b; };
+    void setRestyleSelfLate() { m_restyleLate = true; };
+    void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
+
 protected:
     void createAttributeMap() const;
     void createDecl();
@@ -220,6 +226,9 @@ protected: // member variables
 
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
     DOMStringImpl *m_prefix;
+    bool m_restyleLate;
+    bool m_restyleSelfLate;
+    bool m_restyleChildrenLate;
 };
 
 

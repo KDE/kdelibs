@@ -331,7 +331,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 QString state(document->document()->nextState());
                 if (!state.isNull()) n->restoreState(state);
             }
-            n->closeRenderer();
+            n->close();
 #endif
 	    if(n->isInline()) m_inline = true;
         }
@@ -352,7 +352,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 	// never create anonymous objects just to hold a space.
 	if ( id == ID_TEXT &&
 	     static_cast<TextImpl *>(n)->string()->l == 1 &&
-	     static_cast<TextImpl *>(n)->string()->s[0] == " " )
+	     (static_cast<TextImpl *>(n)->string()->s[0] == ' ' ||
+              static_cast<TextImpl *>(n)->string()->s[0] == '\n'))
 	    return false;
 
         // switch according to the element to insert
@@ -1204,7 +1205,7 @@ void KHTMLParser::popOneBlock()
             QString state(document->document()->nextState());
             if (!state.isNull()) current->restoreState(state);
         }
-        current->closeRenderer();
+        current->close();
     }
 #endif
 

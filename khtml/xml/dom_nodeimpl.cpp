@@ -61,6 +61,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_hasId( false ),
       m_hasStyle( false ),
       m_attached(false),
+      m_closed(false),
       m_changed( false ),
       m_hasChangedChild( false ),
       m_inDocument( false ),
@@ -822,6 +823,12 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
     return ch;
+}
+
+void NodeImpl::close()
+{
+    closeRenderer();
+    m_closed = true;
 }
 
 void NodeImpl::closeRenderer()
