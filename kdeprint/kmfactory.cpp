@@ -148,6 +148,8 @@ void KMFactory::loadFactory()
 		KConfig	*conf = printConfig();
 		conf->setGroup("General");
 		QString	sys = conf->readEntry("PrintSystem","lpdunix");
+                if (sys.length()==1 && sys[0].isNumber()) // old-style key, like 0 or 1
+                    sys = "lpdunix";
 		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
 		if (!m_factory)
