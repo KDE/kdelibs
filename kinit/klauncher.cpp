@@ -1207,11 +1207,14 @@ KLauncher::slotSlaveGone()
 void
 KLauncher::idleTimeout()
 {
+    bool keepOneFileSlave=true;
     time_t now = time(0);
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
-        if (slave->age(now) > SLAVE_MAX_IDLE)
+        if ((slave->protocol()=="file") && (keepOneFileSlave))
+           keepOneFileSlave=false;
+        else if (slave->age(now) > SLAVE_MAX_IDLE)
         {
            // killing idle slave
            delete slave;

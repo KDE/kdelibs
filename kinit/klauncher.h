@@ -46,10 +46,11 @@ public:
    IdleSlave(KSocket *socket);
    bool match( const QString &protocol, const QString &host, bool connected);
    void connect( const QString &app_socket);
-   pid_t pid() { return mPid;}
+   pid_t pid() const { return mPid;}
    int age(time_t now);
    void reparseConfiguration();
    bool onHold(const KURL &url);
+   QString protocol() const   {return mProtocol;}
 
 signals:
    void statusUpdate(IdleSlave *);
