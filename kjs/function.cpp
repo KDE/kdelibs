@@ -98,6 +98,7 @@ void FunctionImp::processParameters(const List *args)
   }
 }
 
+// ECMA 13.2.1
 KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 {
   bool dummyList = false;
@@ -108,7 +109,8 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 
   Context *save = Context::current();
 
-  Context::setCurrent(new Context(codeType(), save, this, args, thisV));
+  Context *ctx = new Context(codeType(), save, this, args, thisV);
+  Context::setCurrent(ctx);
 
   // assign user supplied arguments to parameters
   processParameters(args);
@@ -118,7 +120,11 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   if (dummyList)
     delete args;
 
-  delete Context::current();
+  if (ctx->hadError()) {
+      // propagate errors into calling context. correct ?
+      save->setError(ctx->error());
+  }
+  delete ctx;
   Context::setCurrent(save);
 
   if (comp.complType() == Throw)
