@@ -257,6 +257,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			r.rect(&x, &y, &w, &h);
 			int x2 = x+w-1;
 			int y2 = y+h-1;
+			QPen oldPen = p->pen();
 
 			// Outer frame (round style)
 			p->setPen(cg.shadow());
@@ -275,6 +276,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 			p->fillRect(x+2, y+2, w-4, h-4, cg.button());
 
+			p->setPen( oldPen );
 			break;
 		}
 
@@ -379,6 +381,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = on || down;
 			int x2 = x+w-1;
 			int y2 = y+h-1;
+			QPen oldPen = p->pen();
 
 			// Bevel
 			p->setPen(sunken ? cg.mid() : cg.light());
@@ -396,6 +399,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			else
 				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
 							    cg.button(), flags & Style_Horizontal );
+			p->setPen( oldPen );
 			break;
 		}
 
