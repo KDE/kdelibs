@@ -185,10 +185,10 @@ public:
    * List of all Services and ServiceGroups within this
    * ServiceGroup.
    * @param sorted true to sort items
-   * @param excludeNoDisplay true to include items marked "NoDisplay"
+   * @param excludeNoDisplay true to exclude items marked "NoDisplay"
    * @param allowSeparators true to allow separator items to be included
    * @param sortByGenericName true to sort GenericName+Name instead of Name+GenericName
-   * @return the list of entried
+   * @return the list of entries
    * @since 3.2
    */
   List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName=false);  
