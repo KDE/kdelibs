@@ -35,6 +35,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 
+#include <kde_file.h>
 #include "kapplication.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
@@ -61,8 +62,8 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
       // if we're overwriting an existing file, ensure temp file's
       // permissions are the same as existing file so the existing
       // file's permissions are preserved
-      struct stat stat_buf;
-      if (stat(QFile::encodeName(real_filename), &stat_buf)==0)
+      KDE_struct_stat stat_buf;
+      if (KDE_stat(QFile::encodeName(real_filename), &stat_buf)==0)
       {
          // But only if we own the existing file
          if (stat_buf.st_uid == getuid())
@@ -161,12 +162,12 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    QCString cFilename = QFile::encodeName(qFilename);
    const char *filename = cFilename.data();
 
-   int fd = open( filename, O_RDONLY | O_BINARY);
+   int fd = KDE_open( filename, O_RDONLY );
    if (fd < 0)
       return false;
 
-   struct stat buff;
-   if ( fstat( fd, &buff) < 0 )
+   KDE_struct_stat buff;
+   if ( KDE_fstat( fd, &buff) < 0 )
    {
       ::close( fd );
       return false;
@@ -192,7 +193,7 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    const char *backup = cBackup.data();
    int permissions = buff.st_mode & 07777;
 
-   if ( stat( backup, &buff) == 0)
+   if ( KDE_stat( backup, &buff) == 0)
    {
       if ( unlink( backup ) != 0 )
       {
@@ -202,7 +203,7 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    }
 
    mode_t old_umask = umask(0);
-   int fd2 = open( backup, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, permissions | S_IWUSR);
+   int fd2 = KDE_open( backup, O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR);
    umask(old_umask);
 
    if ( fd2 < 0 )

@@ -36,6 +36,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
+#include <kde_file.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
@@ -51,7 +52,7 @@ public:
    bool isLocked;
    bool recoverLock;
    QTime staleTimer;
-   struct stat statBuf;
+   KDE_struct_stat statBuf;
    int pid;
    QString hostname;
    QString instance;
@@ -88,7 +89,7 @@ KLockFile::setStaleTime(int _staleTime)
   d->staleTime = _staleTime;
 }
 
-static bool statResultIsEqual(struct stat &st_buf1, struct stat &st_buf2)
+static bool statResultIsEqual(KDE_struct_stat &st_buf1, KDE_struct_stat &st_buf2)
 {
 #define FIELD_EQ(what)       (st_buf1.what == st_buf2.what)
   return FIELD_EQ(st_dev) && FIELD_EQ(st_ino) && 
@@ -96,10 +97,10 @@ static bool statResultIsEqual(struct stat &st_buf1, struct stat &st_buf2)
 #undef FIELD_EQ
 }
 
-static KLockFile::LockResult lockFile(const QString &lockFile, struct stat &st_buf)
+static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf)
 {
   QCString lockFileName = QFile::encodeName( lockFile );
-  int result = ::lstat( lockFileName, &st_buf );
+  int result = KDE_lstat( lockFileName, &st_buf );
   if (result == 0)
      return KLockFile::LockFail;
   
@@ -132,12 +133,12 @@ static KLockFile::LockResult lockFile(const QString &lockFile, struct stat &st_b
   return KLockFile::LockOK;
 #endif
 
-  struct stat st_buf2;
-  result = ::lstat( uniqueName, &st_buf2 );
+  KDE_struct_stat st_buf2;
+  result = KDE_lstat( uniqueName, &st_buf2 );
   if (result != 0)
      return KLockFile::LockError;
 
-  result = ::lstat( lockFileName, &st_buf );
+  result = KDE_lstat( lockFileName, &st_buf );
   if (result != 0)
      return KLockFile::LockError;
 
@@ -147,7 +148,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, struct stat &st_b
   return KLockFile::LockOK;
 }
 
-static KLockFile::LockResult deleteStaleLock(const QString &lockFile, struct stat &st_buf)
+static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf)
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
@@ -173,13 +174,13 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, struct sta
 
    // check if link count increased with exactly one
    // and if the lock file still matches
-   struct stat st_buf1;
-   struct stat st_buf2;
-   memcpy(&st_buf1, &st_buf, sizeof(struct stat));
+   KDE_struct_stat st_buf1;
+   KDE_struct_stat st_buf2;
+   memcpy(&st_buf1, &st_buf, sizeof(KDE_struct_stat));
    st_buf1.st_nlink++;
-   if ((lstat(tmpFile, &st_buf2) == 0) && statResultIsEqual(st_buf1, st_buf2))
+   if ((KDE_lstat(tmpFile, &st_buf2) == 0) && statResultIsEqual(st_buf1, st_buf2))
    {
-      if ((lstat(lckFile, &st_buf2) == 0) && statResultIsEqual(st_buf1, st_buf2))
+      if ((KDE_lstat(lckFile, &st_buf2) == 0) && statResultIsEqual(st_buf1, st_buf2))
       {
          // - - if yes, delete lock file, delete temp file, retry lock
          qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
@@ -205,7 +206,7 @@ KLockFile::LockResult KLockFile::lock(int options)
   int n = 5;
   while(true)
   {
-     struct stat st_buf;
+     KDE_struct_stat st_buf;
      result = lockFile(d->file, st_buf);
      if (result == KLockFile::LockOK)
      {
@@ -268,7 +269,7 @@ KLockFile::LockResult KLockFile::lock(int options)
         }
         else
         {
-           memcpy(&(d->statBuf), &st_buf, sizeof(struct stat));
+           memcpy(&(d->statBuf), &st_buf, sizeof(KDE_struct_stat));
            d->staleTimer.start();
            
            d->pid = -1;

@@ -52,6 +52,7 @@
 #include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kurl.h>
+#include <kde_file.h>
 
 extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */
@@ -983,9 +984,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   int fileMode = -1;
   bool createNew = true;
 
-  struct stat buf;
-        if (stat(QFile::encodeName(filename), &buf) == 0)
-        {
+  KDE_struct_stat buf;
+  if (KDE_stat(QFile::encodeName(filename), &buf) == 0)
+  {
      if (buf.st_uid == getuid())
      {
         // Preserve file mode if file exists and is owned by user.
@@ -1026,12 +1027,12 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   {
      // Open existing file.
      // We use open() to ensure that we call without O_CREAT.
-     int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
+     int fd = KDE_open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
      if (fd < 0)
      {
         return bEntriesLeft;
      }
-     pStream = fdopen( fd, "w");
+     pStream = KDE_fdopen( fd, "w");
      if (!pStream)
      {
         close(fd);
