@@ -226,8 +226,7 @@ void KRegistry::load( const char *_dbfile )
 
       file.close();
     }
-  }
-  
+  } 
   const char *s;
   for( s = m_lstToplevelDirs.first(); s != 0L; s = m_lstToplevelDirs.next() )
   {    

@@ -99,8 +99,8 @@ void ksprintf(QString *str, const char *fmt, ...)
 
     char *tmp_data = new char[len]; // make enough space
 
-    va_start( ap, format ); // the rest does the libc for us
-    vsprintf( tmp_data, format, ap );
+    va_start( ap, fmt ); // the rest does the libc for us
+    vsprintf( tmp_data, fmt, ap );
     va_end( ap );
 
     *str = tmp_data; // makes deep copy, that is also resized

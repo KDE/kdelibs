@@ -152,7 +152,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCo
 			 0, 0, configurable);
 }
 
-bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
+bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
@@ -179,28 +179,28 @@ bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
 
 	
 
-bool KAccel::insertItem( const char* descr, const char * action,
-					   const char * keyCode, bool configurable )
+bool KAccel::insertItem( const QString& descr, const QString& action,
+			 const QString& keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
 	return insertItem( descr, action, iKeyCode, configurable );
 }
 
-bool KAccel::insertItem( const char* descr, const char * action,
-					   const char * keyCode, int id,
-			                   QPopupMenu *qmenu, bool configurable)
+bool KAccel::insertItem( const QString& descr, const QString& action,
+			 const QString& keyCode, int id,
+			 QPopupMenu *qmenu, bool configurable)
 {
 	uint iKeyCode = stringToKey( keyCode );
 	return insertItem( descr, action, iKeyCode, id, qmenu, configurable);
 }
 
-bool KAccel::insertItem( const char * action, uint keyCode,
+bool KAccel::insertItem( const QString& action, uint keyCode,
 			 bool configurable )
 {
     return insertItem(action, action, keyCode, configurable);
 }
 
-bool KAccel::insertItem( const char * action, uint keyCode,
+bool KAccel::insertItem( const QString& action, uint keyCode,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
     return insertItem(action, action, keyCode, id, qmenu, configurable);
@@ -672,9 +672,9 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 
 /*****************************************************************************/
 
-QCString keyToString( uint keyCode, bool i18_n )
+QString keyToString( uint keyCode, bool i18_n )
 {
-	QCString res;
+	QString res;
 	
 	if ( keyCode == 0 ) {
 		res.sprintf( "" );
@@ -718,7 +718,7 @@ QCString keyToString( uint keyCode, bool i18_n )
 		}
 	}
 	
-	return QCString();
+	return QString();
 }
 
 uint stringToKey(const QString& key )

@@ -90,10 +90,10 @@ void KMimeType::errorMissingMimeType( const char *_type )
 {
   initStatic();
 
-  string tmp = i18n( "Could not find mime type\n" );
+  QString tmp = i18n( "Could not find mime type\n" );
   tmp += _type;
     
-  QMessageBox::critical( 0, i18n( "KFM Error" ), tmp.c_str(), i18n("OK" ) );
+  QMessageBox::critical( 0, i18n( "KFM Error" ), tmp, i18n("OK" ) );
 
   QString mime = _type;
   QStrList dummy;

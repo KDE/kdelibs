@@ -43,7 +43,7 @@ uint stringToKey( const QString& sKey );
  * Returns a string corresponding to the key code keyCode, which is empty if
  * keyCode is not recognized or zero.
  */
-QCString keyToString( uint keyCode, bool i18_n = false );
+QString keyToString( uint keyCode, bool i18_n = false );
 
 struct KKeyEntry {
 	uint aCurrentKeyCode, aDefaultKeyCode, aConfigKeyCode;
@@ -235,9 +235,9 @@ class KAccel
 	 * 	
 	 */
 	bool insertItem( const QString& descr, const QString& action, uint defaultKeyCode,
-				 bool configurable = TRUE );
-	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
-				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
+			 bool configurable = TRUE );
+	bool insertItem( const QString& descr, const QString& action, uint defaultKeyCode,
+			 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 	
 	 /**
 	 * Inserts an accelerator item and returns -1 if the key code
@@ -261,10 +261,12 @@ class KAccel
 	 * If an action already exists the old association and connections
 	 * will be removed..
 	 */
-	bool insertItem( const QString& descr, const QString& action, const QString& defaultKeyCode,
-				 bool configurable = TRUE );
-	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
-				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
+	bool insertItem( const QString& descr, const QString& action,
+			 const QString& defaultKeyCode,
+			 bool configurable = TRUE );
+	bool insertItem( const QString& descr, const QString& action,
+			 const QString& defaultKeyCode,
+			 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 				
 	/**
 	 *	Inserts a standard accelerator item if id equal to Open,
@@ -287,7 +289,7 @@ class KAccel
 	 */
 	bool insertItem( const QString& action, uint defaultKeyCode,
 				 bool configurable = TRUE );
-	bool insertItem( const char * action, uint defaultKeyCode,
+	bool insertItem( const QString& action, uint defaultKeyCode,
 				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 
 

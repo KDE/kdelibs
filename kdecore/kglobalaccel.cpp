@@ -551,7 +551,7 @@ uint keyToXSym( uint keyCode )
 	char sKey[200];
 
 	uint keysym = 0;
-	QCString s = keyToString( keyCode);
+	QString s = keyToString( keyCode);
 	
 	strncpy(sKey, (const char*)s.data(), 200);
 	

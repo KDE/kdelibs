@@ -505,10 +505,10 @@ void KRun::foundMimeType( const char *_type )
     list<K2URL> lst;
     if ( !K2URL::split( m_strURL, lst ) )
     {
-      string tmp = i18n( "Malformed URL" );
+      QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
       tmp += m_strURL;
-      QMessageBox::critical( 0L, i18n( "Error" ), tmp.c_str(), i18n( "OK" ) );
+      QMessageBox::critical( 0L, i18n( "Error" ), tmp, i18n( "OK" ) );
       return;
     }
 
