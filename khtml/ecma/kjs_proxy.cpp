@@ -36,7 +36,6 @@
 
 using namespace KJS;
 
-extern "C" {
   // initialize HTML module
   KJSProxy *kjs_html_init(KHTMLPart *khtml)
   {
@@ -101,4 +100,3 @@ extern "C" {
   {
     delete script;
   }
-};
