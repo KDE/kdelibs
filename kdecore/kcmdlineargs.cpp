@@ -524,7 +524,7 @@ KCmdLineArgs::parseAllArgs()
 	     if ( about ) {
 		 const QValueList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
-		     printQ( QString(about->programName()) + " " + i18n("was written by\n") );
+		     printQ( i18n("%1 was written by\n").arg ( QString(about->programName()) ) );
 		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
 			 printQ( QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n");
 		     }
