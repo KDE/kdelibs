@@ -65,7 +65,8 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false )
+      m_styleElement( false ),
+      m_implicit( false )
 {
     if (document)
         document->ref();
@@ -219,6 +220,7 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
+    qDebug("NodeImpl::toHTML");
     NodeImpl* fc = firstChild();
     if ( fc )
         return fc->recursive_toHTML(true);
@@ -885,6 +887,7 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     if (m_focused) { *stream << " focused"; }
     if (m_active) { *stream << " active"; }
     if (m_styleElement) { *stream << " styleElement"; }
+    if (m_implicit) { *stream << " implicit"; }
 
     *stream << " tabIndex=" << m_tabIndex;
     if (m_regdListeners)

@@ -518,15 +518,6 @@ static const ushort tag_list_7[] = {
     0
 };
 
-#if 0
-static const ushort tag_list_9[] = {
-    ID_TH,
-    ID_TD,
-    ID_COMMENT,
-    0
-};
-#endif
-
 static const ushort tag_list_10[] = {
     ID_FRAMESET,
     ID_FRAME,
@@ -729,7 +720,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         case ID_THEAD:
         case ID_TFOOT:
         case ID_TBODY:
-	case ID_TR:
             return true;
         default:
             return false;
@@ -745,8 +735,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         if(childID == ID_COL) return true;
         return false;
     case ID_TR:
-        // TR: _9 +
-        return ( childID == ID_TD || childID == ID_TH );
+        // TR: (TD, TH)
+        return (childID == ID_TH || childID == ID_TD);
     case ID_FRAMESET:
         // FRAMESET: ( _10 + & NOFRAMES ? )
         return check_array(childID, tag_list_10);

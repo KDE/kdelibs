@@ -136,7 +136,7 @@ protected:
 class HTMLTableSectionElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableSectionElementImpl(DocumentPtr *doc, ushort tagid);
+    HTMLTableSectionElementImpl(DocumentPtr *doc, ushort tagid, bool implicit);
 
     ~HTMLTableSectionElementImpl();
 

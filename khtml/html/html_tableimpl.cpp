@@ -149,7 +149,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
     if(!head)
     {
         int exceptioncode = 0;
-        head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD);
+        head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD, true /* implicit */);
         if(foot)
             insertBefore( head, foot, exceptioncode );
         if(firstBody)
@@ -174,7 +174,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
     if(!foot)
     {
         int exceptioncode = 0;
-        foot = new HTMLTableSectionElementImpl(docPtr(), ID_TFOOT);
+        foot = new HTMLTableSectionElementImpl(docPtr(), ID_TFOOT, true /*implicit */);
         if(firstBody)
             insertBefore( foot, firstBody, exceptioncode );
         else
@@ -219,7 +219,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     // (note: this is different from "if the table has no sections", since we can have
     // <TABLE><TR>)
     if(!firstBody && !head && !foot && !hasChildNodes())
-        setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY) );
+        setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
     //kdDebug(6030) << k_funcinfo << index << endl;
     // IE treats index=-1 as default value meaning 'append after last'
@@ -326,9 +326,6 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     case ID_COLGROUP:
         if(head || foot || firstBody)
             return 0;
-    case ID_TR:
-        HTMLElementImpl::addChild(child);
-        return child;
     case ID_THEAD:
         return setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
@@ -573,10 +570,11 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
 // -------------------------------------------------------------------------
 
 HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentPtr *doc,
-                                                         ushort tagid)
+                                                         ushort tagid, bool implicit)
     : HTMLTablePartElementImpl(doc)
 {
     _id = tagid;
+    m_implicit = implicit;
 }
 
 HTMLTableSectionElementImpl::~HTMLTableSectionElementImpl()
