@@ -2,7 +2,7 @@
 /* This file is part of the KDE libraries
     Copyright (c) 1997 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-    Copyright (c) 1999 Hans Petter Bieker <bieker@kde.org>
+    Copyright (c) 1999-2000 Hans Petter Bieker <bieker@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,14 +33,13 @@
 #include <stdlib.h>
 
 #include <qtextcodec.h>
-#include <qdir.h>
+#include <qfile.h>
 #include <qdatetime.h>
 
 #include "kglobal.h"
 #include "kstddirs.h"
 #include "ksimpleconfig.h"
 #include "kinstance.h"
-#include "kapp.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "klocale.h"

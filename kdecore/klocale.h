@@ -255,12 +255,16 @@ public:
     /**
      * Return a string containing the name of the month name.
      *
+     * @param i the month number of the year starting at 1/January.
+     *
      * @return The name of the month
      */
     QString MonthName(int i) const;
 
     /**
      * Return a string containing the name of the week day.
+     *
+     * @param i the day number of the week starting at 1/Monday.
      *
      * @return The name of the week
      */
