@@ -61,15 +61,10 @@ public:
 
   QListViewItem *lastItem() const;
 
-  virtual void setItemsMovable(bool b);
   bool itemsMovable() const;
-
-  virtual void setItemsRenameable(bool b);
   bool itemsRenameable() const;
-
-  virtual void setDragEnabled(bool b);
   bool dragEnabled() const;
-
+  bool getRenameableRow(int row);
 
 signals:
 
@@ -118,9 +113,21 @@ signals:
   void itemRenamed(QListViewItem * item, const QString &str, int col);
   void itemRenamed(QListViewItem * item);
 
-
 public slots:
   virtual void rename(QListViewItem *item, int c);
+
+  /**
+   * is row renameable? Set it.  by default, all rows
+   * are not renameable.  If you want more intelligent
+   * selection, you'll have to derive from KListView,
+   * and override @ref rename where you only call
+   * KListView::rename if you want it renamed.
+   **/
+  void setRenameableRow(int row, bool yesno=true);
+  virtual void setItemsMovable(bool b);
+  virtual void setItemsRenameable(bool b);
+  virtual void setDragEnabled(bool b);
+
 
 protected slots:
   void slotOnItem( QListViewItem *item );
@@ -181,8 +188,7 @@ protected:
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
-
-
+  void doneEditing();
 
 private:
   /**

@@ -26,7 +26,9 @@
 #include <kapp.h>
 #include <kipc.h>
 #include <kdebug.h>
+#include <klineedit.h>
 
+#include "klistviewlineedit.h"
 #include "klistview.h"
 
 #include <X11/Xlib.h>
@@ -37,7 +39,61 @@ public:
   QRect *invalidateRect;
   QPoint *pressPos;
   QPoint *startDragPos;
+  KListViewLineEdit *editor;
+  QValueList<int> renameable;
 };
+
+
+KListViewLineEdit::KListViewLineEdit(KListView *parent)
+	: KLineEdit(parent->viewport()), item(0), col(0), p(parent)
+{
+	hide();
+}
+
+KListViewLineEdit::~KListViewLineEdit()
+{
+}
+
+void KListViewLineEdit::load(QListViewItem *i, int c)
+{
+	item=i;
+	col=c;
+	
+	QRect rect(p->itemRect(i));
+	setText(item->text(c));
+	int fieldX = - p->contentsX();
+	
+	for(int i = 0;i< c;i++)
+		fieldX += p->columnWidth(i);
+	
+	setGeometry(rect.x(), rect.y(), p->columnWidth(c)+2, rect.height() + 2);
+	show();
+	setFocus();
+	grabMouse();
+
+}
+
+void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
+{
+	QLineEdit::keyPressEvent(e);
+	
+	if(e->key() == Qt::Key_Return)
+		terminate();
+}
+
+void KListViewLineEdit::terminate()
+{
+	item->setText(col, text());
+	hide();
+	col=item=0;
+	releaseMouse();
+	emit done();
+}
+
+void KListViewLineEdit::focusOutEvent(QFocusEvent *)
+{
+	terminate();
+}
 
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name )
@@ -47,6 +103,8 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->invalidateRect=0;
 		d->pressPos=0;
 		d->startDragPos=0;
+		d->editor=new KListViewLineEdit(this);
+		connect(d->editor, SIGNAL(done()), this, SLOT(doneEditing()));
 	}
 
 	setAcceptDrops(true);
@@ -68,11 +126,14 @@ KListView::KListView( QWidget *parent, const char *name )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
+
+
 KListView::~KListView()
 {
     delete d->startDragPos;
     delete d->pressPos;
     delete d->invalidateRect;
+    delete d->editor;
 }
 
 bool KListView::isExecuteArea( const QPoint& point )
@@ -567,12 +628,32 @@ QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem 
 	return rect;
 }
 
-void KListView::rename(QListViewItem *, int )
+void KListView::rename(QListViewItem *item, int c)
 {
+	d->editor->load(item,c);
 
 }
 
 void KListView::mousePressEvent(QMouseEvent *)
 {
-
+	return (bool)d->renameable.contains(row);
 }
+
+void KListView::setRenameableRow(int row, bool yesno)
+{
+	if (row>=header()->count()) return;
+
+	d->renameable.remove(row);
+	if (yesno && d->renameable.find(row)==d->renameable.end())
+		d->renameable+=row;
+	else if (!yesno && d->renameable.find(row)!=d->renameable.end())
+		d->renameable.remove(row);
+}
+
+void KListView::doneEditing()
+{
+}
+
+
+
+#include "klistviewlineedit.moc"

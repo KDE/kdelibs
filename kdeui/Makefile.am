@@ -87,7 +87,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp
 
-noinst_HEADERS = kdockwidget_private.h
+noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h
 
 libkdeui_la_METASOURCES = AUTO
 
