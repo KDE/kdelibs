@@ -374,7 +374,9 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
                                            time_t mtimeDest
                                            )
 {
-  kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg job=" << job << " progressId=" << (job ? job->progressId() : "?") << endl;
+  kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg job=" << job << endl;
+  if (job)
+    kdDebug(KDEBUG_OBSERVER) << "                         progressId=" << job->progressId() << endl;
   // Hide existing dialog box if any
   if (job)
     m_uiserver->setJobVisible( job->progressId(), false );
