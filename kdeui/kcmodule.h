@@ -117,6 +117,17 @@ public:
   virtual void sysdefaults() { defaults(); };
 
   /**
+   * Return a quick-help text.
+   *
+   * This method is called when the module is docked.
+   * The quick-help text should contain a short description of the module and
+   * links to the module's help files. You can use QML formating tags in the text.
+   *
+   * NOTE: Please make sure the quick help text gets translated (use i18n()).
+   */
+  virtual QString quickHelp() { return QString::null; };
+
+  /**
    * Realizes the settings in the config files.
    *
    * This method may be called during system startup to apply the
