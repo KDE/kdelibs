@@ -19,6 +19,16 @@ public:
   bool listing( const char *_protocol, list<string>& _listing );
   bool supportsListing( const char *_protocol );
   
+  int getConnectTimeout();
+  int getReadTimeout();
+  int getReadTimeoutNoResume();
+  bool getMarkPartial();
+
+  void setConnectTimeout( int _time );
+  void setReadTimeout( int _time );
+  void setReadTimeoutNoResume( int _time );
+  void setMarkPartial( bool _mode );
+
   static ProtocolManager* self() { 
     if ( ! s_pManager )
       s_pManager = new ProtocolManager;
