@@ -1,9 +1,11 @@
 if test -z "$LIB_DNSSD"; then
   echo ""
-  echo "You're missing Apple mDNSResponder 58 or later, therefore"
+  echo "You're missing Apple mDNSResponder 85 or later, therefore"
   echo "dnssd cannot be compiled."
   echo "If you want it, you should install mDNSResponder first."
   echo "See http://developer.apple.com/macosx/rendezvous/"
+  echo "Or you can download tarball from:"
+  echo "http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-85.tar.bz2"
   echo ""
   all_tests=bad
 fi
