@@ -105,12 +105,12 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     QPushButton *button;
 
     if (KSSL::doesSSLWork()) {
-      button = new QPushButton(i18n("C&ryptography Configuration..."), this);
+      button = new QPushButton(SmallIcon("configure"),i18n("C&ryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
 
-    button = new QPushButton(i18n("&Close"), this);
+    button = new QPushButton(SmallIcon("fileclose"),i18n("&Close"), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
     buttonLayout->addWidget( button );
 
