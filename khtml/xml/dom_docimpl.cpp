@@ -1796,10 +1796,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
         // Set focus on the new node
         m_focusNode = newFocusNode;
         if (m_focusNode) {
-	    m_focusNode->ref();
-	    m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
-	    m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
-            m_focusNode->setFocus();
+            m_focusNode->ref();
+            m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
+            m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
+            if (m_focusNode == newFocusNode)
+                m_focusNode->setFocus();
         }
     }
 }
