@@ -2105,7 +2105,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
   kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
   kdDebug(6050) << "current redirectURL=" << d->m_redirectURL << " with delay " << d->m_delayRedirect <<  endl;
   if( delay < 24*60*60 &&
-      ( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) ) {
+      ( d->m_redirectURL.isEmpty() || delay <= d->m_delayRedirect) ) {
     d->m_delayRedirect = delay;
     d->m_redirectURL = url;
     d->m_redirectLockHistory = doLockHistory;
