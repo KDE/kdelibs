@@ -48,6 +48,9 @@ namespace KSpell2
         void setSkipRunTogether( bool );
         bool skipRunTogether() const;
 
+        void setBackgroundCheckerEnabled( bool );
+        bool backgroundCheckerEnabled() const;
+
         void setCurrentIgnoreList( const QStringList& ignores );
         void addWordToIgnore( const QString& word );
         QStringList currentIgnoreList() const;

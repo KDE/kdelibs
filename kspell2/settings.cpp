@@ -48,6 +48,7 @@ public:
 
     bool checkUppercase;
     bool skipRunTogether;
+    bool backgroundCheckerEnabled;
 
     QMap<QString, bool> ignore;
 };
@@ -136,6 +137,19 @@ bool Settings::skipRunTogether() const
     return d->skipRunTogether;
 }
 
+void Settings::setBackgroundCheckerEnabled( bool enable )
+{
+    if ( d->backgroundCheckerEnabled != enable ) {
+        d->modified = true;
+        d->backgroundCheckerEnabled = enable;
+    }
+}
+
+bool Settings::backgroundCheckerEnabled() const
+{
+    return d->backgroundCheckerEnabled;
+}
+
 void Settings::setCurrentIgnoreList( const QStringList& ignores )
 {
     setQuietIgnoreList( ignores );
@@ -185,6 +199,7 @@ void Settings::save()
         conf.writeEntry( "defaultLanguage", d->defaultLanguage );
         conf.writeEntry( "checkUppercase", d->checkUppercase );
         conf.writeEntry( "skipRunTogether", d->skipRunTogether );
+        conf.writeEntry( "backgroundCheckerEnabled", d->backgroundCheckerEnabled );
         conf.writeEntry( QString( "ignore_%1" ).arg( d->defaultLanguage ),
                          d->ignore.keys() );
         conf.sync();
@@ -205,6 +220,9 @@ void Settings::loadConfig()
 
     d->skipRunTogether = conf.readBoolEntry(
         "skipRunTogether", true );
+
+    d->backgroundCheckerEnabled = conf.readBoolEntry(
+        "backgroundCheckerEnabled", false );
 
     readIgnoreList();
 }

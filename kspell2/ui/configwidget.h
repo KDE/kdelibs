@@ -33,8 +33,11 @@ namespace KSpell2
         ConfigWidget( Broker *broker, QWidget *parent, const char *name =0 );
         ~ConfigWidget();
 
+        bool backgroundCheckingButtonShown() const;
+
     public slots:
         void save();
+        void setBackgroundCheckingButtonShown( bool );
 
     protected slots:
         void slotChanged();

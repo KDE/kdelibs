@@ -67,6 +67,8 @@ void ConfigWidget::init( Broker *broker )
     d->ui->m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
     d->ui->m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
     d->ui->m_ignoreListBox->insertStringList( d->broker->settings()->currentIgnoreList() );
+    d->ui->m_bgSpellCB->setChecked( d->broker->settings()->backgroundCheckerEnabled() );
+    d->ui->m_bgSpellCB->hide();//hidden by default
     connect( d->ui->m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
     layout->addWidget( d->ui );
@@ -86,6 +88,8 @@ void ConfigWidget::setFromGUI()
         !d->ui->m_skipUpperCB->isChecked() );
     d->broker->settings()->setSkipRunTogether(
         d->ui->m_skipRunTogetherCB->isChecked() );
+    d->broker->settings()->setBackgroundCheckerEnabled(
+        d->ui->m_bgSpellCB->isChecked() );
 }
 
 void ConfigWidget::slotChanged()
@@ -102,6 +106,16 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
         if ( *itr == d->broker->settings()->defaultLanguage() )
             d->ui->m_langCombo->setCurrentItem( idx );
     }
+}
+
+void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
+{
+    d->ui->m_bgSpellCB->setShown( b );
+}
+
+bool ConfigWidget::backgroundCheckingButtonShown() const
+{
+    return d->ui->m_bgSpellCB->isShown();
 }
 
 #include "configwidget.moc"
