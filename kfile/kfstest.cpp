@@ -67,6 +67,13 @@ int main(int argc, char **argv)
 	a.exec();
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
+    else if (argv1 == QString::fromLatin1("heap")) {
+	KFileDialog *dlg = new KFileDialog( QString::null, QString::null, 0L,
+					    "file dialog", true );
+	if ( dlg->exec() == KDialog::Accepted )
+	    name1 = dlg->selectedURL().url();
+    }
+    
     else{
 	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"

@@ -457,7 +457,7 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	
 	    delete myPixmap;
 	    myPixmap = new QPixmap(KGlobal::iconLoader()->loadIcon(icon,size));
-	    
+	
 	    // we either have found the correct pixmap, or there is none,
 	    // anyway, we won't ever search for one again
 	    myPixmapDirty = false;
@@ -500,6 +500,8 @@ void KFileViewItem::setDeleted()
 }
 
 
+// FIXME: what should happen with those items in copy constructor and 
+// assignment operator???
 void KFileViewItem::setViewItem( const KFileView *view, const void *item )
 {
     viewItems[ view ] = item;

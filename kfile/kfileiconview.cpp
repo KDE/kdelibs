@@ -131,7 +131,7 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     if ( !info )
 	return;
 
-    // we can only hope that this casts works
+    // we can only hope that this cast works
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
     if ( item && item != currentItem() ) {
@@ -231,8 +231,14 @@ void KFileIconView::updateView( const KFileViewItem *i )
     if ( !i )
 	return;
     KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
-    if ( item && item->fileInfo() )
-      item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
+    if ( item )
+      item->setPixmap( i->pixmap( myIconSize ) );
+}
+
+void KFileIconView::setIconSize( KIconLoader::Size size )
+{
+    myIconSize = size;
+    updateView( true );
 }
 
 #include "kfileiconview.moc"
