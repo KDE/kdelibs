@@ -74,7 +74,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
-      if ( service )
+      if ( !!service )
         return KRun::run( *service, lst );
 	
       QString exec = l.text();

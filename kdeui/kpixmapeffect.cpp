@@ -731,7 +731,7 @@ void KPixmapEffect::channelIntensity(QImage &image, float percent,
 
 void KPixmapEffect::blend(QImage &image, float initial_intensity,
 			  const QColor &bgnd, GradientType eff,
-			  int ncols)
+			  int )
 {
     int r_bgnd = bgnd.red(), g_bgnd = bgnd.green(), b_bgnd = bgnd.blue();
     int r, g, b;
