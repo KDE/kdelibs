@@ -242,8 +242,8 @@ protected:
   // Internal method that handles moving of columns with the mouse.
   virtual void doMouseMoveCol(QMouseEvent*);
 
-  KTabListBoxColumn*	colList;
-  KTabListBoxItem*	itemList;
+  KTabListBoxColumn**	colList;
+  KTabListBoxItem**	itemList;
   int			maxItems, numColumns;
   int			current;
   char			sepChar;
@@ -333,12 +333,12 @@ protected:
 
 inline KTabListBoxItem* KTabListBox :: getItem (int idx)
 {
-  return ((idx>=0 && idx<maxItems) ? &itemList[idx] : (KTabListBoxItem*)NULL);
+    return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
 }
 
 inline const KTabListBoxItem* KTabListBox :: getItem (int idx) const
 {
-  return ((idx>=0 && idx<maxItems) ? &itemList[idx] : (KTabListBoxItem*)NULL);
+  return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
 }
 
 #endif /*KTabListBox_h*/
