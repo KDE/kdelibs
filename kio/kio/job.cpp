@@ -1501,7 +1501,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     }
 
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
-    // exclusion of hidden files also requires the full sweep, but the case for full-listing 
+    // exclusion of hidden files also requires the full sweep, but the case for full-listing
     // a single dir is probably common enough to justify the shortcut
     if (prefix.isNull() && includeHidden) {
         emit entries(this, list);
@@ -1512,7 +1512,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
         UDSEntryListConstIterator it = list.begin();
         UDSEntryListConstIterator end = list.end();
         for (; it != end; ++it) {
-    
+
             UDSEntry newone = *it;
             UDSEntry::Iterator it2 = newone.begin();
             QString filename;
@@ -1524,7 +1524,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
             }
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
             // the the toplevel dir, and skip hidden files/dirs if that was requested
-            if (  (prefix.isNull() || (filename != ".." && filename != ".") ) 
+            if (  (prefix.isNull() || (filename != ".." && filename != ".") )
                && (includeHidden || (filename[0] != '.') )  )
                 newlist.append(newone);
         }
@@ -2906,44 +2906,53 @@ void DeleteJob::deleteNextFile()
     //kdDebug(7007) << "deleteNextFile" << endl;
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
-        // Take first file to delete out of list
-        KURL::List::Iterator it = files.begin();
-        bool isLink = false;
-        if ( it == files.end() ) // No more files
-        {
-            it = symlinks.begin(); // Pick up a symlink to delete
-            isLink = true;
-        }
         SimpleJob *job;
-        // Use shredding ?
-        if ( m_shred && (*it).isLocalFile() && !isLink )
-        {
-            // KShred your KTie
-            KIO_ARGS << int(3) << (*it).path();
-            job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
-            Scheduler::scheduleJob(job);
-            m_currentURL=(*it);
-            //emit deleting( this, *it );
-            connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-                     this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
-        } else
-        {
-            // Normal deletion
-            job = KIO::file_delete( *it, false /*no GUI*/);
-            Scheduler::scheduleJob(job);
-            m_currentURL=(*it);
-            //emit deleting( this, *it );
-        }
-        if ( isLink )
-           symlinks.remove(it);
-        else
-           files.remove(it);
-        addSubjob(job);
-    } else
-    {
-        state = STATE_DELETING_DIRS;
-        deleteNextDir();
+        do {
+            // Take first file to delete out of list
+            KURL::List::Iterator it = files.begin();
+            bool isLink = false;
+            if ( it == files.end() ) // No more files
+            {
+                it = symlinks.begin(); // Pick up a symlink to delete
+                isLink = true;
+            }
+            // Use shredding ?
+            if ( m_shred && (*it).isLocalFile() && !isLink )
+            {
+                // KShred your KTie
+                KIO_ARGS << int(3) << (*it).path();
+                job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
+                Scheduler::scheduleJob(job);
+                m_currentURL=(*it);
+                connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+                         this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+            } else
+            {
+                // Normal deletion
+                // If local file, try do it directly
+                if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
+                    job = 0;
+                    m_processedFiles++;
+                } else
+                { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
+                    job = KIO::file_delete( *it, false /*no GUI*/);
+                    Scheduler::scheduleJob(job);
+                    m_currentURL=(*it);
+                }
+            }
+            if ( isLink )
+                symlinks.remove(it);
+            else
+                files.remove(it);
+            if ( job ) {
+                addSubjob(job);
+                return;
+            }
+            // loop only if direct deletion worked (job=0) and there is something else to delete
+        } while (!job && (!files.isEmpty() || !symlinks.isEmpty()));
     }
+    state = STATE_DELETING_DIRS;
+    deleteNextDir();
 }
 
 void DeleteJob::deleteNextDir()
@@ -3132,9 +3141,6 @@ void DeleteJob::slotResult( Job *job )
       assert( subjobs.isEmpty() );
       m_processedFiles++;
 
-      /*emit processedFiles( this, m_processedFiles );
-       if (!m_shred)
-       emitPercent( m_processedFiles, m_totalFilesDirs );*/
       deleteNextFile();
       break;
    case STATE_DELETING_DIRS:
@@ -3171,7 +3177,7 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
   return job;
 }
 
-MultiGetJob::MultiGetJob(const KURL& url, 
+MultiGetJob::MultiGetJob(const KURL& url,
                          bool showProgressInfo)
  : TransferJob(url, 0, QByteArray(), QByteArray(), showProgressInfo)
 {
@@ -3237,7 +3243,7 @@ void MultiGetJob::start(Slave *slave)
       b_multiGetActive = false;
    }
    else
-   {  
+   {
       flushQueue(m_activeQueue);
       b_multiGetActive = true;
    }
@@ -3317,17 +3323,17 @@ void MultiGetJob::slotData( const QByteArray &_data)
 
 void MultiGetJob::slotMimetype( const QString &_mimetype )
 {
-  if (b_multiGetActive) 
+  if (b_multiGetActive)
   {
      QPtrList<GetRequest> newQueue;
      flushQueue(newQueue);
      if (!newQueue.isEmpty())
      {
         while(!newQueue.isEmpty())
-           m_activeQueue.append(newQueue.take(0));   
+           m_activeQueue.append(newQueue.take(0));
         m_slave->connection()->send( m_command, m_packedArgs );
      }
-  } 
+  }
   if (!findCurrentEntry()) return; // Error, unknown request!
   emit mimetype(m_currentEntry->id, _mimetype);
 }
