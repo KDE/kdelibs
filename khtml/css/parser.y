@@ -779,6 +779,8 @@ declaration_block:
     }
     | '{' maybe_space declaration_list declaration '}' {
 	$$ = $3;
+	if ( $4 )
+	    $$ = $4;
     }
     | '{' maybe_space declaration_list error '}' {
 	$$ = $3;
