@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,7 @@
 #define KRESOLVER_P_H
 
 #include <config.h>
+#include <sys/types.h>
 
 #include <qstring.h>
 #include <qcstring.h>
@@ -46,13 +47,37 @@
 extern QMutex getXXbyYYmutex;
 #endif
 
+/* decide whether res_init's context is shared by all threads, 
+   or is per-thread */
+#define SHARED_LIBRESOLV
+#if defined(__GLIBC__)
+# undef SHARED_LIBRESOLV
+#endif
+
 namespace KNetwork
 {
-
   // defined in network/qresolverworkerbase.h
   class KResolverWorkerBase;
   class KResolverWorkerFactoryBase;
+  class KResolverPrivate;
 
+  namespace Internal
+  {
+    class KResolverManager;
+    class KResolverThread;
+    struct RequestData;
+
+    struct InputData
+    {
+      QString node, service;
+      QCString protocolName;
+      int flags;
+      int familyMask;
+      int socktype;
+      int protocol;
+    };
+  }
+    
   class KResolverPrivate
   {
   public:
@@ -66,15 +91,7 @@ namespace KNetwork
     volatile int errorcode, syserror;
 
     // input data. Should not be changed by worker threads!
-    struct InputData
-    {
-      QString node, service;
-      QCString protocolName;
-      int flags;
-      int familyMask;
-      int socktype;
-      int protocol;
-    } input;
+    Internal::InputData input;
 
     // mutex
     QMutex mutex;
@@ -101,14 +118,11 @@ namespace KNetwork
 
   namespace Internal
   {
-    class KResolverManager;
-    class KResolverThread;
-
     struct RequestData
     {
       // worker threads should not change values in the input data
       KNetwork::KResolverPrivate *obj;
-      const KNetwork::KResolverPrivate::InputData *input;
+      const KNetwork::Internal::InputData *input;
       KNetwork::KResolverWorkerBase *worker; // worker class
       RequestData *requestor; // class that requested us
 
@@ -293,7 +307,7 @@ namespace KNetwork
      */
     class KResolverThread: public QThread
     {
-    public:
+    private:
       // private constructor. Only the manager can create worker threads
       KResolverThread();
       RequestData* data;
@@ -303,6 +317,13 @@ namespace KNetwork
 
       friend class KNetwork::Internal::KResolverManager;
       friend class KNetwork::KResolverWorkerBase;
+
+    public:
+      time_t resolverMTime;	// thread-specific resolver's m_time
+
+      bool checkResolver();	// @see KResolverWorkerBase::checkResolver
+      void acquireResolver();	// @see KResolverWorkerBase::acquireResolver
+      void releaseResolver();	// @see KResolverWorkerBase::releaseResolver
     };
 
   } // namespace Internal
