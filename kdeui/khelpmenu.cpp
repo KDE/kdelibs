@@ -114,7 +114,7 @@ KPopupMenu* KHelpMenu::menu()
     // I use hardcoded menu id's here. Reason is to stay backward
     // compatible.
     //
-    const KAboutData *aboutData = KGlobal::instance()->aboutData();
+    const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::instance()->aboutData();
     QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(qApp->name());
 
     mMenu = new KPopupMenu();
@@ -236,7 +236,7 @@ void KHelpMenu::reportBug()
 {
   if( mBugReport == 0 )
   {
-    mBugReport = new KBugReport( mParent, false );
+    mBugReport = new KBugReport( mParent, false, d->mAboutData );
     connect( mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
   }
   mBugReport->show();
