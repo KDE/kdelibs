@@ -47,6 +47,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "xml/xml_tokenizer.h"
 #include "css/cssstyleselector.h"
+#include "css/csshelper.h"
 #include "java/kjavaappletcontext.h"
 using namespace DOM;
 
@@ -3811,7 +3812,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           if( i ) {
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
-            KURL u( completeURL( splitUrlTarget( i->imageURL().string() ) ) );
+            KURL u( completeURL( splitUrlTarget( khtml::parseURL(i->getAttribute(ATTR_SRC)).string() ) ) );
             KURLDrag* urlDrag = KURLDrag::newDrag( u, 0L );
             if ( !d->m_referrer.isEmpty() )
               urlDrag->metaData()["referrer"] = d->m_referrer;

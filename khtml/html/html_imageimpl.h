@@ -50,20 +50,15 @@ public:
                                     MouseEvent *ev );
 
     virtual void attach();
-    virtual void recalcStyle( StyleChange ch );
 
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     QImage currentImage() const;
 
-    DOMString imageURL() const { return m_imageURL; }
+    DOMString altText() const;
 
 protected:
-    bool ismap;
-
-    DOMString altText() const;
-    DOMString m_imageURL;
-
     DOMString usemap;
+    bool ismap;
 };
 
 
@@ -83,7 +78,7 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 
     bool isDefault() const { return shape==Default; }
-    bool isNoref() const { return nohref && !m_hasHref; }
+    bool isNoref() const { return nohref && !m_hasAnchor; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );

@@ -314,10 +314,11 @@ void HTMLObjectElementImpl::attach()
 
 void HTMLObjectElementImpl::detach()
 {
-  HTMLElementImpl::detach();
+    if (attached())
+        // ### do this when we are actualy removed from document instead
+        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
-  // ### do this when we are actualy removed from document instead
-  dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+  HTMLElementImpl::detach();
 }
 
 void HTMLObjectElementImpl::recalcStyle( StyleChange ch )

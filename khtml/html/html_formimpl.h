@@ -277,13 +277,12 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool isEditable();
 
-protected:
-
     DOMString altText() const;
+
+protected:
 
     DOMString m_value;
     DOMString m_filename;
-    DOMString m_src;
     DOMString m_defaultValue;
     int       xPos;
     short     m_maxLen;

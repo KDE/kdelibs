@@ -45,7 +45,7 @@ using namespace DOM;
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
-    m_hasHref = m_hasTarget = false;
+    m_hasTarget = false;
 }
 
 HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
@@ -70,7 +70,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
         // set the url
         DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
-        if(m_hasTarget && m_hasHref)
+        if(m_hasTarget && m_hasAnchor)
             ev->url = DOMString("target://") + getAttribute(ATTR_TARGET) +
                       DOMString("/#") + href;
         else
@@ -84,7 +84,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
-         ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && m_hasHref) {
+         ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && m_hasAnchor) {
 
         MouseEventImpl *e = 0;
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
@@ -179,7 +179,7 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_HREF:
-        m_hasHref = attr->val() != 0;
+        m_hasAnchor = attr->val() != 0;
         break;
     case ATTR_TARGET:
         m_hasTarget = attr->val() != 0;

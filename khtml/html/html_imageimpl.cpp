@@ -107,8 +107,9 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch (attr->id())
     {
+    case ATTR_ALT:
     case ATTR_SRC:
-        m_imageURL = khtml::parseURL(attr->value());
+        if (m_render) m_render->updateFromElement();
         break;
     case ATTR_WIDTH:
         addCSSLength(CSS_PROP_WIDTH, attr->value());
@@ -149,10 +150,9 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             // the map is on the same html page....
             usemap = url;
         }
+        m_hasAnchor = attr->val() != 0;
     case ATTR_ISMAP:
         ismap = true;
-        break;
-    case ATTR_ALT:
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
@@ -183,13 +183,15 @@ DOMString HTMLImageElementImpl::altText() const
     // fall back to title attribute
     if ( alt.isNull() )
         alt = getAttribute( ATTR_TITLE );
+#if 0
     if ( alt.isNull() ) {
-        QString p = KURL( getDocument()->completeURL( m_imageURL.string() ) ).prettyURL();
+        QString p = KURL( getDocument()->completeURL( getAttribute(ATTR_SRC).string() ) ).prettyURL();
         int pos;
         if ( ( pos = p.findRev( '.' ) ) > 0 )
             p.truncate( pos );
         alt = DOMString( KStringHandler::csqueeze( p ) );
     }
+#endif
 
     return alt;
 }
@@ -204,24 +206,10 @@ void HTMLImageElementImpl::attach()
         m_render = new RenderImage(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
-        static_cast<RenderImage*>(m_render)->setAlt(altText());
-        static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
+        m_render->updateFromElement();
     }
 
     NodeBaseImpl::attach();
-}
-
-void HTMLImageElementImpl::recalcStyle( StyleChange ch )
-{
-
-    HTMLElementImpl::recalcStyle( ch );
-    // ### perhaps not the most appropriate place for this.... here so it get's called after
-    // a script has executed
-    if (m_render) {
-        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-        renderImage->setImageUrl(m_imageURL, getDocument()->docLoader());
-        renderImage->setAlt(altText());
-    }
 }
 
 QImage HTMLImageElementImpl::currentImage() const
@@ -385,7 +373,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
             ev->noHref = true;
         else {
             DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
-            if(m_hasTarget && m_hasHref)
+            if(m_hasTarget && m_hasAnchor)
             {
                 DOMString s = DOMString("target://") + getAttribute(ATTR_TARGET) + DOMString("/#")
                               + DOMString(href);

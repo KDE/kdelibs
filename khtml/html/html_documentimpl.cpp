@@ -194,10 +194,11 @@ void HTMLDocumentImpl::setBody(HTMLElementImpl *_body)
     HTMLElementImpl *b = body();
     if ( !_body && !b ) return;
     if ( !_body )
-        documentElement()->removeChild( body(), exceptioncode );
-    if ( !b )
+        documentElement()->removeChild( b, exceptioncode );
+    else if ( !b )
         documentElement()->appendChild( _body, exceptioncode );
-    documentElement()->replaceChild( _body, body(), exceptioncode );
+    else
+        documentElement()->replaceChild( _body, b, exceptioncode );
 }
 
 Tokenizer *HTMLDocumentImpl::createTokenizer()

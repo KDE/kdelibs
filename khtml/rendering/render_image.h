@@ -57,11 +57,10 @@ public:
     DOM::HTMLElementImpl* element() const
     { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
 
-    void setImageUrl(DOM::DOMString url, DocLoader *docLoader);
-    void setAlt(DOM::DOMString text);
 
     // hook to keep RendeObject::m_inline() up to date
     virtual void setStyle(RenderStyle *style);
+    virtual void updateFromElement();
 
     virtual void notifyFinished(CachedObject *finishedObj);
 

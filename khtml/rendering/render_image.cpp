@@ -32,11 +32,15 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
+#include "css/csshelper.h"
 #include "misc/helper.h"
 #include "misc/htmlattrs.h"
-#include "html/html_elementimpl.h"
+#include "misc/htmltags.h"
+#include "html/html_formimpl.h"
+#include "html/html_imageimpl.h"
 #include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom_docimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -299,9 +303,20 @@ void RenderImage::layout()
     setLayouted(!style()->width().isPercent() && !style()->height().isPercent());
 }
 
-void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)
+void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    CachedImage *new_image = docLoader->requestImage(url);
+    if (image == finishedObj && !loadEventSent) {
+        loadEventSent = true;
+        element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+    }
+}
+
+void RenderImage::updateFromElement()
+{
+    assert(element());
+    CachedImage *new_image = element()->getDocument()->docLoader()->
+                             requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
+
     if(new_image && new_image != image) {
         loadEventSent = false;
         if(image) image->deref(this);
@@ -309,17 +324,9 @@ void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)
         image->ref(this);
         berrorPic = image->isErrorImage();
     }
-}
 
-void RenderImage::setAlt(DOM::DOMString text)
-{
-    alt = text;
-}
-
-void RenderImage::notifyFinished(CachedObject *finishedObj)
-{
-    if (image == finishedObj && !loadEventSent) {
-        loadEventSent = true;
-        element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
-    }
+    if (element()->id() == ID_INPUT)
+        alt = static_cast<HTMLInputElementImpl*>(element())->altText();
+    else if (element()->id() == ID_IMG)
+        alt = static_cast<HTMLImageElementImpl*>(element())->altText();
 }

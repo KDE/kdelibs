@@ -933,10 +933,10 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_SIZE:
         m_size = attr->val() ? attr->val()->toInt() : 20;
         break;
-    case ATTR_SRC:
-        m_src = khtml::parseURL(attr->value());
-        break;
     case ATTR_ALT:
+    case ATTR_SRC:
+        if (m_render && m_type == IMAGE) m_render->updateFromElement();
+        break;
     case ATTR_USEMAP:
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
@@ -1027,12 +1027,6 @@ void HTMLInputElementImpl::attach()
     }
 
     HTMLGenericFormElementImpl::attach();
-
-    if (m_render && m_type == IMAGE) {
-        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-        renderImage->setImageUrl(m_src,getDocument()->docLoader());
-        renderImage->setAlt(altText());
-    }
 }
 
 DOMString HTMLInputElementImpl::altText() const
@@ -1055,22 +1049,8 @@ DOMString HTMLInputElementImpl::altText() const
 void HTMLInputElementImpl::recalcStyle( StyleChange ch )
 {
     HTMLGenericFormElementImpl::recalcStyle( ch );
-    if (m_render) {
-        switch(m_type) {
-        case IMAGE:
-        {
-            RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-            renderImage->setImageUrl(m_src,getDocument()->docLoader());
-            renderImage->setAlt(altText());
-        }
-        break;
-        default:
-            // reload all important widget settings (disabled, colors, checked state etc)
-            // ### optimize calls!
-            m_render->updateFromElement();
-            break;
-        }
-    }
+
+    // reload all important widget settings (disabled, colors, checked state etc)
 }
 
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)
