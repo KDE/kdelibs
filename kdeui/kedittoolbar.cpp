@@ -1093,10 +1093,7 @@ void KEditToolbarWidget::slotRemoveButton()
   // we're modified, so let this change
   emit enableOk(true);
 
-  //slotToolbarSelected( m_toolbarCombo->currentText() );
-  delete item;
-  // TODO loadActionList ( ..., InactiveListOnly )
-  //     or just add it to the left again.
+  slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
 void KEditToolbarWidget::insertActive(ToolbarItem *item, QListViewItem *before, bool prepend)
