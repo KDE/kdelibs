@@ -20,12 +20,17 @@
 #ifndef _KJANUS_WIDGET_H_
 #define _KJANUS_WIDGET_H_
 
+#include <qgrid.h>
 #include <qlist.h>
-#include <qlistview.h>
 #include <qwidget.h>
 
+#include <klistview.h>
+
+class QGrid;
+class QHBox;
 class QLabel;
 class QTabWidget;
+class QVBox;
 class QWidgetStack;
 class KSeparator;
 
@@ -151,16 +156,74 @@ class KJanusWidget : public QWidget
     QFrame *plainPage( void );
 
     /**
-     * Add a new page to either TreeList or Tabbed mode. The returned widget
-     * is empty and you add your widget code to this widget.
+     * Add a new page when the class is used in either TreeList or Tabbed 
+     * mode. The returned widget is empty and you must add your widgets 
+     * as children to this widget. In most cases you must create a layout
+     * manager and associate it with this widget as well.
      *
      * @param item String used in the tree list or Tab item.
      * @param header A longer string only used in TreeList mode to describe
-     * the contents of a page. If empty, the item string will be used instead.
+     *        the contents of a page. If empty, the item string will be 
+     *        used instead.
      *
      * @return The empty page or 0 if the face is not TreeList or Tabbed.
      */
     QFrame *addPage(const QString &item,const QString &header=QString::null);
+
+    /**
+     * Add a new page when the class is used in either TreeList or Tabbed 
+     * mode. The returned widget is empty and you must add your widgets 
+     * as children to this widget. The returned widget is a @ref QVBox
+     * so it contains a QVBoxLayout layout that lines up the child widgets 
+     * are vertically.
+     *
+     * @param item String used in the tree list or Tab item.
+     * @param header A longer string only used in TreeList mode to describe
+     *        the contents of a page. If empty, the item string will be 
+     *        used instead.
+     *
+     * @return The empty page or 0 if the face is not TreeList or Tabbed.
+     */
+    QVBox *addVBoxPage( const QString &item, 
+			const QString &header=QString::null );
+
+    /**
+     * Add a new page when the class is used in either TreeList or Tabbed 
+     * mode. The returned widget is empty and you must add your widgets 
+     * as children to this widget. The returned widget is a @ref QHBox
+     * so it contains a QHBoxLayout layout that lines up the child widgets 
+     * are horizontally.
+     *
+     * @param item String used in the tree list or Tab item.
+     * @param header A longer string only used in TreeList mode to describe
+     *        the contents of a page. If empty, the item string will be 
+     *        used instead.
+     *
+     * @return The empty page or 0 if the face is not TreeList or Tabbed.
+     */
+    QHBox *addHBoxPage( const QString &itemName, 
+			const QString &header=QString::null );
+
+    /**
+     * Add a new page when the class is used in either TreeList or Tabbed 
+     * mode. The returned widget is empty and you must add your widgets 
+     * as children to this widget. The returned widget is a @ref QGrid
+     * so it contains a QGridLayout layout that places up the child widgets 
+     * in a grid.
+     *
+     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
+     *          or the number of rows if 'dir' is QGrid::Vertical.
+     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     * @param item String used in the tree list or Tab item.
+     * @param header A longer string only used in TreeList mode to describe
+     *        the contents of a page. If empty, the item string will be 
+     *        used instead.
+     *
+     * @return The empty page or 0 if the face is not TreeList or Tabbed.
+     */
+    QGrid *addGridPage( int n, QGrid::Direction dir, 
+			const QString &itemName, 
+			const QString &header=QString::null );
 
     /**
      * Define the widget to be swallowed. 
@@ -185,6 +248,8 @@ class KJanusWidget : public QWidget
 
   private:
     bool showPage( QWidget *w );
+    void addPageWidget( QFrame *page, const QString &itemName, 
+			const QString &header );
 
   private:
     bool mValid;
@@ -194,7 +259,7 @@ class KJanusWidget : public QWidget
     QStringList *mTitleList;
 
     int          mFace;
-    QListView    *mTreeList;
+    KListView    *mTreeList;
     QWidgetStack *mPageStack;
     QLabel       *mTitleLabel;
     QTabWidget   *mTabControl;
