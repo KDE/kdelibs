@@ -520,3 +520,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     (moved to the new section).
   * kdeprintfax: fixed disabled background for "Comment" widget, use QBrush
     instead of QColor. OK with styles like Liquid.
+
+28/03/2002 Michael Goffioul <goffioul@imec.be>
+  * general: added a user feedback mechanism in the form of a dialog showgin
+    status messages, including initialization, number of the page currently
+    generated, filtering and sending to the printer.

@@ -55,3 +55,10 @@ WISHES
 - allow preview with kprinter: may be useful for PS files coming from
   other apps (GNOME). Ex: use a --with-preview option, and don't not
   allow to preview non-PS files
+
+- log viewer: page_log, error_log, ... This could be based on XML
+  templates and produce printable HTML reports.
+
+- add somewhere a descriptive string about the print server: for CUPS,
+  the current CUPS server (localhost:631) could be shown. Question is
+  "Where?".
