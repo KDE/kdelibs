@@ -479,6 +479,7 @@ class KKeySequence
 	 */
 	bool operator < ( const KKeySequence& seq ) const
 		{ return compare( seq ) < 0; }
+	// TODO: consider adding Qt::SequenceMatch matches(...) methods for QKeySequence equivalence
 
 	/**
 	 * Converts this key sequence to a QKeySequence.
@@ -518,6 +519,7 @@ class KKeySequence
  protected:
 	uchar m_nKeys;
 	uchar m_bTriggerOnRelease;
+	// BCI: m_rgvar should be renamed to m_rgkey for KDE 4.0
 	KKey m_rgvar[MAX_KEYS];
 
  private:
