@@ -85,7 +85,6 @@ public:
 
     /**
      * Call in openConnection, if you reimplement it, when you're done.
-     * Currently unused.
      */
     void connected();
 
