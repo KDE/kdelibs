@@ -123,12 +123,12 @@ ProtocolManager::Type ProtocolManager::outputType( const char *_protocol )
 
 int
 ProtocolManager::getConnectTimeout() {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   int connect_timeout = 60; // 60 seconds
 
-  if ( g )
-    g->readLong( "connect_timeout", connect_timeout );
+  if ( g != 0L )
+    g->readLong( "connectTimeout", connect_timeout );
 
   return connect_timeout;
 }
@@ -136,12 +136,13 @@ ProtocolManager::getConnectTimeout() {
 
 int
 ProtocolManager::getReadTimeout() {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   int read_timeout = 5; // 5 minutes
 
   if ( g )
-    g->readLong( "read_timeout", read_timeout );
+    g->readLong( "readTimeout", read_timeout );
+
 
   return read_timeout;
 }
@@ -149,12 +150,12 @@ ProtocolManager::getReadTimeout() {
 
 int
 ProtocolManager::getReadTimeoutNoResume() {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   int read_timeout_no_resume = 15;  // 15 minutes
 
   if ( g )
-    g->readLong( "read_timeout_no_resume", read_timeout_no_resume );
+    g->readLong( "readTimeoutNoResume", read_timeout_no_resume );
 
   return read_timeout_no_resume;
 }
@@ -162,46 +163,53 @@ ProtocolManager::getReadTimeoutNoResume() {
 
 bool
 ProtocolManager::getMarkPartial() {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
-  bool mark_partial = false;
+  bool mark_partial = true;
 
   if ( g )
-    g->readBool( "mark_partial", mark_partial );
+    g->readBool( "markPartial", mark_partial );
 
   return mark_partial;
 }
 
 
 void ProtocolManager::setConnectTimeout( int _timeout ) {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
-  if ( g )
-    g->writeLong( "connect_timeout", _timeout );
-  
+  if ( g != 0L )
+    g->writeLong( "connectTimeout", _timeout );
+
+  m_pConfig->save();
 }
 
 
 void ProtocolManager::setReadTimeout( int _timeout ) {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   if ( g )
-    g->writeLong( "read_timeout", _timeout );
+    g->writeLong( "readTimeout", _timeout );
+
+  m_pConfig->save();
 }
 
 
 void ProtocolManager::setReadTimeoutNoResume( int _timeout ) {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   if ( g )
-    g->writeLong( "read_timeout_no_resume", _timeout );
+    g->writeLong( "readTimeoutNoResume", _timeout );
+
+  m_pConfig->save();
 }
 
 
 void ProtocolManager::setMarkPartial( bool _mode ) {
-  K2Config *g = m_pConfig->findGroup( "common" );
+  K2Config *g = findIntern( "common" );
 
   if ( g )
-    g->writeBool( "mark_partial", _mode );
+    g->writeBool( "markPartial", _mode );
+
+  m_pConfig->save();
 }
 

@@ -1,3 +1,11 @@
+kioslave 'common' 
+{
+	connectTimeout<long> = 60;
+	readTimeout<long> = 5;
+	readTimeoutNoResume<long> = 15;
+	markPartial<bool> = true;
+};
+
 kioslave 'file' 
 {
 	exec<string> = 'kio_file';
