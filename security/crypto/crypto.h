@@ -44,7 +44,7 @@ class KCryptoConfig;
 class QGridLayout;
 class KSSLCertBox;
 class QVButtonGroup;
-class QComboBox;
+class KComboBox;
 class KSSLSigners;
 
 
@@ -329,8 +329,8 @@ private:
   QPtrList<CAItem> caDelList;
 
   /* Personal Cert Policies tab */
-  QComboBox *defCertBox;
-  QComboBox *hostCertBox;
+  KComboBox *defCertBox;
+  KComboBox *hostCertBox;
   QVButtonGroup *defCertBG;
   QHButtonGroup *hostCertBG;
   QRadioButton *defSend, *defPrompt, *defDont;

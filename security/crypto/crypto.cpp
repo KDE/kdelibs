@@ -43,7 +43,7 @@
 #include <qpushbutton.h>
 #include <qfileinfo.h>
 #include <qcheckbox.h>
-#include <qcombobox.h>
+#include <kcombobox.h>
 #include <qregexp.h>
 
 #include <kfiledialog.h>
@@ -524,7 +524,7 @@ QString whatstr;
   defDont = new QRadioButton(i18n("D&on't Send"), defCertBG);
   grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
   grid->addMultiCellWidget(new QLabel(i18n("Default Certificate:"), tabAuth), 1, 1, 3, 5);
-  defCertBox = new QComboBox(false, tabAuth);
+  defCertBox = new KComboBox(false, tabAuth);
   grid->addMultiCellWidget(defCertBox, 2, 2, 3, 5);
 
   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabAuth), 4, 4, 0, 5);
@@ -542,7 +542,7 @@ QString whatstr;
 
   authHost = new QLineEdit(tabAuth);
   grid->addMultiCellWidget(authHost, 14, 14, 1, 4);
-  hostCertBox = new QComboBox(false, tabAuth);
+  hostCertBox = new KComboBox(false, tabAuth);
   grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 4);
 
   hostCertBG = new QHButtonGroup(i18n("Action..."), tabAuth);
