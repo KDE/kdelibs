@@ -363,7 +363,7 @@ QString KHTMLSettings::settingsToCSS() const
     str += "\n}\n";
 
     if(!m_underlineLink) // needs own key
-        str += "a[href]:hover { text-decoration: underline; }\n";
+        str += "a:hover { text-decoration: underline; }\n";
 
     return str;
 }
