@@ -249,6 +249,9 @@ run_command
 movable_toolbars
         - define whether toolbars may be moved around by the user.
           See also action/options_show_toolbar.
+editable_desktop_icons
+        - define whether icons on the desktop can be moved, renamed, 
+          deleted or added
 run_desktop_files
         - defines whether users may execute desktop files that are not
           part of the default desktop, KDE menu or registered services.
