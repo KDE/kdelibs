@@ -285,7 +285,7 @@ void RenderSubmitButton::layout()
 {
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
-    static_cast<PushButtonWidget*>(m_widget)->setText(value);
+    static_cast<PushButtonWidget*>(m_widget)->setText(value.stripWhiteSpace());
     static_cast<PushButtonWidget*>(m_widget)->setFont(m_style->font());
 
     RenderButton::layout();
