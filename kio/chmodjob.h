@@ -78,12 +78,16 @@ namespace KIO {
 
     /**
      * Change permissions/ownership on several files or directories,
-     * optionnally recursively.
+     * optionally recursively.
      * This version of chmod uses a KFileItemList so that it directly knows
      * what to do with the items. TODO: a version that takes a KURL::List,
      * and a general job that stats each url and returns a KFileItemList.
      *
      * Note that change of ownership is only supported for local files.
+     *
+     * Inside directories, the "x" bits will only be changed for files that had
+     * at least one "x" bit before, and for directories.
+     * This emulates the behaviour of chmod +X.
      *
      * @param lstItems The file items representing several files or directories.
      * @param permissions the permissions we want to set

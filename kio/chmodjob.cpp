@@ -69,7 +69,7 @@ void ChmodJob::processList()
             // File or directory -> remember to chmod
             ChmodInfo info;
             info.url = item->url();
-            // took me a while to figure this out...
+            // This is a toplevel file, we apply changes directly (no +X emulation here)
             info.permissions = ( m_permissions & m_mask ) | ( item->permissions() & ~m_mask );
             /*kdDebug(7007) << "\n current permissions=" << QString::number(item->permissions(),8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
@@ -108,6 +108,7 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
     for (; it != end; ++it) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
         mode_t permissions = 0;
+        bool isDir = false;
         bool isLink = false;
         QString relativePath;
         for( ; it2 != (*it).end(); it2++ ) {
@@ -115,9 +116,9 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             case KIO::UDS_NAME:
               relativePath = (*it2).m_str;
               break;
-              //case KIO::UDS_FILE_TYPE:
-              //isDir = S_ISDIR((*it2).m_long);
-              //break;
+            case KIO::UDS_FILE_TYPE:
+              isDir = S_ISDIR((*it2).m_long);
+              break;
             case KIO::UDS_LINK_DEST:
               isLink = !(*it2).m_str.isEmpty();
               break;
@@ -133,11 +134,27 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             ChmodInfo info;
             info.url = m_lstItems.first()->url(); // base directory
             info.url.addPath( relativePath );
-            info.permissions = ( m_permissions & m_mask ) | ( permissions & ~m_mask );
+            int mask = m_mask;
+            // Emulate -X: only give +x to files that had a +x bit already
+            // So the check is the opposite : if the file had no x bit, don't touch x bits
+            // For dirs this doesn't apply
+            if ( !isDir )
+            {
+                int newPerms = m_permissions & mask;
+                if ( (newPerms & 0111) && !(permissions & 0111) )
+                    mask = mask & ~0111;
+            }
+            info.permissions = ( m_permissions & mask ) | ( permissions & ~mask );
+            /*kdDebug(7007) << "\n current permissions=" << QString::number(permissions,8)
+                          << "\n wanted permission=" << QString::number(m_permissions,8)
+                          << "\n with mask=" << QString::number(mask,8)
+                          << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~mask,8)
+                          << "\n bits we keep =" << QString::number(permissions & ~mask,8)
+                          << "\n new permissions = " << QString::number(info.permissions,8)
+                          << endl;*/
             // Prepend this info in our todo list.
             // This way, the toplevel dirs are done last.
             m_infos.prepend( info );
-            kdDebug(7007) << "Adding info for " << info.url.prettyURL() << endl;
         }
     }
 }
