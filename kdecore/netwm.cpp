@@ -653,8 +653,8 @@ NETRootInfo::~NETRootInfo() {
 void NETRootInfo::setDefaultProperties()
 {
     p->properties[ PROTOCOLS ] = Supported | SupportingWMCheck;
-    p->properties[ WINDOW_TYPES ] = Normal | Desktop | Dock | Toolbar | Menu
-        | Dialog;
+    p->properties[ WINDOW_TYPES ] = NormalMask | DesktopMask | DockMask
+        | ToolbarMask | MenuMask | DialogMask;
     p->properties[ STATES ] = Modal | Sticky | MaxVert | MaxHoriz | Shaded
         | SkipTaskbar | StaysOnTop;
 }
