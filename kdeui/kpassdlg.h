@@ -178,6 +178,9 @@ private:
     QGridLayout *m_pGrid;
     QWidget *m_pMain;
     KPasswordEdit *m_pEdit, *m_pEdit2;
+
+    class KPasswordDialogPrivate;
+    KPasswordDialogPrivate *d;
 };
 
 

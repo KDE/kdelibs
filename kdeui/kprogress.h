@@ -199,6 +199,9 @@ private:
 	int recalcValue(int);
 	void drawText(QPainter *);
 	void adjustStyle();
+
+    class KProgressPrivate;
+    KProgressPrivate *d;
 };
 
 

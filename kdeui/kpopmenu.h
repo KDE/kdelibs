@@ -74,6 +74,9 @@ protected:
     QPixmap miniicon;
     QColor fgColor, bgColor, grHigh, grLow;
     bool useGradient;
+
+    class KPopupTitlePrivate;
+    KPopupTitlePrivate *d;
 };
 
 /**
@@ -135,6 +138,9 @@ public:
 private:
     // For backwards compatibility
     QString lastTitle;
+
+    class KPopupMenuPrivate;
+    KPopupMenuPrivate *d;
 };         
 
 #endif

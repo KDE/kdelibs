@@ -63,6 +63,9 @@ private:
     QStrList possibilityList;
     QString guess;
     QString qual_dir;
+
+    class KURLCompletionPrivate;
+    KURLCompletionPrivate *d;
 };
 
 #endif

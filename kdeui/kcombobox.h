@@ -376,5 +376,7 @@ private :
     // Context Menu items.
     QPopupMenu *m_pContextMenu;
 
+    class KComboBoxPrivate;
+    KComboBoxPrivate *d;
 };
 #endif

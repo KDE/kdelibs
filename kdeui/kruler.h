@@ -422,6 +422,9 @@ private:
 
   QString endlabel;
   QRangeControl range;
+
+  class KRestrictedLinePrivate;
+  KRestrictedLinePrivate *d;
 };
 
 

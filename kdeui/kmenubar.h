@@ -53,6 +53,9 @@ protected:
     void leaveEvent(QEvent *ev);
 
     bool mouseActive;
+
+    class KMenuBarPrivate;
+    KMenuBarPrivate *d;
 };
 
 #endif

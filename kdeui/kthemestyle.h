@@ -342,6 +342,9 @@ public:
                                const QColorGroup &g, QBrush *fill=NULL);
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
+
+    class KThemeStylePrivate;
+    KThemeStylePrivate *d;
 };
 
 #endif

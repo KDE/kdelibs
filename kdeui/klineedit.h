@@ -353,6 +353,9 @@ private :
     // Indicates whether the context menu is enabled
     // or disabled
     bool m_bEnableMenu;
+
+    class KLineEditPrivate;
+    KLineEditPrivate *d;
 };
 
 #endif

@@ -32,33 +32,6 @@
 #include <X11/Xutil.h>
 
  // $Id$
- // $Log$
- // Revision 1.8  1999/03/06 18:03:40  ettrich
- // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
- // It has its own menu entry and reacts on simple LMP clicks.
- //
- // Revision 1.7  1998/11/06 15:45:44  radej
- // sven: added helper for addHotSpot
- //
- // Revision 1.6  1998/09/01 20:22:26  kulow
- // I renamed all old qt header files to the new versions. I think, this looks
- // nicer (and gives the change in configure a sense :)
- //
- // Revision 1.5  1998/08/10 13:33:55  radej
- // sven: Added X-only and Y-only resizing.
- //
- // Revision 1.4  1998/07/29 12:48:31  ssk
- // Removed more warnings, possible portability problems and ANSI violations.
- //
- // Revision 1.3  1998/05/07 16:50:42  radej
- // Docs update: you don't get mouseRelease
- //
- // Revision 1.2  1998/05/04 16:39:34  radej
- // Docs update.
- //
- // Revision 1.1  1998/04/28 09:16:41  radej
- // Initial checkin
- //
 
  /**
   * KToolBoxManager is a class for self management of small windows.
@@ -341,6 +314,9 @@ private:
   int scr;
   XEvent ev;
   unsigned int active_button;
+
+  class KToolBoxManagerPrivate;
+  KToolBoxManagerPrivate *d;
 
 signals:
 

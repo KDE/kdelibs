@@ -16,62 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/*
- * $Id$
- *
- * $Log$
- * Revision 1.11  2000/01/12 03:21:12  dsweet
- * Doc cleaning
- *
- * Revision 1.10  2000/01/11 13:50:01  dsweet
- * Spiffed documentation. Now (i) KDOC2 compatibile, (ii) has consistent language, (iii) added some missing docs for methods
- *
- * Revision 1.9  1999/12/11 17:20:36  antlarr
- * Changed the QStringList questionYesNo method name to questionYesNoList
- * Also reimplemented the original questionYesNo to call questionYesNoList with
- * an empty list which reduces the sources and keeps the look
- * I've changed the only two places that used this to reflect the changes:
- * the KMessageBox test and Konqueror
- *
- * Revision 1.8  1999/11/27 21:30:47  antlarr
- * Added a new questionYesNo which displays a "question" dialog with a listbox
- * to show information to the user (see the mail in kde-core-devel for more info)
- *
- * Revision 1.8  1999/11/27 22:20:41  antlarr
- * Added a new questionYesNo which displays a "question" dialog with a listbox 
- * to show information to the user (see the docs for more info)
- *
- * Revision 1.7  1999/11/11 15:03:41  waba
- * WABA:
- * * Uses KDialogBase for implementation
- * * Some additions according to the KDE Style Guide
- *
- * Revision 1.6  1999/09/12 13:35:04  espensa
- * I have had problems getting the action button to be properly underlined.
- * The changes should fix this once and for all. There were errors in the
- * "box->setButtonText()" (index errors)
- *
- * One minor typo removed in kmessagebox.h as well.
- *
- * Revision 1.5  1999/08/24 13:16:17  waba
- * WABA: Adding enums, fixing default for warningYesNo
- *
- * Revision 1.4  1999/08/15 15:41:47  porten
- * fixed documentation typos
- *
- * Revision 1.3  1999/08/15 14:03:00  porten
- * capitalize "OK" in documentation as well.
- *
- * Revision 1.2  1999/08/15 10:50:30  kulow
- * adding KMessageBox::about which uses the KDE icon instead of the Qt Information
- * icon - very cool! :)
- *
- * Revision 1.1  1999/07/25 19:38:58  waba
- * WABA: Added some i18n'ed qmessagebox'es for convenience
- *
- *
- */
-
 #ifndef _KMESSAGEBOX_H_
 #define _KMESSAGEBOX_H_
 

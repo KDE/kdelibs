@@ -97,6 +97,9 @@ class KTextBrowser : public QTextBrowser
 
   private:
     bool    mNotifyClick;
+
+    class KTextBrowserPrivate;
+    KTextBrowserPrivate *d;
 };
 
 #endif

@@ -128,6 +128,9 @@ protected:
     QSize    m_sizeSlider, m_sizeLabel;
 
     int      m_alignment;
+
+    class KNumInputPrivate;
+    KNumInputPrivate *d;
 };
 
 /* ------------------------------------------------------------------------ */
@@ -270,6 +273,9 @@ protected:
 
     KIntSpinBox* m_spin;
     QSize        m_sizeSpin;
+
+    class KIntNumInputPrivate;
+    KIntNumInputPrivate *d;
 };
 
 
@@ -408,6 +414,9 @@ protected:
     QSize    m_sizeEdit;
 
     friend class KDoubleLine;
+
+    class KDoubleNumInputPrivate;
+    KDoubleNumInputPrivate *d;
 };
 
 
@@ -473,6 +482,9 @@ protected:
     virtual void focusInEvent(QFocusEvent*);
 
     int val_base;
+
+    class KIntSpinBoxPrivate;
+    KIntSpinBoxPrivate *d;
 };
 
 
