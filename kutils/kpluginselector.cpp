@@ -476,6 +476,7 @@ void KPluginSelectionWidget::save()
         bool checked = it.key()->isOn();
         info->setPluginEnabled( checked );
         info->save( d->config );
+        d->plugincheckedchanged[ info ] = false;
     }
     QStringList updatedModules;
     for( QValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
