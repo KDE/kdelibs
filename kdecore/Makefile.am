@@ -51,7 +51,7 @@ libkdefakes_la_LDFLAGS = -version-info 4:0
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h kextsocklookup.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapplication.cpp \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kstyle.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp  \
