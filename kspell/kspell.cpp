@@ -268,7 +268,7 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   connect (this, SIGNAL ( progress (unsigned int) ),
 	   ksdlg, SLOT ( slotProgress (unsigned int) ));
   KWM kwm;
-  kwm.setMiniIcon (ksdlg->winId(), kapp->getMiniIcon());
+  kwm.setMiniIcon (ksdlg->winId(), kapp->miniIcon());
 
   dialogsetup = TRUE;
 }

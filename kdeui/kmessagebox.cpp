@@ -20,6 +20,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/09/23 18:27:45  espensa
+ * Changed to the new kapp->makeStdCaption() for creating captions.
+ * Result: More maintainable code and libkdeui size was reduced by
+ * approx 6000 bytes :-) Note: The about dialog is not changed.
+ *
  * Revision 1.6  1999/09/12 13:35:04  espensa
  * I have had problems getting the action button to be properly underlined.
  * The changes should fix this once and for all. There were errors in the
@@ -233,7 +238,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
 {
     QString _caption = caption;
     if (_caption.isEmpty())
-        _caption = i18n("About %1").arg(kapp->getCaption());
+        _caption = i18n("About %1").arg(kapp->caption());
 
     QMessageBox *box = new QMessageBox( _caption, text,
               QMessageBox::Information,
@@ -242,7 +247,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
               parent, "about" );
 
     box->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    box->setIconPixmap(kapp->getIcon());
+    box->setIconPixmap(kapp->icon());
     box->adjustSize();
     box->setFixedSize(box->size());
 

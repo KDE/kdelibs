@@ -120,7 +120,7 @@ QStringList KStandardDirs::findDirs( const QString& type,
 {
     QStringList list;
 
-    QStringList candidates = getResourceDirs(type);
+    QStringList candidates = resourceDirs(type);
     QDir testdir;
 
     for (QStringList::ConstIterator it = candidates.begin();
@@ -142,7 +142,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
     }
 #endif
 
-    QStringList candidates = getResourceDirs(type);
+    QStringList candidates = resourceDirs(type);
     QString fullPath;
     struct stat buff;
     for (QStringList::ConstIterator it = candidates.begin();
@@ -298,7 +298,7 @@ KStandardDirs::findAllResources( const QString& type,
        }
     }
 
-    QStringList candidates = getResourceDirs(type);
+    QStringList candidates = resourceDirs(type);
 
     if (filterFile.isEmpty())
 	filterFile = "*";
@@ -331,7 +331,7 @@ KStandardDirs::findAllResources( const QString& type,
    return findAllResources(type, filter, recursive, uniq, relList);
 }
 
-QStringList KStandardDirs::getResourceDirs(const QString& type) const
+QStringList KStandardDirs::resourceDirs(const QString& type) const
 {
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
@@ -492,9 +492,9 @@ QString KStandardDirs::kde_default(const QString& type) {
     return QString::null;
 }
 
-QString KStandardDirs::getSaveLocation(const QString& type,
-				       const QString& suffix,
-				       bool create) const
+QString KStandardDirs::saveLocation(const QString& type,
+				    const QString& suffix,
+				    bool create) const
 {
     QStringList *dirs = relatives.find(type);
     if (!dirs)
@@ -593,7 +593,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
     // save the numbers of config directories. If this changes,
     // we will return true to give KConfig a chance to reparse
-    uint configdirs = getResourceDirs("config").count();
+    uint configdirs = resourceDirs("config").count();
 
     // reading the prefixes in
     KConfigGroupSaver(config, "Directories");
@@ -621,7 +621,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     addedCustoms = true;
 
     // return true if the number of config dirs changed
-    return (getResourceDirs("config").count() != configdirs);
+    return (resourceDirs("config").count() != configdirs);
 }
 
 QString KStandardDirs::localkdedir() const
@@ -650,15 +650,15 @@ QString locateLocal( const QString& type,
     int slash = filename.findRev('/')+1;
     if (!slash) // only one filename
     {
-	if ( library )
-	    return library->dirs()->getSaveLocation(type) + filename;
-	else
-	    return KGlobal::dirs()->getSaveLocation(type) + filename;
+        if ( library )
+            return library->dirs()->saveLocation(type) + filename;
+        else
+            return KGlobal::dirs()->saveLocation(type) + filename;
     }
-    
+
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return KGlobal::dirs()->getSaveLocation(type, dir) + file;
+    return KGlobal::dirs()->saveLocation(type, dir) + file;
 }
 

@@ -50,7 +50,7 @@ KConfig	*KGlobal::config()
 KConfig	*KGlobal::instanceConfig()
 {
 	if( _instanceConfig == 0 ) {
-		_instanceConfig = kApp()->getSessionConfig();
+		_instanceConfig = kApp()->sessionConfig();
 	}
 
 	return _instanceConfig;

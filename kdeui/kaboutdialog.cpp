@@ -280,8 +280,9 @@ void KAboutContributor::emailClickedSlot( const QString &e )
 KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *parent,
 					  char *name )
   : QWidget( parent, name ),
-    mTitleLabel(0),mIconLabel(0),mVersionLabel(0),mAuthorLabel(0),
-    mImageFrame(0),mImageLabel(0),mPageTab(0),mPlainSpace(0)
+    mTitleLabel(0),
+    mImageLabel(0),mIconLabel(0),mVersionLabel(0),mAuthorLabel(0), 
+    mImageFrame(0),mPageTab(0),mPlainSpace(0)
 {
   mTopLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
   if( mTopLayout == 0 ) { return; }
@@ -630,7 +631,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
     return;
   }
   
-  mIconLabel->setPixmap( kapp->getIcon() );
+  mIconLabel->setPixmap( kapp->icon() );
 
   QString msg1 = i18n("Version: %1 %2 (KDE %3)").arg(appName).arg(version).
     arg(KDE_VERSION_STRING);

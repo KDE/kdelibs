@@ -40,7 +40,7 @@ typedef unsigned long Atom;
 class QPopupMenu;
 class QStrList;
 class KSessionManaged;
-#define kapp KApplication::getKApplication()
+#define kapp KApplication::kApplication()
 
 class KApplicationPrivate;
 
@@ -48,7 +48,7 @@ class KApplicationPrivate;
 * Controls and provides information to all KDE applications.
 *
 * Only one object of this class can be instantiated in a single app.
-* This instance is always accessible via the @ref getKApplication method.
+* This instance is always accessible via the @ref kApplication method.
 *
 * This class provides the following services to all KDE applications.
 *
@@ -105,14 +105,16 @@ public:
 	* saves the trouble of having to pass the pointer to it explicitly
 	* to every function that may require it.
 	*/
-  static KApplication* getKApplication() { return KApp; }
+  static KApplication* kApplication() { return KApp; }
+
 
   /**
-   * this function is obsolete. Use KGlobal::config() instead.
-   * getConfig will just call this function
+   * Returns the application config object.
+   *
+   * @return A pointer to the application config object.
    * @see KConfig
    */
-  KConfig* getConfig() const;
+  KConfig* config() const;
 
   /**
    * Retrieve the application session config object.
@@ -121,15 +123,15 @@ public:
    * 	KConfig object.
    * @see KConfig
    */
-  KConfig* getSessionConfig();
+  KConfig* sessionConfig();
 
   /**
 	* Is the application restored from the session manager?
 	*
 	* @return If true, this application was restored by the session manager.
 	*	Note that this may mean the config object returned by
-	*	getSessionConfig() contains data saved by a session closedown.
-	* @see #getSessionConfig
+	*	sessionConfig() contains data saved by a session closedown.
+	* @see #sessionConfig
 	*/
   bool isRestored() const { return QApplication::isSessionRestored(); }
 
@@ -158,7 +160,7 @@ public:
    * @param bAboutQtMenu If true, there is a menu entry for About Qt
    * @return a standard help menu
    */
-  QPopupMenu* getHelpMenu( bool bAboutQtMenu,
+  QPopupMenu* helpMenu( bool bAboutQtMenu,
 			   const QString& appAboutText );
 							
   /**
@@ -166,14 +168,14 @@ public:
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
-  QPixmap getIcon() const;
+  QPixmap icon() const;
 
   /**
 	* Get the mini-icon for the application.
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
-  QPixmap getMiniIcon() const;
+  QPixmap miniIcon() const;
 
   /** 
       Makes @param topWidget a top widget of the application.
@@ -182,7 +184,7 @@ public:
       icon. An application may have several top widgets. You don't
       need to call this function manually when using KTMainWindow 
       
-      @see #getIcon, #getCaption
+      @see #icon, #caption
     */
   void setTopWidget( QWidget *topWidget );
 
@@ -233,7 +235,7 @@ public:
    * @param fontlist a reference to a list to fill with fonts.
    * @return true on success.
    */
-  bool getKDEFonts(QStringList &fontlist) const;
+  bool kdeFonts(QStringList &fontlist) const;
 
   // QString appName () const { return name(); }
 
@@ -244,7 +246,7 @@ public:
    * "-caption", otherwise it will be equivalent to the name of the
    * executable.
    */
-  QString getCaption() const;
+  QString caption() const;
 
   /**
    * Builds a caption that contains the application name along with the 
@@ -473,6 +475,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.105  1999/10/08 22:49:15  bero
+// - Replace KTopLevelWidget with KTMainWindow where it's still used
+// - Disable ktopwidget.h
+// - Remove ktopwidget stuff from libs
+//
 // Revision 1.104  1999/10/05 21:52:02  espensa
 // Added invokeMailer() and invokeBrowser(). I have hardcoded kmail
 // and kfmclient for now.

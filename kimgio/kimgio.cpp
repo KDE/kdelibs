@@ -54,7 +54,7 @@ void kimgioRegister(void)
 
 	lt_dlinit();
 
-	QStringList list = KGlobal::dirs()->getResourceDirs("lib");
+	QStringList list = KGlobal::dirs()->resourceDirs("lib");
 	int rindex = 0;
 	while (kimgio_rpaths[rindex] != 0)
 	    list += kimgio_rpaths[rindex++];

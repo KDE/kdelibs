@@ -297,7 +297,7 @@ public:
 	 * The functions updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
 	 */
-	QStringList getResourceDirs(const QString& type) const;
+	QStringList resourceDirs(const QString& type) const;
 
 	/**
 	 * Finds a location to save files into for the given type
@@ -307,15 +307,15 @@ public:
 		       You can't pass filenames here, you _have_ to pass
 		       directory names only and add possible filename in
 		       that directory yourself
-	 * @param create if set, getSaveLocation will create the directories
+	 * @param create if set, saveLocation will create the directories
 	 *        needed (including those given by suffix)
 	 *
 	 * @return a path where resources of the specified type should be
 	 *         saved, or QString::null if the resource type is unknown.
 	 */
-	 QString getSaveLocation(const QString& type,
-				 const QString& suffix = QString::null,
-				 bool create = true) const;
+	 QString saveLocation(const QString& type,
+			      const QString& suffix = QString::null, 
+			      bool create = true) const;
 
 	/**
 	 * Recursively creates still missing directories in the given path.

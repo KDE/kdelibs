@@ -953,7 +953,7 @@ void KLocale::initInstance() {
   if (KGlobal::_locale) 
      return;
 
-  KApplication *app = KApplication::getKApplication();
+  KApplication *app = KApplication::kApplication();
   if (app)
     KGlobal::_locale = new KLocale(app->name());
  

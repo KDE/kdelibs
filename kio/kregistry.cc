@@ -246,7 +246,7 @@ bool KRegistry::save( const QString& _dbfile ) const
 {
   QString f;
   if ( _dbfile.isEmpty() )
-    f = KGlobal::dirs()->getSaveLocation("config") + "kregistry";
+    f = KGlobal::dirs()->saveLocation("config") + "kregistry";
   else
     f = _dbfile;
 

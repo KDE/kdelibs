@@ -394,7 +394,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
 
   lstSys.sort();
 
-  if ( !kapp->getKDEFonts( lstKDE ) ) 
+  if ( !kapp->kdeFonts( lstKDE ) ) 
   {
     list = lstSys;
     return;
@@ -521,6 +521,13 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.44  1999/09/30 21:30:56  espensa
+* KFontCooser:
+* 1. Reimplemented the sizeHint() to return the value of minimumSizeHint()
+* 2. Made getFontList( QStringList &, const char * ) static so that we have
+* a tool for creating fontnames outside the KFontCooser. Useful when the
+* default lists made by KFontCooser is not usable.
+*
 * Revision 1.43  1999/09/29 21:58:02  espensa
 * KFontDialog: Converted to use KDialogBase. Result is underlined
 * buttons and correct caption. The static methods can now specify

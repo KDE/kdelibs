@@ -39,8 +39,9 @@
 
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   : QWidget( parent, name, 0 ),
-    mPageList(0), mTreeNodeList(0), mTitleList(0),mActivePageWidget(0),
-    mActivePageIndex(-1),mValid(false),mFace(face)
+    mValid(false),mPageList(0), mTreeNodeList(0),
+    mTitleList(0), mFace(face), mActivePageWidget(0),
+    mActivePageIndex(-1)
 {
   QVBoxLayout *topLayout = new QVBoxLayout( this );
 

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.71  1999/10/08 23:04:36  torben
+   For components in libraries one has to use KLibGlobal instead
+   of KGlobal
+
    Revision 1.70  1999/08/20 08:27:37  kulow
    the endless story about unknown.png continues :)
    time to go with the #include "unknown.xpm"
@@ -313,11 +317,11 @@ KIconLoader::KIconLoader( KLibGlobal* _library, const QString& var_name )
 
 KIconLoader::KIconLoader() : config(0), library( 0 ), varname("IconPath")
 {
-  KApplication *app = KApplication::getKApplication();
+  KApplication *app = KApplication::kApplication();
   if (app) {
     config = KGlobal::config();
     config->setGroup("KDE Setup");
-    appname = KApplication::getKApplication()->name();
+    appname = KApplication::kApplication()->name();
   }
   iconType = "toolbar";
 

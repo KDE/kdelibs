@@ -49,12 +49,12 @@ public:
 	if ( KTMainWindow::memberList->first() ){
 	    // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
 	    // hook is usefull for better document orientation
-	    KTMainWindow::memberList->first()->saveData(kapp->getSessionConfig());
+	    KTMainWindow::memberList->first()->saveData(kapp->sessionConfig());
 	}
 
 	QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
 	int n = 0;
-	KConfig* config = KApplication::getKApplication()->getSessionConfig();
+	KConfig* config = KApplication::kApplication()->sessionConfig();
 	config->setGroup("Number");
 	config->writeEntry("NumberOfWindows", KTMainWindow::memberList->count());
 	for (it.toFirst(); it.current(); ++it){
@@ -573,7 +573,7 @@ void KTMainWindow::setMaximumToolBarWraps(unsigned int wraps)
 bool KTMainWindow::canBeRestored(int number){
   if (!kapp->isRestored())
     return false;
-  KConfig *config = kapp->getSessionConfig();
+  KConfig *config = kapp->sessionConfig();
   if (!config)
     return false;
   config->setGroup("Number");
@@ -584,7 +584,7 @@ bool KTMainWindow::canBeRestored(int number){
 const QString KTMainWindow::classNameOfToplevel(int number){
   if (!kapp->isRestored())
     return "";
-  KConfig *config = kapp->getSessionConfig();
+  KConfig *config = kapp->sessionConfig();
   if (!config)
     return QString();
   QString s;
@@ -602,7 +602,7 @@ const QString KTMainWindow::classNameOfToplevel(int number){
 bool KTMainWindow::restore(int number){
   if (!canBeRestored(number))
     return false;
-  KConfig *config = kapp->getSessionConfig();
+  KConfig *config = kapp->sessionConfig();
   if (readPropertiesInternal(config, number)){
     show();
     return true;

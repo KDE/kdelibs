@@ -153,7 +153,7 @@ QDateTime parseDateTime(const QString &s)
 
 void KIOCache::initStatic()
 {
-    cachePath += KGlobal::dirs()->getSaveLocation("data", "kio/cache", true);
+    cachePath += KGlobal::dirs()->saveLocation("data", "kio/cache", true);
     readConfig( *( KGlobal::config() ) );
 }
 
@@ -161,7 +161,7 @@ void KIOCache::readConfig( KConfig &config )
 {
     KConfigGroupSaver gs(&config, "Cache");
 
-    QString path = KGlobal::dirs()->getSaveLocation("data", "kio/cache");
+    QString path = KGlobal::dirs()->saveLocation("data", "kio/cache");
     cachePath = config.readEntry( "CachePath", path );
     if ( cachePath.right(1).at(1) != '/')
 	cachePath += "/";

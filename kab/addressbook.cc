@@ -86,7 +86,7 @@ AddressBook::AddressBook(bool readonly_)
       LG(GUARD, "AddressBook constructor: done.\n");
     }
   LG(GUARD, "AddressBook constructor: checking user directory.\n");
-  dir = KGlobal::dirs()->getSaveLocation("data", "kab", false);
+  dir = KGlobal::dirs()->saveLocation("data", "kab", false);
   if(access(dir.c_str(), F_OK)!=0)
     {
       cerr << i18n

@@ -131,7 +131,7 @@ static QList<KSessionManaged>* sessionClients()
   Syntax:  "<appname>:<level>:<sessionId>"
  */
 static int session_restore_level = 0;
-static QString getSessionConfigName()
+static QString sessionConfigName()
 {
   QString aSessionConfigName;
   QTextOStream ts( &aSessionConfigName );
@@ -152,7 +152,7 @@ KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
 
 }
 
-KConfig* KApplication::getConfig() const { return KGlobal::config(); }
+KConfig* KApplication::config() const { return KGlobal::config(); }
 
 int KApplication::xioErrhandler()
 {
@@ -227,12 +227,12 @@ void KApplication::init()
   captionLayout = CaptionAppLast;
 }
 
-KConfig* KApplication::getSessionConfig() {
+KConfig* KApplication::sessionConfig() {
   if (pSessionConfig)
     return pSessionConfig;
 
   // create an instance specific config object
-  pSessionConfig = new KConfig( getSessionConfigName(), false, false);
+  pSessionConfig = new KConfig( sessionConfigName(), false, false);
 
   return pSessionConfig;
 }
@@ -305,8 +305,8 @@ void KApplication::saveState( QSessionManager& sm )
     QFile file;
     do {
 	session_restore_level++;
-	QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") +
-				 getSessionConfigName();
+	QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
+				 sessionConfigName();
 	file.setName( aLocalFileName );
     } while ( file.exists() );
 
@@ -338,7 +338,7 @@ void KApplication::saveState( QSessionManager& sm )
 	sm.cancel();
 }
 
-QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
+QPopupMenu* KApplication::helpMenu( bool /*bAboutQtMenu*/,
 	   const QString& aboutAppText )
 {
   int id = 0;
@@ -396,18 +396,18 @@ void KApplication::aboutKDE()
 void KApplication::aboutApp()
 {
   QWidget* w = activeWindow();
-  QString caption = i18n("About %1").arg(kapp->getCaption());
+  QString caption = i18n("About %1").arg(kapp->caption());
   QMessageBox about(caption, aAppAboutString, QMessageBox::Information,
 		   QMessageBox::Ok + QMessageBox::Default, 0, 0, w, "aboutapp");
   about.setButtonText(0, i18n("&OK"));
-  about.setIconPixmap(getIcon());
+  about.setIconPixmap(icon());
   about.exec();
 }
 
 
 void KApplication::aboutQt(){
    //  QWidget* w = activeWindow();
-  //  QMessageBox::aboutQt( w, getCaption() );
+  //  QMessageBox::aboutQt( w, caption() );
 }
 
 
@@ -529,7 +529,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    session_restore_level = QString( argv[i+1] ).toInt();
 	    delete pSessionConfig; // should be 0 anyway
 	    // create a new read-only session config for the restortation
-	    pSessionConfig = new KConfig( getSessionConfigName(), true, false);
+	    pSessionConfig = new KConfig( sessionConfigName(), true, false);
 	    break;
 	case unknown:
 	    i++;
@@ -547,7 +547,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
     pArgc = argc;
 }
 
-QPixmap KApplication::getIcon() const
+QPixmap KApplication::icon() const
 {
   if( aIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
@@ -556,7 +556,7 @@ QPixmap KApplication::getIcon() const
   return aIconPixmap;
 }
 
-QPixmap KApplication::getMiniIcon() const
+QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
@@ -719,7 +719,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 }
 
 
-QString KApplication::getCaption() const
+QString KApplication::caption() const
 {
   if( !aCaption.isNull() )
 	return aCaption;
@@ -737,7 +737,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 {
   if( userCaption.isNull() == true )
   {
-    return( getCaption() );
+    return( caption() );
   }
 
   //
@@ -756,23 +756,23 @@ QString KApplication::makeStdCaption( const QString &userCaption,
       if( modified == true )
       {
 	return( QString("%1 %2 - %3").arg(modString).arg(userCaption).
-		arg(getCaption()));
+		arg(caption()));
       }
       else
       {
-	return( QString("%1 - %2").arg(userCaption).arg(getCaption()));
+	return( QString("%1 - %2").arg(userCaption).arg(caption()));
       }
     }
     else if( captionLayout == CaptionAppFirst )
     {
       if( modified == true )
       {
-	return( QString("%1: %2 %3").arg(getCaption()).arg(modString).
+	return( QString("%1: %2 %3").arg(caption()).arg(modString).
 		arg(userCaption) );
       }
       else
       {
-	return( QString("%1: %2").arg(getCaption()).arg(userCaption) );
+	return( QString("%1: %2").arg(caption()).arg(userCaption) );
       }
     }
   }
@@ -836,7 +836,7 @@ void KApplication::kdisplaySetPalette()
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
 
   KConfigBase* config;
-  config  = kapp->getConfig();
+  config  = kapp->config();
   config->setGroup( "General" );
   QColor buttonText =
     config->readColorEntry( "foreground", &black );
@@ -1066,9 +1066,9 @@ void KApplication::invokeBrowser( const QString &url )
 
 
 
-bool KApplication::getKDEFonts(QStringList &fontlist) const
+bool KApplication::kdeFonts(QStringList &fontlist) const
 {
-  QString fontfilename = KGlobal::dirs()->getSaveLocation("config") + "kdefonts";
+  QString fontfilename = KGlobal::dirs()->saveLocation("config") + "kdefonts";
   QFile fontfile(fontfilename);
 
   if (!fontfile.exists())
@@ -1197,14 +1197,14 @@ void KApplication::setTopWidget( QWidget *topWidget )
   if( topWidget != 0 )
   {
     // set the specified caption
-    topWidget->setCaption( getCaption() );
+    topWidget->setCaption( caption() );
     // set the specified icons
-    KWM::setIcon(topWidget->winId(), getIcon());
-    KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
+    KWM::setIcon(topWidget->winId(), icon());
+    KWM::setMiniIcon(topWidget->winId(), miniIcon());
     // set a short icon text
     // TODO: perhaps using .ascii() isn't right here as this may be seen by
     // a user?
-    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
+    XSetIconName( qt_xdisplay(), topWidget->winId(), caption().ascii() );
   }
 }
 

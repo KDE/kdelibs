@@ -48,8 +48,8 @@ void KServiceTypeEntry::save( QDataStream& _str ) const
 KServiceTypeFactory::KServiceTypeFactory()
 {
   // Read servicetypes first, since they might be needed to read mimetype properties
-  m_pathList += KGlobal::dirs()->getResourceDirs( "servicetypes" );
-  m_pathList += KGlobal::dirs()->getResourceDirs( "mime" );
+  m_pathList += KGlobal::dirs()->resourceDirs( "servicetypes" );
+  m_pathList += KGlobal::dirs()->resourceDirs( "mime" );
 }
 
 KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )
@@ -178,8 +178,8 @@ void KServiceEntry::save( QDataStream& _str ) const
 
 KServiceFactory::KServiceFactory()
 {
-  m_pathList += KGlobal::dirs()->getResourceDirs( "apps" );
-  m_pathList += KGlobal::dirs()->getResourceDirs( "services" );
+  m_pathList += KGlobal::dirs()->resourceDirs( "apps" );
+  m_pathList += KGlobal::dirs()->resourceDirs( "services" );
 }
 
 KServiceFactory::KServiceFactory( const QStringList& _path_list )

@@ -275,7 +275,7 @@ void KIconLoaderDialog::init()
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
-  changeDirs(KGlobal::dirs()->getResourceDirs("toolbar"));
+  changeDirs(KGlobal::dirs()->resourceDirs("toolbar"));
   
   resize( 470, 350 );
   setMinimumSize( 470, 250 );
@@ -387,7 +387,7 @@ KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_paren
 void KIconLoaderButton::setIconType(const QString& _resType) 
 {
     resType = _resType;
-    loaderDialog->changeDirs(KGlobal::dirs()->getResourceDirs(resType));
+    loaderDialog->changeDirs(KGlobal::dirs()->resourceDirs(resType));
     
     // Reload icon (might differ in new resource type)
     if(!iconStr.isEmpty())

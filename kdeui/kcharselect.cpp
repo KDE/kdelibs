@@ -371,7 +371,7 @@ void KCharSelect::fillFontCombo()
     char** fontNames_copy;
     QString qfontname;
 
-    bool have_installed = kapp->getKDEFonts( fontList );
+    bool have_installed = kapp->kdeFonts( fontList );
 
     if ( !have_installed )
     {

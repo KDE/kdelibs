@@ -52,8 +52,8 @@ KFilePreview::KFilePreview(
 
     myPreview = new KPreview( inDir, this, "_preview" );
     
-    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
-					      DefaultPannerPosition);
+    int pan = kapp->config()->readNumEntry("PannerPosition", 
+					   DefaultPannerPosition);
     setRubberband(pan);
 
     fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo *)));

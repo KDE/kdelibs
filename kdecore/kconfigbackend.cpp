@@ -154,7 +154,7 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     if (fileName.isEmpty())
 	return KConfigBase::NoAccess;
 
-    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") +
+    QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
       fileName;
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
@@ -251,7 +251,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     if (fileName[0] == '/') {
        aLocalFileName = fileName;
     } else {
-       aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
+       aLocalFileName = KGlobal::dirs()->saveLocation("config") + fileName;
     }
 
     // Can we allow the write? We can, if the program
@@ -275,7 +275,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // the useKDEGlobals flag is set.
   if (bEntriesLeft && useKDEGlobals) {
 
-    QString aFileName = KGlobal::dirs()->getSaveLocation("config") +
+    QString aFileName = KGlobal::dirs()->saveLocation("config") +
       "kdeglobals";
     QFile aConfigFile( aFileName );
 
