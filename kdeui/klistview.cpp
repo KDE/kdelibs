@@ -1591,27 +1591,24 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        break;
 
     case Key_Home:
-       //move to the last item and toggle selection of all items inbetween
-       nextItem=item;
+       // move to the first item and toggle selection of all items inbetween
+       nextItem = firstChild();
+       visItem = nextItem;
+       repaintItem2 = visItem;
        if (d->selectedBySimpleMove)
           item->setSelected(false);
        if (shiftOrCtrl)
-          d->selectedBySimpleMove=false;
-
-       while(nextItem!=0)
        {
-          if (shiftOrCtrl)
-             nextItem->setSelected(!nextItem->isSelected());
-          if (nextItem->itemAbove()==0)
+          d->selectedBySimpleMove=false;
+       
+          while ( nextItem != item )
           {
-             if (d->selectedBySimpleMove)
-                nextItem->setSelected(true);
-             repaintItem2=nextItem;
-             visItem=nextItem;
-             setCurrentItem(nextItem);
+             nextItem->setSelected( !nextItem->isSelected() );
+             nextItem = nextItem->itemBelow();
           }
-          nextItem=nextItem->itemAbove();
+          item->setSelected( !item->isSelected() );
        }
+       setCurrentItem( firstChild() );
        emitSelectionChanged=TRUE;
        break;
 
