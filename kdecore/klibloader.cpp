@@ -49,6 +49,7 @@ KLibFactory::~KLibFactory()
     delete d;
 }
 
+// Matz: implement all that cruft in KDE > 2.0
 typedef QValueList<lt_dlhandle> LTList;
 
 static LTList *loaded_stack = 0;
@@ -56,6 +57,9 @@ static LTList *pending_close = 0;
 
 static void add_pending(lt_dlhandle h)
 {
+  if (getenv("KDE_DLCLOSE") != NULL)
+    return;
+
   if (pending_close == 0) {
     pending_close = new LTList;
   }
@@ -65,6 +69,9 @@ static void add_pending(lt_dlhandle h)
 
 static void add_loaded(lt_dlhandle h)
 {
+  if (getenv("KDE_DLCLOSE") != NULL)
+    return;
+
   if (loaded_stack == 0) {
     loaded_stack = new LTList;
   }
@@ -101,6 +108,14 @@ static void try_close()
 
 static void close_all()
 {
+  if (getenv("KDE_NOUNLOAD") != NULL) {
+    if (loaded_stack != 0)
+      delete loaded_stack;
+    loaded_stack = 0;
+    /* Don't need to cleanup pending_close, as it isn't initialized at all
+       in KDE_NOUNLOAD case.  */
+    return;
+  }
   if (loaded_stack != 0) {
     LTList::ConstIterator it;
     for (it = loaded_stack->begin(); it != loaded_stack->end(); ++it) {
@@ -380,6 +395,13 @@ KLibrary* KLibLoader::library( const char *name )
     m_libs.insert( name, lib );
 
     add_loaded( handle );
+    
+    if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
+        /* matz: bad hack: clear loaded stack, as we can't dlclose() any
+           libraries loaded before this one.  */
+        delete loaded_stack;
+        loaded_stack = 0;
+    }
 
     connect( lib, SIGNAL( destroyed() ),
              this, SLOT( slotLibraryDestroyed() ) );
