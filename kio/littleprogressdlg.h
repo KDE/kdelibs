@@ -3,7 +3,7 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
-#include <qpopupmenu.h>
+#include <qpushbutton.h>
 
 #include <kprogress.h>
 
@@ -18,6 +18,23 @@ class KIOJob;
 * Instead of creating a separate window, this is only a widget that can be
 * easily embedded in a statusbar.
 *
+* Usage of KIOLittleProgressDialog is little different.
+* This dialog will be a part of some application.
+*
+* KIOLittleProgressDlg *littleProgress;
+* littleProgress = new KIOLittleProgressDlg( statusBar() );
+* statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
+*
+* KIOJob* job;
+* // set the KIOJob's GUI type to little progress widget
+* job->setGUImode( KIOJob::LITTLE );
+
+* // this connects job with a little progress dialog
+* job->connectProgress( littleProgress );
+*
+* Call @ref #clean() method when you are finished with IO ( e.g. in a slot that
+* is connected to KIOJob's signal @ref #sigFinished or @ref #sigError
+*
 * @short IO progress widget for embedding in a statusbar.
 */ 
 class KIOLittleProgressDlg : public QWidget {
@@ -27,12 +44,9 @@ class KIOLittleProgressDlg : public QWidget {
 public:
 
   KIOLittleProgressDlg( QWidget* parent );
-
-  void processedSize();
-  void speed();
+  ~KIOLittleProgressDlg() {}
 
   void setJob( KIOJob *job );
-
   void clean();
 
 public slots:
@@ -44,15 +58,17 @@ public slots:
 protected:
   KProgress* m_pProgressBar;
   QLabel* m_pLabel;
-  QPopupMenu* m_pMenu;
+  QPushButton* m_pButton;
 
   KIOJob* m_pJob;
 
   unsigned long m_iTotalSize;
 
-  bool mode;
+  enum Mode { None, Label, Progress };
 
-  void setMode( bool _mode );
+  uint mode;
+
+  void setMode();
 
   bool eventFilter( QObject *, QEvent * );
 

@@ -1,40 +1,44 @@
 // $Id$
 
-#include "kio_job.h" 
+#include <qtooltip.h>
+
 #include <kapp.h>
 #include <klocale.h>
-#include <kwm.h>
 
+#include "kio_job.h" 
 #include "kio_littleprogress_dlg.h"
 
 KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) 
-  : QWidget( parent ) 
-{
+  : QWidget( parent ) {
+
   m_pJob = 0L;
   
   QFontMetrics fm = fontMetrics();
+  int w_offset = fm.width( "x" ) + 10;
   int w = fm.width( " 999.9 kB/s 00:00:01 " ) + 8;
   int h = fm.height() + 3;
 
+  m_pButton = new QPushButton( "x", this );
+  m_pButton->setGeometry( 0, 1, w_offset, h - 1);
+  QToolTip::add( m_pButton, i18n("Cancel job") );
+  
   m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
   m_pProgressBar->setLineWidth( 1 );
   m_pProgressBar->setBackgroundMode( QWidget::PaletteBackground );
   m_pProgressBar->setBarColor( Qt::blue );
-  m_pProgressBar->setGeometry( 0, 1, w, h - 1 );
+  m_pProgressBar->setGeometry( w_offset, 1, w + w_offset, h - 1 );
   m_pProgressBar->installEventFilter( this );
 
   m_pLabel = new QLabel( "", this );
   m_pLabel->setFrameStyle( QFrame::Box | QFrame::Raised );
-  m_pLabel->setGeometry( 0, 1, w, h - 1 );
+  m_pLabel->setGeometry( w_offset, 1, w + w_offset, h - 1 );
   m_pLabel->installEventFilter( this );
 
-  m_pMenu = new QPopupMenu();
+  mode = None;
+  setMode();
 
-  mode = false;
-  setMode( true );
-
-  resize( w, h );
+  resize( w + w_offset, h );
 
   this->show();
 }
@@ -49,19 +53,31 @@ void KIOLittleProgressDlg::setJob( KIOJob *job ) {
   connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
 	   SLOT( slotPercent( int, unsigned long ) ) );
 
-  m_pMenu->clear();
-  m_pMenu->insertItem( i18n("Cancel"), m_pJob, SLOT(slotCancel()) );
-  setMode( mode );
+  connect( m_pButton, SIGNAL( clicked() ), m_pJob, SLOT(slotCancel()) );
+  mode = Progress;
+  setMode();
 }
 
 
-void KIOLittleProgressDlg::setMode( bool _mode ) {
-  if ( _mode ) {
+void KIOLittleProgressDlg::setMode() {
+  switch ( mode ) {
+  case None:
+    m_pButton->hide();
+    m_pProgressBar->hide();
+    m_pLabel->hide();
+    break;
+
+  case Label:
+    m_pButton->show();
     m_pProgressBar->hide();
     m_pLabel->show();
-  } else {
+    break;
+
+  case Progress:
+    m_pButton->show();
     m_pProgressBar->show();
     m_pLabel->hide();
+    break;
   }
 }
 
@@ -70,7 +86,9 @@ void KIOLittleProgressDlg::clean() {
   m_pJob = 0L;
   m_pProgressBar->setValue( 0 );
   m_pLabel->clear();
-  setMode( true );
+
+  mode = None;
+  setMode();
 }
 
 
@@ -93,7 +111,7 @@ void KIOLittleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second ) {
 
 
 bool KIOLittleProgressDlg::eventFilter( QObject *, QEvent *ev ) {
-  if ( ! m_pJob ) {
+  if ( ! m_pJob ) { // don't react when there isn't any job doing IO
     return true;
   }
 
@@ -101,19 +119,14 @@ bool KIOLittleProgressDlg::eventFilter( QObject *, QEvent *ev ) {
     QMouseEvent *e = (QMouseEvent*)ev;
 
     if ( e->button() == LeftButton ) {    // toggle view on left mouse button
-      mode = ! mode;
-      setMode( mode );
+      if ( mode == Label ) {
+	mode = Progress;
+      } else if ( mode == Progress ) {
+	mode = Label;
+      }
+      setMode();
       return true;
 
-    } else if ( e->button() == RightButton ) {  // open popup menu on right mouse button
-      m_pMenu->move(-1000,-1000);
-      m_pMenu->show();
-      m_pMenu->hide();
-      QRect g = KWM::geometry( this->winId() );
-      m_pMenu->popup(QPoint( g.x(), g.y() - m_pMenu->height()));
-	
-      m_pMenu->exec();
-      return true;
     }
   }
 
