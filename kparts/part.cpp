@@ -297,7 +297,13 @@ bool ReadOnlyPart::openURL( const KURL &url )
   else
   {
     m_bTemp = true;
-    KTempFile tempFile;
+    // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
+    QString extension;
+    QString fileName = url.fileName();
+    int extensionPos = fileName.findRev( '.' );
+    if ( extensionPos != -1 )
+        extension = fileName.mid( extensionPos + 1 );
+    KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
     d->m_job = KIO::file_copy( m_url, m_file, 0600, true, false, d->m_showProgressInfo );
