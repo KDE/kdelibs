@@ -935,8 +935,7 @@ void KFileBaseDialog::mkdir()
 	    /* Stephan: I don't understand, what this is meant for:
 	    QString tmp;
 	    if ( !dirnameList->contains( ed->text() )) {
-		tmp.sprintf(i18n("check permissions of directory < %s >"),
-			    dir->url().data());
+		tmp = i18n("check permissions of directory < %1 >").arg(dir->url()));
 		QMessageBox::message(i18n("Error: could not create directory"),
 				     tmp,
 				     i18n("Dismiss"),
