@@ -32,15 +32,13 @@ SUBDIRS = malloc $(SVGICONS) . tests
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a
 
-include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
-	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
-	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
-	kcharsets.h kdeversion.h \
-	kpty.h kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
-	kwinmodule.h kwin.h krootprop.h \
-	kshortcut.h kkeynative.h kaccel.h kglobalaccel.h \
-	kstdaccel.h kshortcutlist.h \
-	kcatalogue.h \
+include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h \
+	kconfigbase.h kdesktopfile.h kurl.h ksock.h kaboutdata.h \
+	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
+	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
+	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
+	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
+	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalogue.h \
 	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
@@ -48,12 +46,13 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
-	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
-	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
+	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h
+	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h \
-	ksortablevaluelist.h kdebugclasses.h kclipboard.h kcalendarsystem.h \
-	kcalendarsystemfactory.h kmacroexpander.h kmanagerselection.h \
+	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc
+	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
+	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
+	kmanagerselection.h \
 	kidna.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
@@ -77,17 +76,16 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
-	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
-	kmanagerselection.cpp kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
-	kpty.cpp kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
-	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
-	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
+	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
+	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
+	kstandarddirs.cpp ksock.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
+	klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
+	kiconloader.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
 	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \
 	kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
-	kcrash.cpp kurl.cpp kregexp.cpp \
-	kglobal.cpp kglobalsettings.cpp \
+	kcrash.cpp kurl.cpp kregexp.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	kuniqueapplication.cpp \
