@@ -86,7 +86,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "CLASS" ) {
 	    QDomElement n = e.firstChild().toElement();
-	    ASSERT( n.tagName() == "NAME" );
+	    Q_ASSERT( n.tagName() == "NAME" );
 	    QString className = n.firstChild().toText().data();
 	    // find dcop parent ( rightmost super class )
 	    QString DCOPParent;
@@ -102,22 +102,22 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
-		    ASSERT( r.tagName() == "TYPE" );
+		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString funcType = r.firstChild().toText().data();
 		    r = r.nextSibling().toElement();
-		    ASSERT ( r.tagName() == "NAME" );
+		    Q_ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
 		    QStringList argtypes;
 		    QStringList argnames;
 		    r = r.nextSibling().toElement();
 		    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
-			ASSERT( r.tagName() == "ARG" );
+			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			ASSERT( a.tagName() == "TYPE" );
+			Q_ASSERT( a.tagName() == "TYPE" );
 			argtypes.append( a.firstChild().toText().data() );
 			a = a.nextSibling().toElement();
 			if ( !a.isNull() ) {
-			    ASSERT( a.tagName() == "NAME" );
+			    Q_ASSERT( a.tagName() == "NAME" );
 			    argnames.append( a.firstChild().toText().data() );
 			} else {
 			    argnames.append( QString::null );
@@ -220,20 +220,20 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
-		    ASSERT( r.tagName() == "TYPE" );
+		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString funcType = r.firstChild().toText().data();
 		    if ( funcType == "ASYNC" )
 			funcType = "void";
 		    r = r.nextSibling().toElement();
-		    ASSERT ( r.tagName() == "NAME" );
+		    Q_ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
 		    QStringList args;
 		    QStringList argtypes;
 		    r = r.nextSibling().toElement();
 		    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
-			ASSERT( r.tagName() == "ARG" );
+			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			ASSERT( a.tagName() == "TYPE" );
+			Q_ASSERT( a.tagName() == "TYPE" );
 			argtypes.append( a.firstChild().toText().data() );
 			args.append( QString("arg" ) + QString::number( args.count() ) );
 		    }

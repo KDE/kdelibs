@@ -81,7 +81,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "CLASS" ) {
 	    QDomElement n = e.firstChild().toElement();
-	    ASSERT( n.tagName() == "NAME" );
+	    Q_ASSERT( n.tagName() == "NAME" );
 	    QString className = n.firstChild().toText().data() + "_stub";
 	
 	    // find dcop parent ( rightmost super class )
@@ -138,7 +138,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
-		    ASSERT( r.tagName() == "TYPE" );
+		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
 		    bool async = result == "ASYNC";
 		    if ( async)
@@ -152,7 +152,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << " ";
 
 		    r = r.nextSibling().toElement();
-		    ASSERT ( r.tagName() == "NAME" );
+		    Q_ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
 		    str << className << "::" << funcName << "(";
 
@@ -166,9 +166,9 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			else
 			    str << " ";
 			first = FALSE;
-			ASSERT( r.tagName() == "ARG" );
+			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			ASSERT( a.tagName() == "TYPE" );
+			Q_ASSERT( a.tagName() == "TYPE" );
 			if ( a.hasAttribute( "qleft" ) )
 			    str << a.attribute("qleft") << " ";
 			argtypes.append( a.firstChild().toText().data() );

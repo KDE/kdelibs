@@ -89,7 +89,7 @@ int main( int argc, char** argv )
     doc.setContent( &in );
 
     QDomElement de = doc.documentElement();
-    ASSERT( de.tagName() == "DCOP-IDL" );
+    Q_ASSERT( de.tagName() == "DCOP-IDL" );
 
     QString base( argv[argpos] );
     QString idl = base;
