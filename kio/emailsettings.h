@@ -58,16 +58,16 @@ public:
 
 	KEMailSettings();
 	~KEMailSettings();
-	QStringList profiles();
+	QStringList profiles() const;
 
 	// Retr what profile we're currently using
-	QString currentProfileName();
+	QString currentProfileName() const;
 
 	// Change the current profile
 	void setProfile (const QString &);
 
 	// Retr the name of the one that's currently default QString::null if none
-	QString defaultProfileName();
+	QString defaultProfileName() const;
 
 	// New default..
 	void setDefault(const QString &);
@@ -82,7 +82,7 @@ public:
 	QString getExtendedSetting(KEMailSettings::Extension e, const QString &s );
 	void setExtendedSetting(KEMailSettings::Extension e, const QString &s, const QString &v );
 
-protected:
+private:
 	KEMailSettingsPrivate *p;
 };
 

@@ -37,9 +37,9 @@ public:
 	QString m_sDefaultProfile, m_sCurrentProfile;
 };
 
-QString KEMailSettings::defaultProfileName()
+QString KEMailSettings::defaultProfileName() const
 {
-	return p->m_sDefaultProfile.copy();
+	return p->m_sDefaultProfile;
 }
 
 QString KEMailSettings::getSetting(KEMailSettings::Setting s)
@@ -154,15 +154,15 @@ void KEMailSettings::setDefault(const QString &s)
 
 void KEMailSettings::setProfile (const QString &s)
 {
-	p->m_sCurrentProfile=s.copy();
+	p->m_sCurrentProfile=s;
 }
 
-QString KEMailSettings::currentProfileName()
+QString KEMailSettings::currentProfileName() const
 {
 	return p->m_sCurrentProfile;
 }
 
-QStringList KEMailSettings::profiles()
+QStringList KEMailSettings::profiles() const
 {
 	return p->profiles;
 }
