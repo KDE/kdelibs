@@ -20,6 +20,7 @@
 #include "smbview.h"
 
 #include <kprocess.h>
+#include <ktempfile.h>
 #include <qheader.h>
 #include <qapplication.h>
 
@@ -43,6 +44,7 @@ SmbView::SmbView(QWidget *parent, const char *name)
 	m_current = 0;
 	m_proc = new KProcess();
 	m_proc->setUseShell(true);
+	m_passwdFile = 0;
 	connect(m_proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
 	connect(m_proc,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStdout(KProcess*,char*,int)));
 	connect(this,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotSelectionChanged(QListViewItem*)));
@@ -51,12 +53,30 @@ SmbView::SmbView(QWidget *parent, const char *name)
 SmbView::~SmbView()
 {
 	delete m_proc;
+	delete m_passwdFile;
 }
 
 void SmbView::setLoginInfos(const QString& login, const QString& password)
 {
 	m_login = login;
 	m_password = password;
+
+	// We can't pass the password via the command line or the environment 
+	// because the command line is publically accessible on most OSes and
+	// the environment is publically accessible on some OSes.
+	// Therefor we write the password to a file and pass that file to 
+	// smbclient with the -A option
+	delete m_passwdFile;
+	m_passwdFile = new KTempFile;
+	m_passwdFile->setAutoDelete(true);
+		
+	QTextStream *passwdFile = m_passwdFile->textStream();
+	if (!passwdFile) return; // Error
+	(*passwdFile) << "username = " << m_login << endl;
+	(*passwdFile) << "password = " << m_password << endl;
+	// (*passwdFile) << "domain = " << ???? << endl; 
+		
+	m_passwdFile->close();
 }
 
 void SmbView::startProcess(int state)
@@ -112,10 +132,6 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 {
 	if (on && item->childCount() == 0)
 	{
-		if (!m_login.isEmpty())
-			m_proc->setEnvironment("USER", m_login);
-		if (!m_password.isEmpty())
-			m_proc->setEnvironment("PASSWD", m_password);
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
@@ -123,6 +139,8 @@ void SmbView::setOpen(QListViewItem *item, bool on)
                         *m_proc << KProcess::quote(item->text(0));
                         *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
                         *m_proc << KProcess::quote(item->text(0));
+			*m_proc << " -A ";
+                        *m_proc << KProcess::quote(m_passwdFile->name());
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
@@ -132,6 +150,8 @@ void SmbView::setOpen(QListViewItem *item, bool on)
                         *m_proc << KProcess::quote(item->text(0));
                         *m_proc << " -W ";
                         *m_proc << KProcess::quote(item->parent()->text(0));
+			*m_proc << " -A ";
+                        *m_proc << KProcess::quote(m_passwdFile->name());
 			startProcess(ShareListing);
 		}
 	}

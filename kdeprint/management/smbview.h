@@ -23,6 +23,7 @@
 #include <klistview.h>
 
 class KProcess;
+class KTempFile;
 
 class SmbView : public KListView
 {
@@ -59,6 +60,7 @@ private:
 	KProcess	*m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;
+	KTempFile	*m_passwdFile;
 };
 
 #endif
