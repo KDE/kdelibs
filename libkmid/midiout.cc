@@ -28,6 +28,7 @@
 #include "sndcard.h"
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/param.h>
 #include "midispec.h"
 #include "../version.h"
