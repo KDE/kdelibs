@@ -15,14 +15,6 @@ These are:
 
 2. To get everything up again
 
-- do reference counting
-- passing MCOP object references might be useful (including specification
-  in the IDL), e.g.
-
-interface Foo {
-  Bar giveMeABar(); // should return a Bar object reference
-}
-
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
   interface in the standard namespace
 - add automatic "cleanup" inside the flow system - for instance, if you delete

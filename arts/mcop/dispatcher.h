@@ -43,13 +43,15 @@ class ObjectReference;
 class InterfaceRepo;
 class FlowSystem;
 class ObjectManager;
+class Object_skel;
+class ReferenceClean;
 
 class Dispatcher {
 protected:
 	static Dispatcher *_instance;
 
 	Pool<Buffer> requestResultPool;
-	Pool<class Object_skel> objectPool;
+	Pool<Object_skel> objectPool;
 	list<Connection *> connections;
 
 	string serverID;
@@ -63,6 +65,10 @@ protected:
 	InterfaceRepo *_interfaceRepo;
 	FlowSystem *_flowSystem;
 	ObjectManager *objectManager;
+	ReferenceClean *referenceClean;
+
+	void (*orig_sigpipe)(int);			// original signal handler for SIG_PIPE
+	Connection *_activeConnection;		// internal use only (for refcounting)
 
 public:
 	Dispatcher(IOManager *ioManager = 0);
@@ -152,6 +158,13 @@ public:
 	 * happen if an error occurs as well (network down)
 	 */
 	void handleConnectionClose(Connection *connection);
+
+	/**
+	 * - internal usage only -
+	 *
+	 * this will return the Connection the last request came from
+	 */
+	Connection *activeConnection();
 };
 
 #endif

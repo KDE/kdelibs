@@ -23,43 +23,23 @@
 
     */
 
-#include "simplesoundserver_impl.h"
-#include "mcoputils.h"
-#include <signal.h>
+#include "referenceclean.h"
 
-void stopServer(int)
+ReferenceClean::ReferenceClean(Pool<Object_skel>& objectPool)
+	:objectPool(objectPool)
 {
-	Dispatcher::the()->terminate();
+	Dispatcher::the()->ioManager()->addTimer(5000, this);
 }
 
-void initSignals()
+void ReferenceClean::notifyTime()
 {
-    signal(SIGHUP ,stopServer);
-    signal(SIGQUIT,stopServer);
-    signal(SIGINT ,stopServer);
-    signal(SIGTERM,stopServer);                                                 
+	list<Object_skel *> items = objectPool.enumerate();
+	list<Object_skel *>::iterator i;
+
+	for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
 }
 
-int main()
+ReferenceClean::~ReferenceClean()
 {
-	initSignals();
-
-	Dispatcher dispatcher;
-	SimpleSoundServer_var server = new SimpleSoundServer_impl;
-
-	bool result = ObjectManager::the()
-				->addGlobalReference(server,"Arts_SimpleSoundServer");
-
-	if(!result)
-	{
-		cerr <<
-"Error: Can't add object reference (perhaps it is already running?)." << endl <<
-"       If you are sure it is not already running, remove the relevant file:"
-              << endl << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl << endl;
-		return 1;
-	}
-
-	dispatcher.run();
-	return 0;
+	Dispatcher::the()->ioManager()->removeTimer(this);
 }

@@ -81,6 +81,16 @@ bool isEnum( string type )
 	return false;
 }
 
+bool isInterface( string type )
+{
+	list<InterfaceDef *>::iterator i;
+
+	for(i=interfaces.begin();i != interfaces.end(); i++)
+		if((*i)->name == type) return true;
+
+	return false;
+}
+
 #define MODEL_MEMBER    1
 #define MODEL_ARG       2
 #define MODEL_READ      3
@@ -319,6 +329,37 @@ string createTypeCode(string type, const string& name, long model,
 			result = "request->writeLong("+name+")";
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeLong("+name+");\n";
+	} else if(isInterface(type)) {
+		if(model==MODEL_MEMBER)		result = type+"_var";
+		//if(model==MODEL_MEMBER_SEQ) result = "vector<"+type+">";
+		if(model==MODEL_ARG)		result = type+" *";
+		//if(model==MODEL_ARG_SEQ)	result = "const vector<"+type+">&";
+		if(model==MODEL_RESULT)		result = type+" *";
+		//if(model==MODEL_RESULT_SEQ)	result = "vector<"+type+"> *";
+		if(model==MODEL_READ)
+			result = name+" = readObject<"+type+">(stream)";
+		//if(model==MODEL_READ_SEQ)
+		//	result = "stream.readLongSeq("+name+")";		// TODO
+		if(model==MODEL_RES_READ)
+		{
+			result = indent + type+"* returnCode "
+									"= readObject<"+type+">(*result);\n";
+			result += indent + "delete result;\n";
+			result += indent + "return returnCode;\n";
+		}
+		if(model==MODEL_REQ_READ)
+			result = indent +
+				type+"_var "+name+" = readObject<"+type+">(request);\n";
+		if(model==MODEL_WRITE)
+			result = "writeObject<"+type+">(stream,"+name+")";
+		if(model==MODEL_REQ_WRITE)
+			result = "writeObject<"+type+">(*request,"+name+")";
+		if(model==MODEL_INVOKE)
+		{
+			result = indent + type+" *returnCode = "+name+";\n"
+			       + indent + "writeObject<"+type+">(*result,returnCode);\n"
+			       + indent + "if(returnCode) returnCode->_release();\n";
+		}
 	}
 
 	if((model & ~MODEL_SEQ) == MODEL_MEMBER
@@ -658,8 +699,11 @@ void doInterfacesHeader(FILE *header)
 
 		fprintf(header,"class %s : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
-		fprintf(header,"\tstatic %s *_fromString(string objectref);\n\n",
+		fprintf(header,"\tstatic %s *_fromString(string objectref);\n",
 														d->name.c_str());
+		fprintf(header,"\tstatic %s *_fromReference(ObjectReference ref,"
+		                                " bool needcopy);\n\n",d->name.c_str());
+
 			/* reference counting: _copy */
 		fprintf(header,"\tinline %s *_copy() {\n"
 					   "\t\tassert(_refCnt > 0);\n"
@@ -826,25 +870,35 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"%s *%s::_fromString(string objectref)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\t%s *result = 0;\n",d->name.c_str());
 		fprintf(source,"\tObjectReference r;\n\n");
 		fprintf(source,"\tif(Dispatcher::the()->stringToObjectReference(r,objectref))\n");
-		fprintf(source,"\t{\n");
+		fprintf(source,"\t\treturn %s::_fromReference(r,true);\n",
+															d->name.c_str());
+		fprintf(source,"\treturn 0;\n");
+		fprintf(source,"}\n\n");
+
+		fprintf(source,"%s *%s::_fromReference(ObjectReference r,"
+		               " bool needcopy)\n",d->name.c_str(),d->name.c_str());
+		fprintf(source,"{\n");
+		fprintf(source,"\t%s *result;\n",d->name.c_str());
 		fprintf(source,
-		"\t\tresult = (%s *)Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
+		"\tresult = (%s *)Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
 										d->name.c_str(),d->name.c_str());
-		fprintf(source,"\t\tif(!result)\n");
-		fprintf(source,"\t\t{\n");
-		fprintf(source,"\t\t\tConnection *conn = "
+		fprintf(source,"\tif(!result)\n");
+		fprintf(source,"\t{\n");
+		fprintf(source,"\t\tConnection *conn = "
 							"Dispatcher::the()->connectObjectRemote(r);\n");
-		fprintf(source,"\t\t\tif(conn)\n");
-		fprintf(source,"\t\t\t\tresult = new %s_stub(conn,r.objectID);\n",
+		fprintf(source,"\t\tif(conn)\n");
+		fprintf(source,"\t\t{\n");
+		fprintf(source,"\t\t\tresult = new %s_stub(conn,r.objectID);\n",
 										d->name.c_str());
+		fprintf(source,"\t\t\tif(needcopy) result->_copyRemote();\n");
+		fprintf(source,"\t\t\tresult->_useRemote();\n");
 		fprintf(source,"\t\t}\n");
 		fprintf(source,"\t}\n");
 		fprintf(source,"\treturn result;\n");
 		fprintf(source,"}\n\n");
-
+	
 		// create stub
 
 		fprintf(source,"%s_stub::%s_stub()\n" ,d->name.c_str(),d->name.c_str());

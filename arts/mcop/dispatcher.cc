@@ -29,12 +29,14 @@
 #include "unixconnection.h"
 #include "tcpconnection.h"
 #include "ifacerepo_impl.h"
+#include "referenceclean.h"
 #include "core.h"
 #include "md5auth.h"
 #include "mcoputils.h"
 #include <sys/time.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 Dispatcher *Dispatcher::_instance = 0;
 
@@ -87,6 +89,17 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 
 	_interfaceRepo = new InterfaceRepo_impl();
 	_flowSystem = 0;
+	referenceClean = new ReferenceClean(objectPool);
+
+	/*
+	 * setup signal handler for SIGPIPE
+	 */
+	orig_sigpipe = signal(SIGPIPE,SIG_IGN);
+	if(orig_sigpipe != SIG_DFL)
+	{
+		cerr << "mcop warning: user defined signal handler found for"
+		        " SIG_PIPE, overriding" << endl;
+	}
 	
 	StartupManager::startup();
 }
@@ -94,6 +107,13 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 Dispatcher::~Dispatcher()
 {
 	StartupManager::shutdown();
+
+	/*
+	 * remove signal handler for SIGPIPE
+	 */
+	signal(SIGPIPE,orig_sigpipe);
+
+	delete referenceClean;
 
 	if(_interfaceRepo)
 	{
@@ -191,6 +211,8 @@ Buffer *Dispatcher::createRequest(long& requestID, long objectID, long methodID)
 
 void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 {
+	_activeConnection = conn;
+
 #ifdef DEBUG_IO
 	printf("got a message %ld, %ld bytes in body\n",
 			messageType,buffer->remaining());
@@ -455,6 +477,9 @@ void *Dispatcher::connectObjectLocal(ObjectReference& reference,
 
 Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 {
+	if(reference.serverID == "null")		// null reference?
+		return 0;
+
 	list<Connection *>::iterator i;
 
 	for(i=connections.begin(); i != connections.end();i++)
@@ -563,6 +588,12 @@ void Dispatcher::handleCorrupt(Connection *connection)
 
 void Dispatcher::handleConnectionClose(Connection *connection)
 {
+	list<Object_skel *> objects = objectPool.enumerate();
+	list<Object_skel *>::iterator o;
+
+	for(o=objects.begin(); o != objects.end();o++)
+		(*o)->_disconnectRemote(connection);
+
 	/*
 	 * FIXME:
 	 *
@@ -580,4 +611,9 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 			return;
 		}
 	}
+}
+
+Connection *Dispatcher::activeConnection()
+{
+	return _activeConnection;
 }

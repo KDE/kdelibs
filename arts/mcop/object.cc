@@ -112,7 +112,7 @@ string Object::_interfaceName()
  * Stuff for object skeletons
  */
 
-Object_skel::Object_skel()
+Object_skel::Object_skel() :_remoteSendCount(0), _remoteSendUpdated(false)
 {
 	_objectID = Dispatcher::the()->addObject(this);
 	_methodTableInit = false;
@@ -129,7 +129,7 @@ void Object_skel::_release()
 {
 	assert(_refCnt > 0);
 	_refCnt--;
-	if(_refCnt == 0)
+	if((_refCnt+_remoteSendCount) == 0)
 	{
 		_deleteOk = true;
 		delete this;
@@ -138,17 +138,94 @@ void Object_skel::_release()
 
 void Object_skel::_copyRemote()
 {
-	assert(false);
+	// cout << "_copyRemote();" << endl;
+
+	_remoteSendCount++;
+	_remoteSendUpdated = true;
 }
 
 void Object_skel::_releaseRemote()
 {
-	assert(false);
+	//cout << "_releaseRemote();" << endl;
+
+	Connection *conn = Dispatcher::the()->activeConnection();
+	list<Connection *>::iterator i;
+	bool found = false;
+
+	for(i=_remoteUsers.begin(); !found && i != _remoteUsers.end(); i++)
+	{
+		found = (*i) == conn;
+		if(found) _remoteUsers.erase(i);
+	}
+	assert(found);
+	_release();
 }
 
 void Object_skel::_useRemote()
 {
-	assert(false);
+	//cout << "_useRemote();" << endl;
+
+	Connection *conn = Dispatcher::the()->activeConnection();
+	if(_remoteSendCount == 0)
+	{
+		cerr << "warning: _useRemote without prior _copyRemote() -"
+					" this might fail sometimes" << endl;
+	}
+	else
+	{
+		_remoteSendCount--;
+	}
+	_refCnt++;
+	_remoteUsers.push_back(conn);
+}
+
+void Object_skel::_disconnectRemote(Connection *conn)
+{
+	//cout << "_disconnectRemote();" << endl;
+
+	int rcount = 0;
+	list<Connection *>::iterator i;
+
+	i=_remoteUsers.begin();
+	while(i != _remoteUsers.end())
+	{
+		if((*i) == conn)
+		{
+			_remoteUsers.erase(i);
+			i = _remoteUsers.begin();
+			rcount++;
+		}
+		else i++;
+	}
+
+	while(rcount) {
+		cerr << "client disconnected: dropped one object reference" << endl;
+		rcount--;
+		_release();
+	}
+	/* warning: object may not exist any longer here */
+}
+
+void Object_skel::_referenceClean()
+{
+	if(_remoteSendCount > 0)
+	{
+		if(_remoteSendUpdated)
+		{
+			// this ensures that every client gets at least five
+			// seconds to connect
+			_remoteSendUpdated = false;
+		}
+		else
+		{
+			cerr << "_referenceClean: found unused object"
+			        " marked by _copyRemote => releasing" << endl;
+			_remoteSendCount = 0;
+			_refCnt++;
+			_release();
+		}
+		/* warning: object may be gone here */
+	}
 }
 
 string Object_skel::_toString()
@@ -390,6 +467,7 @@ void Object_stub::_release()
 	if(_refCnt == 0)
 	{
 		_deleteOk = true;
+		_releaseRemote();
 		delete this;
 	}
 }
@@ -406,7 +484,10 @@ Object *Object::_fromString(string objectref)
 		{
 			Connection *conn = Dispatcher::the()->connectObjectRemote(r);
 			if(conn)
+			{
 				result = new Object_stub(conn,r.objectID);
+				result->_useRemote();
+			}
 		}
 	}
 	return result;

@@ -31,6 +31,7 @@
 #include "flowsystem.h"
 
 #include <map>
+#include <list>
 
 class ScheduleNode;
 class Object_skel;
@@ -48,8 +49,8 @@ protected:
 
 	virtual Object_skel *_skel();
 
-	long _refCnt;		// reference count
-	bool _deleteOk;		// ensure that "delete" is not called manually
+	long _refCnt;				// reference count
+	bool _deleteOk;				// ensure that "delete" is not called manually
 	static long _staticObjectCount;
 
 public:
@@ -111,6 +112,12 @@ private:
 	bool _methodTableInit;
 	vector<struct MethodTableEntry> _methodTable;
 
+	// reference counting - remote object watching
+	
+	long _remoteSendCount;		// don't kill objects just sent to other server
+	bool _remoteSendUpdated;	// timeout if they don't want the object
+	list<class Connection *> _remoteUsers;	// who is using it?
+
 protected:
 	void _addMethod(DispatchFunction disp, void *object, const MethodDef& md);
 	void _initStream(string name, void *ptr, long flags);
@@ -120,6 +127,10 @@ protected:
 public:
 	Object_skel();
 	virtual ~Object_skel();
+
+	// reference counting connection drop
+	void _disconnectRemote(class Connection *connection);
+	void _referenceClean();
 
 	void _dispatch(Buffer *request, Buffer *result,long methodID);
 	long _lookupMethod(const MethodDef &);

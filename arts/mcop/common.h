@@ -44,28 +44,7 @@
 /* define this to see what mcop messages are processed */
 #undef DEBUG_MESSAGES
 
-template<class T>
-void freeTypeSeq(vector<T *>& sequence) {
-	for(unsigned long l=0;l<sequence.size();l++)
-		delete sequence[l];
-
-	sequence.clear();
-};
-
-template<class T>
-void readTypeSeq(Buffer& stream, vector<T *>& sequence) {
-	freeTypeSeq(sequence);
-
-	unsigned long l = stream.readLong();
-	while(l--) sequence.push_back(new T(stream));
-};
-
-template<class T>
-void writeTypeSeq(Buffer& stream, const vector<T *>& sequence) {
-	stream.writeLong(sequence.size());
-	for(unsigned long l=0;l<sequence.size();l++)
-		sequence[l]->writeType(stream);
-};
+/* reference counting helper */
 
 template<class T>
 class ReferenceHelper
@@ -107,5 +86,66 @@ public:
 };
 
 #include "core.h"
+
+/* some marshalling helpers */
+
+template<class T>
+void freeTypeSeq(vector<T *>& sequence) {
+	for(unsigned long l=0;l<sequence.size();l++)
+		delete sequence[l];
+
+	sequence.clear();
+};
+
+template<class T>
+void readTypeSeq(Buffer& stream, vector<T *>& sequence) {
+	freeTypeSeq(sequence);
+
+	unsigned long l = stream.readLong();
+	while(l--) sequence.push_back(new T(stream));
+};
+
+template<class T>
+void writeTypeSeq(Buffer& stream, const vector<T *>& sequence) {
+	stream.writeLong(sequence.size());
+	for(unsigned long l=0;l<sequence.size();l++)
+		sequence[l]->writeType(stream);
+};
+
+template<class T>
+void writeObject(Buffer& stream, T* object) {
+	if(object)
+	{
+		/*
+	 	 * perhaps reimplement directly (without conversion to/from string)
+	 	 * for more speed
+	 	 */
+
+		string s = object->_toString();
+
+		Buffer buffer;
+		buffer.fromString(s,"MCOP-Object");
+		ObjectReference reference(buffer);
+
+		object->_copyRemote();	// prevents that the object is freed for a while
+		reference.writeType(stream);
+	}
+	else
+	{
+		ObjectReference null_reference;
+
+		null_reference.serverID = "null";
+		null_reference.objectID = 0;
+		null_reference.writeType(stream);
+	}
+};
+
+template<class T>
+T *readObject(Buffer& stream) {
+	ObjectReference reference(stream);
+
+	if(reference.serverID == "null") return 0;		// null reference?
+	return T::_fromReference(reference,false);
+};
 
 #endif

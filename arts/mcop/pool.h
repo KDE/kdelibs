@@ -34,6 +34,7 @@
  */
 #include <stack>
 #include <vector>
+#include <list>
 
 template <class T>
 class Pool {
@@ -58,5 +59,15 @@ public:
 		slot = freeIDs.top();
 		freeIDs.pop();
 		return slot;
+	}
+	list<T *> enumerate() {
+		list<T *> items;
+		//vector<T *>::iterator i;
+		int n,max = storage.size();
+
+		for(n=0; n < max; n++)
+			if(storage[n]) items.push_back(storage[n]);
+
+		return items;
 	}
 };
