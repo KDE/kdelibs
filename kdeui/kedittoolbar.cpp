@@ -208,7 +208,7 @@ void KEditToolbar::init()
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonApply(bool)));
     enableButtonApply(false);
-    incInitialSize( QSize( 200, 200 ) );
+    resize( 580, 440 );
 }
 
 KEditToolbar::~KEditToolbar()
