@@ -414,15 +414,16 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
 
 void KAboutContainerBase::show( void )
 {
-  QWidget::show();
-  // 2000-18-01 Espen Sand: The entire function will be removed
-  /*
-  if( mPageTab != 0 )
-  {
-    mPageTab->setMinimumSize( mPageTab->sizeHint() );
-  }
-  mTopLayout->activate(); // This must be done after everything else.
-  */
+    // 2000-18-01 Espen Sand: The entire function will be removed
+    // 2000 25 7 Matthias Ettrich: this may very well be, but without
+    // this hack, the initial layout is broken. Probably a bug in
+    // KDialogBase?
+    
+    if( mPageTab != 0 )  {
+	mPageTab->setMinimumWidth( mPageTab->sizeHint().width() );
+    }
+    mTopLayout->activate(); // This must be done after everything else.
+    QWidget::show();
 }
 
 
@@ -1563,7 +1564,7 @@ void KAboutDialog::adjust()
   if( about == 0 ) { return; }
   about->adjust();
   //initializeGeometry();
-  resize(minimumSize());
+  resize( sizeHint() );
 }
 
 
