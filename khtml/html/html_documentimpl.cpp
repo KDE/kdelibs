@@ -240,7 +240,11 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
     return new NameNodeListImpl( this, elementName );
 }
 
-// internal. finds the first element with tagid id
+#warning bloatware
+// ### Please remove that duplicate code.
+// this seems somewhat redundant to getElementByID().
+// however, it is not flexible enough to suit specific needs.
+// please check if this function can be removed.
 NodeImpl *HTMLDocumentImpl::findElement( int id )
 {
     QStack<NodeImpl> nodeStack;
@@ -273,6 +277,66 @@ NodeImpl *HTMLDocumentImpl::findElement( int id )
     }
 
     return 0;
+}
+
+NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
+{
+    if (!start)
+	start = forward?_first:_last;
+    if (!start)
+	return 0;
+    if (forward)
+	while(1)
+	{
+	    if (start->firstChild())
+		start = start->firstChild();
+	    else if (start->nextSibling())
+		start = start->nextSibling();
+	    else // finde den ersten nachbarn eines elternteils
+	    {
+		NodeImpl *pa = start;
+		while (pa)
+		{
+		    pa = pa->parentNode();
+		    if (!pa)
+			return 0;
+		    if (pa->nextSibling())
+		    {
+			start = pa->nextSibling();
+			pa = 0;
+		    }
+		}
+	    }
+	    if (start->id()==id)
+		return start;
+	}
+    else
+	while (1)
+	{
+	    if (start->lastChild())
+		start = start->lastChild();
+	    else if (start->previousSibling())
+		start = start->previousSibling();
+	    else // finde den ersten nachbarn eines parent
+	    {
+		NodeImpl *pa = start;
+		while (pa)
+		{
+		    pa = pa->parentNode();
+		    if (!pa)
+			return 0;
+		    if (pa->previousSibling())
+		    {
+			start = pa->previousSibling();
+			break;
+		    }
+		}
+	    }
+	    if (start->id()==id)
+		return start;
+	}
+    kdDebug(6000) << "some error in findLink\n";
+    exit(1);
 }
 
 
@@ -441,40 +505,90 @@ void HTMLDocumentImpl::clearSelection()
 
 int HTMLDocumentImpl::findHighestTabIndex()
 {
-  NodeImpl *n=body();
-  NodeImpl *next=0;
-  HTMLAreaElementImpl *a;
-  int retval=-1;
-  int tmpval;
-  while(n)
+    NodeImpl *n=body();
+    NodeImpl *next=0;
+    HTMLAreaElementImpl *a;
+    int retval=-1;
+    int tmpval;
+    while(n)
     {
-      //find out tabindex of current element, if availiable
-      if (n->id()==ID_A)
+	//find out tabindex of current element, if availiable
+	if (n->id()==ID_A)
         {
-          a=static_cast<HTMLAreaElementImpl *>(n);
-          tmpval=a->tabIndex();
-          if (tmpval>retval)
-            retval=tmpval;
+	    a=static_cast<HTMLAreaElementImpl *>(n);
+	    tmpval=a->tabIndex();
+	    if (tmpval>retval)
+		retval=tmpval;
         }
-      //iterate to next element.
-      if (n->firstChild())
-        n=n->firstChild();
-      else if (n->nextSibling())
-        n=n->nextSibling();
-      else
+	//iterate to next element.
+	if (n->firstChild())
+	    n=n->firstChild();
+	else if (n->nextSibling())
+	    n=n->nextSibling();
+	else
         {
-          next=0;
-          while(!next)
+	    next=0;
+	    while(!next)
             {
-              n=n->parentNode();
-              if (!n)
-                return retval;
-              next=n->nextSibling();
+		n=n->parentNode();
+		if (!n)
+		    return retval;
+		next=n->nextSibling();
             }
-          n=next;
+	    n=next;
         }
     }
-  return retval;
+    return retval;
+}
+
+NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint)
+{
+    // tabIndexHint is the tabIndex that should be found.
+    // if it is not in the document, and direction is forward,
+    // tabIndexHint is incremented until maxTabIndex is reached.
+    // if direction is backward, tabIndexHint is reduced until -1
+    // is encountered.
+    // if tabIndex is -1, items containing tabIndex should be skipped.
+
+    int maxTabIndex;
+
+    if (forward)
+	maxTabIndex = findHighestTabIndex();
+    else
+	maxTabIndex = -1;
+
+    do
+    {
+	do
+	{
+	    n = findElement(ID_A, n, forward);
+
+	    // this is alright even for non-tabindex-searches,
+	    // because DOM::NodeImpl::tabIndex() defaults to -1.
+	    if (n)
+		kdDebug(6000) << "n:" << n << "ti:" << ((HTMLAreaElementImpl *)n)->tabIndex() << "\n";
+	} while (n && (((HTMLAreaElementImpl *)n)->tabIndex()!=tabIndexHint));
+	if (n)
+	    break;
+	if (tabIndexHint!=-1)
+	{
+	    if (forward)
+	    {
+		tabIndexHint++;
+		if (tabIndexHint>maxTabIndex)
+		    n=0;
+	    }
+	    else
+		tabIndexHint--;
+	}
+	// this is not like else ... ,
+	// since tabIndexHint may be changed in the block above.
+	if (tabIndexHint==-1)
+	    n=0;
+    }
+    while(n); // or break.
+
+    return n;
 }
 
 void HTMLDocumentImpl::slotFinishedParsing()

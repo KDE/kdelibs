@@ -84,20 +84,21 @@ public:
     int frameWidth() const { return _width; }
 
     /**
-     * Implements keyboard traversal.
-     *
-     * Sets the view's position so that the actual link
-     * is visible.
+     * Move the view towards the next link and
+     * draw a cursor around it
      **/
     bool gotoNextLink();
+
     /**
-     * Implements keyboard traversal.
-     *
-     * Sets the view's position so that the actual link
-     * is visible.
+     * Move the view towards the next link and
+     * draw a cursor around it
      **/
     bool gotoPrevLink();
 
+    /**
+     * visualize that the item under the cursor
+     * has been pressed (true) or released(false)
+     */
     void toggleActLink(bool);
 
     /**
@@ -171,7 +172,22 @@ protected:
     void doAutoScroll();
 
 private:
+    /**
+     * move the view towards the currently selected node
+     */
     bool gotoLink();
+
+    /**
+     * move the view towards a given node.
+     * Note: currently this works only if the node is an anchor
+     */
+    bool gotoLink(DOM::NodeImpl *);
+
+    /**
+     * move the view towards the next node 
+     * or the last node from this one.
+     */
+    bool gotoLink(bool);
 
     void useSlowRepaints();
 

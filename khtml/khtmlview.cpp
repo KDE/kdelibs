@@ -77,7 +77,6 @@ public:
         useSlowRepaints = false;
         currentNode = 0;
         originalNode = 0;
-        tabIndex = 0;
         vmode = QScrollView::AlwaysOn;
         hmode = QScrollView::Auto;
     }
@@ -91,7 +90,6 @@ public:
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
-    short tabIndex;
     bool linkPressed;
     bool useSlowRepaints;
 
@@ -123,22 +121,22 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
 KHTMLView::~KHTMLView()
 {
-  if (m_part)
-  {
-     //WABA: Is this Ok? Do I need to deref it as well?
-     //Does this need to be done somewhere else?
-     DOM::HTMLDocumentImpl *doc = m_part->docImpl();
-     if (doc && doc->body())
-        doc->detach();
-  }
-  lstViews->removeRef( this );
-  if(lstViews->isEmpty())
-  {
-      delete lstViews;
-      lstViews = 0;
-  }
+    if (m_part)
+    {
+	//WABA: Is this Ok? Do I need to deref it as well?
+	//Does this need to be done somewhere else?
+	DOM::HTMLDocumentImpl *doc = m_part->docImpl();
+	if (doc && doc->body())
+	    doc->detach();
+    }
+    lstViews->removeRef( this );
+    if(lstViews->isEmpty())
+    {
+	delete lstViews;
+	lstViews = 0;
+    }
 
-  delete d;
+    delete d;
 }
 
 void KHTMLView::init()
@@ -149,7 +147,7 @@ void KHTMLView::init()
     lstViews->append( this );
 
     if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
-    if(!d->tp) d->tp = new QPainter(d->paintBuffer);
+   if(!d->tp) d->tp = new QPainter(d->paintBuffer);
 
     setFocusPolicy(QWidget::StrongFocus);
     viewport()->setFocusPolicy( QWidget::WheelFocus );
@@ -563,184 +561,70 @@ bool KHTMLView::gotoLink()
     return true;
 }
 
-bool KHTMLView::gotoNextLink()
+bool KHTMLView::gotoLink(DOM::NodeImpl *_n)
 {
     if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
-    if (!m_part->docImpl())
-        return false;
 
-    // find next link
-    NodeImpl *n = d->currentNode;
-    NodeImpl *begin = 0;
+    // let's ignore non anchors for the moment
+    if(!_n || _n->id() != ID_A) return false;
+    HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(_n);
+    //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
 
-    //kdDebug( 6000 ) << "gotoNextLink: old tabindex: "<< d->tabIndex << "\n";
+    if (d->linkPressed)
+        n->setKeyboardFocus(DOM::ActivationActive);
+    else
+        n->setKeyboardFocus(DOM::ActivationPassive);
 
-    if (d->tabIndex!=-1)
-    {
-        d->tabIndex++;
-        if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-        {
-            n=0;
-            d->tabIndex=-1;
-        }
-    }
+//calculate x- and ypos
+    int x = 0, y = 0;
+    n->getAnchorPosition(x,y);
 
-    //kdDebug( 6000 ) << "gotoNextLink: current tabindex: "<< d->tabIndex << "\n";
+    QSize size = n->renderer()->containingBlock()->size();
+    int xe = x + size.width();
+    int ye = y + size.height();
 
-    if(!n) n = m_part->docImpl()->body();
-    while(n) {
-        // find next Node
-        if(n->firstChild())
-            n = n->firstChild();
-        else if (n->nextSibling())
-            n = n->nextSibling();
-        else {
-            NodeImpl *next = n->parentNode();
-            bool wrap=true;
-            while(next)
-            {
-                n=next;
-                if (n->nextSibling())
-                {
-                    n=n->nextSibling();
-                    next=0;
-                    wrap=false;
-                }
-                else
-                    next=n->parentNode();
-            }
-            if (wrap)
-            {
-                //        kdDebug(6000)<<"wrapped around document border.\n";
-                if (d->tabIndex==-1)
-                    d->tabIndex++;
-                if (m_part->docImpl()->findHighestTabIndex())
-                    d->tabIndex=-1;
-            }
-        }
-        //kdDebug( 6000 ) << "gotoPrevLink: in-between tabindex: "<< d->tabIndex << "\n";
+    int deltax = (x + xe) / 2 - contentsX();
+    int deltay = (y + ye) / 2 - contentsY();
 
-        if(n->id() == ID_A && ((static_cast<HTMLElementImpl *>(n))->getAttribute(ATTR_HREF).length()))
-        {
-            //here, additional constraints for the previous link are checked.
-            HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
-            if ((a->tabIndex()==d->tabIndex))
-            {
-                d->currentNode = n;
-                //kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
+    int maxx = width();
+    int maxy = height();
 
-                return gotoLink();
-            }
-            else if (!begin)
-            {
-                begin=n;
-            }
-            else if (begin==n)
-            {
-                if (d->tabIndex<m_part->docImpl()->findHighestTabIndex())
-                    d->tabIndex++;
-                else
-                {
-                    d->tabIndex=-1;
-                    return false;
-                }
-            }
-        }
-    }
-    return false;
+    kdDebug(6000) << "x: " << x << " y: "<< y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
+
+    int scrollX=deltax>0?(deltax<maxx?0:deltax-maxx):(deltax>-maxx?deltax:-maxx);
+    int scrollY=deltay>0?(deltay<maxy?0:deltay-maxy):(deltay>-maxy?deltay:-maxy);
+
+    scrollBy(scrollX, scrollY);
+    
+    //    if ( (deltax==0) && (deltay==0) )
+	 d->currentNode = n;
+
+    return true;
 }
+
+bool KHTMLView::gotoLink(bool forward)
+{
+    if (!m_part->docImpl())
+	return false;
+    int currentTabIndex =
+	(d->currentNode?((HTMLAreaElementImpl*)d->currentNode)->tabIndex():0);
+    bool inTabIndex = (currentTabIndex!=-1);
+
+    DOM::NodeImpl *n = m_part->docImpl()->findLink(d->currentNode, forward, inTabIndex?(currentTabIndex+(forward?1:-1)):-1);
+    if (!n)
+    {
+	kdDebug(6000)<< " next Link in same scope not found.";
+	int maxTabIndex = m_part->docImpl()->findHighestTabIndex();
+	n = m_part->docImpl()->findLink(0, forward, (inTabIndex?-1:(forward?maxTabIndex:(maxTabIndex>0?0:maxTabIndex))));
+    };
+    return gotoLink(n);
+}
+
+bool KHTMLView::gotoNextLink()
+{ return gotoLink(true); }
 
 bool KHTMLView::gotoPrevLink()
-{
-    if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
-    if (!(m_part->docImpl()))
-        return false;
-
-    // find next link
-    NodeImpl *n = d->currentNode;
-    NodeImpl *begin=0;
-
-    if(d->tabIndex!=-1)
-    {
-        d->tabIndex--;
-        if (d->tabIndex==-1)
-        {
-            n=0;
-            //kdDebug(6000)<< "tabindex wrapped backwards\n";
-        }
-    }
-
-    //    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
-
-    if(!n) n = m_part->docImpl()->body();
-    while(n) {
-        // find next Node
-        if(n->lastChild())
-            n = n->lastChild();
-        else if (n->previousSibling())
-            n = n->previousSibling();
-        else {
-            NodeImpl *prev = n->parentNode();
-            bool wrap=true;
-            while(prev)
-            {
-                n=prev;
-                if (n->previousSibling())
-                {
-                    n=n->previousSibling();
-                    prev=0;
-                    wrap=false;
-                }
-                else
-                    prev=n->parentNode();
-            }
-            if (wrap)
-            {
-                //              kdDebug(6000)<<"wrapped from "<< d->tabIndex <<endl;
-                if (d->tabIndex==-1)
-                {
-                    d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-                    //              kdDebug"to "<< d->tabIndex<<endl;
-                    if (d->tabIndex!=-1)
-                        begin=0L;
-                }
-            }
-        }
-        // ### add handling of form elements here!
-        if((n->id() == ID_A)&&((static_cast<HTMLElementImpl *>(n)->getAttribute(ATTR_HREF).length())))
-        {
-            //here, additional constraints for the previous link are checked.
-            HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
-            if (a->tabIndex()==d->tabIndex)
-            {
-                d->currentNode = n;
-                //kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
-
-                return gotoLink();
-            }
-        }
-        else if (!begin)
-        {
-            begin=n;
-            //    kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
-        }
-        else if (begin==n)
-        {
-            if (d->tabIndex>=0)
-            {
-                d->tabIndex--;
-            }
-            else
-            {
-                d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-                //      kdDebug(6000)<<"end of non-tabindex-link-mode. restarting search\n";
-                if (d->tabIndex==-1)
-                    return false;
-            }
-        }
-    }
-    return false;
-}
+{ return gotoLink(false); }
 
 void KHTMLView::print()
 {
