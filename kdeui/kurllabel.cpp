@@ -652,9 +652,6 @@ QRect KURLLabel::m_textRect() const
 		}
 	}
 
-//    if (!m_underline)
-      ++y_min;
-
 	/* construct the bounding rectangle */
 	return QRect(x_min, y_min, fm.width(m_text), fm.height());
 }
