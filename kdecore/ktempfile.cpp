@@ -118,6 +118,10 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 
    // Set uid/gid (necessary for SUID programs)
    fchown(mFd, getuid(), getgid());
+
+   // Set close on exec
+   fcntl(mFd, F_SETFD, FD_CLOEXEC);
+   
    return true;
 }
 
