@@ -199,7 +199,7 @@ void HTTPProtocol::resetSessionSettings()
      m_request.referrer = metaData("referrer");
   else
      m_request.referrer = QString::null;
-     
+
   if (!m_request.referrer.startsWith("http"))
   {
      if (m_request.referrer.startsWith("webdav"))
@@ -341,6 +341,7 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
   }
 
   httpClose();
+
   // if data is required internally, don't finish,
   // it is processed before we finish()
   if ( !dataInternal )
@@ -358,6 +359,13 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
     {
       if ( m_bError )
         return false;
+
+      if (m_bIsTunneled && !isConnectionValid ())
+      {
+        kdDebug(7113) << "(" << m_pid << ") Re-establishing SSL tunnel..." << endl;
+        setEnableSSLTunnel (true);
+        m_bIsTunneled = false;
+      }
     }
     else
     {
@@ -368,10 +376,6 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       kdDebug(7113) << "(" << m_pid << ") Current Response: "
                     << m_responseCode << endl;
 
-      if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
-          m_prevResponseCode == 407))
-        saveAuthorization();
-
       if (isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized && !m_bError)
       {
         // Only disable tunneling if the error
@@ -380,6 +384,8 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           kdDebug(7113) << "(" << m_pid << ") Unset tunneling flag!" << endl;
           setEnableSSLTunnel( false );
           m_bIsTunneled = true;
+          // Reset the CONNECT response code...
+          m_responseCode = m_prevResponseCode;
           continue;
         }
         else
@@ -394,6 +400,11 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           kdDebug(7113) << "(" << m_pid << ") Sending an error page!" << endl;
         }
       }
+
+      if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
+          m_prevResponseCode == 407))
+        saveAuthorization();
+
       break;
     }
   }
@@ -928,9 +939,6 @@ void HTTPProtocol::mkdir( const KURL& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  // Never use a keep-alive connection for MKDIR
-  httpCloseConnection();
-
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -978,9 +986,6 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  // Never use a keep-alive connection for PUT
-  httpCloseConnection();
-
   retrieveHeader( true );
 }
 
@@ -1003,9 +1008,6 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
-
-  // Never use a keep-alive connection for COPY
-  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1036,9 +1038,6 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  // Never use a keep-alive connection for MOVE
-  httpCloseConnection();
-
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -1060,9 +1059,6 @@ void HTTPProtocol::del( const KURL& url, bool )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
-
-  // Never use a keep-alive connection for DELETE
-  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1087,9 +1083,6 @@ void HTTPProtocol::post( const KURL& url )
   m_request.query = url.query();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
-
-  // Never use a keep-alive connection for POST
-  httpCloseConnection();
 
   retrieveContent();
 }
@@ -1138,9 +1131,6 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   // insert the document into the POST buffer
   m_bufPOST = lockReq.toCString();
 
-  // Never use a keep-alive connection for LOCK
-  httpCloseConnection();
-
   retrieveContent( true );
 
   if ( m_responseCode == 200 ) {
@@ -1176,9 +1166,6 @@ void HTTPProtocol::davUnlock( const KURL& url )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
-
-  // Never use a keep-alive connection for UNLOCK
-  httpCloseConnection();
 
   retrieveContent( true );
 
@@ -1930,11 +1917,7 @@ bool HTTPProtocol::httpOpen()
     if (m_state.doProxy && !m_bIsTunneled)
     {
       KURL u;
-      // u.setUser( m_state.user );
-      if (m_protocol == "http")
-         u.setProtocol( "http" );
-      else if (m_protocol == "https" )
-         u.setProtocol( "https" );
+
       if (m_protocol == "webdav")
          u.setProtocol( "http" );
       else if (m_protocol == "webdavs" )
@@ -2164,10 +2147,8 @@ bool HTTPProtocol::httpOpen()
 
   bool res = true;
 
-  if ( moreData )
+  if ( moreData || davData )
     res = sendBody();
-  else if ( davData )
-    res = sendBody( true );
 
   infoMessage( i18n( "<b>%1</b> contacted. "
                      "Waiting for reply..." ).arg( m_request.hostname ) );
@@ -2225,16 +2206,21 @@ bool HTTPProtocol::readHeader()
 
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
+
   QString disposition; // Incase we get a Content-Disposition
   QString mediaValue;
   QString mediaAttribute;
-  QStringList responseHeader, upgradeOffers;
+
+  QStringList responseHeader;
+  QStringList upgradeOffers;
 
   bool upgradeRequired = false;   // Server demands that we upgrade to something
                                   // This is also true if we ask to upgrade and
                                   // the server accepts, since we are now
                                   // committed to doing so
   bool canUpgrade = false;        // The server offered an upgrade
+
+  bool propagateHeader = config()->readBoolEntry("PropagateHttpHeader", false);
 
   m_etag = QString::null;
   m_lastModified = QString::null;
@@ -2327,7 +2313,8 @@ bool HTTPProtocol::readHeader()
     {
       // Store the the headers so they can be passed to the
       // calling application later
-      responseHeader << QString::fromLatin1(buf);
+      if (propagateHeader)
+        responseHeader << QString::fromLatin1(buf);
 
       if (strncmp((buf + 5), "1.0",3) == 0)
       {
@@ -2349,7 +2336,7 @@ bool HTTPProtocol::readHeader()
           m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
       }
 
-      if ( m_responseCode )
+      if (m_responseCode)
         m_prevResponseCode = m_responseCode;
 
       m_responseCode = atoi(buf+9);
@@ -2766,9 +2753,8 @@ bool HTTPProtocol::readHeader()
 
 
   // Now process the HTTP/1.1 upgrade
-  for(QStringList::Iterator opt = upgradeOffers.begin(); 
-                             opt != upgradeOffers.end();
-                                                  ++opt) {
+  QStringList::Iterator opt = upgradeOffers.begin();
+  for( ; opt != upgradeOffers.end(); ++opt) {
      if (*opt == "TLS/1.0") {
         if(upgradeRequired) {
            if (!startTLS() && !usingTLS()) {
@@ -2786,16 +2772,8 @@ bool HTTPProtocol::readHeader()
         }
      }
   }
-
-  // Send HTTP version
-  if (m_HTTPrev == HTTP_11)
-    setMetaData("HTTP-Version", "1.1");
-  else if (m_HTTPrev == HTTP_10)
-    setMetaData("HTTP-Version", "1.0");
-  else
-    setMetaData("HTTP-Version", "Unknown");
-
-  // Send the reponse
+  
+  // Send the response header if it was requested
   if (!responseHeader.isEmpty())
     setMetaData("HTTP-Headers", responseHeader.join("\n"));
 
@@ -2852,7 +2830,7 @@ bool HTTPProtocol::readHeader()
       m_fcache = 0;
       updateExpireDate( expireDate, true );
       m_fcache = checkCacheEntry( ); // Re-read cache entry
-      
+
       if (m_fcache)
       {
           m_bCachedRead = true;
@@ -3145,24 +3123,18 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   }
 }
 
-bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
+bool HTTPProtocol::sendBody()
 {
   int result=-1;
   int length=0;
 
   infoMessage( i18n( "Requesting data to send" ) );
 
-  // Loop until we got 'dataEnd'
-  kdDebug(7113) << "(" << m_pid << ") Response code: " << m_responseCode << endl;
-  if ( m_responseCode == 401 || m_responseCode == 407 || dataInternal )
-  {
-    // For RE-POST on authentication failure the
-    // buffer should not be empty...
-    if ( m_bufPOST.isNull() )
+  // m_bufPOST will NOT be empty iff authentication was required before posting
+  // the data OR a re-connect is requested from ::readHeader because the
+  // connection was lost for some reason.
+  if ( !m_bufPOST.isNull() )
     {
-      error( ERR_ABORTED, m_request.hostname );
-      return false;
-    }
     kdDebug(7113) << "(" << m_pid << ") POST'ing saved data..." << endl;
     length = m_bufPOST.size();
     result = 0;
@@ -3188,7 +3160,7 @@ bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
     } while ( result > 0 );
   }
 
-  if ( result != 0 )
+  if ( result < 0 )
   {
     error( ERR_ABORTED, m_request.hostname );
     return false;
@@ -3220,6 +3192,7 @@ bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
+
   return true;
 }
 
@@ -3235,23 +3208,32 @@ void HTTPProtocol::httpClose()
         ::unlink( QFile::encodeName(filename) );
      }
   }
-  if (!m_bKeepAlive)
-     httpCloseConnection();
-  else
-     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
+
+  m_bIsTunneled = false;
+
+  // Only allow persistent connections for GET requests.
+  // NOTE: we might even want to narrow this down to non-form
+  // based submit requests which will require a meta-data from
+  // khtml.
+  if (m_bKeepAlive && m_request.method == HTTP_GET)
+  {
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
+    return;
+  }
+
+  closeConnection();
 }
 
 void HTTPProtocol::closeConnection()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::closeConnection" << endl;
-  httpCloseConnection();
+  httpCloseConnection ();
 }
 
-void HTTPProtocol::httpCloseConnection()
+void HTTPProtocol::httpCloseConnection ()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCloseConnection" << endl;
   m_bKeepAlive = false;
-  m_bIsTunneled = false;
   closeDescriptor();
 }
 
@@ -4507,9 +4489,14 @@ bool HTTPProtocol::getAuthorization()
 {
   AuthInfo info;
   bool result = false;
+
+  kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::getAuthorization: "
+                 << "Current Response: " << m_responseCode << ", "
+                 << "Previous Response: " << m_prevResponseCode << endl;
+
   bool repeatFailure = (m_prevResponseCode == m_responseCode);
 
-  if ( repeatFailure )
+  if (repeatFailure)
   {
     bool prompt = true;
     if ( Authentication == AUTH_Digest )
@@ -4525,7 +4512,8 @@ bool HTTPProtocol::getAuthorization()
         if ( pos < len && auth.find("true", pos, false) != -1 )
         {
           isStaleNonce = true;
-          kdDebug(7113) << "(" << m_pid << ") Stale nonce value. Will retry using same info..." << endl;
+          kdDebug(7113) << "(" << m_pid << ") Stale nonce value. "
+                        << "Will retry using same info..." << endl;
         }
       }
       if ( isStaleNonce )
@@ -4588,7 +4576,7 @@ bool HTTPProtocol::getAuthorization()
     if ( Authentication == AUTH_Digest )
     {
       QString auth;
-      
+
       if (m_responseCode == 401)
         auth = m_strAuthorization;
       else
@@ -4603,13 +4591,14 @@ bool HTTPProtocol::getAuthorization()
         if ( pos < len && auth.find("true", pos, false) != -1 )
         {
           info.digestInfo = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
-          kdDebug(7113) << "(" << m_pid << ") Just a stale nonce value! Retrying with the new nonce sent!" << endl;
+          kdDebug(7113) << "(" << m_pid << ") Just a stale nonce value! "
+                        << "Retrying using the new nonce sent..." << endl;
         }
       }
     }
   }
 
-  if ( !result  )
+  if (!result )
   {
     // Do not prompt if the username & password
     // is already supplied and the login attempt
@@ -4622,7 +4611,7 @@ bool HTTPProtocol::getAuthorization()
     {
       if ( m_request.disablePassDlg == false )
       {
-        kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
+        kdDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization..." << endl;
         promptInfo( info );
         result = openPassDlg( info );
       }
