@@ -50,7 +50,7 @@ public:
   void standby (void);
 
   virtual ~KSpellDlg()
-    {printf ("KSD killed\n");}
+    { }
 
 protected:
   void done (int i);
