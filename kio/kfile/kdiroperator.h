@@ -709,7 +709,7 @@ public slots:
      * @since 3.4
      */
 	// ### KDE4: make virtual
-    void trashSelected();
+    void trashSelected(KAction::ActivationReason, Qt::ButtonState);
 
 protected slots:
     /**

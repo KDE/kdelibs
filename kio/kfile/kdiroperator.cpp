@@ -555,10 +555,15 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
     return 0L;
 }
 
-void KDirOperator::trashSelected()
+void KDirOperator::trashSelected(KAction::ActivationReason reason, Qt::ButtonState state)
 {
     if ( !m_fileView )
         return;
+
+    if ( reason == KAction::PopupMenuActivation && ( state & Qt::ShiftButton ) ) {
+        deleteSelected();
+	return;
+    }
 
     const KFileItemList *list = m_fileView->selectedItems();
     if ( list )
@@ -1252,8 +1257,9 @@ void KDirOperator::setupActions()
                                                    "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    new KAction( i18n( "Move to Trash" ), "edittrash", Key_Delete, this,
-                  SLOT( trashSelected() ), myActionCollection, "trash" );
+    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Key_Delete, myActionCollection, "trash" );
+    connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::ButtonState ) ),
+	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::ButtonState ) ) );
     new KAction( i18n( "Delete" ), "editdelete", SHIFT+Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
@@ -1367,7 +1373,11 @@ void KDirOperator::setupMenu(int whichActions)
     {
         actionMenu->insert( mkdirAction );
         actionMenu->insert( myActionCollection->action( "trash" ) );
-        actionMenu->insert( myActionCollection->action( "delete" ) );
+	
+	KConfig globalconfig("kdeglobals", true, false);
+	globalconfig.setGroup( "KDE" );
+	if ( globalconfig.readBoolEntry("ShowDeleteCommand", false) )
+	    actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
     }
 
