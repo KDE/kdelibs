@@ -37,6 +37,9 @@
                     <property name="accel">
                         <string>Alt+R</string>
                     </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Check this option if the application you want to run is a text mode application or if you want the information that is provided by the terminal emulator window.</string>
+                    </property>
                 </widget>
                 <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
                     <property name="name">
@@ -47,6 +50,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+C</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open let's you retrieve this information.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="2" column="0">
@@ -88,6 +94,9 @@
                     <property name="accel">
                         <string>Alt+N</string>
                     </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file acess and other permissions. The password of the user is required to use this option.</string>
+                    </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
                     <property name="name">
@@ -99,10 +108,16 @@
                     <property name="buddy" stdset="0">
                         <cstring>suidEdit</cstring>
                     </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Enter the user name you want to run the application as.</string>
+                    </property>
                 </widget>
                 <widget class="KLineEdit" row="1" column="1">
                     <property name="name">
                         <cstring>suidEdit</cstring>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Enter here the user name you want to run the application as.</string>
                     </property>
                 </widget>
             </grid>
@@ -127,6 +142,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+L</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Check this option if you want to make clear that your application has started. This visual feedback may appear as a busy cursor or in the taskbar.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -235,11 +253,12 @@
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
-<layoutdefaults spacing="6" margin="11"/>
 <includes>
     <include location="global" impldecl="in implementation">klineedit.h</include>
 </includes>
+<layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>klineedit.h</includehint>
     <includehint>klineedit.h</includehint>
 </includehints>
 </UI>
