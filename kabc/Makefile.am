@@ -13,6 +13,7 @@ addressee.h addressee.cpp field.cpp: $(srcdir)/scripts/makeaddressee \
 CLEANFILES = addressee.h addressee.cpp field.cpp
 
 lib_LTLIBRARIES   = libkabc.la
+libkabc_la_COMPILE_FIRST = addressee.cpp
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
 libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la \
   ../kresources/libkderesources.la
