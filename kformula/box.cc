@@ -163,7 +163,7 @@ void box::calculate(QPainter &p, int setFontsize)
 	  rect.setX(0);
 	  rect.setWidth(1);
 	}
-	  
+	
 	break;
       }
       //if the box is not empty:
@@ -186,7 +186,7 @@ void box::calculate(QPainter &p, int setFontsize)
     case SYMBOL:
       rect = symbolRect(p, (SymbolType)(text[0].unicode()), fontsize);
       break;
-      
+
       //all the operators which just get drawn along with the text:
       //just shift the offsets
     case PLUS:
@@ -228,7 +228,7 @@ void box::calculate(QPainter &p, int setFontsize)
       b1->calculate(p, fontsize);
       b2->calculate(p, fontsize);
       rect = b1->getRect();
-      
+
       tmp1 = QRect(1, -DOTSIZE / 2, DOTSIZE + 1, DOTSIZE);
       relx += rect.right() + SPACE + 1; //where the dot will be drawn.
       tmp1.moveBy(relx, rely);
@@ -244,7 +244,7 @@ void box::calculate(QPainter &p, int setFontsize)
       b2->calculate(p, fontsize);
       tmp1 = b1->getRect();
       tmp2 = b2->getRect();
-      
+
       relx += tmp1.right() + SPACE;
       b2x += -tmp2.left() + tmp1.right() + SPACE * 3 +
 	QMAX(tmp1.height(), tmp2.height()) / 2;
@@ -349,10 +349,10 @@ void box::calculate(QPainter &p, int setFontsize)
 
       if(type == LSUP || type == LSUB)
 	rect = rect.unite(b2->getRect());
-      else 
+      else
 	rect = rect.unite(b1->getRect());
 
-      break;      
+      break;
 
     case ABOVE: // the smaller one above the normal one
       b1->calculate(p, fontsize);
@@ -396,8 +396,8 @@ void box::calculate(QPainter &p, int setFontsize)
 	tmp1.moveBy(b1x, b1y);
 	rect = rect.unite(tmp1);
       }
-      break;     
-      
+      break;
+
     case PAREN:
       b2->calculate(p, fontsize);
       rect = b2->getRect();
@@ -507,7 +507,7 @@ void box::draw(QPainter &p, int x, int y)
 	 parent->b1 == this) break;
       if(parent && (KFormula::intext() + QChar(int(CAT))).
 	 contains(QChar(parent->type))) break;
-      
+
       p.drawRect(x - SPACE, y + rect.center().y() - SPACE,
 		 SPACE * 2, SPACE * 2);
       break;
@@ -544,10 +544,10 @@ void box::draw(QPainter &p, int x, int y)
       p.setPen(QPen(Qt::black, 2));
     else
       p.setPen(QPen(Qt::black, 1));  // mainly for the printer
-    
+
     p.drawLine(x + relx, rect.bottom() + y,
 	       x + relx + rect.height() / 2, rect.top() + y);
-    
+
     p.setPen(QPen());
 
     break;
@@ -655,7 +655,7 @@ void box::draw(QPainter &p, int x, int y)
     p.setPen(QPen());
     break;
 
-  }    
+  }
 
   p.setFont(f);
 
@@ -696,14 +696,14 @@ QRect box::getCursorPos(charinfo i, int x, int y)
       tmp.setX(rect.center().x() + x - 1);
       break;
     }
-    
+
     //to make sure the spaces at the end are computed, we append a . and
     //then subtract off its width (also tweak it a few pixels since
     //there is a space between the last char and the dot).
-    QString temptext(text.ascii(), i.posinbox + 1);
+    QString temptext( text.left( i.posinbox + 1 ) );
     temptext.append(".");
 
-    if(i.posinbox == 0) tmp.setX(rect.left() + x - 1); 
+    if(i.posinbox == 0) tmp.setX(rect.left() + x - 1);
     else tmp.setX(fm.boundingRect(temptext).right() + x - 1 -
 		  fm.boundingRect(".").width());
 
@@ -729,7 +729,7 @@ QRect box::getCursorPos(charinfo i, int x, int y)
 
   default: //for everything else, the cursor is either to the left
            //of the whole box or to the right of the whole box.
-    if(i.posinbox == 0) tmp.setX(rect.x() + x - 1); 
+    if(i.posinbox == 0) tmp.setX(rect.x() + x - 1);
     else tmp.setX(x + rect.right() + 1);
     break;
   }
@@ -850,16 +850,16 @@ void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
     p.setPen(QPen());
 
     return; // don't draw a polygon
-    
+
     break;
 
   case ARROW:
     p.setPen(QPen(Qt::black, size / 8));
     p.drawLine(x, y, x + size, y);
     p.drawLine(x + size - size / 16, y,
-	       x + size - size / 16 - size / 4, y - size / 4); 
+	       x + size - size / 16 - size / 4, y - size / 4);
     p.drawLine(x + size - size / 16, y,
-	       x + size - size / 16 - size / 4, y + size / 4); 
+	       x + size - size / 16 - size / 4, y + size / 4);
     p.setPen(QPen());
 
     return; //don't draw a polygon

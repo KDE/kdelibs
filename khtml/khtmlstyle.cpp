@@ -1,9 +1,9 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1999 Waldo Bastian (bastian@kde.org)
 
-    Based on the Chimera CSS implementation of 
+    Based on the Chimera CSS implementation of
                        John Kilburg <john@cs.unlv.edu>
 
     This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>                     
+#include <stdio.h>
 
 #include "khtmltoken.h"
 #include "khtmlstyle.h"
@@ -67,7 +67,7 @@ public:
 #if 0
     enum contentEnum { contEnum, contAbsValue, contRelValue, contPercent,
     contEm, contEx, contPx };
-    int   contentId;   
+    int   contentId;
     // contentId determines how contentValue should be interpreted
     int   contentValue;
     const char *contentString;
@@ -77,7 +77,7 @@ public:
     int   weight;
 };
 
-class CSSSelector 
+class CSSSelector
 {
 public:
     CSSSelector(void);
@@ -117,12 +117,12 @@ CSSStyleSheet::CSSStyleSheet(const HTMLSettings *_settings)
 CSSStyleSheet::~CSSStyleSheet()
 {
 }
-    
+
 CSSStyle *
 CSSStyleSheet::newStyle(CSSStyle *parentStyle)
 {
     CSSStyle *newStyle = new CSSStyle();
-    
+
     if (parentStyle)
     {
         newStyle->font = parentStyle->font;
@@ -161,13 +161,13 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
     newStyle->width_percent = UNDEFINED;
     newStyle->height = UNDEFINED;
     newStyle->height_percent = UNDEFINED;
-    
+
     return newStyle;
 }
 
 void
-CSSStyleSheet::getStyle(int /*tagID*/, HTMLStackElem */*tagStack*/, 
-                        CSSStyle */*styleElem*/, 
+CSSStyleSheet::getStyle(int /*tagID*/, HTMLStackElem */*tagStack*/,
+                        CSSStyle */*styleElem*/,
                         const char */*klass*/, const char */*id*/)
 {
 }
@@ -180,34 +180,34 @@ CSSStyleSheet::addStyle(CSSStyle */*currentStyle*/, const char */*CSSString*/)
 const char *
 CSSStyleSheet::parseSpace(const char *curP, const char *endP)
 {
-  bool sc = false;     // possible start comment? 
-  bool ec = false;     // possible end comment? 
-  bool ic = false;     // in comment? 
+  bool sc = false;     // possible start comment?
+  bool ec = false;     // possible end comment?
+  bool ic = false;     // in comment?
 
   while (curP < endP)
   {
       if (ic)
       {
-          if (ec && (*curP == '/')) 
+          if (ec && (*curP == '/'))
               ic = false;
-          else if (*curP == '*') 
+          else if (*curP == '*')
               ec = true;
-          else 
+          else
               ec = false;
       }
-      else if (sc && (*curP == '*')) 
+      else if (sc && (*curP == '*'))
       {
           ic = true;
       }
-      else if (*curP == '/') 
+      else if (*curP == '/')
       {
           sc = true;
       }
-      else if (!isspace(*curP)) 
+      else if (!isspace(*curP))
       {
           return(curP);
       }
-      else 
+      else
       {
           sc = false;
       }
@@ -232,21 +232,21 @@ CSSStyleSheet::parseToChar(const char *curP, const char *endP, int c, bool chkws
 
     while (curP < endP)
     {
-        if (esc) 
+        if (esc)
             esc = false;
-        else if (*curP == '\\') 
+        else if (*curP == '\\')
             esc = true;
         else if (dq && (*curP != '"'))
             dq = false;
         else if (sq && (*curP != '\''))
             sq = false;
-        else if (*curP == '"') 
+        else if (*curP == '"')
             dq = true;
-        else if (*curP == '\'') 
+        else if (*curP == '\'')
             sq = true;
-        else if (*curP == c) 
+        else if (*curP == c)
             return(curP);
-        else if (chkws && isspace(*curP)) 
+        else if (chkws && isspace(*curP))
             return(curP);
         else if (*curP == '{')
         {
@@ -300,7 +300,7 @@ CSSSelector *
 CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
 {
     CSSSelector *cs = new CSSSelector();
-    QString selecString(curP+1, endP-curP);
+    QString selecString( QString( curP + 1 ).left( endP - curP ));
 
     if (*curP == '#') cs->id = selecString;
     else if (*curP == '.') cs->klass = selecString;
@@ -310,26 +310,26 @@ CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
         const char *startP = curP;
         while (curP < endP)
         {
-            if (*curP =='#') 
+            if (*curP =='#')
             {
-                QString tag(startP, curP-startP+1);
-                QString tmp(curP+1, endP-curP);
+                QString tag( QString( startP ).left( curP-startP + 1 ) );
+                QString tmp( QString( curP + 1 ).left( endP - curP ) );
                 cs->tag = getTagID(tag.lower().data(), tag.length());
                 cs->id = tmp;
                 break;
             }
-            else if (*curP == '.') 
+            else if (*curP == '.')
             {
-                QString tag(startP, curP-startP+1);
-                QString tmp(curP+1, endP-curP);
+                QString tag( QString( startP ).left( curP - startP + 1 ) );
+                QString tmp( QString( curP + 1 ).left( endP - curP ) );
                 cs->tag = getTagID(tag.lower().data(), tag.length());
                 cs->klass = tmp;
                 break;
             }
             else if (*curP == ':')
             {
-                QString tag(startP, curP-startP+1);
-                QString tmp(curP+1, endP-curP);
+                QString tag( QString( startP ).left( curP - startP + 1 ) );
+                QString tmp( QString( curP + 1 ).left( endP - curP ) );
                 cs->tag = getTagID(tag.lower().data(), tag.length());
                 cs->klass = ":" + tmp;
                 break;
@@ -341,7 +341,7 @@ CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
         }
         if (curP == endP)
         {
-            QString tag(startP,curP-startP+1);
+            QString tag( QString( startP ).left( curP - startP + 1 ) );
             cs->tag = getTagID(tag.lower().data(), tag.length());
         }
    }
@@ -362,7 +362,7 @@ CSSStyleSheet::parseSelector1(const char *curP, const char *endP)
     curP = parseSpace(curP, endP);
     if (!curP)
         return(0);
-    
+
     const char *startP = curP;
     while (curP <= endP)
     {
@@ -400,7 +400,7 @@ CSSStyleSheet::parseSelector(const char *curP, const char *endP)
         curP = parseToChar(curP, endP, ',', false);
         if (!curP)
             curP = endP;
-            
+
         CSSSelector *selector = parseSelector1(startP, curP);
         if (selector)
         {
@@ -413,35 +413,35 @@ CSSStyleSheet::parseSelector(const char *curP, const char *endP)
         curP++;
     }
     return(slist);
-}        
+}
 
 CSSProperty *
 CSSStyleSheet::parseProperty(const char *curP, const char *endP)
 {
     const char *colon;
     // Get rid of space in front of the declaration
-    
+
     curP = parseSpace(curP, endP);
     if (!curP)
         return(0);
-        
+
     // Search for the required colon or white space
     colon = parseToChar(curP, endP, ':', true);
     if (!colon)
         return(0);
-        
-    QString propName(curP, colon-curP+1);
-    
+
+    QString propName( QString( curP ).left( colon - curP + 1 ) );
+
 printf("Property-name = \"%s\"\n", propName.data());
-    // May have only reached white space before 
+    // May have only reached white space before
     if (*colon != ':')
     {
         // Search for the required colon
         colon = parseToChar(curP, endP, ':', false);
         if (!colon)
             return(0);
-    }     
-    // remove space in front of the value 
+    }
+    // remove space in front of the value
     curP = parseSpace(colon+1, endP);
     if (!curP)
         return(0);
@@ -449,13 +449,13 @@ printf("Property-name = \"%s\"\n", propName.data());
     // remove space after the value;
     while (endP > curP)
     {
-    
+
         if (!isspace(*(endP-1)))
             break;
         endP--;
     }
 
-    QString propVal(curP, endP-curP+1);
+    QString propVal( QString( curP ).left( endP - curP + 1 ) );
 printf("Property-value = \"%s\"\n", propVal.data());
 
     const struct props *propPtr = findProp(propName.lower().data(), propName.length());
@@ -466,7 +466,7 @@ printf("Property-value = \"%s\"\n", propVal.data());
     }
     CSSProperty *prop = new CSSProperty();
     prop->propId = propPtr->id;
-    prop->value = propVal.data();    
+    prop->value = propVal.data();
 
     return(prop);
 }
@@ -482,7 +482,7 @@ CSSStyleSheet::parseProperties(const char *curP, const char *endP)
         curP = parseToChar(curP, endP, ';', false);
         if (!curP)
             curP = endP;
-        
+
         CSSProperty *prop = parseProperty(startP, curP);
         if (prop)
         {
@@ -511,9 +511,9 @@ CSSStyleSheet::parseRule(const char *curP, const char *endP)
 
     slist = parseSelector(startP, curP );
 
-    curP++; // need to get past the '{' from above 
+    curP++; // need to get past the '{' from above
 
-    startP = curP; 
+    startP = curP;
     curP = parseToChar(startP, endP, '}', false);
     if (!curP)
     {
@@ -534,7 +534,7 @@ CSSStyleSheet::parseRule(const char *curP, const char *endP)
     }
 
     // Add rule to our data structures...
-    // WABA: To be done 
+    // WABA: To be done
     return(curP);
 }
 
@@ -543,7 +543,7 @@ CSSStyleSheet::parseSheet(const char *src, int len)
 {
     const char *curP = src;
     const char *endP = src+len;
-    
+
     curP = parseSpace(curP, endP);
     while (curP && (curP < endP))
     {
@@ -555,7 +555,7 @@ CSSStyleSheet::parseSheet(const char *src, int len)
         {
             curP = parseRule(curP, endP);
         }
-        
+
         if (curP)
             curP = parseSpace(curP, endP);
     }
@@ -565,7 +565,7 @@ void
 CSSStyleSheet::test(void)
 {
     char buf[40000];
-    
+
     int fd = open("/home/waba/test.css", O_RDONLY);
 
     if (fd < 0)
@@ -573,9 +573,9 @@ CSSStyleSheet::test(void)
         perror("Couldn't open /home/waba/test.css:");
         return;
     }
-    
+
     int len = read(fd, buf, 40000);
- 
+
     close(fd);
 
     parseSheet(buf, len);
