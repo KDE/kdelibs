@@ -1138,7 +1138,7 @@ public:
   KConfig *config() const;
 
   /**
-   * Return dict of items managed by this KConfigSkeleton object.
+   * Return list of items managed by this KConfigSkeleton object.
    */
   KConfigSkeletonItem::List items() const
   {
