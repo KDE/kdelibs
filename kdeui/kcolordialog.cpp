@@ -958,7 +958,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // add the HSV fields
   //
-  label = new QLabel( QString::fromLatin1("H:"), page );
+  label = new QLabel( i18n("H:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
   d->hedit = new KColorSpinBox( 0, 359, 1, page );
@@ -967,7 +967,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   connect( d->hedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
 
-  label = new QLabel( QString::fromLatin1("S:"), page );
+  label = new QLabel( i18n("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
   d->sedit = new KColorSpinBox( 0, 255, 1, page );
@@ -976,7 +976,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   connect( d->sedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
 
-  label = new QLabel( QString::fromLatin1("V:"), page );
+  label = new QLabel( i18n("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
   d->vedit = new KColorSpinBox( 0, 255, 1, page );
@@ -988,7 +988,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // add the RGB fields
   //
-  label = new QLabel( QString::fromLatin1("R:"), page );
+  label = new QLabel( i18n("R:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
   d->redit = new KColorSpinBox( 0, 255, 1, page );
@@ -997,7 +997,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   connect( d->redit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
 
-  label = new QLabel( QString::fromLatin1("G:"), page );
+  label = new QLabel( i18n("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
   d->gedit = new KColorSpinBox( 0, 255,1, page );
@@ -1006,7 +1006,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   connect( d->gedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
 
-  label = new QLabel( QString::fromLatin1("B:"), page );
+  label = new QLabel( i18n("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
   d->bedit = new KColorSpinBox( 0, 255, 1, page );
@@ -1018,7 +1018,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // the entry fields should be wide enough to hold 8888888
   //
-  int w = d->hedit->fontMetrics().width(QString::fromLatin1("8888888"));
+  int w = d->hedit->fontMetrics().width("8888888");
   d->hedit->setFixedWidth(w);
   d->sedit->setFixedWidth(w);
   d->vedit->setFixedWidth(w);
@@ -1061,8 +1061,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   QPushButton *button = new QPushButton( page );
   button->setText(i18n("&Add to Custom Colors"));
   l_hbox->addWidget(button, 0, AlignLeft);
-  connect( button, SIGNAL( clicked()),
-           SLOT( slotAddToCustomColors()));
+  connect( button, SIGNAL( clicked()), SLOT( slotAddToCustomColors()));
 
   //
   // The color picker button
@@ -1070,8 +1069,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   button = new QPushButton( page );
   button->setPixmap( BarIcon("colorpicker"));
   l_hbox->addWidget(button, 0, AlignHCenter );
-  connect( button, SIGNAL( clicked()),
-           SLOT( slotColorPicker()));
+  connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));
 
   //
   // a little space between
@@ -1090,8 +1088,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_grid->addWidget(label, 0, 1, AlignLeft);
 
   d->colorName = new QLabel( page );
-  w = d->colorName->fontMetrics().width(QString::fromLatin1("Very Very long name")); // 7xF!
-  d->colorName->setFixedWidth(w);
   l_grid->addWidget(d->colorName, 0, 2, AlignLeft);
 
   label = new QLabel( page );
@@ -1101,10 +1097,12 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->htmlName = new QLineEdit( page );
   d->htmlName->setMaxLength( 7 );
   d->htmlName->setText("#FFFFFF");
-  w = d->htmlName->fontMetrics().width(QString::fromLatin1("#FFFFFFFF")); // 8xF!
+  w = d->htmlName->fontMetrics().width(QString::fromLatin1("#DDDDDDD"));
   d->htmlName->setFixedWidth(w);
   l_grid->addWidget(d->htmlName, 1, 2, AlignLeft);
-  connect( d->htmlName, SIGNAL( textChanged(const QString &) ), SLOT( slotHtmlChanged() ) );
+
+  connect( d->htmlName, SIGNAL( textChanged(const QString &) ), 
+      SLOT( slotHtmlChanged() ) );
 
   d->patch = new KColorPatch( page );
   d->patch->setFixedSize(48, 48);
