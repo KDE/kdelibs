@@ -26,7 +26,6 @@
 #include <kfileview.h>
 #include <kfileviewitem.h>
 #include <kfilepreview.h>
-#include <kdirlistbox.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
 #include <config-kfile.h>
