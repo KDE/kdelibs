@@ -33,6 +33,7 @@ class QLineEdit;
 class QTextStream;
 class KHistoryCombo;
 class KIntNumInput;
+class KRegExpDialog;
 
 class KEdGotoLine : public KDialogBase
 {
@@ -61,7 +62,7 @@ class KEdFind : public KDialogBase
     Q_PROPERTY( bool direction READ get_direction WRITE setDirection )
 public:
 
-    KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);
+    KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true, bool offerRegExpSearch = false);
     ~KEdFind();
 
     QString getText() const;
@@ -70,6 +71,8 @@ public:
     bool case_sensitive() const;
     void setDirection( bool b );
     bool get_direction() const;
+    void setIsRegExp( bool b );
+    bool isRegExp() const;
 
     /**
      * @returns the combobox containing the history of searches. Can be used
@@ -81,11 +84,18 @@ protected slots:
     void slotCancel( void );
     void slotUser1( void );
     void textSearchChanged ( const QString & );
+    void slotEditRegExp();
+
 
 private:
     QCheckBox *sensitive;
     QCheckBox *direction;
     QLineEdit *value; // FIXME: remove, unused
+    KRegExpDialog* editorDialog;
+
+    QCheckBox *asRegExp;
+    QPushButton *editRegExp;
+    bool offerRegExpSearch;
 
     class KEdFindPrivate;
     KEdFindPrivate *d;
