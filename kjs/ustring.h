@@ -58,7 +58,7 @@ namespace KJS {
      * Construct a character with the given value.
      * @param u 16 bit Unicode value
      */ 
-    UChar(unsigned short u) : hi(u & 0xff00), lo(u & 0x00ff) { }
+    UChar(unsigned short u) : hi(u >> 8), lo(u & 0x00ff) { }
     UChar(const UCharReference &c);
     /**
      * @return The higher byte of the character.

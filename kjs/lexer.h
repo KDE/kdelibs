@@ -106,7 +106,6 @@ namespace KJS {
   private:
 
     void record8(unsigned short c);
-    void record16(unsigned char c);
     void record16(UChar c);
 
     const UChar *code;

@@ -651,11 +651,6 @@ void Lexer::record8(unsigned short c)
   buffer8[pos8++] = (char) c;
 }
 
-void Lexer::record16(unsigned char c)
-{
-  record16(UChar(0, c));
-}
-
 void Lexer::record16(UChar c)
 {
   // enlarge buffer if full
