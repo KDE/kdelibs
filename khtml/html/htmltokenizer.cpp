@@ -871,7 +871,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    }
 	    case SearchEnd:
 	    {
-		if ( tquote || curChar != '>')
+		if ( curChar != '>')
 		{
 		    ++src; // discard everything, until we found the end
 		    break;
@@ -879,6 +879,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		
 		searchCount = 0; // Stop looking for '<!--' sequence
 		tag = NoTag;
+		tquote = NoQuote;
 		pending = NonePending; // Ignore pending spaces
 		++src;
 
