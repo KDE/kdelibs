@@ -42,7 +42,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
-		knumvalidator.h kdialog.h dialogbase.h kdialogbase.h \
+		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h \
 		kdualcolorbtn.h kpalette.h ktoolbarbutton.h \
