@@ -1019,6 +1019,10 @@ void Loader::servePendingRequests()
          domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
       if (crossDomain(u.host(), domain))
          job->addMetaData("cross-domain", "true");
+         
+      KHTMLPart *part = req->m_docLoader->part();
+      if (part && part->widget())
+        job->setWindow (part->widget());
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
