@@ -56,7 +56,7 @@ namespace KIO
    * @param size the sum of the size of the _files_
    * @param showSize whether to show the size in the result
    */
-  static QString itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize);
+  QString itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize);
 
   /**
    * Encode (from the text displayed to the real filename)
