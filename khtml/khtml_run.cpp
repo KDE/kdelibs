@@ -24,7 +24,7 @@
 #include <kio/job.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <khtml_ext.h>
+#include "khtml_ext.h"
 #include <qwidget.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
