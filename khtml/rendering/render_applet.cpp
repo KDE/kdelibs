@@ -97,7 +97,7 @@ void RenderApplet::layout()
         child = child->nextSibling();
     }
 
-    tmp->show();
+    tmp->showApplet();
 
     m_layoutPerformed = TRUE;
 }

@@ -133,9 +133,9 @@ public:
    void create();
 
    /**
-    * Overridden to make sure the applet is created.
+    * Shows applet on the screen
     */
-   virtual void show();
+   void showApplet();
 
    /**
     * Run the applet.
@@ -155,7 +155,6 @@ protected slots:
     //
 
     void setWindow( WId w );
-    void showApplet();
 
 protected:
    void swallowWindow( WId w );
@@ -170,8 +169,6 @@ private:
     KWinModule *kwm;
 
     // Swallowing info
-    // Window is obsolete. Remove when binary changes are allowed 
-    WId window;
     QString swallowTitle;
 
   struct KJavaAppletWidgetPrivate *d;
@@ -181,6 +178,10 @@ private:
 
 /*
  * $Log$
+ * Revision 1.12  2000/08/19 01:41:59  rogozin
+ * - fix problem when Java 1.1 displays cliped applet
+ * - withdrow code is removed since it exists in the QXEmbed
+ *
  * Revision 1.11  2000/07/23 03:06:18  rogozin
  * 1. Clean up old stuff accumulated in applet widget. Since we use embed now a lot of thing can be removed.
  *

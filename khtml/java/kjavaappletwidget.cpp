@@ -70,19 +70,6 @@ void KJavaAppletWidget::create()
     applet->create();
 }
 
-void KJavaAppletWidget::show()
-{
-    if (!shown) {
-	if ( !applet->isCreated() )
-	    applet->create();
-
-	showApplet();
-	shown = true;
-    }
-
-    QXEmbed::show();
-}
-
 void KJavaAppletWidget::setAppletClass( const QString &clazzName )
 {
    applet->setAppletClass( clazzName );
@@ -151,12 +138,17 @@ void KJavaAppletWidget::uniqueTitle()
 
 void KJavaAppletWidget::showApplet()
 {
+  if ( !applet->isCreated() )
+    applet->create();
+
    connect( kwm, SIGNAL( windowAdded( WId ) ),
 	    this, SLOT( setWindow( WId ) ) );
-
+   
    kwm->doNotManage(swallowTitle);
-
+   
    applet->show( swallowTitle );
+   
+   shown = true;
 }
 
 void KJavaAppletWidget::start()
@@ -187,7 +179,7 @@ void KJavaAppletWidget::setWindow( WId w )
 
 void KJavaAppletWidget::swallowWindow( WId w )
 {
-  // This os required for Java window to resize properly
+  // This is required for Java window to resize properly
   XResizeWindow( qt_xdisplay(), w, width(), height() );
 
   embed( w );

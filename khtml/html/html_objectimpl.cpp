@@ -153,8 +153,12 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
 
       args.insert( "width", QString::number(width) );
       args.insert( "height", QString::number(height) );
-      args.insert( "baseURL", view->part()->url().url() );
-
+      
+      if(!view->part()->baseURL().isEmpty())
+	args.insert( "baseURL", view->part()->baseURL().url() );
+      else
+	args.insert( "baseURL", view->part()->url().url() );
+      
       f = new RenderApplet(view, args, this);
   }
   else
