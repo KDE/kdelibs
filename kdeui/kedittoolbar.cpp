@@ -291,7 +291,10 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
 
     XmlData data;
     data.m_xmlFile = client->xmlFile();
-    data.m_type    = XmlData::Shell;
+    if ( it == clients.begin() )
+      data.m_type = XmlData::Shell;
+    else
+      data.m_type = XmlData::Part;
     data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
     elem = data.m_document.documentElement().toElement();
     data.m_barList = d->findToolbars(elem);
@@ -331,16 +334,20 @@ bool KEditToolbarWidget::save()
   }
 
   QValueList<KXMLGUIClient*> clients(factory()->clients());
-  QValueList<KXMLGUIClient*>::Iterator client(clients.begin());
-  for( ; client != clients.end(); ++client)
-  {
-  #if 0
-    // this code doesn't work.  it correctly recreates the toolbars,
-    // but the menus just show up empty!
+
+  // remove the elements starting from the last going to the first
+  QValueList<KXMLGUIClient*>::Iterator client(clients.fromLast());
+  for( ; client != clients.begin(); --client)
     factory()->removeClient( *client );
+
+  // also remove the first element (can't do it in the loop)
+  factory()->removeClient( *clients.begin() );
+
+  // now, rebuild the gui from the first to the last
+  for ( client = clients.begin(); client != clients.end(); ++client )
+  {
     (*client)->reloadXML();
     factory()->addClient( *client );
-  #endif
   }
 
   return true;
@@ -715,7 +722,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // insert this into the inactive list
     // for now, only deal with buttons with icons.. later, we'll need
     // to look into actions a LOT more carefully
-    if (action->iconName().isNull() == false)
+    if ( action->iconName().isNull() )
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
