@@ -73,6 +73,13 @@ void InlineBox::operator delete(void* ptr, size_t sz)
     *(size_t *)ptr = sz;
 }
 
+RootInlineBox* InlineBox::root()
+{
+    if (m_parent)
+        return m_parent->root();
+    return static_cast<RootInlineBox*>(this);
+}
+
 int InlineFlowBox::marginLeft() const
 {
     if (!includeLeftEdge())

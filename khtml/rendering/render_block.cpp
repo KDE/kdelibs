@@ -1263,7 +1263,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
     paintObject(pI, _tx, _ty);
 }
 
-void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty)
+void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintOutline)
 {
 
 #ifdef DEBUG_LAYOUT
@@ -1321,7 +1321,7 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty)
         paintFloats(pI, scrolledX, scrolledY, pI.phase == PaintActionSelection);
 
     // 4. paint outline.
-    if (!inlineFlow && pI.phase == PaintActionOutline &&
+    if (shouldPaintOutline && !inlineFlow && pI.phase == PaintActionOutline &&
         style()->outlineWidth() && style()->visibility() == VISIBLE)
         paintOutline(pI.p, _tx, _ty, width(), height(), style());
 
@@ -2493,7 +2493,7 @@ void RenderBlock::calcBlockMinMaxWidth()
             continue;
         }
 
-        if (prevFloat && (!child->isFloating() || 
+        if (prevFloat && (!child->isFloating() ||
                           (prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
                           (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
             m_maxWidth = kMax(floatWidths, m_maxWidth);

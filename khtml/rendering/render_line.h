@@ -25,6 +25,7 @@
 namespace khtml {
 
 class InlineFlowBox;
+class RootInlineBox;
 
 // InlineBox represents a rectangle that occurs on a line.  It corresponds to
 // some RenderObject (i.e., it represents a portion of that RenderObject).
@@ -76,6 +77,8 @@ public:
 
     InlineFlowBox* parent() { return m_parent; }
     void setParent(InlineFlowBox* par) { m_parent = par; }
+
+    RootInlineBox* root();
 
     void setWidth(short w) { m_width = w; }
     short width() const { return m_width; }

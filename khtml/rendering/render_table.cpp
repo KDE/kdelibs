@@ -1902,8 +1902,7 @@ void RenderTableCell::close()
 
 void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
-    y += _topExtra;
-    RenderBlock::repaintRectangle(x, y, w, h, immediate, f);
+    RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, immediate, f);
 }
 
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
@@ -2285,7 +2284,6 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 
     if (pI.phase == PaintActionOutline) {
         paintOutline( pI.p, _tx, _ty, width(), height() + borderTopExtra() + borderBottomExtra(), style());
-	return;
     }
     
     if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
@@ -2294,7 +2292,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
         paintCollapsedBorder(pI.p, _tx, _ty, w, h);
     }
     else
-        RenderBlock::paintObject(pI, _tx, _ty + _topExtra);
+        RenderBlock::paintObject(pI, _tx, _ty + _topExtra, false);
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
@@ -2435,18 +2433,6 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
             drawBorder(p, border->x1, border->y1, border->x2, border->y2, border->side,
                        border->border.color(), style()->color(), border->style, 0, 0);
     }
-}
-
-void RenderTableCell::paintObject(PaintInfo& pI, int _tx, int _ty)
-{
-    if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
-        int w = width();
-        int h = height() + borderTopExtra() + borderBottomExtra();
-        _ty -= borderTopExtra();
-        paintCollapsedBorder(pI.p, _tx, _ty, w, h);
-    }
-    else
-        RenderBlock::paintObject(pI, _tx, _ty);
 }
 
 void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)

@@ -228,7 +228,7 @@ void RenderFlow::repaint(bool immediate)
     if (isInlineFlow()) {
         // Find our leftmost position.
         int left = 0;
-        int top = firstLineBox() ? firstLineBox()->yPos() : 0;
+        int top = firstLineBox() ? firstLineBox()->root()->topOverflow() : 0;
         for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox())
             if (curr == firstLineBox() || curr->xPos() < left)
                 left = curr->xPos();
@@ -236,7 +236,9 @@ void RenderFlow::repaint(bool immediate)
         // Now invalidate a rectangle.
         int ow = style() ? style()->outlineWidth() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
-                                            width()+ow*2, height()+ow*2, immediate);
+                                            width()+ow*2,
+					    (lastLineBox() ? lastLineBox()->root()->bottomOverflow() : height())+ow*2,
+					    immediate);
     }
     else {
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {

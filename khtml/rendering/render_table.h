@@ -394,8 +394,6 @@ public:
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
-    virtual void paintObject(PaintInfo &pI, int tx, int ty);
-
     bool widthChanged() {
 	bool retval = m_widthChanged;
 	m_widthChanged = false;

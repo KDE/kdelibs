@@ -113,7 +113,7 @@ public:
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
-    void paintObject(PaintInfo& i, int tx, int ty);
+    void paintObject(PaintInfo& i, int tx, int ty, bool paintOutline = true);
     void paintFloats(PaintInfo& i, int _tx, int _ty, bool paintSelection = false);
 
     void insertFloatingObject(RenderObject *o);
