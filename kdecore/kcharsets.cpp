@@ -29,6 +29,8 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
+template QList<KFontStruct>;
+
 #define CHARSETS_COUNT 23
 static const char *charsetsStr[CHARSETS_COUNT]={
     "unicode",

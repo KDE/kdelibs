@@ -6,9 +6,7 @@
 #include "qpixmap.h"
 #include "config.h"
 
-#ifdef HAVE_TEMPLATE_REPOSITORY
-template class QDict <QDOM_NodePrivate>;
-#endif
+template QDict<QDOM_NodePrivate>;
 
 #include <string.h>
 #include <stdlib.h>

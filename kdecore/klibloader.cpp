@@ -2,6 +2,8 @@
 #include "kglobal.h"
 #include "kstddirs.h"
 
+template QAsciiDict<KLibrary>;
+
 #include <qtimer.h>
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )

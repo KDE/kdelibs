@@ -25,6 +25,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopclient.h>
 
+template QList<DCOPObjectProxy>;
+
 static QMap<QCString, DCOPObject *> *objMap_ = 0;
 
 inline QMap<QCString, DCOPObject *> *objMap()
