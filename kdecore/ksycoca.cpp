@@ -88,6 +88,8 @@ KSycoca::KSycoca()
 
 bool KSycoca::openDatabase( bool openDummyIfNotFound )
 {
+   bool result = true;
+  
    m_sycoca_mmap = 0;
    m_str = 0;
    QString path;
@@ -132,21 +134,25 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      database = 0;
 
      bNoDatabase = true;
-     if (!openDummyIfNotFound)
-       return false;
-
-     // We open a dummy database instead.
-     //kdDebug(7011) << "No database, opening a dummy one." << endl;
-     QBuffer *buffer = new QBuffer( QByteArray() );
-     buffer->open(IO_ReadWrite);
-     m_str = new QDataStream( buffer);
-     (*m_str) << (Q_INT32) KSYCOCA_VERSION;
-     (*m_str) << (Q_INT32) 0;
+     if (openDummyIfNotFound)
+     {
+        // We open a dummy database instead.
+        //kdDebug(7011) << "No database, opening a dummy one." << endl;
+        QBuffer *buffer = new QBuffer( QByteArray() );
+        buffer->open(IO_ReadWrite);
+        m_str = new QDataStream( buffer);
+        (*m_str) << (Q_INT32) KSYCOCA_VERSION;
+        (*m_str) << (Q_INT32) 0;
+     }
+     else
+     {
+        result = false;
+     }
    }
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
    d->database = database;
-   return true;
+   return result;
 }
 
 // Read-write constructor - only for KBuildSycoca
