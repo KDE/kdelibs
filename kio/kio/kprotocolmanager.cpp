@@ -412,7 +412,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
-  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname, "UserAgent");
+  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname.lower(), "UserAgent");
 
   // Return the default user-agent if none is specified
   // for the requested host.
