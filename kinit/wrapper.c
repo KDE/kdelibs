@@ -79,7 +79,7 @@ static int write_socket(int sock, char *buffer, int len)
      }
      else if (result == 0)
         return -1;
-     else if ((result == -1) && (errno != EINTR))
+     else if ((result == -1) && (errno != EINTR) && (errno != EAGAIN))
         return -1;
   }
   return 0;
@@ -103,7 +103,7 @@ static int read_socket(int sock, char *buffer, int len)
      }
      else if (result == 0)
         return -1;
-     else if ((result == -1) && (errno != EINTR))
+     else if ((result == -1) && (errno != EINTR) && (errno != EAGAIN))
         return -1;
   }
   return 0;

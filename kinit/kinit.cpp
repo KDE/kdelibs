@@ -564,7 +564,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
           if (errno == ECHILD) {  // a child died.
              continue;
           }
-          if (errno == EINTR) { // interrupted
+          if (errno == EINTR || errno == EAGAIN) { // interrupted or more to read
              continue;
           }
        }
@@ -788,7 +788,7 @@ static int read_socket(int sock, char *buffer, int len)
      }
      else if (result == 0)
         return -1;
-     else if ((result == -1) && (errno != EINTR))
+     else if ((result == -1) && (errno != EINTR) && (errno != EAGAIN))
         return -1;
   }
   return 0;
