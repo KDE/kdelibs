@@ -27,10 +27,10 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 20
+#define WIDGETS 23
 
 /**
- * A very simple pixmap cache for theme plugins. KPixmapCache is not used
+ * A very simple pixmap cache for theme plugins. QPixmapCache is not used
  * since it uses QString keys which are not needed. All the information we
  * need can be encoded in a numeric key. Using QIntCache instead allows us to
  * skip the string operations.
@@ -180,7 +180,8 @@ public:
     enum WidgetType{HScrollGroove=0, VScrollGroove, Slider, SliderGroove,
     IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
     ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
-    ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter};
+    ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
+    MenuItemOn, MenuItemOff};
     /**
      * The scaling type specified by the KConfig file.
      *
@@ -310,6 +311,10 @@ public:
      * @param file The file to write the current configuration to.
      */
     static void writeConfigFile(const QString &file);
+    /**
+     * Removes blank theme config entries from a file.
+     */
+    static void compactConfigFile(const QString &file);
 protected:
     /**
      * Returns a QImage for the given widget if the widget is scaled, NULL
@@ -359,19 +364,11 @@ private:
     SButton sbPlacement;
     ArrowStyle arrowStyle;
     ShadeStyle shading;
-    int defaultFrame;
-    int btnXShift;
-    int btnYShift;
-    int sliderLen;
-    int splitterWidth;
-    bool smallGroove;
-    bool roundedButton;
-    bool roundedCombo;
-    bool roundedSlider;
+    int defaultFrame, btnXShift, btnYShift, sliderLen, splitterWidth;
+    bool smallGroove, roundedButton, roundedCombo, roundedSlider;
     KThemeCache *cache;
     KConfig *config;
-    QString localDir;
-    QString globalDir;
+    QString localDir, globalDir;
     int cacheSize;
 
     /**

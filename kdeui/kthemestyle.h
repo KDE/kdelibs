@@ -246,8 +246,17 @@ public:
      * Returns the width of the splitter as specified in the config file.
      */
     virtual int splitterWidth() const;
-    virtual void drawSplitter( QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, Orientation);
+    virtual void drawSplitter(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &g, Orientation);
+    virtual void drawCheckMark(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, bool act, bool dis);
+    virtual void drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw,
+                                  int tab, QMenuItem *mi, const QPalette &pal,
+                                  bool act, bool enabled, int x, int y, int w,
+                                   int h);
+    int popupMenuItemHeight(bool checkable, QMenuItem *mi,
+                            const QFontMetrics &fm);
+
 protected:
     QPalette oldPalette;
 };

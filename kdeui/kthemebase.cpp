@@ -21,12 +21,39 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
+#include <kglobal.h>
 
 static char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
 "PushButton", "ExIndicatorOn", "ExIndicatorOff", "ComboBox", "ScrollBarSlider",
 "Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
-"ScrollBarDeco", "ComboDeco", "Splitter"};
+"ScrollBarDeco", "ComboDeco", "Splitter", "CheckMark", "MenuItemOn",
+"MenuItemOff"};
+
+// Used only internally for handling non-widget option keys. These are needed
+// because they get iterated through in a couple of places and it allows the
+// use of small for loops.
+
+#define OPTIONS 16
+
+static char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
+"ShadeStyle", "RoundButton", "RoundCombo", "RoundSlider", "FrameWidth",
+"ButtonXShift", "ButtonYShift", "SliderLength", "SplitterHandle", "Name",
+"Description", "CacheSize", "SmallSliderGroove"};
+
+enum OptionLabel{OptSButtonType=0, OptArrowType, OptComboDeco, OptShadeStyle,
+OptRoundButton, OptRoundCombo, OptRoundSlider, OptFrameWidth, OptButtonXShift,
+OptButtonYShift, OptSliderLength, OptSplitterHandle, OptName, OptDescription,
+OptCacheSize, OptSmallGroove};
+
+#define WGROUPS 9
+
+static char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
+"Gradient Highcolor", "Extended Background", "Extended Foreground", "Borders",
+"Highlights", "Pixmaps"};
+
+enum WGroupLabel{WScale=0, WGradients, WGradientLow, WGradientHigh,
+WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps};
 
 void KThemeBase::readConfig(Qt::GUIStyle style)
 {
@@ -34,7 +61,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     QString tmpStr;
     warning("KThemeStyle: Reading theme settings.");
     // Read in the scale hints
-    config->setGroup("Scale");
+    config->setGroup(wGroupEntries[WScale]);
     for(i=0; i < WIDGETS; ++i){
             tmpStr = config->readEntry(widgetEntries[i]);
             if(tmpStr == "Full")
@@ -51,7 +78,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             }
     }
     // Read in gradient types
-    config->setGroup("Gradients");
+    config->setGroup(wGroupEntries[WGradients]);
     for(i=0; i < WIDGETS; ++i){
         tmpStr = config->readEntry(widgetEntries[i]);
         if(tmpStr == "Diagonal")
@@ -68,7 +95,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         }
     }
     // Read in gradient low colors
-    config->setGroup("Gradient Lowcolor");
+    config->setGroup(wGroupEntries[WGradientLow]);
     for(i=0; i < WIDGETS; ++i){
         if(gradients[i] != GrNone){
             grLowColors[i] =
@@ -80,7 +107,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             grLowColors[i] = NULL;
     }
     // Read in gradient high colors
-    config->setGroup("Gradient Highcolor");
+    config->setGroup(wGroupEntries[WGradientHigh]);
     for(i=0; i < WIDGETS; ++i){
         if(gradients[i] != GrNone){
             grHighColors[i] =
@@ -93,13 +120,13 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     }
     // Read in the extended color attributes
     QColor bg[WIDGETS]; // We need to store these for a sec
-    config->setGroup("Extended Background");
+    config->setGroup(wGroupEntries[WExtBackground]);
     for(i=0; i < WIDGETS; ++i){
         if(config->hasKey(widgetEntries[i]))
             bg[i] = config->readColorEntry(widgetEntries[i], &bg[i]);
     }
     // Combine fg and stored bg colors into a color group
-    config->setGroup("Extended Foreground");
+    config->setGroup(wGroupEntries[WExtForeground]);
     QColor fg;
     for(i=0; i < WIDGETS; ++i){
         if(config->hasKey(widgetEntries[i]) || bg[i].isValid()){
@@ -111,15 +138,15 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             colors[i] = NULL;
     }
     // Read in border widths
-    config->setGroup("Borders");
+    config->setGroup(wGroupEntries[WBorders]);
     for(i=0; i < WIDGETS; ++i)
         borders[i] = config->readNumEntry(widgetEntries[i], 1);
     // Read in highlight widths
-    config->setGroup("Highlights");
+    config->setGroup(wGroupEntries[WHighlights]);
     for(i=0; i < WIDGETS; ++i)
         highlights[i] = config->readNumEntry(widgetEntries[i], 1);
     // Read in pixmaps
-    config->setGroup("Pixmaps");
+    config->setGroup(wGroupEntries[WPixmaps]);
     int existing;
     QString pixnames[WIDGETS];
     for(i=0; i < WIDGETS; ++i){
@@ -162,7 +189,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     }
     // Read in misc settings
     config->setGroup("Misc");
-    tmpStr = config->readEntry("SButtonType");
+    tmpStr = config->readEntry(optionEntries[OptSButtonType]);
     if(tmpStr == "BottomLeft")
         sbPlacement = SBBottomLeft;
     else if(tmpStr == "BottomRight")
@@ -173,7 +200,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     tmpStr.ascii());
         sbPlacement = SBOpposite;
     }
-    tmpStr = config->readEntry("ArrowType");
+    tmpStr = config->readEntry(optionEntries[OptArrowType]);
     if(tmpStr == "Small")
         arrowStyle = SmallArrow;
     else if(tmpStr == "3D")
@@ -184,23 +211,33 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     tmpStr.ascii());
         arrowStyle = LargeArrow;
     }
-    tmpStr = config->readEntry("ShadeStyle");
+    tmpStr = config->readEntry(optionEntries[OptShadeStyle]);
     if(tmpStr == "Motif")
         shading = Motif;
     else if(tmpStr == "Next")
         shading = Next;
     else
         shading = Windows;
-    smallGroove = config->readBoolEntry("SmallSliderGroove", false);
-    roundedButton = config->readBoolEntry("RoundButton", false);
-    roundedCombo = config->readBoolEntry("RoundCombo", false);
-    roundedSlider = config->readBoolEntry("RoundSlider", false);
-    defaultFrame = config->readNumEntry("FrameWidth", 2);
-    btnXShift = config->readNumEntry("ButtonXShift", 0);
-    btnYShift = config->readNumEntry("ButtonYShift", 0);
-    sliderLen = config->readNumEntry("SliderLength", 30);
-    splitterWidth = config->readNumEntry("SplitterHandle", 10);
-    cacheSize = config->readNumEntry("CacheSize", 1024);
+    smallGroove = config->
+        readBoolEntry(optionEntries[OptSmallGroove], false);
+    roundedButton = config->
+        readBoolEntry(optionEntries[OptRoundButton], false);
+    roundedCombo = config->
+        readBoolEntry(optionEntries[OptRoundCombo], false);
+    roundedSlider = config->
+        readBoolEntry(optionEntries[OptRoundSlider], false);
+    defaultFrame = config->
+        readNumEntry(optionEntries[OptFrameWidth], 2);
+    btnXShift = config->
+        readNumEntry(optionEntries[OptButtonXShift], 0);
+    btnYShift = config->
+        readNumEntry(optionEntries[OptButtonYShift], 0);
+    sliderLen = config->
+        readNumEntry(optionEntries[OptSliderLength], 30);
+    splitterWidth = config->
+        readNumEntry(optionEntries[OptSplitterHandle], 10);
+    cacheSize = config->
+        readNumEntry(optionEntries[OptCacheSize], 1024);
     
 #ifdef KSTYLE_DEBUG
     for(existing=0, i=0; i < WIDGETS; ++i)
@@ -247,69 +284,21 @@ KThemeBase::~KThemeBase()
 
 void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
 {
-    int i;
+    int group, widget;
 
-    outConfig.setGroup("Scale");
-    inConfig.setGroup("Scale");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
+    for(group=0; group < WGROUPS; ++group){
+        outConfig.setGroup(wGroupEntries[group]);
+        inConfig.setGroup(wGroupEntries[group]);
+        for(widget=0; widget < WIDGETS; ++widget)
+            outConfig.writeEntry(widgetEntries[widget],
+                                 inConfig.readEntry(widgetEntries[widget],
+                                                    " "), true, true);
     }
-    outConfig.setGroup("Extended Background");
-    inConfig.setGroup("Extended Background");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
-    }
-    outConfig.setGroup("Extended Foreground");
-    inConfig.setGroup("Extended Foreground");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
-    }
-    outConfig.setGroup("Borders");
-    inConfig.setGroup("Borders");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readNumEntry(widgetEntries[i], 1),
-                             true, true);
-    }
-    outConfig.setGroup("Highlights");
-    inConfig.setGroup("Highlights");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readNumEntry(widgetEntries[i], 1),
-                             true, true);
-    }
-    outConfig.setGroup("Pixmaps");
-    inConfig.setGroup("Pixmaps");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
-    }
-    outConfig.setGroup("Gradient Lowcolor");
-    inConfig.setGroup("Gradient Lowcolor");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
-    }
-    outConfig.setGroup("Gradient Highcolor");
-    inConfig.setGroup("Gradient Highcolor");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
-                             true, true);
-    }
-    outConfig.setGroup("Gradients");
-    inConfig.setGroup("Gradients");
-    for(i=0; i < WIDGETS; ++i){
-        outConfig.writeEntry(widgetEntries[i],
-                             inConfig.readEntry(widgetEntries[i], " "),
+    inConfig.setGroup("Misc");
+    outConfig.setGroup("Misc");
+    for(widget=0; widget < OPTIONS; ++widget){
+        outConfig.writeEntry(optionEntries[widget],
+                             inConfig.readEntry(optionEntries[widget], " "),
                              true, true);
     }
     // Read in standard color scheme. This is kind of messed up because it
@@ -321,7 +310,6 @@ void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
         outConfig.writeEntry("foreground",
                              inConfig.readEntry("foreground", " "),
                              true, true);
-
     if(inConfig.hasKey("background"))
         outConfig.writeEntry("background",
                              inConfig.readEntry("background", " "),
@@ -351,44 +339,6 @@ void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
     outConfig.writeEntry("widgetStyle",
                          inConfig.readEntry("widgetStyle", " "), true,
                          true);
-    // Read in misc settings
-    outConfig.setGroup("Misc");
-    inConfig.setGroup("Misc");
-    outConfig.writeEntry("SButtonType",
-                         inConfig.readEntry("SButtonType", " "), true, true);
-    outConfig.writeEntry("ArrowType", inConfig.readEntry("ArrowType", " "),
-                         true,true);
-    outConfig.writeEntry("ComboDeco", inConfig.readEntry("ComboDeco", " "),
-                         true, true);
-    outConfig.writeEntry("ShadeStyle", inConfig.readEntry("ShadeStyle", " "),
-                         true, true);
-    outConfig.writeEntry("RoundButton",
-                         inConfig.readBoolEntry("RoundButton", false), true,
-                         true);
-    outConfig.writeEntry("RoundCombo",
-                         inConfig.readBoolEntry("RoundCombo", false), true,
-                         true);
-    outConfig.writeEntry("RoundSlider",
-                         inConfig.readBoolEntry("RoundSlider", false), true,
-                         true);
-    outConfig.writeEntry("FrameWidth",
-                         inConfig.readNumEntry("FrameWidth", 2), true, true);
-    outConfig.writeEntry("ButtonXShift",
-                         inConfig.readNumEntry("ButtonXShift", 0), true, true);
-    outConfig.writeEntry("ButtonYShift",
-                         inConfig.readNumEntry("ButtonYShift", 0), true, true);
-    outConfig.writeEntry("SliderLength",
-                         inConfig.readNumEntry("SliderLength", 10), true,
-                         true);
-    outConfig.writeEntry("SplitterHandle",
-                         inConfig.readNumEntry("SplitterHandle", 10), true,
-                         true);
-    outConfig.writeEntry("Name",
-                         inConfig.readEntry("Name", " "), true, true);
-    outConfig.writeEntry("Description",
-                         inConfig.readEntry("Description", " "), true,
-                         true);
-
     outConfig.sync();
 }
 
@@ -404,6 +354,30 @@ void KThemeBase::writeConfigFile(const QString &file)
     KConfig inConfig;
     KSimpleConfig outConfig(file);
     writeConfig(inConfig, outConfig);
+}
+
+// This should be merged with writeConfig if the deleteEntry stuff is moved
+// to KConfigBase
+void KThemeBase::compactConfigFile(const QString &file)
+{
+    int group, widget;
+    KSimpleConfig config(file, false);
+
+    warning("Using file %s", file.latin1());
+    for(group=0; group < WGROUPS; ++group){
+        config.setGroup(wGroupEntries[group]);
+        for(widget=0; widget < WIDGETS; ++widget)
+            if(!config.hasKey(widgetEntries[widget])){
+                warning("Deleting key [%s] %s", wGroupEntries[group],
+                        widgetEntries[widget]); 
+		// Do something here ;-)
+            }
+    }
+    config.setGroup("Misc");
+    for(widget=0; widget < OPTIONS; ++widget){
+        if(!config.hasKey(optionEntries[widget]))
+           config.deleteEntry(optionEntries[widget], false);
+    }
 }
 
 QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,

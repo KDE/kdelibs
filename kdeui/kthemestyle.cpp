@@ -21,6 +21,8 @@
 #include <kthemebase.h>
 #include <kapp.h>
 #include <qbitmap.h>
+#define INCLUDE_MENUITEM_DEF
+#include <qpopupmenu.h>
 
 void KThemeStyle::polish(QApplication *app)
 {
@@ -672,7 +674,7 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
         QBrush oldBrush = g.brush(QColorGroup::Button);
         QColorGroup tmp(g);
         tmp.setBrush(QColorGroup::Button, QBrush(NoBrush));
-        QWindowsStyle::drawArrow(p, Qt::DownArrow, false, w-15, y, 15, h,
+        QPlatinumStyle::drawArrow(p, Qt::DownArrow, false, w-15, y, 15, h,
                                   tmp, true);
     }
     else{
@@ -799,12 +801,126 @@ int KThemeStyle::splitterWidth() const
     return(splitWidth());
 }
 
-void KThemeStyle::drawSplitter( QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, Orientation)
+void KThemeStyle::drawSplitter(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, Orientation)
 {
-    warning("Splitter size: %d, %d", w, h);
     drawBaseButton(p, x, y, w, h, g, false, false, Splitter);
 }
-        
+
+void KThemeStyle::drawCheckMark(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, bool act, bool dis)
+{
+    if(isPixmap(CheckMark)){
+        if(!dis)
+            p->drawPixmap(x+(w-uncached(CheckMark)->width())/2,
+                          y+(h-uncached(CheckMark)->height())/2,
+                          *uncached(CheckMark));
+    }
+    else
+        QPlatinumStyle::drawCheckMark(p, x, y, w, h, *colorGroup(g, CheckMark),
+                                      act, dis);
+}
+
+int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
+                                     const QFontMetrics &fm)
+{
+    int h2, h = 0;
+    int offset = QMAX(decoWidth(MenuItemOn), decoWidth(MenuItemOff)) + 4;
+    
+    if(mi->isSeparator())
+        return(2);
+    if(mi->isChecked())
+        h = isPixmap(CheckMark) ? uncached(CheckMark)->height()+offset :
+            offset+12;
+    if(mi->pixmap()){
+        h2 = mi->pixmap()->height()+offset;
+        h = h2 > h ? h2 : h;
+    }
+    if(mi->iconSet()){
+        h2 = mi->iconSet()->
+            pixmap(QIconSet::Small,  QIconSet::Normal).height()+offset;
+        h = h2 > h ? h2 : h;
+    }
+    h2 = fm.height()+ offset;
+    h = h2 > h ? h2 : h;
+    return(h);
+}
+
+void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw,
+                                    int tab, QMenuItem *mi, const QPalette &pal,
+                                    bool act, bool enabled, int x, int y, int w,
+                                    int h)
+{
+    WidgetType widget = act && enabled ? MenuItemOn : MenuItemOff;
+    int offset = decoWidth(widget);
+    int pWidth = QMAX(isPixmap(CheckMark) ? uncached(CheckMark)->width()+2 : 0 ,
+                      12);
+    const QColorGroup cg = *colorGroup(!enabled ? pal.disabled() : act ?
+                                       pal.active() : pal.normal(),
+                                       widget);
+    if(mi->isSeparator()){
+        p->setPen(cg.dark());
+        p->drawLine(x, y, x+w, y);
+        p->setPen(cg.light());
+        p->drawLine(x, y+1, x+w, y+1);
+        return;
+    }
+    drawBaseButton(p, x, y, w,  h, cg, act && enabled, false, widget);
+    /*
+    if(mi->isChecked()){
+        if (act && enabled){
+            qDrawShadePanel(p, x+offset, y+offset, pWidth, h-offset*2, cg,
+                            true, 1, &cg.brush(QColorGroup::Button));
+        }
+        else{
+            qDrawShadePanel(p, x+offset, y+offset, pWidth, h-offset*2, cg,
+                            true, 1, &cg.brush(QColorGroup::Midlight));
+        }
+    } */
+    if(mi->iconSet()){
+        QIconSet::Mode mode = enabled ? QIconSet::Normal : QIconSet::Disabled;
+        if (act && enabled )
+            mode = QIconSet::Active;
+        QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+        int pixw = pixmap.width();
+        int pixh = pixmap.height();
+        QRect cr(x+offset+2, y+offset+2, pWidth, h-offset*2);
+        QRect pmr(0, 0, pixw, pixh );
+        pmr.moveCenter(cr.center());
+        p->setPen(cg.text());
+        p->drawPixmap(pmr.topLeft(), pixmap);
+
+    }
+    else if(checkable && mi->isChecked())
+        drawCheckMark(p, x+offset, y+offset, pWidth, h-offset*2, cg, act,
+                      !enabled);
+
+    QString s = mi->text();
+    p->setPen(enabled ? cg.text() : cg.light());
+    if(!s.isNull()){
+        int t = s.find( '\t' );
+        const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
+        if (t >= 0){
+            p->drawText(x+w-tab-offset, y+offset, tab, h-offset*2,
+                        text_flags, s.mid(t+1));
+        }
+        p->drawText(x+offset+pWidth+2, y+offset, w-pWidth-offset*2,
+                     h-offset*2, text_flags, s, t);
+    }
+    else if(mi->pixmap()){ // Not sure if this is correct...
+        QPixmap *pixmap = mi->pixmap();
+        if (pixmap->depth() == 1)
+            p->setBackgroundMode(OpaqueMode );
+        p->drawPixmap( x+offset+2, y+offset+2, *pixmap );
+        if ( pixmap->depth() == 1 )
+            p->setBackgroundMode(TransparentMode);
+    }
+    if (mi->popup()){
+        int dim = h-10;
+        drawArrow(p, RightArrow, false, x+w-dim-offset-4,
+                  y+5, dim, dim, cg, mi->isEnabled());
+    }
+}
+
 #include "kthemestyle.moc"
 
