@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.61  1999/06/10 21:47:50  cschlaeg
+// setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
+//
 // Revision 1.60  1999/06/09 21:52:27  cschlaeg
 // serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
 //
@@ -694,20 +697,27 @@ public:
   void showItem (int id);
 
   /**
-   * Sets toolbar to full parent width (or to value set by setMaxWidth).
-   * You have to call this function if you want to have right aligned items or
-   * autosized item.
-   *
-   * I have started to extend this functionality for vertical bars as well.
-   * So we might consider renaming this to setFullSize() in the future. CS
-   *
-   * The toolbar is set to full width by default.
-   * @see #alignItemRight
-   * @see #setItemAutoSized
+   * Obsolete! This function has been replaced by @ref setFullSize().
    */
   void setFullWidth(bool flag = true);
 
-  bool fullWidth(void);
+  /**
+   * Sets toolbar to full parent size (default). In full size mode the bar
+   * extends over the parent's full width or height. If the mode is disabled
+   * the toolbar tries to take as much space as it needs without wrapping, but
+   * it does not exceed the parent box. You can force a certain width or
+   * height with @ref setMaxWidth or @ref setMaxHeight.
+   *
+   * If you want to use right aligned items or auto-sized items you must use
+   * full size mode.
+   */
+  void setFullSize(bool flag = true);
+
+  /**
+   * This function returns true of the full-size mode is enabled. Otherwise
+   * false.
+   */
+  bool fullSize(void) const;
 
   /**
    * Enables or disables moving of toolbar.
@@ -918,7 +928,7 @@ private:
   QList<KToolBarItem> items;
 
   QString title;
-  bool fullSize;
+  bool fullSizeMode;
   BarPosition position;
   bool moving;
   QWidget *Parent;

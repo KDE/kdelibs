@@ -194,7 +194,6 @@ KTMLayout::minimumSize(void) const
 		if ((*qli)->minimumSizeHint().width() > mainW)
 			mainW = (*qli)->minimumSizeHint().width();
 
-	printf("KTMLayout::minimumSize(): %d, %d\n", mainW, currMargin + mainH);
 	return (QSize(mainW, currMargin + mainH));
 }
 
@@ -316,7 +315,7 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 		 * is also not full width, we put them in the same line. If this is
 		 * not the case or the current one does not fit in the line anymore
 		 * we start a new line. */
-		if (prevFullSize || (*li)->fullWidth() ||
+		if (prevFullSize || (*li)->fullSize() ||
 			(currX + (*li)->maximumSizeHint().width() > rect.width()))
 		{
 			currY += currHeight;
@@ -325,7 +324,7 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 		}
 
 		int mw = rect.width();
-		if (!(*li)->fullWidth())
+		if (!(*li)->fullSize())
 		{
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain width, this will be used. If no size has been requested
@@ -346,7 +345,7 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 		currX += mw;
 		if (hfw > currHeight)
 			currHeight = hfw;
-		prevFullSize = (*li)->fullWidth();
+		prevFullSize = (*li)->fullSize();
 		++li;
 	}
 
@@ -369,7 +368,7 @@ KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 		 * is also not full width, we put them in the same line. If this is
 		 * not the case or the current one does not fit in the line anymore
 		 * we start a new line. */
-		if (prevFullSize || (*li)->fullWidth() ||
+		if (prevFullSize || (*li)->fullSize() ||
 			(currX + (*li)->maximumSizeHint().width() > rectw))
 		{
 			currY += currHeight;
@@ -378,7 +377,7 @@ KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 		}
 
 		int mw = rectw;
-		if (!(*li)->fullWidth())
+		if (!(*li)->fullSize())
 		{
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain width, this will be used. If no size has been requested
@@ -397,7 +396,7 @@ KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 		currX += mw;
 		if (hfw > currHeight)
 			currHeight = hfw;
-		prevFullSize = (*li)->fullWidth();
+		prevFullSize = (*li)->fullSize();
 		++li;
 	}
 	currY += currHeight;
@@ -421,7 +420,7 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 		 * one is also not full height, we put them in the same
 		 * column. If this is not the case or the current one does not
 		 * fit in the column anymore we start a new line. */
-		if (prevFullSize || (*li)->fullWidth() ||
+		if (prevFullSize || (*li)->fullSize() ||
 			(currY + (*li)->maximumSizeHint().height() > rect.height()))
 		{
 			currX += currWidth;
@@ -430,7 +429,7 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 		}
 
 		int mh = rect.height();
-		if (!(*li)->fullWidth())
+		if (!(*li)->fullSize())
 		{
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain height, this will be used. If no size has been requested
@@ -451,7 +450,7 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 		currY += mh;
 		if (wfh > currWidth)
 			currWidth = wfh;
-		prevFullSize = (*li)->fullWidth();
+		prevFullSize = (*li)->fullSize();
 		++li;
 	}
 
@@ -475,7 +474,7 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 		 * one is also not full height, we put them in the same
 		 * column. If this is not the case or the current one does not
 		 * fit in the column anymore we start a new line. */
-		if (prevFullSize || (*li)->fullWidth() ||
+		if (prevFullSize || (*li)->fullSize() ||
 			(currY + (*li)->maximumSizeHint().height() > recth))
 		{
 			currX += currWidth;
@@ -484,7 +483,7 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 		}
 
 		int mh = recth;
-		if (!(*li)->fullWidth())
+		if (!(*li)->fullSize())
 		{
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain height, this will be used. If no size has been requested
@@ -503,7 +502,7 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 		currY += mh;
 		if (wfh > currWidth)
 			currWidth = wfh;
-		prevFullSize = (*li)->fullWidth();
+		prevFullSize = (*li)->fullSize();
 		++li;
 	}
 	currX += currWidth;

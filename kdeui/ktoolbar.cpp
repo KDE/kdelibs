@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.121  1999/06/13 21:43:54  cschlaeg
+// fixed-size main widgets are now working; support for fixed-width widget or heightForWidth-widget needs a different concept; will think about it; floating toolbars are still broken
+//
 // Revision 1.120  1999/06/12 21:43:58  knoll
 // kapp->xxxFont() -> KGlobal::xxxFont()
 //
@@ -979,7 +982,7 @@ void KToolBar::init()
 // 	   SLOT( ContextCallback( int ) ) );
 
   //MD (17-9-97) Toolbar full width by default
-  fullSize=true;
+  fullSizeMode=true;
 
   position = Top;
   moving = true;
@@ -1398,9 +1401,9 @@ KToolBar::updateRects(bool res)
 	case Bottom:
 	{
 		int mw = width();
-		if (!fullSize)
+		if (!fullSizeMode)
 		{
-			/* If we are not in fullSize mode and the user has requested a
+			/* If we are not in full size mode and the user has requested a
 			 * certain width, this will be used. If no size has been requested
 			 * and the parent width is larger than the maximum width, we use
 			 * the maximum width. */
@@ -1417,7 +1420,7 @@ KToolBar::updateRects(bool res)
 	case Right:
 	{
 		int mh = height();
-		if (!fullSize)
+		if (!fullSizeMode)
 		{
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain height, this will be used. If no size has been requested
@@ -1455,7 +1458,7 @@ KToolBar::sizeHint() const
 
 	case Top:
 	case Bottom:
-		if (!fullSize && (maxHorWidth != -1))
+		if (!fullSizeMode && (maxHorWidth != -1))
 		{
 			/* If fullSize mode is disabled and the user has requested a
 			 * specific width, then we use this value. */
@@ -1464,7 +1467,7 @@ KToolBar::sizeHint() const
 		break;
 	case Right:
 	case Left:
-		if (!fullSize && (maxVerHeight != -1))
+		if (!fullSizeMode && (maxVerHeight != -1))
 		{
 			/* If fullSize mode is disabled and the user has requested a
 			 * specific height, then we use this value. */
@@ -1481,6 +1484,8 @@ KToolBar::sizeHint() const
 QSize
 KToolBar::maximumSizeHint() const
 {
+	/* This function returns the maximum size the bar can have. All toolbar
+	 * items are placed in a single line. */
 	int prefWidth = -1;
 	int prefHeight = -1;
 
@@ -1571,133 +1576,115 @@ KToolBar::sizePolicy() const
 
 void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
-  int ox, oy, ow, oh;
-  // Handle highlighting - sven 050198
-  if (horizontal)
-    if (mev->x() < 9)
-    {
-      if (!mouseEntered)
-      {
-        mouseEntered = true;
-        repaint();
-      }
-    }
-    else
-    {
-      if (mouseEntered)
-      {
-        mouseEntered = false;
-        repaint();
-      }
-    }
-
-  else
-    if (mev->y() < 9)
-    {
-      if (!mouseEntered)
-      {
-        mouseEntered = true;
-        repaint();
-      }
-    }
-    else
-    {
-      if (mouseEntered)
-      {
-        mouseEntered = false;
-        repaint();
-      }
-    }
-
-  if ( !buttonDownOnHandle )
-      return;
-  buttonDownOnHandle = FALSE;
+	/* The toolbar handles are hightlighted when the mouse moves over
+     * the handle. */
+	if ((horizontal && (mev->x() < 0 || mev->x() > 9)) ||
+		(!horizontal && (mev->y() < 0 || mev->y() > 9)))
+	{
+		/* Mouse is outside of the handle. If it's still hightlighed we have
+		 * to de-highlight it. */
+		if (mouseEntered)
+		{
+			mouseEntered = false;
+			repaint();
+		}
+		return;
+	}
+	else
+	{
+		/* Mouse is over the handle. If the handle is not yet hightlighted we
+		 * have to to it now. */
+		if (!mouseEntered)
+		{
+			mouseEntered = true;
+			repaint();
+		}
+	}
+		
+	if (!buttonDownOnHandle)
+		return;
+	buttonDownOnHandle = FALSE;
   
-  if (position != Flat)
-      {
-	  //QRect rr(KWM::geometry(Parent->winId(), false));
-	  QRect rr(Parent->geometry());
-	  ox = rr.x();
-	  oy = rr.y();
-	  ow = rr.width();
-	  oh = rr.height();
-	  if (Parent->inherits("KTMainWindow"))
-	      {
-			  QRect mainView = ((KTMainWindow*) Parent)->mainViewGeometry();
+	if (position != Flat)
+	{
+		int ox, oy, ow, oh;
 
-			  ox += mainView.left();
-			  oy += mainView.top();
-			  ow = mainView.width();
-			  oh = mainView.height();
-	      }
+		QRect rr(Parent->geometry());
+		ox = rr.x();
+		oy = rr.y();
+		ow = rr.width();
+		oh = rr.height();
+		if (Parent->inherits("KTMainWindow"))
+		{
+			QRect mainView = ((KTMainWindow*) Parent)->mainViewGeometry();
 
-	  int  fat = 25; //ness
+			ox += mainView.left();
+			oy += mainView.top();
+			ow = mainView.width();
+			oh = mainView.height();
+		}
 
-	  mgr = new KToolBoxManager(this, transparent);
+		int fat = 25; //ness
 
-	  //Firt of all discover _your_ position
+		mgr = new KToolBoxManager(this, transparent);
 
-	  if (position == Top )
-	      mgr->addHotSpot(geometry(), true);             // I'm on top
-	  else
-	      mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+		//Firt of all discover _your_ position
 
-	  if (position == Bottom)
-	      mgr->addHotSpot(geometry(), true);           // I'm on bottom
-	  else
-	      mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+		if (position == Top )
+			mgr->addHotSpot(geometry(), true);             // I'm on top
+		else
+			mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
 
-	  if (position == Left)
-	      mgr->addHotSpot(geometry(), true);           // I'm on left
-	  else
-	      mgr->addHotSpot(ox, oy, fat, oh); // left
+		if (position == Bottom)
+			mgr->addHotSpot(geometry(), true);           // I'm on bottom
+		else
+			mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
 
-	  if (position == Right)
-	      mgr->addHotSpot(geometry(), true);           // I'm on right
-	  else
-	      mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
-	  /*
-	    mgr->addHotSpot(ox, oy, ow, fat);           // top
-	    mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
-	    mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
-	    mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
-	  */
-	  movePos = position;
-	  connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
-	  if (transparent)
-	      mgr->doMove(true, false, true);
-	  else
-	      {
-		  /*
-		    QList<KToolBarItem> ons;
-		    for (KToolBarItem *b = items.first(); b; b=items.next())
-		    {
-		    if (b->isEnabled())
-		    ons.append(b);
-		    b->setEnabled(false);
-		    }
-		  */
-		  mgr->doMove(true, false, false);
-		  /*
-		    for (KToolBarItem *b = ons.first(); b; b=ons.next())
-		    b->setEnabled(true);
-		  */
-	      }
-	  if (transparent)
-	      {
-		  setBarPos (movePos);
+		if (position == Left)
+			mgr->addHotSpot(geometry(), true);           // I'm on left
+		else
+			mgr->addHotSpot(ox, oy, fat, oh); // left
 
-		  if (movePos == Floating)
-		      move (mgr->x(), mgr->y());
-		  if (!isVisible())
-		      show();
-	      }
-	  mouseEntered = false;
-	  delete mgr;
-	  mgr=0;
-	  repaint (false);
-	  //debug ("KToolBar: moving done");
-      }
+		if (position == Right)
+			mgr->addHotSpot(geometry(), true);           // I'm on right
+		else
+			mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
+
+		movePos = position;
+		connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+		if (transparent)
+			mgr->doMove(true, false, true);
+		else
+		{
+			/*
+			  QList<KToolBarItem> ons;
+			  for (KToolBarItem *b = items.first(); b; b=items.next())
+			  {
+			  if (b->isEnabled())
+			  ons.append(b);
+			  b->setEnabled(false);
+			  }
+			*/
+			mgr->doMove(true, false, false);
+			/*
+			  for (KToolBarItem *b = ons.first(); b; b=ons.next())
+			  b->setEnabled(true);
+			*/
+		}
+		if (transparent)
+		{
+			setBarPos (movePos);
+
+			if (movePos == Floating)
+				move (mgr->x(), mgr->y());
+			if (!isVisible())
+				show();
+		}
+		mouseEntered = false;
+		delete mgr;
+		mgr=0;
+		repaint (false);
+	}
 }
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent *)
@@ -1805,7 +1792,7 @@ void KToolBar::resizeEvent(QResizeEvent*)
 		/* It's flicker time again. If the size is under direct control of
 		 * the WM we have to force the height to make the heightForWidth
 		 * feature work. */
-		if (width() > height())
+		if (horizontal)
 		{
 			/* horizontal bar */
 			if (height() != heightForWidth(width()))
@@ -2613,12 +2600,12 @@ QWidget *KToolBar::getWidget (int id)
 
 void KToolBar::setFullWidth(bool flag)
 {
-  fullSize = flag;
+  fullSizeMode = flag;
 }
 
-bool KToolBar::fullWidth(void)
+bool KToolBar::fullSize(void) const
 {
-	return (fullSize);
+	return (fullSizeMode);
 }
 
 void KToolBar::enableMoving(bool flag)
