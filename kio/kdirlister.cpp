@@ -475,7 +475,7 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 
 void KDirLister::FilesAdded( const KURL & directory )
 {
-  kdDebug(7003) << "FilesAdded " << directory.url() << " - we are showing " << m_lstDirs.first().url() << endl;
+  //kdDebug(7003) << "FilesAdded " << directory.url() << " - we are showing " << m_lstDirs.first().url() << endl;
   slotURLDirty( directory );
 }
 
@@ -490,7 +490,7 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
   KURL::List::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
-    kdDebug(7003) << "FilesRemoved: " << (*it).url() << endl;
+    //kdDebug(7003) << "FilesRemoved: " << (*it).url() << endl;
     // For each file removed: look in m_lstFileItems to see if we know it,
     // and if found, unmark it (for deletion)
     kit.toFirst();
