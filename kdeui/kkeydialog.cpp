@@ -51,6 +51,8 @@
 #include <kaction.h>
 #include "kkeybutton.h"
 
+enum { META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
+
 class KKeyChooserPrivate {
 public:
     QDict<int> *globalDict;
@@ -62,6 +64,7 @@ public:
     QCheckBox *cShift;
     QCheckBox *cCtrl;
     QCheckBox *cAlt;
+    QCheckBox *cMeta;
     QGroupBox *fCArea;
     QButtonGroup *kbGroup;
     KKeyEntryMap *map;
@@ -308,6 +311,11 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
                           bool check_against_std_keys)
     : QWidget( parent )
 {
+#ifdef QT_HAS_META
+  bool hasMetaKey = true;
+#else
+  bool hasMetaKey = check_against_std_keys;
+#endif
 
   d = new KKeyChooserPrivate();
 
@@ -440,24 +448,36 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   d->cAlt->setEnabled( false );
   connect( d->cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
 
+  if( hasMetaKey ) {
+    d->cMeta = new QCheckBox( d->fCArea );
+    d->cMeta->setText( i18n("Meta") );
+    d->cMeta->setEnabled( false );
+    connect( d->cMeta, SIGNAL( clicked() ), SLOT( metaClicked() ) );
+  } else
+    d->cMeta = 0;
+
   d->bChange = new KKeyButton(d->fCArea, "key");
   d->bChange->setEnabled( false );
   connect( d->bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
 
   wtstr = i18n("If 'Custom key' is selected, you can set a combination of keys here. Click on"
     " the rightmost button once and then press a key to select it for this binding. You can"
-    " check the SHIFT, CTRL and ALT boxes to combine the selected key with modifier keys.");
+    " check the META, ALT, CTRL, and SHIFT boxes to combine the selected key with modifier keys.");
   QWhatsThis::add( d->cShift, wtstr );
   QWhatsThis::add( d->cCtrl, wtstr );
   QWhatsThis::add( d->cAlt, wtstr );
+  if( d->cMeta )
+    QWhatsThis::add( d->cMeta, wtstr );
   QWhatsThis::add( d->bChange, wtstr );
 
   //
   // Add widgets to the geometry manager
   //
-  pushLayout->addWidget( d->cShift );
-  pushLayout->addWidget( d->cCtrl );
+  if( d->cMeta )
+    pushLayout->addWidget( d->cMeta );
   pushLayout->addWidget( d->cAlt );
+  pushLayout->addWidget( d->cCtrl );
+  pushLayout->addWidget( d->cShift );
   pushLayout->addSpacing( KDialog::spacingHint()*2 );
   pushLayout->addWidget( d->bChange );
   pushLayout->addStretch( 10 );
@@ -571,106 +591,81 @@ void KKeyChooser::readStdKeys()
 
 void KKeyChooser::toChange( QListViewItem *item )
 {
+    // Set to indicate enable/disable of d->cShift/cCtrl/cAlt/cMeta/cChange.
+    bool bEnableChecks;
+
+    // Hack: Do this incase we still have changeKey() running.
+    //  Better would be a modal dialog for changeKey()!
+    d->bKeyIntercept = false;
+    releaseKeyboard();
+
     if ( !item )
     {
         // if nothing is selected -> disable radio boxes
         d->kbGroup->find(NoKey)->setEnabled( false );
         d->kbGroup->find(DefaultKey)->setEnabled( false );
         d->kbGroup->find(CustomKey)->setEnabled( false );
-        d->cAlt->setEnabled( false );
-        d->cShift->setEnabled( false );
-        d->cCtrl->setEnabled( false );
-        d->bChange->setEnabled( false );
-    } else
-    {
-        d->bKeyIntercept = false;
-
+        bEnableChecks = false;
+    } else {
         /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
 
-        /* Is the key configurable or has the user turned it off ? */
+        int kCode = (*it).aConfigKeyCode;
+        int key = kCode & 0xffff; // this is the keycode without modifiers
+
+        // Set the appropriate modifier checks,
+        //  unless the keycode contains ONLY a modifier key.
+        d->cShift->setChecked( (kCode & Qt::SHIFT) && (key != Qt::Key_Shift) );
+        d->cCtrl->setChecked ( (kCode & Qt::CTRL) && (key != Qt::Key_Control) );
+        d->cAlt->setChecked  ( (kCode & Qt::ALT) && (key != Qt::Key_Alt) );
+        if( d->cMeta )
+          d->cMeta->setChecked ( (kCode & META_MOD) && (key != Qt::Key_Meta) );
+        // Name of key w/o shift codes for button
+        d->bChange->setText( KAccel::keyToString( key, true ) );
+        // Name of key w/ shift codes for listbox
+        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+
+        // If the key is not configurable or the user has turned it off,
         if ( !(*it).bConfigurable || d->kbMode == NoKey ) {
-                d->lInfo->setEnabled( false );
-                d->cShift->setEnabled( false );
-                d->cCtrl->setEnabled( false );
-                d->cAlt->setEnabled( false );
-                d->bChange->setEnabled( false );  //bDefault->setEnabled( false );
                 d->lNotConfig->setEnabled( true );
-
-                int kCode = (*it).aConfigKeyCode;
-                int kSCode = kCode & ~(SHIFT | CTRL | ALT);
-
-                if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
-                else d->cShift->setChecked( kCode & SHIFT );
-                if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
-                else d->cCtrl->setChecked( kCode & CTRL );
-                if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
-                else d->cAlt->setChecked( kCode & ALT );
-
-                QString str = KAccel::keyToString( kSCode, true );
-                d->bChange->setText(str);
-
-                item->setText(1, KAccel::keyToString( kCode, true ));
-
+                d->lInfo->setEnabled( false );
+                bEnableChecks = false;
         } else {
                 d->lNotConfig->setEnabled( false );
-                d->lInfo->setText(QString::null); d->lInfo->setEnabled( true );
-
-                int kCode = (*it).aConfigKeyCode;
-                int kSCode = kCode & ~(SHIFT | CTRL | ALT);
-
-                //d->cShift->setEnabled( true ); d->cCtrl->setEnabled( true ); d->cAlt->setEnabled( true );
-                if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
-                else d->cShift->setChecked( kCode & SHIFT );
-                if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
-                else d->cCtrl->setChecked( kCode & CTRL );
-                if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
-                else d->cAlt->setChecked( kCode & ALT );
-
-                QString str = KAccel::keyToString( kSCode, true );
-                d->bChange->setText(str); //eKey->setText(str);
-                //d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
-                item->setText(1, KAccel::keyToString( kCode, true ));
-
-                if ( isKeyPresent(kCode, false) ) {
-                        d->lInfo->setText(i18n("Attention : key already used") );
-                }
-
-                if ( d->kbMode == DefaultKey ) {
-                        d->cAlt->setEnabled( false );
-                        d->cShift->setEnabled( false );
-                        d->cCtrl->setEnabled( false );
-                        d->bChange->setEnabled( false );
-                } else {
-                        d->cAlt->setEnabled( true );
-                        d->cShift->setEnabled( true );
-                        d->cCtrl->setEnabled( true );
-                        d->bChange->setEnabled( true );
-                }
+                d->lInfo->setEnabled( true );
+                d->lInfo->setText( isKeyPresent(kCode, false) ?
+                        i18n("Attention : key already used") :
+                        QString::null );
+                bEnableChecks = (d->kbMode != DefaultKey);
         }
 
-        d->kbGroup->find(NoKey)->setEnabled( true );
-        d->kbGroup->find(DefaultKey)->setEnabled( true );
-        d->kbGroup->find(CustomKey)->setEnabled( true );
-
+        // Select the appropriate radio button.
         ((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( d->kbMode == NoKey );
         ((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( d->kbMode == DefaultKey );
         ((QRadioButton *)d->kbGroup->find(CustomKey))->setChecked( d->kbMode == CustomKey );
 
+        // If the accelerator for this command is not configurable, then
+        //  turn off the radio button's which allow for 'no key' and 'user defined'
         if ( !(*it).bConfigurable ) {
-                d->cAlt->setEnabled( false );
-                d->cShift->setEnabled( false );
-                d->cCtrl->setEnabled( false );
-                d->bChange->setEnabled( false );
                 ((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( false );
                 ((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( false );
                 ((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( false );
-        } else {
+        }
+        // Otherwise, turn of 'no key' and 'custom key', and also 'default key' if
+        //  there -is- a default key for this command.
+        else {
                 ((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( true );
                 ((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).aDefaultKeyCode != 0);
                 ((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( true );
         }
     }
+
+    d->cShift->setEnabled( bEnableChecks );
+    d->cCtrl->setEnabled( bEnableChecks );
+    d->cAlt->setEnabled( bEnableChecks );
+    if( d->cMeta )
+        d->cMeta->setEnabled( bEnableChecks );
+    d->bChange->setEnabled( bEnableChecks );
 }
 
 void KKeyChooser::fontChange( const QFont & )
@@ -733,8 +728,8 @@ void KKeyChooser::defaultKey()
     (*d->actionMap[item]).aConfigKeyCode =
         (*d->actionMap[item]).aDefaultKeyCode;
 
-    item->setText(1, KAccel::keyToString((*d->actionMap[item]).
-                                         aConfigKeyCode, true));
+    item->setText( 1, 
+        KAccel::keyToString((*d->actionMap[item]).aConfigKeyCode, true) );
 
     if ( d->bChange->isEditing() )
         d->bChange->setEditing(false);
@@ -754,38 +749,59 @@ void KKeyChooser::allDefault()
         KKeyEntryMap::Iterator it = d->actionMap[at];
 
         if ( (*it).bConfigurable ) {
-            (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
-            at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+            (*it).aCurrentKeyCode = (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
         }
+        at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
 
         at = at->nextSibling();
     }
     emit keyChange();
 }
 
-void KKeyChooser::shiftClicked()
+// if mod = SHIFT, then keyModEquiv should = Key_Shift, CTRL => Key_Control, etc.
+// select = true to turn the modifier on, false for off.
+void KKeyChooser::modifierClicked( uint keyMod, Qt::Key keySymEquiv, bool select )
 {
-    QListViewItem *item = d->wList->currentItem();
-    if (!item)
-        return;
+   QListViewItem *item = d->wList->currentItem();
+   if (!item)
+      return;
 
-    KKeyEntryMap::Iterator it = d->actionMap[item];
+   // Get a pointer to the command info for current item in list.
+   KKeyEntryMap::Iterator it = d->actionMap[item];
+   // Get the key (w/o modifier codes) currently associated with command.
+   int keySym = (*it).aConfigKeyCode & 0xffff;
 
-    int kSCode = (*it).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
-    if ( kSCode != Key_Shift ) {
-        if ( d->cShift->isOn() )
-            (*it).aConfigKeyCode |= SHIFT;
-        else
-            (*it).aConfigKeyCode &= ~SHIFT;
+   // The key should not equal Key_Shift/Control/Alt/Meta, but if it does,
+   //  then we need to skip.
+   if( keySym != keySymEquiv ) {
+      if( select )
+         (*it).aConfigKeyCode |= keyMod;
+      else
+         (*it).aConfigKeyCode &= ~keyMod;
 
-        item->setText(1,
-                      KAccel::keyToString((*it).aConfigKeyCode, true));
-
-    }
-    toChange(item);
-    emit keyChange();
+      toChange( item );
+      emit keyChange();
+   }
 }
 
+void KKeyChooser::shiftClicked()
+   { modifierClicked( Qt::SHIFT, Qt::Key_Shift,   d->cShift->isOn() ); }
+void KKeyChooser::ctrlClicked()
+   { modifierClicked( Qt::CTRL,  Qt::Key_Control, d->cCtrl->isOn() ); }
+void KKeyChooser::altClicked()
+   { modifierClicked( Qt::ALT,   Qt::Key_Alt,     d->cAlt->isOn() ); }
+void KKeyChooser::metaClicked()
+   { modifierClicked( META_MOD,  Qt::Key_Meta,    d->cMeta->isOn() ); }
+
+void KKeyChooser::changeKey()
+{
+    d->bChange->setEditing(true);
+    d->lInfo->setText( i18n("Press the desired key") );
+    d->lInfo->setEnabled( true );
+
+    d->bKeyIntercept = true;
+    grabKeyboard();
+}
 
 void KKeyChooser::listSync()
 {
@@ -802,131 +818,84 @@ void KKeyChooser::listSync()
     updateAction( d->wList->currentItem() );
 }
 
-void KKeyChooser::ctrlClicked()
-{
-    QListViewItem *item = d->wList->currentItem();
-    if (!item)
-        return;
-
-    KKeyEntryMap::Iterator it = d->actionMap[item];
-
-    int kSCode = (*it).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
-
-    if ( kSCode != Key_Control ) {
-        if ( d->cCtrl->isOn() )
-            (*it).aConfigKeyCode |= CTRL;
-        else
-            (*it).aConfigKeyCode &= ~CTRL;
-
-        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
-    }
-    toChange(item);
-    emit keyChange();
-}
-
-void KKeyChooser::altClicked()
-{
-    QListViewItem *item = d->wList->currentItem();
-    if (!item)
-        return;
-
-    KKeyEntryMap::Iterator it = d->actionMap[item];
-
-    int kSCode = (*it).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
-    if ( kSCode != Key_Alt ) {
-        if ( d->cAlt->isOn() )
-            (*it).aConfigKeyCode |= ALT;
-        else
-            (*it).aConfigKeyCode &= ~ALT;
-
-        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
-    }
-    toChange(d->wList->currentItem());
-    emit keyChange();
-}
-
-void KKeyChooser::changeKey()
-{
-    d->bChange->setEditing(true);
-    d->lInfo->setText( i18n("Press the desired key") );
-    d->lInfo->setEnabled( true );
-
-    d->bKeyIntercept = true;
-    grabKeyboard();
-}
-
 // reimplemented to allow configuring the Tab key
 // otherwise it would move focus without being seen by keyPressEvent()
 bool KKeyChooser::event( QEvent *e )
 {
-    if( !d->bKeyIntercept || e->type() != QEvent::KeyPress )
+    if( d->bKeyIntercept && e->type() == QEvent::KeyPress ) {
+        keyPressEvent( (QKeyEvent*) e );
+        return true;
+    } else
         return QWidget::event( e );
-        
-    keyPressEvent( ( QKeyEvent* )e );
-    return TRUE;
-    }
+}
 
 void KKeyChooser::keyPressEvent( QKeyEvent *e )
 {
-  releaseKeyboard();
-  /* the keys are processed if the change button was pressed */
-  if( !d->bKeyIntercept )
-  {
-    e->ignore();
-    return;
-  }
+   if( d->bKeyIntercept )
+   {
+      int key = e->key() & 0xffff;
 
-  int kCode = e->key() & ~(SHIFT | CTRL | ALT);
-  /* check the given key :
-     if it is a non existent key (=0) : keep the old value and say
-     what happened.
-  */
-  if ( KAccel::keyToString(kCode, true).isNull() )
-  {
-    d->lInfo->setText( i18n("Undefined key") );
-    return;
-  }
-
-  d->bKeyIntercept = false;
-  //eKey->hide();
-  //eKey->setEnabled(false);
-  d->bChange->setEditing(false);
-  d->bChange->setFocus();
-  setKey(kCode);
+      switch( key ) {
+         case Qt::Key_Shift:
+         case Qt::Key_Control:
+         case Qt::Key_Alt:
+         case Qt::Key_Meta:
+	 case Qt::Key_unknown:
+            // Don't allow setting a modifier key as an accelerator.
+            // Also, don't release the focus yet.  We'll wait until
+            //  we get a 'normal' key.
+            break;
+         default:
+            if( KAccel::keyToString( key, true ).isNull() )
+               d->lInfo->setText( i18n("Undefined key") );
+            else {
+               d->bKeyIntercept = false;
+               d->bChange->setEditing(false);
+               d->bChange->setFocus();
+               setKey( e->key() );
+               releaseKeyboard();
+            }
+      }
+   }
+   // Hack: This is to ensure that keyboard has been release.
+   // Create a modal dialog box instead!
+   else
+      releaseKeyboard();
 }
 
-void KKeyChooser::setKey( int kCode)
+void KKeyChooser::setKey( int keyCode )
 {
-    QListViewItem *item = d->wList->currentItem();
-    if (!item)
-        return;
+   QListViewItem *item = d->wList->currentItem();
+   if (!item)
+      return;
 
-    KKeyEntryMap::Iterator it = d->actionMap[item];
+   KKeyEntryMap::Iterator it = d->actionMap[item];
 
-    /* add the current modifier to the key */
-    if ( kCode!=Key_Shift ) kCode |= ((*it).aConfigKeyCode & SHIFT);
-    if ( kCode!=Key_Control ) kCode |= ((*it).aConfigKeyCode & CTRL);
-    if ( kCode!=Key_Alt ) kCode |= ((*it).aConfigKeyCode & ALT);
+   // If no modifier key was pressed, then use the current modifier keys.
+   if( !(keyCode & (META_MOD | Qt::ALT | Qt::CTRL | Qt::SHIFT)) )
+      keyCode |= (*it).aConfigKeyCode & (META_MOD | Qt::ALT | Qt::CTRL | Qt::SHIFT);
 
-    if ( isKeyPresent(kCode) ) {
-        d->lInfo->setText( i18n("Attention : key already used") );
-        return;
-    }
-
-    /* set the list and the change button */
-    (*it).aConfigKeyCode = kCode;
-    item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
-
-    toChange(item);
-    emit keyChange();
+   // If key isn't already in use,
+   if( !isKeyPresent( keyCode ) ) {
+      // Set new key code
+      (*it).aConfigKeyCode = keyCode;
+      // Update display
+      toChange(item);
+      emit keyChange();
+   } else
+      d->lInfo->setText( i18n("Attention : key already used") );
 }
 
+// This function is no longer functional and should be
+//  removed during the next clean-up.
 void KKeyChooser::editKey()
 {
     d->bChange->setEnabled( false ); //eKey->setEnabled( true );
     d->lInfo->setText( i18n("Press 'Return' to quit editing") );
 }
 
+// This function is no longer functional and should be
+//  removed during the next clean-up.
 void KKeyChooser::editEnd()
 {
     kdDebug(125) << "Called editEnd() which relies on eKey widget" << endl;
@@ -1047,6 +1016,6 @@ QDict<int>* KKeyChooser::stdDict()
     {
     return d->stdDict;
     }
-    
+
 #include "kkeydialog.moc"
 #include "kkeybutton.moc"

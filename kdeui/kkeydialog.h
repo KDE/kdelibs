@@ -97,6 +97,7 @@ protected slots:
     void shiftClicked();
     void ctrlClicked();
     void altClicked();
+    void metaClicked();
     void editKey();
     void editEnd();
     void readGlobalKeys();
@@ -109,6 +110,7 @@ protected:
     void keyPressEvent( QKeyEvent* _event );
     void fontChange( const QFont& _font );
     void readKeysInternal( QDict< int >* dict, const QString& group );
+    void modifierClicked( uint keyMod, Qt::Key keySymEquiv, bool select );
 
 protected:
 
