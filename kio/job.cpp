@@ -544,7 +544,7 @@ void MimetypeJob::slotFinished( )
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
         QDataStream stream( m_packedArgs, IO_WriteOnly );
-        stream << m_url.path();
+        stream << m_url.path() << m_url.query();
 
         // Return slave to the scheduler
         slaveDone();
