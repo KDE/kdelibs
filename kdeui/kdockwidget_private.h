@@ -154,4 +154,20 @@ public:
   QGuardedPtr<QWidget> container;
 };
 
+class KDockWidgetHeaderPrivate
+   : public QObject
+{
+public:
+  KDockWidgetHeaderPrivate( QObject* parent )
+        : QObject( parent )
+  {
+    toDesktopButton = 0;
+    showToDesktopButton = true;
+    topLevel = false;
+  }
+  KDockButton_Private* toDesktopButton;
+  bool showToDesktopButton;
+  bool topLevel;
+};
+
 #endif

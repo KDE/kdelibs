@@ -51,14 +51,25 @@
 #define DOCK_CONFIG_VERSION "0.0.5"
 
 static const char* const dockback_xpm[]={
+"6 6 2 1",
+"# c black",
+". c None",
+"......",
+".#....",
+"..#..#",
+"...#.#",
+"....##",
+"..####"};
+
+static const char* const todesktop_xpm[]={
 "5 5 2 1",
 "# c black",
 ". c None",
-"#....",
-".#...",
-"..#.#",
-"...##",
-"..###"};
+"####.",
+"##...",
+"#.#..",
+"#..#.",
+"....#"};
 
 static const char* const not_close_xpm[]={
 "5 5 2 1",
@@ -196,6 +207,8 @@ KDockWidgetAbstractHeader::KDockWidgetAbstractHeader( KDockWidget* parent, const
 KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 :KDockWidgetAbstractHeader( parent, name )
 {
+  d = new KDockWidgetHeaderPrivate( this );
+  
   layout = new QHBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
@@ -219,10 +232,16 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
+  d->toDesktopButton = new KDockButton_Private( this, "ToDesktopButton" );
+  d->toDesktopButton->setPixmap( const_cast< const char** >(todesktop_xpm));
+  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
+
   stayButton->hide();
   
   layout->addWidget( drag );
   layout->addWidget( dockbackButton );
+  layout->addWidget( d->toDesktopButton );
   layout->addWidget( stayButton );
   layout->addWidget( closeButton );
   layout->activate();
@@ -231,6 +250,7 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 
 void KDockWidgetHeader::setTopLevel( bool isTopLevel )
 {
+  d->topLevel = isTopLevel;
   if ( isTopLevel ){
     KDockWidget* par = (KDockWidget*)parent();
     if( par) {
@@ -241,11 +261,14 @@ void KDockWidgetHeader::setTopLevel( bool isTopLevel )
     }
     stayButton->hide();
     closeButton->hide();
+    d->toDesktopButton->hide();
     drag->setEnabled( true );
   } else {
     dockbackButton->hide();
     stayButton->hide();
     closeButton->show();
+    if( d->showToDesktopButton )
+      d->toDesktopButton->show();
   }
   layout->activate();
   updateGeometry();
@@ -264,6 +287,7 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
 
   layout->addWidget( drag );
   layout->addWidget( dockbackButton );
+  layout->addWidget( d->toDesktopButton );
   layout->addWidget( stayButton );
   layout->addWidget( closeButton );
   layout->activate();
@@ -278,6 +302,18 @@ void KDockWidgetHeader::slotStayClicked()
 bool KDockWidgetHeader::dragEnabled() const
 {
   return drag->isEnabled();
+}
+
+void KDockWidgetHeader::showUndockButton(bool show)
+{
+  if( d->showToDesktopButton == show )
+    return;
+  
+  d->showToDesktopButton = show;
+  if( !show || d->topLevel )
+    d->toDesktopButton->hide( );
+  else
+    d->toDesktopButton->show( );
 }
 
 void KDockWidgetHeader::setDragEnabled(bool b)
@@ -442,6 +478,8 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
 void KDockWidget::setEnableDocking( int pos )
 {
   eDocking = pos;
+  if( header && header->inherits( "KDockWidgetHeader" ) )
+     ( ( KDockWidgetHeader* ) header )->showUndockButton( pos & DockDesktop );
   updateHeader();
 }
 
@@ -874,7 +912,15 @@ void KDockWidget::restoreFromForcedFixedSize()
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);	
 }
 
-
+void KDockWidget::toDesktop()
+{
+   QPoint p = mapToGlobal( QPoint( -30, -30 ) );
+   if( p.x( ) < 0 )
+      p.setX( 0 );
+   if( p.y( ) < 0 )
+      p.setY( 0 );
+   manualDock( 0, DockDesktop, 50, p );
+}
 
 void KDockWidget::undock()
 {

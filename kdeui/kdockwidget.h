@@ -72,6 +72,7 @@ class KDockMoveManager;
 class KDockWidget;
 class KDockButton_Private;
 class KDockWidgetPrivate;
+class KDockWidgetHeaderPrivate;
 class KDockArea;
 
 class QObjectList;
@@ -265,6 +266,7 @@ public:
 
   bool dragEnabled() const;
   void setDragEnabled(bool b);
+  void showUndockButton(bool show);
 
 #ifndef NO_KDE2
   /**
@@ -318,7 +320,6 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KDockWidgetHeaderPrivate;
   KDockWidgetHeaderPrivate *d;
 };
 
@@ -651,6 +652,11 @@ public slots:
    * another dockwidget by mouse (docking).
    */
   void undock();
+
+  /**
+   * Docks the widget to the desktop (as a toplevel widget)
+   */
+  void toDesktop( );
 
 protected:
 
