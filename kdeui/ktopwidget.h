@@ -9,6 +9,7 @@
  * @see KTMainWindow
  * @short Old name for KDE top level window
  * @author Stephan Kulow (coolo@kde.org)  Maintained by Sven Radej (radej@kde.org)
+ */
 
 class KTopLevelWidget : public KTMainWindow {
     Q_OBJECT
