@@ -193,6 +193,22 @@ return rc;
 }
 
 
+QStringList Wallet::entryList() {
+QStringList rc;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("entryList", _handle, _folder);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
 bool Wallet::hasFolder(const QString& f) {
 bool rc = false;
 
