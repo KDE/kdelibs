@@ -35,7 +35,7 @@ using namespace KWallet;
 #define KWMAGIC "KWALLET\n\r\0\n"
 #define KWMAGIC_LEN 11
 
-Backend::Backend(const QString& name) : _name(name) {
+Backend::Backend(const QString& name) : _name(name), _ref(0) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	_open = false;
 }

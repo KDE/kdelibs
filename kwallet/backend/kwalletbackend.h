@@ -81,12 +81,19 @@ class Backend {
 		// The list of entries in this folder.
 		QStringList entryList() const;
 
+		int ref() { return ++_ref; }
+
+		int deref() { return --_ref; }
+
+		int refCount() const { return _ref; }
+
 	private:
 		class BackendPrivate;
 		BackendPrivate *d;
 		QString _name;
 		bool _open;
 		QString _folder;
+		int _ref;
 		// Map Folder->Entries
 		typedef QMap< QString, Entry* > EntryMap;
 		typedef QMap< QString, EntryMap > FolderMap;

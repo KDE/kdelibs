@@ -66,7 +66,7 @@ Wallet::Wallet(int handle, const QString& name)
 
 Wallet::~Wallet() {
 	if (_handle != -1) {
-		_dcopRef->call("close", _handle);
+		_dcopRef->call("close", _handle, false);
 		_handle = -1;
 		_folder = QString::null;
 		_name = QString::null;
@@ -95,7 +95,7 @@ int Wallet::lockWallet() {
 		return -1;
 	}
 
-	DCOPReply r = _dcopRef->call("close", _handle);
+	DCOPReply r = _dcopRef->call("close", _handle, true);
 	_handle = -1;
 	_folder = QString::null;
 	_name = QString::null;
@@ -183,12 +183,9 @@ bool rc = false;
 	}
 #endif
 
-	DCOPReply r = _dcopRef->call("setFolder", _handle, f);
-	if (r.isValid()) {
-		r.get(rc);
-		if (rc) {
-			_folder = f;
-		}
+	if (hasFolder(f)) {
+		_folder = f;
+		rc = true;
 	}
 
 return rc;
