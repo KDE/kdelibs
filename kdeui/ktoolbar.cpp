@@ -97,6 +97,8 @@ public:
   }
   ~KToolBarPrivate()
   {
+    for (KToolBarItemList::Iterator it = m_items->begin(); it != m_items->end(); ++it)
+      delete *it;
     delete m_items; m_items = 0;
   }
   int m_iconSize;
