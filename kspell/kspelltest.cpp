@@ -17,7 +17,8 @@
 */
 
 #include "kspell.h"
-#include "kapp.h"
+#include <kapp.h>
+#include <kdebug.h>
 
 #include <qstring.h>
 #include <qlabel.h>
