@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,12 +22,12 @@
 #include "kprintdialogpage.h"
 
 KPrintDialogPage::KPrintDialogPage(QWidget *parent, const char *name)
-: QWidget(parent,name), m_printer(0), m_driver(0), m_ID(0)
+: QWidget(parent,name), m_printer(0), m_driver(0), m_ID(0), m_onlyreal(false)
 {
 }
 
 KPrintDialogPage::KPrintDialogPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const char *name)
-: QWidget(parent,name), m_printer(pr), m_driver(dr), m_ID(0)
+: QWidget(parent,name), m_printer(pr), m_driver(dr), m_ID(0), m_onlyreal(false)
 {
 }
 

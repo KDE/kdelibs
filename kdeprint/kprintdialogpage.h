@@ -152,6 +152,24 @@ public:
 	 */
 	void setTitle(const QString& txt)	{ m_title = txt; }
 	/**
+	 * Tell wether or not the page should be disable if a non real printer (special
+	 * printer) is selected in the print dialog. Returns false by default. Application
+	 * specific pages usually corresponds to printer-independent options, so the
+	 * page should be kept enabled whatever the selected printer. The default value
+	 * is then correct and your application doesn't to change anything.
+	 * @returns true if the page should be disabled for non real printers
+	 * @see setOnlyRealPrinters()
+	 */
+	bool onlyRealPrinters() const	{ return m_onlyreal; }
+	/**
+	 * Change the page state when a non real printer is selected in the print dialog.
+	 * Usually, the default value (false) is OK in most cases and you don't need to
+	 * call this function explicitely.
+	 * @param on if true, then the page will be disabled if a non real printer is selected
+	 * @see onlyRealPrinters()
+	 */
+	void setOnlyRealPrinters(bool on = true) { m_onlyreal = on; }
+	/**
 	 * For internal use only.
 	 */
 	DrMain* driver() 			{ return m_driver; }
@@ -165,6 +183,7 @@ protected:
 	DrMain		*m_driver;
 	int 		m_ID;
 	QString		m_title;
+	bool		m_onlyreal;
 };
 
 #endif

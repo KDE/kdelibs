@@ -321,9 +321,19 @@ void KPrintDialog::done(int result)
 		KMPrinter		*prt(0);
 
 		// get options from global pages
+		QString	msg;
 		QListIterator<KPrintDialogPage>	it(m_pages);
 		for (;it.current();++it)
-			it.current()->getOptions(opts);
+			if (it.current()->isEnabled())
+			{
+				if (it.current()->isValid(msg))
+					it.current()->getOptions(opts);
+				else
+				{
+					KMessageBox::error(this, msg);
+					return;
+				}
+			}
 
 		// add options from the dialog itself
 		// TODO: ADD PRINTER CHECK MECHANISM !!!
@@ -407,6 +417,10 @@ void KPrintDialog::enableSpecial(bool on)
 	KPCopiesPage	*copypage = (KPCopiesPage*)child("CopiesPage","KPCopiesPage");
 	if (copypage)
 		copypage->initialize(!on);
+	// disable/enable all other pages (if needed)
+	for (m_pages.first(); m_pages.current(); m_pages.next())
+		if (m_pages.current()->onlyRealPrinters())
+			m_pages.current()->setEnabled(!on);
 }
 
 void KPrintDialog::setOutputFileExtension(const QString& ext)

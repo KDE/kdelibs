@@ -100,6 +100,9 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 	// dialog flags
 	dlg->setFlags(dialogFlags());
 
+	// add plugins pages
+	setupPrintDialogPages(&m_printdialogpages);
+
 	// dialog pages
 	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
 		m_printdialogpages.insert(0,new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
@@ -159,4 +162,8 @@ int KMUiManager::systemPageCap()
 int KMUiManager::pluginPageCap()
 {
 	return 0;
+}
+
+void KMUiManager::setupPrintDialogPages(QList<KPrintDialogPage>*)
+{
 }

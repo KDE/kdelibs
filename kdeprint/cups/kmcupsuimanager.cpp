@@ -40,6 +40,7 @@
 #include "kmpropquota.h"
 #include "kmwusers.h"
 #include "kmpropusers.h"
+#include "kpschedulepage.h"
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
@@ -143,4 +144,9 @@ void KMCupsUiManager::setupConfigDialog(KMConfigDialog *dlg)
 int KMCupsUiManager::pluginPageCap()
 {
 	return (KMUiManager::CopyAll & ~KMUiManager::Current);
+}
+
+void KMCupsUiManager::setupPrintDialogPages(QList<KPrintDialogPage>* pages)
+{
+	pages->prepend(new KPSchedulePage());
 }
