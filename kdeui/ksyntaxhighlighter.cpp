@@ -375,6 +375,11 @@ void KDictSpellingHighlighter::dictionaryChanged()
     delete oldMonitor;
 }
 
+void KDictSpellingHighlighter::restartBackgroundSpellCheck()
+{
+    slotDictionaryChanged();
+}
+
 void KDictSpellingHighlighter::slotRehighlight()
 {
     rehighlight();
