@@ -350,27 +350,27 @@ public class KJASProtocolHandler
     {
         Main.info( "sendGetURLCmd(" + jobid + ") url = " + url );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
-        int length = jobid.length() + url.length() + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
+        byte [] url_bytes = url.getBytes();
+        int length = jobid.length() + url_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ];
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) GetURLDataCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) GetURLDataCode;
+        bytes[index++] = sep;
 
-        tmpchar = jobid.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = jobid.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( url_bytes, 0, bytes, index, url_bytes.length );
+        index += url_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
 
     /**
@@ -409,27 +409,27 @@ public class KJASProtocolHandler
     {
         Main.info( "sendPutURLCmd(" + jobid + ") url = " + url );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
-        int length = jobid.length() + url.length() + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
+        byte [] url_bytes = url.getBytes();
+        int length = jobid.length() + url_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ];
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) PutURLDataCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) PutURLDataCode;
+        bytes[index++] = sep;
 
-        tmpchar = jobid.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = jobid.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( url_bytes, 0, bytes, index, url_bytes.length );
+        index += url_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     /**
     * sends put data
@@ -439,29 +439,25 @@ public class KJASProtocolHandler
         Main.info( "sendPutData(" + jobid + ") len = " + len );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
         int length = jobid.length() + len + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
+        byte [] bytes = new byte[ length + 8 ];
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) PutDataCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) PutDataCode;
+        bytes[index++] = sep;
 
-        tmpchar = jobid.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = jobid.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = new char[len];
-        for (int i = 0; i < len; i++)
-            tmpchar[i] = (char) b[off+i];
-	
-        System.arraycopy( tmpchar, 0, chars, index, len );
+        System.arraycopy( b, off, bytes, index, len );
         index += len;
-        chars[index++] = sep;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     /**
     * sends notification about the state of the applet.
@@ -522,50 +518,36 @@ public class KJASProtocolHandler
     * @param appletID  ID of the applet
     * @param errorMessage any message
     */
-    public void sendAppletFailed ( 
-        String contextID, 
-        String appletID,
-        String errorMessage)
+    public void sendAppletFailed ( String contextID, String appletID, String errorMessage)
     {
         Main.debug( "sendAppletFailed, contextID = " + contextID + ", appletID = " +
                     appletID + ", errorMessage=" + errorMessage );
-
-        // message format:
-        // 8 bytes length
-        // 1 byte code
-        // 1 byte separator
-        // contextId.length bytes
-        // 1 byte separator
-        // appletID.length bytes
-        // 1 byte separator
-        // errorMessage.length bytes
-        // 1 byte separator
-        int length = contextID.length() + appletID.length() + errorMessage.length() + 5;
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        byte [] msg_bytes = errorMessage.getBytes();
+        int length = contextID.length() + appletID.length() + msg_bytes.length + 5;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) AppletFailedCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) AppletFailedCode;
+        bytes[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = appletID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = appletID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = errorMessage.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( msg_bytes, 0, bytes, index, msg_bytes.length );
+        index += msg_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
    
     public void sendShowDocumentCmd( String loaderKey, String url )
@@ -573,27 +555,27 @@ public class KJASProtocolHandler
         Main.debug( "sendShowDocumentCmd from context#" + loaderKey + " url = " + url );
 
         //length = length of args + 2 for seps + 1 for end + 1 for code
-        int length = loaderKey.length() + url.length() + 4;
-        char[] chars = new char[ length + 8 ]; //8 for the length of this message
-        char[] tmpchar = getPaddedLength( length );
+        byte [] url_bytes = url.getBytes();
+        byte [] key_bytes = loaderKey.getBytes();
+        int length = key_bytes.length + url_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ]; //8 for the length of this message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) ShowDocumentCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) ShowDocumentCode;
+        bytes[index++] = sep;
 
-        tmpchar = loaderKey.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( key_bytes, 0, bytes, index, key_bytes.length );
+        index += key_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( url_bytes, 0, bytes, index, url_bytes.length );
+        index += url_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
 
     public void sendShowDocumentCmd( String contextID, String url, String frame)
@@ -602,32 +584,32 @@ public class KJASProtocolHandler
                          " url = " + url + ", frame = " + frame );
 
         //length = length of args plus code, 3 seps, end
-        int length = contextID.length() + url.length() + frame.length() + 5;
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        byte [] url_bytes = url.getBytes();
+        byte [] frame_bytes = frame.getBytes();
+        int length = contextID.length() + url_bytes.length + frame_bytes.length + 5;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) ShowURLInFrameCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) ShowURLInFrameCode;
+        bytes[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( url_bytes, 0, bytes, index, url_bytes.length );
+        index += url_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = frame.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( frame_bytes, 0, bytes, index, frame_bytes.length );
+        index += frame_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
 
     public void sendShowStatusCmd( String contextID, String msg )
@@ -804,27 +786,27 @@ public class KJASProtocolHandler
     }
 
     private void sendAudioClipCommand(String contextId, String url, int cmd) {
-        int length = contextId.length() + url.length() + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
+        byte [] url_bytes = url.getBytes();
+        int length = contextId.length() + url_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ];
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char)cmd;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) cmd;
+        bytes[index++] = sep;
 
-            tmpchar = contextId.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextId.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-            tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( url_bytes, 0, bytes, index, url_bytes.length );
+        index += url_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     
     public void sendAudioClipPlayCommand(String contextId, String url) {
