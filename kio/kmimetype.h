@@ -143,7 +143,7 @@ public:
    */
   virtual void save( QDataStream& );
 
-  virtual PropertyPtr property( const QString& _name ) const;
+  virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
 
   /**

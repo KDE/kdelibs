@@ -3,6 +3,7 @@
 #ifndef KIO_DAEMON_H
 #define KIO_DAEMON_H
 
+#include <qlist.h>
 #include <kuniqueapp.h>
 
 struct SlaveEntry;

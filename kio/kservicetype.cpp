@@ -43,7 +43,7 @@ KServiceType::KServiceType( KDesktopFile *config )
 {
   init(config);
 }
- 
+
 void
 KServiceType::init( KDesktopFile *config)
 {
@@ -128,29 +128,24 @@ KServiceType::~KServiceType()
 {
 }
 
-KServiceType::PropertyPtr
+QVariant
 KServiceType::property( const QString& _name ) const
 {
-  QVariant* p = 0;
+  QVariant v;
 
   if ( _name == "Name" )
-    p = new QVariant( m_strName );
-  if ( _name == "Icon" )
-    p = new QVariant( m_strIcon );
-  if ( _name == "Comment" )
-    p = new QVariant( m_strComment );
+    v = QVariant( m_strName );
+  else if ( _name == "Icon" )
+    v = QVariant( m_strIcon );
+  else if ( _name == "Comment" )
+    v = QVariant( m_strComment );
+  else {
+    QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
+    if ( it != m_mapProps.end() )
+      v = it.data();
+  }
 
-  if ( p )
-    return KServiceType::PropertyPtr( p );
-
-  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
-  if ( it == m_mapProps.end() )
-    return (QVariant*)0;
-
-  p = (QVariant*)(&(it.data()));
-
-  p->ref();
-  return KServiceType::PropertyPtr( p );
+  return v;
 }
 
 QStringList

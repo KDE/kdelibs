@@ -273,19 +273,10 @@ void KMimeType::save( QDataStream& _str )
   _str << m_lstPatterns;
 }
 
-KServiceType::PropertyPtr KMimeType::property( const QString& _name ) const
+QVariant KMimeType::property( const QString& _name ) const
 {
-  QVariant* p = 0;
-
   if ( _name == "Patterns" )
-    p = new QVariant( m_lstPatterns );
-
-  if ( p )
-  {
-    // We are not interested in these
-    p->deref();
-    return p;
-  }
+    return QVariant( m_lstPatterns );
 
   return KServiceType::property( _name );
 }

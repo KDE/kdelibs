@@ -43,11 +43,10 @@
 class KServiceType : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )
-  
+
 public:
   typedef KSharedPtr<KServiceType> Ptr;
   typedef QValueList<Ptr> List;
-  typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
    * Constructor.  You may pass in arguments to create a servicetype with
@@ -60,26 +59,26 @@ public:
    * @param _fullpath set to "" if calling from a inherited constructor.
    */
   KServiceType( const QString & _fullpath );
-  
+
   /**
    * Construct a service type and take all informations from a deskop file.
    */
   KServiceType( KDesktopFile *config);
-  
+
   /**
-   * @internal construct a service from a stream. 
+   * @internal construct a service from a stream.
    * The stream must already be positionned at the correct offset
    */
   KServiceType( QDataStream& _str, int offset );
-  
+
   virtual ~KServiceType();
-  
-  /** 
+
+  /**
    * @return the icon associated with this service type. Some
    *         derived classes offer special functions which take for
    *         example an URL and returns a special icon for this
    *         URL. An example is @ref KMimeType, @ref KFoldeType and
-   *         others.  
+   *         others.
    */
   virtual QString icon() const { return m_strIcon; }
 
@@ -87,7 +86,7 @@ public:
    * @return the descriptive comment associated, if any.
    */
   virtual QString comment() const { return m_strComment; }
-  
+
   /**
    * @return the name of this service type.
    */
@@ -100,7 +99,7 @@ public:
    */
   QString desktopEntryPath() const { return m_strDesktopEntryPath; }
 
-  virtual PropertyPtr property( const QString& _name ) const;
+  virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
 
   bool isValid() const { return m_bValid; }
@@ -110,18 +109,18 @@ public:
   virtual const QMap<QString,QVariant::Type>& propertyDefs() const { return m_mapPropDefs; }
 
   /**
-   * Save ourselves to the data stream. 
+   * Save ourselves to the data stream.
    */
   virtual void save( QDataStream& );
 
   /**
-   * Load ourselves from the data stream. 
+   * Load ourselves from the data stream.
    */
   virtual void load( QDataStream& );
-  
-  /**  
+
+  /**
    * @return a pointer to the servicetype '_name' or 0L if the
-   *         service type is unknown.  
+   *         service type is unknown.
    * VERY IMPORTANT : don't store the result in a KServiceType * !
    */
   static Ptr serviceType( const QString& _name );
@@ -134,8 +133,8 @@ public:
    */
   static KService::List offers( const QString& _servicetype );
 
-  /** 
-   * @return a list of all the supported servicetypes. Useful for 
+  /**
+   * @return a list of all the supported servicetypes. Useful for
    *         showing the list of available servicetypes in a listbox,
    *         for example.
    * Very memory consuming, don't use unless really necessary.
