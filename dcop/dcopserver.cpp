@@ -134,6 +134,7 @@ DCOPConnection::DCOPConnection( IceConn conn )
     iceConn = conn;
     notifyRegister = false;
     _signalConnectionList = 0;
+    daemon = false;
 }
 
 DCOPConnection::~DCOPConnection()
@@ -872,15 +873,13 @@ void DCOPServer::removeConnection( void* data )
 #ifndef NDEBUG
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
 #endif
-        if ( !daemons.contains( conn->appId ) )
+        if ( !conn->daemon )
         {
             currentClientNumber--;
 #ifndef NDEBUG
             qDebug("DCOP: number of clients is now down to %d", currentClientNumber );
 #endif
         }
-        else
-            daemons.remove( conn->appId );
 
 	appIds.remove( conn->appId );
 
@@ -949,9 +948,9 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	    DCOPConnection* conn = clients.find( iceConn );
             if ( conn && !conn->appId.isNull() ) {
                 if ( daemon ) {
-                    if ( !daemons.contains( conn->appId ) )
+                    if ( !conn->daemon )
                     {
-                        daemons.append( conn->appId );
+                        conn->daemon = true;
 
 #ifndef NDEBUG
                         qDebug( "DCOP: new daemon %s", conn->appId.data() );
@@ -965,8 +964,8 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
                     }
                 } else
                 {
-                    if ( daemons.contains( conn->appId ) ) {
-                        daemons.remove( conn->appId );
+                    if ( conn->daemon ) {
+                        conn->daemon = false;
 
                         currentClientNumber++;
 
@@ -982,7 +981,6 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     if ( fun == "registerAs(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
-            bool isDaemon = false;
 	    QCString app2;
 	    args >> app2;
 	    QDataStream reply( replyData, IO_WriteOnly );
@@ -992,11 +990,6 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		     appIds.find( conn->appId ) == conn ) {
 		    appIds.remove( conn->appId );
 
-                    if ( daemons.contains( conn->appId ) )
-                    {
-                        daemons.remove( conn->appId );
-                        isDaemon = true;
-                    }
 		}
 
 		if ( conn->appId.isNull() )
@@ -1026,9 +1019,6 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->appId = tmp;
 		}
 		appIds.insert( conn->appId, conn );
-
-                if ( isDaemon )
-                    daemons.append( conn->appId );
 
 		int c = conn->appId.find( '-' );
 		if ( c > 0 )

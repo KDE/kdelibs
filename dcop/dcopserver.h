@@ -68,6 +68,7 @@ public:
     QList <_IceConn> waitingForReply;
     QList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
+    bool daemon;
 };
 
 
@@ -109,7 +110,6 @@ private:
     QPtrDict<DCOPConnection> clients;
     DCOPSignals *dcopSignals;
     int currentClientNumber;
-    QCStringList daemons;
     QTimer * m_timer;
 };
 
