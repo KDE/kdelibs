@@ -75,7 +75,8 @@ public:
 
 protected:
    virtual ~KShared() { }
-   int count;
+   int count; // ### KDE 3.0: rename to something like _KShared_count
+              // or make private
 };
 
 /**
