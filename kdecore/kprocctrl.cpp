@@ -53,7 +53,7 @@ KProcessController::KProcessController()
   assert( theKProcessController == 0 );
 
   if (0 > pipe(fd))
-	printf(strerror(errno));
+	puts(strerror(errno));
 
   fcntl(fd[0], F_SETFL, O_NONBLOCK);
   fcntl(fd[0], F_SETFD, FD_CLOEXEC);
