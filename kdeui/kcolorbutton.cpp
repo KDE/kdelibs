@@ -97,16 +97,15 @@ void KColorButton::drawButtonLabel( QPainter *painter )
   int h = r.height();
   int b = 5;
 
-  QColor lnCol = colorGroup().text();
   QColor fillCol = isEnabled() ? col : backgroundColor();
 
   if ( isDown() ) {
-    qDrawPlainRect( painter, l+b+1, t+b+1, w-b*2, h-b*2, lnCol, 1, 0 );
+    qDrawShadePanel( painter, l+b+1, t+b+1, w-b*2, h-b*2, colorGroup(), 1, 1, 0 );
     b++;
     if ( fillCol.isValid() )
       painter->fillRect( l+b+1, t+b+1, w-b*2, h-b*2, fillCol );
   } else {
-    qDrawPlainRect( painter, l+b, t+b, w-b*2, h-b*2, lnCol, 1, 0 );
+    qDrawShadePanel( painter, l+b, t+b, w-b*2, h-b*2, colorGroup(), 1, 1, 0 );
     b++;
     if ( fillCol.isValid() )
       painter->fillRect( l+b, t+b, w-b*2, h-b*2, fillCol );
