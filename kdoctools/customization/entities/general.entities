@@ -338,6 +338,7 @@
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
 <!ENTITY MRU	"<acronym>MRU</acronym>">
 <!ENTITY MTU	"<acronym>MTU</acronym>">
+<!ENTITY multisynk  "<application>MultiSynk</application>">
 <!ENTITY MusiXTeX	"<application>MusiXTeX</application>">
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
