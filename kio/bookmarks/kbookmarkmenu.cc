@@ -33,6 +33,7 @@
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
+#include "kbookmarkdrag.h"
 
 #include <qstring.h>
 #include <qlineedit.h>
@@ -41,7 +42,9 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 
-#include "klineedit.h"
+#include <qclipboard.h>
+
+#include <klineedit.h>
 
 #include <qfile.h>
 #include <qregexp.h>
@@ -222,7 +225,9 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
   } 
   else
   {
-    id = contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), this, SLOT(slotRMBActionRemove(int)) );
+    contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Copy Link Location" ), this, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
     contextMenu->setItemParameter( id, val );
@@ -254,6 +259,21 @@ void KBookmarkMenu::slotRMBActionRemove( int val )
   parentBookmark.deleteBookmark( bookmark );
   m_pManager->emitChanged( parentBookmark );
   m_parentMenu->hide();
+}
+
+void KBookmarkMenu::slotRMBActionCopyLocation( int val )
+{
+  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
+  if (invalid(val)) return;
+
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+  Q_ASSERT(!bookmark.isNull());
+
+  if ( !bookmark.isGroup() )
+  {
+    kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0), 
+                                QClipboard::Clipboard );
+  }
 }
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
