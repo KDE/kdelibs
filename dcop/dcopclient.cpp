@@ -635,7 +635,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
 	return true;
     }
-    
+
     if ( !isAttached() )
 	return false;
 
@@ -1304,7 +1304,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	
 	// if we were rejected by the server, we try again, otherwise we return
 	if ( tmp.status == ReplyStruct::Rejected ) {
-            // WABA: Looks like an attempt to keep your CPU usage at 100%
+	    // WABA: Looks like an attempt to keep your CPU usage at 100%
 	    continue;
 	}
 	

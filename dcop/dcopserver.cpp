@@ -811,7 +811,7 @@ void DCOPServer::removeConnection( void* data )
 
     // Send DCOPReplyFailed to all in conn->waitingForDelayedReply
     while (!conn->waitingForDelayedReply.isEmpty()) {
-	IceConn iceConn = conn->waitingForDelayedReply.take();
+	IceConn iceConn = conn->waitingForDelayedReply.take(0);
 	if (iceConn) {
 	    DCOPConnection* target = clients.find( iceConn );
 	    qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target ? target->appId.data() : "<unknown>", conn->appId.data() );
@@ -825,7 +825,6 @@ void DCOPServer::removeConnection( void* data )
 	}
     }
 
-    // Send DCOPReplyDelayed with 0 seq to all in conn->waitingDelayedReply
     if ( !conn->appId.isNull() ) {
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
 	appIds.remove( conn->appId );
@@ -852,7 +851,7 @@ void DCOPServer::removeConnection( void* data )
 	    }
 	}
     }
-    //_IceFreeConnection(conn->iceConn);
+    
     delete conn;
 }
 
