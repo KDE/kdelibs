@@ -583,16 +583,25 @@ void KApplication::parseCommandLine( int& argc, char** argv )
     }
 
   }
-
-  if (aIconPixmap.isNull()){
-    aIconPixmap = getIconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
-  }
-  if (aMiniIconPixmap.isNull()){
-      aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm"));
-  }
-
 }
 
+QPixmap KApplication::getIcon() const
+{
+  if( aIconPixmap.isNull()) {
+    KApplication *that = (KApplication*)this;
+    that->aIconPixmap = that->getIconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
+  }
+  return aIconPixmap; 
+}
+
+QPixmap KApplication::getMiniIcon() const
+{
+  if (aMiniIconPixmap.isNull()) {
+    KApplication *that = (KApplication*)this;    
+    that->aMiniIconPixmap = that->getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm"));
+  }
+  return aMiniIconPixmap; 
+}
 KApplication::~KApplication()
 {
   removeEventFilter( this );

@@ -205,18 +205,14 @@ public:
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
-  QPixmap getIcon() const
-	{ return aIconPixmap; }
-
+  QPixmap getIcon() const;
 
   /**
 	* Get the mini-icon for the application.
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
-  QPixmap getMiniIcon() const
-	{ return aMiniIconPixmap; }
-
+  QPixmap getMiniIcon() const;
 
   /** Sets the top widget of the application. This widget will
     * be used for communication with the session manager.
@@ -731,6 +727,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.72  1999/05/06 10:37:12  kulow
+// I don't know why I spent several days removing headers from kapp.h when
+// the next commit adds one ;(
+//
 // Revision 1.71  1999/05/06 02:50:30  pbrown
 // refer to .desktop files not .kdelnk files.
 //
