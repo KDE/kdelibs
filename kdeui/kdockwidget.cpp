@@ -24,6 +24,7 @@
 #include <qobjectlist.h>
 #include <qstrlist.h>
 #include <qcursor.h>
+#include <qwidgetlist.h>
 
 #ifndef NO_KDE2
 #ifdef Q_WS_X11
@@ -1029,7 +1030,7 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 
   undockProcess = false;
 
-  menuData = new QList<MenuDockData>;
+  menuData = new QPtrList<MenuDockData>;
   menuData->setAutoDelete( true );
   menuData->setAutoDelete( true );
 
@@ -1097,7 +1098,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 
             currentDragWidget = curdw;
             currentMoveWidget = 0L;
-            childDockWidgetList = new WidgetList();
+            childDockWidgetList = new QWidgetList();
             childDockWidgetList->append( curdw );
             findChildDockWidget( curdw, childDockWidgetList );
 
@@ -1268,7 +1269,7 @@ void KDockManager::findChildDockWidget( QWidget*& ww, const QWidget* p, const QP
   return;
 }
 
-void KDockManager::findChildDockWidget( const QWidget* p, WidgetList*& list )
+void KDockManager::findChildDockWidget( const QWidget* p, QWidgetList*& list )
 {
   if ( p->children() ) {
     QWidget *w;

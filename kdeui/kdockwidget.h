@@ -88,9 +88,6 @@ class KConfig;
 class QToolBar;
 #endif
 
-// KDE 3.0 TODO: this belongs in a namespace!! (Clash with X11/Intrinsic.h!)
-typedef QList<QWidget> WidgetList;
-
 /**
  * An abstract base clase for all dockwidget headers (and member of the dockwidget class set).
  * See the class description of @ref KDockWidgetHeader!
@@ -956,7 +953,7 @@ private:
    * @param p the parent widget where the recursive search starts from
    * @param l the widget list that contains the search result after the return of this method
    */
-  void findChildDockWidget( const QWidget* p, WidgetList*& l);
+  void findChildDockWidget( const QWidget* p, QWidgetList*& l);
 
   /**
    * Sets a dockwidget in drag mode.
@@ -1007,7 +1004,7 @@ private:
   /**
    * It is of interest during the dock process. Then it contains all child dockwidgets.
    */
-  WidgetList* childDockWidgetList;
+  QWidgetList* childDockWidgetList;
 
   /**
    * The dockposition where the dockwidget would be docked to, if we dropped it here.
@@ -1060,7 +1057,7 @@ private:
   /**
    * An internal list containing data for the menuitems for the visibility popup menu.
    */
-  QList<MenuDockData> *menuData;
+  QPtrList<MenuDockData> *menuData;
 
   class KDockManagerPrivate;
   KDockManagerPrivate *d;
