@@ -127,4 +127,4 @@ kdepackages:
 	fi
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop
-include ../Doxyfile.am
+include ../admin/Doxyfile.am

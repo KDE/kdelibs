@@ -12,4 +12,4 @@ include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplacedialog.h
 METASOURCES = AUTO
 
 DOXYGEN_REFERENCES = kdecore kdeui
-include ../Doxyfile.am
+include ../admin/Doxyfile.am

@@ -27,4 +27,4 @@ servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop
 servicetypedir = $(kde_servicetypesdir)
 
 DOXYGEN_REFERENCES = kdecore kdeui kdefx kio
-include ../Doxyfile.am
+include ../admin/Doxyfile.am

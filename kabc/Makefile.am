@@ -84,4 +84,4 @@ datadir = $(kde_appsdir)/Settings/Personalization
 
 EXTRA_DIST = $(data_DATA)
 
-include ../Doxyfile.am
+include ../admin/Doxyfile.am
