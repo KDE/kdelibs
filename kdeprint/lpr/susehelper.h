@@ -17,6 +17,9 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#ifndef susehelper_h
+#define susehelper_h
+
 #include <qdict.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -62,3 +65,5 @@ private:
 	QString			yastdir;
 	bool			loaded;
 };
+
+#endif
