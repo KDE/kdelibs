@@ -8,8 +8,7 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-2.3.1)
-kdesupport (if you don't have a recent libxml)
+qt-copy (This is qt-3.0.0)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
@@ -70,7 +69,7 @@ can be replaced with make).
 
 For Qt the magic sequence is:
 
-./configure -debug -shared -gif -sm -system-zlib -system-libpng -system-jpeg
+./configure -debug -shared -qt-gif -thread -sm -system-zlib -system-libpng -system-jpeg
 make
 
 Common problems
