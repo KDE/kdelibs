@@ -2,5 +2,7 @@
 <Menu name="popupmenu" >
  <Action name="savelinkas" />
  <Action name="saveimageas" />
+ <Separator weakSeparator="1" />
+ <Action name="copylinklocation" />
 </Menu>
 </kpartgui>

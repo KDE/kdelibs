@@ -199,7 +199,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   connect( d->m_view, SIGNAL( selectionChanged() ),
 	   this, SLOT( slotSelectionChanged() ) );
-  
+
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
   d->m_bJScriptEnabled = false;
@@ -1616,9 +1616,9 @@ DOM::Node KHTMLPart::nodeUnderMouse() const
 
 void KHTMLPart::slotSelectionChanged()
 {
-  emit d->m_extension->enableAction( "copy", hasSelection() ); 
+  emit d->m_extension->enableAction( "copy", hasSelection() );
   emit d->m_extension->selectionInfo( selectedText() );
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -1654,7 +1654,7 @@ void KHTMLPartBrowserExtension::copy()
   QString text = m_part->selectedText();
   QClipboard *cb = QApplication::clipboard();
   cb->setText(text);
-} 
+}
 
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {
@@ -1664,6 +1664,7 @@ public:
   KURL m_imageURL;
   KAction *m_paSaveLinkAs;
   KAction *m_paSaveImageAs;
+  KAction *m_paCopyLinkLocation;
 };
 
 
@@ -1676,8 +1677,12 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   setInstance( khtml->instance() );
 
   if ( !url.isEmpty() )
+  {
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
  				     actionCollection(), "savelinkas" );
+    d->m_paCopyLinkLocation = new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
+					   actionCollection(), "copylinklocation" );
+  }
 
   DOM::Element e;
   e = khtml->nodeUnderMouse();
@@ -1690,12 +1695,12 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   }
 
   setXML( doc );
+  setDocument( QDomDocument(), true ); // ### HACK
 
+  QDomElement menu = document().documentElement().namedItem( "Menu" ).toElement();
+  
   if ( actionCollection()->count() > 0 )
-  {
-    QDomElement e = document().documentElement().namedItem( "Menu" ).toElement();
-    e.insertBefore( document().createElement( "separator" ), e.firstChild() );
-  }
+    menu.insertBefore( document().createElement( "separator" ), menu.firstChild() );
 }
 
 KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
@@ -1715,6 +1720,11 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 {
   saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL );
 }
+
+void KHTMLPopupGUIClient::slotCopyLinkLocation()
+{
+  QApplication::clipboard()->setText( d->m_url.url() );
+} 
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url )
 {

@@ -637,6 +637,7 @@ public:
 private slots:
   void slotSaveLinkAs();
   void slotSaveImageAs();
+  void slotCopyLinkLocation();
 private:
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;
