@@ -32,7 +32,6 @@
 #include <kapp.h>
 #include <kfontdialog.h>
 #include <qtimer.h>
-
 #include "keditcl.h"
 
 KEdit::KEdit(KApplication *, QWidget *parent, const char *name,
@@ -135,48 +134,21 @@ int KEdit::loadFile(const QString& name, int mode){
     QFileInfo info(name);
 
     if(!info.exists()){
-      QMessageBox::warning(
-		  this,
-		  i18n("Sorry"),
-		  i18n("The specified File does not exist"),
-		  i18n("OK"),
-		  "",
-		  "",
-		  0,0
-		  );
+      KMessageBox::sorry(this, i18n("The specified File does not exist"));
 
       return KEDIT_RETRY;
     }
 
     if(info.isDir()){
-      QMessageBox::warning(
-		   this,
-		   i18n("Sorry:"),
-		   i18n("You have specificated a directory"),
-		   i18n("OK"),
-		  "",
-		  "",
-		  0,0
-		   );		
-
+      KMessageBox::sorry(this, i18n("You have specificated a directory"));
       return KEDIT_RETRY;
     }
 
 
    if(!info.isReadable()){
-      QMessageBox::warning(
-		  this,
-		  i18n("Sorry"),
-                  i18n("You do not have read permission to this file."),
-                  i18n("OK"),
-		  "",
-		  "",
-		  0,0
-		  );
-
-
-      return KEDIT_RETRY;
-    }
+     KMessageBox::sorry(this,  i18n("You do not have read permission to this file."));
+     return KEDIT_RETRY;
+   }
 
 
     fdesc = open(name.ascii(), O_RDONLY);
@@ -185,28 +157,11 @@ int KEdit::loadFile(const QString& name, int mode){
         switch(errno) {
         case EACCES:
 
-	  QMessageBox::warning(
-		  this,
-		  i18n("Sorry"),
-                  i18n("You do not have read permission to this file."),
-                  i18n("OK"),
-		  "",
-		  "",
-		  0,0
-		  );
-
+	  KMessageBox::sorry(this, i18n("You do not have read permission to this file."));
 	  return KEDIT_OS_ERROR;
 
         default:
-            QMessageBox::warning(
-		  this,
-		  i18n("Sorry"),				
-		  i18n("An Error occured while trying to open this Document"),
-                  i18n("OK"),
-		  "",
-		  "",
-		  0,0
-		  );
+            KMessageBox::sorry(this, i18n("An Error occured while trying to open this Document"));
             return KEDIT_OS_ERROR;
         }
     }
@@ -390,17 +345,10 @@ int KEdit::openFile(int mode)
   int result;
 
     if( isModified() ) {
-      switch( QMessageBox::warning(
+      switch( KMessageBox::warningYesNoCancel(
 			 this,
-			 i18n("Warning:"), 	
 			 i18n("The current Document has been modified.\n"\
-					    "Would you like to save it?"),
-			 i18n("Yes"),
-			 i18n("No"),
-			 i18n("Cancel"),
-                                  0, 2
-			 )
-	      )
+					    "Would you like to save it?")))
 	{
 	case 0: // Yes or Enter
 
@@ -411,17 +359,8 @@ int KEdit::openFile(int mode)
 
 	if (result != KEDIT_OK){
 
-	  switch(QMessageBox::warning(
-			   this,
-			   i18n("Sorry:"),
-			   i18n("Could not save the document.\n"\
-                                              "Open a new document anyways?"),
-			   i18n("Yes"),
-                           i18n("No"),
-			       "",
-			       0,1
-			   )
-		 )
+	  switch(KMessageBox::warningYesNo(this, i18n("Could not save the document.\n"\
+                                              "Open a new document anyways?")))
 	    {
 
 	    case 0:
@@ -472,16 +411,9 @@ int KEdit::newFile(){
   int result;
 
     if( isModified() ) {
-      switch( QMessageBox::warning(
-			 this,
-			 i18n("Warning:"), 	
+      switch( KMessageBox::warningYesNo(this,
 			 i18n("The current Document has been modified.\n"\
-					    "Would you like to save it?"),
-			 i18n("Yes"),
-			 i18n("No"),
-			 i18n("Cancel"),
-                                  0, 2 )
-	      )
+					    "Would you like to save it?")))
 	{
 	
 	case 0: // Yes or Enter
@@ -493,16 +425,10 @@ int KEdit::newFile(){
 
 	  if (result != KEDIT_OK){
 
-	    switch(QMessageBox::warning(this,
-			   i18n("Sorry:"),
-			   i18n("Could not save the document.\n"\
-                                              "Create a new document anyways?"),
-			   i18n("Yes"),
-                           i18n("No"),
-			       "",
-			       0,1
-				      )){
-
+	    switch(KMessageBox::warningYesNo(this,
+			   i18n("Could not save the document.\n"
+				"Create a new document anyways?"))) {
+		   
 	  case 0:
 	    break;
 	  case 1:
@@ -1502,15 +1428,7 @@ int KEdit::saveFile(){
     if( !file.open( IO_WriteOnly | IO_Truncate )) {
       if(make_backup_copies)
         rename(backup_filename.data(),filename.data());
-      QMessageBox::warning(
-			   this,
-			   i18n("Sorry"),
-			   i18n("Could not save the document\n"),
-			   i18n("OK"),
-			   "",
-			   "",
-			   0,0
-			   );
+      KMessageBox::sorry(this, i18n("Could not save the document"));
       return KEDIT_OS_ERROR;
     }
 
@@ -1597,16 +1515,9 @@ try_again:
 
   if(info.exists()){
 
-    switch( QMessageBox::warning(
-			   this,
-			   i18n("Warning:"), 	
-			   i18n("A Document with this Name exists already\n"\
-						     "Do you want to overwrite it ?"),
-                           i18n("Yes"),
-			   i18n("No"),
-				  "",
-                                  1, 1 )
-	    ){
+    switch( KMessageBox::warningYesNo(0, i18n("A Document with this Name exists already\n"
+					      "Do you want to overwrite it ?")))
+      {
     case 0: // Yes or Enter
         // try again
         break;
@@ -1654,17 +1565,8 @@ int KEdit::doSave()
 
     if(info.exists() && !info.isWritable()){
 
-      QMessageBox::warning(
-			   this,
-			   i18n("Sorry:"),
-			   i18n("You do not have write permission "\
-					      "to this file.\n"),
-			   i18n("OK"),
-			   "",
-			   "",
-			   0,0
-			   );
-
+      KMessageBox::sorry(0, i18n("You do not have write permission "
+				 "to this file."));
       return KEDIT_NOPERMISSIONS;
     }
 

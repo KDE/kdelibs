@@ -1,7 +1,7 @@
 #include "kio_interface.h"
 #include "kio_error.h"
 
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -137,5 +137,5 @@ void kioErrorDialog( int _errid, const char *_errortext )
 {
   QString tmp = kioErrorString( _errid, _errortext );
   
-  QMessageBox::critical( 0, i18n( "Error" ), tmp, i18n( "OK" ) );
+  KMessageBox::error( 0, tmp);
 }

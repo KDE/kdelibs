@@ -16,7 +16,7 @@
 #include "editentry.h"
 #include <qpushbutton.h>
 #include <qframe.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include "debug.h"
 #include <klocale.h>
 
@@ -136,10 +136,8 @@ KabAPI::ErrorCode KabAPI::add(const AddressBook::Entry& entry, string& key,
     }
   if(!widget->AddressBook::add(changed, dummy))
     {
-      QMessageBox::information(this,
-			  i18n("Sorry"),
-			  i18n("Your new entry could not be added."),
-			  i18n("OK"));
+      KMessageBox::sorry(this,
+			  i18n("Your new entry could not be added."));
       return InternError;
     } else {
       widget->updateSelector();

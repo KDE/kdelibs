@@ -100,15 +100,11 @@ again:
   if(result == 0){
     if(!srchdialog->get_direction()){ // forward search
     
-      int query = QMessageBox::information(
+      int query = KMessageBox::warningYesNo(
 					   srchdialog,
-					   i18n("Find"), 
-					   i18n("End of document reached.\n"\
+					   i18n("End of document reached.\n"
                                                 "Continue from the beginning?"), 
-					   i18n("Yes"),
-					   i18n("No"),
-					   "",
-					   0,1);
+					   i18n("Find"));
       if (query == 0){
 	line = 0;
 	col = 0;
@@ -117,15 +113,11 @@ again:
     }
     else{ //backward search
       
-      int query = QMessageBox::information(
+      int query = KMessageBox::warningYesNo(
 					   srchdialog,
-					   i18n("Find"), 
-					   i18n("Beginning of document reached.\n"\
-                                                "Continue from the end?"), 
-					   i18n("Yes"),
-					   i18n("No"),
-					   "",
-					   0,1);
+					   i18n("Beginning of document reached.\n"
+                                                "Continue from the end?"),
+					   i18n("Find"));
       if (query == 0){
 	QString string = textLine( numLines() - 1 );
 	line = numLines() - 1;
@@ -355,15 +347,11 @@ again:
     
   if(!replace_dialog->get_direction()){ // forward search
     
-    int query = QMessageBox::information(
+    int query = KMessageBox::warningYesNo(
 				   replace_dialog,
-				   i18n("Find"), 
-				   i18n("End of document reached.\n"\
-                                        "Continue from the beginning?"), 
-				   i18n("Yes"),
-				   i18n("No"),
-				   "",
-				   0,1);
+				   i18n("End of document reached.\n"
+                                        "Continue from the beginning?"),
+				   i18n("Find"));
     if (query == 0){
       replace_all_line = 0;
       replace_all_col = 0;
@@ -372,15 +360,11 @@ again:
   }
   else{ //backward search
     
-    int query = QMessageBox::information(
+    int query = KMessageBox::warningYesNo(
 				   replace_dialog,
-				   i18n("Find"), 
-				   i18n("Beginning of document reached.\n"\
-                                        "Continue from the end?"), 
-				   i18n("Yes"),
-				   i18n("No"),
-				   "",
-				   0,1);
+				   i18n("Beginning of document reached.\n"
+                                        "Continue from the end?"),
+				   i18n("Find"));
     if (query == 0){
       QString string = textLine( numLines() - 1 );
       replace_all_line = numLines() - 1;
@@ -418,15 +402,11 @@ void KEdit::replace_search_slot(){
       }
       else{
 
-	int query = QMessageBox::information(
+	int query = KMessageBox::warningYesNo(
 			 replace_dialog,
-			 i18n("Replace"), 
-			 i18n("Beginning of document reached.\n"\
-                              "Continue from the end?"), 
-			 i18n("Yes"),
-			 i18n("No"),
-			 "",
-			 0,1);
+			 i18n("Beginning of document reached.\n"
+                              "Continue from the end?"),
+			 i18n("Replace"));
 
 	if (query == 0){
 	  QString string = textLine( numLines() - 1 );
@@ -448,15 +428,11 @@ again:
   if(result == 0){
     if(!replace_dialog->get_direction()){ // forward search
     
-      int query = QMessageBox::information(
+      int query = KMessageBox::warningYesNo(
 				     replace_dialog,
-				     i18n("Replace"), 
-				     i18n("End of document reached.\n"\
+				     i18n("End of document reached.\n"
                                           "Continue from the beginning?"), 
-				     i18n("Yes"),
-				     i18n("No"),
-				     "",
-				     0,1);
+				     i18n("Replace")); 
       if (query == 0){
 	line = 0;
 	col = 0;
@@ -465,15 +441,11 @@ again:
     }
     else{ //backward search
       
-      int query = QMessageBox::information(
+      int query = KMessageBox::warningYesNo(
 					   replace_dialog,
-					   i18n("Replace"), 
-					   i18n("Beginning of document reached.\n"\
-                                                "Continue from the end?"), 
-					   i18n("Yes"),
-					   i18n("No"),
-					   "",
-					   0,1);
+					   i18n("Beginning of document reached.\n"
+                                                "Continue from the end?"),
+					   i18n("Replace"));
       if (query == 0){
 	QString string = textLine( numLines() - 1 );
 	line = numLines() - 1;

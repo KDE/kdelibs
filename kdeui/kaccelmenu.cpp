@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "../config.h"
 
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
 
@@ -123,7 +123,7 @@ void KAccelMenu::popMsg () {
       QWhatsThis::remove(this);
     } else {
       msg = i18n("Global Key: cannot change shortcut");
-      QMessageBox::warning(this, "KAccelMenu Warning", msg, i18n("OK"));
+      KMessageBox::sorry(this, msg, "KAccelMenu Warning");
     }
   }
 }
@@ -180,7 +180,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	    if (!oldact.isNull() && !keys->configurable(oldact)) {
 	      stmp = i18n("Key already used as global key: ");
 	      stmp += keys->description(oldact);
-	      QMessageBox::warning(this,"Kpackage",stmp, i18n("OK"));
+	      KMessageBox::sorry(this, stmp);
 	    } else {
 	      keys->clearItem(oldact);
 	      keys->updateItem(actions[cid],kcode);
@@ -189,7 +189,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	  }
 	} else {
 	  stmp = i18n("Global key cannot be changed");
-	  QMessageBox::warning(this,"Kpackage",stmp, i18n("OK"));
+	  KMessageBox::sorry(this, stmp);
 	}
       }
     }

@@ -32,7 +32,7 @@
 #include <qradiobutton.h>
 #include <qfiledialog.h>
 #include <qcheckbox.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
 

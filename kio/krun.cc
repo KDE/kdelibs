@@ -25,8 +25,7 @@
 #include "kio_error.h"
 #include "kio_openwith.h"
 
-#include <qmessagebox.h>
-
+#include <kmessagebox.h>
 #include <kurl.h>
 #include <kapp.h>
 #include <kdebug.h>
@@ -53,7 +52,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )
   {
     QString tmp = i18n("Can not enter\n%1\nAccess denied").arg(_url);
-    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK") );
+    KMessageBox::error( 0L, tmp);
     return false;
   }
   else if ( strcmp( _mimetype, "application/x-desktop" ) == 0 )
@@ -125,7 +124,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
       tmp += *it;
-      QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
+      KMessageBox::error( 0L, tmp);
       return false;
     }
 
@@ -534,7 +533,7 @@ void KRun::foundMimeType( const char *_type )
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
       tmp += m_strURL;
-      QMessageBox::critical( 0L, i18n( "Error" ), tmp, i18n( "OK" ) );
+      KMessageBox::error( 0L, tmp );
       return;
     }
 

@@ -12,7 +12,7 @@
 #include <klocale.h>
 #include <klineeditdlg.h>
 
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +45,7 @@ void pasteClipboard( const char *_dest_url )
   QStringList urls;
   if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ) {
     if ( urls.count() == 0 ) {
-      QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
+      KMessageBox::error( 0L, i18n("The clipboard is empty"));
       return;
     }
 
@@ -59,7 +59,7 @@ void pasteClipboard( const char *_dest_url )
 
   if ( ba.size() == 0 )
   {
-    QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
+    KMessageBox::sorry(0, i18n("The clipboard is empty"));
     return;
   }
 
@@ -71,8 +71,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
   KURL u( _dest_url );
   if ( !u.isLocalFile() ) {
     // TODO: Use KIO put command here for writing the data.
-    QMessageBox::critical( 0L, i18n("Error"), i18n("Pasting clipboard data is only supported on the local hard disk currently"),
-			   i18n("OK") );
+    KMessageBox::sorry( 0L, i18n("Pasting clipboard data is only supported on the local hard disk currently"));
     return;
   }
 
@@ -81,7 +80,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
   if ( x ) {
     QString url = l.text();
     if ( url.isEmpty() ) {
-      QMessageBox::critical( 0L, i18n("Error"), i18n("You did not enter a filename"), i18n("OK") );
+      KMessageBox::error( 0L, i18n("You did not enter a filename"));
       return;
     }
 	
@@ -90,7 +89,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
     struct stat buff;
     if ( stat( u.path().ascii(), &buff ) == 0 ) {
       QString tmp = i18n("The file %1 does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
-      if ( QMessageBox::critical( 0L, i18n("Warning"), tmp,i18n("Yes"), i18n("No") ) == 1 )
+      if ( KMessageBox::warningYesNo( 0L, tmp) == 1 )
 	return;
     }
     

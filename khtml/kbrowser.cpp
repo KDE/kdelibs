@@ -29,7 +29,7 @@
 #include <kdebug.h>
 #include <khtml.h>
 
-#include <qmsgbox.h>
+#include <kmessagebox.h>
 #include <klocale.h>
 
 KBrowser::KBrowser( QWidget *parent, const char *name, KBrowser *_parent_browser )
@@ -330,9 +330,9 @@ void KBrowser::slotURLSelected( QString _url, int _button, QString _target )
   if ( strcmp( u1.protocol(), "cgi" ) == 0 &&
        strcmp( u2.protocol(), "file" ) != 0 && strcmp( u2.protocol(), "cgi" ) != 0 )
   {
-    QMessageBox::critical( (QWidget*)0L, i18n( "Security Alert" ),
-			   i18n( "This page is untrusted\nbut it contains a link to your local file system."),
-			   i18n("OK") );
+    KMessageBox::error( 0, 
+			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
+			i18n( "Security Alert" ));
     return;
   }
     

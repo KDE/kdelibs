@@ -17,7 +17,7 @@ extern "C" {
 #include "bug_3d.xpm"
 }
 #include "AssertDialog.h"
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qradiobutton.h>
 #include <iostream.h>
 #include "kabapi.h"
@@ -211,16 +211,12 @@ void evaluate_assertion(bool condition, const char* file, int line,
 	  if(api->sendEmail(dialog.getMailAddress(), subject)
 	     !=KabAPI::NoError)
 	    {
-	      QMessageBox::information
-		(0, i18n("Error handling error"),
-		 i18n("Could not send message."),
-		 i18n("OK"));
+	      KMessageBox::sorry(0, 
+				 i18n("Could not send message."));
 	    }
 	} else {
-	  QMessageBox::information
-	    (0, i18n("Error handling error"),
-	     i18n("The author did not publish an email address."),
-	     i18n("OK"));
+	  KMessageBox::sorry(0, 
+			     i18n("The author did not publish an email address."));
 	}
       break;
     }

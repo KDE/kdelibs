@@ -2,7 +2,7 @@
 #include "kmimetypes.h"
 
 #include <qstring.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -109,7 +109,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
   {
     QString tmp = i18n( "The service/mime type config file\n%1\n"
 			"does not contain a ServiceType=...\nor MimeType=... entry").arg( _file );
-    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
+    KMessageBox::error( 0L, tmp);
     return 0;
   }
 

@@ -79,7 +79,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
 {
     int i;
     QString tmpStr;
-    warning("KThemeStyle: Reading theme settings.");
+   // debug("KThemeStyle: Reading theme settings.");
     KConfig config("kstylerc", true, false);
 
     // Read in misc settings
@@ -241,8 +241,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     pixmaps[i] = pixmaps[existing];
                     images[i] = NULL;
                     duplicate[i] = true;
-                    warning("KThemeStyle: Marking %s as duplicate.",
-                            pixnames[i].ascii());
+                    // warning("KThemeStyle: Marking %s as duplicate.",
+		    // pixnames[i].ascii());
                     break;
                 }
             }
@@ -403,7 +403,6 @@ QImage* KThemeBase::loadImage(QString &name)
 KThemePixmap* KThemeBase::loadPixmap(QString &name)
 {
     KThemePixmap *pixmap = new KThemePixmap;
-    warning("loading pixmap %s", name.latin1());
     QString path = locate("kstyle_pixmap", name);
     pixmap->load(path);
     if (!pixmap->isNull())

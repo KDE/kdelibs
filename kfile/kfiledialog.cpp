@@ -11,7 +11,7 @@
 #include <qpopupmenu.h>
 #include <qpixmap.h>
 #include <qobjcoll.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qlineedit.h>
 #include <qlistbox.h>
 #include <qlist.h>
@@ -486,13 +486,11 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     if ( !acceptUrls && _pathstr.find(':') != -1 ) {
 	KURL testURL(pathstr);
 	if ( !testURL.isLocalFile() ) {
-	    QMessageBox::critical(this,
-				 i18n("Error: Not local file"),
-				 i18n("The specified directory is not a "
-				      "local directory\n"
-				      "But the application accepts just "
-				      "local files."),
-				 i18n("OK"));
+	    KMessageBox::sorry(this,
+			  i18n("The specified directory is not a "
+			       "local directory\n"
+			       "But the application accepts just "
+			       "local files."));
 	    return;
 	}
     }
@@ -502,11 +500,9 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     dir->setPath(pathstr);
 
     if (!dir->isReadable()) {
-	QMessageBox::critical(this,
-			     i18n("Error: Cannot Open Directory"),
-			     i18n("The specified directory does not exist\n"
-				  "or was not readable."),
-			     i18n("Dismiss"));
+	KMessageBox::error(this,
+			   i18n("The specified directory does not exist\n"
+				"or was not readable."));
 	dir->setPath(backup);
     } else {
 
@@ -614,11 +610,9 @@ void KFileBaseDialog::pathChanged()
 				QDir::Name | QDir::IgnoreCase);
 
     if (!dir->isReadable()) {
-	QMessageBox::critical(this,
-			     i18n("Error: Cannot Open Directory"),
-			     i18n("The specified directory does not exist "
-				  "or was not readable."),
-			     i18n("Dismiss"));
+	KMessageBox::error(this,
+			   i18n("The specified directory does not exist "
+				"or was not readable."));
 	if (backStack.isEmpty())
 	    home();
 	else

@@ -24,9 +24,9 @@
 #include "kapp.h"
 #include "kglobal.h"
 #include "kstddirs.h"
-
-#include <qfile.h>
 #include <qmessagebox.h>
+#include <klocale.h>
+#include <qfile.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qtextstream.h>
@@ -239,7 +239,7 @@ void kdebug( ushort nLevel, ushort nArea,
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
                 va_end( arguments );
-                QMessageBox::warning( 0L, aCaption, buf, "OK" );
+                QMessageBox::warning( 0L, aCaption, buf, i18n("&OK") );
                 break;
           }
         case 2: // Shell
@@ -280,98 +280,98 @@ void kdebug( ushort nLevel, ushort nArea,
 
 
 KDebugDialog::KDebugDialog() :
-  QDialog( 0L, "Debug Settings", true )
+  QDialog( 0L, i18n("Debug Settings"), true )
 {
-  pInfoGroup = new QGroupBox( "Information", this );
+  pInfoGroup = new QGroupBox( i18n("Information"), this );
   pInfoCombo = new QComboBox( false, this );
   pInfoGroup->setGeometry( 5, 10, 140, 185 );
-  pInfoLabel1 = new QLabel( "Output to:", this );
+  pInfoLabel1 = new QLabel( i18n("Output to:"), this );
   pInfoLabel1->setGeometry( 15, 30, 120, 15 );
   pInfoCombo->setGeometry( 15, 50, 120, 20 );
-  pInfoCombo->insertItem( "File" );
-  pInfoCombo->insertItem( "Message Box" );
-  pInfoCombo->insertItem( "Shell" );
-  pInfoCombo->insertItem( "Syslog" );
-  pInfoCombo->insertItem( "None" );
-  pInfoLabel2 = new QLabel( "Filename:", this );
+  pInfoCombo->insertItem( i18n("File") );
+  pInfoCombo->insertItem( i18n("Message Box") );
+  pInfoCombo->insertItem( i18n("Shell") );
+  pInfoCombo->insertItem( i18n("Syslog") );
+  pInfoCombo->insertItem( i18n("None") );
+  pInfoLabel2 = new QLabel( i18n("Filename:"), this );
   pInfoLabel2->setGeometry( 15, 85, 120, 15 );
   pInfoFile = new QLineEdit( this );
   pInfoFile->setGeometry( 15, 105, 120, 20 );
-  pInfoLabel3 = new QLabel( "Show only area(s):", this );
+  pInfoLabel3 = new QLabel( i18n("Show only area(s):"), this );
   pInfoLabel3->setGeometry( 15, 140, 120, 15 );
   pInfoShow = new QLineEdit( this );
   pInfoShow->setGeometry( 15, 160, 120, 20 );
 
-  pWarnGroup = new QGroupBox( "Warning", this );
+  pWarnGroup = new QGroupBox( i18n("Warning"), this );
   pWarnGroup->setGeometry( 165, 10, 140, 185 );
-  pWarnLabel1 = new QLabel( "Output to:", this );
+  pWarnLabel1 = new QLabel( i18n("Output to:"), this );
   pWarnLabel1->setGeometry( 175, 30, 120, 15 );
   pWarnCombo = new QComboBox( false, this );
   pWarnCombo->setGeometry( 175, 50, 120, 20 );
-  pWarnCombo->insertItem( "File" );
-  pWarnCombo->insertItem( "Message Box" );
-  pWarnCombo->insertItem( "Shell" );
-  pWarnCombo->insertItem( "Syslog" );
-  pWarnCombo->insertItem( "None" );
-  pWarnLabel2 = new QLabel( "Filename:", this );
+  pWarnCombo->insertItem( i18n("File") );
+  pWarnCombo->insertItem( i18n("Message Box") );
+  pWarnCombo->insertItem( i18n("Shell") );
+  pWarnCombo->insertItem( i18n("Syslog") );
+  pWarnCombo->insertItem( i18n("None") );
+  pWarnLabel2 = new QLabel( i18n("Filename:"), this );
   pWarnLabel2->setGeometry( 175, 85, 120, 15 );
   pWarnFile = new QLineEdit( this );
   pWarnFile->setGeometry( 175, 105, 120, 20 );
-  pWarnLabel3 = new QLabel( "Show only area(s):", this );
+  pWarnLabel3 = new QLabel( i18n("Show only area(s):"), this );
   pWarnLabel3->setGeometry( 175, 140, 120, 15 );
   pWarnShow = new QLineEdit( this );
   pWarnShow->setGeometry( 175, 160, 120, 20 );
 
-  pErrorGroup = new QGroupBox( "Error", this );
+  pErrorGroup = new QGroupBox( i18n("Error"), this );
   pErrorGroup->setGeometry( 5, 215, 140, 185 );
-  pErrorLabel1 = new QLabel( "Output to:", this );
+  pErrorLabel1 = new QLabel( i18n("Output to:"), this );
   pErrorLabel1->setGeometry( 15, 235, 120, 15 );
   pErrorCombo = new QComboBox( false, this );
   pErrorCombo->setGeometry( 15, 255, 120, 20 );
-  pErrorCombo->insertItem( "File" );
-  pErrorCombo->insertItem( "Message Box" );
-  pErrorCombo->insertItem( "Shell" );
-  pErrorCombo->insertItem( "Syslog" );
-  pErrorCombo->insertItem( "None" );
-  pErrorLabel2 = new QLabel( "Filename:", this );
+  pErrorCombo->insertItem( i18n("File") );
+  pErrorCombo->insertItem( i18n("Message Box") );
+  pErrorCombo->insertItem( i18n("Shell") );
+  pErrorCombo->insertItem( i18n("Syslog") );
+  pErrorCombo->insertItem( i18n("None") );
+  pErrorLabel2 = new QLabel( i18n("Filename:"), this );
   pErrorLabel2->setGeometry( 15, 290, 120, 15 );
   pErrorFile = new QLineEdit( this );
   pErrorFile->setGeometry( 15, 310, 120, 20 );
-  pErrorLabel3 = new QLabel( "Show only area(s):", this );
+  pErrorLabel3 = new QLabel( i18n("Show only area(s):"), this );
   pErrorLabel3->setGeometry( 15, 345, 120, 15 );
   pErrorShow = new QLineEdit( this );
   pErrorShow->setGeometry( 15, 365, 120, 20 );
 
-  pFatalGroup = new QGroupBox( "Fatal error", this );
+  pFatalGroup = new QGroupBox( i18n("Fatal error"), this );
   pFatalGroup->setGeometry( 165, 215, 140, 185 );
-  pFatalLabel1 = new QLabel( "Output to:", this );
+  pFatalLabel1 = new QLabel( i18n("Output to:"), this );
   pFatalLabel1->setGeometry( 175, 235, 120, 15 );
   pFatalCombo = new QComboBox( false, this );
   pFatalCombo->setGeometry( 175, 255, 120, 20 );
-  pFatalCombo->insertItem( "File" );
-  pFatalCombo->insertItem( "Message Box" );
-  pFatalCombo->insertItem( "Shell" );
-  pFatalCombo->insertItem( "Syslog" );
-  pFatalCombo->insertItem( "None" );
-  pFatalLabel2 = new QLabel( "Filename:", this );
+  pFatalCombo->insertItem( i18n("File") );
+  pFatalCombo->insertItem( i18n("Message Box") );
+  pFatalCombo->insertItem( i18n("Shell") );
+  pFatalCombo->insertItem( i18n("Syslog") );
+  pFatalCombo->insertItem( i18n("None") );
+  pFatalLabel2 = new QLabel( i18n("Filename:"), this );
   pFatalLabel2->setGeometry( 175, 290, 120, 15 );
   pFatalFile = new QLineEdit( this );
   pFatalFile->setGeometry( 175, 310, 100, 20 );
-  pFatalLabel3 = new QLabel( "Show only area(s):", this );
+  pFatalLabel3 = new QLabel( i18n("Show only area(s):"), this );
   pFatalLabel3->setGeometry( 175, 345, 120, 15 );
   pFatalShow = new QLineEdit( this );
   pFatalShow->setGeometry( 175, 365, 120, 20 );
 
-  pAbortFatal = new QCheckBox( "Abort on fatal errors", this );
+  pAbortFatal = new QCheckBox( i18n("Abort on fatal errors"), this );
   pAbortFatal->setGeometry( 15, 420, 200, 15 );
-  pOKButton = new QPushButton( "OK", this );
+  pOKButton = new QPushButton( i18n("&OK"), this );
   pOKButton->setGeometry( 15, 460, 80, 20 );
   pOKButton->setDefault( true );
   connect( pOKButton, SIGNAL( clicked() ), SLOT( accept() ) );
-  pCancelButton = new QPushButton( "Cancel", this );
+  pCancelButton = new QPushButton( i18n("&Cancel"), this );
   pCancelButton->setGeometry( 110, 460, 80, 20 );
   connect( pCancelButton, SIGNAL( clicked() ), SLOT( reject() ) );
-  pHelpButton = new QPushButton( "Help", this );
+  pHelpButton = new QPushButton( i18n("&Help"), this );
   pHelpButton->setGeometry( 205, 460, 80, 20 );
   connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
 

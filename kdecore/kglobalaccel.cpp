@@ -26,7 +26,6 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
-#include <qmessagebox.h>
 
 #include <kapp.h>
 #include <klocale.h>

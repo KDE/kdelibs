@@ -107,7 +107,6 @@ int main(int argc, char **argv)
     }
     
     if (!(name1.isNull()))
-	QMessageBox::message("Your Choice",
-			     "You selected the file "+ name1);
+	KMessageBox::information("You selected the file "+ name1, "Your Choice",);
     return 0;
 }

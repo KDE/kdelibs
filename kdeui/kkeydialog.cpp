@@ -24,7 +24,7 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qradiobutton.h>
 
 #include <kglobal.h>
@@ -1024,7 +1024,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Global key conflict"), str, i18n("OK"));
+			KMessageBox::sorry( this, i18n("Global key conflict"), str);
 			
 			return TRUE;
 		}
@@ -1053,7 +1053,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 			
-			QMessageBox::warning( this, i18n("Standard key conflict"), str, i18n("OK"));
+			KMessageBox::sorry( this, str, i18n("Standard key conflict"));
 			
 			return TRUE;
 		}
@@ -1079,7 +1079,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Key conflict"), str, i18n("OK"));
+			KMessageBox::sorry( this, str, i18n("Key conflict"));
 			
 			return TRUE;
 		}

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <qfileinfo.h>
 
 #include <kapp.h>
@@ -209,15 +209,13 @@ void KIORenameDlg::b1Pressed()
   KURL u( m_pLineEdit->text() );
   if ( u.isMalformed() )
   {
-    QString str = i18n( "Malformed URL\n" );
-    str += m_pLineEdit->text();
-    QMessageBox::critical( this, i18n( "Error" ), str, i18n( "OK" ) );
+    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg(m_pLineEdit->text()));
     return;
   }
 
   KURL d( dest );
   if ( u.protocol() != d.protocol() ) {
-    QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "OK" ) );
+    KMessageBox::error( this, i18n( "You must not change the protocol" ));
     return;
   }
 
