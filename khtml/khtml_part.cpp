@@ -331,7 +331,7 @@ bool KHTMLPart::openURL( const KURL &url )
      * and the URL where the error happened is passed as a sub URL.
      */
     KURL::List urls = KURL::split( url );
-    //kdDebug() << "Handling error URL. URL count:" << urls.count() << endl;
+    //kdDebug(6050) << "Handling error URL. URL count:" << urls.count() << endl;
 
     if ( urls.count() > 1 ) {
       KURL mainURL = urls.first();
@@ -341,7 +341,7 @@ bool KHTMLPart::openURL( const KURL &url )
       QString errorText = mainURL.queryItem( "errText" );
       urls.pop_front();
       d->m_workingURL = KURL::join( urls );
-      //kdDebug() << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
+      //kdDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
       emit d->m_extension->setLocationBarURL( d->m_workingURL.prettyURL() );
       htmlError( error, errorText, d->m_workingURL );
       return true;
@@ -1099,8 +1099,8 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
 
 void KHTMLPart::showError( KIO::Job* job )
 {
-  kdDebug() << "KHTMLPart::showError d->m_bParsing=" << (d->m_doc && d->m_doc->parsing()) << " d->m_bComplete=" << d->m_bComplete
-            << " d->m_bCleared=" << d->m_bCleared << endl;
+  kdDebug(6050) << "KHTMLPart::showError d->m_bParsing=" << (d->m_doc && d->m_doc->parsing()) << " d->m_bComplete=" << d->m_bComplete
+                << " d->m_bCleared=" << d->m_bCleared << endl;
 
   if (job->error() == KIO::ERR_NO_CONTENT)
 	return;
@@ -1784,12 +1784,12 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 
     if ( !d->m_findNode )
     {
-      kdDebug() << "KHTMLPart::findTextNext no findNode -> return false" << endl;
+      kdDebug(6050) << "KHTMLPart::findTextNext no findNode -> return false" << endl;
       return false;
     }
     if ( d->m_findNode->id() == ID_FRAMESET )
     {
-      kdDebug() << "KHTMLPart::findTextNext FRAMESET -> return false" << endl;
+      kdDebug(6050) << "KHTMLPart::findTextNext FRAMESET -> return false" << endl;
       return false;
     }
 
@@ -2513,6 +2513,15 @@ void KHTMLPart::updateActions()
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 }
 
+KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
+    QValueList<khtml::ChildFrame>::ConstIterator it = d->m_objects.begin();
+    QValueList<khtml::ChildFrame>::ConstIterator end = d->m_objects.end();
+    for(; it != end; ++it )
+        if ((*it).m_frame == frame)
+            return (*it).m_liveconnect;
+    return 0L;
+}
+
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                               const QStringList &params, bool isIFrame )
 {
@@ -2562,15 +2571,6 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
   KParts::URLArgs args;
   args.serviceType = serviceType;
   return requestObject( &(*it), completeURL( url ), args );
-}
-
-KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
-    QValueList<khtml::ChildFrame>::ConstIterator it = d->m_objects.begin();
-    QValueList<khtml::ChildFrame>::ConstIterator end = d->m_objects.end();
-    for(; it != end; ++it )
-        if ((*it).m_frame == frame)
-            return (*it).m_liveconnect;
-    return 0L;
 }
 
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
@@ -2774,6 +2774,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
         p->write(url.path());
       } else {
 	p->m_url = url;
+        // we need a body element. testcase: <iframe id="a"></iframe><script>alert(a.document.body);</script>
+        p->write("<HTML><BODY></BODY></HTML>");
       }
       p->end();
       return true;
@@ -3202,24 +3204,24 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 KHTMLPart *KHTMLPart::findFrame( const QString &f )
 {
 #if 0
-  kdDebug() << "KHTMLPart::findFrame '" << f << "'" << endl;
+  kdDebug(6050) << "KHTMLPart::findFrame '" << f << "'" << endl;
   FrameIt it2 = d->m_frames.begin();
   FrameIt end = d->m_frames.end();
   for (; it2 != end; ++it2 )
-      kdDebug() << "  - having frame '" << (*it2).m_name << "'" << endl;
+      kdDebug(6050) << "  - having frame '" << (*it2).m_name << "'" << endl;
 #endif
   // ### http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
   ConstFrameIt it = d->m_frames.find( f );
   if ( it == d->m_frames.end() )
   {
-    //kdDebug() << "KHTMLPart::findFrame frame " << f << " not found" << endl;
+    //kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " not found" << endl;
     return 0L;
   }
   else {
     KParts::ReadOnlyPart *p = (*it).m_part;
     if ( p && p->inherits( "KHTMLPart" ))
     {
-      //kdDebug() << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
+      //kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
       return (KHTMLPart*)p;
     }
     else
@@ -3710,7 +3712,7 @@ QString KHTMLPart::lastModified() const
     QDateTime lastModif = QFileInfo( m_url.path() ).lastModified();
     d->m_lastModified = lastModif.toString( Qt::LocalDate );
   }
-  //kdDebug() << "KHTMLPart::lastModified: " << d->m_lastModified << endl;
+  //kdDebug(6050) << "KHTMLPart::lastModified: " << d->m_lastModified << endl;
   return d->m_lastModified;
 }
 
