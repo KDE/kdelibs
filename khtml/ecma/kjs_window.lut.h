@@ -151,7 +151,7 @@ const struct HashEntry LocationTableEntries[] = {
    { "reload", Location::Reload, DontDelete|Function, 0, 0 },
    { "hostname", Location::Hostname, DontDelete, 0, 0 },
    { "host", Location::Host, DontDelete, 0, &LocationTableEntries[14] },
-   { 0, 0, 0, 0, 0 },
+   { "assign", Location::Assign, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "pathname", Location::Pathname, DontDelete, 0, 0 },

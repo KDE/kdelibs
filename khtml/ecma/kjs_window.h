@@ -195,7 +195,7 @@ namespace KJS {
     virtual Value toPrimitive(ExecState *exec, Type preferred) const;
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
-           Replace, Reload, ToString };
+           Assign, Replace, Reload, ToString };
     KHTMLPart *part() const { return m_part; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

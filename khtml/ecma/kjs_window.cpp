@@ -1597,6 +1597,7 @@ const ClassInfo Location::info = { "Location", 0, &LocationTable, 0 };
   protocol	Location::Protocol	DontDelete
   search	Location::Search	DontDelete
   [[==]]	Location::EqualEqual	DontDelete|ReadOnly
+  assign	Location::Assign	DontDelete|Function 1
   toString	Location::ToString	DontDelete|Function 0
   replace	Location::Replace	DontDelete|Function 1
   reload	Location::Reload	DontDelete|Function 0
@@ -1664,7 +1665,7 @@ Value Location::get(ExecState *exec, const UString &p) const
   ValueImp * val = ObjectImp::getDirect(p);
   if (val)
     return Value(val);
-  if (entry && (entry->value == Replace || entry->value == Reload))
+  if (entry && (entry->attr & Function))
   	return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   return Undefined();
@@ -1755,12 +1756,14 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   KHTMLPart *part = location->part();
   if (part) {
     switch (id) {
+    case Location::Assign:
     case Location::Replace:
     {
       QString str = args[0].toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->part();
+      bool lockHistory = id == Location::Replace;
       if ( p )
-        part->scheduleRedirection(-1, p->htmlDocument().completeURL(str).string(), true /*lock history*/);
+        part->scheduleRedirection(-1, p->htmlDocument().completeURL(str).string(), lockHistory);
       break;
     }
     case Location::Reload:
