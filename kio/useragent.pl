@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 while(<>)
 {
     if (($key, $domain, $useragent, $comment) = ($_ =~ /(Entry\d)=\.?([^:]+)::([^:]+)::([^\n]+)/))
