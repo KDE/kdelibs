@@ -60,8 +60,9 @@ public:
   void connectToKWM(bool dock_module = false);
 
   /**
-	if you inherit KWMModuleApplication and overload x11EventFilter,
+     if you inherit KWMModuleApplication and overload x11EventFilter,
      be sure to call its x11EventFilter in your x11EventFilter:
+     
            if (KWMModuleApplication::x11EventFilter(XEvent *))
                return True;
   */
