@@ -50,7 +50,7 @@ configure-stamp:
 	if test ! -f patch-stamp; then \
 		for patch in $(CURDIR)/debian/patches/*.diff ;\
 		do \
-			echo APPLYING PATCH\: ${patch##*/};\
+			echo APPLYING PATCH\: $${patch##*/};\
 			patch -p1 < $$patch ;\
 		done ;\
 		touch patch-stamp ;\
@@ -102,7 +102,7 @@ clean: debian-clean
 	if test -f patch-stamp; then \
 		for patch in $(CURDIR)/debian/patches/*.diff ;\
 		do \
-			echo REMOVING PATCH\: ${patch##*/};\
+			echo REMOVING PATCH\: $${patch##*/};\
 			patch -p1 -R < $$patch ;\
 		done ;\
 		rm -f patch-stamp ;\
