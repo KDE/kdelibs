@@ -166,22 +166,23 @@ public:
   virtual QSizePolicy sizePolicy() const;
 
   /**
-   * Set the format of the text to use to display status.
-   *
-   * The default format is "%p%" (which looks like "42%".)
-   * 
-   * @param format %p is replaced by percentage done, %v is replaced by actual
-   * value, %m is replaced by the maximum value.
-   */
-  void setFormat(const QString & format);
-
-  /**
    * Retrieve the current format for printing status text.
    * @see setFormat()
    */
   QString format() const;
 			
 public slots:
+
+    /**
+     * Set the format of the text to use to display status.
+     *
+     * The default format is "%p%" (which looks like "42%".)
+     * 
+     * @param format %p is replaced by percentage done, %v is replaced by actual
+     * value, %m is replaced by the maximum value.
+     */
+    void setFormat(const QString & format);
+
 	/**
 	 * Set the current value of the progress bar to @p value.
 	 *
