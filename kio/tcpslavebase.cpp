@@ -588,7 +588,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
-   kdDebug(7029) << "SSL HTTP frame is child? " << metaData("main_frame_request") << endl;
+   kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -907,7 +907,6 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         return false;
     }
     setMetaData("ssl_in_use", "TRUE");
-kdDebug() << "SSL_IN_USE set to TRUE in the slave!" << endl;
     int rc = verifyCertificate();
     if ( rc != 1 ) {
         d->status = -1;
