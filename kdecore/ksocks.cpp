@@ -340,21 +340,21 @@ void KSocks::enableSocks() {
 
 int KSocks::connect (int sockfd, const struct sockaddr *serv_addr,
                                                    socklen_t addrlen) {
-  if (_useSocks)
+  if (_useSocks && F_connect)
     return (*F_connect)(sockfd, serv_addr, addrlen);
   else return ::connect(sockfd, serv_addr, addrlen);
 }
 
 
 ssize_t KSocks::read (int fd, void *buf, ssize_t count) {
-  if (_useSocks)
+  if (_useSocks && F_read)
     return (*F_read)(fd, buf, count);
   else return ::read(fd, buf, count);
 }
 
 
 ssize_t KSocks::write (int fd, const void *buf, size_t count) {
-  if (_useSocks)
+  if (_useSocks && F_write)
     return (*F_write)(fd, buf, count);
   else return ::write(fd, buf, count);
 }
@@ -362,7 +362,7 @@ ssize_t KSocks::write (int fd, const void *buf, size_t count) {
 
 int KSocks::recvfrom (int s, void *buf, size_t len, int flags,
                                 struct sockaddr *from, socklen_t *fromlen) {
-  if (_useSocks)
+  if (_useSocks && F_recvfrom)
     return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
   else return ::recvfrom(s, buf, len, flags, from, fromlen);
 }
@@ -370,42 +370,42 @@ int KSocks::recvfrom (int s, void *buf, size_t len, int flags,
 
 int KSocks::sendto (int s, const void *msg, size_t len, int flags,
                              const struct sockaddr *to, socklen_t tolen) {
-  if (_useSocks)
+  if (_useSocks && F_sendto)
     return (*F_sendto)(s, msg, len, flags, to, tolen);
   else return ::sendto(s, msg, len, flags, to, tolen);
 }
 
 
 int KSocks::recv (int s, void *buf, size_t len, int flags) {
-  if (_useSocks)
+  if (_useSocks && F_recv)
     return (*F_recv)(s, buf, len, flags);
   else return ::recv(s, buf, len, flags);
 }
 
 
 int KSocks::send (int s, const void *msg, size_t len, int flags) {
-  if (_useSocks)
+  if (_useSocks && F_send)
     return (*F_send)(s, msg, len, flags);
   else return ::send(s, msg, len, flags);
 }
 
 
 int KSocks::getsockname (int s, struct sockaddr *name, socklen_t *namelen) {
-  if (_useSocks)
+  if (_useSocks && F_getsockname)
     return (*F_getsockname)(s, name, namelen);
   else return ::getsockname(s, name, namelen);
 }
 
 
 int KSocks::getpeername (int s, struct sockaddr *name, socklen_t *namelen) {
-  if (_useSocks)
+  if (_useSocks && F_getpeername)
     return (*F_getpeername)(s, name, namelen);
   else return ::getpeername(s, name, namelen);
 }
 
 
 int KSocks::accept (int s, struct sockaddr *addr, socklen_t *addrlen) {
-  if (_useSocks)
+  if (_useSocks && F_accept)
     return (*F_accept)(s, addr, addrlen);
   else return ::accept(s, addr, addrlen);
 }
@@ -413,21 +413,21 @@ int KSocks::accept (int s, struct sockaddr *addr, socklen_t *addrlen) {
 
 int KSocks::select (int n, fd_set *readfds, fd_set *writefds,
                                 fd_set *exceptfds, struct timeval *timeout) {
-  if (_useSocks)
+  if (_useSocks && F_select)
     return (*F_select)(n, readfds, writefds, exceptfds, timeout);
   else return ::select(n, readfds, writefds, exceptfds, timeout);
 }
 
 
 int KSocks::listen (int s, int backlog) {
-  if (_useSocks)
+  if (_useSocks && F_listen)
     return (*F_listen)(s, backlog);
   else return ::listen(s, backlog);
 }
 
 
 int KSocks::bind (int sockfd, struct sockaddr *my_addr, socklen_t addrlen) {
-  if (_useSocks)
+  if (_useSocks && F_bind)
     return (*F_bind)(sockfd, my_addr, addrlen);
   else return ::bind(sockfd, my_addr, addrlen);
 }
