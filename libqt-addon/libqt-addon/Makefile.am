@@ -19,7 +19,7 @@ libqt_addon_la_SOURCES = qresolver.cpp qresolvermanager.cpp qresolverworkerbase.
 		qstreamsocket.cpp qbufferedsocket.cpp qserversocket.cpp \
 		qdatagramsocket.cpp qhttpproxysocketimpl.cpp
 
-qt_addon_HEADERS = qtaddon.h qresolver.h qreverseresolver.h qsocketaddress.h 
+qt_addon_HEADERS = qtaddon.h qresolver.h qreverseresolver.h qsocketaddress.h \
 	qsocketbase.h qsocketimpl.h \
 	qclientsocketbase.h qstreamsocket.h \
 	qserversocket.h qdatagramsocket.h qmulticastsocketimpl.h qmulticastsocket.h \
