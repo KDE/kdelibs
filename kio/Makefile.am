@@ -20,6 +20,8 @@ SUBDIRS = . file
 
 INCLUDES = -I$(top_srcdir)/kfile $(all_includes) 
 
+CXXFLAGS += @NOREPO@
+
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
