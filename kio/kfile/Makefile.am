@@ -71,3 +71,6 @@ servicetypedir = $(kde_servicetypesdir)
 # Temporary, to be removed
 KDE_OPTIONS = nofinal
 
+kpropertiesdialog.lo: ../kio/kdirnotify_stub.h
+kfiletreeview.lo: ../kio/kdirnotify_stub.h
+
