@@ -105,7 +105,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 
 bool KRun::displayOpenWithDialog( const KURL::List& lst )
 {
-    KOpenWithDlg l( lst, i18n("Open With:"), QString::null, 0L );
+    KOpenWithDlg l( lst, i18n("Open with:"), QString::null, 0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
