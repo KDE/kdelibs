@@ -316,7 +316,7 @@ class Resource : public KRES::Resource
 
   protected:
     Ticket *createTicket( Resource * );
-    QMap<QString, Addressee> mAddrMap;
+    Addressee::Map mAddrMap;
 
   private:
     AddressBook *mAddressBook;
