@@ -127,19 +127,9 @@ KJSO Window::get(const UString &p) const
   if (!element.isNull())
       return getDOMNode(element);
 
-  // we are looking for a frame by name here.
-  // essentially a hack relying on the assumption that the ordering of
-  // frameNames() is identical to frames()
-  // TODO: http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
-  QStringList list = part->frameNames();
-  int i = list.findIndex(p.qstring());
-  if (i >= 0) {
-    QList<KParts::ReadOnlyPart> frames = part->frames();
-    const KParts::ReadOnlyPart *frame = frames.at(i);
-    assert(frame->inherits("KHTMLPart"));
-    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
-  }
+  KHTMLPart *kp = part->findFrame( p.qstring() );
+  if (kp)
+    return KJSO(newWindow(kp));
 
   return Imp::get(p);
 }
@@ -332,15 +322,13 @@ KJSO FrameArray::get(const UString &p) const
   if (p == "length")
     return Number(len);
 
-  const KParts::ReadOnlyPart *frame = 0L;
-
   // check for the name or number
-  QStringList list = part->frameNames();
-  int i = list.findIndex(p.qstring());
-  if (i < 0)
-    i = (int)p.toDouble();
-  if (i >= 0 && i < len)
-    frame = frames.at(i);
+  KParts::ReadOnlyPart *frame = part->findFrame(p.qstring());
+  if (!frame) {
+    int i = (int)p.toDouble();
+    if (i >= 0 && i < len)
+      frame = frames.at(i);
+  }
 
   if (frame && frame->inherits("KHTMLPart")) {
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
