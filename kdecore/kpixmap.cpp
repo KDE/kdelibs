@@ -297,19 +297,18 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         bc = bca;
         int x, y, offset, startPos;
         unsigned int *scanline;
+        unsigned int buffer[totColors];
+        for(offset = 0; offset < totColors-1; ++offset){
+            rc = (int)(rca + rInc*offset);
+            gc = (int)(gca + gInc*offset);
+            bc = (int)(bca + bInc*offset);
+            buffer[offset] = qRgb(rc, gc, bc);
+        }
 
-        for(startPos=0, offset=0,  y=0; y < height(); ++y, ++startPos){
+        for(startPos=0,offset=0, y=0; y < height(); ++y, ++offset, ++startPos){
             scanline = (unsigned int *)image.scanLine(y);
-            offset = startPos;
-            rc = rca;
-            gc = gca;
-            bc = bca;
-            for(x=0; x < width(); ++x, ++offset){
-                rc = (int)(rca + rInc*offset);
-                gc = (int)(gca + gInc*offset);
-                bc = (int)(bca + bInc*offset);
-                scanline[x] = qRgb(rc, gc, bc);
-            }
+            for(x=0; x < width(); ++x, ++offset)
+                scanline[x] = buffer[startPos+x];
         }
         if(depth() <= 16 ) {
             if( depth() == 16 )
