@@ -11,7 +11,7 @@ About kdelibs
 -------------
 
 This is the version 2.0 (almost) release of the KDE libraries.  Among this
-collection are twelve (12) libraries that are central to the development
+collection are eleven (11) libraries that are central to the development
 and execution of a KDE program, internationalization files for these
 libraries, misc HTML documentation, and regression tests.  These libraries
 are:
@@ -21,9 +21,6 @@ are:
 
 * kdeui
     The main collection of misc. user interface classes (widgets).
-
-* jscript
-    A JavaScript interperter perhaps?  Who knows.
 
 * kimgio
     An all purpose extension to the qimgio class that supports PNG and
