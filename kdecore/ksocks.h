@@ -42,6 +42,11 @@ public:
    static KSocks *self();
 
    /**
+    * Return true if KSocks has been started (ie someone called self())
+    */
+   static bool activated();
+
+   /**
     * Disable the use of SOCKS immediately
     */
    void disableSocks();

@@ -201,6 +201,9 @@ KSocks *KSocks::self() {
 }
 
 
+bool KSocks::activated() { return (_me != NULL); }
+
+
 KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
 
    if (_disabled) {
