@@ -1,0 +1,2746 @@
+# Íslenskun á kdelibs.po, fyrsta handrit.
+# Icelandic kdelibs.po, first draft.
+#
+# Copyright (C) 1998 Free Software Foundation, Inc.
+# Logi Ragnarsson <logir@imf.au.dk>, 1998.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 1998-10-04 12:22+0200\n"
+"PO-Revision-Date: 1998-10-03 24:24+0200\n"
+"Last-Translator: Logi Ragnarsson <logir@imf.au.dk>\n"
+"Language-Team: Icelandic (is_IS) <??????????????>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: kab/AssertDialog.cpp:24
+msgid "(unknown file)"
+msgstr "(óþekkt skrá)"
+
+#: kab/AssertDialog.cpp:25
+msgid "(unknown line number)"
+msgstr "(óþekkt línunúmer)"
+
+#: kab/AssertDialog.cpp:26
+msgid "(unknown condition)"
+msgstr "(óþekkt skilyrði)"
+
+#: kab/AssertDialog.cpp:34
+msgid "You have found a bug in "
+msgstr "(Þú hefur fundið villu í "
+
+#: kab/AssertDialog.cpp:41
+msgid "Ignore the error, possibly causing much more damage"
+msgstr "Leiða villuna hjá þér sem veldur hugsanlega mun meiri skaða"
+
+#: kab/AssertDialog.cpp:43
+msgid "Kill the application, loosing all data"
+msgstr "Loka forritinu og glata öllum gögnum"
+
+#: kab/AssertDialog.cpp:45
+msgid "Send an email to the application maintainer"
+msgstr "Sendu þeim sem sér um forritið tölvupóst"
+
+#: kab/AssertDialog.cpp:47 kab/StringListDialog.cpp:40
+#: kab/StringListSelectAndReorderSet.cpp:572
+#: kab/StringListSelectOneDialog.cpp:26 kab/StringListSelectSetDialog.cpp:24
+#: kab/datepickerdialog.cc:26 kab/kabapi.cc:35 kdeui/kcolordlg.cpp:463
+#: kdeui/kcontrol.cpp:44 kdeui/keditcl1.cpp:130 kdeui/keditcl1.cpp:144
+#: kdeui/keditcl1.cpp:159 kdeui/keditcl1.cpp:180 kdeui/keditcl1.cpp:193
+#: kdeui/keditcl1.cpp:1535 kdeui/keditcl1.cpp:1692 kdeui/kfontdialog.cpp:370
+#: kdeui/kiconloaderdialog.cpp:254 kdeui/kmsgbox.cpp:277
+#: kfile/kfiledialog.cpp:246 kfile/kfiledialog.cpp:499
+#: kfile/kfiledialog.cpp:879 kfile/kfiledialogconf.cpp:60 kfmlib/kfm.cpp:403
+#: po/texts.cpp:35 po/texts.cpp:37
+msgid "OK"
+msgstr "Í lagi"
+
+#: kab/AssertDialog.cpp:134
+msgid "The following condition failed:\n"
+msgstr "Eftirfarandi skilyrði var ekki uppfyllt:\n"
+
+#: kab/AssertDialog.cpp:135
+msgid "In file "
+msgstr "Í skánni "
+
+#: kab/AssertDialog.cpp:135
+msgid ", line "
+msgstr ", í línu "
+
+#: kab/PrintDialog.cpp:22
+msgid "Headline text:"
+msgstr "Texti í fyrirsögn:"
+
+#: kab/PrintDialog.cpp:23
+msgid "Right footer text:"
+msgstr "Texti í hægri fæti"
+
+#: kab/PrintDialog.cpp:24
+msgid "Left footer text:"
+msgstr "Texti í vinstri fæti"
+
+#: kab/SearchDialog.cpp:54
+msgid "Search entries"
+msgstr "Search entries"
+
+#: kab/SearchDialog.cpp:55
+msgid "Search"
+msgstr "Leita"
+
+#: kab/SearchDialog.cpp:56 kab/StringListDialog.cpp:41
+#: kab/StringListSelectAndReorderSet.cpp:573
+#: kab/StringListSelectOneDialog.cpp:27 kab/StringListSelectSetDialog.cpp:25
+#: kab/datepickerdialog.cc:27 kab/kabapi.cc:38 kab/widget.cc:1508
+#: kab/widget.cc:1556 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:466
+#: kdeui/kcontrol.cpp:46 kdeui/keditcl1.cpp:398 kdeui/keditcl1.cpp:480
+#: kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:365
+#: kdeui/kiconloaderdialog.cpp:255 kdeui/kmsgbox.cpp:312
+#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:884
+#: kfile/kfiledialogconf.cpp:58 kfmlib/kfm.cpp:407 kio/kio_job.cc:643
+#: kio/kio_linedit_dlg.cc:50 kio/kio_openwith.cc:272 kio/kio_pass_dlg.cc:78
+#: kio/kio_progress_dlg.cc:53 kio/kio_rename_dlg.cc:24 kio/kio_skip_dlg.cc:20
+#: po/texts.cpp:40
+msgid "Cancel"
+msgstr "Hætta við"
+
+#: kab/SearchDialog.cpp:57
+msgid "contains"
+msgstr "inniheldur"
+
+#: kab/SearchDialog.cpp:60
+msgid "The title"
+msgstr "Titilinn"
+
+#: kab/SearchDialog.cpp:61
+msgid "The first name"
+msgstr "Nafn"
+
+#: kab/SearchDialog.cpp:62
+msgid "The additional name"
+msgstr "Millinafn"
+
+#: kab/SearchDialog.cpp:63
+msgid "The name prefix"
+msgstr "Forskeyti"
+
+#: kab/SearchDialog.cpp:64
+msgid "The name"
+msgstr "Föðurnafn"
+
+#: kab/SearchDialog.cpp:65
+msgid "The formatted name"
+msgstr "Formaða nafnið"
+
+#: kab/SearchDialog.cpp:66
+msgid "The address"
+msgstr "Heililisfangið"
+
+#: kab/SearchDialog.cpp:67
+msgid "The town"
+msgstr "Bæinn"
+
+#: kab/SearchDialog.cpp:68
+msgid "The organization"
+msgstr "Fyrirtækið"
+
+#: kab/SearchDialog.cpp:69
+msgid "The role"
+msgstr "Hlutverkið"
+
+#: kab/SearchDialog.cpp:70
+msgid "The org unit"
+msgstr "Deildin"
+
+#: kab/SearchDialog.cpp:71
+msgid "The org subunit"
+msgstr "Undirdeildin"
+
+#: kab/SearchDialog.cpp:72
+msgid "The email address"
+msgstr "Netfangið"
+
+#: kab/SearchDialog.cpp:73
+msgid "The second email address"
+msgstr "Annað Netfang"
+
+#: kab/SearchDialog.cpp:74
+msgid "The third email address"
+msgstr "Þriðja Netfang"
+
+#: kab/SearchDialog.cpp:75
+msgid "The telephone number"
+msgstr "Síminn"
+
+#: kab/SearchDialog.cpp:76
+msgid "The fax number"
+msgstr "Myndritinn"
+
+#: kab/SearchDialog.cpp:77
+msgid "The modem number"
+msgstr "Módemið"
+
+#: kab/SearchDialog.cpp:78
+msgid "The homepage URL"
+msgstr "Heimasíðuslóðina"
+
+#: kab/SearchDialog.cpp:79
+msgid "The comment"
+msgstr "Athugasemdina"
+
+#: kab/StringListSelectAndReorderSet.cpp:43
+msgid "Possible values:"
+msgstr "Möguleg gildi"
+
+#: kab/StringListSelectAndReorderSet.cpp:44
+msgid "Selected values:"
+msgstr "Gildi valin"
+
+#: kdecore/kaccel.cpp:229 kfile/kfiledialog.cpp:549 kfile/kfiledialog.cpp:1191
+#: kfile/kfiledialog.cpp:1350 kfile/kfiledialog.cpp:1384 po/texts.cpp:68
+msgid "Open"
+msgstr "Opna"
+
+#: kdecore/kaccel.cpp:233
+msgid "New"
+msgstr "Nýtt"
+
+#: kab/searchresults.cc:33 kdecore/kaccel.cpp:237 po/texts.cpp:83
+msgid "Close"
+msgstr "Loka"
+
+#: kdecore/kaccel.cpp:241 kfile/kfiledialog.cpp:1246
+#: kfile/kfiledialog.cpp:1405 po/texts.cpp:78
+msgid "Save"
+msgstr "Vista"
+
+#: kdecore/kaccel.cpp:245 po/texts.cpp:121
+msgid "Print"
+msgstr "Prenta"
+
+#: kdecore/kaccel.cpp:249 po/texts.cpp:53
+msgid "Quit"
+msgstr "Hætta"
+
+#: kdecore/kaccel.cpp:253 po/texts.cpp:72
+msgid "Cut"
+msgstr "Klippa"
+
+#: kdecore/kaccel.cpp:257 po/texts.cpp:57
+msgid "Copy"
+msgstr "Afrita"
+
+#: kdecore/kaccel.cpp:261 po/texts.cpp:59
+msgid "Paste"
+msgstr "Líma"
+
+#: kdecore/kaccel.cpp:265 po/texts.cpp:96
+msgid "Undo"
+msgstr "Hætta við"
+
+#: kdecore/kaccel.cpp:269 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
+#: kdeui/keditcl2.cpp:360 kdeui/keditcl2.cpp:377 kdeui/keditcl2.cpp:676
+#: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:786
+msgid "Find"
+msgstr "Finna"
+
+#: kdecore/kaccel.cpp:273 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
+#: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 po/texts.cpp:139
+msgid "Replace"
+msgstr "Skipta út"
+
+#: kdecore/kaccel.cpp:277 po/texts.cpp:140
+msgid "Insert"
+msgstr "Insert"
+
+#: kdecore/kaccel.cpp:281 kfile/kfiledialog.cpp:131
+msgid "Home"
+msgstr "Home"
+
+#: kdecore/kaccel.cpp:285
+msgid "End"
+msgstr "End"
+
+#: kdecore/kaccel.cpp:289
+msgid "Prior"
+msgstr "Fyrri"
+
+#: kdecore/kaccel.cpp:293
+msgid "Next"
+msgstr "Næsti"
+
+#: kdecore/kaccel.cpp:297 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:471
+#: kdeui/kcontrol.cpp:34 kfile/kfiledialog.cpp:240 po/texts.cpp:45
+msgid "Help"
+msgstr "Hjálp"
+
+#: kdecore/kaccel.cpp:595 kdecore/kaccel.cpp:659
+msgid "SHIFT"
+msgstr "SHIFT"
+
+#: kdecore/kaccel.cpp:599 kdecore/kaccel.cpp:661
+msgid "CTRL"
+msgstr "STRL"
+
+#: kdecore/kaccel.cpp:603 kdecore/kaccel.cpp:663
+msgid "ALT"
+msgstr "ALT"
+
+#: kdecore/kapp.cpp:545 po/texts.cpp:143
+msgid "&Contents"
+msgstr "&Innihald"
+
+#: kdecore/kapp.cpp:551
+msgid "&About"
+msgstr "&Um"
+
+#: kdecore/kapp.cpp:558
+msgid "About &KDE..."
+msgstr "Um &KDE"
+
+#: kdecore/kapp.cpp:579
+msgid "About KDE"
+msgstr "Um KDE"
+
+#: kdecore/kapp.cpp:581
+msgid ""
+"\n"
+"The KDE Desktop Environment was written by the KDE Team,\n"
+"a world-wide network of software engineers committed to\n"
+"free software development.\n"
+"\n"
+"Visit http://www.kde.org for more information on the KDE\n"
+"Project. Please consider joining and supporting KDE.\n"
+"\n"
+"Please report bugs at http://buglist.kde.org.\n"
+msgstr ""
+"\n"
+"Meðlimir KDE Hópsins sem skrifaði KDE Skjáumhverfið eruforritarar út um "
+"allan heim sem styðja hugmyndina umFrjálsan Hugbúnað.\n"
+"Nánari upplýsingar um KDE verkefnið fást á http://www.kde.org\n"
+"Þar má líka sjá hvernig má hjálpa til við þróun KDE.\n"
+"\n"
+"Villur í KDE má tilkynna á http://buglist.kde.org.\n"
+"\n"
+
+#: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:396 kdeui/keditcl1.cpp:417
+#: kdeui/keditcl1.cpp:478 kdeui/keditcl1.cpp:498 kdeui/keditcl1.cpp:1635
+#: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:363
+#: kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426 kdeui/keditcl2.cpp:456
+#: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:294 kdeui/kmsgbox.cpp:310
+#: kio/kio_paste.cc:85 po/texts.cpp:27
+msgid "Yes"
+msgstr "Já"
+
+#: kdetest/klocaletest.cpp:101 kdeui/keditcl1.cpp:397 kdeui/keditcl1.cpp:418
+#: kdeui/keditcl1.cpp:479 kdeui/keditcl1.cpp:499 kdeui/keditcl1.cpp:1636
+#: kdeui/keditcl2.cpp:107 kdeui/keditcl2.cpp:124 kdeui/keditcl2.cpp:364
+#: kdeui/keditcl2.cpp:381 kdeui/keditcl2.cpp:427 kdeui/keditcl2.cpp:457
+#: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:292 kdeui/kmsgbox.cpp:308
+#: kio/kio_paste.cc:85 po/texts.cpp:28
+msgid "No"
+msgstr "Nei"
+
+#: kdeui/kcolordlg.cpp:285
+msgid "Select Color"
+msgstr "Veldu lit"
+
+#: kdeui/kcolordlg.cpp:297
+msgid "System Colors"
+msgstr "Kerfislitir"
+
+#: kdeui/kcolordlg.cpp:328
+msgid "Custom Colors"
+msgstr "Aukalitir"
+
+#: kdeui/kcolordlg.cpp:341
+msgid "Add to Custom Colors"
+msgstr "Bæta við aukalit"
+
+#: kdeui/kcolordlg.cpp:788 kdeui/kcolordlg.cpp:840
+msgid "Custom..."
+msgstr "Heimasmíðað..."
+
+#: kdeui/kcontrol.cpp:39 po/texts.cpp:141
+msgid "Default"
+msgstr "Sjálfgefið"
+
+#: kdeui/kcontrol.cpp:45 kfile/kfiledialogconf.cpp:59 po/texts.cpp:42
+msgid "Apply"
+msgstr "Virkja"
+
+#: kdeui/kdatepik.cpp:102
+msgid "January"
+msgstr "Janúar"
+
+#: kdeui/kdatepik.cpp:102
+msgid "February"
+msgstr "Febrúar"
+
+#: kdeui/kdatepik.cpp:103
+msgid "March"
+msgstr "Mars"
+
+#: kdeui/kdatepik.cpp:103
+msgid "April"
+msgstr "apríl"
+
+#: kdeui/kdatepik.cpp:104 kfile/kfileinfo.cpp:222
+msgid "May"
+msgstr "Maj"
+
+#: kdeui/kdatepik.cpp:104
+msgid "June"
+msgstr "Júní"
+
+#: kdeui/kdatepik.cpp:105
+msgid "July"
+msgstr "Júlí"
+
+#: kdeui/kdatepik.cpp:105
+msgid "August"
+msgstr "Ágúst"
+
+#: kdeui/kdatepik.cpp:106
+msgid "September"
+msgstr "September"
+
+#: kdeui/kdatepik.cpp:106
+msgid "October"
+msgstr "Október"
+
+#: kdeui/kdatepik.cpp:107
+msgid "November"
+msgstr "Nóvember"
+
+#: kdeui/kdatepik.cpp:107
+msgid "December"
+msgstr "Desember"
+
+#: kdeui/kdatepik.cpp:247
+msgid "(invalid)"
+msgstr "(ólöglegt)"
+
+#: kdeui/kdatetbl.cpp:49
+msgid "Sun"
+msgstr "Sun"
+
+#: kdeui/kdatetbl.cpp:49
+msgid "Mon"
+msgstr "Mán"
+
+#: kdeui/kdatetbl.cpp:49
+msgid "Tue"
+msgstr "Þri"
+
+#: kdeui/kdatetbl.cpp:50
+msgid "Wed"
+msgstr "Mið"
+
+#: kdeui/kdatetbl.cpp:50
+msgid "Thu"
+msgstr "Fim"
+
+#: kdeui/kdatetbl.cpp:50
+msgid "Fri"
+msgstr "Fös"
+
+#: kdeui/kdatetbl.cpp:51
+msgid "Sat"
+msgstr "Lau"
+
+#: kab/kabapi.cc:143 kab/widget.cc:920 kab/widget.cc:940 kab/widget.cc:2087
+#: kdeui/keditcl1.cpp:128 kdeui/keditcl1.cpp:157 kdeui/keditcl1.cpp:178
+#: kdeui/keditcl1.cpp:191 kdeui/keditcl1.cpp:1533 po/texts.cpp:86
+msgid "Sorry"
+msgstr "Afsakið"
+
+#: kdeui/keditcl1.cpp:129
+msgid "The specified File does not exist"
+msgstr "Tiltekin skrá finnst ekki"
+
+#: kdeui/keditcl1.cpp:142 kdeui/keditcl1.cpp:414 kdeui/keditcl1.cpp:495
+#: kdeui/keditcl1.cpp:1689
+msgid "Sorry:"
+msgstr "Afsakið:"
+
+#: kdeui/keditcl1.cpp:143
+msgid "You have specificated a directory"
+msgstr "Þú hefur tiltekið möppu"
+
+#: kdeui/keditcl1.cpp:158 kdeui/keditcl1.cpp:179
+msgid "You do not have read permission to this file."
+msgstr "Þú hefur ekki lesrétindi á þessa skrá."
+
+#: kdeui/keditcl1.cpp:192
+msgid "An Error occured while trying to open this Document"
+msgstr "Villa kom upp þegar reynt var að opna þetta skjal"
+
+#: kdeui/keditcl1.cpp:357
+msgid "Select Document to Insert"
+msgstr "Veldu Skjal til að stinga inn"
+
+#: kdeui/keditcl1.cpp:393 kdeui/keditcl1.cpp:475 kdeui/keditcl1.cpp:1632
+msgid "Warning:"
+msgstr "Aðvörun:"
+
+#: kdeui/keditcl1.cpp:394 kdeui/keditcl1.cpp:476
+msgid ""
+"The current Document has been modified.\n"
+"Would you like to save it?"
+msgstr "Núverandi skjal hefur breyst. Viltu vista það?"
+
+#: kdeui/keditcl1.cpp:415
+msgid ""
+"Could not save the document.\n"
+"Open a new document anyways?"
+msgstr ""
+"Ekki tókst að vista skjalið.\n"
+"Viltu samt opna nýtt?"
+
+#: kdeui/keditcl1.cpp:446
+msgid "Select Document to Open"
+msgstr "Veldu skjal til að opna."
+
+#: kdeui/keditcl1.cpp:496
+msgid ""
+"Could not save the document.\n"
+"Create a new document anyways?"
+msgstr ""
+"Ekki tókst að vista skjalið.\n"
+"Viltu samt búa til nýtt?"
+
+#: kdeui/keditcl1.cpp:531 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+msgid "Untitled"
+msgstr "Nafnlaust"
+
+#: kdeui/keditcl1.cpp:1534
+msgid "Could not save the document\n"
+msgstr "Ekki tókst að vista skjalið\n"
+
+#: kdeui/keditcl1.cpp:1604
+msgid "Save Document As"
+msgstr "Vista skjal sem"
+
+#: kdeui/keditcl1.cpp:1633
+msgid ""
+"A Document with this Name exists already\n"
+"Do you want to overwrite it ?"
+msgstr ""
+"Nú þegar er til skjal með þessu nafni.\n"
+"Viltu skrifa yfir það?"
+
+#: kdeui/keditcl1.cpp:1690
+msgid "You do not have write permission to this file.\n"
+msgstr "Þú hefur ekki skrifréttindi á þessa skrá.\n"
+
+#: kdeui/keditcl2.cpp:104 kdeui/keditcl2.cpp:361 kdeui/keditcl2.cpp:454
+msgid ""
+"End of document reached.\n"
+"Continue from the beginning?"
+msgstr ""
+"Lokum skjals er náð.\n"
+"Viltu leita frá byrjun þess?"
+
+#: kdeui/keditcl2.cpp:121 kdeui/keditcl2.cpp:378 kdeui/keditcl2.cpp:424
+#: kdeui/keditcl2.cpp:471
+msgid ""
+"Beginning of document reached.\n"
+"Continue from the end?"
+msgstr ""
+"Byrjun skjals er náð.\n"
+"Viltu leita frá lokum þess?"
+
+#: kdeui/keditcl2.cpp:682 kdeui/keditcl2.cpp:780
+msgid "Case Sensitive"
+msgstr "Háð há-/lágstöfum"
+
+#: kdeui/keditcl2.cpp:683 kdeui/keditcl2.cpp:783
+msgid "Find Backwards"
+msgstr "Leita aftur á bak"
+
+#: kdeui/keditcl2.cpp:688 kdeui/keditcl2.cpp:795
+msgid "Done"
+msgstr "Lokið"
+
+#: kdeui/keditcl2.cpp:768
+msgid "Find:"
+msgstr "Leita að:"
+
+#: kdeui/keditcl2.cpp:778
+msgid "Replace with:"
+msgstr "Setja í staðinn:"
+
+#: kdeui/keditcl2.cpp:792
+msgid "Replace All"
+msgstr "Skipta öllum"
+
+#: kdeui/keditcl2.cpp:889
+msgid "Goto Line"
+msgstr "Fara að línu"
+
+#: kdeui/keditcl2.cpp:894
+msgid "Go"
+msgstr "Far"
+
+#: kdeui/kfontdialog.cpp:181
+msgid "Select Font"
+msgstr "Velja letur"
+
+#: kdeui/kfontdialog.cpp:185
+msgid "Requested Font"
+msgstr "Umbeðið letur "
+
+#: kdeui/kfontdialog.cpp:190
+msgid "Actual Font"
+msgstr "Raunletur"
+
+#: kdeui/kfontdialog.cpp:194 kdeui/kfontdialog.cpp:198
+msgid "Family:"
+msgstr "Fjölskylda:"
+
+#: kdeui/kfontdialog.cpp:205 kdeui/kfontdialog.cpp:211 po/texts.cpp:26
+msgid "Charset:"
+msgstr "Stafasett:"
+
+#: kdeui/kfontdialog.cpp:218 kdeui/kfontdialog.cpp:223 kfile/kpreview.cpp:196
+msgid "Size:"
+msgstr "Stærð:"
+
+#: kdeui/kfontdialog.cpp:230 kdeui/kfontdialog.cpp:235
+msgid "Weight:"
+msgstr "Vægi:"
+
+#: kdeui/kfontdialog.cpp:243 kdeui/kfontdialog.cpp:250
+msgid "Style:"
+msgstr "Gerð:"
+
+#: kdeui/kfontdialog.cpp:286
+msgid "Charset"
+msgstr "Stafasett"
+
+#: kdeui/kfontdialog.cpp:297 kfile/kfiledetaillist.cpp:38
+msgid "Size"
+msgstr "Stærð"
+
+#: kdeui/kfontdialog.cpp:338
+msgid "Weight"
+msgstr "Vægi"
+
+#: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:480
+msgid "normal"
+msgstr "venjulegt"
+
+#: kdeui/kfontdialog.cpp:340 kdeui/kfontdialog.cpp:482
+msgid "bold"
+msgstr "feitletrað"
+
+#: kdeui/kfontdialog.cpp:351
+msgid "Style"
+msgstr "Halli"
+
+#: kdeui/kfontdialog.cpp:352 kdeui/kfontdialog.cpp:493
+#: kdeui/kfontdialog.cpp:522
+msgid "roman"
+msgstr "lóðletrað"
+
+#: kdeui/kfontdialog.cpp:353 kdeui/kfontdialog.cpp:495
+#: kdeui/kfontdialog.cpp:520
+msgid "italic"
+msgstr "skáletrað"
+
+#: kdeui/kfontdialog.cpp:383
+msgid "Dolor Ipse"
+msgstr "...sem þrjú sverð væru á lofti."
+
+#: kdeui/kfontdialog.cpp:515
+msgid "Bold"
+msgstr "Feitletrað"
+
+#: kdeui/kfontdialog.cpp:517
+msgid "Normal"
+msgstr "Venjulegt"
+
+#: kdeui/kiconloaderdialog.cpp:237
+msgid "Select Icon"
+msgstr "Veldu táknmynd"
+
+#: kdeui/kiconloaderdialog.cpp:242
+msgid "Filter:"
+msgstr "Sía:"
+
+#: kdeui/kkeydialog.cpp:232 kdeui/knotebook.cpp:224 kdeui/kwizard.cpp:205
+#: po/texts.cpp:46
+msgid "&Help"
+msgstr "&Hjálp"
+
+#: kdeui/kkeydialog.cpp:236 po/texts.cpp:142
+msgid "&Defaults"
+msgstr "&Sjálfgefin gildi"
+
+#: kdeui/kkeydialog.cpp:242 kdeui/knotebook.cpp:247 kdeui/kwizard.cpp:228
+#: po/texts.cpp:36
+msgid "&OK"
+msgstr "Í &lagi"
+
+#: kdeui/kkeydialog.cpp:245 kdeui/knotebook.cpp:178 kdeui/kwizard.cpp:159
+#: po/texts.cpp:41
+msgid "&Cancel"
+msgstr "&Hætta við"
+
+#: kdeui/kkeydialog.cpp:320
+msgid "Current key"
+msgstr "Núverandi takki"
+
+#: kdeui/kkeydialog.cpp:331
+msgid "&Action"
+msgstr "&Aðgerð"
+
+#: kdeui/kkeydialog.cpp:392
+msgid "&No key"
+msgstr "&Enginn taki"
+
+#: kdeui/kkeydialog.cpp:400
+msgid "&Default key"
+msgstr "&Sjálfgefinn takki"
+
+#: kdeui/kkeydialog.cpp:408
+msgid "&Custom key"
+msgstr "&Heimatilbúinn takki"
+
+#: kdeui/kmenubar.cpp:167 kdeui/ktoolbar.cpp:711
+msgid "Top"
+msgstr "Efst"
+
+#: kdeui/kmenubar.cpp:168 kdeui/ktoolbar.cpp:713
+msgid "Bottom"
+msgstr "Neðst"
+
+#: kdeui/kmenubar.cpp:169 kdeui/ktoolbar.cpp:714
+msgid "Floating"
+msgstr "Laust"
+
+#: kdeui/kmenubar.cpp:296 kdeui/kmenubar.cpp:451 kdeui/ktoolbar.cpp:1895
+msgid "Float"
+msgstr "Losa"
+
+#: kdeui/kmenubar.cpp:440 kdeui/ktoolbar.cpp:1877
+msgid "UnFloat"
+msgstr "Festa"
+
+#: kdeui/knotebook.cpp:145
+msgid "Trying to add page when no KWizards are added!"
+msgstr "//Trying to add page when no KWizards are added!"
+
+#: kdeui/knotebook.cpp:201 kdeui/kwizard.cpp:182
+msgid "&Default"
+msgstr "&Sjálfgefið"
+
+#: kdeui/kquickhelp.cpp:203
+msgid "Quickhelp"
+msgstr "Hraðhjálp"
+
+#: kdeui/ktoolbar.cpp:227 kdeui/ktoolbar.cpp:278
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: 'pixmap' er tómt. Hugsnalega vantar skrá"
+
+#: kdeui/ktoolbar.cpp:710
+msgid "Left"
+msgstr "Vinstri"
+
+#: kdeui/ktoolbar.cpp:712
+msgid "Right"
+msgstr "Hægri"
+
+#: kdeui/kwizard.cpp:531 kdeui/kwizard.cpp:678
+#, c-format
+msgid "Page %d of %d"
+msgstr "Síða %d af %d"
+
+#: kfile/bookmark.cpp:246
+msgid "<!-- Do not edit this file -->"
+msgstr "<!-- Ekki breyta þessari skrá handvirkt -->"
+
+#: kfile/kcombiview.cpp:80
+msgid "Folders:"
+msgstr "Möppur:"
+
+#: kfile/kcombiview.cpp:81
+msgid "Contents:"
+msgstr "Innihald:"
+
+#: kab/addressbook.cc:1122 kfile/kfiledetaillist.cpp:36
+msgid "Name"
+msgstr "Nafn"
+
+#: kfile/kfiledetaillist.cpp:40
+msgid "Permissions"
+msgstr "Aðgangsheimildir"
+
+#: kfile/kfiledetaillist.cpp:42
+msgid "Date"
+msgstr "Dagsetning"
+
+#: kfile/kfiledetaillist.cpp:45
+msgid "Owner"
+msgstr "Eigandi"
+
+#: kfile/kfiledetaillist.cpp:47
+msgid "Group"
+msgstr "Hópur"
+
+#: kfile/kfiledialog.cpp:122 po/texts.cpp:56
+msgid "Back"
+msgstr "Aftur"
+
+#: kfile/kfiledialog.cpp:125
+msgid "Forward"
+msgstr "Framm"
+
+#: kfile/kfiledialog.cpp:128
+msgid "Up to parent"
+msgstr "Upp tréð"
+
+#: kfile/kfiledialog.cpp:134 po/texts.cpp:55
+msgid "Reload"
+msgstr "Lesa aftur"
+
+#: kfile/kfiledialog.cpp:150
+msgid "Bookmarks"
+msgstr "Bókamerki"
+
+#: kfile/kfiledialog.cpp:154
+msgid "Create new folder"
+msgstr "Smíða möppu"
+
+#: kfile/kfiledialog.cpp:157
+msgid "Search for a file"
+msgstr "Leita að skrá"
+
+#: kfile/kfiledialog.cpp:160
+msgid "Configure this dialog [development only]"
+msgstr "Stilltu þessa valmyn [bara í forritun]"
+
+#: kfile/kfiledialog.cpp:168
+msgid "The path"
+msgstr "Slóðin"
+
+#: kfile/kfiledialog.cpp:193
+msgid "&Location:"
+msgstr "&Staðsetning:"
+
+#: kfile/kfiledialog.cpp:206
+msgid "&Filter:"
+msgstr "&Sía"
+
+#: kfile/kfiledialog.cpp:220
+msgid "Show hidden"
+msgstr "Sýna falið"
+
+#: kfile/kfiledialog.cpp:494
+msgid "Error: Not local file"
+msgstr "Villa: Skrá ekki á þessu skráakerfi"
+
+#: kfile/kfiledialog.cpp:495
+msgid ""
+"The specified directory is not a local directory\n"
+"But the application accepts just local files."
+msgstr ""
+"Mappan sem þú tiltókst er ekki á þessu\n"
+"skráakerfi, en forritið krefst þess."
+
+#: kfile/kfiledialog.cpp:509 kfile/kfiledialog.cpp:615
+msgid "Error: Cannot Open Directory"
+msgstr "Villa: Get ekki opnað möppu"
+
+#: kfile/kfiledialog.cpp:510
+msgid ""
+"The specified directory does not exist\n"
+"or was not readable."
+msgstr "Tiltekin mappa er ekki til eða er ekki læsileg."
+
+#: kfile/kfiledialog.cpp:512 kfile/kfiledialog.cpp:618
+msgid "Dismiss"
+msgstr "Loka"
+
+#: kfile/kfiledialog.cpp:564 kfile/kfiledialog.cpp:1365 po/texts.cpp:80
+msgid "Save As"
+msgstr "Vista sem"
+
+#: kfile/kfiledialog.cpp:587
+msgid "Root Directory"
+msgstr "Rótarmappa"
+
+#: kfile/kfiledialog.cpp:616
+msgid "The specified directory does not exist or was not readable."
+msgstr "Tiltekin mappa er ekki til eða er ekki læsileg."
+
+#: kfile/kfiledialog.cpp:864
+msgid "Create new directory in: "
+msgstr "Smíða möppu í:"
+
+#: kfile/kfiledialog.cpp:867
+msgid "New Directory"
+msgstr "Ný mappa"
+
+#: kfile/kfiledialog.cpp:939
+msgid "Add to bookmarks"
+msgstr "Setja bókamerki"
+
+#: kfile/kfiledialog.cpp:1225
+msgid "Choose Directory"
+msgstr "Velja möppu"
+
+#: kfile/kfiledialog.cpp:1293
+msgid "directory"
+msgstr "mappa"
+
+#: kfile/kfiledialog.cpp:1295
+msgid "directories"
+msgstr "möppur"
+
+#: kfile/kfiledialog.cpp:1297 kfile/kpreview.cpp:326
+msgid "file"
+msgstr "skrá"
+
+#: kfile/kfiledialog.cpp:1299
+msgid "files"
+msgstr "skrár"
+
+#: kfile/kfiledialog.cpp:1301
+#, c-format
+msgid "%d %s and %d %s"
+msgstr "%d %s og %d %s"
+
+#: kfile/kfiledialog.cpp:1311
+msgid "one directory"
+msgstr "ein mappa"
+
+#: kfile/kfiledialogconf.cpp:41
+msgid "Look and Feel"
+msgstr "Útlit og hegðun"
+
+#: kfile/kfiledialogconf.cpp:43
+msgid ""
+"KDE File Selector by:\n"
+"\n"
+"Richard Moore <rich@kde.org>\n"
+"Stephan Kulow <coolo@kde.org>\n"
+"and Daniel Grana <grana@ie.iwi.unibe.ch>\n"
+"\n"
+"with contributions by\n"
+"\n"
+"Mario Weilguni <mweilguni@sime.com>\n"
+"and Martin Jones <mjones@kde.org>"
+msgstr ""
+"KDE skráaval eftir:\n"
+"\n"
+"Richard Moore <rich@kde.org>\n"
+"Stephan Kulow <coolo@kde.org>\n"
+"and Daniel Grana <grana@ie.iwi.unibe.ch>\n"
+"\n"
+"með hjálp:\n"
+"\n"
+"Mario Weilguni <mweilguni@sime.com>\n"
+"and Martin Jones <mjones@kde.org>"
+
+#: kfile/kfiledialogconf.cpp:56 po/texts.cpp:32
+msgid "About"
+msgstr "Um forrit"
+
+#: kfile/kfiledialogconf.cpp:70
+msgid "View style"
+msgstr "Listaform"
+
+#: kfile/kfiledialogconf.cpp:74
+msgid "Show Short View"
+msgstr "Stuttaralegur listi"
+
+#: kfile/kfiledialogconf.cpp:80
+msgid "Show Detail View"
+msgstr "Nákvæmur listi"
+
+#: kfile/kfiledialogconf.cpp:89
+msgid "Misc"
+msgstr "Ýmislegt"
+
+#: kfile/kfiledialogconf.cpp:95
+msgid "Show Filter"
+msgstr "Sýna síu"
+
+#: kfile/kfiledialogconf.cpp:101
+msgid "Show List Labels"
+msgstr "Sýna lista titla"
+
+#: kfile/kfiledialogconf.cpp:107
+msgid "Show Hidden"
+msgstr "Sýna faldar skrár"
+
+#: kfile/kfiledialogconf.cpp:113
+msgid "Show Status Line"
+msgstr "Sýna ástandsstiku"
+
+#: kfile/kfiledialogconf.cpp:119
+msgid "Use single Click"
+msgstr "Smella einu sinni"
+
+#: kfile/kfiledialogconf.cpp:125
+msgid "Mix dirs and files"
+msgstr "Möppur og skrár saman"
+
+#: kfile/kfiledialogconf.cpp:131
+msgid "Keep dirs first"
+msgstr "Möppur fremst"
+
+#: kfile/kfileinfo.cpp:95 kfile/kfileinfo.cpp:99
+msgid "unknown"
+msgstr "óþekkt"
+
+#: kfile/kfileinfo.cpp:218
+msgid "Jan"
+msgstr "Jan"
+
+#: kfile/kfileinfo.cpp:219
+msgid "Feb"
+msgstr "Feb"
+
+#: kfile/kfileinfo.cpp:220
+msgid "Mar"
+msgstr "Mar"
+
+#: kfile/kfileinfo.cpp:221
+msgid "Apr"
+msgstr "Apr"
+
+#: kfile/kfileinfo.cpp:223
+msgid "Jun"
+msgstr "Jún"
+
+#: kfile/kfileinfo.cpp:224
+msgid "Jul"
+msgstr "Júl"
+
+#: kfile/kfileinfo.cpp:225
+msgid "Aug"
+msgstr "Ágú"
+
+#: kfile/kfileinfo.cpp:226
+msgid "Sep"
+msgstr "Sep"
+
+#: kfile/kfileinfo.cpp:227
+msgid "Oct"
+msgstr "Okt"
+
+#: kfile/kfileinfo.cpp:228
+msgid "Nov"
+msgstr "Nóv"
+
+#: kfile/kfileinfo.cpp:229
+msgid "Dec"
+msgstr "Des"
+
+#: kab/editentry.cc:70 kfile/kpreview.cpp:187
+msgid "Name:"
+msgstr "Nafn:"
+
+#: kfile/kpreview.cpp:205
+msgid "Date:"
+msgstr "Dagsetning:"
+
+#: kfile/kpreview.cpp:214
+msgid "Owner:"
+msgstr "Eigandi:"
+
+#: kfile/kpreview.cpp:223
+msgid "Group:"
+msgstr "Hópur:"
+
+#: kfile/kpreview.cpp:232
+msgid "Type:"
+msgstr "Tegund:"
+
+#: kfile/kpreview.cpp:287
+msgid "locked"
+msgstr "læst"
+
+#: kfile/kpreview.cpp:311
+msgid "picture"
+msgstr "mynd"
+
+#: kfile/kpreview.cpp:343
+msgid "folder"
+msgstr "mappa"
+
+#: kfmlib/kfm.cpp:197
+#, c-format
+msgid ""
+"You dont have the file %s\n"
+"Could not do Authorization"
+msgstr ""
+"Þú ert ekki með skrána %s,\n"
+"svo það var ekki hægt að auðkenna"
+
+#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210 kio/kmimetypes.cc:61
+#: kio/kmimetypes.cc:88 kio/kmimetypes.cc:134 kio/kregfactories.cc:75
+#: kio/krun.cc:105 kio/kservices.cc:114
+msgid "KFM Error"
+msgstr "KFM Villa"
+
+#: kfmlib/kfm.cpp:208
+#, c-format
+msgid ""
+"The file %s is corrupted\n"
+"Could not do Authorization"
+msgstr ""
+"Skráin %s er skemmt, svo það\n"
+"var ekki hægt að auðkenna"
+
+#: kab/widget.cc:172 kab/widget.cc:798 kab/widget.cc:868 kab/widget.cc:880
+#: kab/widget.cc:958 kab/widget.cc:1260 kab/widget.cc:1330 kab/widget.cc:1342
+#: kab/widget.cc:2110 kab/widgets.cc:109 kio/kio_error.cc:111
+#: kio/kio_paste.cc:35 kio/kio_paste.cc:47 kio/kio_paste.cc:62
+#: kio/kio_paste.cc:74 kio/kio_rename_dlg.cc:187 kio/kio_rename_dlg.cc:194
+#: kio/kmimetypes.cc:487 kio/kmimetypes.cc:505 kio/kmimetypes.cc:519
+#: kio/kmimetypes.cc:566 kio/kmimetypes.cc:599 kio/kmimetypes.cc:659
+#: kio/kmimetypes.cc:691 kio/krun.cc:40 kio/krun.cc:512 po/texts.cpp:24
+msgid "Error"
+msgstr "Villa"
+
+#: kio/krun.cc:102 kio/krun.cc:509 po/texts.cpp:25
+msgid "Malformed URL"
+msgstr "Gölluð slóð (URL)"
+
+#: kio/kio_paste.cc:85 po/texts.cpp:29
+msgid "Warning"
+msgstr "Aðvörun"
+
+#: po/texts.cpp:30
+msgid "Save a file"
+msgstr "Vista skrá"
+
+#: po/texts.cpp:31
+msgid "Contents"
+msgstr "Innihald"
+
+#: po/texts.cpp:33
+msgid "A&bout..."
+msgstr "&Um"
+
+#: po/texts.cpp:38
+msgid "On"
+msgstr "Á"
+
+#: po/texts.cpp:39
+msgid "Off"
+msgstr "Af"
+
+#: po/texts.cpp:43
+msgid "File"
+msgstr "Skrá"
+
+#: po/texts.cpp:44
+msgid "&File"
+msgstr "&Skrá"
+
+#: po/texts.cpp:47
+msgid "Edit"
+msgstr "Sýsl"
+
+#: po/texts.cpp:48
+msgid "&Edit"
+msgstr "Sýs&l"
+
+#: po/texts.cpp:49
+msgid "&Options"
+msgstr "S&tillingar"
+
+#: po/texts.cpp:50
+msgid "View"
+msgstr "View"
+
+#: po/texts.cpp:51
+msgid "&View"
+msgstr "&Listun"
+
+#: po/texts.cpp:52
+msgid "E&xit"
+msgstr "&Hætta"
+
+#: po/texts.cpp:54
+msgid "&Quit"
+msgstr "&Hætta"
+
+#: po/texts.cpp:58
+msgid "&Copy"
+msgstr "&Afrita"
+
+#: po/texts.cpp:60
+msgid "&Paste"
+msgstr "&Líma"
+
+#: po/texts.cpp:61
+msgid "&New"
+msgstr "&Nýtt"
+
+#: po/texts.cpp:62
+msgid "&New..."
+msgstr "&Nýtt..."
+
+#: po/texts.cpp:63
+msgid "&New Window..."
+msgstr "&Nýr gluggi..."
+
+#: po/texts.cpp:64
+msgid "New &Window..."
+msgstr "Nýr &Gluggi..."
+
+#: po/texts.cpp:65
+msgid "&New Window"
+msgstr "&Nýr gluggi"
+
+#: po/texts.cpp:66
+msgid "New Game"
+msgstr "Aðra umferð"
+
+#: po/texts.cpp:67
+msgid "&New Game"
+msgstr "&Aðra umferð"
+
+#: po/texts.cpp:69
+msgid "Open a file"
+msgstr "Opna skrá"
+
+#: po/texts.cpp:70
+msgid "Open..."
+msgstr "Opna..."
+
+#: po/texts.cpp:71
+msgid "&Open..."
+msgstr "&Opna..."
+
+#: po/texts.cpp:73
+msgid "&Cut"
+msgstr "&Klippa"
+
+#: po/texts.cpp:74
+msgid "C&ut"
+msgstr "&Klippa"
+
+#: po/texts.cpp:75
+msgid "Font"
+msgstr "Letur"
+
+#: po/texts.cpp:76
+msgid "&Foreground Color"
+msgstr "Forgrunnslitur"
+
+#: po/texts.cpp:77
+msgid "&Background Color"
+msgstr "Bakgrunnslitur"
+
+#: po/texts.cpp:79
+msgid "&Save"
+msgstr "&Vista"
+
+#: po/texts.cpp:81
+msgid "Save as..."
+msgstr "Vista sem..."
+
+#: po/texts.cpp:82
+msgid "S&ave as..."
+msgstr "Vista &sem..."
+
+#: po/texts.cpp:84
+msgid "&Close"
+msgstr "&Loka"
+
+#: po/texts.cpp:85
+msgid "&Print..."
+msgstr "&Prenta..."
+
+#: po/texts.cpp:87
+msgid "Options"
+msgstr "Stillingar"
+
+#: po/texts.cpp:88
+msgid "Remove"
+msgstr "Fjarlægja"
+
+#: po/texts.cpp:89
+msgid "Add"
+msgstr "Bæta við"
+
+#: po/texts.cpp:90
+msgid "Change"
+msgstr "Breyta"
+
+#: po/texts.cpp:91
+msgid "Delete"
+msgstr "Eyða"
+
+#: po/texts.cpp:92
+msgid "&Delete"
+msgstr "&Eyða"
+
+#: kio/kio_linedit_dlg.cc:46 kio/kio_openwith.cc:268 po/texts.cpp:93
+msgid "Clear"
+msgstr "Þurrka út"
+
+#: po/texts.cpp:94
+msgid "Italic"
+msgstr "Skáletrað"
+
+#: po/texts.cpp:95
+msgid "Roman"
+msgstr "Lóðletrað"
+
+#: po/texts.cpp:97
+msgid "&Undo"
+msgstr "&Hætta við"
+
+#: po/texts.cpp:98
+msgid "Redo"
+msgstr "Endurtaka"
+
+#: po/texts.cpp:99
+msgid "&Redo"
+msgstr "&Endurtaka"
+
+#: po/texts.cpp:100
+msgid "&Game"
+msgstr "&Leikur"
+
+#: kio/kio_rename_dlg.cc:22 kio/kio_skip_dlg.cc:18 po/texts.cpp:101
+msgid "Information"
+msgstr "Upplýsingar"
+
+#: po/texts.cpp:102
+msgid "Browse..."
+msgstr "Flakka um..."
+
+#: po/texts.cpp:103
+msgid "Stop"
+msgstr "Stöðva"
+
+#: po/texts.cpp:104
+msgid "&Remove"
+msgstr "&Fjarlægja"
+
+#: po/texts.cpp:105
+msgid "&Properties..."
+msgstr "&Eiginleikar..."
+
+#: po/texts.cpp:106
+msgid "Properties"
+msgstr "Eiginleikar"
+
+#: po/texts.cpp:107
+msgid "&Start"
+msgstr "Hefja"
+
+#: po/texts.cpp:108
+msgid "St&op"
+msgstr "&Stöðva"
+
+#: po/texts.cpp:109
+msgid "Move"
+msgstr "Færa"
+
+#: po/texts.cpp:110
+msgid "Miscellaneous"
+msgstr "Ýmislegt"
+
+#: po/texts.cpp:111
+msgid "Font Size"
+msgstr "Leturstærð"
+
+#: po/texts.cpp:112
+msgid "Fonts"
+msgstr "Letur"
+
+#: po/texts.cpp:113
+msgid "&Fonts"
+msgstr "&Letur"
+
+#: po/texts.cpp:114
+msgid "&Reload"
+msgstr "Lesa &aftur"
+
+#: po/texts.cpp:115
+msgid "&Previous"
+msgstr "&Fyrra"
+
+#: po/texts.cpp:116
+msgid "&Next"
+msgstr "&Næsta"
+
+#: po/texts.cpp:117
+msgid "Files"
+msgstr "Skrár"
+
+#: kab/widget.cc:1507 kab/widget.cc:1555 po/texts.cpp:118
+msgid "Continue"
+msgstr "Áfram"
+
+#: po/texts.cpp:119
+msgid "Restore"
+msgstr "Endurheimta"
+
+#: po/texts.cpp:120
+msgid "Appearance"
+msgstr "Útlit"
+
+#: po/texts.cpp:122
+msgid "Monday"
+msgstr "Mánudagur"
+
+#: po/texts.cpp:123
+msgid "Tuesday"
+msgstr "Þriðjudagur"
+
+#: po/texts.cpp:124
+msgid "Wednesday"
+msgstr "Miðvikudagur"
+
+#: po/texts.cpp:125
+msgid "Thursday"
+msgstr "Fimmtufagur"
+
+#: po/texts.cpp:126
+msgid "Friday"
+msgstr "Föstudagur"
+
+#: po/texts.cpp:127
+msgid "Saturday"
+msgstr "Laugardagur"
+
+#: po/texts.cpp:128
+msgid "Sunday"
+msgstr "Sunnudagur"
+
+#: po/texts.cpp:129
+msgid "&Update"
+msgstr "&Uppfæra"
+
+#: po/texts.cpp:130
+msgid "Layout"
+msgstr "Snið"
+
+#: po/texts.cpp:131
+msgid "Highscore"
+msgstr "Besti árangur"
+
+#: po/texts.cpp:132
+msgid "&New View"
+msgstr "&Ný ásýn"
+
+#: po/texts.cpp:133
+msgid "&Insert"
+msgstr "Stinga &inn"
+
+#: po/texts.cpp:136
+msgid "&Next >>"
+msgstr "&Næsta >>"
+
+#: po/texts.cpp:137
+msgid "<< &Previous"
+msgstr "<< &Fyrra"
+
+#: po/texts.cpp:144
+#, fuzzy
+msgid "&About..."
+msgstr "&Um"
+
+#: kab/addressbook.cc:92
+msgid ""
+"The directory where user specific data for the\n"
+"addressbook application is stored does not exist.\n"
+"The program will try to create\n"
+"         "
+msgstr ""
+"Mappan þar sem upplýsingar háðar notanda eru geymdar\n"
+"er ekki til. Nú verður reynt að búa til hana."
+
+#: kab/addressbook.cc:97
+msgid "and store all local files in this directory."
+msgstr "Allar staðværar skrár verða geymdar þar."
+
+#: kab/addressbook.cc:102
+msgid ""
+"The directory could not be created.\n"
+"Probably you do not have used KDE before, so\n"
+"you do not have a local \".kde\" directory\n"
+"in your home directory. Run the KDE filemanager\n"
+"kfm once to automatically create it."
+msgstr ""
+"Ekki tókst að búa til möppuna. Líklega hefur\n"
+"þú ekki notað KDE áður og því ertu ekki\n"
+"með \".kde\" möppu á heimasvæðinu þínu.\n"
+"Keyrðu KDE skráastjórann (kfm) til að\n"
+"búa hana til sjálfkrafa."
+
+#: kab/addressbook.cc:112
+msgid "The directory has been created.\n"
+msgstr "Mappan hefur verið smíðuð.\n"
+
+#: kab/addressbook.cc:150
+msgid "No addressbook database file, creating new one."
+msgstr "Enginn nafnalisti fannst, svo hann er í smíðum."
+
+#: kab/addressbook.cc:171
+msgid "Tried to load database for creating backup, but failed"
+msgstr "Ekki tókst að opna gagnagrunn til afritatöku."
+
+#: kab/addressbook.cc:210
+msgid "Unable to save to backup file."
+msgstr "Ekki tókst að vista í afritsskrá."
+
+#: kab/addressbook.cc:217
+msgid "Unable to reset filename after creating backup."
+msgstr "Ekki tókst að laga skráarnafn eftir afritstöku."
+
+#: kab/addressbook.cc:223
+msgid "Unable to create backup file"
+msgstr "Ekki tókst að búa til afritsskrá"
+
+#: kab/addressbook.cc:285
+msgid "Unable to insert \""
+msgstr "Ekki tókst að setja \""
+
+#: kab/addressbook.cc:288
+msgid "\" into configuration section (ignored)."
+msgstr "\" inn í stillingahlutan."
+
+#: kab/addressbook.cc:706
+msgid "Unable to add a new entry with available key."
+msgstr "Ekki tókst að setja inn nýja færslu '//with available key'"
+
+#: kab/addressbook.cc:714
+msgid "Cannot find previously created section."
+msgstr "Finn ekki gamlan hluta."
+
+#: kab/addressbook.cc:984
+msgid "entry without name"
+msgstr "nafnlaus færsla"
+
+#: kab/addressbook.cc:1004
+msgid ""
+"Unable to create new database file (probably permission denied), exiting."
+msgstr ""
+"Ekki tókst að búa til nýja gagnagrunnsskrá.\n"
+"Líklega er vandamálið vegna aðgangsheimilda.\n"
+"Hætt við keyrslu."
+
+#: kab/addressbook.cc:1012
+msgid "Cannot create configuration section, exiting."
+msgstr ""
+"Ekki tókst að búa til stillingahluta.\n"
+"Hætt við keyrslu."
+
+#: kab/addressbook.cc:1018
+msgid "Cannot create entries section, exiting."
+msgstr ""
+"Ekki tókst að búa til færslu hluta.\n"
+"Hætt við keyrslu."
+
+#: kab/addressbook.cc:1024
+msgid "Unable to find previously created section, exiting."
+msgstr "Finn ekki gamlan hluta. Hætt við keyrslu."
+
+#: kab/addressbook.cc:1033
+msgid "Cannot save newly created database."
+msgstr "Ekki tókst að vista nýja gagnagrunninn."
+
+#: kab/addressbook.cc:1041
+msgid "Cannot erase database contents."
+msgstr "Ekki tókst að tæma gagnagrunninn."
+
+#: kab/addressbook.cc:1126
+msgid "First name"
+msgstr "Nafn"
+
+#: kab/addressbook.cc:1130
+msgid "Additional name"
+msgstr "Millinafn"
+
+#: kab/addressbook.cc:1134
+msgid "Name prefix"
+msgstr "Forskeyti"
+
+#: kab/addressbook.cc:1138
+msgid "Formatted name"
+msgstr "Formað nafn"
+
+#: kab/addressbook.cc:1142
+msgid "Comment"
+msgstr "Athugasemd"
+
+#: kab/addressbook.cc:1146
+msgid "Organization"
+msgstr "Fyrirtæki"
+
+#: kab/addressbook.cc:1150
+msgid "Unit"
+msgstr "Deild"
+
+#: kab/addressbook.cc:1154
+msgid "Subunit"
+msgstr "Undirdeild"
+
+#: kab/addressbook.cc:1158
+msgid "Title"
+msgstr "Titill"
+
+#: kab/addressbook.cc:1162
+msgid "Role"
+msgstr "Hlutverk"
+
+#: kab/addressbook.cc:1166
+msgid "Birthday"
+msgstr "Fæðingardagur"
+
+#: kab/addressbook.cc:1170
+msgid "Talk addresses"
+msgstr "Talföng"
+
+#: kab/addressbook.cc:1174
+msgid "Delivery label"
+msgstr "//Delivery label"
+
+#: kab/addressbook.cc:1178
+msgid "Email address"
+msgstr "Netfang"
+
+#: kab/addressbook.cc:1182
+msgid "Second email address"
+msgstr "annað netfang"
+
+#: kab/addressbook.cc:1186
+msgid "Third email address"
+msgstr "Þriðja netfang"
+
+#: kab/addressbook.cc:1190
+msgid "Email addresses"
+msgstr "Netföng"
+
+#: kab/addressbook.cc:1194
+msgid "Address"
+msgstr "Heimilisfang"
+
+#: kab/addressbook.cc:1198
+msgid "City/Town"
+msgstr "Bær/Borg"
+
+#: kab/addressbook.cc:1202
+msgid "Telephone"
+msgstr "Sími"
+
+#: kab/addressbook.cc:1206
+msgid "Fax number"
+msgstr "Myndriti"
+
+#: kab/addressbook.cc:1210
+msgid "Modem number"
+msgstr "Módem"
+
+#: kab/addressbook.cc:1214
+msgid "Homepage URL"
+msgstr "Heimasíða"
+
+#: kab/addressbook.cc:1218
+msgid "Zip/postal code"
+msgstr "Póstnúmer"
+
+#: kab/addressbook.cc:1222
+msgid "State/province"
+msgstr "Fylki/sveitarfélag"
+
+#: kab/addressbook.cc:1226
+msgid "Country"
+msgstr "Land"
+
+#: kab/addressbook.cc:1406
+msgid "(unnamed entry)"
+msgstr "(ónefnd færsla)"
+
+#: kab/datepickerdialog.cc:35
+msgid "Select birthday"
+msgstr "Velja fæðingardag"
+
+#: kab/editentry.cc:41
+msgid "Edit the current entry"
+msgstr "Breyta færslunni"
+
+#: kab/editentry.cc:67
+msgid "Title:"
+msgstr "Titill:"
+
+#: kab/editentry.cc:68
+msgid "First name:"
+msgstr "Fornafn:"
+
+#: kab/editentry.cc:69
+msgid "Additional Name:"
+msgstr "Millinafn:"
+
+#: kab/editentry.cc:71
+msgid "Formatted Name:"
+msgstr "Formað nafn:"
+
+#: kab/editentry.cc:94
+msgid "&Name"
+msgstr "&Nafn"
+
+#: kab/editentry.cc:114
+msgid "Address:"
+msgstr "Heimilisfang:"
+
+#: kab/editentry.cc:115
+msgid "Zip/postal code:"
+msgstr "Póstnúmer"
+
+#: kab/editentry.cc:116
+msgid "Town:"
+msgstr "Bær"
+
+#: kab/editentry.cc:117
+msgid "State:"
+msgstr "Fylki"
+
+#: kab/editentry.cc:118
+msgid "Country:"
+msgstr "Land"
+
+#: kab/editentry.cc:141
+msgid "&Address"
+msgstr "&Heimilisfang"
+
+#: kab/editentry.cc:161
+msgid "Organization:"
+msgstr "Ryrirtæki:"
+
+#: kab/editentry.cc:162
+msgid "Org Unit:"
+msgstr "Deild:"
+
+#: kab/editentry.cc:163
+msgid "Org Subunit:"
+msgstr "Undirdeild:"
+
+#: kab/editentry.cc:164
+msgid "Role:"
+msgstr "Hlutverk:"
+
+#: kab/editentry.cc:185
+msgid "&Organization"
+msgstr "&Fyrirtæki"
+
+#: kab/editentry.cc:205
+msgid "Telephone:"
+msgstr "Sími"
+
+#: kab/editentry.cc:206
+msgid "Fax:"
+msgstr "Myndriti:"
+
+#: kab/editentry.cc:207
+msgid "Modem:"
+msgstr "Módem"
+
+#: kab/editentry.cc:208
+msgid "Homepage (URL):"
+msgstr "Heimasíða:"
+
+#: kab/editentry.cc:222 kab/editentry.cc:455
+msgid "Edit email addresses"
+msgstr "Breyta póstföngum"
+
+#: kab/editentry.cc:228 kab/editentry.cc:438
+msgid "Edit talk addresses"
+msgstr "Breyta talföngum"
+
+#: kab/editentry.cc:240
+msgid "&Contact"
+msgstr "//Contact"
+
+#: kab/editentry.cc:265
+msgid "Comment:"
+msgstr "Athugasemd:"
+
+#: kab/editentry.cc:273
+msgid "Birthday:"
+msgstr "Fæðingardagur:"
+
+#: kab/editentry.cc:283
+msgid "O&thers"
+msgstr "&Aðrir"
+
+#: kab/kabapi.cc:144
+msgid "Your new entry could not be added."
+msgstr "Ekki var hægt að bæta færslunni við."
+
+#: kab/searchresults.cc:38
+msgid "search results"
+msgstr "niðurstöður leitar"
+
+#: kab/widget.cc:153
+msgid "Conversion problem"
+msgstr "Vandi í formbreytingu"
+
+#: kab/widget.cc:154
+msgid ""
+"Kab could not convert your database to the\n"
+"current file format.\n"
+"You can use it, but not all features will be\n"
+"supported."
+msgstr ""
+"Kab tókst ekki að breyta gagnagrunninum í\n"
+"nýlegt form. Hann er nothæfur, en ekki allir\n"
+"eiginlekar forritsins nýtast."
+
+#: kab/widget.cc:173
+msgid ""
+"The application saved the last current entry,\n"
+"but this entry does not exist anymore."
+msgstr ""
+"Forritið geymdi síðustu færslu,\n"
+"en hún er ekki lengur til."
+
+#: kab/widget.cc:236 kab/widget.cc:301 kab/widget.cc:309
+msgid "File handling error"
+msgstr "Skráarvilla"
+
+#: kab/widget.cc:237
+msgid "Unable to open database file r/w."
+msgstr ""
+"Ekki tókst að opna gagnagrunninn\n"
+"í les/skrif ham."
+
+#: kab/widget.cc:245
+msgid "Email storage conversion"
+msgstr "Póstgeymsluformbreyting"
+
+#: kab/widget.cc:246
+msgid ""
+"Kab will move all your email addresses to\n"
+"the new style supporting unlimited numbers\n"
+"of email addresses per entry."
+msgstr ""
+"Kab breytir öllum netföngunum þínum í nýja formið\n"
+"sem styður ótakmarkaðan fjölda netfanga í færslu."
+
+#: kab/widget.cc:280
+msgid "kab database update"
+msgstr "breyta kab gagnagrunni"
+
+#: kab/widget.cc:281
+msgid ""
+"Please note that kab now supports some new\n"
+"fields in its addresses. These new fields\n"
+"are:\n"
+"° the state field,\n"
+"° the country field and\n"
+"° the postal code field.\n"
+"You will probably need to edit some of your\n"
+"entries to make use of it."
+msgstr ""
+"Athugið að kab styður nú ný svið í\n"
+"heimilisföngum.Þau eru:\n"
+"° Fylki\n"
+"° Land\n"
+"° Póstnúmer\n"
+"Þú þarft væntnalega að breyta einhverjum\n"
+"færslum til að nýta þetta."
+
+#: kab/widget.cc:302
+msgid "Could not save database after update."
+msgstr "Ekki tókst að vista gagnagrunn eftir breytingu."
+
+#: kab/widget.cc:310
+msgid "Unable to reopen database file r/o."
+msgstr "Ekki tókst að enduropna gagnagrunn í lesham."
+
+#: kab/widget.cc:464
+msgid "first entry"
+msgstr "fyrsta færsla"
+
+#: kab/widget.cc:465
+msgid "previous entry"
+msgstr "fyrri færsla"
+
+#: kab/widget.cc:466
+msgid "next entry"
+msgstr "næsta færsla"
+
+#: kab/widget.cc:467
+msgid "last entry"
+msgstr "síðasta færsla"
+
+#: kab/widget.cc:468
+msgid "search entries"
+msgstr "leita að færslu"
+
+#: kab/widget.cc:469
+msgid "add a new entry"
+msgstr "bæta færslu við"
+
+#: kab/widget.cc:470
+msgid "change this entry"
+msgstr "breyta þessari færslu"
+
+#: kab/widget.cc:471
+msgid "remove this entry"
+msgstr "fjarlægja þessa færslu"
+
+#: kab/widget.cc:513
+msgid "Switched to first entry."
+msgstr "Skipti á fyrstu færslu"
+
+#: kab/widget.cc:545
+msgid "Switched to last entry."
+msgstr "Skiti á síðustu færslu"
+
+#: kab/widget.cc:607 kab/widget.cc:662 kab/widget.cc:948 kab/widget.cc:998
+msgid "Sorry, file changed."
+msgstr "Því miður hefur skráin breyts."
+
+#: kab/widget.cc:611 kab/widget.cc:666 kab/widget.cc:1002
+msgid "Permission denied."
+msgstr "Leyfi ekki veitt."
+
+#: kab/widget.cc:622
+msgid "Remove entry?"
+msgstr "Fjarlægja færslu?"
+
+#: kab/widget.cc:623
+msgid "Really remove this entry?"
+msgstr "Virkilega fjarlægja færslu?"
+
+#: kab/widget.cc:642
+msgid "Entry deleted."
+msgstr "Færslu eytt."
+
+#: kab/widget.cc:676
+msgid "Added a new entry."
+msgstr "Bætti nýtti færslu við."
+
+#: kab/widget.cc:799
+msgid "The mail command must be configured before!"
+msgstr "Fyrst þarf að stilla póstskipunina!"
+
+#: kab/widget.cc:803 kab/widget.cc:916 kab/widget.cc:1273 kab/widget.cc:1953
+#: kab/widgets.cc:47
+msgid "No entries."
+msgstr "Engar færslur"
+
+#: kab/widget.cc:822
+msgid "Empty email address."
+msgstr "Tómur netfangalisti"
+
+#: kab/widget.cc:832 kab/widget.cc:1860 kab/widget.cc:1996 kab/widgets.cc:75
+#: kab/widgets.cc:99
+msgid "Rejected."
+msgstr "Hafnað"
+
+#: kab/widget.cc:842
+msgid "Mail configuration"
+msgstr "Póst uppsetning"
+
+#: kab/widget.cc:843
+msgid "Please configure the parameters for the email command."
+msgstr "Stilltu viðföng við póstskipunina."
+
+#: kab/widget.cc:869
+msgid "The email command parameters are wrong."
+msgstr "Vipföngin við póstskipunina eru ekki rétt."
+
+#: kab/widget.cc:881
+msgid ""
+"Email command failed.\n"
+"Make sure you did setup your email command and parameter!"
+msgstr ""
+"Póstlagning mistókst. Gakktu úr skugga um að\n"
+"búið sé að stilla póstskipunina og viðföng við hana."
+
+#: kab/widget.cc:885
+msgid "Mail program started."
+msgstr "Póstforrit ræst."
+
+#: kab/widget.cc:909
+msgid "Opened browser window."
+msgstr "Flakkaragluggi opnaður"
+
+#: kab/widget.cc:912
+msgid "No URL."
+msgstr "Engin slóð (URL)."
+
+#: kab/widget.cc:921
+msgid "The filemanager is busy, please try again."
+msgstr "Skráastjórinn er upptekinn. Reyndu aftur."
+
+#: kab/widget.cc:941
+msgid ""
+"The addressbook file is currently\n"
+"locked by another application.\n"
+"kab cannot save it."
+msgstr ""
+"Annað forrit hefur læst heimilisfangaskránni\n"
+"og kab getur því ekki vistað hana."
+
+#: kab/widget.cc:959
+msgid "Could not save database."
+msgstr "Ekki tókst að vista gagnagrunn."
+
+#: kab/widget.cc:961
+msgid "Database saved successfully."
+msgstr "Gagnagrunnur vistaður."
+
+#: kab/widget.cc:1021
+msgid "Entry changed."
+msgstr "Færsla hefur breyst."
+
+#: kab/widget.cc:1121
+msgid "Results"
+msgstr "Niðurstöður"
+
+#: kab/widget.cc:1122
+msgid "No entry matches this."
+msgstr "Engar færslur uppfilla þetta."
+
+#: kab/widget.cc:1147
+msgid "Search results window closed."
+msgstr "Glugga með leitarniðurstöðm lokað."
+
+#: kab/widget.cc:1261
+msgid "The talk command must be configured before!"
+msgstr "Fyrst þarf að stilla talskipunina!"
+
+#: kab/widget.cc:1266
+msgid "Talk configuration"
+msgstr "Tal stillingar"
+
+#: kab/widget.cc:1267
+msgid "Please configure the parameters for the talk command."
+msgstr "Stilltu viðföng við talskipun."
+
+#: kab/widget.cc:1282
+msgid "No talk address."
+msgstr "Ekkert talfang."
+
+#: kab/widget.cc:1298
+msgid "kab: Talk addresses"
+msgstr "kab: Talföng"
+
+#: kab/widget.cc:1299
+msgid "Available talk addresses:"
+msgstr "Laus talföng:"
+
+#: kab/widget.cc:1305 kab/widget.cc:2101
+msgid "Cancelled."
+msgstr "Hætt við."
+
+#: kab/widget.cc:1331
+msgid "The talk command parameters are wrong."
+msgstr "Viðföngin við talskipunina eru ekki rétt."
+
+#: kab/widget.cc:1343
+msgid ""
+"Talk command failed.\n"
+"Make sure you did setup your talk command and parameter!"
+msgstr ""
+"Ekki tókst að ná talsambandi. Gakktu úr skugga um að\n"
+"þú sért búinn að setja upp talskipunina og viðföng við hana."
+
+#: kab/widget.cc:1347
+msgid "Talk program started."
+msgstr "Talforrit ræst."
+
+#: kab/widget.cc:1399
+msgid "Attention: printing is still experimental!"
+msgstr "Athugið: prenntun er enn á tilraunastigi!"
+
+#: kab/widget.cc:1504 kab/widget.cc:1552
+msgid "Page size problem"
+msgstr "Vandi með blaðsíðustærð"
+
+#: kab/widget.cc:1505 kab/widget.cc:1553
+msgid ""
+"The fields you requested to print do\n"
+"not fit into the page width."
+msgstr ""
+"Sviðin sem þú vilt láta prennta eru of\n"
+"breið fyrir blaðsíðuna."
+
+#: kab/widget.cc:1760 kab/widgets.cc:113
+msgid "Printing finished successfully."
+msgstr "Útprenntun lokið."
+
+#: kab/widget.cc:1791
+msgid "kab: Email addresses"
+msgstr "kab: Netföng"
+
+#: kab/widget.cc:1792
+msgid "Available email addresses:"
+msgstr "Laus netföng"
+
+#: kab/widget.cc:1857
+msgid "kab: Select fields to copy"
+msgstr "Veldu svið til afritunar"
+
+#: kab/widget.cc:1867
+msgid "Nothing selected."
+msgstr "Ekkert var valið"
+
+#: kab/widget.cc:1925 kab/widgets.cc:92
+msgid "KDE addressbook overview"
+msgstr "Yfirlit yfir KDE símaskrána"
+
+#: kab/widget.cc:1970
+msgid "Name-Email-Link (recommended!)"
+msgstr "Nafna- og netfangatenging (mælt með því!)"
+
+#: kab/widget.cc:1972
+msgid "Select table columns"
+msgstr "Velja töfludálka"
+
+#: kab/widget.cc:1977
+msgid "Nothing to export."
+msgstr "Ekkert að flytja út"
+
+#: kab/widget.cc:2008
+msgid "Email link"
+msgstr "Netfangatenging"
+
+#: kab/widget.cc:2088
+msgid "Could not find the users home directory."
+msgstr "Fann ekki heimasvæði notanda."
+
+#: kab/widget.cc:2089
+msgid "Intern error!"
+msgstr "Innri villa!"
+
+#: kab/widget.cc:2111
+msgid "Could not open the file to create the HTML table."
+msgstr "Ekki tókst að opna skrá til að búa til HTML töflu."
+
+#: kab/widgets.cc:52
+msgid "Printing cancelled."
+msgstr "Hætt við útprenntun."
+
+#: kab/widgets.cc:67
+msgid "kab: Select columns for printing"
+msgstr "kab: Veldu dálka til útprenntunar."
+
+#: kab/widgets.cc:81
+msgid "Nothing to print."
+msgstr "Ekkert að prennta."
+
+#: kab/widgets.cc:93
+msgid "Page <p>"
+msgstr "Síða <p>"
+
+#: kab/widgets.cc:94
+msgid "KDE - the professionals choice."
+msgstr "KDE - þar sem fagmennirnir versla."
+
+#: kab/widgets.cc:110
+msgid "Printing failed!"
+msgstr "Útprenntun mistókst!"
+
+#: kio/kio_cache.cc:345
+msgid "KIO Cache"
+msgstr "KIO flýtiminni"
+
+#: kio/kio_cache.cc:347
+msgid "Contents of the cache"
+msgstr "Innihald flýtiminnis"
+
+#: kio/kio_cache.cc:352
+msgid ""
+"Use the icons for drag and drop actions, since they refer to the cache files "
+"on your hard disk, while you should use the textual links for browsing"
+msgstr ""
+"Notaðu táknmyndirnar til að draga og sleppa, því þær tákna skrár "
+"íflýtiminninu á diskinum. Notaðu hinsvergar textatengingarnar til að flakka"
+
+#: kio/kio_cache.cc:355
+msgid "Creation Date"
+msgstr "Smíðidagur"
+
+#: kio/kio_cache.cc:357
+msgid "Expiration Date"
+msgstr "Úreldingardagur"
+
+#: kio/kio_cache.cc:422
+msgid "Unknown"
+msgstr "Óþekkt"
+
+#: kio/kio_cache.cc:428
+msgid "Never"
+msgstr "Aldrei"
+
+#: kio/kio_error.cc:16
+#, c-format
+msgid ""
+"Could not read\n"
+"%s"
+msgstr ""
+"Ekki tókst að lesa\n"
+"%s"
+
+#: kio/kio_error.cc:19
+#, c-format
+msgid ""
+"Could not write to\n"
+"%s"
+msgstr ""
+"Ekki tókst að skrifa í\n"
+"%s"
+
+#: kio/kio_error.cc:22
+#, c-format
+msgid ""
+"Could not start process\n"
+"%s"
+msgstr ""
+"Ekki tókst að ræsa\n"
+"%s"
+
+#: kio/kio_error.cc:25
+#, c-format
+msgid ""
+"Internel Error\n"
+"Please send a full bugreport to kde-bugs@kde.org\n"
+"\n"
+"%s"
+msgstr ""
+"Innri villa!\n"
+"Vinsamlegast sendu villuskyti til kde-bugs@kde.org\n"
+"\n"
+"%s"
+
+#: kio/kio_error.cc:28
+#, c-format
+msgid ""
+"Malformed URL\n"
+"%s"
+msgstr ""
+"Gölluð slóð (URL)\n"
+"%s"
+
+#: kio/kio_error.cc:31
+#, c-format
+msgid ""
+"The protocol %s\n"
+" is not supported"
+msgstr "%s er ekki þekktur samskiptaháttur."
+
+#: kio/kio_error.cc:34
+#, c-format
+msgid ""
+"The protocol %s\n"
+"is only a filter protocol.\n"
+msgstr "%s er bara síusamskiptahæattur.\n"
+
+#: kio/kio_error.cc:37
+#, c-format
+msgid ""
+"Unsupported action\n"
+"%s"
+msgstr ""
+"%s\n"
+"er óþekkt aðgerð"
+
+#: kio/kio_error.cc:40
+#, c-format
+msgid ""
+"The file or directory\n"
+"%s\n"
+"does not exist"
+msgstr ""
+"Ekki er til skrá eða mappa sem heitir\n"
+"%s"
+
+#: kio/kio_error.cc:43
+#, c-format
+msgid ""
+"%s\n"
+" is a directory,\n"
+"but a file was expected"
+msgstr ""
+"%s\n"
+"er mappa, en búist var við skrá"
+
+#: kio/kio_error.cc:46
+#, c-format
+msgid ""
+"Could not make directory\n"
+"%s"
+msgstr ""
+"Ekki tókst að búa til möppuna\n"
+"%s"
+
+#: kio/kio_error.cc:49
+#, c-format
+msgid ""
+"The file or directory\n"
+"%s\n"
+"does already exist"
+msgstr ""
+"Nú þegar er til skrá eða mappa sem heitir\n"
+"%s"
+
+#: kio/kio_error.cc:52
+#, c-format
+msgid ""
+"%s\n"
+"Access denied"
+msgstr "Aðgangi hafnað"
+
+#: kio/kio_error.cc:55
+#, c-format
+msgid ""
+"Could not enter directory\n"
+"%s"
+msgstr ""
+"Ekki tókst að fara í möppuna\n"
+"%s"
+
+#: kio/kio_error.cc:58
+#, c-format
+msgid ""
+"The protocol %s\n"
+"does not implement a directory service"
+msgstr ""
+"samskiptahátturinn %s\n"
+"leyfir ekki uppflettingar"
+
+#: kio/kio_error.cc:61
+#, c-format
+msgid ""
+"Found a cyclic link in\n"
+"%s"
+msgstr ""
+"%s\n"
+"bendir í hring"
+
+#: kio/kio_error.cc:64
+#, c-format
+msgid ""
+"Could not change permissions for\n"
+"%s"
+msgstr ""
+"Ekki tókst að breyta heimildum fyrir\n"
+"%s"
+
+#: kio/kio_error.cc:67
+#, c-format
+msgid ""
+"Access denied\n"
+"Could not write to\n"
+"%s"
+msgstr ""
+"Ekki tókst að skrifa í\n"
+"%s,\n"
+"því aðgangi var hafnað"
+
+#: kio/kio_error.cc:70
+msgid ""
+"Action has been\n"
+"canceled by the user"
+msgstr "Notandi hæti við aðgerð."
+
+#: kio/kio_error.cc:73
+#, c-format
+msgid ""
+"Found a cyclic link while copying\n"
+"%s"
+msgstr ""
+"Við afritun fannst\n"
+"%s\n"
+"sem bendir í hring"
+
+#: kio/kio_error.cc:76
+#, c-format
+msgid ""
+"Could not create socket for accessing\n"
+"%s"
+msgstr ""
+"Ekki tókst að búa til sökkul til að tengjast\n"
+"%s"
+
+#: kio/kio_error.cc:79
+#, c-format
+msgid ""
+"Could not connect to host\n"
+"%s"
+msgstr ""
+"Náði ekki sambandi við vélina\n"
+"%s"
+
+#: kio/kio_error.cc:82
+#, c-format
+msgid ""
+"Unknown host\n"
+"%s"
+msgstr "Óþekkt vél%s"
+
+#: kio/kio_error.cc:85
+#, c-format
+msgid ""
+"Connection to host\n"
+"%s\n"
+"is broken"
+msgstr ""
+"Tenging við vélina\n"
+"%s\n"
+"rofnaði"
+
+#: kio/kio_error.cc:88
+#, c-format
+msgid ""
+"The protocol %s\n"
+"is not a filter protocol"
+msgstr ""
+"Samskiptahátturinn %s\n"
+"er ekki síusamskiptaháttur."
+
+#: kio/kio_error.cc:91
+#, c-format
+msgid ""
+"%s\n"
+"is a file,\n"
+"but a directory was expected"
+msgstr ""
+"%s\n"
+"er skrá, en búist var við möppu"
+
+#: kio/kio_error.cc:94
+#, c-format
+msgid ""
+"Could not mount device.\n"
+"The reported error was:\n"
+"\n"
+"%s"
+msgstr ""
+"Tókst ekki að tengja tæki inn í skráarkefrið.\n"
+"Villuboðin voru:\n"
+"\n"
+"%s"
+
+#: kio/kio_error.cc:97
+#, c-format
+msgid ""
+"Could not unmount device.\n"
+"The reported error was:\n"
+"\n"
+"%s"
+msgstr ""
+"Tókst ekki að aftengja tæki frá skráarkerfinu.\n"
+"Villuboðin voru:\n"
+"\n"
+"%s"
+
+#: kio/kio_error.cc:100
+#, c-format
+msgid ""
+"The process for the\n"
+"%s protocol\n"
+"died unexpectedly"
+msgstr ""
+"Ferlinu sem meðhöndlar samskiptamátann\n"
+"%s lauk skyndilega"
+
+#: kio/kio_error.cc:111 kio/kio_linedit_dlg.cc:42 kio/kio_openwith.cc:260
+#: kio/kio_pass_dlg.cc:75 kio/kio_paste.cc:35 kio/kio_paste.cc:47
+#: kio/kio_paste.cc:63 kio/kio_paste.cc:74 kio/kio_rename_dlg.cc:187
+#: kio/kio_rename_dlg.cc:194 kio/kmimetypes.cc:61 kio/kmimetypes.cc:88
+#: kio/kmimetypes.cc:134 kio/kmimetypes.cc:487 kio/kmimetypes.cc:505
+#: kio/kmimetypes.cc:519 kio/kmimetypes.cc:566 kio/kmimetypes.cc:599
+#: kio/kmimetypes.cc:659 kio/kmimetypes.cc:691 kio/kregfactories.cc:75
+#: kio/krun.cc:40 kio/krun.cc:105 kio/krun.cc:512 kio/kservices.cc:114
+msgid "Ok"
+msgstr "Í lagi"
+
+#: kio/kio_job.cc:137
+#, c-format
+msgid "Mounting %s ..."
+msgstr "Tengi %s inn í skráakerfið..."
+
+#: kio/kio_job.cc:157
+#, c-format
+msgid "Unmounting %s ..."
+msgstr "Aftengi %s frá skrárkerfinu..."
+
+#: kio/kio_openwith.cc:133
+msgid "This group is empty!"
+msgstr "Þessi flokkur er tómur!"
+
+#: kio/kio_openwith.cc:264
+msgid "&Browser"
+msgstr "&Flakkari"
+
+#: kio/kio_pass_dlg.cc:33
+msgid "User"
+msgstr "Notandi"
+
+#: kio/kio_pass_dlg.cc:44 kio/kio_pass_dlg.cc:88
+msgid "Password"
+msgstr "Lykilorð"
+
+#: kio/kio_paste.cc:35 kio/kio_paste.cc:47
+msgid "The clipboard is empty"
+msgstr "Klippiborðið er tómt"
+
+#: kio/kio_paste.cc:62
+msgid ""
+"Pasting clipboard data is only supported on the local hard disk currently"
+msgstr "Í augnablikinu er bara hægt að líma af klippiborðinu á skráakerfið"
+
+#: kio/kio_paste.cc:67
+msgid "Filename for clipboard content:"
+msgstr "Skráarnafn fyrir innihald klippiborðs:"
+
+#: kio/kio_paste.cc:74
+msgid "You did not enter a filename"
+msgstr "Þú slóst ekki inn skráarnafn"
+
+#: kio/kio_paste.cc:84
+#, c-format
+msgid "The file %s does already exist. Do you really want to overwrite it ?"
+msgstr "Skráin %s er nú þegar til. Viltu skrifa yfir hana?"
+
+#: kio/kio_progress_dlg.cc:92 kio/kio_progress_dlg.cc:108
+msgid " Bytes"
+msgstr " bæti"
+
+#: kio/kio_progress_dlg.cc:97 kio/kio_progress_dlg.cc:113
+msgid " Kb"
+msgstr " Kb"
+
+#: kio/kio_progress_dlg.cc:102 kio/kio_progress_dlg.cc:118
+msgid " Mb"
+msgstr " Mb"
+
+#: kio/kio_progress_dlg.cc:151 kio/kio_progress_dlg.cc:177
+msgid "Stalled"
+msgstr "Fastur í drullupolli"
+
+#: kio/kio_progress_dlg.cc:159
+msgid " Bytes/s"
+msgstr " bæti/s"
+
+#: kio/kio_progress_dlg.cc:164
+msgid " Kb/s"
+msgstr " Kb/s"
+
+#: kio/kio_progress_dlg.cc:169
+msgid " Mb/s"
+msgstr " Mb/s"
+
+#: kio/kio_progress_dlg.cc:184
+#, c-format
+msgid "%i seconds"
+msgstr "%i sekúndur"
+
+#: kio/kio_progress_dlg.cc:190
+#, c-format
+msgid "%i:%i"
+msgstr "%i:%i"
+
+#: kio/kio_progress_dlg.cc:197
+#, c-format
+msgid "%i:%i:%i"
+msgstr "%i:%i:%i"
+
+#: kio/kio_progress_dlg.cc:201
+#, c-format
+msgid "%i%s  Remaining time: %s"
+msgstr "%i%s  Tími eftir: %s"
+
+#: kio/kio_progress_dlg.cc:207
+msgid "Scanning "
+msgstr "Skoða"
+
+#: kio/kio_progress_dlg.cc:222
+msgid "Creating dir "
+msgstr "Smíða möppu"
+
+#: kio/kio_progress_dlg.cc:229
+msgid "Fetching file"
+msgstr "Sæki skrá"
+
+#: kio/kio_rename_dlg.cc:27
+msgid "Rename"
+msgstr "Endurnefna"
+
+#: kio/kio_rename_dlg.cc:32 kio/kio_skip_dlg.cc:23
+msgid "Skip"
+msgstr "Sleppa"
+
+#: kio/kio_rename_dlg.cc:35 kio/kio_skip_dlg.cc:28
+msgid "Auto Skip"
+msgstr "Sleppa sjálfkrafa"
+
+#: kio/kio_rename_dlg.cc:41
+msgid "Overwrite"
+msgstr "Skrifa yfir"
+
+#: kio/kio_rename_dlg.cc:46
+msgid "Overwrite All"
+msgstr "Skrifa yfir allt"
+
+#: kio/kio_rename_dlg.cc:57
+msgid "You try to overwrite"
+msgstr "Þú reynir að skrifa yfir"
+
+#: kio/kio_rename_dlg.cc:78
+msgid "already exists. Overwrite with"
+msgstr "er til nú þegar. Skrifa yfir með"
+
+#: kio/kio_rename_dlg.cc:90
+msgid "Or rename to"
+msgstr "Eða endurnefna"
+
+#: kio/kio_rename_dlg.cc:101
+msgid "already exists."
+msgstr "er til nú þegar."
+
+#: kio/kio_rename_dlg.cc:106
+msgid "Do you want to rename it ?"
+msgstr "Viltu endurnefna?"
+
+#: kio/kio_rename_dlg.cc:185
+msgid "Malformed URL\n"
+msgstr "Gölluð slóð (URL)\n"
+
+#: kio/kio_rename_dlg.cc:194
+msgid "You must not change the protocol"
+msgstr "Þú mátt ekki breyta samskiptamátanum"
+
+#: kio/kio_skip_dlg.cc:35
+msgid "Can not overwrite"
+msgstr "Ekki tókst að skrifa yfir"
+
+#: kio/kmimetypes.cc:61
+msgid "No mime types installed!"
+msgstr "Engin mime tög sett inn!"
+
+#: kio/kmimetypes.cc:85
+msgid "Could not find mime type\n"
+msgstr "Ekki tókst að finna mime tag\n"
+
+#: kio/kmimetypes.cc:131
+msgid "The mime type config file "
+msgstr "Stillingaskráin fyrir mime tög"
+
+#: kio/kmimetypes.cc:133 kio/kregfactories.cc:74
+msgid "does not conatain a MimeType=... entry"
+msgstr "inniheldur ekki MimeType=... færslu"
+
+#: kio/kmimetypes.cc:486
+#, c-format
+msgid ""
+"The kdelnk file\n"
+"%s\n"
+"has no Type=... entry"
+msgstr ""
+"kdelnk skráinn\n"
+"%s\n"
+"inniheldur ekki Type=... færslu"
+
+#: kio/kmimetypes.cc:504
+#, c-format
+msgid ""
+"The kdelnk type\n"
+"%s\n"
+"is unknown"
+msgstr ""
+"kdelnk tagið\n"
+"%s\n"
+"er ekki þekkt"
+
+#: kio/kmimetypes.cc:518 kio/kmimetypes.cc:598 kio/kmimetypes.cc:690
+#, c-format
+msgid ""
+"The kdelnk file\n"
+"%s\n"
+"is of type FSDevice but has no Dev=... entry"
+msgstr ""
+"kdelnk skráin\n"
+"%s\n"
+"er af FSDevice tagi, en inniheldur\n"
+"ekki Dev=... færslu."
+
+#: kio/kmimetypes.cc:565
+#, c-format
+msgid ""
+"The kdelnk file\n"
+"%s\n"
+"is of type Link but has no URL=... entry"
+msgstr ""
+
+#: kio/kmimetypes.cc:608
+msgid "Mount"
+msgstr "Tengja inn"
+
+#: kio/kmimetypes.cc:615
+msgid "Unmount"
+msgstr "Tengja frá"
+
+#: kio/kmimetypes.cc:658
+#, c-format
+msgid ""
+"The kdelnk file\n"
+"%s\n"
+" has an invalid menu entry\n"
+"%s"
+msgstr ""
+"kdelnk skráin\n"
+"%s\n"
+"er með gallaða valyndafærslu\n"
+"%s"
+
+#: kio/kregfactories.cc:72
+msgid "The mime type _cfg file "
+msgstr "_cfg skráin fyrir mime tög "
+
+#: kio/krun.cc:39
+#, c-format
+msgid ""
+"Can not enter\n"
+"%s\n"
+"Access denied"
+msgstr ""
+"Ekki tókst að fara í\n"
+"%s,því aðgangi var hafnað."
+
+#: kio/kservices.cc:111
+msgid "The application config file\n"
+msgstr "Stillingaskrá forritsins\n"
+
+#: kio/kservices.cc:113
+msgid ""
+"\n"
+"does not conatain a Name=... entry"
+msgstr ""
+"\n"
+"inniheldur ekki Name=... færslu"
+
+#~ msgid "(none)"
+#~ msgstr "(ekkert)"
+
+#~ msgid "None"
+#~ msgstr "Ekkert"
+
+#~ msgid "Small"
+#~ msgstr "Lítið"
+
+#~ msgid "Medium"
+#~ msgstr "Miðlungs"
+
+#~ msgid "Large"
+#~ msgstr "Stórt"
