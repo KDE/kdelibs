@@ -6,6 +6,7 @@
 #define YY_NO_UNPUT
 
 char* putSymbol( char *_name );
+char *putBracketizedSymbol( char *_name );
 char* putString( char *_name );
 int yywrap();
 
@@ -41,6 +42,8 @@ DIGIT    [0-9]
 
 {DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return FLOAT; }
 
+\[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval.name = putBracketizedSymbol( yytext ); return ID; }
+
 [a-zA-Z][a-zA-Z0-9]* { yylval.name = putSymbol( yytext ); return ID; }
 
 [ \t\n]+          /* eat up whitespace */
@@ -49,7 +52,17 @@ DIGIT    [0-9]
 
 %%
 
-char* putSymbol( char *_name )
+char* putBracketizedSymbol( char *_name )
+{
+  int l = strlen( _name )-1;
+  char *p = (char *)malloc( l );
+
+  strncpy( p, _name+1, l-1 );
+
+  return p;
+}
+
+char *putSymbol( char *_name )
 {
   char *p = (char*)malloc( strlen( _name ) + 1 );
   strcpy( p, _name );
