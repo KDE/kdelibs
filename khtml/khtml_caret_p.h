@@ -176,11 +176,11 @@ public:
  */
 template<class T> class MassDeleter : public QValueVector<T *> {
 public:
-  MassDeleter(size_t reserved = 1) { reserve(reserved); }
+  MassDeleter(size_t reserved = 1) { this->reserve(reserved); }
   ~MassDeleter()
   {
-    Iterator nd = end();
-    for (Iterator it = begin(); it != nd; ++it)
+    typename QValueVector<T *>::Iterator nd = this->end();
+    for (typename QValueVector<T *>::Iterator it = this->begin(); it != nd; ++it)
       delete *it;
   }
 };
