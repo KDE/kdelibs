@@ -122,7 +122,7 @@ void Buffer::write(const vector<mcopbyte>& raw)
 
 void Buffer::read(vector<mcopbyte>& raw, long l)
 {
-	if(remaining() >= l) {
+	if(l >= 0 && remaining() >= l) {
 		raw.clear();
 		raw.insert(raw.end(), contents.begin()+rpos, contents.begin()+rpos+l);
 		rpos += l;
@@ -134,7 +134,7 @@ void Buffer::read(vector<mcopbyte>& raw, long l)
 void *Buffer::read(long l) {
 	void *result = 0;
 
-	if(remaining() >= l) {
+	if(l >= 0 && remaining() >= l) {
 		result = &contents[rpos];
 		rpos += l;
 	} else {
@@ -144,12 +144,12 @@ void *Buffer::read(long l) {
 }
 
 void *Buffer::peek(long l) {
-	assert(remaining() >= l);
+	assert(l >= 0 && remaining() >= l);
 	return &contents[rpos];
 }
 
 void Buffer::skip(long l) {
-	if(remaining() >= l) {
+	if(l >= 0 && remaining() >= l) {
 		rpos += l;
 	} else {
 		_readError = true;
@@ -196,7 +196,7 @@ void Buffer::readByteSeq(vector<mcopbyte>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	if(remaining() >= seqlen)
+	if(seqlen >= 0 && remaining() >= seqlen)
 	{
 		for(i=0;i<seqlen;i++) result.push_back(readByte());
 	}
@@ -227,7 +227,7 @@ void Buffer::readLongSeq(vector<long>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	if(remaining() >= seqlen * 4)
+	if(seqlen * 4 >= 0 && remaining() >= seqlen * 4)
 	{
 		for(i=0;i<seqlen;i++) result.push_back(readLong());
 	}
@@ -252,7 +252,7 @@ void Buffer::readFloatSeq(vector<float>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	if(remaining() >= seqlen * 4)
+	if(seqlen * 4 >= 0 && remaining() >= seqlen * 4)
 	{
 		for(i=0;i<seqlen;i++) result.push_back(readFloat());
 	}
