@@ -120,8 +120,9 @@ void KShortcutDialog::initGUI()
 	pLayout->addWidget( m_pcbMultiKey[1], 1, 3 );
 
 	QVBox* pVBox = new QVBox( this );
-	m_pcmdOK = new KPushButton( KStdGuiItem::ok(), pVBox );
-	m_pcmdCancel = new KPushButton( KStdGuiItem::cancel(), pVBox );
+        
+	m_pcmdOK = new KPushButton( KGuiItem(i18n( "OK" ), "button_ok"), pVBox );
+	m_pcmdCancel = new KPushButton( KGuiItem(i18n( "Cancel" ), "button_cancel"), pVBox );
 	m_pcbAutoClose = new QCheckBox( i18n("Auto-close"), pVBox );
 	m_pcbAutoClose->setChecked( true );
 	// Disable auto-close if the sequence we're editing is a multi-key shortcut.
