@@ -65,13 +65,13 @@ gmake -f Makefile.cvs
 gmake
 gmake install
 
-(On Linux, GNU make is the default make, and gmake can be replaced with
-make).
+(On Linux, GNU make is the default make, and gmake in the above commands
+can be replaced with make).
 
 For Qt the magic sequence is:
 
-make -f Makefile.cvs
 ./configure -debug -shared -gif -sm -system-zlib -system-libpng -system-jpeg
+make
 
 Common problems
 ===============
