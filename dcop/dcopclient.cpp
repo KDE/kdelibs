@@ -471,13 +471,11 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	  if ( proxy->process( objId, fun, data, replyType, replyData ) )
 	      return TRUE;
       }
-      qDebug("we received a DCOP message for an object '%s' we don't know about!", objId.data());
       return false;
 
   } else {
     DCOPObject *objPtr = DCOPObject::find(objId);
     if (!objPtr->process(fun, data, replyType, replyData)) {
-      qDebug("for some reason, the function didn't process the DCOP request.");
       // obj doesn't understand function or some other error.
       return false;
     }
