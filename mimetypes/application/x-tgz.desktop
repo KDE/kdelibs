@@ -1,0 +1,22 @@
+[Desktop Entry]
+Comment=Gzipped Tar Archives
+Comment[ca]=Arxius tar gzipats
+Comment[cs]=Gzipovaný archív
+Comment[de]=Tar-Archive, die mit gzip komprimiert wurden
+Comment[eo]=Gzip-Tar-arĥivo
+Comment[fi]=Gzip-paketti
+Comment[fr]=Archive Tar compressée par gzip
+Comment[hu]=Gzippelt tar arhívum
+Comment[it]=Archivio Tar-Gzip
+Comment[ja]=GzipされたTarアーカイブ
+Comment[no]=Gzippet tar-akriver
+Comment[no_NY]=Gzippa tar-arkiv
+Comment[pt]=Arquivos GZip
+Comment[ro]=Fişier arhivă TAR comprimat cu GZIP
+Comment[sl]=Z gzip-om stisnjeni arhiv tar
+Comment[sv]=Filarkiv i tar-format komprimerat med gzip
+MimeType=application/x-tgz
+DefaultApp=ark
+Icon=tgz
+Type=MimeType
+Patterns=*.tar.gz;*.tgz;
