@@ -102,15 +102,10 @@ KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
     connect( _host, _port );
 }
 
-KSocket::KSocket( const char *_host, unsigned short int _port ) :
-  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
-{
-  KSocket(_host, _port, 30);
-}
-
 KSocket::KSocket( const char *_path ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
+  timeOut = 0; // Not used
   domain = PF_UNIX;
   connect( _path );
 }
@@ -356,7 +351,7 @@ KSocket::~KSocket()
 
 
 KServerSocket::KServerSocket( const char *_path ) :
-  sock( -1 )
+  notifier( 0L ), sock( -1 )
 {
   domain = PF_UNIX;
   
@@ -371,13 +366,13 @@ KServerSocket::KServerSocket( const char *_path ) :
 }
 
 KServerSocket::KServerSocket( unsigned short int _port ) :
-  sock( -1 )
+  notifier( 0L ), sock( -1 )
 {
   domain = PF_INET;
 
   if ( !init ( _port ) )
   {
-    fatal("Error constructing\n");
+    // fatal("Error constructing\n");
     return;
   }
     
@@ -390,7 +385,12 @@ bool KServerSocket::init( const char *_path )
   if ( domain != PF_UNIX )
     return false;
   
-  struct sockaddr_un name;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {      
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
+    return false;
+  }  
     
   sock = ::socket( PF_UNIX, SOCK_STREAM, 0 );
   if (sock < 0)
@@ -400,15 +400,10 @@ bool KServerSocket::init( const char *_path )
   }
 
   unlink(_path );   
-  name.sun_family = AF_UNIX;
-  int l = strlen( _path );
-  if ( l > UNIX_PATH_MAX - 1 )
-  {      
-    warning( "Too long PF_UNIX domain name '%s'\n",_path);
-    return false;
-  }  
-  strcpy( name.sun_path, _path );
 
+  struct sockaddr_un name;
+  name.sun_family = AF_UNIX;
+  strcpy( name.sun_path, _path );
     
   if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
   {
@@ -442,14 +437,14 @@ bool KServerSocket::init( unsigned short int _port )
   if ( domain != PF_INET )
     return false;
   
-  ksockaddr_in name;
-    
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
     return false;
   }
+
+  ksockaddr_in name;
     
   name.sin_family = AF_INET;
   name.sin_port = htons( _port );
