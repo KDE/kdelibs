@@ -472,6 +472,18 @@ void KPopupMenu::setKeyboardShortcutsExecute(bool enable)
 /**
  * RMB menus on menus
  */
+
+void KPopupMenu::mousePressEvent(QMouseEvent* e)
+{
+    if (d->m_ctxMenu && d->m_ctxMenu->isVisible())
+    {
+        // hide on a second context menu event
+        d->m_ctxMenu->hide();
+    }
+
+    QPopupMenu::mousePressEvent(e);
+}
+
 QPopupMenu* KPopupMenu::contextMenu()
 {
     if (!d->m_ctxMenu)
@@ -516,6 +528,16 @@ void KPopupMenu::itemHighlighted(int /* whichItem */)
 
 void KPopupMenu::showCtxMenu(QPoint pos)
 {
+    QMenuItem* item = findItem(KPopupMenuPrivate::s_highlightedItem);
+    if (item)
+    {
+        QPopupMenu* subMenu = item->popup();
+        if (subMenu)
+        {
+            disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
+        }
+    }
+
     KPopupMenuPrivate::s_highlightedItem = idAt(pos);
 
     if (KPopupMenuPrivate::s_highlightedItem == -1)
@@ -525,6 +547,13 @@ void KPopupMenu::showCtxMenu(QPoint pos)
     }
 
     emit aboutToShowContextMenu(this, KPopupMenuPrivate::s_highlightedItem, d->m_ctxMenu);
+
+    QPopupMenu* subMenu = findItem(KPopupMenuPrivate::s_highlightedItem)->popup();
+    if (subMenu)
+    {
+        connect(subMenu, SIGNAL(aboutToShow()), SLOT(ctxMenuHideShowingMenu()));
+        QTimer::singleShot(100, subMenu, SLOT(hide()));
+    }
 
     if (!KPopupMenuPrivate::s_continueCtxMenuShow)
     {
@@ -537,8 +566,34 @@ void KPopupMenu::showCtxMenu(QPoint pos)
     connect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
 }
 
+/*
+ * this method helps prevent submenus popping up while we have a context menu
+ * showing
+ */
+void KPopupMenu::ctxMenuHideShowingMenu()
+{
+    QMenuItem* item = findItem(KPopupMenuPrivate::s_highlightedItem);
+    if (item)
+    {
+        QPopupMenu* subMenu = item->popup();
+        if (subMenu)
+        {
+            QTimer::singleShot(0, subMenu, SLOT(hide()));
+        }
+    }
+}
+
 void KPopupMenu::ctxMenuHiding()
 {
+    if (KPopupMenuPrivate::s_highlightedItem != 0)
+    {
+        QPopupMenu* subMenu = findItem(KPopupMenuPrivate::s_highlightedItem)->popup();
+        if (subMenu)
+        {
+            disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
+        }
+    }
+
     disconnect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
     KPopupMenuPrivate::s_continueCtxMenuShow = true;
 }
@@ -571,7 +626,7 @@ KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
     d = new KPopupMenuPrivate;
-    setTitle(title);
+    insertTitle(title);
 }
 
 // Obsolete

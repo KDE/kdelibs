@@ -241,6 +241,7 @@ signals:
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e);
     virtual bool focusNextPrevChild( bool next );
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
@@ -255,6 +256,7 @@ protected slots:
     void itemHighlighted(int whichItem);
     void showCtxMenu(QPoint pos);
     void ctxMenuHiding();
+    void ctxMenuHideShowingMenu();
 
 private:
     class KPopupMenuPrivate;
