@@ -57,6 +57,22 @@ class KFileFilterCombo : public KComboBox
      */
     bool showsAllTypes() const { return m_allTypes; }
 
+    /**
+     * This method allows you to set a default-filter, that is used when an
+     * empty filter is set. Make sure you call this before calling
+     * @ref setFilter().
+     *
+     * By default, this is set to i18n("*|All Files")
+     * @see #defaultFilter
+     */
+    void setDefaultFilter( const QString& filter );
+
+    /**
+     * @return the default filter, used when an empty filter is set.
+     * @see #setDefaultFilter
+     */
+    QString defaultFilter() const;
+    
  protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
 

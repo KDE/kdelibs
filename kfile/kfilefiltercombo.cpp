@@ -29,6 +29,7 @@ class KFileFilterCombo::KFileFilterComboPrivate
 public:
     KFileFilterComboPrivate() {
         hasAllSupportedFiles = false;
+        defaultFilter = i18n("*|All Files");
     }
 
     // when we have more than 3 mimefilters and no default-filter,
@@ -36,8 +37,8 @@ public:
     // instead we show "All supported files". We have to translate
     // that back to the list of mimefilters in currentFilter() tho.
     bool hasAllSupportedFiles;
-
     QString lastFilter;
+    QString defaultFilter;
 };
 
 KFileFilterCombo::KFileFilterCombo( QWidget *parent, const char *name)
@@ -71,8 +72,9 @@ void KFileFilterCombo::setFilter(const QString& filter)
 	    index = tmp.find('\n');
 	}
 	filters.append(tmp);
-    } else
-	filters.append(i18n("*|All Files"));
+    } 
+    else
+	filters.append( d->defaultFilter );
 
     QStringList::ConstIterator it;
     for (it = filters.begin(); it != filters.end(); it++) {
@@ -102,7 +104,8 @@ QString KFileFilterCombo::currentFilter() const
 	return f.left(tab);
 }
 
-void KFileFilterCombo::setMimeFilter( const QStringList& types, const QString& defaultType )
+void KFileFilterCombo::setMimeFilter( const QStringList& types, 
+                                      const QString& defaultType )
 {
     clear();
     filters.clear();
@@ -161,6 +164,16 @@ bool KFileFilterCombo::eventFilter( QObject *o, QEvent *e )
     }
 
     return KComboBox::eventFilter( o, e );
+}
+
+void KFileFilterCombo::setDefaultFilter( const QString& filter )
+{
+    d->defaultFilter = filter;
+}
+
+QString KFileFilterCombo::defaultFilter() const
+{
+    return d->defaultFilter;
 }
 
 #include "kfilefiltercombo.moc"

@@ -460,9 +460,11 @@ class KDirOperator : public QWidget
      * @returns true if we are in directory-only mode, that is, no files are
      * shown.
      */
-    bool dirOnlyMode() const {
-        return ( (myMode & KFile::Directory) &&
-                 (myMode & (KFile::File | KFile::Files)) == 0 );
+    bool dirOnlyMode() const { return dirOnlyMode( myMode ); }
+
+    static bool dirOnlyMode( uint mode ) {
+        return ( (mode & KFile::Directory) &&
+                 (mode & (KFile::File | KFile::Files)) == 0 );
     }
 
 protected:

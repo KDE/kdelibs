@@ -62,6 +62,7 @@
 #include <ktoolbarbutton.h>
 #include <kurl.h>
 #include <kurlcombobox.h>
+#include <kurlcompletion.h>
 
 #include "config-kfile.h"
 #include "kpreviewwidgetbase.h"
@@ -189,7 +190,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         d->urlBar->insertItem( u, i18n("Home Directory"), false );
         u.setPath( "/" );
         d->urlBar->insertItem( u, i18n("Root Directory"), false );
-        u.setPath( "/tmp" );
+        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
+        u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
         d->urlBar->insertItem( u, i18n("Temporary Files"), false );
         u = "lan:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
@@ -359,6 +361,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     (void) locationEdit->completionBox();
 
     locationEdit->setFocus();
+//     locationEdit->setCompletionObject( new KURLCompletion() );
+//     locationEdit->setAutoDeleteCompletionObject( true );
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
     connect( locationEdit, SIGNAL( returnPressed() ),
@@ -387,7 +391,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
                                   d->mainWidget);
 
-    filterWidget = new KFileFilterCombo(d->mainWidget, 
+    filterWidget = new KFileFilterCombo(d->mainWidget,
                                         "KFileDialog::filterwidget");
     setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
@@ -1368,6 +1372,8 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
 {
     KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
     dlg.setMode(KFile::Directory | KFile::LocalOnly); // local for now
+    // to get "All Directories" instead of "All Files" in the combo
+    dlg.setFilter( QString::null );
     dlg.ops->clearHistory();
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
     dlg.exec();
@@ -1581,11 +1587,17 @@ void KFileDialog::show()
 void KFileDialog::setMode( KFile::Mode m )
 {
     ops->setMode(m);
+    if ( ops->dirOnlyMode() ) {
+        filterWidget->setDefaultFilter( i18n("*|All Directories") );
+    }
+    else {
+        filterWidget->setDefaultFilter( i18n("*|All Files") );
+    }
 }
 
 void KFileDialog::setMode( unsigned int m )
 {
-    ops->setMode(static_cast<KFile::Mode>( m ));
+    setMode(static_cast<KFile::Mode>( m ));
 }
 
 KFile::Mode KFileDialog::mode() const
@@ -1620,8 +1632,8 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 	combo->setCompletionMode( cm );
 
     cm = (KGlobalSettings::Completion)
-                      kc->readNumEntry( LocationComboCompletionMode,
-					KGlobalSettings::CompletionAuto );
+         kc->readNumEntry( LocationComboCompletionMode,
+                           KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
 	locationEdit->setCompletionMode( cm );
 
