@@ -191,7 +191,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paLoadImages = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
-  d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
+  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), CTRL + Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), 0, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
