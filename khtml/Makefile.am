@@ -26,12 +26,14 @@ endif
 
 SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma . kmultipart
 
+CLEANFILES = dummy.cpp
+
 lib_LTLIBRARIES = libkhtml.la
 kde_module_LTLIBRARIES = khtmlimagepart.la
 
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
-		      khtml_printsettings.cpp htmlpageinfo.ui
+		      khtml_printsettings.cpp htmlpageinfo.ui khtmlimage.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
@@ -53,11 +55,12 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
 	$(top_builddir)/kutils/libkutils.la 
 
-khtmlimagepart_la_SOURCES = khtmlimage.cpp
+dummy.cpp:
+	echo > $@
+
+khtmlimagepart_la_SOURCES = dummy.cpp
 khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
-khtmlimagepart_la_LIBADD = ./html/libkhtmlhtml.la ./xml/libkhtmlxml.la  \
-	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
-	./misc/libkhtmlmisc.la libkhtml.la 
+khtmlimagepart_la_LIBADD = libkhtml.la 
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
