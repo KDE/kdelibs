@@ -20,6 +20,7 @@
 #include <qimage.h>
 #include <qfileinfo.h>
 #include <qdir.h>
+#include <qiconset.h>
 
 #include <kdebug.h>
 #include <kstddirs.h>
@@ -602,9 +603,9 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context) const
 // Easy access functions
 
 QPixmap DesktopIcon(const QString& name, int force_size, int state,
-	KInstance *instace)
+	KInstance *instance)
 {
-    KIconLoader *loader = instace->iconLoader();
+    KIconLoader *loader = instance->iconLoader();
     return loader->loadIcon(name, KIcon::Desktop, force_size, state);
 }
 
@@ -613,16 +614,48 @@ QPixmap DesktopIcon(const QString& name, KInstance *instance)
     return DesktopIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap BarIcon(const QString& name, int force_size, int state,
-	KInstance *instace)
+QIconSet DesktopIconSet(const QString& name, int force_size, KInstance *instance)
 {
-    KIconLoader *loader = instace->iconLoader();
+    KIconLoader *loader = instance->iconLoader();
+    QIconSet iconset;
+    iconset.setPixmap( 
+	DesktopIcon(name, force_size, KIcon::ActiveState, instance) ,
+	QIconSet::Automatic, QIconSet::Active );
+    iconset.setPixmap( 
+	DesktopIcon(name, force_size, KIcon::DisabledState, instance) ,
+	QIconSet::Automatic, QIconSet::Disabled );
+    iconset.setPixmap( 
+	DesktopIcon(name, force_size, KIcon::DefaultState, instance) , 
+	QIconSet::Automatic, QIconSet::Normal );
+    return iconset;
+}
+
+QPixmap BarIcon(const QString& name, int force_size, int state,
+	KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
     return loader->loadIcon(name, KIcon::Toolbar, force_size, state);
 }
 
 QPixmap BarIcon(const QString& name, KInstance *instance)
 {
     return BarIcon(name, 0, KIcon::DefaultState, instance);
+}
+
+QIconSet BarIconSet(const QString& name, int force_size, KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
+    QIconSet iconset;
+    iconset.setPixmap( 
+	BarIcon(name, force_size, KIcon::ActiveState, instance) ,
+	QIconSet::Automatic, QIconSet::Active );
+    iconset.setPixmap( 
+	BarIcon(name, force_size, KIcon::DisabledState, instance) ,
+	QIconSet::Automatic, QIconSet::Disabled );
+    iconset.setPixmap( 
+	BarIcon(name, force_size, KIcon::DefaultState, instance) ,
+	QIconSet::Automatic, QIconSet::Normal );
+    return iconset;
 }
 
 QPixmap SmallIcon(const QString& name, int force_size, int state,
@@ -637,6 +670,22 @@ QPixmap SmallIcon(const QString& name, KInstance *instance)
     return SmallIcon(name, 0, KIcon::DefaultState, instance);
 }
 
+QIconSet SmallIconSet(const QString& name, int force_size, KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
+    QIconSet iconset;
+    iconset.setPixmap( 
+	SmallIcon(name, force_size, KIcon::ActiveState, instance) ,
+	QIconSet::Automatic, QIconSet::Active );
+    iconset.setPixmap( 
+	SmallIcon(name, force_size, KIcon::DisabledState, instance) ,
+	QIconSet::Automatic, QIconSet::Disabled );
+    iconset.setPixmap( 
+	SmallIcon(name, force_size, KIcon::DefaultState, instance) ,
+	QIconSet::Automatic, QIconSet::Normal );
+    return iconset;
+}
+
 QPixmap MainBarIcon(const QString& name, int force_size, int state,
 	KInstance *instance)
 {
@@ -647,6 +696,22 @@ QPixmap MainBarIcon(const QString& name, int force_size, int state,
 QPixmap MainBarIcon(const QString& name, KInstance *instance)
 {
     return MainBarIcon(name, 0, KIcon::DefaultState, instance);
+}
+
+QIconSet MainBarIconSet(const QString& name, int force_size, KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
+    QIconSet iconset;
+    iconset.setPixmap( 
+	MainBarIcon(name, force_size, KIcon::ActiveState, instance) ,
+	QIconSet::Automatic, QIconSet::Active );
+    iconset.setPixmap( 
+	MainBarIcon(name, force_size, KIcon::DisabledState, instance) ,
+	QIconSet::Automatic, QIconSet::Disabled );
+    iconset.setPixmap( 
+	MainBarIcon(name, force_size, KIcon::DefaultState, instance) ,
+	QIconSet::Automatic, QIconSet::Normal );
+    return iconset;
 }
 
 QPixmap UserIcon(const QString& name, int state, KInstance *instance)
@@ -660,6 +725,21 @@ QPixmap UserIcon(const QString& name, KInstance *instance)
     return UserIcon(name, KIcon::DefaultState, instance);
 }
 
+QIconSet UserIconSet(const QString& name, KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
+    QIconSet iconset;
+    iconset.setPixmap( 
+	UserIcon(name, KIcon::ActiveState, instance) ,
+	QIconSet::Automatic, QIconSet::Active );
+    iconset.setPixmap( 
+	UserIcon(name, KIcon::DisabledState, instance) ,
+	QIconSet::Automatic, QIconSet::Disabled );
+    iconset.setPixmap( 
+	UserIcon(name, KIcon::DefaultState, instance) ,
+	QIconSet::Automatic, QIconSet::Normal );
+    return iconset;
+}
 int IconSize(int group, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();

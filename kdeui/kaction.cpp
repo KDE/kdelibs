@@ -576,7 +576,7 @@ void KAction::setIcon( const QString &icon )
     instance = m_parentCollection->instance();
   else
     instance = KGlobal::instance();
-  setIconSet( SmallIcon( icon, 16, KIcon::DefaultState, instance ) );
+  setIconSet( SmallIconSet( icon, 16, instance ) );
 
   // now handle any toolbars
   int len = containerCount();
