@@ -617,3 +617,19 @@ Three new methods have been added to KApplication:
 - bool authorizeKAction(QString action); // For KActions exclusively
 - bool authorizeURLAction(QString, referringURL, destinationURL) // URL Handling
 
+Automatic Logout
+================
+
+Since KDE 3.4 it is possible to automatically logout users that have been idle
+for a certain period of time.
+
+WARNING: Be careful with this option, logging out a user may result in dataloss!
+
+In kdesktoprc you can use the following entry to enable automatic logout:
+
+[ScreenSaver]
+AutoLogout=true
+AutoLogoutTimeout=600
+
+The AutoLogoutTimeout is the time in seconds that the user has to be idle before
+his session is logged out.
