@@ -58,6 +58,8 @@ private:
                                                     QString& valClass, bool editable);
     QWidget* makeStringWidget(const KFileMetaInfoItem& item, QWidget* parent,
                                                        QString& valClass, bool editable);
+    QWidget* makeDateTimeWidget(const KFileMetaInfoItem& item, QWidget* parent,
+                                                     QString& valClass, bool editable);
 
 private slots:
     // Code disabled until the "Add" button is implemented

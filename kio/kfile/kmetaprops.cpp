@@ -35,6 +35,8 @@
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qfileinfo.h>
+#include <qdatetime.h>
+#include <qdatetimeedit.h>
 
 #include <iostream.h>
 
@@ -166,6 +168,7 @@ void KFileMetaPropsPlugin::createLayout()
             // slotAdd() and applyChanges()        
             case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame, editable); break;
             case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass, editable); break;
+            case QVariant::DateTime  : w = makeDateTimeWidget (item, d->m_frame, valClass, editable); break;
             default             : w = makeStringWidget(item, d->m_frame, valClass, editable); break;
         }
       
@@ -301,6 +304,18 @@ QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item,
   return sb;
 }            
 
+QWidget* KFileMetaPropsPlugin::makeDateTimeWidget(const KFileMetaInfoItem& item, 
+                                             QWidget* parent, QString& /*valClass*/, bool editable)
+{
+  QDateTime datetime = item.value().toDateTime();
+  
+  if (!editable) return new QLabel(item.prefix() + 
+                                   KGlobal::locale()->formatDateTime( datetime, true, true ) +
+                                   item.suffix(), parent);
+  
+  return new QDateTimeEdit(datetime, parent);
+}
+
 QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item, 
                                               QWidget* parent, QString& valClass, bool editable)
 {
@@ -379,6 +394,10 @@ void KFileMetaPropsPlugin::applyChanges()
     else if (item->widget->inherits("QLineEdit")) {
           QLineEdit* w = static_cast<QLineEdit*>(item->widget);
           item->info.setValue(QVariant(w->text()));
+    }
+    else if (item->widget->inherits("QDateTimeEdit")) {
+          QDateTimeEdit* w = static_cast<QDateTimeEdit*>(item->widget);
+          item->info.setValue(QVariant(w->dateTime()));
     }
     else {
         kdDebug(250) << "unrecognized widget type. i'm a monster." << endl;
