@@ -74,6 +74,12 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
 
   listProgress = view;
 
+  m_iTotalSize = 0;
+  m_iTotalFiles = 0;
+  m_iProcessedSize = 0;
+  m_iProcessedFiles = 0;
+  m_iSpeed = 0;
+
   m_sAppId = app_id;
   m_iJobId = job_id;
   m_visible = true;
@@ -325,6 +331,7 @@ void ListProgress::writeConfig() {
 
 UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
 {
+
   readSettings();
 
   // setup toolbar
