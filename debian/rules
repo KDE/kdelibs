@@ -90,7 +90,9 @@ binary-arch:  build
 	done
 	dh_installdocs
 # libraries not starting with lib are modules
-	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.a
+
+	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
+	dh_movefiles -pkdelibs3-dev $$list $(kde_includedir) $(kde_libdir)/lib*.a
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
@@ -110,14 +112,13 @@ binary-arch:  build
 	cd debian/tmp && find ./$(kde_confdir) -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	echo "/etc/pam.d/kde" >> debian/tmp/DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
-	dh_md5sums -pkdelibs3
-	dh_md5sums -pkdelibs3-dev
+	dh_md5sums
 	perl -w admin/debianrules update
-	dh_builddeb -pkdelibs3
 	dh_builddeb -pkdelibs3-dev
+	dh_builddeb -pkdelibs3
 
 # Below here is fairly generic really
 
-binary:		binary-indep binary-arch
+binary:		binary-arch
 
-.PHONY: binary binary-arch binary-indep clean
+.PHONY: binary binary-arch clean
