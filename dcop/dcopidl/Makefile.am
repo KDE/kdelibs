@@ -1,6 +1,6 @@
 
 INCLUDES = $(all_includes)
-AM_LDFLAGS   = $(all_libraries)
+LDFLAGS   = $(all_libraries)
 AM_CPPFLAGS = -DYYDEBUG
 
 ####### Files
