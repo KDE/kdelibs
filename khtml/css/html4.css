@@ -438,6 +438,7 @@ PLAINTEXT {
 	font-family: monospace; 
 	white-space: pre; 
 	text-align: -konq-auto;
+	margin: 1.0em 0px;
 }
       
 BIG { 
