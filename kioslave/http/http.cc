@@ -16,6 +16,10 @@
 #include <sys/wait.h>
 
 #include <assert.h>
+//////// FIXME: Need to replace it with QString/QStringList
+#include <list.h>
+#include <string>
+//////////////////////////////////////// (dmuell) 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
