@@ -46,7 +46,7 @@ public:
     /**
      * Defines the context of the icon.
      */
-    enum Context { 
+    enum Context {
       Any, ///< Some icon with unknown purpose.
       Action, ///< An action icon (e.g. 'save', 'print').
       Application, ///< An icon that represents an application.
@@ -58,7 +58,7 @@ public:
     /**
      * The type of the icon.
      */
-    enum Type { 
+    enum Type {
       Fixed, ///< Fixed-size icon.
       Scalable, ///< Scalable-size icon.
       Threshold ///< A threshold icon.
@@ -67,7 +67,7 @@ public:
     /**
      * The type of a match.
      */
-    enum MatchType { 
+    enum MatchType {
       MatchExact, ///< Only try to find an exact match.
       MatchBest   ///< Take the best match if there is no exact match.
 
@@ -90,7 +90,10 @@ public:
         /// medium sized icons for the desktop
         SizeMedium=32,
         /// large sized icons for the panel
-        SizeLarge=48 };
+        SizeLarge=48,
+        /// huge sized icons for iconviews
+        SizeHuge=64
+         };
 
     /**
      * Defines the possible states of an icon.
@@ -102,17 +105,17 @@ public:
     };
 
     /**
-     * This defines an overlay, a semi-transparent image that is 
+     * This defines an overlay, a semi-transparent image that is
      * projected onto the icon. They are used to show that the file
      * represented by the icon is, for example, locked, zipped or hidden.
      */
-    enum Overlays { 
+    enum Overlays {
       LockOverlay=0x100, ///< a file is locked
       ZipOverlay=0x200,  ///< a file is zipped
       LinkOverlay=0x400, ///< a fileis a link
       HiddenOverlay=0x800, ///< a file is hidden
       ShareOverlay=0x1000, ///< a file is shared
-      OverlayMask = ~0xff 
+      OverlayMask = ~0xff
     };
 
     /**
@@ -172,13 +175,13 @@ public:
 
     /**
      * A description for the icon theme.
-     * @return a human-readable description of the theme, QString::null 
+     * @return a human-readable description of the theme, QString::null
      *         if there is none
      */
     QString description() const { return mDesc; }
 
     /**
-     * Return the name of the "example" icon. This can be used to 
+     * Return the name of the "example" icon. This can be used to
      * present the theme to the user.
      * @return the name of the example icon, QString::null if there is none
      */
@@ -208,8 +211,8 @@ public:
      */
     QString lockOverlay() const;
 
-    /** 
-     * Returns the name of this theme's share overlay. 
+    /**
+     * Returns the name of this theme's share overlay.
      * @return the name of the share overlay
      * @since 3.1
      */
