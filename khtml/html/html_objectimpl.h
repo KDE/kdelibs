@@ -52,10 +52,11 @@ public:
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
 protected:
-    KParts::LiveConnectExtension *liveconnect;
+    void setLiveConnect(KParts::LiveConnectExtension * lc);
 private slots:
     void timerDone();
 private:
+    KParts::LiveConnectExtension *liveconnect;
     QTimer *timer;
     QString script;
 };
