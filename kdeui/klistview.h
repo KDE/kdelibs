@@ -179,6 +179,8 @@ public:
 
   /**
    * @returns if it is legal to move items in the list view.  True by default.
+   *
+   * @see #setItemsMovable()
    */
   bool itemsMovable() const;
 
@@ -191,6 +193,8 @@ public:
 
   /**
    * @return whether dragging is enabled.  False by default.
+   *
+   * @see #setDragEnabled()
    */
   bool dragEnabled() const;
 
@@ -203,16 +207,22 @@ public:
 
   /**
    * @return true if @p column is renamable.
+   *
+   * @see #setRenameable()
    */
   bool isRenameable (int column) const;
 
   /**
    * @return true if drawing of the drop-visualizer has been enabled.  True by default.
+   *
+   * @see #setDropVisualizer()
    */
   bool dropVisualizer() const;
 
   /**
    * @return the column for which tooltips are displayed (or -1 if none set).
+   *
+   * @see #setTooltipColumn()
    */
   int tooltipColumn() const;
 
@@ -226,12 +236,15 @@ public:
 
   /**
    * @return true if drawing of the drop-highlighter has been enabled.  False by default.
+   *
+   * @see #setDropHighlighter()
    */
   bool dropHighlighter() const;
 
   /**
    * The dropVisualizerWidth defaults to 4.
    *
+   * @see #setDropVisualizerWidth()
    * @return the current width of the drop-visualizer.
    */
   int dropVisualizerWidth () const;
