@@ -30,7 +30,6 @@
 #include <kurl.h>
 #include <kjs/object.h>
 #include <kjs/types.h>
-#include <kio/netaccess.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
 
@@ -93,14 +92,18 @@ QString KPACImpl::proxyForURL(const KURL &url)
     return QString::null;
 }
 
-bool KPACImpl::setConfig(const KURL &url)
+bool KPACImpl::init()
 {
     if (m_configRead)
     {
         m_kjs->clear();
         m_configRead = false;
     }
-  
+
+    QString fileName = locateLocal("data", "kio_http/proxy.pac");
+    if (fileName.isEmpty())
+        return false;
+        
     if (!m_kjs)
     {
         m_kjs = new KJScript();
@@ -109,12 +112,7 @@ bool KPACImpl::setConfig(const KURL &url)
         global.put("ProxyConfig", bindings);
         global.setPrototype(bindings);
     }
-    if (!url.isValid())
-        return false;
-    QString tempFile;
-    if (!KIO::NetAccess::download(url, tempFile))
-        return false;
-    QFile f(tempFile);
+    QFile f(fileName);
     if (!f.open(IO_ReadOnly))
         return false;
     char *code = (char *)malloc(f.size() + 1);
@@ -125,7 +123,6 @@ bool KPACImpl::setConfig(const KURL &url)
         
     free(code);
     f.close();
-    KIO::NetAccess::removeTempFile(tempFile);
     return m_configRead;
 }
 

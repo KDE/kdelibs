@@ -74,8 +74,7 @@ KPAC *KProtocolManager::pac()
   {
     KConfig *cfg = config();
     cfg->setGroup( "Proxy Settings" );
-    QString scriptURL = cfg->readEntry( "Proxy Config Script" );
-    if (!scriptURL.isEmpty())
+    if (!cfg->readEntry( "Proxy Config Script" ).isEmpty())
     {
       KLibrary *lib = KLibLoader::self()->library("libkpac");
       if (lib)
@@ -84,7 +83,7 @@ KPAC *KProtocolManager::pac()
         if (create_pac)
         {
           _pacDeleter.setObject(_pac = create_pac());
-          _pac->setConfig(scriptURL);
+          _pac->init();
         }
       }
     }
@@ -357,8 +356,9 @@ void KProtocolManager::setProxyConfigScript( const QString& _url )
   cfg->setGroup( "Proxy Settings" );
   cfg->writeEntry( "Proxy Config Script", _url );
   cfg->sync();
+  // TODO: download it
   if (_pac)
-    _pac->setConfig( _url );
+    _pac->init();
 }
 
 void KProtocolManager::setProxyFor( const QString& protocol, const QString& _proxy )

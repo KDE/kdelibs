@@ -34,13 +34,9 @@ public:
      */
     virtual QString proxyForURL(const KURL &url) = 0;
     /**
-     * Loads the PAC-script from @p url
-     * It is safe to specify a HTTP URL that could trigger
-     * a call to @ref proxyForURL as @ref proxyForURL will
-     * return QString::null (direct request) as long as
-     * the config has not been downloaded.
+     * Loads the PAC-script
      */
-    virtual bool setConfig(const KURL &url) = 0;
+    virtual bool init() = 0;
     /**
      * Marks @p proxy as down. If the config script returns
      * alternative proxies or allows a direct connection
