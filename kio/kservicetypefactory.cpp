@@ -184,11 +184,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
         it != list.end();
         ++it)
    {
-#ifndef _WS_QWS_
       KMimeType *newMimeType = dynamic_cast<KMimeType *>((*it).data());
-#else //FIXME
-      KMimeType *newMimeType = (KMimeType*)(*it).data();
-#endif
       if (newMimeType)
          result.append( KMimeType::Ptr( newMimeType ) );
    }

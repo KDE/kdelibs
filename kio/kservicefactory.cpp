@@ -181,11 +181,7 @@ KService::List KServiceFactory::allServices()
         it != list.end();
         ++it)
    {
-#ifndef _WS_QWS_
       KService *newService = dynamic_cast<KService *>((*it).data());
-#else //FIXME
-      KService *newService = (KService*)(*it).data();
-#endif
       if (newService)
          result.append( KService::Ptr( newService ) );
    }
