@@ -46,8 +46,8 @@ class KanjiCode
 public:
     enum Type {ASCII, JIS, EUC, SJIS, UNICODE, UTF8 };
     static enum Type judge(const char *str);
-    static const int ESC = 0x1b;
-    static const int _SS2_ = 0x8e;
+    static const int ESC;
+    static const int _SS2_;
     static const unsigned char kanji_map_sjis[];
     static int ISkanji(int code)
     {
@@ -64,6 +64,9 @@ public:
     }
 
 };
+
+const int KanjiCode::ESC = 0x1b;
+const int KanjiCode::_SS2_ = 0x8e;
 
 const unsigned char KanjiCode::kanji_map_sjis[] =
 {
