@@ -890,7 +890,7 @@ void KFileBaseDialog::mkdir()
     lLayout = new QVBoxLayout( lMakeDir, 5 );
     label = new QLabel(lMakeDir);
     label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(QString(i18n("Create new directory in: ")) + dir->path() );
+    label->setText(i18n("Create new directory in: ") + dir->path() );
     label->setMinimumSize( label->sizeHint() );
     ed= new QLineEdit(lMakeDir);
     ed->setText( i18n("New Directory") );
