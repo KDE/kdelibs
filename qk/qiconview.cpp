@@ -138,7 +138,7 @@ struct QIconViewPrivate
     int cachedContentsX, cachedContentsY;
     int resizeEvents;
     QBrush itemTextBrush;
-    
+
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -2049,7 +2049,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->fullRedrawTimer = new QTimer( this );
     d->resizeEvents = 0;
     d->itemTextBrush = Qt::NoBrush;
-    
+
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2835,11 +2835,18 @@ void QIconView::clearSelection()
 
 void QIconView::selectAll( bool select )
 {
+    bool b = signalsBlocked();
+    blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
+    QIconViewItem *i = d->currentItem;
     for ( ; item; item = item->next ) {
 	if ( select != item->isSelected() )
 	    item->setSelected( select, TRUE );
     }
+    if ( i )
+	setCurrentItem( i );
+    blockSignals( b );
+    emitSelectionChanged();
 }
 
 /*!
