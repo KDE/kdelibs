@@ -159,12 +159,12 @@ if (@docs) {
 
 # Create debian/menu files
 
-sub findkdelnk {
-	/\.kdelnk$/ && push @lnkfiles, "$File::Find::dir/$_" ;
+sub finddesktop {
+	/\.desktop$/ && push @lnkfiles, "$File::Find::dir/$_" ;
 }
 
 if (-d "debian/tmp/opt/kde2pre/share/applnk") {
-	find(\&findkdelnk,"debian/tmp/opt/kde2pre/share/applnk");
+	find(\&finddesktop,"debian/tmp/opt/kde2pre/share/applnk");
 }
 
 if (-e "debian/menu.in") {
@@ -182,39 +182,40 @@ open MENU, ">debian/menu" or die "can't open debian/menu : $!\n";
 open MIME, ">debian/mailcap" or die "can't open debian/mailcap : $!\n";
 
 foreach $file (@lnkfiles) {
-	open KDELNK, $file;
-	undef %kdelnk;
-	while (<KDELNK>) {
+	open DESKTOP, $file;
+	undef %desktop;
+	while (<DESKTOP>) {
 		/^#/ && next ;
+		/^\[Desktop Entry\]/ && next ;
 		/^\[KDE Desktop Entry\]/ && next ;
 		/^\s*$/ && next ;
 		chop ;
 		($what,$value) = split /=/ ;
-		$kdelnk{ucfirst lc $what}=$value;
+		$desktop{ucfirst lc $what}=$value;
 	}
-	close KDELNK;
-	if (defined $kdelnk{"Type"}) {
-		if ($kdelnk{"Type"} ne "Application" ) {
+	close DESKTOP;
+	if (defined $desktop{"Type"}) {
+		if ($desktop{"Type"} ne "Application" ) {
 			print STDERR "Type is not Application : $file !\n" ;
 			next ;
 		}
 	} else {
 		print STDERR "has no Type= defaults to Application : $file !\n" ;
 	}
-	if (! defined $kdelnk{"Exec"}) {
+	if (! defined $desktop{"Exec"}) {
 		print STDERR "has no Exec= : $file !\n" ;
 		next ;
 	}
 
-	if (defined $kdelnk{"Mimetype"} && ! $kdelnk{"Mimetype"} eq '') {
+	if (defined $desktop{"Mimetype"} && ! $desktop{"Mimetype"} eq '') {
 
-  	   $execline = $kdelnk{"Exec"};
+  	   $execline = $desktop{"Exec"};
 	   $execline =~ s/%f/%s/;
-	   $execline =~ s/%c/$kdelnk{"Name"}/;
+	   $execline =~ s/%c/$desktop{"Name"}/;
 	   $execline =~ s/%i//;
 	   $execline =~ s/%m//;
 	   $execline =~ s/%u/%s/;
-	   $mimeline = $kdelnk{"Mimetype"};
+	   $mimeline = $desktop{"Mimetype"};
 	   @mimetypes = split(';', $mimeline);
 	   foreach $mimetype (@mimetypes) {
 	   print MIME "$mimetype; $execline;" . 'test=test "$DISPLAY" != ""; priority=7' . "\n";
@@ -222,7 +223,7 @@ foreach $file (@lnkfiles) {
 
 	}
 
-	($prog,)=split / /, $kdelnk{"Exec"} ;
+	($prog,)=split / /, $desktop{"Exec"} ;
 	if (! defined($type{$prog})) {
 		open MENUIN, ">>debian/menu.in" ;
 		print MENUIN "$prog x11 SECTION\n";
@@ -231,12 +232,12 @@ foreach $file (@lnkfiles) {
 	}
 	if ($sect{$prog} eq "NONE") { next ; }
 	$icon="";
-	if (not defined $kdelnk{"Name"}) {
-		print STDERR "No Name : $package $kdelnk\n";
+	if (not defined $desktop{"Name"}) {
+		print STDERR "No Name : $package $desktop\n";
 		next ;
 	}
-	if (defined $kdelnk{"Icon"}) {
-   	        $icon=$kdelnk{"Icon"} ;
+	if (defined $desktop{"Icon"}) {
+   	        $icon=$desktop{"Icon"} ;
 		if (! -f "debian/tmp/opt/kde2pre/share/icons/$icon" ) {
                    $icon="";
 	        } else {
@@ -244,11 +245,11 @@ foreach $file (@lnkfiles) {
 	  	  $icon="/usr/X11R6/include/X11/pixmaps/" . $icon ;
                }
 	}
-	($kdelnk=$file) =~ s/^.*tmp// ;
+	($desktop=$file) =~ s/^.*tmp// ;
 	print MENU "?package($package):\\\n" ;
 	print MENU "	needs=$type{$prog}\\\n" ;
 	print MENU "	section=$sect{$prog}\\\n" ;
-	print MENU "	title=\"$kdelnk{Name}\"\\\n" ;
+	print MENU "	title=\"$desktop{Name}\"\\\n" ;
 	print MENU "	command=$prog\\\n" ;
 	print MENU "	icon=\"$icon\"\n\n" ;
 
