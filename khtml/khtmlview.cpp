@@ -330,6 +330,7 @@ void KHTMLView::layout(bool)
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+        if ( !root ) return;
 
         if (document->isHTMLDocument()) {
             NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
