@@ -21,6 +21,14 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.12  2002/05/26 11:50:10  pfeiffer
+* a QTextEdit derived class that offers
+* - deleting of words via standard KDE shortcuts
+* - zooming or fast scrolling via Ctrl-Wheelscroll
+* - cursor autohiding
+*
+* KTextBrowser: use KGlobalSettings for zoom/scroll
+*
 * Revision 1.11  2002/03/04 00:51:51  lunakl
 * Keep BC changes (the patch is almost 100KiB of boring stuff
 * ... anybody willing to review? ;) ).
@@ -62,6 +70,7 @@
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <kcursor.h>
+#include <kurl.h>
 
 KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
@@ -101,7 +110,7 @@ void KTextBrowser::setSource( const QString& name )
   {
     if( mNotifyClick == false )
     {
-      kapp->invokeMailer( name, QString::null );
+      kapp->invokeMailer( KURL( name ) );
     }
     else
     {
