@@ -27,6 +27,13 @@
 // malicious infinite recursions. Define to -1 if you want no limit.
 #define KJS_MAX_STACK 1000
 
+// we don't want any padding between UChars (ARM processor)
+#if defined(__GNUC__)
+#define KJS_PACKED __attribute__((__packed__))
+#else
+#define KJS_PACKED
+#endif
+
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
 // Uncomment this to enable very verbose output from KJS

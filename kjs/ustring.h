@@ -98,7 +98,7 @@ namespace KJS {
     friend bool operator<(const UString& s1, const UString& s2);
 
     unsigned short uc;
-  };
+  } KJS_PACKED;
 
   inline UChar::UChar() : uc(0) { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
