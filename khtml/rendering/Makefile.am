@@ -21,7 +21,7 @@ KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 noinst_LTLIBRARIES = libkhtmlrender.la
 libkhtmlrender_la_SOURCES = \
-	bidi.cpp break_lines.cpp render_block.cpp render_inline.cpp \
+	bidi.cpp break_lines.cpp \
 	render_style.cpp render_object.cpp render_container.cpp render_box.cpp \
 	render_flow.cpp render_text.cpp render_arena.cpp render_layer.cpp \
 	render_image.cpp render_table.cpp table_layout.cpp \
