@@ -49,6 +49,9 @@ class KCardImplementation {
   virtual const QString& getType() const;
   virtual const QString& getSubType() const;
   virtual const QString& getSubSubType() const;
+
+  virtual int lastError() const;
+  virtual void clearError();
   
  private:
 
@@ -59,6 +62,7 @@ class KCardImplementation {
 
   KCardReader * _kcardreader;
   QString _type, _subType, _subSubType;
+  int _errno;
 };
 
 #endif

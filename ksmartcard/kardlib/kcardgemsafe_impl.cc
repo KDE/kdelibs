@@ -25,7 +25,9 @@
 KCardGemSafeImplementation::KCardGemSafeImplementation(KCardReader * reader)
   :KCardImplementation (reader){
 
-
+	_type = KCARD_TYPE_PROCESSOR;
+	_subType = "GemSafe";
+	_subSubType = "GPK";
 }
 
 
@@ -33,12 +35,33 @@ KCardGemSafeImplementation::~KCardGemSafeImplementation(){
 }
 
 
-int KCardGemSafeImplementation::selectFile (const QString fileID){
+int KCardGemSafeImplementation::selectFile(const QString fileID){
 	QString result;
-	QString selectfile("00A4xxxxxx");
+	QString selectfile("00A4000C023F00");
 	selectfile += fileID;
-	int rc = _kcardreader->doCommand(selectfile,result);
-	if (rc) return rc;
+	_errno = _kcardreader->doCommand(selectfile,result);
+	// FIXME: parse the result
+	return _errno;
+}
+
+
+int KCardGemSafeImplementation::selectMasterFile() {
+	QString result;
+	QString selectfile("00A4000C023F00");
+	_errno = _kcardreader->doCommand(selectfile,result);
+	// FIXME: parse the result
+	return _errno;
+}
+
+
+const KCardCommand KCardGemSafeImplementation::getInfo() {
+	KCardCommand ret;
+	QString infoCmd("08C002A413");
+	KCardCommand cmd = KPCSC::encodeCommand(infoCmd);
+	_errno = _kcardreader->doCommand(cmd, ret);
+	if (_errno < 0) return KCardCommand();
+
+	return ret;
 }
 
 

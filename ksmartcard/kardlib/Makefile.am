@@ -3,23 +3,25 @@ INCLUDES=$(all_includes) $(PCSC_INCLUDES)
 lib_LTLIBRARIES = libksmartcard.la
 METASOURCES= AUTO
 
-include_HEADERS = kcardreader.h \
-		  kcardstatus.h \
-		  kpcsc.h \
-		  kcardfactory.h \
-	          kcardimplementation.h \
-		  kcardgemsafe_impl.cc \
+include_HEADERS = kcardreader.h			\
+		  kcardstatus.h			\
+		  kpcsc.h			\
+		  kcarddb.h			\
+		  kcardfactory.h		\
+	          kcardimplementation.h		\
+		  kcardgemsafe_impl.h		\
 	          kcardgsmimplementation.h
 
 noinst_HEADERS = 
 
 libksmartcard_la_SOURCES = \
-				kpcsc.cc  \
-				kcardstatus.cc \
-				kcardreader.cc \
-				kcardfactory.cc \
-				kcardimplementation.cc \
-				kcardgemsafe_impl.cc \
+				kpcsc.cc		\
+				kcarddb.cc		\
+				kcardstatus.cc		\
+				kcardreader.cc		\
+				kcardfactory.cc		\
+				kcardimplementation.cc	\
+				kcardgemsafe_impl.cc	\
 				kcardgsmimplementation.cc
 
 

@@ -32,7 +32,13 @@ class KCardGemSafeImplementation : public KCardImplementation {
   KCardGemSafeImplementation(KCardReader *);
   ~KCardGemSafeImplementation();
 
+  // Reimplemented
   int selectFile(const QString);
+  int selectMasterFile();
+
+  // Custom
+  const KCardCommand getInfo();
+
 
  private:
 

@@ -28,6 +28,7 @@ KCardImplementation::KCardImplementation( KCardReader * selectedReader){
   _type = KCARD_TYPE_UNKNOWN;
   _subType = KCARD_TYPE_UNKNOWN;
   _subSubType = KCARD_TYPE_UNKNOWN;
+  _errno = 0;
 
 }
 
@@ -61,5 +62,11 @@ const QString& KCardImplementation::getSubSubType() const {
 	return _subSubType;
 }
 
+int KCardImplementation::lastError() const {
+	return _errno;
+}
 
+void KCardImplementation::clearError() {
+	_errno = 0;
+}
 
