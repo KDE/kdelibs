@@ -368,8 +368,16 @@ public:
   /**
    * Used by @ref url
    * Made public for apps that don't use KCmdLineArgs
+   * @param urlArgs the argument
    */
   static KURL makeURL( const char * urlArg );
+
+  /**
+   * Made public for apps that don't use KCmdLineArgs
+   * To be done before @ref makeURL, to set the current working
+   * directory in case @ref makeURL needs it.
+   */
+  static void setCwd( char * cwd ) { mCwd = cwd; }
 
   /**
    *  Clear all options and arguments.
