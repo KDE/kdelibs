@@ -33,6 +33,11 @@ DEALINGS IN THE SOFTWARE.
 #include <config.h>
 #endif
 
+// need to resolve INT32(qglobal.h)<>INT32(Xlibint.h) conflict
+#ifndef QT_CLEAN_NAMESPACE
+#define QT_CLEAN_NAMESPACE
+#endif
+
 #include "kstartupinfo.h"
 
 #include <unistd.h>
