@@ -256,12 +256,9 @@ QDataStream& operator<<( QDataStream& _str, KService& s )
 }
 */
 
-const QList<KService>& KService::services()
+KServiceList* KService::allServices()
 {
-#warning TODO KService::services()
-   // TODO !!
-   QList<KService> l;
-   return l;
+  return KServiceFactory::allServices();
 }
 
 KService* KService::service( const QString& _name )

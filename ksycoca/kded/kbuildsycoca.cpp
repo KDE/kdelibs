@@ -225,8 +225,8 @@ KBuildSycoca::save()
          {
            (*str) << (Q_INT32) it.current()->offset();
            (*str) << (Q_INT32) itserv.current()->offset();
-           kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
-                  .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
+           //kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
+           //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
          }
        }
      }

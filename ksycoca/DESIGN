@@ -39,3 +39,6 @@ Offer list
 This allows to quickly find services associated with a servicetype.
 It does NOT reflect the user profile, which is stored in profilerc and
 implemented in KServiceTypeProfile.
+
+TODO : allow matchFilename on each mimetype without creating them
+Another index, with (mask, mimetype offset) ? Difficult since mask is a string.

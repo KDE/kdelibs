@@ -168,7 +168,8 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( ! path.isNull() )
     {
       // Try to find it out by looking at the filename
-#warning FIXME matchFilename on all mimetypes
+#warning FIXME matchFilename on all mimetypes (has to be fast !)
+      // Another index, with (mask, mimetype offset) ?
 #if 0
       assert( s_mapMimeTypes );
       QDictIterator<KMimeType> it( *s_mapMimeTypes );

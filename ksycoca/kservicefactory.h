@@ -62,9 +62,15 @@ public:
    */
   static KServiceList *offers( int serviceTypeOffset );
 
+  /**
+   * @return all services. Very memory consuming, avoid using.
+   */
+  static KServiceList *allServices();
+
 protected:
   KService *_findServiceByName( const QString &_name);
   KServiceList *_offers( int serviceTypeOffset );
+  KServiceList *_allServices();
   KService *createService(int offset);
 
 private:

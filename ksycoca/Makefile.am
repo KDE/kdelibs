@@ -41,9 +41,8 @@ libkio_la_SOURCES = \
 
 libkio_la_METASOURCES = AUTO
 
-include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h ksycocatype.h \
-	kservicetype.h kservicetypefactory.h \
-	kmimetype.h kmimemagic.h kservice.h kservicefactory.h \
+include_HEADERS = ksycocaentry.h ksycocatype.h \
+	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h \
 	kio_connection.h kio_base.h kio_rename_dlg.h \
         kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
@@ -53,6 +52,10 @@ include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h ksycoc
         kio_error.h kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
         ktar.h
+
+# Those should be internal. Tell faure@kde.org if you really need one of those.
+noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
+	ksycocadict.h ksycoca.h 
 
 magic_DATA = magic
 magicdir = $(kde_mimedir)

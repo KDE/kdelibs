@@ -122,6 +122,38 @@ KServiceFactory::createService(int offset)
    return newEntry;
 }
 
+//static
+KServiceList *
+KServiceFactory::allServices()
+{
+   if (!self)
+      self = new KServiceFactory();
+   return self->_allServices();   
+}
+
+KServiceList *
+KServiceFactory::_allServices()
+{
+   KServiceList * list = new KServiceList;
+   // Assume we're NOT building a database
+   // Get stream to factory start
+   QDataStream *str = KSycoca::registerFactory( factoryId() );
+   // Read the dict offset - will serve as an end point for the list of entries
+   Q_INT32 sycocaDictOffset;
+   (*str) >> sycocaDictOffset;
+
+   int offset = str->device()->at();
+   KService *newService;
+   while ( offset < sycocaDictOffset )
+   {
+      newService = createService(offset);
+      if (newService)
+         list->append( newService );
+      offset = str->device()->at();
+   }
+   return list;
+}
+
 // static
 KServiceList *KServiceFactory::offers( int serviceTypeOffset )
 {

@@ -66,6 +66,7 @@ void KServiceTypeProfile::initStatic()
   }
 }
 
+//static
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype )
 {
   OfferList offers;
@@ -151,7 +152,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 {
   OfferList offers;
 
-  QListIterator<KService> it( KService::services() );
+  QListIterator<KService> it( *KServiceType::offers( m_strServiceType ) );
   for( ; it.current(); ++it )
   {
     if ( it.current()->hasServiceType( m_strServiceType ) )

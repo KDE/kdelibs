@@ -33,6 +33,7 @@
 #include "ksycocaentry.h"
 #include "ksycocatype.h"
 
+class KServiceList;
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
  * as written in its desktop entry file. A service may be a library, too.
@@ -199,14 +200,11 @@ public:
   /**
    * @return the whole list of services. Useful for being able to
    * to display them in a list box, for example.
-   * Creates a KServiceFactory if it currently knows
-   * nothing about services.
+   * Very memory consuming, don't use unless really necessary.
    */
-  static const QList<KService>& services();
+  static KServiceList * allServices();
 
 private:
-  static void initStatic();
-
   QString m_strName;
   QString m_strExec;
   QString m_strCORBAExec;
