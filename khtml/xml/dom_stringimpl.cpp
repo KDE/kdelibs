@@ -25,6 +25,8 @@
 #include "dom_stringimpl.h"
 
 #include <qregexp.h>
+#include <qstring.h>
+#include <qlist.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -66,6 +68,7 @@ void DOMStringImpl::insert(DOMStringImpl *str, uint pos)
 	memcpy(c+pos+str->l, s+pos, (l-pos)*sizeof(QChar));
 	if(s) delete [] s;
 	s = c;
+        l = newlen;
     }
 }
 
