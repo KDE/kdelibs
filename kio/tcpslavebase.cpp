@@ -202,6 +202,7 @@ void TCPSlaveBase::CloseDescriptor()
 		m_iSock=-1;
 	}
         d->ip = "";
+        d->host = "";
 }
 
 bool TCPSlaveBase::InitializeSSL()
@@ -248,6 +249,8 @@ int TCPSlaveBase::startTLS()
         setMetaData("ssl_in_use", "TRUE");
         rc = verifyCertificate();
         if (rc != 1) {
+           setMetaData("ssl_in_use", "FALSE");
+           d->usingTLS = false;
            delete d->kssl;
            return -3;
         }
