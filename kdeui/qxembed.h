@@ -46,7 +46,7 @@ public:
     WId embeddedWinId() const;
 
     static void embedClientIntoWindow( QWidget* client, WId window );
-    static bool processClientCmdline( QWidget* client, int& argc, char ** argc );
+    static bool processClientCmdline( QWidget* client, int& argc, char ** argv );
 
 
     QSize sizeHint() const;
