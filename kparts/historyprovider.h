@@ -29,6 +29,9 @@ namespace KParts {
  * for fast lookup, if an item is in the history or not.
  *
  * May be subclassed to implement a persistent history for example.
+ * For usage with khtml, just create your subclassed object and call the
+ * HistoryProvider constructor _before_ you do any khtml stuff. That way,
+ * khtml, using the self()-method, will use your subclassed provider.
  */
 class HistoryProvider : public QObject
 {
@@ -41,7 +44,7 @@ public:
      * Creates a KHistoryProvider with an optional parent and name
      */
     HistoryProvider( QObject *parent = 0L, const char *name = 0 );
-    
+
     /**
      * Destroys the provider.
      */
@@ -73,9 +76,19 @@ signals:
      */
     void inserted( const QString& );
 
+    /**
+     * Emitted after an entry has been removed.
+     */
+    void removed( const QString& );
+    
+    /**
+     * Emitted after the history has been cleared.
+     */
+    void cleared();
+    
 private:
     static HistoryProvider *s_self;
-    
+
     class HistoryProviderPrivate;
     HistoryProviderPrivate *d;
 };

@@ -77,11 +77,13 @@ void HistoryProvider::insert( const QString& item )
 void HistoryProvider::remove( const QString& item )
 {
     (void) d->dict.remove( item );
+    emit removed( item );
 }
 
 void HistoryProvider::clear()
 {
     d->dict.clear();
+    emit cleared();
 }	
 
 #include "historyprovider.moc"
