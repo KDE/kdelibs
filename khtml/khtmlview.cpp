@@ -150,6 +150,7 @@ void KHTMLView::init()
 
     if(!paintBuffer) paintBuffer = new QPixmap();
 
+    setFocusPolicy(QWidget::StrongFocus);
   viewport()->setFocusPolicy( QWidget::WheelFocus );
 
   _marginWidth = -1; // undefined
@@ -215,7 +216,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     	eh = pe->rect().height();
 
     QColor bgCol = KHTMLFactory::defaultHTMLSettings()->bgColor();
-    
+
     if(!body)
     {
 	QPainter p(viewport());
@@ -367,7 +368,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
     d->underMouse = innerNode;
-    
+
     khtml::MousePressEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
 }

@@ -38,7 +38,7 @@ public:
    * @internal Constructor
    */
   KHTMLSettings();
-
+    
   void init();
 
   /** Called by constructor and reparseConfiguration */
@@ -66,7 +66,7 @@ public:
     const QValueList<int> &fontSizes() const { return m_fontSizes; }
     void setFontSizes(const QValueList<int> &newFontSizes );
     void resetFontSizes();
-    
+
     int minFontSize() const { return m_minFontSize; }
 
     // the charset used to display the current document.
@@ -74,7 +74,7 @@ public:
     void setCharset( QFont::CharSet c) { if(!enforceCharset) m_charset = c; }
 
     const QString &encoding() const { return m_encoding; }
-    
+
   // Color settings
   const QColor& bgColor() { return m_bgColor; }
   const QColor& textColor() { return m_textColor; }
@@ -105,7 +105,7 @@ private:
     QFont::CharSet m_charset;
     bool enforceCharset;
     QString m_encoding;
-    
+
   QColor m_bgColor;
   QColor m_textColor;
   QColor m_linkColor;

@@ -140,7 +140,6 @@ public:
       delete m_extension;
     delete m_settings;
     delete m_jscript;
-    delete m_settings;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;

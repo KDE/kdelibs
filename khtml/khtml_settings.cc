@@ -64,7 +64,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "MinFontSize" ) )
   {
     m_minFontSize = config->readNumEntry( "MinFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
-    if(m_minFontSize < 6) 
+    if(m_minFontSize < 6)
 	m_minFontSize = 6;
   }
 
@@ -102,7 +102,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( m_strFixedFontName.isEmpty() )
       m_strFixedFontName = HTML_DEFAULT_VIEW_CURSIVE_FONT;
   }
-  
+
   if ( reset || config->hasKey( "FantasyFont" ) )
   {
     m_strFixedFontName = config->readEntry( "FantasyFont" );
@@ -115,10 +115,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
     enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
-  
+
   if ( reset || config->hasKey( "DefaultEncoding" ) )
     m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
-  
+
   if ( reset || config->hasKey( "BgColor" ) )
     m_bgColor = config->readColorEntry( "BgColor", &HTML_DEFAULT_BG_COLOR );
 
