@@ -1131,7 +1131,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_FONT_STRETCH:
     case CSS_PROP_FONT_STYLE:
     case CSS_PROP_FONT_VARIANT:
-    case CSS_PROP_FONT_WEIGHT:
     case CSS_PROP_LIST_STYLE_POSITION:
     case CSS_PROP_LIST_STYLE_TYPE:
     case CSS_PROP_OUTLINE_STYLE:
@@ -1154,6 +1153,23 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_WHITE_SPACE:
         break;
 
+    case CSS_PROP_FONT_WEIGHT:
+	// 100 - 900 values
+    {
+        
+	value = value.stripWhiteSpace();
+	int id = 0;
+	if ( value == "100" || value == "200" || value == "300" || value == "400" || value == "500" )
+	    id = CSS_VAL_NORMAL;
+	else if ( value == "600" || value == "700" || value == "800" || value == "900" )
+	    id = CSS_VAL_BOLD;
+	if ( id )
+	    parsedValue = new CSSPrimitiveValueImpl(id);
+	else
+	    return false;
+	break;
+    }
+    
 // special properties (css_extensions)
     case CSS_PROP_AZIMUTH:
         // CSS2Azimuth
@@ -1227,7 +1243,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_TEXT_DECORATION_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
     {
-        QString value(curP, endP - curP);
         value = value.stripWhiteSpace();
         //kdDebug(6080) << "parsing color " << value << endl;
         QColor c;
