@@ -33,7 +33,7 @@
 #include <sys/param.h>
 #include <sys/ucred.h>
 #include <sys/mount.h>
-#endif      
+#endif
 
 /**
  * Maximum number of slaves kept around in KIOSlavePool.
@@ -54,7 +54,7 @@ KIOJob::KIOJob(const char *name)
   }
 
   s_allJobs->insert( m_id, this);
-  
+
   m_bAutoDelete = true;
   m_iGUImode = SIMPLE; // default is a simple progress dialog
   m_bCacheToPool = true;
@@ -90,7 +90,7 @@ KIOJob::~KIOJob() {
     delete m_pDialog;
   }
 
-  clean();  
+  clean();
 }
 
 
@@ -116,7 +116,7 @@ void KIOJob::kill( bool quiet ) {
   }
 
   clean();
-  
+
   // Time to die ...
   delete this;
 }
@@ -129,7 +129,7 @@ void KIOJob::clean() {
     s_allJobs->remove( m_id );
     m_id = 0;
   }
-  
+
   if ( m_pProgressDlg ) {
     if ( m_pProgressDlg->onlyClean() ) {
       m_pProgressDlg->clean();
@@ -143,22 +143,26 @@ void KIOJob::clean() {
   // died in action. This means that the slave is in an undefined
   // state. If the job has finished successfully then
   // 'slotFinished' already handed the slave back to the pool.
-  if ( m_pSlave ) {    
+  if ( m_pSlave ) {
     delete m_pSlave;
     m_pSlave = 0L;
-  }   
+  }
 }
 
 
 void KIOJob::createGUI() {
   switch ( m_iGUImode ) {
   case LIST:
+    if ( !m_pListProgressDlg )
+      return;
     m_pListProgressDlg->addJob( this );
     m_pListProgressDlg->show();
     break;
 
   case SIMPLE:
   case CUSTOM:
+    if ( !m_pProgressDlg )
+      setGUImode( (KIOJob::GUImode)m_iGUImode );
     m_pProgressDlg->setJob( this );
     // instead of showing immediately, we fire off a one shot timer to
     // show ourselves after 1.5 seconds.  This avoids massive window creation/
@@ -199,11 +203,11 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
     slotError( errid, error.ascii() );
     return false;
   }
-  
+
   if ( m_iGUImode != NONE )
     m_pDialog = createDialog( i18n("Mounting %1...").arg(_dev));
-  
-  return KIOJobBase::mount( _ro, _fstype, _dev, _point );  
+
+  return KIOJobBase::mount( _ro, _fstype, _dev, _point );
 }
 
 
@@ -214,11 +218,11 @@ bool KIOJob::unmount( const char *_point ) {
     slotError( errid, error.data() );
     return false;
   }
-  
+
   if ( m_iGUImode != NONE )
     m_pDialog = createDialog( i18n("Unmounting %1...").arg(_point));
-  
-  return KIOJobBase::unmount( _point );  
+
+  return KIOJobBase::unmount( _point );
 }
 
 
@@ -236,7 +240,7 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move ) {
     slotError( errid, error.data() );
     return false;
   }
-  
+
   createGUI();
 
   if ( _move ) {
@@ -252,7 +256,7 @@ bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move ) {
 
   QString protocol, host, user, pass;
   QStringList::Iterator it = _source.begin();
-  for( ; it != _source.end(); ++it ) {    
+  for( ; it != _source.end(); ++it ) {
     KURL u( (*it) );
     if ( u.isMalformed() ) {
       slotError( ERR_MALFORMED_URL, (*it).ascii() );
@@ -270,7 +274,7 @@ bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move ) {
       ASSERT( 0 );
     }
   }
-  
+
   QString error;
   int errid = 0;
   if ( !createSlave( protocol.ascii(), host.ascii(),
@@ -278,7 +282,7 @@ bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move ) {
     slotError( errid, error.ascii() );
     return false;
   }
-  
+
   createGUI();
 
   if ( _move ) {
@@ -313,7 +317,7 @@ bool KIOJob::del( const char *_source ) {
     slotError( errid, error.ascii() );
     return false;
   }
-  
+
   createGUI();
 
   return KIOJobBase::del( _source );
@@ -348,7 +352,7 @@ bool KIOJob::del( QStringList& _source ) {
       ASSERT( 0 );
     }
   }
-  
+
   QString error;
   int errid = 0;
   if ( !createSlave( protocol.ascii(), host.ascii(),
@@ -356,7 +360,7 @@ bool KIOJob::del( QStringList& _source ) {
     slotError( errid, error.ascii() );
     return false;
   }
-  
+
   createGUI();
 
   return KIOJobBase::del( _source );
@@ -412,7 +416,7 @@ bool KIOJob::get( const char *_url ) {
 bool KIOJob::preget( const char *_url, int _max_size ) {
   m_bPreGet = true;
   m_iPreGetBufferMaxSize = _max_size;
-  
+
   return get( _url );
 }
 
@@ -464,9 +468,9 @@ bool KIOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume,
 
 bool KIOJob::mkdir( const char *_url, int _mode ) {
   assert( !m_pSlave );
-  
+
   KURL u( _url );
-  
+
   QString error;
   int errid = 0;
   if ( !createSlave( u.protocol().ascii(), u.host().ascii(),
@@ -474,9 +478,9 @@ bool KIOJob::mkdir( const char *_url, int _mode ) {
     slotError( errid, error.ascii() );
     return false;
   }
-  
+
   createGUI();
-  
+
   return KIOJobBase::mkdir( _url, _mode );
 }
 
@@ -490,7 +494,7 @@ void KIOJob::cont() {
   m_pSlave->resume();
 
   if ( m_bPreGetFinished )
-    slotFinished();  
+    slotFinished();
 }
 
 
@@ -533,7 +537,7 @@ void KIOJob::slotData( void *_p, int _len ) {
       memcpy( p, m_pPreGetBuffer, m_iPreGetBufferSize );
       delete [] m_pPreGetBuffer;
     }
-    
+
     memcpy( p + m_iPreGetBufferSize, (char*)_p, _len );
     m_pPreGetBuffer = p;
     m_iPreGetBufferSize += _len;
@@ -542,10 +546,10 @@ void KIOJob::slotData( void *_p, int _len ) {
       emit sigPreData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
       m_bPreGet = false;
     }
-    
+
     return;
   }
-  
+
   emit sigData( m_id, (const char*)_p, _len );
 }
 
@@ -576,7 +580,7 @@ void KIOJob::slotFinished() {
   s_allJobs->remove( m_id );
 
   // Put the slave back to the pool
-  if ( m_pSlave ) {  
+  if ( m_pSlave ) {
     disconnectSlave( m_pSlave );
 
     if ( m_bCacheToPool ) {
@@ -590,12 +594,12 @@ void KIOJob::slotFinished() {
 
     m_pSlave = 0L;
   }
-  
+
   emit sigFinished( m_id );
   m_id = 0;
-  
+
   clean();
-  
+
   if ( m_bAutoDelete ) {
     delete this;
     return;
@@ -613,7 +617,7 @@ void KIOJob::slotError( int _errid, const char *_txt ) {
   }
 
   KIOJobBase::slotError( _errid, _txt );
-  
+
   // If someone tries to delete us because we emitted sigError
   // he wont have look. One only stores the id of the job. And since
   // we remove the id from the map NOW, nobody gets the pointer to this
@@ -628,7 +632,7 @@ void KIOJob::slotError( int _errid, const char *_txt ) {
   // NOTE: This may be dangerous. I really hope that the
   // slaves are still in a good shape after reporting an error.
   // Put the slave back to the pool
-  if ( m_pSlave ) {  
+  if ( m_pSlave ) {
     disconnectSlave( m_pSlave );
 
     if ( m_bCacheToPool ) {
@@ -675,7 +679,7 @@ void KIOJob::slotCanResume( bool _resume ) {
 
 void KIOJob::slotTotalSize( unsigned long _bytes ) {
   m_iTotalSize = _bytes;
-  
+
   emit sigTotalSize( m_id, _bytes );
   kdebug( KDEBUG_INFO, 7007, "TotalSize %ld", _bytes );
 }
@@ -741,7 +745,7 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second ) {
     int hr = secs / ( 60 * 60 );
     int mn = ( secs - hr * 60 * 60 ) / 60;
     int sc = ( secs - hr * 60 * 60 - mn * 60 );
-    
+
     m_RemainingTime.setHMS( hr, mn, sc );
   }
 
@@ -791,12 +795,12 @@ void KIOJob::slotDeletingFile( const char *_url ) {
 
 
 void KIOJob::slotMimeType( const char *_type ) {
-  if ( m_bPreGet ) {    
+  if ( m_bPreGet ) {
     m_strPreGetMimeType = _type;
     m_bPreGet = false;
     m_pSlave->suspend();
   }
-  
+
   emit sigMimeType( m_id, _type );
   kdebug( KDEBUG_INFO, 7007, "MimeType %s", _type );
 }
@@ -811,7 +815,7 @@ void KIOJob::slotCancel() {
   emit sigCanceled( m_id );
 
   clean();
-  
+
   if ( m_bAutoDelete ) {
     delete this;
   }
@@ -846,16 +850,16 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _err
     connectSlave( s );
     return s;
   }
-  
+
   QString exec = KProtocolManager::self().executable( _protocol );
   kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
-  
+
   if ( exec.isEmpty() ) {
     _error = ERR_UNSUPPORTED_PROTOCOL;
     _error_text = _protocol;
     return 0L;
   }
-  
+
   s = new KIOSlave( exec.data() );
   if ( !s->isRunning() ) {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -891,16 +895,16 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
     connectSlave( s );
     return s;
   }
-  
+
   QString exec = KProtocolManager::self().executable( _protocol );
   kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
-  
+
   if ( exec.isEmpty() ) {
     _error = ERR_UNSUPPORTED_PROTOCOL;
     _error_text = _protocol;
     return 0L;
   }
-  
+
   s = new KIOSlave( exec.data() );
   if ( !s->isRunning() ) {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -923,7 +927,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
 
 void KIOJob::slotDispatch( int, int &result ) {
   result = 1;
-  if ( !dispatch() ) {    
+  if ( !dispatch() ) {
     result = -1;
 
     // Get rid of the slave. It's no good any longer.
@@ -934,7 +938,7 @@ void KIOJob::slotDispatch( int, int &result ) {
     m_bAutoDelete = false;
     slotError( ERR_SLAVE_DIED, m_strSlaveProtocol.data() );
     m_bAutoDelete = deleteFlag;
-    slotFinished(); 
+    slotFinished();
   }
 }
 
@@ -952,7 +956,7 @@ QDialog* KIOJob::createDialog( const QString &_text ) {
 
   QHBoxLayout *hBox = new QHBoxLayout();
   layout->addLayout(hBox);
-  
+
   hBox->addStretch(1);
 
   QPushButton *pb = new QPushButton( i18n("Cancel"), dlg );
@@ -1044,7 +1048,7 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol)
 }
 
 KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
-			       const char *_user, const char *_pass) 
+			       const char *_user, const char *_pass)
 {
   Entry *entry = m_allSlaves.first();
   Entry *protEntry = 0;
@@ -1060,7 +1064,7 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
            kdebug( KDEBUG_INFO, 7007, "Found matching slave, total match - protocol (%s)", _protocol );
            break;
         }
-     }    
+     }
   }
 
   if (!entry)
@@ -1088,7 +1092,7 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
 
 
 void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char *_host,
-			     const char *_user, const char *_pass ) 
+			     const char *_user, const char *_pass )
 {
   Entry *entry = new Entry();
   entry->m_time = time( 0L );
@@ -1097,7 +1101,7 @@ void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char
   entry->m_host = _host;
   entry->m_user = _user;
   entry->m_pass = _pass;
-  
+
   if (m_allSlaves.count() >= MAX_SLAVES )
   {
      Entry *entry = m_allSlaves.first();
@@ -1131,16 +1135,16 @@ void KIOSlavePool::slotSlaveDied(KProcess *proc) {
    if (!entry)
    {
        kdebug( KDEBUG_ERROR, 7007, "Unknown slave died from KIOSlavePool!" );
-       return;      
+       return;
    }
    m_allSlaves.removeRef(entry);
-   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool - protocol = %s host = %s", 
+   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool - protocol = %s host = %s",
 		entry->m_protocol.ascii(), entry->m_host.ascii() );
    delete entry->m_pSlave;
    delete entry;
 }
 
-    
+
 KIOSlavePool* KIOSlavePool::self() {
   if ( !s_pSelf ) {
     s_pSelf = new KIOSlavePool;
@@ -1180,19 +1184,19 @@ QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file ) {
       }
     }
   }
-    
-#endif /* __FreeBSD__ */             
+
+#endif /* __FreeBSD__ */
 
   // Get the real device name, not some link.
   char buffer[1024];
   QString tmp;
-    
+
   struct stat lbuff;
   lstat( _device, &lbuff );
 
   // Perhaps '_device' is just a link ?
   const char *device2 = _device;
-    
+
   if ( S_ISLNK( lbuff.st_mode ) ) {
     int n = readlink( _device, buffer, 1022 );
     if ( n > 0 ) {
@@ -1206,15 +1210,15 @@ QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file ) {
       }
     }
   }
-    
+
   int len = strlen( _device );
   int len2 = strlen( device2 );
-      
+
   FILE *f;
   f = fopen( _file, "rb" );
   if ( f != 0L ) {
     char buff[ 1024 ];
-    
+
     while ( !feof( f ) ) {
       buff[ 0 ] = 0;
       // Read a line
@@ -1248,11 +1252,11 @@ QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file ) {
 	}
       }
     }
-    
+
     fclose( f );
   }
-  
+
   return QString();
 }
-  
+
 #include "kio_job.moc"
