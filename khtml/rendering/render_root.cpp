@@ -39,13 +39,13 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_height = 0;
 
     m_width = m_minWidth;
-    m_maxWidth = m_minWidth;    
-    
+    m_maxWidth = m_minWidth;
+
     m_rootWidth=0;
     m_rootHeight=0;
 
     setPositioned(true); // to 0,0 :)
-    
+
     m_printingMode = false;
 
     selectionStart = 0;
@@ -53,7 +53,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     selectionStartPos = -1;
     selectionEndPos = -1;
     oldLayoutTime = 0;
-    timeout = 200;
+    timeout = 800;
     setParsing();
 }
 
@@ -64,7 +64,7 @@ RenderRoot::~RenderRoot()
 void RenderRoot::calcWidth()
 {
     // the width gets set by KHTMLView::print when printing to a printer.
-    if(m_printingMode || !m_view) 
+    if(m_printingMode || !m_view)
     {
         m_width = m_rootWidth;
         return;
@@ -73,7 +73,7 @@ void RenderRoot::calcWidth()
     m_width = m_view ?
                 m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
                 : m_minWidth;
-    
+
     if(m_width < m_minWidth) m_width = m_minWidth;
 
     if (style()->marginLeft().type==Fixed)
@@ -131,8 +131,8 @@ void RenderRoot::layout()
     }
     else if (!m_view)
     {
-        m_height = m_rootHeight;   
-        m_width = m_rootWidth;  
+        m_height = m_rootHeight;
+        m_width = m_rootWidth;
     }
 
     layoutSpecialObjects();
@@ -274,7 +274,7 @@ void RenderRoot::updateHeight()
         oldLayoutTime = updateTimer.elapsed();
         timeout += oldLayoutTime / 2;
         if ( 2*docHeight() > 3*m_view->visibleHeight() )
-            timeout = QMAX( 1200, timeout );
+            timeout = QMAX( 2000, timeout );
 
         timeout = QMIN( 2000+8*oldLayoutTime, timeout );
 
