@@ -21,6 +21,11 @@
    work. If you think, that a phrase belongs here, contact me
 */
 
+i18n( "Configure");
+i18n( "&Configure");
+i18n( "Configuration");
+i18n( "Modify");
+i18n( "&Modify");
 i18n( "Align");
 i18n( "Distribute");
 i18n( "Format");
