@@ -1,0 +1,5 @@
+File=kdeglobals.kcfg
+ClassName=KDEGlobals
+Singleton=true
+Mutators=true
+

@@ -1,0 +1,562 @@
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+ <kcfgfile name="kdeglobals" />
+ <group name="DesktopIcons" >
+  <entry key="GridXSpacing" type="Int" >
+   <label>Distance between desktop icons</label>
+   <whatsthis>The distance between icons specified in pixels.</whatsthis>
+   <default>50</default>
+  </entry>
+ </group>
+ <group name="General" >
+  <entry key="alternateBackground" type="String" />
+  <entry key="background" type="String" />
+  <entry key="buttonBackground" type="String" />
+  <entry key="buttonForeground" type="String" />
+  <entry key="foreground" type="String" />
+  <entry key="selectBackground" type="String" />
+  <entry key="selectForeground" type="String" />
+  <entry key="widgetStyle" type="String" >
+   <label>Widget style to use</label>
+   <whatsthis>The name of the widget style, for example &quot;keramik&quot; or &quot;plastik&quot;. Without quotes.</whatsthis>
+   <default>keramik</default>
+  </entry>
+  <entry key="windowBackground" type="String" />
+  <entry key="windowForeground" type="String" />
+  <entry key="UseSystemBell" type="Bool" >
+   <label>Use the PC speaker</label>
+   <whatsthis>If the ordinary PC speaker should be used instead of KDE's own notifications system.</whatsthis>
+   <default>false</default>
+  </entry>
+  <entry key="TerminalApplication" type="String" >
+   <label>What terminal application to use</label>
+   <whatsthis>Whenever a terminal application is launched this terminal emulator program will be used.
+</whatsthis>
+   <default>konsole</default>
+  </entry>
+  <entry key="fixed" type="Font" >
+   <label>Fixed width font</label>
+   <whatsthis>This font is used when a fixed font is needed. A fixed font has a constant width.
+</whatsthis>
+  </entry>
+  <entry key="font" type="Font" >
+   <label>System wide font</label>
+  </entry>
+  <entry key="menuFont" type="Font" >
+   <label>Font for menus</label>
+   <whatsthis>What font to use for menus in applications.</whatsthis>
+  </entry>
+  <entry key="linkColor" type="Color" >
+   <label>Color for links</label>
+   <whatsthis>What color links which are yet not clicked on should have.</whatsthis>
+  </entry>
+  <entry key="visitedLinkColor" type="Color" >
+   <label>Color for visited links</label>
+  </entry>
+  <entry key="taskbarFont" type="Font" >
+   <label>Font for the taskbar</label>
+   <whatsthis>What font to use for the panel at the bottom of the screen, where the currently running applications are.</whatsthis>
+  </entry>
+  <entry key="toolBarFont" type="Font" >
+   <label>Fonts for toolbars</label>
+  </entry>
+ </group>
+ <group name="Global Shortcuts" >
+  <entry key="Activate Window Demanding Attention" type="String" name="Activate Window Demanding Attention" >
+    <default>Alt+Ctrl+A</default>
+  </entry>
+
+  <entry key="Desktop Screenshot" type="String" name="Desktop Screenshot" >
+   <label>Shortcut for taking screenshot</label>
+   <default>Ctrl+Print</default>
+  </entry>
+
+  <entry key="Enable/Disable Clipboard Actions" type="String" name="Enable/Disable Clipboard Actions" >
+   <label>Shortcut for toggling Clipboard Actions on and off</label>
+   <default>Alt+Ctrl+X</default>
+  </entry>
+
+  <entry key="Halt without Confirmation" type="String" name="Halt without Confirmation" >
+   <label>Shortcut for shutting down the computer without confirmation</label>
+   <default>Alt+Ctrl+Shift+PageDown</default>
+  </entry>
+
+  <entry key="Kill Window" type="String" name="Kill Window" >
+    <default>Alt+Ctrl+Escape</default>
+  </entry>
+
+  <entry key="Lock Screen" type="String" >
+    <default>Alt+Ctrl+L</default>
+  </entry>
+  <entry key="Logout" type="String" >
+    <default>Alt+Ctrl+Delete</default>
+  </entry>
+  <entry key="Logout without Confirmation" type="String" >
+    <default>Alt+Ctrl+Shift+Delete</default>
+  </entry>
+  <entry key="Manually Invoke Action on Current Clipboard" type="String" >
+    <default>Alt+Ctrl+R</default>
+  </entry>
+  <entry key="Mouse Emulation" type="String" >
+    <default>Alt+F12</default>
+  </entry>
+  <entry key="Popup Launch Menu" type="String" >
+    <default>Alt+F1</default>
+  </entry>
+  <entry key="Reboot without Confirmation" type="String" name="Reboot without Confirmation" >
+    <default>Alt+Ctrl+Shift+PageUp</default>
+  </entry>
+  <entry key="Run Command" type="String" name="Run Command">
+    <default>Alt+F2</default>
+  </entry>
+  <entry key="Show Klipper Popup-Menu" type="String" >
+    <default>Alt+Ctrl+V</default>
+  </entry>
+  <entry key="Show Taskmanager" type="String" >
+    <default>Ctrl+Escape</default>
+  </entry>
+  <entry key="Show Window List" type="String" >
+    <default>Alt+F5</default>
+  </entry>
+  <entry key="Switch One Desktop Down" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Switch One Desktop Up" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Switch One Desktop to the Left" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Switch One Desktop to the Right" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Switch to Desktop 1" type="String" >
+    <default>Ctrl+F1</default>
+  </entry>
+  <entry key="Switch to Desktop 10" type="String" >
+    <default>Ctrl+F10</default>
+  </entry>
+  <entry key="Switch to Desktop 11" type="String" >
+    <default>Ctrl+F11</default>
+  </entry>
+  <entry key="Switch to Desktop 12" type="String" >
+    <default>Ctrl+F12</default>
+  </entry>
+  <entry key="Switch to Desktop 13" type="String" >
+    <default>Ctrl+Shift+F1</default>
+  </entry>
+  <entry key="Switch to Desktop 14" type="String" >
+    <default>Ctrl+Shift+F2</default>
+  </entry>
+  <entry key="Switch to Desktop 15" type="String" >
+    <default>Ctrl+Shift+F3</default>
+  </entry>
+  <entry key="Switch to Desktop 16" type="String" >
+    <default>Ctrl+Shift+F4</default>
+  </entry>
+  <entry key="Switch to Desktop 2" type="String" >
+    <default>Ctrl+F2</default>
+  </entry>
+  <entry key="Switch to Desktop 3" type="String" >
+    <default>Ctrl+F3</default>
+  </entry>
+  <entry key="Switch to Desktop 4" type="String" >
+    <default>Ctrl+F4</default>
+  </entry>
+  <entry key="Switch to Desktop 5" type="String" >
+    <default>Ctrl+F5</default>
+  </entry>
+  <entry key="Switch to Desktop 6" type="String" >
+    <default>Ctrl+F6</default>
+  </entry>
+  <entry key="Switch to Desktop 7" type="String" >
+    <default>Ctrl+F7</default>
+  </entry>
+  <entry key="Switch to Desktop 8" type="String" >
+    <default>Ctrl+F8</default>
+  </entry>
+  <entry key="Switch to Desktop 9" type="String" >
+    <default>Ctrl+F9</default>
+  </entry>
+  <entry key="Switch to Next Desktop" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Switch to Next Keyboard Layout" type="String" >
+    <default>Ctrl+Alt+K</default>
+  </entry>
+  <entry key="Switch to Previous Desktop" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Toggle Showing Desktop" type="String" >
+    <default>Alt+Ctrl+D</default>
+  </entry>
+  <entry key="Toggle Window Raise/Lower" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Walk Through Desktop List" type="String" >
+    <default>Ctrl+Tab</default>
+  </entry>
+  <entry key="Walk Through Desktop List (Reverse)" type="String" >
+    <default>Ctrl+Shift+Tab</default>
+  </entry>
+  <entry key="Walk Through Desktops" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Walk Through Desktops (Reverse)" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Walk Through Windows" type="String" >
+    <default>Alt+Tab</default>
+  </entry>
+  <entry key="Walk Through Windows (Reverse)" type="String" >
+    <default>Alt+Shift+Tab</default>
+  </entry>
+  <entry key="Window Above Other Windows" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Below Other Windows" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Close" type="String" >
+    <default>Alt+F4</default>
+  </entry>
+  <entry key="Window Fullscreen" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Grow Horizontal" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Grow Vertical" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Lower" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Maximize" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Maximize Horizontal" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Maximize Vertical" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Minimize" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Move" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window No Border" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window On All Desktops" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Operations Menu" type="String" >
+    <default>Alt+F3</default>
+  </entry>
+  <entry key="Window Pack Down" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Pack Left" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Pack Right" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Pack Up" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Raise" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Resize" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Screenshot" type="String" >
+    <default>Alt+Print</default>
+  </entry>
+  <entry key="Window Shade" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Shrink Horizontal" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window Shrink Vertical" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 1" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 10" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 11" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 12" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 13" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 14" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 15" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 16" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 2" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 3" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 4" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 5" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 6" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 7" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 8" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Desktop 9" type="String" >
+    <default></default>
+  </entry>
+  <entry key="Window to Next Desktop" type="String" >
+    <default></default>
+  </entry>
+
+  <entry key="Window to Previous Desktop" type="String" >
+    <default></default>
+  </entry>
+
+ </group>
+ <group name="KDE" >
+  <entry key="AutoSelectDelay" type="String" />
+  <entry key="DoubleClickInterval" type="String" />
+  <entry key="EffectAnimateCombo" type="String" />
+  <entry key="EffectAnimateMenu" type="String" />
+  <entry key="EffectAnimateTooltip" type="String" />
+  <entry key="EffectFadeMenu" type="String" />
+  <entry key="EffectFadeTooltip" type="String" />
+  <entry key="EffectNoTooltip" type="String" />
+  <entry key="EffectsEnabled" type="String" />
+  <entry key="InsertTearOffHandle" type="String" />
+  <entry key="ShowIconsOnPushButtons" type="String" />
+  <entry key="SingleClick" type="String" />
+  <entry key="StartDragDist" type="String" />
+  <entry key="StartDragTime" type="String" />
+  <entry key="VisualActivate" type="String" />
+  <entry key="WheelScrollLines" type="String" />
+  <entry key="colorScheme" type="String" />
+  <entry key="contrast" type="String" />
+  <entry key="cursorTheme" type="String" />
+ </group>
+ <group name="KFileDialog Settings" >
+  <entry key="Automatically select filename extension" type="String" name="Automatically select filename extension">
+    <default>true</default>
+  </entry>
+  <entry key="Height 768" type="String" name="Height 768" />
+  <entry key="LocationCombo Completionmode" type="String" name="LocationCombo Completionmode" />
+  <entry key="PathCombo Completionmode" type="String" name="PathCombo Completionmode" />
+
+  <entry key="Separate Directories" type="Bool" name="Separate Directories" >
+    <default>false</default>
+  </entry>
+
+  <entry key="Sort by" type="String" name="Sort by" />
+
+  <entry key="Sort case insensitively" type="Bool" name="Sort case insensitively">
+    <default>true</default>
+  </entry>
+
+  <entry key="Sort directories first" type="Bool" name="Sort directories first" >
+   <label>Show directories first</label>
+   <whatsthis>If directories should be placed at the top when displaying files</whatsthis>
+   <default>true</default>
+  </entry>
+
+  <entry key="View Style" type="String" name="View Style" />
+  <entry key="Width 1024" type="String" name="Width 1024" />
+
+  <entry key="Recent URLs" type="Path" name="Recent URLs" >
+   <label>The recent URLs recently visited</label>
+   <whatsthis>Used for auto completion in file dialogs for example.</whatsthis>
+  </entry>
+
+  <entry key="Show Preview" type="Bool" name="Show Preview" >
+   <label>Show file preview in file dialog</label>
+   <default>false</default>
+  </entry>
+
+  <entry key="Show hidden files" type="Bool" name="Show hidden files" >
+   <label>Show hidden files</label>
+   <whatsthis>Determines if files starting with a dot(convention for hidden files) should be shown</whatsthis>
+   <default>false</default>
+  </entry>
+
+  <entry key="Show Speedbar" type="Bool" name="Show Speedbar" >
+   <label>Show speedbar</label>
+   <whatsthis>Whether the shortcut icons to the left in the file dialog should be shown</whatsthis>
+   <default>true</default>
+  </entry>
+  
+  <entry key="Sort reversed" type="Bool" name="Sort reversed" >
+   <default>false</default>
+  </entry>
+
+ </group>
+ <group name="KSpell" >
+  <entry key="KSpell_Client" type="String" />
+  <entry key="KSpell_DictFromList" type="String" />
+  <entry key="KSpell_Dictionary" type="String" />
+  <entry key="KSpell_Encoding" type="String" />
+  <entry key="KSpell_NoRootAffix" type="String" />
+  <entry key="KSpell_RunTogether" type="String" />
+ </group>
+ <group name="Locale" >
+  <entry key="Country" type="String" >
+   <label>What country</label>
+   <whatsthis>Used to determine how to display numbers, currency and time/date for example</whatsthis>
+   <default>C</default>
+  </entry>
+  <entry key="Language" type="String" >
+   <label>What language to display text in</label>
+  </entry>
+  <entry key="PositiveSign" type="String" >
+   <label>Character used for indicating positive numbers</label>
+   <whatsthis>Most countries have no character for this</whatsthis>
+  </entry>
+ </group>
+ <group name="Paths" >
+  <entry key="Trash" type="Path" >
+   <label>Path for the trash can</label>
+   <default>$HOME/Desktop/Trash</default>
+  </entry>
+  <entry key="Autostart" type="Path" >
+    <label>Path to the autostart directory</label>
+    <whatsthis>Path to the directory containing executables to be run on session login</whatsthis>
+    <default>$KDEHOME/Autostart</default>
+  </entry>
+  <entry key="Desktop" type="Path" >
+    <label>Path to the desktop directory</label>
+    <whatsthis>In this directory the files on the dekstop are stored</whatsthis>
+    <default>$HOME/Desktop</default>
+  </entry>
+  <entry key="Documents" type="Path" >
+    <label>Path to documents folder</label>
+    <whatsthis></whatsthis>
+    <default>$HOME</default>
+  </entry>
+ </group>
+ <group name="PreviewSettings" >
+  <entry key="BoostSize" type="Bool" />
+  <entry key="MaximumSize" type="Bool" />
+  <entry key="UseFileThumbnails" type="Bool" />
+  <entry key="ar" type="Bool" />
+  <entry key="audiocd" type="Bool" />
+  <entry key="devices" type="Bool" />
+  <entry key="file" type="Bool" />
+  <entry key="fish" type="Bool" />
+  <entry key="floppy" type="Bool" />
+  <entry key="fonts" type="Bool" />
+  <entry key="ftp" type="Bool" />
+  <entry key="imap" type="Bool" />
+  <entry key="imaps" type="Bool" />
+  <entry key="kdeapi" type="Bool" />
+  <entry key="lan" type="Bool" />
+  <entry key="mac" type="Bool" />
+  <entry key="man" type="Bool" />
+  <entry key="nfs" type="Bool" />
+  <entry key="nntp" type="Bool" />
+  <entry key="perldoc" type="Bool" />
+  <entry key="pop3" type="Bool" />
+  <entry key="pop3s" type="Bool" />
+  <entry key="print" type="Bool" />
+  <entry key="printdb" type="Bool" />
+  <entry key="programs" type="Bool" />
+  <entry key="pydoc" type="Bool" />
+  <entry key="rlan" type="Bool" />
+  <entry key="settings" type="Bool" />
+  <entry key="sftp" type="Bool" />
+  <entry key="sieve" type="Bool" />
+  <entry key="smb" type="Bool" />
+  <entry key="smtp" type="Bool" />
+  <entry key="smtps" type="Bool" />
+  <entry key="system" type="Bool" />
+  <entry key="tar" type="Bool" />
+  <entry key="webdav" type="Bool" />
+  <entry key="webdavs" type="Bool" />
+  <entry key="zip" type="Bool" />
+ </group>
+ <group name="Socks" >
+  <entry key="SOCKS_enable" type="Bool" >
+    <label>Enable SOCKS support</label>
+    <whatsthis>Whether SOCKS version 4 and 5 should be enabled in KDE's sub systems</whatsthis>
+    <default>false</default>
+  </entry>
+  <entry key="SOCKS_lib" type="Path" >
+    <label>Path to custom SOCKS library</label>
+  </entry>
+  <entry key="SOCKS_method" type="String" />
+ </group>
+ <group name="Toolbar style" >
+  <entry key="Highlighting" type="Bool">
+    <label>Highlight toolbar buttons on mouse over</label>
+    <default>true</default>
+  </entry>
+  <entry key="IconText" type="Bool">
+    <label>Show text on toolbar icons </label>
+    <whatsthis>Whether text should be shown in addition to icons on toolbar icons</whatsthis>
+    <default>false</default>
+  </entry>
+  <entry key="TransparentMoving" type="Bool" >
+    <label>Transparent toolbars when moved</label>
+    <whatsthis>Whether toolbars should be visible when moved</whatsthis>
+    <default>false</default>
+  </entry>
+ </group>
+ <group name="WM" >
+  <entry key="activeBackground" type="String" />
+  <entry key="activeBlend" type="String" />
+  <entry key="activeFont" type="String" />
+  <entry key="activeForeground" type="String" />
+  <entry key="activeTitleBtnBg" type="String" />
+  <entry key="frame" type="String" />
+  <entry key="handle" type="String" />
+  <entry key="inactiveBackground" type="String" />
+  <entry key="inactiveBlend" type="String" />
+  <entry key="inactiveForeground" type="String" />
+  <entry key="inactiveFrame" type="String" />
+  <entry key="inactiveHandle" type="String" />
+  <entry key="inactiveTitleBtnBg" type="String" />
+ </group>
+ <group name="Passwords">
+   <entry name="EchoMode" type="Enum">
+     <label>Password echo type</label>
+     <choices>
+       <choice name="OneStar"/>
+       <choice name="ThreeStars"/>
+       <choice name="NoEcho"/>
+     </choices>
+     <default>OneStar</default>
+   </entry>
+ </group>
+ <group name="KKeyDialog Settings">
+   <entry name="Dialog Size" type="IntList"><!-- Should this be taken care of globally, for dialogs? -->
+     <label>The size of the dialog</label>
+   </entry>
+ </group>
+</kcfg>
