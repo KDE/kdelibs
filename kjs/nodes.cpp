@@ -2993,8 +2993,8 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   FunctionImp *fimp = new DeclaredFunctionImp(exec, ident, body, sc);
   Object func(fimp); // protect from GC
 
-  List empty;
   //  Value proto = exec->interpreter()->builtinObject().construct(exec,List::empty());
+  List empty;
   Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
   func.put(exec, "prototype", proto, Internal|DontDelete);
 
@@ -3049,6 +3049,9 @@ Value FuncExprNode::evaluate(ExecState *exec)
   const List sc = exec->context().scopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(exec, UString::null, body, sc);
   Value ret(fimp);
+  List empty;
+  Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
+  fimp->put(exec, "prototype", proto, Internal|DontDelete);
 
   int plen = 0;
   for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
