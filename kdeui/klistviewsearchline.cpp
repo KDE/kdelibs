@@ -257,7 +257,7 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
 		    for(int j = 0; j < header->mapToIndex(i); j++)
 		        if(d->listView->columnWidth(header->mapToSection(j))>0)
 		            visiblePosition++;
-		    columnText = i18n("Column number %1").arg(visiblePosition);
+		    columnText = i18n("Column number %1","Column No. %1").arg(visiblePosition);
 	        }
                 subMenu->insertItem(columnText, visibleColumns);
 	        if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
