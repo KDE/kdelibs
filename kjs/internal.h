@@ -130,7 +130,7 @@ namespace KJS {
     static ValueImp *zero() { return SimpleNumber::make(0); }
     static ValueImp *one() { return SimpleNumber::make(1); }
     static ValueImp *two() { return SimpleNumber::make(2); }
-    
+
     double value() const { return val; }
 
     Type type() const { return NumberType; }
@@ -305,7 +305,7 @@ namespace KJS {
 
     void addSourceCode(SourceCode *code);
     void removeSourceCode(SourceCode *code);
-    
+
     void setContext(ContextImp *c) { _context = c; }
 
   private:
@@ -358,7 +358,7 @@ namespace KJS {
     // Chained list of interpreters (ring) - for collector
     static InterpreterImp* s_hook;
     InterpreterImp *next, *prev;
-    
+
     ContextImp *_context;
 
     int recursion;
@@ -379,23 +379,6 @@ namespace KJS {
 
     AttachedInterpreter *interps;
     bool isAborted;
-  };
-
-
-
-  class InternalFunctionImp : public ObjectImp {
-  public:
-    InternalFunctionImp(FunctionPrototypeImp *funcProto);
-    bool implementsHasInstance() const;
-    Boolean hasInstance(ExecState *exec, const Value &value);
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
-    Identifier name() const { return ident; }
-    void setName(Identifier _ident) { ident = _ident; }
-
-  protected:
-    Identifier ident;
   };
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16

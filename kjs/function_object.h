@@ -29,10 +29,8 @@
 namespace KJS {
 
   /**
-   * @internal
-   *
    * The initial value of Function.prototype (and thus all objects created
-   * with the Function constructor
+   * with the Function constructor)
    */
   class FunctionPrototypeImp : public InternalFunctionImp {
   public:

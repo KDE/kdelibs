@@ -32,7 +32,35 @@ namespace KJS {
   class Parameter;
 
   /**
-   * @short Implementation class for internal Functions.
+   * Base class for all function objects.
+   * It implements the hasInstance method (for instanceof, which only applies to function objects)
+   * and allows to give the function a name, used in toString().
+   *
+   * Constructors and prototypes of internal objects (implemented in C++) directly inherit from this.
+   * FunctionImp also does, for functions implemented in JS.
+   */
+  class InternalFunctionImp : public ObjectImp {
+  public:
+    /**
+     * Constructor. For C++-implemented functions, @p funcProto is usually
+     * static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+     */
+    InternalFunctionImp(FunctionPrototypeImp *funcProto);
+    bool implementsHasInstance() const;
+    Boolean hasInstance(ExecState *exec, const Value &value);
+
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+    Identifier name() const { return ident; }
+    /// You might want to use the helper function ObjectImp::setFunctionName for this
+    void setName(Identifier _ident) { ident = _ident; }
+
+  protected:
+    Identifier ident;
+  };
+
+  /**
+   * @short Implementation class for functions implemented in JS.
    */
   class FunctionImp : public InternalFunctionImp {
     friend class Function;
@@ -121,7 +149,7 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    
+
     virtual void mark();
 
   private:
