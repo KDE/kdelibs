@@ -605,7 +605,7 @@ static RenderObject* findRenderer(NodeImpl *&node, long offset,
   if (r && isUnsuitable(r, trav)) {
     r = advanceSuitableObject(r, trav, false, base, state);
     mapTraversalStateToRenderPos(trav, false, outside, outsideEnd);
-    r_ofs = r->minOffset();
+    if (r) r_ofs = r->minOffset();
   }
 #if DEBUG_CARETMODE > 3
   kdDebug(6200) << "2r " << r << endl;
