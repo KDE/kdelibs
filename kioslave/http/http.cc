@@ -46,9 +46,7 @@
 
 #include "http.h"
 
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
-#include <kio_dlg.h>
+#include <kio/skipdlg.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <ksock.h>
@@ -60,14 +58,17 @@
 #include <dcopclient.h>
 #include <kservice.h>
 
+#include <kio/slaveinterface.h>
+#include <kio/passdlg.h>
+
+using namespace KIO;
+
 // Maximum chunk size is 256K
 #define MAX_CHUNK_SIZE (1024*256)
 
 #define MAX_IPC_SIZE (1024*32)
 
 template class QStack<char>;
-
-bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
@@ -78,23 +79,29 @@ extern "C" {
 #endif
 };
 
-int main( int, char ** )
+#if 0
+int main( int argc, char **argv )
 {
-  signal(SIGCHLD, KIOProtocol::sigchld_handler);
-  //  signal(SIGSEGV, IOProtocol::sigsegv_handler);
-
   KInstance instance( "kio_http" );
 
   kdebug( KDEBUG_INFO, 7103, "Starting %d", getpid());
 
-  KIOConnection parent( 0, 1 );
+  if (argc != 2)
+  {
+     fprintf(stderr, "Usage: kio_file UNIX-domain-socket\n");
+  }
+  KSocket sock(argv[1]);
+
+  printf("kio_file: socket = %d\n", sock.socket());
+
+  KIOConnection parent( sock.socket(), sock.socket() );
 
   HTTPProtocol http( &parent );
   http.dispatchLoop();
 
   kdebug( KDEBUG_INFO, 7103, "Done" );
 }
-
+#endif
 
 static char * trimLead (char *orig_string) {
   while (*orig_string == ' ')
@@ -290,17 +297,16 @@ int verify_callback (int, X509_STORE_CTX *)
 
 /*****************************************************************************/
 
-HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
+HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol ) 
+  : SlaveBase( _conn )
 {
+  m_protocol = protocol;
   m_maxCacheAge = 0;
   m_cmd = CMD_NONE;
   m_fsocket = 0L;
   m_sock = 0;
   m_fcache = 0;
-  m_bIgnoreJobErrors = false;
-  m_bIgnoreErrors = false;
   m_bKeepAlive = false;
-  m_iSavedError = 0;
   m_iSize = 0;
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
@@ -445,6 +451,105 @@ bool HTTPProtocol::eof()
   return m_bEOF;
 }
 
+void HTTPProtocol::http_openConnection()
+{
+  // try to ensure that the port is something reasonable
+  unsigned short int port = m_request.port;
+  if ( port == 0 ) {
+#ifdef DO_SSL
+    if (m_protocol=="https") {
+      struct servent *sent = getservbyname("https", "tcp");
+      if (sent) {
+        port = ntohs(sent->s_port);
+      } else
+        port = DEFAULT_HTTPS_PORT;
+    } else
+#endif
+      if ( (m_protocol=="http") || (m_protocol == "httpf") ) {
+        struct servent *sent = getservbyname("http", "tcp");
+	if (sent) {
+	  port = ntohs(sent->s_port);
+	} else
+	  port = DEFAULT_HTTP_PORT;
+      } else {
+	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data()); 
+	port = 80;
+      }
+  }
+  m_request.port = port;
+
+#if 0
+  // Move to initialisation
+  // make sure that we can support what we are asking for
+  if (m_protocol() == "https") {
+#ifdef DO_SSL
+    m_bUseSSL=true;
+#else
+    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
+    return false;
+#endif
+  }
+#endif
+
+  // do we want to use a proxy?
+  m_request.do_proxy = m_bUseProxy;
+
+  // if so, we had first better make sure that our host isn't on the
+  // No Proxy list
+  if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
+      m_request.do_proxy = !revmatch(m_request.hostname, m_strNoProxyFor);
+
+  if (m_sock)
+  {
+     bool closeDown = false;
+     kdebug( KDEBUG_INFO, 7103, "http_open: connection still active (%d)", getpid());
+     if (!m_state.do_proxy && !m_request.do_proxy)
+     {
+        if (m_state.hostname != m_request.hostname)
+        {
+           closeDown = true;
+           kdebug( KDEBUG_INFO, 7103, "keep_alive: host does not match. (%s vs %s)",
+                   m_state.hostname.ascii(), m_request.hostname.ascii());
+        }
+        else if (m_state.port != m_request.port)
+        {
+           closeDown = true;
+           kdebug( KDEBUG_INFO, 7103, "keep_alive: port does not match. (%d vs %d)",
+	           m_state.port, m_request.port);
+        }
+        else if (m_state.user != m_request.user)
+        {
+           closeDown = true;
+           kdebug( KDEBUG_INFO, 7103, "keep_alive: user does not match. (%s vs %s)",
+                   m_state.user.ascii(), m_request.user.ascii());
+        }
+        else if (m_state.passwd != m_request.passwd)
+        {
+           closeDown = true;
+           kdebug( KDEBUG_INFO, 7103, "keep_alive: paswd does not match.");
+        }
+     }
+     else if (m_request.do_proxy && m_state.do_proxy)
+     {
+        // Keep the connection to the proxy.
+     }
+     else 
+     {
+        closeDown = true;
+        kdebug( KDEBUG_INFO, 7103, "keep_alive: proxy setting changed.");
+     }
+     if (closeDown)
+        http_closeConnection();
+  }
+
+  // let's update our current state
+  m_state.hostname = m_request.hostname;
+  m_state.port = m_request.port;
+  m_state.user = m_request.user;
+  m_state.passwd = m_request.passwd;
+  m_state.do_proxy = m_request.do_proxy; 
+}
+
 
 /**
  * This function is responsible for opening up the connection to the remote
@@ -468,95 +573,9 @@ bool HTTPProtocol::eof()
  * 2) Format our request/header
  * 3) Send the header to the remote server
  */
-bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
-                             unsigned long _offset )
+bool HTTPProtocol::http_open()
 {
-  // try to ensure that the port is something reasonable
-  unsigned short int port = _url.port();
-  if ( port == 0 ) {
-#ifdef DO_SSL
-    if (_url.protocol()=="https") {
-      struct servent *sent = getservbyname("https", "tcp");
-      if (sent) {
-        port = ntohs(sent->s_port);
-      } else
-        port = DEFAULT_HTTPS_PORT;
-    } else
-#endif
-      if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") ) {
-        struct servent *sent = getservbyname("http", "tcp");
-	if (sent) {
-	  port = ntohs(sent->s_port);
-	} else
-	  port = DEFAULT_HTTP_PORT;
-      } else {
-	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", _url.protocol().ascii()); fflush(stderr);
-	port = 80;
-      }
-  }
-
-  // make sure that we can support what we are asking for
-  if (_url.protocol() == "https") {
-#ifdef DO_SSL
-    m_bUseSSL=true;
-#else
-    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
-    return false;
-#endif
-  }
-  // okay, we know now that our URL is at least half-way decent.
-
-  // do we want to use a proxy?
-  bool do_proxy = m_bUseProxy;
-
-  // if so, we had first better make sure that our host isn't on the
-  // No Proxy list
-  if (do_proxy && !m_strNoProxyFor.isEmpty())
-      do_proxy = !revmatch(_url.host(), m_strNoProxyFor);
-
-  if (m_sock)
-  {
-     bool closeDown = false;
-     kdebug( KDEBUG_INFO, 7103, "http_open: connection still active (%d)", getpid());
-     if (m_state.url.host() != _url.host())
-     {
-        closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: host does not match. (%s vs %s)",
-		m_state.url.host().ascii(), _url.host().ascii());
-     }
-     else if (m_state.port != port)
-     {
-        closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: port does not match. (%d vs %d)",
-		m_state.port, port);
-     }
-     else if (m_state.url.user() != _url.user())
-     {
-        closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: user does not match. (%s vs %s)",
-		m_state.url.user().ascii(), _url.user().ascii());
-     }
-     else if (m_state.url.pass() != _url.pass())
-     {
-        closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: paswd does not match.");
-     }
-     else if (m_state.do_proxy != do_proxy)
-     {
-        closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: proxy setting changed.");
-     }
-     if (closeDown)
-        http_closeConnection();
-  }
-
-  // let's store our current state
-  m_state.url    = _url;
-  m_state.reload = _reload;
-  m_state.offset = _offset;
-  m_state.postDataSize = _post_data_size;
-  m_state.port = port;
-  m_state.do_proxy = do_proxy;
+  http_openConnection();
 
   m_fcache = 0;
   m_bCachedRead = false;
@@ -564,9 +583,9 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   if (m_bUseCache)
   {
 #ifdef DO_SSL
-     if (!m_state.reload && !m_bUseSSL && (m_state.postDataSize == 0))
+     if (!m_request.reload && !m_bUseSSL)
 #else
-     if (!m_state.reload && (m_state.postDataSize == 0))
+     if (!m_request.reload)
 #endif
      {
         m_fcache = checkCacheEntry( m_state.cef );
@@ -596,7 +615,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
       m_sock = 0;
-      error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
+      error( ERR_COULD_NOT_CREATE_SOCKET, m_state.hostname );
       return false;
     }
 
@@ -617,13 +636,13 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
       // apparently we don't want a proxy.  let's just connect directly
       ksockaddr_in server_name;
 
-      if(!KSocket::initSockaddr(&server_name, _url.host(), port)) {
-        error( ERR_UNKNOWN_HOST, _url.host() );
+      if(!KSocket::initSockaddr(&server_name, m_state.hostname, m_state.port)) {
+        error( ERR_UNKNOWN_HOST, m_state.hostname );
         return false;
       }
 
       if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
-        error(ERR_COULD_NOT_CONNECT, _url.host());
+        error(ERR_COULD_NOT_CONNECT, m_state.hostname );
         return false;
       }
     }
@@ -631,7 +650,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     // Placeholder
     if (!openStream())
     {
-      error( ERR_COULD_NOT_CONNECT, _url.host() );
+      error( ERR_COULD_NOT_CONNECT, m_state.hostname );
       return false;
     }
   }
@@ -639,25 +658,51 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   // this will be the entire header
   QString header;
 
-  // determine if this is a POST or GET method
-  if (_post_data_size > 0) {
-    _reload = true;     /* no caching allowed */
-    header = "POST ";
-  } else
-    header = "GET ";
+  bool moreData = false;
 
+  // determine if this is a POST or GET method
+  switch( m_request.method) {
+  case HTTP_GET: 
+      header = "GET ";
+      break;
+  case HTTP_PUT: 
+      header = "PUT ";
+      moreData = true;
+      break;
+  case HTTP_POST: 
+      header = "POST ";
+      moreData = true;
+      break;
+  case HTTP_HEAD: 
+      header = "HEAD ";
+      break;
+  case HTTP_DELETE: 
+      header = "DELETE "; 
+      break;
+  }
+  
   // format the URI
   char c_buffer[64];
   memset(c_buffer, 0, 64);
   if(m_state.do_proxy) {
-    sprintf(c_buffer, ":%u", port);
+    sprintf(c_buffer, ":%u", m_state.port);
     header += "http://";
-    header += _url.host();
+    header += m_state.hostname;
     header += c_buffer;
   }
 
   // Let the path be "/" if it is empty ( => true )
-  header += _url.encodedPathAndQuery(0, true);
+  { 
+     QString encoded = m_request.path;
+     if (encoded.isEmpty())
+        encoded = "/";
+     else
+        KURL::encode(encoded);
+     if (!m_request.query.isEmpty())
+        encoded += "?" + m_request.query;
+     
+     header += encoded;
+  }
 
   header += " HTTP/1.1\r\n"; /* start header */
 
@@ -675,13 +720,13 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   header += getUserAgentString();
   header += "\r\n";
 
-  if ( _offset > 0 ) {
-    sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
+  if ( m_request.offset > 0 ) {
+    sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
     kdebug( KDEBUG_INFO, 7103, "kio_http : Range = %s", c_buffer);
   }
 
-  if ( _reload ) { /* No caching for reload */
+  if ( m_request.reload ) { /* No caching for reload */
     header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
     header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
@@ -700,34 +745,32 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     header += "Accept-Language: " + m_strLanguages + "\r\n";
 
   header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
-  header += _url.host();
-  if (_url.port() != 0) {
+  header += m_state.hostname;
+  if (m_state.port != 0) {
     memset(c_buffer, 0, 64);
-    sprintf(c_buffer, ":%u", port);
+    sprintf(c_buffer, ":%u", m_state.port);
     header += c_buffer;
   }
+
   header += "\r\n";
 
-  QString cookieStr = findCookies( _url.url());
+  QString cookieStr = findCookies( m_request.url.url());
   if (!cookieStr.isEmpty())
   {
     header += cookieStr;
   }
 
-  if (_post_data_size > 0 ) {
-    header += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-    memset(c_buffer, 0, 64);
-    sprintf(c_buffer, "%i\r\n", _post_data_size);
-    header += c_buffer;
+  if (m_request.method == HTTP_POST) {
+    header += "Content-Type: application/x-www-form-urlencoded\r\n";
   }
 
   // check if we need to login
-  if (_url.pass() ||_url.user()) {
+  if (m_state.passwd || m_state.user) {
     if (Authentication == AUTH_Basic) {
-      header += create_basic_auth("Authorization", _url.user(),_url.pass());
+      header += create_basic_auth("Authorization", m_state.user, m_state.passwd);
     } else if (Authentication == AUTH_Digest) {
-      header+= create_digest_auth("Authorization", _url.user(),
-				  _url.pass(), m_strAuthString);
+      header += create_digest_auth("Authorization", m_state.user,
+				  m_state.passwd, m_strAuthString);
     }
     header+="\r\n";
   }
@@ -748,22 +791,33 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
       }
     }
   }
-  header += "\r\n";  /* end header */
+
+  if (!moreData)
+     header += "\r\n";  /* end header */
 
   kdebug( KDEBUG_INFO, 7103, "Sending header: \n===\n%s\n===", header.ascii());
   // now that we have our formatted header, let's send it!
-  if (write(header, header.length()) != (ssize_t) header.length()) {
-    kdebug( KDEBUG_INFO, 7103, "Connection broken!");
+  bool sendOk;
+  sendOk = (write(header, header.length()) == (ssize_t) header.length());
+  if (!sendOk) {
+    kdebug( KDEBUG_INFO, 7103, "Connection broken! (%s)", m_state.hostname.ascii());
     if (m_bKeepAlive)
     {
        // With a Keep-Alive connection this can happen.
        // Just reestablish the connection.
        http_closeConnection();
-       return http_open(_url, _post_data_size, _reload, _offset );
+       http_openConnection();
+       sendOk = (write(header, header.length()) == (ssize_t) header.length());
     }
-    error( ERR_CONNECTION_BROKEN, _url.host() );
-    return false;
+    if (!sendOk)
+    {
+       error( ERR_CONNECTION_BROKEN, m_state.hostname );
+       return false;
+    }
   }
+
+  if (moreData)
+     return sendBody();
 
   return true;
 }
@@ -785,7 +839,7 @@ bool HTTPProtocol::readHeader()
      if (!fgets(buffer, 4096, m_fcache))
      {
         // Error, delete cache entry
-        error( ERR_CONNECTION_BROKEN, m_state.url.host() );
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
@@ -815,13 +869,13 @@ bool HTTPProtocol::readHeader()
      if (m_bKeepAlive) // Try to reestablish connection.
      {
         http_closeConnection();
-        if (!http_open(m_state.url, m_state.postDataSize, m_state.reload, m_state.offset) )
+        if ( !http_open() )
 	   return false;
         gets(buffer, sizeof(buffer)-1);
      }
      if (eof())
      {
-        error( ERR_CONNECTION_BROKEN, m_state.url.host() );
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
   }
@@ -835,7 +889,10 @@ bool HTTPProtocol::readHeader()
 
     // if there was only a newline then continue
     if (!len)
+    {
+      kdebug( KDEBUG_INFO, 7103, "Got header (%d): --empty--", getpid());
       continue;
+    }
 
     kdebug( KDEBUG_INFO, 7103, "Got header (%d): \"%s\"", getpid(), buffer);
 
@@ -865,7 +922,7 @@ bool HTTPProtocol::readHeader()
 		
     // whoops.. we received a warning
     else if (strncasecmp(buffer, "Warning:", 8) == 0) {
-      error(ERR_WARNING, trimLead(buffer + 8));
+      warning(trimLead(buffer + 8));
     }
     else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
       m_bCachedWrite = false; // Don't put in cache
@@ -887,10 +944,12 @@ bool HTTPProtocol::readHeader()
       if (strncmp(buffer + 9, "401", 3) == 0) {
 	unauthorized = true;
       } else if (buffer[9] == '4' || buffer[9] == '5') {
+#if 0
+#warning To be fixed! error terminates the job!
 	// Let's first send an error message
 	// this will be moved to slotErrorPage(), when it will be written
-	error(ERR_ACCESS_DENIED, m_state.url.url());
-
+	error(ERR_ACCESS_DENIED, m_state.hostname);
+#endif
 	// Tell that we will only get an error page here.
 	errorPage();
 
@@ -927,7 +986,7 @@ bool HTTPProtocol::readHeader()
       {
 	// 301 Moved permanently
         // 307 Temporary Redirect
-        if (m_state.postDataSize)
+        if (m_request.method == HTTP_POST)
         {
            errorPage();	
            noRedirect = true;
@@ -938,8 +997,11 @@ bool HTTPProtocol::readHeader()
       {
 	// 302 Found
         // 303 See Other
-        m_state.postDataSize = 0; // Force a GET!
-        m_bCachedWrite = false; // Don't put in cache
+        if (m_request.method != HTTP_HEAD)
+        {
+           m_request.method = HTTP_GET; // Force a GET!
+           m_bCachedWrite = false; // Don't put in cache
+        }
       }
     }
 
@@ -1012,7 +1074,7 @@ bool HTTPProtocol::readHeader()
   if (!cookieStr.isEmpty())
   {
      // Give cookies to the cookiejar.
-     addCookies( m_state.url.url(), cookieStr );
+     addCookies( m_request.url.url(), cookieStr );
   }
 
   // we need to reread the header if we got a '100 Continue'
@@ -1021,21 +1083,15 @@ bool HTTPProtocol::readHeader()
   // we need to try to login again if we failed earlier
   else if (unauthorized) {
     http_closeConnection();
-    QString user = m_state.url.user();
-    QString pass = m_state.url.pass();
     if (m_strRealm.isEmpty())
-      m_strRealm = m_state.url.host();
+      m_strRealm = m_state.hostname;
 
-    if (!open_PassDlg(m_strRealm, user, pass)) {
-      error(ERR_ACCESS_DENIED, m_state.url.url());
+    if (!open_PassDlg(m_strRealm, m_request.user, m_request.passwd)) {
+      error(ERR_ACCESS_DENIED, m_state.hostname);
       return false;
     }
 
-    KURL u(m_state.url);
-    u.setUser(user);
-    u.setPass(pass);
-
-    if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+    if ( !http_open())
       return false;
 
     return readHeader();
@@ -1043,23 +1099,31 @@ bool HTTPProtocol::readHeader()
   // We need to do a redirect
   else if (!locationStr.isEmpty() && !noRedirect)
   {
+#if 0
     // WABA:
     // We either need to close the connection or read the rest of the contents!
     // Closing the connection is bad for performance.
     // We really should read the contents here!
     http_closeConnection();
-    KURL u(m_state.url, locationStr);
+    KURL u(m_request.url, locationStr);
     redirection(u.url());
 
-    if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+    if ( !http_open() )
       return false;
 
     return readHeader();
+#else
+    KURL u(m_request.url, locationStr);
+    redirection(u.url());
+#endif
   }
 
   // FINALLY, let the world know what kind of data we are getting
   // and that we do indeed have a header
   mimeType(m_strMimeType);
+
+  if (m_request.method == HTTP_HEAD)
+     return true;
 
   // Do we want to cache this request?
   if (m_bCachedWrite)
@@ -1069,10 +1133,11 @@ bool HTTPProtocol::readHeader()
      if (!m_fcache)
         m_bCachedWrite = false; // Error creating cache entry.
   }
+
   if (m_bCachedWrite)
-    kdebug( KDEBUG_INFO, 7103, "Cache, adding \"%s\"", m_state.url.url().ascii());
+    kdebug( KDEBUG_INFO, 7103, "Cache, adding \"%s\"", m_request.url.url().ascii());
   else
-    kdebug( KDEBUG_INFO, 7103, "Cache, not adding \"%s\"", m_state.url.url().ascii());
+    kdebug( KDEBUG_INFO, 7103, "Cache, not adding \"%s\"", m_request.url.url().ascii());
 
   return true;
 }
@@ -1099,28 +1164,6 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     abort();
   }
 }
-
-
-bool HTTPProtocol::isValidProtocol (const char *p)
-{
-  if (strcasecmp(p, "https")==0) // Secure HTTP
-    return true;
-  if (strcasecmp(p, "httpf")==0) // Try to use WebDAV
-    return true;
-  if (strcasecmp(p, "http")==0)  // Standard HTTP
-    return true;
-  return false;
-}
-
-
-bool HTTPProtocol::isValidProtocol (KURL *u)
-{
-  if (u)
-    return isValidProtocol(u->protocol());
-  else
-    return false;
-}
-
 
 void HTTPProtocol::configAuth(const char *p, bool b)
 {
@@ -1168,6 +1211,46 @@ void HTTPProtocol::configAuth(const char *p, bool b)
   }
 }
 
+bool HTTPProtocol::sendBody()
+{
+  QList<QByteArray> bufferList;
+  int length = 0;
+
+  int result;
+  // Loop until we got 'dataEnd'
+  do
+  {
+     QByteArray *buffer = new QByteArray();
+     dataReq(); // Request for data
+     result = readData( *buffer );
+     if (result > 0)
+     {
+        bufferList.append(buffer);
+        length += result;
+     }
+   }
+   while ( result > 0 );
+
+   if ( result != 0)
+   {
+     error( ERR_ABORTED, m_request.hostname );
+     return false;
+   }
+
+   char c_buffer[64];
+   QString header = "Content-Length: ";
+   memset(c_buffer, 0, 64);
+   sprintf(c_buffer, "%i\r\n", length);
+   header += c_buffer;
+   header += "\r\n"; /* end header */
+
+   QByteArray *buffer;
+   while ( (buffer = bufferList.take(0)))
+   {
+      write(buffer->data(), buffer->size());
+   }
+   return true;
+}
 
 void HTTPProtocol::http_close()
 {
@@ -1197,11 +1280,15 @@ void HTTPProtocol::http_closeConnection()
     fclose( m_fsocket );
   m_fsocket = 0;
   if ( m_sock )
-    close( m_sock );
+    ::close( m_sock );
   m_sock = 0;
 }
 
-
+#if 1
+#warning To be removed ?
+// David: No, to be implemented as stat() - it's ok to return
+// only the size if that's all kio_http can guess.
+#else
 void HTTPProtocol::slotGetSize(const char *_url)
 {
   KURL usrc(_url);
@@ -1233,7 +1320,7 @@ void HTTPProtocol::slotGetSize(const char *_url)
   m_cmd = CMD_NONE;
   return;
 }
-
+#endif
 
 const char *HTTPProtocol::getUserAgentString ()
 {
@@ -1252,114 +1339,195 @@ const char *HTTPProtocol::getUserAgentString ()
   return strdup(user_agent.ascii());
 }
 
-
-/**
- * This is one of the "big" functions in an ioslave -- slotGet() is
- * responsible for "getting" data from the remote server.  In the case
- * of HTTP, that means that this function will get called for the vast
- * majority of requests.  Pretty much the only major request that isn't
- * serviced through this function is the POST requests (handled by
- * slotPut).  This is called in response to the client sending a
- * KIOJob::get(const char* _url)
- *
- * The basic procedure is *very* simple now with a lot of the actual work
- * being done elsewhere:
- *
- * 1) Make sure that this URL is valid
- * 2) Let the world know that we are doing a Get
- * 3) Start the process going with an http_open()
- * 4) Read the header
- * 5) Call slotDataEnd to get the data
- * 6) Close the connection
- */
-void HTTPProtocol::slotGet( const char *_url )
+void HTTPProtocol::openConnection(const QString& host, int port, const QString& user, const QString& pass)
 {
-  // transform this URL into a KURL for easy manipulating
-  KURL usrc(_url);
+  m_request.hostname = host;
 
-  // make sure it is a "good" URL in more ways than one
-  if (usrc.isMalformed()) {
-    error(ERR_MALFORMED_URL, strdup(_url));
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  if (!isValidProtocol(&usrc)) {
-    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  m_cmd = CMD_GET;
-
-  m_bIgnoreErrors = false;
-  if (http_open(usrc, 0, false)) {
-    if ( readHeader() )
-      slotDataEnd();
-
-    http_close();
-    finished();
-  }
-
-  m_cmd = CMD_NONE;
-}
-
-
-/**
- * This is one of the other "big" functions in an ioslave -- slotPut()
- * is responsible for those requests where data needs to be sent or "put"
- * on the remote server.  In the case of HTTP, this means (mostly) POST
- * requests.  It's possible that WebDAV requests will also start from
- * here later.. but that's not the case now. This is called in response
- * to the client sending a KIOJob::put(...)
- *
- * 1) Make sure that this URL is valid
- * 2) Let the world know that we are doing a Put
- * 3) Start the process going with an http_open()
- * 4a)If we have something to post then call ready immediately to get
-      the response
- * 4b)Otherwise we read the header
- * 5) Call slotDataEnd to get the content data
- * 6) Close the connection
- */
-void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
-			   bool /*_overwrite*/,
-                           bool /*_resume*/, int _len)
-{
-  // transform this URL into a KURL for easy manipulating
-  KURL usrc(_url);
-
-  // make sure it is a "good" URL in more ways than one
-  if (usrc.isMalformed()) {
-    error(ERR_MALFORMED_URL, strdup(_url));
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  if (!isValidProtocol(&usrc)) {
-    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  // let's not be shy about our intentions... besides, we'll
-  // need this later
-  m_cmd = CMD_PUT;
-
-  m_bIgnoreErrors = false;
-  if (http_open(usrc, _len, false)) {
-
-    if ( _len > 0 )
-      ready();
-    else if ( readHeader() )
-      {
-	slotDataEnd();
-        http_close();
-        finished();
-	m_cmd = CMD_NONE;
+  // try to ensure that the port is something reasonable
+  if ( port == 0 ) {
+#ifdef DO_SSL
+    if (m_protocol=="https") {
+      struct servent *sent = getservbyname("https", "tcp");
+      if (sent) {
+        port = ntohs(sent->s_port);
+      } else
+        port = DEFAULT_HTTPS_PORT;
+    } else
+#endif
+      if ( (m_protocol=="http") || (m_protocol == "httpf") ) {
+        struct servent *sent = getservbyname("http", "tcp");
+	if (sent) {
+	  port = ntohs(sent->s_port);
+	} else
+	  port = DEFAULT_HTTP_PORT;
+      } else {
+	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data()); 
+	port = 80;
       }
   }
+  m_request.port = port;
+  m_request.user = user;
+  m_request.passwd = pass;
+  m_request.do_proxy = m_bUseProxy;
 }
+
+void HTTPProtocol::closeConnection( )
+{
+  m_request.hostname = QString::null;
+  m_request.port = 0;
+  m_request.user = QString::null;
+  m_request.passwd = QString::null;
+  m_request.do_proxy = QString::null;
+  http_closeConnection();
+}
+
+
+void HTTPProtocol::buildURL()
+{
+  m_request.url = KURL();
+  m_request.url.setProtocol( m_protocol);
+  m_request.url.setUser( m_request.user );
+  m_request.url.setPass( m_request.passwd );
+  m_request.url.setHost( m_request.hostname );
+  m_request.url.setPort( m_request.port );
+  m_request.url.setPath( m_request.path );
+  m_request.url.setQuery( m_request.query );
+}
+
+void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
+{
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "http GET: No host specified!");
+
+  m_request.method = HTTP_GET;
+  m_request.path = path;
+  m_request.query = query;
+  m_request.reload = reload;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  buildURL();
+
+  ready();
+
+  if (!http_open())
+     return;
+  
+  if (!readHeader())
+     return;
+
+  if (!readBody())
+     return;
+
+  http_close();
+  finished();
+}
+
+void HTTPProtocol::put( const QString& path, int, bool, bool)
+{
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "http PUT: No host specified!");
+
+  m_request.method = HTTP_PUT;
+  m_request.path = path;
+  m_request.query = QString::null;
+  m_request.reload = true;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  buildURL();
+
+  ready();
+
+  if (!http_open())
+     return;
+  
+  if (!readHeader())
+     return;
+
+  if (!readBody())
+     return;
+
+  http_close();
+  finished();
+}
+
+void HTTPProtocol::post( const QString& path, const QString& query)
+{
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "http POST: No host specified!");
+
+  m_request.method = HTTP_POST;
+  m_request.path = path;
+  m_request.query = query;
+  m_request.reload = true;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  buildURL();
+
+  ready();
+
+  if (!http_open())
+     return;
+  
+  if (!readHeader())
+     return;
+
+  if (!readBody())
+     return;
+
+  http_close();
+  finished();
+}
+
+void HTTPProtocol::mimetype( const QString& path )
+{
+  kdebug( KDEBUG_INFO, 7103, "http: mimetype(%s)", path.ascii());
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
+
+  m_request.method = HTTP_HEAD;
+  m_request.path = path;
+  m_request.query = QString::null;
+  m_request.reload = false;
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  buildURL();
+
+  ready();
+
+  if (!http_open())
+     return;
+  
+  if (!readHeader())
+     return;
+
+  kdebug( KDEBUG_INFO, 7103, "http: mimetype = %s",  m_strMimeType.ascii());
+
+  http_close();
+  finished();
+}
+
+void HTTPProtocol::special( const QByteArray &data)
+{
+    int tmp;
+    QDataStream stream(data, IO_ReadOnly);
+
+    stream >> tmp;
+    switch (tmp) {
+    case 1: // HTTP POST
+      {
+	QString path;
+	QString query;
+	stream >> path >> query;
+	post( path, query );
+      }
+      break;
+   default:
+       assert(0);
+   }
+}
+   
+
+
 
 void HTTPProtocol::decodeGzip()
 {
@@ -1405,25 +1573,30 @@ void HTTPProtocol::decodeGzip()
 }
 
 
-size_t HTTPProtocol::sendData( HTTPIOJob *job )
+size_t HTTPProtocol::sendData( )
 {
   // This was rendered necesary b/c
   // the IPC stuff can't handle
   // chunks much larger than 2048.
-
-  KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
   size_t sent=0;
   size_t bufferSize = MAX_IPC_SIZE;
   size_t sz = big_buffer.size();
   processedSize(sz);
   totalSize(sz);
+  QByteArray array;
   while (sent+bufferSize < sz) {
-    ioJob->data(big_buffer.data()+sent, bufferSize);
+    array.setRawData( big_buffer.data()+sent, bufferSize);
+    data( array );
+    array.resetRawData( big_buffer.data()+sent, bufferSize);
     sent+=bufferSize;
   }
   if (sent < sz)
-    ioJob->data(big_buffer.data()+sent, (sz-sent));
+  {
+    array.setRawData( big_buffer.data()+sent, sz-sent);
+    data( array );
+    array.resetRawData( big_buffer.data()+sent, sz-sent);
+  }
 
   if (m_bCachedWrite &&  m_fcache)
   {
@@ -1431,354 +1604,8 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
      closeCacheEntry();
   }
 
-  ioJob->dataEnd();
-  m_cmd = CMD_NONE;
+  data( QByteArray() );
   return sz;
-}
-
-
-void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
-{
-  QStringList lst;
-  lst.append( _source );
-
-  slotCopy( lst, _dest);
-}
-
-
-void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
-{
-  //  IOProtocol::slotCopy(_source, _dest);
-
-  fflush(stderr);
-
-  KURL udest( _dest );
-  if ( udest.isMalformed() ) {
-    error( ERR_MALFORMED_URL, _dest );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  if ( KURL::split( _dest ).count() != 1 )
-    {
-      error( ERR_NOT_FILTER_PROTOCOL, "http" );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-  QString exec = KProtocolManager::self().executable( udest.protocol() );
-
-  if ( exec.isEmpty() ) {
-    error( ERR_UNSUPPORTED_PROTOCOL, udest.protocol() );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  // Is the right most protocol a filesystem protocol ?
-  if ( KProtocolManager::self().outputType( udest.protocol() ) != KProtocolManager::T_FILESYSTEM ) {
-    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, udest.protocol() );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  m_cmd = CMD_COPY;
-
-  KIOSlave slave( exec );
-  if ( !slave.isRunning() ) {
-    error( ERR_CANNOT_LAUNCH_PROCESS, exec );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  HTTPIOJob job( &slave, this );
-
-  /*****
-   * Copy files
-   *****/
-
-  bool overwrite_all = false;
-  bool auto_skip = false;
-  bool resume_all = false;
-
-  totalDirs( 0 );
-  totalFiles( _source.count() );
-
-  m_bIgnoreJobErrors = true;
-
-  QStringList::Iterator fit = _source.begin();
-  for( ; fit != _source.end(); fit++ ) {
-    bool overwrite = false;
-    bool skip_copying = false;
-    bool resume = false;
-    unsigned long offset = 0;
-
-    KURL u1( *fit );
-    if ( u1.isMalformed() ) {
-      error( ERR_MALFORMED_URL, *fit );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-    if (!isValidProtocol(&u1)) {
-      error( ERR_INTERNAL, "kio_http got non http/https/httpf protocol as source in copy command" );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-    KURL ud( udest );
-
-    if ( u1.filename().isEmpty() )
-      ud.addPath( "index.html" );
-
-    if ( ud.filename(false).isEmpty() ) {
-      ud.addPath( u1.filename() );
-    }
-
-    QString d = ud.url();
-
-    // Repeat until we got no error
-    do {
-      job.clearError();
-
-      m_bIgnoreErrors = true;
-      kdebug( KDEBUG_INFO, 7103, "kio_http : calling http_open (%s:%d)",__FILE__,__LINE__);
-      if ( !http_open( u1, 0, false, offset ) ) {
-	m_bIgnoreErrors = false;
-	/* if ( !m_bGUI )
-	   {
-	   http_close();
-	   releaseError();
-	   m_cmd = CMD_NONE;
-	   return;
-	   } */
-	
-	QString tmp = "Could not read\n";
-	tmp += *fit;
-
-	QStringList::Iterator tmpit = fit;
-	tmpit++;
-	if( tmpit == _source.end() ) {
-	  open_CriticalDlg( "Error", tmp.latin1(), "Cancel" );
-	  clearError();
-	  error( ERR_USER_CANCELED, "" );
-	  m_cmd = CMD_NONE;
-	  return;
-	}
-	
-	if ( !open_CriticalDlg( "Error", tmp.latin1(), "Continue", "Cancel" ) ) {
-	  clearError();
-	  error( ERR_USER_CANCELED, "" );
-	  m_cmd = CMD_NONE;
-	  return;
-	}
-	else {
-	  clearError();
-	  continue;
-	}
-      }
-      else
-	m_bIgnoreErrors = false;
-
-      if ( readHeader() )
-	{
-	  // This is a hack, since total size should be the size of all files together
-	  // while we transmit only the size of the current file here.
-	  //	  totalSize( m_iSize + offset);
-
-	  canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
-
-	  copyingFile( *fit, d );
-
-	  job.put( d, -1, overwrite_all || overwrite,
-		   resume_all || resume, m_iSize + offset );
-
-	  while( !job.isReady() && !job.hasFinished() )
-	    job.dispatch();
-
-	  // Did we have an error ?
-	  if ( job.hasError() ) {
-            http_closeConnection();
-	    int currentError = job.errorId();
-	
-	    kdebug( KDEBUG_INFO, 7103, "kio_http : ################# COULD NOT PUT %d",currentError);
-	    if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
-	      // Should we skip automatically ?
-	      if ( auto_skip ) {
-		job.clearError();
-		skip_copying = true;
-		continue;
-	      }
-	      QString tmp2 = ud.url();
-	      SkipDlg_Result r;
-	      r = open_SkipDlg( tmp2, ( _source.count() > 1 ) );
-	      if ( r == S_CANCEL ) {
-		error( ERR_USER_CANCELED, "" );
-		m_cmd = CMD_NONE;
-		return;
-	      } else if ( r == S_SKIP ) {
-		// Clear the error => The current command is not repeated => skipped
-		job.clearError();
-		skip_copying = true;
-		continue;
-	      } else if ( r == S_AUTO_SKIP ) {
-		// Clear the error => The current command is not repeated => skipped
-		job.clearError();
-		skip_copying = true;
-		continue;
-	      } else
-		assert( 0 );
-	    }
-	    // Can we prompt the user and ask for a solution ?
-	    else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
-		      currentError == ERR_DOES_ALREADY_EXIST_FULL ) {
-	      // Should we skip automatically ?
-	      if ( auto_skip ) {
-		job.clearError();
-		continue;
-	      }
-	
-	      RenameDlg_Result r;
-	      QString n;
-	
-	      if ( KProtocolManager::self().autoResume() && m_bCanResume &&
-		   currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
-		r = R_RESUME_ALL;
-	      }
-	      else {
-		RenameDlg_Mode m;
-		
-		// ask for resume only if transfer can be resumed and if it is not
-		// already fully downloaded
-		if ( _source.count() > 1 ) {
-		  if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
-		    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE | M_RESUME);
-		  else
-		    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE);
-		} else {
-		  if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
-		    m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE | M_RESUME);
-		  else
-		    m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
-		}
-		
-		QString tmp2 = ud.url();
-		r = open_RenameDlg( *fit, tmp2, m, true, n );
-	      }
-	      if ( r == R_CANCEL ) {
-		error( ERR_USER_CANCELED, "" );
-		m_cmd = CMD_NONE;
-		return;
-	      } else if ( r == R_RENAME ) {
-		KURL u( n );
-		// The Dialog should have checked this.
-		if ( u.isMalformed() )
-		  assert( "The URL is malformed, something fucked up, you should never see this!" );
-
-		renamed( u.path( -1 ) ); // emit signal
-
-		// Change the destination name of the current file
-		// 	    l = lst;
-		// 	    l.getLast()->addPath( filename.c_str() );
-		
-		// 	    list<KURL>::iterator it = l.begin();
-		// 	    for( ; it != l.end(); it++ )
-		// 	      d += it->url();
-		
-		d = u.path();
-		// Dont clear error => we will repeat the current command
-	      } else if ( r == R_SKIP ) {
-		// Clear the error => The current command is not repeated => skipped
-		job.clearError();
-	      } else if ( r == R_AUTO_SKIP ) {
-		// Clear the error => The current command is not repeated => skipped
-		job.clearError();
-		auto_skip = true;
-	      } else if ( r == R_OVERWRITE ) {
-		overwrite = true;
-		// Dont clear error => we will repeat the current command
-	      } else if ( r == R_OVERWRITE_ALL ) {
-		overwrite_all = true;
-		// Dont clear error => we will repeat the current command
-	      } else if ( r == R_RESUME ) {
-		resume = true;
-		offset = getOffset( ud.url() );
-		// Dont clear error => we will repeat the current command
-	      } else if ( r == R_RESUME_ALL ) {
-		resume_all = true;
-		offset = getOffset( ud.url() );
-		// Dont clear error => we will repeat the current command
-	      } else
-		assert( "Unhandled command!" );
-	    }
-	    // No need to ask the user, so raise an error and finish
-	    else {
-	      error( currentError, job.errorText() );
-	      m_cmd = CMD_NONE;
-	      return;
-	    }
-	  }
-	}
-        else
-        {
-           kdebug( KDEBUG_INFO, 7103, "kio_http : error reading header");
-        }
-    }
-    while( job.hasError() );
-
-    if ( skip_copying )
-      continue;
-
-    slotDataEnd( &job );
-
-    job.dataEnd();
-    http_close();
-
-    while( !job.hasFinished() )
-      job.dispatch();
-    //	  finished();
-  }
-
-  finished();
-  m_cmd = CMD_NONE;
-}
-
-
-/**
- * This function is called in response to a client KIOJob::data(..)
- * request.  In practice, this is during a client "put" event.  The
- * procedure is like:
- *
- * 1) Client sends KIOJob::put(..)
- * 2) HTTPProtocol::slotPut(...) gets called and, in the process,
- *    calls HTTPProtocol::http_open(...).
- * 3) HTTPProtocol::http_open(...) calls IOJob::ready()
- * 4) The client's slotReady() is called.  This function will execute
- *    KIOJob::data(..) with the data to send to the server
- * 5) This function is called with that data.  It sends it to the
- *    remote server.
- */
-void HTTPProtocol::slotData(void *_p, int _len)
-{
-  // this *should* be for a PUT method.  make sure
-
-  if (m_cmd != CMD_PUT) {
-    abort();
-    return;
-  }
-
-  // good.  now send our data to the remote server
-  if (write(_p, _len) == -1) {
-    error(ERR_CONNECTION_BROKEN, m_state.url.host());
-    return;
-  }
-
-  if ( readHeader() ) {
-    slotDataEnd();
-  }
-
-  http_close();
-  finished();
-  m_cmd = CMD_NONE;
 }
 
 /**
@@ -1909,21 +1736,19 @@ int HTTPProtocol::readUnlimited()
  * (meaning that the client is done sending data) or by 'http_open()'
  * (if we are in the process of a Get request).
  */
-void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
+bool HTTPProtocol::readBody( )
 {
-  KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
-
+  QByteArray array;
 
   // Check if we need to decode the data.
   // If we are in copy mode the use only transfer decoding.
   bool decode = !m_qTransferEncodings.isEmpty() ||
-    ( !m_qContentEncodings.isEmpty() &&
-      m_cmd != CMD_COPY );
+                !m_qContentEncodings.isEmpty();
 
   bool useMD5 = !m_sContentMD5.isEmpty();
 
   // we are getting the following URL
-  gettingFile(m_state.url.url());
+  gettingFile(m_request.url.url());
 
   totalSize( m_iSize );
   // get the starting time.  this is used later to compute the transfer
@@ -1934,14 +1759,16 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 
   if (m_bCachedRead)
   {
+     char buffer[ MAX_IPC_SIZE ];
      // Jippie! It's already in the cache :-)
-     m_bufReceive.resize(MAX_IPC_SIZE);
      while (!feof(m_fcache) && !ferror(m_fcache))
      {
-        int nbytes = fread( m_bufReceive.data(), 1, MAX_IPC_SIZE, m_fcache);
+        int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_fcache);
         if (nbytes > 0)
         {
-          ioJob->data(m_bufReceive.data(), nbytes);
+          array.setRawData( buffer, nbytes);
+          data( array );
+          array.resetRawData( buffer, nbytes );
           sz += nbytes;
         }
      }
@@ -1954,9 +1781,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
      } else {
        speed(0);
      }
-
-     m_cmd = CMD_NONE;
-     return;
+     return true;
   }
 
 #ifdef DO_MD5
@@ -1967,6 +1792,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
     m_iBytesLeft = m_iSize;
   else
     m_iBytesLeft = 1;
+
 
   // this is the main incoming loop.  gather everything while we can...
   while (!eof()) {
@@ -1982,9 +1808,8 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
     // make sure that this wasn't an error, first
     if (bytesReceived == -1) {
       // erg.  oh well, log an error and bug out
-      error(ERR_CONNECTION_BROKEN, m_state.url.host());
-      m_cmd = CMD_NONE;
-      break;
+      error(ERR_CONNECTION_BROKEN, m_state.hostname);
+      return false;
     }
 
     // i guess that nbytes == 0 isn't an error.. but we certainly
@@ -1998,7 +1823,10 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
         }
 #endif
         // yep, let the world know that we have some data
-        ioJob->data(m_bufReceive.data(), bytesReceived);
+        array.setRawData( m_bufReceive.data(), bytesReceived );
+        data( array );
+        array.resetRawData( m_bufReceive.data(), bytesReceived );
+
         if (m_bCachedWrite && m_fcache)
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
         sz += bytesReceived;
@@ -2058,7 +1886,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 	decodeGzip();
       }
     }
-    sz = sendData(job);
+    sz = sendData();
   }
 
   // this block is all final MD5 stuff
@@ -2101,29 +1929,14 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   } else {
     speed(0);
   }
-
-  m_cmd = CMD_NONE;
+  return true;
 }
 
-void HTTPProtocol::jobError( int _errid, const char *_txt )
+void HTTPProtocol::error( int _err, const QString &_text )
 {
-  if ( !m_bIgnoreJobErrors )
-    error( _errid, _txt );
-}
-
-
-bool HTTPProtocol::error( int _err, const char *_txt )
-{
-  if ((_err != ERR_WARNING) && ( _err != ERR_CHECKSUM_MISMATCH))
-  {
-     http_closeConnection();
-  }
-  if ( m_bIgnoreErrors ) {
-    m_iSavedError = _err;
-    m_strSavedError = _txt;
-    return true;
-  } else
-    return KIOProtocol::error( _err, _txt );
+  m_bKeepAlive = false;
+  http_close();
+  return SlaveBase::error( _err, _text );
 }
 
 void
@@ -2178,7 +1991,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
 {
    const QChar seperator = '_';
 
-   CEF = m_state.url.path();
+   CEF = m_request.path;
 
    int p = CEF.find('/');
 
@@ -2188,7 +2001,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       p = CEF.find('/', p);
    }
 
-   QString host = m_state.url.host().lower();
+   QString host = m_state.hostname.lower();
    CEF = host + CEF + ':';
 
    QString dir = m_strCacheDir;
@@ -2208,7 +2021,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QCString u = m_state.url.url().ascii();
+   QCString u = m_request.url.url().ascii();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;
@@ -2324,7 +2137,7 @@ HTTPProtocol::closeCacheEntry()
    m_fcache = 0;
    if (result == 0)
    {
-      if (rename( filename.ascii(), m_state.cef.ascii()) == 0)
+      if (::rename( filename.ascii(), m_state.cef.ascii()) == 0)
       {
          kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: cache written correctly! (%s)", m_state.cef.ascii());
          return; // Success
@@ -2346,14 +2159,14 @@ HTTPProtocol::cleanCache()
 
    struct stat stat_buf;
 
-   int result = stat(cleanFile.ascii(), &stat_buf);
+   int result = ::stat(cleanFile.ascii(), &stat_buf);
    if (result == -1)
    {
       int fd = creat( cleanFile.ascii(), 0666);
       if (fd != -1)
       {
          doClean = true;
-         close(fd);
+         ::close(fd);
       }
    }
    else
@@ -2373,23 +2186,14 @@ HTTPProtocol::cleanCache()
    }
 }
 
-/*************************************
- *
- * HTTPIOJob
- *
- *************************************/
-
-
-HTTPIOJob::HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_HTTP ) : KIOJobBase( _conn )
-{
-  m_pHTTP = _HTTP;
-}
-
-
-void HTTPIOJob::slotError( int _errid, const char *_txt )
-{
-  KIOJobBase::slotError( _errid, _txt );
-
-  m_pHTTP->jobError( _errid, _txt );
-}
-
+extern "C" {
+    SlaveBase *init_http() {
+        return new HTTPProtocol(0, "http");
+    }
+    SlaveBase *init_httpf() {
+        return new HTTPProtocol(0, "httpf");
+    }
+    SlaveBase *init_https() {
+        return new HTTPProtocol(0, "https");
+    }
+}     

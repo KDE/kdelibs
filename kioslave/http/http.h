@@ -31,10 +31,10 @@
 #include <qstack.h>
 #include <qstring.h>
 
-#include <kio_interface.h>
-#include <kio_base.h>
-#include <kurl.h>
+#include <kio/global.h>
+#include <kio/slavebase.h>
 #include <ksock.h>
+#include <kurl.h>
 
 
 // Default ports.. you might want to change this if you're trying to dodge
@@ -48,45 +48,87 @@ class HTTPIOJob;
 class DCOPClient;
 
 
-typedef struct
-{
-	KURL  url;
-	int   postDataSize;
-	bool  reload;
-	unsigned long offset;
-	short unsigned int port;
-	bool  do_proxy;
-	QString cef; // Cache Entry File belonging to this URL.
-} HTTPState;
-
-class HTTPProtocol : public KIOProtocol
+class HTTPProtocol : public KIO::SlaveBase
 {
 public:
-  HTTPProtocol( KIOConnection *_conn );
+  HTTPProtocol( KIO::Connection *_conn, const QCString &protocol );
   virtual ~HTTPProtocol() { }
 
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_PROPFIND, HTTP_HEAD, HTTP_DELETE};
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, 
+                    HTTP_PROPFIND, HTTP_HEAD, HTTP_DELETE};
 
-  virtual void slotGet( const char *_url );
-  virtual void slotGetSize( const char *_url );
-  virtual void slotPut( const char *_url, int _mode, bool _overwrite,
-		                bool _resume, int _len );
-  virtual void slotCopy( QStringList& _source, const char *_dest );
-  virtual void slotCopy( const char *_source, const char *_dest );
-  
-  virtual void slotData(void *_p, int _len);
-  virtual void slotDataEnd( HTTPIOJob *job = 0 );
+  typedef struct
+  {
+        QString hostname;
+        short unsigned int port;
+        QString user;
+        QString passwd;
+	bool  do_proxy;
+	QString cef; // Cache Entry File belonging to this URL.
+  } HTTPState;
 
-  virtual bool error( int _err, const char *_txt );
+  typedef struct
+  {
+	QString hostname;
+	short unsigned int port;
+	QString user;
+	QString passwd;
+	QString path;
+	QString query;
+	HTTP_METHOD method;
+	bool  reload;
+	unsigned long offset;
+	bool do_proxy;
+	KURL url;
+  } HTTPRequest;
 
-  void jobError( int _errid, const char *_txt );
-  
-  KIOConnection* connection() { return KIOConnectionSignals::m_pConnection; }
+  /** 
+   * Fills in m_request.url from the rest of the request data.
+   */
+  void buildURL();
+
+  /**
+   * Opens a connection
+   * @param host
+   * @param port
+   * @param user
+   * @param pass
+   * Called directly by createSlave, this is why there is no equivalent in
+   * SlaveInterface, unlike the other methods.
+   */
+  virtual void openConnection(const QString& host, int port, const QString& user, const QString& pass);
+
+  /**
+   * Closes the connection (forced)
+   */
+  virtual void closeConnection();
+
+
+  virtual void get( const QString& path, const QString& query, bool reload );
+  virtual void put( const QString& path, int _mode,
+			bool _overwrite, bool _resume );
+  void post( const QString& path, const QString& query );
+
+  /**
+   * Special commands supported by this slave :
+   * 1 - HTTP POST
+   */
+  virtual void special( const QByteArray &data);
+
+  virtual void mimetype( const QString& path);
+
+#if 0
+  // TODO (replaces testDir and getSize)
+  virtual void stat( const QString& path );
+  virtual void del( const QString& path, bool isfile);
+#endif
 
 protected:
+
+  void error( int _errid, const QString &_text );
 
   int readChunked(); // Read a chunk
   int readLimited(); // Read maximum m_iSize bytes.
@@ -125,28 +167,22 @@ protected:
     */
   void addEncoding(QString, QStack<char> *);
 
-  bool isValidProtocol (const char *);
-  bool isValidProtocol (KURL *);
-
   void configAuth(const char *, bool);
 #ifdef DO_SSL
   void initSSL();
 #endif
 
-  size_t sendData( HTTPIOJob *job = 0 );
+  size_t sendData();
 
-  bool http_open( KURL &_url, int _post_data_len, bool _reload, unsigned long _offset = 0 );
+  bool http_open();
   void http_close(); // Close transfer
+
+  void http_openConnection(); // Open connection
   void http_closeConnection(); // Close conection
 
-  void clearError() { m_iSavedError = 0; }
-  void releaseError() {
-    if ( m_iSavedError )
-      KIOProtocol::error( m_iSavedError, m_strSavedError );
-    m_iSavedError = 0;
-  }
-
   bool readHeader();
+  bool sendBody();
+  bool readBody();
 
   /**
     * Return the proper UserAgent string.
@@ -206,11 +242,14 @@ protected:
   void cleanCache();
 
 protected: // Members
+  QCString m_protocol;
+  HTTPState m_state;
+  HTTPRequest m_request;
+
   bool m_bEOF;
   int m_cmd;
   int m_sock;
   FILE* m_fsocket;
-  HTTPState m_state;
   enum HTTP_REV m_HTTPrev;
   enum HTTP_PROTO m_proto;
 
@@ -249,12 +288,6 @@ protected: // Members
           m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
 
-  // Stuff to hold various error state information
-  int m_iSavedError;
-  QString m_strSavedError;
-  bool m_bIgnoreJobErrors,
-       m_bIgnoreErrors; 
-
   // Persistant connections
   bool m_bKeepAlive;
   
@@ -273,17 +306,6 @@ protected: // Members
   SSL *hand;
 #endif
 
-};
-
-class HTTPIOJob : public KIOJobBase
-{
-public:
-  HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_gzip );
-  
-  virtual void slotError( int _errid, const char *_txt );
-
-protected:
-  HTTPProtocol* m_pHTTP;
 };
 
 #endif
