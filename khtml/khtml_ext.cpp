@@ -85,13 +85,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "saveState!" << endl;
+  //kdDebug( 6050 ) << "saveState!" << endl;
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "restoreState!" << endl;
+  //kdDebug( 6050 ) << "restoreState!" << endl;
   m_part->restoreState( stream );
 }
 
@@ -376,7 +376,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
       QString engine = config.readEntry("DefaultSearchEngine");
-        
+
       // search text
       QString selectedText = khtml->selectedText();
       if ( selectedText.length()>18 ) {
@@ -747,7 +747,7 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
 }
 
 void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
-{ 
+{
   if (id == VIRTUAL_FIND_FRAME_PARENT)
   {
     FindFrameParentParams *param = static_cast<FindFrameParentParams*>(data);
