@@ -245,6 +245,7 @@ AC_OUTPUT(Makefile \
 	kstyles/pics/Makefile \
 	kparts/Makefile \
 	kparts/tests/Makefile \
+	kparts/tests/notepadplugins/Makefile \
 	interfaces/Makefile \
 	pics/Makefile \
 	pics/filesys/Makefile \
