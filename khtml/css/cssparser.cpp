@@ -306,14 +306,14 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
     kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 #endif
 
-    if (*curP == '#')
+    if (*curP == '#' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
         cs->attr = ATTR_ID;
         cs->match = CSSSelector::Exact;
         cs->value = DOMString( curP + 1, endP - curP -1 );
     }
-    else if (*curP == '.')
+    else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
         cs->attr = ATTR_CLASS;
@@ -332,7 +332,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
         QString tag;
         while (curP < endP)
         {
-            if (*curP =='#')
+            if (*curP =='#' && (curP < endP && !((*(curP+1)).isDigit())))
             {
                 tag = QString( startP, curP-startP );
                 cs->attr = ATTR_ID;
@@ -340,7 +340,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
                 cs->value = DOMString( curP + 1, endP - curP - 1);
                 break;
             }
-            else if (*curP == '.')
+            else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
             {
                 tag = QString( startP, curP - startP );
                 cs->attr = ATTR_CLASS;
