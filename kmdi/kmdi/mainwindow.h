@@ -159,8 +159,8 @@ class KMDI_EXPORT MainWindow : public KParts::DockMainWindow
     void setupGUIClient ();
 
   private slots:
-    void setActiveToolDock(KMDI::DockContainer*);
-    void removeFromActiveDockList(KMDI::DockContainer*);
+    void setActiveToolDock(DockContainer*);
+    void removeFromActiveDockList(DockContainer*);
 
   #define protected public
   signals:
