@@ -123,12 +123,11 @@ bool KTarBase::open( int mode )
         const char* p = buffer + 0x64;
         while( *p == ' ' ) ++p;
         int access = (int)strtol( p, &dummy, 8 );
-        if (isdir)
-          access |= S_IFDIR; // f*cking broken tar files
 
         // read user and group
         QString user( buffer + 0x109 );
         QString group( buffer + 0x129 );
+        // read symlink dest (if any)
         QString symlink(buffer + 0x9d );
 
         // read time
@@ -136,6 +135,17 @@ bool KTarBase::open( int mode )
         p = buffer + 0x88;
         while( *p == ' ' ) ++p;
         int time = (int)strtol( p, &dummy, 8 );
+
+        // read type flag
+        char typeflag = buffer[ 0x9c ];
+        // '0' for files, '1' hard link, '2' symlink, '5' for directory (and 'L' for longlink)
+        if ( typeflag == '1' )
+          isdir = true;
+        bool islink = ( typeflag == '1' || typeflag == '2' );
+        kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
+
+        if (isdir)
+          access |= S_IFDIR; // f*cking broken tar files
 
         KTarEntry* e;
         if ( isdir )
@@ -148,6 +158,13 @@ bool KTarBase::open( int mode )
           const char* p = buffer + 0x7c;
           while( *p == ' ' ) ++p;
           int size = (int)strtol( p, &dummy, 8 );
+
+          // Let's hack around hard links. Our classes don't support that, so make them symlinks
+          if ( typeflag == '1' )
+          {
+              size = nm.length(); // in any case, we don't want to skip the real size, hence this resetting of size
+              kdDebug() << "HARD LINK, setting size to " << size << endl;
+          }
 
           int rest = size % 0x200;
 
@@ -186,7 +203,10 @@ bool KTarBase::open( int mode )
         }
       }
       else
+      {
+        qDebug("Terminating. Read %d bytes, first one is %d", n, buffer[0]);
         ende = true;
+      }
     } while( !ende );
   }
 
