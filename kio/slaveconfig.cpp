@@ -105,6 +105,12 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    // Read stuff
    // Break host into domains
    QString domain = host;
+   if (!domain.contains('.'))
+   {
+      // Host without domain.
+      if (scp->configFile->hasGroup("<local>"))
+         readConfig(scp->configFile, "<local>", metaData);
+   }
    while (true)
    {
       if (scp->configFile->hasGroup(domain))
