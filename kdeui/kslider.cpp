@@ -8,6 +8,7 @@
 // 1.0 KSlider by Martin R. Jones
 // 1.1 All changes now by Christian Esken: sanity checks ( checkWidth() ).
 // 1.2 Implemented rangeChange()
+
 // 1.3 Reworked drawArrow(). For avoiding paint problems with some servers, I
 // am now painting the arrow with "precise" lines.
 

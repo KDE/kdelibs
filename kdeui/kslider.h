@@ -10,6 +10,7 @@
 #include <qrangect.h>
 #include <qwidget.h>
 
+
 /// Control for selecting a value from using a sliding pointer.
 /**
 KSlider is a control for selecting a value from using a sliding pointer.
