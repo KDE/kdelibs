@@ -1,11 +1,10 @@
 #include <kmacroexpander.h>
-#include <stdio.h>
+
 #include <kapplication.h>
-#include <stdlib.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kcharsets.h>
-#include <qtextcodec.h>
+
+#include <stdlib.h>
 
 bool check(QString txt, QString s, QString a, QString b)
 {
@@ -22,10 +21,39 @@ bool check(QString txt, QString s, QString a, QString b)
   return true;
 }
 
+class MyCExpander : public KCharMacroExpander {
+public:
+  MyCExpander() : KCharMacroExpander() {}
+protected:
+  bool expandMacro(QChar chr, QStringList &ret)
+  {
+    if (chr == 'm') {
+      ret = QString("expanded");
+      return true;
+    }
+    return false;
+  }
+};
+
+class MyWExpander : public KWordMacroExpander {
+public:
+  MyWExpander() : KWordMacroExpander() {}
+protected:
+  bool expandMacro(const QString &str, QStringList &ret)
+  {
+    if (str == "macro") {
+      ret = QString("expanded");
+      return true;
+    }
+    return false;
+  }
+};
+
 int main(int argc, char *argv[])
 {
-  KApplication app(argc,argv,"kmacroexpandertest",false,false);
-  QString s;
+  KCmdLineArgs::init(argc, argv, ":", "", "", "");
+  KApplication app(false,false);
+  QString s, s2;
 
   QMap<QChar,QStringList> map1;
   map1.insert('n', "Restaurant \"Chew It\"");
@@ -55,17 +83,11 @@ int main(int argc, char *argv[])
   s = "kedit --caption %n %f";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption 'Restaurant '\\''Chew It'\\''' 'filename.txt'");
 
-#if 0
   s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"\"'Restaurant '\\''Chew It'\\'''\"\" 'filename.txt'");
-#endif
+  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant 'Chew It'\" 'filename.txt'");
 
   map.replace('n', "Restaurant \"Chew It\"");
   s = "kedit --caption \"%n\" %f";
-  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'");
-
-  s = "dcop `dcop|grep konqueorr|head -n -1` default 'createNewWindow(QString)' %s || kfmclient exec %%s";
-  s = "kfmclient exec \\%s";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'");
 
   map.replace('n', "Restaurant $HOME");
@@ -95,6 +117,18 @@ int main(int argc, char *argv[])
   s = "Title: %foo-%file-%url-%name-%";
   check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n-filename.txt-http://www.kde.org/index.html-Restaurant \"Chew It\"-%");
 
-  printf("\nTest OK!\n");
+  MyCExpander mx1;
+  s = "subst %m but not %n equ %%";
+  s2 = s;
+  mx1.expandMacros(s2);
+  check( "MyCExpander::expandMacros", s, s2, "subst expanded but not %n equ %");
+
+  MyWExpander mx2;
+  s = "subst %macro but not %not equ %%";
+  s2 = s;
+  mx2.expandMacros(s2);
+  check( "MyWExpander::expandMacros", s, s2, "subst expanded but not %not equ %");
+
+  kdDebug() << endl << "Test OK!" << endl;
 }
 

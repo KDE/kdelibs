@@ -27,8 +27,8 @@
 #include <qmap.h>
 
 /**
- * Abstract base class for the worker classes behind the KMacroExpander namespace.
- * @internal
+ * Abstract base class for the worker classes behind the KMacroExpander namespace
+ * and the KCharMacroExpander and KWordMacroExpander classes.
  *
  * @since 3.1.3
  * @author Oswald Buddenhagen <ossi@kde.org>
@@ -136,6 +136,125 @@ protected:
 
 private:
     QChar escapechar;
+};
+
+/**
+ * Abstract base class for simple word macro substitutors. Use this instead of
+ * the functions in the KMacroExpander namespace if speculatively pre-filling
+ * the substitution map would be too expensive.
+ *
+ * A typical application:
+ *
+ * \code
+ * class MyClass {
+ * ...
+ *   private:
+ *     QString m_str;
+ * ...
+ *   friend class MyExpander;
+ * };
+ *
+ * class MyExpander : public KWordMacroExpander {
+ *   public:
+ *     MyExpander( MyClass *_that ) : KWordMacroExpander(), that( _that ) {}
+ *   protected:
+ *     virtual bool expandMacro( const QString &str, QStringList &ret );
+ *   private:
+ *     MyClass *that;
+ * };
+ *
+ * bool MyExpander::expandMacro( const QString &str, QStringList &ret )
+ * {
+ *   if (str == "macro") {
+ *     ret += complexOperation( that->m_str );
+ *     return true;
+ *   }
+ *   return false;
+ * }
+ *
+ * ... MyClass::...(...)
+ * {
+ *   QString str;
+ *   ...
+ *   MyExpander mx( this );
+ *   mx.expandMacrosShellQuote( str );
+ *   ...
+ * }
+ * \endcode
+ *
+ * Alternatively MyClass could inherit from KWordMacroExpander directly.
+ *
+ * @since 3.3
+ * @author Oswald Buddenhagen <ossi@kde.org>
+ */
+class KWordMacroExpander : public KMacroExpanderBase {
+
+public:
+    /**
+     * Constructor.
+     * @param c escape char indicating start of macros, or QChar::null for none
+     */
+    KWordMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
+
+protected:
+    /**
+     * \reimp
+     */
+    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
+
+    /**
+     * \reimp
+     */
+    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+
+    /**
+     * Return substitution list @p ret for string macro @p str.
+     * @param str the macro to expand
+     * @param ret return variable reference. It is guaranteed to be empty
+     *  when expandMacro is entered.
+     * @return @c true iff @p chr was a recognized macro name
+     */
+    virtual bool expandMacro( const QString &str, QStringList &ret ) = 0;
+};
+
+/**
+ * Abstract base class for single char macro substitutors. Use this instead of
+ * the functions in the KMacroExpander namespace if speculatively pre-filling
+ * the substitution map would be too expensive.
+ *
+ * See KWordMacroExpander for a sample application.
+ *
+ * @since 3.3
+ * @author Oswald Buddenhagen <ossi@kde.org>
+ */
+class KCharMacroExpander : public KMacroExpanderBase {
+
+public:
+    /**
+     * Constructor.
+     * @param c escape char indicating start of macros, or QChar::null for none
+     */
+    KCharMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
+
+protected:
+    /**
+     * \reimp
+     */
+    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
+
+    /**
+     * \reimp
+     */
+    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+
+    /**
+     * Return substitution list @p ret for single-character macro @p chr.
+     * @param chr the macro to expand
+     * @param ret return variable reference. It is guaranteed to be empty
+     *  when expandMacro is entered.
+     * @return @c true iff @p chr was a recognized macro name
+     */
+    virtual bool expandMacro( QChar chr, QStringList &ret ) = 0;
 };
 
 /**
