@@ -182,7 +182,7 @@ void CSSImportRuleImpl::init()
     CSSStyleSheetImpl *parentSheet = parentStyleSheet();
     if (!parentSheet->href().isNull()) {
       // use parent styleheet's URL as the base URL
-      absHref = KURL(parentSheet->href().string(),m_strHref.string()).url();
+      absHref = KURL(KURL( parentSheet->href().string() ),m_strHref.string()).url();
     }
 /*
     else {
@@ -196,7 +196,7 @@ void CSSImportRuleImpl::init()
     for ( parent = static_cast<StyleBaseImpl*>( this )->parent();
          parent;
          parent = parent->parent() )
-        if ( absHref == parent->baseURL() )
+        if ( absHref == parent->baseURL().url() )
             return;
 
     // ### pass correct charset here!!

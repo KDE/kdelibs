@@ -778,7 +778,7 @@ bool CSSParser::parseValue( int propId, bool important )
             DOMString uri = khtml::parseURL( domString( value->string ) );
             if ( !uri.isEmpty() ) {
                 parsedValue = new CSSImageValueImpl(
-                    DOMString(KURL( styleElement->baseURL().string(), uri.string()).url()),
+                    DOMString(KURL( styleElement->baseURL(), uri.string()).url()),
                     styleElement );
                 valueList->next();
 #ifdef CSS_DEBUG
@@ -1001,8 +1001,6 @@ bool CSSParser::parseValue( int propId, bool important )
 #ifdef CSS_DEBUG_BCKGR
         kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
 #endif
-        uint old_numParsed = numParsedProperties;
-
         // The CSS 2.1 specs require the browser to set all possible expanded
         // properties to their initial value before the right side is parsed
         addProperty( CSS_PROP_BACKGROUND_IMAGE,
@@ -1286,7 +1284,7 @@ bool CSSParser::parseContent( int propId, bool important )
             // url
             DOMString value = khtml::parseURL(domString(val->string));
             parsedValue = new CSSImageValueImpl(
-                DOMString(KURL( styleElement->baseURL().string(), value.string()).url() ), styleElement );
+                DOMString(KURL( styleElement->baseURL(), value.string()).url() ), styleElement );
 #ifdef CSS_DEBUG
             kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().string() << endl;
 #endif
