@@ -21,6 +21,7 @@
 #include <qstringlist.h>
 #include <ksockaddr.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <kstaticdeleter.h>
 
 class KSocksTable;
