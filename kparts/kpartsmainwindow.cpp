@@ -172,9 +172,11 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
     else if ( containerStateBuffer.size() > 0 )
     {
       QDataStream stream( containerStateBuffer, IO_ReadOnly );
-      Q_INT32 pos;
-      stream >> pos;
-      bar->setBarPos( (KToolBar::BarPosition)pos );
+      Q_INT32 i;
+      stream >> i;
+      bar->setBarPos( (KToolBar::BarPosition)i );
+      stream >> i;
+      bar->setIconText( (KToolBar::IconText)i );
     }
 
     bar->show();
@@ -202,7 +204,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
 QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
 {
   QByteArray stateBuff;
-  
+
   if ( !container->isWidgetType() )
   {
     if ( !container->inherits( "QAction" ) )
@@ -218,7 +220,7 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
   else if ( container->inherits( "KToolBar" ) )
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
-    stream << (int)((KToolBar *)container)->barPos();
+    stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
     d->m_toolBars.removeRef( (KToolBar *)container ); //will also delete the tb as autodelete is on
   }
   else if ( container->inherits( "KStatusBar" ) && d->m_statusBar )
@@ -237,7 +239,7 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
   }
   else
     updateRects();
-  
+
   return stateBuff;
 }
 
