@@ -3,6 +3,7 @@ Type=BMP
 Header=
 Name=BMP Image
 Name[hu]=BMP kép
+Name[pt_BR]=Imagem BMP
 Name[sv]=Bmp-bild
 Read=true
 Write=true
