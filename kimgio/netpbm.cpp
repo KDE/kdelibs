@@ -12,30 +12,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <qimage.h>
-
-#define CMDBUFLEN     4096
+#include <qfile.h>
+#include <kprocess.h>
+#include <ktempfile.h>
 
 //////
 // the real filter.
 //
 
-void import_graphic (char *filter, QImageIO *image)
+void import_graphic (const char *filter, QImageIO *image)
 {
-  char * tmpFileName;
   QImage myimage;
 
-  char cmdBuf [CMDBUFLEN];
+  KTempFile tmp;
+  tmp.close();
 
-  tmpFileName = tmpnam(NULL);
+  QString cmd = filter;
+  cmd += " ";
+  cmd += KShellProcess::quote(image->fileName());
+  cmd += " > ";
+  cmd += KShellProcess::quote(tmp.name());
 
-  sprintf (cmdBuf, "%s %s > %s", filter, image->fileName(), tmpFileName);
-//  printf (cmdBuf);
-//  fflush (stdout);
+  system (QFile::encodeName(cmd));
+  myimage.load (tmp.name());
 
-  system (cmdBuf);
-  myimage.load (tmpFileName);
-
-  unlink (tmpFileName);
+  tmp.unlink();
 
   image->setImage (myimage);
   image->setStatus (0);
