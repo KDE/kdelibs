@@ -169,7 +169,7 @@ KIconLoader::KIconLoader(const QString& _appname)
 
     // relying on LastGroup's value becomes dangerous as soon
     // as someone is changing KIcon's enum to be bases of 10 ;/
-    d->mpGroups = new KIconGroup[KIcon::LastGroup];
+    d->mpGroups = new KIconGroup[static_cast<int>(KIcon::LastGroup)];
 
     // these are the currently known groups and they have to match the order in
     // kicontheme.h
