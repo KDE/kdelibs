@@ -36,6 +36,13 @@ KMJob::KMJob(const KMJob& j)
 	copy(j);
 }
 
+KMJob& KMJob::operator=(const KMJob& j)
+{
+	init();
+	copy(j);
+	return *this;
+}
+
 void KMJob::init()
 {
 	m_ID = -1;

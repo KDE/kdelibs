@@ -56,6 +56,7 @@ public:
 	KMJob();
 	KMJob(const KMJob& j);
 
+	KMJob& operator=(const KMJob& j);
 	void copy(const KMJob& j);
 	QString pixmap();
 	QString stateString();
