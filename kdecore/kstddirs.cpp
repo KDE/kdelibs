@@ -9,6 +9,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <assert.h>
 #include <iostream.h>
 
@@ -295,11 +296,9 @@ QString KStandardDirs::kde_data_relative()
     return "share/apps/";
 }
 
-#warning Stephan: Harri, the new parameters are in place :)
-
 QString KStandardDirs::getSaveLocation(const QString& type,
-				       const QString&, 
-				       bool) const
+				       const QString& suffix, 
+				       bool create) const
 {
     QString local = QDir::homeDirPath() + "/.kde/";
     int length = local.length();
@@ -308,8 +307,18 @@ QString KStandardDirs::getSaveLocation(const QString& type,
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); it++) 
     {
-	if ((*it).left(length) == local)
-	    return *it;
+	if ((*it).left(length) == local) {
+	    // Check for existance of typed directory + suffix
+	    QString fullPath = *it + suffix;
+	    if (access(fullPath.data(), F_OK) == 0)
+		return fullPath;
+	    else if (create) {
+		// TODO: create requested dir
+	    } else {
+		debug("save location %s doesn't exist", fullPath.ascii());
+		return local;
+	    }
+	}
     }
     debug("couldn't find save location for type %s", type.ascii());
     return local;
