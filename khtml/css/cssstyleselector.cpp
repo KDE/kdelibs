@@ -2057,14 +2057,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         float size = 0;
         int minFontSize = e->getDocument()->view()->part()->settings()->minFontSize();
 
-        float toPix = 1.; // fallback
-//        if ( !khtml::printpainter )
-            toPix = paintDeviceMetrics->logicalDpiY()/72.;
-//        if ( !khtml::printpainter && toPix < 96./72. )
-        if (toPix  < 96./72.)
-            toPix = 96./72.;
+        float toPix = paintDeviceMetrics->logicalDpiY()/72.;
+        if (toPix  < 96./72.) toPix = 96./72.;
 
-        //qDebug("printpainter: %d toPix %5.3f", khtml::printpainter, toPix);
         QValueList<int> standardSizes = e->getDocument()->view()->part()->fontSizes();
         if(e->parentNode()) {
             oldSize = e->parentNode()->style()->font().pixelSize();

@@ -423,7 +423,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 else
                 {
                     // check relation: = / ~= / |=
-		    // CSS3: ^= / $= / *= 
+		    // CSS3: ^= / $= / *=
                     if(*(equal-1) == '~')
                     {
                         attr = QString( curP, equal - curP - 1 );
@@ -434,21 +434,21 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                         attr = QString( curP, equal - curP - 1 );
                         cs->match = CSSSelector::Hyphen;
                     }
-		    else if(*(equal-1) == '^')
-		    {
-		        attr = QString( curP, equal - curP - 1);
-			cs->match = CSSSelector::Begin;
-		    }
-		    else if(*(equal-1) == '$')
-		    {
-		        attr = QString( curP, equal - curP - 1);
-			cs->match = CSSSelector::End;
-		    }
-		    else if(*(equal-1) == '*')
-		    {
-		        attr = QString( curP, equal - curP - 1);
-			cs->match = CSSSelector::Contain;
-		    }
+                    else if(*(equal-1) == '^')
+                    {
+                        attr = QString( curP, equal - curP - 1);
+                        cs->match = CSSSelector::Begin;
+                    }
+                    else if(*(equal-1) == '$')
+                    {
+                        attr = QString( curP, equal - curP - 1);
+                        cs->match = CSSSelector::End;
+                    }
+                    else if(*(equal-1) == '*')
+                    {
+                        attr = QString( curP, equal - curP - 1);
+                        cs->match = CSSSelector::Contain;
+                    }
                     else
                     {
                         attr = QString(curP, equal - curP );

@@ -145,9 +145,7 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
 
     float size = pixelsize;
 
-    float toPix = 1.;
-    if ( !khtml::printpainter )
-        toPix = devMetrics->logicalDpiY()/72.;
+    float toPix = devMetrics->logicalDpiY()/72.;
 
     // ok, now some magic to get a nice unscaled font
     // ### all other font properties should be set before this one!!!!
