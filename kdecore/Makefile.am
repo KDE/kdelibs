@@ -54,7 +54,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	ksortablevaluelist.h kdebugclasses.h kclipboard.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
-libkdefakes_la_LDFLAGS = -version-info 5:0:1
+libkdefakes_la_LDFLAGS = -version-info 6:0:2
 libkdefakes_la_LIBADD  = $(LIBSOCKET)
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
@@ -89,7 +89,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel
 
-libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 5:0:1 -no-undefined
+libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la
 
 libkdecore_la_METASOURCES = AUTO

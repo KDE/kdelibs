@@ -27,7 +27,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
 			 kpmarginpage.cpp messagewindow.cpp posterpreview.cpp kpposterpage.cpp
 
-libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 5:0:1 -no-undefined
+libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 6:0:2 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
 libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) 
 libkdeprint_la_METASOURCES = AUTO

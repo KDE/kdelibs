@@ -9,7 +9,7 @@ libkab_la_SOURCES	= \
 	addressbook.cc \
 	qconfigDB.cc 
 
-libkab_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 5:0:1 -no-undefined
+libkab_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined
 libkab_la_LIBADD = ../kdeui/libkdeui.la
 
 libkab_la_METASOURCES = AUTO

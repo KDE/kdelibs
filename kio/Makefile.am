@@ -26,7 +26,7 @@ lib_LTLIBRARIES = libkio.la
 
 libkio_la_SOURCES = dummy.cpp
 
-libkio_la_LDFLAGS = -version-info 5:0:1 -no-undefined $(all_libraries) \
+libkio_la_LDFLAGS = -version-info 6:0:2 -no-undefined $(all_libraries) \
 	$(KDE_MT_LDFLAGS)
 libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la \
 	kio/libksycoca.la bookmarks/libkbookmarks.la kfile/libkfile.la \

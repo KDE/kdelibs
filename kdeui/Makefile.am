@@ -23,7 +23,7 @@ SUBDIRS = . tests
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/interfaces $(all_includes)
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 5:0:1
+libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
 # we should get this to work when libtool 1.3 is released
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 

@@ -4,7 +4,7 @@ INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
   -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes)
 
 lib_LTLIBRARIES   = libkabc.la
-libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 2:0:1 -module
+libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
 libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la
 
 libkabc_la_SOURCES = \
