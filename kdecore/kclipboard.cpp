@@ -128,12 +128,8 @@ void KClipboard::slotSelectionChanged()
 
     if ( s_sync )
     {
-        bool oldMode = clip->selectionModeEnabled();
-        clip->setSelectionMode( true );
-
-        setClipboard( new MimeSource( clip->data() ), Clipboard );
-
-        clip->setSelectionMode( oldMode );
+        setClipboard( new MimeSource( clip->data( QClipboard::Selection) ), 
+                      Clipboard );
     }
 }
 
@@ -147,12 +143,8 @@ void KClipboard::slotClipboardChanged()
 
     if ( s_implicitSelection || s_sync )
     {
-        bool oldMode = clip->selectionModeEnabled();
-        clip->setSelectionMode( false );
-
-        setClipboard( new MimeSource( clip->data() ), Selection );
-
-        clip->setSelectionMode( oldMode );
+        setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ), 
+                      Selection );
     }
 }
 
@@ -166,13 +158,11 @@ void KClipboard::setClipboard( QMimeSource *data, Mode mode )
 
     if ( mode == Clipboard )
     {
-        clip->setSelectionMode( false );
-        clip->setData( data );
+        clip->setData( data, QClipboard::Clipboard );
     }
     else if ( mode == Selection )
     {
-        clip->setSelectionMode( true );
-        clip->setData( data );
+        clip->setData( data, QClipboard::Selection );
     }
 
     s_blocked = false;
