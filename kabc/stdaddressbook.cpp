@@ -123,6 +123,8 @@ void StdAddressBook::init( bool onlyFastResources )
     resource->setFastResource( true );
 
     if ( !addResource( resource ) ) delete resource;
+
+    setStandardResource( resource );
   }
 
   load();

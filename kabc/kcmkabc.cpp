@@ -215,6 +215,7 @@ void ConfigPage::defaults()
 
   config->setGroup( "General" );
   config->writeEntry( "ResourceKeys", groups );
+  config->writeEntry( "Standard", key );
     
   config->setGroup( "Resource_" + key );
   config->writeEntry( "ResourceName", "Default" );
@@ -302,8 +303,8 @@ void ConfigPage::slotRemove()
     return;
 
   if ( confItem->standard() ) {
-    if ( KMessageBox::warningYesNo( this, i18n( "Do you really want to delete your standard resource?" ) ) == KMessageBox::Cancel )
-      return;
+    KMessageBox::error( this, i18n( "You can't remove your standard resource!. Please select a new standard resource first." ) );
+    return;
   }
 
   config->deleteGroup( "Resource_" + confItem->key );
