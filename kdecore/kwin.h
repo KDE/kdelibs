@@ -146,9 +146,9 @@ public:
      * the requested size.
      *
      * @param win the id of the window
-     * @param the desired width, or -1
-     * @param the desired height, or -1
-     * @param if true the icon will be scaled to the desired size. Otherwise the
+     * @param width the desired width, or -1
+     * @param height the desired height, or -1
+     * @param scale if true the icon will be scaled to the desired size. Otherwise the
      *        icon will not be modified.
      * @return the icon of the window
      */
@@ -246,7 +246,7 @@ public:
     /**
      * Convenience function to set the current desktop to @p desktop.
      * See @ref NETRootInfo.
-     * @param the number of the new desktop
+     * @param desktop the number of the new desktop
      */
     static void setCurrentDesktop( int desktop );
 

@@ -1,4 +1,4 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
    
@@ -57,17 +57,18 @@ class KTempFile
 public:
    /**
     * Creates a temporary file with the name:
-    *  <filePrefix><six letters><fileExtension>
+    *  \<filePrefix>\<six letters>\<fileExtension>
     *
     * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname"
     * The default @p fileExtension is ".tmp"
     * @param filePrefix the prefix of the file name, or QString::null
     *        for the default value
-    * @param the extension of the prefix, or QString::null for the 
+    * @param fileExtension the extension of the prefix, or QString::null for the
     *        default value
+    * @param mode the file permissions
     **/
-   KTempFile(QString filePrefix=QString::null, 
-             QString fileExtension=QString::null, 
+   KTempFile(QString filePrefix=QString::null,
+             QString fileExtension=QString::null,
              int mode = 0600 );
 
 
@@ -85,10 +86,10 @@ public:
    void setAutoDelete(bool autoDelete) { bAutoDelete = autoDelete; }
 
    /**
-    * Returns the status of the file based on errno. (see errno.h) 
+    * Returns the status of the file based on errno. (see errno.h)
     * 0 means OK.
     *
-    * You should check the status after object creation to check 
+    * You should check the status after object creation to check
     * whether a file could be created in the first place.
     *
     * You may check the status after closing the file to verify that

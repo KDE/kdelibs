@@ -89,7 +89,7 @@ namespace KDE
        * @param sa	the sockaddr structure containing the raw address
        * @param salen	the length of the sockaddr structure
        */
-      ResolverEntry(const struct sockaddr *sa, ksocklen_t salen, int socktype, 
+      ResolverEntry(const struct sockaddr *sa, ksocklen_t salen, int socktype,
 		    int protocol, const QString& canonName = QString::null,
 		    const QCString& encodedName = QCString());
 
@@ -173,7 +173,7 @@ namespace KDE
      *
      * A ResolverResults object is associated with a resolution, so, in addition
      * to the resolved elements, you can also retrieve information about the 
-     * resolution process itself, like the nodename that was resolved or an error 
+     * resolution process itself, like the nodename that was resolved or an error
      * code.
      *
      * Note Resolver also uses ResolverResults objects to indicate failure, so
@@ -328,7 +328,7 @@ namespace KDE
        * object:
        * @li Passive: resolve to a passive socket (i.e., one that can be used for
        *		binding to a local interface)
-       * @li CanonName: request that the canonical name for the given nodename 
+       * @li CanonName: request that the canonical name for the given nodename
        *		be found and recorded)
        * @li NoResolve: request that no external resolution be performed. The given
        *		nodename and servicename will be resolved locally only.
@@ -350,7 +350,7 @@ namespace KDE
        * @li NumericHost: don't try to resolve the host address to a text form.
        *		Instead, convert the address to its numeric textual representation.
        * @li NumericService: the same as NumericHost, but for the service name
-       * @li NodeNameOnly: returns the node name only (i.e., not the Fully 
+       * @li NodeNameOnly: returns the node name only (i.e., not the Fully
        *		Qualified Domain Name)
        * @li Datagram: in case of ambiguity in the service name, prefer the
        *		name associated with the datagram protocol
@@ -602,7 +602,7 @@ namespace KDE
        * @li neither name nor number: reset to default behaviour
        *
        * @param protonum		the protocol number we want
-       * @param protoname		the protocol name
+       * @param name		the protocol name
        */
       void setProtocol(int protonum, const char *name = 0L);
 
@@ -699,13 +699,13 @@ namespace KDE
        * name resolution. It resolves the given host and service names synchronously
        * and returns the results it found. It is equivalent to the following code:
        *
-       * <code>
+       * \code
        *   Resolver kres(host, service);
        *   kres.setFlags(flags);
        *   kres.setFamily(families)
        *   kres.start();
        *   return kres.results();
-       * </code>
+       * \endcode
        *
        * @param host		the nodename to resolve
        * @param service		the service to resolve
@@ -725,20 +725,20 @@ namespace KDE
        * @ref finished signal to the given slot and starts the resolution
        * asynchronously. It is more or less equivalent to the following code:
        *
-       * <code>
+       * \code
        *   Resolver* kres = new Resolver(host, service);
        *   QObject::connect(kres, SIGNAL(finished(ResolverResults)),
        *			  userObj, userSlot);
        *   kres->setFlags(flags);
        *   kres->setFamily(families);
        *   return kres->startAsync();
-       * </code>
+       * \endcode
        *
        * You should use it like this in your code:
-       * <code>
+       * \code
        *   Resolver::resolveAsync(myObj, SLOT(mySlot(KResolveResults)),
        *				 host, service);
-       * </code>
+       * \endcode
        *
        * @param userObj		the object whose slot @p userSlot we will connect
        * @param userSlot	the slot to which we'll connect
@@ -821,11 +821,11 @@ namespace KDE
        * It is, however, guaranteed that domains returned
        * by @ref domainToAscii will work. And the following is always true,
        * if the encoding is successful:
-       * <code>
+       * \code
        *    domainToUnicode(domainToAscii(domainname)) == domainname
-       * </code>
+       * \endcode
        *
-       * @param domain	the ACE-encoded domain name to be decoded
+       * @param asciiDomain	the ACE-encoded domain name to be decoded
        * @return the Unicode representation of the given domain name
        * if successful, the original string if not
        * @note ACE = ASCII-Compatible Encoding, i.e., 7-bit
@@ -835,7 +835,7 @@ namespace KDE
       /**
        * The same as above, but taking a QString argument.
        *
-       * @param domain	the ACE-encoded domain name to be decoded
+       * @param asciiDomain	the ACE-encoded domain name to be decoded
        * @return the Unicode representation of the given domain name
        * if successful, QString::null if not.
        */
@@ -926,7 +926,7 @@ namespace KDE
        *		name.
        */
       static QStrList serviceName(int port, const char *protoname);
- 
+
     protected:
 
       /**

@@ -69,7 +69,7 @@ public:
     /** Returns the nth word in the string if found
       * Returns a EMPTY (not null) string otherwise.
       * Note that the FIRST index is 0.
-      * @param the the string to search for the words
+      * @param text the string to search for the words
       * @param pos the position of the word to search
       * @return the word, or an empty string if not found
       */
@@ -83,7 +83,7 @@ public:
       * @li ":3" returns everything up to the fourth word
       *
       * If you grok python, you're set.
-      * @param the the string to search for the words
+      * @param text the string to search for the words
       * @param range the words to return (see description)
       * @return the words, or an empty string if not found
       */
@@ -91,7 +91,7 @@ public:
 
     /** Inserts a word into the string, and returns
       * a new string with the word included. the first
-      * index is zero (0). If there are not @p pos words in the original 
+      * index is zero (0). If there are not @p pos words in the original
       * string, the new word will be appended to the end.
       * @param text the original text
       * @param word the word to insert
@@ -102,7 +102,7 @@ public:
 
     /** Replaces a word in the string, and returns
       * a new string with the word included. the first
-      * index is zero (0). If there are not @p pos words in the original 
+      * index is zero (0). If there are not @p pos words in the original
       * string, the new word will be appended to the end.
       * @param text the original text
       * @param word the word to insert
@@ -170,7 +170,7 @@ public:
       */
     static QStringList    reverse( const QStringList &list );
 
-    /** Left-justifies a string and returns a string at least 'width' characters 
+    /** Left-justifies a string and returns a string at least 'width' characters
       * wide.
       * If the string is longer than the @p width, the original
       * string is returned. It is never truncated.
@@ -180,7 +180,7 @@ public:
       */
     static QString        ljust( const QString &text , uint width );
 
-    /** Right-justifies a string and returns a string at least 'width' characters 
+    /** Right-justifies a string and returns a string at least 'width' characters
       * wide.
       * If the string is longer than the @p width, the original
       * string is returned. It is never truncated.
@@ -190,7 +190,7 @@ public:
       */
     static QString        rjust( const QString &text , uint width );
 
-    /** Centers a string and returns a string at least 'width' characters 
+    /** Centers a string and returns a string at least 'width' characters
       * wide.
       * If the string is longer than the @p width, the original
       * string is returned. It is never truncated.
@@ -208,31 +208,31 @@ public:
      */
     static QString        lsqueeze( const QString & str, uint maxlen = 40 );
 
-    /** Substitute characters at the beginning of a string by "...". Similar to 
+    /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
      * the number of characters
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
-    static QString lEmSqueeze( const QString & name, 
-                               const QFontMetrics& fontMetrics, 
+    static QString lEmSqueeze( const QString & name,
+                               const QFontMetrics& fontMetrics,
                                uint maxlen = 30 );
 
-    /** Substitute characters at the beginning of a string by "...". Similar to 
+    /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum pixel length the modified string will have
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
+     * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
-    static QString lPixelSqueeze( const QString & name, 
-                                  const QFontMetrics& fontMetrics, 
+    static QString lPixelSqueeze( const QString & name,
+                                  const QFontMetrics& fontMetrics,
                                   uint maxPixels );
 
     /** Substitute characters at the middle of a string by "...".
@@ -243,31 +243,31 @@ public:
      */
     static QString        csqueeze( const QString & str, uint maxlen = 40 );
 
-    /** Substitute characters in the middle of a string by "...". Similar to 
+    /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
      * the number of characters
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
-    static QString cEmSqueeze( const QString & name, 
-                               const QFontMetrics& fontMetrics, 
+    static QString cEmSqueeze( const QString & name,
+                               const QFontMetrics& fontMetrics,
                                uint maxlen = 30 );
 
-    /** Substitute characters in the middle of a string by "...". Similar to 
+    /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum pixel length the modified string will have
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
+     * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
     static QString cPixelSqueeze( const QString & name,
-                                  const QFontMetrics& fontMetrics, 
+                                  const QFontMetrics& fontMetrics,
                                   uint maxPixels );
 
     /** Substitute characters at the end of a string by "...".
@@ -278,30 +278,30 @@ public:
      */
     static QString        rsqueeze( const QString & str, uint maxlen = 40 );
 
-    /** Substitute characters at the end of a string by "...". Similar to 
+    /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
      * the number of characters
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
-    static QString rEmSqueeze( const QString & name, 
-                               const QFontMetrics& fontMetrics, 
+    static QString rEmSqueeze( const QString & name,
+                               const QFontMetrics& fontMetrics,
                                uint maxlen = 30 );
 
-    /** Substitute characters at the end of a string by "...". Similar to 
+    /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
-     * @param str is the string to modify
-     * @param str is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum pixel length the modified string will have
+     * @param name is the string to modify
+     * @param fontMetrics is the font metrics to use to calculate character sizes
+     * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      * @since 3.2
      */
-    static QString rPixelSqueeze( const QString & name, 
+    static QString rPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
                                   uint maxPixels );
 
@@ -328,6 +328,7 @@ public:
      * </pre>
      *
      * @param sep is the string to use to delimit s.
+     * @param s is the input string
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
@@ -343,10 +344,11 @@ public:
      * Example:
      * <pre>
      * perlSplit(' ', "kparts reaches the parts other parts can't", 3)
-     * QStringList contains: "kparts", "reaches", "the pats other parts can't"
+     * QStringList contains: "kparts", "reaches", "the parts other parts can't"
      * </pre>
      *
      * @param sep is the character to use to delimit s.
+     * @param s is the input string
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
@@ -366,6 +368,7 @@ public:
      * </pre>
      *
      * @param sep is the regular expression to use to delimit s.
+     * @param s is the input string
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */

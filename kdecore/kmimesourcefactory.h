@@ -57,7 +57,7 @@ public:
    * the absolute one.
    *
    * To load an icon, prepend the @p category name before the @p icon name, in the style
-   * of <category>|<icon>.
+   * of \<category>|\<icon>.
    *
    * Example:
    * <pre> "<img src=\"user|ksysv_start\"/>", "<img src="\desktop|trash\">", ...

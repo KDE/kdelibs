@@ -156,9 +156,9 @@ public:
     **/
    int findColor(const QColor &color) const;
 
-   /** 
+   /**
     * Find color name by @p index.
-    * @param the index of the color
+    * @param index the index of the color
     * @return The name of the @p index -th color.
     * Note that not all palettes have named the colors. Null is
     * returned if the color does not exist or has no name.

@@ -523,7 +523,7 @@ public:
    *
    * @param pDateTime The date and time to be formated.
    * @param shortFormat using the short date format.
-   * @param includeSeconds using the short date format.
+   * @param includeSecs using the short date format.
    *
    * @return The date and time as a string
    */
@@ -893,7 +893,7 @@ public:
   /**
    * Changes the preferred page size when printing.
    *
-   * @param The new preferred page size in the format QPrinter::PageSize
+   * @param paperFormat the new preferred page size in the format QPrinter::PageSize
    */
   void setPageSize(int paperFormat);
 
@@ -1008,7 +1008,7 @@ public:
   static void setMainCatalogue(const char *catalogue);
 
   /**
-   * Finds localized resource in resourceDir( rtype ) + <lang> + fname.
+   * Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
    *
    * @param fname relative path to find
    * @param rtype resource type to use

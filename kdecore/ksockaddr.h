@@ -603,7 +603,7 @@ public:
 
   /**
    * Constructor from pathname.
-   * @param path	pathname
+   * @param pathname	pathname
    */
   KUnixSocketAddress(QCString pathname);
 

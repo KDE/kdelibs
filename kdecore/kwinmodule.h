@@ -71,7 +71,7 @@ public:
      * indexes of this list: Whenever you enter Qt's event loop in your
      * application, it may happen that entries are removed or added.
      * Your module should perhaps work on a copy of this list and verify a
-     * window with @ref hasWindow() before any operations.
+     * window with @ref hasWId() before any operations.
      *
      * Iteration over this list can be done easily with
      * <pre>
@@ -139,8 +139,8 @@ public:
      * Returns the workarea for the specified desktop, or the current
      * work area if no desktop has been specified. Excludes struts of
      * clients in the exclude List.
-     * 
-     * @param clients the list of clients whose struts will be excluded
+     *
+     * @param excludes the list of clients whose struts will be excluded
      * @param desktop the number of the desktop to check, -1 for the
      *        current desktop
      * @return the size and position of the desktop
@@ -194,10 +194,10 @@ signals:
     void windowRemoved(WId id);
 
     /**
-     * Hint that <Window> is active (= has focus) now.
+     * Hint that \<Window> is active (= has focus) now.
      * @param id the id of the window that is active
      */
-    void activeWindowChanged(WId);
+    void activeWindowChanged(WId id);
 
     /**
      * Desktops have been renamed.

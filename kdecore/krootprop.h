@@ -145,9 +145,9 @@ public:
   * @param rKey		The key to write.
   * @param rValue		The value to write.
   * @return The old value for this key. If this key did not exist,
-  *	  a null string is returned.	
+  *	  a null string is returned.
   *
-  **/				
+  **/
  QString writeEntry( const QString& rKey, const QString& rValue );
 
  /**
@@ -156,7 +156,7 @@ public:
   * @param rKey The key to write.
   * @param nValue The value to write.
   * @return The old value for this key. If this key did not
-  * exist, a null string is returned.	
+  * exist, a null string is returned.
   **/
  QString writeEntry( const QString& rKey, int nValue );
 
@@ -164,22 +164,22 @@ public:
   * Writes the (key/value) pair.
   * Same as above, but writes a font.
   * @param rKey The key to write.
-  * @param rValue The value to write.
+  * @param rFont The font to write.
   * @return The old value for this key. If this key did not
-  * exist, a null string is returned.	
+  * exist, a null string is returned.
   **/
   QString writeEntry( const QString& rKey, const QFont& rFont );
- 
+
   /**
    * Writes the (key/value) pair.
    * Same as above, but writes a color.
    * @param rKey The key to write.
-   * @param rValue The value to write.
+   * @param rColor The colour to write.
    * @return The old value for this key. If this key did not
-   *  exist, a null string is returned.	
+   *  exist, a null string is returned.
    **/
   QString writeEntry( const QString& rKey, const QColor& rColor );
-  
+
   /**
    * Removes an entry.
    * @param rKey The key to remove.
@@ -198,7 +198,7 @@ public:
    * Flushes the entry cache.
    * Writes back dirty configuration entries to the current property,
    * This is called automatically from the destructor.
-   **/	
+   **/
   void sync();
 };
 

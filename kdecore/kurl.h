@@ -32,7 +32,7 @@ class KURLPrivate;
  *
  * A prototypical URL looks like:
  * <pre>
- *   protocol:/user:password@hostname:port/path/to/file.ext#reference
+ *   protocol:/user:password\@hostname:port/path/to/file.ext#reference
  * </pre>
  *
  * KURL has some restrictions regarding the path
@@ -190,7 +190,7 @@ public:
   bool hasUser() const { return !m_strUser.isEmpty(); }
 
   /**
-   * Returns the decoded password (corresponding to @ref user()) included in the URL.
+   * Returns the decoded password (corresponding to \ref user()) included in the URL.
    * @return the password or QString::null if it does not exist
    **/
   QString pass() const { return m_strPass; }
@@ -261,8 +261,8 @@ public:
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged. If the URL has no path, then no '/' is added
    *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis@host" means something
-   *                  completely different than "ftp://weis@host/". So adding or stripping
+   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
+   *                  completely different than "ftp://weis\@host/". So adding or stripping
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    *
@@ -303,8 +303,8 @@ public:
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged. If the URL has no path, then no '/' is added
    *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis@host" means something
-   *                  completely different than "ftp://weis@host/". So adding or stripping
+   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
+   *                  completely different than "ftp://weis\@host/". So adding or stripping
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    */
@@ -334,8 +334,8 @@ public:
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged. If the URL has no path, then no '/' is added
    *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis@host" means something
-   *                  completely different than "ftp://weis@host/". So adding or stripping
+   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
+   *                  completely different than "ftp://weis\@host/". So adding or stripping
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    * @param _no_empty_path If set to true then an empty path is substituted by "/".

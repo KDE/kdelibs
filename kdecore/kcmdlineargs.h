@@ -54,7 +54,7 @@ class KCmdLineArgsPrivate;
  *  and application specific options.
  *
  *  This class is used in main() via the static method
- *  @ref init().
+ *  init().
  *
  *  A typical KDE application should look like this:
  *
@@ -108,29 +108,29 @@ class KCmdLineArgsPrivate;
  *
  *  options are defined as follow
  *
- *  <code>
+ *  \code
  *  static KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
- *     { "b <file>", I18N_NOOP("A short option which takes an argument."), 0 },
- *     { "c <speed>", I18N_NOOP("As above but with a default value."), "9600" },
+ *     { "b \<file>", I18N_NOOP("A short option which takes an argument."), 0 },
+ *     { "c \<speed>", I18N_NOOP("As above but with a default value."), "9600" },
  *     { "option1", I18N_NOOP("A long binary option, off by default."), 0 },
  *     { "nooption2", I18N_NOOP("A long binary option, on by default."), 0 },
- *     { "option3 <file>", I18N_NOOP("A long option which takes an argument."), 0 },
- *     { "option3 <speed>", I18N_NOOP("As above with 9600 as default."), "9600" },
+ *     { "option3 \<file>", I18N_NOOP("A long option which takes an argument."), 0 },
+ *     { "option3 \<speed>", I18N_NOOP("As above with 9600 as default."), "9600" },
  *     { "d", 0, 0 },
  *     { "option4", I18N_NOOP("A long option which has a short option as alias."), 0 },
  *     { "e", 0, 0 },
  *     { "nooption5", I18N_NOOP("Another long option with an alias."), 0 },
  *     { "f", 0, 0 },
- *     { "option6 <speed>", I18N_NOOP("'--option6 speed' is same a '-f speed'"), 0 },
- *     { "!option7 <cmd>", I18N_NOOP("All options following this one will be treated as arguments", 0 },
+ *     { "option6 \<speed>", I18N_NOOP("'--option6 speed' is same a '-f speed'"), 0 },
+ *     { "!option7 \<cmd>", I18N_NOOP("All options following this one will be treated as arguments", 0 },
  *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
  *     KCmdLineLastOption // End of options.
  *  };
- *  </code>
+ *  \endcode
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
@@ -200,12 +200,12 @@ public:
    *
    * This function should be called as the very first thing in
    *  your application.
-   * @param argc As passed to @p main(...).
-   * @param argv As passed to @p main(...).
-   * @param appname The untranslated name of your application. This should
+   * @param _argc As passed to @p main(...).
+   * @param _argv As passed to @p main(...).
+   * @param _appname The untranslated name of your application. This should
    *                match with @p argv[0].
-   * @param description A short description of what your application is about.
-   * @param version A version.
+   * @param _description A short description of what your application is about.
+   * @param _version A version.
    * @param noKApp Don't add commandline options for @ref QApplication/@ref KApplication
    */
   static void init(int _argc, char **_argv,
@@ -217,8 +217,8 @@ public:
    *
    * This function should be called as the very first thing in
    *  your application.
-   * @param argc As passed to @p main(...).
-   * @param argv As passed to @p main(...).
+   * @param _argc As passed to @p main(...).
+   * @param _argv As passed to @p main(...).
    * @param about A KAboutData object describing your program.
    * @param noKApp Don't add commandline options for @ref QApplication / @ref KApplication
    */
@@ -231,7 +231,7 @@ public:
    * This function should be called as the very first thing in
    *  your application.
    * This method is exactly the same as calling
-   * @ref init(0,0, const KAboutData *about, true)
+   * init(0,0, const KAboutData *about, true)
    * This method will rarely be used
    * @param about the about data.
    */
@@ -245,14 +245,16 @@ public:
    *
    * The list of options should look like this:
    *
+   * \code
    * static KCmdLineOptions options[] =
    * {
-   *    { "option1 <argument>", I18N_NOOP("Description 1"), "default" },
+   *    { "option1 \<argument>", I18N_NOOP("Description 1"), "default" },
    *    { "o", 0, 0 },
    *    { "option2", I18N_NOOP("Description 2"), 0 },
    *    { "nooption3", I18N_NOOP("Description 3"), 0 },
    *    { 0, 0, 0}
    * }
+   * \endcode
    *
    * @li "option1" is an option that requires an additional argument
    * @li "option2" is an option that can be turned on. The default is off.
@@ -264,15 +266,15 @@ public:
    *     when an argument is passed to it. Note that the reverse is not
    *     true. If required, you must check yourself the number of arguments
    *     specified by the user:
-   *     <code>
+   *     \code
    *       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified!"));
-   *     </code>
+   *     \endcode
    *
    * In BNF:
    * cmd = myapp [options] file
    * options = (option)*
-   * option = --option1 <argument> |
+   * option = --option1 \<argument> |
    *          (-o | --option2 | --nooption2) |
    *          ( --option3 | --nooption3 )
    *
@@ -338,7 +340,7 @@ public:
 
   /**
    * Print an error to stderr and the usage help to stdout and exit.
-   * @param the error to print
+   * @param error the error to print
    **/
   static void usage(const QString &error);
 
@@ -359,7 +361,7 @@ public:
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
    *  <pre>
-   *    { "option <argument>", I18N_NOOP("Description"), "default" }
+   *    { "option \<argument>", I18N_NOOP("Description"), "default" }
    *  </pre>
    *
    *  @param option The name of the option without '-'.
@@ -377,7 +379,7 @@ public:
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
    *  <pre>
-   *    { "option <argument>", I18N_NOOP("Description"), "default" }
+   *    { "option \<argument>", I18N_NOOP("Description"), "default" }
    *  </pre>
    *
    *  @param option The name of the option without '-'.
@@ -394,12 +396,12 @@ public:
    *
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
-   *          If the option is listed as 'no<option>' the
+   *          If the option is listed as 'no\<option>' the
    *          default is true.
-   *          If the option is listed as '<option>' the
+   *          If the option is listed as '\<option>' the
    *          default is false.
    *
-   *          If the option is listed as '<option> <arg>'
+   *          If the option is listed as '\<option> \<arg>'
    *          this function returns @p true if the option was present
    *          and @p false otherwise.
    */
@@ -439,9 +441,9 @@ public:
   KURL url(int n) const;
 
   /**
-   * Used by @ref #url().
+   * Used by url().
    * Made public for apps that don't use KCmdLineArgs
-   * @param urlArgs the argument
+   * @param urlArg the argument
    * @return the url.
    */
   static KURL makeURL( const char * urlArg );

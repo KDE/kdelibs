@@ -74,7 +74,7 @@ class KStandardDirsPrivate;
  * @li cgi - CGIs to run from kdehelp.
  * @li config - Configuration files.
  * @li data - Where applications store data.
- * @li exe - Executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account.
+ * @li exe - Executables in $prefix/bin. @ref findExe() for a function that takes $PATH into account.
  * @li html - HTML documentation.
  * @li icon - Icons, see @ref KIconLoader.
  * @li lib - Libraries.
@@ -188,7 +188,7 @@ public:
 
 	/**
 	 * Tries to find a resource in the following order:
-	 * @li All PREFIX/<relativename> paths (most recent first).
+	 * @li All PREFIX/\<relativename> paths (most recent first).
 	 * @li All absolute paths (most recent first).
 	 *
 	 * The filename should be a filename relative to the base dir

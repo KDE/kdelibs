@@ -92,7 +92,7 @@ public:
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use.
-     * Unlike @ref #symbol(), this method doesn't warn if the symbol doesn't exist,
+     * Unlike @ref symbol(), this method doesn't warn if the symbol doesn't exist,
      * so if the symbol might or might not exist, better use hasSymbol() before symbol().
      * @param name the name of the symbol to check
      * @return true if the symbol exists
@@ -135,7 +135,7 @@ class KLibWrapPrivate;
  * Dependent libraries are loaded automatically.
  *
  * KLibLoader follows the singleton pattern. You can not create multiple
- * instances. Use @ref #self() to get a pointer to the loader.
+ * instances. Use @ref self() to get a pointer to the loader.
  *
  * @see KLibrary
  * @author Torben Weis <weis@kde.org>
@@ -201,7 +201,7 @@ public:
      * globally accessible so libraries with dependencies can be loaded
      * sequentially.
      *
-     * @param libname  This is the library name without extension. Usually that is something like
+     * @param name     This is the library name without extension. Usually that is something like
      *                 "libkspread". The function will then search for a file named
      *                 "libkspread.la" in the KDE library paths.
      *                 The *.la files are created by libtool and contain
