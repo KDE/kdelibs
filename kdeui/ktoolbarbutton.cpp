@@ -275,8 +275,9 @@ void KToolBarButton::setEnabled( bool enabled )
 void KToolBarButton::setText( const QString& text)
 {
   d->setText(text);
-  repaint (false);
   QButton::setText( text );
+  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+  repaint (false);
 }
 
 void KToolBarButton::setIcon( const QString &icon )
