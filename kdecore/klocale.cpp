@@ -404,7 +404,7 @@ void KLocale::initFormat(KConfig *config)
   m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
   m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
 
-  QString pf = translate_priv( "_: Definition of PluralForm\nLook at klocale.cpp for now", 0);
+  QString pf = translate_priv( I18N_NOOP("_: Definition of PluralForm\nLook at klocale.cpp for now"), 0);
   if ( pf.isEmpty() )
       kdWarning() << "found no definition of PluralForm" << endl;
   else if ( pf == "NoPlural" )
