@@ -1,3 +1,8 @@
+2004-01-19  Dirk Mueller  <mueller@kde.org>
+
+       * rendering/render_object.cpp (getVerticalPosition): improve
+       logic (#65121).
+
 2004-01-19  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_style.h: providing an initial property
