@@ -311,7 +311,7 @@ QVariant KJS::ValueToVariant(ExecState* exec, const Value &val) {
   return res;
 }
 
-class KDE_NO_EXPORT EmbedLiveConnect : public ObjectImp
+class EmbedLiveConnect : public ObjectImp
 {
   friend Value KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
   EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id);
@@ -364,15 +364,16 @@ Value KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString &
   }
 }
 
-EmbedLiveConnect::EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id)
+KDE_NO_EXPORT EmbedLiveConnect::EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id)
   : m_liveconnect (lc), name(n), objtype(t), objid(id)
 {}
 
-EmbedLiveConnect::~EmbedLiveConnect() {
+KDE_NO_EXPORT EmbedLiveConnect::~EmbedLiveConnect() {
   if (m_liveconnect)
     m_liveconnect->unregister(objid);
 }
 
+KDE_NO_EXPORT
 Value EmbedLiveConnect::get(ExecState *, const Identifier & prop) const
 {
   if (m_liveconnect) {
@@ -385,16 +386,19 @@ Value EmbedLiveConnect::get(ExecState *, const Identifier & prop) const
   return Undefined();
 }
 
+KDE_NO_EXPORT
 void EmbedLiveConnect::put(ExecState * exec, const Identifier &prop, const Value & value, int)
 {
   if (m_liveconnect)
     m_liveconnect->put(objid, prop.qstring(), value.toString(exec).qstring());
 }
 
+KDE_NO_EXPORT
 bool EmbedLiveConnect::implementsCall() const {
   return objtype == KParts::LiveConnectExtension::TypeFunction;
 }
 
+KDE_NO_EXPORT
 Value EmbedLiveConnect::call(ExecState *exec, Object&, const List &args)
 {
   if (m_liveconnect) {
@@ -410,14 +414,17 @@ Value EmbedLiveConnect::call(ExecState *exec, Object&, const List &args)
   return Undefined();
 }
 
+KDE_NO_EXPORT
 bool EmbedLiveConnect::toBoolean(ExecState *) const {
   return true;
 }
 
+KDE_NO_EXPORT
 Value EmbedLiveConnect::toPrimitive(ExecState *exec, Type) const {
   return String(toString(exec));
 }
 
+KDE_NO_EXPORT
 UString EmbedLiveConnect::toString(ExecState *) const {
   QString str;
   const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
