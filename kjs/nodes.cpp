@@ -146,6 +146,45 @@ KJSO *GroupNode::evaluate()
   return group->evaluate();
 }
 
+// ECMA 11.1.5
+KJSO *ObjectLiteralNode::evaluate()
+{
+  if (list)
+    return list->evaluate();
+
+  return Object::create(ObjectClass);
+}
+
+// ECMA 11.1.5
+KJSO *PropertyValueNode::evaluate()
+{
+  Ptr obj;
+  if (list)
+    obj = list->evaluate();
+  else
+    obj = Object::create(ObjectClass);
+  Ptr n = name->evaluate();
+  Ptr a = assign->evaluate();
+  Ptr v = a->getValue();
+
+  obj->put(n->stringVal(), v);
+
+  return obj->ref();
+}
+
+// ECMA 11.1.5
+KJSO *PropertyNode::evaluate()
+{
+  Ptr s;
+
+  if (str.isNull()) {
+    s = KJSO::newString(UString::from(numeric));
+  } else
+    s = KJSO::newString(str);
+
+  return s->ref();
+}
+
 // ECMA 11.2.1a
 KJSO *AccessorNode1::evaluate()
 {

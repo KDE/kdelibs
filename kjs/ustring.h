@@ -154,6 +154,8 @@ namespace KJS {
     UString &operator+=(const UString &s);
 
     const UChar* data() const { return rep->data(); }
+    bool isNull() const { return (rep == &UStringData::null); }
+    bool isEmpty() const { return (!rep->len); }
     bool is8Bit() const;
     unsigned int size() const { return rep->size(); }
     UChar &operator[](unsigned int pos) const;

@@ -168,6 +168,33 @@ namespace KJS {
     KJSO *evaluate() { /* TODO */ return 0L; }
   };
 
+  class ObjectLiteralNode : public Node {
+  public:
+    ObjectLiteralNode(Node *l) : list(l) { }
+    KJSO *evaluate();
+  private:
+    Node *list;
+  };
+
+  class PropertyValueNode : public Node {
+  public:
+    PropertyValueNode(Node *n, Node *a, Node *l = 0L)
+      : name(n), assign(a), list(l) { }
+    KJSO *evaluate();
+  private:
+    Node *name, *assign, *list;
+  };
+  
+  class PropertyNode : public Node {
+  public:
+    PropertyNode(double d) : numeric(d) { }
+    PropertyNode(const UString *s) : str(*s) { }
+    KJSO *evaluate();
+  private:
+    double numeric;
+    UString str;
+  };
+
   class AccessorNode1 : public Node {
   public:
     AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}

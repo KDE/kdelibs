@@ -99,7 +99,7 @@ using namespace KJS;
 
 /* non-terminal types */
 %type <node>  Literal PrimaryExpr Expr MemberExpr NewExpr CallExpr
-%type <node>  ArrayLiteral
+%type <node>  ArrayLiteral PropertyName PropertyNameAndValueList
 %type <node>  LeftHandSideExpr PostfixExpr UnaryExpr
 %type <node>  MultiplicativeExpr AdditiveExpr
 %type <node>  ShiftExpr RelationalExpr EqualityExpr
@@ -156,6 +156,8 @@ PrimaryExpr:
   | Literal
   | ArrayLiteral
   | '(' Expr ')'                   { $$ = new GroupNode($2); }
+  | '{' '}'                        { $$ = new ObjectLiteralNode(0L); }
+  | '{' PropertyNameAndValueList '}'   { $$ = new ObjectLiteralNode($2); }
 ;
 
 ArrayLiteral:
@@ -178,6 +180,20 @@ ElisionOpt:
 Elision:
     ','                            { $$ = new ElisionNode(0L); }
   | Elision ','                    { $$ = new ElisionNode($1); }
+;
+
+PropertyNameAndValueList:
+    PropertyName ':' AssignmentExpr     { $$ = new PropertyValueNode($1, $3); }
+  | PropertyNameAndValueList ',' PropertyName ':' AssignmentExpr
+                                   { $$ = new PropertyValueNode($3, $5, $1); }
+;
+
+PropertyName:
+    IDENT                          { $$ = new PropertyNode($1);
+                                     delete $1; }
+  | STRING                         { $$ = new PropertyNode($1); delete $1; }
+  | INTEGER                        { $$ = new PropertyNode((double)$1); }
+  | DOUBLE                         { $$ = new PropertyNode($1); }
 ;
 
 MemberExpr:
