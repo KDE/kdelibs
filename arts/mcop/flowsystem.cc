@@ -21,6 +21,7 @@
     */
 
 #include "flowsystem.h"
+#include "debug.h"
 
 using namespace Arts;
 
@@ -95,19 +96,30 @@ void RemoteScheduleNode::devirtualize(std::string port, ScheduleNode *fromNode,
 	
 void RemoteScheduleNode::start()
 {
-	nodeObject()._flowSystem().startObject(nodeObject());
+	FlowSystem remoteFs = nodeObject()._flowSystem();
+	arts_return_if_fail(!remoteFs.isNull());
+
+	remoteFs.startObject(nodeObject());
 }
 
 void RemoteScheduleNode::stop()
 {
-	nodeObject()._flowSystem().stopObject(nodeObject());
+	FlowSystem remoteFs = nodeObject()._flowSystem();
+	arts_return_if_fail(!remoteFs.isNull());
+
+	remoteFs.stopObject(nodeObject());
 }
 
 void RemoteScheduleNode::connect(std::string port, ScheduleNode *remoteNode,
 			                        std::string remotePort)
 {
+	arts_return_if_fail(remoteNode != 0);
+
 	FlowSystem fs = nodeObject()._flowSystem();
+	arts_return_if_fail(!fs.isNull());
+
 	AttributeType flags = fs.queryFlags(nodeObject(),port);
+	arts_return_if_fail(flags != 0);
 
 	// connectObject must be called as connectObject([sourcePort], [destPort]);
 
@@ -118,6 +130,8 @@ void RemoteScheduleNode::connect(std::string port, ScheduleNode *remoteNode,
 	else if(flags & streamIn)
 	{
 		FlowSystem remoteFs = remoteNode->nodeObject()._flowSystem();
+		arts_return_if_fail(!remoteFs.isNull());
+
 		remoteFs.connectObject(remoteNode->nodeObject(),
 										remotePort,nodeObject(),port);
 	} else {
@@ -128,8 +142,13 @@ void RemoteScheduleNode::connect(std::string port, ScheduleNode *remoteNode,
 void RemoteScheduleNode::disconnect(std::string port, ScheduleNode *remoteNode,
 			                            std::string remotePort)
 {
+	arts_return_if_fail(remoteNode != 0);
+
 	FlowSystem fs = nodeObject()._flowSystem();
+	arts_return_if_fail(!fs.isNull());
+
 	AttributeType flags = fs.queryFlags(nodeObject(),port);
+	arts_return_if_fail(flags != 0);
 
 	// connectObject must be called as connectObject([sourcePort], [destPort]);
 
@@ -140,6 +159,8 @@ void RemoteScheduleNode::disconnect(std::string port, ScheduleNode *remoteNode,
 	else if(flags & streamIn)
 	{
 		FlowSystem remoteFs = remoteNode->nodeObject()._flowSystem();
+		arts_return_if_fail(!remoteFs.isNull());
+
 		remoteFs.disconnectObject(remoteNode->nodeObject(),
 										remotePort,nodeObject(),port);
 	} else {
