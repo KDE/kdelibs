@@ -1381,8 +1381,7 @@ void RenderTable::layoutRows(int yoff)
         RenderObject *containing = containingBlock();
         if (ch.isFixed())
             th = h.width(ch.value);
-        else if (containing->parent() && containing->parent()->parent()
-                 && containing->parent()->parent()->isRoot())
+        else 
         {
             th = h.width(viewRect().height())-5;
             // not really, but this way the view height change
