@@ -39,7 +39,7 @@
 
 static bool isUtf8(const char *buf) {
   int i, n;
-  register char c;
+  register unsigned char c;
   bool gotone = false;
 
 #define F 0   /* character never appears in text */
