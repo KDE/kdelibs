@@ -583,11 +583,13 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 if(s->checkVerticalPoint(y, ty, h))
                     s->printActivation(p, tx, ty);
 
+#if 0
                 int diff;
                 if(si < (int) m_lines.count()-1 && !m_lines[si+1]->m_reversed) // ### no RTL
                     diff = m_lines[si+1]->m_text - s->m_text;
                 else
                     diff = s->m_len;
+#end
 
             } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
         }
