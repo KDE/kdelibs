@@ -115,6 +115,7 @@ public:
     m_decoder = 0L;
     m_jscript = 0L;
     m_wallet = 0L;
+    m_bWalletOpened = false;
     m_runningScripts = 0;
     m_kjs_lib = 0;
     m_job = 0L;
@@ -256,6 +257,7 @@ public:
   bool m_bPluginsOverride :1;
   bool m_restored :1;
   bool m_statusMessagesEnabled :1;
+  bool m_bWalletOpened :1;
   int m_frameNameId;
   int m_dcop_counter;
   DCOPObject *m_dcopobject;

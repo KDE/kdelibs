@@ -1611,6 +1611,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
+  d->m_bWalletOpened = false;
 
   if(url.isValid()) {
       QString urlString = url.url();
@@ -6017,8 +6018,9 @@ KWallet::Wallet* KHTMLPart::wallet()
   if (p)
     return p->wallet();
 
-  if (!d->m_wallet) {
+  if (!d->m_wallet && !d->m_bWalletOpened) {
     d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet(), widget() ? widget()->topLevelWidget()->winId() : 0);
+    d->m_bWalletOpened = true;
     if (d->m_wallet) {
       connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
       d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
@@ -6045,6 +6047,7 @@ void KHTMLPart::slotWalletClosed()
     d->m_wallet->deleteLater();
     d->m_wallet = 0L;
   }
+  d->m_bWalletOpened = false;
   if (d->m_statusBarWalletLabel) {
     d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarWalletLabel);
     delete d->m_statusBarWalletLabel;
