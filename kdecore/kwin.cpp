@@ -278,6 +278,13 @@ WId KWin::transientFor( WId win )
 #endif
 }
 
+void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    XSetTransientForHint( qt_xdisplay(), subwindow->winId(), mainwindow );
+#endif
+}
+
 WId KWin::groupLeader( WId win )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY

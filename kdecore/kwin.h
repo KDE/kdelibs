@@ -144,6 +144,21 @@ public:
 
 
     /**
+     * Sets the parent window of @p subwindow to be @p mainwindow.
+     * This overrides the parent set the usual way as the QWidget parent,
+     * but only for the window manager - e.g. stacking order and window grouping
+     * will be affected, but features like automatic deletion of children
+     * when the parent is deleted are unaffected and normally use
+     * the QWidget parent.
+     *
+     * This function should be used before a dialog is shown for a window
+     * that belongs to another application.
+     *
+     * @since 3.4
+     */
+    static void setMainWindow( QWidget* subwindow, WId mainwindow );
+
+    /**
      * Makes @p trayWin a system tray window for @p forWin.
      *
      * A system tray window serves as an icon replacement. It's
