@@ -48,6 +48,11 @@
 #include <kio/global.h>
 #include <kservicetype.h>
 
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#include <fixx11h.h>
+#endif
+
 Kded *Kded::_self = 0;
 
 static bool checkStamps = true;
@@ -841,7 +846,16 @@ extern "C" int kdemain(int argc, char *argv[])
      QByteArray data;
      client->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
      client->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
-
+#ifdef Q_WS_X11
+     XEvent e;
+     e.xclient.type = ClientMessage;
+     e.xclient.message_type = XInternAtom( qt_xdisplay(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = qt_xdisplay();
+     e.xclient.window = qt_xrootwin();
+     e.xclient.format = 8;
+     strcpy( e.xclient.data.b, "kded" );
+     XSendEvent( qt_xdisplay(), qt_xrootwin(), False, SubstructureNotifyMask, &e );
+#endif
      int result = k.exec(); // keep running
 
      delete kded;
