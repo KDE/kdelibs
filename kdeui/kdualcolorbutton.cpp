@@ -16,7 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kdualcolorbtn.h"
+#include "kdualcolorbutton.h"
 #include "kcolordialog.h"
 #include "kcolordrag.h"
 #include "dcolorarrow.xbm"
@@ -268,4 +268,4 @@ void KDualColorButton::mouseReleaseEvent(QMouseEvent *ev)
         miniCtlFlag = false;
 }
 
-#include "kdualcolorbtn.moc"
+#include "kdualcolorbutton.moc"

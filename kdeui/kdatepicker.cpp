@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kdatepik.h"
+#include "kdatepicker.h"
 #include <kglobal.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -33,7 +33,7 @@
 #include <kdebug.h>
 #include <knotifyclient.h>
 #include "kdatetbl.h"
-#include "kdatepik.moc"
+#include "kdatepicker.moc"
 
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
