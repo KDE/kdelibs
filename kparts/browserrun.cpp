@@ -126,10 +126,8 @@ void BrowserRun::scanFile()
           m_args.metaData().insert("ssl_was_in_use", "FALSE" );
       }
       
-      // Set the PropagateHttpHeader meta-data if it has not already been set
-      // and the current protocol is http, i.e. http,webdav, and ftp over proxy.
-      if ((proto.startsWith("http") || proto.startsWith("webdav") || proto.startsWith("ftp")) &&
-           m_args.metaData().contains("PropagateHttpHeader"))
+      // Set the PropagateHttpHeader meta-data if it has not already been set...
+      if (!m_args.metaData().contains("PropagateHttpHeader"))
           m_args.metaData().insert("PropagateHttpHeader", "TRUE");
   }
  
