@@ -258,6 +258,9 @@ QString ResourceDir::format() const
 
 void ResourceDir::pathChanged()
 {
+  if ( !addressBook() )
+    return;
+
   load();
   addressBook()->emitAddressBookChanged();
 }
