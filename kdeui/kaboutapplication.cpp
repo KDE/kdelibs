@@ -29,6 +29,7 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kurllabel.h>
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 				      bool modal )
@@ -69,9 +70,6 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
   QString appPageText = aboutData->shortDescription() + "\n";
 
-  if (!aboutData->homepage().isEmpty())
-    appPageText += "\n" + aboutData->homepage()+"\n";
-
   if (!aboutData->otherText().isEmpty())
     appPageText += "\n" + aboutData->otherText()+"\n";
 
@@ -82,6 +80,16 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
   QLabel *appPageLabel = new QLabel( appPageText, 0 );
   appPage->addWidget( appPageLabel );
+
+  if (!aboutData->homepage().isEmpty())
+  {
+    KURLLabel *url = new KURLLabel();
+    url->setText(aboutData->homepage());
+    url->setURL(aboutData->homepage());
+    appPage->addWidget( url );
+    connect( url, SIGNAL(leftClickedURL(const QString &)),
+             this, SLOT(openURLSlot(const QString &)));
+  }
 
   int authorCount = aboutData->authors().count();
   if (authorCount)
@@ -141,5 +149,3 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   //
   setInitialSize( QSize(400,1) );
 }
-
-
