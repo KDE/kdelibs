@@ -20,13 +20,8 @@
 #include <config.h>
 
 #ifdef HAVE_DNOTIFY
-#ifndef _GNU_SOURCE
+#undef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
-#if defined(_XOPEN_SOURCE) && _XOPEN_SOURCE - 0 < 500
-#undef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 500
-#endif
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
