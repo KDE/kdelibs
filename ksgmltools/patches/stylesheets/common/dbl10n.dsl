@@ -27,6 +27,7 @@
 ;; et - Estonian
 ;; fi - Finnish
 ;; fr - French
+;; hu - French
 ;; it - Italian
 ;; ja - Japanese
 ;; nl - Dutch
@@ -137,6 +138,7 @@
     <![%l10n-et[ (("et") (et-auto-xref-indirect-connector before)) ]]>
     <![%l10n-fi[ (("fi") (fi-auto-xref-indirect-connector before)) ]]>
     <![%l10n-fr[ (("fr") (fr-auto-xref-indirect-connector before)) ]]>
+    <![%l10n-hu[ (("hu") (hu-auto-xref-indirect-connector before)) ]]>
     <![%l10n-it[ (("it") (it-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ja[ (("ja") (ja-auto-xref-indirect-connector before)) ]]>
     <![%l10n-nl[ (("nl") (nl-auto-xref-indirect-connector before)) ]]>
@@ -170,6 +172,7 @@
     <![%l10n-et[ (("et") %generate-et-toc-in-front%) ]]>
     <![%l10n-fi[ (("fi") %generate-fi-toc-in-front%) ]]>
     <![%l10n-fr[ (("fr") %generate-fr-toc-in-front%) ]]>
+    <![%l10n-hu[ (("hu") %generate-hu-toc-in-front%) ]]>
     <![%l10n-it[ (("it") %generate-it-toc-in-front%) ]]>
     <![%l10n-ja[ (("ja") %generate-ja-toc-in-front%) ]]>
     <![%l10n-nl[ (("nl") %generate-nl-toc-in-front%) ]]>
@@ -350,6 +353,7 @@
       <![%l10n-et[ (("et") (et-label-number-format target)) ]]>
       <![%l10n-fi[ (("fi") (fi-label-number-format target)) ]]>
       <![%l10n-fr[ (("fr") (fr-label-number-format target)) ]]>
+      <![%l10n-hu[ (("hu") (hu-label-number-format target)) ]]>
       <![%l10n-it[ (("it") (it-label-number-format target)) ]]>
       <![%l10n-ja[ (("ja") (ja-label-number-format target)) ]]>
       <![%l10n-nl[ (("nl") (nl-label-number-format target)) ]]>
@@ -417,6 +421,7 @@
     <![%l10n-et[ (("et") %gentext-et-start-quote%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-start-quote%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-start-quote%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-start-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-start-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-start-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-start-quote%) ]]>
@@ -450,6 +455,7 @@
     <![%l10n-et[ (("et") %gentext-et-end-quote%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-end-quote%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-end-quote%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-end-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-end-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-end-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-end-quote%) ]]>
@@ -483,6 +489,7 @@
     <![%l10n-et[ (("et") %gentext-et-start-nested-quote%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-start-nested-quote%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-start-nested-quote%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-start-nested-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-start-nested-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-start-nested-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-start-nested-quote%) ]]>
@@ -510,6 +517,7 @@
     <![%l10n-et[ (("et") %gentext-et-end-nested-quote%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-end-nested-quote%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-end-nested-quote%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-end-nested-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-end-nested-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-end-nested-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-end-nested-quote%) ]]>
@@ -537,6 +545,7 @@
     <![%l10n-et[ (("et") %gentext-et-by%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-by%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-by%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-by%) ]]>
@@ -570,6 +579,7 @@
     <![%l10n-et[ (("et") %gentext-et-edited-by%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-edited-by%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-edited-by%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-edited-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-edited-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-edited-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-edited-by%) ]]>
@@ -603,6 +613,7 @@
     <![%l10n-et[ (("et") %gentext-et-revised-by%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-revised-by%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-revised-by%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-revised-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-revised-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-revised-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-revised-by%) ]]>
@@ -636,6 +647,7 @@
     <![%l10n-et[ (("et") %gentext-et-page%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-page%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-page%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-page%) ]]>
     <![%l10n-it[ (("it") %gentext-it-page%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-page%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-page%) ]]>
@@ -669,6 +681,7 @@
     <![%l10n-et[ (("et") %gentext-et-and%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-and%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-and%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-and%) ]]>
     <![%l10n-it[ (("it") %gentext-it-and%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-and%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-and%) ]]>
@@ -702,6 +715,7 @@
     <![%l10n-et[ (("et") %gentext-et-bibl-pages%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-bibl-pages%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-bibl-pages%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-bibl-pages%) ]]>
     <![%l10n-it[ (("it") %gentext-it-bibl-pages%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-bibl-pages%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-bibl-pages%) ]]>
@@ -735,6 +749,7 @@
     <![%l10n-et[ (("et") %gentext-et-endnotes%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-endnotes%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-endnotes%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-endnotes%) ]]>
     <![%l10n-it[ (("it") %gentext-it-endnotes%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-endnotes%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-endnotes%) ]]>
@@ -768,6 +783,7 @@
     <![%l10n-et[ (("et") %gentext-et-table-endnotes%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-table-endnotes%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-table-endnotes%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-table-endnotes%) ]]>
     <![%l10n-it[ (("it") %gentext-it-table-endnotes%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-table-endnotes%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-table-endnotes%) ]]>
@@ -801,6 +817,7 @@
     <![%l10n-et[ (("et") %gentext-et-index-see%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-index-see%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-index-see%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-index-see%) ]]>
     <![%l10n-it[ (("it") %gentext-it-index-see%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-index-see%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-index-see%) ]]>
@@ -834,6 +851,7 @@
     <![%l10n-et[ (("et") %gentext-et-index-seealso%) ]]>
     <![%l10n-fi[ (("fi") %gentext-fi-index-seealso%) ]]>
     <![%l10n-fr[ (("fr") %gentext-fr-index-seealso%) ]]>
+    <![%l10n-hu[ (("hu") %gentext-hu-index-seealso%) ]]>
     <![%l10n-it[ (("it") %gentext-it-index-seealso%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-index-seealso%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-index-seealso%) ]]>
