@@ -40,7 +40,8 @@
 //      IconText=0        0=icons, 1=icons+text
 //      Highlighting=1    0=No, 1=yes
 //      Size=26           height of one row in toolbar
-
+// Fixed white bg on disabled buttons in icontext mode and
+// positioning on signal appearanceChanged - sven 24.3.1998
 //-------------------------------------------------------------------------
 
 #include <qpainter.h>
@@ -249,7 +250,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
       int tf = AlignVCenter|AlignLeft;
       if (!isEnabled())
-        tf |= GrayText;
+        _painter->setPen(palette().disabled().dark());
       dx= pixmap()->width();
       _painter->setFont(buttonFont);
       if(raised)
@@ -490,7 +491,7 @@ void KToolBar::slotReadConfig()
   if (doUpdate)
     emit modechange(); // tell buttons what happened
     if (isVisible ())
-      updateRects(true);
+      emit moved (position);
 }
     emit (moved(position));
 void KToolBar::drawContents ( QPainter *)
