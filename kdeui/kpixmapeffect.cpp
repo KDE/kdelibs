@@ -728,3 +728,66 @@ void KPixmapEffect::channelIntensity(QImage &image, float percent,
   delete [] segTbl;
 }
 
+
+void KPixmapEffect::blend(QImage &image, float initial_intensity,
+			  const QColor &bgnd, GradientType eff,
+			  int ncols)
+{
+    int r_bgnd = bgnd.red(), g_bgnd = bgnd.green(), b_bgnd = bgnd.blue();
+    int r, g, b;
+    int ind;
+    float intensity = initial_intensity, var = 1. - initial_intensity;
+
+    register int x, y;
+    
+    unsigned int *data =  (unsigned int *)image.bits();
+    
+    if( eff == VerticalGradient ||
+	eff == HorizontalGradient) {
+      var /= (eff == VerticalGradient?image.height():image.width());
+      for (y = 0; y < image.height() ; y++) {
+	intensity = eff == VerticalGradient? intensity + var : 
+		                             initial_intensity;
+	for (x = 0; x < image.width() ; x++) {
+	  if (eff == HorizontalGradient) intensity += var;
+	  ind = x + image.width()  * y ;
+	  r = qRed  (data[ind]) + (int)(intensity * 
+					(r_bgnd - qRed  (data[ind]))); 
+	  g = qGreen(data[ind]) + (int)(intensity * 
+					(g_bgnd - qGreen(data[ind]))); 
+	  b = qBlue (data[ind]) + (int)(intensity * 
+					(b_bgnd - qBlue (data[ind])));
+	  if (r > 255) r = 255; if (r < r_bgnd ) r = r_bgnd;
+	  if (g > 255) g = 255; if (g < g_bgnd ) g = g_bgnd;
+	  if (b > 255) b = 255; if (b < b_bgnd ) b = b_bgnd;
+	  data[ind]=qRgb(r, g, b);
+	}
+      }
+    }
+    else {
+      float xvar = var / 2 / image.width();
+      float yvar = var / 2 / image.height();
+      if (eff == DiagonalGradient  || eff == CrossDiagonalGradient) {
+	for (x = 0; x < image.width() ; x++) {
+	  intensity = initial_intensity + xvar * 
+	    (eff == DiagonalGradient? x : image.width() - x -1);
+	  for (y = 0; y < image.height() ; y++) {
+	    intensity += yvar;
+	    ind = x + image.width()  * y ;
+	    r = qRed  (data[ind]) + (int)(intensity * 
+					  (r_bgnd - qRed  (data[ind]))); 
+	    g = qGreen(data[ind]) + (int)(intensity * 
+					  (g_bgnd - qGreen(data[ind]))); 
+	    b = qBlue (data[ind]) + (int)(intensity * 
+					  (b_bgnd - qBlue (data[ind])));
+	    if (r > 255) r = 255; if (r < r_bgnd ) r = r_bgnd;
+	    if (g > 255) g = 255; if (g < g_bgnd ) g = g_bgnd;
+	    if (b > 255) b = 255; if (b < b_bgnd ) b = b_bgnd;
+	    data[ind]=qRgb(r, g, b);
+	  }
+	}
+      }
+      else debug("not yet implemented");
+    }
+    
+}

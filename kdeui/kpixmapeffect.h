@@ -68,7 +68,22 @@ public:
                                         RGBComponent channel,
                                         bool brighten = true);
     
+  /**
+   * Blends the provided image into a background of the indicated color
+   * @ float initial_intensity;  this parameter says how much to fade the
+   *    image in its less affected spot
+   * @ QColor bgnd; indicates the color of the background to blend in
+   * @ KPixmapEffect::GradientType eff; lets you choose what
+   *    kind of blending you like
+   */
+  static void blend(QImage &image, float initial_intensity,
+		    const QColor &bgnd, GradientType eff, int ncols=3);
 
+  /**
+   * Blends the provided pixmap (see the other method prototype)
+   */
+  inline static void blend(KPixmap &pixmap, float initial_intensity,
+		    const QColor &bgnd, GradientType eff, int ncols=3);
 };
 
 inline void KPixmapEffect::intensity(KPixmap &pixmap, float percent,
@@ -88,5 +103,14 @@ inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
     pixmap.convertFromImage(image);
 }
 
+inline void KPixmapEffect::blend(KPixmap &pixmap, 
+					float initial_intensity,
+					const QColor &bgnd, GradientType eff, 
+					int ncols)
+{
+  QImage image = pixmap.convertToImage();
+  blend(image, initial_intensity, bgnd, eff, ncols);
+  pixmap.convertFromImage(image);
+}
 
 #endif

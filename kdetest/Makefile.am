@@ -35,14 +35,14 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
-		kunbalancedgrdtest kcolortest knuminputtest
+		kunbalancedgrdtest kcolortest knuminputtest kblendtest
 
 noinst_HEADERS = kdatepicktestdlg.h \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
 		klocaletest.h krulertest.h kconfigtest.h kgradienttest.h \
-		kcolortest.h kunbalancedgrdtest.h
+		kcolortest.h kunbalancedgrdtest.h kblendtest.h
 
 METASOURCES = kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
@@ -93,4 +93,4 @@ khtmltest_LDADD = $(LIB_KHTML)
 kcolortest_SOURCES = kcolortest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
-
+kblendtest_SOURCES = kblendtest.cpp
