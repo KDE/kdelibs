@@ -30,6 +30,7 @@ extern void qt_set_locale_codec( QTextCodec *codec );
 int main(int argc, char *argv[])
 {
   KApplication app(argc,argv,"kurltest",false,false);
+
   KURL::List lst;
 
   KURL emptyURL;
@@ -583,6 +584,11 @@ int main(int argc, char *argv[])
   KURL utf8_2("audiocd:/By%20Name/15%2fGeantra%C3%AE.wav", 106);
   check("utf8_2.fileName()", utf8_2.fileName(), QString::fromLatin1("15/Geantraî.wav"));
 
+  KURL url_newline_1("http://www.foo.bar/foo/bar\ngnork");
+  check("url_newline_1.url()", url_newline_1.url(), QString::fromLatin1("http://www.foo.bar/foo/bar%0Agnork")); 
+
+  KURL url_newline_2("http://www.foo.bar/foo?bar\ngnork");
+  check("url_newline_2.url()", url_newline_2.url(), QString::fromLatin1("http://www.foo.bar/foo?bar%0Agnork"));
   printf("\nTest OK !\n");
 }
 
