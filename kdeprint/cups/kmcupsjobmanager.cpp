@@ -65,7 +65,8 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 		// allowed on remote jobs is listing (done elsewhere).
 
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
-		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
+		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
+		/*
 		QString	jobHost;
 		if (!it.current()->uri().isEmpty())
 		{
@@ -74,6 +75,7 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 			req.setPort(url.port());
 			jobHost = url.host();
 		}
+		*/
 
 		switch (action)
 		{
@@ -137,8 +139,10 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 	if (!mp->uri().isEmpty())
 	{
 		req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyURL());
+		/*
 		req.setHost(mp->uri().host());
 		req.setPort(mp->uri().port());
+		*/
 	}
 	else
 		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri.arg(infos->host()).arg(infos->port()).arg(((mp&&mp->isClass())?"classes":"printers")).arg(prname));
@@ -261,12 +265,14 @@ bool KMCupsJobManager::jobIppReport(KMJob *j)
 	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
 	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
 	bool	result(true);
+	/*
 	if (!j->uri().isEmpty())
 	{
 		KURL	url(j->uri());
 		req.setHost(url.host());
 		req.setPort(url.port());
 	}
+	*/
 	if ((result=req.doRequest("/")))
 		static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
 	else
@@ -324,15 +330,17 @@ bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
 		else value = QMAX(value-10, 1);
 
 		IppRequest	req;
+		/*
 		if (!it.current()->uri().isEmpty())
 		{
 			KURL	url(it.current()->uri());
 			req.setHost(url.host());
 			req.setPort(url.port());
 		}
+		*/
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
 		req.addURI(IPP_TAG_OPERATION, "job-uri", it.current()->uri());
-		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());
+		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->login());
 		req.addInteger(IPP_TAG_JOB, "job-priority", value);
 
 		if (!(result = req.doRequest("/jobs/")))
@@ -363,12 +371,14 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 
 	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
 	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
+	/*
 	if (!j->uri().isEmpty())
 	{
 		KURL	url(j->uri());
 		req.setHost(url.host());
 		req.setPort(url.port());
 	}
+	*/
 	if (!req.doRequest("/"))
 	{
 		KMManager::self()->setErrorMsg(i18n("Unable to retrieve job information: ")+req.statusMessage());
@@ -426,7 +436,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		req.init();
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
 		req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
-		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());
+		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->login());
 		req.setMap(opts);
 		//req.dump(1);
 		if (!req.doRequest("/jobs/"))
