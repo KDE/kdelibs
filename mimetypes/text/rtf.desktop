@@ -48,3 +48,6 @@ Comment[zu]=Ifomathi Yokubhaliweyo Okubalulekile
 Icon=wordprocessing
 Type=MimeType
 Patterns=*.rtf;*.RTF;
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.rtf
