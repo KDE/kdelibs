@@ -19,9 +19,18 @@
 
 // $Id$
 
+#include "config.h"
+
 #include <netdb.h>
-#include <resolv.h>
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
 #include <arpa/nameser.h>
+#include <resolv.h>
 #include <sys/utsname.h>
 
 #include <qtimer.h>
