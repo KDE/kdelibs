@@ -104,9 +104,14 @@ KEdit::insertText(QTextStream *stream)
    setModified(true);
    setFocus();
 
-   QString str = text();
-   for (int i = 0; i < (int) str.length(); i++)
-     printf("KEdit: U+%04X\n", str[i].unicode());
+   // Bernd: Please don't leave debug message like that lying around
+   // they cause ENORMOUSE performance hits. Once upon a day
+   // kedit used to be really really fast using memmap etc .....
+   // oh well ....
+
+   //   QString str = text();
+   //   for (int i = 0; i < (int) str.length(); i++)
+   //     printf("KEdit: U+%04X\n", str[i].unicode());
 
 }
 
