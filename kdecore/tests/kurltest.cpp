@@ -325,6 +325,10 @@ int main(int argc, char *argv[])
 
   check("man: URL, is relative", KURL::isRelativeURL("man:mmap") ? "true" : "false", "false");
   check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
+  // more isRelative
+  check("file: URL, is relative", KURL::isRelativeURL("file:/blah") ? "true" : "false", "false");
+  check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "true"); // arguable
+  check("something, is relative", KURL::isRelativeURL("something") ? "true" : "false", "true");
 
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
