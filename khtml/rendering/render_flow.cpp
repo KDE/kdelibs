@@ -1011,7 +1011,7 @@ RenderFlow::clearFloats()
         return; //html tables and lists flow as blocks
 
     if(flow->floatBottom() > offset)
-	addOverHangingFloats( flow, 0, offset );
+	addOverHangingFloats( flow, flow->borderLeft() + flow->paddingLeft(), offset );
 }
 
 void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, bool child )
