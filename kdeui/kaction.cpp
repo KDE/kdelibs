@@ -245,7 +245,7 @@ void KAction::setEnabled( bool state )
 
 bool KAction::readConfig( const KConfigBase& cfg )
 {
-	QString pfx = "Action" + desc;
+	QString pfx = "Action" + desc();
 	QString key = pfx + "Accel";
 
 	if( cfg.hasKey( key ) ) {
@@ -258,7 +258,7 @@ bool KAction::readConfig( const KConfigBase& cfg )
 
 void KAction::writeConfig( KConfigBase& cfg )
 {
-	QString pfx = "Action" + desc;
+	QString pfx = "Action" + desc();
 	QString key = pfx + "Accel";
 
 	cfg.writeEntry( key, accel() );
