@@ -303,3 +303,14 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: started to used new icons provided by Bogdan, for the toolbar
   * general: added KPrinter::autoConfigure(), to automatically configure
     a KPrinter object without the need for a print dialog.
+
+14/01/2002 Michael Goffioul <goffioul@imec.be>
+  * slave: made case-insensitive for backward compatibility (old URLs may
+    come from history). Now print:/Classes should work OK.
+  * CUPS: moved the IPP report to an separate dialog and added the
+    possibility to print the result.
+
+15/01/2002 Michael Goffioul <goffioul@imec.be>
+  * started the implementation of a new LPR/LPRng plugin: this implementation
+    is designed to be modular to provide support for various systems like
+    Foomatic, APSFilter, GNUlpr or Printtool(RH).

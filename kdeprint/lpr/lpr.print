@@ -1,0 +1,5 @@
+[KDE Print Entry]
+PrintSystem=lpr
+Comment=LPR/LPRng print system
+DetectUris=service:/printer
+DetectPrecedence=0
