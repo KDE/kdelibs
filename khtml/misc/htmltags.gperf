@@ -69,6 +69,7 @@ link, ID_LINK
 map, ID_MAP
 menu, ID_MENU
 meta, ID_META
+nobr, ID_NOBR
 noembed, ID_NOEMBED
 noframes, ID_NOFRAMES
 noscript, ID_NOSCRIPT
@@ -106,6 +107,7 @@ tt, ID_TT
 u, ID_U
 ul, ID_UL
 var, ID_VAR
+wbr, ID_WBR
 xmp, ID_XMP
 anchor, ID_A
 image, ID_IMG

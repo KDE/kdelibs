@@ -59,6 +59,7 @@ link
 map
 menu
 meta
+nobr
 noembed
 noframes
 noscript
@@ -96,4 +97,5 @@ tt
 u
 ul
 var
+wbr
 xmp
