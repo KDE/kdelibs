@@ -798,7 +798,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_clicked = false;
     m_checked = false;
 
-    m_haveType = false;
     m_activeSubmit = false;
     m_autocomplete = true;
     m_inited = false;
@@ -891,48 +890,13 @@ void HTMLInputElementImpl::click(  )
 
 void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    // ### IMPORTANT: check that the type can't be changed after the first time
-    // otherwise a javascript programmer may be able to set a text field's value
-    // to something like /etc/passwd and then change it to a file field
     switch(attr->id())
     {
     case ATTR_AUTOCOMPLETE:
         m_autocomplete = strcasecmp( attr->value(), "off" );
         break;
-    case ATTR_TYPE: {
-            typeEnum newType;
-
-            if ( strcasecmp( attr->value(), "password" ) == 0 )
-                newType = PASSWORD;
-            else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
-                newType = CHECKBOX;
-            else if ( strcasecmp( attr->value(), "radio" ) == 0 )
-                newType = RADIO;
-            else if ( strcasecmp( attr->value(), "submit" ) == 0 )
-                newType = SUBMIT;
-            else if ( strcasecmp( attr->value(), "reset" ) == 0 )
-                newType = RESET;
-            else if ( strcasecmp( attr->value(), "file" ) == 0 )
-                newType = FILE;
-            else if ( strcasecmp( attr->value(), "hidden" ) == 0 )
-                newType = HIDDEN;
-            else if ( strcasecmp( attr->value(), "image" ) == 0 )
-                newType = IMAGE;
-            else if ( strcasecmp( attr->value(), "button" ) == 0 )
-                newType = BUTTON;
-            else if ( strcasecmp( attr->value(), "khtml_isindex" ) == 0 )
-                newType = ISINDEX;
-            else
-                newType = TEXT;
-
-            if (!m_haveType) {
-                m_type = newType;
-                m_haveType = true;
-            }
-            else if (m_type != newType) {
-                setAttribute(ATTR_TYPE,type());
-            }
-        }
+    case ATTR_TYPE:
+        // ignore to avoid that javascript can change a type field to file
         break;
     case ATTR_VALUE:
     case ATTR_CHECKED:
@@ -991,6 +955,45 @@ void HTMLInputElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
+    if (!m_inited) {
+        DOMString type = getAttribute(ATTR_TYPE);
+        if ( strcasecmp( type, "password" ) == 0 )
+            m_type = PASSWORD;
+        else if ( strcasecmp( type, "checkbox" ) == 0 )
+            m_type = CHECKBOX;
+        else if ( strcasecmp( type, "radio" ) == 0 )
+            m_type = RADIO;
+        else if ( strcasecmp( type, "submit" ) == 0 )
+            m_type = SUBMIT;
+        else if ( strcasecmp( type, "reset" ) == 0 )
+            m_type = RESET;
+        else if ( strcasecmp( type, "file" ) == 0 )
+            m_type = FILE;
+        else if ( strcasecmp( type, "hidden" ) == 0 )
+            m_type = HIDDEN;
+        else if ( strcasecmp( type, "image" ) == 0 )
+            m_type = IMAGE;
+        else if ( strcasecmp( type, "button" ) == 0 )
+            m_type = BUTTON;
+        else if ( strcasecmp( type, "khtml_isindex" ) == 0 )
+            m_type = ISINDEX;
+        else
+            m_type = TEXT;
+
+        if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
+        if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
+            QString value = m_value.string();
+            // remove newline stuff..
+            QString nvalue;
+            for (unsigned int i = 0; i < value.length(); ++i)
+                if (value[i] >= ' ')
+                    nvalue += value[i];
+            m_value = nvalue;
+        }
+        m_checked = (getAttribute(ATTR_CHECKED) != 0);
+        m_inited = true;
+    }
+
     // make sure we don't inherit a color to the form elements
     // by adding a non-CSS color property. this his higher
     // priority than inherited color, but lesser priority than
@@ -1014,21 +1017,6 @@ void HTMLInputElementImpl::attach()
             addCSSLength(CSS_PROP_WIDTH, getAttribute(ATTR_WIDTH));
         break;
     };
-
-    if (!m_inited) {
-        if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
-        if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
-            QString value = m_value.string();
-            // remove newline stuff..
-            QString nvalue;
-            for (unsigned int i = 0; i < value.length(); ++i)
-                if (value[i] >= ' ')
-                    nvalue += value[i];
-            m_value = nvalue;
-        }
-        m_checked = (getAttribute(ATTR_CHECKED) != 0);
-        m_inited = true;
-    }
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
