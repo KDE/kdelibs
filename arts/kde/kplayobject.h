@@ -25,7 +25,7 @@
 #include <kmedia2.h>
 #include <qobject.h>
 
-class KPlayObject : private QObject
+class KPlayObject : public QObject
 {
     Q_OBJECT
     public:
