@@ -456,8 +456,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 {
     //kdDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
     // Firstly take into account all special slaves
-    if (protocol == "data")	// simply return a new one for data protocol
-        return new DataProtocol();
+    if (protocol == "data")
+        return 0;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
