@@ -926,12 +926,20 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
   //
   // And _even_ more tricky: if the changed item isn't in our list yet, then skip
   // this code (otherwise we abort but don't update anything!) (David)
-  if ( !m_bComplete && !dirs.isEmpty() )
+  //
+  // Ok, finally the most tricky thingie (gets really out of hand now :): only
+  // stop jobs listing one of the 'dirs', and only update the directory, if
+  // the job was really running (David, Michael)
+  if ( !m_bComplete )
   {
-      stop();
-      KURL::List::ConstIterator it = dirs.begin();
-      for ( ; it != dirs.end() ; ++it )
+    it = dirs.begin();
+    for ( ; it != dirs.end() ; ++it )
+    {
+      QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator job = d->jobs.begin();
+      while ( job != d->jobs.end() )
+        if ( job.key()->url() == (*it) )
           updateDirectory( (*it ) );
+    }
   }
 }
 
