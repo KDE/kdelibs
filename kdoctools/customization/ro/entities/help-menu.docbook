@@ -5,12 +5,12 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Ajutor</guimenu>
+<guimenuitem>Cuprins...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Invocă Sistemul de ajutor KDE</action> 
+ce afişează paginiile de ajutor ale &kappname;. (acest document).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +18,42 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Ajutor</guimenu>
+<guimenuitem>Ce înseamnă aceasta?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Schimbă cursorul mouse-ului într-o combinaţie formată
+dintr-o săgeată şi un semn de întrebare.</action>  Dacă daţi clic pe
+itemi ai &kappname; va fi afişată o fereastră de ajutor (dacă există
+una pentru acel item particular) care explică funcţia itemului.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Ajutor</guimenu>
+<guimenuitem>Raportează erori...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Deschide dialogul de raportare a erorilor</action> 
+unde puteţi comunica eroarea întîmpinată sau să înregistraţi 
+<quote>o dorinţă</quote>.</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Ajutor</guimenu>
+<guimenuitem>Despre &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Această acţiune afişează informaţii despre
+versiune şi autorul aplicaţiei.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Ajutor</guimenu>
+<guimenuitem>Despre KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Această acţiune afişează informaţii despre
+versiunea KDE şi alte informaţii de bază.</action></para></listitem>
 </varlistentry>
 </variablelist>

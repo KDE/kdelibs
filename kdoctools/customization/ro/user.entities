@@ -6,3 +6,7 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!-- ROLES OF TRANSLATORS -->
+
+<!ENTITY tradClaudiuCostin   '<othercredit role="translator"><firstname>Claudiu</firstname><surname>Costin</surname><affiliation><address><email>claudiuc@kde.org</email></address></affiliation><contrib>Traducerea în română</contrib></othercredit>'>
+<!ENTITY coreClaudiuCostin   '<othercredit role="reviewer"><firstname>Claudiu</firstname><surname>Costin</surname><affiliation><address><email>>claudiuc@kde.org</email></address></affiliation><contrib>Corectura traducerii în română</contrib></othercredit>'>
