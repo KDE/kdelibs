@@ -45,7 +45,7 @@ void KPopupMenu::paintCell(QPainter *p, int row, int col)
     else if ( ( (row == 0) && (col == 1) && (isCheckable()) ) ||
 		( (row == 0) && (col == 0) && (!isCheckable()) ) ) {
         int cellh = itemHeight(0);
-        int cellw = itemWidth(0);
+        int cellw = width();
         QColorGroup cg = this->colorGroup();
 
         p->setPen(cg.light());
