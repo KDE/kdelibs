@@ -25,7 +25,7 @@
 #ifndef NDEBUG
 #include "kdebug.h"
 #endif
-#include <kconfig.h>
+#include <kconfigbase.h>
 #include <kapplication.h>
 
 class KAutoConfig::KAutoConfigPrivate {
@@ -35,7 +35,7 @@ public:
 #ifndef NDEBUG
 	  , retrievedSettings(false)
 #endif
-  { }
+  { init(); }
 
   // Widgets to parse
   QPtrList<QWidget> widgets;
@@ -75,16 +75,19 @@ public:
   }
 };
 
-KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent, const char *name):
-			 QObject(parent, name), config(kconfig) {
+KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent,
+	const char *name) : QObject(parent, name), config((KConfigBase*)kconfig) {
   d = new KAutoConfigPrivate();
-  d->init();
+}
+
+KAutoConfig::KAutoConfig(KConfigBase *configbase, QObject *parent,
+	const char *name) : QObject(parent, name), config(configbase) {
+  d = new KAutoConfigPrivate();
 }
 
 KAutoConfig::KAutoConfig(QObject *parent, const char *name) :
-			 QObject(parent, name), config(KGlobal::config()) {
+	QObject(parent, name), config(((KConfigBase*)KGlobal::config())) {
   d = new KAutoConfigPrivate();
-  d->init();
 }
 
 KAutoConfig::~KAutoConfig(){
@@ -105,7 +108,10 @@ void KAutoConfig::ignoreSubWidget(QWidget *widget){
 bool KAutoConfig::retrieveSettings(bool trackChanges){
 #ifndef NDEBUG
   if(d->retrievedSettings){
-      kdDebug() << "This should not happen.  Function KAutoConfig::retrieveSettings() called more then once, returning first.  It is not recomended unless you know the implimentation details of KAutoConfig and what this breaks.  Please fix." << endl;
+      kdDebug() << "This should not happen.  Function "
+       "KAutoConfig::retrieveSettings() called more then once, returning "
+       "first.  It is not recomended unless you know the implimentation "
+       "details of KAutoConfig and what this breaks.  Please fix." << endl;
     return false;
   }
   d->retrievedSettings = true;
@@ -167,7 +173,9 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 bool KAutoConfig::saveSettings() {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "KAutoConfig::saveSettings() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
+      kdDebug() << "KAutoConfig::saveSettings() called before "
+	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+	      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -219,7 +227,9 @@ bool KAutoConfig::saveSettings() {
 bool KAutoConfig::hasChanged() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "KAutoConfig::hasChanged() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
+    kdDebug() << "KAutoConfig::hasChanged() called before "
+	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+	      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -252,7 +262,9 @@ bool KAutoConfig::hasChanged() const {
 bool KAutoConfig::isDefault() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "KAutoConfig::isDefault() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
+    kdDebug() << "KAutoConfig::isDefault() called before "
+	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+	      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -283,7 +295,9 @@ bool KAutoConfig::isDefault() const {
 void KAutoConfig::resetSettings(){
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "KAutoConfig::resetSettings() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
+    kdDebug() << "KAutoConfig::resetSettings() called before "
+	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+	      "Please Fix." << endl;
     return;
   }
 #endif
@@ -351,13 +365,15 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
 	  connect(childWidget, changedMap[childWidget->className()], SIGNAL(widgetModified()));
 #ifndef NDEBUG
 	else if(trackChanges && changedMap.find(childWidget->className()) == changedMap.end())
-            kdDebug() << "KAutoConfig::retrieveSettings, Unknown changed signal for widget:" << childWidget->className() << endl;
+            kdDebug() << "KAutoConfig::retrieveSettings, Unknown changed "
+		    "signal for widget:" << childWidget->className() << endl;
 #endif
 
       }
 #ifndef NDEBUG
       else
-          kdDebug() << "KAutoConfig::retrieveSettings, Unknown widget:" << childWidget->className() << endl;
+          kdDebug() << "KAutoConfig::retrieveSettings, Unknown widget:" 
+		  << childWidget->className() << endl;
 #endif
     }
     if(parseTheChildren){

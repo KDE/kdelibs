@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
+class KConfigBase;
 class KConfig;
 class QWidget;
 
@@ -113,6 +114,15 @@ public:
    * @param name - Object name.
    */ 
   KAutoConfig( KConfig *kconfig, QObject *parent=0, const char *name=0 );	
+ 
+  /**
+   * Constructor.
+   * @param config - KConfigBase to use when retrieving/saving the widgets
+   * that KAutoConfig knows about.
+   * @param parent - Parent object.
+   * @param name - Object name.
+   */ 
+  KAutoConfig( KConfigBase *config, QObject *parent=0, const char *name=0 );	
  
   /**
    * Constructor.
@@ -216,8 +226,8 @@ public slots:
 
 
 protected:
-  // KConfig object used to get/save values.
-  KConfig *config;
+  // KConfigBase object used to get/save values.
+  KConfigBase *config;
   // Map of the classes and the signals that they emit when changed. 
   QMap<QString, const char *> changedMap;
 
