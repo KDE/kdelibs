@@ -34,6 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qhbox.h>
 #include <qvbox.h>
+#include <qaccel.h>
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qlayout.h>
@@ -153,6 +154,8 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     m_button->setDefault( true );
     m_button = bbox->addButton( i18n("&Reject"), this, SLOT(reject()), false );
     bbox->addStretch();
+    QAccel* a = new QAccel( this );
+    a->connectItem( a->insertItem(Qt::Key_Escape), m_button, SLOT(animateClick()) );
     m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
                                 this, SLOT(slotCookieDetails()), false );
 #ifndef QT_NO_WHATSTHIS
