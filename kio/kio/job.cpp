@@ -816,7 +816,6 @@ void TransferJob::slotFinished()
             case CMD_SPECIAL: {
                 int specialcmd;
                 istream >> specialcmd;
-                assert(specialcmd == 1); // you have to switch() here if other cmds are added
                 if (specialcmd == 1) // Assume HTTP POST
                 {
                    addMetaData("cache","reload");
