@@ -193,6 +193,7 @@ KUniqueApplication::start()
   {
      s_DCOPClient = new DCOPClient();
      s_DCOPClient->registerAs(appName, false);
+     s_DCOPClient->send(appName, appName, "newInstanceNoFork()", QByteArray());
      return true;
   }
   DCOPClient *dc;
@@ -351,6 +352,13 @@ bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
   if (fun == "newInstance()") {
     QDataStream ds(data, IO_ReadOnly);
     KCmdLineArgs::loadAppArgs(ds);
+    int exitCode = newInstance();
+    QDataStream rs(replyData, IO_WriteOnly);
+    rs << exitCode;
+    replyType = "int";
+    return true;
+  } else
+  if (fun == "newInstanceNoFork()") {
     int exitCode = newInstance();
     QDataStream rs(replyData, IO_WriteOnly);
     rs << exitCode;
