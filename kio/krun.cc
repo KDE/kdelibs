@@ -368,7 +368,7 @@ void KRun::init()
 
   job->setAutoDelete( false );
   m_jobId = job->id();
-  job->enableGUI( false );
+  job->setGUImode( KIOJob::NONE );
   job->testDir( m_strURL );
 }
 
@@ -390,7 +390,7 @@ void KRun::scanFile()
 	   this, SLOT( slotError( int, int, const char* ) ) );
   job->setAutoDelete( false );
   m_jobId = job->id();
-  job->enableGUI( false );
+  job->setGUImode( KIOJob::NONE );
   job->preget( m_strURL, 2048 );
 }
 
@@ -534,7 +534,7 @@ void KRun::foundMimeType( const char *_type )
 	     this, SLOT( slotPreData( int, const char*, int ) ) );
     job->setAutoDelete( false );
     m_jobId = job->id();
-    job->enableGUI( false );
+    job->setGUImode( KIOJob::NONE );
     job->preget( m_strURL, 2048 );
     return;
   }

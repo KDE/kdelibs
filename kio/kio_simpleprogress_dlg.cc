@@ -1,12 +1,13 @@
-#include "kio_progress_dlg.h"
-#include "kio_job.h"
-
 #include <qpushbutton.h>
 
 #include <kapp.h>
 #include <kwm.h>
 
-KIOCopyProgressDlg::KIOCopyProgressDlg( KIOJob* _job, bool m_bStartIconified ) : QDialog( 0L )
+#include "kio_job.h"
+#include "kio_simpleprogress_dlg.h"
+
+
+KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified ) : QDialog( 0L )
 {
   m_iTotalSize = 0;
   m_iTotalFiles = 0;
@@ -77,23 +78,23 @@ KIOCopyProgressDlg::KIOCopyProgressDlg( KIOJob* _job, bool m_bStartIconified ) :
     KWM::setIconify( this->winId(), true );
 }
 
-void KIOCopyProgressDlg::totalSize( unsigned long _bytes )
+void KIOSimpleProgressDlg::totalSize( unsigned long _bytes )
 {
   m_iTotalSize = _bytes;
 }
 
-void KIOCopyProgressDlg::totalDirs( unsigned long _dirs )
+void KIOSimpleProgressDlg::totalDirs( unsigned long _dirs )
 {
   m_iTotalDirs = _dirs;
 }
 
-void KIOCopyProgressDlg::totalFiles( unsigned long _files )
+void KIOSimpleProgressDlg::totalFiles( unsigned long _files )
 {
   m_iTotalFiles = _files;
   processedFiles( 0 );
 }
 
-void KIOCopyProgressDlg::processedSize( unsigned long _bytes )
+void KIOSimpleProgressDlg::processedSize( unsigned long _bytes )
 {
   if ( _bytes == 0 || m_iTotalSize == 0 )
     return;
@@ -147,21 +148,21 @@ void KIOCopyProgressDlg::processedSize( unsigned long _bytes )
   setCaption( buffer );
 }
 
-void KIOCopyProgressDlg::processedDirs( unsigned long _dirs )
+void KIOSimpleProgressDlg::processedDirs( unsigned long _dirs )
 {
   char buffer[ 200 ];
   sprintf( buffer, "%i/%i directories created", (int)_dirs, (int)m_iTotalDirs );
   m_pLine1->setText( buffer );
 }
 
-void KIOCopyProgressDlg::processedFiles( unsigned long _files )
+void KIOSimpleProgressDlg::processedFiles( unsigned long _files )
 {
   char buffer[ 200 ];
   sprintf( buffer, "%i/%i files", (int)_files, (int)m_iTotalFiles );
   m_pLine1->setText( buffer );
 }
 
-void KIOCopyProgressDlg::speed( unsigned long _bytes_per_second )
+void KIOSimpleProgressDlg::speed( unsigned long _bytes_per_second )
 {
   if ( m_iProcessedSize == 0 )
     return;
@@ -192,12 +193,6 @@ void KIOCopyProgressDlg::speed( unsigned long _bytes_per_second )
 
   char t[ 100 ];
   
-  if ( _bytes_per_second == 0 )
-  {
-    m_pLine5->setText( i18n( "Stalled" ) );
-    return;
-  }
-  
   unsigned long secs = ( m_iTotalSize - m_iProcessedSize ) / _bytes_per_second;
   if ( secs < 60 )
   {
@@ -222,14 +217,14 @@ void KIOCopyProgressDlg::speed( unsigned long _bytes_per_second )
   m_pLine5->setText( buffer );
 }
 
-void KIOCopyProgressDlg::scanningDir( const char *_dir )
+void KIOSimpleProgressDlg::scanningDir( const char *_dir )
 {
   string tmp = (const char*)i18n( "Scanning " );
   tmp += _dir;
   m_pLine2->setText( tmp.c_str() );
 }
 
-void KIOCopyProgressDlg::copyingFile( const char *_from, const char *_to )
+void KIOSimpleProgressDlg::copyingFile( const char *_from, const char *_to )
 {
   string tmp = i18n("From : ").ascii();
   tmp += _from;
@@ -240,23 +235,23 @@ void KIOCopyProgressDlg::copyingFile( const char *_from, const char *_to )
   m_pLine3->setText( tmp.c_str() );
 }
 
-void KIOCopyProgressDlg::makingDir( const char *_dir )
+void KIOSimpleProgressDlg::makingDir( const char *_dir )
 {
   string tmp = (const char*)i18n( "Creating dir " );
   tmp += _dir;
   m_pLine2->setText( tmp.c_str() );
 }
 
-void KIOCopyProgressDlg::gettingFile( const char *_url )
+void KIOSimpleProgressDlg::gettingFile( const char *_url )
 {
   m_pLine1->setText( i18n("Fetching file") );
   m_pLine2->setText( _url );
 }
 
-void KIOCopyProgressDlg::deletingFile( const char *_url )
+void KIOSimpleProgressDlg::deletingFile( const char *_url )
 {
   m_pLine1->setText( i18n("Deleting file") );
   m_pLine2->setText( _url );
 }
 
-#include "kio_progress_dlg.moc"
+#include "kio_simpleprogress_dlg.moc"

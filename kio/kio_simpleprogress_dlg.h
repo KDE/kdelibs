@@ -1,5 +1,5 @@
-#ifndef __kio_progress_dlg_h__
-#define __kio_progress_dlg_h__
+#ifndef __kio_simpleprogress_dlg_h__
+#define __kio_simpleprogress_dlg_h__
 
 #include <qdialog.h>
 #include <qlabel.h>
@@ -9,11 +9,11 @@
 
 class KIOJob;
 
-class KIOCopyProgressDlg : public QDialog
+class KIOSimpleProgressDlg : public QDialog
 {
   Q_OBJECT
 public:
-  KIOCopyProgressDlg( KIOJob*, bool m_bStartIconified = false );
+  KIOSimpleProgressDlg( KIOJob*, bool m_bStartIconified = false );
 
   void totalSize( unsigned long );
   void totalDirs( unsigned long );
