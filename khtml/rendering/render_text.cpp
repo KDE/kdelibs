@@ -39,6 +39,7 @@
 #include "misc/loader.h"
 
 #include <qbitmap.h>
+#include <qimage.h>
 #include <qpainter.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -279,15 +280,15 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         int bmapw = 2*thickness+1;
         float *bmap = new float[bmapw*bmapw];
         float md = thickness*thickness; // max-dist²
-        float strength = 1.0/(1+2*log10(thickness));
+        float strength = 1.0/(sqrt(thickness));
         if (strength > 1.0) strength = 1.0;
         for(int n=-thickness; n<thickness; n++) {
             for(int m=-thickness; m<thickness; m++) {
                 float f, d = (m*m+n*n); // dist²
-                if (d >= md)
+                if (d > md)
                     f = 0.0;
                 else {
-                    f = (md-d)/md;
+                    f = (1+md-d)/md;
                     f = f*f*f*f; // square-root of distance
                 }
                 bmap[(m+thickness)+(n+thickness)*bmapw] = f*strength;;
