@@ -87,12 +87,6 @@ public:
 				_currentVolumeRight += 0.01 * delta;
 			else
 				_currentVolumeRight += 0.0003 * delta;
-
-			/* clipping */
-			if(outleft[i] > 1.0) outleft[i] = 1.0;
-			if(outleft[i] < -1.0) outleft[i] = -1.0;
-			if(outright[i] > 1.0) outright[i] = 1.0;
-			if(outright[i] < -1.0) outright[i] = -1.0;
 		}
 	}
 };

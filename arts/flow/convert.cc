@@ -174,11 +174,19 @@ void convert_stereo_2float_i16le(unsigned long samples, float *left, float *righ
 
 	while(left < end)
 	{
-		syn = (long)((*left++)*32767)+65536;
+		syn = (long)((*left++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
 		*to++ = syn & 0xff;
 		*to++ = (syn >> 8) & 0xff;
 
-		syn = (long)((*right++)*32767)+65536;
+		syn = (long)((*right++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
 		*to++ = syn & 0xff;
 		*to++ = (syn >> 8) & 0xff;
 	}	
@@ -190,7 +198,11 @@ void convert_mono_float_16le(unsigned long samples, float *from, unsigned char *
 
 	while(from < end)
 	{
-		long syn = (long)((*from++)*32767)+65536;
+		long syn = (long)((*from++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
 		*to++ = syn & 0xff;
 		*to++ = (syn >> 8) & 0xff;
 	}	
