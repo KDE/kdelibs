@@ -622,6 +622,7 @@ public:
     /**
      * Returns the unit for this item. See KFileMimeTypeInfo::Unit.
      * @return the unit
+     * @since 3.2
      **/
     uint unit() const;
 
@@ -760,7 +761,6 @@ public:
         return i.value();
     }
 
-
     /**
      * Use this method to get a list of keys in the specified group that
      * the plugin knows about. No variable keys.
@@ -835,10 +835,17 @@ public:
     QStringList removedItems();
 
     /**
-     * The name of the item.
-     * @return the name of the item
+     * The name of this group.
+     * @return the name of this group
      */
     QString name() const;
+
+    /**
+     * The translated name of this group.
+     * @return the translated name of this group
+     * @since 3.2
+     */
+    QString translatedName() const;
 
     /**
      * Returns the attributes of this item.

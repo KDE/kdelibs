@@ -54,7 +54,7 @@ public:
     Data() : mimeTypeInfo( 0L )
     {}
 
-    ~Data() 
+    ~Data()
     {
         if ( this == null ) // only the null item owns its mimeTypeInfo
             delete mimeTypeInfo;
@@ -1186,6 +1186,11 @@ KFileMetaInfoItem KFileMetaInfoGroup::item(uint hint) const
 QString KFileMetaInfoGroup::name() const
 {
     return d->name;
+}
+
+QString KFileMetaInfoGroup::translatedName() const
+{
+    return d->mimeTypeInfo->groupInfo(d->name)->translatedName();
 }
 
 uint KFileMetaInfoGroup::attributes() const
