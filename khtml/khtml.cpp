@@ -1554,7 +1554,6 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 
 void KHTMLWidget::calcSize()
 {
-#ifndef NEW_LAYOUT
     if ( clue == 0 )
 	return;
 
@@ -1573,7 +1572,6 @@ void KHTMLWidget::calcSize()
     clue->setPos( 0, clue->getAscent() );
 
     emit documentChanged();
-#endif
 }
 
 

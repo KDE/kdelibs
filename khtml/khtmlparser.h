@@ -43,7 +43,6 @@
 #include "khtmlclue.h"
 #include "khtmltags.h"
 #include "khtmlstyle.h"
-#include "khtmltable.h"
 
 //
 // External Classes
@@ -132,18 +131,12 @@ protected:
     enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
 
-    /*
-     * This function creates a new flow adds it to '_clue' and sets _clue
-     * to the flow
-     */
-    void newFlow();
-    /*
-     * This function closes the current flow
-     */
-    void closeFlow() 
-    { if(_clue->type() == HTMLObject::Flow) _clue = _clue->close(); }
+	/*
+	 * This function creates a new flow adds it to '_clue' and sets 'flow'
+	 */
+	void newFlow();
 
-    void insertText(char *str, const HTMLFont * fp);
+	void insertText(char *str, const HTMLFont * fp);
 
     /*
      * tagID
@@ -177,13 +170,10 @@ protected:
     void parseTagBody(void); 
     void parseTagBr(void);
     void parseTagButton(void);
-    void parseTagCaption(void);
     void parseTagCell(void);
     void parseTagCenter(void);
     void parseTagCite(void);
     void parseTagCode(void);
-    void parseTagCol(void);
-    void parseTagColgroup(void);
     void parseTagDD(void);
     void parseTagDel(void);
     void parseTagDfn(void);
@@ -242,20 +232,13 @@ protected:
     void parseTagSub(void); 	
     void parseTagSup(void); 	
     void parseTagTable(void); 	
-    void parseTagTableEnd(void); 	
-    void parseTagTD(void); 	
     void parseTagTextarea(void); 	
     void parseTagTextareaEnd(void); 	
     void parseTagTitle(void); 	
-    void parseTagTR(void); 	
     void parseTagTT(void); 	
     void parseTagU(void); 	
     void parseTagUL(void); 	
     void parseTagVar(void); 	
-
-    // this does the actual parsing of the <col> tag.
-    void parseTagCol(int defWidth, HTMLTable::ColType colType,
-		     HTMLClue::VAlign valign, HTMLClue::HAlign halign);
 	
     /*
      * This function is used for convenience only. It inserts a vertical space
@@ -351,15 +334,15 @@ protected:
     const char *baseTarget;
 
 
-    HTMLStackElem *blockStack; 
+	HTMLStackElem *blockStack; 
 
     void pushBlock( int _id, int _level, 
-		    HTMLObject *obj = 0, blockFunc _exitFunc = 0, 
-		    int _miscData1 = 0);
+    				  blockFunc _exitFunc = 0, 
+    				  int _miscData1 = 0);
     					  
     void popBlock( int _id );
  
-    void freeBlock( void);
+	void freeBlock( void);
     
 	 /*
 	  * Code for closing-tag to restore block
@@ -443,11 +426,6 @@ protected:
     QStack<GlossaryEntry> glossaryStack;
 
     /*
-     * Stack of HTMLTables used during paring
-     */
-    QStack<HTMLTable> tableStack;
-
-    /*
      * The current alignment, set by <DIV > or <CENTER>
      */
     HTMLClue::HAlign divAlign;
@@ -462,6 +440,11 @@ protected:
      * Used to avoid inserting multiple vspaces
      */
     bool vspace_inserted;
+
+    /*
+     * The current flow box to add objects to
+     */
+    HTMLClue *flow;
 
     /*
      * Array of TAG functions, e.g.

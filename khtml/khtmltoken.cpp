@@ -424,17 +424,13 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	    if (!isalnum(*src))
 	    {
 	        charEntity = false;
-	        // check trailing char (only ";" is good HTML, but
-	        // accept ' ', '&' and EOL too...) (David)
-	        if (strchr("; &\r\n", searchBuffer[searchCount+1])) {
-	            searchBuffer[ searchCount+1] = '\0';
-	            res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
-	            if (bytesConverted <= 0)
-	            {
-	                bytesConverted = 0;
-	                res = 0;
-	            }
-		}
+	        searchBuffer[ searchCount+1] = '\0';
+	        res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
+	        if (bytesConverted <= 0)
+	        {
+	            bytesConverted = 0;
+	            res = 0;
+	        }
 	    }
 	}
 	    
@@ -712,12 +708,8 @@ printf("Unknown tag: \"%s\"\n", tagStr);
 		select = startTag;
 	    }
 	    else if (( tagID == ID_FRAMESET ) ||
-#ifdef NEW_LAYOUT
            	     ( tagID == ID_CELL ) ||
                      ( tagID == ID_TABLE ))
-#else
-           	     ( tagID == ID_CELL ))
-#endif
 	    {
 	        if (startTag)
 	        {

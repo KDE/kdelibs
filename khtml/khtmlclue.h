@@ -98,8 +98,6 @@ public:
      */
     virtual void calcSize( HTMLClue *parent = 0L );
     virtual void recalcBaseSize( QPainter * );
-    
-    virtual void position( HTMLObject * );
 
     void setFixedWidth( int _width);
     virtual int  calcMinWidth();
@@ -129,7 +127,7 @@ public:
     virtual void setIndent( int ) { }
     virtual void reset();
 
-    virtual ObjectType type() const
+    virtual ObjectType getObjectType() const
 	    {	return Clue; }
     bool hasChildren() const
 	    {	return (head != 0L); }
@@ -138,7 +136,18 @@ public:
     /************************************************************
      * Make an object a child of this Box.
      */
-    virtual void append( HTMLObject *_object );
+    void append( HTMLObject *_object )
+	{
+	    if ( !head )
+	    {
+		head = tail = _object;
+	    }
+	    else
+	    {
+		tail->setNext( _object );
+		tail = _object;
+	    }
+	}
 	
     virtual void findFreeArea( int _y, int, int, int,
                                int *_y_pos, int *_lmargin, int *_rmargin)
@@ -254,12 +263,14 @@ class HTMLClueAligned : public HTMLClueV
 public:
     HTMLClueAligned( HTMLClue *_parent )
 	: HTMLClueV()
-    { parentObj = _parent; nextAligned = 0; setAligned( true ); }
+    { prnt = _parent; nextAligned = 0; setAligned( true ); }
     virtual ~HTMLClueAligned() { }
     
     virtual void setMaxAscent( int ) { }
     virtual void calcSize( HTMLClue *_parent = 0L );
     
+    HTMLClue *parent()
+	{ return prnt; }
     HTMLClueAligned *nextClue() const
 	{ return nextAligned; }
     void setNextClue( HTMLClueAligned *n )
@@ -268,6 +279,7 @@ public:
     virtual const char * objectName() const { return "HTMLClueAligned"; };
 
 private:
+    HTMLClue *prnt;
     HTMLClueAligned *nextAligned;
 };
 
@@ -293,9 +305,6 @@ public:
 
     virtual void setIndent( int i )
 	    {	indent = i; }
-
-    virtual ObjectType type() const
-	    {	return Flow; }
 
     virtual const char * objectName() const { return "HTMLClueFlow"; };
 
@@ -359,9 +368,6 @@ public:
 
     virtual void setIndent( int i )
 	    {	indent = i; }
-
-    virtual ObjectType type() const
-	    {	return Flow; }
 
     virtual const char * objectName() const { return "HTMLClueH"; };
 
