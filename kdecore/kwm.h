@@ -33,6 +33,21 @@
 #endif
 
 /**
+ *
+ * WARNING! THIS CLASS WILL DISSAPPEAR IN KDE-2.0
+ *
+ * With the raise of a common wm-spec standard and KDE-2.0 supporting
+ * X11R6 session management, this class becomes obsolete.
+ *
+ * Instead, there will a class KWin to deal with the common window 
+ * operations (will work with all window managers then) and another 
+ * class to raise desktop sound events (likely KDESound). The communication
+ * protocol ( sendKWMCommand() ) will dissappear completely. Hacks
+ * based on that shall be replaced with real IPC based on DCOP.
+ *
+ * END OF WARNING
+ *
+ *
  * The class KWM allows usual X11 clients to get or modify window
  * properties and to interact with the windowmanager. It also offers
  * some high level functions to support the easy implementation of
@@ -667,7 +682,7 @@ public:
     */
   static void doNotManage(const QString&);
 
-    
+
     /**
      * Tell the window manager that you like to have this window on
      *  top of all other windows.  The last window to call keepOnTop()
