@@ -155,8 +155,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     return;
   }
 
-  if ( m_url.isEmpty() || !_keep )
-    m_url = _url;     // the root
+  m_url = _url;
 
   m_bComplete = false;
   d->urlChanged = false;
