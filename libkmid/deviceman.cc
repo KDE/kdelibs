@@ -431,6 +431,7 @@ void DeviceManager::sync(int i)
     }
     else
     {
+    seqbuf_dump();
     ioctl(seqfd, SNDCTL_SEQ_SYNC);
     };
 #endif
