@@ -131,6 +131,10 @@ int Lexer::lex()
       } else if (current == '/' && next1 == '/') {
 	shift(1);
 	state = InSingleLineComment;
+	// <!-- marks the beginning of a line comment (for www usage)
+      } else if (current == '<' && next1 == '!' && next2 == '-' && next3 == '-') {
+	shift(3);
+	state = InSingleLineComment;
       } else if (current == '/' && next1 == '*') {
 	shift(1);
 	state = InMultiLineComment;
