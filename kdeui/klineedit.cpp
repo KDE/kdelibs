@@ -23,6 +23,7 @@
 
 #include <qclipboard.h>
 
+#include <kcursor.h>
 #include <klocale.h>
 #include <kstdaccel.h>
 #include <kdebug.h>

@@ -21,6 +21,7 @@
 
 #include <qclipboard.h>
 
+#include <kcursor.h>
 #include <klocale.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>

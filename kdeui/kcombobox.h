@@ -363,7 +363,7 @@ protected:
     /**
     * Initializes the variables upon construction.
     */
-    virtual void init();
+    void init();
 
     /**
     * @reimplemented

@@ -295,7 +295,7 @@ protected:
     /**
     * Initializes variables.  Called from the constructors.
     */
-    virtual void init();
+    void init();
 
     /**
     * Re-implemented for internal reasons.  API not affected.
