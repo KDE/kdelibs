@@ -82,7 +82,7 @@ namespace Keramik
 			
 			int key()
 			{
-				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<12) ^ (m_height<<22) ^ m_colorCode ^ m_bgCode;
+				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
 			}
 			
 			bool operator == (const KeramikCacheEntry& other)
@@ -102,44 +102,10 @@ namespace Keramik
 			}
 		};
 		
-		struct KeramikImageCacheEntry
-		{
-			int m_id;
-			QRgb m_colorCode;
-			QRgb m_bgCode;
-			bool    m_disabled;
-			bool    m_blended;
-			
-			QImage* m_image;
-			
-			KeramikImageCacheEntry(int id, const QColor& color, const QColor& bg, bool disabled, bool blended, QImage* image = 0 ):
-				m_id(id), m_colorCode(color.rgb()), m_bgCode(bg.rgb()), m_disabled(disabled), m_blended(blended), m_image(image)
-			{}
-			
-			int key()
-			{
-				return m_disabled ^ (m_blended<<1) ^ (m_id<<2) ^ m_colorCode ^ m_bgCode;
-			}
-			
-			bool operator == (const KeramikImageCacheEntry& other)
-			{
-				return (m_id           == other.m_id) &&
-							(m_blended == other.m_blended) &&
-							(m_bgCode  == other.m_bgCode) && 
-							(m_colorCode == other.m_colorCode) && 
-							(m_disabled == other.m_disabled);
-			}
-						
-			~KeramikImageCacheEntry()
-			{
-				delete m_image;
-			}
-		};
 
 		
 		QImage* getColored(int id, const QColor& color, const QColor& bg, bool blended);
 		QImage* getDisabled(int id, const QColor& color, const QColor& bg, bool blended);
-		QIntCache <KeramikImageCacheEntry> m_imageCache;
 		QIntCache <KeramikCacheEntry>  m_pixmapCache;
 		
 		

@@ -37,13 +37,11 @@ using namespace Keramik;
 
 PixmapLoader* PixmapLoader::s_instance = 0;
 
-PixmapLoader::PixmapLoader():   m_imageCache(131072,  1013),
-											 	 m_pixmapCache(2*131072, 1013)
+PixmapLoader::PixmapLoader():  m_pixmapCache(327680, 2017)
 													
 { 
 //	QPixmapCache::setCacheLimit( 128 );
 	m_pixmapCache.setAutoDelete(true);
-	m_imageCache.setAutoDelete(true);
 	
 	for (int c=0; c<256; c++)
 		clamp[c]=static_cast<unsigned char>(c);
@@ -270,20 +268,6 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 
 	QImage* img = 0;	
 	QPixmap* result = 0;
-	KeramikImageCacheEntry imageEntry(name, color, bg, disabled, blend);
-	KeramikImageCacheEntry* imageCacheEntry;
-	int imgKey = imageEntry.key();
-	if ((imageCacheEntry = m_imageCache.find(imgKey, false)))
-	{
-		if (imageEntry == *imageCacheEntry) //True match!
-		{
-			m_imageCache.find(imgKey, true); 
-			img = imageCacheEntry->m_image;
-		}
-	}
-	
-	if ( !img )
-	{
 		if (disabled)
 			img = getDisabled(name, color, bg, blend);
 		else
@@ -296,29 +280,14 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 			return QPixmap();
 		}
 
-		KeramikImageCacheEntry* imgToAdd = new KeramikImageCacheEntry(imageEntry);
-		imgToAdd->m_image = img;
-		m_imageCache.insert(imgKey, imgToAdd, img->width()*img->height()*img->depth()/8);
-	}
 	
-	
-	//SadEagle: Disabled for now to conserve cache space.
-	//if (img->width() >= 32 || img->hasAlphaBuffer())
 		result = new QPixmap( *img );
-	/*else
-	{
-		int repeat = int(32.0/float(img->width())+0.9);
-		result = new QPixmap( img->width()*repeat, img->height()*repeat);
-		QPainter p(result);
-		p.drawTiledPixmap(0, 0, result->width(), result->height(), QPixmap(*img) );
-		p.end();
-	}*/
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
 	
 	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
 	
-	//delete img;
+	delete img;
 	return *result;
 }
 
@@ -341,20 +310,7 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 	
 	QImage* img = 0;	
 	QPixmap* result = 0;
-	KeramikImageCacheEntry imageEntry(name, color, bg, disabled, blend);
-	KeramikImageCacheEntry* imageCacheEntry;
-	int imgKey = imageEntry.key();
-	if ((imageCacheEntry = m_imageCache.find(imgKey, false)))
-	{
-		if (imageEntry == *imageCacheEntry) //True match!
-		{
-			m_imageCache.find(imgKey, true); 
-			img = imageCacheEntry->m_image;
-		}
-	}
 	
-	if ( !img )
-	{
 		if (disabled)
 			img = getDisabled(name, color, bg, blend);
 		else
@@ -368,18 +324,14 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 			return QPixmap();
 		}
 		
-		KeramikImageCacheEntry* imgToAdd = new KeramikImageCacheEntry(imageEntry);
-		imgToAdd->m_image = img;
-		m_imageCache.insert(imgKey, imgToAdd, img->width()*img->height()*img->depth()/8);
-	}
-	result = new QPixmap ( img->scale( width ? width : img->width(), height ? height : img->height() ) );
+	result = new QPixmap ( img->scale( width ? width : img->width(), height ? height: img->height() ) );
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
 	
 	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
 
-//	delete img;	
+	delete img;	
 	return *result;
 }
 
@@ -440,8 +392,8 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 		{
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
 			
-			 //else t = tile( col, row, color, disabled );
-			 int tileW = PixmapLoader::the().size (absTileName( col, row ) ).width();
+			//else t = tile( col, row, color, disabled );
+			int tileW = PixmapLoader::the().size (absTileName( col, row ) ).width();
 			
 			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
 			int realW = w ? w : tileW;
@@ -539,7 +491,7 @@ int RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 }
 
 ActiveTabPainter::ActiveTabPainter( bool bottom )
-	: RectTilePainter( bottom? keramik_tab_bottom_active: keramik_tab_top_active),
+	: RectTilePainter( bottom? keramik_tab_bottom_active: keramik_tab_top_active, false),
 	  m_bottom( bottom )
 {
 	m_rows = 2;
@@ -563,7 +515,7 @@ int ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 }
 
 InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
-	: RectTilePainter( bottom? keramik_tab_bottom_inactive: keramik_tab_top_inactive),
+	: RectTilePainter( bottom? keramik_tab_bottom_inactive: keramik_tab_top_inactive, false),
 	  m_mode( mode ), m_bottom( bottom )
 {
 	m_rows = 2;
@@ -601,12 +553,12 @@ ScrollBarPainter::ScrollBarPainter( int type, int count, bool horizontal )
 	for (int c=0; c<5; c++)
 	{
 		if ( !m_horizontal || !( c % 2 ) ) colMde[c] = Fixed;
-		else colMde[c] =  ( m_count == 2 ) ? Scaled : Tiled;
+		else colMde[c] =  Tiled;
 		
 		if ( m_horizontal || !( c % 2 ) ) rowMde[c] = Fixed;
-		else rowMde[c] =  ( m_count == 2 ) ? Scaled : Tiled;
+		else rowMde[c] =  Tiled;
 	}
-	
+    
 	m_columns = m_horizontal ? m_count : 1;
 	m_rows       = m_horizontal ? 1 : m_count;
 	

@@ -338,7 +338,7 @@ int main(int argc, char** argv)
 	cout<<"\t\treturn images[id];\n";
 	cout<<"\t}\n\n";
 	cout<<"private:\n";
-	cout<<"\tKeramikImageDb():images(211)\n";
+	cout<<"\tKeramikImageDb():images(503)\n";
 	cout<<"\t{\n";
 	cout<<"\t\tfor (int c=0; image_db[c].width; c++)\n";
 	cout<<"\t\t\timages.insert(image_db[c].id, &image_db[c]);\n";
