@@ -39,6 +39,7 @@
 #include <kio/job.h>
 #include <kstandarddirs.h>
 #include <kfiledialog.h>
+#include <kdirnotify_stub.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -643,6 +644,11 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   }
   else
   {
+    KDirNotify_stub allDirNotify("*", "KDirNotify*");
+    KURL dirUrl( m_url );
+    dirUrl.setPath( dirUrl.directory() );
+    allDirNotify.FilesAdded( dirUrl );
+
     d->m_uploadJob = 0;
     setModified( false );
     emit completed();
