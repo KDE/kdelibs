@@ -38,7 +38,7 @@ SUBDIRS = misc dom css xml html rendering java . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
-		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp
+		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
