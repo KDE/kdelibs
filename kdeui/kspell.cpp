@@ -33,8 +33,10 @@
 #include <strings.h>
 #endif
 
+#include <qregexp.h>
 #include <qtextcodec.h>
 #include <qtimer.h>
+
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
@@ -76,6 +78,7 @@ public:
   bool checking;
   QValueList<BufferedWord> unchecked;
   QTimer *checkNextTimer;
+  bool aspellV6;
 };
 
 //TODO
@@ -122,11 +125,34 @@ void KSpell::hide() { ksdlg->hide(); }
 int KSpell::heightDlg() const { return ksdlg->height(); }
 int KSpell::widthDlg() const { return ksdlg->width(); }
 
+// Check if aspell is at least version 0.6
+static bool determineASpellV6()
+{
+  QString result;
+  FILE *fs = popen("aspell -v", "r");
+  if (fs)
+  {
+    QTextStream ts(fs, IO_ReadOnly);
+    result = ts.read().stripWhiteSpace();
+    pclose(fs);
+  }
+
+  QRegExp rx("Aspell (\\d.\\d)");
+  if (rx.search(result) != -1)
+  {
+     float version = rx.cap(1).toFloat();
+     return (version >= 0.6);
+  }
+  return false;
+}
+
 
 void
 KSpell::startIspell()
   //trystart = {0,1,2}
 {
+  if ((trystart == 0) && (ksconfig->client() == KS_CLIENT_ASPELL))
+     d->aspellV6 = determineASpellV6();
 
   kdDebug(750) << "Try #" << trystart << endl;
 
@@ -232,6 +258,11 @@ KSpell::startIspell()
 	break;
       case KS_E_UTF8:
         *proc << "-Tutf8";
+        if (ksconfig->client() == KS_CLIENT_ASPELL)
+          *proc << "--encoding=utf-8";
+        else
+          *proc << "-Tutf8";
+
         break;
       case KS_E_KOI8U:
 	*proc << "-w'"; // add ' as a word char
@@ -1011,7 +1042,7 @@ void KSpell::check2( KProcIO * )
         dlgresult=-1;
 
         // for multibyte encoding posinline needs correction
-        if (ksconfig->encoding() == KS_E_UTF8) {
+        if ((ksconfig->encoding() == KS_E_UTF8) && !d->aspellV6) {
           // kdDebug(750) << "line: " << origbuffer.mid(lastlastline,
           // lastline-lastlastline) << endl;
           // kdDebug(750) << "posinline uncorr: " << posinline << endl;
@@ -1408,6 +1439,7 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   d->m_bNoMisspellingsEncountered = true;
   d->type = type;
   d->checking = false;
+  d->aspellV6 = false;
   d->checkNextTimer = new QTimer( this );
   connect( d->checkNextTimer, SIGNAL( timeout() ),
 	   this, SLOT( checkNext() ));
