@@ -49,6 +49,7 @@
 #include <kio/previewjob.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
+#include <kstdaccel.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -1096,7 +1097,7 @@ void KDirOperator::setupActions()
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
-    reloadAction->setAccel( Key_F5 );
+    reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
 
     // the sort menu actions
