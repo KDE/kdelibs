@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
+                      David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,74 +21,60 @@
 #ifndef __kbrowser_h__
 #define __kbrowser_h__
 
-#include <qwidget.h>
 #include <qpoint.h>
 #include <qlist.h>
 #include <qdatastream.h>
 
-#include <kaction.h>
+#include <qaction.h>
 #include <kpart.h>
 
 class KFileItem;
 typedef QList<KFileItem> KFileItemList;
 
 class QString;
-class KConfig;
 
-class ViewPropertiesExtension : public QObject
+ /**
+  * The following standard actions are defined by the host of the view :
+  * 
+  * cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
+  * paste : copy selected items to clipboard (and notifies it's not a cut)
+  * pastecopy : called when doing a paste after a copy
+  * pastecut : called when doing a paste after a cut
+  * erase : delete selected items (couldn't call it delete!)
+  * trash : move selected items to trash
+  * print : print :-)
+  *
+  * reparseConfiguration : re-read configuration and apply it
+  * saveLocalProperties : save current configuration into .directory
+  * savePropertiesAsDefault : save current configuration as default
+  * refreshMimeTypes :
+  * 
+  * 
+  * The view should emit enableAction when an action should be enabled/disabled,
+  * and should define a slot with the name of the action in order to implement the action.
+  * The browser will detect the slot automatically and connect its action to it when
+  * appropriate (i.e. when the view is active)
+  */
+class BrowserExtension : public QObject
 {
   Q_OBJECT
 public:
-  ViewPropertiesExtension( QObject *parent, const char *name = 0 ) : QObject( parent, name ) {}
+  /**
+   * Constructor
+   *
+   * @param parent the KParts::ReadOnlyPart that this extension ... "extends" :)
+   * @param name an optionnal name for the extension
+   */
+  BrowserExtension( KParts::ReadOnlyPart *parent,
+                    const char *name = 0L ) :
+    QObject( parent, name ), m_part( parent ) {}
 
-  virtual void reparseConfiguration() = 0;
-  virtual void saveLocalProperties() = 0;
-  virtual void savePropertiesAsDefault() = 0;
-  // Reimplement if the view shows icons (Icon/Tree/DirTree...)
-  virtual void refreshMimeTypes() {}
-};
+  virtual ~BrowserExtension() { }
 
-class PrintingExtension : public QObject
-{
-  Q_OBJECT
-public:
-  PrintingExtension( QObject *parent, const char *name = 0L ) : QObject( parent, name ) {}
-
-  virtual void print() = 0;
-
-};
-
-class EditExtension : public QObject
-{
-  Q_OBJECT
-public:
-  EditExtension( QObject *parent, const char *name = 0L ) : QObject( parent, name ) {}
-
-  virtual void can( bool &cut, bool &copy, bool &paste, bool &move ) = 0;
-
-  virtual void cutSelection() = 0;
-  virtual void copySelection() = 0;
-  virtual void pasteSelection( bool move = false ) = 0;
-  virtual void moveSelection( const QString &destinationURL = QString::null ) = 0;
-  // reimplement if the view deals with urls (currently only used by slotDelete)
-  virtual QStringList selectedUrls() { return QStringList(); }
-
-signals:
-  void selectionChanged();
-
-};
-
-class BrowserView : public QObject
-{
-  Q_OBJECT
-public:
-  BrowserView( KParts::ReadOnlyPart *parent = 0L, const char *name = 0L ) : QObject( parent, name ) { m_part = parent; }
-
-  virtual ~BrowserView() { }
-
-  virtual void setXYOffset( int x, int y ) = 0;
-  virtual int xOffset() = 0;
-  virtual int yOffset() = 0;
+  // Simon: some comments here please :)
+  virtual void setXYOffset( int /* x */, int /* y */ ) {};
+  virtual int xOffset() { return 0; }
+  virtual int yOffset() { return 0; }
 
   virtual void saveState( QDataStream &stream )
   { stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
@@ -97,6 +84,12 @@ public:
     m_part->openURL( u ); setXYOffset( xOfs, yOfs ); }
 
 signals:
+  /**
+   * Enable or disable a standard action held by the browser.
+   * See class documentation for the list of standard actions.
+   */
+  void enableAction( const char * name, bool enabled );
+
   void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   void setStatusBarText( const QString &text );
   void setLocationBarURL( const QString &url );
