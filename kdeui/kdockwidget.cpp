@@ -549,6 +549,7 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   closeButton = new KDockButton_Private( this, "DockCloseButton" );
   closeButton->setPixmap(close_xpm);
   closeButton->setFixedSize(9,9);
+  connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new KDockButton_Private( this, "DockStayButton" );

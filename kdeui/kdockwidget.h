@@ -477,6 +477,11 @@ signals:
    */
   void setDockDefaultPos();
 
+  /**
+   * Signals that the close button of the panel (@ref KDockWidgetHeader) has been clicked.
+   */
+  void headerCloseButtonClicked();
+
 public slots:
 
   /**
