@@ -284,6 +284,8 @@ class KAccelAction
 class KAccelActions : protected QValueVector<KAccelAction>
 {
  public:
+        typedef KAccelAction* iterator;
+        typedef const KAccelAction* const_iterator;
 	KAccelActions();
 	virtual ~KAccelActions();
 
