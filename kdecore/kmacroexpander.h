@@ -149,7 +149,7 @@ namespace KMacroExpander {
      * map.insert('u', "/tmp/myfile.txt");
      * map.insert('n', "My File");
      * QString s = "%% Title: %u:%n";
-     * KMacroExpander::expandMacros(s, map);
+     * s = KMacroExpander::expandMacros(s, map);
      * // s is now "% Title: /tmp/myfile.txt:My File";
      * \endcode
      */
@@ -174,7 +174,7 @@ namespace KMacroExpander {
      * map.insert('u', "/tmp/myfile.txt");
      * map.insert('n', "My File");
      * QString s = "kedit --caption %n %u";
-     * KMacroExpander::expandMacrosShellQuote(s, map);
+     * s = KMacroExpander::expandMacrosShellQuote(s, map);
      * // s is now "kedit --caption 'My File' '/tmp/myfile.txt'";
      * system(QFile::encodeName(s));
      * \endcode
@@ -201,7 +201,7 @@ namespace KMacroExpander {
      * map.insert("url", "/tmp/myfile.txt");
      * map.insert("name", "My File");
      * QString s = "Title: %{url}-%name";
-     * KMacroExpander::expandMacros(s, map);
+     * s = KMacroExpander::expandMacros(s, map);
      * // s is now "Title: /tmp/myfile.txt-My File";
      * \endcode
      */
@@ -229,7 +229,7 @@ namespace KMacroExpander {
      * map.insert("url", "/tmp/myfile.txt");
      * map.insert("name", "My File");
      * QString s = "kedit --caption %name %{url}";
-     * KMacroExpander::expandMacrosShellQuote(s, map);
+     * s = KMacroExpander::expandMacrosShellQuote(s, map);
      * // s is now "kedit --caption 'My File' '/tmp/myfile.txt'";
      * system(QFile::encodeName(s));
      * \endcode
