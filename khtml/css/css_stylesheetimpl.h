@@ -57,7 +57,7 @@ public:
 
     virtual ~StyleSheetImpl();
 
-    virtual bool isStyleSheet() { return true; }
+    virtual bool isStyleSheet() const { return true; }
 
     virtual bool deleteMe();
 
@@ -93,7 +93,7 @@ public:
 
     virtual ~CSSStyleSheetImpl();
 
-    virtual bool isCSSStyleSheet() { return true; }
+    virtual bool isCSSStyleSheet() const { return true; }
 
     virtual DOM::DOMString type() const { return "text/css"; }
 

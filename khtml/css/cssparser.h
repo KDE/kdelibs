@@ -119,9 +119,9 @@ public:
 
 	StyleBaseImpl *parent() { return m_parent; }
 
-	virtual bool isStyleSheet() { return false; }
-	virtual bool isCSSStyleSheet() { return false; }
-	virtual bool isStyleSheetList() { return false; }
+	virtual bool isStyleSheet() const { return false; }
+	virtual bool isCSSStyleSheet() const { return false; }
+	virtual bool isStyleSheetList() const { return false; }
 	virtual bool isMediaList() { return false; }
 	virtual bool isRuleList() { return false; }
 	virtual bool isRule() { return false; }
@@ -134,7 +134,7 @@ public:
 	virtual bool isUnknownRule() { return false; }
 	virtual bool isStyleDeclaration() { return false; }
 	virtual bool isValue() { return false; }
-	virtual bool isPrimitiveValue() { return false; }
+	virtual bool isPrimitiveValue() const { return false; }
 	virtual bool isValueList() { return false; }
 	virtual bool isValueCustom() { return false; }
 

@@ -35,6 +35,7 @@
 #include "misc/loader.h"
 
 #include <kdebug.h>
+#include <qregexp.h>
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
@@ -413,11 +414,6 @@ void CSSPrimitiveValueImpl::cleanup()
     m_type = 0;
 }
 
-unsigned short CSSPrimitiveValueImpl::primitiveType() const
-{
-    return m_type;
-}
-
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue, int &exceptioncode )
 {
     exceptioncode = 0;
@@ -430,11 +426,6 @@ void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatV
     //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
     m_value.num = floatValue;
     m_type = unitType;
-}
-
-float CSSPrimitiveValueImpl::getFloatValue( unsigned short /*unitType*/)
-{
-    return m_value.num;
 }
 
 void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOMString &stringValue, int &exceptioncode )
@@ -454,36 +445,6 @@ void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOM
 	m_type = stringType;
     }
     // ### parse ident
-}
-
-DOMStringImpl *CSSPrimitiveValueImpl::getStringValue(  )
-{
-    if(m_type < CSSPrimitiveValue::CSS_STRING) return 0;
-    if(m_type > CSSPrimitiveValue::CSS_ATTR) return 0;
-    if(m_type == CSSPrimitiveValue::CSS_IDENT)
-    {
-	// ###
-	return 0;
-    }
-    return m_value.string;
-}
-
-CounterImpl *CSSPrimitiveValueImpl::getCounterValue(  )
-{
-    if(m_type != CSSPrimitiveValue::CSS_COUNTER) return 0;
-    return m_value.counter;
-}
-
-RectImpl *CSSPrimitiveValueImpl::getRectValue(  )
-{
-    if(m_type != CSSPrimitiveValue::CSS_RECT) return 0;
-    return m_value.rect;
-}
-
-RGBColor *CSSPrimitiveValueImpl::getRGBColorValue(  )
-{
-    if(m_type != CSSPrimitiveValue::CSS_RGBCOLOR) return 0;
-    return m_value.rgbcolor;
 }
 
 unsigned short CSSPrimitiveValueImpl::cssValueType() const
@@ -670,3 +631,46 @@ CSSImageValueImpl::~CSSImageValueImpl()
     if(m_image) m_image->deref(this);
 }
 
+// ------------------------------------------------------------------------
+
+FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
+    : CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
+{
+    const QString &available = KHTMLSettings::availableFamilies();
+
+    QString face = string.lower();
+    // a languge tag is often added in braces at the end. Remove it.
+    face = face.replace(QRegExp(" \\(.*\\)$"), "");
+    //kdDebug(0) << "searching for face '" << face << "'" << endl;
+    if(face == "serif" || 
+       face == "sans-serif" || 
+       face == "cursive" ||
+       face == "fantasy" ||
+       face == "monospace" ||
+       face == "konq_default") {
+	parsedFontName = face;
+    } else {
+	int pos = available.find( face, 0, false );
+	if( pos == -1 ) {
+	    QString str = face;
+	    int p = face.find(' ');
+	    // Arial Blk --> Arial
+	    // MS Sans Serif --> Sans Serif
+	    if ( p != -1 ) {
+		if(p > 0 && (int)str.length() - p > p + 1)
+		    str = str.mid( p+1 );
+		else
+		    str.truncate( p );
+		pos = available.find( str, 0, false);
+	    }
+	}
+
+	if ( pos != -1 ) {
+	    int pos1 = available.findRev( ',', pos ) + 1;
+	    pos = available.find( ',', pos );
+	    if ( pos == -1 )
+		pos = available.length();
+	    parsedFontName = available.mid( pos1, pos - pos1 );
+	}
+    }
+}

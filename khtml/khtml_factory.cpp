@@ -71,6 +71,7 @@ QList<KHTMLPart> *KHTMLFactory::s_parts = 0;
 #else
 QPtrList<KHTMLPart> *KHTMLFactory::s_parts = 0;
 #endif
+QString *KHTMLSettings::avFamilies = 0;
 
 KHTMLFactory::KHTMLFactory( bool clone )
 {
@@ -90,6 +91,8 @@ KHTMLFactory::~KHTMLFactory()
             delete s_about;
         if ( s_settings )
             delete s_settings;
+	if ( KHTMLSettings::avFamilies )
+	    delete KHTMLSettings::avFamilies;
         if ( s_parts )
         {
             assert( s_parts->isEmpty() );
@@ -100,6 +103,7 @@ KHTMLFactory::~KHTMLFactory()
         s_about = 0;
         s_settings = 0;
         s_parts = 0;
+	KHTMLSettings::avFamilies = 0;
 
         kdDebug( 6000 ) << "KHTMLFactory::~KHTMLFactory" << endl;
         // clean up static data

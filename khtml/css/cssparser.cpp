@@ -1907,7 +1907,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
           CSSValueListImpl *list = new CSSValueListImpl;
 	  for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
             if( *it != QString::null ) {
-	      list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
+	      list->append( new FontFamilyValueImpl(*it) );
 	      //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl;
             }
 	  }

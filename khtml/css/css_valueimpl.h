@@ -156,18 +156,37 @@ public:
 
     void cleanup();
 
-    unsigned short primitiveType() const;
+    unsigned short primitiveType() const {
+	    return m_type;
+    }
+
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
     void setFloatValue ( unsigned short unitType, float floatValue, int &exceptioncode );
-    float getFloatValue ( unsigned short unitType);
-    void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
-    DOM::DOMStringImpl *getStringValue (  );
-    CounterImpl *getCounterValue (  );
-    RectImpl *getRectValue (  );
-    RGBColor *getRGBColorValue (  );
+    float getFloatValue ( unsigned short/* unitType */) const {
+	return m_value.num;
+    }
 
-    virtual bool isPrimitiveValue() { return true; }
+    void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
+    DOM::DOMStringImpl *getStringValue () const {
+	return ( ( m_type < CSSPrimitiveValue::CSS_STRING || 
+		   m_type > CSSPrimitiveValue::CSS_ATTR || 
+		   m_type == CSSPrimitiveValue::CSS_IDENT ) ? // fix IDENT
+		 0 : m_value.string ); 
+    }
+    CounterImpl *getCounterValue () const {
+        return ( m_type != CSSPrimitiveValue::CSS_COUNTER ? 0 : m_value.counter );
+    }
+
+    RectImpl *getRectValue () const {
+	return ( m_type != CSSPrimitiveValue::CSS_RECT ? 0 : m_value.rect );
+    }
+
+    RGBColor *getRGBColorValue () const {
+	return ( m_type != CSSPrimitiveValue::CSS_RGBCOLOR ? 0 : m_value.rgbcolor );
+    }
+    
+    virtual bool isPrimitiveValue() const { return true; }
     virtual unsigned short cssValueType() const;
 
     int getIdent();
@@ -231,6 +250,16 @@ public:
 protected:
     khtml::CachedImage *m_image;
 };
+
+class FontFamilyValueImpl : public CSSPrimitiveValueImpl
+{
+public:
+    FontFamilyValueImpl( const QString &string);
+    const QString &fontName() const { return parsedFontName; }
+protected:
+    QString parsedFontName;
+};
+
 // ------------------------------------------------------------------------------
 
 // another helper class

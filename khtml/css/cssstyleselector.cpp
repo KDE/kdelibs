@@ -2280,76 +2280,35 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
-	const KHTMLSettings *s = e->getDocument()->view()->part()->settings();
-	QString available = s->availableFamilies();
 	QFont f = style->font();
 	QString family;
-	bool isUserPref;
-	//kdDebug(0) << "searching for font... available:" << available << endl;
-        for(int i = 0; i < len; i++)
-        {
+        for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
-            DOMStringImpl *str = val->getStringValue();
-            QString face = QConstString(str->s, str->l).string().lower();
-	    // a languge tag is often added in braces at the end. Remove it.
-	    face = face.replace(QRegExp(" \\(.*\\)$"), "");
-            //kdDebug(0) << "searching for face '" << face << "'" << endl;
-	    isUserPref = false;
-            if(face == "serif") {
-                face = s->serifFontName();
-                isUserPref = true;
-            }
-            else if(face == "sans-serif") {
-                face = s->sansSerifFontName();
-                isUserPref = true;
-            }
-            else if( face == "cursive") {
-                face = s->cursiveFontName();
-                isUserPref = true;
-            }
-            else if( face == "fantasy") {
-                face = s->fantasyFontName();
-                isUserPref = true;
-            }
-            else if( face == "monospace") {
-                face = s->fixedFontName();
-                isUserPref = true;
-            }
-            else if( face == "konq_default") {
-                face = s->stdFontName();
-                isUserPref = true;
-            }
-
-	    if (isUserPref) {
+            QString face = static_cast<FontFamilyValueImpl *>(val)->fontName();
+	    if ( !face.isNull() || face.isEmpty() ) {
+		const KHTMLSettings *s = e->getDocument()->view()->part()->settings();
+		if(face == "serif") {
+		    face = s->serifFontName();
+		}
+		else if(face == "sans-serif") {
+		    face = s->sansSerifFontName();
+		}
+		else if( face == "cursive") {
+		    face = s->cursiveFontName();
+		}
+		else if( face == "fantasy") {
+		    face = s->fantasyFontName();
+		}
+		else if( face == "monospace") {
+		    face = s->fixedFontName();
+		}
+		else if( face == "konq_default") {
+		    face = s->stdFontName();
+		}
 		f.setFamily( face );
-                style->setFont(f);
-                return;
-	    }
-
-	    int pos;
-	    if( (pos = available.find( face, 0, false)) == -1 ) {
-		QString str = face;
-                int p = face.find(' ');
-                // Arial Blk --> Arial
-                // MS Sans Serif --> Sans Serif
-                if(p > 0 && (int)str.length() - p > p + 1)
-                    str = str.mid( p+1 );
-                else
-                    str.truncate( p );
-		pos = available.find( str, 0, false);
-	    }
-
-	    if ( pos != -1 ) {
-		int pos1 = available.findRev( ',', pos ) + 1;
-		pos = available.find( ',', pos );
-		if ( pos == -1 )
-		    pos = available.length();
-		family = available.mid( pos1, pos - pos1 );
-                //kdDebug(0) << "found family: " << family << endl;
-		f.setFamily( family );
                 style->setFont(f);
                 return;
 	    }

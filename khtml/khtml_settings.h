@@ -116,7 +116,7 @@ public:
     static const char* adviceToStr(KJavaScriptAdvice _advice);
 
     QString settingsToCSS() const;
-    QString availableFamilies() const;
+    static const QString &availableFamilies();
 
     QString userStyleSheet() const;
 
@@ -125,10 +125,12 @@ public:
     int maxFormCompletionItems() const;
 
 private:
+    friend class KHTMLFactory;
     void setFont(int, int i, const QString &n);
     QString lookupFont(int i) const;
 
     KHTMLSettingsPrivate *d;
+    static QString *avFamilies;
 };
 
 #endif

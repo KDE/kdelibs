@@ -27,6 +27,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <qregexp.h>
 
 #define MAXFONTSIZES 15
 
@@ -53,7 +54,6 @@ public:
 
     QString m_encoding;
     QString m_userSheet;
-    QString availFamilies;
 
     QColor m_textColor;
     QColor m_linkColor;
@@ -489,9 +489,10 @@ QString KHTMLSettings::settingsToCSS() const
     return str;
 }
 
-QString KHTMLSettings::availableFamilies() const
+const QString &KHTMLSettings::availableFamilies()
 {
-    if ( d->availFamilies.isEmpty() ) {
+    if ( !avFamilies ) {
+	avFamilies = new QString;
         QFontDatabase db;
         QStringList families = db.families();
         QStringList s;
@@ -505,10 +506,10 @@ QString KHTMLSettings::availableFamilies() const
         }
         s.sort();
 
-        d->availFamilies = s.join(",");
+        *avFamilies = s.join(",");
     }
 
-  return d->availFamilies;
+  return *avFamilies;
 }
 
 QString KHTMLSettings::lookupFont(int i) const
