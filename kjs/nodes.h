@@ -93,7 +93,7 @@ namespace KJS {
 
     UString toCode() const;
     virtual void streamTo(SourceStream &s) const = 0;
-    virtual void processVarDecls(ExecState */*exec*/) {}
+    virtual void processVarDecls(ExecState* /*exec*/) {}
     int lineNo() const { return line; }
 
   public:
@@ -138,7 +138,7 @@ namespace KJS {
   protected:
     LabelStack ls;
   private:
-    Reference2 evaluate(ExecState */*exec*/) const { return Reference2(); }
+    Reference2 evaluate(ExecState* /*exec*/) const { return Reference2(); }
     int l0, l1;
     int sid;
     bool breakPoint;
@@ -991,7 +991,7 @@ namespace KJS {
       : ident(i), param(p), body(b) { }
     virtual void ref();
     virtual bool deref();
-    Completion execute(ExecState */*exec*/)
+    Completion execute(ExecState* /*exec*/)
       { /* empty */ return Completion(); }
     void processFuncDecl(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
