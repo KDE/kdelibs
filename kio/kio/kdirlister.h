@@ -73,14 +73,16 @@ public:
   virtual ~KDirLister();
 
   /**
-   * Run the directory lister on the given url. If @p _url is already in the cache
-   * (i.e. openURL() was already called with @p _url) and _keep == true this is
-   * equivalent to @p updateDirectory( _url ).
+   * Run the directory lister on the given url.
+   *
+   * This method causes KDirLister to emit _all_ the items of @p _url, in any case.
+   * Depending on @p _keep either clear() or clear( const KURL & ) will be
+   * emitted first.
    *
    * @param _url          the directory URL.
    * @param _keep         if true the previous directories aren't forgotten
    *                      (they are still watched by kdirwatch and their items
-   *                      are kept in m_lstFileItems). This is useful for e.g.
+   *                      are kept for this KDirLister). This is useful for e.g.
    *                      a treeview.
    * @param _reload       indicates wether to use the cache (false) or to reread the
    *                      directory from the disk.
@@ -169,10 +171,14 @@ public:
   virtual void emitChanges();
 
   /**
-   * Update @p _dir.
-   * The current implementation calls it automatically for
+   * Update the directory @p _dir. This method causes KDirLister to _only_ emit
+   * the items of @p _dir that actually changed compared to the current state in the
+   * cache and updates the cache.
+   *
+   * The current implementation calls updateDirectory automatically for
    * local files, using KDirWatch (if autoUpdate() is true), but it might be
    * useful to force an update manually.
+   *
    * @param _dir the directory URL
    */
   virtual void updateDirectory( const KURL& _dir );
