@@ -25,7 +25,6 @@ Comment[sk]=Tcl súbor
 Comment[sl]=Datoteka Tcl
 Comment[sr]=Tcl fajl
 Comment[sv]=Tcl-program
-Icon=unknown
 Type=MimeType
 MimeType=text/x-tcl
 Patterns=*.tcl;*.tk;

@@ -9,6 +9,5 @@ Comment[mi]=Makefájl
 Comment[no_NY]='Make'-fil
 Comment[ro]=Fiºier Makefile
 DefaultApp=kwrite
-Icon=unknown
 Type=MimeType
 Patterns=Makefile*;makefile*;

@@ -24,7 +24,6 @@ Comment[sk]=Neznámy
 Comment[sl]=Neznano
 Comment[sr]=Nepoznat
 Comment[sv]=Okänt filformat
-Icon=unknown
 Type=MimeType
 MimeType=application/octet-stream
 Patterns=
