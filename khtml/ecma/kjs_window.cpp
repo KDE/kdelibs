@@ -112,11 +112,11 @@ availWidth    DontEnum|ReadOnly
 
 static const struct HashEntry ecmaScreenTableEntries[] = {
    { "availLeft", Screen::availLeft, DontEnum|ReadOnly, 0, 0 },
-   { 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
    { "availTop", Screen::availTop, DontEnum|ReadOnly, 0, 0 },
    { "height", Screen::height, DontEnum|ReadOnly, 0, 0 },
    { "width", Screen::width, DontEnum|ReadOnly, 0, &ecmaScreenTableEntries[8] },
-   { 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
    { "availHeight", Screen::availHeight, DontEnum|ReadOnly, 0, 0 },
    { "pixelDepth", Screen::pixelDepth, DontEnum|ReadOnly, 0, &ecmaScreenTableEntries[9] },
    { "colorDepth", Screen::colorDepth, DontEnum|ReadOnly, 0, 0 },
