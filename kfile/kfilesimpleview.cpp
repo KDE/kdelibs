@@ -76,12 +76,16 @@ void KFileSimpleView::setAutoUpdate(bool f)
 
 void KFileSimpleView::highlightItem(unsigned int i)
 {
+    debugC("highlightItem %d", i);
+
     int col =  i / rowsVisible;
     highlightItem( i - rowsVisible * col, col );
 }
 
 void KFileSimpleView::highlightItem(int row, int col)
 { 
+    debugC("highlightItem %d %d", row, col);
+
     if (col * rowsVisible + row  >= count())
 	return;
 

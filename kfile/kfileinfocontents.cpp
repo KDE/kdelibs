@@ -366,7 +366,7 @@ void KFileInfoContents::setCurrentItem(const char *item,
     uint i;
     if (item != 0) {
 	for (i = 0; i < sorted_length; i++)
-	    if (sortedArray[i]->fileName() == item) {
+	    if (!strcmp(sortedArray[i]->fileName(),item)) {
 		highlightItem(i);
 		highlight(i);
 		return;

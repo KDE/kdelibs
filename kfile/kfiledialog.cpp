@@ -1101,34 +1101,41 @@ void KFileBaseDialog::completion() // SLOT
     else
 	base = dir->path();
 
+    // if someone uses completion, he doesn't like the current
+    // selection
+    selection = 0;
+
     QString text = locationEdit->currentText();
     if ( KURL(text).isMalformed() )
-      return;                         // invalid entry in location
+	return;                         // invalid entry in location
             
     if (text.left(base.length()) == base) {
 
 	QString complete = 
 	    fileList->findCompletion(text.right(text.length() - 
 						base.length()));
-
+	
 	if (!complete.isNull()) {
 	    debugC("Complete %s", complete.data());
-	    if ( complete != "../" )
+	    if ( complete != "../" ) {
                 locationEdit->setText(base + complete);
+		filename_ = base + complete;
+	    }
 	} else {
 	    // warning("no complete");
 	}
-    } else {                   // we changed into a parent directory -> go there first
+    } else {    // we changed into a parent directory -> go there first
 	int l = text.length() - 1;
 	while (!text.isEmpty() && text[l] != '/')
 	    l--;
 	setDir(text.left(l), true);
 	locationEdit->setText(text);
+	filename_ = text;
+
 	// this recursion is very dangerous.
 	// I'm not *that* sure, that it works in every case
         // dg: added a little timeout: time to reread the new directory
         QTimer::singleShot( 500, this, SLOT(completion()) );
-	// completion();
     }
 }
 
