@@ -419,7 +419,7 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 QFrame *KDialogBase::plainPage()
 {
-  return ( !mJanus ? 0 : mJanus->plainPage() );
+	return ( mJanus ? mJanus->plainPage() : 0 );
 }
 
 
@@ -441,8 +441,10 @@ QSize KDialogBase::sizeHint() const
 
 QSize KDialogBase::minimumSizeHint() const
 {
-  int m = marginHint();
-  int s = spacingHint();
+  const int m = marginHint();
+  const int s = spacingHint();
+
+  const QSize zeroByS(0, s);
 
   QSize s1(0,0);
   QSize s2(0,0);
@@ -452,7 +454,7 @@ QSize KDialogBase::minimumSizeHint() const
   //
   if( mUrlHelp )
   {
-    s2 = mUrlHelp->minimumSize() + QSize( 0, s );
+    s2 = mUrlHelp->minimumSize() + zeroByS;
   }
   s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
   s1.rheight() += s2.rheight();
@@ -462,11 +464,11 @@ QSize KDialogBase::minimumSizeHint() const
   //
   if( mJanus )
   {
-    s2 = mJanus->minimumSizeHint() + QSize( 0, s );
+    s2 = mJanus->minimumSizeHint() + zeroByS;
   }
   else if( mMainWidget )
   {
-    s2 = mMainWidget->sizeHint() + QSize( 0, s );
+    s2 = mMainWidget->sizeHint() + zeroByS;
     s2 = s2.expandedTo( mMainWidget->minimumSize() );
     s2 = s2.expandedTo( mMainWidget->minimumSizeHint() );
     if( s2.isEmpty() )
@@ -483,7 +485,7 @@ QSize KDialogBase::minimumSizeHint() const
 
   if (d->detailsWidget && d->bDetails)
   {
-    s2 = d->detailsWidget->sizeHint() + QSize( 0, s );
+    s2 = d->detailsWidget->sizeHint() + zeroByS;
     s2 = s2.expandedTo( d->detailsWidget->minimumSize() );
     s2 = s2.expandedTo( d->detailsWidget->minimumSizeHint() );
     s1.rwidth()  = QMAX( s1.rwidth(), s2.rwidth() );
@@ -733,7 +735,7 @@ void KDialogBase::setButtonStyle( int style )
   QPushButton *prevButton = 0;
   QPushButton *newButton;
 
-  for( int i=0; i<layoutMax; i++ )
+  for( int i=0; i<layoutMax; ++i )
   {
     if(((ButtonCode) layout[i]) == Stretch) // Unconditional Stretch
     {
@@ -753,57 +755,57 @@ void KDialogBase::setButtonStyle( int style )
     else if( d->mButton.mask & Help & layout[i] )
     {
       newButton = actionButton( Help );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Default & layout[i] )
     {
       newButton = actionButton( Default );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & User3 & layout[i] )
     {
       newButton = actionButton( User3 );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & User2 & layout[i] )
     {
       newButton = actionButton( User2 );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & User1 & layout[i] )
     {
       newButton = actionButton( User1 );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Ok & layout[i] )
     {
       newButton = actionButton( Ok );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Apply & layout[i] )
     {
       newButton = actionButton( Apply );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Try & layout[i] )
     {
       newButton = actionButton( Try );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Cancel & layout[i] )
     {
       newButton = actionButton( Cancel );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Close & layout[i] )
     {
       newButton = actionButton( Close );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else if( d->mButton.mask & Details & layout[i] )
     {
       newButton = actionButton( Details );
-      lay->addWidget( newButton ); numButton++;
+      lay->addWidget( newButton ); ++numButton;
     }
     else
     {
@@ -1294,26 +1296,26 @@ void KDialogBase::setHelpLinkText( const QString &text )
 QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
 			      const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addPage( itemName, header, pixmap ) );
+  return ( mJanus ? mJanus->addPage( itemName, header, pixmap ) : 0);
 }
 
 QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
 			      const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addPage( items, header, pixmap ) );
+  return ( mJanus ? mJanus->addPage( items, header, pixmap ) : 0);
 }
 
 
 QVBox *KDialogBase::addVBoxPage( const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addVBoxPage( itemName, header, pixmap) );
+  return ( mJanus ? mJanus->addVBoxPage( itemName, header, pixmap) : 0);
 }
 
 QVBox *KDialogBase::addVBoxPage( const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addVBoxPage( items, header, pixmap) );
+  return ( mJanus ? mJanus->addVBoxPage( items, header, pixmap) : 0);
 }
 
 
@@ -1321,14 +1323,14 @@ QHBox *KDialogBase::addHBoxPage( const QString &itemName,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addHBoxPage( itemName, header, pixmap ) );
+  return ( mJanus ? mJanus->addHBoxPage( itemName, header, pixmap ) : 0);
 }
 
 QHBox *KDialogBase::addHBoxPage( const QStringList &items,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addHBoxPage( items, header, pixmap ) );
+  return ( mJanus ? mJanus->addHBoxPage( items, header, pixmap ) : 0);
 }
 
 
@@ -1336,16 +1338,14 @@ QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addGridPage( n, dir, itemName, header,
-						 pixmap) );
+  return ( mJanus ? mJanus->addGridPage( n, dir, itemName, header, pixmap) : 0);
 }
 
 QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return ( !mJanus ? 0 : mJanus->addGridPage( n, dir, items, header,
-						 pixmap) );
+  return ( mJanus ? mJanus->addGridPage( n, dir, items, header, pixmap) : 0);
 }
 
 void KDialogBase::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
@@ -1469,19 +1469,19 @@ QWidget *KDialogBase::mainWidget()
 
 bool KDialogBase::showPage( int index )
 {
-  return ( !mJanus ? false : mJanus->showPage(index) );
+  return ( mJanus ? mJanus->showPage(index) : false);
 }
 
 
 int KDialogBase::activePageIndex() const
 {
-  return ( !mJanus ? -1 : mJanus->activePageIndex() );
+  return ( mJanus ? mJanus->activePageIndex() : -1);
 }
 
 
 int KDialogBase::pageIndex( QWidget *widget ) const
 {
-  return ( !mJanus ? -1 : mJanus->pageIndex( widget) );
+  return ( mJanus ? mJanus->pageIndex( widget) : -1);
 }
 
 
@@ -1669,7 +1669,7 @@ const QPixmap *KDialogBase::getBackgroundTile() { return backgroundTile(); }
 
 const QPixmap *KDialogBase::backgroundTile()
 {
-  return ( !mTile ? 0 : mTile->get() );
+  return ( mTile ? mTile->get() : 0);
 }
 
 
@@ -1786,18 +1786,16 @@ void KDialogBase::saveDialogSize( KConfig& config, const QString& groupName,
 
 KDialogBaseButton::KDialogBaseButton( const KGuiItem &item, int key,
 				      QWidget *parent,  const char *name )
-  : KPushButton( item, parent, name )
+  : KPushButton( item, parent, name ), mKey(key)
 {
-  mKey = key;
 }
 
 
 
 
 KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
-  : QObject( parent, name )
+  : QObject( parent, name ), mPixmap(0)
 {
-  mPixmap = 0;
 }
 
 
