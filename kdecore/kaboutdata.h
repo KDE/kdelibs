@@ -220,7 +220,7 @@ class KAboutData
      * need. Each entry is appended to a list. The person in the first entry
      * is assumed to be the leader of the project.
      *
-     * @param name The developer's name.
+     * @param name The developer's name in UTF-8 encoding.
      *
      * @param task What the person is responsible for. This text can contain
      *             newlines. It should be marked for translation like this:
@@ -242,7 +242,7 @@ class KAboutData
      * Defines a person that deserves credit. You can call this function
      * as many times you need. Each entry is appended to a list.
      *
-     * @param name The person's name.
+     * @param name The person's name in UTF-8 encoding.
      *
      * @param task What the person has done to deserve the honor. The
      *        text can contain newlines. It should be marked for 
