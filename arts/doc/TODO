@@ -65,6 +65,7 @@ currently mostly done. Remaining issues are:
   it wants to have addObject() and removeObject() methods - this leads to
   slightly unlogic accesses from outside
 - recording, full duplex
+- try to fix autoSuspend in conjunction with full duplex
 
 3. To have more fun
 
