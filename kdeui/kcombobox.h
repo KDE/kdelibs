@@ -54,7 +54,7 @@
  *
  * This widget by default creates a completion object when you invoke
  * the @ref completionObject member function for the first time or use
- * @ref setCompletionObject to assign your own completion object.  
+ * @ref setCompletionObject to assign your own completion object.
  * Additionally, to make this widget more functional, KComboBox will
  * automatically handle the iteration and completion signals internally
  * when a completion object is created through either one of the methods
@@ -255,7 +255,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void previousMatch( KCompletionBase::KeyBindingType /* type */ );
+    void previousMatch( KeyBindingType /* type */ );
 
     /**
     * Signal emitted when the key-binding set for
@@ -266,7 +266,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void nextMatch( KCompletionBase::KeyBindingType /* type */ );
+    void nextMatch( KeyBindingType /* type */ );
 
     /**
     * This signal is emitted when the rotate up key is pressed.
@@ -274,7 +274,7 @@ signals:
     * Note that this signal is NOT available if this widget is non-editable
     * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
-    void rotateUp( KCompletionBase::KeyBindingType /* type */ );
+    void rotateUp( KeyBindingType /* type */ );
 
     /**
     * Signal emitted when the rotate down key is pressed.
@@ -282,7 +282,7 @@ signals:
     * Note that this signal is NOT available if this widget is non-editable
     * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
-    void rotateDown( KCompletionBase::KeyBindingType /* type */ );
+    void rotateDown( KeyBindingType /* type */ );
 
 public slots:
 
@@ -303,11 +303,11 @@ public slots:
     *
     * @param type the key-binding invoked.
     */
-    void rotateText( KCompletionBase::KeyBindingType /* type */ );
+    void rotateText( KeyBindingType /* type */ );
 
 
 protected slots:
-   
+
     /**
     * Deals with highlighting the seleted item when
     * return is pressed in the list box (editable-mode only).
@@ -326,7 +326,7 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
-        
+
 protected:
 
     /**
@@ -363,10 +363,10 @@ private :
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
     bool m_bEnableMenu;
-    
+
     // Pointer to the line editor.
     QGuardedPtr<QLineEdit> m_pEdit;
-    
+
     // Holds the current text on rotation.  Allows us
     // to emulate *nix shell like rotation where you
     // would not loose what you typed even if you rotate
