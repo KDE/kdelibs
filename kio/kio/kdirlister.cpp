@@ -1889,9 +1889,10 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
   if ( filters.isEmpty() )
     return true;
 
+  KMimeType::Ptr mimeptr = KMimeType::mimeType(mime);
   QStringList::ConstIterator it = filters.begin();
   for ( ; it != filters.end(); ++it )
-    if ( (*it) == mime )
+    if ( mimeptr->is(*it) )
       return true;
 
   return false;
