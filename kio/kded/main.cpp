@@ -18,29 +18,16 @@
 */
 
 #include "kbuildsycoca.h"
-#include <kbuildservicetypefactory.h>
-#include <kservicefactory.h>
-
 #include <kapp.h>
-#include <qfile.h>
-#include <qdatastream.h>
-
 #include <unistd.h>
+#include <stdio.h>
 
 int main(int argc, char *argv[])
 {
      KApplication k(argc,argv, "kded", false /* not GUI */);
 
      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-     
-     // It is very important to build the servicetype one first
-     KBuildServiceTypeFactory *factory = new KBuildServiceTypeFactory;
-     sycoca->addFactory(factory);
-     KServiceFactory *sfactory = new KServiceFactory;
-     sycoca->addFactory(sfactory);
-
-     sycoca->build(); // Parse dirs
-     sycoca->save(); // Save database
+     sycoca->recreate();
 
 #ifndef NOFORK     // define NOFORK to debug kded in gdb
      switch(fork()) {

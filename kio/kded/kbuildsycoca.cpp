@@ -22,9 +22,8 @@
 
 #include <kservice.h>
 #include <kmimetype.h>
-#include <ksycocatype.h>
-#include <ksycocaentry.h>
-#include <ksycocafactory.h>
+#include <kbuildservicetypefactory.h>
+#include <kservicefactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -62,6 +61,18 @@ void KBuildSycoca::addFactory( KSycocaFactory *factory)
    m_lstFactories->append(factory);
 }
 
+void KBuildSycoca::clear()
+{
+  // For each factory
+  QListIterator<KSycocaFactory> factit ( *m_lstFactories );
+  for ( ; factit.current(); ++factit )
+  {
+    // Clear it
+    factit.current()->clear();
+  }
+  m_lstFactories->clear();
+}
+
 void KBuildSycoca::build()
 {
   // For each factory
@@ -81,10 +92,18 @@ void KBuildSycoca::build()
 
 void KBuildSycoca::recreate()
 {
-  // TODO : set a flag to prevent re-entrance here (if update() gets called while building)
   debug("KBuildSycoca::recreate()");
-  build();
-  save();
+     
+  // It is very important to build the servicetype one first
+  KBuildServiceTypeFactory *factory = new KBuildServiceTypeFactory;
+  addFactory(factory);
+  KServiceFactory *sfactory = new KServiceFactory;
+  addFactory(sfactory);
+  
+  build(); // Parse dirs
+  save(); // Save database
+  clear(); // save memory usage
+
   // TODO notify applications using DCOP !
 }
 

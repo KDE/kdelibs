@@ -124,7 +124,7 @@ KService::List KServiceFactory::allServices()
    KService::List list;
    // Assume we're NOT building a database
    // Get stream to factory start
-   QDataStream *str = KSycoca::self()->registerFactory( factoryId() );
+   QDataStream *str = KSycoca::self()->findFactory( factoryId() );
    // Read the dict offset - will serve as an end point for the list of entries
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;

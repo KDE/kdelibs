@@ -19,6 +19,27 @@ public:
    KBuildSycoca();
    virtual ~KBuildSycoca();
    
+public slots:
+
+   /**
+    * Recreate the database file
+    */
+   void recreate();
+
+protected slots:
+
+   /**
+    * @internal Triggers rebuilding
+    */
+   void dirDeleted(const QString& path);
+ 
+   /**
+    * @internal Triggers rebuilding
+    */
+   void update (const QString& dir );
+
+protected:
+
    /**
     * Add a factory for building, triggers directory parsing
     * (unlike KSycoca::registerFactory which is for read-only factories)
@@ -35,7 +56,10 @@ public:
     */
    void save();
 
-protected:
+   /**
+    * Clear the factories
+    */
+   void clear();
 
    /**
     * Saves the offer list 
@@ -64,23 +88,6 @@ protected:
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return true; }
-
-protected slots:
-
-   /**
-    * Recreate the database file
-    */
-   void recreate();
-
-   /**
-    * @internal Triggers rebuilding
-    */
-   void dirDeleted(const QString& path);
- 
-   /**
-    * @internal Triggers rebuilding
-    */
-   void update (const QString& dir );
 
 protected:
 

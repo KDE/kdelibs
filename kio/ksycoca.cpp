@@ -43,6 +43,7 @@ KSycoca::KSycoca()
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
+   m_lstFactories->setAutoDelete( true );
    _self = this;
 }
 
@@ -58,6 +59,7 @@ KSycoca::KSycoca( bool /* dummy */ )
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
+   m_lstFactories->setAutoDelete( true );
    _self = this;
 }
 
@@ -92,7 +94,7 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
    return str;
 }
 
-QDataStream * KSycoca::registerFactory(KSycocaFactoryId id)
+QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 {
    str->device()->at(0);
    Q_INT32 aId;
@@ -100,16 +102,16 @@ QDataStream * KSycoca::registerFactory(KSycocaFactoryId id)
    while(true)
    {
       (*str) >> aId;
-      kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_registerFactory : found factory %1").arg(aId));
+      kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
       {
-fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
+         kdebug(KDEBUG_ERROR, 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
          break;
       }
       (*str) >> aOffset;
       if (aId == id)
       {
-         kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_registerFactory(%1) offset %2").arg((int)id).arg(aOffset));
+         kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
          str->device()->at(aOffset);
          return str;
       }

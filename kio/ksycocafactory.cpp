@@ -30,7 +30,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
    {
-      QDataStream *str = KSycoca::self()->registerFactory( factory_id );
+      QDataStream *str = KSycoca::self()->findFactory( factory_id );
       // can't call factoryId() here since the constructor can't call inherited methods
 
       // Read position of index tables....

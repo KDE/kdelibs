@@ -62,7 +62,7 @@ public:
    /**
     * @internal - called by factories in read-only mode
     */
-   QDataStream *registerFactory( KSycocaFactoryId id);
+   QDataStream *findFactory( KSycocaFactoryId id);
    /**
     * @internal - returns stream to the header (see DESIGN)
     */

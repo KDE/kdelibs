@@ -70,7 +70,7 @@ public:
     */
    void addEntry(KSycocaEntry *newEntry);
    /**
-    * Clear the whole factory - often called before updating it
+    * Clear the whole factory - called after saving
     * Destroys every entry since the list and the dict are autodelete
     * Keeps the paths.
     */
