@@ -16,6 +16,7 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 
 <UL>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
+<LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 </UL>
 
 <H3><A NAME="gettingstarted">Getting started</A></H3>
@@ -28,9 +29,42 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
   (available in CVS under the module "kdesdk"), to generate a new
   application template. Replace the generated source files by yours
   and adapt Makefile.am accordingly.
+<p>
+  Please note that we tried to be mostly source-compatible where it
+  was possible. To accomplish that, we added commonly used but still
+  deprecated / removed API parts in a #ifndef KDE_NO_COMPAT-block. 
+  That means you can "test" and adjust your application by #defining
+  KDE_NO_COMPAT for compiling and see where it breaks. This is
+  recommended, as those backward compatibility "hacks" are not kept for
+  long.
+</p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
+<H3><A NAME="khtmlpart">API-cleanups in KHTML</A></H3>
+
+There were a few relatively minor API-adjustements in KHTMLPart. In particular: 
+<ul><li>enableJScript(bool) has been replaced by setJScriptEnabled(bool)
+<li>enableJava(bool) has been replaced by setJavaEnabled(bool)
+<li>enablePlugins(bool) has been replaced by setPluginsEnabled(bool)
+<li>autoloadImages(bool) has been replaced by setAutoloadImages(bool)
+<li>enableMetaRefresh(bool) has been replaced by setMetaRefreshEnabled(bool)
+<li>setBaseURL and setBaseTarget have been removed. baseURL(), baseTarget() and
+completeURL() are remained for compatibility reasons, but they're deprecated now. use the variants in DOM::HTMLDocument() instead. 
+<li>the second parameter of KTHMLPart::completeURL is removed. it didn't have 
+   any effect before either. 
+</ul>
+Besides that, all methods previously marked as deprecated or were internal
+but accidently part of the public API are now private or removed. 
+As they were marked as becoming private already you should not experience
+any problems. Backward compatibility exists for the common methods, to
+disable this use a #define KDE_NO_COMPAT. 
+<p>In KHTMLView, the following changes were done:
+<ul>
+<li>gotoNextLink has been replaced by gotoLink(true);
+<li>gotoPrevLink has been replaced by gotoLink(false);
+</ul>
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 <p>
 Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
 
