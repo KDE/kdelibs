@@ -886,12 +886,18 @@ KURL& KURL::operator=( const KURL& _u )
 
 bool KURL::operator<( const KURL& _u) const
 {
+  int i;
   if (_u.isMalformed())
+  {
+     if (isMalformed())
+     {
+        i = m_strProtocol.compare(_u.m_strProtocol);
+        return (i < 0);
+     }
      return false;
+  }
   if (isMalformed())
      return true;
-  
-  int i;
   
   i = m_strProtocol.compare(_u.m_strProtocol);
   if (i) return (i < 0);
