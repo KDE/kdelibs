@@ -128,7 +128,7 @@ class KCmdLineArgsPrivate;
  *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
- *     { 0, 0, 0 } // End of options.
+ *     KCmdLineLastOption // End of options.
  *  };
  *  </code>
  *
@@ -331,7 +331,7 @@ public:
    * Print the usage help to stdout and exit.
    *
    * @param id if 0, print all options. If id is set, only print the
-   *        option specified by id. The id is the value set by 
+   *        option specified by id. The id is the value set by
    *        #ref addCmdLineOptions().
    **/
   static void usage(const char *id = 0);
