@@ -232,7 +232,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 {
 	if (m_exepath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be find in your PATH.").arg("lpc");
+		msg = i18n("Unable to locate executable %1 in your PATH.").arg("lpc");
 		return false;
 	}
 	QString	result = execute(m_exepath + " " + op + " " + printer);
