@@ -415,13 +415,13 @@ int KFileItem::overlays() const
      _state |= KIcon::HiddenOverlay;
 
   if( S_ISDIR( m_fileMode ) && m_bIsLocalURL)
+  {
+    if (KFileShare::isDirectoryShared( m_url.path() ))
     {
-        if (KFileShare::isDirectoryShared( m_url.path() ))
-   {
-     kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
-     _state |= KIcon::ShareOverlay;
-     }
+      kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
+      _state |= KIcon::ShareOverlay;
     }
+  }
 
   if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
      _state |= KIcon::ZipOverlay;
