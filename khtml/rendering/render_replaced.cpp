@@ -247,7 +247,8 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                widget()->setEraseColor(backgroundColor );
+                if (strcmp(widget()->name(), "__khtml"))
+                    widget()->setEraseColor(backgroundColor );
                 for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
@@ -388,7 +389,7 @@ static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
     QPixmap pm = QPixmap(widget->width(), widget->height());
     if ( p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget) ) {
 	// even hackier!
-	pm.fill(widget, QPoint(0, 0));
+	pm.fill(widget->colorGroup().background());
     } else {
 	QPoint pt(tx, ty);
 	pt = p->xForm(pt);

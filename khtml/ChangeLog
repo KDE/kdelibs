@@ -1,3 +1,9 @@
+2003-12-10  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_replaced.cpp (updateFromElement): don't use setEraseColor for __khtml
+        widgets as it changes the background mode and induces flicker (#69130)
+        (copyWidget): retrieve background color from the widget's palette.
+
 2003-12-10  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_list.cpp: fix toLetter, based on Safari patch.
