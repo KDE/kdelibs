@@ -65,6 +65,8 @@ char* base64_encode_string( const char *buf, unsigned int len )
           c1 = buf[inPos] & 0xFF;
           out[outPos++] = basis_64[(c1 & 0xFC) >> 2];
           out[outPos++] = basis_64[((c1 & 0x03) << 4)];
+          out[outPos++] = '=';
+          out[outPos++] = '=';
           break;
       case 2:
           c1 = buf[inPos++] & 0xFF;
@@ -72,6 +74,7 @@ char* base64_encode_string( const char *buf, unsigned int len )
           out[outPos++] = basis_64[(c1 & 0xFC) >> 2];
           out[outPos++] = basis_64[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
           out[outPos++] = basis_64[((c2 & 0x0F) << 2)];
+          out[outPos++] = '=';
           break;
   }
   out[outPos] = 0;
