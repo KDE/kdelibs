@@ -390,7 +390,7 @@ QString KIconTheme::current()
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver(config, "Icons");
     *_theme = config->readEntry("Theme",defaultThemeName());
-    if ( *_theme == "hicolor" ) *_theme == defaultThemeName();
+    if ( *_theme == QString::fromLatin1("hicolor") ) *_theme = defaultThemeName();
 /*    if (_theme->isEmpty())
     {
         if (QPixmap::defaultDepth() > 8)
