@@ -258,12 +258,9 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
     unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
 	    : (unsigned int *) img.colorTable();
     int rval, gval, bval, val, alpha, i;
-    float rcol, gcol, bcol;
+    float rcol = col.red(), gcol = col.green(), bcol = col.blue();
     for (i=0; i<pixels; i++)
     {
-        rcol = col.red();
-        gcol = col.green();
-        bcol = col.blue();
         val = qGray(data[i]);
         if (val < 128)
         {
@@ -271,12 +268,18 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
              gval = static_cast<int>(gcol/128*val);
              bval = static_cast<int>(bcol/128*val);
         }
-        else if (val >= 128)
+        else if (val > 128)
         {
              rval = static_cast<int>((val-128)*(2-rcol/128)+rcol-1);
              gval = static_cast<int>((val-128)*(2-gcol/128)+gcol-1);
              bval = static_cast<int>((val-128)*(2-bcol/128)+bcol-1);
         }
+	else if (val == 128)
+	{
+             rval = rcol;
+             gval = gcol;
+             bval = bcol;
+	}
 	if (value < 1.0)
 	{
 	    rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
