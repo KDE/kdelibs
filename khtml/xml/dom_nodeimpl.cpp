@@ -1399,12 +1399,18 @@ NodeListImpl* NodeBaseImpl::getElementsByTagNameNS ( DOMStringImpl* namespaceURI
     NodeImpl::Id idMask = NodeImpl_IdNSMask | NodeImpl_IdLocalMask;
     if (localName->l && localName->s[0] == '*')
         idMask &= ~NodeImpl_IdLocalMask;
-    if (!namespaceURI || (namespaceURI->l && namespaceURI->s[0] == '*'))
+    if (namespaceURI && namespaceURI->l && namespaceURI->s[0] == '*')
         idMask &= ~NodeImpl_IdNSMask;
 
-    return new TagNodeListImpl( this,
-                                getDocument()->tagId(namespaceURI, localName, true, 0),
-                                idMask);
+    Id id = 0; // 0 means "all items"
+    if ( (idMask & NodeImpl_IdLocalMask) || namespaceURI ) // not getElementsByTagName("*")
+    {
+        id = getDocument()->tagId( namespaceURI, localName, true /*readonly*/, 0 );
+        if ( !id ) // not found -> we want to return an empty list, not "all items"
+            id = (Id)-1;
+    }
+
+    return new TagNodeListImpl( this, id, idMask );
 }
 
 // I don't like this way of implementing the method, but I didn't find any
@@ -1724,8 +1730,8 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return ( testNode->isElementNode() && m_id &&
-             (testNode->id() & m_idMask) == m_id);
+    return testNode->isElementNode() &&
+           ((testNode->id() & m_idMask) == m_id);
 }
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
