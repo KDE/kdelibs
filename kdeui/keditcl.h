@@ -80,7 +80,7 @@ private:
 
     class KEdFindPrivate;
     KEdFindPrivate *d;
-	virtual void done(int i ) { KDialogbase::done(i); }
+	virtual void done(int i ) { KDialogBase::done(i); }
 
 signals:
 
@@ -117,7 +117,7 @@ private:
 
     class KEdReplacePrivate;
     KEdReplacePrivate *d;
-	virtual void done(int i ) { KDialogbase::done(i); } 
+	virtual void done(int i ) { KDialogBase::done(i); } 
 
 signals:
     void replace();
