@@ -759,8 +759,10 @@ void KDoubleNumInput::setValue(double val)
 
     if(m_slider) {
         int slvalue = (int)(m_slider->maxValue()
-                                                        * (m_value - m_lower)/(m_upper - m_lower));
+                            * (m_value - m_lower)/(m_upper - m_lower));
+        m_slider->blockSignals( true );
         m_slider->setValue(slvalue);
+        m_slider->blockSignals( false );
     }
 
     resetEditBox();
