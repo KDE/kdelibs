@@ -61,47 +61,47 @@ using namespace khtml;
         // ### react to style changes
         // see http://www.richinstyle.com for details
 
-	/* Mapping system settings to CSS 2 
+	/* Mapping system settings to CSS 2
 	 * Tried hard to get an appropriate mapping - schlpbch
 	 */
 
 	KConfig *globalConfig = KGlobal::config();
 	globalConfig->setGroup("WM");
-        
+
 	QColorGroup cg = kapp->palette().active();
 
-	// Active window border. 
-        map["activeborder"] = globalConfig->readColorEntry( "background", &cg.light()); 
-	// Active window caption. 
+	// Active window border.
+        map["activeborder"] = globalConfig->readColorEntry( "background", &cg.light());
+	// Active window caption.
         map["activecaption"] = globalConfig->readColorEntry( "activeBackground", &cg.text());
         // Text in caption, size box, and scrollbar arrow box.
 	map["captiontext"] = globalConfig->readColorEntry( "activeForeground", &cg.text());
 
         cg = kapp->palette().inactive();
 
-	/* Don't know how to deal with buttons correctly */ 
+	/* Don't know how to deal with buttons correctly */
 
-	// Face color for three-dimensional display elements. 
+	// Face color for three-dimensional display elements.
         map["buttonface"] = cg.button();
-	// Dark shadow for three-dimensional display elements (for edges facing away from the light source). 
+	// Dark shadow for three-dimensional display elements (for edges facing away from the light source).
         map["buttonhighlight"] = cg.light();
-	// Shadow color for three-dimensional display elements. 
+	// Shadow color for three-dimensional display elements.
         map["buttonshadow"] = cg.shadow();
-	// Text on push buttons. 
+	// Text on push buttons.
         map["buttontext"] = globalConfig->readColorEntry( "buttonForeground", &cg.buttonText());
 
-	// Dark shadow for three-dimensional display elements. 
+	// Dark shadow for three-dimensional display elements.
         map["threeddarkshadow"] = cg.dark();
-	// Face color for three-dimensional display elements. 
+	// Face color for three-dimensional display elements.
         map["threedface"] = cg.button();
-	// Highlight color for three-dimensional display elements. 
+	// Highlight color for three-dimensional display elements.
         map["threedhighlight"] = cg.light();
-	// Light color for three-dimensional display elements (for edges facing the light source). 
+	// Light color for three-dimensional display elements (for edges facing the light source).
         map["threedlightshadow"] = cg.midlight();
-	// Dark shadow for three-dimensional display elements. 
-        map["threedshadow"] = cg.shadow();	
+	// Dark shadow for three-dimensional display elements.
+        map["threedshadow"] = cg.shadow();
 
-	// InfoBackground	
+	// InfoBackground
         map["infobackground"] = QToolTip::palette().inactive().background();
 	// InfoText
         map["infotext"] = QToolTip::palette().inactive().foreground();
@@ -111,35 +111,36 @@ using namespace khtml;
         map["menu"] = globalConfig->readColorEntry( "background", &cg.background());
 	// Text in menus
         map["menutext"] = globalConfig->readColorEntry( "foreground", &cg.background());
-	
-	// Item(s) selected in a control. 
+
+	// Item(s) selected in a control.
         map["highlight"] = globalConfig->readColorEntry( "background", &cg.background()).light(110);
-        // Text of item(s) selected in a control. 
+        // Text of item(s) selected in a control.
 	map["highlighttext"] = globalConfig->readColorEntry( "foreground", &cg.background());
-	
-	// Background color of multiple document interface. 
+
+	// Background color of multiple document interface.
         map["appworkspace"] = globalConfig->readColorEntry( "background", &cg.text());
-	
+
 	// Scroll bar gray area.
-        map["scrollbar"] = globalConfig->readColorEntry( "background", &cg.background()); 
-	
-	// Window background. 
+        map["scrollbar"] = globalConfig->readColorEntry( "background", &cg.background());
+
+	// Window background.
         map["window"] = globalConfig->readColorEntry( "windowBackground", &cg.background());
-	// Window frame. 
+	// Window frame.
         map["windowframe"] = globalConfig->readColorEntry( "windowBackground",&cg.background());
-        // WindowText 
+        // WindowText
 	map["windowtext"] = globalConfig->readColorEntry( "windowForeground", &cg.text());
+        map["text"] = cg.text();
 
         cg = kapp->palette().disabled();
 	globalConfig->setGroup("WM");
-	// Inactive window border. 
+	// Inactive window border.
         map["inactiveborder"] = globalConfig->readColorEntry( "background", &cg.background());
-	// Inactive window caption. 
+	// Inactive window caption.
         map["inactivecaption"] = globalConfig->readColorEntry( "inactiveBackground", &cg.background());
-	// Color of text in an inactive caption. 
+	// Color of text in an inactive caption.
         map["inactivecaptiontext"] = globalConfig->readColorEntry( "inactiveForeground", &cg.text());
         map["graytext"] = cg.text();
-	
+
 	KConfig *bckgrConfig = new KConfig("kdesktoprc"); // No multi-screen support
 	bckgrConfig->setGroup("Desktop0");
         // Desktop background.
