@@ -96,8 +96,8 @@ public:
 bool KGlobalAccelPrivate::g_bKeyEventsEnabled = true;
 
 
-KGlobalAccel::KGlobalAccel(bool _do_not_grab)
- : QObject()
+KGlobalAccel::KGlobalAccel(QObject* parent, bool _do_not_grab)
+ : QObject(parent)
 {
 	aAvailableId = 1;
 	bEnabled = true;
@@ -107,7 +107,7 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	d = new KGlobalAccelPrivate( this, do_not_grab );
 }
 
-KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab)
+KGlobalAccel::KGlobalAccel(QObject * parent, const char *name, bool _do_not_grab)
     : QObject(parent, name) {
     	aAvailableId = 1;
 	bEnabled = true;

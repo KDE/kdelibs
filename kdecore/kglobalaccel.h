@@ -86,7 +86,7 @@ class KGlobalAccel : public QObject
 	/**
 	 * Creates a KGlobalAccel object.
 	 */
-	KGlobalAccel( bool _do_not_grab = false);
+	KGlobalAccel(QObject * parent, bool _do_not_grab);
 
 	/**
 	   Creates a KGlobalAccel object with a parent and a name. The
@@ -94,7 +94,7 @@ class KGlobalAccel : public QObject
 	   will be automatically destroyed in the parent's destructor,
 	   thus releaseing the keys.
 	*/
-	KGlobalAccel(QWidget * parent, const char *name = 0, bool _do_not_grab = false);
+	KGlobalAccel(QObject * parent = 0, const char *name = 0, bool _do_not_grab = false);
 
 
 	/**
