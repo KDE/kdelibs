@@ -632,7 +632,7 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
     
   }
   
-  parent = 0L;
+  parent = after ? after->parent() : 0L ;
 }
 
 
