@@ -659,7 +659,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	update();
 }
 
-void KKeyChooser::slotListItemSelected( QListViewItem *item )
+void KKeyChooser::slotListItemSelected( QListViewItem * /*item*/ )
 {
 	//updateButtons( item );
 	updateButtons();
