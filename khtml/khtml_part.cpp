@@ -39,7 +39,6 @@
 #include "decoder.h"
 #include "kjs.h"
 
-#include <stdio.h>
 #include <assert.h>
 
 #include <kglobal.h>
@@ -244,7 +243,6 @@ bool KHTMLPart::openURL( const KURL &url )
   static QString http_protocol = QString::fromLatin1( "http" );
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
-
   if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     m_url = url;
@@ -458,8 +456,6 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_workingURL = KURL();
   }
 
-//  printf("data %s",data.data());
-
   write( data.data(), data.size() );
 }
 
@@ -621,6 +617,14 @@ QString KHTMLPart::baseTarget() const
 
 KURL KHTMLPart::completeURL( const QString &url, const QString &target )
 {
+  // WABA: The following check is necassery to fix forms which don't set
+  // an action URL in the believe that it default to the same URL as
+  // the current page which contains the form.
+  if (url.isEmpty())
+  {
+    return m_url; 
+  }
+
   KURL orig;
   /* ###
   if(url[0] == '#' && !target.isEmpty() && findFrame(target))
@@ -675,7 +679,6 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   KCharsets *c = KGlobal::charsets();
   if(!c->isAvailable(name))
   {
-    printf("charset not available!\n");
     return false;
   }
 
@@ -683,7 +686,6 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   c->setQFont(f, name);
 
   QFontInfo fi(f);
-  printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
 
   d->m_settings->charset = f.charSet();
   return true;
@@ -691,7 +693,6 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
 
 bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
-    printf("setting the encoding to %s\n",name.latin1());
     d->m_encoding = name;
 
     // ### hack!!!!
@@ -721,7 +722,6 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 bool KHTMLPart::gotoAnchor( const QString &name )
 {
-  printf("gotoAnchor(%s)\n", name.latin1());
   HTMLCollectionImpl *anchors =
       new HTMLCollectionImpl( d->m_doc, HTMLCollectionImpl::DOC_ANCHORS);
   anchors->ref();
@@ -731,16 +731,13 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   if(!n)
   {
     n = d->m_doc->getElementById(name);
-    if(n) printf("found element with matching id\n");
   }
 	
   if(!n) return false;
-  printf("found anchor %p!\n", n);
 
   int x = 0, y = 0;
   HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(n);
   a->getAnchorPosition(x, y);
-  printf("going to %d/%d\n", x, y);
   d->m_view->setContentsPos(x-50, y-50);
   return true;
 }
