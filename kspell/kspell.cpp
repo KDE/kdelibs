@@ -102,9 +102,24 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   case KS_E_LATIN3:
       codec = QTextCodec::codecForName("ISO 8859-3");
       break;
-
-  // add the other charsets here
-
+  case KS_E_LATIN4:
+      codec = QTextCodec::codecForName("ISO 8859-4");
+      break;
+  case KS_E_LATIN5:
+      codec = QTextCodec::codecForName("ISO 8859-5");
+      break;
+  case KS_E_LATIN7:
+      codec = QTextCodec::codecForName("ISO 8859-7");
+      break;
+  case KS_E_LATIN8:
+      codec = QTextCodec::codecForName("ISO 8859-8");
+      break;
+  case KS_E_LATIN9:
+      codec = QTextCodec::codecForName("ISO 8859-9");
+      break;
+  case KS_E_LATIN15:
+      codec = QTextCodec::codecForName("ISO 8859-15");
+      break;
   case KS_E_UTF8:
       codec = QTextCodec::codecForName("UTF-8");
       break;
@@ -206,6 +221,16 @@ KSpell::startIspell()
         break;
 
       // add the other charsets here    
+      case KS_E_LATIN4:
+      case KS_E_LATIN5:
+      case KS_E_LATIN7:
+      case KS_E_LATIN8:
+      case KS_E_LATIN9:
+      case KS_E_LATIN15:
+      
+	// will work, if this is the default charset in the dictionary
+	kdError(750) << "charsets iso-8859-4 .. iso-8859-15 not supported yet" << endl;
+	break;
 
       case KS_E_UTF8:
         *proc << "-Tutf8";
@@ -509,7 +534,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
 
   sugg->clear();
 
-  if (buffer [0]=='*')
+  if (buffer [0]=='*' || buffer[0] == '+' || buffer[0] == '-')
     {
       return GOOD;
     }
@@ -1082,7 +1107,7 @@ KSpell::modalCheck( QString& text )
 void KSpell::slotModalReady()
 {
   //kdDebug() << qApp->loopLevel() << endl;
-  // kdDebug() << "MODAL READY" << endl;
+  kdDebug(750) << "MODAL READY" << endl;
   
   ASSERT( m_status == Running );
   connect( this, SIGNAL( done( const QString & ) ), 
@@ -1093,7 +1118,7 @@ void KSpell::slotModalReady()
 
 void KSpell::slotModalDone( const QString &_buffer )
 {
-    // kdDebug() << "MODAL DONE " << _buffer << endl;
+    kdDebug(750) << "MODAL DONE " << _buffer << endl;
     modaltext = _buffer;
     cleanUp();
 
@@ -1109,3 +1134,4 @@ QWidget* KSpell::modalWidgetHack = 0;
 
 
 #include "kspell.moc"
+
