@@ -56,6 +56,8 @@ Plugin::Plugin( QObject* parent, const char* name )
 
 Plugin::~Plugin()
 {
+    if ( factory() )
+        factory()->removeClient( this );
 //  delete d;
 }
 
