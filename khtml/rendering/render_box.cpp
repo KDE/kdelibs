@@ -88,7 +88,7 @@ void RenderBox::setStyle(RenderStyle *style)
 		m_relPositioned = true;
 	}
     }
-   
+
 }
 
 RenderBox::~RenderBox()
@@ -285,7 +285,7 @@ void RenderBox::close()
 {
     setParsing(false);
     calcWidth();
-    calcHeight();    
+    calcHeight();
     calcMinMaxWidth();
     if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
@@ -320,19 +320,19 @@ void RenderBox::updateSize()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
 #endif
-    
+
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
     setMinMaxKnown(false);
     calcMinMaxWidth();
 
-    if ((isInline() || isFloating()) && parent() && parent()->isInline())
+    if ((isInline() || isFloating()) && parent())
     {
     	parent()->updateSize();
 	return;
     }
-    
+
     if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
     	m_maxWidth != oldMax || isReplaced())
     {    	
@@ -346,7 +346,7 @@ void RenderBox::updateSize()
 void RenderBox::updateHeight()
 {
 
-#ifdef DEBUG_LAYOUT    
+#ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 #endif
 
@@ -461,7 +461,7 @@ void RenderBox::repaintObject(RenderObject *o, int x, int y)
 void RenderBox::relativePositionOffset(int &tx, int &ty)
 {
     if(!m_style->left().isVariable())
-	tx += m_style->left().width(containingBlockWidth()); 
+	tx += m_style->left().width(containingBlockWidth());
     else if(!m_style->right().isVariable())
 	tx -= m_style->right().width(containingBlockWidth());
     if(!m_style->top().isVariable())
@@ -482,7 +482,7 @@ void RenderBox::calcWidth()
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderBox("<<renderName()<<")::calcWidth()" << endl;
-#endif    
+#endif
     if (isPositioned())
     {
     	calcAbsoluteHorizontal();
@@ -490,13 +490,13 @@ void RenderBox::calcWidth()
     else
     {
 
-        Length w = m_style->width();        
+        Length w = m_style->width();
         if (isReplaced() && w.type==Variable)
             w = Length(intrinsicWidth(), Fixed);
-        
+
     	Length ml = m_style->marginLeft();
 	Length mr = m_style->marginRight();
-        
+
 	int cw = containingBlockWidth();
 	
 	m_marginLeft = 0;
@@ -508,30 +508,30 @@ void RenderBox::calcWidth()
 	    m_marginLeft = ml.minWidth(cw);
 	    m_marginRight = mr.minWidth(cw);
     	    m_width = cw - m_marginLeft - m_marginRight;
-//	    kdDebug( 6040 ) <<  m_width <<"," <<  
+//	    kdDebug( 6040 ) <<  m_width <<"," <<
 //	    	m_marginLeft <<"," <<  m_marginRight << endl;
 		
 	    if(m_width < m_minWidth) m_width = m_minWidth;
 	}
 	else
 	{	
-//	    kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;    
+//	    kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
     	    m_width = w.width(cw);
 	    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-	    
+	
 	    if(m_width < m_minWidth) m_width = m_minWidth;
-	    
+	
             if (isFloating())
             {
  	    	m_marginLeft = ml.minWidth(cw);
-		m_marginRight = mr.minWidth(cw);               
+		m_marginRight = mr.minWidth(cw);
             }
             else
             {
 	        if (ml.type == Variable && mr.type == Variable )
 	        {
 	    	    m_marginRight = (cw - m_width)/2;		
-	    	    m_marginLeft = cw - m_width - m_marginRight; 
+	    	    m_marginLeft = cw - m_width - m_marginRight;
 	        }
 	        else if (mr.type == Variable)
 	        {
@@ -558,8 +558,8 @@ void RenderBox::calcWidth()
 		m_marginLeft = cw - m_width - m_marginRight;
 
 	}
-    }    
-    
+    }
+
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
@@ -578,12 +578,12 @@ void RenderBox::calcHeight()
     	calcAbsoluteVertical();
     else
     {
-        
+
         Length h = m_style->height();
-        
+
         if (isReplaced() && h.type == Variable)
             h = Length(intrinsicHeight(), Fixed);
-                
+
 	Length tm = style()->marginTop();
 	Length bm = style()->marginBottom();
 	Length ch = containingBlock()->style()->height();
@@ -592,17 +592,17 @@ void RenderBox::calcHeight()
 	    m_marginTop = tm.minWidth(ch.value);		
 	else
 	    m_marginTop = 0;
-	    
+	
 	if (!bm.isPercent() || ch.isFixed())
 	    m_marginBottom = bm.minWidth(ch.value);		
 	else
 	    m_marginBottom = 0;
-	    
+	
 	if (h.isFixed())
     	    m_height = MAX (h.value + borderTop() + paddingTop()
 		+ borderBottom() + paddingBottom() , m_height);
 	else if (h.isPercent())
-	{    	    
+	{    	
 	    if (ch.isFixed())
     		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop()
 	    	    + borderBottom() + paddingBottom(), m_height);
