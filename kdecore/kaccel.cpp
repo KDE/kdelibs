@@ -20,6 +20,7 @@
 #include "kaccel.h"
 
 #include <qaccel.h>
+#include <qguardedptr.h>
 #include <qpopupmenu.h>
 #include <qstring.h>
 #include <qtimer.h>
@@ -316,9 +317,12 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 					KAccelAction* pAction = m_mapIDToAction[nID];
 					if( !pAction->isEnabled() )
 						continue;
+					QGuardedPtr<KAccelPrivate> me = this;
 					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 					emit menuItemActivated();
-					disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+					if (me) {
+						disconnect( me, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+					}
 				} else
 					slotKeyPressed( nID );
 
