@@ -29,8 +29,8 @@
 #ifndef _KLINEEDIT_H
 #define _KLINEEDIT_H
 
-#include <qlineedit.h>
 #include <qpopupmenu.h>
+#include <qlineedit.h>
 
 #include <kcompletion.h>
 
@@ -121,10 +121,11 @@
  *
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
+ *
  */
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
@@ -246,7 +247,7 @@ public slots:
     * if there is no completion object or the completion object
     * does not contain a next match.
     */
-    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch(), -1 ); }
+    virtual void iterateUpInList() { rotateText( KCompletionBase::UpKeyEvent ); }
 
     /*
     * Iterates in the down (next match) direction through the
@@ -258,7 +259,7 @@ public slots:
     * is taken if there is no completion object or the completion
     * object does not contain a next match.
     */
-    virtual void iterateDownInList() { rotateText(  completionObject()->nextMatch(), 1 ); }
+    virtual void iterateDownInList() { rotateText( KCompletionBase::DownKeyEvent ); }
 
 protected slots:
 
@@ -307,12 +308,13 @@ protected:
     virtual void init();
 
     /**
-    * Rotates the text on rotation events.
+    * This method has been deprected.  Instead use the method
+    * above @p rotateText( KComboBox::Rotation dir ).  This
+    * method is kept for binary compatiablity.
     *
-    * @param string the text to replace the current one with.
-    * @param dir rotation direction ( rotateUp or rotateDown ).
+    * @deprecated
     */
-    void rotateText( const QString&, int /* dir */ );
+    void rotateText( const QString&, int /* dir */ ){};
 
     /**
     * Implementation of @ref KCompletionBase::connectSignals().
@@ -337,6 +339,16 @@ protected:
     * See @ref QLineEdit::mousePressEvent.
     */
     virtual void mousePressEvent( QMouseEvent * );
+
+    /**
+    * Rotates the text in the combobox based on the
+    * requested direction.  Note that this method
+    * understands the inseration policies of the combo
+    * box and adjusts the rotation accordingly.
+    *
+    * @param dir rotation direction: @p rotateUp or @p rotateDown.
+    */
+    void rotateText( KCompletionBase::RotationEvent /* dir */ );
 
 private :
     // Pointers to the context & sub menus.

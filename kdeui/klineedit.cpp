@@ -85,14 +85,13 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::rotateText( const QString& input, int dir )
+void KLineEdit::rotateText( KCompletionBase::RotationEvent dir )
 {
     KCompletion* comp = completionObject();
-    QString str;
-    int len = text().length();
-    if( hasMarkedText() && !input.isNull() )
+    if( hasMarkedText() )
     {
-        str = text();
+        QString str = text();
+        QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();
         if( input == str ) return; // Skip rotation if same text
         int pos = str.find( markedText() );
         int index = input.find( str.remove( pos , markedText().length() ) );
@@ -103,41 +102,46 @@ void KLineEdit::rotateText( const QString& input, int dir )
     else
     {
         QStringList list = comp->items();
-        if( list.count() == 0 ) return;
+        int cnt = list.count();
+        if( cnt == 0 ) return;
         int index = list.findIndex( text() );
         if( index == -1 )
         {
-            index = ( dir == 1 ) ? 0 : list.count()-1;
-            str = ( len == 0 ) ? list[index] : input;
+        	if( dir == KCompletionBase::UpKeyEvent )
+        		index = cnt -1;
         }
         else
-        {
-            index += dir;
-            if( index >= (int)list.count() ) index = 0; // rotate back to beginning
-            else if( index < 0  ) index = list.count() - 1; // rotate back to the end
-            str = list[index];
-        }
-        setText( str );
+        	index += ( dir == KCompletionBase::UpKeyEvent ) ? -1 : 1;
+        	
+        if ( index > -1 && index < cnt )
+        	setText( list[index] );
     }
 }
 
 void KLineEdit::makeCompletion( const QString& text )
 {
-    QString match = completionObject()->makeCompletion( text );
+	QString match;
+   	int pos = cursorPosition();
+	KCompletion *comp = completionObject();
+   	KGlobalSettings::Completion mode = completionMode();
+    	
+   	if( comp->hasMultipleMatches() && mode == KGlobalSettings::CompletionShell )
+    	match = comp->nextMatch();
+    else
+    	match = comp->makeCompletion( text );
+    	
     // If no match or the same match, simply return
     // without completing.
     if( match.length() == 0 || match == text )
         return;
 
-    if( completionMode() == KGlobalSettings::CompletionShell )
-    {
-        setText( match );
-    }
-    else
-    {
-        int pos = cursorPosition();
-        validateAndSet( match, pos, pos, match.length() );
-    }
+    setText( match );
+	if( mode == KGlobalSettings::CompletionAuto ||
+		mode == KGlobalSettings::CompletionMan )
+	{
+		setSelection( pos, match.length() );
+		setCursorPosition( pos );
+	}
 }
 
 void KLineEdit::connectSignals( bool handle ) const

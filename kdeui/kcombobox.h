@@ -121,7 +121,7 @@ class KComboBox : public QComboBox, public KCompletionBase
   Q_OBJECT
 
 public:
-
+	
     /**
     * Constructs a read-only or rather select-only combo box with a parent object
     * and a name.
@@ -270,7 +270,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch(), -1 ); }
+    virtual void iterateUpInList() { rotateText( KCompletionBase::UpKeyEvent ); }
 
     /**
     * Iterates in the down (next match) direction through the
@@ -282,7 +282,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateDownInList() { rotateText( completionObject()->nextMatch(), 1 ); }
+    virtual void iterateDownInList() { rotateText( KCompletionBase::DownKeyEvent ); }
 
 protected slots:
 
@@ -324,7 +324,15 @@ protected slots:
     virtual void itemSelected( QListBoxItem* );
 
     /**
-    * Deals with text changes in auto completion mode.
+    * Completes text according to the completion mode.
+    *
+    * Note: this method is @p not invoked if the completion mode is
+    * set to CompletionNone.  Also if the mode is set to @p CompletionShell
+    * and multiple matches are found, this method will complete the
+    * text to the first match with a beep to inidicate that there are
+    * more matches.  Then any successive completion key event iterates
+    * through the remaining matches.  This way the rotation functionality
+    * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
 
@@ -336,12 +344,13 @@ protected:
     virtual void init();
 
     /**
-    * Rotates the text on rotation events.
+    * This method has been deprected.  Instead use the method
+    * above @p rotateText( KComboBox::Rotation dir ).  This
+    * method is kept for binary compatiablity.
     *
-    * @param string the text to replace the current one with.
-    * @param dir rotation direction ( rotateUp or rotateDown ).
+    * @deprecated
     */
-    void rotateText( const QString&, int /* dir */ );
+    void rotateText( const QString&, int /* dir */ ){};
 
     /**
     * Implementation of @ref KCompletionBase::connectSignals().
@@ -367,6 +376,16 @@ protected:
     */
     virtual bool eventFilter( QObject *, QEvent * );
 
+    /**
+    * Rotates the text in the combobox based on the
+    * requested direction.  Note that this method
+    * understands the inseration policies of the combo
+    * box and adjusts the rotation accordingly.
+    *
+    * @param dir rotation direction: @p rotateUp or @p rotateDown.
+    */
+    void rotateText( KCompletionBase::RotationEvent /* dir */ );
+
 private :
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
@@ -375,7 +394,7 @@ private :
     QLineEdit* m_pEdit;
     // Context Menu items.
     QPopupMenu *m_pContextMenu;
-
+	
     class KComboBoxPrivate;
     KComboBoxPrivate *d;
 };

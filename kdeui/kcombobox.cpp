@@ -111,45 +111,51 @@ void KComboBox::makeCompletion( const QString& text )
 {
     if( m_pEdit != 0 )
     {
-        QString match = completionObject()->makeCompletion( text );
+		QString match;
+    	int pos = cursorPosition();
+		KCompletion *comp = completionObject();
+    	KGlobalSettings::Completion mode = completionMode();
+    	
+    	if( comp->hasMultipleMatches() && mode == KGlobalSettings::CompletionShell )
+	    	match = comp->nextMatch();
+	    else
+   	    	match = comp->makeCompletion( text );
+ 	
+        // If no match or the same text simply return without completing.
+        if( match.isNull() || match == text )  return;
 
-        // If no match or the same match, simply return
-        // without completing.
-        if( match.isNull() || match == text )
-            return;
-
-        if( completionMode() == KGlobalSettings::CompletionShell )
+		int index = ( match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
+		if( index > -1 )  setCurrentItem( index );
+			
+		if( mode == KGlobalSettings::CompletionAuto ||
+			mode == KGlobalSettings::CompletionMan )
         {
-            m_pEdit->setText( match );
+            m_pEdit->setSelection( pos, match.length() );
+            m_pEdit->setCursorPosition( pos );
         }
-        else
-        {
-            int pos = cursorPosition();
-            m_pEdit->validateAndSet( match, pos, pos, match.length() );
-        }
-    }
+	}
     else if( m_pEdit == 0 )
     {
-       if( text.isNull() )
-        return;
-
-       int index = listBox()->index( listBox()->findItem( text ) );
-        if( index >= 0 )
-            setCurrentItem( index );
+		if( text.isNull() ) return;
+		int index = listBox()->index( listBox()->findItem( text ) );
+		if( index >= 0 ) setCurrentItem( index );
     }
+
 }
 
-void KComboBox::rotateText( const QString& input, int dir )
+void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
 {
     if( m_pEdit != 0 )
     {
-        KCompletion* comp = completionObject();
-        QString str;
-        int len = m_pEdit->text().length();
-        if( m_pEdit->hasMarkedText() && !input.isNull() )
+    	// Support for rotating through highlighted text!!  This means
+    	// a person can rotate through all combinations of car, class,
+    	// coffee, cookie, club by just pressing the rotation keys.
+		KCompletion* comp = completionObject();
+        if( m_pEdit->hasMarkedText() )
         {
-            str = m_pEdit->text();
-            if( input == str ) return; // Skip rotation if same text
+			QString str = m_pEdit->text();
+			QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();
+            if( input == str ) return; // Ignore rotating to the same text
             int pos = str.find( m_pEdit->markedText() );
             int index = input.find( str.remove( pos , m_pEdit->markedText().length() ) );
             if( index == -1 ) return;
@@ -158,30 +164,50 @@ void KComboBox::rotateText( const QString& input, int dir )
         }
         else
         {
-            QStringList list = comp->items();
-            if( list.count() == 0 ) return;
-            int index = list.findIndex( m_pEdit->text() );
-            if( index == -1 )
-            {
-                index = ( dir == 1 ) ? 0 : list.count()-1;
-                str = ( len == 0 ) ? list[index] : input;
-            }
-            else
-            {
-                index += dir;
-                if( index >= (int)list.count() ) index = 0; // rotate back to beginning
-                else if( index < 0  ) index = list.count() - 1; // rotate back to the end
-                str = list[index];
-            }
-            m_pEdit->setText( str );
-        }
-    }
-    else // non-editable
-    {
-        int index = listBox()->index( listBox()->findItem( input ) );
-        if( index >= 0 )
-        {
-            setCurrentItem( index );
+        	QString input = m_pEdit->text();
+			QComboBox::Policy policy = insertionPolicy();
+			// Workaround a Qt bug!! findItem in QListBox returns
+			// the first element even if the argument is an empty
+			// string.  This is not correct according their documentations.			
+			int index = ( input.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( input ) );
+			if( index == -1 )
+			{
+				// Only allow a previous match key press
+				// match since we do not yet have a next
+				// match at this point yet.
+				if( dir == KCompletionBase::UpKeyEvent )
+				{
+					if( policy == QComboBox::AtTop )
+						index = 0;
+					else if( policy == QComboBox::AtBottom )
+						index = listBox()->count() - 1;
+					else
+						// TODO: Figure out what to do with other insertion policies
+						// For now just start from the currently selected item.
+						index = currentItem();
+				}
+			}
+			else
+			{
+				if( dir == KCompletionBase::UpKeyEvent )
+				{
+					if( policy == QComboBox::AtBottom )
+						index -= 1;
+					else
+						index += 1;
+				}
+				else if( dir == KCompletionBase::DownKeyEvent )
+				{
+					if( policy == QComboBox::AtBottom )
+						index += 1;
+					else
+						index -= 1;
+				}
+			
+			}	
+			// List is made so that it will not iterate back through			
+			if( index > -1 && index < (int)listBox()->count() )
+				setCurrentItem( index );
         }
     }
 }
@@ -190,8 +216,7 @@ void KComboBox::itemSelected( QListBoxItem* item )
 {
     if( item != 0 && m_pEdit != 0 )
     {
-        debug( "Item selected from list" );
-        m_pEdit->setSelection( 0, m_pEdit->text().length() );
+		m_pEdit->setSelection( 0, m_pEdit->text().length() );
     }
 }
 
@@ -219,10 +244,15 @@ void KComboBox::selectedItem( int id )
 
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
+	// Disable Qt's hard coded rotate-up key binding!  It is
+	// configurable in KDE.
+	if( e->state() == Qt::AltButton && e->key() == Qt::Key_Up )
+		return;
     if( m_pEdit != 0 && m_pEdit->hasFocus() )
     {
         KGlobalSettings::Completion mode = completionMode();
-        // On Return pressed event, emit returnPressed( const QString& )
+        // On Return pressed event, emit both returnPressed( const QString& )
+        // and returnPressed() signals
         if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
         {
             emit returnPressed();
@@ -251,11 +281,12 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 if( (mode == KGlobalSettings::CompletionMan &&
                     (compObj != 0 && compObj->lastMatch() != m_pEdit->displayText()) ) ||
                     (mode == KGlobalSettings::CompletionShell &&
-                      m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ))
+	                 m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ) )
                 {
                     emit completion( m_pEdit->text() );
                     return;
                 }
+
             }
             // Handles rotateUp.
             key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
