@@ -107,7 +107,7 @@ public:
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() { return str; }
 
-    virtual void layout(bool /*deep*/ = false) {assert(false);}
+    virtual void layout() {assert(false);}
 
     bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
 

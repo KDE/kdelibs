@@ -184,7 +184,7 @@ void RenderImage::calcMinMaxWidth()
 
 }
 
-void RenderImage::layout(bool)
+void RenderImage::layout()
 {
     if(layouted()) return;
 #ifdef DEBUG_LAYOUT

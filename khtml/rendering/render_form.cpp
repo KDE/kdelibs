@@ -56,7 +56,7 @@ RenderFormElement::~RenderFormElement()
 {
 }
 
-void RenderFormElement::layout(bool)
+void RenderFormElement::layout()
 {
     if(m_widget) {
         m_widget->resize(m_width, m_height);
@@ -68,7 +68,9 @@ void RenderFormElement::layout(bool)
 
 void RenderFormElement::calcMinMaxWidth()
 {
-    layout(false);
+    layout();
+
+    //kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
@@ -100,7 +102,7 @@ RenderButton::RenderButton(QScrollView *view,
 {
 }
 
-void RenderButton::layout(bool)
+void RenderButton::layout()
 {
     QSize s(0, 0);
 
@@ -110,7 +112,7 @@ void RenderButton::layout(bool)
     m_height = s.height();
     m_width = s.width();
 
-    RenderFormElement::layout(false);
+    RenderFormElement::layout();
 
     setLayouted();
 }
@@ -136,10 +138,10 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
 }
 
-void RenderCheckBox::layout(bool deep)
+void RenderCheckBox::layout()
 {
     static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-    RenderButton::layout(deep);
+    RenderButton::layout();
 }
 
 void RenderCheckBox::slotStateChanged(int state)
@@ -174,10 +176,10 @@ void RenderRadioButton::slotClicked()
 	static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
 }
 
-void RenderRadioButton::layout(bool deep)
+void RenderRadioButton::layout()
 {
     static_cast<QRadioButton*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-    RenderButton::layout(deep);
+    RenderButton::layout();
 }
 
 // -------------------------------------------------------------------------------
@@ -208,12 +210,12 @@ void RenderSubmitButton::slotClicked()
 	m_element->form()->submit();
 }
 
-void RenderSubmitButton::layout(bool deep)
+void RenderSubmitButton::layout()
 {
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isNull() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
     static_cast<QPushButton*>(m_widget)->setText(value);
-    RenderButton::layout(deep);
+    RenderButton::layout();
 }
 
 QString RenderSubmitButton::defaultLabel() {
@@ -302,7 +304,7 @@ void RenderLineEdit::slotReturnPressed()
 	m_element->form()->maybeSubmit();
 }
 
-void RenderLineEdit::layout(bool)
+void RenderLineEdit::layout()
 {
     QFontMetrics fm( m_widget->font() );
     QSize s;
@@ -337,7 +339,7 @@ void RenderLineEdit::layout(bool)
     m_height = s.height();
     m_width = s.width();
 
-    RenderFormElement::layout(false);
+    RenderFormElement::layout();
     setLayouted();
 }
 
@@ -402,7 +404,7 @@ void RenderFileButton::slotClicked()
     }
 }
 
-void RenderFileButton::layout( bool )
+void RenderFileButton::layout( )
 {
     // this is largely taken from the RenderLineEdit layout
     QFontMetrics fm( m_edit->font() );
@@ -432,7 +434,7 @@ void RenderFileButton::layout( bool )
     m_height = s.height();
     m_width  = s.width();
 
-    RenderFormElement::layout(false);
+    RenderFormElement::layout();
     setLayouted();
 }
 
@@ -524,7 +526,7 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     m_selectedIndex = element->selectedIndex();
 }
 
-void RenderSelect::layout( bool )
+void RenderSelect::layout( )
 {
     // ### maintain selection properly between type/size changes, and work
     // out how to handle multiselect->singleselect (probably just select
@@ -697,7 +699,7 @@ void RenderSelect::layout( bool )
         m_height = s.height();
     }
 
-    RenderFormElement::layout(false);
+    RenderFormElement::layout();
     setLayouted();
 }
 
@@ -974,7 +976,7 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
 }
 
-void RenderTextArea::layout( bool )
+void RenderTextArea::layout( )
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
@@ -995,9 +997,10 @@ void RenderTextArea::layout( bool )
     m_width  = size.width();
     m_height = size.height();
 
+    RenderFormElement::layout();
+
     setLayouted();
 
-    RenderFormElement::layout(false);
 }
 
 void RenderTextArea::close( )

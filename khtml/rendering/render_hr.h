@@ -50,7 +50,7 @@ public:
 
     virtual void printReplaced(QPainter *p, int _tx, int _ty);
 
-    virtual void layout(bool deep = false);
+    virtual void layout();
 
     void setShade(bool shd) { shade = shd; }
     void setSize(short sz) { size = sz; }

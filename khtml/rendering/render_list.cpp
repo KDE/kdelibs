@@ -113,11 +113,11 @@ void RenderListItem::calcListValue()
 }
 
 
-void RenderListItem::layout( bool deep )
+void RenderListItem::layout( )
 {
     calcListValue();
-    m_marker->layout(true);
-    RenderFlow::layout(deep);
+    m_marker->layout();
+    RenderFlow::layout();
 }
 
 void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
@@ -175,7 +175,8 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 				    int, int, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
+
+        kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(m_style->font());
     p->setPen(m_style->color());
@@ -243,7 +244,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     }
 }
 
-void RenderListMarker::layout(bool)
+void RenderListMarker::layout()
 {	
     calcMinMaxWidth();
 
@@ -270,7 +271,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o, bool *manua
     {	
 	setLayouted(false);
 	setMinMaxKnown(false);
-	layout(true);
+	layout();
 	// the updateSize() call should trigger a repaint too
         if (manualUpdate)
         {

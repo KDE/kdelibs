@@ -209,7 +209,7 @@ void RenderFlow::setXPos( int xPos )
 }
 
 
-void RenderFlow::layout( bool deep )
+void RenderFlow::layout()
 {
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
     //QTime t;
@@ -221,16 +221,18 @@ void RenderFlow::layout( bool deep )
 
     int oldWidth = m_width;
 
-    calcWidth();
+    calcWidth();        
+    
+//    kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
+//            << m_width << ","<< layouted() << "," << isAnonymousBox() << endl;
 
     if (specialObjects==0)
     	if (oldWidth == m_width && layouted() && !isAnonymousBox()
-	    && !containsPositioned() && !isPositioned()) return;
-    //else
-    //	    if (nextSibling())
-    //		nextSibling()->setLayouted(false);
+	    && !containsPositioned() && !isPositioned()) return;  
+    
+        
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout(" << deep << ") width=" << m_width << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
     	kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
 #endif
@@ -259,7 +261,7 @@ void RenderFlow::layout( bool deep )
     if(childrenInline())
 	layoutInlineChildren();
     else
-	layoutBlockChildren(deep);
+	layoutBlockChildren();
 
     calcHeight();
 
@@ -284,7 +286,7 @@ void RenderFlow::layout( bool deep )
 	for ( ; (r = it.current()); ++it )
     	    if (r->type == SpecialObject::Positioned)
 	    {
-		r->node->layout(true);			
+		r->node->layout();			
 	    }
 	specialObjects->sort();
     }
@@ -295,10 +297,10 @@ void RenderFlow::layout( bool deep )
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() elapsed" << t.elapsed() << endl;
 }
 
-void RenderFlow::layoutBlockChildren(bool deep)
+void RenderFlow::layoutBlockChildren()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "layoutBlockChildren(" << deep << ")" << endl;
+    kdDebug( 6040 ) << "layoutBlockChildren( )" << endl;
 #endif
 
     bool _layouted = true;
@@ -325,20 +327,24 @@ void RenderFlow::layoutBlockChildren(bool deep)
     if(isTableCell())
 	prevMargin = -firstChild()->marginTop();
 	
+    QTime t;
+    t.start();
+    
     while( child != 0 )
     {
-    	//kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+    	kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+        kdDebug( 6040 ) << t.elapsed() << endl;
 	// ### might be some layouts are done two times... FIX that.
 	
     	if (child->isPositioned())
 	{
-	    child->layout(true);
+	    child->layout();
 	    static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
 	    child = child->nextSibling();
 	    continue;
 	} else if ( child->isReplaced() )
-	    child->layout(true);
-	
+	    child->layout();
+	    
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -351,13 +357,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
 	child->setYPos(m_height);
 
-	if(deep) {
-	    //kdDebug(6040) << "layouting " << child->renderName() << endl;
-	    child->layout(deep);
-	} else if (!child->layouted()) {
-	    child->layout();
-	    _layouted = child->layouted();
-	}
+        child->layout();
 
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
@@ -473,7 +473,7 @@ RenderFlow::insertFloat(RenderObject *o)
 	++it;
     }
 
-    o->layout(true);
+    o->layout();
 
     if(!f) f = new SpecialObject;
 
@@ -1007,14 +1007,16 @@ void RenderFlow::close()
     calcWidth();
     calcHeight();
 
-    if(!isInline() && m_childrenInline)
+/*    if(!isInline() && m_childrenInline)
     {
 	layout();
     }
     else
     {
 	calcMinMaxWidth();
-    }
+    }*/
+            
+calcMinMaxWidth();
 
     if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();

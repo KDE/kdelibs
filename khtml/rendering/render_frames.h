@@ -49,9 +49,9 @@ public:
 
   virtual const char *renderName() const { return "RenderFrameSet"; }
 
-  virtual void layout( bool deep = true );
+  virtual void layout();
 
-  void positionFrames( bool deep = true );
+  void positionFrames( );
 
   virtual bool isInline() const { return false; }
 
@@ -91,7 +91,7 @@ public:
 
   virtual bool isInline() const { return false; }
 
-  virtual void layout( bool deep = true );
+  virtual void layout();
 
   virtual void setWidget( QWidget *widget );
 };
@@ -129,7 +129,7 @@ public:
 
   virtual void setSize( int w, int h );
 
-  virtual void layout( bool deep = true );
+  virtual void layout( );
 
   DOM::HTMLElementImpl *m_obj;
 };

@@ -76,7 +76,7 @@ public:
     virtual bool isRendered() const  { return true; }
 
     virtual void calcMinMaxWidth();
-    virtual void layout(bool);
+    virtual void layout();
 
     virtual bool isInline() const { return true; }
 
@@ -105,7 +105,7 @@ public:
 
     virtual const char *renderName() const { return "RenderButton"; }
 
-    virtual void layout(bool);
+    virtual void layout();
 };	
 
 // -------------------------------------------------------------------------
@@ -148,7 +148,7 @@ public:
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
 
-    virtual void layout(bool deep = false);
+    virtual void layout( );
 public slots:
     virtual void slotStateChanged(int state);
 };
@@ -183,7 +183,7 @@ public:
 
     virtual void setChecked(bool);
 
-    virtual void layout(bool deep = false);
+    virtual void layout();
 
  public slots:	
     void slotClicked();
@@ -219,7 +219,7 @@ public:
 
     virtual QString defaultLabel();
 
-    virtual void layout(bool deep = false);
+    virtual void layout();
     bool clicked() { return m_clicked; }
     void setClicked(bool _clicked) { m_clicked = _clicked; }
 
@@ -280,7 +280,7 @@ class RenderLineEdit : public RenderFormElement
 public:
     RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element);
 
-    virtual void layout(bool);
+    virtual void layout();
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
 
@@ -329,7 +329,7 @@ public:
 
     virtual const char *renderName() const { return "RenderFileButton"; }
 
-    virtual void layout( bool deep = false );
+    virtual void layout( );
 
 public slots:	
     virtual void slotClicked();
@@ -412,7 +412,7 @@ public:
 
     virtual const char *renderName() const { return "RenderSelect"; }
 
-    virtual void layout( bool deep = false );
+    virtual void layout();
     virtual void close( );
 
     virtual void reset();
@@ -478,7 +478,7 @@ public:
 
     virtual const char *renderName() const { return "RenderTextArea"; }
 
-    virtual void layout( bool deep = false );
+    virtual void layout();
     virtual void close ( );
 
     QString text(); // ### remove

@@ -51,7 +51,7 @@ namespace khtml
 			   int xoff, int yoff);
 	virtual void printObject(QPainter *p, int x, int y, int w, int h,
 				 int xoff, int yoff);
-	virtual void layout( bool );
+	virtual void layout( );
 	virtual void calcMinMaxWidth();
 
 	virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0);	
@@ -84,7 +84,7 @@ public:
     virtual void printObject(QPainter *p, int x, int y, int w, int h,
 		       int xoff, int yoff);
 
-    virtual void layout( bool deep = false );
+    virtual void layout( );
 
 protected:
     long int predefVal;

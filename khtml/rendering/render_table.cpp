@@ -1217,21 +1217,18 @@ void RenderTable::calcRowHeight(int r)
 
 }
 
-void RenderTable::layout(bool deep)
+void RenderTable::layout()
 {
-//kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
+//kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
     if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
    	return;
 
     _lastParentWidth = containingBlockWidth();
 
-    // ###
-    deep = true;
-
     m_height = 0;
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::layout1(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
 
@@ -1248,8 +1245,7 @@ void RenderTable::layout(bool deep)
     if(tCaption)
     {
 	tCaption->setYPos(m_height);
-	if(deep)
-	    tCaption->layout(deep);
+	tCaption->layout();
 	m_height += tCaption->height();
     }
 
@@ -1289,7 +1285,7 @@ void RenderTable::layoutRow(int r)
 	if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
 	
-	cell->layout(true);
+	cell->layout();
 	cell->setCellTopExtra(0);
 	cell->setCellBottomExtra(0);	
     }

@@ -87,7 +87,7 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     }
 }
 
-void RenderHR::layout(bool)
+void RenderHR::layout()
 {
     calcMinMaxWidth();
     m_height = size+2;

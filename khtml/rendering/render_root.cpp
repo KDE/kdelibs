@@ -78,9 +78,9 @@ void RenderRoot::calcMinMaxWidth()
     if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
 }
 
-void RenderRoot::layout(bool deep)
+void RenderRoot::layout()
 {
-    //kdDebug(6040) << "RenderRoot::layout(" << deep << ")" << endl;
+    //kdDebug(6040) << "RenderRoot::layout()" << endl;
 
     calcMinMaxWidth();
     calcWidth();
@@ -90,7 +90,7 @@ void RenderRoot::layout(bool deep)
     	firstChild()->setLayouted(false);
 	//firstChild()->layout();
     }
-    RenderFlow::layout(deep);
+    RenderFlow::layout();
 
     int contentsHeight = m_view->visibleHeight();
     //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
@@ -155,7 +155,7 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 
 void RenderRoot::updateSize()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     setMinMaxKnown(false);
     calcMinMaxWidth();
     if(m_width < m_minWidth) m_width = m_minWidth;
@@ -166,7 +166,7 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight()" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight() timer=" << updateTimer.elapsed() << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
 
@@ -177,23 +177,20 @@ void RenderRoot::updateHeight()
 	    return;
 	} else
 	    updateTimer.start();	
-	if(updateCount < 500) {
+	/*if(updateCount < 500) {
 	    updateCount++;
 	    return;
-	}
+	}*/
     }
     updateCount = 0;
 
     int oldHeight = m_height;
-
-    if (parsing()) {
-	layout(false);
-    } else {
-
-    kdDebug(6040) << "RenderRoot::starting a full layout" << endl;
-
+    
     m_view->layout(true);
-    }
+    
+    kdDebug(0) << "root layout, time used=" << updateTimer.elapsed() << endl;
+    
+    updateTimer.start();
 
     if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {

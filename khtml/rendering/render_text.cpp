@@ -56,12 +56,10 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     if (!m_text || len <= 0)
 	return;
 
-    _ty += m_baseline;
-
 //    p->setPen(QColor("#000000"));
     QConstString s(m_text , len);
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(x + _tx, y + _ty, s.string());
+    p->drawText(x + _tx, y + _ty + m_baseline, s.string());
 }
 
 void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int endPos)
@@ -596,13 +594,13 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(from == 0 && m_parent->isInline())
 	x += paddingLeft() + borderLeft();
 
-#ifdef DEBUG_LAYOUT
+    //#ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
-    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << endl;
-#endif
+//    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
+    //#endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-				 fm->ascent() + fm->descent(), fm->ascent(), width, deleteChar);
+				 bidiHeight(), fm->ascent(), width, deleteChar);
 
     if(!m_first)
 	m_first = m_last = s;

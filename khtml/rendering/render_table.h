@@ -112,7 +112,7 @@ public:
 			int tx, int ty);
     virtual void printBorders( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
-    virtual void layout(bool deep = false);
+    virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
 
@@ -282,7 +282,7 @@ public:
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
     virtual bool isInline() const { return false; }
-    virtual void layout(bool) {}
+    virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 
@@ -318,7 +318,7 @@ public:
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
     virtual bool isInline() const { return false; }
-    virtual void layout(bool) {}
+    virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 
@@ -432,7 +432,7 @@ public:
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
     virtual bool isInline() const { return false; }
-    virtual void layout(bool) {}
+    virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 

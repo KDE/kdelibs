@@ -305,7 +305,7 @@ void RenderBox::close()
     	containingBlock()->updateSize();
     else if(!isInline() || isReplaced())
     {
-	layout(true);
+	layout();
     }
 }
 
@@ -375,7 +375,7 @@ void RenderBox::updateHeight()
     {
 	int oldHeight = m_height;
 	setLayouted(false);
-	layout(true);
+	layout();
 
 	if(m_height != oldHeight) {
 	    if(containingBlock() != this) containingBlock()->updateHeight();

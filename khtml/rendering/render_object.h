@@ -174,7 +174,7 @@ public:
      * set to false and the Element receives layout() calls
      * again.
      */
-    virtual void layout(bool deep = false) = 0;
+    virtual void layout() = 0;
 
     /**
      * this function get's called, if a child changed it's geometry

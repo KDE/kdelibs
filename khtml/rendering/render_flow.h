@@ -72,7 +72,7 @@ public:
 			int tx, int ty);
 
 
-    virtual void layout( bool deep = false );
+    virtual void layout( );
 
     virtual void close();
 
@@ -99,7 +99,7 @@ protected:
 
     virtual void newLine();
 
-    void layoutBlockChildren(bool deep);
+    void layoutBlockChildren();
     void layoutInlineChildren();
 
     inline int floatBottom();

@@ -79,11 +79,11 @@ RenderFrameSet::~RenderFrameSet()
   delete m_vSplitVar;
 }
 
-void RenderFrameSet::layout( bool deep )
+void RenderFrameSet::layout( )
 {
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
@@ -219,7 +219,7 @@ void RenderFrameSet::layout( bool deep )
     else
 	m_colWidth[0] = m_width;
 
-    positionFrames(deep);
+    positionFrames();
 
     RenderObject *child = firstChild();
     if ( !child )
@@ -283,7 +283,7 @@ void RenderFrameSet::layout( bool deep )
     setLayouted();
 }
 
-void RenderFrameSet::positionFrames( bool deep )
+void RenderFrameSet::positionFrames()
 {
   int r;
   int c;
@@ -306,8 +306,7 @@ void RenderFrameSet::positionFrames( bool deep )
       child->setPos( xPos, yPos );
       child->setSize( m_colWidth[c], m_rowHeight[r] );
 
-      //if ( deep )
-      child->layout( deep );
+      child->layout( );
 	
       xPos += m_colWidth[c] + m_frameset->border();
       child = child->nextSibling();
@@ -320,8 +319,7 @@ void RenderFrameSet::positionFrames( bool deep )
 	    e->setWidth(colWidth[c]);
 	    e->setAvailableWidth(colWidth[c]);
 	    e->setDescent(rowHeight[r]);
-	    if(deep)
-		e->layout(deep);
+	    e->layout();
 	    xPos += colWidth[c] + border;
 	    child = child->nextSibling();
 	    if(!child) return;
@@ -420,7 +418,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       m_rowHeight[m_hSplit+1] += delta;
     }
 
-    positionFrames( true );
+    positionFrames( );
   }
 
   return res;
@@ -447,7 +445,7 @@ void RenderPart::setWidget( QWidget *widget )
   repaint();
 }
 
-void RenderPart::layout( bool )
+void RenderPart::layout( )
 {
   if ( m_widget )
     m_widget->resize( m_width, m_height );
@@ -641,7 +639,7 @@ void RenderPartObject::setSize( int w, int h )
   m_minWidth = m_maxWidth = w;
 }
 
-void RenderPartObject::layout( bool )
+void RenderPartObject::layout( )
 {
   setSize( m_style->width().width( m_view->clipper()->width() ),
 	   m_style->height().width( m_view->clipper()->height() ) );

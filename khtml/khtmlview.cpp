@@ -270,7 +270,7 @@ void KHTMLView::layout(bool force)
 	    setHScrollBarMode(AlwaysOff);
 	    _width = visibleWidth();
 
-	    root->layout(true);
+	    root->layout();
 	    return;
 	}
 
@@ -286,8 +286,8 @@ void KHTMLView::layout(bool force)
 	    //	    QTime qt;
 	    //	    qt.start();
 
-	    root->layout(true);
-	
+	    root->layout();
+            
 	    int rw = root->width()+root->marginLeft()+root->marginRight();
 	    int rh = root->height()+root->marginTop()+root->marginBottom();
 
@@ -298,7 +298,8 @@ void KHTMLView::layout(bool force)
 	    //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
 	
 	} else {
-	    root->layout(false);
+	   root->layout();
+
 	}
     } else {
 	_width = visibleWidth();

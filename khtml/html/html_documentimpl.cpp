@@ -396,7 +396,7 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     }
 
     // force a relayout of this part of the document
-    m_render->layout(true);
+    m_render->layout();
     // force a repaint of this part.
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...

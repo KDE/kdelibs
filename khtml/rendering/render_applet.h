@@ -46,7 +46,7 @@ public:
 
     virtual bool isReplaced() const { return true; }
 
-    virtual void layout(bool);
+    virtual void layout();
 
 private:
     void processArguments( QMap<QString, QString> args );
@@ -66,7 +66,7 @@ public:
 
   virtual bool isReplaced() const { return true; }
 
-  virtual void layout(bool) {};
+  virtual void layout() {};
 };
 
 };

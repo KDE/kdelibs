@@ -75,7 +75,7 @@ RenderApplet::~RenderApplet()
   }
 }
 
-void RenderApplet::layout(bool)
+void RenderApplet::layout()
 {
     if(m_layoutPerformed)
         return;
