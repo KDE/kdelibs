@@ -192,8 +192,10 @@ static pid_t launch(int argc, const char *_name, const char *args)
      name = _name;
      name = name.mid( name.findRev('/') + 1);
      exec = _name;
-     libpath = lib;
-     execpath = exec;
+     if (lib.right(3) == ".la")
+        libpath = lib;
+     else
+        execpath = exec;
   }
   if (!args)
   {
@@ -390,11 +392,11 @@ static pid_t launch(int argc, const char *_name, const char *args)
        }
        if (d.n == 0)
        {
-          perror("kdeinit: Pipe closed unexpected.\n");
+          perror("kdeinit: Pipe closed unexpectedly");
           d.result = 1; // Error
           break;
        }
-       perror("kdeinit: Error reading from pipe.\n");
+       perror("kdeinit: Error reading from pipe");
        d.result = 1; // Error
        break;
      }
