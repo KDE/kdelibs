@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.11  1998/08/22 20:02:37  kulow
+// make kdecore have nicer output, when compiled with -Weffc++ :)
+//
 // Revision 1.10  1998/03/29 19:07:30  kalle
 // Methods for reading and writing bool, unsigned int, long, unsigned long,
 // double, QRect, QSize, QPoint
@@ -619,6 +622,16 @@ public:
 						  bool bNLS = false );
   //}
 
+
+	/** Turns on or off "dollar expansion" when reading config entries.
+	 *	@param bExpand if true, dollar expansion is turned on.
+	 */
+	void setDollarExpansion( bool bExpand = true );
+
+	/** Returns whether dollar expansion is on or off.
+	 *	@return true if dollar expansion is on.
+	 */
+	bool isDollarExpansion() const;
 
   /** Don't write dirty entries at destruction time. If bDeep is
 	* false, only the global dirty flag of the KConfig object gets

@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.10  1998/09/01 20:21:21  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.9  1998/08/22 20:02:39  kulow
 // make kdecore have nicer output, when compiled with -Weffc++ :)
 //
@@ -29,7 +33,7 @@
 // new KConfig
 //
 //
-// (C) 1996 by Matthias Kalle Dalheimer
+// (C) 1996-1998 by Matthias Kalle Dalheimer
 
 #ifndef _KCONFIGDATA_H
 #define _KCONFIGDATA_H
@@ -74,6 +78,7 @@ private:
   bool bDirty; // is there any entry that has to be written back to disk?
   bool bLocaleInitialized;
   bool bReadOnly; // currently only used by KSimpleConfig
+	bool bExpand; // whether dollar expansion is used
 
   QDict<KEntryDict> aGroupDict;
 
@@ -91,7 +96,8 @@ public:
 inline KConfigBaseData::KConfigBaseData() :
     aLocalAppFile(0), aGlobalAppFile(0),
     aGroup("<default>"), aLocaleString(0), bDirty(false),
-    bLocaleInitialized(false), bReadOnly(false), aGroupDict( 37, false )
+    bLocaleInitialized(false), bReadOnly(false), bExpand( true ),
+	aGroupDict( 37, false )
 #ifndef NDEBUG
   , aFile(0)
 #endif

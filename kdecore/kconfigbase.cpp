@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.33  1998/08/23 15:58:34  kulow
+// fixed some more advanced warnings
+//
 // Revision 1.32  1998/07/29 09:07:48  ssk
 // Fixed a whole lot of -Wall -ansi -pedantic warnings.
 //
@@ -347,39 +350,43 @@ const QString KConfigBase::readEntry( const char* pKey,
   else if( pDefault )
 	aValue = pDefault;
 
-  // check for environment variables and make necessary translations
-  int nDollarPos = aValue.find( '$' );
 
-  // detach the QString if you are doing modifications!
-  if (nDollarPos != -1)
-    aValue.detach();
-
-  while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length()))
-	{
-	  // there is at least one $
- 	  if( (aValue)[nDollarPos+1] != '$' )
-	    {
-	      uint nEndPos = nDollarPos;
-	      // the next character is no $
-	      do
-			{
-			  nEndPos++;
-			} while ( isalnum( (aValue)[nEndPos] ) || 
-					  nEndPos > aValue.length() );
-	      QString aVarName = aValue.mid( nDollarPos+1, 
-										 nEndPos-nDollarPos-1 );
-	      char* pEnv = getenv( aVarName );
-	      if( pEnv )
-			aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
-	      else
-			aValue.remove( nDollarPos, nEndPos-nDollarPos );
-	    }
-	  else {
-	    // remove one of the dollar signs
-	    aValue.remove( nDollarPos, 1 );
-	  }
-	  nDollarPos = aValue.find( '$', nDollarPos+2 );
-	};
+  // only do dollar expansion if so desired
+  if( data()->bExpand ) {
+	  // check for environment variables and make necessary translations
+	  int nDollarPos = aValue.find( '$' );
+	  
+	  // detach the QString if you are doing modifications!
+	  if (nDollarPos != -1)
+		  aValue.detach();
+	  
+	  while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length()))
+		  {
+			  // there is at least one $
+			  if( (aValue)[nDollarPos+1] != '$' )
+				  {
+					  uint nEndPos = nDollarPos;
+					  // the next character is no $
+					  do
+						  {
+							  nEndPos++;
+						  } while ( isalnum( (aValue)[nEndPos] ) || 
+									nEndPos > aValue.length() );
+					  QString aVarName = aValue.mid( nDollarPos+1, 
+													 nEndPos-nDollarPos-1 );
+					  char* pEnv = getenv( aVarName );
+					  if( pEnv )
+						  aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
+					  else
+						  aValue.remove( nDollarPos, nEndPos-nDollarPos );
+				  }
+			  else {
+				  // remove one of the dollar signs
+				  aValue.remove( nDollarPos, 1 );
+			  }
+			  nDollarPos = aValue.find( '$', nDollarPos );
+		  };
+  }
   return aValue;
 }
 
@@ -1089,3 +1096,14 @@ void KConfigBase::reparseConfiguration()
   parseConfigFiles();
 }
 
+
+void KConfigBase::setDollarExpansion( bool bExpand )
+{
+	data()->bExpand = bExpand;
+}
+
+
+bool KConfigBase::isDollarExpansion() const
+{
+	return data()->bExpand;
+}
