@@ -188,7 +188,8 @@ void KWindowListMenu::init()
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
-            if ( windowType == NET::Normal || windowType == NET::Unknown ) {
+            if ( (windowType == NET::Normal || windowType == NET::Unknown) &&
+                 !(info->state() & NET::SkipTaskbar) ) {
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
                 if (items == 1 && nd > 1)
