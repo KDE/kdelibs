@@ -684,6 +684,12 @@ void KURL::parse( const QString& _url, int encoding_hint )
         goto NodeOk;
       // there is more after the digits
       pos -= strlen(endptr);
+      if ((buf[pos] != '@') &&
+          (buf[pos] != '/') &&
+          (buf[pos] != '?') &&
+          (buf[pos] != '#'))
+        goto NodeErr;
+
       start = pos++;
       goto Node9;
     }

@@ -648,6 +648,14 @@ int main(int argc, char *argv[])
   baseURL = "http://www.kde.org/info/index.html";
   check("relativeURL(\"http://www.kde.org/info/index.html\", \"http://www.kde.org/bugs/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/bugs/contact.html"), "../bugs/contact.html");
 
+  baseURL = "ptal://mlc:usb:PC_970";
+  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "true");
+  check("url()", baseURL.url(), "ptal://mlc:usb:PC_970");
+
+  baseURL = "http://mlc:80/";
+  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "false");
+  check("port()?", QString("%1").arg(baseURL.port()), "80");
+
   printf("\nTest OK !\n");
 }
 
