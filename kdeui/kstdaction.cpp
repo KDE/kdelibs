@@ -194,6 +194,9 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
     case Preferences:
         act = preferences(recvr, slot, parent, name);
         break;
+    case ConfigureToolbars:
+        act = configureToolbars(recvr, slot, parent, name);
+        break;
 
     case Help:
         act = help(recvr, slot, parent, name);
@@ -378,6 +381,9 @@ const char* KStdAction::stdName(StdAction act_enum)
         break;
     case Preferences:
         ret = "options_configure";
+        break;
+    case ConfigureToolbars:
+        ret = "options_configure_toolbars";
         break;
 
     case Help:
@@ -794,6 +800,13 @@ KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
     return new KAction(i18n("&Preferences..."), "options",
                        0, recvr, slot, parent,
                        name ? name : stdName(Preferences));
+}
+
+KAction *KStdAction::configureToolbars(const QObject *recvr, const char *slot,
+                                       QObject *parent, const char *name )
+{
+    return new KAction(i18n("Configure Tool&bars..."), 0, recvr,
+                       slot, parent, name ? name : stdName(ConfigureToolbars));
 }
 
 KAction *KStdAction::help(const QObject *recvr, const char *slot,

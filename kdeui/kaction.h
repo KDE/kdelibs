@@ -97,8 +97,8 @@ class KActionSeparatorPrivate;
  * Here is an example of enabling a "New [document]" action
  * <PRE>
  * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
-								 KStdAccel::key(KStdAccel::New), this, SLOT(fileNew()),
-								 this);
+ *                               KStdAccel::key(KStdAccel::New), this,
+ *                               SLOT(fileNew()), this);
  * </PRE>
  * This line creates our action.  It says that wherever this action is
  * displayed, it will use "&New" as the text, the standard icon, and
@@ -132,6 +132,34 @@ class KActionSeparatorPrivate;
  * "quit", or any other action described in the KDE UI Standards,
  * please use the methods in the @ref KStdAction class rather then
  * defining your own.
+ *
+ * @sect Usage Within the XML Framework:
+ *
+ * If you are using KAction within the context of the XML menu and
+ * toolbar building framework, then there are a few tiny changes.  The
+ * first is that you must insert your new action into an action
+ * collection.  The action collection (a @ref QActionCollection) is,
+ * logically enough, a central collection of all of the actions
+ * defined in your application.  The XML UI framework code in KXMLGUI
+ * classes needs access to this collection in order to build up the
+ * GUI (it's how the builder code knows which actions are valid and
+ * which aren't).
+ *
+ * Inserting your action into the collection is very simple.  To use a
+ * previous example:
+ * 
+ * <pre>
+ * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ *                               KStdAccel::key(KStdAccel::New), this,
+ *                               SLOT(fileNew()), actionCollection());
+ * </pre>
+ *
+ * The only change is to use 'actionCollection()' as the parent of the
+ * action.  That's it!
+ *
+ * Also, if you use the XML builder framework, then you do not ever
+ * have to plug your actions into containers manually.  The framework
+ * does that for you.
  *
  * @see KStdAction
  * @short Class to encapsulate user-driven action or event

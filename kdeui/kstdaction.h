@@ -33,6 +33,80 @@ class KStdActionPrivate;
  * toolbar items.  Using these actions helps your application easily
  * conform to the KDE UI Style Guide
  * ( @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html ).
+ *
+ * All of the documentation for @ref KAction holds for KStdAction
+ * also.  When in doubt on how things work, check the KAction
+ * documention first.
+ *
+ * @sect Simple Example:
+ *
+ * In general, using standard actions should be a drop in replacement
+ * for regular actions.  For example, if you previously had:
+ *
+ * <PRE>
+ * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ *                               KStdAccel::key(KStdAccel::New), this,
+ *                               SLOT(fileNew()), actionCollection());
+ * </PRE>
+ *
+ * You could drop that and replace it with:
+ *
+ * <PRE>
+ * KAction *newAct = KStdAction::openNew(this, SLOT(fileNew()),
+ *                                       actionCollection());
+ * </PRE>
+ *
+ * @sect Non-standard Usages
+ *
+ * It is possible to use the standard actions in various
+ * non-recommended ways.  Say, for instance, you wanted to have a
+ * standard action (with the associated correct text and icon and
+ * accelerator, etc) but you didn't want it to go in the standard
+ * place (this is not recommended, by the way).  One way to do this is
+ * to simply not use the XML UI framework and plug it into wherever
+ * you want.  If you do want to use the XML UI framework (good!), then
+ * it is still possible.
+ *
+ * Basically, the XML building code matches names in the XML code with
+ * the internal names of the actions.  You can find out the internal
+ * names of each of the standard actions by using the @ref stdName
+ * action like so: KStdAction::stdName(KStdAction::Cut) would return
+ * 'edit_cut'.  The XML building code will match 'edit_cut' to the
+ * attribute in the global XML file and place your action there.
+ *
+ * However, you can change the internal name.  In this example, just
+ * do something like:
+ *
+ * <PRE>
+ * (void)KStdAction::cut(this, SLOT(editCut()), actionCollection(), "my_cut");
+ * </PRE>
+ *
+ * Now, in your local XML resource file (e.g., yourappui.rc), simply
+ * put 'my_cut' where you want it to go.
+ *
+ * Another non-standard usage concerns getting a pointer to an
+ * existing action if, say, you want to enable or disable the action.
+ * You could do it the recommended way and just grab a pointer when
+ * you instantiate it as in the the 'openNew' example above... or you
+ * could do it the hard way:
+ *
+ * <pre>
+ * KAction *cut = actionCollection()->action(KStdAction::stdName(KStdAction::Cut));
+ * </pre>
+ *
+ * Another non-standard usage concerns instantiating the action in the
+ * first place.  Usually, you would use the static member functions as
+ * shown above (e.g., 'KStdAction::cut(this, SLOT, parent)').  You
+ * may, however, do this using the enums provided.  This author can't
+ * think of a reason why you would want to.. but hey, if you do,
+ * here's how:
+ *
+ * <pre>
+ * (void)KStdAction::action(KStdAction::New, this, SLOT(fileNew()), actionCollection());
+ * (void)KStdAction::action(KStdAction::Cut, this, SLOT(editCut()), actionCollection());
+ * </pre>
+ *
+ * @author Kurt Granroth <granroth@kde.org>
  */
 class KStdAction
 {
@@ -65,10 +139,15 @@ public:
 
         // Settings Menu
         ShowMenubar, ShowToolbar, ShowStatusbar, SaveOptions, KeyBindings,
-        Preferences,
+        Preferences, ConfigureToolbars,
 
         // Help Menu
-        Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE
+        Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE,
+
+        // NULL entries for possible later use
+        NULL1, NULL2, NULL3, NULL4, NULL5, NULL6, NULL7, NULL8, NULL9,
+        NULL10, NULL11, NULL12, NULL13, NULL14, NULL15, NULL16, NULL17,
+        NULL18, NULL19, NULL20
     };
 
     /**
@@ -390,6 +469,14 @@ public:
      */
     static KAction *preferences(const QObject *recvr = 0, const char *slot = 0,
                                 QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * The Customize Toolbar dialog
+     */
+    static KAction *configureToolbars(const QObject *recvr = 0,
+                                      const char *slot = 0,
+                                      QObject *parent = 0,
+                                      const char *name = 0L );
 
     /**
      * Display the help.
