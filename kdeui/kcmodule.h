@@ -184,11 +184,6 @@ public:
   KCDialog(KCModule *client, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
 
 
-protected:
-
-  void resizeEvent(QResizeEvent *event);
-
-
 protected slots:
 
   void helpClicked();
@@ -208,7 +203,6 @@ private:
   QPushButton *_cancel;
   QPushButton *_apply;
   QPushButton *_ok;
-  QWidget     *_buttons;
   QFrame      *_sep;
 
 };

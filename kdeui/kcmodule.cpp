@@ -38,54 +38,64 @@ KCModule::KCModule(QWidget *parent, const char *name)
 {
 }
 
-
+void setVisible(QPushButton *btn, bool vis)
+{
+  if (vis)
+    btn->show();
+  else
+    btn->hide();
+}
   
 KCDialog::KCDialog(KCModule *client, QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f), _client(client)
 {
   client->reparent(this,0,QPoint(0,0),true);
 
-  _buttons = new QWidget(this);
-
   _sep = new QFrame(this);
   _sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
   _sep->show();
 
-  QHBoxLayout *box = new QHBoxLayout(_buttons, 2, 2);
-
-  _help = new QPushButton(i18n("Help"), _buttons);
-  box->addWidget(_help);
-  _default = new QPushButton(i18n("Default"), _buttons);
-  box->addWidget(_default);
-  _reset = new QPushButton(i18n("Reset"), _buttons);
-  box->addWidget(_reset);
-  box->addStretch();
-  _cancel = new QPushButton(i18n("Cancel"), _buttons);
-  box->addWidget(_cancel);
-  _apply = new QPushButton(i18n("Apply"), _buttons);
-  box->addWidget(_apply);
-  _ok = new QPushButton(i18n("Ok"), _buttons);
-  box->addWidget(_ok);
+  _help = new QPushButton(i18n("Help"), this);
+  _default = new QPushButton(i18n("Default"), this);
+  _reset = new QPushButton(i18n("Reset"), this);
+  _cancel = new QPushButton(i18n("Cancel"), this);
+  _apply = new QPushButton(i18n("Apply"), this);
+  _ok = new QPushButton(i18n("Ok"), this);
 
   // only enable the requested buttons
   int b = _client->buttons();
-  _help->setEnabled(b & KCModule::Help);
-  _default->setEnabled(b & KCModule::Default);
-  _reset->setEnabled(b & KCModule::Reset);
-  _cancel->setEnabled(b & KCModule::Cancel);
-  _apply->setEnabled(b & KCModule::Apply);
-  _ok->setEnabled(b & KCModule::Ok);
-
-  _buttons->setFixedHeight(_help->sizeHint().height()+4);
-  resizeEvent(0);
-  _buttons->show();
-
+  setVisible(_help, b & KCModule::Help);
+  setVisible(_default, b & KCModule::Default);
+  setVisible(_reset, b & KCModule::Reset);
+  setVisible(_cancel, b & KCModule::Cancel);
+  setVisible(_apply, b & KCModule::Apply);
+  setVisible(_ok, b & KCModule::Ok);
+  
+  // disable initial buttons
+  _reset->setEnabled(false);
+  _apply->setEnabled(false);
+  
   connect(_help, SIGNAL(clicked()), this, SLOT(helpClicked()));
   connect(_default, SIGNAL(clicked()), this, SLOT(defaultClicked()));
   connect(_reset, SIGNAL(clicked()), this, SLOT(resetClicked()));
   connect(_cancel, SIGNAL(clicked()), this, SLOT(cancelClicked()));
   connect(_apply, SIGNAL(clicked()), this, SLOT(applyClicked()));
   connect(_ok, SIGNAL(clicked()), this, SLOT(okClicked()));
+
+  QGridLayout *top = new QGridLayout(this, 4, 6, 5);
+  top->addMultiCellWidget(client, 0, 0, 0, 6);
+  top->addMultiCellWidget(_sep, 1, 1, 0, 6);  
+  top->addWidget(_help, 2, 0);
+  top->addWidget(_default, 2, 1);
+  top->addWidget(_reset, 2, 2);
+  top->addWidget(_apply, 2, 4);
+  top->addWidget(_ok, 2, 5);
+  top->addWidget(_cancel, 2, 6);
+  
+  top->setRowStretch(0, 1);
+  top->setColStretch(3, 1);
+  
+  top->activate();
 }
 
 
@@ -124,15 +134,3 @@ void KCDialog::okClicked()
   _client->save();
   accept();
 }
-
-
-void KCDialog::resizeEvent(QResizeEvent *event)
-{
-  QDialog::resizeEvent(event);
-
-  _sep->setGeometry(0,height()-_buttons->height()-2,width(),2);
-  _buttons->setGeometry(0,height()-_buttons->height(),width(),_buttons->height());
-  _client->setGeometry(0,0,width(),height()-_buttons->height()-2);
-}
-
-
