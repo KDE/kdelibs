@@ -126,6 +126,8 @@ public:
     // not part of the DOM
 
     DOMString getAttribute ( int id );
+    AttrImpl *getAttributeNode ( int index );
+    int getAttributeCount();
     void setAttribute ( int id, const DOMString &value );
     void setAttribute ( khtml::AttributeList list );
 

@@ -94,19 +94,20 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
     return (NodeImpl *)((ElementImpl *)map)->removeAttributeNode( n );
 }
 
-Node NamedNodeMap::item( unsigned long /*index*/ )
+Node NamedNodeMap::item( unsigned long index )
 {
     if(map->nodeType() != Node::ELEMENT_NODE)
 	return 0;
 
-    // ####
-    return 0;
+    return (NodeImpl *)((ElementImpl *)map)->getAttributeNode( index );
 }
 
 unsigned long NamedNodeMap::length() const
 {
-    // ####
-    return 0;
+    if(map->nodeType() != Node::ELEMENT_NODE)
+	return 0;
+
+    return (unsigned long)(NodeImpl *)((ElementImpl *)map)->getAttributeCount();
 }
 
 // ---------------------------------------------------------------------------

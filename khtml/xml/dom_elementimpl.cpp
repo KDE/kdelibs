@@ -86,7 +86,7 @@ unsigned short AttrImpl::nodeType() const
 
 DOMString AttrImpl::name() const
 {
-    return getAttrName(attr.id);
+    return attr.name();
 }
 
 bool AttrImpl::specified() const
@@ -123,6 +123,7 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 		   DocumentImpl *doc, bool specified) : NodeImpl(doc)
 {
     attr = khtml::Attribute(name, value);
+    _parent = 0;
     _specified = specified;
 }
 
@@ -192,6 +193,16 @@ DOMString ElementImpl::getAttribute( int id )
     if (index != -1) return defaultMap()->value(index);
 
     return 0;
+}
+
+AttrImpl *ElementImpl::getAttributeNode ( int index )
+{
+    return new AttrImpl(attributeMap.name(index) , attributeMap.value(index), document, true);
+}
+
+int ElementImpl::getAttributeCount()
+{
+    return attributeMap.length();
 }
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value )

@@ -72,10 +72,13 @@ public:
 
     Attribute &operator = (const Attribute &other) {
 	id = other.id;
-	if(v == other.v) return *this;
+	if(v == other.v && n == other.n) return *this;
 	if(v) v->deref();
 	v = other.v;
 	if(v) v->ref();
+	if(n) n->deref();
+	n = other.n;
+	if(n) n->ref();
 	return *this;
     }
 
