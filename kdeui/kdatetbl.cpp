@@ -251,7 +251,12 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         }
 
       pen=painter->pen();
-      if( firstday+calendar->day(date) == pos )
+      int firstWeekDay=KGlobal::locale()->weekStartDay();
+      int offset=firstday-firstWeekDay;
+      if(offset<1)
+        offset+=7;
+      int d = calendar->day(date);
+      if( (offset+d) == (pos+1) )
         {
           if(hasFocus())
             { // draw the currently selected date
@@ -414,11 +419,11 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   // new position and date
   pos = (7 * (row - 1)) + col; 
   QDate clickedDate = dateFromPos( pos );
-  
+
   // set the new date. If it is in the previous or next month, the month will
   // automatically be changed, no need to do that manually...
   setDate( clickedDate );
-  
+
   // call updateCell on the old and new selection. If setDate switched to a different 
   // month, these cells will be painted twice, but that's no problem.
   updateCell( temp/7+1, temp%7 );
