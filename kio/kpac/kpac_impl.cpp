@@ -55,6 +55,11 @@ KPACImpl::~KPACImpl()
 QString KPACImpl::proxyForURL(const KURL &url)
 {
     kdDebug(7025) << "KPACImpl::proxyForURL(), url=" << url.prettyURL() << endl;
+
+    QString p = url.protocol();
+    if (p != "http" && p != "https" && p != "ftp" && p != "gopher")
+      return "DIRECT";
+
     if (!m_configRead)
     {
         kdDebug(7025) << "KPACImpl::proxyForURL(): config not (yet) read, not using a proxy" << endl;
