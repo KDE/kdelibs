@@ -24,6 +24,7 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
+#include <klocale.h>
 #include <stdlib.h>
 
 #include "metainfo.h"
@@ -95,7 +96,7 @@ void MetaInfoProtocol::put(const KURL& url, int, bool, bool)
     } 
     else 
     {
-        error(ERR_NO_CONTENT, "No metainfo for " + url.path());
+        error(ERR_NO_CONTENT, i18n("No metainfo for %1").arg(url.path()));
         return;
     }
     finished();
