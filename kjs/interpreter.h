@@ -286,6 +286,15 @@ namespace KJS {
      * Default implementation does nothing, this exist for classes that reimplement Interpreter.
      */
     virtual void mark() {}
+
+    /**
+     * Provides a way to distinguish derived classes.
+     * Only useful if you reimplement Interpreter and if different kind of
+     * interpreters are created in the same process.
+     * The base class returns 0, the ECMA-bindings interpreter returns 1.
+     */
+    virtual int rtti() { return 0; }
+
 #ifdef KJS_DEBUG_MEM
     /**
      * @internal
