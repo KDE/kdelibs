@@ -2,6 +2,7 @@
 Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated Postscript Images
+Name[ca]=Imatge PostScript encapsulat
 Name[cs]=Obrázky ve formátu Encapsulated PostScript
 Name[da]=Encapsulated Postscript billeder
 Name[de]=Encapsulated PostScript
@@ -23,6 +24,7 @@ Name[no_NY]=Encapsulated Postscript-bilete
 Name[pt]=Imagens em PostScript(TM) Encapsulado
 Name[pt_BR]=Imagens Encapsulated Postscript
 Name[ro]=Imagini Encapsulated Postscript
+Name[sk]=Obrázky ve formátu Encapsulated PostScript
 Name[sl]=Slike v enkapsuliranem PostScriptu
 Name[sr]=Encapsulated PostScript slike
 Name[sv]=Inkapslade PostScript-bilder
