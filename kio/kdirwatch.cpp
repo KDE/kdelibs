@@ -260,6 +260,7 @@ bool KDirWatch::stopDirScan( const QString& _path )
     return false;
 
   (*it).m_ctime = NO_NOTIFY;
+  (*it).m_status = Normal;
 
 #ifdef HAVE_FAM
   if (d->use_fam) {
@@ -285,7 +286,16 @@ bool KDirWatch::restartDirScan( const QString& _path )
 
   struct stat statbuff;
   stat( QFile::encodeName(path), &statbuff );
-  (*it).m_ctime = statbuff.st_ctime;
+  if (stat( QFile::encodeName(path), &statbuff ) == 0)
+  {
+     (*it).m_ctime = statbuff.st_ctime;
+     (*it).m_status = Normal;
+  }
+  else
+  {
+     (*it).m_ctime = NO_NOTIFY;
+     (*it).m_status = NonExistent;
+  }
 
 #ifdef HAVE_FAM
   if (d->use_fam) {

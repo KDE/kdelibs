@@ -170,11 +170,9 @@ class KDirWatch : public QObject
    /**
     * Emitted when directory is deleted.
     *
-    *  When you receive
-    * this signal, the directory is not yet deleted from the list. You will
-    * receive this signal only once, because one directory cannot be
-    * deleted more than once. Please, forget the last^H^H^H^Hprevious
-    * sentence.
+    * When you receive this signal, the directory is not yet
+    * deleted from the list. However, it will be removed from the
+    * notification list afterwards automatically. 
     */
    void deleted (const QString& dir);
      
