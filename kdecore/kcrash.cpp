@@ -31,7 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qlist.h>
 
 #include "kcrash.h"
 
@@ -57,24 +56,34 @@ void setEmergencySaveFunction (void (*saveFunction)(int))
 
 void setCrashHandler (void (*crashHandler)(int))
 {
+printf("Trying to install kcrash handler...\n");
+
  if (crashHandler == KDE_CRASH_DEFAULT)
  {
+	 printf("Installing the system's default bug handler...");
 	  signal (SIGSEGV, SIG_DFL);		
+printf("done.\n");
 	  return;
  }
 
  if (crashHandler == KDE_CRASH_INTERNAL)
  {
+printf("Installing the KDE internal crash handler...");
    signal (SIGSEGV, defaultCrashHandler);
+print("done\n");
    return;
  }
 
+printf("Installing the application's crash handler...");
  signal (SIGSEGV, crashHandler);
+printf("done.\n");
+
 
 }
 
 void resetCrashRecursion (void)
 {
+printf("Crash recursion set to zero.\n");
   CrashRecursionCounter = 0;
 }
 
