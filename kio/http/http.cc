@@ -1006,7 +1006,7 @@ bool HTTPProtocol::readHeader()
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  QString locationStr; // In case we get a redirect.
+  QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
@@ -1038,7 +1038,7 @@ bool HTTPProtocol::readHeader()
            // No response error
            error( ERR_SERVER_TIMEOUT, m_state.hostname );
            return false;
-        } 
+        }
         gets(buffer, sizeof(buffer)-1);
      }
      if (eof())
@@ -1105,7 +1105,7 @@ bool HTTPProtocol::readHeader()
  kdDebug(7103) << "Expires =!" << expire << "!" << endl;
     }
     else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
-      QStringList cacheControls = QStringList::split(',', 
+      QStringList cacheControls = QStringList::split(',',
                                      QString::fromLatin1(trimLead(buffer+14)));
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
@@ -1125,7 +1125,7 @@ bool HTTPProtocol::readHeader()
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
-      if (strncmp(buffer+5, "1.0 ",4) == 0)      
+      if (strncmp(buffer+5, "1.0 ",4) == 0)
       {
          m_HTTPrev = HTTP_10;
          m_bKeepAlive = false;
@@ -1142,13 +1142,13 @@ bool HTTPProtocol::readHeader()
            m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
 #endif
       }
-      int code = atoi(buffer+9); 
+      int code = atoi(buffer+9);
 
       // unauthorized access
       if ((code == 401) || (code == 407)) {
 	unauthorized = true;
         m_bCachedWrite = false; // Don't put in cache
-      } 
+      }
       // server side errors
       else if ((code >= 500) && (code <= 599)) {
         if (m_request.method == HTTP_HEAD) {
@@ -1326,7 +1326,14 @@ bool HTTPProtocol::readHeader()
 
     return readHeader();
 #else
+    kdDebug(7103) << "request.url is " << m_request.url.url() << " locationstr " << locationStr.data() << endl;
+
     KURL u(m_request.url, locationStr);
+    if(u.isMalformed()) {
+      error(ERR_MALFORMED_URL, u.url());
+      return false;
+    }
+
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
 #endif
@@ -1335,8 +1342,7 @@ bool HTTPProtocol::readHeader()
   // and that we do indeed have a header
   // Do this only if there is no redirection. Buggy server implementations
   // incorrectly send Content-Type with a redirection response. (DA)
-  kdDebug(7103) << "Location field's text is : " << locationStr << endl;
-  if( locationStr.length() == 0 )
+  if( locationStr.isEmpty() )
      mimeType(m_strMimeType);
 
   if (m_request.method == HTTP_HEAD)
@@ -2430,10 +2436,10 @@ HTTPProtocol::closeCacheEntry()
       {
          return; // Success
       }
-      kdWarning(7103) << "closeCacheEntry: error renaming cache entry. (" 
+      kdWarning(7103) << "closeCacheEntry: error renaming cache entry. ("
                    << filename << " -> " << m_state.cef << ")" << endl;
    }
-   kdWarning(7103) << "closeCacheEntry: error closing cache entry. (" 
+   kdWarning(7103) << "closeCacheEntry: error closing cache entry. ("
                    << filename<< ")" << endl;
 }
 
