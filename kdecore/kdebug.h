@@ -16,6 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef _KDEBUG_H
 #define _KDEBUG_H
 
@@ -65,10 +66,11 @@ void kdebug( unsigned short, unsigned short, const char*, ... );
 #define KASSERT9( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7, Par8, Par9 )
 #endif
 
-#define KDEBUG_INFO 0
-#define KDEBUG_WARN 1
-#define KDEBUG_ERROR 2
-#define KDEBUG_FATAL 3
+enum DebugLevels {
+	KDEBUG_INFO=	0,
+	KDEBUG_WARN=	1,
+	KDEBUG_ERROR=	2,
+	KDEBUG_FATAL=	3
+};
 
 #endif
-
