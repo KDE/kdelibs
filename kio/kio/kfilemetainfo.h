@@ -255,7 +255,6 @@ protected:
      **/
     KFilePlugin * const plugin() const;
 
-    class Data;
     Data* d;
 };
 
