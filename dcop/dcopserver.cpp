@@ -396,7 +396,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
       } else if ( app == "*") {
 	// handle a broadcast.
 	QDictIterator<DCOPConnection> aIt(appIds);
-	while (aIt.current()) {
+    for ( ; aIt.current(); ++aIt) {
 	    IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
 			 sizeof(DCOPMsg), DCOPMsg, pMsg);
 	    int datalen = ba.size();
