@@ -503,8 +503,10 @@ void FileCopyJob::slotDataReq( KIO::Job * job, QByteArray &data)
 {
    kdDebug(7007) << "FileCopyJob::slotDataReq(" << job << ")" << endl;
    if (m_getJob)
+   {
       m_getJob->resume(); // Order more beer
-   m_putJob->suspend();
+      m_putJob->suspend();
+   }
    data = m_buffer;
    m_buffer = QByteArray();
 }
