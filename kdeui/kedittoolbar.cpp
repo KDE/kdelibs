@@ -45,8 +45,8 @@
 #include <kpushbutton.h>
 #include <kprocio.h>
 
-static const char *lineseparatorstring = I18N_NOOP("--- line separator ---"); 
-static const char *separatorstring = I18N_NOOP("--- separator ---"); 
+static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---"); 
+static const char * const separatorstring = I18N_NOOP("--- separator ---"); 
 
 #define LINESEPARATORSTRING i18n(lineseparatorstring) 
 #define SEPARATORSTRING i18n(separatorstring) 
