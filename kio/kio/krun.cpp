@@ -547,13 +547,13 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
 
-static pid_t runCommandInternal( KProcess* proc, const KService::Ptr& service, const QString& binName,
+static pid_t runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
     const QString &execName_P, const QString & iconName_P )
 {
   QString bin = KRun::binaryName( binName, false );
   QString execName = execName_P;
   QString iconName = iconName_P;
-  if ( service != NULL && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
+  if ( service && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
      KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
      return 0;
@@ -562,20 +562,17 @@ static pid_t runCommandInternal( KProcess* proc, const KService::Ptr& service, c
   bool startup_notify = false;
   QCString wmclass;
   KStartupInfoId id;
-  if( service != NULL )
+  if( service && service->property( "X-KDE-StartupNotify" ).isValid())
   {
-      if( service->property( "X-KDE-StartupNotify" ).isValid())
+      startup_notify = service->property( "X-KDE-StartupNotify" ).toBool();
+      wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
+  }
+  else // non-compliant app ( .desktop file )
+  {
+      if( service && service->type() == "Application" )
       {
-          startup_notify = service->property( "X-KDE-StartupNotify" ).toBool();
-          wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
-      }
-      else // non-compliant app ( .desktop file )
-      {
-          if( service->type() == "Application" )
-          {
-              startup_notify = true; // doesn't have .desktop entries needed
-              wmclass = "0";         // start as non-compliant
-          }
+          startup_notify = true; // doesn't have .desktop entries needed
+          wmclass = "0";         // start as non-compliant
       }
   }
   if( startup_notify )
@@ -647,7 +644,7 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
      QString arg = *it;
      *proc << arg;
   }
-  return runCommandInternal( proc, KService::Ptr( new KService( _service ) ), _service.exec(), _service.name(), _service.icon() );
+  return runCommandInternal( proc, &_service, _service.exec(), _service.name(), _service.icon() );
 }
 
 // BIC merge with method below
@@ -725,7 +722,7 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   *proc << cmd;
   QString bin = binaryName( cmd, false );
   KService::Ptr service = KService::serviceByDesktopName( bin );
-  return runCommandInternal( proc, service, bin, execName, iconName );
+  return runCommandInternal( proc, &(*service), bin, execName, iconName );
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
