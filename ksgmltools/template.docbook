@@ -1,11 +1,11 @@
-<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN" [
-  <!ENTITY kappname "&kapp;" -- replace kapp here. This only *seems* redundant -->
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+  <!ENTITY kappname "&kapp;" -- replace kapp here -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE" -- change language only here -->
   <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V2.0//EN">
   %ents;
   <!-- Do not define any other entities; instead, use the entities
-       from kde-genent.entities and <lg>/user.entities. -->
+       from kde-genent.entities and $LANG/user.entities. -->
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
      Minor update to "Credits and Licenses" section on August 24, 2000
@@ -31,7 +31,7 @@ thanks ;-).
 
 <!-- ................................................................ -->
 
-<!-- The language must NOT be changed. -->
+<!-- The language must NOT be changed here. -->
 
 <book lang="&language;">
 
@@ -67,7 +67,7 @@ as Authors, publish date, the abstract, and Keywords -->
 Don't forget to include this last date and this last revision number, we
 need them for translation coordination !
 Please respect the format of the date (DD/MM/YYYY) and of the version
-(Major.minor.lesser), it could be used by automation scripts.
+(V.MM.LL), it could be used by automation scripts.
 Do NOT change these in the translation. -->
 
 <date>03/04/1999</date>
@@ -88,8 +88,8 @@ Please at least include KDE, the KDE package it is in, the name
 
 <keywordset>
 <keyword>KDE</keyword>
-<keyword>Kapp</keyword>
 <keyword>kdeutils</keyword>
+<keyword>Kapp</keyword>
 <keyword>nothing</keyword>
 <keyword>nothing else</keyword>
 </keywordset>
