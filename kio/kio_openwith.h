@@ -12,7 +12,6 @@
 #include <kapp.h>
 #include <kurlcompletion.h>
 #include "kservice.h"
-#include <ksharedptr.h>
 
 class KApplicationTree;
 
