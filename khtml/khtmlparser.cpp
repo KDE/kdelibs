@@ -1161,8 +1161,8 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 }
 
 // <b>              </b>
-// <base
-// <basefont                        unimpl. HTML4
+// <base                            complete
+// <basefont                        unimpl.
 // <bdo>            </bdo>          unimpl. HTML4 bidirectional writing
 // <big>            </big>
 // <blockquote>     </blockquote>
@@ -1171,8 +1171,49 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 // <button>         </button>       unimpl. HTML4
 void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 {
-    if ( strncmp( str, "basefont", 8 ) == 0 )
+    if ( strncmp( str, "br", 2 ) == 0 )
     {
+	//attrs: %coreattrs
+
+	HTMLVSpace::Clear clear = HTMLVSpace::CNone;
+
+	stringTok->tokenize( str + 3, " >" );
+	while ( stringTok->hasMoreTokens() )
+	{
+	    const char* token = stringTok->nextToken();
+	    if ( strncasecmp( token, "clear=", 6 ) == 0 )
+	    {
+		if ( strcasecmp( token+6, "left" ) == 0 )
+		    clear = HTMLVSpace::Left;
+		else if ( strcasecmp( token+6, "right" ) == 0 )
+		    clear = HTMLVSpace::Right;
+		else if ( strcasecmp( token+6, "all" ) == 0 )
+		    clear = HTMLVSpace::All;
+            }
+	}
+
+	if (!flow)
+	    newFlow(_clue);
+
+	HTMLObject *last = flow->lastChild(); 
+	if (!last || last->isNewline())
+	{
+		// Start of line, add vertical space based on current font.
+		flow->append( new HTMLVSpace( 
+				currentFont()->pointSize(),
+				clear ));
+	}
+	else
+	{
+		// Terminate current line
+		flow->append( new HTMLVSpace(0, clear));
+	}
+
+	vspace_inserted = false;
+    }
+    else if ( strncmp( str, "basefont", 8 ) == 0 )
+    {
+	// attrs: id size color face
     }
     else if ( strncmp(str, "base", 4 ) == 0 )
     {
@@ -1192,6 +1233,8 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     }
     else if ( strncmp(str, "big", 3 ) == 0 )
     {
+	// attrs %attrs
+
 	selectFont( +2 );
 	pushBlock(ID_BIG, 1, &KHTMLParser::blockEndFont);
     }
@@ -1201,6 +1244,8 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     }
     else if ( strncmp(str, "blockquote", 10 ) == 0 )
     {
+	// attrs: cite, %attrs
+
 	pushBlock(ID_BLOCKQUOTE, 2, &KHTMLParser::blockEndIndent, indent);
 	indent += INDENT_SIZE;
 	flow = 0; 
@@ -1209,8 +1254,23 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     {
 	popBlock( ID_BLOCKQUOTE, _clue);
     }
+    else if ( strncmp( str, "button", 6 ) == 0 )
+    {
+	// forms...
+    }
+    else if ( strncmp( str, "/button", 7 ) == 0 )
+    {
+    }
+    else if ( strncmp( str, "bdo", 3 ) == 0 )
+    {
+	// I think we'll wait for qt to support right to left...
+    }
+    else if ( strncmp( str, "/bdo", 4 ) == 0 )
+    {
+    }
     else if ( strncmp( str, "body", 4 ) == 0 )
     {
+	// missing attrs: %attrs, onload, onunload, alink
 
 	if ( bodyParsed )
 	    return;
@@ -1256,48 +1316,11 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 	    }
 	}
     }
-    else if ( strncmp( str, "br", 2 ) == 0 )
-    {
-	HTMLVSpace::Clear clear = HTMLVSpace::CNone;
-
-	stringTok->tokenize( str + 3, " >" );
-	while ( stringTok->hasMoreTokens() )
-	{
-	    const char* token = stringTok->nextToken();
-	    if ( strncasecmp( token, "clear=", 6 ) == 0 )
-	    {
-		if ( strcasecmp( token+6, "left" ) == 0 )
-		    clear = HTMLVSpace::Left;
-		else if ( strcasecmp( token+6, "right" ) == 0 )
-		    clear = HTMLVSpace::Right;
-		else if ( strcasecmp( token+6, "all" ) == 0 )
-		    clear = HTMLVSpace::All;
-            }
-	}
-
-	if (!flow)
-	    newFlow(_clue);
-
-	HTMLObject *last = flow->lastChild(); 
-	if (!last || last->isNewline())
-	{
-		// Start of line, add vertical space based on current font.
-		flow->append( new HTMLVSpace( 
-				currentFont()->pointSize(),
-				clear ));
-	}
-	else
-	{
-		// Terminate current line
-		flow->append( new HTMLVSpace(0, clear));
-	}
-
-	vspace_inserted = false;
-    }
     else if ( strncmp(str, "b", 1 ) == 0 )
     {
 	if ( str[1] == '>' || str[1] == ' ' )
 	{
+	    // attrs: %attrs
 	    weight = QFont::Bold;
 	    selectFont();
 	    pushBlock(ID_B, 1, &KHTMLParser::blockEndFont);
@@ -1309,10 +1332,10 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
     }
 }
 
-// <center>         </center>
-// <cite>           </cite>
-// <code>           </code>
-// <cell>           </cell>
+// <center>         </center>      
+// <cite>           </cite>        
+// <code>           </code>        
+// <cell>           </cell>         (not in HTML4...)
 // <comment>        </comment>      unimplemented (??? doesn't exist
 //                                  according to HTML4 specs...)
 void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
@@ -1360,7 +1383,7 @@ void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
 	}
 }
 
-// <dd>             </dd>           unimpl. HTML4 end tag optional
+// <dd>             </dd>           
 // <del>            </del>          unimpl. HTML4
 // <dfn>            </dfm>          unimpl. HTML4
 // <dir             </dir>          partial
@@ -1385,6 +1408,7 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
 	stringTok->tokenize( str + 4, " >" );
 	while ( stringTok->hasMoreTokens() )
 	{
+	    // attrs: %attrs
 	    const char* token = stringTok->nextToken();
 	    if ( strncasecmp( token, "align=", 6 ) == 0 )
 	    {
@@ -1406,6 +1430,8 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
     }
     else if ( strncmp( str, "dl", 2 ) == 0 )
     {
+	// attrs: %attrs
+
 	vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	closeAnchor();
 	if ( glossaryStack.top() )
@@ -1438,6 +1464,8 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
     }
     else if (strncmp( str, "dt", 2 ) == 0)
     {
+	// attrs: %attrs
+
 	if ( !glossaryStack.top() )
 	    return;
 
@@ -1453,6 +1481,8 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
     }
     else if (strncmp( str, "dd", 2 ) == 0)
     {
+	// attrs: %attrs
+
 	if ( !glossaryStack.top() )
 	    return;
 
@@ -1462,6 +1492,21 @@ void KHTMLParser::parseD( HTMLClue *_clue, const char *str )
 	    indent += INDENT_SIZE;
 	}
 	flow = 0;
+    }
+    else if (strncmp( str, "dfn", 3 ) == 0)
+    {
+	// attrs: %attrs
+    }
+    else if (strncmp( str, "/dfn", 4 ) == 0)
+    {
+    }
+    else if (strncmp( str, "del", 3 ) == 0)
+    {
+	// attrs: %attrs, cite, datetime
+	// marks deleted text. Could be rendered as struck-through
+    }
+    else if (strncmp( str, "/del", 4 ) == 0)
+    {
     }
 }
 
@@ -1676,6 +1721,13 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	    //Lars: see above
 	    //popBlock( ID_FORM, _clue);
 	}
+	else if ( strncmp( str, "fieldset", 8 ) == 0 )
+	{
+	}
+	else if ( strncmp( str, "/fieldset", 9 ) == 0 )
+	{
+	}
+	
 }
 
 // 
@@ -1968,6 +2020,27 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	parseInput( str + 6 );
 	vspace_inserted = false;
     }
+    else if ( strncmp(str, "iframe", 6 ) == 0 )
+    {
+	// inlined frame
+    }
+    else if ( strncmp(str, "/iframe", 7 ) == 0 )
+    {
+    }
+    else if ( strncmp(str, "ins", 3 ) == 0 )
+    {
+	// inserted text... opposite of <del>
+    }
+    else if ( strncmp(str, "/ins", 4 ) == 0 )
+    {
+    }
+    else if ( strncmp(str, "isindex", 7 ) == 0 )
+    {
+	// deprecated... is it used at all?
+    }
+    else if ( strncmp(str, "/isindex", 8 ) == 0 )
+    {
+    }
     else if ( strncmp(str, "i", 1 ) == 0 )
     {
 	if ( str[1] == '>' || str[1] == ' ' )
@@ -2098,6 +2171,20 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 	if ( listStack.count() > 0 )
 		listStack.top()->itemNumber++;
     }
+    else if (strncmp( str, "label", 5 ) == 0)
+    {
+	// form field label text
+    }
+    else if (strncmp( str, "/label", 6 ) == 0)
+    {
+    }
+    else if (strncmp( str, "legend", 6 ) == 0)
+    {
+	// fieldset legend
+    }
+    else if (strncmp( str, "/legend", 7 ) == 0)
+    {
+    }
 }
 
 // <map             </map>
@@ -2210,6 +2297,19 @@ void KHTMLParser::parseN( HTMLClue *, const char *str )
     // only ignore the stuff in noframes, if we have a htmlview
     if( HTMLWidget->htmlView && strncmp( str, "noframes", 8 ) == 0)
 	inNoframes = true;	
+    else if( strncmp( str, "noscript", 8 ) == 0 )
+    {
+    }
+    else if( strncmp( str, "/noscript", 9 ) == 0 )
+    {
+    }
+    else if( strncmp( str, "nobr", 4 ) == 0 )
+    {
+	// do not break lines
+    }
+    else if( strncmp( str, "/nobr", 5 ) == 0 )
+    {
+    }
 }
 
 // <object>         </object>       unimpl. HTML4        
@@ -2304,6 +2404,20 @@ void KHTMLParser::parseO( HTMLClue *_clue, const char *str )
 		formSelect->setText( formText );
 	inOption = false;
     }
+    else if ( strncmp( str, "optgroup", 8 ) == 0 )
+    {
+	// grouping options
+    }
+    else if ( strncmp( str, "/optgroup", 9 ) == 0 )
+    {
+    }
+    else if ( strncmp( str, "object", 6 ) == 0 )
+    {
+	// external objects, java, etc...
+    }
+    else if ( strncmp( str, "/object", 7 ) == 0 )
+    {
+    }
 }
 
 // <p
@@ -2356,11 +2470,23 @@ void KHTMLParser::parseP( HTMLClue *_clue, const char *str )
 	    closeAnchor();
 	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
+	else if ( strncmp( str, "param", 5 ) == 0 )
+	{
+	    // named property value
+	}
 }
 
 // <q>            </q>            unimpl. HTML4
-void KHTMLParser::parseQ( HTMLClue *, const char * )
+void KHTMLParser::parseQ( HTMLClue *, const char *str )
 {
+    if ( *str == 'q' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
+    {
+	// inline quotation
+    }
+    else if ( *str == '/' && *(str+1) == 'q' &&
+	      ( *(str+2) == ' ' || *(str+2) == '>' ) )
+    {
+    }
 }
 
 void KHTMLParser::parseR( HTMLClue *, const char * )
@@ -2456,6 +2582,41 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	else if ( strncmp(str, "/strong", 7 ) == 0 )
 	{
 		popBlock( ID_STRONG, _clue);
+	}
+	else if ( strncmp(str, "script", 6 ) == 0 )
+	{
+	    // javascript...
+	}
+	else if ( strncmp(str, "/script", 7 ) == 0 )
+	{
+	}
+	else if ( strncmp(str, "span", 4 ) == 0 )
+	{
+	    // inline <div>...
+	}
+	else if ( strncmp(str, "/span", 5 ) == 0 )
+	{
+	}
+	else if ( strncmp(str, "style", 5 ) == 0 )
+	{
+	    // style sheets...
+	}
+	else if ( strncmp(str, "/style", 6 ) == 0 )
+	{
+	}
+	else if ( strncmp(str, "sub", 3 ) == 0 )
+	{
+	    // subscript
+	}
+	else if ( strncmp(str, "/sub", 4 ) == 0 )
+	{
+	}
+	else if ( strncmp(str, "sup", 3 ) == 0 )
+	{
+	    // superscript
+	}
+	else if ( strncmp(str, "/sup", 4 ) == 0 )
+	{
 	}
 	else if ( strncmp( str, "strike", 6 ) == 0 )
 	{
@@ -2715,6 +2876,10 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
 
 const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 {
+    // missing tags:
+    // <col> <colgroup> </colgroup>
+    // <thead> </thead> <tbody> </tbody> <tfoot> </tfoot>
+ 
     static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
     static const char *endall[] = { "</caption>", "</table>", "<tr", "<td", "<th"," </th", "</td", "</tr", 0 };    
