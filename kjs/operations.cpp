@@ -76,9 +76,6 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
       return (v1.toString().value() == v2.toString().value());
     if (t1 == BooleanType)
       return (v1.toBoolean().value() == v2.toBoolean().value());
-    // TODO: does that make sense ?
-    if (t1 == HostType)
-      return equal(v1.toPrimitive(HostType), v2.toPrimitive(HostType));
     return (v1.imp() == v2.imp());
   }
 
