@@ -1,22 +1,14 @@
 
-INCLUDES = $(all_includes)
+INCLUDES = $(all_includes) -I$(srcdir)/..
 
 noinst_PROGRAMS = ctest apitest notesoff
 
 ctest_SOURCES = ctest.c
-ctest_CPPFLAGS	= -I..
-ctest_LDFLAGS	= -L..
-ctest_LDADD = -lkmid
+ctest_LDADD = ../libkmid.la
 
 apitest_SOURCES = apitest.cc
-apitest_CXXFLAGS	= -I..
-apitest_LDFLAGS	= -L..
-apitest_LDADD = -lkmid 
+apitest_LDADD = ../libkmid.la
 
 notesoff_SOURCES = notesoff.cc
-notesoff_CXXFLAGS = -I..
-notesoff_LDFLAGS = -L..
-notesoff_LDADD = -lkmid 
+notesoff_LDADD = ../libkmid.la
 
-
-DISTCLEANFILES = ./.deps/* ./.deps/.P
