@@ -18,11 +18,11 @@ libkdeprint_pdq_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
 
 ####### Build rules
 
-parser.cpp: parser.yy
+$(srcdir)/parser.cpp: parser.yy
 	cd $(srcdir) && bison -t -d -v -o parser.cpp parser.yy
-parser.cpp.h: parser.cpp
+$(srcdir)/parser.cpp.h: $(srcdir)/parser.cpp
 
-scanner.cpp: scanner.ll parser.cpp
+$(srcdir)/scanner.cpp: scanner.ll $(srcdir)/parser.cpp
 	cd $(srcdir) && flex -B -8 -oscanner.cpp scanner.ll
 
 EXTRA_DIST = scanner.ll parser.yy
