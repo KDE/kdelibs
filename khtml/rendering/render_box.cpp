@@ -163,8 +163,7 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
         mh = QMIN(_h,h);
 
-    if ( !root()->printingMode() )
-        printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
         printBorder(p, _tx, _ty, w, h, style());
