@@ -472,12 +472,12 @@ void KDockTabBarPainter::drawBuffer()
   QColor c1 = colorGroup().light();
   QColor c2 = colorGroup().dark();
   QColor c4 = colorGroup().light(); // for paint top line;
-
+  KDockTabBar* tabBar = (KDockTabBar*)parent();
   int W = 0;
   int H = 0;
   int shadowX = 1;
   int shadowY = 1;
-  switch ( ((KDockTabBar*)parent())->tabPos ){
+  switch ( tabBar->tabPos ){
     case KDockTabBar::TAB_TOP:
       W = width();
       H = height();
@@ -497,15 +497,15 @@ void KDockTabBarPainter::drawBuffer()
   paint.fillRect( 0, 0, W, H, QBrush( colorGroup().brush( QColorGroup::Background ) ));
 
   int x = 2;
-  int curTab  = ((KDockTabBar*)parent())->_currentTab;
+  int curTab  = tabBar->_currentTab;
   int curTabNum = -1;
-  int leftTab = ((KDockTabBar*)parent())->leftTab;
+  int leftTab = tabBar->leftTab;
   int curx = -1; // start current tab ( selected )
   int curWidth = -1;
   int broken = -1;
-  bool iconShow = ((KDockTabBar*)parent())->iconShow;
+  bool iconShow = tabBar->iconShow;
 
-  QList<KDockTabBar_Private> *mainData = ((KDockTabBar*)parent())->mainData;
+  QList<KDockTabBar_Private> *mainData = tabBar->mainData;
   for ( uint k = 0; k < mainData->count(); k++ ){
     int x1 = x;
     int y1 = 2;
@@ -521,7 +521,7 @@ void KDockTabBarPainter::drawBuffer()
 
     if ( mainData->at(k)->pix != 0L && iconShow ){
       QWMatrix m;
-      switch ( ((KDockTabBar*)parent())->tabPos ){
+      switch ( tabBar->tabPos ){
         case KDockTabBar::TAB_TOP:
           break;
         case KDockTabBar::TAB_RIGHT:
@@ -534,13 +534,14 @@ void KDockTabBarPainter::drawBuffer()
     int ty = ( H + fontMetrics().height() ) / 2 - 2;
     int tx = ( mainData->at(k)->pix != 0L && iconShow ) ? 32:12;
 
-    paint.setFont( parentWidget()->font() );
+    paint.setFont( tabBar->font() );
 
     if ( mainData->at(k)->enabled ){
-//      if ( (int)k == curTab )
-//        paint.setPen( colorGroup().buttonText() );
-//      else
-        paint.setPen( mainData->at(k)->textColor );
+      if ( (int)k == curTab && tabBar->hasFocus() ){
+        paint.setPen( colorGroup().buttonText() );
+        paint.drawWinFocusRect(x1+tx-2,y1+2,width-tx-2,H-3);
+      }
+      paint.setPen( mainData->at(k)->textColor );
       paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
     } else {
       paint.setPen( colorGroup().light() );
@@ -798,6 +799,7 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
   setFixedHeight( fontMetrics().height() + 10 );
 
   setButtonPixmap();
+  setFocusPolicy( TabFocus );
 }
 
 KDockTabBar::~KDockTabBar()
@@ -1048,6 +1050,52 @@ int KDockTabBar::tabsWidth()
     width += mainData->at(k)->width;
   }
   return width == 0 ? 0:width + 4;
+}
+
+void KDockTabBar::keyPressEvent( QKeyEvent* e )
+{
+  int id = _currentTab;
+  int fid = -1;
+  switch (e->key()){
+    case Key_Left:
+      --id;
+      while (true){
+        KDockTabBar_Private* data = findData( id );
+        if ( !data )
+          break;
+
+        if ( data->enabled ){
+          fid = id;
+          break;
+        }
+        --id;
+      }
+      if ( fid != -1 )
+        setCurrentTab(fid);
+      setFocus();
+      debug("Left");
+      break;
+    case Key_Right:
+      id++;
+      while (true){
+        KDockTabBar_Private* data = findData( id );
+        if ( !data )
+          break;
+
+        if ( data->enabled ){
+          fid = id;
+          break;
+        }
+        id++;
+      }
+      if ( fid != -1 )
+        setCurrentTab(fid);
+      setFocus();
+      debug("Right");
+      break;
+    default:
+      break;
+  }
 }
 
 void KDockTabBar::resizeEvent(QResizeEvent *)

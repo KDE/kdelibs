@@ -239,6 +239,12 @@ protected:
    */
   virtual void resizeEvent( QResizeEvent* );
 
+  /**
+   * Handles key press events for this widgets
+   * Reimplemented from QWidget
+   */
+  virtual void keyPressEvent( QKeyEvent* );
+
 private:
   /** For internal use */
   void setButtonPixmap();
