@@ -25,7 +25,7 @@
 #include "internal.h"
 #include "function_object.h"
 
-#include <sys/time.h>
+#include <time.h>
 
 namespace KJS {
 
