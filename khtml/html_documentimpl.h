@@ -68,7 +68,7 @@ public:
     void write ( const QString &text );
     void writeln ( const DOMString &text );
     ElementImpl *getElementById ( const DOMString &elementId );
-    NodeList getElementsByName ( const DOMString &elementName );
+    NodeListImpl *getElementsByName ( const DOMString &elementName );
 
     // internal
     NodeImpl *findElement( int id );

@@ -1,4 +1,4 @@
-/*
+/**           -*- c++ -*-
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
@@ -375,6 +375,14 @@ public:
     virtual unsigned long length() const;
 
     virtual NodeImpl *item ( unsigned long index );
+
+protected:
+    // helper functions for searching all ElementImpls in a tree
+    unsigned long recursiveLength(NodeImpl *start) const;
+
+    NodeImpl *recursiveItem ( NodeImpl *start, unsigned long &offset ) const;
+
+    virtual bool nodeMatches( NodeImpl *testNode ) const;
 };
 
 class ChildNodeListImpl : public NodeListImpl
@@ -390,6 +398,50 @@ public:
 
 protected:
     NodeImpl *refNode;
+};
+
+
+/**
+ * NodeList which lists all Nodes in a document with a given tag name
+ */ 
+class TagNodeListImpl : public NodeListImpl
+{
+public:
+    TagNodeListImpl( DocumentImpl *doc, const DOMString &t );
+
+    virtual ~TagNodeListImpl();
+
+    virtual unsigned long length() const;
+
+    virtual NodeImpl *item ( unsigned long index ) const;
+
+protected:
+    virtual bool nodeMatches( NodeImpl *testNode ) const;
+
+    DocumentImpl *refDoc;
+    const DOMString &tagName;
+};
+
+
+/**
+ * NodeList which lists all Nodes in a document with a given "name=" tag
+ */ 
+class NameNodeListImpl : public NodeListImpl
+{
+public:
+    NameNodeListImpl( DocumentImpl *doc, const DOMString &t );
+
+    virtual ~NameNodeListImpl();
+
+    virtual unsigned long length() const;
+
+    virtual NodeImpl *item ( unsigned long index ) const;
+
+protected:
+    virtual bool nodeMatches( NodeImpl *testNode ) const;
+
+    DocumentImpl *refDoc;
+    const DOMString &nodeName;
 };
 
 }; //namespace

@@ -28,6 +28,8 @@
 #include "dtd.h"
 
 #include "dom_nodeimpl.h"
+#include "dom_elementimpl.h"
+#include "dom_docimpl.h"
 
 #include <stdio.h>
 
@@ -245,7 +247,7 @@ NodeBaseImpl::~NodeBaseImpl()
     }
 }
 
-NodeListImpl *NodeBaseImpl::childNodes()
+NodeListImpl *NodeBaseImpl::childNodes() // 
 {
     return new ChildNodeListImpl(this);
 }
@@ -483,6 +485,46 @@ unsigned long NodeListImpl::length() const
     return 0;
 }
 
+unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
+{
+    unsigned long len = 0;
+
+    for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
+	if ( n->nodeType() == Node::ELEMENT_NODE ) {
+	    if (nodeMatches(n))
+		len++;
+	    len+= recursiveLength(n);
+	}
+    }
+
+    return len;
+}
+
+NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset ) const
+{
+    unsigned long len = 0;
+
+    for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
+	if ( n->nodeType() == Node::ELEMENT_NODE ) {
+	    if (nodeMatches(n))
+		if (!offset--)
+		    return n;
+
+	    NodeImpl *depthSearch= recursiveItem(n, offset);
+	    if (depthSearch)
+		return depthSearch;
+	}
+    }
+
+    return 0; // no matching node in this subtree
+}
+
+bool NodeListImpl::nodeMatches( NodeImpl *testNode ) const
+{
+    return false;
+}
+
+
 ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n )
 {
     refNode = n;
@@ -496,7 +538,7 @@ ChildNodeListImpl::~ChildNodeListImpl()
 
 unsigned long ChildNodeListImpl::length() const
 {
-    int len = 0;
+    unsigned long len = 0;
     NodeImpl *n;
     for(n = refNode->firstChild(); n != 0; n = n->nextSibling())
 	len++;
@@ -518,3 +560,64 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index )
     return n;
 }
 
+
+
+TagNodeListImpl::TagNodeListImpl(DocumentImpl *doc, const DOMString &t )
+  : tagName(t)
+{
+    refDoc= doc;
+    refDoc->ref();
+}
+
+TagNodeListImpl::~TagNodeListImpl()
+{
+    refDoc->deref();
+}
+
+unsigned long TagNodeListImpl::length() const
+{
+    return recursiveLength( refDoc->documentElement() );
+}
+
+NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
+{
+    return recursiveItem( refDoc->documentElement(), index );
+}
+
+bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+{
+    return testNode->nodeName()==tagName; 
+}
+
+
+
+NameNodeListImpl::NameNodeListImpl(DocumentImpl *doc, const DOMString &t )
+  : nodeName(t)
+{
+    refDoc= doc;
+    refDoc->ref();
+}
+
+NameNodeListImpl::~NameNodeListImpl()
+{
+    refDoc->deref();
+}
+
+unsigned long NameNodeListImpl::length() const
+{
+    return recursiveLength( refDoc->documentElement() );
+}
+
+NodeImpl *NameNodeListImpl::item ( unsigned long index ) const
+{
+    return recursiveItem( refDoc->documentElement(), index );
+}
+
+bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+{
+    // assert(testNode->nodeType() == Node::ELEMENT_NODE)
+    // this function is only called by NodeListImpl::recursiveXXX if
+    // the node is an element
+    return static_cast<ElementImpl *>(testNode) ->
+      getAttribute("name") == nodeName;
+}

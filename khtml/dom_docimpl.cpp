@@ -76,7 +76,7 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 
 NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 {
-    // #### implement
+    return new TagNodeListImpl( this, tagname );
 }
 
 // ----------------------------------------------------------------------------

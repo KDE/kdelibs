@@ -41,6 +41,7 @@
 #include "dom_string.h"
 #include "html_imageimpl.h"
 
+#include "dom_nodeimpl.h"
 #include "html_documentimpl.h"
 
 #include <stdio.h>
@@ -192,9 +193,9 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 }
 
 
-NodeList HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
+NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
 {
-    // ###
+    return new NameNodeListImpl( this, elementName );
 }
 
 // internal. finds the first element with tagid id
