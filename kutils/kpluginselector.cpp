@@ -485,6 +485,8 @@ void KPluginSelectionWidget::save()
         {
             ( *it )->save();
             QStringList * names = d->moduleParentComponents[ *it ];
+            if( names->size() == 0 )
+                names->append( QString::null );
             for( QStringList::ConstIterator nameit = names->begin();
                     nameit != names->end(); ++nameit )
                 if( updatedModules.find( *nameit ) == updatedModules.end() )
