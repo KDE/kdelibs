@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include <config.h>
 #include <map>
 	
@@ -38,8 +39,36 @@ string MCOPUtils::createFilePath(string name)
 	if(getenv("LOGNAME")) logname = getenv("LOGNAME");
 
 	string tmpdir = "/tmp/mcop-"+logname;
-	mkdir(tmpdir.c_str(),0700);
-	chmod(tmpdir.c_str(),0700);
+	if(mkdir(tmpdir.c_str(),0700) != 0 && errno != EEXIST)
+	{
+		cerr << "MCOP error: can't create " << tmpdir <<
+		        " (" << strerror(errno) << ")" << endl;
+		exit(1);
+	}
+
+	/** check that /tmp/mcop-<username>/ is a secure temporary dir **/
+	struct stat st;
+	if(lstat(tmpdir.c_str(),&st) != 0)
+	{
+		cerr << "MCOP error: can't stat " << tmpdir <<
+		        " (" << strerror(errno) << ")" << endl;
+		exit(1);
+	}
+	if (st.st_uid != getuid ())
+    {
+		cerr << "MCOP error: " << tmpdir << " not owned by user" << endl;
+		exit(1);
+	}
+	if(st.st_mode & 0077)
+	{
+		cerr << "MCOP error: " << tmpdir << " accessible by others" << endl;
+		exit(1);
+	}
+	if(!S_ISDIR(st.st_mode))
+	{
+		cerr << "MCOP error: " << tmpdir << " is not a directory" << endl;
+		exit(1);
+	}
 
 	string::iterator si;
 	for(si = name.begin(); si != name.end(); si++)
