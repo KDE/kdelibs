@@ -1927,3 +1927,77 @@ KURL KURL::fromPathOrURL( const QString& text )
 
     return url;
 }
+
+QString KURL::relativePath(const QString &base_dir, const QString &path, bool *isParent)
+{
+   QString _base_dir(QDir::cleanDirPath(base_dir));
+   QString _path(QDir::cleanDirPath(path.isEmpty() || (path[0] != '/') ? _base_dir+"/"+path : path));
+
+   if (_base_dir.isEmpty())
+      return _path;
+
+   if (_base_dir[_base_dir.length()-1] != '/')
+      _base_dir.append('/');
+
+   QStringList list1 = QStringList::split('/', _base_dir);
+   QStringList list2 = QStringList::split('/', _path);
+                                                                   
+   // Find where they meet
+   uint level = 0;
+   uint maxLevel = QMIN(list1.count(), list2.count());
+   while((level < maxLevel) && (list1[level] == list2[level])) level++;
+  
+   QString result;                                                                       
+   // Need to go down out of the first path to the common branch.
+   for(uint i = level; i < list1.count(); i++)
+      result.append("../");
+
+   // Now up up from the common branch to the second path.
+   for(uint i = level; i < list2.count(); i++)
+      result.append(list2[i]).append("/");
+
+   if ((level < list2.count()) && (path[path.length()-1] != '/'))
+      result.truncate(result.length()-1);
+
+   if (isParent)
+      *isParent = (level == list1.count());
+
+   if (level == list1.count())
+      result.prepend("./");
+   
+
+   return result;
+}
+
+QString KURL::relativeURL(const KURL &base_url, const KURL &url, int encoding_hint)
+{
+   if ((url.protocol() != base_url.protocol()) ||
+       (url.host() != base_url.host()) ||
+       (url.port() && url.port() != base_url.port()) ||
+       (url.hasUser() && url.user() != base_url.user()) ||
+       (url.hasPass() && url.pass() != base_url.pass()))
+   {
+      return url.url(0, encoding_hint);
+   }
+
+   QString relative_path;
+   
+   if ((base_url.path() != url.path()) || (base_url.query() != url.query()))
+   {
+      QString basePath = base_url.directory(false, false);
+      relative_path = relativePath(basePath, url.path());
+   }
+
+   KURL tmp;
+   tmp.setPath(relative_path);
+   tmp.setQuery(url.query());
+   
+   if (url.hasRef())
+      tmp.setRef(url.ref());
+      
+   QString result = tmp.url(0, encoding_hint);
+   if (result.startsWith("file:"))
+      result = result.mid(5);
+      
+   return result;
+}

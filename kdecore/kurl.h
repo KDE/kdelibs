@@ -796,6 +796,31 @@ public:
    */
   static bool isRelativeURL(const QString &_url);
 
+  /**
+   * Convenience function
+   *
+   * Returns a "relative URL" based on @p base_url that points to @p url.
+   * 
+   * If no "relative URL" can be created, e.g. because the protocol 
+   * and/or hostname differ between @p base_url and @p url an absolute
+   * URL is returned.
+   * Note that if @p base_url represents a directory, it should contain 
+   * a trailing slash.
+   * @param encoding_hint MIB of original encoding of @p str .
+   * @see QTextCodec::mibEnum()
+   * @see adjustPath()
+   */
+  static QString relativeURL(const KURL &base_url, const KURL &url, int encoding_hint = 0);
+  
+  /**
+   * Convenience function
+   *
+   * Returns a relative path based on @p base_dir that points to @p path.
+   * @param isParent A pointer to a boolean which, if provided, will be set to reflect
+   * whether @p path has @p base_dir is a parent dir.
+   */
+  static QString relativePath(const QString &base_dir, const QString &path, bool *isParent=0);
+
 #ifdef KDE_NO_COMPAT
 private:
 #endif

@@ -625,6 +625,29 @@ int main(int argc, char *argv[])
   KURL local_file_4("file:///my/file");
   check("local_file_4.isLocalFile()", local_file_4.isLocalFile() ? "true" : "false", "true");
 
+  QString basePath = "/home/bastian";
+  
+  check("relativePath(\"/home/bastian\", \"/home/bastian\")", KURL::relativePath(basePath, "/home/bastian"), "./");
+  bool b;
+  check("relativePath(\"/home/bastian\", \"/home/bastian/src/plugins\")", KURL::relativePath(basePath, "/home/bastian/src/plugins", &b), "./src/plugins");
+  check("Is a subdirectory?", b ? "true" : "false", "true");
+  check("relativePath(\"/home/bastian\", \"./src/plugins\")", KURL::relativePath(basePath, "./src/plugins"), "./src/plugins");
+  check("relativePath(\"/home/bastian\", \"/home/waba/src/plugins\")", KURL::relativePath(basePath, "/home/waba/src/plugins", &b), "../waba/src/plugins");
+  check("Is a subdirectory?", b ? "true" : "false", "false");
+  check("relativePath(\"/home/bastian\", \"/\")", KURL::relativePath(basePath, "/"), "../../");
+
+  check("relativePath(\"/\", \"/\")", KURL::relativePath("/", "/"), "./");
+  check("relativePath(\"/\", \"/home/bastian\")", KURL::relativePath("/", "/home/bastian"), "./home/bastian");
+
+  baseURL = "http://www.kde.org/index.html";
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html#help\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html#help"), "#help");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html?help=true\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html?help=true"), "./index.html?help=true");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/contact.html"), "./contact.html");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"ftp://ftp.kde.org/pub/kde\")", KURL::relativeURL(baseURL, "ftp://ftp.kde.org/pub/kde"), "ftp://ftp.kde.org/pub/kde");
+
+  baseURL = "http://www.kde.org/info/index.html";
+  check("relativeURL(\"http://www.kde.org/info/index.html\", \"http://www.kde.org/bugs/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/bugs/contact.html"), "../bugs/contact.html");
+
   printf("\nTest OK !\n");
 }
 
