@@ -220,9 +220,12 @@ void AddressLineEdit::insert(const QString &t)
 
     // remove newlines in the to-be-pasted string as well as an eventual
     // mailto: protocol
-    newText.replace( QRegExp("\r?\n"), " " );
+    newText.replace( QRegExp("\r?\n"), ", " );
     if ( newText.startsWith( "mailto:" ) )
-        newText.remove( 0, 7 );
+    {
+      KURL u(newText);
+      newText = u.path();
+    }
     else if (newText.find(" at ") != -1)
     {
        // Anti-spam stuff
