@@ -124,7 +124,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
       // App-starting notification
       bool notify = _service.mapNotify();
 
-      kdDebug(7010) << "MapNotify is " << notify ? "true" : "false" << endl;
+      kdDebug(7010) << "MapNotify is " << (notify ? "true" : "false") << endl;
 
       if (notify)
         clientStarted(_service.name(), miniicon, pid);
@@ -304,7 +304,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   return retval;
 }
 
-pid_t KRun::runCommand( const QString& cmd, const QString & execName, const QString & iconName )
+pid_t KRun::runCommand( const QString& cmd, const QString &/*execName*/, const QString &/*iconName*/ )
 {
   return KRun::run( cmd );
 }
