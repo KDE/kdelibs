@@ -542,8 +542,8 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
 : QWidget( parent, name )
 , d( new KPluginSelectorPrivate )
 {
-    QBoxLayout * vbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
-    vbox->setAutoAdd( true );
+    QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
+    hbox->setAutoAdd( true );
     d->frame = new QFrame( this, "KPluginSelector left frame" );
     d->frame->setFrameStyle( QFrame::NoFrame );
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
