@@ -156,62 +156,64 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
   QStringList::ConstIterator end;
   QVariant tmp;
 
-  switch( type )
-    {
-    case QVariant::Invalid:
-      return QVariant();
-    case QVariant::String:
-      return QVariant( readEntry( aKey ) );
-    case QVariant::StringList:
-      return QVariant( readListEntry( aKey ) );
-    case QVariant::List:
-      strList = readListEntry( aKey );
+  if ( hasKey( aKey ) )
+  {
+      switch( type )
+      {
+          case QVariant::Invalid:
+              return QVariant();
+          case QVariant::String:
+              return QVariant( readEntry( aKey ) );
+          case QVariant::StringList:
+              return QVariant( readListEntry( aKey ) );
+          case QVariant::List:
+              strList = readListEntry( aKey );
 
-      it = strList.begin();
-      end = strList.end();
+              it = strList.begin();
+              end = strList.end();
 
-      for (; it != end; ++it ) {
-	  tmp = *it;
-	  list.append( tmp );
+              for (; it != end; ++it ) {
+                  tmp = *it;
+                  list.append( tmp );
+              }
+              return QVariant( list );
+
+          case QVariant::Font:
+              return QVariant( readFontEntry( aKey ) );
+          case QVariant::Pixmap:
+              ASSERT( 0 );
+              return QVariant();
+          case QVariant::Image:
+              ASSERT( 0 );
+              return QVariant();
+          case QVariant::Brush:
+              ASSERT( 0 );
+              return QVariant();
+          case QVariant::Point:
+              return QVariant( readPointEntry( aKey ) );
+          case QVariant::Rect:
+              return QVariant( readRectEntry( aKey ) );
+          case QVariant::Size:
+              return QVariant( readSizeEntry( aKey ) );
+          case QVariant::Color:
+              return QVariant( readColorEntry( aKey ) );
+          case QVariant::Palette:
+              ASSERT( 0 );
+              return QVariant();
+          case QVariant::ColorGroup:
+              ASSERT( 0 );
+              return QVariant();
+          case QVariant::Int:
+              return QVariant( readNumEntry( aKey ) );
+          case QVariant::Bool:
+              return QVariant( static_cast<int>(readBoolEntry( aKey )) );
+          case QVariant::Double:
+              return QVariant( readDoubleNumEntry( aKey ) );
+          default:
+              ASSERT( 0 );
       }
-      return QVariant( list );
+  }
 
-    case QVariant::Font:
-      return QVariant( readFontEntry( aKey ) );
-    case QVariant::Pixmap:
-      ASSERT( 0 );
-      return QVariant();
-    case QVariant::Image:
-      ASSERT( 0 );
-      return QVariant();
-    case QVariant::Brush:
-      ASSERT( 0 );
-      return QVariant();
-    case QVariant::Point:
-      return QVariant( readPointEntry( aKey ) );
-    case QVariant::Rect:
-      return QVariant( readRectEntry( aKey ) );
-    case QVariant::Size:
-      return QVariant( readSizeEntry( aKey ) );
-    case QVariant::Color:
-      return QVariant( readColorEntry( aKey ) );
-    case QVariant::Palette:
-      ASSERT( 0 );
-      return QVariant();
-    case QVariant::ColorGroup:
-      ASSERT( 0 );
-      return QVariant();
-    case QVariant::Int:
-      return QVariant( readNumEntry( aKey ) );
-    case QVariant::Bool:
-      return QVariant( static_cast<int>(readBoolEntry( aKey )) );
-    case QVariant::Double:
-      return QVariant( readDoubleNumEntry( aKey ) );
-    default:
-      ASSERT( 0 );
-    }
-
-  // Never reached
   return QVariant();
 }
 
