@@ -163,6 +163,11 @@ public final class KJASAppletStub
             frame.setUndecorated(true);
         frame.setLocation( 0, 0 );
         frame.pack();
+        // resize frame for j2sdk1.5beta1..
+        if (appletSize.getWidth() > 0)
+            frame.setBounds( 0, 0, appletSize.width, appletSize.height );
+        else
+            frame.setBounds( 0, 0, 50, 50 );
         frame.setVisible(true);
         loader.addStatusListener(panel);
         runThread = new Thread
@@ -384,13 +389,16 @@ public final class KJASAppletStub
     {
         Thread [] ts = new Thread[Thread.activeCount() + 5];
         int len = Thread.enumerate(ts);
-        for (int i = 0; i < len; i++)
-            if (ts[i].getName() != null && 
-                ts[i].getName().equals("applet destroy thread")) {
-                try {
-                    ts[i].join(10000);
-                } catch (InterruptedException ie) {}
-            }
+        for (int i = 0; i < len; i++) {
+            try {
+                if (ts[i].getName() != null && 
+                        ts[i].getName().equals("applet destroy thread")) {
+                    try {
+                        ts[i].join(10000);
+                    } catch (InterruptedException ie) {}
+                }
+            } catch (Exception e) {}
+        }
     }
 
     /**
