@@ -259,13 +259,6 @@ void HTMLElementImpl::addCSSProperty(const DOMString &property)
     m_styleDecls->setProperty(property);
 }
 
-DOMString HTMLElementImpl::toHTML(DOMString _string)
-{
-    _string = _string + "<" + nodeName() + ">";
-    _string = innerHTML(_string);
-    _string = _string +  "</" + nodeName() + ">";
-    return _string;
-}
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)

@@ -123,6 +123,8 @@ public:
     void setAttribute ( AttributeList list );
 
     virtual void attach(KHTMLView *w);
+    
+    virtual DOMString toHTML(DOMString _string);
 
 protected: // member variables
 

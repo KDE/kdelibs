@@ -150,6 +150,14 @@ void HTMLHRElementImpl::attach(KHTMLView *)
     }
 }
 
+DOMString HTMLHRElementImpl::toHTML(DOMString _string)
+{
+    _string = _string + "<" + nodeName();
+    _string = attributeMap.toHTML(_string) + ">";
+    _string = innerHTML(_string);
+    return _string;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentImpl *doc, ushort _tagid) : HTMLElementImpl(doc)

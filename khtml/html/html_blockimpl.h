@@ -86,6 +86,8 @@ public:
     virtual tagStatus endTag() { return HREndTag; }
     
     virtual void attach(KHTMLView *);
+
+    virtual DOMString toHTML(DOMString _string);
 protected:
     khtml::Length length;
     bool shade;
