@@ -59,22 +59,8 @@ extern "C" {
 
     KJS::Global global(Global::current());
 
-    KJSO window(new KJS::Window(khtml->view()));
-    KJSO document = getDOMNode(khtml->htmlDocument());
-    KJSO parent = khtml->parentPart() ?
-      KJSO(new Frame(khtml->parentPart())) : window;
-    KJSO top = parent; /* TODO */
-
-    window.put("document", document);
+    KJSO window(new KJS::Window(khtml));
     global.put("window", window);
-    global.put("self", window);
-    global.put("parent", parent);
-    global.put("top", top);
-    global.put("document", document);
-    global.put("navigator", KJSO(new Navigator()));
-    global.put("location", KJSO(new Location(khtml)));
-    global.put("Image", KJSO(new ImageConstructor(global)));
-
     // make "window" prefix implicit for shortcuts like alert()
     global.setPrototype(window);
 

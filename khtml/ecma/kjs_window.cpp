@@ -27,6 +27,9 @@
 
 #include <kjs/operations.h>
 #include "kjs_window.h"
+#include "kjs_navigator.h"
+#include "kjs_html.h"
+#include "kjs_dom.h"
 
 #include <qevent.h>
 #include "khtmlview.h"
@@ -36,8 +39,8 @@
 
 using namespace KJS;
 
-Window::Window(KHTMLView *w)
-  : widget(w), winq(0L)
+Window::Window(KHTMLPart *p)
+  : part(p), winq(0L)
 {
 }
 
@@ -46,7 +49,7 @@ Window::~Window()
   delete winq;
 }
 
-bool Window::hasProperty(const UString &p, bool recursive) const
+bool Window::hasProperty(const UString &, bool) const
 {
   return true;
 }
@@ -54,7 +57,19 @@ bool Window::hasProperty(const UString &p, bool recursive) const
 KJSO Window::get(const UString &p) const
 {
   if (p == "location")
-    return KJSO(new Location(widget->part()));
+    return KJSO(new Location(part));
+  else if (p == "document")
+    return getDOMNode(part->htmlDocument());
+  else if (p == "navigator")
+    return KJSO(new Navigator());
+  else if (p == "self")
+    return KJSO(new Window(part));
+  else if (p == "parent")
+    return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
+  else if (p == "top") /* TODO */
+    return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
+  else if (p == "Image")
+    return KJSO(new ImageConstructor(Global::current()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
@@ -75,15 +90,15 @@ void Window::put(const UString &p, const KJSO &v)
 {
   if (p == "status") {
     String s = v.toString();
-    WindowFunc::setStatusBarText(widget->part(), s.value().qstring());
+    WindowFunc::setStatusBarText(part, s.value().qstring());
   } else if (p == "location") {
     QString str = v.toString().value().qstring();
-    widget->part()->scheduleRedirection(0, str);
+    part->scheduleRedirection(0, str);
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
       // doesn't work yet
-      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
+      part->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
     }
   } else
     Imp::put(p, v);
@@ -109,7 +124,7 @@ Completion WindowFunc::tryExecute(const List &args)
   QString str, str2;
   int i;
 
-  KHTMLView *widget = window->widget;
+  KHTMLView *widget = window->part->view();
   KJSO v = args[0];
   String s = v.toString();
   str = s.value().qstring();
@@ -199,7 +214,7 @@ void WindowQObject::clearTimeout(int /* timerId */)
 
 void WindowQObject::timeout()
 {
-  parent->widget->part()->executeScript(timeoutHandler.qstring());
+  parent->part->executeScript(timeoutHandler.qstring());
 }
 
 class FrameArray : public HostImp {
@@ -219,7 +234,7 @@ KJSO FrameArray::get(const UString &p) const
     const KParts::ReadOnlyPart *frame = frames.at(i);
     if (frame->inherits("KHTMLPart")) {
       const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-      return KJSO(new Window(khtml->view()));
+      return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
     }
   }
 
@@ -242,11 +257,11 @@ KJSO Frame::tryGet(const UString &p) const
     const KParts::ReadOnlyPart *frame = frames.at(i);
     assert(frame->inherits("KHTMLPart"));
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return KJSO(new Window(khtml->view()));
+    return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
   }
   
   // search window properties
-  KJSO window(new Window(part->view()));
+  KJSO window(new Window(part));
   return window.get(p);
 }
 

@@ -39,7 +39,7 @@ namespace KJS {
     friend class WindowFunc;
     friend class WindowQObject;
   public:
-    Window(KHTMLView *w);
+    Window(KHTMLPart *p);
     ~Window();
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
@@ -47,7 +47,7 @@ namespace KJS {
     int installTimeout(const UString &handler, int t);
     void clearTimeout(int timerId);
   private:
-    KHTMLView *widget;
+    KHTMLPart *part;
     WindowQObject *winq;
   };
 
