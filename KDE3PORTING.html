@@ -21,6 +21,7 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
 <LI><A HREF="#kio">Changes in kio</A></LI>
 <LI><A HREF="#kparts">Changes in kparts</A></LI>
+<LI><A HREF="#kspell">Changes in kspell</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 <LI><A HREF="#kcontrol">KDE Control Center</A></LI>
 </UL>
@@ -43,6 +44,12 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
   KDE_NO_COMPAT for compiling and see where it breaks. This is
   recommended, as those backward compatibility "hacks" are not kept for
   long.
+</p>
+<p>
+  <b>WARNING:</b>In some cases the names or signatures of signals or slots 
+  have changed. Check your source carefully for this since these changes will 
+  not be discovered by your compiler but will result in incorrect runtime
+  behaviour if left uncorrected in your application.
 </p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
@@ -367,6 +374,33 @@ The <code>URLArgs urlArgs()</code> method is no more virtual. So when you want t
 change the behavior of the urlArgs property you don't need to re-implement
 both virtual functions, setURLArgs and urlArgs, but instead just re-implementing
 setURLArgs does the job.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="kspell">Changes in kspell</A></H3>
+
+<H4>KSpell</H4>
+The API has been cleaned up to be in line with the rest of kdelibs, in particular:
+<ul>
+<li>suggestions() now returns a QStringList instead of a pointer to a QStringList
+<li>intermediateBuffer() noew returns a QString instead of a pointer to a QString
+<li>The signal <b>misspelling(QString, QStringList *, unsigned)</b> has changed to
+    misspelling(const QString &amp;, const QStringList &amp;, unsigned int)
+<li>The signal <b>corrected(QString, QString, unsigned)</b> has changed to
+    corrected(const QString &amp;, const QString &amp;, unsigned int)
+<li>The signal <b>ignoreall(QString)</b> has changed to
+    ignoreall(const QString &amp;)
+<li>The signal <b>ignoreword(QString)</b> has changed to
+    ignoreword(const QString &amp;)
+<li>The signal <b>addword(QString)</b> has changed to
+    addword(const QString &amp;)
+</ul>
+
+      Make sure to check if you use the above signals since your compiler
+      will typically not generate a compile-time error for these changes,
+      instead you might get a run-time error when you try to connect to
+      one of these signals using the old signature.
+
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
