@@ -379,7 +379,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
        QString _name = KProtocolInfo::exec(protocol);
        if (_name.isEmpty())
        {
-          error_text = i18n("Unknown protocol '%1'.\n").arg(protocol);
+          error_text = i18n("Unknown protocol '%1'.").arg(protocol);
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
           delete slave;
 	  return 0;
