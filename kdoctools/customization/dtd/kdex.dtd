@@ -43,6 +43,13 @@ catalog errors I'd rather stay away from (they're easy to fix though).
     where it is defined, unless otherwise defined by the application you use.
     If you have permanent internet access, you can use any URLs (and
     you don't have to install docbook).
+
+    After a version number change, plenty of problems may occur because
+    of non-compatibilities (or DTDs not found, etc).  That doesn't mean your
+    document is invalid; it just means that the reference DTD has changed 
+    (new documentation and documentation updates).  Check out the previous
+    version and point to the appropriate catalog or DTD and things should
+    work again (=still ;-).
 -->
 
 
