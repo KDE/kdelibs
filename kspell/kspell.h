@@ -273,7 +273,6 @@ public:
    */
   static int modalCheck( QString& text, KSpellConfig * _kcs  );
 
-
 signals:
 
   /**
@@ -407,7 +406,12 @@ private slots:
    * Used for @ref modalCheck().
    */
   void slotModalDone( const QString & );
-    
+  /**
+   * Used for @ref modalCheck().
+   */
+  void slotSpellCheckerCorrected( QString oldText, QString newText, unsigned );
+
+
 signals:
   void dialog3 ();
   void ez ();
@@ -465,6 +469,7 @@ protected:
   static QString modaltext;
   static int modalreturn;
   static QWidget* modalWidgetHack;
+  static QStringList modalListText;
     
   int parseOneResponse (const QString &_buffer, QString &word, QStringList *sugg);
   QString funnyWord (QString word);
