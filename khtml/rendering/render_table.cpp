@@ -154,6 +154,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 		o = new RenderTableSection(0 /* anonymous */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
+                newStyle->setDisplay(TABLE_ROW_GROUP);
 		o->setStyle(newStyle);
 		o->setIsAnonymousBox(true);
 		addChild(o, beforeChild);
@@ -647,10 +648,12 @@ void RenderTableSection::detach()
         table()->setNeedSectionRecalc();
 }
 
-void RenderTableSection::setStyle(RenderStyle* style)
+void RenderTableSection::setStyle(RenderStyle* _style)
 {
-    style->setDisplay(TABLE_ROW_GROUP);
-    RenderBox::setStyle(style);
+    // we don't allow changing this one
+    if (style()) _style->setDisplay(style()->display());
+    _style->setDisplay(TABLE_ROW_GROUP);
+    RenderBox::setStyle(_style);
 }
 
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
