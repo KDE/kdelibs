@@ -236,6 +236,7 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
+        setChanged();
         break;
     case ATTR_ID:
     case ATTR_NAME:
