@@ -38,7 +38,7 @@ potdir = $(kde_includes)
 pot_DATA = kde.pot
 
 messages:
-	cd kabc/scripts && $(MAKE) -f Makefile.am all-local srcdir=.
+	cd kabc/scripts && perl ./makeaddressee
 	find . -type d | grep -v CVS | sed -e 's,$$,/,' > dirs
 	mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'` ;\
 	for dir in $$mfs; do \
