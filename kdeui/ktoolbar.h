@@ -110,7 +110,8 @@ public:
     enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
     /**
      * The state of the status bar.
-   **/
+     * @deprecated
+     **/
     enum BarStatus{Toggle, Show, Hide};
     /**
    * Possible bar positions.
@@ -131,9 +132,9 @@ public:
    * @param _honor_mode If true, then global settings for IconSize
    *                    and IconText will be honored
    */
-  KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+    KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
     
-  virtual ~KToolBar();
+    virtual ~KToolBar();
 
   /**
    * Insert a button (a @ref KToolbarButton) with a pixmap.  The
@@ -689,46 +690,44 @@ public:
    */
     BarPosition barPos() const;
 
-    /**
+  /**
+   * @deprecated
    * Show, hide, or toggle toolbar.
    *
-   * If toolbar floats,
-   * hiding means minimizing. Warning: kwm will not show a minimized toolbar
-   * on taskbar. Therefore hiding means hiding.
+   * This method is provided for compatibility only, 
+   * please use show() and/or hide() instead.
    * @see BarStatus
    */
     bool enable(BarStatus stat);
 
   /**
-   * Set maximal height of vertical (Right or Left) toolbar.
-   *
-   * You normally do not have to call it.
-   * If you reimplement @ref KMainWindow::resizeEvent().
-   * be sure to call this function with the maximal height the toolbar can have.
-   * In 0xFE cases out of 0xFF (i.e., quite nearly always) you don't need to use this function.
+   * @deprecated
+   * Use setMaximumHeight() instead.
    */
     void setMaxHeight (int h);  // Set max height for vertical toolbars
 
-    /**
+  /**
+   * @deprecated
+   * Use maximumHeight() instead.
    * Retrieve the value that was set with @ref setMaxHeight().
    */
     int maxHeight();
 
-    /**
+  /**
+   * @deprecated
+   * Use setMaximumWidth() instead.
    * Set maximal width of horizontal (top or bottom) toolbar.
-   *
-   * This works
-   * only for horizontal toolbars (at Top or Bottom), and has no effect
-   * otherwise. Has no effect when toolbar is floating.
    */
     void setMaxWidth (int dw);
 
-    /**
+  /**
+   * @deprecated
+   * Use maximumWidth() instead.
    * Retrieve the value that was set with @ref setMaxWidth().
    */
     int maxWidth();
 
-    /**
+  /**
    * Set title for toolbar when it floats.
    *
    * Titles are however not (yet)
@@ -736,19 +735,13 @@ public:
    */
     void setTitle (const QString& _title);
 
-    /**
-   * Enable or disable floating.
-   *
-   * Floating is enabled by default.
-   * This only disables menu entry Floating in popup menu, so
-   * toolbar can still be moved by @ref setBarPos() or by dragging.
-   * This function is obsolete and do not use it. If you want to make
-   * toolbar static use @ref enableMoving
+  /**
    * @deprecated
+   * Use enableMoving() instead.
    */
     void enableFloating (bool arrrrrrgh);
 
-    /**
+  /**
    * Set the kind of painting for buttons.
    *
    * Choose from:
@@ -760,7 +753,7 @@ public:
    *
    */
     void setIconText(IconText it);
-    // Note: don't merge with the next one, it breaks Qt properties
+   // Note: don't merge with the next one, it breaks Qt properties
 
   /**
    * Similar to @ref setIconText(IconText it) but allows you to
@@ -770,12 +763,12 @@ public:
    */
     void setIconText(IconText it, bool update);
 
-    /**
+  /**
    * @return The current text style for buttons.
    */
     IconText iconText() const;
 
-    /**
+  /**
    * Set the icon size to load. Usually you should not call
    * this, the icon size is taken care of by KIconLoader
    * and globally configured.
@@ -798,26 +791,26 @@ public:
    */
     void setIconSize(int size, bool update);
 
-    /**
+  /**
    * @return The current icon size for buttons.
    */
     int iconSize() const;
 
-    /**
+  /**
    * This allows you to enable or disable the context menu.
    *
    * @param enable If false, then the context menu will be disabled
    */
     void setEnableContextMenu(bool enable = true);
 
-    /**
+  /**
    * Returns whether or not the context menu is disabled
    *
    * @return The context menu state
    */
     bool contextMenuEnabled() const;
 
-    /**
+  /**
    * This will inform a toolbar button to ignore certain style
    * changes.  Specifically, it will ignore IconText (always IconOnly)
    * and will not allow image effects to apply.
@@ -834,14 +827,14 @@ public:
    */
     int count();
 
-    /**
+  /**
    * Instruct the toolbar to save it's current state to either the app
    * config file or to the XML-GUI resource file (whichever has
    * precedence).
    */
     void saveState();
 
-    /**
+  /**
    * Tell the toolbar what XML-GUI resource file it should use to save
    * it's state.  The state of the toolbar (position, size, etc) is
    * saved in KConfig files if the application does not use XML-GUI..
@@ -861,7 +854,7 @@ public:
    */
     void setText( const QString & txt );
 
-    /**
+  /**
    * @return the toolbar's text.
    */
     QString text() const;
