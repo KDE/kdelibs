@@ -7,43 +7,10 @@ set -e
 
 case "$1" in
     install|upgrade)
-      rm -f /etc/kderc
-      if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
-        if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
-          rm -rf /usr/share/applnk > /dev/null 2>&1
-        else
-          rm -f /etc/kde2/applnk >/dev/null 2>&1
-          mv /usr/share/applnk /etc/kde2/applnk
-        fi
+      if [ -e /etc/kderc -a ! -L /etc/kderc ]; then
+        rm -f /etc/kderc
+        ln -sf /etc/kde2/system.kdeglobals /etc/kderc
       fi
-      if [ -e /usr/share/mimelnk -a ! -L /usr/share/mimelnk ]; then
-        if [ -e /etc/kde2/mimelnk -a ! -L /etc/kde2/mimelnk ]; then
-          rm -rf /usr/share/mimelnk > /dev/null 2>&1
-        else
-          rm -f /etc/kde2/minelnk >/dev/null 2>&1
-          mv /usr/share/mimelnk /etc/kde2/mimelnk
-        fi
-      fi
-      if [ -e /usr/share/services -a ! -L /usr/share/services ]; then
-        if [ -e /etc/kde2/services -a ! -L /etc/kde2/services ]; then
-          rm -rf /usr/share/services > /dev/null 2>&1
-        else
-          rm -f /etc/kde2/services >/dev/null 2>&1
-          mv /usr/share/services /etc/kde2/services
-        fi
-      fi
-      if [ -e /usr/share/servicetypes -a ! -L /usr/share/servicetypes ]; then
-        if [ -e /etc/kde2/servicetypes -a ! -L /etc/kde2/servicetypes ]; then
-          rm -rf /usr/share/servicetypes > /dev/null 2>&1
-        else
-          rm -f /etc/kde2/servicetypes >/dev/null 2>&1
-          mv /usr/share/servicetypes /etc/kde2/servicetypes
-        fi
-      fi
-      ln -sf /etc/kde2/applnk /usr/share/applnk
-      ln -sf /etc/kde2/mimelnk /usr/share/mimelnk
-      ln -sf /etc/kde2/services /usr/share/services
-      ln -sf /etc/kde2/servicetypes /usr/share/servicetypes
     ;;
 
     abort-upgrade)
