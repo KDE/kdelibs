@@ -162,8 +162,10 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
     if ( item ) {
-	KIconView::setSelected( item, enable, true );
-        KIconView::setCurrentItem( item );
+	if ( !item->isSelected() )
+	    KIconView::setSelected( item, enable, true );
+	if ( KIconView::currentItem() != item )
+	    KIconView::setCurrentItem( item );
     }
 }
 

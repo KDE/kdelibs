@@ -1038,8 +1038,13 @@ void KFileDialog::fileCompletion( const QString& file )
 {
     d->completionLock = true;
     QString text = ops->makeCompletion( file );
-    if ( !text.isEmpty() )
-        locationEdit->setCompletedText( text );
+    if ( !text.isEmpty() ) {
+	KCompletion *comp = ops->completionObject();
+	if ( comp->completionMode() == KGlobalSettings::CompletionPopup )
+	    locationEdit->setCompletedItems( comp->allMatches() );
+	else
+	    locationEdit->setCompletedText( text );
+    }
     d->completionLock = false;
 }
 
