@@ -35,6 +35,13 @@ public:
     QPoint p(0,9);
     kdDebug() << p << endl;
 
+    QRect r(9,12,58,234);
+    kdDebug() << r << endl;
+
+    QRegion reg(r);
+    reg += QRect(1,60,200,59);
+    kdDebug() << reg << endl;
+
     QStringList sl;
     sl << "hi" << "this" << "list" << "is" << "short";
     kdDebug() << sl << endl;

@@ -33,6 +33,14 @@
 inline kdbgstream operator<<( kdbgstream str, const QPoint & p )  { str << "(" << p.x() << ", " << p.y() << ")"; return str; }
 inline kdbgstream operator<<( kdbgstream str, const QSize & s )  { str << "[" << s.width() << "x" << s.height() << "]"; return str; }
 inline kdbgstream operator<<( kdbgstream str, const QRect & r )  { str << "[" << r.left() << ", " << r.top() << " - " << r.right() << ", " << r.bottom() << "]"; return str; }
+inline kdbgstream operator<<( kdbgstream str, const QRegion & reg ) {
+  str = str.operator<<("[ ");
+  QMemArray<QRect>rs=reg.rects();
+  for (uint i=0;i<rs.size();++i)
+    str = str.operator<<( QString("[%1, %2 - %3, %4] ").arg(rs[i].left()).arg(rs[i].top()).arg(rs[i].right()).arg(rs[i].bottom()));
+  str = str.operator<<("]");
+  return str;
+}
 
 inline kdbgstream operator<<( kdbgstream str, const KURL & u )  { str << u.prettyURL(); return str; }
 
