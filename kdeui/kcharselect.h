@@ -39,11 +39,12 @@ class KCharSelectTablePrivate;
 class KCharSelectPrivate;
 
 /**
+ * @short Character selection table
+ *
  * A table widget which displays the characters of a font. Internally
  * used by KCharSelect. See the KCharSelect documentation for further
  * details.
- * @short Character-Selection Table
- * @version $Id$
+ *
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
@@ -108,11 +109,15 @@ private:
 };
 
 /**
- * A Widget which allows the user to select a character of a
+ * @short Character selection widget
+ *
+ * This widget allows the user to select a character of a
  * specified font in a table
  *
+ * \image html kcharselect.png "Character Selection Widget"
+ *
  * You can specify the font whose characters should be displayed via
- * setFont(). Using enableFontCombo() you can allow the
+ * setFont() or in the constructor. Using enableFontCombo() you can allow the
  * user to choose the font from a combob-box. As only 256 characters
  * are displayed at once in the table, using the spinbox on the top
  * the user can choose starting from which character the table
@@ -129,8 +134,6 @@ private:
  * setChar() and the table number which should be displayed with
  * setTableNum().
  *
- * @short Character-Selection Widget
- * @version $Id$
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
