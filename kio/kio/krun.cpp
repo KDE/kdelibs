@@ -281,8 +281,10 @@ KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
    case 'n':
    case 'd':
    case 'v':
-      if( urls.count() != 1 )
-         kdWarning() << "KRun::processDesktopExec: Multiple or no URLs supplied to single-URL service" << endl;
+      if( urls.isEmpty() )
+         kdWarning() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
+      else if( urls.count() > 1 )
+         kdWarning() << "KRun::processDesktopExec: Multiple URLs supplied to single-URL service " << str << endl;
       else
          subst( option, urls.first(), ret );
       break;
