@@ -25,6 +25,7 @@
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
 #include <kresourcelist.h>
+#include <kcrash.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -99,6 +100,8 @@ Kded::Kded(bool checkUpdates, int pollInterval, int NFSPollInterval)
   QCString cPath = QFile::encodeName(path);
   m_pTimer = new QTimer(this);
   connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
+
+  QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
   m_pDirWatch = 0;
   m_pDirWatchNfs = 0;
@@ -243,6 +246,17 @@ void Kded::build()
     factoryList->removeRef(factory);
   }
   delete kbs;
+}
+
+void Kded::crashHandler(int)
+{
+   DCOPClient::emergencyClose();
+   system("kded");
+}
+
+void Kded::installCrashHandler()
+{
+   KCrash::setEmergencySaveFunction(crashHandler);
 }
 
 void Kded::recreate()
