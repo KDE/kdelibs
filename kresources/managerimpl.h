@@ -20,7 +20,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef KRESOURCES_MANAGERIMPL_H
 #define KRESOURCES_MANAGERIMPL_H
 
@@ -37,25 +36,25 @@ namespace KRES {
 
 class Resource;
 class Factory;
-class ManagerImplListener;
+class ManagerNotifier;
 
 /**
   @internal
 
   Do not use this class directly. Use ResourceManager instead
 */
-class ManagerImpl : public QObject, virtual public ManagerIface
+class ManagerImpl : virtual public ManagerIface
 {
-    Q_OBJECT
   public:
-    ManagerImpl( const QString &family );
+    ManagerImpl( ManagerNotifier *, const QString &family );
     ~ManagerImpl();
 
     void readConfig( KConfig * );
     void writeConfig( KConfig * );
 
-    void add( Resource *resource, bool useDCOP = true );
-    void remove( Resource *resource, bool useDCOP = true );
+    void add( Resource *resource );
+    void remove( Resource *resource );
+    void change( Resource *resource );
 
     Resource *standardResource();
     void setStandardResource( Resource *resource );
@@ -71,18 +70,13 @@ class ManagerImpl : public QObject, virtual public ManagerIface
 
     QStringList resourceNames();
 
-    void setListener( ManagerImplListener *listener );
-
     static QString defaultConfigFile( const QString &family );
-
-  public slots:
-    void resourceChanged( Resource *resource );
 
   private:
     // dcop calls
-    void dcopResourceAdded( QString identifier );
-    void dcopResourceModified( QString identifier );
-    void dcopResourceDeleted( QString identifier );
+    void dcopKResourceAdded( QString managerId, QString resourceId );
+    void dcopKResourceModified( QString managerId, QString resourceId );
+    void dcopKResourceDeleted( QString managerId, QString resourceId );
 
   private:
     void createStandardConfig();
@@ -94,13 +88,14 @@ class ManagerImpl : public QObject, virtual public ManagerIface
     Resource *getResource( Resource *resource );
     Resource *getResource( const QString& identifier );
 
+    ManagerNotifier *mNotifier;
     QString mFamily;
     KConfig *mConfig;
     KConfig *mStdConfig;
     Resource *mStandard;
     Factory *mFactory;
     Resource::List mResources;
-    ManagerImplListener *mListener;
+    QString mId;
 };
 
 }

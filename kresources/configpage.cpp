@@ -43,7 +43,7 @@
 
 #include "configpage.h"
 
-using namespace KRES;
+namespace KRES {
 
 class ConfigViewItem : public QCheckListItem
 {
@@ -67,6 +67,14 @@ class ConfigViewItem : public QCheckListItem
     bool readOnly() const { return mResource->readOnly(); }
 
     Resource *resource() { return mResource; }
+
+    void updateItem()
+    {
+      setOn( mResource->isActive() );
+      setText( 0, mResource->resourceName() );
+      setText( 1, mResource->type() );
+      setText( 2, mIsStandard ? i18n( "Yes" ) : QString::null );
+    }
 
   private:
     Resource* mResource;
@@ -133,7 +141,7 @@ ConfigPage::~ConfigPage()
 {
   QValueList<ResourcePageInfo>::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it ) {
-    (*it).mManager->removeListener( this );
+    (*it).mManager->removeObserver( this );
     delete (*it).mManager;
     delete (*it).mConfig;
   }
@@ -159,7 +167,7 @@ void ConfigPage::load()
         mCurrentManager = new Manager<Resource>( family );
         if ( mCurrentManager ) {
           mFamilyMap.append( family );
-          mCurrentManager->addListener( this );
+          mCurrentManager->addObserver( this );
 
           ResourcePageInfo info;
           info.mManager = mCurrentManager;
@@ -346,7 +354,7 @@ void ConfigPage::slotEdit()
       configItem->setStandard( false );
     }
 
-    mCurrentManager->resourceChanged( resource );
+    mCurrentManager->change( resource );
     emit changed( true );
   }
 }
@@ -391,28 +399,51 @@ void ConfigPage::slotSelectionChanged()
   mStandardButton->setEnabled( state );
 }
 
-void ConfigPage::resourceAdded( Resource* resource )
+void ConfigPage::resourceAdded( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceAdded( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceAdded( " << resource->resourceName()
+                << " )" << endl;
+
   ConfigViewItem *item = new ConfigViewItem( mListView, resource );
 
-  // FIXME: this sucks. This should be in the config file,
-  // or application-dependent, in which case it's always Off
-  item->setOn( false );
+  item->setOn( resource->isActive() );
 
   mLastItem = item;
 
   emit changed( true );
 }
 
-void ConfigPage::resourceModified( Resource* resource )
+void ConfigPage::resourceModified( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceModified( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceModified( " << resource->resourceName()
+                << " )" << endl;
+  ConfigViewItem *item = findItem( resource );
+  if ( !item ) return;
+
+  // TODO: Reread resource config. Otherwise we won't see the modification.
+
+  item->updateItem();
 }
 
-void ConfigPage::resourceDeleted( Resource* resource )
+void ConfigPage::resourceDeleted( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ConfigPage::resourceDeleted( " << resource->resourceName()
+                << " )" << endl;
+
+  ConfigViewItem *item = findItem( resource );
+  if ( !item ) return;
+
+  delete item;
+}
+
+ConfigViewItem *ConfigPage::findItem( Resource *resource )
+{
+  QListViewItem *i;
+  for( i = mListView->firstChild(); i; i = i->nextSibling() ) {
+    ConfigViewItem *item = static_cast<ConfigViewItem *>( i );
+    if ( item->resource() == resource ) return item;
+  }
+  return 0;
 }
 
 void ConfigPage::slotItemClicked( QListViewItem *item )
@@ -436,7 +467,7 @@ void ConfigPage::saveResourceSettings()
   if ( mCurrentManager ) {
     QListViewItem *item = mListView->firstChild();
     while ( item ) {
-      ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
+      ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
 
       // check if standard resource
       if ( configItem->standard() && !configItem->readOnly() &&
@@ -453,6 +484,8 @@ void ConfigPage::saveResourceSettings()
     if ( !mCurrentManager->standardResource() )
       KMessageBox::sorry( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
   }
+}
+
 }
 
 #include "configpage.moc"

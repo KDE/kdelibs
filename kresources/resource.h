@@ -1,7 +1,7 @@
 /*
     This file is part of libkresources
 
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2001-2003 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
 
     This library is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef KRESOURCES_RESOURCE_H
 #define KRESOURCES_RESOURCE_H
 
@@ -36,59 +35,54 @@ namespace KRES {
 class ConfigWidget;
 
 /**
- * @internal
- * \mainpage The KDE Resource library
- *
- * \note { this library is NOT (YET?) PUBLIC. Do not publish this
- * interface, it is in constant flux. }
- *
- * The KDE Resource framework can be used to manage resources of
- * different types, organized in families. The Resource framework
- * is currently used for addressbook resources in libkabc and for
- * calendar resources in libkcal.
- *
- * When you want to use the framework for a new family, you need to
- * <ul><li>Define a name for your resource family</li>
- * <li>subclass Resource and add the fields and method that are needed
- * in your application</li>
- * <li>If needed, override the doOpen() and doClose() methods.
- * <li> Provide a configuration possibility for resources in your
- * new family. You can use ResourcesConfigPage to easily create a
- * KControl applet</li>
- * <li>In your application, you can use ResourceManager to keep track
- * of the resources in your family, and you can use ResourceSelectDialog
- * to let the user select a single resource.</li>
- * </ul>
- *
- * When you want to add a new resource type to an existing resource family,
- * you need to
- * <ul><li>Further subclass the family-specific Resource to implement
- * resource type-specific operation</li>
- * <li>Subclass ResourceConfigWidget to provide a configuration widget
- * for your new resource type</li>
- * <li>Provide a .desktop file so that the new resource type can be found
- * automatically by the ResourceManager</li>
- * </ul>
- *
- * Example:
- *
-<B>resourceexample.h</B>:
+  \mainpage The KDE Resource library
+ 
+  The KDE Resource framework can be used to manage resources of
+  different types, organized in families. The Resource framework
+  is for example used for addressbook resources in libkabc and for
+  calendar resources in libkcal.
+ 
+  When you want to use the framework for a new family, you need to
+  <ul><li>Define a name for your resource family</li>
+  <li>subclass Resource and add the fields and method that are needed
+  in your application</li>
+  <li>If needed, override the doOpen() and doClose() methods.
+  <li>In your application, you can use ResourceManager to keep track
+  of the resources in your family, and you can use ResourceSelectDialog
+  to let the user select a single resource.</li>
+  </ul>
+ 
+  When you want to add a new resource type to an existing resource family,
+  you need to
+  <ul><li>Further subclass the family-specific Resource to implement
+  resource type-specific operation</li>
+  <li>Subclass ResourceConfigWidget to provide a configuration widget
+  for your new resource type</li>
+  <li>Provide a .desktop file so that the new resource type can be found
+  automatically by the ResourceManager</li>
+  </ul>
+ 
+  Example:
+ 
+  <B>resourceexample.h</B>:
 \code
 #include <kconfig.h>
 #include <kresources/resource.h>
 
-class ResourceExample : public KRES::ResourceExample
+class ResourceExample : public KRES::Resource
 {
-public:
-  ResourceExample( const KConfig * );
-  ~ResourceExample();
-  void writeConfig( KConfig *config );
-private:
-  QString mLocation;
-  QString mPassword;
+  public:
+    ResourceExample( const KConfig * );
+    ~ResourceExample();
+    void writeConfig( KConfig *config );
+
+  private:
+    QString mLocation;
+    QString mPassword;
 }
 \endcode
-<B>resourceexample.cpp</B>:
+
+  <B>resourceexample.cpp</B>:
 \code
 #include <kconfig.h>
 
@@ -124,7 +118,8 @@ extern "C"
   }
 }
 \endcode
-* <B>resourceexampleconfig.h</B>:
+
+  <B>resourceexampleconfig.h</B>:
 \code
 #include <klineedit.h>
 #include <kresources/resourceconfigwidget.h>
@@ -133,21 +128,21 @@ extern "C"
 
 class ResourceExampleConfig : public KRES::ResourceConfigWidget
 {
-  Q_OBJECT
+    Q_OBJECT
+  public:
+    ResourceExampleConfig( QWidget *parent = 0, const char *name = 0 );
 
-public:
-  ResourceExampleConfig( QWidget* parent = 0, const char* name = 0 );
+  public slots:
+    virtual void loadSettings( KRES::Resource *resource);
+    virtual void saveSettings( KRES::Resource *resource );
 
-public slots:
-  virtual void loadSettings( KRES::Resource *resource);
-  virtual void saveSettings( KRES::Resource *resource );
-
-private:
-  KLineEdit* mLocationEdit;
-  KLineEdit* mPasswordEdit;
+  private:
+    KLineEdit *mLocationEdit;
+    KLineEdit *mPasswordEdit;
 };
 \endcode
-* <B>resourceexampleconfig.cpp</B>:
+
+  <B>resourceexampleconfig.cpp</B>:
 \code
 #include <qlayout.h>
 #include <qlabel.h"
@@ -155,10 +150,9 @@ private:
 #include "resourceexample.h"
 #include "resourceexampleconfig.h"
 
-ResourceExampleConfig::ResourceExampleConfig( QWidget* parent,  const char* name )
-    : KRES::ResourceConfigWidget( parent, name )
+ResourceExampleConfig::ResourceExampleConfig( QWidget *parent,  const char *name )
+  : KRES::ResourceConfigWidget( parent, name )
 {
-  resize( 245, 115 );
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
 
   QLabel *label = new QLabel( i18n( "Location:" ), this );
@@ -175,25 +169,26 @@ ResourceExampleConfig::ResourceExampleConfig( QWidget* parent,  const char* name
 
 void ResourceExampleConfig::loadSettings( KRES::Resource *resource )
 {
-  ResourceExample* res = dynamic_cast<ResourceExample *>( resource );
-  if (res) {
+  ResourceExample *res = dynamic_cast<ResourceExample *>( resource );
+  if ( res ) {
     mHostEdit->setText( res->host() );
     mPasswordEdit->setText( res->password() );
   } else
-    kdDebug(5700) << "ERROR: ResourceExampleConfig::loadSettings(): no ResourceExample, cast failed" << endl;
+    kdDebug() << "ERROR: ResourceExampleConfig::loadSettings(): no ResourceExample, cast failed" << endl;
 }
 
 void ResourceExampleConfig::saveSettings( KRES::Resource *resource )
 {
-  ResourceExample* res = dynamic_cast<ResourceExample *>( resource );
-  if (res) {
-    res->setHost(mHostEdit->text());
-    res->setPassword(mPasswordEdit->text());
+  ResourceExample *res = dynamic_cast<ResourceExample *>( resource );
+  if ( res ) {
+    res->setHost( mHostEdit->text() );
+    res->setPassword( mPasswordEdit->text() );
   } else
-    kdDebug(5700) << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
+    kdDebug() << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
 }
 \endcode
-* <B>resourceexample.desktop</B>:
+
+  <B>resourceexample.desktop</B>:
 \code
 [Desktop Entry]
 Type=Service
@@ -206,32 +201,63 @@ Name=Example Resource
 Type=exchange
 X-KDE-Library=resourceexample
 \endcode
-* <B>Makefile.am</B>
+
+  <B>Makefile.am</B>
 \code
 kde_module_LTLIBRARIES = resourceexample.la
 
 resourceexample_la_SOURCES = resourceexample.cpp resourceexampleconfig.cpp
-resourceexample_la_LDFLAGS= $(all_libraries) -module $(KDE_PLUGIN)
-resourceexample_la_LIBADD= -lkderesources
+resourceexample_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+resourceexample_la_LIBADD = -lkresources
 
-linkdir= $(kde_datadir)/resources/family
-link_DATA= resourceexample.desktop
+servicedir = $(kde_datadir)/resources/example
+service_DATA = resourceexample.desktop
 \endcode
- *
- *
- */
+
+*/
 
 /**
- * A Resource  is a ...
- *
- * A subclass should reimplement at least the constructor and the
- * writeConfig method.
- *
- */
+  This class provides a resource which is managed in a general way.
+  
+  A Resource represents the concept of an object with the following attributes:
+
+  - Applications operate on sets of one or more Resource objects.
+  - Creation and deletetion of Resource objects is done in a general way,
+    independent of concrete functionality of the Resource.
+  - The end user has control over creation, deletion and configuration of
+    Resource object.
+  - Properties, behaviour and configuration of different Resource objects can
+    widely differ.
+  - Resources can be active or inactive.
+  - There is one special Resource which is the standard Resource. This can for
+    example be used as default destination for newly created object managed
+    by a certain Resource family.
+  - Activation of Resources can be covered by a two step process of being opened
+    and then loaded. Deactivation corresponds to saving and closing.
+  - Different application ususally share the same set of Resources.
+
+  The Resource base class provides the management functionality. Classes
+  inheriting from Resource automatically appear in the general kresources
+  kcontrol module.
+
+  Concrete functionality of Resources is specified per family by a subclass of
+  Resource. This classes in turn have subclasses which implement the different
+  flavours of the functionality represented by the family.
+ 
+  A subclass should reimplement at least the constructor and the
+  writeConfig method.
+
+  An example for a Resource subclass hierarchy would be the "calendar" family.
+  The ResourceCalendar subclass would specify an API for accessing calendar
+  data. Subclasses of ResourceCalendar would implement this API for local files,
+  remote files, specific calendar servers etc.
+*/
 class Resource : public QObject
 {
-  Q_OBJECT
+    friend class Factory;
+    friend class ManagerImpl;
 
+    Q_OBJECT
   public:
     typedef QValueList<Resource *> List;
 
@@ -324,9 +350,6 @@ class Resource : public QObject
     */
     bool isActive() const;
 
-    friend class Factory;
-    friend class ManagerImpl;
-
     /**
       Print resource information as debug output.
     */
@@ -350,8 +373,8 @@ class Resource : public QObject
      */
     virtual void doClose() {}
 
-    void setIdentifier( const QString& identifier );
-    void setType( const QString& type );
+    void setIdentifier( const QString &identifier );
+    void setType( const QString &type );
 
   private:
     class ResourcePrivate;

@@ -85,20 +85,23 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
   KService::Ptr ptr = mTypeMap[ type ];
   KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
   if ( !factory ) {
-    kdDebug() << "KRES::Factory::configWidget(): Factory creation failed" << endl;
+    kdDebug(5650) << "KRES::Factory::configWidget(): Factory creation failed"
+                  << endl;
     return 0;
   }
 
   PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug() << "KRES::Factory::configWidget(): no plugin factory." << endl;
+    kdDebug(5650) << "KRES::Factory::configWidget(): no plugin factory."
+                  << endl;
     return 0;
   }
 
   ConfigWidget *wdg = pluginFactory->configWidget( parent );
   if ( !wdg ) {
-    kdDebug() << "'" << ptr->library() << "' is not a " + mResourceFamily + " plugin." << endl;
+    kdDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
+                     " plugin." << endl;
     return 0;
   }
 
@@ -125,7 +128,7 @@ QString Factory::typeDescription( const QString &type ) const
 
 Resource *Factory::resource( const QString& type, const KConfig *config )
 {
-  kdDebug() << "Factory::resource( " << type << ", config)" << endl;
+  kdDebug(5650) << "Factory::resource( " << type << ", config )" << endl;
 
   if ( type.isEmpty() || !mTypeMap.contains( type ) )
     return 0;
@@ -133,20 +136,22 @@ Resource *Factory::resource( const QString& type, const KConfig *config )
   KService::Ptr ptr = mTypeMap[ type ];
   KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
   if ( !factory ) {
-    kdDebug() << "KRES::Factory::resource(): Factory creation failed" << endl;
+    kdDebug(5650) << "KRES::Factory::resource(): Factory creation failed"
+                  << endl;
     return 0;
   }
 
   PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug() << "KRES::Factory::resource(): no plugin factory." << endl;
+    kdDebug(5650) << "KRES::Factory::resource(): no plugin factory." << endl;
     return 0;
   }
 
   Resource *resource = pluginFactory->resource( config );
   if ( !resource ) {  
-    kdDebug() << "'" << ptr->library() << "' is not a " + mResourceFamily + " plugin." << endl;
+    kdDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
+                     " plugin." << endl;
     return 0;
   }
 

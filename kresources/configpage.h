@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,8 +20,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
-
 #ifndef KRESOURCES_CONFIGPAGE_H
 #define KRESOURCES_CONFIGPAGE_H
 
@@ -34,7 +34,6 @@ class KListView;
 class QListViewItem;
 class QPushButton;
 
-
 namespace KRES {
 
 class ResourcePageInfo
@@ -45,8 +44,9 @@ class ResourcePageInfo
 };
 
 class Resource;
+class ConfigViewItem;
 
-class ConfigPage : public QWidget, public ManagerListener<Resource>
+class ConfigPage : public QWidget, public ManagerObserver<Resource>
 {
   Q_OBJECT
 
@@ -66,11 +66,14 @@ class ConfigPage : public QWidget, public ManagerListener<Resource>
     void slotStandard();
     void slotSelectionChanged();
 
-    // From ManagerListener<Resource>
   public:
-    virtual void resourceAdded( Resource* resource );
-    virtual void resourceModified( Resource* resource );
-    virtual void resourceDeleted( Resource* resource );
+    // From ManagerObserver<Resource>
+    virtual void resourceAdded( Resource *resource );
+    virtual void resourceModified( Resource *resource );
+    virtual void resourceDeleted( Resource *resource );
+
+  protected:
+    ConfigViewItem *findItem( Resource *resource );
 
   protected slots:
     void slotItemClicked( QListViewItem * );
