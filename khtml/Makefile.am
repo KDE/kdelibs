@@ -17,8 +17,8 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-#DEFS += -DNEW_LAYOUT
-#DEFS += -DTABLE_DEBUG
+#AM_CXXFLAGS += -DNEW_LAYOUT
+#AM_CXXFLAGS += -DTABLE_DEBUG
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlparser.cpp khtmljscript.cpp khtml.cpp \
