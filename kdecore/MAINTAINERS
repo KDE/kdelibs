@@ -6,7 +6,7 @@ When adding yourself as a maintainer, on't be afraid to reorder the files to a
 more logical grouping.
 
 dmalloc.cpp
-kaboutdata.cpp
+kaboutdata.cpp		David Faure <faure@kde.org>
 kaccel.cpp		Ellis Whitehead <ellis@kde.org>
 kaccelaction.cpp	Ellis Whitehead <ellis@kde.org>
 kaccelbase.cpp		Ellis Whitehead <ellis@kde.org>
@@ -33,7 +33,7 @@ kextsock.cpp
 kglobal.cpp
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalaccel_x11.cpp	Ellis Whitehead <ellis@kde.org>
-kglobalsettings.cpp
+kglobalsettings.cpp	David Faure <faure@kde.org>
 kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp
@@ -47,7 +47,7 @@ klibloader.cpp
 klocale.cpp		Hans Petter Bieker <bieker@kde.org>
 kmdcodec.cpp
 kmimesourcefactory.cpp
-kmultipledrag.cpp
+kmultipledrag.cpp	David Faure <faure@kde.org>
 knotifyclient.cpp
 kpalette.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapprovider.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
@@ -75,7 +75,7 @@ ksycocafactory.cpp	Waldo Bastian <bastian@kde.org>
 ktempfile.cpp		Waldo Bastian <bastian@kde.org>
 kuniqueapplication.cpp	Waldo Bastian <bastian@kde.org>
 kurl.cpp		Waldo Bastian <bastian@kde.org>
-kurldrag.cpp
+kurldrag.cpp		David Faure <faure@kde.org>
 kwin.cpp
 kwinmodule.cpp
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
