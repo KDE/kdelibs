@@ -46,10 +46,6 @@ class KBufferedSocketPrivate;
  * Objects of this type operate only in non-blocking mode. A call to
  * setBlocking(true) will result in an error.
  *
- * @bug Because of a bug in g++ 2.95.x, this class may return true to
- *      isBlocking() under some circumstances, even though the socket
- *      is not blocking.
- *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class KBufferedSocket: public KStreamSocket
