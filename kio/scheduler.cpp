@@ -270,7 +270,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     debug_info();
     bool newSlave = false;
 
-    SimpleJob *job;
+    SimpleJob *job = 0;
     Slave *slave = 0;
 
     if (protInfo->skipCount > 2)
