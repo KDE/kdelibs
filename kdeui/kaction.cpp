@@ -274,7 +274,7 @@ KAction::KAction( QObject* parent, const char* name )
 
 KAction::~KAction()
 {
-    kdDebug(125) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
+    kdDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
     if (d->m_kaccel)
       unplugAccel();
 
@@ -295,7 +295,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d->m_cutDefault = cut;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
-    kdDebug(125) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
+    kdDebug(129) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
@@ -486,7 +486,7 @@ QString KAction::toolTip() const
 
 int KAction::plug( QWidget *w, int index )
 {
-  //kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
+  //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
@@ -654,7 +654,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
 void KAction::unplugAccel()
 {
-  //kdDebug(125) << "KAction::unplugAccel()" << endl;
+  //kdDebug(129) << "KAction::unplugAccel()" << endl;
   if ( d->m_kaccel )
   {
     d->m_kaccel->remove(name());
@@ -674,7 +674,7 @@ void KAction::plugMainWindowAccel( QWidget *w )
   if (mw)
     plugAccel( mw->accel() );
   else
-    kdDebug(125) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
+    kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KAction::setEnabled(bool enable)
@@ -916,7 +916,7 @@ void KAction::slotActivated()
 
 void KAction::slotDestroyed()
 {
-  kdDebug(125) << "KAction::slotDestroyed(): sender = " << sender() << endl;
+  kdDebug(129) << "KAction::slotDestroyed(): sender = " << sender() << endl;
   if ( sender() == d->m_kaccel )
   {
     d->m_kaccel = 0;
@@ -967,7 +967,7 @@ void KAction::removeContainer( int index )
 
 void KAction::slotKeycodeChanged()
 {
-  kdDebug(125) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
+  kdDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
   KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
   if( pAction )
     setShortcut(pAction->shortcut());
@@ -1341,7 +1341,7 @@ void KSelectAction::setComboWidth( int width )
 }
 QPopupMenu* KSelectAction::popupMenu() const
 {
-	kdDebug(125) << "KAction::popupMenu()" << endl; // remove -- ellis
+	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
   {
     d->m_menu = new KPopupMenu(0L, "KSelectAction::popupMenu()");
@@ -1398,7 +1398,7 @@ void KSelectAction::changeItem( int id, int index, const QString& text)
 
 void KSelectAction::setItems( const QStringList &lst )
 {
-	kdDebug(125) << "KAction::setItems()" << endl; // remove -- ellis
+	kdDebug(129) << "KAction::setItems()" << endl; // remove -- ellis
   d->m_list = lst;
   d->m_current = -1;
 
@@ -1475,7 +1475,7 @@ void KSelectAction::updateComboWidth( int id )
 
 void KSelectAction::updateItems( int id )
 {
-	kdDebug(125) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
+	kdDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
@@ -1497,7 +1497,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     // Create the PopupMenu and store it in m_menu
@@ -2093,7 +2093,7 @@ void KFontAction::setFont( const QString &family )
           return;
        }
     }
-    kdDebug(125) << "Font not found " << family.lower() << endl;
+    kdDebug(129) << "Font not found " << family.lower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )
@@ -2322,7 +2322,7 @@ KActionMenu::KActionMenu( const QString& text, const QString& icon,
 KActionMenu::~KActionMenu()
 {
     unplugAll();
-    kdDebug(125) << "KActionMenu::~KActionMenu()" << endl; // ellis
+    kdDebug(129) << "KActionMenu::~KActionMenu()" << endl; // ellis
     delete d; d = 0;
 }
 
@@ -2368,7 +2368,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
-  kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
@@ -2631,7 +2631,7 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
-  kdDebug() << "KActionCollection::KActionCollection( " << parent << ", " << name << " ): this = " << this << endl; // ellis
+  kdDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << name << " ): this = " << this << endl; // ellis
   d = new KActionCollectionPrivate;
   if( parent )
     d->m_kaccel = new KAccel( parent, "KActionCollection-KAccel" );
@@ -2642,7 +2642,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
                                       KInstance *instance )
   : QObject( parent, name )
 {
-  kdDebug() << "KActionCollection::KActionCollection( " << watch << ", " << parent << ", " << name << " ): this = " << this << endl; //ellis
+  kdDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << ", " << name << " ): this = " << this << endl; //ellis
   d = new KActionCollectionPrivate;
   if( watch )
     d->m_kaccel = new KAccel( watch, this, "KActionCollection-KAccel" );
@@ -2654,7 +2654,7 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
-  kdDebug() << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
+  kdDebug(129) << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
@@ -2690,7 +2690,7 @@ KActionCollection::~KActionCollection()
 //  into this accel.
 void KActionCollection::setWidget( QWidget* w )
 {
-  kdDebug() << "KActionCollection::setWidget( " << w << " ): this = " << this << endl;
+  kdDebug(129) << "KActionCollection::setWidget( " << w << " ): this = " << this << endl;
   if ( !d->m_kaccel ) {
     if ( w )
       d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
@@ -2710,7 +2710,7 @@ void KActionCollection::findMainWindow( QWidget *w )
   if (mw)
     d->m_mainwindow = mw;
   else
-    kdDebug(125) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
+    kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KActionCollection::_insert( KAction* action )
@@ -2786,7 +2786,7 @@ KAction* KActionCollection::action( int index ) const
 
 /*void KActionCollection::createKeyMap( KAccelActions& map ) const
 {
-  kdDebug(125) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
+  kdDebug(129) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
   map.clear();
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it ) {
@@ -2805,7 +2805,7 @@ KAction* KActionCollection::action( int index ) const
 
 void KActionCollection::setKeyMap( const KAccelActions& map )
 {
-  kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
+  kdDebug(129) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
   for( uint i = 0; i < map.count(); i++ )
   {
     const KAccelAction* aa = map.actionPtr( i );
@@ -3100,7 +3100,7 @@ bool KActionShortcutList::setOther( Other, uint, QVariant )
 
 bool KActionShortcutList::save() const
 {
-	kdDebug(125) << "KActionShortcutList::save(): xmlFile = " << m_actions.xmlFile() << endl;
+	kdDebug(129) << "KActionShortcutList::save(): xmlFile = " << m_actions.xmlFile() << endl;
 
 	if( m_actions.xmlFile().isEmpty() )
 		return writeSettings();
@@ -3142,7 +3142,7 @@ bool KActionShortcutList::save() const
 		const QString& sName = name(i);
 
 		bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
-		//kdDebug() << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+		//kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
 		// now see if this element already exists
 		QDomElement act_elem;
@@ -3157,7 +3157,7 @@ bool KActionShortcutList::save() const
 		if( act_elem.isNull() ) {
 			if( bSameAsDefault )
 				continue;
-			//kdDebug() << "\tnode doesn't exist." << endl;
+			//kdDebug(129) << "\tnode doesn't exist." << endl;
 			act_elem = doc.createElement( tagAction );
 			act_elem.setAttribute( attrName, sName );
 		}
@@ -3165,7 +3165,7 @@ bool KActionShortcutList::save() const
 		act_elem.removeAttribute( attrAccel );
 		if( bSameAsDefault ) {
 			act_elem.removeAttribute( attrShortcut );
-			//kdDebug() << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+			//kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
 			if( act_elem.attributes().count() == 1 )
 				elem.removeChild( act_elem );
 		} else {
