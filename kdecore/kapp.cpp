@@ -129,7 +129,9 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 
 static void kde_ice_ioerrorhandler( IceConn conn )
 {
-    kapp->iceIOErrorHandler( conn );
+    if(kapp)
+        kapp->iceIOErrorHandler( conn );
+    // else ignore the error for now
 }
 
 }
@@ -1470,12 +1472,12 @@ KApplication::startServiceByDesktopName( const QString& _name, const QStringList
                       _name, URLs, error, dcopService, pid);
 }
 
-int 
+int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid )
 {
    return startServiceInternal("kdeinit_exec(QString,QStringList)",
-	name, args, error, 0, pid);
+        name, args, error, 0, pid);
 }
 
 
