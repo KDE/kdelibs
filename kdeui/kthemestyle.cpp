@@ -1178,155 +1178,125 @@ void KThemeStyle::tabbarMetrics( const QTabBar* t, int& hframe, int& vframe, int
 void KThemeStyle::drawTab( QPainter* p, const QTabBar* tb, QTab* t ,
                            bool selected )
 {
-    QRect r(t->r);
     WidgetType widget = selected ? ActiveTab : InactiveTab;
     const QColorGroup *cg = colorGroup(tb->colorGroup(), widget);
     int i;
+    int x = t->r.x(), y = t->r.y();
+    int x2 = t->r.right(), y2 = t->r.bottom();
     int bWidth = borderWidth(widget);
     int hWidth = highlightWidth(widget);
     if(tb->shape() == QTabBar::RoundedAbove){
         if(!selected){
-            p->fillRect(r.left(), r.top(), r.width(), 2,
+            p->fillRect(x, y, x2-x+1, 2,
                         tb->palette().normal().brush( QColorGroup::Background));
-            r.setTop(r.top()+2);
+            y+=2;
         }
         p->setPen(cg->text());
         i=0;
         if(i < bWidth){
-            p->drawLine(r.left(), r.top()+1, r.left(), r.bottom());
-            p->drawLine(r.right(), r.top()+1, r.right(), r.bottom());
-            p->drawLine(r.left()+1, r.top(), r.right()-1, r.top());
+            p->drawLine(x, y+1, x, y2);
+            p->drawLine(x2, y+1, x2, y2);
+            p->drawLine(x+1, y, x2-1, y);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
-                r.setBottom(r.bottom()-1);
+                p->drawLine(x, y2, x2, y2);
+                --y2;
             }
-            r.setLeft(r.left()+1);
-            r.setTop(r.top()+1);
-            r.setRight(r.right()-1);
-            ++i;
+            ++i, ++x, ++y, --x2;
         }
-        for(; i < bWidth; ++i){
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom());
-            p->drawLine(r.right(), r.top(), r.right(), r.bottom());
-            p->drawLine(r.left(), r.top(), r.right(), r.top());
+        for(; i < bWidth; ++i, ++x, ++y, --x2){
+            p->drawLine(x, y, x, y2);
+            p->drawLine(x2, y, x2, y2);
+            p->drawLine(x, y, x2, y);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
-                r.setBottom(r.bottom()-1);
+                p->drawLine(x, y2, x2, y2);
+                --y2;
             }
-            r.setLeft(r.left()+1);
-            r.setTop(r.top()+1);
-            r.setRight(r.right()-1);
         }
         i=0;
         if(i < hWidth && bWidth == 0){
             p->setPen(cg->light());
-            p->drawLine(r.left(), r.top()+1, r.left(), r.bottom());
-            p->drawLine(r.left()+1, r.top(), r.right()-1, r.top());
+            p->drawLine(x, y+1, x, y2);
+            p->drawLine(x+1, y, x2-1, y);
             p->setPen(cg->dark());
-            p->drawLine(r.right(), r.top()+1, r.right(), r.bottom());
+            p->drawLine(x2, y+1, x2, y2);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
-                r.setBottom(r.bottom()-1);
+                p->drawLine(x, y2, x2, y2);
+                --y2;
             }
-            r.setLeft(r.left()+1);
-            r.setTop(r.top()+1);
-            r.setRight(r.right()-1);
-            ++i;
+            ++i, ++x, ++y, --x2;
         }
-        for(; i < hWidth; ++i){
+        for(; i < hWidth; ++i, ++x, ++y, --x2){
             p->setPen(cg->light());
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom());
-            p->drawLine(r.left(), r.top(), r.right(), r.top());
+            p->drawLine(x, y, x, y2);
+            p->drawLine(x, y, x2, y);
             p->setPen(cg->dark());
-            p->drawLine(r.right(), r.top()+1, r.right(), r.bottom());
+            p->drawLine(x2, y+1, x2, y2);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
-                r.setBottom(r.bottom()-1);
+                p->drawLine(x, y2, x2, y2);
+                --y2;
             }
-            r.setLeft(r.left()+1);
-            r.setTop(r.top()+1);
-            r.setRight(r.right()-1);
         }
         if(isPixmap(widget))
-            p->drawTiledPixmap(r.left(), r.top(), r.width(), r.height(),
-                               *scalePixmap(r.width(), r.height(),
-                                            widget));
+            p->drawTiledPixmap(x, y, x2-x+1, y2-y+1,
+                               *scalePixmap(x2-x+1, y2-y+1, widget));
         else
-            p->fillRect(r.left(), r.top(), r.width(), r.height(),
-                        cg->background());
+            p->fillRect(x, y, x2-x+1, y2-y+1, cg->background());
     }
     else if(tb->shape()  == QTabBar::RoundedBelow){
         if(!selected){
-            p->fillRect(r.left(), r.bottom()-2, r.width(), 2,
+            p->fillRect(x, y2-2, x2-x+1, 2,
                         tb->palette().normal().brush( QColorGroup::Background));
-            r.setBottom(r.bottom()-2);
+            y2-=2;
         }
         p->setPen(cg->text());
         i=0;
         if(i < bWidth){
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom()-1);
-            p->drawLine(r.right(), r.top(), r.right(), r.bottom()-1);
-            p->drawLine(r.left()+1, r.bottom(), r.right()-1, r.bottom());
+            p->drawLine(x, y, x, y2-1);
+            p->drawLine(x2, y, x2, y2-1);
+            p->drawLine(x+1, y2, x2-1, y2);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.top(), r.right(), r.top());
-                r.setTop(r.top()+1);
+                p->drawLine(x, y, x2, y);
+                ++y;
             }
-            r.setLeft(r.left()+1);
-            r.setBottom(r.bottom()-1);
-            r.setRight(r.right()-1);
-            ++i;
         }
-        for(; i < bWidth; ++i){
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom());
-            p->drawLine(r.right(), r.top(), r.right(), r.bottom());
-            p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
+        for(; i < bWidth; ++i, ++x, --x2, --y2){
+            p->drawLine(x, y, x, y2);
+            p->drawLine(x2, y, x2, y2);
+            p->drawLine(x, y2, x2, y2);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.top(), r.right(), r.top());
-                r.setTop(r.top()+1);
+                p->drawLine(x, y, x2, y);
+                ++y;
             }
-            r.setLeft(r.left()+1);
-            r.setBottom(r.bottom()-1);
-            r.setRight(r.right()-1);
-            ++i;
         }
         i=0;
         if(i < hWidth && bWidth == 0){
             p->setPen(cg->dark());
-            p->drawLine(r.left()+1, r.bottom(), r.right()-1, r.bottom());
-            p->drawLine(r.right(), r.top(), r.right(), r.bottom()-1);
+            p->drawLine(x+1, y2, x2-1, y2);
+            p->drawLine(x2, y, x2, y2-1);
             p->setPen(cg->light());
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom()-1);
+            p->drawLine(x, y, x, y2-1);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.top(), r.right(), r.top());
-                r.setTop(r.top()+1);
+                p->drawLine(x, y, x2, y);
+                ++y;
             }
-            r.setLeft(r.left()+1);
-            r.setBottom(r.bottom()-1);
-            r.setRight(r.right()-1);
-            ++i;
+            ++i, ++x, --x2, --y2;
         }
-        for(; i < hWidth; ++i){
+        for(; i < hWidth; ++i, ++x, --x2, --y2){
             p->setPen(cg->dark());
-            p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
-            p->drawLine(r.right(), r.top(), r.right(), r.bottom());
+            p->drawLine(x, y2, x2, y2);
+            p->drawLine(x2, y, x2, y2);
             p->setPen(cg->light());
-            p->drawLine(r.left(), r.top(), r.left(), r.bottom());
+            p->drawLine(x, y, x, y2);
             if(selected ? activeTabLine() : inactiveTabLine()){
-                p->drawLine(r.left(), r.top(), r.right(), r.top());
-                r.setTop(r.top()+1);
+                p->drawLine(x, y, x2, y);
+                ++y;
             }
-            r.setLeft(r.left()+1);
-            r.setBottom(r.bottom()-1);
-            r.setRight(r.right()-1);
-            ++i;
         }
         if(isPixmap(widget))
-            p->drawTiledPixmap(r.left(), r.top(), r.width(), r.height(),
-                               *scalePixmap(r.width(), r.height(),
-                                            widget));
+            p->drawTiledPixmap(x, y, x2-x+1, y2-y+1,
+                               *scalePixmap(x2-x+1, y2-y+1, widget));
         else
-            p->fillRect(r.left(), r.top(), r.width(), r.height(),
-                        cg->background());
+            p->fillRect(x, y, x2-x+1, y2-y+1, cg->background());
     }
     else 
         QCommonStyle::drawTab(p, tb, t, selected );
