@@ -188,7 +188,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type )
     if(script.length())
     {
 	printf("emit executeScript( %s )\n", script.string().ascii());
-	htmlwidget->slotExecuteScript( script.string() );
+	emit htmlwidget->executeScript( script.string() );
     }
 
     if(click)
@@ -196,7 +196,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type )
 	script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
-	    htmlwidget->slotExecuteScript( script.string() );
+	    emit htmlwidget->executeScript( script.string() );
 	    printf("emit executeScript( %s )\n", script.string().ascii());
 	}
     }

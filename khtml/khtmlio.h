@@ -1,23 +1,23 @@
 /*
     This file is part of the KDE libraries
- 
+
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
- 
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/  
+*/
 // ------------------------------------------------------------------------
 //
 // Provides a cache for effective caching of images in memory
@@ -50,7 +50,7 @@ using namespace DOM;
 
 class KHTMLWidget;
 
-class HTMLFileRequester 
+class HTMLURLRequester
 {
 public:
     /********************************
@@ -59,9 +59,9 @@ public:
      *
      * fileLoaded is called when the requested file has arrived.
      */
-    virtual void fileLoaded( QString /*_url*/, 
+    virtual void fileLoaded( QString /*_url*/,
 			     QString /*localfile*/ ) = 0;
-    virtual bool fileLoaded( QString /* _url */, QBuffer& /* _buffer */, 
+    virtual bool fileLoaded( QString /* _url */, QBuffer& /* _buffer */,
 			     bool /* eof */ = false ) = 0;
 };
 
@@ -72,16 +72,45 @@ public:
     virtual void pixmapChanged( QPixmap *p ) = 0;
 };
 
-struct HTMLPendingFile
+struct HTMLURLRequest
 {
 public:
-  HTMLPendingFile();
-  HTMLPendingFile( const QString _url, HTMLFileRequester *_obj );
+  HTMLURLRequest();
+  HTMLURLRequest( const QString _url, HTMLURLRequester *_obj );
 
   QBuffer m_buffer;
   QString m_strURL;
-  QList<HTMLFileRequester> m_lstClients;
+  QList<HTMLURLRequester> m_lstClients;
 };
+
+class HTMLURLRequestJob : QObject
+{
+  Q_OBJECT
+
+  friend class KHTMLWidget;
+public:
+  HTMLURLRequestJob( KHTMLWidget* _browser );
+  ~HTMLURLRequestJob();
+
+  void run( const QString &_url, const QString &_simple_url, bool _reload );
+
+signals:
+  void error( const QString &_url, int _err, const char* _errtext );
+
+protected slots:
+  void slotFinished( int _id );
+  void slotData( int _id, const char*, int _len );
+  void slotError( int _id, int _err, const char *_text );
+
+protected:
+  int m_jobId;
+  KHTMLWidget *m_pBrowser;
+  QString m_strURL;
+  QString m_strSimpleURL;
+    bool m_bReload;
+};
+
+
 
 struct HTMLPageInfo
 {
@@ -98,7 +127,7 @@ class KHTMLImageSource : public QDataSource
  public:
   KHTMLImageSource(QByteArray buf);
   ~KHTMLImageSource();
- 
+
   /**
    * Overload QDataSource::readyToSend() and returns the number
    * of bytes ready to send if not eof instead of returning -1.
@@ -138,7 +167,7 @@ class KHTMLImageSource : public QDataSource
   bool eof;
 };
 
-/** 
+/**
  * contains one cached image
  */
 class KHTMLCachedImage : public QObject
@@ -150,7 +179,7 @@ public:
     ~KHTMLCachedImage();
 
     // just for convenience
-    void append( HTMLImageRequester *o ); 
+    void append( HTMLImageRequester *o );
     void remove( HTMLImageRequester *o );
     QPixmap* pixmap();
     int count() { return clients.count(); }
@@ -184,7 +213,7 @@ public slots:
      * gets called, whenever a QMovie changes frame
      */
     void movieUpdated( const QRect &rect );
- 
+
 public:
     QPixmap *p;
     QMovie *m;
@@ -220,7 +249,7 @@ public:
     }
 };
 
-class KHTMLCache : public HTMLFileRequester
+class KHTMLCache : public HTMLURLRequester
 {
 public:
     KHTMLCache( KHTMLWidget *w );
@@ -234,26 +263,26 @@ public:
 		  Pending,      // only partially loaded
 		  Uncacheable };// to big to be cached,
                                 // will be destroyed as soon as possible
-    
+
     /**
      * called from the KHTMLWidget to say that new data has arrived
      * if eof is TRUE, the url is completely loaded.
      */
-    virtual bool fileLoaded( QString _url, QBuffer &buffer, 
+    virtual bool fileLoaded( QString _url, QBuffer &buffer,
 			     bool eof = false);
     /**
      * called from KHTMLWidget to say, that the image is loaded
      */
     virtual void fileLoaded( QString _url, QString localfile );
 
-    /** 
+    /**
      * if an htmlimage is destructed it calls
      * this function, to tell the cache, the image is not used
      * anymore.
      */
     static void free( DOMString _url, HTMLImageRequester *o = 0);
 
-    /** 
+    /**
      * this is called from the KHTMLWidget to indicate that a
      * HTMLImageRequester needs an Image
      */
@@ -265,14 +294,14 @@ public:
     static int status( QString _url );
 
     /**
-     * preload an image into the cache. 
-     * Set Status to Persistent, if you don't wan't it to be 
+     * preload an image into the cache.
+     * Set Status to Persistent, if you don't wan't it to be
      * removed in any case.
      */
     static void preload( QString _url, CacheStatus s = Unknown );
 
     /**
-     * get the pixmap belonging to an url. 
+     * get the pixmap belonging to an url.
      * @return 0 if the image is not cached.
      */
     static QPixmap *image( QString _url );
@@ -305,7 +334,7 @@ protected:
 
     static int maxSize;
     static int actSize;
-    
+
     KHTMLWidget *htmlWidget;
 
 };

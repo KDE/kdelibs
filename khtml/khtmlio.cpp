@@ -1,23 +1,23 @@
 /*
     This file is part of the KDE libraries
- 
+
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
- 
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/  
+*/
 // ------------------------------------------------------------------------
 //
 // Provides io classes for khtml
@@ -27,6 +27,10 @@
 
 #include "khtmlio.h"
 #include "khtml.h"
+
+#include <kio_job.h>
+#include <kio_cache.h>
+#include <kio_error.h>
 
 //#undef CACHE_DEBUG
 #define CACHE_DEBUG
@@ -38,17 +42,90 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>  
+#include <stdio.h>
 
-HTMLPendingFile::HTMLPendingFile()
+HTMLURLRequest::HTMLURLRequest()
 {
 }
 
-HTMLPendingFile::HTMLPendingFile( QString _url, HTMLFileRequester *_obj )
+HTMLURLRequest::HTMLURLRequest( QString _url, HTMLURLRequester *_obj )
 {
   m_strURL = _url;
   m_lstClients.append( _obj );
 }
+
+
+/********************************************************************
+ *
+ * KHTMLWidgetURLRequestJob
+ *
+ ********************************************************************/
+
+HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser)
+{
+  m_pBrowser = _browser;
+  m_jobId = 0;
+
+}
+
+HTMLURLRequestJob::~HTMLURLRequestJob()
+{
+  kdebug(0,1202,"Destructor 1");
+  if ( m_jobId )
+  {
+    KIOJob* job = KIOJob::find( m_jobId );
+    if ( job )
+      job->kill();
+    m_jobId = 0;
+  }
+  kdebug(0,1202,"Destructor 2");
+}
+
+void HTMLURLRequestJob::run( const QString &_url, const QString &_simple_url, bool _reload )
+{
+  m_strSimpleURL = _simple_url;
+  m_strURL = _url;
+  m_bReload = _reload;
+
+  kdebug(0,1202,"$$$$$$$$$ BrowserJob for %s", _url.latin1());
+
+  CachedKIOJob* job = new CachedKIOJob;
+  job->setGUImode( KIOJob::NONE );
+
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
+
+  m_jobId = job->id();
+  job->get( m_strURL, m_bReload );
+}
+
+void HTMLURLRequestJob::slotFinished( int /*_id*/ )
+{
+  m_jobId = 0;
+
+  kdebug(0,1202,"BROWSER JOB FINISHED %s %s", m_strURL.ascii(), m_strSimpleURL.ascii());
+  m_pBrowser->data( m_strSimpleURL, "", 0, true );
+  m_pBrowser->urlRequestFinished( this );
+  kdebug(0,1202,"Back");
+}
+
+void HTMLURLRequestJob::slotData( int /*_id*/, const char* _data, int _len )
+{
+  m_pBrowser->data( m_strSimpleURL, _data, _len, false );
+}
+
+void HTMLURLRequestJob::slotError( int /*_id*/, int _err, const char *_text )
+{
+  m_jobId = 0;
+
+  emit error( m_strURL, _err, _text );
+
+  m_pBrowser->data( m_strSimpleURL, "", 0, true );
+  m_pBrowser->urlRequestFinished( this );
+}
+
+
 
 /*!
   This Class defines the DataSource for incremental loading of images.
@@ -115,7 +192,7 @@ void KHTMLImageSource::rewind()
 void KHTMLImageSource::sendTo(QDataSink* sink, int n)
 {
   sink->receive((const uchar*)&buffer.at(pos), n);
-  
+
   pos += n;
 }
 
@@ -145,24 +222,24 @@ KHTMLCachedImage::~KHTMLCachedImage()
     if( p ) delete p;
 }
 
-void 
-KHTMLCachedImage::append( HTMLImageRequester *o ) 
-{ 
-    clients.append( o ); 
+void
+KHTMLCachedImage::append( HTMLImageRequester *o )
+{
+    clients.append( o );
     if( status != KHTMLCache::Pending || m )
 	notify( o );
 }
 
-void 
-KHTMLCachedImage::remove( HTMLImageRequester *o ) 
-{ 
-  clients.remove( o ); 
+void
+KHTMLCachedImage::remove( HTMLImageRequester *o )
+{
+  clients.remove( o );
   if(m && clients.isEmpty() && m->running())
     m->pause();
 }
 
 QPixmap*
-KHTMLCachedImage::pixmap() 
+KHTMLCachedImage::pixmap()
 {
     return m ? (QPixmap*)&m->framePixmap() : p;
 }
@@ -179,7 +256,7 @@ KHTMLCachedImage::computeStatus()
 	status = KHTMLCache::Cached;
 }
 
-void 
+void
 KHTMLCachedImage::clear()
 {
     if( m ) {
@@ -228,7 +305,7 @@ KHTMLCachedImage::load( QString _f )
     fclose( f );
     QByteArray arr;
     arr.assign( c, s );
-    
+
     formatType = QImageDecoder::formatName( (const uchar*)arr.data(), arr.size());
     printf("KHTMLCache: image file %s, format %s\n",_file, formatType);
     if ( formatType )
@@ -247,15 +324,15 @@ KHTMLCachedImage::load( QString _f )
     else
       {
 	p = new QPixmap();
-	p->loadFromData( arr );	    
-	// set size of image. 
+	p->loadFromData( arr );	
+	// set size of image.
 	if( p != 0 && !p->isNull() )
 	    size = p->width() * p->height() * p->depth() / 8;
 
 	computeStatus();
 	notify();
       }
-}    
+}
 
 bool
 KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
@@ -277,7 +354,7 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	    return eof;
 	  }
       }
-    
+
     if ( !eof )
       {
 	if ( imgSource )
@@ -289,8 +366,8 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
     if( !formatType )
       {
 	p = new QPixmap();
-	p->loadFromData( _buffer.buffer() );	    
-	// set size of image. 
+	p->loadFromData( _buffer.buffer() );	
+	// set size of image.
 	if( p && !p->isNull() )
 	  size = p->width() * p->height() * p->depth() / 8;
 
@@ -310,7 +387,7 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
     return true;
 }
 
-void 
+void
 KHTMLCachedImage::notify( HTMLImageRequester *o )
 {
     printf("Cache::notify()\n");
@@ -319,7 +396,7 @@ KHTMLCachedImage::notify( HTMLImageRequester *o )
     {
 	if(m->finished())
 	    m->restart();
-	if(m->paused()) 
+	if(m->paused())
 	    m->unpause();
     }
 
@@ -350,7 +427,7 @@ KHTMLCachedImage::notify( HTMLImageRequester *o )
 	o->setPixmap( pixmap );
 }
 
-void 
+void
 KHTMLCachedImage::movieUpdated( const QRect & )
 {
     //printf("Cache::movieUpdated()\n");
@@ -394,7 +471,7 @@ KHTMLCache::init()
     }
 }
 
-void 
+void
 KHTMLCache::clear()
 {
     if(cache) delete cache;
@@ -424,13 +501,13 @@ KHTMLCache::requestImage( HTMLImageRequester *obj, QString _url)
 	im->append(obj);
 	cache->insert( kurl.url(), im );
 	lru->append( kurl.url() );
-	    
+	
 	if ( kurl.isLocalFile() )
 	{
 	    im->load( kurl.url() );
 	    actSize += im->size;
 	}
-	else 
+	else
 	    htmlWidget->requestFile( this, kurl.url() );
 	return;
     }
@@ -448,10 +525,10 @@ KHTMLCache::requestImage( HTMLImageRequester *obj, QString _url)
 
 void
 KHTMLCache::fileLoaded( QString _url, QString _file )
-{ 
+{
     KHTMLCachedImage *im = cache->find(_url);
 
-    if(!im) 
+    if(!im)
     {
 #ifdef CACHE_DEBUG
 	printf("Cache: ERROR loading: %s not found.\n", _url.latin1());
@@ -463,7 +540,7 @@ KHTMLCache::fileLoaded( QString _url, QString _file )
 #ifdef CACHE_DEBUG
     printf("Cache: Loaded %s %s\n", _url.latin1(), _file.latin1() );
 #endif
-    
+
     im->load( _file );
     actSize += im->size;
 }
@@ -489,11 +566,11 @@ KHTMLCache::fileLoaded( QString _url, QBuffer & _buffer, bool eof )
 
   if( eof )
     actSize += im->size;
-  
+
   return state;
 }
 
-void 
+void
 KHTMLCache::free( DOMString _url, HTMLImageRequester *obj )
 {
     if(!_url.length()) return;
@@ -504,7 +581,7 @@ KHTMLCache::free( DOMString _url, HTMLImageRequester *obj )
     im->remove( obj );
 
 #ifdef CACHE_DEBUG
-    printf("Cache: references( %s ) = %d\n", _url.string().latin1(), 
+    printf("Cache: references( %s ) = %d\n", _url.string().latin1(),
 	   im->count());
 #endif
 
@@ -536,11 +613,11 @@ KHTMLCache::flush()
     printf("Cache: flush()\n");
 #endif
     if( actSize < maxSize ) return;
-    
+
     for ( QStringList::Iterator it = lru->begin(); it != lru->end(); ++it )
     {
 	im = cache->find( *it );
-	if( im->count() || im->status == Persistent ) 
+	if( im->count() || im->status == Persistent )
 	    continue; // image is still used or cached permanently
 
 #ifdef CACHE_DEBUG
@@ -557,18 +634,18 @@ KHTMLCache::flush()
 #endif
 }
 
-void 
+void
 KHTMLCache::preload( QString _url, CacheStatus s)
 {
     // better be careful, since this function is static
     init();
-    
+
     KURL kurl( _url );
     if ( kurl.isMalformed() )
     {
 	warning("Malformed URL '%s'\n", _url.latin1() );
 	return;
-    }	    
+    }	
     if ( !kurl.isLocalFile() )
     {
 #ifdef CACHE_DEBUG
@@ -578,7 +655,7 @@ KHTMLCache::preload( QString _url, CacheStatus s)
     }
 
     KHTMLCachedImage *im = cache->find(kurl.url());
-    
+
     if(!im)
     {
 #ifdef CACHE_DEBUG
@@ -611,7 +688,7 @@ KHTMLCache::image( QString _url )
     return im->pixmap();
 }
 
-void 
+void
 KHTMLCache::setSize( int bytes )
 {
     maxSize = bytes;
@@ -619,7 +696,7 @@ KHTMLCache::setSize( int bytes )
     flush();
 }
 
-void 
+void
 KHTMLCache::statistics()
 {
   KHTMLCachedImage *im;

@@ -60,13 +60,13 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     height = 0;
 
     if (!pFontManager)
-	pFontManager = new HTMLFontManager();  
+	pFontManager = new HTMLFontManager();
     if (!pSettings)
-	pSettings = new HTMLSettings();  
+	pSettings = new HTMLSettings();
 
 }
 
-HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c) 
+HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
     : DocumentImpl()
 {
     printf("HTMLDocumentImpl constructor2 this = %p\n",this);
@@ -82,9 +82,9 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
     bodyElement = 0;
 
     if (!pFontManager)
-	pFontManager = new HTMLFontManager();  
+	pFontManager = new HTMLFontManager();
     if (!pSettings)
-	pSettings = new HTMLSettings();  
+	pSettings = new HTMLSettings();
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -183,7 +183,7 @@ void HTMLDocumentImpl::clear()
 
 DOMString HTMLDocumentImpl::requestImage(HTMLImageRequester *n, DOMString url)
 {
-    KURL u(view->getDocumentURL(), url.string());
+    KURL u(view->url(), url.string());
 
     cache->requestImage(n, u.url());
 
@@ -203,13 +203,13 @@ NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
-    if(_first) 
+    if(_first)
     {
 	printf("AddChild failed! id=#document, child->id=%d. Already have a HTML element!\n", newChild->id());
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
-    // just add it... 
+    // just add it...
     newChild->setParent(this);
     newChild->setAvailableWidth(width);
     _first = _last = newChild;
@@ -247,8 +247,8 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
 }
 
 void HTMLDocumentImpl::print(NodeImpl *e, bool recursive)
-{ 
-    view->paintElement(e, recursive); 
+{
+    view->paintElement(e, recursive);
 }
 
 void HTMLDocumentImpl::updateSize()

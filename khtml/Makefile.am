@@ -49,14 +49,12 @@ libkhtml_la_SOURCES = dtd.cpp\
 	html_head.cpp html_headimpl.cpp html_image.cpp \
 	html_imageimpl.cpp html_inline.cpp html_inlineimpl.cpp html_list.cpp \
 	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
-	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp\
-	kbrowser.cpp
+	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp
 
 libkhtml_la_METASOURCES = khtml.moc khtmlio.moc khtmlembed.moc \
-	kbrowser.moc html_formimpl.moc
+	html_formimpl.moc
 
 include_HEADERS = khtml.h khtmlsavedpage.h khtmlembed.h khtmlio.h \
-	kbrowser.h \
 	dom_core.h dom_doc.h dom_element.h dom_exception.h \
 	dom_misc.h dom_node.h dom_string.h dom_text.h \
 	dom_xml.h \

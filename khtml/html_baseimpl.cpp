@@ -29,7 +29,7 @@
 using namespace DOM;
 
 #include "khtml.h"
-#include "kbrowser.h"
+#include "khtml.h"
 #include "khtmlattrs.h"
 #include <stdio.h>
 #include <kurl.h>
@@ -63,7 +63,8 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     {
 	QColor bg;
 	setNamedColor( bg, attr->value().string() );
-	if(view) view->setBGColor( bg );
+	// ### FIXME
+	if(view) view->viewport()->setBackgroundColor( bg );
 	break;
     }
     case ATTR_BACKGROUND:
@@ -193,12 +194,12 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     parentWidget = w;
     if(w)
     {	
-	view = w->newView(w->viewport(), name.string().ascii(), 0);
+	view = w->createFrame(w->viewport(), name.string().ascii());
 	view->setIsFrame(true);
     }
     if(url != 0)
     {
-	KURL u(w->getDocumentURL(), url.string());
+	KURL u(w->url(), url.string());
 	static_cast<KBrowser *>(view)->openURL(u.url());
     }
 
