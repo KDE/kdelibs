@@ -102,6 +102,9 @@ bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QSt
 	if ( (*it).resource() != resource && (*it).resource() != 0 )
 	    continue;
 
+	// mark addressee as saved
+	(*it).setChanged( false );
+
 	s << (*it);
 	counter++;
     }
@@ -123,4 +126,25 @@ void BinaryFormat::removeAddressee( const Addressee& )
 QString BinaryFormat::typeInfo() const
 {
     return i18n( "binary" );
+}
+
+bool BinaryFormat::checkFormat( const QString& fileName ) const
+{
+    kdDebug(5700) << "BinaryFormat::checkFormat(): " << fileName << endl;
+
+    QFile file( fileName );
+
+    if ( !file.open( IO_ReadOnly ) )
+	return false;
+
+    QDataStream s( &file );
+
+    Q_UINT32 magic;
+    
+    s >> magic;
+
+    if ( magic != 0x2e93e )
+	return false;
+    else
+	return true;
 }

@@ -527,6 +527,7 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
 
 void Addressee::setResource( Resource *resource )
 {
+    detach();
     mData->resource = resource;
 } 
 
@@ -537,12 +538,13 @@ Resource *Addressee::resource() const
 
 void Addressee::setChanged( bool value )
 {
-	mData->changed = value;
+    detach();
+    mData->changed = value;
 }
 
 bool Addressee::changed()
 {
-	return mData->changed;
+    return mData->changed;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )

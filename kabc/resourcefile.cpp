@@ -89,7 +89,7 @@ Ticket *ResourceFile::requestSaveTicket()
 
 bool ResourceFile::open()
 {
-  return true;
+  return mFormat->checkFormat( mFileName );
 }
 
 void ResourceFile::close()

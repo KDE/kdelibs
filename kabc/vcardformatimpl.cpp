@@ -200,6 +200,12 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
     if ( (*it).resource() != resource && (*it).resource() != 0 )
 	continue;
 
+    if ( (*it).changed() )
+	kdDebug() << "is changed" << endl;
+
+    // mark addressee as saved
+    (*it).setChanged( false );
+
     VCard *v = new VCard;
 
     addTextValue( v, EntityName, (*it).name() );

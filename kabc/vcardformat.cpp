@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qfile.h>
+
 #include <klocale.h>
 
 #include "vcardformatimpl.h"
@@ -53,4 +55,22 @@ void VCardFormat::removeAddressee( const Addressee& addr )
 QString VCardFormat::typeInfo() const
 {
   return i18n( "VCard" );
+}
+
+bool VCardFormat::checkFormat( const QString &fileName ) const
+{
+    QFile file( fileName );
+    if ( !file.open( IO_ReadOnly ) )
+	return false;
+
+    if ( file.size() == 0 )
+	return true;
+
+    QString line;
+    file.readLine( line, 1024 );
+    line = line.stripWhiteSpace();
+    if ( line == "BEGIN:VCARD" )
+	return true;
+    else
+	return false;
 }

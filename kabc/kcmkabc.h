@@ -21,12 +21,12 @@
 */
 
 #include <qcombobox.h>
-#include <qlistbox.h>
 #include <qstringlist.h>
 #include <qwidget.h>
 
 #include <kcmodule.h>
 #include <klineedit.h>
+#include <klistview.h>
 #include <kpushbutton.h>
 
 #ifndef KCMKABC_H
@@ -54,7 +54,7 @@ signals:
 private:
     KConfig *config;
 
-    KListBox* listBox;
+    KListView* listView;
     QPushButton* addButton;
     QPushButton* removeButton;
     QPushButton* editButton;

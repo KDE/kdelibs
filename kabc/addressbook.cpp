@@ -277,8 +277,10 @@ void AddressBook::insertAddressee( const Addressee &a )
   for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
       bool changed = false;
-      if ( a != (*it) )
+      if ( a != (*it) ) {
         changed = true;
+        kdDebug() << "AddressBook::insertAddr: changed" << endl;
+      }
       (*it) = a;
       if ( changed ) {
         (*it).setRevision( QDateTime::currentDateTime() );

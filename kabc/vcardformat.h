@@ -44,6 +44,7 @@ class VCardFormat : public Format {
     bool save( AddressBook *, Resource *, const QString &fileName );
     void removeAddressee( const Addressee& addr );
     QString typeInfo() const;
+    bool checkFormat( const QString &fileName ) const;
 
   private:
     VCardFormatImpl *mImpl;

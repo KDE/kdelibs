@@ -95,6 +95,9 @@ bool SimpleFormat::save( AddressBook *addressBook, Resource *resource, const QSt
     if ( (*it).resource() != resource && (*it).resource() != 0 )
 	continue;
 
+    // mark addressee as saved
+    (*it).setChanged( false );
+
     cfg.setGroup( (*it).uid() );
 
     cfg.writeEntry( "name", (*it).name() );
@@ -130,4 +133,14 @@ void SimpleFormat::removeAddressee( const Addressee& )
 QString SimpleFormat::typeInfo() const
 {
     return i18n( "simple" );
+}
+
+bool SimpleFormat::checkFormat( const QString &fileName ) const
+{
+    KSimpleConfig cfg( fileName );
+
+    if ( cfg.hasGroup( "General" ) )
+	return true;
+    else
+	return false;
 }

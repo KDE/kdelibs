@@ -29,7 +29,6 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <klistbox.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
@@ -40,32 +39,25 @@
 #include "resourceconfigdlg.h"
 #include "resourcefactory.h"
 
-class ConfigBoxItem : public QListBoxText
+class ConfigViewItem : public QListViewItem
 {
 public:
-    ConfigBoxItem( const QString &text = QString::null );
+    ConfigViewItem( QListView *parent, QString name, QString type,
+	    QString identifier = QString::null );
 
     QString key;
     QString type;
-
-    void setText( const QString &text);
 };
 
-ConfigBoxItem::ConfigBoxItem( const QString &text )
-    : QListBoxText( text )
+ConfigViewItem::ConfigViewItem( QListView *parent, QString name,
+	QString type, QString identifier )
+    : QListViewItem( parent, name, type, identifier )
 {
-    type = "";
-}
-
-void ConfigBoxItem::setText( const QString &text )
-{
-    QListBoxText::setText( text );
 }
 
 ConfigPage::ConfigPage( QWidget *parent, const char *name )
     : QWidget( parent, name )
 {
-//    resize( 328, 241 ); 
     setCaption( i18n( "Resource Configuration" ) );
 
     QVBoxLayout *mainLayout = new QVBoxLayout( this );
@@ -76,9 +68,13 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
     groupBox->layout()->setMargin( 11 );
     QHBoxLayout *groupBoxLayout = new QHBoxLayout( groupBox->layout() );
 
-    listBox = new KListBox( groupBox );
+    listView = new KListView( groupBox );
+    listView->setAllColumnsShowFocus( true );
+    listView->addColumn( i18n( "Name" ) );
+    listView->addColumn( i18n( "Type" ) );
+    listView->addColumn( i18n( "Location" ) );
 
-    groupBoxLayout->addWidget( listBox );
+    groupBoxLayout->addWidget( listView );
 
     KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
     addButton = buttonBox->addButton( i18n( "&Add" ), this, SLOT(slotAdd()) );
@@ -92,8 +88,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
     mainLayout->addWidget( groupBox );
 
-    connect( listBox, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
-    connect( listBox, SIGNAL(doubleClicked(QListBoxItem*)), this, SLOT(slotEdit()) );
+    connect( listView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+    connect( listView, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotEdit()) );
 
     config = 0;
 
@@ -110,17 +106,16 @@ void ConfigPage::load()
     config->setGroup( "General" );
     keys = config->readListEntry( "ResourceKeys" );
 
-    listBox->clear();
+    listView->clear();
 
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config->setGroup( "Resource_" + (*it) );
-	ConfigBoxItem *item = new ConfigBoxItem( config->readEntry( "ResourceName" ) +
-	" (" + config->readEntry( "ResourceType" ) + ")" );
+	ConfigViewItem *item = new ConfigViewItem( listView, 
+		config->readEntry( "ResourceName" ),
+		config->readEntry( "ResourceType" ) );
 
 	item->key = (*it);
 	item->type = config->readEntry( "ResourceType" );
-
-	listBox->insertItem( item );
     }
 
     emit changed( false );
@@ -130,11 +125,11 @@ void ConfigPage::save()
 {
     QStringList keys;
 
-    QListBoxItem *item = listBox->item( 0 );
+    QListViewItem *item = listView->firstChild();
     while ( item != 0 ) {
-	ConfigBoxItem *configItem = dynamic_cast<ConfigBoxItem*>( item );
+	ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
 	keys.append( configItem->key );
-	item = item->next();
+	item = item->itemBelow();
     }
 
     config->setGroup( "General" );
@@ -169,12 +164,11 @@ void ConfigPage::defaults()
     config->writeEntry( "FileFormat", 0 );
     config->writeEntry( "FileName", locateLocal( "data", "kabc/std.vcf" ) );
 
-    listBox->clear();
+    listView->clear();
 
-    ConfigBoxItem *item = new ConfigBoxItem( "Default (" + type + ")" );
+    ConfigViewItem *item = new ConfigViewItem( listView, "Default", type );
     item->key = key;
     item->type = type;
-    listBox->insertItem( item );
 }
 
 void ConfigPage::slotAdd()
@@ -202,10 +196,10 @@ void ConfigPage::slotAdd()
 	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
 	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-	ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() + " (" + type + ")" );
+	ConfigViewItem *item = new ConfigViewItem( listView,
+		dlg.resourceName->text(), type );
 	item->key = key;
 	item->type = type;
-	listBox->insertItem( item );
 	emit changed( true );
     } else {
 	config->deleteGroup( "Resource_" + key );
@@ -214,19 +208,21 @@ void ConfigPage::slotAdd()
 
 void ConfigPage::slotRemove()
 {
-    QListBoxItem *item = listBox->item( listBox->currentItem() );
-    QString key = dynamic_cast<ConfigBoxItem*>( item )->key;
+    QListViewItem *item = listView->currentItem();
+    QString key = dynamic_cast<ConfigViewItem*>( item )->key;
 
     config->deleteGroup( "Resource_" + key );
 
-    listBox->removeItem( listBox->currentItem() );
+    listView->takeItem( item );
+    delete item;
+
     emit changed( true );
 }
 
 void ConfigPage::slotEdit()
 {
-    QListBoxItem *item = listBox->item( listBox->currentItem() );
-    ConfigBoxItem *configItem = dynamic_cast<ConfigBoxItem*>( item );
+    QListViewItem *item = listView->currentItem();
+    ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
     if ( !configItem )
 	return;
 
@@ -247,14 +243,15 @@ void ConfigPage::slotEdit()
 	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
 	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-	configItem->setText( dlg.resourceName->text() + " (" + type + ")" );
+	configItem->setText( 0, dlg.resourceName->text() );
+	configItem->setText( 1, type );
 	emit changed( true );
     }
 }
 
 void ConfigPage::slotSelectionChanged()
 {
-    bool state = ( listBox->currentItem() != -1 );
+    bool state = ( listView->currentItem() != 0 );
 
     removeButton->setEnabled( state );
     editButton->setEnabled( state );

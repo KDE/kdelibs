@@ -56,6 +56,11 @@ class Format {
       String representation of this format.
     */
     virtual QString typeInfo() const = 0;
+
+    /**
+      Check if given file contains the right format
+    */
+    virtual bool checkFormat( const QString &fileName ) const = 0;
 };
 
 }
