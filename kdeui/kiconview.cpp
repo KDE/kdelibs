@@ -382,6 +382,12 @@ void KIconView::contentsDragMoveEvent( QDragMoveEvent *e )
     QIconView::contentsDragMoveEvent( e );
 }
 
+void KIconView::contentsDropEvent( QDropEvent* e )
+{
+    d->dragHoldTimer.stop();
+    QIconView::contentsDropEvent( e );
+}
+
 void KIconView::slotDragHoldTimeout()
 {
     QIconViewItem *tmp = d->dragHoldItem;

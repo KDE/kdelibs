@@ -164,6 +164,7 @@ protected:
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
   virtual void contentsDragEnterEvent( QDragEnterEvent *e );
   virtual void contentsDragMoveEvent( QDragMoveEvent *e );
+  virtual void contentsDropEvent( QDropEvent* e );
 
 private slots:
   void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
