@@ -314,7 +314,7 @@ protected:
       * rebuild geometry managment.
       *
       */
-    void initGUI();
+    virtual void initGUI();
 
     /**
       * Makes a new directory in current directory after asking user
@@ -393,8 +393,11 @@ private:
     QVBoxLayout *boxLayout;
     QGridLayout *lafBox;
     QHBoxLayout *btngroup;
+protected:
     QPushButton *bOk, *bCancel, *bHelp;
+
     QLabel *locationLabel, *filterLabel;
+private:
     QString filterString;
 };
 
