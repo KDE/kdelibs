@@ -170,6 +170,7 @@ private:
     KWinModule *kwm;
 
     // Swallowing info
+    // Window is obsolete. Remove when binary changes are allowed 
     WId window;
     QString swallowTitle;
 
@@ -180,6 +181,11 @@ private:
 
 /*
  * $Log$
+ * Revision 1.11  2000/07/23 03:06:18  rogozin
+ * 1. Clean up old stuff accumulated in applet widget. Since we use embed now a lot of thing can be removed.
+ *
+ * 2. Bug fix: trailing slash in Java path prevents Java from correct start. Just cut it off.
+ *
  * Revision 1.10  2000/07/10 12:34:19  hoelzer
  * Use qxembed to embed the java view.
  * Now a KWin guru should put this code from 'working'
