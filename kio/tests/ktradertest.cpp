@@ -68,6 +68,9 @@ int main( int argc, char **argv )
         case QVariant::String:
   	  outp += prop.toString();
 	break;
+        case QVariant::StringList:
+  	  outp += prop.toStringList().join(" - ");
+	break;
         default: outp = QString::null; break;
       }
 
