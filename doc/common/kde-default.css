@@ -40,21 +40,27 @@ navigation problem.  */
 body { padding-top: 100px; background-color:
 white; color: black;}
 
-/* Nice link colors for the main text, and bottom navigation */
+/* Nice link colors for the main text, and bottom navigation 
+   Setting text-decoration seems to fix a nasty redraw problem in KHC */
 
 :link { color: rgb(170,0,0);
+        text-decoration: underline;
         background-color: white; /* should be inherit */ }
 :visited { color: rgb(170,0,85);
+	   text-decoration: underline;
            background-color: white; /* should be inherit */ }
 :active { color: rgb(170,0,0);
+	  text-decoration: underline;
           background-color: white; /* should be inherit */ }
 
 /* Link colors for the top navigation */
 
 .left :link, .center :link, .right :link { color: rgb(255,255,255);
+        text-decoration: underline;
         background-color: rgb(82,80,82); }
 
 .left :visited, .center :visited, .right :visited { color: rgb(186,182,186);
+        text-decoration: underline;
         background-color: rgb(82,80,82); }
 
 /* Giving this a background color breaks things, and it's not necessary for 
