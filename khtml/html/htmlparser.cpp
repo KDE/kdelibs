@@ -94,7 +94,7 @@ const unsigned short tagPriority[] = {
     0, // ID_BR
     1, // ID_BUTTON
     1, // ID_CAPTION
-    3, // ID_CENTER
+    4, // ID_CENTER
     1, // ID_CITE
     1, // ID_CODE
     0, // ID_COL
