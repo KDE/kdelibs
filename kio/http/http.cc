@@ -297,7 +297,26 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
 /* Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
    nplist is "inka.de,hadiko.de" or if host is "localhost" and
    nplist is "localhost" */
+bool revmatch( const QString& host, const QString& nplist )
+{
+    bool found = false;
+    // Any amount of "space" or "comma" separated list.
+    QStringList np = QStringList::split(QRegExp("[, ]") , nplist);
+    QStringList::ConstIterator it = np.begin();
+    for( ; it != np.end(); ++it )
+    {
+        int pos = host.findRev((*it));
+        int exp_pos = host.length() - (*it).length();
+        if( pos == exp_pos )
+        {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}
 
+/*
 bool revmatch(const char *host, const char *nplist)
 {
   const char *hptr = host + strlen( host ) - 1;
@@ -322,7 +341,7 @@ bool revmatch(const char *host, const char *nplist)
 
   return false;
 }
-
+*/
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
@@ -544,7 +563,7 @@ void HTTPProtocol::http_checkConnection()
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-      m_request.do_proxy = !revmatch(m_request.hostname.latin1(), m_strNoProxyFor.latin1());
+      m_request.do_proxy = !revmatch(m_request.hostname, m_strNoProxyFor);
 
   if (m_sock)
   {
