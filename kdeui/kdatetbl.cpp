@@ -206,7 +206,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           text.setNum(pos-firstday+1);
 	  if ( d->useCustomColors )
 	  {
-	    const QString key=text+"-"+date.month()+"-"+date.year();
+	    const QString key=text+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
 	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[key];
 	    if (mode)
 	    {
@@ -526,7 +526,7 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
     mode->bgMode=bgMode;
     mode->fgColor=fgColor;
     mode->bgColor=bgColor;
-    const QString key=QString::number(date.day())+"-"+date.month()+"-"+date.year();
+    const QString key=QString::number(date.day())+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
 		
     d->customPaintingModes.replace( key, mode );
     d->useCustomColors=true;
@@ -535,7 +535,7 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
 
 void KDateTable::unsetCustomDatePainting( const QDate &date )
 {
-    const QString key=QString::number(date.day())+"-"+date.month()+"-"+date.year();
+    const QString key=QString::number(date.day())+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
 
     d->customPaintingModes.remove( key );
 }	
