@@ -5,19 +5,19 @@ libkio uses kioslaves (separate processes) that handle a given protocol.
 Launching those slaves is taken care of by the kdeinit/klauncher tandem,
 which are notified by DCOP.
 
-Connection is the most low-level class, the one that encapsulate the pipe.
+Connection is the most low-level class, the one that encapsulates the pipe.
 
 SlaveInterface is the main class for transferring anything to the slave
 and Slave, which inherits SlaveInterface, is the sub class that Job should handle.
 
 A slave inherits SlaveBase, which is the other half of SlaveInterface.
 
-The scheduling is supposed to be on a two level base. One is in the daemon
+The scheduling is supposed to be on a two level basis. One is in the daemon
 and one is in the application. The daemon one (as opposite to the holy one? :)
 will determine how many slaves are ok for this app to be opened and it will
 also assign tasks to actually existing slaves.
-The application will have some kind of scheduler still, but it should be
-very much simpler as it doesn't have to decide anything besides which
+The application will still have some kind of a scheduler, but it should be
+a lot simpler as it doesn't have to decide anything besides which
 task goes to which pool of slaves (related to the protocol/host/user/port)
 and move tasks around.
 Currently a design study to name it cool is in scheduler.cpp but in the
@@ -29,8 +29,8 @@ pool of slaves. So what we need is some kind of load calculation of the
 scheduler in the application and load balancing in the daemon. 
 
 A third thought: Maybe the daemon can just take care of a number of 'unused'
-slaves. When an application needs a slave it can request the daemon for a 
-slave. The application will get one, either from the pool of unused slaves, 
+slaves. When an application needs a slave, it can request it from the daemon. 
+The application will get one, either from the pool of unused slaves, 
 or a new one will be created. This keeps things simple at the daemon level.
 It is up to the application to give the slaves back to the daemon.
 The scheduler in the application must take care not to request too many
@@ -51,7 +51,7 @@ be able to pass the slave which does the partial download from konqueror
 to the application where it can do the complete download.
 
 Do we need to have a hard limit on the number of slaves/host?
-It seems so, because some protocols are about two fail if you
+It seems so, because some protocols are about to fail if you
 have two slaves running in parralel (e.g. POP3) 
 This has to be implemented in the daemon because only at daemon
 level all the slaves are known. As a consequence slaves must 
@@ -68,7 +68,7 @@ which slave is connected to which host.
 The above does of course not apply to hostless protocols (like file).
 (They will never change host).
 
-Apart form a 'hard limit' of the number of slaves/host we can have
+Apart from a 'hard limit' on the number of slaves/host we can have
 a 'soft limit'. E.g. upon connection to a HTTP 1.1 server, the web-
 server tells the slave the number of parallel connections allowed.
 THe simplest solution seems to be to treat 'soft limits' the same
@@ -112,7 +112,7 @@ del is implemented as listRecursive, removing all files and removing all
  
  ... My concern was more that the fact we can list / doesn't mean we can
  remove it. So we shouldn't remove everything we could list without checking
- we can. But then the question arises how do we check we can remove it?
+ we can. But then the question arises how do we check whether we can remove it?
  (Stephan)
 
  ... I was wrong, rm -rf /, even as a user, lists everything and removes
