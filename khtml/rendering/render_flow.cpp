@@ -21,7 +21,7 @@
  */
 // -------------------------------------------------------------------------
 //#define DEBUG
-//#define DEBUG_LAYOUT
+#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 //#define FLOAT_DEBUG
 
@@ -997,7 +997,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
 		special->left = r->left - xoff;
-		if (flow == parent())
+		if (flow != parent())
 		    special->left += flow->marginLeft();
 		if ( !child ) {
 		    special->left -= marginLeft();
@@ -1541,6 +1541,15 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     return inBox;
 }
 
+short RenderFlow::intrinsicWidth() const
+{
+    return RenderBox::intrinsicWidth();
+}
+
+int RenderFlow::intrinsicHeight() const
+{
+    return RenderBox::intrinsicHeight();
+}
 
 #ifndef NDEBUG
 void RenderFlow::printTree(int indent) const
