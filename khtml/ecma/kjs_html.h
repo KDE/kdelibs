@@ -23,6 +23,7 @@
 #include <html_document.h>
 #include <html_base.h>
 #include <html_misc.h>
+#include <html_form.h>
 
 #include <kjs/object.h>
 #include <kjs/function.h>
