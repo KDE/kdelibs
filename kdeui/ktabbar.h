@@ -38,6 +38,8 @@ public:
     KTabBar( QWidget* parent=0, const char* name=0 );
     virtual ~KTabBar();
 
+    virtual void setTabEnabled( int, bool );
+
     const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
     virtual void removeTab( QTab * );

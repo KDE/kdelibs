@@ -52,6 +52,30 @@ KTabBar::~KTabBar()
     //delete d;
 }
 
+void KTabBar::setTabEnabled( int id, bool enabled )
+{
+    QTab * t = tab( id );
+    if ( t ) {
+        if ( t->isEnabled() != enabled ) {
+            t->setEnabled( enabled );
+            QRect r( t->rect() );
+            if ( !enabled && id == currentTab() && count()>1 ) {
+                int index = indexOf( id );
+                index += ( index+1 == count() ) ? -1 : 1;
+                t = tabAt( index );
+
+                if ( t->isEnabled() ) {
+                    r = r.unite( t->rect() );
+                    QPtrList<QTab> *tablist = tabList();
+                    tablist->append( tablist->take( tablist->findRef( t ) ) );
+                    emit selected( t->identifier() );
+                }
+            }
+            repaint( r );
+        }
+    }
+}
+
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
     QTab *tab = selectTab( e->pos() );
