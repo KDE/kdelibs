@@ -22,6 +22,7 @@
 #include <qtooltip.h>
 #include <kapp.h>
 #include "debug.h"
+#include <klocale.h>
 
 EditEntryDialog::EditEntryDialog(QWidget* parent, const char* name)
   : QTabDialog(parent, name, true)

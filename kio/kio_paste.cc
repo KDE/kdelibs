@@ -6,6 +6,7 @@
 #include <kclipboard.h>
 #include <kurl.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <klineeditdlg.h>
 
 #include <qmessagebox.h>

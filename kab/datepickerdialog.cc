@@ -14,6 +14,7 @@
 #include "datepickerdialog.h"
 #include <kdatepik.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <qpushbutton.h>
 #include <qdialog.h>
 

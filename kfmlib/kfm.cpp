@@ -28,7 +28,7 @@
 
 #include "kfm.h"
 #include <kapp.h>
-
+#include <klocale.h>
 QString displayName()
 {
     QString d( getenv( "DISPLAY" ) );

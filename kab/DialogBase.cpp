@@ -20,6 +20,8 @@
 #include "debug.h"
 
 #include <kquickhelp.h>
+#include <kapp.h>
+#include <klocale.h>
 
 QPixmap* DialogBase::tile=0;
 const int DialogBase::Grid=3;

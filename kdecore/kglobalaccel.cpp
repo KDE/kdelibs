@@ -34,6 +34,7 @@
 #include <qmessagebox.h>
 
 #include <kapp.h>
+#include <klocale.h>
 
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs

@@ -28,7 +28,6 @@ extern "C" {
 }
 // C++ headers:
 #include "stl_headers.h"
-#include <kapp.h>
 
 #if defined USE_NAMESPACES
 using namespace std;

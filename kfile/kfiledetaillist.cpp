@@ -24,7 +24,7 @@
 #include "kfiledetaillist.h"
 #include "qkeycode.h"
 #include <kapp.h>
-
+#include <klocale.h>
 KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, 
 				 QWidget *parent, const char *name)
     : KTabListBox(parent, name, 7), KFileInfoContents(s,sorting)

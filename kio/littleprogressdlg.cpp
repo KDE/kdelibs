@@ -1,5 +1,6 @@
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kwm.h>
 
 #include "kio_job.h"

@@ -15,6 +15,7 @@
 #include <qtooltip.h>
 #include "searchresults.h"
 #include "debug.h"
+#include <klocale.h>
 
 const int SearchResults::Grid=3;
 

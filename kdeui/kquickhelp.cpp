@@ -40,7 +40,7 @@
 #include "kquickhelp.h"
 
 #include <kapp.h>
-
+#include <klocale.h>
 #include <qbitmap.h>
 #include <qpainter.h>
 #include <qpixmap.h>

@@ -10,6 +10,7 @@
 #include <qregexp.h>
 
 #include <kaccel.h>
+#include <klocale.h>
 #include <kquickhelp.h>
 
 #include "kaccelmenu.h"

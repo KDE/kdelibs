@@ -15,10 +15,6 @@
 #include <qintdict.h> 
 #include <qpopupmenu.h>
 
-#include <kapp.h>
-#include <kconfig.h>
-#include <kaccel.h>
-
 class KQuickHelpWindow;
 
 //////////////////////////////////////////////////////////////////////////////

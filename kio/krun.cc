@@ -10,6 +10,7 @@
 
 #include <kurl.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <kprotocolmanager.h>
 
 #include <stdlib.h>

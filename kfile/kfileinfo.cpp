@@ -36,6 +36,7 @@
 #include <qregexp.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include "config-kfile.h"
 
 KFileInfo::KFileInfo(const UDSEntry &e)

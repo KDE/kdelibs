@@ -7,6 +7,7 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
 

@@ -22,6 +22,9 @@ extern "C" {
 #include "AssertDialog.h"
 #include "kabapi.h"
 #include "debug.h"
+#include <klocale.h>
+#include <qpixmap.h>
+#include <kapp.h>
 
 AssertDialog::AssertDialog(QWidget* parent, const char* name)
   : AssertDialogData(parent, name),

@@ -4,6 +4,7 @@
 #include <qpixmap.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <ksimpleconfig.h>
 #include <ktreelist.h>
 #include <ktopwidget.h>

@@ -16,6 +16,7 @@
 #include <ksimpleconfig.h>
 #include <kurl.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <kdebug.h>
 
 /************************************************

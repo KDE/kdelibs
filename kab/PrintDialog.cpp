@@ -13,6 +13,8 @@
 
 #include "PrintDialog.h"
 #include "debug.h"
+#include <klocale.h>
+#include <kapp.h>
 
 #define Inherited PrintDialogData
 

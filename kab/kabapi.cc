@@ -18,6 +18,8 @@
 #include <qmessagebox.h>
 #include "kabapi.h"
 #include "debug.h"
+#include <klocale.h>
+
 KabAPI::KabAPI(QWidget* parent)
   : QDialog(parent, 0, true),
     widget(0)

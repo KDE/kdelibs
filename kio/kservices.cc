@@ -15,7 +15,7 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
-
+#include <klocale.h>
 QList<KService>* KService::s_lstServices = 0L;
 
 void KService::initStatic()

@@ -28,6 +28,8 @@
 #include <qregexp.h>
 #include <qkeycode.h>
 #include <qwidcoll.h>
+#include <qpopupmenu.h>
+#include <drag.h>
 
 #include <kapp.h>
 #include <kiconloader.h>

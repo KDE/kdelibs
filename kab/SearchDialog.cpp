@@ -14,6 +14,7 @@
 #include "SearchDialog.h"
 #include "SearchDialogMainWidget.h"
 #include "debug.h"
+#include <klocale.h>
 
 const char* SearchDialog::Keys[]= {
   "title",

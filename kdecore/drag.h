@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.25  1999/03/01 23:33:05  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.24.2.1  1999/02/14 02:05:26  granroth
  * Converted a lot of 'const char*' to 'QString'.  This compiles... but
  * it's entirely possible that nothing will run linked to it :-P
@@ -137,7 +140,6 @@
 #include <config.h>
 #endif
 
-#include <qapplication.h> // for the TrueColor problem
 #include <qwidget.h>
 #include <qpixmap.h>
 #include <qstrlist.h>
@@ -172,17 +174,11 @@
 #define Dnd_X_Precision 2
 #define Dnd_Y_Precision 2
 
-#define kapp KApplication::getKApplication()
-
-
-
 // we need Window and Atom but do not want to include X.h since it
 // #defines way too many constants
 typedef unsigned long XID;
 typedef unsigned long Atom;
 typedef XID Window;
-
-
 
 /**
 * Icon for KDE Drag 'n Drop. This is the widget that is moved

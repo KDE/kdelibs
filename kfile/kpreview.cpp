@@ -30,7 +30,7 @@
 
 #include "kdir.h"
 #include <kapp.h>
-
+#include <klocale.h>
 static void cleanUpHandlers();
 static void initHandlers();
 

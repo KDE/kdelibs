@@ -28,6 +28,7 @@
 #include <qradiobutton.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kbuttonbox.h>
 #include <kckey.h>
 

@@ -17,6 +17,7 @@
 #include "debug.h"
 #endif
 #include <kapp.h>
+#include <klocale.h>
 #include "debug.h"
 
 extern "C" {

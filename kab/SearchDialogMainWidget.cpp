@@ -13,7 +13,9 @@
 
 #include "SearchDialogMainWidget.h"
 #include <qtooltip.h>
-#include "debug.h" // includes kapp.h
+#include "debug.h"
+#include <klocale.h>
+#include <kapp.h> // includes kapp.h
 
 SearchDialogMainWidget::SearchDialogMainWidget(QWidget* parent, const char* name)
   : SearchDialogMainWidgetData(parent, name)

@@ -33,6 +33,7 @@
 
 #include <kurl.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <kwm.h>
 #include <qmsgbox.h>
 

@@ -8,6 +8,8 @@
 #include "StringListEditWidget.h"
 #include <kiconloader.h>
 #include "debug.h"
+#include <kapp.h>
+#include <klocale.h>
 
 // the bitmaps
 #include "arrow_up.xbm"

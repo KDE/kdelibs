@@ -53,6 +53,7 @@
 #include "text.xbm"
 #include "select.xbm"
 #include <kapp.h>
+#include <klocale.h>
 
 const unsigned int AddressWidget::Grid=3;
 const unsigned int AddressWidget::ButtonSize=24;

@@ -35,14 +35,15 @@
 
 class KIconLoader;
 class KCharsets;
+class KLocale;
 
-#include <drag.h>
+typedef unsigned long Atom; 
 
 #include <qapplication.h>
-#include <qfile.h>
-#include <qpopupmenu.h>
-#include <qstrlist.h>
-#include <klocale.h>
+#include <qpixmap.h>
+class QPopupMenu;
+class QStrList;
+class KDNDDropZone;
 
 #define kapp KApplication::getKApplication()
 
@@ -721,6 +722,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.66  1999/04/12 16:47:15  ssk
+// Wrote and updated some documentation.
+//
 // Revision 1.65  1999/03/04 17:49:08  ettrich
 // more fixes for Qt-2.0
 //

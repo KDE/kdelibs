@@ -4,7 +4,7 @@
 #include <qmessagebox.h>
 
 #include <kapp.h>
-
+#include <klocale.h>
 QString kioErrorString( int _errid, const char *_errortext )
 {
   QString result;

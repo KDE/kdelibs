@@ -2,7 +2,7 @@
 #include <qstrlist.h>
 
 #include <kapp.h>
-
+#include <klocale.h>
 #include "kspelldlg.moc"
 #include "version.h"
 

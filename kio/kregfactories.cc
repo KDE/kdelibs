@@ -6,7 +6,7 @@
 #include <qmessagebox.h>
 
 #include <kapp.h>
-
+#include <klocale.h>
 /**************************************************
  *
  * KMimeTypeEntry
