@@ -121,6 +121,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     }
     else { // just a normal XML document
 	// ### parse the xml for processing instructions containing style sheet info
+	if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
 	authorStyle = new CSSStyleSelectorList();
     }
 }

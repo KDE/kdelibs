@@ -103,6 +103,7 @@ public:
 
     virtual ElementImpl *createElement ( const DOMString &tagName );
     virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
+    virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
 
     DocumentFragmentImpl *createDocumentFragment ();
 
@@ -256,6 +257,7 @@ public:
     virtual NamedNodeMapImpl *entities() const;
     virtual NamedNodeMapImpl *notations() const;
     virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
 
     NamedEntityMapImpl *m_entities;
 /*    QDict<EntityImpl> m_dict;

@@ -88,7 +88,6 @@ public:
     void setOnload( const QString &script ) { onloadScript = script; }
     void setOnunload( const QString &script ) { onUnloadScript = script; }
     virtual ElementImpl *createElement ( const DOMString &tagName );
-    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
 
 signals:
     void finishedParsing();

@@ -64,6 +64,9 @@ public:
 
     bool fatalError( const QXmlParseException& exception );
 
+    unsigned long errorLine;
+    unsigned long errorCol;
+
 private:
     QString errorProt;
     DOM::DocumentImpl *m_doc;
