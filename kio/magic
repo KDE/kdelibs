@@ -93,6 +93,17 @@
 0       belong          0xfffb          audio/x-mp3
 
 #------------------------------------------------------------------------------
+# KSysV stuff: logfiles and packages belonging to KSysV
+#
+
+# KSysV logfiles
+0	string		KDE System V Init Editor	text/x-ksysv-log
+
+# KSysV init packages
+4	string	KSysV
+>15	byte	>0x01	application/x-ksysv-package
+
+#------------------------------------------------------------------------------
 # c-lang:  file(1) magic for C programs or various scripts
 #
 
