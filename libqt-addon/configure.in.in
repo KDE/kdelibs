@@ -75,4 +75,4 @@ AC_CHECK_LIB(idn, idna_to_ascii_4i, [
 AC_CHECK_HEADERS([idna.h punycode.h stringprep.h])
 AC_SUBST(LIB_IDN)
 
-KDE_INIT_DOXYGEN([The QtAddon Reference], [Version $VERSION])
+# KDE_INIT_DOXYGEN([The QtAddon Reference], [Version $VERSION])
