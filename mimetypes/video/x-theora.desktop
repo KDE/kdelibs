@@ -3,6 +3,5 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=video/x-theora
 Icon=video
-Patterns=*.ogg;*.OGG;
 X-KDE-IsAlso=application/ogg
 Comment=Theora Video
