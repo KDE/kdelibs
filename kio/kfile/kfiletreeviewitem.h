@@ -34,7 +34,9 @@ class KFileTreeBranch;
 class KFileTreeItem;
 
 
-
+/**
+ * An item for @ref a KFileTreeView that knows about its own @ref KFileItem.
+ */
 class KFileTreeViewItem : public KListViewItem
 {
 public:
