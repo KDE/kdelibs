@@ -164,6 +164,9 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
 bool KonfUpdate::updateFile(const QString &filename)
 {
    currentFilename = filename;
+   int i = currentFilename.findRev('/');
+   if (i != -1) 
+       currentFilename = currentFilename.mid(i+1);
    skip = true;
    QFile file(filename);
    if (!file.open(IO_ReadOnly))
@@ -212,8 +215,10 @@ bool KonfUpdate::updateFile(const QString &filename)
   
    struct stat buff;
    stat( QFile::encodeName(filename), &buff);
+   config->setGroup(currentFilename);
    config->writeEntry("ctime", buff.st_ctime);
    config->writeEntry("mtime", buff.st_mtime);
+   config->sync();
    return true;
 }
 
