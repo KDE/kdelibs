@@ -90,6 +90,7 @@ protected:
   QPushButton *b5;
   QPushButton *b6;
   QPushButton *b7;
+  QPushButton *b8; //why isn't it an array 
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout; // ### doesn't need to be here
 
@@ -107,6 +108,7 @@ public slots:
   void b5Pressed();
   void b6Pressed();
   void b7Pressed();
+  void b8Pressed();
 
 protected slots:
   void enableRenameButton(const QString &);

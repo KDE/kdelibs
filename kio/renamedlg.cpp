@@ -35,6 +35,7 @@
 #include <kmimetype.h>
 #include <kwin.h>
 #include <kstringhandler.h>
+#include <qfileinfo.h>
 
 using namespace KIO;
 
@@ -61,7 +62,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   src = _src;
   dest = _dest;
 
-  b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;
+  b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = 0L;
 
   setCaption( _caption );
 
@@ -71,6 +72,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   if ( ! (_mode & M_NORENAME ) ) {
       b1 = new QPushButton( i18n( "Rename" ), this );
       b1->setEnabled(false);
+      b8 = new QPushButton( i18n( "Propose" ), this );
+      connect(b8, SIGNAL(clicked()), this, SLOT(b8Pressed()));
       connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
   }
 
@@ -135,6 +138,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
           QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeDest) ), this );
           gridLayout->addWidget( lb, row, 1 );
           row++;
+
       }
       if ( ctimeDest != (time_t)-1 )
       {
@@ -212,6 +216,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
   if ( b1 )
     layout->addWidget( b1 );
+  if( b8 )
+    layout->addWidget( b8 );
   if ( b2 )
     layout->addWidget( b2 );
   if ( b3 )
@@ -225,6 +231,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   if ( b7 )
     layout->addWidget( b7 );
 
+
   b0->setDefault( true );
   layout->addWidget( b0 );
 
@@ -233,6 +240,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
 RenameDlg::~RenameDlg()
 {
+  // no need to delete Pushbuttons,... qt will do this
 }
 
 void RenameDlg::enableRenameButton(const QString &newDest)
@@ -272,6 +280,47 @@ void RenameDlg::b1Pressed()
   }
 
   done( 1 );
+}
+// Propose
+void RenameDlg::b8Pressed()
+{
+  int pos; 
+  if ( m_pLineEdit->text().isEmpty() )
+    return;
+  QString basename, suffix, tmp;
+  QFileInfo info ( m_pLineEdit->text() );
+  basename = info.baseName();
+  suffix = info.extension();
+  pos = basename.findRev('_' );
+  if(pos != -1 ) 
+  {
+    bool ok;
+    tmp = basename.right( basename.length() - (pos + 1) );
+    int number = tmp.toInt( &ok, 10 );
+    if ( !ok ) // ok there is no number 
+    {
+      basename.append("_1" );
+      m_pLineEdit->setText(basename + "." + suffix );
+      b1Pressed(); // prepended now  'click' rename
+      return;
+    } 
+    else 
+    { // yes there's allready a number behind the _ so increment it by one
+      QString tmp2 = QString::number ( number + 1 );
+      basename.replace( pos+1, tmp.length() ,tmp2);
+      m_pLineEdit->setText( basename + "." + suffix );
+      //b1Pressed();
+      return;
+    }  
+  } 
+  else // no underscore yet
+  {
+    m_pLineEdit->setText( basename + "_1." + suffix );
+    //b1Pressed();
+    return;
+  
+  }
+  return; // we should never return from here jic
 }
 
 void RenameDlg::b2Pressed()
