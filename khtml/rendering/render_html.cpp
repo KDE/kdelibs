@@ -78,7 +78,14 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     int bh = QMAX(h + marginTop() + marginBottom() + borderTop() + borderBottom(), parent()->height());
 
     if(c.isValid()) {
-	p->fillRect(bx, by, bw, bh, c);
+	int my = QMAX(by,_y);
+	int mh;
+	if (by<_y)
+	    mh=QMAX(0,bh-(_y-by));
+	else
+	    mh = QMIN(_h,bh);
+
+	p->fillRect(bx, my, bw, mh, c);
     }
 
     if(bg) {
