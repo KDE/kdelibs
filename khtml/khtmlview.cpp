@@ -1051,7 +1051,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	{
 		// type-ahead find aka find-as-you-type
 		QString status;
-		if(_ke->key() >= Key_Space && _ke->key() <= Key_AsciiTilde)
+		if(_ke->key() >= Key_Space && _ke->key() < Key_Escape)
 		{
 			QString newFindString = d->findString + _ke->text();
 			if(d->findLinksOnly)
