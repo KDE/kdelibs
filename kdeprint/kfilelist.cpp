@@ -38,7 +38,8 @@
 KFileList::KFileList(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
-	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to let you"
+	QString whatsThisAddFileButton = i18n(  " <qt> <b>Add File button</b>"
+                                                " <p>This button calls the \"File Open\" dialog to let you"
 						" select a file for printing. Note, that "
 						" <ul><li>you can select ASCII or International Text, PDF,"
 						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
@@ -49,23 +50,27 @@ KFileList::KFileList(QWidget *parent, const char *name)
 						" </ul>"
 					        " </qt>" );
 
-	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
+	QString whatsThisRemoveFileButton = i18n(" <qt> <b>Remove File button</b>"
+                                                " <p>This button removes the highlighted file from the"
 						" list of to-be-printed files."
 					        " </qt>" );
 
-	QString whatsThisMoveFileUpButton = i18n(" <qt> <p>This button moves the highlighted file up in the list"
+	QString whatsThisMoveFileUpButton = i18n(" <qt> <b>Move File Up button</b>"
+                                                " <p>This button moves the highlighted file up in the list"
 						" of files to be printed.</p>"
 						" <p>In effect, this changes the order"
 						" of the files' printout.</p>"
 					        " </qt>" );
 
-	QString whatsThisMoveFileDownButton = i18n(" <qt> <p>This button moves the highlighted file down in the list"
+	QString whatsThisMoveFileDownButton = i18n(" <qt> <b>Move File Down button</b>"
+                                                " <p>This button moves the highlighted file down in the list"
 						" of files to be printed.</p>"
 						" <p>In effect, this changes the order"
 						" of the files' printout.</p>"
 					        " </qt>" );
 
-	QString whatsThisOpenFileButton = i18n( " <qt> <p>This button tries to open the highlighted file, so"
+	QString whatsThisOpenFileButton = i18n( " <qt> <b>File Open button</b>"
+                                                " <p>This button tries to open the highlighted file, so"
 						" you can view or edit it before you send it to the printing"
 						" system.</p>"
 						" <p>If you open"
@@ -73,12 +78,14 @@ KFileList::KFileList(QWidget *parent, const char *name)
 						" the file.</p>"
 					        " </qt>" );
 
-	QString whatsThisFileSelectionListview = i18n( " <qt><p>This list displays all the files you selected for printing."
+	QString whatsThisFileSelectionListview = i18n( " <qt> <b>File List view</b>"
+                                                " <p>This list displays all the files you selected for printing."
 						" You can see the file name(s), file path(s) and the file"
-						" (MIME) type(s) as determined by KDEPrint. The initial order of the list is"
-						" the order of your initial selection.</p>"
-						" <p>The list will be printed"
-						" in the same order as displayed finally.</p>"
+						" (MIME) type(s) as determined by KDEPrint. You may re-arrange the "
+						" initial order of the list "
+						" with the help of the arrow buttons on the right.</p>"
+						" <p>The files will be printed as a single job,"
+						" in the same order as displayed in the list.</p>"
 						" <p><b>Note:</b> You can select multiple files. The files may be in multiple"
 						" locations. The files may be of multiple MIME types. The buttons on the right"
 						" side let you add more files, remove already selected files from the list, "
