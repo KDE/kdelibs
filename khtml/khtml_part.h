@@ -140,7 +140,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::RenderPartObject;
   friend class KJS::Window;
   friend class KJS::WindowFunc;
-  friend class KJS::JSEventListener;
+  friend class KJSProxy;
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;
   friend class DOM::DocumentImpl;
