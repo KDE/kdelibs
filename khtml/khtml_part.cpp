@@ -2473,8 +2473,6 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
                               const QStringList &params, bool isIFrame )
 {
 //  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
-  if (url.isEmpty())
-    return false;
   FrameIt it = d->m_frames.find( frameName );
   if ( it == d->m_frames.end() )
   {
@@ -2533,7 +2531,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     return false;
   if ( child->m_bPreloaded )
   {
-//      kdDebug(6005) << "requestObject preload" << endl;
+    //kdDebug(6005) << "requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -2553,6 +2551,10 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_serviceName = QString::null;
   if (!m_url.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = m_url.url();
+
+  // Support for <frame url="">
+  if (url.isEmpty() && args.serviceType.isEmpty())
+    args.serviceType = QString::fromLatin1( "text/html" );
 
   if ( args.serviceType.isEmpty() ) {
     child->m_run = new KHTMLRun( this, child, url, child->m_args,
@@ -2693,7 +2695,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       p->end();
       return true;
   }
-  else {
+  else if ( !url.isEmpty() )
+  {
       //kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
       return child->m_part->openURL( url );
   }
