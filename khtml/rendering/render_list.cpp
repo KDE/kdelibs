@@ -265,6 +265,10 @@ RenderListMarker::~RenderListMarker()
 
 void RenderListMarker::setStyle(RenderStyle *s)
 {
+    if ( s && style() && s->listStylePosition() != style()->listStylePosition() ) {
+	setLayouted( false );
+	setMinMaxKnown( false );
+    }
     RenderBox::setStyle(s);
 
     if ( m_listImage != style()->listStyleImage() ) {
