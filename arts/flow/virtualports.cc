@@ -319,6 +319,27 @@ void VPort::devirtualize(VPort *forward)
 	}
 }
 
+void VPort::setFloatValue(float value)
+{
+	if(outgoing.empty())
+	{
+		AudioPort *aport = port->audioPort();
+		assert(aport);
+		aport->setFloatValue(value);
+	}
+	else
+	{
+		list<VPortConnection *>::iterator i;
+		for(i=outgoing.begin();i != outgoing.end(); i++)
+		{
+			VPortConnection *conn = *i;
+			assert(conn->style == VPortConnection::vcMasquerade);
+
+			conn->dest->setFloatValue(value);
+		}
+	}
+}
+
 void VPort::connect(VPort *dest)
 {
 	VPortConnection *conn;

@@ -61,6 +61,8 @@ public:
 	VPort(Port *p);
 	~VPort();
 
+	void setFloatValue(float value);
+
 	void connect(VPort *vport);
 	void disconnect(VPort *port);
 
