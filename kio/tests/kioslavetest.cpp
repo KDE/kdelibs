@@ -293,19 +293,20 @@ void KioslaveTest::startJob() {
 }
 
 
-void KioslaveTest::slotResult( KIO::Job * job )
+void KioslaveTest::slotResult( KIO::Job * _job )
 {
-  if ( job->error() )
+  if ( _job->error() )
   {
-    job->showErrorDialog();
+    _job->showErrorDialog();
   }
   else if ( selectedOperation == Stat )
   {
-      UDSEntry entry = ((KIO::StatJob*)job)->statResult();
+      UDSEntry entry = ((KIO::StatJob*)_job)->statResult();
       printUDSEntry( entry );
   }
 
-  job = 0L;
+  if (job == _job)
+     job = 0L;
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
 }
