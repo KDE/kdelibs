@@ -127,17 +127,32 @@ QString Field::value( const KABC::Addressee &a )
       return a.url().prettyURL();
     case FieldImpl::HomePhone:
     {
-      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home );
+      // check for preferred number
+      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home | PhoneNumber::Pref );
       PhoneNumber::List::Iterator it;
       for ( it = list.begin(); it != list.end(); ++it )
         if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
           return (*it).number();
+
+      // check for normal home number
+      list = a.phoneNumbers( PhoneNumber::Home );
+      for ( it = list.begin(); it != list.end(); ++it )
+        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
+          return (*it).number();
+
       return QString::null;
     }
     case FieldImpl::BusinessPhone:
     {
-      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work );
+      // check for preferred number
+      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work | PhoneNumber::Pref );
       PhoneNumber::List::Iterator it;
+      for ( it = list.begin(); it != list.end(); ++it )
+        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
+          return (*it).number();
+
+      // check for normal work number
+      list = a.phoneNumbers( PhoneNumber::Work );
       for ( it = list.begin(); it != list.end(); ++it )
         if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
           return (*it).number();
