@@ -2966,7 +2966,7 @@ bool HTTPProtocol::readHeader()
         if (*pos)
         {
           mediaAttribute = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
-          mediaValue = QString::fromLatin1(++pos, end-pos).stripWhiteSpace();
+          mediaValue = QString::fromLatin1(pos+1, end-pos-1).stripWhiteSpace();
 	  pos = end;
           if (mediaValue.length() &&
               (mediaValue[0] == '"') &&
