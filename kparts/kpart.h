@@ -15,7 +15,7 @@ class KPart : public QWidget
 {
     Q_OBJECT
 public:
-    KPart( QWidget* parent = 0, const char* name = 0 );
+    KPart( QWidget *parent = 0, const char* name = 0 );
     ~KPart();
 
     QString config();
@@ -24,6 +24,14 @@ public:
     QActionCollection* actionCollection();
 
     virtual KPlugin* plugin( const char* libname );
+
+    /**
+     * Note that you have to recreate the returned widget in order to insert it into your widget hierarchy.
+     * Also note that the KPart is still the holder of the QWidget, meaning that if you delete the KPart,
+     * then the widget gets destroyed aswell.
+     */
+    // TODO: need to fix KPartManager to obey widget()
+    //    virtual QWidget *widget() = 0;
 
 protected:
     virtual QString configFile() const = 0;

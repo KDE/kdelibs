@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 KPart::KPart( QWidget* parent, const char* name )
-    : QWidget( parent, name )
+    : QWidget( parent, name ), m_collection( this )
 {
 }
 
@@ -173,16 +173,20 @@ KPartGUIServant::KPartGUIServant( KPart *part )
 
 QAction *KPartGUIServant::action( const QDomElement &element )
 {
-  if ( element.tagName() == "Action" )
-   return m_part->action( element.attribute( "name" ) );
-  else if ( element.tagName() == "PluginAction" )
-  {
-    KPlugin *plugin = m_part->plugin( element.attribute( "plugin" ) );
-    if ( plugin )
-      return plugin->action( element.attribute( "name" ) );
-  }
+  QString pluginAttr = element.attribute( "plugin" );
+  QString name = element.attribute( "name" );
 
-  return 0;
+  if ( !pluginAttr.isEmpty() )
+  {
+    KPlugin *plugin = m_part->plugin( pluginAttr );
+
+    if ( !plugin )
+      return 0;
+
+    return plugin->action( name );
+  }
+ 
+  return m_part->action( name );
 }
 
 QString KPartGUIServant::xml()

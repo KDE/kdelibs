@@ -1,6 +1,25 @@
 
 #include "kxmlgui.h"
 
+#include <qfile.h>
+
+QString KXMLGUIFactory::readConfigFile( const QString &filename )
+{
+  QFile file( filename );
+  if ( !file.open( IO_ReadOnly ) )
+    return QString::null;
+
+  uint size = file.size();
+  char* buffer = new char[ size + 1 ];
+  file.readBlock( buffer, size );
+  buffer[ size ] = 0;
+  file.close();
+
+  QString text = QString::fromUtf8( buffer, size );
+  delete[] buffer;
+
+  return text;
+}
 
 void KXMLGUIFactory::createGUI( KXMLGUIShellServant *shell, KXMLGUIServant *part )
 {
@@ -37,17 +56,46 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIShe
   QDomElement e = servantElement.firstChild().toElement();
   for (; !e.isNull(); e = e.nextSibling().toElement() )
   {
-    qDebug( "parsing tag %s", e.tagName().ascii() );
+    qDebug( "parsing tag %s with possible name %s", e.tagName().ascii(), e.attribute( "name" ).ascii() );
     if ( e.tagName() == "Part" && servant == shellServant )
     {
-      buildRecursive( QDomElement(), shellServant, e, partServant, parent );
+      QDomElement p;
+
+      QDomElement shellParent = e.parentNode().toElement();
+      QDomElement partParent = partElement.parentNode().toElement();
+
+      if ( !shellParent.attribute( "name" ).isEmpty() )
+      {
+        QDomElement i = partParent.firstChild().toElement();
+        for (; !i.isNull(); i = i.nextSibling().toElement() )
+          if ( i.attribute( "name" ) == shellParent.attribute( "name" ) )
+  	  {
+	    p = i;
+	    break;
+          }
+      }
+      else
+      {
+	QDomElement i = partParent.firstChild().toElement();
+	for (; !i.isNull(); i = i.nextSibling().toElement() )
+	  if ( i.tagName() == shellParent.tagName() )
+	  {
+	    p = i;
+	    break;
+	  }
+      }
+
+      buildRecursive( QDomElement(), shellServant, p, partServant, parent );
     }
-    else if ( e.tagName() == "Action" || e.tagName() == "PluginAction" )
+    else if ( e.tagName() == "Action" )
     {
       QAction *action = servant->action( e );
      
       if ( action && parent && parent->inherits( "QWidget" ) )
         action->plug( (QWidget *)parent );
+
+      if ( !action )
+        qDebug( "cannot find action %s", e.attribute( "name" ).ascii() );
 
     }
     else

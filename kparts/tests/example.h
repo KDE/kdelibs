@@ -6,14 +6,15 @@
 #include <kshell.h>
 #include <kpartmanager.h>
 
+class QVBox;
 class QSplitter;
 class QMultiLineEdit;
 
-class Shell : public KShell
+class Shell : public KTMainWindow
 {
   Q_OBJECT
 public:
-  Shell( KReadOnlyPart *part1, KPart *part2 );
+  Shell();
   virtual ~Shell();
 
 protected slots:
@@ -22,7 +23,6 @@ protected slots:
   void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:
-  virtual QString config() const;
   virtual void resizeEvent( QResizeEvent * );
   
 private:
@@ -30,6 +30,7 @@ private:
   KPart *m_part2;
   KPartManager *m_manager;
   QSplitter *m_splitter;
+  KTMainWindowGUIServant *m_servant;
 };
 
 class Part1 : public KReadOnlyPart
@@ -38,12 +39,16 @@ class Part1 : public KReadOnlyPart
 public:
   Part1();
   virtual ~Part1();
+
+  //  virtual QWidget *widget();
+
 protected:
   virtual bool openFile();
 
 protected:
   virtual QString configFile() const;
   QMultiLineEdit * m_edit;
+  //  QVBox *m_box;
 };
 
 class Part2 : public KPart
@@ -53,8 +58,12 @@ public:
   Part2();
   virtual ~Part2();
 
+  //  virtual QWidget *widget();
+
 protected:
   virtual QString configFile() const;
+
+  //  QWidget *m_widget;
 };
 
 #endif

@@ -40,6 +40,8 @@ class KXMLGUIShellServant : public KXMLGUIServant
 class KXMLGUIFactory
 {
  public:
+  static QString readConfigFile( const QString &filename );
+
   static void createGUI( KXMLGUIShellServant *shell, KXMLGUIServant *part );
 
  private:

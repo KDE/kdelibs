@@ -7,20 +7,30 @@
 #include <qdir.h>
 #include <qtextstream.h>
 #include <qmultilinedit.h>
+#include <qvbox.h>
 
 #include <kapp.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
 
-Shell::Shell( KReadOnlyPart *part1, KPart *part2 )
+Shell::Shell()
 {
-  m_part1 = part1;
-  m_part2 = part2;
+  m_servant = new KTMainWindowGUIServant( this );
 
-  (void)new KAction( i18n( "&Open local file" ), 0, this, SLOT( slotFileOpen() ), actionCollection(), "open_local_file" );
-  (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), actionCollection(), "open_remote_file" );
-  (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "shell_quit" );
+  m_servant->setXML( KXMLGUIFactory::readConfigFile( "example_shell.rc" ) );
+
+  m_part1 = new Part1();
+  m_part2 = new Part2();
+
+  QActionCollection *coll = m_servant->actionCollection();
+
+  (void)new KAction( i18n( "&Open local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
+
+  (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
+  (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
 
   m_manager = new KPartManager( this );
 
@@ -39,7 +49,7 @@ Shell::Shell( KReadOnlyPart *part1, KPart *part2 )
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
 
-  setActivePart( m_part1 );
+  slotActivePartChanged( m_part1, 0 );
 }
 
 Shell::~Shell()
@@ -62,13 +72,23 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
 {
   if ( newPart && oldPart )
     qDebug( "%s -> %s", newPart->name(), oldPart->name() );
-  if ( newPart )
-    setActivePart( newPart );
-}
 
-QString Shell::config() const
-{
-  return readConfigFile( "example_shell.rc" );
+  setUpdatesEnabled( false );
+
+  m_servant->clearGUI();
+
+  if ( newPart )
+  {
+    KPartGUIServant partServant( newPart );
+    KXMLGUIFactory::createGUI( m_servant, &partServant );
+  }
+  else
+  {
+    KNullGUIServant nullServant;
+    KXMLGUIFactory::createGUI( m_servant, &nullServant );
+  }
+
+  setUpdatesEnabled( true );
 }
 
 void Shell::resizeEvent( QResizeEvent * )
@@ -79,15 +99,23 @@ void Shell::resizeEvent( QResizeEvent * )
 Part1::Part1()
  : KReadOnlyPart( 0, "Part1" )
 {
-  QBoxLayout * box = new QBoxLayout(this, QBoxLayout::TopToBottom);
-  m_edit = new QMultiLineEdit(this);
+  //  m_box = new QVBox;
+  QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
+  m_edit = new QMultiLineEdit( this );
   box->addWidget( m_edit );
+
+  (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
 }
 
 Part1::~Part1()
 {
 }
-
+/*
+QWidget *Part1::widget()
+{
+  return m_box;
+}
+*/
 bool Part1::openFile()
 {
   debug("Part1: opening %s", m_file.ascii());
@@ -103,23 +131,33 @@ bool Part1::openFile()
   }
   m_edit->setText(s);
   // can a part set the caption ? setCaption(m_url); // what the user sees is m_url
+
+  // HA! That's exactly what I meant in the two kde-core-devel discussions ;-)
+  // We need support for caption stuff in KInstance, in order to make libkparts support it.
   return true;
 }
 
 QString Part1::configFile() const
 {
-  return QString::null;
+  return KXMLGUIFactory::readConfigFile( "part1.rc" );
 }
 
 Part2::Part2()
  : KPart( 0, "Part2" )
 {
+  //  m_widget = new QWidget;
+
 }
 
 Part2::~Part2()
 {
 }
-
+/*
+QWidget *Part2::widget()
+{
+  return m_widget;
+}
+*/
 QString Part2::configFile() const
 {
   return QString::null;
@@ -129,10 +167,7 @@ int main( int argc, char **argv )
 {
   KApplication app( argc, argv, "example" );
   
-  KReadOnlyPart *part1 = new Part1;
-  KPart *part2 = new Part2;
-  
-  Shell *shell = new Shell( part1, part2 );
+  Shell *shell = new Shell;
   
   shell->show();
   

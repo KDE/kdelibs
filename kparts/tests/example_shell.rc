@@ -4,7 +4,21 @@
   <Menu name="File"><text>File</text>
    <Action name="open_local_file"/>
    <Action name="open_remote_file"/>
+   <Separator/>
+   <Part/>
+   <Separator/>
    <Action name="shell_quit"/>
   </Menu>
+  <Part/>
+  <Menu name="Blah"><text>BlahFoo</text>
+   <Action name="shell_yami"/>
+   <Menu name="nonsense"><text>Dummdidumm</text>
+    <Action name="shell_yasmi"/>
+   </Menu>
+  </Menu>
 </MenuBar>
+<ToolBar>
+ <Action name="shell_quit"/>
+</ToolBar>
+<Part/>
 </kpartgui>
