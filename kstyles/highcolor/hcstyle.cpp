@@ -287,6 +287,14 @@ void HCStyle::polish(QWidget *w)
     if(w->isTopLevel())
         return;
 
+    if(w->inherits("QPushButton")){
+        w->installEventFilter(this);
+        QPalette pal = w->palette();
+        // we use this as a flag since it's otherwise unused.
+        pal.setColor(QColorGroup::Highlight, Qt::black);
+        w->setPalette(pal);
+
+    }
     if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::NoBackground);
         return;
@@ -312,6 +320,14 @@ void HCStyle::unPolish(QWidget *w)
     if (w->isTopLevel())
         return;
 
+    if(w->inherits("QPushButton")){
+        w->removeEventFilter(this);
+        QPalette pal = w->palette();
+        pal.setColor(QColorGroup::Highlight,
+                     kapp->palette().active().color(QColorGroup::Highlight));
+        w->setPalette(pal);
+
+    }
     if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::PaletteBackground);
         return;
@@ -335,26 +351,50 @@ void HCStyle::unPolish(QWidget *w)
 
 bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
 {
-    if(ev->type() == QEvent::Resize){
-        // must be a toolbar resize
-        QObjectList *tbChildList = obj->queryList("KToolBarButton", NULL,
-                                                  false, false);
-        QObjectListIt it(*tbChildList);
-        QObject *child;
-        while((child = it.current()) != NULL){
-            ++it;
-            if(child->isWidgetType())
-                ((QWidget *)child)->repaint(false);
+    if(obj->inherits("KToolBar")){
+        if(ev->type() == QEvent::Resize){
+            QObjectList *tbChildList = obj->queryList("KToolBarButton", NULL,
+                                                      false, false);
+            QObjectListIt it(*tbChildList);
+            QObject *child;
+            while((child = it.current()) != NULL){
+                ++it;
+                if(child->isWidgetType())
+                    ((QWidget *)child)->repaint(false);
+            }
+        }
+    }
+    else if(obj->inherits("QPushButton")){
+        if(ev->type() == QEvent::Enter){
+            QWidget *btn = (QWidget *)obj;
+            if (btn->isEnabled()){
+                QPalette pal = btn->palette();
+                pal.setColor(QColorGroup::Highlight,
+                             pal.active().color(QColorGroup::Midlight));
+                btn->setPalette(pal);
+                btn->repaint(false);
+            }
+        }
+        else if(ev->type() == QEvent::Leave){
+            QWidget *btn = (QWidget *)obj;
+            QPalette pal = btn->palette();
+            pal.setColor(QColorGroup::Highlight, Qt::black);
+            btn->setPalette(pal);
+            btn->repaint(false);
         }
     }
     return(false);
 }
 
 void HCStyle::drawButton(QPainter *p, int x, int y, int w, int h,
-                            const QColorGroup &g, bool sunken,
-                            const QBrush *fill)
+                         const QColorGroup &g, bool sunken,
+                         const QBrush *fill)
 {
-    if(vSmall){
+    if(g.highlight() != Qt::black){
+        kDrawBeButton(p, x, y, w, h, g, sunken,
+                      &g.brush(QColorGroup::Midlight));
+    }
+    else if(vSmall){
         int x2 = x+w-1;
         int y2 = y+h-1;
         p->setPen(g.dark());
@@ -398,10 +438,11 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
     bool sunken = btn->isOn() || btn->isDown();
     QColorGroup g = btn->colorGroup();
     
-    drawButton(p, r.x(), r.y(), r.width(), r.height(), g,
-               sunken, sunken ? &g.brush(QColorGroup::Mid) :
-               btn->isDefault() ? &g.brush(QColorGroup::Midlight) :
-               &g.brush(QColorGroup::Button));
+    if(sunken)
+        kDrawBeButton(p, r.x(), r.y(), r.width(), r.height(), g, true,
+                      &g.brush(QColorGroup::Mid));
+    else
+        drawButton(p, r.x(), r.y(), r.width(), r.height(), g, false);
     if(btn->isDefault()){
         p->setPen(Qt::black);
         p->drawLine(r.x()+1, r.y(), r.right()-1, r.y());
@@ -1053,42 +1094,41 @@ int HCStyle::sliderLength() const
     return(18);
 }
 
+#define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
+
 void HCStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
-    static QBitmap up(8, 8, up_bits, true);
-    static QBitmap down(8, 8, down_bits, true);
-    static QBitmap left(8, 8, left_bits, true);
-    static QBitmap right(8, 8, right_bits, true);
-
-    if(!up.mask()){
-        up.setMask(up);
-        down.setMask(down);
-        left.setMask(left);
-        right.setMask(right);
-    }
+    static QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
+    static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
+    static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
+    static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
     
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;
     }
+
+    QPointArray a;
     switch(type){
     case Qt::UpArrow:
-        p->drawPixmap(x, y, up);
+        a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
         break;
     case Qt::DownArrow:
-        p->drawPixmap(x, y, down);
+        a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
         break;
     case Qt::LeftArrow:
-        p->drawPixmap(x, y, left);
+        a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
         break;
     default:
-        p->drawPixmap(x, y, right);
+        a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
         break;
     }
 
+    a.translate(x, y);
+    p->drawLineSegments(a);
 }
 
 void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
