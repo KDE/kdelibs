@@ -864,12 +864,24 @@ bool HTTPProtocol::http_open()
     bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
     if ( sendReferrer )
     {
-      QString referrer = config()->readEntry("referrer");
-      if (!referrer.isEmpty())
+      KURL referrerURL = config()->readEntry("referrer");
+      if (referrerURL.isValid())
       {
-        header += "Referer: ";
-        header += referrer;
-        header += "\r\n"; //Don't try to correct spelling!
+        // Sanitize
+        QString protocol = referrerURL.protocol();
+        
+        if ((protocol == "http") || 
+            ((protocol == "https") && (m_protocol == "https"))
+           )
+        {
+           referrerURL.setRef(QString::null);
+           referrerURL.setUser(QString::null);
+           referrerURL.setPass(QString::null);
+
+           header += "Referer: ";
+           header += referrerURL.url();
+           header += "\r\n"; //Don't try to correct spelling!
+        }
       }
     }
 
