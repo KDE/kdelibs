@@ -276,8 +276,8 @@ void PillBoxStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
     else{
         x += 3;
         y += 2;
-        w = 8;
-        h = 9;
+        w = 9;
+        h = 5;
     }
     drawLightShadeRect(p, x, y, w, h, g, &g.brush(QColorGroup::Mid));
 }
