@@ -1,3 +1,4 @@
+#BEGIN $Id$
 AC_CHECK_HEADERS(sys/acl.h, [ACL_H="1"], [ACL_H=""])
 AC_CHECK_FUNC(acl_get_tag_type, [ACL_FUNC=1], [
 		AC_CHECK_LIB(posix1e, acl_get_tag_type, [
@@ -10,4 +11,4 @@ AC_CHECK_FUNC(acl_get_tag_type, [ACL_FUNC=1], [
 	])
 AC_SUBST(LIBPOSIX1E)
 AM_CONDITIONAL(USE_POSIX_ACL, [test -n "$ACL_H" -a "$ACL_FUNC"])
-
+#END $Id$
