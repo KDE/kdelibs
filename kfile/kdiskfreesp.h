@@ -61,6 +61,11 @@ public:
 
 signals:
    void foundMountPoint( const QString & mountPoint, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
+
+   // This one is a hack around a weird (compiler?) bug. In the former signal,
+   // the slot in KPropsDlg would get 0L, 0L as the last two parameters.
+   // When using const ulong& instead, all is ok.
+   void foundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& );
    void done();
 
 private slots:

@@ -376,9 +376,13 @@ protected slots:
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
   void slotDirSizeFinished( KIO::Job * );
-  void slotFoundMountPoint( const QString & mp, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
+  void slotFoundMountPoint( const QString& mp, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
   void slotSizeStop();
   void slotSizeDetermine();
+
+private slots:
+  // workaround for compiler bug
+void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& kBUsed, const unsigned long& kBAvail, const QString& mp );
 
 private:
 

@@ -149,6 +149,7 @@ void KDiskFreeSp::dfDone()
       {
         kdDebug() << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
+        emit foundMountPoint( kBSize, kBUsed, kBAvail, mountPoint ); // sic!
       }
     }//if not header
   }//while further lines available

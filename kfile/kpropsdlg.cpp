@@ -824,8 +824,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
       KDiskFreeSp * job = new KDiskFreeSp;
-      connect( job, SIGNAL( foundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ),
-               this, SLOT( slotFoundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ) );
+      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& ) ) );
       job->readDF( mountPoint );
   }
 
@@ -917,7 +917,17 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
         while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
 }
 
-void KFilePropsPlugin::slotFoundMountPoint( const QString &, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail )
+void KFilePropsPlugin::slotFoundMountPoint( const QString& mp, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail )
+{
+    d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+                               .arg(KIO::convertSizeFromKB(kBAvail))
+                               .arg(KIO::convertSizeFromKB(kBSize))
+                               .arg( (int)(100.0 * kBUsed / kBSize) ) );
+}
+
+// attention: copy&paste below, due to compiler bug
+// it doesn't like those unsigned long parameters -- unsigned long& are ok :-/
+void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& kBUsed, const unsigned long& kBAvail, const QString& mp )
 {
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
                                .arg(KIO::convertSizeFromKB(kBAvail))
