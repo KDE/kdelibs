@@ -28,6 +28,97 @@
 using namespace std;
 using namespace Arts;
 
+/* Since this file is a tad bit more complex, here is some basic documentation:
+
+1) ASyncPort: There are asynchronous ports which are parts of the standard-
+   flowsystem schedule nodes. Their lifetime starts whenever an asynchronous
+   stream gets created by the flow system, and ends when the schedule node
+   gets destroyed. Basically, an ASyncPort has two functions:
+
+   * it is a "Port", which means that it gets connect(), disconnect() and
+     other calls from the flowsystem
+
+   * it is a "GenericDataChannel", which means that DataPackets can interact
+     with it
+
+   Although there will be ASyncPorts which only send data and ASyncPorts which
+   only receive data (there are none that do both), there are no distinct
+   classes for this.
+
+2) Standard case: a DataPacket that gets transported over a datachannel locally:
+
+   1. the user allocates himself a datapacket "packet"
+   2. the user calls "packet->send()", which in turn calls
+      ASyncPort::sendPacket(packet)
+   3. the ASyncPort sends the DataPacket to every subscriber (incrementing the
+      useCount) over the NotificationManager
+   4. the NotificationManager delivers the DataPackets to the receiver
+   5. eventually, the receiver confirms using "packet->processed()"
+   6. the packet informs the ASyncPort::processedPacket()
+   7. the packet is freed
+
+variant (pulling):
+
+   1. the user gets told by the ASyncPort: produce some data, here is a "packet"
+   2. the user calls "packet->send()", which in turn calls
+      ASyncPort::sendPacket(packet)
+   3. the ASyncPort sends the DataPacket to every subscriber (incrementing the
+      useCount) over the NotificationManager
+   4. the NotificationManager delivers the DataPackets to the receiver
+   5. eventually, the receiver confirms using "packet->processed()"
+   6. the packet informs the ASyncPort::processedPacket()
+   7. the ASyncPort restarts with 1.
+
+3) Remote case: the remote case follows from the local case by adding two extra
+things: one object that converts packets from their packet form to a message
+(ASyncNetSend), and one object that converts packets from the message form
+to a packet again. Effectively, the sending of a single packet looks like
+this, then:
+
+   1-S. the user allocates himself a datapacket "packet"
+   2-S. the user calls "packet->send()", which in turn calls
+        ASyncPort::sendPacket(packet)
+   3-S. the ASyncPort sends the DataPacket to every subscriber (incrementing the
+        useCount) over the NotificationManager
+   4-S. the NotificationManager delivers the DataPackets to the ASyncNetSend
+   5-S. the ASyncNetSend::notify method gets called, which in turn converts
+        the packet to a network message
+    
+	... network transfer ...
+   
+   6-R. the ASyncNetReceive::receive method gets called - the method creates
+        a new data packet, and sends it using the NotificationManager again
+   7-R. the NotificationManager delivers the DataPacket to the receiver
+   8-R. eventually, the receiver confirms using "packet->processed()"
+   9-R. the packet informs the ASyncNetReceive::processedPacket() which
+        frees the packet and tells the (remote) sender that it went all right
+
+	... network transfer ...
+ 
+   10-S. eventually, ASyncNetSend::processed() gets called, and confirms
+         the packet using "packet->processed()"
+   11-S. the packet informs the ASyncPort::processedPacket()
+   12-S. the packet is freed
+
+variant(pulling):
+
+   works the same as in the local case by exchanging steps 1-S and 12-S
+
+4) ownership:
+
+   * ASyncPort: is owned by the Object which it is a part of, if the object
+   dies, ASyncPort dies unconditionally
+
+   * DataPacket: is owned by the GenericDataChannel they are propagated over,
+   that is, the ASyncPort normally - however if the DataPacket is still in
+   use (i.e. in state 5 of the local case), it will take responsibility to
+   free itself once all processed() calls have been collected
+
+   * ASyncNetSend, ASyncNetReceive: own each other, so that if the sender dies,
+   the connection will die as well, and if the receiver dies, the same happens
+
+*/
+
 #undef DEBUG_ASYNC_TRANSFER
 
 ASyncPort::ASyncPort(std::string name, void *ptr, long flags,
@@ -51,15 +142,17 @@ ASyncPort::~ASyncPort()
 		sent.pop_front();
 	}
 
-	/*
-	 * disconnect remote connections (if present)
+	/* disconnect remote connections (if present): the following things will
+	 * need to be ensured here, since we are being deleted:
+     *
+	 *  - the senders should not talk to us after our destructor
+	 *  - all of our connections need to be disconnected
+	 *  - every connection needs to be closed exactly once
+     *
+	 * (closing a connection can cause reentrancy due to mcop communication)
 	 */
-
-	// copy list since elements in the original list will be deleted
-	list<ASyncNetSend *> senders = netSenders;
-	list<ASyncNetSend *>::iterator i;
-	for(i = senders.begin(); i != senders.end(); i++)
-		(*i)->disconnect();
+	while(!netSenders.empty())
+		netSenders.front()->disconnect();
 
 	FlowSystemReceiver receiver = netReceiver;
 	if(!receiver.isNull())
@@ -93,16 +186,15 @@ void ASyncPort::endPull()
 void ASyncPort::processedPacket(GenericDataPacket *packet)
 {
 	int count = 0;
-	list<GenericDataPacket *>::iterator i, nexti;
-	for(i=sent.begin(); i != sent.end(); i = nexti)
+	list<GenericDataPacket *>::iterator i = sent.begin();
+	while(i != sent.end())
 	{
-		nexti = i; nexti++;
-
 		if(*i == packet)
 		{
 			count++;
-			sent.erase(i);
+			i = sent.erase(i);
 		}
+		else i++;
 	}
 	assert(count == 1);
 
@@ -275,7 +367,11 @@ ASyncNetSend::~ASyncNetSend()
 		pqueue.front()->processed();
 		pqueue.pop();
 	}
-	ap->removeSendNet(this);
+	if(ap)
+	{
+		ap->removeSendNet(this);
+		ap = 0;
+	}
 }
 
 long ASyncNetSend::notifyID()
@@ -290,10 +386,18 @@ void ASyncNetSend::notify(const Notification& notification)
 	GenericDataPacket *dp = (GenericDataPacket *)notification.data;
 	pqueue.push(dp);
 
-	// put it into a custom data message and send it to the receiver
-	Buffer *buffer = receiver._allocCustomMessage(receiveHandlerID);
-	dp->write(*buffer);
-	receiver._sendCustomMessage(buffer);
+	/*
+	 * since packets are delivered asynchronously, and since disconnection
+	 * involves communication, it might happen that we get a packet without
+	 * actually being connected any longer - in that case, silently forget it
+	 */
+	if(!receiver.isNull())
+	{
+		// put it into a custom data message and send it to the receiver
+		Buffer *buffer = receiver._allocCustomMessage(receiveHandlerID);
+		dp->write(*buffer);
+		receiver._sendCustomMessage(buffer);
+	}
 }
 
 void ASyncNetSend::processed()
@@ -311,12 +415,23 @@ void ASyncNetSend::setReceiver(FlowSystemReceiver newReceiver)
 
 void ASyncNetSend::disconnect()
 {
+	/* since disconnection will cause destruction (most likely immediate),
+	 * we'll reference ourselves ...  */
+	_copy();
+
 	if(!receiver.isNull())
 	{
 		FlowSystemReceiver r = receiver;
 		receiver = FlowSystemReceiver::null();
 		r.disconnect();
 	}
+	if(ap)
+	{
+		ap->removeSendNet(this);
+		ap = 0;
+	}
+	
+	_release();
 }
 
 string ASyncNetSend::dest()
