@@ -57,7 +57,7 @@ FormatFactory::FormatFactory()
   mFormatList.insert( "vcard", info );
 
   QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/formats/*.desktop", true, true );
-  for ( QStringList::iterator it = list.begin(); it != list.end(); ++it )
+  for ( QStringList::ConstIterator it = list.begin(); it != list.end(); ++it )
   {
     KSimpleConfig config( *it, true );
 
