@@ -135,7 +135,7 @@ RenderTable::~RenderTable()
 
 void RenderTable::setStyle(RenderStyle *_style)
 {
-    RenderBox::setStyle(_style);
+    RenderFlow::setStyle(_style);
 
     // init RenderObject attributes
     setInline(style()->display()==INLINE_TABLE);
@@ -1632,7 +1632,7 @@ void RenderTable::updateSize()
 //    setMinMaxKnown(false);
 //    setLayouted(false);
 //    parent()->updateSize();
-     RenderBox::updateSize();
+     RenderFlow::updateSize();
 }
 
 int RenderTable::borderTopExtra()
@@ -1842,7 +1842,7 @@ void RenderTableCell::close()
 
 void RenderTableCell::updateSize()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderBox)::updateSize()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::updateSize()" << endl;
 
     RenderFlow::updateSize();
 
