@@ -92,7 +92,8 @@ public:
 class HTMLOListElementImpl : public HTMLUListElementImpl
 {
 public:
-    HTMLOListElementImpl(DocumentImpl *doc) : HTMLUListElementImpl(doc),_start(1) {}
+    HTMLOListElementImpl(DocumentImpl *doc)
+        : HTMLUListElementImpl(doc) { _start = 1; }
     virtual ~HTMLOListElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -115,7 +116,8 @@ private:
 class HTMLLIElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLLIElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc), isValued(false) {}
+    HTMLLIElementImpl(DocumentImpl *doc)
+        : HTMLElementImpl(doc) { isValued = false; }
     virtual ~HTMLLIElementImpl() {}
 
     virtual const DOMString nodeName() const;

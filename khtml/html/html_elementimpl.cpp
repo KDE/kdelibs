@@ -247,7 +247,7 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
     DocumentFragmentImpl *fragment = new DocumentFragmentImpl( ownerDocument() );
     HTMLTokenizer *tok = new HTMLTokenizer( static_cast<HTMLDocumentImpl *>(ownerDocument()), fragment );
     tok->begin();
-    tok->write( html.string() );
+    tok->write( html.string(), false );
     tok->end();
     delete tok;
 
