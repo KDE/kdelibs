@@ -18,9 +18,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "ksslx509v3.h"
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include "ksslx509v3.h"
 #include <kopenssl.h>
+#include <kdebug.h>
 
 
 KSSLX509V3::KSSLX509V3() {
@@ -38,7 +42,8 @@ KSSLX509V3::~KSSLX509V3() {
 
 bool KSSLX509V3::certTypeCA() {
 #ifdef HAVE_SSL
-	return (flags & (0xffff << 16)) ? true : false;
+	// 65407 == 0xffff xor 64    so we don't include Any Purpose CA
+	return (flags & (65471L << 16)) ? true : false;
 #endif
 	return false;
 }
