@@ -18,7 +18,13 @@ service_DATA = kbyteseditwidget.desktop
 servicedir = $(kde_servicesdir)
 
 # the service type
-include_HEADERS = kbyteseditinterface.h
-
 servicetypedir = $(kde_servicetypesdir)
 servicetype_DATA = kbytesedit.desktop
+
+# the interfaces
+khexeditinclude_HEADERS = byteseditinterface.h \
+                          hexcolumninterface.h textcolumninterface.h \
+                          zoominterface.h clipboardinterface.h
+
+khexeditincludedir = $(includedir)/khexeditor
+
