@@ -2190,7 +2190,7 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   Q_ASSERT ( prev != d->m_stringPortions.end() );
 
   d->m_selectionEnd = (*prev).node;
-  d->m_endOffset = index + length - (*prev).index + 1;
+  d->m_endOffset = index + length - (*prev).index;
   d->m_startBeforeEnd = true;
 
 #if 0
