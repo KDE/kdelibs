@@ -947,8 +947,8 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 /* Source for DOMDOMImplementationProtoTable. Use "make hashtables" to regenerate.
 @begin DOMDOMImplementationProtoTable 5
   hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
-# DOM2
   createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
+# DOM2
   createDocumentType	DOMDOMImplementation::CreateDocumentType	DontDelete|Function 3
   createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function 3
   createHTMLDocument    DOMDOMImplementation::CreateHTMLDocument        DontDelete|Function 1

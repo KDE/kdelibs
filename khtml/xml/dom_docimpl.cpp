@@ -185,11 +185,15 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     return doc;
 }
 
-CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/,
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl *media,
                                                               int &/*exceptioncode*/)
 {
-    // ### implement
-    return 0;
+    // ### TODO : title should be set, and media could have wrong syntax, in which case we should
+	// generate an exception.
+	CSSStyleSheetImpl *parent = 0L;
+	CSSStyleSheetImpl *sheet = new CSSStyleSheetImpl(parent, DOMString());
+	sheet->setMedia(new MediaListImpl(sheet, media));
+	return sheet;
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
