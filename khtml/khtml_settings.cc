@@ -225,8 +225,13 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if ( reset || config->hasKey( "DefaultEncoding" ) ) {
         d->m_encoding = config->readEntry( "DefaultEncoding", "" );
+#if QT_VERSION < 300
         if ( d->m_encoding.isEmpty() )
             d->m_encoding = KGlobal::locale()->charset();
+#else
+        if ( d->m_encoding.isEmpty() )
+            d->m_encoding = KGlobal::locale()->encoding();
+#endif
 
 #if QT_VERSION < 300
         d->m_defaultCharset = KGlobal::charsets()->nameToID( d->m_encoding );
