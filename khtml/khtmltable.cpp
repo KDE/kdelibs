@@ -135,7 +135,7 @@ void HTMLTableCell::calcSize( HTMLClue *parent )
 //-----------------------------------------------------------------------------
 void HTMLRowInfo::newRow()
 {
-//    if( r > 0 )
+//    if( rowCount > 0 )
 //	current = new Row(entry[r-1]->len);
 //    else
 	current = new Row(5);
@@ -150,10 +150,10 @@ void HTMLRowInfo::endRow()
 
     //see if we need a new line
     // remove last rowInfo if duplicated
-    int j;
+    unsigned int j;
     bool exists = false;
     
-    for(j = 0; j < r; j++)
+    for(j = 0; j < rowCount; j++)
     {
 	if(len(j) == current->len)
 	{
@@ -187,17 +187,17 @@ void HTMLRowInfo::endRow()
 	return;
     }
     // add the new row
-    if(r >= alloc)
+    if(rowCount >= alloc)
     {
-	Row **newData = new Row *[r + 5];
-	memcpy( newData, entry, r * sizeof(Row *) );
+	Row **newData = new Row *[rowCount + 5];
+	memcpy( newData, entry, rowCount * sizeof(Row *) );
 	if(entry) delete [] entry;
 	entry = newData;
 	alloc += 5;
     }
-    entry[r] = current;
+    entry[rowCount] = current;
     current = 0;
-    r++;
+    rowCount++;
     printf("finished endRow()\n");
 }
 

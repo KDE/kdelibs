@@ -152,7 +152,7 @@ public:
 
     HTMLRowInfo()
     {
-	r = 0;
+	rowCount = 0;
 	entry = new Row *[5];
 	alloc = 5;
 	current = 0;
@@ -161,7 +161,7 @@ public:
     { 
 	if(entry) 
 	{
-	    for( int i = 0; i < r; i++ ) 
+	    for( unsigned int i = 0; i < rowCount; i++ ) 
 		if( entry[i] ) delete entry[i];
 	    delete [] entry; 
 	}
@@ -173,16 +173,16 @@ public:
 	current->append(i); 
     }
     int pos();
-    int row() { return r; }
+    unsigned int row() { return rowCount; }
     int len(int row) { return entry[row]->len; }
     void newRow();
     void endRow();
 
 protected:
     Row **entry;
-    Row *current;
-    int r;
-    int alloc;
+    Row *current; // The current row we are working on.
+    unsigned int rowCount;
+    unsigned int alloc;
 };
 
 
