@@ -17,7 +17,9 @@
   Boston, MA 02111-1307, USA.
 */
 
+#ifndef _BSD_SOURCE
 #define _BSD_SOURCE
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -37,24 +39,24 @@
 #include <pwd.h>
 #include <grp.h>
 
-// Misc helper functions:
-static inline int my_seteuid( uid_t euid)
+/* Misc helper functions: */
+static int my_seteuid( uid_t euid)
 {
 #ifdef HAVE_SETEUID
      return seteuid(euid);
 #else
      return setreuid(-1, euid);
-#endif // HAVE_SETEUID
+#endif
 }
 
-// Misc. functions
-static inline int my_setegid( gid_t egid)
+/* Misc. functions */
+static int my_setegid( gid_t egid)
 {
 #ifdef HAVE_SETEUID
      return setegid(egid);
 #else
      return setregid(-1, egid);
-#endif // HAVE_SETEUID    
+#endif
 }
 
 /*
@@ -62,7 +64,7 @@ static inline int my_setegid( gid_t egid)
  *         1 directory needs to be made
  *         2 directory/file needs to be removed, then remade
  */
-int check_tmp_dir(const char *tmp_dir)
+static int check_tmp_dir(const char *tmp_dir)
 {
   int result;
   struct stat stat_buf;
@@ -88,7 +90,7 @@ int check_tmp_dir(const char *tmp_dir)
   return 0;
 }
 
-int main(int argc, char **argv)
+int main(/*int argc, char **argv*/)
 {
   char user_tmp_dir[PATH_MAX+1];
   struct passwd *pw_ent;
