@@ -866,6 +866,14 @@ public:
    */
   void setStartupId( const QCString& startup_id );
 
+  /**
+   * Updates the last user action timestamp to the given time, or to the current time,
+   * if 0 is given. Do not use unless you're really sure what you're doing.
+   * Consult focus stealing prevention section in kdebase/kwin/README.
+   * @since 3.2
+   */
+  void updateUserTimestamp( unsigned long time = 0 );
+  
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary

@@ -1631,6 +1631,24 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 #endif
 
+void KApplication::updateUserTimestamp( unsigned long time )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    if( time == 0 )
+    { // get current X timestamp
+        Window w = XCreateSimpleWindow( qt_xdisplay(), qt_xrootwin(), 0, 0, 1, 1, 0, 0, 0 );
+        XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
+        unsigned char data[ 1 ];
+        XChangeProperty( qt_xdisplay(), w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
+        XEvent ev;
+        XWindowEvent( qt_xdisplay(), w, PropertyChangeMask, &ev );
+        time = ev.xproperty.time;
+        XDestroyWindow( qt_xdisplay(), w );
+    }
+    qt_x_last_input_time = time;
+#endif
+}
+
 void KApplication::invokeEditSlot( const char *slot )
 {
   QObject *object = focusWidget();
