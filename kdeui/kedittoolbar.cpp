@@ -311,6 +311,7 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
 
 KEditToolbarWidget::~KEditToolbarWidget()
 {
+    delete d;
 }
 
 bool KEditToolbarWidget::save()
