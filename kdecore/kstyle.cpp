@@ -29,9 +29,10 @@
 // to be overridden in new styles.
 
 void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                            const QColorGroup &g, bool horizontal,
+                            const QColorGroup &g, KToolBarPos type,
                             QBrush *fill)
 {
+    bool horizontal = type != Left && type != Right;
     int stipple_height;
     
     if(horizontal){
@@ -71,9 +72,10 @@ void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 }
 
 void KStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup &g, bool floating)
+                          const QColorGroup &g, KToolBarPos pos,
+                          QBrush *)
 {
-    if(!floating)
+    if(pos != Floating)
         qDrawShadePanel(p, x, y, w, h, g , false, 1);
 }
 
@@ -191,7 +193,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
 }
 
 void KStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup &g, QBrush *fill)
+                          const QColorGroup &g, bool, QBrush *fill)
 {
     QBrush brush = fill ? *fill : g.brush(QColorGroup::Background);
     qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
