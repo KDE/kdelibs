@@ -34,13 +34,13 @@
 #include <kipc.h>
 
 
-int KIPC::dropError(Display *, XErrorEvent *)
+static int dropError(Display *, XErrorEvent *)
 {
     return 0;
 }
 
 
-long KIPC::getSimpleProperty(Window w, Atom a)
+static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
     int format;
@@ -57,7 +57,7 @@ long KIPC::getSimpleProperty(Window w, Atom a)
 }
 
 
-void KIPC::sendMessage(Message msg, Window w, int data)
+void KIPC::sendMessage(Message msg, WId w, int data)
 {
     static Atom a = 0;
     if (a == 0)
@@ -65,12 +65,12 @@ void KIPC::sendMessage(Message msg, Window w, int data)
     XEvent ev;
     ev.xclient.type = ClientMessage;
     ev.xclient.display = qt_xdisplay();
-    ev.xclient.window = w;
+    ev.xclient.window = (Window) w;
     ev.xclient.message_type = a;
     ev.xclient.format = 32;
     ev.xclient.data.l[0] = msg;
     ev.xclient.data.l[1] = data;
-    XSendEvent(qt_xdisplay(), w, False, 0L, &ev);
+    XSendEvent(qt_xdisplay(), (Window) w, False, 0L, &ev);
     
     // KDE 1 support
     static Atom kde1 = 0;
@@ -78,7 +78,7 @@ void KIPC::sendMessage(Message msg, Window w, int data)
 	if ( kde1 == 0 )
 	    kde1 = XInternAtom(qt_xdisplay(), "KDEChangeGeneral", False );
 	ev.xclient.message_type = kde1;
-	XSendEvent(qt_xdisplay(), w, False, 0L, &ev);
+	XSendEvent(qt_xdisplay(), (Window) w, False, 0L, &ev);
     }
 
 }
@@ -93,7 +93,7 @@ void KIPC::sendMessageAll(Message msg, int data)
     int screen = DefaultScreen(dpy);
     Window root = RootWindow(dpy, screen);
 
-    defaultHandler = XSetErrorHandler(&KIPC::dropError);
+    defaultHandler = XSetErrorHandler(&dropError);
 
     XQueryTree(dpy, root, &dw1, &dw2, &rootwins, &nrootwins);
     Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);

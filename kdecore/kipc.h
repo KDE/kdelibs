@@ -22,15 +22,6 @@
 #ifndef __KIPC_h_Included__
 #define __KIPC_h_Included__
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#undef Bool
-#undef None // X11 headers... 
-#undef Unsorted
-#undef INT8
-#undef INT32
-#undef Status
-
 /**
  * This class implements a very simple IPC mechanism for KDE. You can send 
  * a message of a predefined type to either a specific application, or to all 
@@ -66,7 +57,7 @@ public:
      * @param w The window id of a toplevel window of the target application.
      * @param data An optional integer of data.
      */
-    static void sendMessage(Message msg, Window w, int data=0);
+    static void sendMessage(Message msg, WId w, int data=0);
 
     /**
      * Send a message to all KDE application on the current display.
@@ -75,16 +66,5 @@ public:
      * @param data An optional integer of data.
      */
     static void sendMessageAll(Message msg, int data=0);
-
-private:
-    /**
-     * Used internally
-     */
-    static int dropError(Display *, XErrorEvent *);
-
-    /**
-     * Used internally
-     */
-    static long getSimpleProperty(Window w, Atom a);
 };
 #endif
