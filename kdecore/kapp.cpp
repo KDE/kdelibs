@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.117  1998/12/13 18:03:54  ettrich
+// bugfix for user defined session management
+//
 // Revision 1.116  1998/12/05 01:32:59  ettrich
 // support for icon text
 //
@@ -560,6 +563,7 @@ void KApplication::enableSessionManagement(bool userdefined){
   bSessionManagementUserDefined = userdefined;
   if (topWidget()){
     KWM::enableSessionManagement(topWidget()->winId());
+    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
   }
 }
 
@@ -1737,7 +1741,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption() );
     if (bSessionManagement)
       enableSessionManagement(bSessionManagementUserDefined);
-    
+
     if (bSessionManagementUserDefined || !bSessionManagement)
 	KWM::setWmCommand( topWidget->winId(), aWmCommand);
   }
