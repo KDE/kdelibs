@@ -74,14 +74,14 @@ static KStaticDeleter< QIntDict<KDebugEntry> > kdd;
 static QString getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
-    KDebugCache = kdd.setObject(new QIntDict<KDebugEntry>);
+    kdd.setObject(KDebugCache, new QIntDict<KDebugEntry>);
     KDebugCache->setAutoDelete(true);
   }
 
   KDebugEntry *ent = KDebugCache->find( _num );
   if ( ent )
     return ent->descr;
-  
+
   if ( !KDebugCache->isEmpty() ) // areas already loaded
     return QString::null;
 
@@ -99,7 +99,7 @@ static QString getDescrFromNum(unsigned int _num)
   QTextStream *ts = new QTextStream(&file);
   ts->setEncoding( QTextStream::Latin1 );
   while (!ts->eof()) {
-    const QString data(ts->readLine()); 
+    const QString data(ts->readLine());
     int i = 0;
     int len = data.length();
 
@@ -109,25 +109,25 @@ static QString getDescrFromNum(unsigned int _num)
     }
     while (ch.isSpace()) {
       if (!(i < len))
-	continue; 
+	continue;
       ++i;
       ch = data[i];
     }
     if (ch.isNumber()) {
 	int numStart = i ;
-	while (ch.isNumber())  {  
+	while (ch.isNumber())  {
 	  if (!(i < len))
 	    continue;
 	  ++i;
 	  ch = data[i];
 	}
-	number = data.mid(numStart,i).toULong(&longOK);  
+	number = data.mid(numStart,i).toULong(&longOK);
     }
     while (ch.isSpace()) {
       if (!(i < len))
-	continue; 
+	continue;
       ++i;
-      ch = data[i]; 
+      ch = data[i];
     }
     const QString description(data.mid(i, len));
     //qDebug("number: [%i] description: [%s]", number, description.latin1());
@@ -159,7 +159,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 {
   if ( !debug_Config && KGlobal::_instance )
   {
-      debug_Config = pcd.setObject(new KConfig( "kdebugrc", false, false ));
+      pcd.setObject(debug_Config, new KConfig( "kdebugrc", false, false ));
       debug_Config->setGroup("0");
   }
 
@@ -267,7 +267,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
               if (nPriority == LOG_INFO)
                   output = stderr;
               else */
-                  output = stderr;				
+                  output = stderr;
               // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
 	      // if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
 	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
