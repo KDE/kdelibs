@@ -45,6 +45,7 @@
 #include <qtimer.h>
 #include <kapp.h>
 
+#include <kurldrag.h>
 #include <kimageio.h>
 #include <kdebug.h>
 
@@ -157,6 +158,7 @@ void KHTMLView::init()
   _width = 0;
   _height = 0;
 
+  setAcceptDrops(true);
   resizeContents(visibleWidth(), visibleHeight());
 }
 
@@ -348,6 +350,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
+
     if(!m_part->docImpl()) return;
 
 
@@ -880,4 +883,30 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
       }
   }
   d->linkPressed=false;
+}
+
+void KHTMLView::dragEnterEvent( QDragEnterEvent *e )
+{
+  if ( e->provides( "text/uri-list" ) ) 
+  {
+      KURL::List m_lstDragURLs;
+      bool ok = KURLDrag::decode( e, m_lstDragURLs );
+      if( ok 
+          && ! m_lstDragURLs.first().prettyURL().contains("javascript:", false) 
+          && e->source() != viewport() ) 	// don't accept on this window, only on others
+      {
+          e->acceptAction();
+      }
+  }
+}
+
+void KHTMLView::dropEvent(QDropEvent* event)
+{
+    KURL::List m_lstDragURLs;
+    bool ok = KURLDrag::decode( event, m_lstDragURLs );
+    if( ok )
+    {
+        // just take the first URL
+	part()->slotShowDocument(m_lstDragURLs.first().url(), "_top");
+    }
 }

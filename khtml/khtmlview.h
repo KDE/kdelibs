@@ -186,6 +186,16 @@ protected:
      */
     void doAutoScroll();
 
+    /**
+     * Something is dragged over this view.
+     */
+    void dragEnterEvent( QDragEnterEvent *e );
+
+    /**
+     * Something is dropped on this view.
+     */
+    void dropEvent( QDropEvent* event );
+
 private:
     /**
      * move the view towards the currently selected node
