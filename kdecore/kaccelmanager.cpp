@@ -452,15 +452,21 @@ void KAcceleratorManager::last_manage(QString &added,  QString &changed, QString
  *********************************************************************/
 
 KAccelString::KAccelString(const QString &input, int initialWeight)
-  : m_pureText(input), m_origText(input), m_weight()
+  : m_pureText(input), m_weight()
 {
-    if (m_pureText.contains('\t'))
-        m_pureText = m_pureText.left(m_pureText.find('\t'));
     m_orig_accel = m_pureText.find("(!)&");
-    m_pureText.replace(m_orig_accel, 4, "");
+    if (m_orig_accel != -1)
+	m_pureText.remove(m_orig_accel, 4);
+    
     m_orig_accel = m_pureText.find("(&&)");
     if (m_orig_accel != -1)
         m_pureText.replace(m_orig_accel, 4, "&");
+    
+    m_origText = m_pureText;
+    
+    if (m_pureText.contains('\t'))
+        m_pureText = m_pureText.left(m_pureText.find('\t'));
+    
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
     kdDebug(125) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
@@ -481,22 +487,17 @@ QString KAccelString::accelerated() const
 
   if (KAcceleratorManagerPrivate::programmers_mode)
   {
+    if (m_accel != m_orig_accel) {
       int oa = m_orig_accel;
 
       if (m_accel >= 0) {
-          if (m_accel != m_orig_accel) {
               result.insert(m_accel, "(!)&");
               if (m_accel < m_orig_accel)
                   oa += 4;
-          } else {
-              result.insert(m_accel, "&");
-              if (m_accel < m_orig_accel)
-                  oa++;
-          }
       }
-
-      if (m_accel != m_orig_accel && m_orig_accel >= 0)
-          result.insert(oa, "(&&)");
+      if (m_orig_accel >= 0)
+	  result.replace(oa, 1, "(&&)");
+    }
   } else {
       if (m_accel >= 0 && m_orig_accel != m_accel) {
           result.remove(m_orig_accel, 1);
