@@ -83,6 +83,8 @@ bool CachedObject::canDelete()
 CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &baseURL, bool reload)
     : CachedObject(url, CSSStyleSheet, reload)
 {
+    // It's css we want.
+    setAccept( QString::fromLatin1("text/css") );
     // load the file
     Cache::loader()->load(this, baseURL, false);
     loading = true;
@@ -150,6 +152,8 @@ void CachedCSSStyleSheet::error( int /*err*/, const char */*text*/ )
 CachedScript::CachedScript(const DOMString &url, const DOMString &baseURL, bool reload)
     : CachedObject(url, Script, reload)
 {
+    // It's javascript we want.
+    setAccept( QString::fromLatin1("application/x-javascript") );
     // load the file
     Cache::loader()->load(this, baseURL, false);
     loading = true;
