@@ -801,7 +801,8 @@ bool HTTPProtocol::http_open()
 
   // Let's also clear out some things, so bogus values aren't used.
   // m_HTTPrev = HTTP_Unknown;
-  m_sContentMD5 = "";
+  m_sContentMD5 = QString::null;
+  m_strMimeType = QString::null;
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
