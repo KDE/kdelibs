@@ -1273,14 +1273,20 @@ QString locate( const char *type,
 QString locateLocal( const char *type,
 	             const QString& filename, const KInstance* inst )
 {
+    return locateLocal(type, filename, true, inst);
+}
+
+QString locateLocal( const char *type,
+	             const QString& filename, bool createDir, const KInstance* inst )
+{
     // try to find slashes. If there are some, we have to
     // create the subdir first
     int slash = filename.findRev('/')+1;
     if (!slash) // only one filename
-	return inst->dirs()->saveLocation(type, QString::null, true) + filename;
+	return inst->dirs()->saveLocation(type, QString::null, createDir) + filename;
 
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return inst->dirs()->saveLocation(type, dir, true) + file;
+    return inst->dirs()->saveLocation(type, dir, createDir) + file;
 }

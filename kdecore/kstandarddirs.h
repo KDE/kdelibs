@@ -655,6 +655,17 @@ QString locate( const char *type, const QString& filename, const KInstance* inst
  **/
 QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
+/*!
+ * \relates KStandardDirs
+ * This function is much like locate. No check is made if the
+ * specified filename actually exists. Missing directories
+ * are created if @p createDir is true. If filename is only 
+ * a directory, without a specific file, 
+ * filename must have a trailing slash.
+ *
+ **/
+QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
+
 /*! @} */
 
 #endif // SSK_KSTDDIRS_H
