@@ -1682,7 +1682,9 @@ void KHTMLPart::slotRedirect()
   d->m_redirectURL = QString::null;
   QString target;
   u = splitUrlTarget( u, &target );
-  urlSelected( u, 0, 0, target );
+  KParts::URLArgs args;
+  args.setLockHistory( true );
+  urlSelected( u, 0, 0, target, args );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
@@ -2218,6 +2220,12 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
 
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
 {
+    urlSelected( url, button, state, _target, KParts::URLArgs() );
+}
+
+void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target,
+                             KParts::URLArgs args )
+{
   bool hasTarget = false;
 
   QString target = _target;
@@ -2254,7 +2262,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 			 i18n( "Follow" )))
     return;
 
-  KParts::URLArgs args;
   args.frameName = target;
 
   // For http-refresh, force the io-slave to re-get the page

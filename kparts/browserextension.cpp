@@ -60,10 +60,12 @@ struct URLArgsPrivate
 {
     URLArgsPrivate() {
       doPost = false;
+      lockHistory = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
+    bool lockHistory;
 };
 
 };
@@ -148,6 +150,18 @@ void URLArgs::setDoPost( bool enable )
 bool URLArgs::doPost() const
 {
     return d ? d->doPost : false;
+}
+
+void URLArgs::setLockHistory( bool lock )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->lockHistory = lock;
+}
+
+bool URLArgs::lockHistory() const
+{
+    return d ? d->lockHistory : false;
 }
 
 namespace KParts

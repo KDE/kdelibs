@@ -983,6 +983,9 @@ protected:
     void emitSelectionChanged(); // ### KDE 3.0: make private
 
 private:
+  void urlSelected( const QString &url, int button, int state,
+                            const QString &_target, KParts::URLArgs args );
+
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed );

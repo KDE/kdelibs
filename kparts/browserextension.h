@@ -62,6 +62,8 @@ struct URLArgs
   QString contentType() const; // Header for POST
   void setDoPost( bool enable );
   bool doPost() const;
+  void setLockHistory( bool lock );
+  bool lockHistory() const;
 
   QMap<QString, QString> &metaData();
 
