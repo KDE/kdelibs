@@ -124,29 +124,12 @@ public:
 	KSSLCertificate::KSSLValidation validate();
 
 	/**
-	 *  Check the chain to make sure it's valid for a specified purpose.
-	 *  @param p the purpose to validate for
-	 *  @return the result of the validation procedure
-	 *  @see KSSLCertificate
-	 */
-	KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
-
-	/**
 	 *  Check the chain to make sure it's valid.
 	 *  Ignore any cached validation result.
 	 *  @return the result of the validation
 	 *  @see KSSLCertificate
 	 */
 	KSSLCertificate::KSSLValidation revalidate();
-
-	/**
-	 *  Check the chain to make sure it's valid for a specific purpose.
-	 *  Ignore any cached validation result.
-	 *  @param p the purpose to validate for
-	 *  @return the result of the validation
-	 *  @see KSSLCertificate
-	 */
-	KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
 	/**
 	 *  Return true if the chain is valid.

@@ -123,19 +123,6 @@ public:
     QStringList descriptiveEncodingNames();
 
     /**
-     * Lists all languages.
-     * @return a list of all languages
-     */
-    QStringList languages();
-
-    /**
-     * Lists all available encodings for language name 'language'.
-     * @param language to language to search for
-     * @return the list of encodings for the language
-     */
-    QStringList encodingsForLanguage( const QString &language );
-
-    /**
      * Returns the language the encoding is used for.
      * @param encoding the encoding for the language
      * @return the language of the encoding

@@ -75,15 +75,6 @@ public:
                QWidget *parent = 0L, const char *name = 0L );
 
   /**
-   * Default constructor.  This will not do anything until you use
-   * setIcons() later.
-   *
-   * @param parent The standard parent
-   * @param name   The standard internal name
-   */
-  KAnimWidget( QWidget *parent = 0L, const char *name = 0L );
-
-  /**
    * Destructor
    */
   virtual ~KAnimWidget();

@@ -174,16 +174,6 @@ class KKey
 	/**
 	 * @internal
 	 */
-	bool isValidQt() const;
-
-	/**
-	 * @internal
-	 */
-	bool isValidNative() const;
-
-	/**
-	 * @internal
-	 */
 	uint sym() const;
 	/**
 	 * @internal
@@ -424,11 +414,6 @@ class KKeySequence
 	 * @return true if successful, false otherwise
 	 */
 	bool setKey( uint i, const KKey& key );
-
-	/**
-	 * @internal
-	 */
-	void setTriggerOnRelease( bool );
 
 	/**
 	 * Returns true if the key sequence is null (after clear() or empty

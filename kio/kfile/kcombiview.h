@@ -102,9 +102,6 @@ public:
 
     virtual void setAcceptDrops(bool b);
 
-    // KDE 4: Make virtual
-    void setDropOptions(int options);
-
 protected:
     KFileIconView *left;
     KFileView *right;

@@ -141,13 +141,6 @@ class KAccel : public QAccel
 	void setEnabled( bool bEnabled );
 
 	/**
-	 * Checks whether auto-update of connections is enabled.
-	 * @return true if auto-update is enabled (the default)
-	 * @see setAutoUpdate()
-	 */
-	bool getAutoUpdate();
-
-	/**
 	 * Enable auto-update of connections. This means that the signals
 	 * are automatically disconnected when you disable an action, and
 	 * re-enabled when you enable it. By default auto update is turned 
@@ -217,14 +210,6 @@ class KAccel : public QAccel
 	KAccelAction* insert( KStdAccel::StdAccel id,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	/**
-	 * Use this to insert a label into the action list.  This will be
-	 * displayed when the user configures shortcuts.
-	 * @param sName the name of the action
-	 * @param sLabel the label of the action
-	 * @return the created KAccelAction
-	 */
-	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
         /**
          * Removes the accelerator action identified by the name.

@@ -540,7 +540,6 @@ protected:
   static QString modaltext;
   static int modalreturn;
   static QWidget* modalWidgetHack;
-  static QStringList modalListText;
 
   int parseOneResponse (const QString &_buffer, QString &word, QStringList &sugg);
   QString funnyWord (const QString & word);

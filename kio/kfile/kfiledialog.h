@@ -797,12 +797,6 @@ protected:
     KFileFilterCombo *filterWidget;
 
     /**
-     * adds a entry of the current directory. If disableUpdating is set
-     * to true, it will care about clever updating
-     **/
-    void addDirEntry(KFileItem *entry, bool disableUpdating);
-
-    /**
      * Reimplemented to animate the cancel button.
      */
     virtual void keyPressEvent( QKeyEvent *e );

@@ -139,13 +139,6 @@ class KGlobalAccel : public QObject
 	 * @return true if successful, false otherwise
 	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
-	/** 
-	 * Enable or disable the action named by @p sAction.
-	 * @param sAction the name of the action
-	 * @param bEnabled true to enable, false to disable
-	 * @return true if successful, false otherwise
-	 */
-	bool setEnabled( const QString& sAction, bool bEnabled );
 
 	/**
 	 * Returns the configuration group that is used to save the accelerators.

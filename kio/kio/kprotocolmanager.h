@@ -128,14 +128,6 @@ public:
    */
   static int responseTimeout();
 
-  /**
-   * Returns the set default timeout value for connecting
-   * to remote machines.
-   *
-   * @return timeout value in seconds
-   */
-  static int defaultConnectTimeout();
-
 
 /*=============================== PROXY CONFIG ==============================*/
 

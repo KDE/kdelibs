@@ -98,8 +98,6 @@ class KInstance
      */
     void newIconLoader() const;
 
-    KCharsets	     *charsets() const;
-
     /**
      *  Returns the about data of this instance
      *  Warning, can be 0L

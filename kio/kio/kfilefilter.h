@@ -115,12 +115,6 @@ public:
     virtual void setNameFilters( const QString& nameFilters );
 
     /**
-     * @internal 
-     * not implemented?
-     */
-    QString nameFilters() const;
-
-    /**
      * Sets a list of mime filters. A file can only pass if its
      * mime type is contained in this list.
      * @param mimeFilters the list of mime types

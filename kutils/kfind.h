@@ -284,10 +284,6 @@ signals:
     void dialogClosed();
 
 protected:
-    /**
-     * @internal Constructor for KReplace
-     */
-    KFind(const QString &pattern, const QString &replacement, long options, QWidget *parent);
 
     QWidget* parentWidget() const { return (QWidget *)parent(); }
 

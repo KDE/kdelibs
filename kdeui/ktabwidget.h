@@ -54,7 +54,7 @@ public:
       you from which index to which index a tab has been moved.
     */
     void setTabReorderingEnabled( bool enable );
-    inline bool isTabReorderingEnabled() const;
+    bool isTabReorderingEnabled() const;
 
     /*!
       If \a enable is true, a close button will be shown on mouse hover
@@ -62,14 +62,14 @@ public:
       when pressed.
     */
     void setHoverCloseButton( bool enable );
-    inline bool hoverCloseButton() const;
+    bool hoverCloseButton() const;
 
     /*!
       If \a delayed is true, a close button will be shown on mouse hover
       over tab icons immediately else after double mouse double click delay.
     */
     void setHoverCloseButtonDelayed( bool delayed );
-    inline bool hoverCloseButtonDelayed() const;
+    bool hoverCloseButtonDelayed() const;
 
 public slots:
     /*!
