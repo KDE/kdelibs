@@ -25,6 +25,8 @@ echo -e $begin_line \
 		"\tconst char *name;\n" \
 		"\tint code;\n" \
 		"} KKeys;\n\n" \
+		"#define MAX_KEY_LENGTH      15   // sort of dummy (for kkeydialog)\n" \
+		"#define MAX_KEY_MODIFIER_LENGTH 15\n" \
 		"#define NB_KEYS " `cat kckey_a | wc -l` "\n" \
 		"extern const KKeys KKEYS[NB_KEYS];\n" > kckey.h
 

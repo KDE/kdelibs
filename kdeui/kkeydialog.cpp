@@ -29,9 +29,9 @@
 
 #include <kapp.h>
 #include <kbuttonbox.h>
+#include <kckey.h>
 
 #include "kkeydialog.h"
-
 
 /*****************************************************************************/
 /* KSplitListItem                                                            */
