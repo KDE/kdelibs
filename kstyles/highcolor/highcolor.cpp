@@ -758,18 +758,27 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_PanelDockWindow: {		// Toolbar
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
+			
+			if (opt.lineWidth())
+			{
+				p->setPen(cg.light());
+				p->drawLine(r.x(), r.y(), x2-1,  r.y());
+				p->drawLine(r.x(), r.y(), r.x(), y2-1);
+				p->setPen(cg.dark());
+				p->drawLine(r.x(), y2, x2, y2);
+				p->drawLine(x2, r.y(), x2, y2);
 
-			p->setPen(cg.light());
-			p->drawLine(r.x(), r.y(), x2-1,  r.y());
-			p->drawLine(r.x(), r.y(), r.x(), y2-1);
-			p->setPen(cg.dark());
-			p->drawLine(r.x(), y2, x2, y2);
-			p->drawLine(x2, r.y(), x2, y2);
-
-			// ### Qt should specify Style_Horizontal where appropriate
-			renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
-				cg.button(), (r.width() < r.height()) &&
+				// ### Qt should specify Style_Horizontal where appropriate
+				renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
+					cg.button(), (r.width() < r.height()) &&
 								 (pe != PE_PanelMenuBar) );
+			}
+			else
+			{
+				renderGradient( p, QRect(r.x(), r.y(), x2, y2),
+					cg.button(), (r.width() < r.height()) &&
+								 (pe != PE_PanelMenuBar) );
+			}
 
 			break;
 		}
