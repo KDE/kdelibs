@@ -94,6 +94,15 @@ again1:
   int n = ::read( m_in, buffer, 8 );
   if ( n == -1 && errno == EINTR )
     goto again1;
+
+  if ( n == -1) switch (errno) {
+    case EAGAIN: cerr << "read failed, errno=EAGAIN" << endl;
+    case EIO: cerr << "read failed, errno=EIO" << endl;
+    case EISDIR: cerr << "read failed, errno=EISDIR" << endl;
+    case EBADF: cerr << "read failed, errno=EBADF" << endl;
+    case EINVAL: cerr << "read failed, errno=EINVAL" << endl;
+    case EFAULT: cerr << "read failed, errno=EFAULT" << endl;
+  }
   
   if ( n != 8 )
   {
