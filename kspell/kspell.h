@@ -356,6 +356,11 @@ signals:
   void addword (const QString & originalword);
 
   /**
+   * Emitted when the user pressed "ReplaceAll" in the dialog.
+   */
+  void replaceall( const QString & origword ,  const QString &replacement );
+
+  /**
    * Emitted after KSpell has verified that ISpell/ASpell is running
    * and working properly.
    */

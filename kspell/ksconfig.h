@@ -27,6 +27,7 @@ class QComboBox;
 class QLabel;
 
 class KConfig;
+class KSpellConfigPrivate;
 
 // Should be replaced by the charset strings
 // because the config file would be more stable
@@ -117,6 +118,13 @@ class KSpellConfig : public QWidget
     void setIgnoreList (QStringList _ignorelist);
 
     /**
+     * The @p _replaceAllList contains word you like that replace
+     * word. Becarefull this list contains word which is replaced
+     * and new word.
+     */
+    void setReplaceAllList (QStringList _replaceAllList);
+
+    /**
      * Set an ISpell option.
      *
      * If @p true, don't create root-affix combinations.
@@ -153,6 +161,8 @@ class KSpellConfig : public QWidget
     //QString personalDict () const;
     int encoding () const;
     QStringList ignoreList () const;
+    QStringList replaceAllList () const;
+
     int client () const; //see enums at top of file
 
     /**
@@ -231,7 +241,6 @@ signals:
     void configChanged();
 
   private:
-    class KSpellConfigPrivate;
     KSpellConfigPrivate *d;
     void getAvailDictsIspell();
     void getAvailDictsAspell();

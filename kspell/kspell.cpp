@@ -101,7 +101,6 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
   proc=0;
   ksconfig=0;
   ksdlg=0;
-
   //won't be using the dialog in ksconfig, just the option values
   if (_ksc!=0)
     ksconfig = new KSpellConfig (*_ksc);
@@ -162,6 +161,7 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
   // copy ignore list from ksconfig
   ignorelist += ksconfig->ignoreList();
 
+  replacelist += ksconfig->replaceAllList();
   texmode=dlgon=FALSE;
   m_status = Starting;
   dialogsetup = FALSE;
@@ -1097,7 +1097,9 @@ void KSpell::dialog2 (int result)
       break;
     case KS_REPLACEALL:
       replacelist.append (dlgorigword);
-      replacelist.append (replacement());
+      QString _replacement = replacement();
+      replacelist.append (_replacement);
+      emit replaceall( dlgorigword ,  _replacement );
       break;
     }
 
@@ -1124,6 +1126,7 @@ KSpell:: ~KSpell ()
 KSpellConfig KSpell::ksConfig () const
 {
   ksconfig->setIgnoreList(ignorelist);
+  ksconfig->setReplaceAllList(replacelist);
   return *ksconfig;
 }
 

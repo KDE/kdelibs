@@ -36,6 +36,13 @@
 
 #include "ksconfig.h"
 
+class KSpellConfigPrivate
+{
+public:
+    QStringList replacelist;
+};
+
+
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   : QWidget(0, 0), nodialog(true)
   , kc(0)
@@ -46,6 +53,8 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , encodingcombo(0)
   , clientcombo(0)
 {
+    d= new KSpellConfigPrivate;
+    setReplaceAllList( _ksc.replaceAllList ());
   setNoRootAffix (_ksc.noRootAffix());
   setRunTogether (_ksc.runTogether());
   setDictionary  (_ksc.dictionary());
@@ -68,7 +77,8 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   , encodingcombo(0)
   , clientcombo(0)
 {
-  kc = KGlobal::config();
+    d= new KSpellConfigPrivate;
+    kc = KGlobal::config();
   if( _ksc == 0 )
   {
     readGlobalSettings();
@@ -152,6 +162,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 
 KSpellConfig::~KSpellConfig ()
 {
+    delete d;
 }
 
 
@@ -741,6 +752,18 @@ QStringList
 KSpellConfig::ignoreList () const
 {
   return ignorelist;
+}
+
+void
+KSpellConfig::setReplaceAllList (QStringList _replacelist)
+{
+  d->replacelist=_replacelist;
+}
+
+QStringList
+KSpellConfig::replaceAllList () const
+{
+  return d->replacelist;
 }
 
 #include "ksconfig.moc"
