@@ -888,10 +888,13 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 
 const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
+    bool isLocalURL;
+    KURL url = mostLocalURL(isLocalURL);
+      
     if ( autoget && !m_metaInfo.isValid() &&
-         KGlobalSettings::showFilePreview(m_url) )
+         KGlobalSettings::showFilePreview(url) )
     {
-        m_metaInfo = KFileMetaInfo( m_url, mimetype() );
+        m_metaInfo = KFileMetaInfo( url, mimetype() );
     }
 
     return m_metaInfo;
