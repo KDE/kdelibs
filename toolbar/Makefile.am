@@ -1,5 +1,5 @@
 
-kde_toolbardir = $(kde_icondir)/medium/locolor/toolbars
+kde_toolbardir = $(kde_icondir)/medium/hicolor/toolbars
 kde_toolbar_DATA = add_point.png airbrush.png back.png blend.png bottom.png \
 	centrejust.png circle_select.png close.png \
 	contents.png context_help.png \
