@@ -32,8 +32,8 @@ extern "C" { int start_launcher(int); }
 
 static void sig_handler(int sig_num)
 {
-   KLauncher::destruct(255);
 fprintf(stderr, "KLauncher: Exiting on signal %d\n", sig_num);
+   KLauncher::destruct(255);
 }
 
 int
@@ -49,7 +49,7 @@ start_launcher(int socket)
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
 
-   KLauncher launcher(socket);
+   KLauncher *launcher = new KLauncher(socket);
 
    signal( SIGHUP, sig_handler);
    signal( SIGPIPE, sig_handler);
@@ -59,9 +59,9 @@ start_launcher(int socket)
 #ifdef __USE_GNU
 #warning Temporary hack to get KLocale initialised
 #endif
-   (void)launcher.config();
+   (void)launcher->config();
 
-   launcher.exec();
+   launcher->exec();
    return 0;
 }
 
