@@ -54,22 +54,6 @@ public:
     bool persist;
 };
 
-/***************************** KIO::SessionData::CookieData ************************/
-struct KIO::SessionData::CookieData
-{
-public:
-
-    CookieData() {}
-
-    CookieData( const QString& d, int id )  {
-        domain = d;
-        winId = id;
-    }
-
-    QString domain;
-    int winId;
-};
-
 /************************* KIO::SessionData::AuthDataList ****************************/
 class KIO::SessionData::AuthDataList : public QList<KIO::SessionData::AuthData>
 {
@@ -166,7 +150,6 @@ void KIO::SessionData::AuthDataList::unregisterAuthData( KIO::SessionData::AuthD
         else
         {
             client.delVars(d->key);
-            kdDebug() << "Deleting: " << d->key << endl;
         }
     }
 }
@@ -181,73 +164,27 @@ void KIO::SessionData::AuthDataList::purgeCachedData()
     }
 }
 
-/*********************** KIO::SessionData::CookieDataList ****************************/
-class KIO::SessionData::CookieDataList : public QList<KIO::SessionData::CookieData>
-{
-public:
-    CookieDataList() { setAutoDelete(true); }
-    ~CookieDataList() { purgeCachedData(); }
-
-private:
-    void purgeCachedData();
-};
-
-void KIO::SessionData::CookieDataList::purgeCachedData()
-{
-    if ( !isEmpty() )
-    {
-        DCOPClient* client = new DCOPClient();
-        if ( !client->attach() )
-            return;
-        QListIterator<KIO::SessionData::CookieData> it( *this );
-        for ( ; it.current(); ++it )
-        {
-            QByteArray params;
-            QDataStream stream(params, IO_WriteOnly);
-            stream << it.current()->domain << it.current()->winId;
-            if ( !client->send("kcookiejar", "kcookiejar",
-                               "deleteSessionCookiesFor(QString,long int)",
-                               params) )
-                kdDebug() << "Could not delete session cookie!" << endl;
-        }
-        delete client;
-    }
-}
-
 /********************************* SessionData ****************************/
 SessionData::SessionData()
 {
     authData = new AuthDataList;
-    cookieData = new CookieDataList;
 }
 
 SessionData::~SessionData()
 {
     delete authData;
-    delete cookieData;
     authData = 0L;
-    cookieData = 0L;
 }
 
 void KIO::SessionData::slotAuthData( const QCString& key, const QCString& gkey,
                                      bool keep )
 {
-
     authData->addData( new KIO::SessionData::AuthData(key, gkey, keep) );
 }
 
 void SessionData::slotDelAuthData( const QCString& gkey )
 {
     authData->removeData( gkey );
-}
-
-void SessionData::slotSessionCookieData( const QString& domain, int winId )
-{
-    cookieData->append( new KIO::SessionData::CookieData(domain, winId) );
-}
-
-void SessionData::slotDelSessionCookieData( int )
-{
 }
 
 #include "sessiondata.moc"

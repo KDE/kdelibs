@@ -36,17 +36,14 @@ public:
 public slots:
     void slotAuthData( const QCString&, const QCString&, bool );
     void slotDelAuthData( const QCString& );
-    void slotSessionCookieData( const QString&, int );
-    void slotDelSessionCookieData( int );
 
 private:
     struct AuthData;
-    struct CookieData;
     class AuthDataList;
-    class CookieDataList;
-
     AuthDataList* authData;
-    CookieDataList* cookieData;
+
+    class SessionDataPrivate;
+    SessionDataPrivate* cookieData;
 };
 
 };
