@@ -36,7 +36,7 @@
 (define %kde-gentext-pt-BR-language% "&BrasilianPortuguese;")
 (define %kde-pt-BR-logo% "")
 (define %kde-gentext-pt-BR-date-phrase% "&LastUpdated;: ")
-; (define %kde-gentext-pt-BR-author-phrase% "&by; ")
+; <!-- (define %kde-gentext-pt-BR-author-phrase% "&by; ") -->
 (define %kde-gentext-pt-BR-releaseinfo-phrase% "&Version; ") 
 
    </STYLE-SPECIFICATION-BODY>
