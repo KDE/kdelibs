@@ -98,6 +98,11 @@ return rc;
 }
 
 
+void Wallet::changePassword(const QString& name) {
+DCOPRef("kded", "kwalletd").send("changePassword", name);
+}
+
+
 bool Wallet::isOpen(const QString& name) {
 DCOPReply r = DCOPRef("kded", "kwalletd").call("isOpen", name);
 bool rc = false;

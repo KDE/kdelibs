@@ -57,6 +57,8 @@ class Wallet : public QObject, public DCOPObject {
 		static const QString PasswordFolder;
 		static const QString FormDataFolder;
 
+		static void changePassword(const QString& name);
+
 		virtual int lockWallet();
 
 		virtual const QString& walletName() const;
