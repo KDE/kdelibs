@@ -2,3 +2,7 @@ This directory contains files used in the KDE customization
 of the DocBook XSL style sheets.
 
 For the time being however, it only contains as yet unused localisation code.
+
+We plan to have these file generated with the same procedure as the
+corresponding files in the docbook style sheets, if it doesn't require
+too much machinery.
