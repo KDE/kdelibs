@@ -63,6 +63,8 @@ RenderFormElement::RenderFormElement(QScrollView *view,
 
     m_element = element;
     m_clickCount = 0;
+    m_state = 0;
+    m_button = 0;
     m_isDoubleClick = false;
 }
 
@@ -193,26 +195,29 @@ bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
         int absX, absY;
         absolutePosition(absX,absY);
         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
+        m_button = _e->button();
+        m_state  = _e->state();
         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
 
         m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
 
-        if((m_pressPos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
+        if((m_mousePos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
             // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
             // and released in the "same screen location"
             // As people usually can't click on the same pixel, we're a bit tolerant here
             m_element->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
-
-            if(!isRenderButton()) {
-                // ### DOMActivate is also dispatched for thigs like selects & textareas -
-                // not sure if this is correct
-                m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
-            }
         }
-	// special case for HTML click & ondblclick handler
-	m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-        if ( !isRenderButton() )
+
+        if(!isRenderButton()) {
+            // ### DOMActivate is also dispatched for thigs like selects & textareas -
+            // not sure if this is correct
+            m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+            m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
             m_isDoubleClick = false;
+        }
+        else
+            // save position for slotClicked - see below -
+            m_mousePos = e2.pos();
     }
     break;
     case QEvent::MouseButtonDblClick:
@@ -244,6 +249,10 @@ bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
 void RenderFormElement::slotClicked()
 {
     if(isRenderButton()) {
+        QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+
+        m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+
 	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
 	m_isDoubleClick = false;
     }
@@ -255,8 +264,8 @@ void RenderFormElement::handleMousePressed(QMouseEvent *e)
     absolutePosition(absX,absY);
     QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
 
-    if((m_pressPos - e2.pos()).manhattanLength() > QApplication::startDragDistance()) {
-        m_pressPos = e2.pos();
+    if((m_mousePos - e2.pos()).manhattanLength() > QApplication::startDragDistance()) {
+        m_mousePos = e2.pos();
         m_clickCount = 1;
     }
     else
@@ -337,13 +346,13 @@ void RenderRadioButton::setChecked(bool checked)
 
 void RenderRadioButton::slotClicked()
 {
-    // emit mouseClick event etc
-    RenderButton::slotClicked();
-
     m_element->setAttribute(ATTR_CHECKED,"");
 
     if (m_element->ownerDocument()->isHTMLDocument())
         static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
+
+    // emit mouseClick event etc
+    RenderButton::slotClicked();
 }
 
 void RenderRadioButton::layout()

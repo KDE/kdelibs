@@ -89,7 +89,9 @@ protected:
     void handleMousePressed(QMouseEvent* e);
 
     DOM::HTMLGenericFormElementImpl *m_element;
-    QPoint m_pressPos;
+    QPoint m_mousePos;
+    int m_state;
+    int m_button;
     int m_clickCount;
     bool m_isDoubleClick;
 };
