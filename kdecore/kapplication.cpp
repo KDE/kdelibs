@@ -1754,6 +1754,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
 
     disabledgrp.setColor(QColorGroup::ButtonText, disbtntext);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
+    disabledgrp.setColor(QColorGroup::Highlight, highlight.dark(120));
     disabledgrp.setColor(QColorGroup::Link, link);
     disabledgrp.setColor(QColorGroup::LinkVisited, visitedLink);
 
