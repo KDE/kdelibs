@@ -190,8 +190,11 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& encoding ,
     setOperationMode(Saving);
     }
 
-  toolBar()->insertCombo(QStringList(), 33333, false, 0L, 0L, 0L, true);
-  d->encoding = toolBar()->getCombo(33333);
+  KToolBar *tb = toolBar();
+  int index = tb->insertCombo(QStringList(), -1 /*id*/, false /*writable*/, 0 /*signal*/, 0 /*receiver*/, 0 /*slot*/ );
+  d->encoding = tb->getCombo( tb->idAt( index ) );
+  if ( !d->encoding )
+      return;
 
   d->encoding->clear ();
   QString sEncoding = encoding;
