@@ -35,6 +35,7 @@
 #include "dom2_traversalimpl.h"
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
+#include <iostream.h>
 
 using namespace DOM;
 
@@ -57,9 +58,12 @@ RangeImpl::RangeImpl(DocumentPtr *_ownerDocument,
               NodeImpl *_endContainer, long _endOffset)
 {
     m_ownerDocument = _ownerDocument;
+    m_ownerDocument->ref();
     m_startContainer = _startContainer;
+    m_startContainer->ref();
     m_startOffset = _startOffset;
     m_endContainer = _endContainer;
+    m_endContainer->ref();
     m_endOffset = _endOffset;
     m_detached = false;
 }
@@ -397,6 +401,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     if (exceptioncode)
         return 0;
 
+    cerr << "RangeImpl::processContents() 10\n";
     // what is the highest node that partially selects the start of the range?
     NodeImpl *partialStart = 0;
     if (m_startContainer != cmnRoot) {
@@ -417,6 +422,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
         fragment = new DocumentFragmentImpl(m_ownerDocument);
 
+    cerr << "RangeImpl::processContents() 20\n";
     // Simple case: the start and end containers are the same. We just grab
     // everything >= start offset and < end offset
     if (m_startContainer == m_endContainer) {
@@ -475,6 +481,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     //
     // These are deleted, cloned, or extracted (i.e. both) depending on action.
 
+    cerr << "RangeImpl::processContents() 30\n";
     NodeImpl *leftContents = 0;
     if (m_startContainer != cmnRoot) {
         // process the left-hand side of the range, up until the last ancestor of
@@ -497,14 +504,17 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             // leftContents = ...
         }
         else {
+	    cerr << "RangeImpl::processContents() 30.10\n";
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
 		leftContents = m_startContainer->cloneNode(false,exceptioncode);
             NodeImpl *n = m_startContainer->firstChild();
             unsigned long i;
             for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
                 n = n->nextSibling();
-            NodeImpl *next = n->nextSibling();
+	    cerr << "RangeImpl::processContents() 30.13\n";
+	    cerr << "RangeImpl::processContents() 30.14\n";
             while (n) { // process until end
+		NodeImpl *next = n->nextSibling();
                 if (action == EXTRACT_CONTENTS)
                     leftContents->appendChild(n,exceptioncode); // will remove n from m_startContainer
                 else if (action == CLONE_CONTENTS)
@@ -512,19 +522,21 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 else
                     m_startContainer->removeChild(n,exceptioncode);
                 n = next;
-		if (n)
-		    next = next->nextSibling();
             }
+	    cerr << "RangeImpl::processContents() 30.20\n";
         }
 
+	cerr << "RangeImpl::processContents() 30.30\n";
         NodeImpl *leftParent = m_startContainer->parentNode();
         NodeImpl *n = m_startContainer->nextSibling();
         for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
+	    cerr << "RangeImpl::processContents() 30.40\n";
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
 		NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
 		leftContentsParent->appendChild(leftContents,exceptioncode);
 		leftContents = leftContentsParent;
 	    }
+	    cerr << "RangeImpl::processContents() 30.50\n";
 
             NodeImpl *next;
             for (; n; n = next ) {
@@ -536,11 +548,14 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 else
                     leftParent->removeChild(n,exceptioncode);
             }
+	    cerr << "RangeImpl::processContents() 30.60\n";
             n = leftParent->nextSibling();
         }
+	    cerr << "RangeImpl::processContents() 30.70\n";
     }
 
-    NodeImpl *rightContents = 0;;
+    cerr << "RangeImpl::processContents() 40\n";
+    NodeImpl *rightContents = 0;
     if (m_endContainer != cmnRoot) {
         // delete the right-hand side of the range, up until the last ancestor of
         // m_endContainer before cmnRoot
@@ -605,6 +620,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
     // delete all children of cmnRoot between the start and end container
 
+    cerr << "RangeImpl::processContents() 50\n";
     NodeImpl *processStart; // child of cmnRooot
     if (m_startContainer == cmnRoot) {
         unsigned long i;
@@ -634,6 +650,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     // Now add leftContents, stuff in between, and rightContents to the fragment
     // (or just delete the stuff in between)
 
+    cerr << "RangeImpl::processContents() 60\n";
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && leftContents)
       fragment->appendChild(leftContents,exceptioncode);
 
@@ -652,9 +669,11 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         }
     }
 
+    cerr << "RangeImpl::processContents() 70\n";
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
       fragment->appendChild(rightContents,exceptioncode);
 
+    cerr << "RangeImpl::processContents() 80\n";
     // collapse to the proper position - see spec section 2.6
     if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS) {
 	if (!partialStart && !partialEnd)
@@ -670,6 +689,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	    m_startOffset = m_endOffset = partialEnd->nodeIndex();
 	}
     }
+    cerr << "RangeImpl::processContents() 90\n";
     return fragment;
 }
 
@@ -1184,6 +1204,11 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
         }
     }
 
+    while (newParent->firstChild()) {
+    	newParent->removeChild(newParent->firstChild(),exceptioncode);
+	if (exceptioncode)
+	    return;
+    }
     DocumentFragmentImpl *fragment = extractContents(exceptioncode);
     if (exceptioncode)
         return;
