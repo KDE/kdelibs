@@ -833,7 +833,7 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
     QFile list( baseDir + "/output/links.html" );
     list.open( IO_WriteOnly|IO_Append );
     QString link, cl;
-    link = QString( "<a href=\"%1\" target=content>%2</a><br>" )
+    link = QString( "<a href=\"%1\" target=content>%2</a><br>\n" )
         .arg( test + "-compare.html" ).arg( m_currentTest );
     list.writeBlock( link.latin1(), link.length() );
     list.close();
@@ -843,14 +843,31 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
     QString relpath = "..";
     for ( int i = 0; i < test.contains( '/' ); ++i )
         relpath += "/../";
+    if ( relpath.endsWith( "/" ) )
+        relpath = relpath.left( relpath.length() - 1 );
+    relpath = relpath.replace( "//", "/" );
+
     compare.open( IO_WriteOnly|IO_Truncate );
-    cl = QString( "<html><body text=black bgcolor=gray><table valign=top>"
-                  "<tr><td><h1>Base</h1></td><td><h1>Output</h1></td></tr><tr><td>"
-                  "<img width=%3 height=%4 src=\"%1\"><td><img width=%5 height=%6 src=\"%2\"></html>" )
-         .arg( relpath+"baseline/"+test+"-dump.png" )
-         .arg( relpath+"output/"+test+"-dump.png" )
-         .arg( baseSize.width() ).arg( baseSize.height() )
-         .arg( outSize.width() ).arg( outSize.height() );
+    cl = QString( "<html><head><script>\n"
+                  "var pics = new Array();\n"
+                  "pics[0]=new Image();\n"
+                  "pics[0].src = '%1';\n"
+                  "pics[1]=new Image();\n"
+                  "pics[1].src = '%2';\n"
+                  "var t = 1;\n"
+                  "function runSlideShow(){\n"
+                  "   document.getElementById('image').src = pics[t].src;\n"
+                  "   t = 1 - t;\n"
+                  "   setTimeout('runSlideShow()', 50);\n"
+                  "}\n"
+                  "</script>\n")
+         .arg( relpath+"/baseline/"+test+"-dump.png" )
+         .arg( relpath+"/output/"+test+"-dump.png" );
+
+    cl += QString( "<body onload=\"runSlideShow();\" text=black bgcolor=gray>"
+                       "<img width='%3' height='%4' src=\"%1\" id='image'></html>" )
+         .arg( relpath+"/baseline/"+test+"-dump.png" )
+         .arg( baseSize.width() ).arg( baseSize.height() );
 
     compare.writeBlock( cl.latin1(), cl.length() );
     compare.close();
