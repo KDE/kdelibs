@@ -178,7 +178,8 @@ void KioslaveTest::slotQuit(){
   if ( job ) {
     job->kill( true );  // kill the job quietly
   }
-  KIO::Scheduler::disconnectSlave(slave);
+  if (slave)
+    KIO::Scheduler::disconnectSlave(slave);
   kapp->quit();
 }
 
@@ -290,7 +291,8 @@ void KioslaveTest::startJob() {
   }
   if (myJob)
   {
-    KIO::Scheduler::assignJobToSlave(slave, myJob);
+    if (slave)
+      KIO::Scheduler::assignJobToSlave(slave, myJob);
     job = myJob;
   }
 
@@ -338,6 +340,7 @@ void KioslaveTest::slotSlaveConnected()
 void KioslaveTest::slotSlaveError()
 {
    kdDebug() << "Error connected." << endl;
+   slave = 0;
 }
 
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
