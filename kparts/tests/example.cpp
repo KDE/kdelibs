@@ -22,7 +22,7 @@ Shell::Shell( KReadOnlyPart *part1, KPart *part2 )
   (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), actionCollection(), "open_remote_file" );
   (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "shell_quit" );
 
-  m_manager = new KEmbedManager( this );
+  m_manager = new KPartManager( this );
 
   connect( m_manager, SIGNAL( activePartChanged( KPart *, KPart * ) ),
            this, SLOT( slotActivePartChanged( KPart *, KPart * ) ) );

@@ -4,7 +4,7 @@
 
 #include <kpart.h>
 #include <kshell.h>
-#include <kembedmanager.h>
+#include <kpartmanager.h>
 
 class QSplitter;
 class QMultiLineEdit;
@@ -28,7 +28,7 @@ protected:
 private:
   KReadOnlyPart *m_part1;
   KPart *m_part2;
-  KEmbedManager *m_manager;
+  KPartManager *m_manager;
   QSplitter *m_splitter;
 };
 
