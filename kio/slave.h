@@ -24,11 +24,15 @@
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
 
+#include <time.h>
+#include <unistd.h>
+
 #include <qobject.h>
+
+#include <kurl.h>
+
 #include "kio/slaveinterface.h"
 #include "kio/connection.h"
-#include <kurl.h>
-#include <time.h>
 
 class KServerSocket;
 class KSocket;
@@ -42,6 +46,8 @@ namespace KIO {
     public:
 	Slave(KServerSocket *unixdomain, 
 	      const QString &protocol, const QString &socketname);
+
+	void setPID(pid_t);
 
 	/**
 	 * Force termination
@@ -121,6 +127,7 @@ namespace KIO {
         QString m_passwd;
 	KServerSocket *serv;
 	QString m_socket;
+	pid_t m_pid;
 	bool contacted;
 	bool dead;
 	time_t contact_started;

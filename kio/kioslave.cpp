@@ -53,6 +53,7 @@ IdleSlave::IdleSlave(KSocket *socket)
    mConn.init(socket);
    mConn.connect(this, SLOT(gotInput()));
    mConn.send( CMD_SLAVE_STATUS );
+   mPid = 0;
    // Timeout!
 }
 
@@ -80,10 +81,12 @@ IdleSlave::gotInput()
    else 
    {   
       QDataStream stream( data, IO_ReadOnly );
+      pid_t pid;
       QCString protocol;
       QString host;
       Q_INT8 b;
-      stream >> protocol >> host >> b;
+      stream >> pid >> protocol >> host >> b;
+      mPid = pid;
       mConnected = (b != 0);
       mProtocol = protocol;
       mHost = host;
@@ -145,10 +148,10 @@ KIODaemon::slotSlaveGone()
     mSlaveList.removeRef(slave);
 }
 
-QString 
+pid_t
 KIODaemon::requestSlave(const QString &protocol, 
                         const QString &host,
-                        const QString &app_socket)
+                        const QString &app_socket, QString &error)
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
@@ -176,7 +179,7 @@ KIODaemon::requestSlave(const QString &protocol,
     {
        mSlaveList.removeRef(slave);
        slave->connect(app_socket);
-       return QString::null;
+       return slave->pid();
     }
 
     kDebugInfo(7016, "requestSlave( %s, %s, %s)",
@@ -186,21 +189,24 @@ KIODaemon::requestSlave(const QString &protocol,
 	 protocol_library = locate("lib", QString("kio_%1.la").arg(protocol));
 
     if (protocol_library.isNull()) {
-	return "error: no such protocol";
+	error = i18n("error: no such protocol");
+        return 0;
     }
 
     int fd[2];
 
     if (::socketpair(PF_UNIX, SOCK_STREAM, 0, fd) == -1) {
 	perror("socketpair");
-	return QString::fromLatin1("error: pipe creation failed");
+	error = i18n("error: pipe creation failed");
+        return 0;
     }
     QApplication::flushX();
 
     int pid = fork();
     if (pid == -1) {
 	perror("fork");
-	return QString::fromLatin1("error: fork failed");
+	error = i18n("error: fork failed");
+        return 0;
     }
     static char errors[] = { 'K', // OK
 			     'L' // Loading failed
@@ -251,7 +257,7 @@ KIODaemon::requestSlave(const QString &protocol,
 	ksw->dispatchLoop();
 
 	exit(0);
-	return QString::null; // never reached
+	return 0; // never reached
 
     } else {
         ::close(fd[1]);
@@ -262,16 +268,18 @@ KIODaemon::requestSlave(const QString &protocol,
 	if (::read(fd[0], &result, 1) != 1) {
 	    perror("read");
             ::close(fd[0]);
-	    return i18n("error: io-slave crashed");
+	    error = i18n("error: io-slave crashed");
+            return 0;
 	}
         ::close(fd[0]);
 
 	if (result != errors[ERR_OK]) {
-	    return i18n("error: loading failed");
+	    error = i18n("error: loading failed");
+            return 0;
 	}
 
         // Success
-	return QString::null;
+	return pid;
     }
 }
 
@@ -290,8 +298,9 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
         QString app_socket;
 	stream >> protocol >> host >> app_socket;
 	replyType = "QString";
-	QString reply = requestSlave(protocol, host, app_socket);
-	output << reply;
+        QString error;
+	pid_t pid = requestSlave(protocol, host, app_socket, error);
+	output << pid << error;;
 	return true;
     }
     fprintf(stderr, "Unknown function '%s'\n", fun.data());

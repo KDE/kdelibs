@@ -23,6 +23,7 @@
 #ifndef KIO_DAEMON_H
 #define KIO_DAEMON_H
 
+#include <unistd.h>
 #include <qlist.h>
 #include <ksock.h>
 #include <kuniqueapp.h>
@@ -35,6 +36,7 @@ public:
    IdleSlave(KSocket *socket);
    bool match( const QString &protocol, const QString &host, bool connected);
    void connect( const QString &app_socket);
+   pid_t pid() { return mPid;}
 
 protected slots:
    void gotInput();      
@@ -44,6 +46,7 @@ protected:
    QString mProtocol;
    QString mHost;
    bool mConnected;
+   pid_t mPid;
 };
 
 class KIODaemon : public KUniqueApplication {
@@ -60,8 +63,8 @@ protected slots:
     void slotSlaveGone();
 
 protected:
-    QString requestSlave(const QString &protocol, const QString &host,
-                         const QString &app_socket);
+    pid_t requestSlave(const QString &protocol, const QString &host,
+                       const QString &app_socket, QString &error);
                          
     QString mPoolSocketName;                         
     KServerSocket *mPoolSocket;

@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 #include <sys/types.h>
 
 #include <qfile.h>
@@ -71,8 +72,14 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     m_socket = socketname;
     dead = false;
     contact_started = time(0);
+    m_pid = 0;
     connect(serv, SIGNAL(accepted( KSocket* )),
 	    SLOT(accept(KSocket*) ) );
+}
+
+void Slave::setPID(pid_t pid)
+{
+    m_pid = pid;
 }
 
 void Slave::gotInput()
@@ -117,6 +124,11 @@ void Slave::gotAnswer()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
+    kDebugInfo("killing slave (%s:\\%s)", debugString(m_protocol), debugString(m_host));
+    if (m_pid)
+    {
+       ::kill(m_pid, SIGTERM);
+    }
 }
 
 void Slave::openConnection( const QString &host, int port,
@@ -182,6 +194,19 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
         delete slave;
 	return 0;
     }
+    QDataStream stream2(reply, IO_ReadOnly);
+    QString errorStr;
+    pid_t pid;
+    stream2 >> pid >> errorStr;
+    if (!pid)
+    {
+	error_text = i18n("Unable to create io-slave:\n%1").arg(errorStr);
+	error = KIO::ERR_INTERNAL;
+        delete slave;
+	return 0;
+    }
+    kDebugInfo("PID of slave = %d", pid);
+    slave->setPID(pid);
 
     return slave;
 }

@@ -94,9 +94,10 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_SLAVE_STATUS:
         {
+           pid_t pid;
            QCString protocol;
-           stream >> protocol >> str1 >> b;
-           emit slaveStatus(protocol, str1, (b != 0));
+           stream >> pid >> protocol >> str1 >> b;
+           emit slaveStatus(pid, protocol, str1, (b != 0));
         }
         break;
 

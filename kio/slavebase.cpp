@@ -66,8 +66,9 @@ void SlaveBase::renamed( const QString &_new )
 
 void SlaveBase::slaveStatus( const QString &host, bool connected )
 {
+    pid_t pid = getpid();
     Q_INT8 b = connected ? 1 : 0;
-    KIO_DATA << mProtocol << host << b;
+    KIO_DATA << pid << mProtocol << host << b;
     m_pConnection->send( MSG_SLAVE_STATUS, data );
 }
 

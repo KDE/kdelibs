@@ -20,8 +20,13 @@
 #ifndef __kio_slaveinterface_h
 #define __kio_slaveinterface_h
 
+#include <unistd.h>
+#include <sys/types.h>
+
 #include <qobject.h>
+
 #include <kurl.h>
+
 #include <kio/global.h>
 
 namespace KIO {
@@ -127,7 +132,7 @@ public:
     void ready();
     void connected();
     void finished();
-    void slaveStatus(const QCString &, const QString &, bool);
+    void slaveStatus(pid_t, const QCString &, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
 
