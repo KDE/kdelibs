@@ -246,8 +246,8 @@ void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
         QString cmd=KStandardDirs::findExe(downloadManger);
         if (cmd.isEmpty())
         {
-            QString errMsg=i18n("Sorry, I can't find  the Download Manager (%1) in your $PATH ").arg(downloadManger);
-            QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with konqueror will be disabled!");
+            QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
+            QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
             KMessageBox::detailedSorry(0,errMsg,errMsgEx);
             cfg->writeEntry("DownloadManager",QString::null);
             cfg->sync ();
