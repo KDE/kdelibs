@@ -55,7 +55,9 @@ private:
 #endif
 };
 
+#ifndef NDEBUG
 int KJSProxyImpl::s_count = 0;
+#endif
 
 KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
 {
