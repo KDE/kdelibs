@@ -609,6 +609,8 @@ void RenderPartObject::updateWidget()
               aStr += QString::fromLatin1("=\"");
               aStr += p->value();
               aStr += QString::fromLatin1("\"");
+              if (p->name().lower() == QString::fromLatin1("type"))
+                  static_cast<HTMLObjectBaseElementImpl *>(element())->setServiceType(p->value());
               params.append(aStr);
           }
       }

@@ -54,6 +54,7 @@ public:
     void unregister(const unsigned long);
 
     void setLiveConnect(KParts::LiveConnectExtension * lc);
+    void setServiceType(const QString &);
 
     QString url;
     QString classId;

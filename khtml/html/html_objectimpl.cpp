@@ -52,20 +52,23 @@ HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
     needWidgetUpdate = false;
 }
 
+void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
+    serviceType = val.lower();
+    int pos = serviceType.find( ";" );
+    if ( pos!=-1 )
+        serviceType = serviceType.left( pos );
+    needWidgetUpdate = true;
+}
+
 void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
 {
     DOM::DOMStringImpl *stringImpl = attr->val();
     QString val = QConstString( stringImpl->s, stringImpl->l ).string();
-    int pos;
     switch ( attr->id() )
     {
         case ATTR_TYPE:
         case ATTR_CODETYPE:
-            serviceType = val.lower();
-            pos = serviceType.find( ";" );
-            if ( pos!=-1 )
-                serviceType = serviceType.left( pos );
-            needWidgetUpdate = true;
+            setServiceType( val );
             break;
         case ATTR_WIDTH:
             addCSSLength( CSS_PROP_WIDTH, attr->value());
