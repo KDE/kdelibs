@@ -105,8 +105,10 @@ bool KGlobalAccelPrivate::disconnectKey( const KKey& spec )
 bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab, KAccelAction* pAction )
 {
 	KKeyNative key( spec );
-	if( !key.code() )
+	if( !key.code() ) {
+		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << spec.toStringInternal() << ", " << bGrab << ", \"" << pAction->name() << "\" ): Tried to grab key with null code." << endl;
 		return false;
+	}
 
 	// Make sure that grab masks have been initialized.
 	if( g_keyModMaskXOnOrOff == 0 )
