@@ -279,6 +279,7 @@ RenderText::RenderText(DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     hasFirstLine = false;
+    m_hasReturn = true;
     fm = 0;
     
 #ifdef DEBUG_LAYOUT
@@ -619,7 +620,8 @@ void RenderText::calcMinMaxWidth()
 
     int currMinWidth = 0;
     int currMaxWidth = 0;
-
+    m_hasReturn = false;
+    
     QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
     for(int i = 0; i < len; i++)
@@ -638,6 +640,7 @@ void RenderText::calcMinMaxWidth()
         {
             if ( (*(str->s+i+wordlen)).latin1() == '\n' )
             {
+		m_hasReturn = true;
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
@@ -660,9 +663,7 @@ void RenderText::calcMinMaxWidth()
         i += wordlen;
     }
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-    currMinWidth = 0;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-    currMaxWidth = 0;
     setMinMaxKnown();
 }
 
@@ -816,17 +817,18 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
     return width( from, len, fm );
 }
 
-unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *fm) const
+unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *_fm) const
 {
     if(!str->s || from > str->l ) return 0;
-
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
+    if ( _fm == fm && from == 0 && len == str->l ) 
+ 	 w = m_maxWidth;
     if( len == 1)
-        w = fm->width( *(str->s+from) );
+        w = _fm->width( *(str->s+from) );
     else
-        w = fm->width(QConstString(str->s+from, len).string());
+        w = _fm->width(QConstString(str->s+from, len).string());
 
     // ### add margins and support for RTL
 

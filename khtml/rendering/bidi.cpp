@@ -924,11 +924,32 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
         } else if ( o->isReplaced() ) {
             tmpW += o->width();
         } else if ( o->isText() ) {
-            RenderText *t = static_cast<RenderText *>(o);
-	    QFontMetrics fm = t->metrics( firstLine );
-            QChar *str = t->text();
+	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->length();
-            int len = strlen - pos;
+	    int len = strlen - pos;
+	    QChar *str = t->text();
+	    if ( ( !firstLine || !t->firstLine() ) && !t->hasReturn() && t->maxWidth() + w + tmpW < width ) {
+		// the rest of the object fits completely
+// 		kdDebug() << "RenderFlow::findNextLineBreak object fits completely, max=" << t->maxWidth()
+// 			  << " width =" << w << " avail = " << width <<" tmp=" << tmpW << endl; 
+		//search backwards for last possible linebreak
+		int lastSpace = strlen-1;
+		while( lastSpace >= pos && !isBreakable( str, lastSpace, strlen ) )
+		    lastSpace--;
+		lastSpace++;
+		if ( lastSpace > pos ) {
+		    w += tmpW + t->width( pos, lastSpace-pos, firstLine);
+		    tmpW = 0;
+		    lBreak.obj = o;
+		    lBreak.pos = lastSpace;
+		}
+		tmpW += t->width( lastSpace, strlen-lastSpace, firstLine);
+// 		kdDebug() << "--> width=" << t->width( pos, strlen-pos, firstLine)	
+// 			  <<" first=" << t->width( pos, lastSpace-pos, firstLine)
+// 			  <<" end=" << t->width( lastSpace, strlen-lastSpace, firstLine)
+// 			  << endl; 
+	    } else {
+	    QFontMetrics fm = t->metrics( firstLine );
 	    // proportional font, needs a bit more work.
 	    int lastSpace = pos;
 	    while(len) {
@@ -956,6 +977,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		len--;
 	    }
 	    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
+	    }
         } else
             assert( false );
 

@@ -172,6 +172,9 @@ public:
     virtual short baselineOffset() const;
     virtual short verticalPositionHint() const;
 
+    bool firstLine() const { return hasFirstLine; }
+    bool hasReturn() const { return m_hasReturn; }
+    
     virtual const QFont &font();
     QFontMetrics metrics(bool firstLine = false) const;
 
@@ -201,6 +204,7 @@ protected:
 
     SelectionState m_selectionState : 3 ;
     bool hasFirstLine : 1;
+    bool m_hasReturn : 1;
 private:
     QFontMetrics *fm;
     // the one for the first line
