@@ -1,5 +1,6 @@
 /*****************************************************************
 Copyright (c) 2000 Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,55 +33,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "marshall.cpp"
 
 static DCOPClient* dcop = 0;
+static bool bAppIdOnly = 0;
+static bool bLaunchApp = 0;
 
-void queryApplications()
+bool findObject( const char* app, const char* obj, const char* func, int argc, char** args )
 {
-    QCStringList apps = dcop->registeredApplications();
-    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
-	if ( (*it) != dcop->appId() && (*it).left(9) != "anonymous" )
-	    printf( "%s\n", (*it).data() );
-
-    if ( !dcop->isAttached() )
-    {
-	qWarning( "server not accessible" );
-        exit(1);
-    }
-}
-
-void queryObjects( const char* app )
-{
-    bool ok = false;
-    QCStringList objs = dcop->remoteObjects( app, &ok );
-    for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it ) {
-	if ( (*it) == "default" && ++it != objs.end() )
-	    printf( "%s (default)\n", (*it).data() );
-	else
-	    printf( "%s\n", (*it).data() );
-    }
-    if ( !ok )
-    {
-	qWarning( "application '%s' not accessible", app );
-	exit(1);
-    }
-}
-
-void queryFunctions( const char* app, const char* obj )
-{
-    bool ok = false;
-    QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
-    for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
-	printf( "%s\n", (*it).data() );
-    }
-    if ( !ok )
-    {
-	qWarning( "object '%s' in application '%s' not accessible", obj, app );
-        exit(1);
-    }
-}
-
-void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
-{
-
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
     int right = f.find( ')' );
@@ -91,45 +48,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
         exit(1);
     }
 
-    if ( left < 0 ) {
-	// try to get the interface from the server
-	bool ok = false;
-	QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
-	QCString realfunc;
-	if ( !ok && argc == 0 )
-	    goto doit;
-	if ( !ok )
-        {
-	    qWarning( "object not accessible" );
-            exit(1);
-        }
-	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
-	    int l = (*it).find( '(' );
-	    int s = (*it).find( ' ');
-	    if ( s < 0 )
-		s = 0;
-	    else
-		s++;
-
-	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
-		realfunc = (*it).mid( s );
-		int a = (*it).contains(',');
-		if ( ( a == 0 && argc == 0) || ( a > 0 && a + 1 == argc ) )
-		    break;
-	    }
-	}
-	if ( realfunc.isEmpty() )
-	{
-	    qWarning("no such function");
-            exit(1);
-	}
-	f = realfunc;
-	left = f.find( '(' );
-	right = f.find( ')' );
-    }
-
- doit:
-    if ( left < 0 )
+    if ( !f.isEmpty() && (left < 0) )
 	f += "()";
 
     // This may seem expensive but is done only once per invocation
@@ -204,8 +123,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	exit(1);
     }
 
-    QByteArray data, replyData;
-    QCString replyType;
+    QByteArray data;
     QDataStream arg(data, IO_WriteOnly);
 
     int i = 0;
@@ -213,32 +131,49 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
         marshall(arg, args[i++], *it);
     }
 
-    if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {
-	qWarning( "call failed");
-        exit(1);
-    } else {
-	QDataStream reply(replyData, IO_ReadOnly);
-
-        if ( replyType != "void" && replyType != "ASYNC" )
-        {
-            QCString replyString = demarshal( reply, replyType );
-            if ( replyString.isEmpty() )
-                replyString.sprintf( "<%s>", replyType.data() );
-
-            printf( "%s\n", replyString.data() );
-        }
+    QCString foundApp;
+    QCString foundObj;
+    if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) ) 
+    {
+       if (bAppIdOnly)
+          puts(foundApp.data());
+       else
+          printf("DCOPRef(%s,%s)\n", qStringToC(foundApp), qStringToC(foundObj));
+       return true;
     }
+    return false;
 }
 
+void usage()
+{
+//   fprintf( stderr, "Usage: dcopfind [-l] [-a] application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
+   fprintf( stderr, "Usage: dcopfind [-a] application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
+   exit(0);
+}
 
 
 int main( int argc, char** argv )
 {
+    int argi = 1;
 
-    if ( argc > 1 && argv[1][0] == '-' ) {
-	fprintf( stderr, "Usage: dcop [ application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
-	exit(0);
+    while ((argi < argc) && (argv[argi][0] == '-')) 
+    {
+       switch ( argv[argi][1] ) {
+       case 'l': 
+            bLaunchApp = true;
+            break;
+       case 'a': 
+            bAppIdOnly = true;
+            break;
+       default:
+            usage();
+       }
+       argi++;
     }
+
+    if (argc <= argi) 
+       usage();
+
 
     DCOPClient client;
     client.attach();
@@ -248,54 +183,41 @@ int main( int argc, char** argv )
     QCString objid;
     QCString function;
     char **args = 0;
-    if ((argc > 1) && (strncmp(argv[1], "DCOPRef(", 8)) == 0)
+    if ((argc > argi) && (strncmp(argv[argi], "DCOPRef(", 8)) == 0)
     {
-       char *delim = strchr(argv[1], ',');
+       char *delim = strchr(argv[argi], ',');
        if (!delim)
        {
-          fprintf(stderr, "Error: '%s' is not a valid DCOP reference.\n", argv[1]);
+          fprintf(stderr, "Error: '%s' is not a valid DCOP reference.\n", argv[argi]);
           return 1;
        }
        *delim = 0;
-       app = argv[1] + 8;
+       app = argv[argi++] + 8;
        delim++;
        delim[strlen(delim)-1] = 0;
        objid = delim;
-       if (argc > 2)
-          function = argv[2];
-       if (argc > 3)
-          args = &argv[3];
-       argc++;
     }
     else
     {
-       if (argc > 1)
-          app = argv[1];
-       if (argc > 2)
-          objid = argv[2];
-       if (argc > 3)
-          function = argv[3];
-       if (argc > 4)
-          args = &argv[4];
+       if (argc > argi)
+          app = argv[argi++];
+       if (argc > argi)
+          objid = argv[argi++];
+    }
+    if (argc > argi)
+       function = argv[argi++];
+        
+    if (argc > argi)
+    {
+       args = &argv[argi];
+       argc = argc-argi;
+    }
+    else
+    {
+       argc = 0;
     }
 
-    switch ( argc ) {
-    case 0:
-    case 1:
-	queryApplications();
-	break;
-    case 2:
-	queryObjects( app );
-	break;
-    case 3:
-	queryFunctions( app, objid );
-	break;
-    case 4:
-    default:
-	callFunction( app, objid, function, argc - 4, args );
-	break;
-
-    }
+    findObject( app, objid, function, argc, args );
 
     return 0;
 }
