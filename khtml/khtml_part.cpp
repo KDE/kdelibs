@@ -160,6 +160,8 @@ public:
     m_bJScriptOverride = false;
     m_bJavaForce = false;
     m_bJavaOverride = false;
+    m_bPluginsForce = false;
+    m_bPluginsOverride = false;
 
     m_bFirstData = true;
 
@@ -173,6 +175,8 @@ public:
             m_bJScriptOverride = part->d->m_bJScriptOverride;
             m_bJavaForce = part->d->m_bJavaForce;
             m_bJavaOverride = part->d->m_bJavaOverride;
+            m_bPluginsForce = part->d->m_bPluginsForce;
+            m_bPluginsOverride = part->d->m_bPluginsOverride;
         }
     }
   }
@@ -204,12 +208,15 @@ public:
 
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
-  bool m_bJScriptEnabled;
-  bool m_bJavaEnabled;
-  bool m_bJScriptForce;
-  bool m_bJScriptOverride;
-  bool m_bJavaForce;
-  bool m_bJavaOverride;
+  bool m_bJScriptEnabled :1;
+  bool m_bJavaEnabled :1;
+  bool m_bPluginsEnabled :1;
+  bool m_bJScriptForce :1;
+  bool m_bJScriptOverride :1;
+  bool m_bJavaForce :1;
+  bool m_bJavaOverride :1;
+  bool m_bPluginsForce :1;
+  bool m_bPluginsOverride :1;
   int m_frameNameId;
   KJavaAppletContext *m_javaContext;
 
@@ -436,6 +443,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // set the default java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
+  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
 
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
@@ -514,6 +522,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
   d->m_haveCharset = true;
   d->m_charset = charset;
   d->m_settings->setCharset( d->m_charset );
@@ -595,6 +604,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
   d->m_settings->resetCharset();
   d->m_haveCharset = false;
   d->m_charset = d->m_settings->charset();
@@ -779,6 +789,19 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
   }
 
   return d->m_javaContext;
+}
+
+void KHTMLPart::enablePlugins( bool enable )
+{
+  d->m_bPluginsForce = enable;
+  d->m_bPluginsOverride = true;
+}
+
+bool KHTMLPart::pluginsEnabled() const
+{
+  if ( d->m_bPluginsOverride )
+      return d->m_bPluginsForce;
+  return d->m_bPluginsEnabled;
 }
 
 void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
@@ -2876,6 +2899,7 @@ void KHTMLPart::reparseConfiguration()
   // PENDING(lars) Pass hostname to the following two methods.
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
   d->m_bJavaEnabled = settings->isJavaEnabled();
+  d->m_bPluginsEnabled = settings->isPluginsEnabled();
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 

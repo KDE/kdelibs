@@ -282,6 +282,11 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
   return lookup_hostname_policy(hostname, javaScriptDomainPolicy, m_bEnableJavaScript);
 }
 
+bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
+{
+  // FIXME: After 2.1 this new feature can be implemented (malte)
+  return true;
+}
 
 bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 {

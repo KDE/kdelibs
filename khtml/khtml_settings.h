@@ -102,6 +102,7 @@ public:
     // Java and JavaScript
     bool isJavaEnabled( const QString& hostname = QString::null );
     bool isJavaScriptEnabled( const QString& hostname = QString::null );
+    bool isPluginsEnabled( const QString& hostname = QString::null );
     bool isCSSEnabled( const QString& hostname = QString::null );
 
     // helpers for parsing domain-specific configuration, used in KControl module as well

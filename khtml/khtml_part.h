@@ -249,6 +249,16 @@ public:
   KJavaAppletContext *createJavaContext();
 
   /**
+   * Enable or disable plugins via, default is enabled
+   */
+  void enablePlugins( bool enable );
+
+  /**
+   * Return if plugins are enabled/disabled.
+   */
+  bool pluginsEnabled() const;
+  
+  /**
    * Should images be loaded automatically? Default is @p true.
    *
    * (not implemented at the moment)

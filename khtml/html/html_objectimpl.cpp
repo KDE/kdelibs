@@ -279,14 +279,17 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
    if ( !r )
       return;
 
-   if ( _parent->id()!=ID_OBJECT )
+   if (w->part()->pluginsEnabled())
    {
-      RenderPartObject *p = new RenderPartObject( w, this );
-      m_render = p;
-      m_render->setStyle(m_style);
-      r->addChild( m_render, _next ? _next->renderer() : 0 );
-   } else
-      r->setStyle(m_style);
+     if ( _parent->id()!=ID_OBJECT )
+     {
+        RenderPartObject *p = new RenderPartObject( w, this );
+        m_render = p;
+        m_render->setStyle(m_style);
+        r->addChild( m_render, _next ? _next->renderer() : 0 );
+     } else
+        r->setStyle(m_style);
+   }
 
   NodeBaseImpl::attach( w );
 }
@@ -360,10 +363,13 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
   if ( !r )
     return;
 
-  RenderPartObject *p = new RenderPartObject( w, this );
-  m_render = p;
-  m_render->setStyle(m_style);
-  r->addChild( m_render, _next ? _next->renderer() : 0 );
+  if (w->part()->pluginsEnabled())
+  {
+    RenderPartObject *p = new RenderPartObject( w, this );
+    m_render = p;
+    m_render->setStyle(m_style);
+    r->addChild( m_render, _next ? _next->renderer() : 0 );
+  }
 
   NodeBaseImpl::attach( w );
 }
