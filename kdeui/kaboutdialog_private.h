@@ -94,6 +94,7 @@ class KAboutContainerBase : public QWidget
     void setImage( const QString &fileName );
     void setImageBackgroundColor( const QColor &color );
     void setImageFrame( bool state );
+    void setIcon( const QString &fileName );
     void setProduct( const QString &appName, const QString &version,
 		     const QString &author, const QString &year );
 

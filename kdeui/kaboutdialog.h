@@ -392,6 +392,20 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
+   * Define an icon to be shown in the dialog.  Use this to override the
+   * default application icon.  For example, use this function if the 
+   * KAboutDialog is for a panel applet and you want to override the
+   * appletproxy icon with your own icon.
+   *
+   * @param fileName Path to file containing icon data in a format that 
+   *        can be loaded by QPixmap.
+   *
+   * @since 3.3
+   */
+  void setIcon( const QString &fileName );
+
+  /**
+   * (Constructor II only)
    * The image has a minimum size, but is centered within an area if the
    * dialog box is enlarged by the user. You set the background color
    * of the area with this method.

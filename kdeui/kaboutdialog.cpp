@@ -641,6 +641,24 @@ void KAboutContainerBase::setImage( const QString &fileName )
   mImageFrame->layout()->activate();
 }
 
+void KAboutContainerBase::setIcon( const QString &fileName )
+{
+  if( mIconLabel == 0 )
+  {
+    kdDebug(291) << "setIcon: " << "Invalid layout" << endl;
+    return;
+  }
+  if( fileName.isNull() )
+  {
+    return;
+  }
+
+  QPixmap logo( fileName );
+  if( !logo.isNull() )
+  {
+    mIconLabel->setPixmap( logo );
+  }
+}
 
 void KAboutContainerBase::setImageBackgroundColor( const QColor &color )
 {
@@ -681,7 +699,12 @@ void KAboutContainerBase::setProduct( const QString &appName,
   }
 
   if ( kapp )
-      mIconLabel->setPixmap( kapp->icon() );
+  {
+    mIconLabel->setPixmap( kapp->icon() );
+    kdDebug(291) << "setPixmap (iconName): " << kapp->iconName() << endl;
+  }
+  else
+    kdDebug(291) << "no kapp" << endl;
 
   QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
     arg(QString::fromLatin1(KDE_VERSION_STRING));
@@ -1672,6 +1695,12 @@ void KAboutDialog::setImage( const QString &fileName )
 {
   if( mContainerBase == 0 ) { return; }
   mContainerBase->setImage( fileName );
+}
+
+void KAboutDialog::setIcon( const QString &fileName )
+{
+	if( mContainerBase == 0 ) { return; }
+	mContainerBase->setIcon( fileName );
 }
 
 
