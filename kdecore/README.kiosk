@@ -213,6 +213,7 @@ Kicker related:
 action/kicker_rmb // RMB menu
 action/menuedit
 
+
 KWin related:
 action/kwin_rmb // RMB window context menu
 
@@ -407,6 +408,10 @@ lineedit_text_completion
           any previously entered data and make suggestions based on this 
           when typing. When a single account is shared by multiple people you
           may wish to disable this out of privacy concerns.
+
+start_new_session
+	- defines whether the user may start a second X session.
+          See also the kdm configuration.
 
 Screensaver related:
 opengl_screensavers
