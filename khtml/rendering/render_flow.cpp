@@ -362,7 +362,7 @@ void RenderFlow::layoutSpecialObjects( bool relayoutChildren )
             //kdDebug(6040) << "   have a positioned object" << endl;
             if (r->type == SpecialObject::Positioned) {
 		if ( relayoutChildren ) {
-		    r->node->setLayouted( false );
+		    r->node->setLayoutedLocal( false );
 		}
 		if ( !r->node->layouted() )
 		    r->node->layout();

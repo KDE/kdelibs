@@ -183,6 +183,9 @@ public:
 	    root->scheduleRelayout();
 	}
     }
+    void setLayoutedLocal(bool b) {
+	m_layouted = b;
+    }
     // hack to block inline layouts during parsing
     // evil, evil. I didn't do it. <tm>
     virtual void setBlockBidi() {}
