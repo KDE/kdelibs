@@ -313,7 +313,7 @@ QString whatstr;
   //
   //  CipherWizards
   //
-  QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards..."), tabSSL);
+  QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards"), tabSSL);
   mCWcompatible = new QPushButton(i18n("&Most Compatible"), cwbg);
   mCWus = new QPushButton(i18n("&US Ciphers Only"), cwbg);
   mCWexp = new QPushButton(i18n("E&xport Ciphers Only"), cwbg);
@@ -521,9 +521,9 @@ QString whatstr;
   defCertBG = new QVButtonGroup(i18n("Default Action..."), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
-  defDont = new QRadioButton(i18n("D&on't Send"), defCertBG);
+  defDont = new QRadioButton(i18n("D&on't send"), defCertBG);
   grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
-  grid->addMultiCellWidget(new QLabel(i18n("Default Certificate:"), tabAuth), 1, 1, 3, 5);
+  grid->addMultiCellWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 1, 3, 5);
   defCertBox = new KComboBox(false, tabAuth);
   grid->addMultiCellWidget(defCertBox, 2, 2, 3, 5);
 
