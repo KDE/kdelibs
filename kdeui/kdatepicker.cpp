@@ -373,7 +373,7 @@ KDatePicker::setEnabled(bool enable)
   QWidget *widgets[]= {
     yearForward, yearBackward, monthForward, monthBackward,
     selectMonth, selectYear,
-    line, table, d->selectWeek };
+    line, table, d->selectWeek, d->todayButton };
   const int Size=sizeof(widgets)/sizeof(widgets[0]);
   int count;
   // -----
