@@ -323,7 +323,7 @@ void RenderText::absolutePosition(int &xPos, int &yPos)
     else
 	xPos = yPos = -1;
 }
-	
+
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		      int tx, int ty)
 {
@@ -349,7 +349,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	}
 	s = m_first;
 #ifndef BIDI_DEBUG
-    }	
+    }
 #endif
 
 
@@ -402,7 +402,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		startPos = 0;
 //	    kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
 	}
-	
+
 	while(s && endPos)
 	{
 	    if(s->checkVerticalPoint(y, ty, h))
@@ -415,7 +415,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    endPos -= diff;
 	    startPos -= diff;
 	    if(breakAtEnd && endPos < 0) break;
-	    s=s->next();	
+	    s=s->next();
 	}
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
@@ -463,7 +463,7 @@ void RenderText::calcMinMaxWidth()
 	    currMinWidth += fm->width(c);
 	    if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
 	    currMinWidth = 0;
-    	    currMaxWidth += fm->width(c);	
+    	    currMaxWidth += fm->width(c);
 	}
 	else if( c == QChar('\n'))
 	{
@@ -595,16 +595,16 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     {
 	x += paddingLeft() + borderLeft() + marginLeft();
         width -= marginLeft();
-    } 
-    
+    }
+
     if(from + len == int(str->l) && m_parent->isInline() && m_parent->lastChild()==this)
         width -= marginRight();
-       
+
     //#ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
 //    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
     //#endif
-    
+
     TextSlave *s = new TextSlave(x, y, ch, len,
 				 bidiHeight(), baselineOffset(), width, deleteChar);
 
@@ -631,9 +631,10 @@ unsigned int RenderText::width( int from, int len) const
 
     if(m_parent->isInline())
     {
-	if(from == 0 && m_parent->firstChild()==this)
+	if(from == 0 && m_parent->firstChild() == static_cast<const RenderObject*>(this))
 	    w += borderLeft() + paddingLeft() + marginLeft();
-	if(from + len == int(str->l) && m_parent->lastChild()==this)
+	if(from + len == int(str->l) &&
+	   m_parent->lastChild() == static_cast<const RenderObject*>(this))
 	    w += borderRight() + paddingRight() +marginRight();;
     }
 

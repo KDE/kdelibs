@@ -145,7 +145,7 @@ bool RenderListItem::checkChildren() const
 	RenderObject *next = o->firstChild();
 	if ( !next )
 	    next = o->nextSibling();
-	while ( !next && o->parent() != this ) {
+	while ( !next && o->parent() != static_cast<const RenderObject*>(this) ) {
 	    o = o->parent();
 	    next =  o->nextSibling();
 	}
@@ -285,7 +285,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 }
 
 void RenderListMarker::layout()
-{	
+{
     calcMinMaxWidth();
 
     if(listImage) {
@@ -300,7 +300,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 {
     if (manualUpdate && *manualUpdate)
     {
-        updateSize();	
+        updateSize();
         repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         return;
     }
@@ -309,7 +309,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 	RenderBox::setPixmap(p, r, o);
 
     if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
-    {	
+    {
 	setLayouted(false);
 	setMinMaxKnown(false);
 	layout();
@@ -320,7 +320,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         }
         else
         {
-            updateSize();	
+            updateSize();
 	    repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         }
     }
@@ -329,7 +329,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 	repaintRectangle(0, 0, m_width, m_height);
     }
 }
-	
+
 void RenderListMarker::calcMinMaxWidth()
 {
     m_width = 0;
