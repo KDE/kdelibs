@@ -1144,6 +1144,8 @@ KColorDialog::setDefaultColor( const QColor& col )
         // and the "default color" checkbox, under all items on the right side
         //
         d->cbDefaultColor = new QCheckBox( i18n( "Default color" ), mainWidget() );
+        d->cbDefaultColor->setChecked(true);
+
         d->l_right->addWidget( d->cbDefaultColor );
 
         mainWidget()->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX ); // cancel setFixedSize()
@@ -1166,25 +1168,14 @@ QColor KColorDialog::defaultColor() const
 
 void KColorDialog::slotDefaultColorClicked()
 {
-    bool enable;
     if ( d->cbDefaultColor->isChecked() )
     {
-        d->selColor = QColor();
-        showColor( d->defaultColor, i18n( "-default-" ) );
-        enable = false;
+        d->selColor = d->defaultColor;
+        showColor( d->selColor, i18n( "-default-" ) );
     } else
     {
-        d->selColor = d->defaultColor;
-        enable = true;
+        showColor( d->selColor, QString::null );
     }
-    d->hedit->setEnabled( enable );
-    d->sedit->setEnabled( enable );
-    d->vedit->setEnabled( enable );
-    d->redit->setEnabled( enable );
-    d->gedit->setEnabled( enable );
-    d->bedit->setEnabled( enable );
-    d->valuePal->setEnabled( enable );
-    d->hsSelector->setEnabled( enable );
 }
 
 void
@@ -1218,6 +1209,8 @@ KColorDialog::slotWriteSettings()
 QColor
 KColorDialog::color() const
 {
+  if ( d->cbDefaultColor && d->cbDefaultColor->isChecked() )
+     return QColor();
   if ( d->selColor.isValid() )
     d->table->addToRecentColors( d->selColor );
   return d->selColor;
@@ -1365,11 +1358,20 @@ void KColorDialog::slotColorDoubleClicked
 
 void KColorDialog::_setColor(const KColor &color, const QString &name)
 {
-  if (color == d->selColor) return;
+  if (color.isValid())
+  {
+     if (d->cbDefaultColor && d->cbDefaultColor->isChecked())
+        d->cbDefaultColor->setChecked(false);
+     d->selColor = color;
+  }
+  else
+  {
+     if (d->cbDefaultColor && d->cbDefaultColor->isChecked())
+        d->cbDefaultColor->setChecked(true);
+     d->selColor = d->defaultColor;
+  }
 
-  d->selColor = color;
-
-  showColor( color, name );
+  showColor( d->selColor, name );
 
   emit colorSelected( d->selColor );
 }
