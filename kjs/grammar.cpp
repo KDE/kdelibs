@@ -1647,11 +1647,11 @@ case 110:
     break;}
 case 125:
 #line 389 "grammar.y"
-{ yyval.stat = new BlockNode(0L); ;
+{ yyval.stat = new BlockNode(0L); DBG(yyval.stat, yylsp[-1], yylsp[0]); ;
     break;}
 case 126:
 #line 390 "grammar.y"
-{ yyval.stat = new BlockNode(yyvsp[-1].slist); ;
+{ yyval.stat = new BlockNode(yyvsp[-1].slist); DBG(yyval.stat, yylsp[-2], yylsp[0]); ;
     break;}
 case 127:
 #line 394 "grammar.y"

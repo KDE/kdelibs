@@ -386,8 +386,8 @@ Statement:
 ;
 
 Block:
-    '{' '}'                        { $$ = new BlockNode(0L); }
-  | '{' StatementList '}'          { $$ = new BlockNode($2); }
+    '{' '}'                        { $$ = new BlockNode(0L); DBG($$, @1, @2); }
+  | '{' StatementList '}'          { $$ = new BlockNode($2); DBG($$, @1, @3); }
 ;
 
 StatementList:
