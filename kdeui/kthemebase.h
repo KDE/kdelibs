@@ -178,7 +178,8 @@ public:
      * The gradient types. Horizontal is left to right, Vertical is top to
      * bottom, and diagonal is upper-left to bottom-right.
      */
-    enum Gradient{GrNone, GrHorizontal, GrVertical, GrDiagonal};
+     enum Gradient{GrNone, GrHorizontal, GrVertical, GrDiagonal, GrPyramid,
+     GrRectangle, GrElliptic};
     /**
      * This provides a list of widget types that KThemeBase recognizes.
      */

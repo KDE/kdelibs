@@ -165,6 +165,12 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             gradients[i] = GrHorizontal;
         else if(tmpStr == "Vertical")
             gradients[i] = GrVertical;
+        else if(tmpStr == "Pyramid")
+            gradients[i] = GrPyramid;
+        else if(tmpStr == "Rectangle")
+            gradients[i] = GrRectangle;
+        else if(tmpStr == "Elliptic")
+            gradients[i] = GrElliptic;
         else{
             if(tmpStr != "None" && !tmpStr.isEmpty())
                 warning("KThemeStyle: Unrecognized gradient option %s, using None.",
@@ -514,7 +520,22 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
             }
         }
     }
-    else if(gradients[widget] == GrDiagonal){
+    else{
+        KPixmapEffect::GradientType g;
+        switch(gradients[widget]){
+        case GrPyramid:
+            g = KPixmapEffect::PyramidGradient;
+            break;
+        case GrRectangle:
+            g = KPixmapEffect::RectangleGradient;
+            break;
+        case GrElliptic:
+            g = KPixmapEffect::EllipticGradient;
+            break;
+        default:
+            g = KPixmapEffect::DiagonalGradient;
+            break;
+        }
         if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
            pixmaps[widget]->height() != h){
             KThemePixmap *cachePix = cache->pixmap(w, h, widget);
@@ -532,8 +553,7 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->resize(w, h);
                 KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
-                                        *grLowColors[widget],
-                                        KPixmapEffect::DiagonalGradient);
+                                        *grLowColors[widget], g);
             }
         }
     }
