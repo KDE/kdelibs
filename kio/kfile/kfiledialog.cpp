@@ -1746,7 +1746,12 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->operationMode = mode;
     d->keepLocation = (mode == Saving);
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
-    d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
+    if ( mode == Opening )
+       d->okButton->setGuiItem( KGuiItem( i18n("&Open"), "fileopen") );
+    else if ( mode == Saving )
+       d->okButton->setGuiItem( KStdGuiItem::save() );
+    else
+       d->okButton->setGuiItem( KStdGuiItem::KStdGuiItem::ok() );
     updateLocationWhatsThis ();
     updateAutoSelectExtension ();
 }
