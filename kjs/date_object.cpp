@@ -189,9 +189,6 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case ToString:
-    s = ctime(&tv);
-    result = String(s.substr(0, s.size() - 1));
-    break;
   case ToDateString:
   case ToTimeString:
   case ToGMTString:
@@ -201,9 +198,9 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       strftime(timebuffer, bufsize, "%x",t);
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
-    } else { // toGMTString & toUTCString
-      t = gmtime(&tv);
-      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %Z", t);
+    } else { // ToString, toGMTString & toUTCString
+      t = (id == ToString ? localtime(&tv) : gmtime(&tv));
+      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
     }
     setlocale(LC_TIME,oldlocale.c_str());
     result = String(timebuffer);
@@ -466,7 +463,9 @@ Value KJS::parseDate(const String &s)
     time_t seconds = KRFCDate_parseDate( u );
 #ifdef KJS_VERBOSE
     fprintf(stderr,"KRFCDate_parseDate returned seconds=%d\n",seconds);
+    fprintf(stderr, "this is: %s\n", ctime(&seconds));
 #endif
+
     if ( seconds == -1 )
       return Undefined();
     else
@@ -720,24 +719,33 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      // broken mail-/news-clients omit the time zone
      if (*dateString) {
 
-        if ((*dateString == '+') || (*dateString == '-')) {
-           offset = strtol(dateString, &newPosStr, 10);
+       if (dateString[0] == 'G' && dateString[1] == 'M' && dateString[2] == 'T')
+         dateString += 3;
+       else if (dateString[0] == 'U' && dateString[1] == 'T' && dateString[2] == 'C')
+         dateString += 3;
 
-           if ((offset < -9959) || (offset > 9959))
-              return result; // Invalid date
+       while (*dateString && isspace(*dateString))
+         ++dateString;
 
-           int sgn = (offset < 0)? -1:1;
-           offset = abs(offset);
-           offset = ((offset / 100)*60 + (offset % 100))*sgn;
-        } else {
-           for (int i=0; known_zones[i].tzName != 0; i++) {
-              if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
-                 offset = known_zones[i].tzOffset;
-                 break;
-              }
+       if ((*dateString == '+') || (*dateString == '-')) {
+         offset = strtol(dateString, &newPosStr, 10);
+
+         if ((offset < -9959) || (offset > 9959))
+           return result; // Invalid date
+
+         int sgn = (offset < 0)? -1:1;
+         offset = abs(offset);
+         offset = ((offset / 100)*60 + (offset % 100))*sgn;
+       } else {
+         for (int i=0; known_zones[i].tzName != 0; i++) {
+           if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
+             offset = known_zones[i].tzOffset;
+             break;
            }
-        }
+         }
+       }
      }
+
      if (sizeof(time_t) == 4)
      {
          if ((time_t)-1 < 0)
