@@ -27,6 +27,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kparts/browserextension.h>
+#include <kwinmodule.h>
 
 #include <kjs/operations.h>
 #include "kjs_window.h"
@@ -89,10 +90,19 @@ private:
 
 KJSO Screen::get(const UString &p) const
 {
+  
+  KWinModule info; 
+
   if (p == "height")
     return Number(QApplication::desktop()->height());
   else if (p == "width")
     return Number(QApplication::desktop()->width());
+  else if (p == "colorDepth")
+    return Number(QPixmap::defaultDepth());
+  else if (p == "availHeight")
+    return Number(info.workArea().width());
+  else if (p == "availWidth")
+    return Number(info.workArea().height());
   else
     return Undefined();
 }
