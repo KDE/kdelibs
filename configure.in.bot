@@ -58,6 +58,15 @@ if test -z "$jpeg_incdir" || test -z "$LIBJPEG" ; then
   all_tests=bad
 fi 
 
+if test "$ac_use_cups" != "yes"; then
+  echo ""
+  echo "You're missing CUPS (Common UNIX Printing System) support."
+  echo "If you want CUPS support, please install CUPS from http://www.cups.org"
+  echo "or the development packages of your distribution."
+  echo ""
+  all_tests=bad
+fi
+
 if test "$all_tests" = "fine"; then
   echo ""
   echo "Good - your configure finished. Start make now"
