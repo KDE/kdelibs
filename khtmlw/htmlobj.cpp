@@ -305,19 +305,18 @@ QPixmap* HTMLImage::findImage( const char *_filename )
   // yet been initialized. Better be careful.
   if( !pCache )
 	{
-	  debug( "Calling HTMLImage::cacheImage without existing HTMLImage
-object!" );
 	  pCache = new QList<HTMLCachedImage>;
+	  pCache->setAutoDelete( true );
 	}
 
-    HTMLCachedImage *img;
-    for ( img = pCache->first(); img != 0L; img = pCache->next() )
+  HTMLCachedImage *img;
+  for ( img = pCache->first(); img != 0L; img = pCache->next() )
     {
-	if ( strcmp( _filename, img->getFileName() ) == 0 )
+	  if ( strcmp( _filename, img->getFileName() ) == 0 )
 	    return img->getPixmap();
     }
-    
-    return 0L;
+  
+  return 0L;
 }
 
 void HTMLImage::cacheImage( const char *_filename )
@@ -326,18 +325,18 @@ void HTMLImage::cacheImage( const char *_filename )
   // yet been initialized. Better be careful.
   if( !pCache )
 	{
-	  debug( "Calling HTMLImage::cacheImage without existing HTMLImage
-object!" );
 	  pCache = new QList<HTMLCachedImage>;
+	  pCache->setAutoDelete( true );
 	}
 
-    pCache->append( new HTMLCachedImage( _filename ) );
+  pCache->append( new HTMLCachedImage( _filename ) );
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _url, int _max_width,
 		      int _width, int _height, int _percent )
 {
 	pCache = new QList<HTMLCachedImage>;
+	pCache->setAutoDelete( true );
 
     pixmap = 0L;
 
@@ -516,6 +515,7 @@ HTMLImage::~HTMLImage()
 	delete pixmap;
 
 	delete pCache;
+	pCache = NULL;
 }
 
 //-----------------------------------------------------------------------------

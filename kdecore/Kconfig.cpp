@@ -1,6 +1,10 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.7  1997/05/09 15:10:09  kulow
+ * Coolo: patched ltconfig for FreeBSD
+ * removed some stupid warnings
+ *
  * Revision 1.6  1997/04/23 16:45:14  kulow
  * fixed a bug in acinclude.m4 (Thanks to Paul)
  * solved some little problems with some gcc versions (no new code)
@@ -292,7 +296,8 @@ const QString& KConfig::getGroup() const
     return pData->aGroup;
 }
 
-QString KConfig::readEntry( const QString& rKey ) const
+QString KConfig::readEntry( const QString& rKey, 
+							const QString* pDefault ) const 
 {
   QString aValue;
   // retrieve the current group dictionary
@@ -304,18 +309,20 @@ QString KConfig::readEntry( const QString& rKey ) const
       KEntryDictEntry* pData = (*pCurrentGroupDict)[ rKey.data() ];
       if( pData )
 		aValue = pData->aValue;
+	  else if( pDefault )
+		aValue = *pDefault;
     }
   return aValue;
 }
 
-int KConfig::readNumEntry( const QString& rKey ) const
+int KConfig::readNumEntry( const QString& rKey, int nDefault ) const
 {
   bool ok;
   int rc;
 
   QString aValue = readEntry( rKey );
   if( aValue.isNull() )
-	return 0;
+	return nDefault;
   else
 	{
 	  rc = aValue.toInt( &ok );
@@ -324,7 +331,8 @@ int KConfig::readNumEntry( const QString& rKey ) const
 }
 
 
-QFont KConfig::readFontEntry( const QString& rKey ) const
+QFont KConfig::readFontEntry( const QString& rKey, 
+							  const QFont* pDefault ) const
 {
   QFont aRetFont;
 
@@ -382,12 +390,15 @@ QFont KConfig::readFontEntry( const QString& rKey ) const
 	  if( nFontBits & 0x20 )
 		aRetFont.setRawMode( true );
 	}
+  else if( pDefault )
+	aRetFont = *pDefault;
 
   return aRetFont;
 }
 
 
-QColor KConfig::readColorEntry( const QString& rKey ) const
+QColor KConfig::readColorEntry( const QString& rKey,
+								const QColor* pDefault ) const
 {
   QColor aRetColor;
   int nRed = 0, nGreen = 0, nBlue = 0;
@@ -415,6 +426,8 @@ bool bOK;
 
 	  aRetColor.setRgb( nRed, nGreen, nBlue );
 	}
+  else if( pDefault )
+	aRetColor = *pDefault;
 
   return aRetColor;
 }

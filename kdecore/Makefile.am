@@ -23,7 +23,7 @@ libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 
 libkdecore_la_LDFLAGS = -version-info 0:8 -rpath $(libdir) 
 
-BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc
+BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc
 
 %.moc: %.h
 	$(MOC) $< -o $@

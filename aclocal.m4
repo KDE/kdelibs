@@ -103,6 +103,33 @@ qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries 
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
 AC_FIND_FILE(libqt.so libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries=$qt_libdir
+
+ac_cxxflags_safe=$CXXFLAGS
+ac_ldflags_safe=$LDFLAGS
+CXXFLAGS="$CXXFLAGS -I$qt_incdir"
+LDFLAGS="$LDFLAGS -lqt -L$qt_libdir"
+
+AC_LANG_CPLUSPLUS
+cat > conftest.$ac_ext <<EOF
+#include "confdefs.h"
+#include <qslider.h>
+int main() {
+  QSlider s;
+  s.addStep();
+  return 0;
+};
+EOF
+
+if AC_TRY_EVAL(ac_link) && test -s conftest; then
+  rm -f conftest*
+else
+  echo "configure: failed program was:" >&AC_FD_CC
+  cat conftest.$ac_ext >&AC_FD_CC
+  ac_qt_libraries="NO"
+fi
+rm -f conftest*
+CXXFLAGS=$ac_cxxflags_safe
+LDFLAGS=$ac_ldflags_safe
  
 if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.8  1997/05/09 19:52:54  kalle
+// Kalle: Application-specific config files without leading .
+//
 // Revision 1.7  1997/05/08 22:53:16  kalle
 // Kalle:
 // KPixmap gone for good
@@ -78,6 +81,8 @@
 //
 // DND stuff by Torben Weis <weis@stud.uni-frankfurt.de>
 // 09.12.96
+//
+//
 // Revision 1.69  1997/11/03 14:41:28  ettrich
 #ifndef _KAPP_H
 // Matthias: tiny fix for command line arguments: "-icon" will also be used

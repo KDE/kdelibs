@@ -1,4 +1,7 @@
-v0.8.xx:	virtual methods in KApplication for overriding external
+v0.10:		KConfig::read*Entry() methods take a default argument.
+			Application-specific config files no longer start with a dot.
+
+v0.9:	virtual methods in KApplication for overriding external
 				configuration of fonts, palette and style
 			KButton uses default widget colorgroup
 			new KPanner by Paul Kendall

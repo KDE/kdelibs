@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.6  1997/05/08 22:53:16  kalle
+// Kalle:
+// KPixmap gone for good
+// Eliminated static objects from KApplication and HTML-Widget
+//
 // Revision 1.5  1997/05/02 16:46:34  kalle
 // Kalle: You may now override how KApplication reacts to external changes
 // KButton uses the widget default palette
@@ -89,6 +94,7 @@
   accelerators, common menu entries, a KCOnfig object etc. */
 
 class KIconLoader;
+  Q_OBJECT
 
   /// Constructor: pass command-line arguments
   /** Constructor. Pass command-line arguments. A KConfig object is
