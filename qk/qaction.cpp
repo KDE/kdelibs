@@ -1143,11 +1143,11 @@ void QActionWidget::setCurrentGroup( const QString& grp, bool update )
 	item->setText( (*it)->plainText() );
 	item->setName( (*it)->name() );
 	if ( (*it)->hasIconSet() )
-	    item->setIcon( (*it)->iconSet().pixmap() );
+	    item->setPixmap( (*it)->iconSet().pixmap() );
 	else if ( (*it)->inherits("QActionMenu") )
-	    item->setIcon( QPixmap( folder ) );
+	    item->setPixmap( QPixmap( folder ) );
 	else
-	    item->setIcon( QPixmap( unknown ) );
+	    item->setPixmap( QPixmap( unknown ) );
     }
 }
 
@@ -1260,11 +1260,11 @@ void QActionWidget::insertAction( QAction* action )
 	item->setText( action->plainText() );
 	item->setName( action->name() );
 	if ( action->hasIconSet() )
-	    item->setIcon( action->iconSet() .pixmap());
+	    item->setPixmap( action->iconSet() .pixmap());
 	else if ( action->inherits("QActionMenu") )
-	    item->setIcon( QPixmap( folder ) );
+	    item->setPixmap( QPixmap( folder ) );
 	else
-	    item->setIcon( QPixmap( unknown ) );
+	    item->setPixmap( QPixmap( unknown ) );
     }
     else
     {
@@ -1306,11 +1306,11 @@ void QActionWidget::updateAction( QAction* action )
 	item->setText( action->plainText() );
 	item->setName( action->name() );
 	if ( action->hasIconSet() )
-	    item->setIcon( action->iconSet().pixmap() );
+	    item->setPixmap( action->iconSet().pixmap() );
 	else if ( action->inherits("QActionMenu") )
-	    item->setIcon( QPixmap( folder ) );
+	    item->setPixmap( QPixmap( folder ) );
 	else
-	    item->setIcon( QPixmap( unknown ) );
+	    item->setPixmap( QPixmap( unknown ) );
     }
     else
     {

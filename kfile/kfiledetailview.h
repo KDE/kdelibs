@@ -24,7 +24,7 @@
 class KFileViewItem;
 class QWidget;
 
-#include <qlistview.h>
+#include <klistview.h>
 #include "kfileview.h"
 
 class KFileListViewItem : public QListViewItem
@@ -45,7 +45,7 @@ private:
 
 };
 
-class KFileDetailView : public QListView, public KFileView
+class KFileDetailView : public KListView, public KFileView
 {
     friend class KSimpleCombiView;
     friend class KDetailCombiView;

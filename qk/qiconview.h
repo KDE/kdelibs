@@ -73,11 +73,11 @@ public:
     virtual bool operator<( const QIconDragItem &icon )  const;
     virtual bool operator==( const QIconDragItem &icon ) const;
 
-    virtual QRect iconRect() const;
+    virtual QRect pixmapRect() const;
     virtual QRect textRect() const;
     virtual QString key() const;
 
-    virtual void setIconRect( const QRect &r );
+    virtual void setPixmapRect( const QRect &r );
     virtual void setTextRect( const QRect &r );
 
 protected:
@@ -152,8 +152,8 @@ public:
     virtual void setDragEnabled( bool allow );
     virtual void setDropEnabled( bool allow );
 
-    QString text() const;
-    QPixmap icon() const;
+    virtual QString text() const;
+    virtual QPixmap *pixmap() const;
     virtual QString key() const;
 
     bool renameEnabled() const;
@@ -187,14 +187,9 @@ public:
     QSize size() const;
     QPoint pos() const;
     QRect textRect( bool relative = TRUE ) const;
-    QRect iconRect( bool relative = TRUE ) const;
+    QRect pixmapRect( bool relative = TRUE ) const;
     bool contains( QPoint pnt ) const;
     bool intersects( QRect r ) const;
-
-    virtual void setFont( const QFont &font );
-    virtual void setColor( const QColor &color );
-    QFont font() const;
-    QColor color() const;
 
     virtual bool acceptDrop( const QMimeSource *mime ) const;
 
@@ -208,9 +203,9 @@ signals:
 
 public slots:
     virtual void setText( const QString &text );
-    virtual void setIcon( const QPixmap &icon );
+    virtual void setPixmap( const QPixmap &icon );
     virtual void setText( const QString &text, bool recalc, bool redraw = TRUE );
-    virtual void setIcon( const QPixmap &icon, bool recalc, bool redraw = TRUE );
+    virtual void setPixmap( const QPixmap &icon, bool recalc, bool redraw = TRUE );
     virtual void setKey( const QString &k );
 
 protected slots:
@@ -220,8 +215,8 @@ protected slots:
 protected:
     virtual void removeRenameBox();
     virtual void calcRect( const QString &text_ = QString::null );
-    virtual void paintItem( QPainter *p );
-    virtual void paintFocus( QPainter *p );
+    virtual void paintItem( QPainter *p, const QColorGroup &cg, const QFont &font );
+    virtual void paintFocus( QPainter *p, const QColorGroup &cg );
     virtual void dropped( QDropEvent *e );
     virtual void dragEntered();
     virtual void dragLeft();
@@ -229,21 +224,18 @@ protected:
     void setView( QIconView* v );
     void setItemRect( const QRect &r );
     void setTextRect( const QRect &r );
-    void setIconRect( const QRect &r );
+    void setPixmapRect( const QRect &r );
     void calcTmpText();
 
 private:
     QIconView *view;
     QString itemText, itemKey;
     QString tmpText;
-    QPixmap itemIcon;
+    QPixmap *itemIcon;
     QIconViewItem *prev, *next;
     bool allow_rename, allow_drag, allow_drop;
     bool selected, selectable;
     QRect itemRect, itemTextRect, itemIconRect;
-    QFontMetrics *fm;
-    QFont *f;
-    QColor *c;
     QIconViewItemLineEdit *renameBox;
     bool isReady;
     QRect oldRect;
@@ -310,16 +302,6 @@ public:
     virtual void setSelectionMode( SelectionMode m );
     SelectionMode selectionMode() const;
 
-    virtual void setSingleClickConfiguration( QFont *normalText, QColor *normalTextCol,
-					      QFont *highlightedText, QColor *highlightedTextCol,
-					      QCursor *highlightedCursor, int setCurrentInterval );
-    void singleClickConfiguration( QFont *normalText, QColor *normalTextCol,
-				   QFont *highlightedText, QColor *highlightedTextCol,
-				   QCursor *highlightedCursor, int &setCurrentInterval ) const;
-
-    virtual void setUseSingleClickMode( bool b );
-    bool useSingleClickMode() const;
-
     QIconViewItem *findItem( const QPoint &pos ) const;
     QIconViewItem *findItem( const QString &text ) const;
     virtual void selectAll( bool select );
@@ -329,7 +311,8 @@ public:
     virtual void repaintItem( QIconViewItem *item );
 
     void ensureItemVisible( QIconViewItem *item );
-    QIconViewItem* findFirstVisibleItem() const;
+    QIconViewItem* findFirstVisibleItem( const QRect &r ) const;
+    QIconViewItem* findLastVisibleItem( const QRect &r ) const;
 
     virtual void clear();
 
@@ -363,9 +346,6 @@ public:
     virtual void setWordWrapIconText( bool b );
     bool wordWrapIconText() const;
 
-    virtual void setItemFont( const QFont &font );
-    virtual void setItemColor( const QColor &color );
-
     bool eventFilter( QObject * o, QEvent * );
 
     QSize minimumSizeHint() const;
@@ -373,6 +353,9 @@ public:
     QSize sizeHint() const;
 
     virtual void sort( bool ascending = TRUE );
+
+    virtual void setFont( const QFont & );
+    virtual void setPalette( const QPalette & );
 
 public slots:
     virtual void alignItemsInGrid( const QSize &grid, bool update = TRUE );
@@ -382,7 +365,6 @@ public slots:
 
 signals:
     void selectionChanged();
-    void selectionChanged( int numItems );
     void selectionChanged( QIconViewItem *item );
     void currentChanged();
     void currentChanged( QIconViewItem *item );
@@ -414,10 +396,10 @@ protected slots:
     virtual void doAutoScroll();
     virtual void adjustItems();
     virtual void slotUpdate();
-    virtual void selectHighlightedItem();
 
 private slots:
     void clearInputString();
+    void movedContents( int dx, int dy );
 
 protected:
     virtual void drawContents( QPainter *p, int cx, int cy, int cw, int ch );
@@ -444,18 +426,21 @@ protected:
     virtual void drawBackground( QPainter *p, const QRect &r );
 
     void emitSelectionChanged();
-    void emitNewSelectionNumber();
     void emitRenamed( QIconViewItem *item );
 
     void setDragObjectIsKnown( QDropEvent *e );
     void setNumDragItems( int num );
     QIconViewItem *makeRowLayout( QIconViewItem *begin, int &y );
 
+    void styleChange( QStyle& );
+
 private:
     void findItemByName( const QString &text );
     int calcGridNum( int w, int x ) const;
     QIconViewItem *rowBegin( QIconViewItem *item ) const;
-    void clearSingleClickConfig();
+    void updateItemContainer( QIconViewItem *item );
+    void appendItemContainer();
+    void rebuildContainers();
 
     QIconViewPrivate *d;
 

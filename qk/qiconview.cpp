@@ -41,9 +41,13 @@
 #include "qmultilineedit.h"
 #include "qmap.h"
 #include "qarray.h"
+#include "qlist.h"
 
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
+
+#define RECT_EXTENSION 300
 
 static const char *unknown[] = {
     "32 32 11 1",
@@ -108,11 +112,10 @@ struct QIconViewPrivate
     QIconViewItem *currentItem, *tmpCurrentItem, *highlightedItem;
     QRect *rubber;
     QTimer *scrollTimer, *adjustTimer, *updateTimer, *inputTimer,
-	*singleClickSelectTimer, *fullRedrawTimer;
+	*fullRedrawTimer;
     int rastX, rastY, spacing;
     bool cleared, dropped, clearing;
     int dragItems;
-    int numSelectedItems;
     QPoint oldDragPos;
     QIconView::AlignMode alignMode;
     QIconView::ResizeMode resizeMode;
@@ -127,33 +130,33 @@ struct QIconViewPrivate
     bool dirty, rearrangeEnabled;
     QIconView::ItemTextPos itemTextPos;
     bool reorderItemsWhenInsert;
-    bool singleClickMode;
     QCursor oldCursor;
     bool resortItemsWhenInsert, sortDirection;
-    bool hasOwnColor, hasOwnFont;
-    QColor ownColor;
-    QFont ownFont;
     bool wordWrapIconText;
     int cachedContentsX, cachedContentsY;
     int resizeEvents;
     QBrush itemTextBrush;
     bool drawAllBack;
     QRegion clipRegion;
+    QPoint dragStartPos;
+    QFontMetrics *fm;
+    int minLeftBearing, minRightBearing;
+    bool containerUpdateLocked;
+    bool firstSizeHint;
 
-    struct SingleClickConfig {
-	SingleClickConfig()
-	    : normalText( 0 ), normalTextCol( 0 ),
-	      highlightedText( 0 ), highlightedTextCol( 0 ),
-	      highlightedCursor( 0 ), setCurrentInterval( -1 ) {
+    struct ItemContainer {
+	ItemContainer( ItemContainer *pr, ItemContainer *nx, const QRect &r )
+	    : p( pr ), n( nx ), rect( r ) {
+		items.setAutoDelete( FALSE );
+		if ( p )
+		    p->n = this;
+		if ( n )
+		    n->p = this;
 	}
-	
-	QFont *normalText;
-	QColor *normalTextCol;
-	QFont *highlightedText;
-	QColor *highlightedTextCol;
-	QCursor *highlightedCursor;
-	int setCurrentInterval;
-    } singleClickConfig;
+	ItemContainer *p, *n;
+	QRect rect;
+	QList<QIconViewItem> items;
+    } *firstContainer, *lastContainer;
 
     struct SortableItem {
 	QIconViewItem *item;
@@ -168,6 +171,7 @@ struct QIconViewPrivate
 
 struct QIconViewItemPrivate
 {
+    QIconViewPrivate::ItemContainer *container1, *container2;
 };
 
 /*****************************************************************************
@@ -202,14 +206,11 @@ QIconViewItemLineEdit::QIconViewItemLineEdit( const QString &text, QWidget *pare
 					      QIconViewItem *theItem, const char *name )
     : QMultiLineEdit( parent, name ), item( theItem ), startText( text )
 {
-
-// Commented out by David, to fix compilation.
-// We don't even use inline renaming in KDE !
-    //setWordWrap( QMultiLineEdit::FixedPixelWidth );
+    setWordWrap( QMultiLineEdit::FixedPixelWidth );
     setWrapColumnOrWidth( item->iconView()->maxItemWidth() -
 			  ( item->iconView()->itemTextPos() == QIconView::Bottom ?
-			    0 : item->iconRect().width() ) );
-    //setWrapPolicy( QMultiLineEdit::Anywhere );
+			    0 : item->pixmapRect().width() ) );
+    setWrapPolicy( QMultiLineEdit::Anywhere );
     setMaxLength( item->iconView()->maxItemTextLength() );
     setAlignment( Qt::AlignCenter );
     setText( text );
@@ -346,8 +347,8 @@ bool QIconDragItem::operator==( const QIconDragItem &icon ) const
 void QIconDragItem::makeKey()
 {
     QString k( "%1 %2 %3 %4 %5 %6 %7 %8" );
-    k = k.arg( iconRect().x() ).arg( iconRect().y() ).arg( iconRect().width() ).
-	arg( iconRect().height() ).arg( textRect().x() ).arg( textRect().y() ).
+    k = k.arg( pixmapRect().x() ).arg( pixmapRect().y() ).arg( pixmapRect().width() ).
+	arg( pixmapRect().height() ).arg( textRect().x() ).arg( textRect().y() ).
 	arg( textRect().width() ).arg( textRect().height() );
 }
 
@@ -366,7 +367,7 @@ QRect QIconDragItem::textRect() const
   data is stored in this item.
 */
 
-QRect QIconDragItem::iconRect() const
+QRect QIconDragItem::pixmapRect() const
 {
     return iconRect_;
 }
@@ -384,7 +385,7 @@ QString QIconDragItem::key() const
   Sets \a r as the rectangle of the icon.
 */
 
-void QIconDragItem::setIconRect( const QRect &r )
+void QIconDragItem::setPixmapRect( const QRect &r )
 {
     iconRect_ = r;
 }
@@ -501,8 +502,8 @@ QByteArray QIconDrag::encodedData( const char* mime ) const
 	QIconList::ConstIterator it = icons.begin();
 	for ( ; it != icons.end(); ++it ) {
 	    QString k( "%1 %2 %3 %4 %5 %6 %7 %8" );
-	    k = k.arg( (*it).iconRect().x() ).arg( (*it).iconRect().y() ).arg( (*it).iconRect().width() ).
-		arg( (*it).iconRect().height() ).arg( (*it).textRect().x() ).arg( (*it).textRect().y() ).
+	    k = k.arg( (*it).pixmapRect().x() ).arg( (*it).pixmapRect().y() ).arg( (*it).pixmapRect().width() ).
+		arg( (*it).pixmapRect().height() ).arg( (*it).textRect().x() ).arg( (*it).textRect().y() ).
 		arg( (*it).textRect().width() ).arg( (*it).textRect().height() );
 	    int l = k.length();
 	    a.resize( c + l + 1 );
@@ -589,7 +590,7 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
 		return FALSE;
 	    tr.setHeight( atoi( s.latin1() + pos + 1 ) );
 	
-	    icon.setIconRect( ir );
+	    icon.setPixmapRect( ir );
 	    icon.setTextRect( tr );
 	    list_.append( icon );
 	}
@@ -665,9 +666,9 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent )
-    : view( parent ), itemText(), itemIcon( *unknown_icon ),
+    : view( parent ), itemText(), itemIcon( unknown_icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init();
 }
@@ -678,9 +679,9 @@ QIconViewItem::QIconViewItem( QIconView *parent )
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after )
-    : view( parent ), itemText(), itemIcon( *unknown_icon ),
+    : view( parent ), itemText(), itemIcon( unknown_icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
 }
@@ -691,9 +692,9 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after )
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent, const QString &text )
-    : view( parent ), itemText( text ), itemIcon( *unknown_icon ),
+    : view( parent ), itemText( text ), itemIcon( unknown_icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( 0 );
 }
@@ -705,9 +706,9 @@ QIconViewItem::QIconViewItem( QIconView *parent, const QString &text )
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after,
 			      const QString &text )
-    : view( parent ), itemText( text ), itemIcon( *unknown_icon ),
+    : view( parent ), itemText( text ), itemIcon( unknown_icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
 }
@@ -719,9 +720,9 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after,
 
 QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
 			      const QPixmap &icon )
-    : view( parent ), itemText( text ), itemIcon( icon ),
+    : view( parent ), itemText( text ), itemIcon( new QPixmap( icon ) ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( 0 );
 }
@@ -733,9 +734,9 @@ QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon )
-    : view( parent ), itemText( text ), itemIcon( icon ),
+    : view( parent ), itemText( text ), itemIcon( new QPixmap( icon ) ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
-      selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
+      selected( FALSE ), selectable( TRUE ), renameBox( 0 )
 {
     init( after );
 }
@@ -747,14 +748,12 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after, const QSt
 void QIconViewItem::init( QIconViewItem *after )
 {
     d = new QIconViewItemPrivate;
-    f = 0;
-    c = 0;
+    d->container1 = 0;
+    d->container2 = 0;
     if ( view ) {
 	itemKey = itemText;
 	dirty = TRUE;
 	wordWrapDirty = TRUE;
-	fm = new QFontMetrics( view->font() );
-
 	calcRect();
 	view->insertItem( this, after );
     }
@@ -769,13 +768,13 @@ QIconViewItem::~QIconViewItem()
     if ( view )
 	view->takeItem( this );
     delete d;
-    delete f;
-    delete c;
-    removeRenameBox();
 }
 
 /*!
-  Sets \a text as text of the iconview item.
+  Sets \a text as text of the iconview item.  This method might be a no-op
+  if you reimplement text().
+
+  \sa text()
 */
 
 void QIconViewItem::setText( const QString &text )
@@ -807,12 +806,21 @@ void QIconViewItem::setKey( const QString &k )
 }
 
 /*!
-  Sets \a icon as item icon of the iconview item.
+  Sets \a icon as item icon of the iconview item. This method might be a no-op
+  if you reimplement pixmap().
+
+  \sa pixmap()
 */
 
-void QIconViewItem::setIcon( const QPixmap &icon )
+void QIconViewItem::setPixmap( const QPixmap &icon )
 {
-    itemIcon = icon;
+    if ( itemIcon && itemIcon == unknown_icon )
+	itemIcon = 0;
+
+    if ( itemIcon )
+	*itemIcon = icon;
+    else
+	itemIcon = new QPixmap( icon );
     calcRect();
     repaint();
 }
@@ -821,6 +829,10 @@ void QIconViewItem::setIcon( const QPixmap &icon )
   Sets \a text as text of the iconview item. Using \a recalc you can
   specify, if the iconview should be recalculated and using \a redraw if it
   should be repainted or not.
+
+  This method might be a no-op if you reimplement text().
+
+  \sa text()
 */
 
 void QIconViewItem::setText( const QString &text, bool recalc, bool redraw )
@@ -841,11 +853,21 @@ void QIconViewItem::setText( const QString &text, bool recalc, bool redraw )
   Sets \a icon as item icon of the iconview item. Using \a recalc you can
   specify, if the iconview should be recalculated and using \a redraw if it
   should be repainted or not.
+
+  This method might be a no-op if you reimplement pixmap().
+
+  \sa pixmap()
 */
 
-void QIconViewItem::setIcon( const QPixmap &icon, bool recalc, bool redraw )
+void QIconViewItem::setPixmap( const QPixmap &icon, bool recalc, bool redraw )
 {
-    itemIcon = icon;
+    if ( itemIcon && itemIcon == unknown_icon )
+	itemIcon = 0;
+
+    if ( itemIcon )
+	*itemIcon = icon;
+    else
+	itemIcon = new QPixmap( icon );
 
     if ( recalc )
 	calcRect();
@@ -886,7 +908,11 @@ void QIconViewItem::setDropEnabled( bool allow )
 }
 
 /*!
-  Returns the text of the iconview item.
+  Returns the text of the iconview item. Normally you will set the text
+  if the item with setText(), but somethimes you don't want to call setText/)
+  for each item,  so you can reimplement this method and return the text of
+  the item directly here. If you do this you have to call calcRect() manually each
+  time the text (and so the size of it) changes.
 
   \sa setText()
 */
@@ -908,12 +934,17 @@ QString QIconViewItem::key() const
 }
 
 /*!
-  Returns the icon of the iconview item.
+  Returns the icon of the iconview item. Normally you will set the pixmap
+  if the item with setPixmap(), but somethimes you don't want that every item
+  stores a copy of a pixmap or that you need to call setPixmap() for each item,
+  so you can reimplement this method and return the pointer to the item pixmap
+  directly here. If you do this you have to call calcRect() manually each time
+  the size of this pixmap changes!
 
-  \sa setIcon()
+  \sa setPixmap()
 */
 
-QPixmap QIconViewItem::icon() const
+QPixmap *QIconViewItem::pixmap() const
 {
     return itemIcon;
 }
@@ -1081,6 +1112,8 @@ void QIconViewItem::repaint()
 void QIconViewItem::move( int x, int y )
 {
     itemRect.setRect( x, y, itemRect.width(), itemRect.height() );
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
@@ -1090,6 +1123,8 @@ void QIconViewItem::move( int x, int y )
 void QIconViewItem::moveBy( int dx, int dy )
 {
     itemRect.moveBy( dx, dy );
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
@@ -1195,7 +1230,7 @@ QRect QIconViewItem::textRect( bool relative ) const
   origin of the item's rectangle
 */
 
-QRect QIconViewItem::iconRect( bool relative ) const
+QRect QIconViewItem::pixmapRect( bool relative ) const
 {
     if ( relative )
 	return itemIconRect;
@@ -1211,7 +1246,7 @@ QRect QIconViewItem::iconRect( bool relative ) const
 bool QIconViewItem::contains( QPoint pnt ) const
 {
     return ( textRect( FALSE ).contains( pnt ) ||
-	     iconRect( FALSE ).contains( pnt ) );
+	     pixmapRect( FALSE ).contains( pnt ) );
 }
 
 /*!
@@ -1222,65 +1257,7 @@ bool QIconViewItem::contains( QPoint pnt ) const
 bool QIconViewItem::intersects( QRect r ) const
 {
     return ( textRect( FALSE ).intersects( r ) ||
-	     iconRect( FALSE ).intersects( r ) );
-}
-
-/*!
-  Changes the text font of this item to \a font.
-*/
-
-void QIconViewItem::setFont( const QFont &font )
-{
-    if ( !f )
-	f = new QFont;
-    *f = font;
-
-    if ( fm )
-	delete fm;
-
-    fm = new QFontMetrics( *f );
-    calcRect();
-    repaint();
-}
-
-
-/*!
-  Changes the text color of this item to \a color.
-*/
-
-void QIconViewItem::setColor( const QColor &color )
-{
-    if ( !c )
-	c = new QColor;
-    *c = color;
-
-    repaint();
-}
-
-/*!
-  Returns the text color of this item.
-
-  \sa setColor()
-*/
-
-QColor QIconViewItem::color() const
-{
-    if ( !c )
-	return view->colorGroup().text();
-    return *c;
-}
-
-/*!
-  Returns the text font of this item.
-
-  \sa setFont()
-*/
-
-QFont QIconViewItem::font() const
-{
-    if ( !f )
-	return view->font();
-    return *f;
+	     pixmapRect( FALSE ).intersects( r ) );
 }
 
 /*!
@@ -1306,7 +1283,7 @@ void QIconViewItem::rename()
 {
     oldRect = rect();
     renameBox = new QIconViewItemLineEdit( itemText, view->viewport(), this );
-    renameBox->resize( textRect().width() + fm->width( ' ' ), textRect().height() );
+    renameBox->resize( textRect().width() + view->d->fm->width( ' ' ), textRect().height() );
     view->addChild( renameBox, textRect( FALSE ).x(), textRect( FALSE ).y() );
     renameBox->setFrameStyle( QFrame::Plain | QFrame::Box );
     renameBox->setLineWidth( 1 );
@@ -1394,19 +1371,16 @@ void QIconViewItem::removeRenameBox()
 }
 
 /*!
-  Recalculates the bounding rect, text- and iconrect of the item.
+  Recalculates the bounding rect, text- and pixmap-rect of the item.
 */
 
 void QIconViewItem::calcRect( const QString &text_ )
 {
-    if ( !fm )
-	return;
-
     int pw = 0;
     int ph = 0;
 
-    pw = itemIcon.width() + 2;
-    ph = itemIcon.height() + 2;
+    pw = ( pixmap() ? pixmap() : unknown_icon )->width() + 2;
+    ph = ( pixmap() ? pixmap() : unknown_icon )->height() + 2;
 
     itemIconRect.setWidth( pw );
     itemIconRect.setHeight( ph );
@@ -1423,15 +1397,26 @@ void QIconViewItem::calcRect( const QString &text_ )
 
     int tw = 0;
     int th = 0;
-    int bearing = - fm->minLeftBearing() - fm->minRightBearing();
-    QRect r( fm->boundingRect( 0, 0, iconView()->maxItemWidth() -
-			       ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-			       iconRect().width() ) - bearing,
-			       0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
+    int bearing = - view->d->minLeftBearing - view->d->minRightBearing;
+    QRect r;
+    if ( view->d->wordWrapIconText ) {
+	r = QRect( view->d->fm->boundingRect( 0, 0, iconView()->maxItemWidth() -
+					      ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
+						pixmapRect().width() ) - bearing,
+					      0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
+    } else {
+	r = QRect( 0, 0, view->d->fm->width( t ), view->d->fm->height() );
+	if ( r.width() > iconView()->maxItemWidth() -
+	     ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
+	       pixmapRect().width() ) - bearing )
+	    r.setWidth( iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
+						       pixmapRect().width() ) - bearing );
+    }
+
     tw = r.width() + bearing;
     th = r.height();
-    if ( tw < fm->width( "X" ) )
-	tw = fm->width( "X" );
+    if ( tw < view->d->fm->width( "X" ) )
+	tw = view->d->fm->width( "X" );
 
     itemTextRect.setWidth( tw );
     itemTextRect.setHeight( th );
@@ -1461,50 +1446,36 @@ void QIconViewItem::calcRect( const QString &text_ )
 	itemIconRect = QRect( 0, ( height() - itemIconRect.height() ) / 2,
 			      itemIconRect.width(), itemIconRect.height() );
     }
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
-  Paints the item using the painter \a p.
+  Paints the item using the painter \a p, the color group \a cg and the font \a font. If you want, that
+  your iconview item is drawn with a different font or color, reimplement this method and
+  change the values of the color group or the font and call then the paintItem() method of the
+  super class with the changed values.
 */
 
-void QIconViewItem::paintItem( QPainter *p )
+void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg, const QFont &font )
 {
     p->save();
+    p->setFont( font );
 
-    if ( f )
-	p->setFont( *f );
-    else
-	p->setFont( view->font() );
-
-    if ( c )
-	p->setPen( *c );
-
-    if ( view->d->singleClickMode ) {
-	if ( view->d->highlightedItem == this ) { // if this is the highlighted item
-	    // item's font is strongest and overrides other settings
-	    if ( view->d->singleClickConfig.highlightedText && !f )
-		p->setFont( *view->d->singleClickConfig.highlightedText );
-	    // singlie click highlighte color is strongest and overrides other settings
-	    if ( view->d->singleClickConfig.highlightedTextCol )
-		p->setPen( *view->d->singleClickConfig.highlightedTextCol );
-	} else {
-	    // item's font is strongest and overrides other settings
-	    if ( view->d->singleClickConfig.normalText && !f )
-		p->setFont( *view->d->singleClickConfig.normalText );
-	    // item's color is strongest and overrides other settings
-	    if ( view->d->singleClickConfig.normalTextCol && !c )
-		p->setPen( *view->d->singleClickConfig.normalTextCol );
-	}
+    if ( isSelected() ) {
+	p->setPen( cg.highlightedText() );
+    } else {
+	p->setPen( cg.text() );
     }
 
     calcTmpText();
 
     if ( view->itemTextPos() == QIconView::Bottom ) {
-	int w = itemIcon.width();
+	int w = ( pixmap() ? pixmap() : unknown_icon )->width();
 
 	if ( isSelected() )
-	    p->fillRect( iconRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() + ( width() - w ) / 2, y(), itemIcon );
+	    p->fillRect( pixmapRect( FALSE ), view->colorGroup().highlight() );
+	p->drawPixmap( x() + ( width() - w ) / 2, y(), *( pixmap() ? pixmap() : unknown_icon ) );
 
 	p->save();
 	if ( isSelected() ) {
@@ -1513,16 +1484,18 @@ void QIconViewItem::paintItem( QPainter *p )
 	} else if ( view->d->itemTextBrush != Qt::NoBrush )
 	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
-	p->drawText( textRect( FALSE ), Qt::AlignCenter | Qt::WordBreak,
-		     view->d->wordWrapIconText ? itemText : tmpText );
+	int align = Qt::AlignCenter;
+	if ( view->d->wordWrapIconText )
+	    align |= Qt::WordBreak;
+	p->drawText( textRect( FALSE ), align, view->d->wordWrapIconText ? itemText : tmpText );
 
 	p->restore();
     } else {
-	int h = itemIcon.height();
+	int h = ( pixmap() ? pixmap() : unknown_icon )->height();
 
 	if ( isSelected() )
-	    p->fillRect( iconRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() , y() + ( height() - h ) / 2, itemIcon );
+	    p->fillRect( pixmapRect( FALSE ), view->colorGroup().highlight() );
+	p->drawPixmap( x() , y() + ( height() - h ) / 2, *( pixmap() ? pixmap() : unknown_icon ) );
 
 	p->save();
 	if ( isSelected() ) {
@@ -1531,8 +1504,10 @@ void QIconViewItem::paintItem( QPainter *p )
 	} else if ( view->d->itemTextBrush != Qt::NoBrush )
 	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
-	p->drawText( textRect( FALSE ), Qt::AlignCenter | Qt::WordBreak,
-		     view->d->wordWrapIconText ? itemText : tmpText );
+	int align = Qt::AlignCenter;
+	if ( view->d->wordWrapIconText )
+	    align |= Qt::WordBreak;
+	p->drawText( textRect( FALSE ), align, view->d->wordWrapIconText ? itemText : tmpText );
 
 	p->restore();
     }
@@ -1541,19 +1516,18 @@ void QIconViewItem::paintItem( QPainter *p )
 }
 
 /*!
-  Paints the focus rect of the item using the painter \a.
+  Paints the focus rect of the item using the painter \a p and the color group \a cg.
 */
 
-void QIconViewItem::paintFocus( QPainter *p )
+void QIconViewItem::paintFocus( QPainter *p, const QColorGroup &cg )
 {
     view->style().drawFocusRect( p, QRect( textRect( FALSE ).x(), textRect( FALSE ).y(),
 					   textRect( FALSE ).width(), textRect( FALSE ).height() ),
-				 view->colorGroup(), isSelected() ? &view->colorGroup().highlight() :
-				 &view->colorGroup().base(), isSelected() );
-    view->style().drawFocusRect( p, QRect( iconRect( FALSE ).x(), iconRect( FALSE ).y(), iconRect( FALSE ).width(),
-					   iconRect( FALSE ).height() ),
-				 view->colorGroup(), isSelected() ? &view->colorGroup().highlight() :
-				 &view->colorGroup().base(), isSelected() );
+				 cg, isSelected() ? &cg.highlight() : &cg.base(), isSelected() );
+    view->style().drawFocusRect( p, QRect( pixmapRect( FALSE ).x(), pixmapRect( FALSE ).y(),
+					   pixmapRect( FALSE ).width(),
+					   pixmapRect( FALSE ).height() ),
+				 cg, isSelected() ? &cg.highlight() : &cg.base(), isSelected() );
 }
 
 /*!
@@ -1612,6 +1586,8 @@ void QIconViewItem::setView( QIconView *v )
 void QIconViewItem::setItemRect( const QRect &r )
 {
     itemRect = r;
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
@@ -1623,6 +1599,8 @@ void QIconViewItem::setItemRect( const QRect &r )
 void QIconViewItem::setTextRect( const QRect &r )
 {
     itemTextRect = r;
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
@@ -1631,9 +1609,11 @@ void QIconViewItem::setTextRect( const QRect &r )
   to set the calcualted rectangle
 */
 
-void QIconViewItem::setIconRect( const QRect &r )
+void QIconViewItem::setPixmapRect( const QRect &r )
 {
     itemIconRect = r;
+    if ( view )
+	view->updateItemContainer( this );
 }
 
 /*!
@@ -1642,20 +1622,20 @@ void QIconViewItem::setIconRect( const QRect &r )
 
 void QIconViewItem::calcTmpText()
 {
-    if ( view->d->wordWrapIconText || !fm || !wordWrapDirty )
+    if ( view->d->wordWrapIconText || !wordWrapDirty )
 	return;
     wordWrapDirty = FALSE;
 
     int w = iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-					   iconRect().width() ) - 4;
-    if ( fm->width( itemText ) < w ) {
+					   pixmapRect().width() ) - 4;
+    if ( view->d->fm->width( itemText ) < w ) {
 	tmpText = itemText;
 	return;
     }
 
     tmpText = "...";
     int i = 0;
-    while ( fm->width( tmpText + itemText[ i ] ) < w )
+    while ( view->d->fm->width( tmpText + itemText[ i ] ) < w )
 	tmpText += itemText[ i++ ];
     tmpText.remove( 0, 3 );
     tmpText += "...";
@@ -1672,10 +1652,7 @@ void QIconViewItem::calcTmpText()
   \brief The QIconView class
 
   The QIconView provides a widget which can contain lots of iconview items which can
-  be selected, dragged and so on. The iconview can be used in double click mode
-  (default) or single click mode (behaves like a web page). For the programmer which
-  uses the iconview these modes are transparent, this means the iconview does all the
-  work for that.
+  be selected, dragged and so on.
 
   Items can be inserted in a grid and can flow from top to bottom (South) or from
   left to right (East). The text can be either displayed at the bottom of the icons
@@ -1891,12 +1868,6 @@ void QIconViewItem::calcTmpText()
   in each selection mode.
 */
 
-/*! \fn void  QIconView::selectionChanged (int numItems)
-  This signal is emitted when the selection has been changed.
-  \a numItems specifies the number of selected items. This
-  signals is only emitted in multi- and extended selection mode.
-*/
-
 /*! \fn void  QIconView::selectionChanged( QIconViewItem *item )
   This signal is emitted when the selection has been changed. \a item
   is the new selected item. This signal is only emitted in single
@@ -2018,7 +1989,6 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->rastX = d->rastY = -1;
     d->spacing = 5;
     d->cleared = FALSE;
-    d->numSelectedItems = 0;
     d->alignMode = East;
     d->resizeMode = Fixed;
     d->dropped = FALSE;
@@ -2036,14 +2006,9 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->rearrangeEnabled = TRUE;
     d->itemTextPos = Bottom;
     d->reorderItemsWhenInsert = TRUE;
-    d->singleClickMode = FALSE;
-    d->singleClickConfig = QIconViewPrivate::SingleClickConfig();
     d->oldCursor = Qt::arrowCursor;
-    d->singleClickSelectTimer = new QTimer( this );
     d->resortItemsWhenInsert = FALSE;
     d->sortDirection = TRUE;
-    d->hasOwnColor = FALSE;
-    d->hasOwnFont = FALSE;
     d->wordWrapIconText = TRUE;
     d->cachedContentsX = d->cachedContentsY = -1;
     d->clearing = FALSE;
@@ -2051,6 +2016,14 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->resizeEvents = 0;
     d->itemTextBrush = Qt::NoBrush;
     d->drawAllBack = TRUE;
+    QFont fo( font() );
+    fo.setItalic( TRUE );
+    d->fm = new QFontMetrics( fo );
+    d->minLeftBearing = d->fm->minLeftBearing();
+    d->minRightBearing = d->fm->minRightBearing();
+    d->firstContainer = d->lastContainer = 0;
+    d->containerUpdateLocked = FALSE;
+    d->firstSizeHint = TRUE;
 
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
@@ -2058,10 +2031,10 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
 	     this, SLOT( slotUpdate() ) );
     connect( d->inputTimer, SIGNAL( timeout() ),
 	     this, SLOT( clearInputString() ) );
-    connect( d->singleClickSelectTimer, SIGNAL( timeout() ),
-	     this, SLOT( selectHighlightedItem() ) );
     connect( d->fullRedrawTimer, SIGNAL( timeout() ),
 	     this, SLOT( updateContents() ) );
+    connect( this, SIGNAL( contentsMoving( int, int ) ),
+	     this, SLOT( movedContents( int, int ) ) );
 
     setAcceptDrops( TRUE );
     viewport()->setAcceptDrops( TRUE );
@@ -2069,9 +2042,51 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     setMouseTracking( TRUE );
     viewport()->setMouseTracking( TRUE );
 
-    viewport()->setBackgroundMode( NoBackground );
+    viewport()->setBackgroundMode( PaletteBase );
     viewport()->setFocusProxy( this );
     viewport()->setFocusPolicy( QWidget::WheelFocus );
+}
+
+/*!
+  \reimp
+*/
+
+void QIconView::styleChange( QStyle& old )
+{
+    QScrollView::styleChange( old );
+    QFont fo( font() );
+    fo.setItalic( TRUE );
+    *d->fm = QFontMetrics( fo );
+    d->minLeftBearing = d->fm->minLeftBearing();
+    d->minRightBearing = d->fm->minRightBearing();
+}
+
+/*!
+  \reimp
+*/
+
+void QIconView::setFont( const QFont & f )
+{
+    QScrollView::setFont( f );
+    QFont fo( font() );
+    fo.setItalic( TRUE );
+    *d->fm = QFontMetrics( fo );
+    d->minLeftBearing = d->fm->minLeftBearing();
+    d->minRightBearing = d->fm->minRightBearing();
+}
+
+/*!
+  \reimp
+*/
+
+void QIconView::setPalette( const QPalette & p )
+{
+    QScrollView::setPalette( p );
+    QFont fo( font() );
+    fo.setItalic( TRUE );
+    *d->fm = QFontMetrics( fo );
+    d->minLeftBearing = d->fm->minLeftBearing();
+    d->minRightBearing = d->fm->minRightBearing();
 }
 
 /*!
@@ -2088,14 +2103,6 @@ QIconView::~QIconView()
 	delete item;
 	item = tmp;
     }
-
-    delete d->scrollTimer;
-    delete d->adjustTimer;
-    delete d->updateTimer;
-    delete d->inputTimer;
-    delete d->singleClickSelectTimer;
-
-    clearSingleClickConfig();
 
     delete d;
 }
@@ -2117,13 +2124,6 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 {
     if ( !item )
 	return;
-
-    viewport()->setUpdatesEnabled( FALSE );
-    if ( d->hasOwnFont )
-	item->setFont( d->ownFont );
-    if ( d->hasOwnColor )
-	item->setColor( d->ownColor );
-    viewport()->setUpdatesEnabled( TRUE );
 
     if ( !d->firstItem ) {
 	d->firstItem = d->lastItem = item;
@@ -2251,6 +2251,13 @@ void QIconView::takeItem( QIconViewItem *item )
     if ( !item )
 	return;
 
+    if ( item->d->container1 )
+	item->d->container1->items.removeRef( item );
+    if ( item->d->container2 )
+	item->d->container2->items.removeRef( item );
+    item->d->container2 = 0;
+    item->d->container1 = 0;
+
     bool block = signalsBlocked();
     blockSignals( TRUE );
 
@@ -2375,7 +2382,6 @@ void QIconView::setCurrentItem( QIconViewItem *item )
     d->currentItem = item;
     emit currentChanged();
     emit currentChanged( d->currentItem );
-    emitNewSelectionNumber();
 
     if ( old )
 	repaintItem( old );
@@ -2429,7 +2435,6 @@ void QIconView::doAutoScroll()
 
     int minx = contentsWidth(), miny = contentsHeight();
     int maxx = 0, maxy = 0;
-    int selected = 0;
     bool changed = FALSE;
     bool block = signalsBlocked();
 
@@ -2437,30 +2442,41 @@ void QIconView::doAutoScroll()
     QRegion region( 0, 0, visibleWidth(), visibleHeight() );
 
     blockSignals( TRUE );
-    QIconViewItem *item = d->firstItem;
     viewport()->setUpdatesEnabled( FALSE );
-    for ( ; item; item = item->next ) {
-	if ( !item->intersects( d->rubber->normalize() ) ) {
-	    if ( item->isSelected() ) {
-		item->setSelected( FALSE );
-		changed = TRUE;
-		rr = rr.unite( item->rect() );
-	    }
-	} else if ( item->intersects( d->rubber->normalize() ) ) {
-	    if ( !item->isSelected() ) {
-		item->setSelected( TRUE, TRUE );
-		changed = TRUE;
-		rr = rr.unite( item->rect() );
-	    } else {
-		region = region.subtract( QRect( contentsToViewport( item->pos() ),
-						 item->size() ) );
-	    }
+    bool alreadyIntersected = FALSE;
+    QRect nr = d->rubber->normalize();
+    QRect rubberUnion = nr.unite( oldRubber.normalize() );
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    for ( ; c; c = c->n ) {
+	if ( c->rect.intersects( rubberUnion ) ) {
+	    alreadyIntersected = TRUE;
+	    QIconViewItem *item = c->items.first();
+	    for ( ; item; item = c->items.next() ) {
+		if ( !item->intersects( nr ) ) {
+		    if ( item->isSelected() ) {
+			item->setSelected( FALSE );
+			changed = TRUE;
+			rr = rr.unite( item->rect() );
+		    }
+		} else if ( item->intersects( nr ) ) {
+		    if ( !item->isSelected() ) {
+			item->setSelected( TRUE, TRUE );
+			changed = TRUE;
+			rr = rr.unite( item->rect() );
+		    } else {
+			region = region.subtract( QRect( contentsToViewport( item->pos() ),
+							 item->size() ) );
+		    }
 	
-	    ++selected;
-	    minx = QMIN( minx, item->x() - 1 );
-	    miny = QMIN( miny, item->y() - 1 );
-	    maxx = QMAX( maxx, item->x() + item->width() + 1 );
-	    maxy = QMAX( maxy, item->y() + item->height() + 1 );
+		    minx = QMIN( minx, item->x() - 1 );
+		    miny = QMIN( miny, item->y() - 1 );
+		    maxx = QMAX( maxx, item->x() + item->width() + 1 );
+		    maxy = QMAX( maxy, item->y() + item->height() + 1 );
+		}
+	    }
+	} else {
+ 	    if ( alreadyIntersected )
+ 		break;
 	}
     }
     viewport()->setUpdatesEnabled( TRUE );
@@ -2472,7 +2488,7 @@ void QIconView::doAutoScroll()
     QPainter p;
     p.begin( viewport() );
     p.setRasterOp( NotROP );
-    p.setPen( QPen( Qt::black, 1 ) );
+    p.setPen( QPen( Qt::color0, 1 ) );
     p.setBrush( Qt::NoBrush );
     drawRubber( &p );
     p.end();
@@ -2490,7 +2506,7 @@ void QIconView::doAutoScroll()
 
     p.begin( viewport() );
     p.setRasterOp( NotROP );
-    p.setPen( QPen( Qt::black, 1 ) );
+    p.setPen( QPen( Qt::color0, 1 ) );
     p.setBrush( Qt::NoBrush );
     drawRubber( &p );
 
@@ -2498,7 +2514,6 @@ void QIconView::doAutoScroll()
 
     if ( changed ) {
 	emit selectionChanged();
-	emit selectionChanged( selected );
 	if ( d->selectionMode == Single )
 	    emit selectionChanged( d->currentItem );
     }
@@ -2527,30 +2542,57 @@ void QIconView::doAutoScroll()
 
 void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
 {
-    p->save();
-    p->resetXForm();
-    QRect r( contentsToViewport( QPoint( cx, cy ) ), QSize( cw, ch ) );
-    if ( d->drawAllBack )
-	p->setClipRect( r );
-    else {
-	QRegion reg = d->clipRegion.intersect( r );
-	p->setClipRegion( reg );
+    QRect r = QRect( cx, cy, cw, ch );
+
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    QRegion remaining( QRect( cx, cy, cw, ch ) );
+    bool alreadyIntersected = FALSE;
+    while ( c ) {
+	if ( c->rect.intersects( r ) ) {
+	    p->save();
+	    p->resetXForm();
+	    QRect r2 = c->rect;
+	    r2 = r2.intersect( r );
+	    QRect r3( contentsToViewport( QPoint( r2.x(), r2.y() ) ), QSize( r2.width(), r2.height() ) );
+	    if ( d->drawAllBack ) {
+		p->setClipRect( r3 );
+	    } else {
+		QRegion reg = d->clipRegion.intersect( r3 );
+		p->setClipRegion( reg );
+	    }
+	    drawBackground( p, r3 );
+	    remaining = remaining.subtract( r3 );
+	    p->restore();
+	
+	    QIconViewItem *item = c->items.first();
+	    for ( ; item; item = c->items.next() ) {
+		if ( item->rect().intersects( r ) && !item->dirty )
+		    item->paintItem( p, colorGroup(), font() );
+	    }
+	    alreadyIntersected = TRUE;
+	} else {
+	    if ( alreadyIntersected )
+		break;
+	}
+	c = c->n;
     }
-    drawBackground( p, r );
-    p->restore();
 
-    if ( !d->firstItem )
-	return;
-
-    r = QRect( cx, cy, cw, ch );
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	if ( item->rect().intersects( r ) && !item->dirty )
-	    item->paintItem( p );
+    if ( !remaining.isNull() && !remaining.isEmpty() ) {
+	p->save();
+	p->resetXForm();
+	if ( d->drawAllBack ) {
+	    p->setClipRegion( remaining );
+	} else {
+	    remaining = d->clipRegion.intersect( remaining );
+	    p->setClipRegion( remaining );
+	}
+	drawBackground( p, remaining.boundingRect() );
+	p->restore();
+    }
 
     if ( ( hasFocus() || viewport()->hasFocus() ) && d->currentItem &&
 	 d->currentItem->rect().intersects( r ) )
-	d->currentItem->paintFocus( p );
+	d->currentItem->paintFocus( p, colorGroup() );
 }
 
 /*!
@@ -2570,6 +2612,8 @@ void QIconView::alignItemsInGrid( bool update )
 {
     if ( !d->firstItem || !d->lastItem )
 	return;
+
+    d->containerUpdateLocked = TRUE;
 
     int w = 0, h = 0, y = d->spacing;
 
@@ -2596,6 +2640,7 @@ void QIconView::alignItemsInGrid( bool update )
 	    item = item->prev;
 	}
     }
+    d->containerUpdateLocked = FALSE;
 	
     w = QMAX( QMAX( d->cachedW, w ), d->lastItem->x() + d->lastItem->width() );
     h = QMAX( QMAX( d->cachedH, h ), d->lastItem->y() + d->lastItem->height() );
@@ -2609,6 +2654,7 @@ void QIconView::alignItemsInGrid( bool update )
     resizeContents( w, h );
     viewport()->setUpdatesEnabled( TRUE );
     d->dirty = FALSE;
+    rebuildContainers();
     if ( update )
 	repaintContents( contentsX(), contentsY(), viewport()->width(), viewport()->height(), FALSE );
 }
@@ -2625,6 +2671,7 @@ void QIconView::alignItemsInGrid( bool update )
 
 void QIconView::alignItemsInGrid( const QSize &grid, bool update )
 {
+    d->containerUpdateLocked = TRUE;
     QSize grid_( grid );
     if ( !grid_.isValid() ) {
 	int w = 0, h = 0;
@@ -2649,8 +2696,10 @@ void QIconView::alignItemsInGrid( const QSize &grid, bool update )
 	h = QMAX( h, item->y() + item->height() );
 	item->dirty = FALSE;
     }
+    d->containerUpdateLocked = FALSE;
 
     resizeContents( w, h );
+    rebuildContainers();
     if ( update )
 	repaintContents( contentsX(), contentsY(), viewport()->width(), viewport()->height(), FALSE );
 }
@@ -2708,134 +2757,6 @@ QIconView::SelectionMode QIconView::selectionMode() const
 }
 
 /*!
-  Sets the configuration for the single click mode. \a normalText
-  is the font and \a normalTextCol the color which should be used
-  for the normal icon text. \a highlightedText is the font and
-  \a highlightedTextCol the color which should be used for the icon
-  text, when the icon is highlighted (means, when the mouse cursor is
-  over the item). \a highlightedCursor is the mouse cursor which should
-  be used when the mouse is over an item. Passing 0 for one of these
-  parameters lets the iconview use the default value.
-  \a setCurrentInterval specifies the time interval (in ms) after which
-  a highlighted item (item over which the mouse is) gets the current
-  item and gets selected. Passing -1 here disables this feature.
-
-  The QIconView takes the ownership of the passed pointers. This means
-  you must not delete them! The QIconView cares about deleting them.
-
-  You have to switch the iconview to single click mode first, to
-  make these setting working using setUseSingleClickMode()
-
-  \sa QIconView::setUseSingleClickMode()
-*/
-
-void QIconView::setSingleClickConfiguration( QFont *normalText, QColor *normalTextCol,
-					     QFont *highlightedText, QColor *highlightedTextCol,
-					     QCursor *highlightedCursor, int setCurrentInterval )
-{
-    clearSingleClickConfig();
-
-    d->singleClickConfig.normalText = normalText;
-    d->singleClickConfig.normalTextCol = normalTextCol;
-    d->singleClickConfig.highlightedText = highlightedText;
-    d->singleClickConfig.highlightedTextCol = highlightedTextCol;
-    d->singleClickConfig.highlightedCursor = highlightedCursor;
-    d->singleClickConfig.setCurrentInterval = setCurrentInterval;
-}
-
-/*!
-  This method gives back the current single click configuration
-  using the parameters.
-
-  \sa QIconView::setSingleClickConfiguration(), QIconView::setUseSingleClickMode()
-*/
-
-void QIconView::singleClickConfiguration( QFont *normalText, QColor *normalTextCol,
-					  QFont *highlightedText, QColor *highlightedTextCol,
-					  QCursor *highlightedCursor, int &setCurrentInterval ) const
-{
-    normalText = d->singleClickConfig.normalText;
-    normalTextCol = d->singleClickConfig.normalTextCol;
-    highlightedText = d->singleClickConfig.highlightedText;
-    highlightedTextCol = d->singleClickConfig.highlightedTextCol;
-    highlightedCursor = d->singleClickConfig.highlightedCursor;
-    setCurrentInterval = d->singleClickConfig.setCurrentInterval;
-}
-
-/*!
-  If \a b is TRUE, the iconview is switched to single click mode. This means
-  it behaves quite like a web page. E.g. a single click on an item lets the
-  iconview emit a doubleClicked signal, and the items behave a bit like links
-  (can be configures in QIconView::setSingleClickConfiguration()).
-  If \a b is FALSE, the normal mode of the iconview is used, with double clicks
-  and so on.
-
-  If you use the QIconView you don't have to care about the difference of single
-  click or double click modes. For you this is transparent (the QIconView translates
-  the important signals and events).
-  So you can offer the user to switch between single and doubleclick mode, but
-  you don't need to care about the handling of that at all.
-
-  \sa QIconView::setSingleClickConfiguration()
-*/
-
-void QIconView::setUseSingleClickMode( bool b )
-{
-    d->singleClickMode = b;
-    viewport()->repaint( FALSE );
-}
-
-/*!
-  Returns TRUE if the iconview is in single click mode, or
-  FALSE if it is in double click mode.
-
-  \sa QIconView::setUseSingleClickMode(), QIconView::setSingleClickConfiguration()
-*/
-
-bool QIconView::useSingleClickMode() const
-{
-    return d->singleClickMode;
-}
-
-/*!
-  Sets the \a font for the text of all items in the iconview.
-  New items which are inserted also get this settings.
-
-  By default the normal font() of the iconview is used
-  for the item text.
-*/
-
-void QIconView::setItemFont( const QFont &font )
-{
-    viewport()->setUpdatesEnabled( FALSE );
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	item->setFont( font );
-    d->hasOwnFont = TRUE;
-    d->ownFont = font;
-    viewport()->setUpdatesEnabled( TRUE );
-}
-
-/*!
-  Sets the \a color for the text of all items in the iconview.
-  New items which are inserted also get this settings.
-
-  By default the text color of QIconView's colorGroup()
-  is used.
-*/
-
-void QIconView::setItemColor( const QColor &color )
-{
-    viewport()->setUpdatesEnabled( FALSE );
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	item->setColor( color );
-    d->hasOwnColor = TRUE;
-    d->ownColor = color;
-    viewport()->setUpdatesEnabled( TRUE );
-}
-
-/*!
   Returns a pointer to the item which contains \a pos, which is given
   on contents coordinates.
 */
@@ -2845,10 +2766,15 @@ QIconViewItem *QIconView::findItem( const QPoint &pos ) const
     if ( !d->firstItem )
 	return 0;
 
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	if ( item->contains( pos ) )
-	    return item;
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    for ( ; c; c = c->n ) {
+	if ( c->rect.contains( pos ) ) {
+	    QIconViewItem *item = c->items.first();
+	    for ( ; item; item = c->items.next() )
+		if ( item->contains( pos ) )
+		    return item;
+	}
+    }
 
     return 0;
 }
@@ -2864,9 +2790,16 @@ QIconViewItem *QIconView::findItem( const QString &text ) const
 	return 0;
 
     QIconViewItem *item = d->currentItem;
-    for ( ; item; item = item->next )
+    for ( ; item; item = item->next ) {
 	if ( item->text().lower().left( text.length() ) == text )
 	    return item;
+    }
+
+    item = d->firstItem;
+    for ( ; item && item != d->currentItem; item = item->next ) {
+	if ( item->text().lower().left( text.length() ) == text )
+	    return item;
+    }
 
     return 0;
 }
@@ -2947,32 +2880,82 @@ void QIconView::ensureItemVisible( QIconViewItem *item )
     if ( !item )
 	return;
 
-    ensureVisible( item->x(), item->y(),
-		   item->width(), item->height() );
+    int w = item->width();
+    int h = item->height();
+    ensureVisible( item->x() + w / 2, item->y() + h / 2,
+		   w / 2 + 1, h / 2 + 1 );
 }
 
 /*!
-  Finds the first item which is visible on the viewport. If no items are
+  Finds the first item which is visible in the rectangle \a r in contents coordinates. If no items are
   visible at all, 0 is returned.
 */
 
-QIconViewItem* QIconView::findFirstVisibleItem() const
+QIconViewItem* QIconView::findFirstVisibleItem( const QRect &r ) const
 {
-    QRect r( contentsX(), contentsY(), visibleWidth(), visibleHeight() );
-    QIconViewItem *item = d->firstItem, *i = 0;
-    for ( ; item; item = item->next ) {
-	if ( r.intersects( item->rect() ) ) {
-	    if ( !i )
-		i = item;
-	    else {
-		QRect r2 = item->rect();
-		QRect r3 = i->rect();
-		if ( r2.y() < r3.y() )
-		    i = item;
-		else if ( r2.y() == r3.y() &&
-			  r2.x() < r3.x() )
-		    i = item;
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    QIconViewItem *i = 0;
+    bool alreadyIntersected = FALSE;
+    for ( ; c; c = c->n ) {
+	if ( c->rect.intersects( r ) ) {
+	    alreadyIntersected = TRUE;
+	    QIconViewItem *item = c->items.first();
+	    for ( ; item; item = c->items.next() ) {
+		if ( r.intersects( item->rect() ) ) {
+		    if ( !i ) {
+			i = item;
+		    } else {
+			QRect r2 = item->rect();
+			QRect r3 = i->rect();
+			if ( r2.y() < r3.y() )
+			    i = item;
+			else if ( r2.y() == r3.y() &&
+				  r2.x() < r3.x() )
+			    i = item;
+		    }
+		}
 	    }
+	} else {
+	    if ( alreadyIntersected )
+		break;
+	}
+    }
+
+    return i;
+}
+
+/*!
+  Finds the last item which is visible in the rectangle \a r in contents coordinates. If no items are
+  visible at all, 0 is returned.
+*/
+
+QIconViewItem* QIconView::findLastVisibleItem( const QRect &r ) const
+{
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    QIconViewItem *i = 0;
+    bool alreadyIntersected = FALSE;
+    for ( ; c; c = c->n ) {
+	if ( c->rect.intersects( r ) ) {
+	    alreadyIntersected = TRUE;
+	    QIconViewItem *item = c->items.first();
+	    for ( ; item; item = c->items.next() ) {
+		if ( r.intersects( item->rect() ) ) {
+		    if ( !i ) {
+			i = item;
+		    } else {
+			QRect r2 = item->rect();
+			QRect r3 = i->rect();
+			if ( r2.y() > r3.y() )
+			    i = item;
+			else if ( r2.y() == r3.y() &&
+				  r2.x() > r3.x() )
+			    i = item;
+		    }
+		}
+	    }
+	} else {
+	    if ( alreadyIntersected )
+		break;
 	}
     }
 
@@ -3003,6 +2986,13 @@ void QIconView::clear()
 	delete item;
 	item = tmp;
     }
+    QIconViewPrivate::ItemContainer *c = d->firstContainer, *tmpc;
+    while ( c ) {
+	tmpc = c->n;
+	delete c;
+	c = tmpc;
+    }
+    d->firstContainer = d->lastContainer = 0;
 
     d->count = 0;
     d->firstItem = 0;
@@ -3148,7 +3138,10 @@ void QIconView::setAlignMode( AlignMode am )
 	return;
 
     d->alignMode = am;
+
+    viewport()->setUpdatesEnabled( FALSE );
     resizeContents( viewport()->width(), viewport()->height() );
+    viewport()->setUpdatesEnabled( TRUE );
     alignItemsInGrid( TRUE );
 }
 
@@ -3371,11 +3364,8 @@ bool QIconView::wordWrapIconText() const
 
 void QIconView::contentsMousePressEvent( QMouseEvent *e )
 {
+    d->dragStartPos = e->pos();
     QIconViewItem *item = findItem( e->pos() );
-    emit mouseButtonPressed( e->button(), item, e->globalPos() );
-    emit pressed( item );
-    emit pressed( item, e->globalPos() );
-    item = findItem( e->pos() );
 
     if ( d->currentItem )
 	d->currentItem->renameItem();
@@ -3386,12 +3376,12 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	 item->textRect( FALSE ).contains( e->pos() ) ) {
 
 	if ( !item->renameEnabled() )
-	    return;
+	    goto emit_signals;
 
 	ensureItemVisible( item );
 	setCurrentItem( item );
 	item->rename();
-	return;
+	goto emit_signals;
     }
 
     if ( item && item->isSelectable() ) {
@@ -3401,6 +3391,9 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	    item->setSelected( !item->isSelected(), e->state() & ControlButton );
 	else if ( d->selectionMode == Extended ) {
 	    if ( e->state() & ShiftButton ) {
+		bool block = signalsBlocked();
+		blockSignals( TRUE );
+		viewport()->setUpdatesEnabled( FALSE );
 		QRect r;
 		bool select = !item->isSelected();
 		if ( d->currentItem )
@@ -3418,11 +3411,30 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 		else
 		    r.setHeight( d->currentItem->y() - item->y() + d->currentItem->height() );
 		r = r.normalize();
-		for ( QIconViewItem *i = d->firstItem; i; i = i->next ) {
-		    if ( r.intersects( i->rect() ) )
-			i->setSelected( select, TRUE );
+		QIconViewPrivate::ItemContainer *c = d->firstContainer;
+		bool alreadyIntersected = FALSE;
+		QRect redraw;
+		for ( ; c; c = c->n ) {
+ 		    if ( c->rect.intersects( r ) ) {
+			alreadyIntersected = TRUE;
+			QIconViewItem *i = c->items.first();
+			for ( ; i; i = c->items.next() ) {
+ 			    if ( r.intersects( i->rect() ) ) {
+				redraw = redraw.unite( i->rect() );
+ 				i->setSelected( select, TRUE );
+			    }
+			}
+ 		    } else {
+  			if ( alreadyIntersected )
+  			    break;
+ 		    }
 		}
 		item->setSelected( select, TRUE );
+		redraw = redraw.unite( item->rect() );
+		blockSignals( block );
+		viewport()->setUpdatesEnabled( TRUE );
+		repaintContents( redraw, FALSE );
+		emit selectionChanged();
 	    } else if ( e->state() & ControlButton )
 		item->setSelected( !item->isSelected(), e->state() & ControlButton );
 	    else
@@ -3449,6 +3461,11 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	d->mousePressed = TRUE;
     }
 
+ emit_signals:
+    emit mouseButtonPressed( e->button(), item, e->globalPos() );
+    emit pressed( item );
+    emit pressed( item, e->globalPos() );
+
     if ( e->button() == RightButton ) {
 	emit rightButtonPressed( item, e->globalPos() );
 	if ( item )
@@ -3465,19 +3482,16 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     QIconViewItem *item = findItem( e->pos() );
-    emit mouseButtonClicked( e->button(), item, e->globalPos() );
-    emit clicked( item );
-    emit clicked( item, e->globalPos() );
-    item = findItem( e->pos() );
 
     d->mousePressed = FALSE;
     d->startDrag = FALSE;
-
+    bool emitClicked = TRUE;
+    
     if ( d->rubber ) {
 	QPainter p;
 	p.begin( viewport() );
 	p.setRasterOp( NotROP );
-	p.setPen( QPen( Qt::black, 1 ) );
+	p.setPen( QPen( Qt::color0, 1 ) );
 	p.setBrush( Qt::NoBrush );
 
 	drawRubber( &p );
@@ -3486,12 +3500,7 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 
 	delete d->rubber;
 	d->rubber = 0;
-    } else if ( !d->startDrag && d->singleClickMode ) {
-	if ( item && !item->renameBox ) {
-	    if ( e->button() == LeftButton &&
-		 !( e->state() & ControlButton ) && !( e->state() & ShiftButton ) )
-		emit doubleClicked( item );
-	}
+	emitClicked = FALSE;
     }
 
     if ( d->scrollTimer ) {
@@ -3501,6 +3510,12 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 	d->scrollTimer = 0;
     }
 
+    if ( emitClicked ) {
+	emit mouseButtonClicked( e->button(), item, e->globalPos() );
+	emit clicked( item );
+	emit clicked( item, e->globalPos() );
+    }
+    
     if ( e->button() == RightButton ) {
 	emit rightButtonClicked( item, e->globalPos() );
 	if ( item )
@@ -3516,56 +3531,20 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 
 void QIconView::contentsMouseMoveEvent( QMouseEvent *e )
 {
-    if ( d->singleClickMode ) {
-	if ( ( d->currentItem && d->currentItem->renameBox ) ||
-	     d->rubber ) {
-	    if ( d->singleClickSelectTimer->isActive() )
-		d->singleClickSelectTimer->stop();
-	} else {
-	    QIconViewItem *item = findItem( e->pos() );
-	    if ( item ) {
-		if ( item != d->highlightedItem ) {
-		    if ( d->singleClickSelectTimer->isActive() )
-			d->singleClickSelectTimer->stop();
-
-		    QIconViewItem *old = d->highlightedItem;
-		    d->highlightedItem = item;
-		    emit onItem( item );
-		    if ( d->singleClickConfig.highlightedCursor )
-			viewport()->setCursor( *d->singleClickConfig.highlightedCursor );
-		    repaintItem( old );
-		    repaintItem( d->highlightedItem );
-		    if ( d->singleClickConfig.setCurrentInterval >= 0 )
-			d->singleClickSelectTimer->start( d->singleClickConfig.setCurrentInterval, TRUE );
-		}
-	    } else if ( d->highlightedItem ) {
-		if ( d->singleClickSelectTimer->isActive() )
-		    d->singleClickSelectTimer->stop();
-
-		viewport()->setCursor( d->oldCursor );
-		QIconViewItem *old = d->highlightedItem;
-		d->highlightedItem = 0;
-		repaintItem( old );
-		emit onViewport();
-	    }
-	}
-    } else {
-	QIconViewItem *item = findItem( e->pos() );
-	if ( d->highlightedItem != item ) {
-	    if ( item )
-		emit onItem( item );
-	    else
-		emit onViewport();
-	    d->highlightedItem = item;
-	}
+    QIconViewItem *item = findItem( e->pos() );
+    if ( d->highlightedItem != item ) {
+	if ( item )
+	    emit onItem( item );
+	else
+	    emit onViewport();
+	d->highlightedItem = item;
     }
 
     if ( d->mousePressed && d->currentItem && d->currentItem->dragEnabled() ) {
 	if ( !d->startDrag ) {
 	    d->currentItem->setSelected( TRUE, TRUE );
 	    d->startDrag = TRUE;
-	}
-	else {
+	} else if ( ( d->dragStartPos - e->pos() ).manhattanLength() > QApplication::startDragDistance() ) {
 	    d->mousePressed = FALSE;
 	    d->cleared = FALSE;
 	    startDrag();
@@ -3637,7 +3616,7 @@ void QIconView::contentsDragMoveEvent( QDragMoveEvent *e )
 	    QPainter p;
 	    p.begin( viewport() );
 	    p.translate( -contentsX(), -contentsY() );
-	    item->paintFocus( &p );
+	    item->paintFocus( &p, colorGroup() );
 	    p.end();
 	}
     } else {
@@ -3795,6 +3774,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     switch ( e->key() )
     {
     case Key_Home: {
+	d->currInputString = QString::null;
 	if ( !d->firstItem )
 	    return;
 
@@ -3810,6 +3790,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_End: {
+	d->currInputString = QString::null;
 	if ( !d->lastItem )
 	    return;
 
@@ -3825,6 +3806,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_Right: {	
+	d->currInputString = QString::null;
 	QIconViewItem *item;
 	if ( d->alignMode == East ) {
 	    if ( !d->currentItem->next )
@@ -3867,6 +3849,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_Left: {
+	d->currInputString = QString::null;
 	QIconViewItem *item;
 	if ( d->alignMode == East ) {
 	    if ( !d->currentItem->prev )
@@ -3909,15 +3892,18 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_Space: {
+	d->currInputString = QString::null;
 	if ( d->selectionMode == Single )
 	    return;
 
 	d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
     } break;
     case Key_Enter: case Key_Return:
+	d->currInputString = QString::null;
 	emit returnPressed( d->currentItem );
 	break;
     case Key_Down: {
+	d->currInputString = QString::null;
 	QIconViewItem *item;
 	
 	if ( d->alignMode == East ) {
@@ -3961,6 +3947,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_Up: {
+	d->currInputString = QString::null;
 	QIconViewItem *item;
 	
 	if ( d->alignMode == East ) {
@@ -4004,40 +3991,66 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     case Key_Next: {
+	d->currInputString = QString::null;
+	QRect r;
 	if ( d->alignMode == East )
-	    scrollBy( 0, visibleHeight() );
+	    r = QRect( 0, d->currentItem->y() + visibleHeight(), contentsWidth(), visibleHeight() );
 	else
-	    scrollBy( visibleWidth(), 0 );
+	    r = QRect( d->currentItem->x() + visibleWidth(), 0, visibleWidth(), contentsHeight() );
 	QIconViewItem *item = d->currentItem;
-	setCurrentItem( findFirstVisibleItem() );
-	if ( d->selectionMode == Single ) {
-	    if ( item )
-		item->setSelected( FALSE );
-	    d->currentItem->setSelected( TRUE, TRUE );
-	} else {
-	    if ( e->state() & ShiftButton )
-		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	QIconViewItem *ni = findFirstVisibleItem( r  );
+	if ( !ni ) {
+	    if ( d->alignMode == East )
+		r = QRect( 0, d->currentItem->y() + d->currentItem->height(), contentsWidth(), contentsHeight() );
+	    else
+		r = QRect( d->currentItem->x() + d->currentItem->width(), 0, contentsWidth(), contentsHeight() );
+	    ni = findLastVisibleItem( r  );
+	}
+	if ( ni ) {
+	    setCurrentItem( ni );
+	    if ( d->selectionMode == Single ) {
+		if ( item )
+		    item->setSelected( FALSE );
+		d->currentItem->setSelected( TRUE, TRUE );
+	    } else {
+		if ( e->state() & ShiftButton )
+		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	    }
 	}
     } break;
     case Key_Prior: {
+	d->currInputString = QString::null;
+	QRect r;
 	if ( d->alignMode == East )
-	    scrollBy( 0, -visibleHeight() );
+	    r = QRect( 0, d->currentItem->y() - visibleHeight(), contentsWidth(), visibleHeight() );
 	else
-	    scrollBy( -visibleWidth(), 0 );
+	    r = QRect( d->currentItem->x() - visibleWidth(), 0, visibleWidth(), contentsHeight() );
 	QIconViewItem *item = d->currentItem;
-	setCurrentItem( findFirstVisibleItem() );
-	if ( d->selectionMode == Single ) {
-	    if ( item )
-		item->setSelected( FALSE );
-	    d->currentItem->setSelected( TRUE, TRUE );
-	} else {
-	    if ( e->state() & ShiftButton )
-		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	QIconViewItem *ni = findFirstVisibleItem( r  );
+	if ( !ni ) {
+	    if ( d->alignMode == East )
+		r = QRect( 0, 0, contentsWidth(), d->currentItem->y() );
+	    else
+		r = QRect( 0, 0, d->currentItem->x(), contentsHeight() );
+	    ni = findFirstVisibleItem( r  );
+	}
+	if ( ni ) {
+	    setCurrentItem( ni );
+	    if ( d->selectionMode == Single ) {
+		if ( item )
+		    item->setSelected( FALSE );
+		d->currentItem->setSelected( TRUE, TRUE );
+	    } else {
+		if ( e->state() & ShiftButton )
+		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	    }
 	}
     } break;
     default:
 	if ( !e->text().isEmpty() && e->text()[ 0 ].isPrint() )
 	    findItemByName( e->text() );
+	else
+	    d->currInputString = QString::null;
     }
 
     if ( e->key() != Key_Shift &&
@@ -4096,16 +4109,17 @@ QDragObject *QIconView::dragObject()
     if ( !d->currentItem )
 	return 0;
 
-    QPoint orig = viewportToContents( viewport()->mapFromGlobal( QCursor::pos() ) );
+    QPoint orig = d->dragStartPos;
 
     QIconDrag *drag = new QIconDrag( viewport() );
-    drag->setPixmap( QPixmap( d->currentItem->icon() ),
- 		     QPoint( d->currentItem->iconRect().width() / 2, d->currentItem->iconRect().height() / 2 ) );
+    drag->setPixmap( *d->currentItem->pixmap(),
+ 		     QPoint( d->currentItem->pixmapRect().width() / 2,
+			     d->currentItem->pixmapRect().height() / 2 ) );
     for ( QIconViewItem *item = d->firstItem; item; item = item->next )
 	if ( item->isSelected() )
-	    drag->append( QIconDragItem( QRect( item->iconRect( FALSE ).x() - orig.x(),
-						item->iconRect( FALSE ).y() - orig.y(),
-						item->iconRect().width(), item->iconRect().height() ),
+	    drag->append( QIconDragItem( QRect( item->pixmapRect( FALSE ).x() - orig.x(),
+						item->pixmapRect( FALSE ).y() - orig.y(),
+						item->pixmapRect().width(), item->pixmapRect().height() ),
 					 QRect( item->textRect( FALSE ).x() - orig.x(),
 						item->textRect( FALSE ).y() - orig.y(), 	
 						item->textRect().width(), item->textRect().height() ) ) );
@@ -4119,7 +4133,10 @@ QDragObject *QIconView::dragObject()
 
 void QIconView::startDrag()
 {
-    QPoint orig = viewportToContents( viewport()->mapFromGlobal( QCursor::pos() ) );
+    if ( !d->currentItem )
+	return;
+
+    QPoint orig = d->dragStartPos;
     d->dragStart = QPoint( orig.x() - d->currentItem->x(),
 			   orig.y() - d->currentItem->y() );
 
@@ -4210,26 +4227,6 @@ void QIconView::emitSelectionChanged()
     emit selectionChanged();
     if ( d->selectionMode == Single )
 	emit selectionChanged( d->currentItem );
-    emitNewSelectionNumber();
-}
-
-/*!
-  Emits signals, that indciate the number of selected items
-*/
-
-void QIconView::emitNewSelectionNumber()
-{
-    if ( d->selectionMode != Single ) {
-	int num = 0;
-	QIconViewItem *item = d->firstItem;
-	for ( ; item; item = item->next )
-	    if ( item->isSelected() )
-		++num;
-
-	emit selectionChanged( num );
-	d->numSelectedItems = num;
-    } else
-	d->numSelectedItems = 1;
 }
 
 /*!
@@ -4252,6 +4249,9 @@ void QIconView::emitRenamed( QIconViewItem *item )
 
 void QIconView::drawDragShapes( const QPoint &pos )
 {
+    if ( pos == QPoint( -1, -1 ) )
+	return;
+
     if ( !d->drawDragShapes ) {
 	d->drawDragShapes = TRUE;
 	return;
@@ -4262,10 +4262,11 @@ void QIconView::drawDragShapes( const QPoint &pos )
 	p.begin( viewport() );
 	p.translate( -contentsX(), -contentsY() );
 	p.setRasterOp( NotROP );
-
+	p.setPen( QPen( color0 ) );
+	
 	QValueList<QIconDragItem>::Iterator it = d->iconDragData.begin();
 	for ( ; it != d->iconDragData.end(); ++it ) {
-	    QRect ir = (*it).iconRect();
+	    QRect ir = (*it).pixmapRect();
 	    QRect tr = (*it).textRect();
 	    tr.moveBy( pos.x(), pos.y() );
 	    ir.moveBy( pos.x(), pos.y() );
@@ -4278,6 +4279,7 @@ void QIconView::drawDragShapes( const QPoint &pos )
 	QPainter p;
 	p.begin( viewport() );
 	p.setRasterOp( NotROP );
+	p.setPen( QPen( color0 ) );
 
 	for ( int i = 0; i < d->numDragItems; ++i ) {
 	    QRect r( pos.x() + i * 40, pos.y(), 35, 35 );
@@ -4446,7 +4448,7 @@ void QIconView::findItemByName( const QString &text )
     if ( d->inputTimer->isActive() )
 	d->inputTimer->stop();
     d->inputTimer->start( 500, TRUE );
-    d->currInputString += text;
+    d->currInputString += text.lower();
     QIconViewItem *item = findItem( d->currInputString );
     if ( item )
 	setCurrentItem( item );
@@ -4474,12 +4476,12 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		x += d->spacing + item->width();
 		if ( x > visibleWidth() && item != begin ) {
 		    h = QMAX( h, item->height() );
-		    ih = QMAX( ih, item->iconRect().height() );
+		    ih = QMAX( ih, item->pixmapRect().height() );
 		    item = item->prev;
 		    break;
 		}
 		h = QMAX( h, item->height() );
-		ih = QMAX( ih, item->iconRect().height() );
+		ih = QMAX( ih, item->pixmapRect().height() );
 		QIconViewItem *old = item;
 		item = item->next;
 		if ( !item ) {
@@ -4497,10 +4499,10 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 	    while ( TRUE ) {
 		item->dirty = FALSE;
 		if ( item == begin )
-		    item->move( d->spacing, y + ih - item->iconRect().height() );
+		    item->move( d->spacing, y + ih - item->pixmapRect().height() );
 		else
 		    item->move( item->prev->x() + item->prev->width() + d->spacing,
-				y + ih - item->iconRect().height() );
+				y + ih - item->pixmapRect().height() );
 		if ( y + h < item->y() + item->height() )
 		    h = QMAX( h, ih + item->textRect().height() );
 		if ( item == end )
@@ -4512,7 +4514,7 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 	    // first calculate the row height
 	    int h = begin->height();
 	    int x = d->spacing;
-	    int ih = begin->iconRect().height();
+	    int ih = begin->pixmapRect().height();
 	    QIconViewItem *item = begin;
 	    int i = 0;
 	    int sp = 0;
@@ -4529,12 +4531,12 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		}
 		if ( x > visibleWidth() && item != begin ) {
 		    h = QMAX( h, item->height() );
-		    ih = QMAX( ih, item->iconRect().height() );
+		    ih = QMAX( ih, item->pixmapRect().height() );
 		    item = item->prev;
 		    break;
 		}
 		h = QMAX( h, item->height() );
-		ih = QMAX( ih, item->iconRect().height() );
+		ih = QMAX( ih, item->pixmapRect().height() );
 		QIconViewItem *old = item;
 		item = item->next;
 		if ( !item ) {
@@ -4557,9 +4559,9 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		if ( item == begin ) {
 		    if ( d->itemTextPos == Bottom )
 			item->move( d->spacing + ( r * d->rastX - item->width() ) / 2,
-				    y + ih - item->iconRect().height() );
+				    y + ih - item->pixmapRect().height() );
 		    else
-			item->move( d->spacing, y + ih - item->iconRect().height() );
+			item->move( d->spacing, y + ih - item->pixmapRect().height() );
 		    i += r;
 		    sp += r;
 		} else {
@@ -4567,9 +4569,9 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		    int x = i * d->rastX + sp * d->spacing;
 		    if ( d->itemTextPos == Bottom )
 			item->move( x + ( r * d->rastX - item->width() ) / 2,
-				    y + ih - item->iconRect().height() );
+				    y + ih - item->pixmapRect().height() );
 		    else
-			item->move( x, y + ih - item->iconRect().height() );
+			item->move( x, y + ih - item->pixmapRect().height() );
 		    i += r;
 		}
 		if ( y + h < item->y() + item->height() )
@@ -4663,45 +4665,6 @@ QIconViewItem *QIconView::rowBegin( QIconViewItem * ) const
     return d->firstItem;
 }
 
-/*!
-  This slot selects the currentle highlighed item (if there is one).
-  This is used in the single click mode.
-
-  \sa QIconView::setSingleClickConfiguration(), QIconView::setUseSingleClickMode()
-*/
-
-void QIconView::selectHighlightedItem()
-{
-    if ( d->highlightedItem ) {
-	setCurrentItem( d->highlightedItem );
-	d->highlightedItem->setSelected( TRUE );
-    }
-}
-
-/*!
-  \internal
-*/
-
-void QIconView::clearSingleClickConfig()
-{
-    if ( d->singleClickConfig.normalText )
-	delete d->singleClickConfig.normalText;
-    if ( d->singleClickConfig.normalTextCol )
-	delete d->singleClickConfig.normalTextCol;
-    if ( d->singleClickConfig.highlightedText )
-	delete d->singleClickConfig.highlightedText;
-    if ( d->singleClickConfig.highlightedTextCol )
-	delete d->singleClickConfig.highlightedTextCol;
-    if ( d->singleClickConfig.highlightedCursor )
-	delete d->singleClickConfig.highlightedCursor;
-    d->singleClickConfig.normalText = 0;
-    d->singleClickConfig.normalTextCol = 0;
-    d->singleClickConfig.highlightedText = 0;
-    d->singleClickConfig.highlightedTextCol = 0;
-    d->singleClickConfig.highlightedCursor = 0;
-    d->singleClickConfig.setCurrentInterval = -1;
-}
-
 static int cmpIconViewItems( const void *n1, const void *n2 )
 {
     if ( !n1 || !n2 )
@@ -4784,28 +4747,17 @@ void QIconView::sort( bool ascending )
 
 QSize QIconView::sizeHint() const
 {
-    // #### todo
-    // ##### should be mutable
-//     if ( d->dirty )
-// 	( (QIconView*)this )->alignItemsInGrid();
+    if ( d->dirty && d->firstSizeHint ) {
+	( (QIconView*)this )->resizeContents( QMAX( 400, contentsWidth() ),
+					      QMAX( 400, contentsHeight() ) );
+	( (QIconView*)this )->alignItemsInGrid( FALSE );
+	d->firstSizeHint = FALSE;
+    }
 
-//     int w = 100;
-//     int h = 100;
+    d->dirty = TRUE;
 
-//     QIconViewItem *item = d->firstItem;
-//     for ( ; item; item = item->next ) {
-// 	w = QMAX( w, item->x() + item->width() );
-// 	h = QMAX( h, item->y() + item->height() );
-//     }
-
-//     w += d->spacing;
-//     h += d->spacing;
-
-//     d->dirty = TRUE;
-
-//     return QSize( QMIN( 400, w ), QMIN( 400, h ) );
-
-    return QSize( 400, 400 );
+    return QSize( QMIN( 400, contentsWidth() + style().scrollBarExtent().width()),
+		  QMIN( 400, contentsHeight() + style().scrollBarExtent().height() ) );
 }
 
 /*!
@@ -4814,7 +4766,7 @@ QSize QIconView::sizeHint() const
 
 void QIconView::updateContents()
 {
-    viewport()->repaint( FALSE );
+    viewport()->update();
 }
 
 /*!
@@ -4827,5 +4779,166 @@ void QIconView::enterEvent( QEvent *e )
     emit onViewport();
 }
 
-#include "qiconview.moc"
+/*!
+  \internal
+  This method is always called when the geometry of an item changes. This method
+  moves the item into the correct area in the internal data structure then.
+*/
 
+void QIconView::updateItemContainer( QIconViewItem *item )
+{
+    if ( !item || d->containerUpdateLocked || !isVisible() )
+	return;
+
+    if ( item->d->container1 && d->firstContainer ) {
+	item->d->container1->items.removeRef( item );
+    }
+    item->d->container1 = 0;
+    if ( item->d->container2 && d->firstContainer ) {
+	item->d->container2->items.removeRef( item );
+    }
+    item->d->container2 = 0;
+
+    QIconViewPrivate::ItemContainer *c = d->firstContainer;
+    if ( !c ) {
+	appendItemContainer();
+	c = d->firstContainer;
+    }
+
+    bool contains;
+    while ( TRUE ) {
+	if ( c->rect.intersects( item->rect() ) ) {
+	    contains = c->rect.contains( item->rect() );
+	    break;
+	}
+	
+	c = c->n;
+	if ( !c ) {
+	    appendItemContainer();
+	    c = d->lastContainer;
+	}
+    }
+
+    if ( !c ) {
+	qDebug( "oops, this can't happen!!!!!!!!!" );
+	return;
+    }
+
+    c->items.append( item );
+    item->d->container1 = c;
+
+    if ( !contains ) {
+	c = c->n;
+	if ( !c ) {
+	    appendItemContainer();
+	    c = d->lastContainer;
+	}
+	c->items.append( item );
+	item->d->container2 = c;
+    }
+}
+
+/*!
+  \internal
+  Appends a new rect area to the internal data structure of the items
+*/
+
+void QIconView::appendItemContainer()
+{
+    QSize s;
+    // #### We have to find out which value is best here
+    if ( d->alignMode == East )
+	s = QSize( INT_MAX - 1, RECT_EXTENSION );
+    else
+	s = QSize( RECT_EXTENSION, INT_MAX - 1 );
+
+    if ( !d->firstContainer ) {
+	d->firstContainer = new QIconViewPrivate::ItemContainer( 0, 0, QRect( QPoint( 0, 0 ), s ) );
+	d->lastContainer = d->firstContainer;
+    } else {
+	if ( d->alignMode == East )
+	    d->lastContainer = new QIconViewPrivate::ItemContainer(
+		d->lastContainer, 0, QRect( d->lastContainer->rect.bottomLeft(), s ) );
+	else
+	    d->lastContainer = new QIconViewPrivate::ItemContainer(
+		d->lastContainer, 0, QRect( d->lastContainer->rect.topRight(), s ) );
+    }
+}
+
+/*!
+  \internal
+  Rebuilds the whole internal data structure. This is done when
+  most certainly all items change their geometry (e.g. in alignItemsInGrid()), because
+  calling this is then more efiicient than calling updateItemContainer() for each
+  item
+*/
+
+void QIconView::rebuildContainers()
+{
+    QIconViewPrivate::ItemContainer *c = d->firstContainer, *tmpc;
+    while ( c ) {
+	tmpc = c->n;
+	delete c;
+	c = tmpc;
+    }
+    d->firstContainer = d->lastContainer = 0;
+
+    QIconViewItem *item = d->firstItem;
+    appendItemContainer();
+    c = d->lastContainer;
+    while ( item ) {
+	if ( c->rect.contains( item->rect() ) ) {
+	    item->d->container1 = c;
+	    item->d->container2 = 0;
+	    c->items.append( item );
+	    item = item->next;
+	} else if ( c->rect.intersects( item->rect() ) ) {
+	    item->d->container1 = c;
+	    c->items.append( item );
+	    c = c->n;
+	    if ( !c ) {
+		appendItemContainer();
+		c = d->lastContainer;
+	    }
+	    c->items.append( item );
+	    item->d->container2 = c;
+	    item = item->next;
+	    c = c->p;
+	} else {
+	    if ( d->alignMode == East ) {
+		if ( item->y() < c->rect.y() && c->p ) {
+		    c = c->p;
+		    continue;
+		}
+	    } else {
+		if ( item->x() < c->rect.x() && c->p ) {
+		    c = c->p;
+		    continue;
+		}
+	    }
+	    c = c->n;
+	    if ( !c ) {
+		appendItemContainer();
+		c = d->lastContainer;
+	    }
+	}
+    }
+}
+
+/*!
+  \internal
+*/
+
+void QIconView::movedContents( int, int )
+{
+    if ( d->drawDragShapes ) {
+	drawDragShapes( d->oldDragPos );
+	d->oldDragPos = QPoint( -1, -1 );
+    }
+}
+
+/*!
+  \internal
+*/
+
+#include "qiconview.moc"

@@ -25,7 +25,7 @@ class KFileViewItem;
 class QWidget;
 class QLabel;
 
-#include <qiconview.h>
+#include <kiconview.h>
 #include "kfileview.h"
 
 class KFileIconViewItem : public QIconViewItem
@@ -49,7 +49,7 @@ private:
 
 };
 
-class KFileIconView : public QIconView, public KFileView
+class KFileIconView : public KIconView, public KFileView
 {
     Q_OBJECT
 

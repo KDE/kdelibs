@@ -17,7 +17,7 @@
  *  Library General Public License for more details.
  *
  *  You should have received a copy of the GNU Library General Public License
- *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  along with this library; see the file COPYING.LIB.	If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
@@ -34,7 +34,7 @@
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qpushbutton.h>
-#include <qiconview.h>
+#include <kiconview.h>
 
 #include <kapp.h>
 #include <kdialogbase.h>
@@ -52,11 +52,11 @@ class QTimer;
 * @version $Id$
 * @author Christoph.Neerfeld@bonn.netsurf.de
 */
-class KIconLoaderCanvas : public QIconView
+class KIconLoaderCanvas : public KIconView
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     KIconLoaderCanvas (QWidget *parent=0, const char* name=0);
     virtual ~KIconLoaderCanvas();
 
@@ -64,7 +64,7 @@ class KIconLoaderCanvas : public QIconView
     QString getCurrent( void );
     QString currentDir( void );
 
-  signals:
+signals:
     void nameChanged( const QString& );
     void doubleClicked();
     void interrupted();
@@ -72,17 +72,17 @@ class KIconLoaderCanvas : public QIconView
     void progress( int p );
     void finished();
 
-  protected:
+protected:
     /**
      * Makes sure Key_Escape is ignored
      */
     virtual void keyPressEvent(QKeyEvent *e);
 
-  private slots:
+private slots:
     void slotLoadDir();
     void slotCurrentChanged( QIconViewItem *item );
 
-  private:
+private:
     QString dir_name, filter;
     QTimer *loadTimer;
 
@@ -98,9 +98,9 @@ class KIconLoaderCanvas : public QIconView
  */
 class KIconLoaderDialog : public KDialogBase
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     /**
      * The KIconLoaderDialog is a modal dialog; i.e. it has its own eventloop
      * and the normal program will stop after a call to selectIcon() until
@@ -149,10 +149,10 @@ class KIconLoaderDialog : public KDialogBase
     void changeDirs( const QStringList &l );
     int exec(QString filter);
 
-  protected:
+protected:
     void init();
 
-  protected slots:
+protected slots:
     void filterChanged();
     void dirChanged(const QString&);
     void needReload();
@@ -161,7 +161,7 @@ class KIconLoaderDialog : public KDialogBase
     void progress( int p );
     void hideProgressBar( void );
 
-  protected:
+protected:
     KIconLoaderCanvas *canvas;
     QLabel	      *l_name;
     QLineEdit	      *i_filter;

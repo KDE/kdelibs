@@ -29,18 +29,15 @@
 #include <klocale.h>
 
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
-    : QListView(parent, name), KFileView()
+    : KListView(parent, name), KFileView()
 {
-    // #### Works only with double click at the moment,
-    // #### Single click has to be implemented in QListView
-
     addColumn( i18n( "Name" ) );
     addColumn( i18n( "Size" ) );
     addColumn( i18n( "Permissions" ) );
     addColumn( i18n( "Date" ) );
     addColumn( i18n( "Owner" ) );
     addColumn( i18n( "Group" ) );
-    //	  setShowSortIndicator( TRUE );
+    setShowSortIndicator( TRUE );
     setAllColumnsShowFocus( TRUE );
 
     connect( this, SIGNAL( doubleClicked(QListViewItem *) ),

@@ -37,16 +37,9 @@ KFileIconViewItem::~KFileIconViewItem()
 }
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
-    : QIconView(parent, name), KFileView()
+    : KIconView(parent, name), KFileView()
 {
     toolTip = 0;
-    QFont f( font() );
-    f.setUnderline( TRUE );
-    setSingleClickConfiguration( new QFont( f ), new QColor( Qt::black ),
-				 new QFont( f ), new QColor( Qt::blue ),
-				 new QCursor( PointingHandCursor ), -1 );
-    // TODO single click is hard coded for now
-    setUseSingleClickMode( true );
     setResizeMode( Adjust );
     setAlignMode( South );
     setItemTextPos( Right );
@@ -89,7 +82,7 @@ void KFileIconView::showToolTip( QIconViewItem *item )
 	return;
 
     int w = maxItemWidth() - ( itemTextPos() == QIconView::Bottom ? 0 :
-			       item->iconRect().width() ) - 4;
+			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
 	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0, "myToolTip",
 			      WStyle_Customize | WStyle_NoBorder |
@@ -196,7 +189,7 @@ void KFileIconView::updateView( bool b )
 	KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
 	if ( item ) {
 	    do {
-		item ->setIcon( const_cast<KFileViewItem*>(item->fileInfo())->pixmap() );
+		item ->setPixmap( const_cast<KFileViewItem*>(item->fileInfo())->pixmap() );
 		item = static_cast<KFileIconViewItem *>(item->nextItem());
 	    } while ( item != 0L );
 	}
@@ -210,7 +203,7 @@ void KFileIconView::updateView( const KFileViewItem *i )
 	return;
     KFileIconViewItem *item = (KFileIconViewItem*)it;
     if ( item )
-	item ->setIcon( item->fileInfo()->pixmap() );
+	item ->setPixmap( item->fileInfo()->pixmap() );
 }
 
 #include "kfileiconview.moc"
