@@ -1681,9 +1681,10 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (realKey && selectCurrentItem)
           item->setSelected(false);
        //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+       QListView::SelectionMode oldSelectionMode = selectionMode();
        setSelectionMode (QListView::Multi);
        QListView::keyPressEvent (e);
-       setSelectionMode (QListView::Extended);
+       setSelectionMode (oldSelectionMode);
        if (realKey && selectCurrentItem)
        {
           currentItem()->setSelected(true);
