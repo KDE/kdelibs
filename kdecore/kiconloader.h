@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.23  1999/05/07 16:45:13  kulow
+   adding more explicit calls to ascii()
+
    Revision 1.22  1999/05/07 15:42:36  kulow
    making some changes to the code and partly to the API to make it
    -DQT_NO_ASCII_CAST compatible.
@@ -35,58 +38,6 @@
 
    Revision 1.19  1999/03/29 04:14:37  ssk
    Rewrote some docs.
-
-   Revision 1.18  1999/03/09 16:39:50  dfaure
-   Merging with 1.1 branch : initPath(), and header doc update.
-
-   Revision 1.17  1999/03/09 06:47:14  antlarr
-   Added the getIconPath function that returns the full path to a icon filename and
-   changed loadInternal to use it.
-
-   Revision 1.17  1999/03/09 07:40:26  antlarr
-   Added the getIconPath function that returns the full path to a icon filename,
-   it can be useful for many applications. Changed loadInternal to use it.
-
-   Revision 1.16  1999/03/02 00:09:43  dfaure
-   Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
-   instead of 0L. Will prevent koffice apps and some others from crashing when
-   not finding an icon. Approved by Reggie.
-
-   loadIcon not changed, since I tried and it broke kpanel (which uses loadIcon
-   even on empty string in configuration item). This means loadIcon and ICON are
-   no longer equivalent : loadIcon is for apps that want to do complex things
-   with icons, based on whether they're installed or not, ICON() is for apps
-   that just want an Icon and don't want to care about it !
-
-   Of course, unknown.xpm is WAYS to big for a toolbar - that's the point :
-   you easily see that the icon is missing....   :)))
-
-   Not tested with Qt2.0, of course, but it's time for binary incompat changes...
-
-   Revision 1.15  1998/11/02 10:08:35  ettrich
-   new reload method for kiconloader (Rene Beutler)
-
-   Revision 1.14  1998/09/01 20:21:27  kulow
-   I renamed all old qt header files to the new versions. I think, this looks
-   nicer (and gives the change in configure a sense :)
-
-   Revision 1.13  1998/08/26 18:37:48  neerfeld
-   bug fix for loadInternal;  changed email address
-
-   Revision 1.12  1998/08/22 20:02:41  kulow
-   make kdecore have nicer output, when compiled with -Weffc++ :)
-
-   Revision 1.11  1998/08/17 10:34:03  konold
-
-   Martin K.: Fixed a typo
-
-   Revision 1.10  1998/06/16 06:03:22  kalle
-   Implemented copy constructors and assignment operators or disabled them
-
-   Revision 1.9  1998/03/08 18:50:23  wuebben
-   Bernd: fixed up the kiconloader class -- it was completely busted
-
-
 */
 
 
@@ -97,17 +48,19 @@ class KConfig;
 #include <qobject.h>
 #include <qlist.h>
 #include <qpixmap.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qstring.h>
 
 /**
 	Icon loader with caching.
 
-	Multiples loads of the same icons using this class will be cached,
-	saving memory and loading time. 
+	Multiples loads of the same icons using this class will be cached
+	using @ref QPixmapCache, saving memory and loading time. 
 	
 	Icons are searched for according to the KDE file system standard.
 	Extra directories can be added, see @ref insertDirectory.
+
+	All keys used in QPixmapCache by this class have the "$kico_.." prefix.
 
 	@author Christoph Neerfeld (chris@kde.org)
 	@version $Id$
@@ -115,40 +68,41 @@ class KConfig;
 class KIconLoader : public QObject
 {
   Q_OBJECT
+
 public:
   /**
-  	Constructor.
+    Constructor.
 
-	If you want to use another path in your application then write into
-	your .my_application_rc:
+    If you want to use another path in your application then write into
+    your .my_application_rc:
 
-<pre>
-	 [MyApplication]
-	 PixmapPath=/..../my_pixmap_path
-</pre>
+    <pre>
+    [MyApplication]
+    PixmapPath=/..../my_pixmap_path
+    </pre>
 
-	and call KIconLoader( config, "MyApplication", "PixmapPath" ).
+    and call KIconLoader( config, "MyApplication", "PixmapPath" ).
 
-	@param config	Pointer to a KConfig object which will be searched
-	 		for additional paths.
-	@param group	Group to search for paths. Normally "KDE Setup" is used.
-	@param key	Key to search for paths. Normally "IconPath" is used.
-	
+    @param config	Pointer to a KConfig object which will be searched
+    for additional paths.
+    @param group	Group to search for paths. Normally "KDE Setup" is used.
+    @param key	Key to search for paths. Normally "IconPath" is used.
+
   */
-  KIconLoader ( KConfig *conf, const QString &app_name, const QString &var_name );
+  KIconLoader ( KConfig *conf, const QString &app_name, 
+		  const QString &var_name );
 
   /** Constructor. Searches for path in [KDE Setup]/IconPath.  */
   KIconLoader();
 
   /** Destructor. */
-  ~KIconLoader ();
+  ~KIconLoader () {}
 
   /** 
   	Load an icon from disk or cache.
 
 	@param name	The name of the icon to load. Absolute pathnames are
 	 		allowed.
-
   	@param w	The max width of the resulting pixmap. Larger icons
 			are scaled down. The default is no maximum.
   	@param h	The max height of the resulting pixmap. Larger icons
@@ -159,7 +113,7 @@ public:
 
 	@return	The loaded icon.
   */
-  QPixmap loadIcon( const char *name, int w = 0, int h = 0, 
+  QPixmap loadIcon( const QString& name, int w = 0, int h = 0, 
   		bool canReturnNull = true );
 
 
@@ -172,7 +126,7 @@ public:
 
 	@see loadIcon
   */
-  QPixmap reloadIcon( const char *name, int w = 0, int h = 0);
+  QPixmap reloadIcon( const QString& name, int w = 0, int h = 0);
   
   /** 
   	Load a mini icon from disk or cache.
@@ -180,7 +134,7 @@ public:
 
 	@see loadIcon
   */
-  QPixmap loadMiniIcon( const char *name , int w = 0, int h = 0 );
+  QPixmap loadMiniIcon( const QString& name , int w = 0, int h = 0 );
 
   /**
    * The loadApplication-Icon functions are similar to the 
@@ -194,14 +148,14 @@ public:
    *
    * @see loadIcon
    */
-  QPixmap loadApplicationIcon( const char *name, int w = 0, int h = 0 );
+  QPixmap loadApplicationIcon( const QString& name, int w = 0, int h = 0 );
 
   /**
   	Similar to loadMiniIcon, but searches for a mini icon.
 
 	@see loadMiniIcon, loadApplicationIcon
   */
-  QPixmap loadApplicationMiniIcon( const char *name, int w = 0, int h = 0 );
+  QPixmap loadApplicationMiniIcon( const QString& name, int w = 0, int h = 0 );
 
 
   /** 
@@ -221,16 +175,23 @@ public:
 
 	@li list of directories in [KDE Setup]:IconPath=...
 
-	 @param index	The index in the search path at which to insert
-	 		the new directory.
+	@param index	The index in the search path at which to insert
+	the new directory.
 	@param dir_name	The directory to insert into the search path.
 	@return true on success, false on index out of range.
 
   */
 
-  bool insertDirectory( int index, const char *dir_name ) {
-      return pixmap_dirs.insert( index, dir_name ); }
-  QStrList* getDirList() { return &pixmap_dirs; }
+  bool insertDirectory( int index, const QString& dir_name );
+  
+  /**
+   * Append a directory to the end of the search directory list.
+   */
+  bool appendDirectory( const QString& dir_name )
+  		{ pixmap_dirs.append( dir_name ); return true; }
+
+
+  QStringList* getDirList() { return &pixmap_dirs; }
 
   /** 
 	Get the complete path for an icon name.
@@ -242,19 +203,23 @@ public:
 
 	@return the physical path to the named icon.
   */
-  QString getIconPath( const char *name, 
+  QString getIconPath( const QString& name, 
   		bool always_valid=false);
 
 
-  /** Remove an icon from the cache. */
+  /** 
+   * Remove an icon from the cache. This is no longer required since @ref
+   * QPixmapCache does this for us.
+   * @deprecated
+   */
   void flush( const QString &name ); 
 
 protected:
-  KConfig           *config;
-  QStrList           name_list;
-  QStrList           pixmap_dirs;
-  QList<QPixmap>     pixmap_list;
-  QPixmap loadInternal(const char *name, int w = 0, int h = 0 );
+
+  KConfig		*config;
+  QStringList           pixmap_dirs;
+
+  QPixmap loadInternal( const QString& name, int w = 0, int h = 0 );
 
 private:
   void initPath();

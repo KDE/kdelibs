@@ -31,6 +31,7 @@
 
 #include <kiconloader.h>
 #include "kiconloadertestmain.h"
+#include "kconfig.h"
 
 int main( int argc, char **argv )
 {
