@@ -1181,7 +1181,7 @@ bool HTTPProtocol::readHeader()
 
     // We got a header back !
     if (strncasecmp(buf, "HTTP/", 5) == 0) {
-      if (strncmp(buffer+5, "1.0 ",4) == 0)
+      if (strncmp(buf+5, "1.0 ",4) == 0)
       {
          m_HTTPrev = HTTP_10;
          m_bKeepAlive = false;
@@ -1209,7 +1209,7 @@ bool HTTPProtocol::readHeader()
       if ( m_responseCode )
         m_prevResponseCode = m_responseCode;
 
-      m_responseCode = atoi(buffer+9);
+      m_responseCode = atoi(buf+9);
 
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
@@ -1309,14 +1309,14 @@ bool HTTPProtocol::readHeader()
 
     // are we allowd to resume?  this will tell us
     else if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
-      if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
+      if (strncasecmp(trimLead(buf + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
 
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
       QStringList cacheControls = QStringList::split(',',
-                                     QString::fromLatin1(trimLead(buffer+14)));
+                                     QString::fromLatin1(trimLead(buf+14)));
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
           it++)
@@ -1342,12 +1342,12 @@ bool HTTPProtocol::readHeader()
 
     // get the size of our data
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
-      m_iSize = atol(trimLead(buffer + 15));
+      m_iSize = atol(trimLead(buf + 15));
     }
 
     // what type of data do we have?
     else if (strncasecmp(buf, "Content-type:", 13) == 0) {
-       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).stripWhiteSpace().lower();
+       m_strMimeType = QString::fromLatin1(trimLead(buf + 13)).stripWhiteSpace().lower();
        int semicolonPos = m_strMimeType.find( ';' );
        if ( semicolonPos != -1 )
        {
@@ -1382,36 +1382,36 @@ bool HTTPProtocol::readHeader()
 
     // Date
     else if (strncasecmp(buf, "Date:", 5) == 0) {
-      dateHeader = KRFCDate::parseDate(trimLead(buffer+5));
+      dateHeader = KRFCDate::parseDate(trimLead(buf+5));
     }
 
     // Cache management
     else if (strncasecmp(buf, "ETag:", 5) == 0) {
-      m_etag = trimLead(buffer+5);
+      m_etag = trimLead(buf+5);
     }
 
     // Cache management
     else if (strncasecmp(buf, "Expires:", 8) == 0) {
-      expireDate = KRFCDate::parseDate(trimLead(buffer+8));
+      expireDate = KRFCDate::parseDate(trimLead(buf+8));
       if (!expireDate)
         expireDate = 1; // Already expired
     }
 
     // Cache management
     else if (strncasecmp(buf, "Last-Modified:", 14) == 0) {
-      m_lastModified = (QString::fromLatin1(trimLead(buffer+14))).stripWhiteSpace();
+      m_lastModified = (QString::fromLatin1(trimLead(buf+14))).stripWhiteSpace();
     }
 
     // whoops.. we received a warning
     else if (strncasecmp(buf, "Warning:", 8) == 0) {
       //Don't use warning() here, no need to bother the user.
       //Those warnings are mostly about caches.
-      infoMessage(trimLead(buffer + 8));
+      infoMessage(trimLead(buf + 8));
     }
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      QCString pragma = QCString(trimLead(buffer+7)).stripWhiteSpace().lower();
+      QCString pragma = QCString(trimLead(buf+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
          m_bCachedWrite = false; // Don't put in cache
@@ -1422,32 +1422,32 @@ bool HTTPProtocol::readHeader()
 
     // The deprecated Refresh Response
     else if (strncasecmp(buf,"Refresh:", 8) == 0) {
-      kdDebug(7113) << buffer << endl;
+      kdDebug(7113) << buf << endl;
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace() );
+      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buf+8)).stripWhiteSpace() );
     }
 
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = QCString(trimLead(buffer+9)).stripWhiteSpace();
+        locationStr = QCString(trimLead(buf+9)).stripWhiteSpace();
     }
 
     // Check for cookies
     else if (strncasecmp(buf, "Set-Cookie", 10) == 0) {
-      cookieStr += buffer;
+      cookieStr += buf;
       cookieStr += '\n';
     }
 
     // check for direct authentication
     else if (strncasecmp(buf, "WWW-Authenticate:", 17) == 0) {
-      configAuth(trimLead(buffer + 17), false);
+      configAuth(trimLead(buf + 17), false);
     }
 
     // check for proxy-based authentication
     else if (strncasecmp(buf, "Proxy-Authenticate:", 19) == 0) {
-        configAuth(trimLead(buffer + 19), true);
+        configAuth(trimLead(buf + 19), true);
     }
 
     // content?
@@ -1465,16 +1465,16 @@ bool HTTPProtocol::readHeader()
       // a document to be compressed without loosing the identity of its underlying
       // media type.  Simply put if it is specified, this is the actual mime-type
       // we should use when we pull the resource !!!
-      addEncoding(trimLead(buffer + 17), m_qContentEncodings);
+      addEncoding(trimLead(buf + 17), m_qContentEncodings);
     }
 
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
       if (strncasecmp(buf, "Connection:", 11) == 0) {
-        if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
+        if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0) {
           m_bKeepAlive = false;
-        } else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
+        } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
           // Don't do persistant connections with SSL.
           if (!m_bIsSSL)
              m_bKeepAlive = true;
@@ -1487,16 +1487,16 @@ bool HTTPProtocol::readHeader()
         // If multiple encodings have been applied to an entity, the
         // transfer-codings MUST be listed in the order in which they
         // were applied.
-        addEncoding(trimLead(buffer + 18), m_qTransferEncodings);
+        addEncoding(trimLead(buf + 18), m_qTransferEncodings);
       }
 
       // md5 signature
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
-        m_sContentMD5 = strdup(trimLead(buffer + 12));
+        m_sContentMD5 = strdup(trimLead(buf + 12));
       }
       // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
       else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-        disposition = trimLead(buffer + 20);
+        disposition = trimLead(buf + 20);
         int pos = disposition.find( ';' );
         if ( pos != -1 )
         {
