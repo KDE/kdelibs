@@ -203,7 +203,7 @@ int main( int argc, char **argv )
     
     if (!args->count()) return 1;
 
-    KFileMetaInfo info( args->arg(0), QString::null, KFileMetaInfo::Everything);
+    KFileMetaInfo info( args->url(0), QString::null, KFileMetaInfo::Everything);
     
     if (args->isSet("groups"))
     {
