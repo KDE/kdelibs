@@ -305,6 +305,7 @@ protected:
   void promptInfo( KIO::AuthInfo& info );
 
 protected:
+
   HTTPState m_state;
   HTTPRequest m_request;
 

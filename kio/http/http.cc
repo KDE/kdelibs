@@ -128,8 +128,8 @@ static char * trimLead (char *orig_string)
 /************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
-                                          const QCString &app )
-                    :TCPSlaveBase( 0, protocol, pool, app, (protocol == "https") )
+                            const QCString &app )
+             :TCPSlaveBase( 0, protocol, pool, app, (protocol == "https") )
 {
   m_lineBufUnget = 0;
   m_protocol = protocol;
@@ -184,12 +184,10 @@ void HTTPProtocol::reparseConfiguration()
 }
 
 void HTTPProtocol::resetSessionSettings()
-{
-  m_request.window = metaData("window-id");
-
+{  
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
-  KURL proxy = metaData("UseProxy");
+  KURL proxy = config()->readEntry("UseProxy");
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
        (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
@@ -205,16 +203,18 @@ void HTTPProtocol::resetSessionSettings()
   m_bUseCache = config()->readBoolEntry("UseCache");
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
-
-  if ( m_bUseCache ) {
+  m_request.window = config()->readEntry("window-id");
+  
+  // Deal with cache cleaning.
+  // TODO: Find a smart way to deal with caching.
+  if ( m_bUseCache )
     cleanCache();
-  }
 
+  // Deal with HTTP tunneling
   if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
-  {
-    kdDebug(7103) << "(" << getpid() << ") Tunneling to: " << m_request.hostname << endl;
     setEnableSSLTunnel( true );
-  }
+  else
+    setEnableSSLTunnel( false );
 
   m_responseCode = 0;
   m_prevResponseCode = 0;
@@ -306,20 +306,37 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
         if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
              && !m_bError )
-        {
-            kdDebug(7103) << "(" << getpid() << ") Unsetting tunneling flag!" << endl;
-            setEnableSSLTunnel( false );
-            m_bIsTunneled = true;
-            continue;
+        {       
+            // Only disable tunneling if the error    
+            if ( m_responseCode < 400 )
+            {
+                kdDebug(7113) << "(" << getpid() << ") Unsetting tunneling flag!" << endl;
+                setEnableSSLTunnel( false );
+                m_bIsTunneled = true;
+                continue;
+            }
+            else
+            {
+                if ( !m_bErrorPage )
+                {
+                  kdDebug(7113) << "(" << getpid() << ") Sending an error message!" << endl;
+                  error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
+                  return false;                
+                }
+                kdDebug(7113) << "(" << getpid() << ") Sending an error page!"
+                              << endl;
+             }
         }
         break;
     }
   }
+  
   if ( close_connection )
   {
     http_close();
     finished();
   }
+  
   return true;
 }
 
@@ -359,7 +376,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
-  QString tmp = metaData("cache");
+  QString tmp = config()->readEntry("cache");
   if (!tmp.isEmpty())
     m_request.cache = parseCacheControl(tmp);
   else
@@ -562,59 +579,74 @@ bool HTTPProtocol::http_openConnection()
 {
   m_bKeepAlive = false;
   setBlockConnection( true );
+
+  int errCode;
+  QString errMsg;
+
   if ( m_state.do_proxy )
   {
     QString proxy_host = m_proxyURL.host();
     int proxy_port = m_proxyURL.port();
+
     kdDebug(7113) << "(" << getpid() << ") http_openConnection " << proxy_host << " "
-                  << proxy_port << endl;
+                           << proxy_port << endl;
 
     infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
     setConnectTimeout( m_proxyConnTimeout );
-    if ( !ConnectToHost( proxy_host, proxy_port, false ) )
+
+    if ( !ConnectToHost(proxy_host, proxy_port, false) )
     {
-      int result = connectResult();
-      if ( result == IO_LookupError)
-        error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
-      else if ( result == IO_TimeOutError )
-        error(ERR_SERVER_TIMEOUT, i18n("Timed out while waiting to "
-                                       "connect to %1").arg(proxy_host));
-      else
-        error(ERR_COULD_NOT_CONNECT,
-              i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port) );
+      switch ( connectResult() )
+      {
+        case IO_LookupError:
+          errMsg = proxy_host;
+          errCode = ERR_UNKNOWN_PROXY_HOST;
+          break;
+        case IO_TimeOutError:
+          errMsg = i18n("Timed out while waiting to connect to %1").arg(proxy_host);
+          errCode = ERR_SERVER_TIMEOUT;
+          break;
+        default:
+          errMsg = i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port);
+          errCode = ERR_COULD_NOT_CONNECT;
+      }
+      error( errCode, errMsg );
       return false;
     }
   }
   else
   {
-    // apparently we don't want a proxy.  let's just connect directly
+    // Apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
     if ( !ConnectToHost(m_state.hostname, m_state.port, false ) )
     {
-      int result = connectResult();
-      if ( result == IO_LookupError)
-        error(ERR_UNKNOWN_HOST, m_state.hostname);
-      else if ( result == IO_TimeOutError )
-        error(ERR_SERVER_TIMEOUT, i18n("Timed out while waiting to "
-                                       "connect to %1").arg(m_state.hostname));
-      else
+      switch ( connectResult() )
       {
-        if (m_state.port != m_iDefaultPort)
-          error(ERR_COULD_NOT_CONNECT,
-                i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
-        else
-          error( ERR_COULD_NOT_CONNECT, m_state.hostname );
+        case IO_LookupError:
+          errMsg = m_state.hostname;
+          errCode = ERR_UNKNOWN_HOST;
+          break;
+        case IO_TimeOutError:
+          errMsg = i18n("Timed out while waiting to connect to %1").arg(m_state.hostname);
+          errCode = ERR_SERVER_TIMEOUT;
+          break;
+        default:
+          errCode = ERR_COULD_NOT_CONNECT;
+          if (m_state.port != m_iDefaultPort)
+            errMsg = i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port);
+          else
+            errMsg = m_state.hostname;
       }
+      error( errCode, errMsg );      
       return false;
     }
   }
 
   // Set our special socket option!!
   int on = 1;
-  (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on,
-                     sizeof(on) );
-  kdDebug(7113) << "(" << getpid() << ") Sending connected @ "
-                << time(0L) << endl;
+  (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on) );
+  kdDebug(7113) << "(" << getpid() << ") Sending connected @ " << time(0L) << endl;
+  
   connected();
   return true;
 }
@@ -655,7 +687,8 @@ bool HTTPProtocol::http_open()
   }
 
   http_checkConnection();
-
+  
+  // Let's clear out some things, so bogus values aren't used.
   m_fcache = 0;
   m_lineCount = 0;
   m_lineCountUnget = 0;
@@ -663,6 +696,18 @@ bool HTTPProtocol::http_open()
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
   m_bEOF = false;
+
+  m_iWWWAuthCount = 0;
+  m_iProxyAuthCount = 0;
+  m_sContentMD5 = QString::null;
+  m_strMimeType = QString::null;
+  m_qContentEncodings.clear();
+  m_qTransferEncodings.clear();
+  m_bChunked = false;
+  m_bError = false;
+  m_bErrorPage = config()->readBoolEntry("errorPage", true);
+  m_iSize = -1;
+  
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -697,19 +742,6 @@ bool HTTPProtocol::http_open()
         return false;
      }
   }
-
-  // Let's also clear out some things, so bogus values aren't used.
-  // m_HTTPrev = HTTP_Unknown;
-  m_iWWWAuthCount = 0;
-  m_iProxyAuthCount = 0;
-  m_sContentMD5 = QString::null;
-  m_strMimeType = QString::null;
-  m_qContentEncodings.clear();
-  m_qTransferEncodings.clear();
-  m_bChunked = false;
-  m_bError = false;
-  m_bErrorPage = (metaData("errorPage") != "false");
-  m_iSize = -1;
 
   // Let's try to open up our socket if we don't have one already.
   if ( m_iSock == -1)
@@ -756,7 +788,7 @@ bool HTTPProtocol::http_open()
     // Identify who you are to the proxy server!
     if ( config()->readBoolEntry("SendUserAgent", true) )
     {
-      QString agent = metaData("UserAgent");
+      QString agent = config()->readEntry("UserAgent");
       if( !agent.isEmpty() )
         header += "User-Agent: " + agent + "\r\n";
     }
@@ -790,7 +822,7 @@ bool HTTPProtocol::http_open()
 
     if ( config()->readBoolEntry("SendUserAgent", true) )
     {
-      QString agent = metaData("UserAgent");
+      QString agent = config()->readEntry("UserAgent");
       if( !agent.isEmpty() )
         header += "User-Agent: " + agent + "\r\n";
     }
@@ -798,7 +830,7 @@ bool HTTPProtocol::http_open()
     bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
     if ( sendReferrer )
     {
-      QString referrer = metaData("referrer");
+      QString referrer = config()->readEntry("referrer");
       if (!referrer.isEmpty())
       {
         header += "Referer: ";
@@ -822,7 +854,7 @@ bool HTTPProtocol::http_open()
 */
 
     // Adjust the offset value based on the "resume" meta-data.
-    QString resumeOffset = metaData("resume");
+    QString resumeOffset = config()->readEntry("resume");
     if ( !resumeOffset.isEmpty() )
       m_request.offset = resumeOffset.toInt();
 
@@ -849,7 +881,7 @@ bool HTTPProtocol::http_open()
     }
 
     header += "Accept: ";
-    QString acceptHeader = metaData("accept");
+    QString acceptHeader = config()->readEntry("accept");
     if (!acceptHeader.isEmpty())
       header += acceptHeader;
     else
@@ -897,7 +929,7 @@ bool HTTPProtocol::http_open()
     header += "\r\n";
 
     QString cookieStr;
-    QString cookieMode = metaData("cookies").lower();
+    QString cookieMode = config()->readEntry("cookies").lower();
     if (cookieMode == "none")
     {
       m_cookieMode = CookiesNone;
@@ -905,7 +937,7 @@ bool HTTPProtocol::http_open()
     else if (cookieMode == "manual")
     {
       m_cookieMode = CookiesManual;
-      cookieStr = metaData("setcookies");
+      cookieStr = config()->readEntry("setcookies");
     }
     else
     {
@@ -919,7 +951,7 @@ bool HTTPProtocol::http_open()
 
     if (m_request.method == HTTP_POST)
     {
-      header += metaData("content-type");
+      header += config()->readEntry("content-type");
       header += "\r\n";
     }
 
@@ -1061,7 +1093,8 @@ bool HTTPProtocol::readHeader()
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
   QString disposition; // Incase we get a Content-Disposition
-
+  QString errMessage; // for handling errorPages...
+  
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
   char buffer[4097];
@@ -1069,6 +1102,8 @@ bool HTTPProtocol::readHeader()
   bool cacheValidated = false; // Revalidation was successfull
   bool mayCache = true;
   bool hasCacheDirective = false;
+  
+  int errCode = -1; // incase we error out...  
 
   if (!waitForResponse(m_remoteRespTimeout))
   {
@@ -1169,15 +1204,16 @@ bool HTTPProtocol::readHeader()
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
       {
-        if (m_request.method == HTTP_HEAD) {
-           // Ignore error
-        } else {
+        if (m_request.method == HTTP_HEAD) { /*Ignore error*/
+        }
+        else
+        {
            if (m_bErrorPage)
-              errorPage();
+              errCode = 0;
            else
            {
-              error(ERR_INTERNAL_SERVER, m_request.url.url());
-              return false;
+              errCode = ERR_COULD_NOT_CONNECT;
+              errMessage = m_request.url.url();
            }
         }
         m_bCachedWrite = false; // Don't put in cache
@@ -1201,11 +1237,11 @@ bool HTTPProtocol::readHeader()
       {
         // Tell that we will only get an error page here.
         if (m_bErrorPage)
-           errorPage();
+           errCode = 0;
         else
         {
-           error(ERR_DOES_NOT_EXIST, m_request.url.url());
-           return false;
+           errCode = ERR_COULD_NOT_CONNECT;
+           errMessage = m_request.url.url();
         }
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
@@ -1407,10 +1443,6 @@ bool HTTPProtocol::readHeader()
 
     // content?
     else if (strncasecmp(buf, "Content-Encoding:", 17) == 0) {
-      // This is so wrong !!  No wonder kio_http is stripping the
-      // gzip encoding from downloaded files.  This solves multiple
-      // bug reports and caitoo's problem with downloads when such a
-      // header is encountered...
 
       // A quote from RFC 2616:
       // " When present, its (Content-Encoding) value indicates what additional
@@ -1424,7 +1456,7 @@ bool HTTPProtocol::readHeader()
     }
 
     // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
-    else if(strncasecmp(buf, "Content-Disposition:", 20) == 0)
+    else if (strncasecmp(buf, "Content-Disposition:", 20) == 0)
     {
       char* dispositionBuf = trimLead(buffer + 20);
       while ( dispositionBuf )
@@ -1433,20 +1465,26 @@ bool HTTPProtocol::readHeader()
         {
           dispositionBuf += 8;
           while ( dispositionBuf && (dispositionBuf[0] == ' ' ||
-                      dispositionBuf[0] == '=') ) dispositionBuf++;
+                  dispositionBuf[0] == '=') ) 
+            dispositionBuf++;
+          
           char* bufStart = dispositionBuf;
-          while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
+          while ( dispositionBuf && dispositionBuf[0] != ';' )
+            dispositionBuf++;
           if ( dispositionBuf > bufStart )
           {
-            disposition = QString::fromLatin1( trimLead(bufStart), dispositionBuf - bufStart );
+            disposition = QString::fromLatin1( trimLead(bufStart),
+                                               dispositionBuf-bufStart );
             break;
           }
         }
         else
         {
-          while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
+          while ( dispositionBuf && dispositionBuf[0] != ';' )
+            dispositionBuf++;
           while ( dispositionBuf && (dispositionBuf[0] == ';' ||
-                      dispositionBuf[0] == ' ') ) dispositionBuf++;
+                  dispositionBuf[0] == ' ') )
+            dispositionBuf++;
         }
       }
 
@@ -1498,6 +1536,20 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
   } while (len && (gets(buffer, sizeof(buffer)-1)));
+  
+  // Check if we got need to error out...
+  if ( errCode >= 0 )
+  {
+    if ( errCode == 0 && m_iSize > 0 )
+    {
+      errorPage();
+    }
+    else
+    {
+      error(errCode, errMessage);
+      return false;
+    }
+  }
 
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
@@ -1586,6 +1638,13 @@ bool HTTPProtocol::readHeader()
         {
            http_closeConnection();
            return false; // Try again.
+        }
+        else
+        {
+          if ( m_bErrorPage && m_iSize > 0 )
+            errorPage();
+          else
+            error( ERR_USER_CANCELED, QString::null );          
         }
 
         if (m_bError)
@@ -2270,7 +2329,7 @@ bool HTTPProtocol::readBody()
 
   // Main incoming loop...  Gather everything while we can...
   KMD5 context;
-  bool cpMimeBuffer = false;
+  bool mimeBufferHasData = false;
   QByteArray mimeTypeBuffer;
   m_bufEncodedData.resize(0);
 
@@ -2292,13 +2351,6 @@ bool HTTPProtocol::readBody()
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
     }
-
-    if ( bytesReceived <= 0 && m_iBytesLeft > 0 )
-    {
-      kdDebug(7113) << "(" << getpid() << ") WARNING: Could not retreive resource: " << m_request.url.url() << endl;
-      infoMessage( i18n("<qt text=\"red\">Error retreiving: <b>%1</b></qt>").arg( m_request.url.url() )  );
-      return false;
-    }
     else if (bytesReceived > 0)
     {
       // If a broken server does not send the mime-type,
@@ -2314,7 +2366,7 @@ bool HTTPProtocol::readBody()
                 bytesReceived );
         if ( m_iBytesLeft > 0 && mimeTypeBuffer.size() < 1024 )
         {
-          cpMimeBuffer = true;
+          mimeBufferHasData = true;
           continue;   // Do not send up the data since we do not yet know its mimetype!
         }
 
@@ -2340,7 +2392,7 @@ bool HTTPProtocol::readBody()
             m_bCachedWrite = false;
         }
 
-        if ( cpMimeBuffer )
+        if ( mimeBufferHasData )
         {
           bytesReceived = mimeTypeBuffer.size();
           m_bufReceive.resize(0);
@@ -3137,14 +3189,9 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
+    
     if ( prompt && !retryPrompt() )
-    {
-      if (m_bErrorPage)
-         errorPage();
-      else
-         error(ERR_USER_CANCELED, QString::null);
       return false;
-    }
   }
   else
   {
@@ -3235,11 +3282,7 @@ bool HTTPProtocol::getAuthorization()
     }
     return true;
   }
-
-  if (m_bErrorPage)
-     errorPage();
-  else
-     error( ERR_USER_CANCELED, QString::null );
+  
   return false;
 }
 
