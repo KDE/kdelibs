@@ -64,7 +64,7 @@ public:
      *
      * You will want to call this before inserting into a menu.
      */
-    void setTitle(const QString &text, const QPixmap *icon=NULL);
+    void setTitle(const QString &text, const QPixmap *icon=0);
     /**
      * Returns the current title.
      */
