@@ -1,6 +1,8 @@
 kdelibs (4:2.2.0-final-1) unstable; urgency=low
  
   * New upstream version 2.2
+  * Build with objprelink for i386
+  * update build-depends
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 30 Jul 2001 00:01:00 -0700
 

@@ -18,6 +18,9 @@ ifeq ($(ARCH),alpha)
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
+ifeq ($(ARCH),i386)
+  OBJPRELINK=--enable-objprelink
+endif
 
 tmp = $(shell pwd)/debian/kdelibs3
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
@@ -38,7 +41,7 @@ build-stamp:
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups
+	--disable-cups $(OBJPRELINK)
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install

@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.0-3), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
+Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-7), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
 Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
