@@ -283,3 +283,22 @@ KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _
 
     return pasteDataAsyncTo( new_url, _data );
 }
+
+KIO_EXPORT QString KIO::pasteActionText()
+{
+    QMimeSource *data = QApplication::clipboard()->data();
+    KURL::List urls;
+    if ( KURLDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
+        if ( urls.isEmpty() )
+            return QString::null; // nothing to paste
+        else if ( urls.first().isLocalFile() )
+            return i18n( "&Paste file", "&Paste %n files", urls.count() );
+        else
+            return i18n( "&Paste URL", "&Paste %n URLs", urls.count() );
+    } else if ( data->format(0) != 0 ) {
+        return i18n( "&Paste clipboard contents" );
+    } else {
+        return QString::null;
+    }
+}
+
