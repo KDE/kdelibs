@@ -35,6 +35,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
+#include <math.h>
+#include <ctype.h>
 
 using namespace KJS;
 
@@ -432,15 +434,62 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     }
     break;
   }
-  case ParseInt: {
+  case ParseInt: { // ECMA 15.1.2.2
     CString cstr = args[0].toString(exec).cstring();
+    const char* startptr = cstr.c_str();
+    while ( *startptr && isspace( *startptr ) ) // first, skip leading spaces
+      ++startptr;
     char* endptr;
     errno = 0;
-    long value = strtol(cstr.c_str(), &endptr, args[1].toInt32(exec));
-    if (errno || endptr == cstr.c_str())
-      res = Number(NaN);
-    else
-      res = Number(value);
+    //fprintf( stderr, "ParseInt: parsing string %s\n", startptr );
+    int base;
+    // Figure out the base
+    if ( args.size() > 1 )
+      base = args[ 1 ].toInt32( exec );
+    else {
+      // default base is 10, unless the number starts with 0x or 0X
+      if ( *startptr == '0' && toupper( *(startptr+1) ) == 'X' )
+        base = 16;
+      else
+        base = 10;
+    }
+    //fprintf( stderr, "base=%d\n",base );
+    if ( base != 10 )
+    {
+      // We can't use strtod if a non-decimal base was specified...
+      long value = strtol(startptr, &endptr, base);
+      if (errno || endptr == startptr)
+        res = Number(NaN);
+      else
+        res = Number(value);
+    } else {
+      // Parse into a double, not an int or long. We must be able to parse
+      // huge integers like 16-digits ones (credit card numbers ;)
+      // But first, check that it only has digits (after the +/- sign if there's one).
+      // That's because strtod will accept .5, but parseInt shouldn't.
+      // Also, strtod will parse 0x7, but it should fail here (base==10)
+      bool foundSign = false;
+      bool foundDot = false;
+      bool ok = false;
+      for ( const char* ptr = startptr; *ptr; ++ptr ) {
+        if ( *ptr >= '0' && *ptr <= '9' )
+          ok = true;
+        else if ( !foundSign && ( *ptr == '-' || *ptr == '+' ) )
+          foundSign = true;
+        else if ( ok && !foundDot && *ptr == '.' ) // only accept one dot, and after a digit
+          foundDot = true;
+        else {
+          *const_cast<char *>(ptr) = '\0';   // this will prevent parseInt('0x7',10) from returning 7.
+          break; // something else -> stop here.
+        }
+      }
+
+      double value = strtod(startptr, &endptr);
+      if (!ok || errno || endptr == startptr)
+        res = Number(NaN);
+      else
+        res = Number(floor(value));
+    }
     break;
   }
   case ParseFloat:
