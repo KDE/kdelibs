@@ -15,7 +15,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-	*/
+        */
 
 // $Id$
 
@@ -122,7 +122,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
     char errstr[256];
     XGetErrorText( dpy, err->error_code, errstr, 256 );
     if ( err->error_code != BadWindow )
-	qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
+        qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
     return 0;
 }
 }
@@ -155,9 +155,9 @@ static QList<QWidget>*x11Filter = 0;
 void KApplication::installX11EventFilter( QWidget* filter )
 {
     if ( !filter )
-	return;
+        return;
     if (!x11Filter)
-	x11Filter = new QList<QWidget>;
+        x11Filter = new QList<QWidget>;
     connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
@@ -165,12 +165,12 @@ void KApplication::installX11EventFilter( QWidget* filter )
 void KApplication::x11FilterDestroyed()
 {
     if ( !x11Filter || !sender() )
-	return;
+        return;
     QWidget* w = (QWidget*) sender();
     x11Filter->removeRef( w );
     if ( x11Filter->isEmpty() ) {
-	delete x11Filter;
-	x11Filter = 0;
+        delete x11Filter;
+        x11Filter = 0;
     }
 }
 
@@ -180,7 +180,7 @@ static QList<KSessionManaged>* sessionClients()
 {
     static QList<KSessionManaged>* session_clients = 0L;
     if ( !session_clients )
-	session_clients = new QList<KSessionManaged>;
+        session_clients = new QList<KSessionManaged>;
     return session_clients;
 }
 
@@ -274,7 +274,7 @@ void KApplication::init(bool GUIenabled)
 
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
-	          (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
+                  (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
 
   if (GUIenabled)
   {
@@ -320,7 +320,7 @@ void KApplication::init(bool GUIenabled)
     smw = new QWidget(0,0);
     long data = 1;
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
-					PropModeReplace, (unsigned char *)&data, 1);
+                                        PropModeReplace, (unsigned char *)&data, 1);
   }
 }
 
@@ -357,9 +357,9 @@ DCOPClient *KApplication::dcopClient()
 
   pDCOPClient = new DCOPClient();
   connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
-	  SLOT(dcopFailure(const QString &)));
+          SLOT(dcopFailure(const QString &)));
   connect(pDCOPClient, SIGNAL(blockUserInput(bool) ),
-	  SLOT(dcopBlockUserInput(bool)) );
+          SLOT(dcopBlockUserInput(bool)) );
 
   return pDCOPClient;
 }
@@ -367,7 +367,7 @@ DCOPClient *KApplication::dcopClient()
 KConfig* KApplication::sessionConfig()
 {
     if (pSessionConfig)
-	return pSessionConfig;
+        return pSessionConfig;
 
     // create an instance specific config object
     pSessionConfig = new KConfig( sessionConfigName(), false, false);
@@ -419,9 +419,9 @@ void KApplication::disableSessionManagement() {
 bool KApplication::requestShutDown()
 {
     if ( mySmcConnection ) {
-	// we already have a connection to the session manager, use it.
-	SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
-	return TRUE;
+        // we already have a connection to the session manager, use it.
+        SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
+        return TRUE;
     }
 
     // open a temporary connection, if possible
@@ -429,21 +429,21 @@ bool KApplication::requestShutDown()
     propagateSessionManager();
     QCString smEnv = ::getenv("SESSION_MANAGER");
     if (smEnv.isEmpty())
-	return FALSE;
+        return FALSE;
 
     char cerror[256];
     char* myId = 0;
     char* prevId = 0;
     SmcCallbacks cb;
     SmcConn smcConnection = SmcOpenConnection( 0, 0, 1, 0,
-					       0, &cb,
-					       prevId,
-					       &myId,
-					       255,
-					       cerror );
+                                               0, &cb,
+                                               prevId,
+                                               &myId,
+                                               255,
+                                               cerror );
     ::free( myId ); // it was allocated by C
     if (!smcConnection )
-	return FALSE;
+        return FALSE;
 
     SmcRequestSaveYourself( smcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
     SmcCloseConnection( smcConnection, 0, 0 );
@@ -457,21 +457,21 @@ void KApplication::propagateSessionManager()
     QCString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
-	 QFileInfo info( fName );
-	 QTime current = info.lastModified().time();
-	 check = current > *smModificationTime;
+         QFileInfo info( fName );
+         QTime current = info.lastModified().time();
+         check = current > *smModificationTime;
     }
     if ( check ) {
-	delete smModificationTime;
-	QFile f( fName );
-	if ( !f.open( IO_ReadOnly ) )
-	    return;
-	QFileInfo info ( f );
-	smModificationTime = new QTime( info.lastModified().time() );
-	QTextStream t(&f);
-	QString s = t.readLine();
-	f.close();
-	::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
+        delete smModificationTime;
+        QFile f( fName );
+        if ( !f.open( IO_ReadOnly ) )
+            return;
+        QFileInfo info ( f );
+        smModificationTime = new QTime( info.lastModified().time() );
+        QTextStream t(&f);
+        QString s = t.readLine();
+        f.close();
+        ::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
     }
 }
 
@@ -479,41 +479,41 @@ void KApplication::commitData( QSessionManager& sm )
 {
     bool cancelled = false;
     for (KSessionManaged* it = sessionClients()->first();
-	 it && !cancelled;
-	 it = sessionClients()->next() ) {
-	cancelled = !it->commitData( sm );
+         it && !cancelled;
+         it = sessionClients()->next() ) {
+        cancelled = !it->commitData( sm );
     }
     if ( cancelled )
-	sm.cancel();
+        sm.cancel();
 
     if ( sm.allowsInteraction() ) {
-	QWidgetList done;
-	QWidgetList *list = QApplication::topLevelWidgets();
-	bool cancelled = FALSE;
-	QWidget* w = list->first();
-	while ( !cancelled && w ) {
-	    if ( !w->testWState( WState_ForceHide ) && !w->inherits("KTMainWindow") ) {
-		QCloseEvent e;
-		sendEvent( w, &e );
-		cancelled = !e.isAccepted();
-		if ( !cancelled )
-		    done.append( w );
-		delete list; // one never knows...
-		list = QApplication::topLevelWidgets();
-		w = list->first();
-	    } else {
-		w = list->next();
-	    }
-	    while ( w && done.containsRef( w ) )
-		w = list->next();
-	}
-	delete list;
+        QWidgetList done;
+        QWidgetList *list = QApplication::topLevelWidgets();
+        bool cancelled = FALSE;
+        QWidget* w = list->first();
+        while ( !cancelled && w ) {
+            if ( !w->testWState( WState_ForceHide ) && !w->inherits("KTMainWindow") ) {
+                QCloseEvent e;
+                sendEvent( w, &e );
+                cancelled = !e.isAccepted();
+                if ( !cancelled )
+                    done.append( w );
+                delete list; // one never knows...
+                list = QApplication::topLevelWidgets();
+                w = list->first();
+            } else {
+                w = list->next();
+            }
+            while ( w && done.containsRef( w ) )
+                w = list->next();
+        }
+        delete list;
     }
 
 
     if ( !bSessionManagement ) {
-	sm.setRestartHint( QSessionManager::RestartNever );
-	return;
+        sm.setRestartHint( QSessionManager::RestartNever );
+        return;
     }
 }
 
@@ -523,25 +523,25 @@ void KApplication::saveState( QSessionManager& sm )
     mySmcConnection = (SmcConn) sm.handle();
 
     if ( !bSessionManagement ) {
-	sm.setRestartHint( QSessionManager::RestartNever );
-	return;
+        sm.setRestartHint( QSessionManager::RestartNever );
+        return;
     }
 
     if ( firstTime ) {
-	firstTime = false;
-	return; // no need to save the state.
+        firstTime = false;
+        return; // no need to save the state.
     }
 
     QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
-	sessionConfigName();
+        sessionConfigName();
 
     // remove former session config if still existing, we want a new and fresh one
     if ( pSessionConfig ) {
-	delete pSessionConfig;
-	pSessionConfig = 0;
-	QFile f ( aLocalFileName );
-	if ( f.exists() )
-	    f.remove();
+        delete pSessionConfig;
+        pSessionConfig = 0;
+        QFile f ( aLocalFileName );
+        if ( f.exists() )
+            f.remove();
     }
 
     // tell the session manager about our new lifecycle
@@ -552,22 +552,22 @@ void KApplication::saveState( QSessionManager& sm )
     emit saveYourself(); // for compatiblity
     bool cancelled = false;
     for (KSessionManaged* it = sessionClients()->first();
-	 it && !cancelled;
-	 it = sessionClients()->next() ) {
-	cancelled = !it->saveState( sm );
+         it && !cancelled;
+         it = sessionClients()->next() ) {
+        cancelled = !it->saveState( sm );
     }
 
     // if we created a new session config object, register a proper discard command
     if ( pSessionConfig ) {
-	pSessionConfig->sync();
-	QStringList discard;
-//	discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
+        pSessionConfig->sync();
+        QStringList discard;
+//      discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
         discard  << "rm" << aLocalFileName; // WABA: Screw xsm
-	sm.setDiscardCommand( discard );
+        sm.setDiscardCommand( discard );
     }
 
     if ( cancelled )
-	sm.cancel();
+        sm.cancel();
 }
 
 
@@ -585,14 +585,14 @@ void KApplication::dcopFailure(const QString &msg)
   if (failureCount == 2)
   {
      QString msgStr(i18n("There was some error setting up inter-process\n"
-		      "communications for KDE.  The message returned\n"
-		      "by the system was:\n\n"));
+                      "communications for KDE.  The message returned\n"
+                      "by the system was:\n\n"));
      msgStr += msg;
      msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
 
      QMessageBox::critical(kapp->mainWidget(),
-			i18n("DCOP communications error (%1)").arg(kapp->caption()),
-			msgStr, i18n("OK"));
+                        i18n("DCOP communications error (%1)").arg(kapp->caption()),
+                        msgStr, i18n("OK"));
      return;
   }
 }
@@ -606,60 +606,60 @@ void KApplication::parseCommandLine( int& argc, char** argv )
     int i = 1;
     parameter_code parameter;
     while( i < argc ) {
-	parameter = unknown;
+        parameter = unknown;
 
-	for ( int p = 0 ; parameter_strings[p]; p++)
-	    if ( !strcmp( argv[i], parameter_strings[p]) ) {
-		parameter = static_cast<parameter_code>(p + 1);
-		break;
-	    }
+        for ( int p = 0 ; parameter_strings[p]; p++)
+            if ( !strcmp( argv[i], parameter_strings[p]) ) {
+                parameter = static_cast<parameter_code>(p + 1);
+                break;
+            }
 
-	if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
-	    argc -= 1;
-	    break; // jump out of the while loop
-	}
+        if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
+            argc -= 1;
+            break; // jump out of the while loop
+        }
 
-	switch (parameter) {
-	case caption:
-	    aCaption = argv[i+1];
-	    parsingString += parameter_strings[caption-1];
-	    parsingString += " \"";
-	    parsingString += argv[i+1];
-	    parsingString += "\" ";
-	    break;
-	case icon:
-	    if (argv[i+1][0] == '/')
-		aIconPixmap = QPixmap(argv[i+1]);
-	    else
-		aIconPixmap = DesktopIcon(argv[i+1]);
-	    if (aMiniIconPixmap.isNull())
-		aMiniIconPixmap = SmallIcon(argv[i+1]);
-	    parsingString += parameter_strings[icon-1];
-	    parsingString += " ";
-	    parsingString += argv[i+1];
-	    parsingString += " ";
-	    break;
-	case miniicon:
-	    aMiniIconPixmap = SmallIcon(argv[i+1]);
-	    parsingString += parameter_strings[miniicon-1];
-	    parsingString += " ";
-	    parsingString += argv[i+1];
-	    parsingString += " ";
-	    break;
-	case dcopserver:
-	    dcopClient()->setServerAddress(argv[i+1]);
-	    break;
-	case unknown:
-	    i++;
-	}
+        switch (parameter) {
+        case caption:
+            aCaption = argv[i+1];
+            parsingString += parameter_strings[caption-1];
+            parsingString += " \"";
+            parsingString += argv[i+1];
+            parsingString += "\" ";
+            break;
+        case icon:
+            if (argv[i+1][0] == '/')
+                aIconPixmap = QPixmap(argv[i+1]);
+            else
+                aIconPixmap = DesktopIcon(argv[i+1]);
+            if (aMiniIconPixmap.isNull())
+                aMiniIconPixmap = SmallIcon(argv[i+1]);
+            parsingString += parameter_strings[icon-1];
+            parsingString += " ";
+            parsingString += argv[i+1];
+            parsingString += " ";
+            break;
+        case miniicon:
+            aMiniIconPixmap = SmallIcon(argv[i+1]);
+            parsingString += parameter_strings[miniicon-1];
+            parsingString += " ";
+            parsingString += argv[i+1];
+            parsingString += " ";
+            break;
+        case dcopserver:
+            dcopClient()->setServerAddress(argv[i+1]);
+            break;
+        case unknown:
+            i++;
+        }
 
-	if ( parameter != unknown ) { // remove arguments
+        if ( parameter != unknown ) { // remove arguments
 
-	    for( int j = i;  j < argc-2; j++ )
-		argv[j] = argv[j+2];
+            for( int j = i;  j < argc-2; j++ )
+                argv[j] = argv[j+2];
 
-	    argc -=2 ;
-	}
+            argc -=2 ;
+        }
 
     }
     pArgc = argc;
@@ -693,11 +693,11 @@ static const KCmdLineOptions qt_options[] =
 
 static const KCmdLineOptions kde_options[] =
 {
-   { "caption <caption>",	I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
-   { "icon <icon>",  		I18N_NOOP("Use 'icon' as the application icon"), 0},
-   { "miniicon <icon>", 	I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
-   { "dcopserver <server>",	I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
-   { "nocrashhandler",		I18N_NOOP("Disable crash handler, to get core dumps"), 0},
+   { "caption <caption>",       I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
+   { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon"), 0},
+   { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
+   { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
+   { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
    { 0, 0, 0 }
 };
 
@@ -817,74 +817,74 @@ void KApplication::dcopBlockUserInput( bool b )
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if ( kapp_block_user_input ) {
-	switch ( _event->type  ) {
-	case ButtonPress:
-	case ButtonRelease:
-	case XKeyPress:
-	case XKeyRelease:
-	case MotionNotify:
-	    return TRUE;
-	default:
-	    break;
-	}
+        switch ( _event->type  ) {
+        case ButtonPress:
+        case ButtonRelease:
+        case XKeyPress:
+        case XKeyRelease:
+        case MotionNotify:
+            return TRUE;
+        default:
+            break;
+        }
     }
 
     if (x11Filter) {
-	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) {
-	    if (((KAppX11HackWidget*) w)->publicx11Event(_event))
-		return true;
-	}
+        for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) {
+            if (((KAppX11HackWidget*) w)->publicx11Event(_event))
+                return true;
+        }
     }
 
     if ((_event->type == ClientMessage) &&
-	    (_event->xclient.message_type == kipcCommAtom))
+            (_event->xclient.message_type == kipcCommAtom))
     {
-	XClientMessageEvent *cme = (XClientMessageEvent *) _event;
+        XClientMessageEvent *cme = (XClientMessageEvent *) _event;
 
-	int id = cme->data.l[0];
-	int arg = cme->data.l[1];
-	if ((id < 32) && (kipcEventMask & (1 << id)))
-	{
-	    switch (id)
-	    {
-	    case KIPC::StyleChanged:
-		KGlobal::config()->reparseConfiguration();
-		kdisplaySetStyle();
-		break;
+        int id = cme->data.l[0];
+        int arg = cme->data.l[1];
+        if ((id < 32) && (kipcEventMask & (1 << id)))
+        {
+            switch (id)
+            {
+            case KIPC::StyleChanged:
+                KGlobal::config()->reparseConfiguration();
+                kdisplaySetStyle();
+                break;
 
-	    case KIPC::PaletteChanged:
-		KGlobal::config()->reparseConfiguration();
-		kdisplaySetPalette();
-		break;
+            case KIPC::PaletteChanged:
+                KGlobal::config()->reparseConfiguration();
+                kdisplaySetPalette();
+                break;
 
-	    case KIPC::FontChanged:
-		KGlobal::config()->reparseConfiguration();
-		KGlobalSettings::rereadFontSettings();
-		kdisplaySetFont();
-		break;
+            case KIPC::FontChanged:
+                KGlobal::config()->reparseConfiguration();
+                KGlobalSettings::rereadFontSettings();
+                kdisplaySetFont();
+                break;
 
-	    case KIPC::BackgroundChanged:
-		emit backgroundChanged(arg);
-		break;
+            case KIPC::BackgroundChanged:
+                emit backgroundChanged(arg);
+                break;
 
-	    case KIPC::SettingsChanged:
-		KGlobal::config()->reparseConfiguration();
-		propagateSettings((SettingsCategory)arg);
-		break;
+            case KIPC::SettingsChanged:
+                KGlobal::config()->reparseConfiguration();
+                propagateSettings((SettingsCategory)arg);
+                break;
 
-	    case KIPC::IconChanged:
-		QPixmapCache::clear();
-		KGlobal::config()->reparseConfiguration();
-		KGlobal::instance()->newIconLoader();
-		emit iconChanged(arg);
-		break;
-	    }
-	}
-	else if (id >= 32)
-	{
-	    emit kipcMessage(id, arg);
-	}
-	return true;
+            case KIPC::IconChanged:
+                QPixmapCache::clear();
+                KGlobal::config()->reparseConfiguration();
+                KGlobal::instance()->newIconLoader();
+                emit iconChanged(arg);
+                break;
+            }
+        }
+        else if (id >= 32)
+        {
+            emit kipcMessage(id, arg);
+        }
+        return true;
     }
 
     return false;
@@ -894,8 +894,8 @@ void KApplication::addKipcEventMask(int id)
 {
     if (id >= 32)
     {
-	kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
-	return;
+        kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+        return;
     }
     kipcEventMask |= (1 << id);
 }
@@ -904,8 +904,8 @@ void KApplication::removeKipcEventMask(int id)
 {
     if (id >= 32)
     {
-	kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
-	return;
+        kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+        return;
     }
     kipcEventMask &= ~(1 << id);
 }
@@ -946,7 +946,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     void *oldHandle = styleHandle;
 
     if(pKStyle)
-	disconnect(pKStyle, SIGNAL(destroyed()), this, 0);
+        disconnect(pKStyle, SIGNAL(destroyed()), this, 0);
 
     if(styleStr == "Default"){
         pKStyle = new KDEStyle;
@@ -988,7 +988,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             pKStyle = new KDEStyle;
             setStyle(pKStyle);
             styleHandle=0;
-	    connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
+            connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
             return;
         }
 
@@ -1037,7 +1037,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         lt_dlclose((lt_dlhandle*)oldHandle);
     }
     if(pKStyle)
-	connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
+        connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
 
     // WABA: Hack to get the button background right.
     QApplication::setPalette(palette(), true);
@@ -1055,14 +1055,14 @@ QString KApplication::caption() const
 {
   // Caption set from command line ?
   if( !aCaption.isNull() )
-	return aCaption;
+        return aCaption;
   else
       // We have some about data ?
       if ( KGlobal::instance()->aboutData() )
         return KGlobal::instance()->aboutData()->programName();
       else
         // Last resort : application name
-	return name();
+        return name();
 }
 
 
@@ -1071,7 +1071,7 @@ QString KApplication::caption() const
 // An attempt to simplify consistent captions.
 //
 QString KApplication::makeStdCaption( const QString &userCaption,
-	                              bool withAppName, bool modified ) const
+                                      bool withAppName, bool modified ) const
 {
   // This string should be collected from a global object.
   QString mod = i18n("modified");
@@ -1196,9 +1196,9 @@ void KApplication::propagateSettings(SettingsCategory arg)
 
     int num = config->readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if (num < 200)
-	num = 200;
+        num = 200;
     if (num > 2000)
-	num = 2000;
+        num = 2000;
     QApplication::setCursorFlashTime(num);
     num = config->readNumEntry("DoubleClickInterval", QApplication::doubleClickInterval());
     QApplication::setDoubleClickInterval(num);
@@ -1214,7 +1214,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
 
 
 void KApplication::invokeHelp( const QString& anchor,
-			       const QString& _appname) const
+                               const QString& _appname) const
 {
    QString url;
    QString appname;
@@ -1298,8 +1298,8 @@ KApplication::launcher()
 {
    char host[200];
    if (gethostname(host, 200) == -1) {
-      kdDebug(101) << "gethostname(): " << strerror(errno) << "\n";
-      return 0;
+       qDebug("Couldn't find hostname, using localhost");
+       strcpy( host, "localhost" );
    }
    QCString name;
    name.sprintf("klauncher_%s_%d", host, getuid());
@@ -1321,28 +1321,28 @@ KApplication::libmapnotify()
     {
       QFile la(la_file);
       if (la.open(IO_ReadOnly))
-	{
-	  QTextStream is(&la);
-	
-	  QString line;
-	  while (!is.atEnd())
-	    {
-	      line = is.readLine();
-	      if (line.left(15) == "library_names='")
-		{
-		  lib = line.mid(15);
-		  int pos = lib.find(" ");
-		  if (pos > 0)
-		    lib = lib.left(pos);
-		}
-	    }
+        {
+          QTextStream is(&la);
 
-	  la.close();
-	}
+          QString line;
+          while (!is.atEnd())
+            {
+              line = is.readLine();
+              if (line.left(15) == "library_names='")
+                {
+                  lib = line.mid(15);
+                  int pos = lib.find(" ");
+                  if (pos > 0)
+                    lib = lib.left(pos);
+                }
+            }
+
+          la.close();
+        }
 
       // look up the path
       if (!lib.isEmpty())
-	lib = locate("lib", lib);
+        lib = locate("lib", lib);
     }
   kdDebug(101) << "Found libkmapnotify at: " << lib << endl;
 
@@ -1398,10 +1398,10 @@ startServiceInternal( const QCString &function,
          "setLaunchEnv(QCString,QCString)", params2, replyType, replyData);
    }
    if (!dcopClient->call(_launcher, _launcher,
-	function, params, replyType, replyData))
+        function, params, replyType, replyData))
    {
         if (error)
-	   *error = i18n("KLauncher could not be reached via DCOP.\n");
+           *error = i18n("KLauncher could not be reached via DCOP.\n");
         if (!kapp)
            delete dcopClient;
         return -1;
@@ -1525,10 +1525,10 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
   if( !aAutosaveDir.exists() )
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
-	{
-	  // Last chance: use _PATH_TMP
-	  aAutosaveDir.setPath( _PATH_TMP );
-	}
+        {
+          // Last chance: use _PATH_TMP
+          aAutosaveDir.setPath( _PATH_TMP );
+        }
     }
 
   aFilename.replace( QRegExp( "/" ),"\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
@@ -1554,10 +1554,10 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
   if( !aAutosaveDir.exists() )
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
-	{
-	  // Last chance: use _PATH_TMP
-	  aAutosaveDir.setPath( _PATH_TMP );
-	}
+        {
+          // Last chance: use _PATH_TMP
+          aAutosaveDir.setPath( _PATH_TMP );
+        }
     }
 
   aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
@@ -1633,9 +1633,9 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
-	topWidget->setCaption( caption() );
-	NETWinInfo info( qt_xdisplay(), topWidget->winId(), qt_xrootwin(), 0 );
-	info.setName( caption().utf8().data() );
+        topWidget->setCaption( caption() );
+        NETWinInfo info( qt_xdisplay(), topWidget->winId(), qt_xrootwin(), 0 );
+        info.setName( caption().utf8().data() );
     }
 
     // set the specified icons
@@ -1675,7 +1675,7 @@ QString KApplication::randomString(int length)
    if (length<0)
       length=random();
 
-   char *string=new char[length+1];	
+   char *string=new char[length+1];
    string[length] = '\0';
    while (--length)
    {
