@@ -70,11 +70,12 @@ static const char textareaEnd [] = "</textarea";
 #define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
 #define KHTML_DELETE_QCHAR_VEC( P ) free((char*)( P ))
 
-// Partial support for MS Windows Latin-1 extensions.
-//
-// Technically these extensions should be marked "windows-1252" or "cp1252", but
+// Full support for MS Windows extensions to Latin-1.
+// Technically these extensions should only be activated for pages
+// marked "windows-1252" or "cp1252", but
 // in the standard Microsoft way, these extensions infect hundreds of thousands
-// pages marked as something else.
+// of web pages.  Note that people with non-latin-1 Microsoft extensions
+// are SOL.
 //
 // See: http://www.microsoft.com/globaldev/reference/WinCP.asp
 //      http://www.bbsinc.com/iso8859.html
@@ -85,24 +86,46 @@ static const char textareaEnd [] = "</textarea";
             if (!(x).row() ) { \
                 switch ((x).cell()) \
                 { \
-                case 0x82: (x) = ','; break; \
-                case 0x84: (x) = '"'; break; \
-                case 0x8b: (x) = '<'; break; \
-                case 0x9b: (x) = '>'; break; \
-                case 0x91: (x) = '\''; break; \
-                case 0x92: (x) = '\''; break; \
-                case 0x93: (x) = '"'; break; \
-                case 0x94: (x) = '"'; break; \
-                case 0x95: (x) = '*'; break; \
-                case 0x96: (x) = '-'; break; \
-                case 0x97: (x) = '-'; break; \
-                case 0x98: (x) = '~'; break; \
+                /* ALL of these should be changed to Unicode SOON */ \
+                case 0x80: (x) = 0x20ac; break; \
+\
+                case 0x82: (x) = ',';    break; \
+                case 0x83: (x) = 0x0192; break; \
+                case 0x84: (x) = '"';    break; \
+                case 0x85: (x) = 0x2026; break; \
+                case 0x86: (x) = 0x2020; break; \
+                case 0x87: (x) = 0x2021; break; \
+                case 0x88: (x) = 0x02C6; break; \
+                case 0x89: (x) = 0x2030; break; \
+                case 0x8A: (x) = 0x0160; break; \
+                case 0x8b: (x) = '<';    break; \
+                case 0x8C: (x) = 0x0152; break; \
+\
+                case 0x8E: (x) = 0x017D; break; \
+\
+\
+                case 0x91: (x) = '\'';   break; \
+                case 0x92: (x) = '\'';   break; \
+                case 0x93: (x) = '"';    break; \
+                case 0x94: (x) = '"';    break; \
+                case 0x95: (x) = '*';    break; \
+                case 0x96: (x) = '-';    break; \
+                case 0x97: (x) = '-';    break; \
+                case 0x98: (x) = '~';    break; \
                 case 0x99: (x) = 0x2122; break; \
-                case 0xb7: (x) = '*'; break; \
+                case 0x9A: (x) = 0x0161; break; \
+                case 0x9b: (x) = '>';    break; \
+                case 0x9C: (x) = 0x0153; break; \
+\
+                case 0x9E: (x) = 0x017E; break; \
+                case 0x9F: (x) = 0x0178; break; \
+                /* This one should die */ \
+                case 0xb7: (x) = '*';    break; \
                 default: break; \
                 } \
             } \
             else { \
+                /* These should all die sooner rather than later */ \
                 switch( (x).unicode() ) { \
                 case 0x2013: (x) = '-'; break; \
                 case 0x2014: (x) = '-'; break; \
