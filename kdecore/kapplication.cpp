@@ -914,18 +914,27 @@ void KApplication::disableSessionManagement() {
 }
 
 
-bool KApplication::requestShutDown()
-{
-    return requestShutDown( false );
-}
-
-bool KApplication::requestShutDown( bool bFast )
+bool KApplication::requestShutDown( 
+    ShutdownConfirm confirm, ShutdownType sdtype, ShutdownMode sdmode )
 {
 #ifdef Q_WS_X11
+    /*  use ksmserver's dcop interface if necessary  */
+    if ( confirm == ShutdownConfirmYes ||
+         sdtype != ShutdownTypeDefault ||
+         sdmode != ShutdownModeDefault )
+    {
+        QByteArray data;
+        QDataStream arg(data, IO_WriteOnly);
+        arg << (int)confirm << (int)sdtype << (int)sdmode;
+	return dcopClient()->send( "ksmserver", "ksmserver",
+                                   "logout(int,int,int)", data );
+    }
+
     if ( mySmcConnection ) {
         // we already have a connection to the session manager, use it.
         SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True,
-				SmInteractStyleAny, bFast ? True : False, True );
+				SmInteractStyleAny, 
+				confirm == ShutdownConfirmNo, True );
 
 	// flush the request
 	IceFlush(SmcGetIceConnection(mySmcConnection));

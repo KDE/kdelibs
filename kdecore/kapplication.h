@@ -190,13 +190,87 @@ public:
   void disableSessionManagement();
 
   /**
+   * The possible values for the @p confirm parameter of @ref requestShutdown.
+   */
+  enum ShutdownConfirm {
+    /**
+     * Obey the user's confirmation setting.
+     */
+    ShutdownConfirmDefault = -1,
+    /**
+     * Don't confirm, shutdown without asking.
+     */
+    ShutdownConfirmNo = 0,
+    /**
+     * Always confirm, ask even if the user turned it off.
+     */
+    ShutdownConfirmYes = 1
+  };
+
+  /**
+   * The possible values for the @p sdtype parameter of @ref requestShutdown.
+   */
+  enum ShutdownType {
+    /**
+     * Select previous action or the default if it's the first time.
+     */
+    ShutdownTypeDefault = -1,
+    /**
+     * Only log out.
+     */
+    ShutdownTypeNone = 0,
+    /**
+     * Log out and reboot the machine.
+     */
+    ShutdownTypeReboot = 1,
+    /**
+     * Log out and halt the machine.
+     */
+    ShutdownTypeHalt = 2
+  };
+
+  /**
+   * The possible values for the @p sdmode parameter of @ref requestShutdown.
+   */
+  enum ShutdownMode {
+    /**
+     * Select previous mode or the default if it's the first time.
+     */
+    ShutdownModeDefault = -1,
+    /**
+     * Schedule a shutdown (halt or reboot) for the time all active sessions
+     * have exited.
+     */
+    ShutdownModeSchedule = 0,
+    /**
+     * Shut down, if no sessions are active. Otherwise do nothing.
+     */
+    ShutdownModeTryNow = 1,
+    /**
+     * Force shutdown. Kill any possibly active sessions.
+     */
+    ShutdownModeForceNow = 2
+  };
+
+  /**
    * Asks the session manager to shut the session down.
+   *
+   * @param confirm Whether to ask the user if he really wants to log out.
+   *   @ref ShutdownConfirm
+   * @param sdtype The action to take after logging out. @ref ShutdownType
+   * @param sdmode If/When the action should be taken. @ref ShutdownMode
+   *
+   * Using confirm == ShutdownConfirmYes or sdtype != ShutdownTypeDefault or
+   * sdmode != ShutdownModeDefault causes the use of ksmserver's DCOP
+   * interface. The remaining two combinations use the standard XSMP and
+   * will work with any session manager compliant with it.
    *
    * Returns TRUE on sucess, FALSE if the session manager could not be
    * contacted.
    */
-  bool requestShutDown();
-  bool requestShutDown( bool bFast );
+  bool requestShutDown( ShutdownConfirm confirm = ShutdownConfirmDefault,
+                        ShutdownType sdtype = ShutdownTypeDefault,
+			ShutdownMode sdmode = ShutdownModeDefault );
 
   /**
    * Propagates the network address of the session manager in the
