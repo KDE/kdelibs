@@ -737,18 +737,21 @@ int main(int argc, char *argv[])
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
-         bool autoload = service->property("X-KDE-Kded-autoload").toBool();
-         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readBoolEntry("autoload", autoload);
-         if (autoload)
-            kded->loadModule(service, false);
+	     if (!service->property( "X-KDE-Kded-nostart").toBool())
+         {
+            bool autoload = service->property("X-KDE-Kded-autoload").toBool();
+            config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
+            autoload = config->readBoolEntry("autoload", autoload);
+            if (autoload)
+               kded->loadModule(service, false);
 
-         bool dontLoad = false;
-         QVariant p = service->property("X-KDE-Kded-load-on-demand");
-         if (p.isValid() && (p.toBool() == false))
-            dontLoad = true;
-         if (dontLoad)
-            kded->noDemandLoad(service->desktopEntryName());
+            bool dontLoad = false;
+            QVariant p = service->property("X-KDE-Kded-load-on-demand");
+            if (p.isValid() && (p.toBool() == false))
+               dontLoad = true;
+            if (dontLoad)
+               kded->noDemandLoad(service->desktopEntryName());
+         }
      }
 
      // During startup kdesktop waits for KDED to finish.
