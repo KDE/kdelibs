@@ -113,7 +113,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 }
 
 KDialogBase::KDialogBase( int dialogFace, const QString &caption,
-			  int buttonMask, ButtonCode defaultButton, 
+			  int buttonMask, ButtonCode defaultButton,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const KGuiItem &user1,
 			  const KGuiItem &user2, const KGuiItem &user3 )
@@ -148,7 +148,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
    mButtonOrientation(Horizontal),mEscapeButton(escapeButton)
 {
-  d = new KDialogBasePrivate;  
+  d = new KDialogBasePrivate;
 
   setCaption( caption );
 
@@ -159,8 +159,12 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
   buttonMask &= Details|Yes|No|Cancel;
 
-  makeButtonBox( buttonMask, defaultButton, no, yes );
-  setButtonCancelText( cancel.text() );
+  makeButtonBox( buttonMask, defaultButton, 
+                 no.text().isEmpty()  ? KStdGuiItem::no()  : no,
+                 yes.text().isEmpty() ? KStdGuiItem::yes() : yes );
+
+  setButtonCancelText( cancel.text().isEmpty() ? 
+                       KStdGuiItem::cancel().text() : cancel.text() );
 
   mIsActivated = true;
   setupLayout();
