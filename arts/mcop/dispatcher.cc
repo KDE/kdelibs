@@ -30,12 +30,21 @@
 #include "core.h"
 #include "md5auth.h"
 #include "mcoputils.h"
-#include <sys/time.h>
-#include <stdio.h>
+#include "loopback.h"
+
 #include <sys/stat.h>
+#include <stdio.h>
 #include <signal.h>
 #include <iostream.h>
-#include <loopback.h>
+
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#elif HAVE_SYS_TIME_H
+# include <sys/time.h>
+#else
+# include <time.h>
+#endif                                                                          
 
 /* Dispatcher private data class (to ensure binary compatibility) */
 

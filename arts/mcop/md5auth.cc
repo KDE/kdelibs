@@ -20,7 +20,8 @@
 
     */
 
-#include <sys/time.h>
+#include <config.h>
+
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,6 +32,14 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#elif HAVE_SYS_TIME_H
+# include <sys/time.h>
+#else
+# include <time.h>
+#endif
 
 #include "md5.h"
 #include "md5auth.h"
