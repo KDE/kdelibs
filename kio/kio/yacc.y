@@ -27,7 +27,7 @@ void KTraderParse_initFlex( const char *s );
 %token GR
 %token OR
 %token AND
-%token _IN
+%token TOKEN_IN
 %token EXIST
 %token MAX
 %token MIN
@@ -77,7 +77,7 @@ bool_compare: expr_in EQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 1
             | expr_in { $$ = $<ptr>1; }
 ;
 
-expr_in: expr_twiddle _IN VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ) ); }
+expr_in: expr_twiddle TOKEN_IN VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ) ); }
        | expr_twiddle { $$ = $<ptr>1; }
 ;
 
