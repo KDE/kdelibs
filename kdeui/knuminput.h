@@ -438,6 +438,7 @@ class KDoubleNumInput : public KNumInput
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
+    Q_PROPERTY( int precision READ precision WRITE setPrecision )
 
 public:
     /**
