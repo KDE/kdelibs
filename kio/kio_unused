@@ -1,0 +1,1992 @@
+#if 0
+
+void FileProtocol::doCopy( const KURL::List& _source, const KURL& udest, bool _rename, bool _move )
+{
+  if ( _rename )
+    assert( _source.count() == 1 );
+
+  kDebugInfo( 7101, "Making copy to %s", debugString(udest.url()) );
+
+  // Check whether the URLs are wellformed
+  KURL::List::ConstIterator source_files_it = _source.begin();
+  while (source_files_it != _source.end()) {
+    kDebugInfo( 7101, "Checking %s", debugString((*source_files_it).url()) );
+    KURL usrc();
+    if ( (*source_files_it).isMalformed() ) {
+      error( KIO::ERR_MALFORMED_URL, (*source_files_it).url() );
+      m_cmd = KIO::CMD_NONE;
+      return;
+    }
+    if ( !(*source_files_it).isLocalFile() ) {
+      error( KIO::ERR_INTERNAL, "kio_file got non local file as source in copy command" );
+      m_cmd = KIO::CMD_NONE;
+      return;
+    }
+    ++source_files_it;
+  }
+
+  kDebugInfo( 7101, "All URLs ok %s", debugString(udest.url()) );
+
+  // Check wellformedness of the destination
+  if ( udest.isMalformed() ) {
+    error( KIO::ERR_MALFORMED_URL, udest.url() );
+    m_cmd = KIO::CMD_NONE;
+    return;
+  }
+
+  kDebugInfo( 7101, "Dest ok %s", debugString(udest.url()) );
+
+  // Find IO server for destination
+  QString exec = KProtocolManager::self().executable( udest.protocol() );
+  if ( exec.isEmpty() ) {
+    error( KIO::ERR_UNSUPPORTED_PROTOCOL, udest.protocol() );
+    m_cmd = KIO::CMD_NONE;
+    return;
+  }
+
+  // Is the left most protocol a filesystem protocol ?
+  if ( KProtocolManager::self().outputType( udest.protocol() ) != KProtocolManager::T_FILESYSTEM )
+  {
+    error( KIO::ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, udest.protocol() );
+    m_cmd = KIO::CMD_NONE;
+    return;
+  }
+
+  kDebugInfo( 7101, "IO server ok %s", debugString(udest.url()) );
+
+  // Get a list of all source files and directories
+  QValueList<Copy> files;
+  QValueList<CopyDir> dirs;
+  int size = 0;
+  kDebugInfo( 7101, "Iterating" );
+
+  source_files_it = _source.begin();
+  kDebugInfo( 7101, "Looping" );
+  while ( source_files_it != _source.end()) {
+    kDebugInfo( 7101, "Executing %s", debugString((*source_files_it).url()) );
+
+    kDebugInfo( 7101, "Parsed URL" );
+    // Did an error occur ?
+    int s;
+    if ( ( s = listRecursive( (*source_files_it).path(), files, dirs, _rename ) ) == -1 ) {
+      // Error message is already sent
+      m_cmd = KIO::CMD_NONE;
+      return;
+    }
+    // Sum up the total amount of bytes we have to copy
+    size += s;
+    ++source_files_it;
+  }
+
+  kDebugInfo( 7101, "Recursive 1 %s", debugString(udest.url()) );
+
+  // Check whether we do not copy a directory in itself or one of its subdirectories
+  struct stat buff2;
+  if ( udest.isLocalFile() && stat( udest.path(), &buff2 ) == 0 ) {
+    bool b_error = false;
+    for ( source_files_it = _source.begin(); source_files_it != _source.end(); ++source_files_it ) {
+      KURL usrc( (*source_files_it) );
+
+      struct stat buff1;
+      // Can we stat both the source, too ? ( Should always be the case )
+      if ( stat( usrc.path(), &buff1 ) == 0 ) {
+	bool b_error = false;
+	// Are source and dest equal ? => error
+	if ( buff1.st_ino == buff2.st_ino )
+	  b_error = true;
+      }
+    }
+
+    if ( !b_error ) {
+      // Iterate over all subdirectories
+      QValueList<CopyDir>::Iterator it = dirs.begin();
+      for( ; it != dirs.end() && !b_error; it++ )
+	if ( buff2.st_ino == (*it).m_ino )
+	  b_error = true;
+    }
+
+    // Do we have a cyclic copy now ? => error
+    if ( b_error ) {
+      error( KIO::ERR_CYCLIC_COPY, (*source_files_it).url() );
+      m_cmd = KIO::CMD_NONE;
+      return;
+    }
+  }
+
+  kDebugInfo( 7101, "Recursive ok %s", debugString(udest.url()) );
+
+  m_cmd = KIO::CMD_GET;
+
+  // Start a server for the destination protocol
+  KIOSlave slave( exec );
+  if ( !slave.isRunning() ) {
+      error( KIO::ERR_CANNOT_LAUNCH_PROCESS, exec );
+      m_cmd = KIO::CMD_NONE;
+      return;
+  }
+
+  // Put a protocol on top of the job
+  FileIOJob job( &slave, this );
+
+  kDebugInfo( 7101, "Job started ok %s", debugString(udest.url()) );
+
+  // Tell our client what we 'r' gonna do
+  totalSize( size );
+  totalFiles( files.count() );
+  totalDirs( dirs.count() );
+
+  int processed_files = 0;
+  int processed_dirs = 0;
+  int processed_size = 0;
+
+  // Replace the relative destinations with absolut destinations
+  // by prepending the destinations path
+  QString tmp1 = udest.path( 1 );
+  // Strip '/'
+  QString tmp1_stripped = udest.path( -1 );
+
+  QValueList<CopyDir>::Iterator dir_it = dirs.begin();
+  while (dir_it != dirs.end()) {
+    QString tmp2 = (*dir_it).m_strRelDest;
+    if ( _rename )
+      (*dir_it).m_strRelDest = tmp1_stripped;
+    else
+      (*dir_it).m_strRelDest = tmp1;
+    (*dir_it).m_strRelDest += tmp2;
+    dir_it++;
+  }
+  QValueList<Copy>::Iterator fit = files.begin();
+  for( ; fit != files.end(); fit++ ) {
+    QString tmp2 = (*fit).m_strRelDest;
+    if ( _rename ) // !!! && fit->m_strRelDest == "" )
+      (*fit).m_strRelDest = tmp1_stripped;
+    else
+      (*fit).m_strRelDest = tmp1;
+    (*fit).m_strRelDest += tmp2;
+  }
+
+  kDebugInfo( 7101, "Destinations ok %s", debugString(udest.url()) );
+
+  /*****
+   * Make directories
+   *****/
+
+  m_bIgnoreJobErrors = true;
+  bool overwrite_all = false;
+  bool auto_skip = false;
+  QStringList skip_list;
+  QStringList overwrite_list;
+  // Create all directories
+  dir_it = dirs.begin();
+  while (dir_it != dirs.end()) {
+    // Repeat until we got no error
+    do {
+      job.clearError();
+
+      KURL ud( udest );
+      ud.setPath( (*dir_it).m_strRelDest );
+
+      QString d = ud.url();
+
+      // Is this URL on the skip list ?
+      bool skip = false;
+      QStringList::Iterator sit = skip_list.begin();
+      for( ; sit != skip_list.end() && !skip; sit++ )
+	// Is d a subdirectory of *sit ?
+	if ( strncmp( *sit, d, (*sit).length() ) == 0 )
+	  skip = true;
+
+      if ( skip )
+	continue;
+
+      // Is this URL on the overwrite list ?
+      bool overwrite = false;
+      QStringList::Iterator oit = overwrite_list.begin();
+      for( ; oit != overwrite_list.end() && !overwrite; oit++ )
+	if ( strncmp( *oit, d, (*oit).length() ) == 0 )
+	  overwrite = true;
+
+      if ( overwrite )
+	continue;
+
+      // Tell what we are doing
+      makingDir( d );
+
+      kDebugInfo( 7101, "Making remote dir %s", debugString(d) );
+      // Create the directory
+      job.mkdir( d, (*dir_it).m_mode );
+      while( !job.hasFinished() )
+	job.dispatch();
+
+      // Did we have an error ?
+      if ( job.hasError() ) {
+	// Can we prompt the user and ask for a solution ?
+	if ( /* m_bGUI && */ job.errorId() == KIO::ERR_DOES_ALREADY_EXIST )
+	{
+	  QString old_path = ud.path( 1 );
+	  QString old_url = ud.url( 1 );
+	  // Should we skip automatically ?
+	  if ( auto_skip ) {
+	    job.clearError();
+	    // We dont want to copy files in this directory, so we put it on the skip list.
+	    skip_list.append( old_url );
+	    continue;
+	  } else if ( overwrite_all ) {
+	    job.clearError();
+	    continue;
+	  }
+
+	  /* RenameDlg_Mode m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE );
+	  if ( dirs.count() > 1 )
+	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
+	  struct stat buff;	
+	  stat( ud.path(), &buff );	
+	  bool sn = (*dir_it).m_mtime >= buff.st_mtime;
+	  RenameDlg_Result r = open_RenameDlg( (*dir_it).m_strAbsSource, tmp2,
+					       m, sn, n );
+	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
+	  QString tmp2 = ud.url();
+	  QString n;
+	  RenameDlg_Result r = open_RenameDlg( (*dir_it).m_strAbsSource, tmp2, m, n );
+	  if ( r == R_CANCEL ) {
+	    error( KIO::ERR_USER_CANCELED, "" );
+	    m_cmd = KIO::CMD_NONE;
+	    return;
+	  } else if ( r == R_RENAME ) {
+	    KURL u( n );
+	    // The Dialog should have checked this.
+	    if ( u.isMalformed() )
+	      assert( 0 );
+	    // The new path with trailing '/'
+	    QString tmp3 = u.path( 1 );
+	    renamed( tmp3 );
+	    ///////
+	    // Replace old path with tmp3
+	    ///////
+	    QValueList<CopyDir>::Iterator dir_it2 = dir_it;
+	    // Change the current one and strip the trailing '/'
+	    (*dir_it2).m_strRelDest = u.path( -1 );
+	    // Change the name of all subdirectories
+	    dir_it2++;
+	    for( ; dir_it2 != dirs.end(); dir_it2++ )
+	      if ( strncmp( (*dir_it2).m_strRelDest, old_path, old_path.length() ) == 0 )
+		(*dir_it2).m_strRelDest.replace( 0, old_path.length(), tmp3 );
+	    // Change all filenames
+	    QValueList<Copy>::Iterator fit2 = files.begin();
+	    for( ; fit2 != files.end(); fit2++ )
+	      if ( strncmp( (*fit2).m_strRelDest, old_path, old_path.length() ) == 0 )
+		(*fit2).m_strRelDest.replace( 0, old_path.length(), tmp3 );
+	    // Dont clear error => we will repeat the current command
+	  } else if ( r == R_SKIP ) {
+	    // Skip all files and directories that start with 'old_url'
+	    skip_list.append( old_url );
+	    // Clear the error => The current command is not repeated => skipped
+	    job.clearError();
+	  } else if ( r == R_AUTO_SKIP ) {
+	    // Skip all files and directories that start with 'old_url'
+	    skip_list.append( old_url );
+	    // Clear the error => The current command is not repeated => skipped
+	    job.clearError();
+	    auto_skip = true;
+	  } else if ( r == R_OVERWRITE ) {
+	    // Dont bother for subdirectories
+	    overwrite_list.append( old_url );
+	    // Clear the error => The current command is not repeated => we will
+	    // overwrite every file in this directory or any of its subdirectories
+	    job.clearError();
+	  } else if ( r == R_OVERWRITE_ALL ) {
+	    job.clearError();
+	    overwrite_all = true;
+	  } else
+	    assert( 0 );
+	}
+	// No need to ask the user, so raise an error
+	else {
+	  error( job.errorId(), job.errorText() );
+	  m_cmd = KIO::CMD_NONE;
+	  return;
+	}
+      }
+    }
+    while( job.hasError() );
+
+    processedDirs( ++processed_dirs );
+    ++dir_it;
+  }
+
+  kDebugInfo( 7101, "Created directories %s", debugString(udest.url()) );
+
+  /*****
+   * Copy files
+   *****/
+
+  time_t t_start = time( 0L );
+  time_t t_last = t_start;
+
+  fit = files.begin();
+  for( ; fit != files.end(); fit++ ) {
+
+    bool overwrite = false;
+    bool skip_copying = false;
+
+    // Repeat until we got no error
+    do {
+      job.clearError();
+
+      KURL ud( udest );
+      ud.setPath( (*fit).m_strRelDest );
+      QString d = ud.url();
+
+      // Is this URL on the skip list ?
+      bool skip = false;
+      QStringList::Iterator sit = skip_list.begin();
+      for( ; sit != skip_list.end() && !skip; sit++ )
+	// Is 'd' a file in directory '*sit' or one of its subdirectories ?
+	if ( strncmp( *sit, d, (*sit).length() ) == 0 )
+	  skip = true;
+
+      if ( skip )
+	continue;
+
+      QString realpath = "file:"; realpath += (*fit).m_strAbsSource;
+      copyingFile( realpath, d );
+
+      // kDebugInfo( 7101, "Writing to %s", d );
+
+      // Is this URL on the overwrite list ?
+      QStringList::Iterator oit = overwrite_list.begin();
+      for( ; oit != overwrite_list.end() && !overwrite; oit++ )
+	if ( strncmp( *oit, d, (*oit).length() ) == 0 )
+	  overwrite = true;
+
+      job.put( d, (*fit).m_mode, overwrite_all || overwrite,
+	       false, (*fit).m_size );
+
+      while( !job.isReady() && !job.hasFinished() )
+	job.dispatch();
+
+      // Did we have an error ?
+      if ( job.hasError() ) {
+	int currentError = job.errorId();
+	kDebugError( 7101, "################# COULD NOT PUT %d", currentError);
+	
+	// Can we prompt the user and ask for a solution ?
+	if ( currentError == ERR_DOES_ALREADY_EXIST ||
+	     currentError == ERR_DOES_ALREADY_EXIST_FULL ) {
+	  // Should we skip automatically ?
+	  if ( auto_skip ) {
+	    job.clearError();
+	    continue;
++	  }
++
++	  RenameDlg_Mode m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE );
++	  if ( files.count() > 1 )
++	    m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
++
++	  QString tmp2 = ud.url().data();
++	  QString n;
++	  struct stat buff;
++	  stat( ud.path(), &buff );
++	  bool sn = (*fit).m_mtime >= buff.st_mtime;
++	  RenameDlg_Result r = open_RenameDlg((*fit).m_strAbsSource, tmp2,
++					      m, sn, n );
++
++	  if ( r == R_CANCEL )
++	    {
++	      error( ERR_USER_CANCELED, "" );
++	      m_cmd = CMD_NONE;
++	      return;
++	    }
++	  else if ( r == R_RENAME )
++	    {
++	      KURL u( n );
++	      // The Dialog should have checked this.
++	      if ( u.isMalformed() )
++		assert( 0 );
++	      renamed( u.path( -1 ) );
++	      // Change the destination name of the current file
++	      (*fit).m_strRelDest = u.path( -1 );
++	      // Dont clear error => we will repeat the current command
++	    } else if ( r == R_SKIP ) {
++	      // Clear the error => The current command is not repeated => skipped
++	      job.clearError();
++	    }
++	  else if ( r == R_AUTO_SKIP )
++	    {
++	      // Clear the error => The current command is not repeated => skipped
++	      job.clearError();
++	      auto_skip = true;
++	    }
++	  else if ( r == R_OVERWRITE )
++	    {
++	      overwrite = true;
++	      // Dont clear error => we will repeat the current command
++	    }
++	  else if ( r == R_OVERWRITE_ALL )
++	    {
++	      overwrite_all = true;
++	      // Dont clear error => we will repeat the current command
++	    }
++	  else {
++	    assert( 0 );
++	  }
++
++	} else {
++	  // Should we skip automatically ?
++	  if ( auto_skip ) {
++	    job.clearError();
+	    skip_copying = true;
+	    continue;
+	  }
+	  QString tmp2 = ud.url();
+	  SkipDlg_Result r;
++	  QString tmps = KIO::kioErrorString( job.errorId(), job.errorText() );
++	  r = open_SkipDlg( tmp2, ( files.count() > 1 ), tmps );
+	  if ( r == S_CANCEL ) {
+	    error( KIO::ERR_USER_CANCELED, "" );
+	    m_cmd = KIO::CMD_NONE;
+	    return;
+	  } else if ( r == S_SKIP ) {
+	    // Clear the error => The current command is not repeated => skipped
+	    job.clearError();
+	    skip_copying = true;
+	    continue;
+	  } else if ( r == S_AUTO_SKIP ) {
+	    // Clear the error => The current command is not repeated => skipped
+	    job.clearError();
+	    skip_copying = true;
+	    continue;
+	  } else {
+	    assert( 0 );
+	  }
+      }
+    }
+    while( job.hasError() );
+
+    if ( skip_copying )
+      continue;
+
+    //kDebugInfo( 7101, "Opening %s", (*fit).m_strAbsSource );
+
+    FILE *f = fopen( (*fit).m_strAbsSource, "rb" );
+    if ( f == 0L ) {
+      error( KIO::ERR_CANNOT_OPEN_FOR_READING, (*fit).m_strAbsSource );
+      m_cmd = KIO::CMD_NONE;
+      return;
+    }
+
+    char buffer[4095];
+    QByteArray array;
+
+    while( !feof( f ) ) {
+      int n = fread( buffer, 1, 2048, f );
+
+      // !!! slow down loop for local testing
+//        for ( int tmpi = 0; tmpi < 800000; tmpi++ ) ;
+
+      array.assign(buffer, n);
+      job.data( array );
+      processed_size += n;
+      time_t t = time( 0L );
+      if ( t - t_last >= 1 )
+      {
+	processedSize( processed_size );
+	speed( processed_size / ( t - t_start ) );
+	t_last = t;
+      }
+
+      // Check parent
+      while ( check( connection() ) )
+	dispatch();
+      // Check for error messages from slave
+      while ( check( &slave ) )
+	job.dispatch();
+
+      // An error ?
+      if ( job.hasFinished() )
+      {
+	fclose( f );
+	m_cmd = KIO::CMD_NONE;
+	finished();
+	return;
+      }
+    }
+
+    job.dataEnd();
+
+    fclose( f );
+
+    while( !job.hasFinished() )
+      job.dispatch();
+
+    time_t t = time( 0L );
+
+    processedSize( processed_size );
+    if ( t - t_start >= 1 )
+    {
+      speed( processed_size / ( t - t_start ) );
+      t_last = t;
+    }
+    processedFiles( ++processed_files );
+  }
+
+  kDebugInfo( 7101, "Copied files %s", debugString(udest.url()) );
+
+  if ( _move ) {
+    slotDel( _source );
+  }
+  else
+  {
+    finished();
+    m_cmd = KIO::CMD_NONE;
+  }
+}
+
+
+long FileProtocol::listRecursive( const QString& _path, QValueList<Copy>&
+				_files, QValueList<CopyDir>& _dirs, bool _rename )
+{
+  struct stat buff;
+
+  // Check whether we have to copy the complete directory tree beginning by its root.
+  int len = strlen( _path );
+  while( len >= 1 && _path[ len -1 ] == '/' )
+    len--;
+  if ( len == 1 && _path[ 0 ] == '/' )
+  {
+    if ( stat( "/", &buff ) == -1 )
+    {
+      error( KIO::ERR_DOES_NOT_EXIST, "/" );
+      return -1;
+    }
+
+    CopyDir c;
+    c.m_strAbsSource = _path;
+    if ( _rename )
+      c.m_strRelDest = "";
+    else
+      c.m_strRelDest = "Root";
+    c.m_ino = buff.st_ino;
+    c.m_mode = buff.st_mode;
+    _dirs.append( c );
+
+    return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
+  }
+
+  QString p( _path );
+  p.truncate( len );
+  kDebugInfo( 7101, "########## RECURSIVE LISTING %s", debugString(p) );
+
+  if ( stat( p, &buff ) == -1 ) {
+    error( KIO::ERR_DOES_NOT_EXIST, p );
+    return -1;
+  }
+
+  KURL u( p );
+  // Should be checked before, but who knows
+  if ( u.isMalformed() )
+    assert( 0 );
+
+  // Is the source not a directory ? => so just copy it and we are done.
+  if ( !S_ISDIR( buff.st_mode ) ) {
+    QString fname;
+    if ( _rename )
+      fname = "";
+    else {
+      fname = u.filename();
+      // Should be impossible, but who knows ...
+      if ( fname.isEmpty() )
+	assert( 0 );
+    }
+
+    Copy c;
+    c.m_strAbsSource = p;
+    c.m_strRelDest = fname;
+    c.m_mode = buff.st_mode;
+    c.m_size = buff.st_size;
+    _files.append( c );
+    return buff.st_size;
+  }
+
+  // The source is a directory. So we have to go into recursion here.
+  QString tmp1;
+  if ( _rename )
+    tmp1 = u.path( 0 );
+  else {
+    tmp1 = u.directory( true );
+    tmp1 += "/";
+  }
+  QString tmp2;
+  if ( _rename )
+    tmp2 = "";
+  else
+    tmp2 = u.filename();
+  CopyDir c;
+  c.m_strAbsSource = p;
+  c.m_strRelDest = tmp2;
+  c.m_mode = buff.st_mode;
+  c.m_ino = buff.st_ino;
+  _dirs.append( c );
+  kDebugInfo( 7101, "########### STARTING RECURSION with %s and %s", debugString(tmp1),
+	  debugString(tmp2) );
+
+  return listRecursive2( tmp1, tmp2, _files, _dirs );
+}
+
+long FileProtocol::listRecursive2( const QString& _abs_path, const QString& _rel_path,
+				   QValueList<Copy>& _files, QValueList<CopyDir>& _dirs )
+{
+  long size = 0;
+
+  QString p = _abs_path;
+  p += _rel_path;
+
+  DIR *dp = 0L;
+  struct dirent *ep;
+
+  scanningDir( p );
+
+  dp = opendir( p );
+  if ( dp == 0L )
+  {
+    error( KIO::ERR_CANNOT_ENTER_DIRECTORY, p );
+    return -1;
+  }
+
+  while ( ( ep = readdir( dp ) ) != 0L )
+  {
+    if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
+      continue;
+
+    QString p2 = p;
+    p2 += "/";
+    p2 += ep->d_name;
+
+    struct stat buff;
+    if ( stat( p2, &buff ) == -1 )
+    {
+      // Should never happen
+      error( KIO::ERR_DOES_NOT_EXIST, p );
+      return -1;
+    }
+
+    QString tmp = _rel_path;
+//     if ( tmp != "" )
+      tmp += "/";
+    tmp += ep->d_name;
+
+    if ( !S_ISDIR( buff.st_mode ) )
+    {
+      Copy c;
+      c.m_strAbsSource = p2;
+      c.m_strRelDest = tmp;
+      c.m_mode = buff.st_mode & ( S_ISUID | S_ISGID | S_IFLNK | S_IRWXU | S_IRWXG | S_IRWXO );
+      c.m_size = buff.st_size;
+      _files.append( c );
+      size += buff.st_size;
+    } else {
+      // Did we scan this directory already ?
+      // This may happen because a link goes backward in the directory tree
+      QValueList<CopyDir>::Iterator it = _dirs.begin();
+      for( ; it != _dirs.end(); it++ )
+	if ( (*it).m_ino == buff.st_ino ) {
+	  error( KIO::ERR_CYCLIC_LINK, p2 );
+	  return -1;
+	}
+
+      CopyDir c;
+      c.m_strAbsSource = p2;
+      c.m_strRelDest = tmp;
+      c.m_mode = buff.st_mode;
+      c.m_ino = buff.st_ino;
+      _dirs.append( c );
+
+      long s;
+      if ( ( s = listRecursive2( _abs_path, tmp, _files, _dirs ) ) == -1 )
+	return -1;
+      size += s;
+    }
+  }
+
+  closedir( dp );
+
+  return size;
+}
+
+#endif
+
+
+#if 0
+/**
+* This is main class for doing IO operations.
+*
+* Use this class if you need to do any file transfer using various transfer protocols.
+* Simply create new instance of this class, connect your custom slots to KIOJob signals
+* and then call methods like copy, get, mount etc.
+*
+* KIOJob by default shows progress dialog for these operations ( this feature can be turned off ).
+*
+* KIOJob emits signals for almost all events that happen during transfer. Utilize these for
+* more sophisticated control over transfer. The most important are @ref #sigFinished and
+* @ref #sigError
+*
+* @short A main class for doing IO operations.
+*/
+class KIOJob : public QObject {
+
+  Q_OBJECT
+
+public:
+
+  KIOJob(const char *name = 0);
+  virtual ~KIOJob();
+
+  int id() { return m_id; }
+  QTime getRemainingTime() { return m_RemainingTime; }
+
+  /**
+   * Call this, if you want to do a runtime manipulation with progress dialog.
+   * @ref #KIOProgressBase inherits @ref #QWidget, so you can call e.g. show(), hide() methods.
+   *
+   * @return  pointer to a SIMPLE or CUSTOM progress dialog, depends on settings.
+   */
+  KIOProgressBase* progressDlg() { return m_pProgressDlg; }
+
+  /**
+   * Call this, if you want to do a runtime manipulation with list progress dialog.
+   * KIOListProgressDlg inherits @ref #KTMainWindow, so you can call e.g. show(), hide() methods.
+   *
+   * @return  pointer to a list progress dialog.
+   */
+  KIOListProgressDlg* listProgressDlg() { return m_pListProgressDlg; }
+
+  enum GUImode { NONE, SIMPLE, LIST, CUSTOM };
+
+  /**
+   * AutoDelete mode is turned on by default. It is not recommended
+   * to turn it off. Later versions may not even be able to turn it
+   * off at all.
+   */
+  void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
+
+  /**
+   * Use this to set whether KIOJob should cache slaves into the pool.
+   * Caching means, that when slave is done it is cached for next use.
+   * This also means, that it is kept in the memory.
+   *
+   * @param  _mode  if true - cache slaves to the pool. This is a default value.
+   *                if false - don't cache them but destroy immediately after it's done.
+   */
+  void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
+
+
+  /**
+   * Specify what type of GUI will this KIOJob use.
+   * Call this before you call any other operation method ( copy, move, del etc. )
+   * Valid values are NONE, SIMPLE and LIST
+   *
+   * @param  _mode  NONE   - don't show any dialogs.
+   *                SIMPLE - show a simple progress dialog. It shows progress for one operation.
+   *                LIST   - show a list progress dialog. It shows progress for all operations.
+   */
+  void setGUImode( GUImode _mode );
+
+  /**
+   * Set a custom progress dialog.
+   * Call this before you call any other operation method ( copy, move, del etc. )
+   * Custom progress dialog must inherit from KIOProgressBase.
+   *
+   * @param  dlg - custom progress dialog.
+   */
+  void setProgressDlg( KIOProgressBase *dlg );
+
+  virtual bool copy( const KURL::List& _source, const KURL&_dest, bool _move = false );
+  virtual bool copy( const KURL& _source, const KURL&_dest, bool _move = false );
+
+  virtual bool move( const KURL::List& _source, const KURL&_dest );
+  virtual bool move( const KURL&_source, const KURL&_dest );
+
+  virtual bool del( const KURL::List& _source );
+  virtual bool del( const KURL& _source );
+
+  virtual bool get( const KURL& _url );
+  virtual bool getSize( const KURL& _url );
+
+  virtual bool put( const KURL& _url, int _mode, bool _overwrite,
+		            bool _resume, int _len );
+
+  virtual bool mkdir( const KURL& _url, int _mode );
+
+  /**
+   * Directory listing. "." and ".." are listed as well.
+   */
+  virtual bool listDir( const KURL& _url );
+  /**
+   * Tests whether _url is a directory.
+   * Will emit @ref #sigIsDirectory or @ref #sigIsFile depending on which one it is.
+   */
+  virtual bool testDir( const KURL& _url );
+
+  void mount(bool, const class QString &, const class QString &, const class QString &);
+
+  void unmount( const QString& _point );
+
+  /**
+   * Starts fetching '_url' and buffers _max_len characters or some more
+   * if available. These are sent using @ref #sigPreData. If we know
+   * about the mimetype ( example HTTP protocol ) then @ref #sigMimeType
+   * is called and no data is buffered.
+   * The connection is sleeping until someone calls @ref #cont.
+   */
+  virtual bool preget( const KURL& url, int _max_len );
+
+  /**
+   * Call only after using preget and after you received either
+   * the signal @ref #sigMimeType or @ref #sigPreData.
+   * Afte calling this functions the KIOJob behaves like calling
+   * @ref #get. All buffered data is emitted using @ref #sigData now.
+   */
+  virtual void cont();
+
+  virtual void slotData( const QByteArray& p );
+  virtual void slotError( int _errid, const QString& _txt );
+
+  virtual void slotReady();
+  virtual void slotFinished();
+  virtual void slotIsDirectory();
+  virtual void slotIsFile();
+  virtual void slotRenamed( const char *_new );
+  virtual void slotCanResume( bool _resume );
+
+  virtual void slotTotalSize( unsigned long _bytes );
+  virtual void slotTotalFiles( unsigned int _files );
+  virtual void slotTotalDirs( unsigned int _dirs );
+  virtual void slotProcessedSize( unsigned long _bytes );
+  virtual void slotProcessedFiles( unsigned int _files );
+  virtual void slotProcessedDirs( unsigned int _dirs );
+  virtual void slotScanningDir( const KURL& _dir );
+  virtual void slotSpeed( unsigned long _bytes_per_second );
+  virtual void slotCopyingFile( const KURL& _from, const KURL&_to );
+  virtual void slotMakingDir( const KURL&_dir );
+  virtual void slotGettingFile( const KURL& _url );
+  virtual void slotDeletingFile( const KURL& _url );
+  virtual void slotListEntry( const KUDSEntry& _entry );
+  virtual void slotMimeType( const QString& _type );
+  virtual void slotRedirection( const KURL& _url );
+
+  /**
+   * Stops the current action ( that means kills any running servers associated with
+   * this job and deletes itself ignoring whether auto-delete mode is on or off.
+   *
+   * @param  quiet  if true - KIOJob will not emit sigCanceled when killed. This is a default value.
+   */
+  virtual void kill( bool quiet = false );
+
+  static KIOJob* find( int id );
+
+  /**
+   * Convert size from bytes to the string representation.
+   *
+   * @param  _size  size in bytes
+   * @return  converted size as a string - e.g. 123.4 kB , 12 MB
+   */
+  static QString convertSize( unsigned long size );
+
+  friend KIOProgressBase;
+  friend KIOListViewItem;
+
+signals:
+
+  /**
+   * KIOJob has stopped because of error.
+   *
+   * @param  id     id number of this KIOJob.
+   * @param  errid  id number of the error.
+   * @param  txt    additional text message for the error.
+   *
+   * @see kio_interface.h
+   */
+  void sigError( int id, int errid, const QString& txt );
+
+  /**
+   * KIOJob has finished.
+   *
+   * @param  id  id number of this KIOJob.
+   */
+  void sigFinished( int id );
+
+  /**
+   * KIOJob has been canceled.
+   *
+   * @param  id  id number of this KIOJob.
+   */
+  void sigCanceled( int id );
+
+  /**
+   * A new entry has been found by @ref #listDir
+   * @param  id  id number of this KIOJob.
+   * @param entry information on this entry
+   */
+  void sigListEntry( int id, const KUDSEntry& entry );
+
+  void sigMimeType( int id, const QString& mimetype );
+
+  /**
+   * The saved file has been renamed.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  name  new name of the destination file ( Usually from rename dialog ).
+   */
+  void sigRenamed( int id, const QString& name );
+
+  /**
+   * Copying has been started.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  from  a source name.
+   * @param  to    a destination name.
+   */
+  void sigCopying(int id, const KURL& from, const KURL& to );
+
+  /**
+   * Directory is being scanned.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dir   a name of scanned directory.
+   */
+  void sigScanningDir( int id, const KURL& dir );
+
+  /**
+   * Directory is being made.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dir   a name of created directory.
+   */
+  void sigMakingDir( int id, const KURL& dir );
+
+  /**
+   * Fetching has been started.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  url   a name of fetched file.
+   */
+  void sigGettingFile( int id, const KURL& url );
+
+  /**
+   * Deleting has been started.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  url   a name of deleted file.
+   */
+  void sigDeletingFile( int id, const KURL& url );
+
+  /**
+   * KIOJob can / cannot be resumed.
+   *
+   * @param  id      id number of this KIOJob.
+   * @param  resume  if true - this KIOJob can be resumed.
+   *                 if false - this KIOJob cannot be resumed.
+   */
+  void sigCanResume( int id, bool resume );
+
+  /**
+   * @param  id    id number of this KIOJob.
+   * @param  data  may be 0L if the file has zero size.
+   */
+  void sigPreData( int id, const QByteArray& data );
+  void sigData( int id, const QByteArray& data );
+  void sigReady( int id );
+  void sigRedirection( int id, const KURL& url );
+  void sigIsDirectory( int id );
+  void sigIsFile( int id );
+
+  /**
+   * Current speed of the transfer in bytes per second.
+   *
+   * @param  id                id number of this KIOJob.
+   * @param  bytes_per_second  speed in bytes per second.
+   */
+  void sigSpeed( int id, unsigned long bytes_per_second );
+
+  /**
+   * Total size of transfer ( counted recursively in case of directories ).
+   *
+   * @param  id     id number of this KIOJob.
+   * @param  bytes  total size in bytes.
+   */
+  void sigTotalSize( int id, unsigned long bytes );
+
+  /**
+   * Total number of files in this transfer ( counted recursively ).
+   *
+   * @param  id     id number of this KIOJob.
+   * @param  files  total number of files.
+   */
+  void sigTotalFiles( int id, unsigned int files );
+
+  /**
+   * Total number of directories in this transfer ( counted recursively ).
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dirs  total number of directories.
+   */
+  void sigTotalDirs( int id, unsigned int dirs );
+
+  /**
+   * Already processed size in bytes.
+   *
+   * @param  id     id number of this KIOJob.
+   * @param  bytes  processed size in bytes.
+   */
+  void sigProcessedSize( int id, unsigned long bytes );
+
+  /**
+   * Already processed size in percent.
+   * This is different from sigProcessedSize(), because it is not emited
+   * everytime the processed size changes, but only when percent changes.
+   *
+   * @param  id       id number of this KIOJob.
+   * @param  percent  processed size in percent.
+   */
+  void sigPercent( int id, unsigned long percent );
+
+  /**
+   * Number of already transfered files.
+   *
+   * @param  id     id number of this KIOJob.
+   * @param  files  number of processed files.
+   */
+  void sigProcessedFiles( int id, unsigned int files );
+
+  /**
+   * Number of already transfered directories.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dirs  number of processed directories.
+   */
+  void sigProcessedDirs( int id, unsigned int dirs );
+
+protected slots:
+
+  /**
+   * Stops the current action ( that means kills any running servers associated with
+   * this KIOJob and deletes itself if auto-delete mode is on.
+   */
+  virtual void slotCancel();
+
+  /**
+   * Slave has died.
+   */
+  // void slotSlaveDied( KProcess *);
+
+protected:
+
+  KIOSlave* createSlave( const KURL& url, int& error, QString& error_text );
+
+  /**
+   * Cleanup function used in the destructor.
+   */
+  void clean();
+
+  void connectSlave( KIOSlave *_s );
+
+  void disconnectSlave( KIOSlave *_s );
+
+
+  // KIOSlave* createSlave(  const KURL& url, int& _error, QString& _error_text );
+
+  QDialog* createDialog( const QString &_text );
+
+  void createGUI();
+
+  static void initStatic();
+
+  bool m_bAutoDelete;
+
+  bool m_bCacheToPool;
+
+  int m_iGUImode;
+
+  KIOProgressBase* m_pProgressDlg;
+
+  QDialog *m_pDialog;
+
+  KIOSlave* m_pSlave;
+  KURL m_slaveURL;
+
+  unsigned long m_iTotalSize;
+  unsigned long m_iTotalFiles;
+  unsigned long m_iTotalDirs;
+  unsigned long m_iProcessedSize;
+  unsigned long m_iProcessedFiles;
+  unsigned long m_iProcessedDirs;
+  unsigned long m_iSpeed;
+  QTime m_RemainingTime;
+  bool m_bStalled;
+
+  unsigned long m_iPercent;
+
+  bool m_bCanResume;
+  KURL m_strFrom;
+  KURL m_strTo;
+  QString m_strDir;
+
+  /**
+   * Used in @ref #preget
+   */
+  bool m_bPreGet;
+  QByteArray m_pPreGetBuffer;
+  size_t m_iPreGetBufferMaxSize;
+  bool m_bPreGetFinished;
+  QString m_strPreGetMimeType;
+
+  int m_id;
+  static int s_id;
+
+  typedef QIntDict<KIOJob> jobDict;
+  static jobDict* s_allJobs;
+  static KIOListProgressDlg *m_pListProgressDlg;
+
+  bool m_bIsReady;
+  bool m_bError;
+  int m_iError;
+  QString m_strError;
+};
+#endif
+
+//////////////////////////////////////// from kio_job.cpp /////////////////////
+
+#if 0
+int KIOJob::s_id = 0;
+KIOJob::jobDict *KIOJob::s_allJobs = 0L;
+KIOListProgressDlg* KIOJob::m_pListProgressDlg = 0L;
+
+KIOJob::KIOJob(const char *name)
+    : QObject(0, name)
+{
+    m_id = ++s_id;
+
+    if (!s_allJobs) {
+	initStatic();
+    }
+
+    s_allJobs->insert( m_id, this);
+
+    m_bAutoDelete = true;
+    m_iGUImode = SIMPLE; // default is a simple progress dialog
+    m_bCacheToPool = true;
+
+    m_iTotalSize = 0;
+    m_iTotalFiles = 0;
+    m_iTotalDirs = 0;
+    m_iProcessedSize = 0;
+    m_iProcessedFiles = 0;
+    m_iProcessedDirs = 0;
+    m_iSpeed = 0;
+    m_bStalled = false;
+    m_iPercent = 0;
+
+    m_pProgressDlg = 0L;
+
+    m_pDialog = 0L;
+    m_pSlave = 0L;
+    m_bPreGet = false;
+    m_iPreGetBufferMaxSize = 0;
+    m_bPreGetFinished = false;
+}
+
+
+KIOJob::~KIOJob() {
+  delete [] m_pPreGetBuffer;
+  delete m_pDialog;
+  clean();
+}
+
+
+void KIOJob::initStatic() {
+  if ( !s_allJobs ) {
+    s_allJobs = new jobDict;
+  }
+
+  if ( !m_pListProgressDlg ) {
+    m_pListProgressDlg = new KIOListProgressDlg;
+  }
+}
+
+
+KIOJob *KIOJob::find( int _id ) {
+  return s_allJobs->find( _id );
+}
+
+
+void KIOJob::kill( bool quiet ) {
+  if ( !quiet ) {
+    emit sigCanceled( m_id );
+  }
+
+  clean();
+
+  // Time to die ...
+  delete this;
+}
+
+
+void KIOJob::clean() {
+  assert( s_allJobs );
+  if ( m_id ) {
+    assert( s_allJobs->find( m_id ) != 0 );
+    s_allJobs->remove( m_id );
+    m_id = 0;
+  }
+
+  if ( m_pProgressDlg ) {
+    if ( m_pProgressDlg->onlyClean() ) {
+      m_pProgressDlg->clean();
+    } else {
+      delete m_pProgressDlg;
+      m_pProgressDlg = 0L;
+    }
+  }
+
+  // Do not putback the slave into the pool because we may have
+  // died in action. This means that the slave is in an undefined
+  // state. If the job has finished successfully then
+  // 'slotFinished' already handed the slave back to the pool.
+  if ( m_pSlave ) {
+    delete m_pSlave;
+    m_pSlave = 0L;
+  }
+}
+
+void KIOJob::createGUI() {
+  switch ( m_iGUImode ) {
+  case LIST:
+    if ( !m_pListProgressDlg )
+      return;
+    m_pListProgressDlg->addJob( this );
+    m_pListProgressDlg->show();
+    break;
+
+  case SIMPLE:
+  case CUSTOM:
+    if ( !m_pProgressDlg )
+      setGUImode( (KIOJob::GUImode)m_iGUImode );
+    m_pProgressDlg->setJob( this );
+    // instead of showing immediately, we fire off a one shot timer to
+    // show ourselves after 1.5 seconds.  This avoids massive window creation/
+    // destruction on single file copies or other short operations.
+    QTimer::singleShot(1500, m_pProgressDlg, SLOT(show()));
+
+    break;
+  }
+}
+
+void KIOJob::setProgressDlg( KIOProgressBase *dlg ) {
+  m_pProgressDlg = dlg;
+  m_pProgressDlg->setJob( this );
+}
+
+void KIOJob::setGUImode( GUImode _mode ) {
+  if ( m_iGUImode == _mode && m_pProgressDlg ) {
+    return;
+  }
+
+  m_iGUImode = _mode;
+  if ( m_pProgressDlg ) {
+    delete m_pProgressDlg;
+  }
+
+  if ( m_iGUImode == SIMPLE ) {  // create a default dialog
+    m_pProgressDlg = new KIOSimpleProgressDlg();
+  }
+}
+
+void KIOJob::mount( bool _ro, const QString& _fstype, const QString& _dev, const QString& _point ) {
+
+    QString error;
+    int errid;
+    if ( !createSlave( KURL("file:/"), errid, error ) ) {
+	slotError( errid, error );
+	return;
+    }
+
+    if ( m_iGUImode != NONE )
+	m_pDialog = createDialog( i18n("Mounting %1...").arg(_dev));
+
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    stream << int(KIOProtocol::CMD_MOUNT) << Q_INT8( _ro ? 1 : 0 ) << _fstype << _dev << _point;
+
+    m_pSlave->special(data);
+}
+
+void KIOJob::unmount( const QString& _point ) {
+    QString error;
+    int errid;
+    if ( !createSlave( KURL("file:/"), errid, error ) ) {
+	slotError( errid, error );
+	return;
+    }
+
+    if ( m_iGUImode != NONE )
+	m_pDialog = createDialog( i18n("Unmounting %1...").arg(_point));
+
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    stream << int(KIOProtocol::CMD_UNMOUNT) << _point;
+
+    m_pSlave->special(data);
+}
+
+bool KIOJob::copy( const KURL& u, const KURL& , bool ) {
+  if ( u.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, u.url() );
+    return false;
+  }
+
+  QString error;
+  int errid = 0;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+  return false;
+
+#if 0
+  if ( _move ) {
+    return KIOSlaveInterface::move( _source, _dest );
+  } else {
+    return KIOSlaveInterface::copy( _source, _dest );
+  }
+#endif
+}
+
+bool KIOJob::copy( const KURL::List& _source, const KURL& , bool  ) {
+  assert( !m_pSlave );
+
+  KURL base;
+  KURL::List::ConstIterator it = _source.begin();
+  for( ; it != _source.end(); ++it ) {
+
+    if ( (*it).isMalformed() ) {
+      slotError( KIO::ERR_MALFORMED_URL, (*it).url() );
+      return false;
+    }
+
+    if ( base.isEmpty() ) {
+	base =  *it;
+    } else if ( base.protocol() != (*it).protocol() ||
+		base.host() != (*it).host() ||
+		base.user() != (*it).host() ||
+		base.pass() != (*it).pass() ) {     // Still the same host and protocol ?
+      // URGENTLY TODO: extract these sources and start a second copy command with them
+      ASSERT( 0 );
+    }
+  }
+
+  if (base.isEmpty())
+      return false;
+
+  QString error;
+  int errid = 0;
+  if ( !createSlave( base, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+#if 0
+  if ( _move ) {
+    return KIOSlaveInterface::move( _source, _dest );
+  } else {
+    return KIOSlaveInterface::copy( _source, _dest );
+  }
+#endif
+  return false;
+
+}
+
+
+bool KIOJob::move( const KURL::List& _source, const KURL& _dest ) {
+    return copy( _source, _dest, true );
+}
+
+bool KIOJob::move( const KURL& _source, const KURL& _dest ) {
+    return copy( _source, _dest, true );
+}
+
+bool KIOJob::del( const KURL& _source ) {
+
+  if ( _source.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, _source.url() );
+    return false;
+  }
+
+  QString error;
+  int errid = 0;
+  if ( !createSlave( _source, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+#if 0
+  return KIOSlaveInterface::del( _source );
+#endif
+  return false;
+}
+
+bool KIOJob::del( const KURL::List& _source ) {
+
+  assert( !m_pSlave );
+
+  KURL base;
+
+  KURL::List::ConstIterator it = _source.begin();
+  for( ; it != _source.end(); ++it ) {
+
+    if ( (*it).isMalformed() ) {
+      slotError( KIO::ERR_MALFORMED_URL, (*it).url() );
+      return false;
+    }
+
+    if ( base.isEmpty() ) {
+	base = *it; // just pick one
+    }
+    // Still the same host and protocol ?
+    else if ( base.protocol() != (*it).protocol() ||
+	      base.host() != (*it).host() ||
+	      base.user() != (*it).user() ||
+	      base.pass() != (*it).pass() ) {
+      // URGENTLY TODO: extract these sources and start a second copy command with them
+      ASSERT( 0 );
+    }
+  }
+
+  if (base.isEmpty())
+      return false;
+
+  QString error;
+  int errid = 0;
+  if ( !createSlave( base, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+#if 0
+  return KIOSlaveInterface::del( _source );
+#endif
+  return false;
+}
+
+
+bool KIOJob::testDir( const KURL& u ) {
+  ASSERT( !m_pSlave );
+
+  if ( u.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, u.url() );
+    return false;
+  }
+
+  QString error;
+  int errid;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+  return false;
+}
+
+
+bool KIOJob::get( const KURL& _url ) {
+  ASSERT( !m_pSlave );
+
+  KURL u( _url );
+  if ( u.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, _url.url() );
+    return false;
+  }
+
+  QString error;
+  int errid;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+  return false;
+}
+
+
+bool KIOJob::preget( const KURL&, int _max_size ) {
+  m_bPreGet = true;
+  m_iPreGetBufferMaxSize = _max_size;
+
+  return false;
+}
+
+
+bool KIOJob::getSize( const KURL& u ) {
+  assert( !m_pSlave );
+
+  if ( u.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, u.url() );
+    return false;
+  }
+
+  QString error;
+  int errid;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  return false;
+}
+
+
+bool KIOJob::put( const KURL& u, int , bool , bool ,
+		  int  ) {
+  ASSERT( !m_pSlave );
+
+  if ( u.isMalformed() ) {
+    slotError( KIO::ERR_MALFORMED_URL, u.url() );
+    return false;
+  }
+
+  QString error;
+  int errid;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+  return false;
+}
+
+
+bool KIOJob::mkdir( const KURL& u, int ) {
+  assert( !m_pSlave );
+
+  QString error;
+  int errid = 0;
+  if ( !createSlave( u, errid, error ) ) {
+    slotError( errid, error );
+    return false;
+  }
+
+  createGUI();
+
+  return false;
+}
+
+
+void KIOJob::cont() {
+  if ( !m_strPreGetMimeType.isEmpty() )
+    emit sigMimeType( m_id, m_strPreGetMimeType );
+  if ( m_pPreGetBuffer )
+    emit sigData( m_id, m_pPreGetBuffer);
+
+  m_pSlave->resume();
+
+  if ( m_bPreGetFinished )
+    slotFinished();
+}
+
+#endif
+
+
+
+#if 0
+void KIOJob::slotIsDirectory() {
+  emit sigIsDirectory( m_id );
+}
+
+
+void KIOJob::slotIsFile() {
+  emit sigIsFile( m_id );
+}
+
+void KIOJob::slotData( const QByteArray &p ) {
+
+  if ( m_bPreGet ) {
+      // m_pPreGetBuffer += p;
+      char *buffer = new char[m_pPreGetBuffer.size() + p.size()];
+      memcpy(buffer, m_pPreGetBuffer.data(), m_pPreGetBuffer.size());
+      memcpy(buffer + m_pPreGetBuffer.size(), p.data(), p.size());
+      m_pPreGetBuffer.assign(buffer, m_pPreGetBuffer.size() + p.size());
+
+      if ( m_pPreGetBuffer.size() >= m_iPreGetBufferMaxSize ) {
+	  m_pSlave->suspend();
+	  emit sigPreData( m_id, m_pPreGetBuffer );
+	  m_bPreGet = false;
+      }
+
+      return;
+  }
+
+  emit sigData( m_id, p );
+}
+
+void KIOJob::slotListEntry( const KUDSEntry& _entry ) {
+    emit sigListEntry( m_id, _entry );
+}
+
+void KIOJob::slotFinished() {
+    if ( m_bPreGet ) {
+	m_bPreGet = false;
+	emit sigPreData( m_id, m_pPreGetBuffer);
+	m_bPreGetFinished = true;
+	return;
+    }
+
+    // If someone tries to delete us because we emitted sigFinished
+    // he wont have look. One only stores the id of the job. And since
+    // we remove the id from the map NOW, nobody gets the pointer to this
+    // object => nobody can delete it. We delete this object at the end
+    // of this function anyway.
+    assert( s_allJobs );
+    s_allJobs->remove( m_id );
+
+    // Put the slave back to the pool
+    if ( m_pSlave ) {
+	disconnectSlave( m_pSlave );
+	
+	if ( m_bCacheToPool ) {
+	    KIOSlavePool::self()->addSlave( m_pSlave, m_slaveURL);
+	} else {
+	    delete m_pSlave;
+	}
+	
+	m_pSlave = 0L;
+    }
+
+    emit sigFinished( m_id );
+    m_id = 0;
+
+    clean();
+
+    if ( m_bAutoDelete ) {
+	delete this;
+	return;
+    }
+}
+
+void KIOJob::slotError( int _errid, const QString& _txt ) {
+
+    if ( _errid == KIO::ERR_WARNING ) {
+	//this is very tricky, because we rely on the slots connected to sigError
+	//to check that this is only a warning on continue to proceed normally.
+	//otherwise we might run into trouble...
+	emit sigError( m_id, _errid, _txt );
+	return;
+    }
+
+    m_bError = true;
+    m_iError = _errid;
+    m_strError = _txt;
+
+    // If someone tries to delete us because we emitted sigError
+    // he wont have look. One only stores the id of the job. And since
+    // we remove the id from the map NOW, nobody gets the pointer to this
+    // object => nobody can delete it. We delete this object at the end
+    // of this function anyway.
+    assert( s_allJobs );
+    s_allJobs->remove( m_id );
+
+    emit sigError( m_id, _errid, _txt );
+    m_id = 0;
+
+    // NOTE: This may be dangerous. I really hope that the
+    // slaves are still in a good shape after reporting an error.
+    // Put the slave back to the pool
+    if ( m_pSlave ) {
+	disconnectSlave( m_pSlave );
+	
+	if ( m_bCacheToPool ) {
+	    KIOSlavePool::self()->addSlave( m_pSlave, m_slaveURL);
+	} else {
+	    delete m_pSlave;
+	}
+	
+	m_pSlave = 0L;
+    }
+
+    clean();
+
+    if ( m_bAutoDelete ) {
+	delete this;
+	return;
+    }
+}
+
+
+void KIOJob::slotReady() {
+    m_bIsReady = true;
+
+    emit sigReady( m_id );
+}
+
+
+void KIOJob::slotRenamed( const char *_new ) {
+    m_strTo = _new;
+
+    emit sigRenamed( m_id, _new );
+}
+
+
+void KIOJob::slotCanResume( bool _resume ) {
+    m_bCanResume = _resume;
+
+    emit sigCanResume( m_id, _resume );
+}
+
+
+void KIOJob::slotTotalSize( unsigned long _bytes ) {
+    m_iTotalSize = _bytes;
+
+    emit sigTotalSize( m_id, _bytes );
+    kDebugInfo( 7007, "TotalSize %ld", _bytes );
+}
+
+
+void KIOJob::slotTotalFiles( unsigned int _files ) {
+    m_iTotalFiles = _files;
+
+    emit sigTotalFiles( m_id, _files );
+    kDebugInfo( 7007, "TotalFiles %ld", _files );
+}
+
+
+void KIOJob::slotTotalDirs( unsigned int _dirs ) {
+    m_iTotalDirs = _dirs;
+
+    emit sigTotalDirs( m_id, _dirs );
+    kDebugInfo( 7007, "TotalDirs %ld", _dirs );
+}
+
+
+void KIOJob::slotProcessedSize( unsigned long _bytes ) {
+    uint old = m_iPercent;
+
+    m_iProcessedSize = _bytes;
+
+    if ( m_iTotalSize != 0 ) {
+	m_iPercent = (int)(( (float)m_iProcessedSize / (float)m_iTotalSize ) * 100.0);
+	if ( m_iPercent != old ) {
+	    emit sigPercent( m_id, m_iPercent );
+	}
+    }
+
+    emit sigProcessedSize( m_id, _bytes );
+}
+
+
+void KIOJob::slotProcessedFiles( unsigned int _files ) {
+    m_iProcessedFiles = _files;
+
+    emit sigProcessedFiles( m_id, _files );
+    kDebugInfo( 7007, "ProcessedFiles %d", _files );
+}
+
+void KIOJob::slotProcessedDirs( unsigned int _dirs ) {
+    m_iProcessedDirs = _dirs;
+
+    emit sigProcessedDirs( m_id, _dirs );
+    kDebugInfo( 7007, "ProcessedDirs %d", _dirs );
+}
+
+
+void KIOJob::slotSpeed( unsigned long _bytes_per_second ) {
+  m_iSpeed = _bytes_per_second;
+
+  if ( _bytes_per_second == 0 ) {
+    m_bStalled = true;
+  } else {
+    m_bStalled = false;
+
+    if (m_iTotalSize >= m_iProcessedSize)
+    {
+       int secs = ( m_iTotalSize - m_iProcessedSize ) / _bytes_per_second;
+
+       m_RemainingTime = QTime().addSecs(secs);
+    }
+  }
+
+  emit sigSpeed( m_id, _bytes_per_second );
+}
+
+
+void KIOJob::slotScanningDir( const KURL& _dir ) {
+  m_strFrom = _dir;
+
+  emit sigScanningDir( m_id, _dir );
+  kDebugInfo( 7007, "ScanningDir %s", debugString(_dir.url()) );
+}
+
+
+void KIOJob::slotMakingDir( const KURL& _dir ) {
+  m_strTo = _dir;
+
+  emit sigMakingDir( m_id, _dir );
+  kDebugInfo( 7007, "MakingDir %s", debugString(_dir.url()) );
+}
+
+
+void KIOJob::slotCopyingFile( const KURL& _from, const KURL& _to ) {
+  m_strFrom = _from;
+  m_strTo = _to;
+
+  emit sigCopying( m_id, _from, _to );
+  kDebugInfo( 7007, "CopyingFile %s -> %s", debugString(_from.url()), debugString(_to.url()) );
+}
+
+
+void KIOJob::slotGettingFile( const KURL& _url ) {
+  m_strFrom = _url;
+
+  emit sigGettingFile( m_id, _url );
+  kDebugInfo( 7007, "GettingFile %s", debugString(_url.url()));
+}
+
+
+void KIOJob::slotDeletingFile( const KURL& _url ) {
+  m_strFrom = _url;
+
+  emit sigDeletingFile( m_id, _url );
+  kDebugInfo( 7007, "DeletingFile %s", debugString(_url.url()));
+}
+
+
+void KIOJob::slotMimeType( const QString& _type ) {
+  if ( m_bPreGet ) {
+    m_strPreGetMimeType = _type;
+    m_bPreGet = false;
+    m_pSlave->suspend();
+  }
+
+  emit sigMimeType( m_id, _type );
+  kDebugInfo( 7007, "MimeType %s", debugString(_type) );
+}
+
+
+void KIOJob::slotRedirection( const KURL& _url ) {
+  emit sigRedirection( m_id, _url );
+}
+
+
+void KIOJob::slotCancel() {
+  emit sigCanceled( m_id );
+
+  clean();
+
+  if ( m_bAutoDelete ) {
+    delete this;
+  }
+}
+
+void KIOJob::connectSlave( KIOSlave *) {
+    // setConnection( _s );
+    // TODO connect(_s, SIGNAL( receivedStdout( int, int &)), this, SLOT( slotDispatch( int, int & )) );
+    // connect(_s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
+    // _s->resume();
+}
+
+void KIOJob::disconnectSlave( KIOSlave * ) {
+    // _s->suspend();
+    // TODO disconnect(_s, SIGNAL( receivedStdout( int, int &)), this, SLOT( slotDispatch( int, int & )) );
+    // disconnect(_s, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
+}
+
+KIOSlave* KIOJob::createSlave( const KURL& url, int& error, QString& error_text )
+{
+    KIOSlave *s = KIOSlave::createSlave(url, error, error_text);
+    if (!s)
+	return 0;
+
+    debug("KIOJob::createSlave : Got slave");
+    return s;
+}
+
+QDialog* KIOJob::createDialog( const QString &_text ) {
+  QDialog* dlg = new QDialog;
+  QVBoxLayout* layout = new QVBoxLayout( dlg, KDialog::marginHint(),
+					 KDialog::spacingHint() );
+  layout->addStrut( 360 );	// makes dlg at least that wide
+
+  QLabel *line1 = new QLabel( _text, dlg );
+  layout->addWidget( line1 );
+
+  layout->addSpacing( KDialog::spacingHint() );
+
+  QHBoxLayout *hBox = new QHBoxLayout();
+  layout->addLayout(hBox);
+
+  hBox->addStretch(1);
+
+  QPushButton *pb = new QPushButton( i18n("Cancel"), dlg );
+  connect( pb, SIGNAL( clicked() ), this, SLOT( slotCancel() ) );
+  hBox->addWidget( pb );
+
+  layout->addStretch( 10 );
+
+  dlg->resize( dlg->sizeHint() );
+
+  // instead of showing immediately, we fire off a one shot timer to
+  // show ourselves after 1.5 seconds.  This avoids massive window creation/
+  // destruction on single file copies or other short operations.
+
+  QTimer::singleShot(1500, dlg, SLOT(show()));
+
+  return dlg;
+}
+
+QString KIOJob::convertSize( unsigned long size )
+{
+    float fsize;
+    QString s;
+    // Giga-byte
+    if ( size >= 1073741824 )
+    {
+        fsize = (float) size / (float) 1073741824;
+        if ( fsize > 1024 ) // Tera-byte
+            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024, 1));
+        else
+            s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    // Mega-byte
+    else if ( size >= 1048576 )
+    {
+        fsize = (float) size / (float) 1048576;
+        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    // Kilo-byte
+    else if ( size > 1024 )
+    {
+        fsize = (float) size / (float) 1024;
+        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    // Just byte
+    else
+    {
+        fsize = (float) size;
+        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    return s;
+}
+
+#endif
