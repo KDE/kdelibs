@@ -26,7 +26,7 @@
 #include <qpopupmenu.h>
 #include <qlistbox.h>
 
-#include <kcompletionbase.h>
+#include <kcompletion.h>
 
 
 /**
@@ -56,10 +56,12 @@
  * of list in opposing directions.  The @ref returnPressed
  * signals are emitted when the user presses the return key.
  *
- * By default both the completion and rotation signals are
- * automatically handled by this widget.  If you do not need
- * these features, simply use the appropriate accessor methods
- * to shut them off.
+ * By default, when you create a completion object through
+ * either @ref completionObject() or @ref setCompletionObject
+ * this widget will be automatically enabled to handle the
+ * signals.  If you do not need this feature, simply use the
+ * appropriate accessor methods or the boolean paramters on
+ * the above function to shut them off.
  *
  * The default key-binding for completion and rotation is
  * determined from the global settings in @ref KStdAccel.
@@ -196,60 +198,51 @@ public:
     /**
     * Re-implemented from @ref KCompletionBase.
     *
-    * This method allows you to enable the completion feature
-    * by supplying your own KCompletion object.  The object
-    * assigned through this method is not deleted when this
-    * widget is destroyed.  If you want KComboBox to handle
-    * the deletion, use @ref setAutoDeleteCompletionObject
-    * This functionality is helpful when you want to share
-    * a single completion object across multiple widgets.
+    * This is a re-implementation of
+    * @ref KCompletionBase::setCompletionObject for
+    * internal reasons.
     *
-    * @param obj a @ref KCompletion or a derived child object.
+    * NOTE: Letting this widget handle the completion
+    * and rotation signals internally does not stop
+    * external application from receiving @ref completion,
+    * @ref rotateUp and @ref rotateDown signals.
+    *
+    * @param compObj a @ref KCompletion or a derived child object.
+    * @param hsig if false do not handle signals internally
     */
-    virtual void setCompletionObject( KCompletion* );
+    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
 
 
     /**
-    * Re-implemented from @ref KCompletionBase.
-    *
-    * When this function is invoked with the argument set to
-    * "true", KComboBox will automatically handle completion
-    * and rotation signals.  To stop KComboBox from handling
-    * these signals internally simply invoke this function
-    * with with the argument set to false.
-    *
-    * Note that calling this function does not hinder you from
-    * connecting and hence receiving the completion signals
-    * externally.
-    *
-    * @param complete if true, handle completion & roation internally.
-    */
-    virtual void setHandleSignals( bool complete );
-
-    /**
-    * Enables/disables the popup (context) menu.
+    * Enables or disables the popup (context) menu.
     *
     * This method only works if this widget is editable, i.e.
     * read-write and allows you to enable/disable the context
-    * menu. If this method is invoked without an argument, the
-    * context menu will be disabled.  Note that by default the
-    * mode changer is visible when context menu is enabled.
-    * Use either hideModechanger() or call this function with
-    * the second argument set to "false" if you do not want that
-    * item to be inserted.
+    * menu.  It does nothing if invoked for a none-editable
+    * combo-box.  Note that by default the mode changer item
+    * is made visiable if the context menu is enabled.  Use
+    * @ref hideModechanger() if you want to hide this item.
     *
-    * @param showMenu if true, shows the context menu.
-    * @param showModeChanger if true, shows the mode changer in popup menu.
+    * @param showMenu if true, show the context menu.
+    * @param showMode if true, show the mode changer.
     */
-    virtual void setEnableContextMenu( bool showMenu = true, bool showChanger = true );
+    virtual void setEnableContextMenu( bool showMenu = true );
 
     /**
-    * Shows the mode changer in the context menu.
+    * Shows the mode changer item in the popup menu.
+    *
+    * Note that the mode changer item is a sub menu, that allows
+    * the user to select from one of the standard completion modes
+    * described at @ref KCompletionBase::setCompletionMode.
+    * Additionally, if the user changes the completion mode to
+    * something other than the global setting, a "Default" entry
+    * is added at the bottom to allow the user to revert his/her
+    * changes back to the global setting.
     */
-    void showModeChanger() { m_bShowModeChanger = true; }
+    void showModeChanger();
 
     /**
-    * Hides the mode changer in the context menu.
+    * Hides the mode changer item in the popup menu.
     */
     void hideModeChanger();
 
@@ -381,7 +374,7 @@ protected slots:
     * Sets the comepltion mode to the global default setting
     * defined by @ref KGlobal::completionMode().
     */
-    virtual void modeDefault() { useGlobalSettings(); }
+    virtual void modeDefault() { setCompletionMode( KGlobal::completionMode() ); }
 
     /**
     * Deals with text changing in the line edit in
@@ -419,7 +412,7 @@ protected slots:
     /**
     * Resets the completion object pointer when it is destroyed
     */
-    void completionDestroyed() { m_pCompObj = 0; }
+    void completionDestroyed() { setCompletionObject( 0, false ); }
 
 
 protected:
@@ -428,26 +421,37 @@ protected:
     */
     virtual void init();
 
+    /*
+    * Rotates the text on rotation events
+    */
+    void rotateText( const QString& );
+
+    /**
+    * Implementation of @ref KCompletionBase::connectSignals().
+    *
+    * This function simply connects the signals to appropriate
+    * slots when they are handled internally.
+    *
+    * @param handle if true, handle completion & roation internally.
+    */
+    virtual void connectSignals( bool handle ) const;
+
     /**
     * Overridden from QComboBox to provide automatic selection
     * in "select-only" mode.
     */
     virtual void keyPressEvent ( QKeyEvent* );
 
-    /*
-    * Rotates the text on rotation events
-    */
-    void rotateText( const QString& );
 
 private :
     // Holds the length of the entry.
     int m_iPrevlen;
     // Holds the current cursor position.
     int m_iPrevpos;
-    // Holds the sub-menu id once created.
-    // This is needed to put check marks along
-    // the selected items.
-    int m_iSubMenuId;
+    // Holds the completion sub-menu id once created.
+    // This is needed to put check marks along the
+    // selected items.
+    int m_iCompletionID;
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.

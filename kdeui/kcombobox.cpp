@@ -86,7 +86,7 @@ void KComboBox::init()
     // Initialize the context Menu.  The popup menu as well as
     // the mode switching entry have to be manually enabled.
     m_pSubMenu = 0;
-    m_iSubMenuId = -1;
+    m_iCompletionID = -1;
 
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
@@ -98,81 +98,43 @@ void KComboBox::setAutoCompletion( bool autocomplete )
     m_iCompletionMode = autocomplete ? KGlobal::CompletionAuto : KGlobal::completionMode();
 }
 
-void KComboBox::setCompletionObject( KCompletion* obj )
+void KComboBox::setCompletionObject( KCompletion* compObj, bool hsig )
 {
     if( m_pCompObj != 0 )
         disconnect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
 
-    m_pCompObj = obj;
-    m_bAutoDelCompObj = false;
+    KCompletionBase::setCompletionObject( compObj, hsig );
 
     if( m_pCompObj != 0 )
-    {
-        setCompletionMode( m_iCompletionMode );
         connect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
-        setHandleSignals( true ); // handle signals internally now.
-        m_bEmitSignals = true;
-    }
-    else
-        m_bEmitSignals = false; //no completion object.
 }
 
-void KComboBox::setHandleSignals( bool handle )
+void KComboBox::setEnableContextMenu( bool showMenu )
 {
-    if( handle && !m_bHandleSignals )
+    if( m_pEdit != 0 && showMenu )
     {
-        connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleSignals = handle;
+        connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
+        showModeChanger();
     }
-    else if( !handle && m_bHandleSignals )
-    {
-        disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleSignals = handle;
-    }
-}
-
-void KComboBox::setEnableContextMenu( bool showMenu, bool showChanger )
-{
-    if( m_pEdit != 0 && m_pCompObj != 0 )
-    {
-        if( showMenu )
-        {
-            connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-            m_bEnableMenu = showMenu;
-            if( showChanger )
-                showModeChanger();
-        }
-        else
-        {
-            disconnect ( m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT( aboutToShowMenu()) );
-            if( m_pSubMenu != 0 )
-            {
-                disconnect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
-                delete m_pSubMenu;
-                m_iSubMenuId = -1;
-                m_pSubMenu = 0;
-            }
-            m_bEnableMenu = showMenu;
-        }
-    }
+    m_bEnableMenu = showMenu;
 }
 
 void KComboBox::hideModeChanger()
 {
-    if ( m_bEnableMenu )
+    if( m_pSubMenu != 0 )
     {
-        if( m_pSubMenu != 0 )
-        {
-            disconnect( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
-            delete m_pSubMenu;
-            m_pSubMenu = 0;
-        }
+        delete m_pSubMenu;
+        m_pSubMenu = 0;
+        m_iCompletionID = -1;
     }
     m_bShowModeChanger = false;
+}
+
+void KComboBox::showModeChanger()
+{
+    if( m_pSubMenu == 0 )
+        m_pSubMenu = new QPopupMenu();
+    m_bShowModeChanger = true;
 }
 
 void KComboBox::setEditText( const QString& text )
@@ -190,22 +152,17 @@ void KComboBox::setEditText( const QString& text )
 
 void KComboBox::aboutToShowMenu()
 {
-    if( m_bShowModeChanger && m_pCompObj != 0 )
+    if( m_bShowModeChanger && m_pCompObj != 0 && m_iCompletionID == -1 )
     {
-        if( m_pSubMenu == 0 )
-            m_pSubMenu = new QPopupMenu();
-        if( m_iSubMenuId == -1 )
-        {
-            m_pContextMenu->insertSeparator( m_pContextMenu->count() - 1 );
-            m_iSubMenuId = m_pContextMenu->insertItem( i18n("Completion Mode"), m_pSubMenu, -1, m_pContextMenu->count() - 2 );
-            connect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
-        }
+        m_pContextMenu->insertSeparator( m_pContextMenu->count() - 1 );
+        m_iCompletionID = m_pContextMenu->insertItem( i18n("Completion"), m_pSubMenu, -1, m_pContextMenu->count() - 2 );
+        connect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
     }
 }
 
 void KComboBox::aboutToShowSubMenu( int itemID )
 {
-    if( itemID == m_iSubMenuId )
+    if( itemID == m_iCompletionID )
     {
         m_pSubMenu->clear();
         int id = m_pSubMenu->insertItem( i18n("None"), this, SLOT(modeNone()) );
@@ -216,10 +173,11 @@ void KComboBox::aboutToShowSubMenu( int itemID )
         m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionAuto );
         id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()) );
         m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
-        m_pSubMenu->insertSeparator();
-        id = m_pSubMenu->insertItem( i18n("Default"), this, SLOT(modeDefault()) );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
-
+        if( m_iCompletionMode != KGlobal::completionMode() )
+        {
+            m_pSubMenu->insertSeparator();
+            m_pSubMenu->insertItem( i18n("Default"), this, SLOT(modeDefault()) );
+        }
     }
 }
 
@@ -352,6 +310,21 @@ void KComboBox::itemSelected( QListBoxItem* item )
     }
 }
 
+void KComboBox::connectSignals( bool handle ) const
+{
+    if( handle && !m_bHandleSignals )
+    {
+        connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
+        connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
+        connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+    }
+    else if( !handle && m_bHandleSignals )
+    {
+        disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
+        disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
+        disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+    }
+}
 
 bool KComboBox::eventFilter( QObject *o, QEvent *ev )
 {
@@ -403,9 +376,10 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             QMouseEvent *e = (QMouseEvent *) ev;
             if( e->button() == Qt::RightButton )
             {
-                    if( m_bEnableMenu )
-                        return false;
-                    return true;
+                debug( m_bEnableMenu ? "Menu will be shown..." : "Menu will be hidden..." );
+                if( m_bEnableMenu )
+                    return false;
+                return true;
             }
         }
     }

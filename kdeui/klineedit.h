@@ -32,7 +32,7 @@
 #include <qlineedit.h>
 #include <qpopupmenu.h>
 
-#include <kcompletionbase.h>
+#include <kcompletion.h>
 
 /**
  * An enhanced QLineEdit widget for inputting text.
@@ -57,12 +57,12 @@
  * signals are intended to be used to iterate through a
  * list of predefined text entries.
  *
- * By default both the completion and rotation signals
- * are handled by this widget.  If you do not want this
- * widget to automatically handle these signals, simply
- * use the appropriate mutator methods to shut them off.
- * See @ref setHandleCompletion and @ref setHandleRotation
- * for details.
+ * By default, when you create a completion object through
+ * either @ref completionObject() or @ref setCompletionObject
+ * this widget will be automatically enabled to handle the
+ * signals.  If you do not need this feature, simply use the
+ * appropriate accessor methods or the boolean paramters on
+ * the above function to shut them off.
  *
  * The default key-bindings for completion and rotation
  * are determined from the global settings in @ref KStdAccel.
@@ -169,34 +169,19 @@ public:
     /**
     * Re-implemented from @ref KCompletionBase.
     *
-    * This method allows you to enable the completion feature
-    * by supplying your own KCompletion object.  The object
-    * assigned through this method is not deleted when this
-    * widget is destroyed.  If you want KLineEdit to handle
-    * the deletion, use @ref setAutoDeleteCompletionObject
-    * This functionality is helpful when you want to share
-    * a single completion object across multiple widgets.
+    * This is a re-implementation of
+    * @ref KCompletionBase::setCompletionObject for
+    * internal reasons.
     *
-    * @param obj a @ref KCompletion or a derived child object.
+    * NOTE: Letting this widget handle the completion
+    * and rotation signals internally does not stop
+    * external application from receiving @ref completion,
+    * @ref rotateUp and @ref rotateDown signals.
+    *
+    * @param compObj a @ref KCompletion or a derived child object.
+    * @param hsig if false do not handle signals internally
     */
-    virtual void setCompletionObject( KCompletion* );
-
-    /**
-    * Re-implemented from @ref KCompletionBase.
-    *
-    * When this function is invoked with the argument set to
-    * "true", KLineEdit will automatically handle completion
-    * and rotation signals.  To stop KLineEdit from handling
-    * these signals internally simply invoke this function
-    * with with the argument set to false.
-    *
-    * Note that calling this function does not hinder you from
-    * connecting and hence receiving the completion signals
-    * externally.
-    *
-    * @param complete if true, handle completion & roation internally.
-    */
-    virtual void setHandleSignals( bool complete );
+    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
 
     /**
     * Re-implemented from @ref KCompletionBase for internal reasons.
@@ -214,37 +199,33 @@ public:
     * This method also allows you to enable/disable the context
     * menu. If this method is invoked without an argument, the
     * context menu will be enabled.  By default the mode changer
-    * is visible when context menu is enabled.  Use either
-    * hideModechanger() or call this function with the second
-    * argument set to "false" if you do not want that item to be
-    * inserted.
+    * is visible when context menu is enabled.  Use either the
+    * second boolean parameter or @ref hideModechanger() if you
+    * do not want this item to be visible.
     *
-    * Note the @p showChanger flag is only used when a context
-    * menu is created.  That is it is only used when you invoke
-    * this function for the first time or when you disable and
-    * then subsequently  re-enable the context menu.  To show or
-    * hide the mode changer item under other circumstances use
-    * @ref showModeChanger and @ref hideModeChanger.
-    *
-    * @param showMenu if true, shows the context menu.
-    * @param showModeChanger if true, shows mode changer in popup menu.
+    * @param showMenu if true, show the context menu.
+    * @param showMode if true, show the mode changer item.
     */
-    virtual void setEnableContextMenu( bool showMenu = true, bool showChanger = true );
+    virtual void setEnableContextMenu( bool showMenu = true );
 
     /**
     * Makes the completion mode changer visible in the context
     * menu.
     *
-    * This function allows you to show the completion mode
-    * changer, thus, enabling the user to change the comepltion
-    * mode on the fly.
+    * Note that the mode changer item is a sub menu, that allows
+    * the user to select from one of the standard completion modes
+    * described at @ref KCompletionBase::setCompletionMode.
+    * Additionally, if the user changes the completion mode to
+    * something other than the global setting, a "Default" entry
+    * is added at the bottom to allow the user to revert his/her
+    * changes back to the global setting.
     */
-    void showModeChanger() { m_bShowModeChanger = true; }
+    void showModeChanger();
 
     /**
     * Hides the completion mode changer in the context menu.
     */
-    void hideModeChanger() { m_bShowModeChanger = false; }
+    void hideModeChanger();
 
     /**
     * Returns true when the context menu is enabled.
@@ -367,7 +348,7 @@ protected slots:
     * Sets the comepltion mode to the global default setting
     * defined by @ref KGlobal::completionMode().
     */
-    virtual void modeDefault()  { useGlobalSettings(); }
+    virtual void modeDefault()  { setCompletionMode( KGlobal::completionMode() ); }
 
     /**
     * Populates the context menu before it is displayed.
@@ -394,7 +375,7 @@ protected slots:
     /**
     * Resets the completion object if it is deleted externally.
     */
-    void completionDestroyed() { m_pCompObj = 0; }
+    void completionDestroyed() { setCompletionObject( 0 , false ); }
 
     /**
     * Re-emitts the returnPressed signal with the current
@@ -410,6 +391,21 @@ protected:
     virtual void init();
 
     /*
+    * Rotates the text on rotation events
+    */
+    void rotateText( const QString& );
+
+    /**
+    * Implementation of @ref KCompletionBase::connectSignals().
+    *
+    * This function simply connects the signals to appropriate
+    * slots when they are handled internally.
+    *
+    * @param handle if true, handle completion & roation internally.
+    */
+    virtual void connectSignals( bool handle ) const;
+
+    /*
     * Re-implemented from QLineEdit to filter key-events.
     */
     virtual void keyPressEvent( QKeyEvent * );
@@ -419,18 +415,13 @@ protected:
     */
     virtual void mousePressEvent( QMouseEvent * );
 
-    /*
-    * Rotates the text on rotation events
-    */
-    void rotateText( const QString& );
-
     // Pointers to the context & sub menus.
     QPopupMenu *m_pContextMenu, *m_pSubMenu;
 
 private :
     // Holds the location where the Mode
     // switcher item was inserted.
-    int m_iSubMenuId;
+    int m_iCompletionID;
     // Holds the length of the entry.
     int m_iPrevlen;
     // Holds the current cursor position.
