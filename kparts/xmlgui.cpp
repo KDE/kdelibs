@@ -96,6 +96,7 @@ public:
   {
     m_rootNode = new XMLGUIContainerNode( 0L, QString::null, 0L );
     m_defaultMergingName = QString::fromLatin1( "<default>" );
+    m_bAcceptSeparator = false;
   }
   ~XMLGUIFactoryPrivate()
   {
@@ -107,6 +108,8 @@ public:
   QString m_defaultMergingName;
 
   int m_genId;
+
+  bool m_bAcceptSeparator;
 };
 
 };
@@ -324,12 +327,16 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	if ( !action )
 	  continue;
 	
+        d->m_bAcceptSeparator = true;
         action->plug( (QWidget *)parentNode->container, idx );
 
 	containerClient->m_actions.append( action );
       }
       else
       {
+        if (d->m_bAcceptSeparator == false)
+          continue;
+        d->m_bAcceptSeparator = false;
         int id = m_builder->insertSeparator( (QWidget *)parentNode->container, idx );
 	containerClient->m_separators.append( id );
       }
@@ -343,6 +350,8 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
        * But first we have to check if there's already a existing (child) container of the same type in our
        * tree. However we have to ignore just newly created containers!
        */
+      d->m_bAcceptSeparator = false;
+
       XMLGUIContainerNode *matchingContainer = findContainer( parentNode, e, &containerList );
 
       if ( matchingContainer )
