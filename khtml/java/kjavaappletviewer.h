@@ -40,6 +40,7 @@ class KJavaAppletViewer;
 class KAboutData;
 class KInstance;
 class KConfig;
+class CoverWidget;
 
 class KJavaAppletViewerBrowserExtension : public KParts::BrowserExtension {
     Q_OBJECT
@@ -82,7 +83,7 @@ public:
     KJavaAppletViewer (QWidget * wparent, const char * wname,
               QObject * parent, const char * name, const QStringList &args);
     ~KJavaAppletViewer ();
-    KJavaAppletWidget * view () const { return m_view; }
+    CoverWidget * view () const { return m_view; }
     static KAboutData* createAboutData ();
 
     KJavaAppletViewerBrowserExtension * browserextension() const
@@ -101,7 +102,7 @@ public slots:
 protected:
     bool openFile();
 private:
-    QGuardedPtr <KJavaAppletWidget> m_view;
+    QGuardedPtr <CoverWidget> m_view;
     KConfig * m_config;
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
