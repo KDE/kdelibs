@@ -277,7 +277,8 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 
     for (it=lst.begin(); it!=lst.end(); it++)
     {
-	if (!d->mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
+	if (!d->mThemeList.contains(*it) ||
+	    ( d->mThemesInTree.contains(*it) && (*it) != "hicolor"))
 	    continue;
 	KIconTheme *theme = new KIconTheme(*it,appname);
 	if (!theme->isValid()) {
