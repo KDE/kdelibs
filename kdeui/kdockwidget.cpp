@@ -2183,6 +2183,10 @@ void KDockManager::writeConfig(QDomElement &base)
             groupEl = doc.createElement("dock");
             groupEl.appendChild(createStringEntry(doc, "tabCaption", obj->tabPageLabel()));
             groupEl.appendChild(createStringEntry(doc, "tabToolTip", obj->toolTipString()));
+            if (!obj->parent()) {
+                groupEl.appendChild(createStringEntry(doc, "dockBackTo", obj->formerBrotherDockWidget ? obj->formerBrotherDockWidget->name() : ""));
+                groupEl.appendChild(createNumberEntry(doc, "dockBackToPos", obj->formerDockPos));
+            }
         }
 
         groupEl.appendChild(createStringEntry(doc, "name", QString::fromLatin1(obj->name())));
@@ -2243,6 +2247,7 @@ void KDockManager::readConfig(QDomElement &base)
         ++it;
     }
 
+    // firstly, recreate all common dockwidgets
     QDomElement childEl = base.firstChild().toElement();
     while (!childEl.isNull() ) {
         KDockWidget *obj = 0;
@@ -2273,6 +2278,7 @@ void KDockManager::readConfig(QDomElement &base)
         childEl = childEl.nextSibling().toElement();
     }
 
+    // secondly, now iterate again and create the groups and tabwidgets, apply the dockwidgets to them
     childEl = base.firstChild().toElement();
     while (!childEl.isNull() ) {
         KDockWidget *obj = 0;
@@ -2336,9 +2342,32 @@ void KDockManager::readConfig(QDomElement &base)
             h->setDragEnabled(boolEntry(childEl, "dragEnabled"));
         }
 
-        childEl = childEl.nextSibling().toElement();
+        childEl = childEl.nextSibling().toElement();  
     }
 
+    // thirdly, now that all ordinary dockwidgets are created, 
+    // iterate them again and link them with their corresponding dockwidget for the dockback action
+    childEl = base.firstChild().toElement();
+    while (!childEl.isNull() ) {
+        KDockWidget *obj = 0;
+
+        if (childEl.tagName() != "dock") {
+            childEl = childEl.nextSibling().toElement();
+            continue;            
+        }
+        
+        if (!boolEntry(childEl, "hasParent")) {
+            // Read a common toplevel dock widget
+            obj = getDockWidgetFromName(stringEntry(childEl, "name"));
+            QString name = stringEntry(childEl, "dockBackTo");
+            if (!name.isEmpty()) {
+                obj->formerBrotherDockWidget = getDockWidgetFromName(name);
+            }
+            obj->formerDockPos = KDockWidget::DockPosition(numberEntry(childEl, "dockBackToPos"));
+        }
+        childEl = childEl.nextSibling().toElement();  
+    }
+    
     if (main->inherits("KDockMainWindow")) {
         KDockMainWindow *dmain = (KDockMainWindow*)main;
 
@@ -2506,6 +2535,8 @@ void KDockManager::writeConfig( KConfig* c, QString group )
           c->writeEntry( cname+":type", "NULL_DOCK");
           c->writeEntry( cname+":geometry", QRect(obj->frameGeometry().topLeft(), obj->size()) );
           c->writeEntry( cname+":visible", obj->isVisible());
+          c->writeEntry( cname+":dockBackTo", obj->formerBrotherDockWidget ? obj->formerBrotherDockWidget->name() : "");
+          c->writeEntry( cname+":dockBackToPos", obj->formerDockPos);
         } else {
           c->writeEntry( cname+":type", "DOCK");
         }
@@ -2657,6 +2688,28 @@ void KDockManager::readConfig( KConfig* c, QString group )
     nameList.next();
   }
 
+  // thirdly, now that all ordinary dockwidgets are created, 
+  // iterate them again and link the toplevel ones of them with their corresponding dockwidget for the dockback action
+  nameList.first();
+  while ( nameList.current() ){
+    QString oname = nameList.current();
+    c->setGroup( group );
+    QString type = c->readEntry( oname + ":type" );
+    obj = 0L;
+    
+    if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
+      obj = getDockWidgetFromName( oname );
+      c->setGroup( group );
+      QString name = c->readEntry( oname + ":dockBackTo" );
+      if (!name.isEmpty()) {
+          obj->formerBrotherDockWidget = getDockWidgetFromName( name );
+      }
+      obj->formerDockPos = KDockWidget::DockPosition(c->readNumEntry( oname + ":dockBackToPos" ));
+    }
+
+    nameList.next();
+  }
+  
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
 
