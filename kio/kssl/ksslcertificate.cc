@@ -542,7 +542,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     //kdDebug(7029) << "KSSL setting CRL.............." << endl;
     // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 
-    d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, X509_PURPOSE_SSL_CLIENT);
+    d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, X509_PURPOSE_SSL_SERVER);
 
     //kdDebug(7029) << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
