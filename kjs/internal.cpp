@@ -1116,11 +1116,11 @@ double KJS::roundValue(ExecState *exec, const Value &v)
 {
   if (v.type() == UndefinedType) /* TODO: see below */
     return 0.0;
-  Number n = v.toNumber(exec);
-  if (n.value() == 0.0)   /* TODO: -0, NaN, Inf */
+  double n = v.toNumber(exec);
+  if (n == 0.0)   /* TODO: -0, NaN, Inf */
     return 0.0;
-  double d = floor(fabs(n.value()));
-  if (n.value() < 0)
+  double d = floor(fabs(n));
+  if (n < 0)
     d *= -1;
 
   return d;

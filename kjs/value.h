@@ -110,6 +110,7 @@ namespace KJS {
                               Type preferredType = UnspecifiedType) const = 0;
     virtual bool toBoolean(ExecState *exec) const = 0;
     virtual double toNumber(ExecState *exec) const = 0;
+    // TODO: no need for the following 4 int conversions to be virtual
     virtual int toInteger(ExecState *exec) const;
     virtual int toInt32(ExecState *exec) const;
     virtual unsigned int toUInt32(ExecState *exec) const;
