@@ -3495,17 +3495,54 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
         {
             QWidget* tabbar = static_cast<QWidget*>(obj);
             hoverWidget = tabbar;
+            hoverTab = 0;
             tabbar->repaint(false);
         }
         else if (ev->type() == QEvent::MouseMove)
         {
-            QWidget* tabbar = static_cast<QWidget*>(obj);
-            tabbar->repaint(false);
+            QTabBar *tabbar = dynamic_cast<QTabBar*>(obj);
+            QMouseEvent *me = dynamic_cast<QMouseEvent*>(ev);
+
+            if (tabbar && me) {
+                // avoid unnecessary repaints (which otherwise would occour on every
+                // MouseMove event causing high cpu load).
+
+                bool repaint = true;
+
+                // if hoverTab is 0, we can simply skip this...
+                if (hoverTab != 0) {
+                    // go through the tabbar and see which tabs are hovered by the mouse.
+                    // tabs are overlapping 1 px, so it's possible that 2 tabs are under the mouse.
+                    int tabCount = 0;
+                    for (int i = 0; i < tabbar->count(); ++i) {
+                        QTab *tab = tabbar->tab(i);
+                        if (tab && tab->rect().contains(me->pos() ) ) {
+                            ++ tabCount;
+    
+                            if (tabCount < 2) {
+                                // good, only one tab under the mouse.
+                                if (hoverTab==tab)
+                                    repaint = false; // has been updated before, no repaint necessary
+                                hoverTab = tab;
+                            } else {
+                                // uhh! there's another tab under the mouse, repaint...
+                                repaint = true;
+                                hoverTab = 0; // make sure the tabbar is repainted next time too.
+                            }
+    
+                        }
+                    }
+                }
+
+                if (repaint)
+                    tabbar->repaint(false);
+            }
         }
         else if (ev->type() == QEvent::Leave)
         {
             QWidget* tabbar = static_cast<QWidget*>(obj);
             hoverWidget = 0;
+            hoverTab = 0;
             tabbar->repaint(false);
         }
         return false;

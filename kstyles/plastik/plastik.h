@@ -51,6 +51,7 @@
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
 class QSettings;
+class QTab;
 
 class PlastikStyle : public KStyle
 {
@@ -287,6 +288,8 @@ private:
     QColor _overHighlightColor;
     QColor _focusHighlightColor;
     QColor _checkMarkColor;
+
+    QTab *hoverTab;
 
     // track khtml widgets.
     QMap<const QWidget*,bool> khtmlWidgets;
