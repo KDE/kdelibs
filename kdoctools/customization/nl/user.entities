@@ -35,12 +35,16 @@
 <!ENTITY nagelezen.otto "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
 
 <!-- Algemene afkortingen -->
-<!ENTITY etc "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
-<!ENTITY enz "<abbrev>enz.</abbrev>">
-<!ENTITY bijv "<abbrev>bijv.</abbrev>">
+<!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
+<!ENTITY enz     "<abbrev>enz.</abbrev>">
+<!ENTITY bijv    "<abbrev>bijv.</abbrev>">
+<!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
+<!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
+<!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
 <!ENTITY kcontrolcenter "<application>KDE Configuratiecentrum</application>">
-<!ENTITY kde-configuratiecentrum "<application>KDE Configuratiecentrum</application>">
+<!ENTITY kcc     "<application>KDE Configuratiecentrum</application>">
+<!ENTITY khc     "<application>KDE Helpcentrum</application>">
 
