@@ -962,14 +962,18 @@ bool HTTPProtocol::http_open()
 #else
   header += "Connection: Keep-Alive\r\n";
 #endif
-  QString agent = metaData("userAgent");
-  // If application did not specify a user agent,
-  // use configured by the user or the default!!
-  if( agent.isEmpty() )
-    agent = KProtocolManager::userAgentForHost( m_state.hostname );
 
-  if( !agent.isEmpty() )
-    header += "User-Agent: " + agent + "\r\n";
+  if ( m_bSendUserAgent )
+  {
+    QString agent = metaData("userAgent");
+    // If application did not specify a user agent,
+    // use configured by the user or the default!!
+    if( agent.isEmpty() )
+      agent = KProtocolManager::userAgentForHost( m_state.hostname );
+
+    if( !agent.isEmpty() )
+      header += "User-Agent: " + agent + "\r\n";
+  }
 
   QString referrer = metaData("referrer");
   if (!referrer.isEmpty())
@@ -1017,7 +1021,7 @@ bool HTTPProtocol::http_open()
   // header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
     header += "Accept-Encoding: x-gzip; q=1.0, gzip; q=1.0, identity\r\n";
 #endif
-
+   
   // Charset negotiation:
   if ( !m_strCharsets.isEmpty() )
     header += "Accept-Charset: " + m_strCharsets + "\r\n";
@@ -3251,101 +3255,6 @@ void HTTPProtocol::cleanCache()
    }
 }
 
-void HTTPProtocol::reparseConfiguration()
-{
-  kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
-  m_bUseProxy = false;
-  m_strProxyRealm = QString::null;
-  m_strProxyAuthorization = QString::null;
-  if ( KProtocolManager::useProxy() )
-  {
-    // Use the appropriate proxy depending on the protocol
-    QCString protocol = (m_protocol == "https") ? QCString("http") : m_protocol;
-    m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
-    if (!m_proxyURL.isMalformed() )
-    {
-        m_bUseProxy = true;
-        m_strNoProxyFor = KProtocolManager::noProxyFor();
-        ProxyAuthentication = AUTH_None;
-        kdDebug(7103) << "(" << getpid() << ") Setting Proxy configuration:" << endl
-                      << "HOST= " << m_proxyURL.host() << endl
-                      << "PORT= " << m_proxyURL.port() << endl
-                      << "REALM= " << m_strProxyRealm << endl
-                      << "AUTH_STRING= " << m_strProxyAuthorization << endl
-                      << "No Proxy for= " << m_strNoProxyFor << endl;
-    }
-    else
-        kdDebug(7103) << "Proxy URL \"" << m_proxyURL.url() << "\" is either "
-                      << "MALFORMED or NOT SUPPORTED. IGNORING it!!" << endl;
-  }
-
-  m_bUseCache = KProtocolManager::useCache();
-  if (m_bUseCache)
-  {
-    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-    m_maxCacheAge = KProtocolManager::maxCacheAge();
-  }
-
-  // Update the proxy and remote server connection timeout values
-  m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
-  m_remoteConnTimeout = KProtocolManager::connectTimeout();
-  m_remoteRespTimeout = KProtocolManager::responseTimeout();
-
-  // Define language and charset settings from KLocale (David)
-  // Get rid of duplicate language entries!!
-  QString tmp;
-  QStringList languageList = KGlobal::locale()->languageList();
-  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
-  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
-  if ( it != languageList.end() )
-  {
-    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
-        languageList.remove( it );
-    else
-        (*it) = QString::fromLatin1("en");
-  }
-
-  // Use commas not spaces.
-  m_strLanguages = languageList.join( ", " );
-  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
-  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
-  m_strCharsets += QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
-
-  // Launch the cookiejar if not already running
-  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
-  if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-      !cookieConfig->hasGroup("Cookie Policy") )
-    cookieConfig->setGroup("Browser Settings/HTTP");
-  else
-    cookieConfig->setGroup("Cookie Policy");
-  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
-  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
-  {
-     QString error;
-     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
-     {
-        // Error starting kcookiejar.
-        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
-     }
-  }
-  delete cookieConfig;
-}
-
-void HTTPProtocol::resetSessionSettings()
-{
-  m_request.window = metaData("window-id");
-  m_responseCode = 0;
-  m_prevResponseCode = 0;
-
-  m_strRealm = QString::null;
-  m_strAuthorization = QString::null;
-  Authentication = AUTH_None;
-
-  m_bCanResume = false;
-  m_bUnauthorized = false;
-}
-
 void HTTPProtocol::retrieveContent( bool check_ssl )
 {
   if ( !retrieveHeader(false) )
@@ -3869,3 +3778,98 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   return auth;
 }
 
+void HTTPProtocol::reparseConfiguration()
+{
+  kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
+  m_bUseProxy = false;
+  m_strProxyRealm = QString::null;
+  m_strProxyAuthorization = QString::null;
+  if ( KProtocolManager::useProxy() )
+  {
+    // Use the appropriate proxy depending on the protocol
+    QCString protocol = (m_protocol == "https") ? QCString("http") : m_protocol;
+    m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
+    if (!m_proxyURL.isMalformed() )
+    {
+        m_bUseProxy = true;
+        m_strNoProxyFor = KProtocolManager::noProxyFor();
+        ProxyAuthentication = AUTH_None;
+        kdDebug(7103) << "(" << getpid() << ") Setting Proxy configuration:" << endl
+                      << "HOST= " << m_proxyURL.host() << endl
+                      << "PORT= " << m_proxyURL.port() << endl
+                      << "REALM= " << m_strProxyRealm << endl
+                      << "AUTH_STRING= " << m_strProxyAuthorization << endl
+                      << "No Proxy for= " << m_strNoProxyFor << endl;
+    }
+    else
+        kdDebug(7103) << "Proxy URL \"" << m_proxyURL.url() << "\" is either "
+                      << "MALFORMED or NOT SUPPORTED. IGNORING it!!" << endl;
+  }
+
+  m_bSendUserAgent = KProtocolManager::sendUserAgent();
+  m_bUseCache = KProtocolManager::useCache();
+  if (m_bUseCache)
+  {
+    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+    m_maxCacheAge = KProtocolManager::maxCacheAge();
+  }
+
+  // Update the proxy and remote server connection timeout values
+  m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
+  m_remoteConnTimeout = KProtocolManager::connectTimeout();
+  m_remoteRespTimeout = KProtocolManager::responseTimeout();
+
+  // Define language and charset settings from KLocale (David)
+  // Get rid of duplicate language entries!!
+  QString tmp;
+  QStringList languageList = KGlobal::locale()->languageList();
+  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
+  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
+  if ( it != languageList.end() )
+  {
+    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
+        languageList.remove( it );
+    else
+        (*it) = QString::fromLatin1("en");
+  }
+
+  // Use commas not spaces.
+  m_strLanguages = languageList.join( ", " );
+  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
+  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
+  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
+  m_strCharsets += QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+
+  // Launch the cookiejar if not already running
+  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
+  if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
+      !cookieConfig->hasGroup("Cookie Policy") )
+    cookieConfig->setGroup("Browser Settings/HTTP");
+  else
+    cookieConfig->setGroup("Cookie Policy");
+  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
+  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
+  {
+     QString error;
+     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
+     {
+        // Error starting kcookiejar.
+        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
+     }
+  }
+  delete cookieConfig;
+}
+
+void HTTPProtocol::resetSessionSettings()
+{
+  m_request.window = metaData("window-id");
+  m_responseCode = 0;
+  m_prevResponseCode = 0;
+
+  m_strRealm = QString::null;
+  m_strAuthorization = QString::null;
+  Authentication = AUTH_None;
+
+  m_bCanResume = false;
+  m_bUnauthorized = false;
+}
