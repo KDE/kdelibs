@@ -158,6 +158,8 @@ public:
     KSSLCertificateHome::KSSLAuthAction getAction() const { return _aa; }
     QString configName() const { return _host; }
     QString getCertName() const { return _name; }
+    void setCertName(QString name) { _name = name; setText(1, name); }
+    void setHost(QString name) { _host = name; setText(0, name); }
 
 protected:
 
@@ -224,6 +226,9 @@ public slots:
   void slotNewHostAuth();
   void slotRemoveHostAuth();
   void slotAuthItemChanged();
+  void slotAuthText(const QString &t);
+  void slotAuthButtons();
+  void slotAuthCombo();
 
 private:
 
@@ -286,7 +291,7 @@ private:
   QListView *hostAuthList;
   QPushButton *authAdd, *authRemove;
   QLineEdit *authHost;
-
+  QList<HostAuthItem> authDelList;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts, *authcfg;

@@ -176,6 +176,7 @@ QString whatstr;
 
   otherCertDelList.setAutoDelete(true);
   yourCertDelList.setAutoDelete(true);
+  authDelList.setAutoDelete(true);
 
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 4 tabs.
@@ -509,6 +510,11 @@ QString whatstr;
   connect(defCertBox, SIGNAL(activated(int)), this, SLOT(configChanged()));
   connect(defCertBG, SIGNAL(clicked(int)), this, SLOT(configChanged()));
   connect(hostAuthList, SIGNAL(selectionChanged()), this, SLOT(slotAuthItemChanged()));
+  connect(authAdd, SIGNAL(clicked()), this, SLOT(slotNewHostAuth()));
+  connect(authRemove, SIGNAL(clicked()), this, SLOT(slotRemoveHostAuth()));
+  connect(authHost, SIGNAL(textChanged(const QString &)), this, SLOT(slotAuthText(const QString &)));
+  connect(hostCertBG, SIGNAL(clicked(int)), this, SLOT(slotAuthButtons()));
+  connect(hostCertBox, SIGNAL(activated(int)), this, SLOT(slotAuthCombo()));
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -752,6 +758,7 @@ void KCryptoConfig::load()
 #ifdef HAVE_SSL
   otherCertDelList.clear();
   yourCertDelList.clear();
+  authDelList.clear();
   config->setGroup("TLS");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
 
@@ -1605,6 +1612,12 @@ QCString oldpass = "";
 
 
 void KCryptoConfig::slotNewHostAuth() {
+    HostAuthItem *j = new HostAuthItem(hostAuthList,
+                                       "",
+                                       "",
+                                       this );
+    j->setAction(KSSLCertificateHome::AuthSend);
+    hostAuthList->setSelected(j, true);
   authHost->setEnabled(true);
   hostCertBox->setEnabled(true);
   hostCertBG->setEnabled(true);
@@ -1619,7 +1632,9 @@ void KCryptoConfig::slotRemoveHostAuth() {
 HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
 
   if (x) {
-    
+      hostAuthList->takeItem(x);
+      authDelList.append(x);
+      configChanged();
   }
 }
 
@@ -1628,9 +1643,6 @@ void KCryptoConfig::slotAuthItemChanged() {
 HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
 
 if (x) {
-  // Save the old fields if necessary
-
-
   // Make sure the fields are enabled
   authHost->setEnabled(true);
   hostCertBox->setEnabled(true);
@@ -1660,13 +1672,55 @@ if (x) {
        break;
     }
   }
-
 } else {
   authHost->clear();
   authHost->setEnabled(false);
   hostCertBox->setEnabled(false);
   hostCertBG->setEnabled(false);
   authRemove->setEnabled(false);
+}
+}
+
+
+void KCryptoConfig::slotAuthText(const QString &t) {
+HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
+
+if (x) {
+   x->setHost(t);
+configChanged();
+}   
+}
+
+
+
+void KCryptoConfig::slotAuthButtons() {
+HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
+
+if (x) {
+   KSSLCertificateHome::KSSLAuthAction aa = KSSLCertificateHome::AuthDont;
+   int sel = hostCertBG->id(hostCertBG->selected());
+
+   if (sel ==  hostCertBG->id(hostSend))
+    aa = KSSLCertificateHome::AuthSend;
+   else if (sel == hostCertBG->id(hostPrompt))
+    aa = KSSLCertificateHome::AuthPrompt;
+   else
+    aa =  KSSLCertificateHome::AuthDont;
+
+   x->setAction(aa);
+configChanged();
+}   
+}
+
+
+void KCryptoConfig::slotAuthCombo() {
+HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
+
+if (x) {
+  if (hostCertBox->currentItem() == 0)
+    x->setCertName("");
+  else x->setCertName(hostCertBox->currentText());
+  configChanged();
 }
 }
 
