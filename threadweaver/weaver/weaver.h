@@ -53,7 +53,7 @@ namespace ThreadWeaver {
     extern int DebugLevel;
 
     inline void setDebugLevel (bool debug, int level)
-	{
+        {
 	    Debug = debug;
 	    DebugLevel = level;
 	}
@@ -90,8 +90,8 @@ namespace ThreadWeaver {
 	the event, since the event receiver will assume ownership of the
 	event.
 	Events are associated to the sending thread and possibly to a
-	processed job. 
-	
+	processed job.
+
 	Note: Do not create and use SPR/APR events, use Job::triggerSPR or
 	Job::triggerAPR to create the requests. */
 
@@ -109,7 +109,7 @@ namespace ThreadWeaver {
 	    JobStarted,
 	    JobFinished,
 	    JobSPR, /// Synchronous Process Request
-	    JobAPR  /// Asynchronous Process Request 
+	    JobAPR  /// Asynchronous Process Request
 	};
 	Event ( Action = NoAction, Thread * = 0, Job *job = 0);
 	/** Return the (custom defined) event type. */
@@ -128,33 +128,33 @@ namespace ThreadWeaver {
     };
 
     /** A Job is a simple abstraction of an action that is to be
-        executed in a thread context. 
+        executed in a thread context.
 	It is essential for the ThreadWeaver library that as a kind of
         convention, the different creators of Job objects do not touch the
         protected data members of the Job until somehow notified by the
-        Job. See the SPR signal for an example. 
+        Job. See the SPR signal for an example.
 
 	Jobs may emit process requests as signals. Consider process requests
-	as a kind of synchronized call to the main thread. 
+	as a kind of synchronized call to the main thread.
 	Process Requests are a generic means for Job derivate programmers to have
 	the jobs interact with the creators (in the main thread) during
 	processing time. To avoid race
 	conditions and extensive locking and unlocking, the thread executing the
-	job is suspended during the period needed to process the request. 
-	
+	job is suspended during the period needed to process the request.
+
 	There are two kinds of process requests (we introduce abbreviations,
-	also in the signal names and the code, 
+	also in the signal names and the code,
 	only to save typing). Both are emitted by signals in the main thread:
 	- Synchronous Process Requests (SPR): Synchronous requests expect that the
 	complete request is performed in the slots connected to the signals. For
 	example, to update a widget according to the progress of the job, a SPR
 	may be used. In such cases, the Job's execution will be resumed
-	immediately after the signal has been processed. 
+	immediately after the signal has been processed.
 	- Asynchronous Process Requests (APR): For APRs, the job emitting the
 	signal does not assume anything about the amount of time needed to
 	perform the operation. Therefore, the thread is not waked after the
 	signal returns. The creator has to wake to thread whenever it is
-	ready by calling the wakeAPR method. 
+	ready by calling the wakeAPR method.
 
 	Note: When using an APR, you better make sure to receive the signal
 	with some object, otherwise the calling thread will block forever!
@@ -191,14 +191,14 @@ namespace ThreadWeaver {
 	/** This signal is emitted when a job has been finished. */
 	void done ();
 	/** This signal is emitted when the job needs some operation done by
-	    the main thread (usually the creator of the job). 
+	    the main thread (usually the creator of the job).
 	    It is important to understand that the emitting thread is
-	    suspended until the signal returns. 
+	    suspended until the signal returns.
 	    When
 	    the operation requested has been performed and this signal is
-	    finished, the thread is automatically waked. 
+	    finished, the thread is automatically waked.
 	    What operation needs to be performed has to be negotiated between
-	    the two objects. 
+	    the two objects.
 	    Note: This signal is an attempt to provide job programmers with a
 	    generic way to interact while the job is executed. I am interested
 	    in feedback about it's use. */
@@ -215,18 +215,18 @@ namespace ThreadWeaver {
             execute(). This method is the one to overload it with the
             job's task. */
         virtual void run () = 0;
-	/** Return the thread that executes this job. 
+	/** Return the thread that executes this job.
 	    Returns zero of the job is not currently executed. */
 	Thread *thread();
 	/** Call with status = true to mark this job as done. */
 	virtual void setFinished(bool status);
-	/** Trigger a SPR. 
+	/** Trigger a SPR.
 	    This emits a signal in the main thread indicating the necessity of
 	    a synchronized operation. */
 	void triggerSPR ();
-	/** Trigger an APR. 
+	/** Trigger an APR.
 	    This emit a signal in the main thread indicating the necessity of
-	    an unsynchronized operation. 
+	    an unsynchronized operation.
 	    The calling thread needs to ensure to wake the thread when the
 	    operation is done. */
 	void triggerAPR ();
@@ -247,7 +247,7 @@ namespace ThreadWeaver {
     class Thread : public QThread
     {
     public:
-	/** Create a thread. 
+	/** Create a thread.
 	    These thread objects are only used inside the Weaver parent
 	    object. */
         Thread(Weaver *parent);
@@ -301,12 +301,12 @@ namespace ThreadWeaver {
         virtual ~Weaver ();
         /** Add a job to be executed. */
         virtual void enqueue (Job*);
-	/** Enqueue all jobs in the given list. 
+	/** Enqueue all jobs in the given list.
 	    This is an atomic operation, no jobs will start
-	    before all jobs in the list are enqueued. 
+	    before all jobs in the list are enqueued.
 	    If you need a couple of jobs done and want to receive the
 	    finished () signal afterwards, use this method to queue
-	    them. Otherwise, when enqueueing your jobs 
+	    them. Otherwise, when enqueueing your jobs
 	    individually, there is a chance that you receive more than
 	    one finished signal. */
 	void enqueue (QPtrList<Job> jobs);
@@ -315,7 +315,7 @@ namespace ThreadWeaver {
             removed from the queue. For now, it is unsupported to
             dequeue a job once its execution has started.
 	    For that case, you will have to provide a method to interrupt your
-	    job's execution (and receive the done signal). 
+	    job's execution (and receive the done signal).
             Returns true if the job has been dequeued, false if the
             job has already been started or is not found in the
             queue. */
@@ -327,10 +327,10 @@ namespace ThreadWeaver {
         /** Get notified when a thread has finished a job.
             This is done automatically. */
         // virtual void jobFinished(Thread *);
-	/** Finish all queued operations, then return. 
+	/** Finish all queued operations, then return.
 	    This method is used in imperative programs that cannot react on
             events to have the controlling (main) thread wait wait for the
-            jobs to finish. 
+            jobs to finish.
 	    Warning: This will suspend your thread!
 	    Warning: If your jobs enter for example an infinite loop, this
 	             will never return! */
@@ -348,7 +348,7 @@ namespace ThreadWeaver {
         virtual void suspend (bool state);
         /** Is the queue empty? */
         bool isEmpty ();
-	/** Is the weaver idle? 
+	/** Is the weaver idle?
 	    The weaver is idle if no jobs are queued and no jobs are processed
             by the threads (m_active is zero). */
 	bool isIdle ();
@@ -361,7 +361,7 @@ namespace ThreadWeaver {
 	    calling thread to finish and exit.
             If no jobs are available and shut down is not in progress,
             the calling thread is suspended until either condition is
-            met. 
+            met.
 	    In previous, threads give the job they have completed. If this is
 	    the first job, previous is zero. */
         virtual Job* applyForWork (Thread *thread, Job *previous);
@@ -395,7 +395,7 @@ namespace ThreadWeaver {
 	    programmer if this signal or the done signal of the job is more
 	    handy. */
 	void jobDone (Job*);
-// The following signals are used mainly for debugging purposes. 
+// The following signals are used mainly for debugging purposes.
 	void threadCreated (Thread *);
 	void threadDestroyed (Thread *);
 	void threadBusy (Thread *);
@@ -433,7 +433,7 @@ namespace ThreadWeaver {
 	    continuously enqueue one single job. */
 	bool m_running;
         /** If m_suspend is true, no new jobs will be assigned to
-            threads. 
+            threads.
 	    Jobs may be queued, but will not be processed until suspend
 	    (false) is called. */
         bool m_suspend;
