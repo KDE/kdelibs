@@ -47,11 +47,11 @@
 /*
 
  HOWTO:
- 
+
  This class allows translators (and application developers) to check for accelerator
  conflicts in menu and widgets. Put the following in your kdeglobals (or the config
  file for the application you're testing):
- 
+
  [Development]
  CheckAccelerators=F12
  AutoCheckAccelerators=false
@@ -67,7 +67,7 @@
  the results of the check. If you set 'AlwaysShowCheckAccelerators' to true,
  the dialog will be shown even if the automatic check didn't find any conflicts,
  and all submenus will be shown, even those without conflicts.
- 
+
  The dialog first lists the name of the window, then all results for all menus
  (if the window has a menubar) and then result for all controls in the active
  window (if there are any checkboxes etc.). For every submenu and all controls
@@ -120,7 +120,7 @@ void KCheckAccelerators::autoCheckSlot()
     checkAccelerators( true );
     block = false;
     }
-    
+
 void KCheckAccelerators::findAccel( const QString& item, const QString &txt, AccelMap &accels ) {
     QChar c;
     int search_pos = 0;
@@ -162,7 +162,7 @@ void KCheckAccelerators::checkMenuData( const QString& prefix, QMenuData* m ) {
     }
 
     menuAccels[ prefix ] = accels;
-    
+
     for ( i = 0; i < (int) m->count(); i++ ) {
         mi = m->findItem( m->idAt( i ) );
         if ( mi->popup() ) {
@@ -197,6 +197,9 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
                      ++i )
                     findAccel( w->className(), mbar->text( mbar->idAt( i )), accels );
             }
+            if (w->inherits("QLineEdit") || w->inherits("QComboBox") || !w->isFocusEnabled())
+                continue;
+
 	    QMetaObject *mo = w->metaObject();
 	    const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
 	    const QMetaProperty* title = mo->property( mo->findProperty( "title", TRUE ), TRUE );
@@ -260,7 +263,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
 
     s += "<h3>" + i18n( "Used accelerators:" ) + "</h3> " + ( used.isEmpty() ? i18n( "None" ) : used );
     was_clash |= ( num_clashes > 0 );
-    
+
     if ( mbar ) {
 	checkMenuData( mbar );
         QString s2;
@@ -319,7 +322,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
 
     if( automatic && !alwaysShow && !was_clash )
         return;
-        
+
     s.prepend( QString("<h2><em>") + actWin->caption() + "<em></h2>" );
 
     QDialog dlg( actWin, "kapp_accel_check_dlg", true );
