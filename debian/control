@@ -11,9 +11,10 @@ Package: kdelibs4
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdelibs3, kdepim-libs (<< 3.0-0.alpha1-1), koffice-libs, kdebase-libs (<< 4:2.2.1-2)
-Depends: ${shlibs:Depends}, python, xbase-clients
+Depends: ${shlibs:Depends}, kdelibs4-common | kdelibs-common, python, xbase-clients
 Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, kdelibs4-cups, aspell | ispell, libssl0.9.6
 Suggests: anti-aliasing-howto, gdb
+Provides: kdelibs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -28,6 +29,16 @@ Suggests: cupsomatic-ppd
 Conflicts: kdelibs3-cups
 Description: KDE print system (CUPS support)
  This package contains the KDE printer bits which use CUPS. 
+
+Package: kdelibs4-common
+Architecture: all
+Sections: libs
+Replaces: kdelibs3, kdelibs4, kdelibs3
+Depends: kdelibs
+Provides: kdelibs-common
+Description: KDE core libraries (common files)
+ This package contains all the common files from kdelibs.  This
+ includes all the services, mime, images, and desktop files.
 
 Package: libarts1
 Architecture: any
