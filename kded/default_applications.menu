@@ -4,9 +4,9 @@
 <Menu>
 	<Name>KDE</Name>
 	<!-- Search the default locations -->
+	<KDELegacyDirs/>
 	<DefaultAppDirs/>
 	<DefaultDirectoryDirs/>
-	<KDELegacyDirs/>
 
 	<Menu>
 		<Name>Development</Name>

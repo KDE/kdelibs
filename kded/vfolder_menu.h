@@ -74,9 +74,11 @@ public:
   QStringList m_defaultLegacyDirs;
 
   QStringList m_directoryDirs; // Current set of applicable <DirectoryDir> dirs
-  KService::List m_applications; // Current set of applicable applications
+  QDict<KService> m_applications; // All applications
   
   QPtrDict<QString> m_appRelPaths; // Dictionary with relative paths
+  QDict<SubMenu> m_legacyNodes; // Dictionary that stores Menu nodes 
+                                // associated with legacy tree.
 
   class docInfo {
   public:
@@ -103,7 +105,7 @@ private:
   void mergeFile(QDomElement &docElem, const QDomNode &mergeHere);
   void loadMenu(const QString &filename);
 
-  void processKDELegacyDir();
+  void processKDELegacyDirs();
   void processLegacyDir(const QString &dir, const QString &relDir);
   void processMenu(QDomElement &docElem, int pass);
   void processCondition(QDomElement &docElem, QDict<KService> *items);
