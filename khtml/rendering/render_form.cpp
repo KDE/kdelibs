@@ -36,7 +36,6 @@
 #include <qradiobutton.h>
 #include <qcheckbox.h>
 #include <qlineedit.h>
-#include <qmultilineedit.h>
 #include <qcombobox.h>
 #include <qstack.h>
 #include <qlayout.h>
@@ -1017,28 +1016,19 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 // -------------------------------------------------------------------------
 
-class TextAreaWidget : public QMultiLineEdit
-{
-public:
-    TextAreaWidget(int wrap, QWidget* parent)
+TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         : QMultiLineEdit(parent)
-    {
-        if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-            setWordWrap(QMultiLineEdit::WidgetWidth);
-            clearTableFlags(Tbl_autoScrollBars);
-            setTableFlags(Tbl_vScrollBar);
-        }
-        else {
-            clearTableFlags(Tbl_autoScrollBars);
-            setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
-        }
-    };
-
-    QScrollBar* verticalScrollBar () const
-        { return QTableView::verticalScrollBar(); };
-    QScrollBar* horizontalScrollBar () const
-        { return QTableView::horizontalScrollBar(); };
-};
+{
+    if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
+	setWordWrap(QMultiLineEdit::WidgetWidth);
+	clearTableFlags(Tbl_autoScrollBars);
+	setTableFlags(Tbl_vScrollBar);
+    }
+    else {
+	clearTableFlags(Tbl_autoScrollBars);
+	setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
+    }
+}
 
 
 // -------------------------------------------------------------------------
@@ -1050,8 +1040,10 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     : RenderFormElement(view, element)
 {
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
-
     setQWidget(edit);
+    connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
+    connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
 }
 
 void RenderTextArea::layout( bool )
@@ -1060,6 +1052,7 @@ void RenderTextArea::layout( bool )
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
     w->setReadOnly(m_readonly);
+    w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string());
 
     QFontMetrics m = w->fontMetrics();
     QSize size( QMAX(f->cols(), 1)*m.maxWidth() + w->frameWidth()*5 +
@@ -1092,9 +1085,8 @@ void RenderTextArea::close( )
     HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
     if(f->firstChild() && f->firstChild()->id() == ID_TEXT)
-        setValue(static_cast<TextImpl*>(f->firstChild())->string());
+        f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
 
-    reset();
     layout();
 
     // Restore state
@@ -1112,6 +1104,41 @@ QString RenderTextArea::text()
 {
     return static_cast<TextAreaWidget *>(m_widget)->text();
 }
+
+void RenderTextArea::slotTextChanged()
+{
+    static_cast<HTMLTextAreaElementImpl*>(m_element)->setValue(static_cast<TextAreaWidget *>(m_widget)->text());
+}
+
+void RenderTextArea::blur()
+{
+    disconnect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    static_cast<TextAreaWidget *>(m_widget)->clearFocus();
+    connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+}
+
+void RenderTextArea::focus()
+{
+    disconnect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
+    static_cast<TextAreaWidget *>(m_widget)->setFocus();
+    connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
+}
+
+void RenderTextArea::slotBlurred()
+{
+    static_cast<HTMLTextAreaElementImpl*>(m_element)->onBlur();
+}
+
+void RenderTextArea::slotFocused()
+{
+    static_cast<HTMLTextAreaElementImpl*>(m_element)->onFocus();
+}
+
+void RenderTextArea::select()
+{
+    static_cast<TextAreaWidget *>(m_widget)->selectAll();
+}
+
 
 // ---------------------------------------------------------------------------
 

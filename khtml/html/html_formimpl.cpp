@@ -1319,17 +1319,24 @@ QString HTMLTextAreaElementImpl::state( )
 
 void HTMLTextAreaElementImpl::blur(  )
 {
-    // ###
+    if (m_render)
+	static_cast<RenderTextArea*>(m_render)->blur();
+//    onBlur(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLTextAreaElementImpl::focus(  )
 {
-    //###
+    // ### make sure this can't cause an infinite loop when called from onFocus/onBlur
+    if (m_render)
+	static_cast<RenderTextArea*>(m_render)->focus();
+//    onFocus(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLTextAreaElementImpl::select(  )
 {
-
+    if (m_render)
+	static_cast<RenderTextArea*>(m_render)->select();
+//    onSelect(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
@@ -1358,7 +1365,7 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONBLUR:
     case ATTR_ONSELECT:
     case ATTR_ONCHANGE:
-	// ###
+	// no need to parse
 	break;
     case ATTR_NAME:
 	// handled by parent...
@@ -1417,6 +1424,36 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     m_value = _value;
     setChanged(true);
 }
+
+void HTMLTextAreaElementImpl::onBlur()
+{
+    DOMString script = getAttribute(ATTR_ONBLUR);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+void HTMLTextAreaElementImpl::onFocus()
+{
+    DOMString script = getAttribute(ATTR_ONFOCUS);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+void HTMLTextAreaElementImpl::onSelect()
+{
+    DOMString script = getAttribute(ATTR_ONSELECT);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+void HTMLTextAreaElementImpl::onChange()
+{
+    DOMString script = getAttribute(ATTR_ONFOCUS);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+
 
 // -------------------------------------------------------------------------
 

@@ -43,6 +43,7 @@ class QListboxItem;
 
 #include <qpixmap.h>
 #include <qintdict.h>
+#include <qmultilineedit.h>
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -89,7 +90,6 @@ public:
     virtual QString state() { return QString::null; }
     virtual void restoreState(const QString &) { };
 
-    virtual void reset() {} // ### remove
     virtual void setChecked(bool) {}
     void setReadonly(bool ro)  { m_readonly = ro; }
     bool readonly() { return m_readonly; }
@@ -101,7 +101,6 @@ public:
     virtual void layout(bool);
 
     virtual bool isInline() const { return true; }
-    HTMLGenericFormElementImpl *element() { return m_element; } // ### temp
 
 protected:
     QCString encodeString( QString e );
@@ -137,8 +136,6 @@ public:
 
     virtual const char *renderName() const { return "RenderHiddenButton"; }
     virtual Type type() { return HiddenButton; }
-
-    virtual void reset() { };
 };
 
 
@@ -385,11 +382,36 @@ protected slots:
     void slotActivated(int index);
 };
 
+// -------------------------------------------------------------------------
+
+class TextAreaWidget : public QMultiLineEdit
+{
+    Q_OBJECT
+public:
+    TextAreaWidget(int wrap, QWidget* parent);
+
+    QScrollBar* verticalScrollBar () const
+        { return QTableView::verticalScrollBar(); };
+    QScrollBar* horizontalScrollBar () const
+        { return QTableView::horizontalScrollBar(); };
+
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+    // ### selected???
+
+signals:
+    void focused();
+    void blurred();
+};
+
 
 // -------------------------------------------------------------------------
 
 class RenderTextArea : public RenderFormElement
 {
+    Q_OBJECT
 public:
     RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element);
 
@@ -403,6 +425,15 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
     QString text(); // ### remove
+
+    void blur();
+    void focus();
+    void select();
+
+protected slots:
+    void slotTextChanged();
+    void slotBlurred();
+    void slotFocused();
 };
 
 // -------------------------------------------------------------------------

@@ -433,6 +433,11 @@ public:
     void focus (  );
     void select (  );
 
+    void onBlur();
+    void onFocus();
+    void onSelect();
+    void onChange();
+
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
     virtual QCString encoding();

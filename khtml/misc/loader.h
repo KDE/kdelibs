@@ -130,8 +130,8 @@ namespace khtml
         
         /*
          * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
-         * E.g. "text/*"
          */
+        // e.g. "text/*"
         QString accept() { return m_accept; }
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
