@@ -65,7 +65,7 @@ protected:
 	if ( m_urls.isEmpty() )
 	    return 0L;
 
-	QDragObject *drag = KURLDrag::newDrag( m_urls, this, "url drag" );
+	QDragObject *drag = new KURLDrag( m_urls, this, "url drag" );
 	return drag;
     }
 
@@ -259,7 +259,7 @@ void KURLRequester::slotOpenDialog()
     if ( !d->url().isEmpty() ) {
         KURL u( url() );
         // If we won't be able to list it (e.g. http), then don't try :)
-        if ( KProtocolInfo::supportsListing( u.protocol() ) )
+        if ( KProtocolInfo::supportsListing( u ) )
 	    dlg->setSelection( u.url() );
     }
 

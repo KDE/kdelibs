@@ -789,7 +789,7 @@ QDragObject * KURLBarListBox::dragObject()
     }
 
     if ( !urls.isEmpty() ) // ### use custom drag-object with description etc.?
-        return KURLDrag::newDrag( urls, this, "urlbar drag" );
+        return new KURLDrag( urls, this, "urlbar drag" );
 
     return 0L;
 }

@@ -135,7 +135,7 @@ namespace KNotify
             else
                 section= header->sectionAt( p.y() );
 
-            if ( section >= (sizeof(m_tips) / sizeof(QString)) )
+            if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(m_tips) / sizeof(QString)) ) )
                 return;
             
             tip( header->sectionRect( section ), m_tips[section] );
