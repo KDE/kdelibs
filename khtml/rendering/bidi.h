@@ -93,6 +93,10 @@ namespace khtml {
 
 	BidiIterator(const BidiIterator &it);
 	BidiIterator &operator = (const BidiIterator &it);
+        void operator= (RenderObject* _obj) {
+            obj = _obj; pos = 0;
+            // ### isText ?
+        }
 
 	void operator ++ ();
 

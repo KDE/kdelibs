@@ -1075,6 +1075,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
     int w = 0;
     int tmpW = 0;
 #ifdef DEBUG_LINEBREAKS
+    kdDebug(6041) << "RenderFlow::findNextLineBreak: " << this << endl;
     kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
@@ -1127,92 +1128,28 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 #endif
         if(o->isBR()) {
             if( w + tmpW <= width ) {
-                lBreak.obj = o;
-                lBreak.pos = 0;
+                lBreak = o;
                 //check the clear status
-                EClear clear = o->style()->clear();
-                if(clear != CNONE) {
-                    m_clearStatus = (EClear) (m_clearStatus | clear);
-                }
+                m_clearStatus |= o->style()->clear();
             }
             goto end;
-        }
-        if( o->isSpecial() ) {
-            // add to special objects...
-	    if(o->isFloating()) {
-		insertSpecialObject(o);
-		// check if it fits in the current line.
-		// If it does, position it now, otherwise, position
-		// it after moving to next line (in newLine() func)
-		if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
-		    positionNewFloats();
-		    width = lineWidth(m_height);
-		}
-	    } else if(o->isPositioned()) {
-		static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
-	    }
-        } else if ( o->isReplaced() ) {
-            tmpW += o->width()+o->marginLeft()+o->marginRight();
-
-	    // Non text entities need to wrap too!
-	    if (w + tmpW > width) {
-		goto end;
-	    } else {
-		bool allowWrap = false;
-		if (o->parent()->style()->whiteSpace() != NOWRAP) {
-		    allowWrap = true;
-		} else {
-		    // See if we are the "left edge" of a nowrap area.
-		    // If so, we should be allowed to wrap if necessary.
-		    RenderObject *wrapEdge = o->parent();
-		    RenderObject *me = o;
-		    while (wrapEdge->firstChild() == me &&
-			   me != this) {
-			if (wrapEdge->parent()->style()->whiteSpace() != NOWRAP) {
-			    allowWrap = true;
-			    break;
-			}
-
-			me = wrapEdge;
-			wrapEdge = wrapEdge->parent();
-		    }
-		}
-		if (allowWrap == true) {
-		    w += tmpW;
-		    tmpW = 0;
-		    lBreak.obj = o;
-		    lBreak.pos = 0;
-		}
-	    }
+        } else if(o->isFloating()) {
+            insertSpecialObject(o);
+            // check if it fits in the current line.
+            // If it does, position it now, otherwise, position
+            // it after moving to next line (in newLine() func)
+            if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
+                positionNewFloats();
+                width = lineWidth(m_height);
+            }
+        } else if(o->isPositioned()) {
+            static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->stringLength();
 	    int len = strlen - pos;
 	    QChar *str = t->text();
-#if 0
-	    if ( ( !firstLine || !t->firstLine() ) && !t->hasReturn() && t->maxWidth() + w + tmpW < width ) {
-		// the rest of the object fits completely
-// 		kdDebug() << "RenderFlow::findNextLineBreak object fits completely, max=" << t->maxWidth()
-// 			  << " width =" << w << " avail = " << width <<" tmp=" << tmpW << endl;
-		//search backwards for last possible linebreak
-		int lastSpace = strlen-1;
-		while( lastSpace >= pos && !isBreakable( str, lastSpace, strlen ) )
-		    lastSpace--;
-		lastSpace++;
-		if ( lastSpace > pos ) {
-		    w += tmpW + t->width( pos, lastSpace-pos, firstLine);
-		    tmpW = 0;
-		    lBreak.obj = o;
-		    lBreak.pos = lastSpace;
-		}
-		tmpW += t->width( lastSpace, strlen-lastSpace, firstLine);
-// 		kdDebug() << "--> width=" << t->width( pos, strlen-pos, firstLine)
-// 			  <<" first=" << t->width( pos, lastSpace-pos, firstLine)
-// 			  <<" end=" << t->width( lastSpace, strlen-lastSpace, firstLine)
-// 			  << endl;
-	    } else {
-#endif
-            if (style()->whiteSpace() == NOWRAP || t->style()->whiteSpace() == NOWRAP ) {
+            if (style()->whiteSpace() == NOWRAP || t->style()->whiteSpace() == NOWRAP) {
                 tmpW += t->maxWidth();
                 pos = len;
                 len = 0;
@@ -1226,7 +1163,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                         (!isPre && isBreakable( str, pos, strlen ) ) ) {
 		    tmpW += t->width(lastSpace, pos - lastSpace, f);
 #ifdef DEBUG_LINEBREAKS
-		    kdDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).latin1() << "' adding " << tmpW << " new width = " << w << endl;
+		    kdDebug(6041) << "found space: '" << QString( str, pos ).latin1() << "' +" << tmpW << " -> w = " << w << endl;
 #endif
 		    if ( !isPre && w + tmpW > width && w == 0 ) {
 			int fb = floatBottom();
@@ -1245,7 +1182,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 		    lBreak.obj = o;
 		    lBreak.pos = pos;
 
-		    if( *(str+pos) == '\n' ) {
+		    if( str[pos] == '\n' ) {
 #ifdef DEBUG_LINEBREAKS
 			kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 #endif
@@ -1257,14 +1194,28 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 		}
 		pos++;
 		len--;
-	    }
-            // IMPORTANT: pos is > length here!
-            tmpW += t->width(lastSpace, pos - lastSpace, f);
+                }
+                // IMPORTANT: pos is > length here!
+                tmpW += t->width(lastSpace, pos - lastSpace, f);
+                if (!isPre && w + tmpW < width && pos && str[pos-1] != nbsp)
+                    lBreak =  Bidinext( start.par, o );
+            }
+        } else if ( o->isReplaced() ) {
+            tmpW += o->width()+o->marginLeft()+o->marginRight();
+
+            if ( w + tmpW > width )
+                goto end;
+
+            if (o->style()->whiteSpace() != NOWRAP) {
+                w += tmpW;
+                tmpW = 0;
+                lBreak = o;
+                lBreak.pos = pos;
             }
         } else
             KHTMLAssert( false );
 
-        if( w + tmpW > width+1 && style()->whiteSpace() != NOWRAP && o->style()->whiteSpace() != NOWRAP ) {
+        if( w + tmpW > width+1 && style()->whiteSpace() == NORMAL /*&& o->style()->whiteSpace() != NOWRAP*/ ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
@@ -1280,18 +1231,11 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
 		// getting below floats wasn't enough...
 		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
-		lBreak.obj = o;
-                if(last != o) {
-                    //kdDebug() << " using last " << last << endl;
-                    //lBreak.obj = last;
-                    lBreak.pos = 0;//last->length() - 1;
-                }
-                else if ( unsigned ( pos ) >= o->length() ) {
-                    lBreak.obj = Bidinext( start.par, o );
-                    lBreak.pos = 0;
-                }
-                else
+		lBreak = o;
+                if (o == last)
                     lBreak.pos = pos;
+                if (unsigned ( pos ) >= o->length())
+                    lBreak = Bidinext(start.par, o);
             }
             goto end;
         }
@@ -1304,28 +1248,19 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 #ifdef DEBUG_LINEBREAKS
     kdDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW << endl;
 #endif
-    if( w + tmpW <= width ) {
-        lBreak.obj = 0;
-        lBreak.pos = 0;
-    }
+    if( w + tmpW <= width )
+        lBreak = 0;
 
  end:
 
     if( lBreak == start && !lBreak.obj->isBR() ) {
         // we just add as much as possible
-        if ( m_pre ) {
-            if(pos != 0) {
-                lBreak.obj = o;
-                lBreak.pos = pos - 1;
-            } else {
-                lBreak.obj = last;
-                lBreak.pos = last->length();
-            }
-        } else if( lBreak.obj ) {
+        if ( m_pre )
+            lBreak = pos ? Bidinext(start.par, o) : o;
+        else {
 	    if( last != o ) {
 		// better break between object boundaries than in the middle of a word
-		lBreak.obj = o;
-		lBreak.pos = 0;
+		lBreak = o;
 	    } else {
 		int w = 0;
 		if( lBreak.obj->isText() )
@@ -1349,7 +1284,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
         ++lBreak;
 
 #ifdef DEBUG_LINEBREAKS
-    kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+    kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << "/" << width << endl;
 #endif
     return lBreak;
 }
