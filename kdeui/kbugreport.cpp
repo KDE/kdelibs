@@ -155,10 +155,11 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
 
   text = "http://bugs.kde.org/";
   KURLLabel *url = new KURLLabel( parent );
-  url->setFloat(true);
+  url->setGlow(true);
   url->setUnderline(true);
   url->setText(text);
   url->setURL(text);
+  url->setTransparentMode(true);
   connect( url, SIGNAL(leftClickedURL(const QString &)),
 	   this, SLOT(slotUrlClicked(const QString &)));
   hlay->addWidget( url, 0, AlignBottom );
