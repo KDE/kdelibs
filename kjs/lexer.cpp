@@ -730,7 +730,8 @@ bool Lexer::scanRegExp()
     else if (current != '/' || lastWasEscape == true)
     {
         record16(current);
-        lastWasEscape = (current == '\\');
+        lastWasEscape = 
+            !lastWasEscape && (current == '\\');
     }
     else {
       pattern = UString(buffer16, pos16);
