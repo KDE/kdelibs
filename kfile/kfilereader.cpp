@@ -22,7 +22,6 @@
 
 #include "kfileviewitem.h"
 #include <qdir.h>
-#include <qfileinfo.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -57,7 +56,6 @@
 #endif
 
 #include <qapplication.h>
-#include <qtimer.h>
 #include <qstringlist.h>
 #include <qpixmap.h>
 
@@ -72,6 +70,17 @@ template class QList<QRegExp>;
 ** KFileReader - URL aware directory operator
 **
 */
+
+class KFileReader::KFileReaderPrivate
+{
+public:
+    KFileReaderPrivate() {}
+    ~KFileReaderPrivate() {}
+
+    KDirWatch *dirWatch;
+    bool autoUpdate;
+};
+
 
 KFileReader::KFileReader()
     : QObject(0, "KFileReader")
@@ -91,30 +100,21 @@ KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
 
 void KFileReader::init()
 {
-    myUpdateDir = 0L;
+    d = new KFileReaderPrivate();
     readable  = false;
 
-    myAutoUpdate = false;
+    d->autoUpdate = false;
     myDirtyFlag  = true;
     showHidden   = false;
+    d->dirWatch = new KDirWatch();
     myJob = 0L;
-    myDirWatch = 0L;
-    myUpdateTimer = 0L;
     myEntries.setAutoDelete(true);
     myNewEntries.setAutoDelete(false);
-    myUpdateList.setAutoDelete(false);
     filters.setAutoDelete(true);
 }
 
 KFileReader::~KFileReader()
 {
-    delete myDirWatch;
-}
-
-KFileReader &KFileReader::operator= (const QString& url)
-{
-    setURL(url);
-    return *this;
 }
 
 void KFileReader::setURL(const KURL& url)
@@ -133,19 +133,20 @@ void KFileReader::setURL(const KURL& url)
 	    readable = (test != 0);
 	    if (test) {
 		closedir(test);
-		if ( myAutoUpdate ) {
+		if ( d->autoUpdate ) {
                     if (oldurl.isLocalFile()) {
-                        myDirWatch->removeDir( oldurl.path() );
+			#warning fixme (KDirWatch)
+			// d->dirWatch->removeDir( oldurl.path() );
                     }
-		    myDirWatch->addDir( path() );
+		    // d->dirWatch->addDir( path() );
 		}
 	    }
 	}
     } else {
 	readable = true; // what else can we say?
 
-        if ( myAutoUpdate && oldurl.isLocalFile()) {
-	    myDirWatch->removeDir( oldurl.path() );
+        if ( d->autoUpdate && oldurl.isLocalFile()) {
+	    // d->dirWatch->removeDir( oldurl.path() );
 	}
     }
 
@@ -170,40 +171,21 @@ void KFileReader::setNameFilter(const QString& nameFilter)
 	g = strtok(0, " ");
     }
     delete [] s;
-
-    updateFiltered();
+    myDirtyFlag = true;
 }
 
 
 void KFileReader::setAutoUpdate( bool b )
 {
-    if ( b == myAutoUpdate )
+    if ( b == d->autoUpdate )
 	return;
 
-    myAutoUpdate = b;
+    d->autoUpdate = b;
+}
 
-    if ( myAutoUpdate ) {
-	if ( !myDirWatch ) {
-	    myDirWatch = new KDirWatch;
-	    myUpdateTimer = new QTimer( this );
-	}
-	connect( myDirWatch, SIGNAL( deleted(const QString&) ),
-		 SLOT(slotDirDeleted(const QString&) ));
-	connect( myDirWatch, SIGNAL( dirty(const QString&)),
-		 this, SLOT( slotDirDirty(const QString&) ));
-	connect( myUpdateTimer, SIGNAL( timeout() ),
-		 this, SLOT( slotDirUpdate() ));
-
-	if (isLocalFile())
-           myDirWatch->addDir( path() );
-	myDirWatch->startScan();
-    }
-    else {
-	disconnect( myDirWatch, SIGNAL( dirty(const QString&)),
-		    this, SLOT( slotDirDirty(const QString&)) );
-        if (isLocalFile())
-           myDirWatch->removeDir( path() );
-    }
+bool KFileReader::autoUpdate() const
+{
+    return d->autoUpdate;
 }
 
 uint KFileReader::count() const
@@ -216,22 +198,6 @@ uint KFileReader::dirCount() const
     return myEntries.count() + myPendingEntries.count();
 }
 
-void KFileReader::updateFiltered()
-{
-    bool changed = false;
-
-    for (KFileViewItem *i= myEntries.first(); i; i=myEntries.next()) {
-	register bool test = i->isHidden();
-	if (test == filterEntry(i)) {
-	    i->setHidden(!test);
-	    changed = true;
-	}
-    }
-
-    if (changed)
-	emit filterChanged();
-}
-
 void KFileReader::getEntries()
 {
     if (myDirtyFlag) {
@@ -241,7 +207,6 @@ void KFileReader::getEntries()
 
     myDirtyFlag = true;
     startLoading();
-
 }
 
 void KFileReader::listContents()
@@ -310,12 +275,13 @@ void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
       KFileViewItem *i= new KFileViewItem(baseurl, *(it.current()));
       CHECK_PTR(i);
 
-      myEntries.append(i);
-      i->setHidden(!filterEntry(i));
-      if (!i->isHidden()) {
-	  emit dirEntry(i);
-	  myNewEntries.append(i);
+      if (!filterEntry(i)) {
+	  delete i;
+	  continue;
       }
+
+      myEntries.append(i);
+      myNewEntries.append(i);
     }
 
     if ( myNewEntries.count() > 0 )
@@ -334,98 +300,11 @@ void KFileReader::slotIOFinished( KIO::Job * job )
 	emit contents(myNewEntries, true);
 }
 
-// called when KDirWatch tells us that our directory contents have changed
-// rereading it is delayed for half a second to avoid reading it too often on
-// heavy changes.
-void KFileReader::slotDirDirty( const QString& dir )
-{
-    if ( dir == path(-1) ) // no a slash at the end
-	myUpdateTimer->start( 500, true );
-}
-
-// this is similar to getEntries(), but it's a bit different, because
-// it will read the dir in chunks, delayed thru a QTimer
-void KFileReader::slotDirUpdate()
-{
-    if (myJob) { // still reading, or someone called setURL() during update
-        if (myUpdateDir) {
-	    closedir(myUpdateDir);
-	    myUpdateDir = 0L;
-	    myUpdateList.clear();
-	    myNewEntries.clear();
-	}
-        return;
-    }
-
-    if (!myUpdateDir) { // ok, let's try reading and init some stuff
-        myUpdateDir = opendir(path().local8Bit());
-	if (myUpdateDir) {
-	    (void) readdir(myUpdateDir); // take out the "."
-	    myUpdateList = myEntries;    // separate list for comparing
-	    myNewEntries.clear();
-	}
-	else {
-	    slotDirDeleted( path() ); //maybe not deleted, but we can't read it
-	    return;
-	}
-    }
-
-    QString _path = path(+1);
-    struct dirent *dp = readdir(myUpdateDir);
-    if ( dp ) {
-        KFileViewItem *i;
-        QString name = QString::fromLocal8Bit(dp->d_name);
-        const KFileViewItem *item = myEntries.findByName( name );
-
-	if ( item ) {
-	    myUpdateList.remove( item );
-	}
-	else { // new item
-	    i = new KFileViewItem( _path, name );
-	    CHECK_PTR(i);
-	    if (i->name().isNull())
-	        delete i;
-	    else {
-	        // call mimeType() as well?
-	        i->setHidden(!filterEntry(i));
-		myEntries.append(i);
-	        myNewEntries.append(i);
-	    }
-	}
-	// on to the next dir entry (sort of nonblocking)
-	QTimer::singleShot( 0, this, SLOT(slotDirUpdate()) );
-	return;
-    }
-
-    else { // finished reading dir
-        closedir(myUpdateDir);
-	myUpdateDir = 0L;
-
-	// remove items, that were not in the directory anymore
-	KFileViewItem *item = 0L;
-	for ( item = myUpdateList.first(); item; item = myUpdateList.next() )
-	    item->setDeleted(); // mark them as removed
-
-	if ( myUpdateList.count() > 0 )
-	    emit itemsDeleted( myUpdateList );
-	
-	// new signal because of no sorting?
-	if ( myNewEntries.count() > 0 )
-	    emit contents(myNewEntries, true);
-    }
-}
-
-void KFileReader::slotDirDeleted( const QString&  )
-{
-}
-
 void KFileReader::setShowHiddenFiles(bool b)
 {
+    myDirtyFlag = (showHidden != b);
     showHidden = b;
-    updateFiltered();
 }
 
 #include "kfilereader.moc"
-
-
 

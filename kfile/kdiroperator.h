@@ -55,6 +55,9 @@ class KDirOperator : public QWidget {
 
     void close();
 
+    /**
+     * Set a filter like "*.cpp *.h *.o". Call @ref rereadDir() to apply it.
+     */
     void setNameFilter(const QString& filter);
 
     KURL url() const;

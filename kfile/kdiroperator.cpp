@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <unistd.h>
+
 #include <qdir.h>
 #include <qapplication.h>
 #include <qdialog.h>
@@ -79,8 +81,6 @@ KDirOperator::KDirOperator(const KURL& url,
 	    SLOT(itemsDeleted(const KFileViewItemList &)));
     connect(dir, SIGNAL(error(int, const QString& )),
 	    SLOT(slotKIOError(int, const QString& )));
-    connect(dir, SIGNAL(filterChanged()),
-	    SLOT(filterChanged()));
 
     connect(&myCompletion, SIGNAL(match(const QString&)),
 	    SLOT(slotCompletionMatch(const QString&)));
@@ -122,7 +122,7 @@ void KDirOperator::readNextMimeType()
 
     KFileViewItem *item = pendingMimeTypes.first();
     const QPixmap& p = item->pixmap();
-    (void) item->mimeType();
+    (void) item->determineMimeType();
 
     if ( item->pixmap().serialNumber() != p.serialNumber() ) // reloads the pixmap in case
         fileView->updateView(item);
@@ -146,9 +146,7 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::activatedMenu( const KFileViewItem *item )
 {
-    if ( !item ) {
-	actionMenu->popup( QCursor::pos() );
-    }
+    actionMenu->popup( QCursor::pos() );
 }
 
 void KDirOperator::setPreviewWidget(const QWidget *w) {
@@ -719,7 +717,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
     KFileViewItemListIterator it(newone);
     KFileViewItem *item = 0L;
     for( ; (item = it.current()); ++it ) {
-	if ( isLocal && !item->isHidden() )
+	if ( isLocal )
 	    pendingMimeTypes.append( item );
     }
 
@@ -774,12 +772,15 @@ void KDirOperator::itemsDeleted(const KFileViewItemList &list)
 
 void KDirOperator::selectFile(const KFileViewItem *item)
 {
+    // FIXME: what is this about?? (pfeiffer)
     KURL tmp ( dir->url() );
     tmp.setFileName(item->name());
 
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = false;
+
+    emit fileSelected( item );
 }
 
 
@@ -834,11 +835,9 @@ void KDirOperator::prepareCompletionObjects()
 	for( ; it.current(); ++it ) {
             KFileViewItem *item = it.current();
 
-	    if ( !item->isHidden() ) {
-	        myCompletion.addItem( item->name() );
-		if ( item->isDir() )
-		    myDirCompletion.addItem( item->name() );
-	    }
+	    myCompletion.addItem( item->name() );
+	    if ( item->isDir() )
+		myDirCompletion.addItem( item->name() );
 	}
 	myCompleteListDirty = false;
     }

@@ -97,9 +97,6 @@ bool KFileView::addItem( KFileViewItem *i )
 */
 bool KFileView::updateNumbers(const KFileViewItem *i)
 {
-    if (i->isHidden())
-	return false;
-
     if (!( viewMode() & Files ) && i->isFile())
 	return false;
 
@@ -131,7 +128,6 @@ void KFileView::addItemList(const KFileViewItemList &list)
 	    tfirst->setNext(0);
 	    continue;
 	}
-	
 	tmp->setNext(tfirst);
 	tfirst = tmp;
     }
@@ -167,9 +163,6 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     delete [] sortedArray;
 
     clearView();
-    if ( myFirstItem == tfirst ) // we're probably just resorting, not adding atims
-	myFirstItem = 0L;
-
     myFirstItem = mergeLists(myFirstItem, tfirst);
 
     for (it = myFirstItem; it; it = it->next())
@@ -354,7 +347,8 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 		bigger = (fi1->size() > fi2->size());
 		break;
 	    case QDir::Time:
-		bigger = (fi1->mTime() > fi2->mTime());
+		bigger = (fi1->time(KIO::UDS_MODIFICATION_TIME) >
+			  fi2->time(KIO::UDS_MODIFICATION_TIME));
 		break;
 	    case QDir::Name:
 	    default:
@@ -444,7 +438,7 @@ const KFileViewItemList * KFileView::selectedItems() const
 	KFileViewItem *item = 0L;
 	for (item = myFirstItem; item; item = item->next()) {
 	    if ( isSelected( item ) )
-		selectedList->append( item );
+		selectedList->append( item ), debug("** selected: %s", item->name().ascii());
 	}
     }
 

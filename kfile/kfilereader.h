@@ -33,10 +33,9 @@
 #include <qstring.h>
 #include <qregexp.h>
 #include <qlist.h>
-#include <qtimer.h>
-#include <kdirwatch.h>
 #include <kurl.h>
 #include <kio/global.h>
+#include <kdirwatch.h>
 
 #include "kfileviewitem.h"
 
@@ -44,7 +43,6 @@ namespace KIO {
 class Job;
 }
 class QStrList;
-class KDirWatch;
 class KURL;
 
 class KFileReader : public QObject, public KURL
@@ -57,8 +55,6 @@ public:
 		const QString& nameFilter= QString::null);
     ~KFileReader();
 
-    KFileReader &operator= (const QString& url);
-
     /**
      * Set the current url.
      * An url without a protocol (file:/, ftp://) will be treated as a
@@ -67,7 +63,9 @@ public:
     virtual void setURL(const KURL&);
 
     /**
-     * Set the current name filter.
+     * Set the current name filter. Separate multiple filters with spaces,
+     * e.g. setNameFilter("*.cpp *.h");
+     * You need to call @ref listContents() to get the updated file-list
      */
     void setNameFilter(const QString&);
 
@@ -125,8 +123,15 @@ public:
      **/
     bool isReadable() const { return readable; }
 
+    /**
+     * Enables / disables showing hidden files (dotfiles)
+     * you need to call @ref listContents() to get the new file-list
+     */
     void setShowHiddenFiles(bool b);
 
+    /**
+     * @returns true if hidden files are available or false otherwise.
+     */
     bool showHiddenFiles() const { return showHidden; }
 
     /**
@@ -136,7 +141,7 @@ public:
      * Default is enabled.
      */
     virtual void setAutoUpdate( bool b );
-    bool autoUpdate() const { return myAutoUpdate; }
+    bool autoUpdate() const;
 
  signals:
     /**
@@ -144,11 +149,6 @@ public:
      * call setURL().
      */
     void urlChanged(const QString&);
-
-    /**
-     * Emitted when a directory entry that matches the filter is received.
-     */
-    void dirEntry(KFileViewItem *);
 
     /**
      * Emitted when the directory has been completely loaded.
@@ -161,15 +161,16 @@ public:
     void error(int, const QString&);
 
     /**
-     * Emitted, if new files are queued
+     * Emitted when new file-entries arrived. Ready specifies if this is the
+     * last set of file-entries, i.e. a directory has been read completely.
      **/
     void contents(const KFileViewItemList &, bool ready);
 
+    /**
+     * emitted when auto-update is enabled and the the directory has been
+     * reread. The list contains all files that are not available anymore.
+     */
     void itemsDeleted(const KFileViewItemList &);
-
-    void dirDeleted();
-
-    void filterChanged();
 
 protected slots:
 
@@ -182,10 +183,6 @@ protected slots:
      * Called when Job has finished the current network operation.
      */
     void slotIOFinished( KIO::Job * );
-
-    void slotDirDirty(const QString& dir);
-    void slotDirDeleted(const QString& dir);
-    void slotDirUpdate();
 
 protected:
     void updateFiltered();
@@ -200,7 +197,6 @@ protected:
     virtual void startLoading();
 
     KIO::Job *myJob;
-    KDirWatch *myDirWatch;
 
 private:
     KFileReader(const KFileReader&);
@@ -210,17 +206,12 @@ private:
     // Raw entries (we cache these for performance)
     KFileViewItemList myEntries, myNewEntries, myUpdateList;
     KFileViewItemList myPendingEntries;
-    QTimer *myUpdateTimer;
 
     bool myDirtyFlag;
-    bool myAutoUpdate;
     bool root;
 
     bool readable;
     bool showHidden;
-
-    // for KDirWatch update (async via QTimer)
-    DIR *myUpdateDir;
 
     long int currentSize;
 

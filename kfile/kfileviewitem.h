@@ -32,9 +32,11 @@
 #include <qmap.h>
 #include <qstring.h>
 
+#include <kfileitem.h>
 #include <kiconloader.h>
 #include <kmimetype.h>
 #include <kio/global.h>
+
 
 class QFileInfo;
 class QPixmap;
@@ -63,23 +65,21 @@ private:
   * @author rich@kde.org
   * @version $Id$
   */
-class KFileViewItem // : public KFileItem
+class KFileViewItem : public KFileItem
 {
 public:
     /**
-      * Construct a KFileViewItem object from a KDirEntry.
+      * Construct a KFileViewItem
       */
     KFileViewItem(const QString& baseURL, const KIO::UDSEntry &);
 
     /**
-      * Copy a KFileViewItem.
-      */
-    KFileViewItem (const KFileViewItem &);
-
-    /**
       * Constructs a "little" KFileViewItem (just for local files)
       **/
-    KFileViewItem(const QString& baseURL, const QString& name, bool delaystat = false);
+    //    KFileViewItem(const QString& baseURL, const QString& name, bool delaystat = false);
+    KFileViewItem( mode_t _mode, mode_t _permissions, const KURL& _url,
+		   bool _determineMimeTypeOnDemand,
+		   bool _urlIsDirectory = false );
 
     /**
       * Destroy the KFileViewItem object.
@@ -87,54 +87,30 @@ public:
     ~KFileViewItem();
 
     /**
-      * Copy a KFileViewItem.
+      * Returns true if this item represents a file (and not a a directory)
       */
-    KFileViewItem &operator=(const KFileViewItem &);
+    bool isFile() const { return !isDir(); }
+
+    QString urlString() const;
 
     /**
-      * Returns true if this file is a directory.
-      */
-    bool isDir() const { return myIsDir; }
-    bool isFile() const { return myIsFile; }
-    bool isSymLink() const { return myIsSymLink; }
-
-    /**
-      * Returns the name of the file
-      *
-      * Note: If this object does not refer to a real file
-      * (broken symlink), it will return QString::null
-      * If you set @param @p lowerCase to true, you will get the name in
-      * lower case (doh). Useful to speed up sorting case insensitively.
-      **/
-    QString name( bool lowerCase = false ) const {
-	if ( !lowerCase )
-	    return myName;
-	else
-	    if ( myLowerCaseName.isNull() )
-		myLowerCaseName = myName.lower();
-	return myLowerCaseName;
+     * Returns a pixmap representing the file
+     * @param size KDE-size, for the pixmap, e.g. KIcon::Small
+     * @returns the pixmap.
+     * @see KFileItem::pixmap
+     */
+    QPixmap pixmap( int size, int state = 0 ) const { 
+	return KFileItem::pixmap( size, state );
     }
 
-    QString url() const;
-
     /**
-     * Returns an icon for this file.
-     * It will return the icon according to the mimetype of this file, when
-     * you have called @see mimeType() once. Otherwise, it will return a
-     * default icon.
-     * @param size specifies the size of the icon.
-     * The default icon is only available in small size, so far.
-     */
-    QPixmap pixmap( int size ) const;
-
-    /**
-     * Returns a pixmap for this file. The only semantic difference to the
-     * other pixmap() method is that the last used Pixmap-size will be used.
+     * Returns a pixmap for this file. The only difference to the other
+     * pixmap() method is that the last used Pixmap-size will be used.
      * E.g. if you call pixmap( KIcon::SizeSmall ) once, you can refer to
      * this pixmap thru this method without specifying the size.
      * The default size is KIcon::SizeSmall. Use 0 for the default size.
      */
-    QPixmap pixmap() const { return pixmap( myPixmapSize ); }
+    QPixmap pixmap() const;
 
     /**
       * Returns a string of the date of the file.
@@ -142,63 +118,21 @@ public:
     QString date() const;
 
     /**
-     * Returns the modification time of the file.
-     */
-    time_t mTime() const { return myDate_t; }
-
-    /**
       * Returns the access permissions for the file as a string.
       */
     QString access() const;
 
     /**
-      * Returns the owner of the file.
-      */
-    QString owner() const;
-
-    /**
-      * Returns the group of the file.
-      */
-    QString group() const;
-
-    /**
-      * Returns the size of the file.
-      */
-    uint size() const { return mySize; }
-
-    /**
-      * Returns true if the specified permission flag is set.
-      */
-    bool permission(uint permissionSpec);
-
-    /**
      * Return true if the file is readable
      */
-    bool isReadable() const  { return myIsReadable; }
+    bool isReadable() const;
 
-    /**
-     * Returns the mimetype, e.g. "image/png"
-     * When this method is called the first time, it will also search for
-     * the correct icon according to this mimetype. The next call to
-     * @see pixmap() will return this correct pixmap.
-     */
-    QString mimeType();
-
-    void stat(bool alreadyindir);
-
-    /**
-     * frees the static allocated ressources (user information from
-     * /etc/passwd and /etc/group)
-     */
-    static void cleanup();
+    //    void stat(bool alreadyindir);
 
     void setViewItem( const KFileView *view, const void *item );
     const void *viewItem( const KFileView *view ) const;
 
     static QString dateTime(time_t secsSince1Jan1970UTC);
-
-    void setHidden(bool h) { myHidden = h; }
-    bool isHidden() const { return myHidden; }
 
     void setDeleted();
 
@@ -206,54 +140,17 @@ public:
     void setNext(KFileViewItem *n) { myNext = n; }
 
 protected:
-    void parsePermissions(const char *perms);
     QString parsePermissions(uint perm) const;
-    void readUserInfo();
-    bool testReadable(const QCString& file, struct stat& buf);
+    //    bool testReadable(const QCString& file, struct stat& buf);
 
 private:
-    bool myHidden;
-    QString myName;
-    QString myBaseURL;
+    void init();
 
     // will be filled on first access
-    mutable QString myDate;
-    mutable QString myFilePath;
-    mutable QString myOwner;
-    mutable QString myGroup;
-    mutable QString myAccess;
-    mutable QString myLowerCaseName;
-
-    time_t myDate_t;
-    uid_t myOwner_t;
-    gid_t myGroup_t;
-
-    bool myIsDir;
-    bool myIsFile;
-    bool myIsSymLink;
-    uint myPermissions;
-    int mySize;
-    bool myIsReadable;
+    mutable QString myURLString;
 
     QMap< const KFileView *, const void * > viewItems;
-
     KFileViewItem *myNext;
-
-    mutable const QPixmap *myPixmap;
-    mutable bool myPixmapDirty;
-    mutable int myPixmapSize;
-    KMimeType::Ptr myMimeType;
-
-    // cache for passwd and group entries
-    typedef QIntDict<char> IntCache;
-    static IntCache *passwdCache;
-    static IntCache *groupCache;
-
-    typedef QValueList<gid_t> GroupCache;
-    static GroupCache *myGroupMemberships;
-
-    void init();
-    QString defaultIcon() const;
 
 private:
     class KFileViewItemPrivate;
@@ -263,11 +160,5 @@ private:
 
 // typedef QList<KFileViewItem> KFileViewItemList;
 typedef QListIterator<KFileViewItem> KFileViewItemListIterator;
-
-inline bool KFileViewItem::permission(uint permissionSpec)
-{
-  return ((myPermissions & permissionSpec) != 0);
-}
-
 
 #endif // KFILEINFO_H

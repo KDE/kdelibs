@@ -58,12 +58,18 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     // icon (and not the text), we have to create our own tooltips
     setShowToolTips( false );
 
-    connect( this, SIGNAL( executed(QIconViewItem *) ),
-	     SLOT( selected( QIconViewItem *) ) );
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
+    connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
+	     SLOT( selected( QIconViewItem *) ) );
+
+    connect( this, SIGNAL( executed(QIconViewItem *) ),
+	     SLOT( highlighted( QIconViewItem *) ) );
     connect( this, SIGNAL( currentChanged( QIconViewItem *) ),
 	     this, SLOT( highlighted( QIconViewItem *)	) );
+    //    connect( this, SIGNAL( currentChanged( QIconViewItem *) ),
+    //	     this, SLOT( highlighted( QIconViewItem *)	) );
+
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
 	     this, SLOT( showToolTip( QIconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),

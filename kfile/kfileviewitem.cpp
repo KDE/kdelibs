@@ -47,103 +47,53 @@
 
 template class QList<KFileViewItem>;
 
-KFileViewItem::IntCache   * KFileViewItem::passwdCache = 0L;
-KFileViewItem::IntCache   * KFileViewItem::groupCache  = 0L;
-KFileViewItem::GroupCache * KFileViewItem::myGroupMemberships = 0L;
+
+class KFileViewItem::KFileViewItemPrivate
+{
+public:
+    KFileViewItemPrivate() {}
+    ~KFileViewItemPrivate() {}
+    
+    QString access;
+    QString date;
+    int pixmapSize;
+    bool isReadable;
+    
+};
 
 KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
+    : KFileItem( e, baseURL, true, true )
 {
-    myIsDir = false;
-    myIsFile = true;
-    myIsSymLink = false;
-    myPermissions = 0755;
-    mySize = 0;
-    myPixmap = 0L;
-    myBaseURL = baseURL;
-
-    KIO::UDSEntry::ConstIterator it = e.begin();
-    for( ; it != e.end(); it++ ) {
-	switch (( *it ).m_uds) {
-	case KIO::UDS_NAME:
-	    myName = ( *it ).m_str;
-	    break;
-	case KIO::UDS_SIZE:
-	    mySize = ( *it ).m_long;
-	    break;
-	case KIO::UDS_MODIFICATION_TIME:
-	    myDate_t = ( *it ).m_long;
-	    break;
-	case KIO::UDS_USER:
-	    myOwner = ( *it ).m_str;
-	    break;
-	case KIO::UDS_GROUP:
-	    myGroup = ( *it ).m_str;
-	    break;
-	case KIO::UDS_ACCESS:
-	    myPermissions = ( *it ).m_long;
-	    break;
-	case KIO::UDS_FILE_TYPE:
-	    myIsDir = (( *it ).m_long & S_IFDIR) != 0;
-	    myIsFile = !myIsDir;
-	    break;
-	case KIO::UDS_LINK_DEST:
-	    myIsSymLink = (( *it ).m_str.length());
-	    break;
-	case KIO::UDS_MIME_TYPE:
-	case KIO::UDS_ACCESS_TIME:
-	case KIO::UDS_CREATION_TIME:
-	    break;
-	};
-    }
-
-    if (myName.at(myName.length() - 1) == '/')
-	myName.truncate(myName.length() - 1);
-    myIsReadable = true;
+    d = new KFileViewItemPrivate();
+    d->isReadable = true;
 
     init();
 }
 
-KFileViewItem::KFileViewItem(const QString& baseurl, const QString& name, bool delaystat)
+KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand, bool _urlIsDirectory )
+    : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand,
+		 _urlIsDirectory )
 {
-    myPixmap = 0L;
-    myName = name;
-    myBaseURL = baseurl;
-
-    myIsDir = false; // assumptions to get a nice default pixmap
-    myIsFile = true;
-    myIsSymLink = false;
-    myIsReadable = true;
-    ASSERT( myBaseURL.at(myBaseURL.length() - 1) == '/' || name.at(0) == '/' );
-
-    if (!passwdCache) {
-	passwdCache = new IntCache( 317 );
-	groupCache = new IntCache( 317 );
-	myGroupMemberships = new GroupCache;
-	
-	passwdCache->setAutoDelete( true );
-	groupCache->setAutoDelete( true );
-	
-	readUserInfo();
-	qAddPostRoutine( cleanup );
-    }
+    d->isReadable = true;
 
     init();
-    if (!delaystat)
-	stat(false);
 }
 
+#if 0
 void KFileViewItem::stat(bool alreadyindir)
 {
+    // #warning adopt in KFileItem?
+
     struct stat buf;
     myIsSymLink = false;
     QCString local8;
     if (alreadyindir)
 	local8 = myName.local8Bit();
     else {
-	QString fullname = url();
-	if (fullname.left(5) == QString::fromLatin1("file:"))
-	    fullname = fullname.mid(5);
-	local8 = fullname.local8Bit();
+	if (url().isLocalFile())
+	    local8 = QFile::encodeName( url().path(-1) );
+	else
+	    local8 = QFile::encodeName(urlString());
     }
 
     if (lstat(local8, &buf) == 0) {
@@ -164,17 +114,11 @@ void KFileViewItem::stat(bool alreadyindir)
 	myDate_t = buf.st_mtime;
 	mySize = buf.st_size;
 	myIsFile = !myIsDir;
-	myIsReadable = testReadable( local8, buf );
+	d->isReadable = testReadable( local8, buf );
 	
 	myPermissions = buf.st_mode;
 	myOwner_t = buf.st_uid;
 	myGroup_t = buf.st_gid;
-
-	// guess we should update, now that we have the correct information
-	if ( !myMimeType ) {
-	    delete myPixmap;
-	    myPixmap = 0L;
-	}
 
     } else {
 	// default
@@ -182,104 +126,32 @@ void KFileViewItem::stat(bool alreadyindir)
 	mySize = 0;
 	myIsFile = false;
 	myIsDir = false;
-	myIsReadable = false;
+	d->isReadable = false;
 	myPermissions = 0;
-	parsePermissions(myPermissions);
+	parsePermissions(permissions());
     }
 }
-
-KFileViewItem::KFileViewItem(const KFileViewItem &i)
-{
-    *this = i;
-}
+#endif
 
 KFileViewItem::~KFileViewItem()
 {
-    delete myPixmap;
+    
 }
-
-KFileViewItem &KFileViewItem::operator=(const KFileViewItem &i)
-{
-    myName= i.myName;
-    myBaseURL= i.myBaseURL;
-    myAccess = i.myAccess;
-    myDate= i.myDate;
-    myDate_t = i.myDate_t;
-    myOwner= i.myOwner;
-    myGroup= i.myGroup;
-    myIsDir = i.myIsDir;
-    myIsFile = i.myIsFile;
-    myIsSymLink = i.myIsSymLink;
-    myPermissions= i.myPermissions;
-    mySize= i.mySize;
-    myIsReadable = i.myIsReadable;
-    myFilePath = i.myFilePath;
-    myPixmap = i.myPixmap;
-    myMimeType = i.myMimeType;
-    myPixmapDirty = i.myPixmapDirty;
-
-    return *this;
-}
-
 
 void KFileViewItem::init()
 {
     myNext = 0;
-    myMimeType = 0L;
-    myHidden = false;
-    myPixmapDirty = false;
-    myPixmapSize = KIcon::SizeSmall;
+    d->pixmapSize = KIcon::SizeSmall;
 }
 
 
-void KFileViewItem::parsePermissions(const char *perms)
-{
-    myPermissions = 0;
-    char p[11] = {0, 0, 0, 0, 0,
-		  0, 0, 0, 0, 0,
-		  0};
-
-    strncpy(p, perms, sizeof(p));
-
-    myIsDir = (bool)(p[0] == 'd');
-    myIsSymLink = (bool)(p[0] == 'l');
-    myIsFile = !myIsDir;
-
-    if(p[1] == 'r')
-      myPermissions |= QFileInfo::ReadUser;
-
-    if(p[2] == 'w')
-      myPermissions |= QFileInfo::WriteUser;
-
-    if(p[3] == 'x')
-      myPermissions |= QFileInfo::ExeUser;
-
-    if(p[4] == 'r')
-      myPermissions |= QFileInfo::ReadGroup;
-
-    if(p[5] == 'w')
-      myPermissions |= QFileInfo::WriteGroup;
-
-    if(p[6] == 'x')
-      myPermissions |= QFileInfo::ExeGroup;
-
-    if(p[7] == 'r')
-      myPermissions |= QFileInfo::ReadOther;
-
-    if(p[8] == 'w')
-      myPermissions |= QFileInfo::WriteOther;
-
-    if(p[9] == 'x')
-      myPermissions |= QFileInfo::ExeOther;
-}
-
-QString KFileViewItem::parsePermissions(uint perm) const
+QString KFileViewItem::parsePermissions(mode_t perm) const
 {
     char p[] = "----------";
 
-    if (myIsDir)
+    if (isDir())
 	p[0]='d';
-    else if (myIsSymLink)
+    else if (isLink())
 	p[0]='l';
 
     if (perm & QFileInfo::ReadUser)
@@ -307,9 +179,9 @@ QString KFileViewItem::parsePermissions(uint perm) const
 }
 
 QString KFileViewItem::date() const {
-    if (myDate.isNull())
-	myDate = dateTime(myDate_t);
-    return myDate;
+    if (d->date.isNull())
+	d->date = dateTime(time( KIO::UDS_MODIFICATION_TIME) );
+    return d->date;
 }
 
 QString KFileViewItem::dateTime(time_t _time) {
@@ -318,144 +190,21 @@ QString KFileViewItem::dateTime(time_t _time) {
     return KGlobal::locale()->formatDateTime( t );
 }
 
-void KFileViewItem::readUserInfo()
+
+QString KFileViewItem::urlString() const
 {
-    struct passwd *pass;
-    while ( (pass = getpwent()) != 0L ) {
-	passwdCache->insert(pass->pw_uid, qstrdup(pass->pw_name));
-    }
-    delete pass;
-    endpwent();
-
-    char *myUsername = passwdCache->find( getuid() );
-    struct group *gr;
-    while( (gr = getgrent()) != 0L ) {
-	groupCache->insert(gr->gr_gid, qstrdup(gr->gr_name));
-
-	int i = 0;
-	char *member = 0L;
-	while ( (member = gr->gr_mem[i++]) != 0L ) {
-	    if ( myUsername && strcmp( myUsername, member ) == 0 ) {
-	        myGroupMemberships->append( gr->gr_gid );
-		break;
-	    }
-	}
-    }
-    delete gr;
-    endgrent();
-}
-
-
-void KFileViewItem::cleanup()
-{
-    delete passwdCache;
-    passwdCache = 0L;
-
-    delete groupCache;
-    groupCache = 0L;
-
-    delete myGroupMemberships;
-    myGroupMemberships = 0L;
-}
-
-QString KFileViewItem::url() const
-{
-    if (myFilePath.isNull())
+    if (myURLString.isNull())
 	if (isDir())
-	    myFilePath = myBaseURL + myName + '/';
+	    myURLString = KFileItem::url().url(+1);
 	else
-	    myFilePath = myBaseURL + myName;
-    return myFilePath;
-}
-
-QString KFileViewItem::mimeType()
-{
-    if ( !myMimeType ) {
-	myMimeType = KMimeType::findByURL( url(), 0, true );
-	
-	if ( myIsReadable ) // keep the "locked" icon for unreadable files/dirs
-	    myPixmapDirty = true;
-    }
-
-    return myMimeType->name();
-}
-
-
-QPixmap KFileViewItem::pixmap( int size ) const
-{
-    if ( !myPixmapDirty ) {
-	if ( myPixmapSize != size || !myPixmap ) {
-	    delete myPixmap;
-	    if ( !myMimeType )
-		myPixmap = new QPixmap( KGlobal::iconLoader()->loadIcon(defaultIcon(),
-			KIcon::Desktop, size) );
-	    else
-		myPixmap = new QPixmap( myMimeType->pixmap( url(), size ));
-	}
-    }
-
-    else  { // pixmap dirty, we shall load the pixmap according to our mimetype
-	QString icon = myMimeType->icon( url(), true );
-	if ( icon != defaultIcon() || (size != myPixmapSize) || !myPixmap ) {
-	
-	    if ( icon.isEmpty() || !myIsReadable )
-		icon = defaultIcon();
-	
-	    delete myPixmap;
-	    KIconLoader *loader = KGlobal::iconLoader();
-	    myPixmap = new QPixmap( loader->loadIcon(icon, KIcon::Desktop, size) );
-	
-	    // we either have found the correct pixmap, or there is none,
-	    // anyway, we won't ever search for one again
-	    myPixmapDirty = false;
-	}
-    }
-    myPixmapSize = size;
-    return *myPixmap;
-}
-
-QString KFileViewItem::defaultIcon() const
-{
-    // avoid creating a QString every time this function is called
-    static QString folder = QString::fromLatin1("folder");
-    static QString lockedfolder = QString::fromLatin1("lockedfolder");
-    static QString unknown = QString::fromLatin1("mimetypes/unknown");
-    static QString locked  = QString::fromLatin1("locked");
-    static QString symlink = QString::fromLatin1("link");
-
-    if ( myIsSymLink ) {
-	if ( myIsReadable )
-	    if ( myIsDir )
-		return folder;
-	    else
-		return symlink;
-	else
-	    if ( myIsDir )
-		return lockedfolder;
-	    else
-		return locked;
-    }
-    else if ( myIsDir ) {
-	if ( myIsReadable )
-	    return folder;
-	else
-	    return lockedfolder;
-    }
-    else {
-	if ( myIsReadable )
-	    return unknown;
-	else
-	    return locked;
-    }
-
-    return QString::null;
+	    myURLString = KFileItem::url().url();
+    return myURLString;
 }
 
 void KFileViewItem::setDeleted()
 {
-    myIsReadable = false;
-    myAccess = "**********";
-    myPixmapDirty = true; // next pixmap() call will load the "locked" icon
+    d->isReadable = false;
+    d->access = "**********";
 }
 
 
@@ -474,40 +223,13 @@ const void *KFileViewItem::viewItem( const KFileView *view ) const
 }
 
 QString KFileViewItem::access() const {
-    if (myAccess.isNull())
-      myAccess = parsePermissions(myPermissions);
+    if (d->access.isNull())
+      d->access = parsePermissions(permissions());
 
-    return myAccess;
+    return d->access;
 }
 
-QString KFileViewItem::owner() const
-{
-    static QString unknown = i18n("unknown");
-
-    if (myOwner.isNull()) {
-        myOwner = QString::fromLocal8Bit( passwdCache->find(myOwner_t) );
-
-	if (myOwner.isNull())
-	    myOwner = unknown;
-    }
-    return myOwner;
-}
-
-
-QString KFileViewItem::group() const
-{
-    static QString unknown = i18n("unknown");
-
-    if ( myGroup.isNull() ) {
-        myGroup = QString::fromLocal8Bit( groupCache->find(myGroup_t) );
-
-	if (myGroup.isNull())
-	    myGroup = unknown;
-    }
-    return myGroup;
-}
-
-
+#if 0
 // Tests if a file is readable. We don't just call ::access(), because we
 // already have a stat-structure and know about the groups.
 bool KFileViewItem::testReadable( const QCString& file, struct stat& buf )
@@ -515,18 +237,19 @@ bool KFileViewItem::testReadable( const QCString& file, struct stat& buf )
     if (file.isEmpty())
 	return false;
 
+    bool isdir = isDir();
   // check the "others'" permissions first
-  if ( (buf.st_mode & (S_IROTH | (myIsDir ? S_IXOTH : 0))) != 0 )
+  if ( (buf.st_mode & (S_IROTH | (isdir ? S_IXOTH : 0))) != 0 )
     return true;
 
   // check if user can read [execute dirs]
-  if ( (buf.st_mode & (S_IRUSR | (myIsDir ? S_IXUSR : 0))) != 0 ) {
+  if ( (buf.st_mode & (S_IRUSR | (isdir ? S_IXUSR : 0))) != 0 ) {
     if ( buf.st_uid == getuid() )
       return true;
   }
 
   // check the group permissions, if we have no user permissions
-  if ( (buf.st_mode & (S_IRGRP | (myIsDir ? S_IXGRP : 0))) != 0 ) {
+  if ( (buf.st_mode & (S_IRGRP | (isdir ? S_IXGRP : 0))) != 0 ) {
     if ( buf.st_gid == getgid() ||
 	 myGroupMemberships->find( buf.st_gid ) != myGroupMemberships->end())
       return true;
@@ -534,6 +257,7 @@ bool KFileViewItem::testReadable( const QCString& file, struct stat& buf )
 
   return false;
 }
+#endif
 
 
 /////////////
@@ -568,4 +292,14 @@ const KFileViewItem * KFileViewItemList::findByName( const QString& url ) const
     }
 
     return myDict.find( url );
+}
+
+QPixmap KFileViewItem::pixmap() const 
+{ 
+    return pixmap( d->pixmapSize );
+}
+
+bool KFileViewItem::isReadable() const
+{
+    return d->isReadable;
 }

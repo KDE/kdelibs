@@ -511,7 +511,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
     if (i->isDir())
         return;
-
+    debug("** highlighted **");
     d->url = i->url();
     if ( (ops->mode() & KFile::Files) == KFile::Files )
 	multiSelectionChanged( i );
@@ -536,6 +536,7 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
     }
 
     emit fileSelected(d->url.url());
+    slotOk();
 }
 
 
@@ -618,6 +619,7 @@ KFileDialog::~KFileDialog()
 void KFileDialog::slotFilterChanged() // SLOT
 {
     ops->setNameFilter(filterWidget->currentFilter());
+    ops->rereadDir();
     emit filterChanged(filterWidget->currentFilter());
 }
 
@@ -844,7 +846,7 @@ void KFileDialog::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KFileViewItem i(QString::fromLatin1("file:"), u.path());
+    KFileViewItem i(-1, -1, u, true );
     //    KFileViewItem i(u.path());
     if (i.isDir())
 	setURL(u, true);
@@ -961,7 +963,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
-
+    dlg.setMode(KFile::Files);
     dlg.exec();
 
     QStringList list = dlg.selectedFiles();
@@ -996,7 +998,7 @@ KURL::List KFileDialog::getOpenURLs(const QString& dir,
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
-
+    dlg.setMode(KFile::Files);
     dlg.exec();
 
     KURL::List list = dlg.selectedURLs();

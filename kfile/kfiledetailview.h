@@ -93,6 +93,10 @@ protected:
 
     QListViewItem *myLastItem;
 
+protected slots:
+    void slotSelectionChanged();
+    void slotSelectionChanged( QListViewItem * );
+
 private slots:
     void slotSortingChanged( int );
     void selected( QListViewItem *item );
