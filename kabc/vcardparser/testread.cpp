@@ -40,6 +40,7 @@ int main()
   KABC::VCardTool tool;
   KABC::Addressee::List list = tool.parseVCards( text );
   text = tool.createVCards( list ); // uses version 3.0
+//  text = tool.createVCards( list, VCard::v2_1 ); // uses version 2.1
 
   file.setName( "testout.vcf" );
   if ( !file.open( IO_WriteOnly ) ) {

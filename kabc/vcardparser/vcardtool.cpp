@@ -428,7 +428,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
-            type &= mPhoneTypeMap[(*it).lower()];
+            type += mPhoneTypeMap[(*it).upper()];
 
           phone.setType( type );
 

@@ -67,7 +67,12 @@ VCard::List VCardParser::parseVCards( const QString& text )
         if ( params.count() > 1 ) { // find all parameters
           for ( uint i = 1; i < params.count(); ++i ) {
             QStringList pair = QStringList::split( '=', params[i] );
-            vCardLine.addParameter( pair[0].lower(), pair[1] );
+            if ( pair[1].contains( ',' ) ) { // parameter in type=x,y,z format
+              QStringList args = QStringList::split( ',', pair[ 1 ] );
+              for ( uint j = 0; j < args.count(); ++j )
+                vCardLine.addParameter( pair[0].lower(), args[j] );
+            } else
+              vCardLine.addParameter( pair[0].lower(), pair[1] );
           }
         }
 
