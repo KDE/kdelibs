@@ -150,6 +150,8 @@ KUniqueApplication::start()
            // Try to launch kdeinit.
            kdError() << "KUniqueApplication: Trying to launch kdeinit." << endl;
            QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+           if (srv.isEmpty())
+               srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
            if (!srv.isEmpty())
            {
               kunique_app_my_system(QFile::encodeName(srv));
@@ -334,7 +336,7 @@ int KUniqueApplication::newInstance()
 // OBSOLETE FUNCTION, DO NOT USE //
 int KUniqueApplication::newInstance(QValueList<QCString>)
 {
-  return 0; 
+  return 0;
 }
 
 #include "kuniqueapp.moc"
