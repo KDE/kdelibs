@@ -190,10 +190,8 @@ KSpell::startIspell()
 {
 
   kdDebug(750) << "Try #" << trystart << endl;
-
   if (trystart>0)
     proc->resetAll();
-
   switch (ksconfig->client())
     {
     case KS_CLIENT_ISPELL:
@@ -205,7 +203,6 @@ KSpell::startIspell()
       kdDebug(750) << "Using aspell" << endl;
       break;
     }
-
   *proc << "-a" << "-S";
   if (ksconfig->noRootAffix())
     {
@@ -297,9 +294,10 @@ KSpell::startIspell()
       OUTPUT(KSpell2);
     }
 
-  if (proc->start ()==FALSE)
+  if (proc->start ()==FALSE )
   {
-     QTimer::singleShot( 0, this, SLOT(emitDeath()));
+      m_status = Error;
+      QTimer::singleShot( 0, this, SLOT(emitDeath()));
   }
 }
 
