@@ -289,7 +289,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
     if ( soundFile.isEmpty() || isPlaying( soundFile ) )
         return false;
 
-    
+
     // Oh dear! we seem to have lost our connection to artsd!
     if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
         connectSoundServer();
@@ -413,7 +413,7 @@ bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName 
     }
     if (senderWinId != 0) {
 	KIconLoader iconLoader( appName );
-	QPixmap icon = iconLoader.loadIcon( appName, KIcon::Desktop );
+	QPixmap icon = iconLoader.loadIcon( appName, KIcon::Small );
 	KPassivePopup::message(appName, text, icon, senderWinId);
 	return true;
     }
@@ -530,13 +530,13 @@ bool KNotify::isPlaying( const QString& soundFile ) const
 {
     // in local encoding, as passed to the PlayObjectFactory
     std::string filename = QFile::encodeName( soundFile ).data();
-    
+
     for ( QValueList< Arts::PlayObject >::Iterator it = d->playObjects.begin();
           it != d->playObjects.end(); it++ )
     {
         if ( (*it).mediaName() == filename )
             return true;
     }
-    
+
     return false;
 }
