@@ -53,6 +53,19 @@ class KListView : public QListView
    
 public:
   /**
+   * Possible selection modes.
+   *
+   * The first four correspond directly to @ref QListView::SelectionMode
+   */
+  enum SelectionModeExt {
+	Single = QListView::Single,
+	Multi = QListView::Multi,
+	Extended = QListView::Extended,
+	NoSelection = QListView::NoSelection,
+	Konqueror
+  };
+
+  /**
    * Constructor.
    *
    * The parameters @p parent and @p name are handled by
@@ -156,6 +169,13 @@ public:
    */
   inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
 
+  /**
+   * @return the "extended" selection mode of this listview.
+   *
+   * @see SelectionModeExt
+   * @see setSelectionModeExt
+   */
+  SelectionModeExt selectionModeExt () const;
 
 signals:
 
@@ -226,12 +246,20 @@ signals:
    * @param str is the new value of column @p col.
    * @param col is the renamed column.
    */
-  void itemRenamed(QListViewItem * item, const QString &str, int col);
+  void itemRenamed(QListViewItem* item, const QString &str, int col);
 
   /**
    * Same as above, but without the extra information.
    */
-  void itemRenamed(QListViewItem * item);
+  void itemRenamed(QListViewItem* item);
+
+  /**
+   * This signal is emitted when the shortcut key for popup-menus is pressed.
+   *
+   * @param list is this listview.
+   * @param item is the @ref currentItem() at the time the key was pressed. May be 0L.
+   */
+  void menuShortCutPressed (KListView* list, QListViewItem* item);
 
 public slots:
   /**
@@ -309,6 +337,13 @@ public slots:
    * @deprecated
    */
   virtual void setCreateChildren(bool b);
+
+  /**
+   * Set the selection mode.
+   *
+   * A different name was chosen to avoid API-clashes with @ref QListView::setSelectionMode().
+   */
+  void setSelectionModeExt (SelectionModeExt mode);
 
 protected slots:
   /**
@@ -494,6 +529,15 @@ protected:
    */
   virtual void startDrag();
 
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
+  virtual void keyPressEvent (QKeyEvent*);
+
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
@@ -534,6 +578,11 @@ private:
    * Where is the nearest QListViewItem that I'm going to drop?
    **/
   void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
+
+  /**
+   * A special keyPressEvent (for Konqueror-style selection).
+   */
+  void konquerorKeyPressEvent (QKeyEvent*);
 
 private:
   class KListViewPrivate;
