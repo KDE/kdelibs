@@ -22,9 +22,12 @@
 
 #include "knewpanner.h"
 #include <stdio.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-KNewPanner::KNewPanner(QWidget *parent= 0, const char *name= 0,
-			   Orientation orient= Vertical, Units units= Percent, int pos= 50)
+KNewPanner::KNewPanner(QWidget *parent, const char *name,
+			   Orientation orient, Units units, int pos)
     : QWidget(parent, name)
 {
     orientation= orient;
