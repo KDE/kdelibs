@@ -54,42 +54,33 @@ public:
     KConfig* globalEvents;
     QMap<QString, KConfig*> events;
     QString externalPlayer;
+    Arts::SimpleSoundServer soundServer;
     bool useExternal;
 };
 
-/*
- * This is global because it needs to be initialized *before* the KNotify
- * DCOP object will accept requests (otherwise there may be reentrancy issues
- * and race conditions
- */
-
-Arts::SimpleSoundServer g_soundServer;
-bool enableAudio;
-
-
-bool connectSoundServer()
+Arts::SimpleSoundServer connectSoundServer()
 {
     static bool firstTime = true;
 
     /*
-     * obtain an object reference to the soundserver - retry sometimes, so
-     * it will work during the startup sequence, even if artsd is started
-     * some time after the first process requests knotify to do some
-     * notifications
+     * obtain an object reference to the soundserver - if we're doing it
+     * for the first time, retry sometimes, so it will work during the
+     * startup sequence, even if artsd is started some time after the first
+     * process requests knotify to do some notifications
      */
-    g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
-    if ( firstTime && g_soundServer.isNull() )
+    Arts::SimpleSoundServer result;
+    result = Arts::Reference("global:Arts_SimpleSoundServer");
+    if ( firstTime && result.isNull() )
         for( int tries=0; tries<7; tries++ )
         {
             sleep( 1 );
-            g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
-            if( !g_soundServer.isNull() ) break;
+            result = Arts::Reference("global:Arts_SimpleSoundServer");
+            if( !result.isNull() ) break;
         }
 
     firstTime = false;
-    return !g_soundServer.isNull();
+    return result;
 }
-
 
 int main(int argc, char **argv)
 {
@@ -113,23 +104,8 @@ int main(int argc, char **argv)
     KUniqueApplication app;
     app.disableSessionManagement();
 
-	KCrash::setCrashHandler(KNotify::crashHandler);
-	{ // check if we should shouldn't allow sound events..
-		char file[512];
-		sprintf(file, "%s/.knotify-noaudio", getenv("HOME"));	
-		int fd=open(file, O_RDONLY);
-		enableAudio=(fd==-1);
-		if (fd!=-1)
-			close(fd);
-	}
-
-	// setup mcop communication
-	if (enableAudio)
-	{
-    	Arts::QIOManager qiomanager;
-    	Arts::Dispatcher dispatcher(&qiomanager);
-    	g_soundServer = Arts::SimpleSoundServer::null();
-	}
+    // setup mcop communication
+    Arts::Dispatcher dispatcher;
 
     // start notify service
     KNotify notify;
@@ -142,6 +118,7 @@ KNotify::KNotify()
     : QObject(), DCOPObject("Notify")
 {
     d = new KNotifyPrivate;
+    d->soundServer = Arts::SimpleSoundServer::null();
     d->globalEvents = new KConfig(locate("config", "eventsrc"), true, false);
     loadConfig();
 }
@@ -256,17 +233,14 @@ bool KNotify::notifyBySound( const QString &sound )
 	soundFile = locate( "sound", sound );
 
     // Oh dear! we seem to have lost our connection to artsd!
-    if( enableAudio && !external && (g_soundServer.isNull() || g_soundServer.error()) )
-        connectSoundServer();
+    if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
+        d->soundServer = connectSoundServer();
 
     kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
     
-    if (!external && !g_soundServer.isNull() && !g_soundServer.error()) {
-		if (!enableAudio)
-			return false;
-				
+    if (!external && !d->soundServer.isNull() && !d->soundServer.error()) {
         // play sound finally
-        g_soundServer.play( QFile::encodeName(soundFile).data() );
+        d->soundServer.play( QFile::encodeName(soundFile).data() );
 
         return true;
 
@@ -338,16 +312,3 @@ bool KNotify::isGlobal(const QString &eventname)
 {
     return d->globalEvents->hasGroup( eventname );
 }
-
-void KNotify::crashHandler(int)
-{
-	// try to save the fact knotify likes to crash...
-	char file[512];
-	sprintf(file, "%s/.knotify-noaudio", getenv("HOME"));
-	int fd=creat(file, O_RDWR);
-	close(fd);
-		
-	_exit(255);
-}
-
-
