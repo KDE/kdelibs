@@ -31,6 +31,7 @@
 #endif
 
 class QFrame;
+class KDockContainer;
 
 
 /**
@@ -77,7 +78,10 @@ public:
 protected:
   int checkValue( int ) const;
   virtual void resizeEvent(QResizeEvent *);
-
+/*
+protected slots:
+  void delayedResize();*/
+  
 private:
   void setupMinMaxSize();
 

@@ -21,6 +21,7 @@
 #include <qpainter.h>
 #include <qcursor.h>
 #include <kdebug.h>
+#include <qtimer.h>
 
 KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos, bool highResolution)
 : QWidget(parent, name)
@@ -67,7 +68,25 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
 
   divider->show();
   resizeEvent(0);
+  if (((KDockWidget*)child0)->forcedFixedWidth()!=-1)
+  {
+  	setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
+	//QTimer::singleShot(100,this,SLOT(delayedResize()));
+  }
+  else
+  if (((KDockWidget*)child1)->forcedFixedWidth()!=-1)
+  {
+  	setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
+	//QTimer::singleShot(100,this,SLOT(delayedResize()));
+  }
 }
+
+/*
+void KDockSplitter::delayedResize()
+{
+	kdDebug()<<"*********************** DELAYED RESIZE !!!!!!!!!!!!!!!"<<endl;
+	resizeEvent(0);	
+}*/
 
 void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 {

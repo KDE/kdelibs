@@ -15,7 +15,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-
 #include "kdockwidget.h"
 #include "kdockwidget_private.h"
 #include "kdockwidget_p.h"
@@ -674,7 +673,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
 		  if (cont)
 		  {
-			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) 
+			if (latestKDockContainer() ) //&& (latestKDockContainer()!=contWid)) 
 				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
 			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
@@ -832,6 +831,8 @@ void KDockWidget::setForcedFixedWidth(int w)
 {
 	d->forcedWidth=w;
 //	setFixedWidth(w);
+	setFixedWidth(w);
+	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedWidth(this,w);
 }
@@ -844,6 +845,9 @@ int KDockWidget::forcedFixedWidth()
 void KDockWidget::restoreFromForcedFixedSize()
 {
 	d->forcedWidth=-1;
+	setMinimumWidth(0);
+	setMaximumWidth(32000);	
+	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);	
 }
@@ -1892,13 +1896,13 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   c->setGroup( group );
   c->writeEntry( "Version", DOCK_CONFIG_VERSION );
 
-  QStrList nameList;
-  QStrList findList;
+  QStringList nameList;
+  QStringList findList;
   QObjectListIt it( *childDock );
   KDockWidget * obj;
 
   // collect KDockWidget's name
-  QStrList nList;
+  QStringList nList;
   while ( (obj=(KDockWidget*)it.current()) ) {
     ++it;
     //debug("  +Add subdock %s", obj->name());
@@ -1906,18 +1910,26 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     if ( obj->parent() == main )
       c->writeEntry( "Main:view", obj->name() );
   }
-
-  nList.first();
-  while ( nList.current() ){
+  
+  kdDebug()<<QString("list size: %1").arg(nList.count())<<endl;
+  for (QObjectListIt it(d->containerDocks);it.current();++it)
+  {
+  	static_cast<KDockContainer*>(((KDockWidget*)it.current())->widget->qt_cast("KDockContainer"))->prepareSave(nList);
+  }
+  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
+  
+  QStringList::Iterator nListIt=nList.begin();
+  while ( nListIt!=nList.end() ){
     //debug("  -Try to save %s", nList.current());
-    obj = getDockWidgetFromName( nList.current() );
+    obj = getDockWidgetFromName( *nListIt );
     QString cname = obj->name();
     if ( obj->header ){
       obj->header->saveConfig( c );
     }
+    if (obj->d->isContainer) static_cast<KDockContainer*>(obj->widget->qt_cast("KDockContainer"))->save(c);
 /*************************************************************************************************/
     if ( obj->isGroup ){
-      if ( findList.find( obj->firstName.latin1() ) != -1 && findList.find( obj->lastName.latin1() ) != -1 ){
+      if ( (findList.find( obj->firstName ) != findList.end()) && (findList.find( obj->lastName ) != findList.end() )){
 
         c->writeEntry( cname+":type", "GROUP");
         if ( !obj->parent() ){
@@ -1935,8 +1947,8 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         nameList.append( obj->name() );
         findList.append( obj->name() );
         //debug("  Save %s", nList.current());
-        nList.remove();
-        nList.first();
+        nList.remove(nListIt);
+        nListIt=nList.begin(); //nList.first();
       } else {
 /*************************************************************************************************/
         //debug("  Skip %s", nList.current());
@@ -1944,8 +1956,9 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         //  debug("  ? Not found %s", obj->firstName);
         //if ( findList.find( obj->lastName ) == -1 )
         //  debug("  ? Not found %s", obj->lastName);
-        nList.next();
-        if ( !nList.current() ) nList.first();
+        ++nListIt;
+        // if ( !nList.current() ) nList.first();
+	if (nListIt==nList.end()) nListIt=nList.begin();
       }
     } else {
 /*************************************************************************************************/
@@ -1967,8 +1980,8 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         nameList.append( obj->name() );
         findList.append( obj->name() ); // not realy need !!!
         //debug("  Save %s", nList.current());
-        nList.remove();
-        nList.first();
+        nList.remove(nListIt);
+        nListIt=nList.begin();
       } else {
 /*************************************************************************************************/
         if ( !obj->parent() ){
@@ -1981,8 +1994,8 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         nameList.append( cname.latin1() );
         //debug("  Save %s", nList.current());
         findList.append( obj->name() );
-        nList.remove();
-        nList.first();
+        nList.remove(nListIt);
+        nListIt=nList.begin();
       }
     }
   }
@@ -2098,6 +2111,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj = getDockWidgetFromName( oname );
     }
 
+    if (obj && obj->d->isContainer)  static_cast<KDockContainer*>(obj->widget->qt_cast("KDockContainer"))->load(c);
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
