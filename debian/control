@@ -11,7 +11,7 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdebase (<< 4:2.2.1-1), kdebase-libs (<< 4:2.2.1-2), konqueror (<< 4:2.2.1-1), kdelibs3-crypto
-Depends: ${shlibs:Depends}, kdelibs-bin, python, xbase-clients
+Depends: ${shlibs:Depends}, kdelibs-bin, xbase-clients
 Suggests: libarts | libarts-alsa | libarts-bin, libkmid | libkmid-alsa | libkmid-bin, kdelibs3-cups, aspell | ispell, anti-aliasing-howto, gdb, libsocksd | libsocks4, libssl0.9.6
 Conflicts: kdelibs3-crypto (<< 4:2.2.2-1)
 Description: KDE core libraries (runtime files)
@@ -22,7 +22,7 @@ Package: kdelibs3-bin
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdelibs3 (<< 4:2.2.2-7), kdelibs4-bin
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, python
 Conflicts: kdelibs3 (<< 4:2.2.2-7), kdelibs4-bin
 Provides: kdelibs-bin
 Description: KDE core binaries (binary files)
