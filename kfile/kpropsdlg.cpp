@@ -91,6 +91,15 @@ mode_t FilePermissionsPropsPage::fperm[3][4] = {
 
 template class QList<PropsPage>;
 
+PropertiesDialog::PropertiesDialog( KFileItem * item ) :
+  m_singleUrl( item->url() ), m_bMustDestroyItems( false )
+{
+  m_items.append( item );
+  assert( item );
+  assert(!m_singleUrl.isEmpty());
+  init();
+}
+
 PropertiesDialog::PropertiesDialog( KFileItemList _items ) :
   m_singleUrl( _items.first()->url() ), m_items( _items ),
   m_bMustDestroyItems( false )

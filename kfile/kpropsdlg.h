@@ -77,12 +77,21 @@ public:
    * Bring up a Properties dialog. Normal constructor for
    * file-manager-like applications.
    *
+   * @param _items file item whose properties should be displayed.
+   */
+  PropertiesDialog( KFileItem * item );
+
+  /**
+   * Bring up a Properties dialog. Normal constructor for
+   * file-manager-like applications.
+   *
    * @param _items list of file items whose properties should be
    * displayed. NOTE : the current limitations of PropertiesDialog
    * makes it use only the FIRST item in the list
    *
    */
   PropertiesDialog( KFileItemList _items );
+
   /**
    * Bring up a Properties dialog. Convenience constructor for
    * non-file-manager applications.
