@@ -117,15 +117,18 @@ void HTMLDivElement::setAlign( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLHRElement::HTMLHRElement() : HTMLElement()
+HTMLHRElement::HTMLHRElement() 
+    : HTMLElement()
 {
 }
 
-HTMLHRElement::HTMLHRElement(const HTMLHRElement &other) : HTMLElement(other)
+HTMLHRElement::HTMLHRElement(const HTMLHRElement &other) 
+    : HTMLElement(other)
 {
 }
 
-HTMLHRElement::HTMLHRElement(HTMLHRElementImpl *impl) : HTMLElement(impl)
+HTMLHRElement::HTMLHRElement(HTMLHRElementImpl *impl) 
+    : HTMLElement(impl)
 {
 }
 
@@ -197,15 +200,18 @@ void HTMLHRElement::setWidth( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLHeadingElement::HTMLHeadingElement() : HTMLElement()
+HTMLHeadingElement::HTMLHeadingElement() 
+    : HTMLElement()
 {
 }
 
-HTMLHeadingElement::HTMLHeadingElement(const HTMLHeadingElement &other) : HTMLElement(other)
+HTMLHeadingElement::HTMLHeadingElement(const HTMLHeadingElement &other) 
+    : HTMLElement(other)
 {
 }
 
-HTMLHeadingElement::HTMLHeadingElement(HTMLElementImpl *impl) : HTMLElement(impl)
+HTMLHeadingElement::HTMLHeadingElement(HTMLElementImpl *impl) 
+    : HTMLElement(impl)
 {
 }
 
@@ -253,11 +259,13 @@ HTMLParagraphElement::HTMLParagraphElement() : HTMLElement()
 {
 }
 
-HTMLParagraphElement::HTMLParagraphElement(const HTMLParagraphElement &other) : HTMLElement(other)
+HTMLParagraphElement::HTMLParagraphElement(const HTMLParagraphElement &other) 
+    : HTMLElement(other)
 {
 }
 
-HTMLParagraphElement::HTMLParagraphElement(HTMLElementImpl *impl) : HTMLElement(impl)
+HTMLParagraphElement::HTMLParagraphElement(HTMLElementImpl *impl) 
+    : HTMLElement(impl)
 {
 }
 
@@ -294,11 +302,13 @@ HTMLPreElement::HTMLPreElement() : HTMLElement()
 {
 }
 
-HTMLPreElement::HTMLPreElement(const HTMLPreElement &other) : HTMLElement(other)
+HTMLPreElement::HTMLPreElement(const HTMLPreElement &other) 
+    : HTMLElement(other)
 {
 }
 
-HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl) : HTMLElement(impl)
+HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl) 
+    : HTMLElement(impl)
 {
 }
 
