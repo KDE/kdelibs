@@ -89,9 +89,9 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 	bool	ok = (p && !p->isSpecial());
 	if (ok)
 	{
-		QList<KMPrinter>	list;
+		QPtrList<KMPrinter>	list;
 		KMFactory::self()->virtualManager()->virtualList(list,p->name());
-		QListIterator<KMPrinter>	it(list);
+		QPtrListIterator<KMPrinter>	it(list);
 		for (;it.current();++it)
 		{
 			QStringList	pair = QStringList::split('/',it.current()->name(),false);

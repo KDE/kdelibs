@@ -183,7 +183,7 @@ void KPrintDialog::setFlags(int f)
 	m_wizard->setEnabled((mgr->hasManagement() && (mgr->printerOperationMask() & KMManager::PrinterCreation)));
 }
 
-void KPrintDialog::setDialogPages(QList<KPrintDialogPage> *pages)
+void KPrintDialog::setDialogPages(QPtrList<KPrintDialogPage> *pages)
 {
 	if (!pages) return;
 	if (pages->count() + m_pages.count() == 1)
@@ -240,11 +240,11 @@ void KPrintDialog::initialize(KPrinter *printer)
 	m_printer = printer;
 
 	// first retrieve printer list and update combo box (get default or last used printer also)
-	QList<KMPrinter>	*plist = KMFactory::self()->manager()->printerList();
+	QPtrList<KMPrinter>	*plist = KMFactory::self()->manager()->printerList();
 	if (plist)
 	{
 		m_printers->clear();
-		QListIterator<KMPrinter>	it(*plist);
+		QPtrListIterator<KMPrinter>	it(*plist);
 		int 	defindex(-1);
 		bool	sep(false);
 		for (;it.current();++it)
@@ -273,7 +273,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	m_preview->setEnabled(!m_printer->previewOnly());
 	m_cmd->setText(m_printer->option("kde-printcommand"));
 	m_fileselect->setFileList(QStringList::split(QRegExp(",\\s*"), m_printer->option("kde-filelist"), false));
-	QListIterator<KPrintDialogPage>	it(m_pages);
+	QPtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->setOptions(m_printer->options());
 }
@@ -338,7 +338,7 @@ void KPrintDialog::done(int result)
 
 		// get options from global pages
 		QString	msg;
-		QListIterator<KPrintDialogPage>	it(m_pages);
+		QPtrListIterator<KPrintDialogPage>	it(m_pages);
 		for (;it.current();++it)
 			if (it.current()->isEnabled())
 			{
@@ -471,7 +471,7 @@ void KPrintDialog::reload()
 			delete page;
 		}
 	// reload printer dependent pages from plugin
-	QList<KPrintDialogPage>	pages;
+	QPtrList<KPrintDialogPage>	pages;
 	pages.setAutoDelete(false);
 	KMFactory::self()->uiManager()->setupPrintDialogPages(&pages);
 	// add those pages to the dialog

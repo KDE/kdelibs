@@ -48,6 +48,7 @@
 #include <kconfig.h>
 #include <ktoolbar.h>
 
+#undef m_manager
 #define	m_manager	KMFactory::self()->manager()
 
 extern "C"
@@ -240,7 +241,7 @@ void KMMainView::stopTimer()
 
 void KMMainView::slotTimer()
 {
-	QList<KMPrinter>	*printerlist = m_manager->printerList();
+	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	m_printerview->setPrinterList(printerlist);
 	startTimer();
 }

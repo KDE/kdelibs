@@ -42,7 +42,7 @@ bool KMSpecialManager::savePrinters()
 
 	// then add printers
 	n = 0;
-	QListIterator<KMPrinter>	it(m_mgr->m_printers);
+	QPtrListIterator<KMPrinter>	it(m_mgr->m_printers);
 	for (;it.current();++it)
 	{
 		if (!it.current()->isSpecial()) continue;
@@ -101,7 +101,7 @@ void KMSpecialManager::refresh()
 		loadPrinters();
 	else
 	{
-		QListIterator<KMPrinter>	it(m_mgr->m_printers);
+		QPtrListIterator<KMPrinter>	it(m_mgr->m_printers);
 		for (;it.current();++it)
 			if (it.current()->isSpecial())
 			{

@@ -23,7 +23,7 @@
 #define KMPRINTERVIEW_H
 
 #include <qwidgetstack.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KMIconView;
 class KMListView;
@@ -39,7 +39,7 @@ public:
 	KMPrinterView(QWidget *parent = 0, const char *name = 0);
 	~KMPrinterView();
 
-	void setPrinterList(QList<KMPrinter> *list);
+	void setPrinterList(QPtrList<KMPrinter> *list);
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }
 
@@ -54,7 +54,7 @@ private:
 	KMIconView		*m_iconview;
 	KMListView		*m_listview;
 	ViewType		m_type;
-	QList<KMPrinter>	*m_printers;
+	QPtrList<KMPrinter>	*m_printers;
 	KMPrinter		*m_current;
 };
 

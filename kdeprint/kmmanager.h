@@ -92,7 +92,7 @@ public:
 
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
-	QList<KMPrinter>* printerList(bool reload = true);
+	QPtrList<KMPrinter>* printerList(bool reload = true);
 
 	// driver DB functions
 	virtual QString driverDbCreationProgram();

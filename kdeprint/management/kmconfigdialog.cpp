@@ -38,7 +38,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 
 	// initialize pages
 	KConfig	*conf = KMFactory::self()->printConfig();
-	QListIterator<KMConfigPage>	it(m_pages);
+	QPtrListIterator<KMConfigPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->loadConfig(conf);
 
@@ -62,7 +62,7 @@ void KMConfigDialog::slotOk()
 {
 	// save configuration
 	KConfig	*conf = KMFactory::self()->printConfig();
-	QListIterator<KMConfigPage>	it(m_pages);
+	QPtrListIterator<KMConfigPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->saveConfig(conf);
 	conf->sync();

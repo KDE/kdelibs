@@ -102,7 +102,7 @@ private:
 
 	KConfig			*m_printconfig;
 	Settings		*m_settings;
-	QList<KPReloadObject>	m_objects;
+	QPtrList<KPReloadObject> m_objects;
 };
 
 #endif

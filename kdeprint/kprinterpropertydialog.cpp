@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -67,7 +67,7 @@ bool KPrinterPropertyDialog::synchronize()
 {
 	if (m_current) m_current->getOptions(m_options,true);
 	QString	msg;
-	QListIterator<KPrintDialogPage>	it(m_pages);
+	QPtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 	{
 		it.current()->setOptions(m_options);
@@ -82,7 +82,7 @@ bool KPrinterPropertyDialog::synchronize()
 
 void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts)
 {
-	QListIterator<KPrintDialogPage>	it(m_pages);
+	QPtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->getOptions(opts,false);
 }

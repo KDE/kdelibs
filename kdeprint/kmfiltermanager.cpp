@@ -106,10 +106,10 @@ void KMFilterManager::loadFilters()
 
 void KMFilterManager::insertToDict(FilterInfo *fi, const QString& mime)
 {
-	QList<FilterInfo>	*l = m_filterdict.find(mime);
+	QPtrList<FilterInfo>	*l = m_filterdict.find(mime);
 	if (!l)
 	{
-		l = new QList<FilterInfo>;
+		l = new QPtrList<FilterInfo>;
 		l->setAutoDelete(false);
 		m_filterdict.insert(mime, l);
 	}
@@ -176,7 +176,7 @@ QStringList KMFilterManager::autoFilter(const QString& mimesrc, const QString& m
 	if (m_filters.count() == 0)
 		loadFilters();
 
-	QList<FilterInfo>	*l = m_filterdict.find(mimesrc);
+	QPtrList<FilterInfo>	*l = m_filterdict.find(mimesrc);
 	if (l)
 	{
 		for (l->first(); l->current(); l->next())

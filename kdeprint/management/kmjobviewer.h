@@ -72,16 +72,16 @@ protected:
 	void initActions();
 	void initPrinterActions();
 	JobItem* findItem(int ID);
-	void jobSelection(QList<KMJob>& l);
+	void jobSelection(QPtrList<KMJob>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString::null);
 	void loadPrinters();
 
 private:
 	QListView		*m_view;
-	QList<KMJob>		m_jobs;
-	QList<JobItem>		m_items;
+	QPtrList<KMJob>		m_jobs;
+	QPtrList<JobItem>		m_items;
 	QPopupMenu		*m_pop;
-	QList<KMPrinter>	m_printers;
+	QPtrList<KMPrinter>	m_printers;
 };
 
 #endif

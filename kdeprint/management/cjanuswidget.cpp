@@ -225,7 +225,7 @@ void CJanusWidget::slotSelected(QListBoxItem *item)
 
 CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 {
-	QListIterator<CPage>	it(m_pages);
+	QPtrListIterator<CPage>	it(m_pages);
 	for (;it.current();++it)
 		if (it.current()->m_widget == w)
 			return it.current();
@@ -234,7 +234,7 @@ CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 
 CJanusWidget::CPage* CJanusWidget::findPage(QListBoxItem *i)
 {
-	QListIterator<CPage>	it(m_pages);
+	QPtrListIterator<CPage>	it(m_pages);
 	for (;it.current();++it)
 		if (it.current()->m_item == i)
 			return it.current();
@@ -255,7 +255,7 @@ QListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 
 void CJanusWidget::clearPages()
 {
-	QListIterator<CPage>	it(m_pages);
+	QPtrListIterator<CPage>	it(m_pages);
 	for (;it.current(); ++it)
 	{
 		delete it.current()->m_widget;

@@ -24,7 +24,7 @@
 
 #include <qwidget.h>
 #include <qpixmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QWidgetStack;
 class QLabel;
@@ -56,7 +56,7 @@ private:
 	QListBoxItem* findPrevItem(CPage*);
 
 private:
-	QList<CPage>		m_pages;
+	QPtrList<CPage>		m_pages;
 	CListBox		*m_iconlist;
 	QLabel			*m_header;
 	QWidgetStack		*m_stack;

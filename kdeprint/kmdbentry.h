@@ -23,7 +23,7 @@
 #define KMDBENTRY_H
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 struct KMDBEntry
 {
@@ -42,7 +42,7 @@ struct KMDBEntry
 	bool validate(bool checkIt = true);
 };
 
-typedef QList<KMDBEntry>		KMDBEntryList;
-typedef QListIterator<KMDBEntry>	KMDBEntryListIterator;
+typedef QPtrList<KMDBEntry>		KMDBEntryList;
+typedef QPtrListIterator<KMDBEntry>	KMDBEntryListIterator;
 
 #endif

@@ -23,7 +23,7 @@
 #define KPRINTDIALOG_H
 
 #include <kdialog.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kdeprint/kpreloadobject.h>
 
 class KPrinter;
@@ -45,7 +45,7 @@ public:
 	~KPrintDialog();
 
 	void setFlags(int f);
-	void setDialogPages(QList<KPrintDialogPage> *pages);
+	void setDialogPages(QPtrList<KPrintDialogPage> *pages);
 	void initialize(KPrinter*);
 	KPrinter* printer() const;
 
@@ -77,7 +77,7 @@ protected:
 	PluginComboBox	*m_plugin;
 	KFileList	*m_fileselect;
 
-	QList<KPrintDialogPage>	m_pages;
+	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;
 };
 

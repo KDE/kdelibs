@@ -37,7 +37,7 @@ KMJobManager::~KMJobManager()
 
 void KMJobManager::discardAllJobs()
 {
-	QListIterator<KMJob>	it(m_jobs);
+	QPtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 }
@@ -54,7 +54,7 @@ void KMJobManager::removeDiscardedJobs()
 
 KMJob* KMJobManager::findJob(int ID)
 {
-	QListIterator<KMJob>	it(m_jobs);
+	QPtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 		if (it.current()->id() == ID)
 			return it.current();
@@ -87,7 +87,7 @@ bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
 	KMJob	*job = findJob(ID);
 	if (job)
 	{
-		QList<KMJob>	l;
+		QPtrList<KMJob>	l;
 		l.setAutoDelete(false);
 		l.append(job);
 		return sendCommand(l,action,arg);
@@ -95,13 +95,13 @@ bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
 	return false;
 }
 
-bool KMJobManager::sendCommand(const QList<KMJob>& jobs, int action, const QString& args)
+bool KMJobManager::sendCommand(const QPtrList<KMJob>& jobs, int action, const QString& args)
 {
 	// split jobs in 2 classes
-	QList<KMJob>	csystem, cthread;
+	QPtrList<KMJob>	csystem, cthread;
 	csystem.setAutoDelete(false);
 	cthread.setAutoDelete(false);
-	QListIterator<KMJob>	it(jobs);
+	QPtrListIterator<KMJob>	it(jobs);
 	for (;it.current();++it)
 		if (it.current()->type() == KMJob::Threaded) cthread.append(it.current());
 		else csystem.append(it.current());
@@ -114,17 +114,17 @@ bool KMJobManager::sendCommand(const QList<KMJob>& jobs, int action, const QStri
 	return true;;
 }
 
-bool KMJobManager::sendCommandSystemJob(const QList<KMJob>&, int, const QString&)
+bool KMJobManager::sendCommandSystemJob(const QPtrList<KMJob>&, int, const QString&)
 {
 	return false;
 }
 
-bool KMJobManager::sendCommandThreadJob(const QList<KMJob>& jobs, int action, const QString&)
+bool KMJobManager::sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action, const QString&)
 {
 	if (action != KMJob::Remove)
 		return false;
 
-	QListIterator<KMJob>	it(jobs);
+	QPtrListIterator<KMJob>	it(jobs);
 	bool	result(true);
 	for (;it.current() && result; ++it)
 		result = m_threadjob->removeJob(it.current()->id());
@@ -137,7 +137,7 @@ bool KMJobManager::listJobs()
 	return true;
 }
 
-const QList<KMJob>& KMJobManager::jobList()
+const QPtrList<KMJob>& KMJobManager::jobList()
 {
 	discardAllJobs();
 	listJobs();

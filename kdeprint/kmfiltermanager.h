@@ -50,8 +50,8 @@ protected:
 private:
 	struct FilterInfo;
 	QStringList		m_flist;
-	QList<FilterInfo>	m_filters;
-	QDict< QList<FilterInfo> >	m_filterdict;
+	QPtrList<FilterInfo>	m_filters;
+	QDict< QPtrList<FilterInfo> >	m_filterdict;
 };
 
 #endif

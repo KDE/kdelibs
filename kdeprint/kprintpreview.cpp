@@ -62,7 +62,7 @@ void KPreviewProc::slotProcessExited(KProcess*)
 //*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
-: KParts::MainWindow(parent,"KPrintPreview",WType_Modal|WType_TopLevel|WStyle_Dialog)
+: KParts::MainWindow(parent,"KPrintPreview",WType_Dialog|WShowModal|WType_TopLevel)
 {
 	kdDebug() << "kdeprint: creating preview dialog" << endl;
 	setXMLFile(locate("config","ui/kprintpreviewui.rc"));

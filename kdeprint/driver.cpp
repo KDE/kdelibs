@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -98,7 +98,7 @@ int DrMain::checkConstraints()
 {
 	int 	result(0);
 	clearConflict();
-	QListIterator<DrConstraint>	it(m_constraints);
+	QPtrListIterator<DrConstraint>	it(m_constraints);
 	for (;it.current();++it)
 		if (it.current()->check(this))
 			result++;
@@ -136,7 +136,7 @@ DriverItem* DrGroup::createItem(DriverItem *parent)
 
 void DrGroup::createTree(DriverItem *parent)
 {
-	QListIterator<DrGroup>	lit(m_subgroups);
+	QPtrListIterator<DrGroup>	lit(m_subgroups);
 	for (lit.toLast();lit.current();--lit)
 		lit.current()->createItem(parent);
 
@@ -150,7 +150,7 @@ DrBase* DrGroup::findOption(const QString& name)
 	DrBase	*opt = m_options.find(name);
 	if (!opt)
 	{
-		QListIterator<DrGroup>	it(m_subgroups);
+		QPtrListIterator<DrGroup>	it(m_subgroups);
 		for (;it.current() && !opt; ++it)
 			opt = it.current()->findOption(name);
 	}
@@ -163,7 +163,7 @@ void DrGroup::clearConflict()
 	for (;dit.current();++dit)
 		dit.current()->setConflict(false);
 
-	QListIterator<DrGroup>	lit(m_subgroups);
+	QPtrListIterator<DrGroup>	lit(m_subgroups);
 	for (;lit.current();++lit)
 		lit.current()->clearConflict();
 }
@@ -174,7 +174,7 @@ void DrGroup::setOptions(const QMap<QString,QString>& opts)
 	for (;dit.current();++dit)
 		dit.current()->setOptions(opts);
 
-	QListIterator<DrGroup>	lit(m_subgroups);
+	QPtrListIterator<DrGroup>	lit(m_subgroups);
 	for (;lit.current();++lit)
 		lit.current()->setOptions(opts);
 }
@@ -185,7 +185,7 @@ void DrGroup::getOptions(QMap<QString,QString>& opts, bool incldef)
 	for (;dit.current();++dit)
 		dit.current()->getOptions(opts,incldef);
 
-	QListIterator<DrGroup>	lit(m_subgroups);
+	QPtrListIterator<DrGroup>	lit(m_subgroups);
 	for (;lit.current();++lit)
 		lit.current()->getOptions(opts,incldef);
 }
@@ -308,7 +308,7 @@ void DrListOption::setValueText(const QString& s)
 
 DrBase* DrListOption::findChoice(const QString& txt)
 {
-	QListIterator<DrBase>	it(m_choices);
+	QPtrListIterator<DrBase>	it(m_choices);
 	for (;it.current();++it)
 		if (it.current()->name() == txt)
 			return it.current();

@@ -23,7 +23,7 @@
 #define KMLISTVIEW_H
 
 #include <qlistview.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KMListViewItem;
 class KMPrinter;
@@ -35,7 +35,7 @@ public:
 	KMListView(QWidget *parent = 0, const char *name = 0);
 	~KMListView();
 
-	void setPrinterList(QList<KMPrinter> *list);
+	void setPrinterList(QPtrList<KMPrinter> *list);
 	void setPrinter(KMPrinter*);
 
 signals:
@@ -53,7 +53,7 @@ protected:
 	KMListViewItem* findItem(KMPrinter*);
 
 private:
-	QList<KMListViewItem>	m_items;
+	QPtrList<KMListViewItem>	m_items;
 	KMListViewItem		*m_root, *m_classes, *m_printers, *m_specials;
 };
 

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #define MATIC_H
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 /*static QString prefix = "";*/
 
@@ -49,7 +49,7 @@ public:
 
 	QString	*name;
 	QString	*value;
-	QList<MHash>	hashes;
+	QPtrList<MHash>	hashes;
 	Type	type;
 };
 
@@ -78,7 +78,7 @@ inline MHash::~MHash()
 			{
 				debug("%s%s => {",prefix.latin1(),(name ? name->latin1() : "<unnamed>"));
 				prefix.append("  ");
-				QListIterator<MHash>	it(hashes);
+				QPtrListIterator<MHash>	it(hashes);
 				for (;it.current();++it)
 					it.current()->dump();
 				prefix.truncate(prefix.length()-2);

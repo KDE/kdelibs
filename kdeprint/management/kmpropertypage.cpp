@@ -45,7 +45,7 @@ KMPropertyPage::~KMPropertyPage()
 
 void KMPropertyPage::setPrinter(KMPrinter *p)
 {
-	QListIterator<KMPropWidget>	it(m_widgets);
+	QPtrListIterator<KMPropWidget>	it(m_widgets);
 	for (;it.current();++it)
 		it.current()->setPrinterBase(p);
 }

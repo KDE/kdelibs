@@ -165,6 +165,6 @@ int KMUiManager::pluginPageCap()
 	return 0;
 }
 
-void KMUiManager::setupPrintDialogPages(QList<KPrintDialogPage>*)
+void KMUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>*)
 {
 }

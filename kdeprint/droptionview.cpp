@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -207,7 +207,7 @@ void ListView::setOption(DrBase *opt)
 		blockSS = true;
 		m_list->clear();
 		m_choices.clear();
-		QListIterator<DrBase>	it(*(((DrListOption*)opt)->choices()));
+		QPtrListIterator<DrBase>	it(*(((DrListOption*)opt)->choices()));
 		for (;it.current();++it)
 		{
 			m_list->insertItem(it.current()->get("text"));
@@ -254,7 +254,7 @@ void BooleanView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::Boolean)
 	{
-		QListIterator<DrBase>	it(*(((DrBooleanOption*)opt)->choices()));
+		QPtrListIterator<DrBase>	it(*(((DrBooleanOption*)opt)->choices()));
 		m_choices.clear();
 		m_group->find(0)->setText(it.toFirst()->get("text"));
 		m_choices.append(it.toFirst()->name());

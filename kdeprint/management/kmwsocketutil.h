@@ -23,7 +23,7 @@
 #define	KMWSOCKETUTIL_H
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kdialog.h>
 
 struct SocketInfo
@@ -64,13 +64,13 @@ public:
 	bool checkPrinter(const char *host, int port);
 	bool checkPrinter(unsigned long IP, int port);
 
-	const QList<SocketInfo>* printerList() { return &printerlist_; }
+	const QPtrList<SocketInfo>* printerList() { return &printerlist_; }
 	bool scanNetwork(QProgressBar *bar = 0);
 	void configureScan(QWidget *parent = 0);
 	void setDefaultPort(int p) { port_ = p; }
 
 private:
-	QList<SocketInfo>	printerlist_;
+	QPtrList<SocketInfo>	printerlist_;
 	unsigned long		start_, stop_;
 	int			port_;
 	int			timeout_;	// in milliseconds

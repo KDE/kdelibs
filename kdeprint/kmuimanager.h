@@ -73,7 +73,7 @@ public:
 	int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
 	int dialogFlags();
 	void setupPrintDialog(KPrintDialog*);
-	virtual void setupPrintDialogPages(QList<KPrintDialogPage>*);
+	virtual void setupPrintDialogPages(QPtrList<KPrintDialogPage>*);
 
 	// printer property dialog
 	void setupPropertyDialog(KPrinterPropertyDialog*);
@@ -86,7 +86,7 @@ public:
 
 protected:
 	int			m_printdialogflags;
-	QList<KPrintDialogPage>	m_printdialogpages;
+	QPtrList<KPrintDialogPage>	m_printdialogpages;
 };
 
 #endif

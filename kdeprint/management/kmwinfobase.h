@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #define KMWINFOBASE_H
 
 #include "kmwizardpage.h"
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QLabel;
 class QLineEdit;
@@ -41,8 +41,8 @@ public:
 	QString text(int);
 
 private:
-	QList<QLabel>		m_labels;
-	QList<QLineEdit>	m_edits;
+	QPtrList<QLabel>		m_labels;
+	QPtrList<QLineEdit>	m_edits;
 	QLabel			*m_info;
 	int			m_nlines;
 };

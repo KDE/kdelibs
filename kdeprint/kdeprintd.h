@@ -49,7 +49,7 @@ protected:
 	void cleanTempFile(KProcess*);
 
 private:
-	QList<KPrintProcess>	m_processpool;
+	QPtrList<KPrintProcess>	m_processpool;
 	QPtrDict<QStringList>	m_tempfiles;
 };
 

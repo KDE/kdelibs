@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #define KPRINTERPROPERTYDIALOG_H
 
 #include <qtabdialog.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 
 class KMPrinter;
@@ -56,7 +56,7 @@ protected slots:
 protected:
 	KMPrinter		*m_printer;
 	DrMain			*m_driver;
-	QList<KPrintDialogPage>	m_pages;
+	QPtrList<KPrintDialogPage>	m_pages;
 	KPrintDialogPage	*m_current;
 	QMap<QString,QString>	m_options;
 };

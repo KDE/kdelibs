@@ -247,7 +247,7 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 	// reload the factory
 	loadFactory(syst);
 	// notify all registered objects
-	QListIterator<KPReloadObject>	it(m_objects);
+	QPtrListIterator<KPReloadObject>	it(m_objects);
 	for (;it.current();++it)
 		it.current()->reload();
 }

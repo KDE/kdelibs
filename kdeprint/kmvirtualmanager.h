@@ -23,7 +23,7 @@
 #define KMVIRTUALMANAGER_H
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdatetime.h>
 
 class KMPrinter;
@@ -37,7 +37,7 @@ public:
 
         void refresh();
 	void reset();
-	void virtualList(QList<KMPrinter>& list, const QString& prname);
+	void virtualList(QPtrList<KMPrinter>& list, const QString& prname);
 	void triggerSave();
 
 	KMPrinter* findPrinter(const QString& name);

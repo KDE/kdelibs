@@ -79,10 +79,10 @@ void KPrintAction::slotAboutToShow()
 {
 	popupMenu()->clear();
 	d->printers.clear();
-	QList<KMPrinter>	*prts = KMManager::self()->printerList();
+	QPtrList<KMPrinter>	*prts = KMManager::self()->printerList();
 	if (prts && !prts->isEmpty())
 	{
-		QListIterator<KMPrinter>	it(*prts);
+		QPtrListIterator<KMPrinter>	it(*prts);
 		bool	first(false);
 		int	ID(0);
 		for (; it.current(); ++it)

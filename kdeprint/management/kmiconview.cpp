@@ -104,7 +104,7 @@ KMIconViewItem* KMIconView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		QListIterator<KMIconViewItem>	it(m_items);
+		QPtrListIterator<KMIconViewItem>	it(m_items);
 		for (;it.current();++it)
 			if (it.current()->printer() && it.current()->printer()->name() == p->name()
 			    && it.current()->printer()->isClass() == p->isClass())
@@ -113,17 +113,17 @@ KMIconViewItem* KMIconView::findItem(KMPrinter *p)
 	return 0;
 }
 
-void KMIconView::setPrinterList(QList<KMPrinter> *list)
+void KMIconView::setPrinterList(QPtrList<KMPrinter> *list)
 {
 	bool	changed(false);
 
-	QListIterator<KMIconViewItem>	it(m_items);
+	QPtrListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 
 	if (list)
 	{
-		QListIterator<KMPrinter>	it(*list);
+		QPtrListIterator<KMPrinter>	it(*list);
 		KMIconViewItem			*item(0);
 		for (;it.current();++it)
 		{
@@ -160,7 +160,7 @@ void KMIconView::setViewMode(ViewMode m)
 	bool	big = (m == KMIconView::Big);
 	int	mode = (big ? QIconView::Bottom : QIconView::Right);
 
-	QListIterator<KMIconViewItem>	it(m_items);
+	QPtrListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->updatePrinter(0, mode);
 
@@ -184,7 +184,7 @@ void KMIconView::slotSelectionChanged()
 
 void KMIconView::setPrinter(KMPrinter *p)
 {
-	QListIterator<KMIconViewItem>	it(m_items);
+	QPtrListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->printer() == p)
 		{

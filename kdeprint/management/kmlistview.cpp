@@ -149,7 +149,7 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		QListIterator<KMListViewItem>	it(m_items);
+		QPtrListIterator<KMListViewItem>	it(m_items);
 		for (;it.current();++it)
 			if (it.current()->printer() && it.current()->printer()->name() == p->name()
 			    && it.current()->printer()->isClass() == p->isClass())
@@ -158,17 +158,17 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 	return 0;
 }
 
-void KMListView::setPrinterList(QList<KMPrinter> *list)
+void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
 {
 	bool 	changed(false);
 
-	QListIterator<KMListViewItem>	it(m_items);
+	QPtrListIterator<KMListViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 
 	if (list)
 	{
-		QListIterator<KMPrinter>	it(*list);
+		QPtrListIterator<KMPrinter>	it(*list);
 		KMListViewItem			*item (0);
 		for (;it.current();++it)
 		{
@@ -206,7 +206,7 @@ void KMListView::slotSelectionChanged()
 
 void KMListView::setPrinter(KMPrinter *p)
 {
-	QListIterator<KMListViewItem>	it(m_items);
+	QPtrListIterator<KMListViewItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->printer() == p)
 		{

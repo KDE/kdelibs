@@ -38,6 +38,7 @@
 #include <kapp.h>
 #include <kcursor.h>
 
+#undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
 
 KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
@@ -218,7 +219,7 @@ void KMJobViewer::initPrinterActions()
 	fact->insert(actionCollection()->action("filter_sep"));
 
 	// parse printers
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (int i=0;it.current();++it,i++)
 	{
 		if (!it.current()->instanceName().isEmpty())
@@ -235,11 +236,11 @@ void KMJobViewer::initPrinterActions()
 
 void KMJobViewer::updateJobs()
 {
-	QListIterator<JobItem>	jit(m_items);
+	QPtrListIterator<JobItem>	jit(m_items);
 	for (;jit.current();++jit)
 		jit.current()->setDiscarded(true);
 
-	QListIterator<KMJob>	it(m_jobs);
+	QPtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 	{
 		KMJob	*j(it.current());
@@ -263,7 +264,7 @@ void KMJobViewer::updateJobs()
 
 JobItem* KMJobViewer::findItem(int ID)
 {
-	QListIterator<JobItem>	it(m_items);
+	QPtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->jobID() == ID) return it.current();
 	return 0;
@@ -276,7 +277,7 @@ void KMJobViewer::slotSelectionChanged()
 	int	thread(0);
 	bool	completed(true);
 
-	QListIterator<JobItem>	it(m_items);
+	QPtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 	{
 		if (it.current()->isSelected())
@@ -303,10 +304,10 @@ void KMJobViewer::slotSelectionChanged()
 	actionCollection()->action("job_restart")->setEnabled((thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
 }
 
-void KMJobViewer::jobSelection(QList<KMJob>& l)
+void KMJobViewer::jobSelection(QPtrList<KMJob>& l)
 {
 	l.setAutoDelete(false);
-	QListIterator<JobItem>	it(m_items);
+	QPtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->isSelected())
 			l.append(it.current()->job());
@@ -316,7 +317,7 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 {
 	KMTimer::blockTimer();
 
-	QList<KMJob>	l;
+	QPtrList<KMJob>	l;
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
 		KMessageBox::error(this,i18n("Unable to perform action \"%1\" on selected jobs !").arg(name));
@@ -364,7 +365,7 @@ void KMJobViewer::loadPrinters()
 	m_printers.clear();
 
 	// retrieve printer list without reloading it (faster)
-	QListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
+	QPtrListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
 	for (;it.current();++it)
 	{
 		// keep only real printers (no instance, no implicit)

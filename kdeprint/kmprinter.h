@@ -179,11 +179,11 @@ protected:
 	bool			m_isedited;
 };
 
-class KMPrinterList : public QList<KMPrinter>
+class KMPrinterList : public QPtrList<KMPrinter>
 {
 public:
-	KMPrinterList() : QList<KMPrinter>() {}
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2)
+	KMPrinterList() : QPtrList<KMPrinter>() {}
+	virtual int compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2)
 	{ return KMPrinter::compare((KMPrinter*)i1, (KMPrinter*)i2); }
 };
 

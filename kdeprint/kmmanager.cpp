@@ -153,7 +153,7 @@ bool KMManager::testPrinter(KMPrinter*)
 
 KMPrinter* KMManager::findPrinter(const QString& name)
 {
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->name() == name) return it.current();
 	setErrorMsg(i18n("%1: printer not found.").arg(name));
@@ -162,13 +162,13 @@ KMPrinter* KMManager::findPrinter(const QString& name)
 
 KMPrinter* KMManager::softDefault() const
 {
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->isSoftDefault()) return it.current();
 	return 0;
 }
 
-QList<KMPrinter>* KMManager::printerList(bool reload)
+QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	if (reload || m_printers.count() == 0)
 	{
@@ -300,7 +300,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 
 void KMManager::setHardDefault(KMPrinter *p)
 {
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		it.current()->setHardDefault(false);
 	if (p) p->setHardDefault(true);
@@ -308,7 +308,7 @@ void KMManager::setHardDefault(KMPrinter *p)
 
 void KMManager::setSoftDefault(KMPrinter *p)
 {
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
         {
 		it.current()->setSoftDefault(false);
@@ -350,7 +350,7 @@ QString KMManager::testPage()
 
 void KMManager::discardAllPrinters(bool on)
 {
-	QListIterator<KMPrinter>	it(m_printers);
+	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (!on || !it.current()->isSpecial())
 			it.current()->setDiscarded(on);

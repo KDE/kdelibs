@@ -58,7 +58,7 @@ void radioCursor(QButtonGroup *bg)
 void initCombo(QComboBox *cb, DrListOption *opt)
 {
 	cb->clear();
-	QListIterator<DrBase>	it(*(opt->choices()));
+	QPtrListIterator<DrBase>	it(*(opt->choices()));
 	for (;it.current();++it)
 	{
 		cb->insertItem(it.current()->get("text"));

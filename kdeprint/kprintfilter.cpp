@@ -22,7 +22,7 @@
 #include "driverview.h"
 
 #include <qxml.h>
-#include <qstack.h>
+#include <qptrstack.h>
 #include <qregexp.h>
 #include <kstddirs.h>
 #include <kdialogbase.h>
@@ -57,7 +57,7 @@ public:
 private:
 	enum State { None, Filter, Args, Input, Output };
 private:
-	QStack<DrGroup>	m_stack;
+	QPtrStack<DrGroup>	m_stack;
 	DrBase		*m_opt;
 	int		m_state;
 	KPrintFilter		*m_filter;

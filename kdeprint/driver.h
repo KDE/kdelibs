@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #define DRIVER_H
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 #include <qmap.h>
 #include <qrect.h>
@@ -102,7 +102,7 @@ protected:
 	void createTree(DriverItem *parent);
 
 protected:
-	QList<DrGroup>	m_subgroups;
+	QPtrList<DrGroup>	m_subgroups;
 	QDict<DrBase>	m_options;
 };
 
@@ -123,7 +123,7 @@ public:
 	void addPageSize(DrPageSize *sz);
 
 protected:
-	QList<DrConstraint>	m_constraints;
+	QPtrList<DrConstraint>	m_constraints;
 	QDict<DrPageSize>	m_pagesizes;
 };
 
@@ -189,7 +189,7 @@ public:
 	~DrListOption();
 
 	void addChoice(DrBase *ch)	{ m_choices.append(ch); }
-	QList<DrBase>* choices()	{ return &m_choices; }
+	QPtrList<DrBase>* choices()	{ return &m_choices; }
 	DrBase* currentChoice() const 	{ return m_current; }
 	DrBase* findChoice(const QString& txt);
 
@@ -198,7 +198,7 @@ public:
 	virtual void setValueText(const QString& s);
 
 protected:
-	QList<DrBase>	m_choices;
+	QPtrList<DrBase>	m_choices;
 	DrBase		*m_current;
 };
 

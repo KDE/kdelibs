@@ -21,7 +21,7 @@
 #define KMCONFIGDIALOG_H
 
 #include <kdialogbase.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include "kmconfigpage.h"
 
@@ -37,7 +37,7 @@ protected slots:
 	void slotOk();
 
 private:
-	QList<KMConfigPage>	m_pages;
+	QPtrList<KMConfigPage>	m_pages;
 };
 
 #endif

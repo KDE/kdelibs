@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@ void MHash::addHash(MHash *hash)
 		hashes.append(hash);
 		if (hash->type == MHash::Hash && !hash->name)
 		{
-			QListIterator<MHash>	it(hash->hashes);
+			QPtrListIterator<MHash>	it(hash->hashes);
 			for (;it.current();++it)
 				if (it.current()->type == MHash::String && it.current()->name && *(it.current()->name) == "name")
 				{
@@ -56,7 +56,7 @@ void MaticBlock::readMHash(MHash *h)
 	if (h->type == MHash::Hash)
 	{
 		if (h->name) m_name = *(h->name);
-		QListIterator<MHash>	it(h->hashes);
+		QPtrListIterator<MHash>	it(h->hashes);
 		for (;it.current();++it)
 		{
 			switch (it.current()->type)
