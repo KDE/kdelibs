@@ -17,7 +17,7 @@ modified        string          The modification date of the document (set by ht
 
 accept          string          List of mimetypes to accept seperated by a ", ". (read by http)
 
-userAgent       string          The user agent name to send to remote host (read by http)
+UserAgent       string          The user agent name to send to remote host (read by http)
 
 content-type    string          The content type of the data to be uploaded (read by http)
 
@@ -63,8 +63,8 @@ job = KIO::get( KURL("http://www.kde.org"), false, false);
 job->addMetaData("cookies", "manual");
 job->addMetaData("setcookies", "Cookie: foo=bar; gnat=gnork");
 
-The above sends two cookies along with the request, any cookies send back by 
-the server can be retrieved with job->queryMetaData("cookies") after 
+The above sends two cookies along with the request, any cookies send back by
+the server can be retrieved with job->queryMetaData("cookies") after
 receiving the mimetype() signal or when the job is finished.
 
 The cookiejar is not used in this case.
