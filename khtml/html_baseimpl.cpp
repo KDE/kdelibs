@@ -118,6 +118,13 @@ void HTMLBodyElementImpl::layout(bool deep)
 
 #endif
 
+void HTMLBodyElementImpl::close() 
+{ 
+    printf("BODY:close\n");
+    setLayouted(false);
+    _parent->updateSize(); 
+}
+
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
@@ -523,6 +530,7 @@ void HTMLHtmlElementImpl::getAbsolutePosition(int &xPos, int &yPos)
 	xPos = 0, yPos = 0;
 }
 
+#include "qdatetime.h"
 
 void HTMLHtmlElementImpl::layout(bool deep)
 {
@@ -541,7 +549,11 @@ void HTMLHtmlElementImpl::layout(bool deep)
 	child->setXPos(BORDER);
 	child->setYPos(BORDER);
     }
+    
+    QTime qt;
+    qt.start();
     child->layout(deep);
+    printf("TIME: layout() dt=%d\n",qt.elapsed());
 
     ascent = 0;
     descent = child->getHeight();

@@ -824,8 +824,15 @@ void KHTMLWidget::end()
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 {
     printf("resizeEvent\n");
+    viewport()->setUpdatesEnabled(false); 
     QScrollView::resizeEvent(event);
     layout();
+    viewport()->setUpdatesEnabled(true);
+
+    //repaint without erasing the background
+    //viewport()->repaint(false);
+    viewport()->repaint(true);
+ 
     //emit resized( event->size() );
 }
 

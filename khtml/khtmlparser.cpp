@@ -318,6 +318,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	       tmp->nodeName().string().ascii(),
 	       newNode->nodeName().string().ascii());
 #endif
+    	n->attach(HTMLWidget);
+
 	// don't push elements without end tag on the stack
 	if(tagPriority[id] != 0)
 	{
@@ -328,8 +330,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	}
 	else
 	    n->calcMinMaxWidth();
-
-	n->attach(HTMLWidget);
+	
 
 	if(n->isElementNode())
 	    static_cast<HTMLElementImpl *>(n)->setStyle(currentStyle);

@@ -371,7 +371,8 @@ void HTMLGenericFormElementImpl::setYPos( int yPos )
 void HTMLGenericFormElementImpl::print(QPainter *p, int, int,
 				       int, int, int tx, int ty)
 {
-    if(badPos && view && w)
+    //if(badPos && view && w)
+    if(view && w)
     {
 	tx += x;
 	ty += y - ascent;

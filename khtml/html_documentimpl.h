@@ -27,6 +27,8 @@
 #include "dtd.h"
 #include "dom_docimpl.h"
 
+#include "html_baseimpl.h"
+
 class KHTMLParser;
 class HTMLTokenizer;
 class KHTMLWidget;
@@ -39,7 +41,7 @@ class HTMLCollection;
 class NodeList;
 class Element;
 class HTMLElement;
-class HTMLElementImpl;
+
 class DOMString;
 
 class HTMLDocumentImpl : public DocumentImpl
@@ -69,7 +71,10 @@ public:
 
     // oeverrides NodeImpl
     virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void setAvailableWidth(int w = -1) { if(w != -1) width = w; }
+    virtual void setAvailableWidth(int w = -1) { 
+    	if(w != -1) width = w; 
+	if(bodyElement) bodyElement->setAvailableWidth(w);
+    }
 
     virtual int getWidth() const { return width; }
     virtual int getHeight() const { return height; }

@@ -49,6 +49,8 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(Attribute *);
+    
+    virtual void close();
     	
 //    virtual void layout(bool);  // just use BlockElement layout instead
 

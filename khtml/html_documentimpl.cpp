@@ -289,16 +289,22 @@ void HTMLDocumentImpl::print(NodeImpl *e, bool recursive)
 void HTMLDocumentImpl::updateSize()
 {
     if(body())
-    {    	
-	int w = bodyElement->getMinWidth();
-	int h = bodyElement->getHeight();
-	printf("RESIZE %d,%d\n",w,h);
-	if(width < w || height < h)
+    {    
+    	int oldw = width;
+	int oldh = height;
+	
+    	layout(true);	
+	
+	if(width != oldw || height != oldh)
+	{
 	    if(view)
 	    {
-		view->resizeContents(width, h);
+		view->resizeContents(width, height);
 		// ### schedule layout!
 	    }
+	}
+	if (view)	
+	    view->viewport()->repaint(true);
     }
 }
 

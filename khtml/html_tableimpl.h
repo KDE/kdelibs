@@ -246,7 +246,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-
 class HTMLTablePartElementImpl : public HTMLBlockElementImpl
 {
 public:
@@ -275,9 +274,15 @@ public:
 	} 
     virtual void updateSize() 
     { 
-    	calcMinMaxWidth();    
+    	/*calcMinMaxWidth();    
 	setLayouted(false);
-	if(_parent) _parent->updateSize(); 
+	if(_parent) _parent->updateSize(); */
+	calcMinMaxWidth();  
+	setLayouted(false);
+	if (table)
+	{
+	    table->updateSize();
+	}
     }
     
     virtual VAlign vAlign() { return valign; } 
@@ -412,6 +417,8 @@ public:
 	} 
         
     virtual void calcVerticalAlignment(int baseline);
+    
+    virtual void layout(bool deep = false);    
             
     virtual VAlign vAlign();
    

@@ -63,6 +63,8 @@ void HTMLBlockquoteElementImpl::setAvailableWidth(int w)
     if(w != -1) availableWidth = w - 2*BLOCKQUOTEINDENT;
     if(availableWidth < 20) availableWidth = 20;
 
+    setLayouted(false);
+
     NodeImpl *child = firstChild();
     while(child != 0)
     {
@@ -233,7 +235,7 @@ void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
 HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentImpl *doc, ushort _tagid) : HTMLBlockElementImpl(doc)
 {
     _id = _tagid;
-    halign = HCenter;
+    halign = Left;
 }
 
 HTMLHeadingElementImpl::~HTMLHeadingElementImpl()

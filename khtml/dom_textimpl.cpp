@@ -238,3 +238,28 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 
     return inside;
 }
+
+int TextImpl::getXPos() const
+{
+    if (first)
+	return first->x;
+    else
+	return 0;
+}
+
+int TextImpl::getYPos() const
+{
+    if (first)
+	return first->y;
+    else
+	return 0;
+}
+
+int TextImpl::getAscent() const
+{
+    //printf("AS%d\n",first->ascent);
+    if (first)
+	return first->ascent;
+    else
+	return 0;
+}

@@ -188,8 +188,7 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
         // Image dimensions have been changed, recalculate layout
 	printf("Image: recalculating layout\n");
 	calcMinMaxWidth();
-	if(_parent) _parent->updateSize();
-	layout();	
+	if(_parent) _parent->updateSize();	
     }
     static_cast<HTMLDocumentImpl *>(document)->print(this);
 }
@@ -308,9 +307,10 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	    width = 32;
 	    setMinMaxKnown(false);
 	}
-	else
+	else if (width!=pixmap->width())
 	{
 	    width = pixmap->width();
+	    setLayouted(false);
 	    // if it doesn't fit... make it fit
 	    // NO! Images don't scale unless told to. Ever.  -AKo 
 	    //if(availableWidth < width) width = availableWidth;

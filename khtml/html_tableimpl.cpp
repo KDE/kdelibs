@@ -28,7 +28,7 @@
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
 //#define TABLE_DEBUG
-//#define DEBUG_LAYOUT
+// #define DEBUG_LAYOUT
 
 #include <qlist.h>
 #include <qstack.h>
@@ -1039,6 +1039,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
     {
 	tableWidth = availableWidth < maxWidth ?
 	    availableWidth : maxWidth;
+	//tableWidth = availableWidth;
     }
 #ifdef TABLE_DEBUG
     printf("table width set to %d\n", tableWidth);
@@ -1206,6 +1207,7 @@ void HTMLTableElementImpl::calcRowHeights()
 
     for ( r = 0; r < totalRows; r++ )
     {
+    	int oldheight = rowHeights[r+1] - rowHeights[r];
 	rowHeights[r+1] = 0;
 	
 	int baseline=0;
@@ -1235,20 +1237,12 @@ void HTMLTableElementImpl::calcRowHeights()
 		NodeImpl* firstElem = cell->firstChild();	    	    
 		if (firstElem)
 		{
-		    int b=0;
-		    if (firstElem->isTextNode())
-		    {
-    			TextSlave* sl = static_cast<TextImpl*>(firstElem)->first;
-			if (sl)
-			    b = sl->y;   
-		    }
-		    else
-	    		b=firstElem->getYPos();
+		    int b=firstElem->getAscent();
 
 		    if (b>baseline)
 			baseline=b;
 		    	    	
-		    int td = cell->getHeight() - (b-rowHeights[ indx ]);
+		    int td = rowHeights[ indx ] + cell->getHeight() - b;
 		    if (td>bdesc)
 			bdesc = td;
 		}
@@ -1268,11 +1262,32 @@ void HTMLTableElementImpl::calcRowHeights()
 
 	if ( rowHeights[r+1] < rowHeights[r] )
 	    rowHeights[r+1] = rowHeights[r];
+	    
+	// if rowheight changed, recalculate valigns later
+	if (oldheight != rowHeights[r+1] - rowHeights[r])
+	{
+	    for ( c = 0; c < totalCols; c++ )
+	    {
+		if ( ( cell = cells[r][c] ) == 0 )
+		    continue;
+		if ( c < totalCols - 1 && cell == cells[r][c+1] )
+		    continue;
+		if ( r < totalRows - 1 && cells[r+1][c] == cell )
+    		    continue;
+		
+		if (cell->vAlign()!=Top)
+		    cell->setLayouted(false);
+	    }
+	}
+
     }
 }
 
 void HTMLTableElementImpl::layout(bool deep)
 {
+    if (layouted())
+   	return;
+
     ascent = 0;
     descent = 0;
     int pad = padding/2;
@@ -1334,7 +1349,6 @@ void HTMLTableElementImpl::layout(bool deep)
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
 	int cellHeight;
-	int baseline=0;
 
 	if ( tCaption )// && capAlign == HTMLClue::Top )
 	    descent += tCaption->getHeight();
@@ -1372,6 +1386,7 @@ void HTMLTableElementImpl::layout(bool deep)
     if(frame & Below) descent += border;
 
     setLayouted();
+    
 }
 
 void HTMLTableElementImpl::setAvailableWidth(int w)
@@ -1583,9 +1598,10 @@ void HTMLTableElementImpl::calcMinMaxWidth()
 
     for(int i = 0; i < (int)totalCols; i++)
     {
-	maxWidth += actColWidth[i] + spacing;
+	maxWidth += colMaxWidth[i] + spacing;
 	minWidth += colMinWidth[i] + spacing;
     }
+//    printf("table: calcminmaxwidth %d, %d\n",minWidth,maxWidth);
 
     if(!availableWidth || minMaxKnown()) return;
 
@@ -1609,14 +1625,17 @@ void HTMLTableElementImpl::close()
 
 void HTMLTableElementImpl::updateSize()
 {
-    calcMinMaxWidth();
+    /*calcMinMaxWidth();
     if (incremental)
     	calcColWidth();
     else
     	calcColWidthII();
     setLayouted(false);
-    if(_parent) _parent->updateSize();
+    if(_parent) _parent->updateSize();*/
+    
+    HTMLPositionedElementImpl::updateSize();
 }
+
 
 // -------------------------------------------------------------------------
 
@@ -1925,7 +1944,7 @@ void HTMLTableCellElementImpl::calcMinMaxWidth()
     HTMLBlockElementImpl::calcMinMaxWidth();
     if(nWrap) minWidth = maxWidth;
     table->addColInfo(this);
-    printf("cell: calcminmaxwidth %d, %d\n",width,minWidth);
+//    printf("cell: calcminmaxwidth %d, %d\n",minWidth,maxWidth);
 //    if(availableWidth && minWidth > availableWidth)
 //	if(_parent) _parent->updateSize();
 
@@ -1989,6 +2008,9 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
     // called after the cell has been layouted and rowheight is known.
     // probably non-optimal...  -AKo
 
+    if (layouted())
+    	return;
+
 //    printf("HTMLTableCellElementImpl::calcVerticalAlignment()\n");
 
     int hh = rowHeight-table->cellPadding();
@@ -1998,29 +2020,31 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
     NodeImpl *current = firstChild();
     
     if (!current || valign==Top || hh <= getHeight())
+    {
+    	setLayouted();
     	return;
+    }
     int vdelta=0;
     
     VAlign va = vAlign();
     switch (va)
     {
     case Baseline:
-    	if (current->isTextNode())
-	{
-    	    TextSlave* sl = static_cast<TextImpl*>(current)->first;
-	    if (sl)
-	    	vdelta = baseline - sl->y ;	    
-	}
-	else
-    	    vdelta = baseline - current->getYPos();
+    	vdelta = baseline - current->getYPos();
 	break;
     case VNone:
     case VCenter:
-    	vdelta=(hh-descent)/2;
+    	vdelta=(hh-descent)/2-(current->getYPos()-current->getAscent());
 	break;
     case Bottom:
-    	vdelta=hh-descent;
+    	vdelta=(hh-descent)-(current->getYPos()-current->getAscent());
 	break;            
+    }
+    
+    if (!vdelta)
+    {
+    	setLayouted();
+	return;    
     }
     
     QStack<NodeImpl> nodeStack;
@@ -2063,8 +2087,18 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	    current = current->nextSibling();
 	}
     }
+    
+    setLayouted();
 
 }
+
+void HTMLTableCellElementImpl::layout(bool deep)
+{
+    bool lay = layouted();
+    HTMLBlockElementImpl::layout(deep);
+    setLayouted(lay);
+}
+
 
 VAlign HTMLTableCellElementImpl::vAlign()
 {

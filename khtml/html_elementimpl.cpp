@@ -23,7 +23,7 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 //#define DEBUG_LAYOUT
-#undef PAR_DEBUG
+//#define PAR_DEBUG
 
 #include "dom_string.h"
 
@@ -241,10 +241,10 @@ void HTMLElementImpl::close()
     calcMinMaxWidth();
     if(!availableWidth) return;
     if(availableWidth < minWidth)
-	_parent->updateSize();
+    	_parent->updateSize();
     else if(!isInline())
     {
-	layout();
+	layout(true);
 	if(layouted())
 	    static_cast<HTMLDocumentImpl *>(document)->print(this);
     }
@@ -498,7 +498,7 @@ NodeImpl *HTMLPositionedElementImpl::addChild(NodeImpl *newChild)
 
 void HTMLPositionedElementImpl::updateSize()
 {
-//    printf("positionelement::updateSize()\n");
+    //printf("positionelement::updateSize()\n");
     int oldAscent = ascent;
     int oldDescent = descent;
     int oldMin = minWidth;
@@ -506,22 +506,25 @@ void HTMLPositionedElementImpl::updateSize()
     calcMinMaxWidth();
     if(minWidth > availableWidth || minWidth!=oldMin)
     {
-//    	printf("parent\n");
+    	//printf("parent id=%d\n",_parent->id());
 	if(_parent) _parent->updateSize();
     }
     else
     {
-//    	printf("layout\n");
+    	//printf("layout\n");
 	setAvailableWidth();
 	layout(true);	
 	if(ascent != oldAscent || descent != oldDescent)
+	{
 	    if(_parent) _parent->updateSize();
-	
-	// ###FIXME   		
-	KHTMLWidget* kh = const_cast<KHTMLWidget*>(
-	    static_cast<HTMLDocumentImpl*>(document)->HTMLWidget());
-	if (kh)
-	    kh->updateContents(getXPos(),getYPos(),getWidth(),getHeight());
+	} else {
+	    //printf("HACK!\n");
+	    // ###FIXME   		
+	    KHTMLWidget* kh = const_cast<KHTMLWidget*>(
+		static_cast<HTMLDocumentImpl*>(document)->HTMLWidget());
+	    if (kh)
+		kh->updateContents(getXPos(),getYPos()-getAscent(),getWidth(),getHeight());
+	}
     }
 }
 // -------------------------------------------------------------------------
@@ -592,6 +595,9 @@ void HTMLBlockElementImpl::printObject(QPainter *p, int _x, int _y,
 
 void HTMLBlockElementImpl::layout( bool deep )
 {
+    if (layouted())
+   	return;
+
     width = availableWidth;
 #ifdef DEBUG_LAYOUT
     printf("%s(BlockElement)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
@@ -941,7 +947,11 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 			    if (dw==width)
 			    {
 			    	endNode = testNode;
-			    	endPos = testPos;
+				// are we advancing at all?
+				if (startPos==testPos && startNode==testNode)
+				    endPos = ++testPos;
+				else 
+			    	    endPos = testPos;
 			    }
 			    else
 			    {
@@ -1051,8 +1061,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
  			if (endNode.current()->isTextNode())
  			{
 			    endPos=-1; // -1=break after this text element
- 			}
-			
+ 			} 
 			lineFull = true;
 			break;
 		    }
@@ -1067,6 +1076,9 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    	secondaryAscent = currentAscent;
 		    if(currentDescent > lineDescent)
 		    	lineDescent = currentDescent;
+			
+		    endNode = testNode;
+	    	    endPos = testPos;			
 		}
 
 	    }
@@ -1098,7 +1110,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
 	printf("got line from %p/%d to %p/%d\n", startNode.current(), startPos,
 	       endNode.current(), endPos);
-	printf("ascent/decsent %d/%d\n", lineAscent, lineDescent);
+	printf("ascent/descent %d/%d\n", lineAscent, lineDescent);
 #endif	
 
 	// alignment		
@@ -1189,6 +1201,8 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    else if (current->isFloating())
     	    {
 		nextNode=true;
+		if(current == endNode.current())
+		    endOfLine = true;
 	    }	
 	    else
 	    { 	
@@ -1200,20 +1214,15 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		case ID_P:
 		    // ### should be defined by style sheet...
 		    // ### add indent for next line acc to style
-
 		    lineDescent += 8;		
+		    
+ 		case ID_P + ID_CLOSE_TAG:				    
 		case ID_BR:
 		    // ignore
 		    endOfLine = true;
 		    nextNode = true;
 		    break;
- 		case ID_P + ID_CLOSE_TAG:		
- 		    // helper tag
-  		    ++startNode;		
-  		    endOfLine = true;
-  		    startPos = 0;
-  		    slave = 0;
-  		    break;
+
  		default:	    		
  		    current->setXPos(xPos+current->hSpace());
   		    int asc;
@@ -1225,7 +1234,9 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
   		    	asc=lineAscent;
  		    current->setYPos(descent + asc + current->vSpace());
  		    xPos += current->getWidth()+current->hSpace()*2;
-  		    nextNode = true;
+		    if(current == endNode.current())
+		    	endOfLine = true;
+		    nextNode = true;
  		    break;				
   		}		
 	    }
@@ -1302,33 +1313,32 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
 		static_cast<HTMLDocumentImpl *>(document)->print(this);
 		startPar = 0;
 	    }
-	}
-    	if(child->isFloating())
-    	{
-    	    calcFloating(newChild,descent);	
-    	}
-	else
-	{		
-	    int x = getLeftMargin(descent);
-	    int w = getWidth(descent);
-	    child->setYPos(descent);
- 	    child->setAvailableWidth(w);
-	    switch(hAlign())
+	    if(child->isFloating())
 	    {
-	    case Left:
-		break;
-	    case Right:
-		x = x + w - child->getWidth();
-		break;
-	    case HCenter:
-		x = x + (w - child->getWidth())/2;
-		break;
-	    default:
-		break;
+    		calcFloating(newChild,descent);	
 	    }
-	    child->setXPos(x);	
-	    child->layout(false);
-	}
+	    else
+	    {		
+		int x = getLeftMargin(descent);
+		int w = getWidth(descent);
+		child->setYPos(descent);
+ 		child->setAvailableWidth(w);
+		switch(hAlign())
+		{
+		case Left:
+		    break;
+		case Right:
+		    x = x + w - child->getWidth();
+		    break;
+		case HCenter:
+		    x = x + (w - child->getWidth())/2;
+		    break;
+		default:
+		    break;
+		}
+		child->setXPos(x);	
+	    }
+	}	
     }
 
     return newChild;

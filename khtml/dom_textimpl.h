@@ -101,6 +101,9 @@ public:
     virtual bool mouseEvent( int x, int y, int button, 
 			     DOM::NodeImpl::MouseEventType, 
 			     int _tx, int _ty, DOMString &url);
+    virtual int getXPos() const;
+    virtual int getYPos() const;
+    virtual int getAscent() const;
 
 protected:
     short minWidth;
