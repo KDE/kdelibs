@@ -1125,7 +1125,7 @@ public:
 
 /*
  * The FileCopyJob works according to the famous Bayern
- * 'Alternating Bittburger Protocol': we either drink a beer or we
+ * 'Alternating Bitburger Protocol': we either drink a beer or we
  * we order a beer, but never both at the same time.
  * Tranlated to io-slaves: We alternate between receiving a block of data
  * and sending it away.
