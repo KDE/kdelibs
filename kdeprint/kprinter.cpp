@@ -326,11 +326,24 @@ void KPrinter::translateQtOptions()
 	{
 		int res = resolution();
 		DrPageSize *ps = d->m_pagesize;
-		d->m_wrapper->setMargins(
-				( int )( ( ps->topMargin() * res + 71 ) / 72 ),
-				( int )( ( ps->leftMargin() * res + 71 ) / 72 ),
-				( int )( ( ps->bottomMargin() * res + 71 ) / 72 ),
-				( int )( ( ps->rightMargin() * res + 71 ) / 72 ) );
+		int top = ( int )( ps->topMargin() * res + 71 ) / 72;
+		int left = ( int )( ps->leftMargin() * res + 71 ) / 72;
+		int bottom = ( int )( ps->bottomMargin() * res + 71 ) / 72;
+		int right = ( int )( ps->rightMargin() * res + 71 ) / 72;
+		if ( !fullPage() )
+		{
+			// Printers can often print very close to the edges (PPD files say ImageArea==PaperDimension).
+			// But that doesn't mean it looks good. Apps which use setFullPage(false) assume that
+			// KPrinter will give them reasonable margins, so let's QMAX with defaults from Qt in that case.
+			// Keep this in sync with KPMarginPage::initPageSize
+			unsigned int it, il, ib, ir;
+			d->m_wrapper->margins( &it, &il, &ib, &ir );
+			top = QMAX( top, (int)it );
+			left = QMAX( left, (int)il );
+			bottom = QMAX( bottom, (int)ib );
+			right = QMAX( right, (int)ir );
+		}
+		d->m_wrapper->setMargins( top, left, bottom, right );
 	}
 	/*else
 	{
