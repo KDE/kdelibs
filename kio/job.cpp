@@ -24,6 +24,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 #include <assert.h>
 #include <dirent.h>
@@ -56,9 +57,9 @@
 
 #include "slave.h"
 #include "kio/job.h"
-#include <sys/stat.h>
-#include <scheduler.h>
-#include <kmimemagic.h>
+#include "scheduler.h"
+#include "kmimemagic.h"
+#include "kshred.h"
 
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
@@ -1425,8 +1426,8 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest )
   return job;
 }
 
-DeleteJob::DeleteJob( const KURL::List& src )
-    : Job(), m_srcList(src)
+DeleteJob::DeleteJob( const KURL::List& src, bool shred )
+    : Job(), m_srcList(src), m_shred(shred)
 {
     startNextJob();
 }
@@ -1495,9 +1496,28 @@ void DeleteJob::deleteNextFile()
     {
         // Take first file to delete out of list
         KURL::List::Iterator it = files.begin();
-        SimpleJob *job = KIO::file_delete( *it );
-        files.remove(it);
-        addSubjob( job );
+        // Use shredding ?
+        if ( m_shred && (*it).isLocalFile() )
+        {
+            for ( ; it != files.end() ; ++it )
+                if (!KShred::shred( (*it).path() ))
+                {
+                    m_error = ERR_CANNOT_DELETE;
+                    m_errorText = (*it).path();
+                    emit result(this);
+                    delete this;
+                    return;
+                }
+            files.clear();
+            state = STATE_DELETING_DIRS;
+            deleteNextDir();
+        } else
+        {
+            // Normal deletion
+            SimpleJob *job = KIO::file_delete( *it );
+            files.remove(it);
+            addSubjob( job );
+        }
     } else
     {
         state = STATE_DELETING_DIRS;
@@ -1615,17 +1635,17 @@ void DeleteJob::slotResult( Job *job )
     }
 }
 
-DeleteJob *KIO::del( const KURL& src )
+DeleteJob *KIO::del( const KURL& src, bool shred )
 {
   KURL::List srcList;
   srcList.append( src );
-  DeleteJob *job = new DeleteJob( srcList );
+  DeleteJob *job = new DeleteJob( srcList, shred );
   return job;
 }
 
-DeleteJob *KIO::del( const KURL::List& src )
+DeleteJob *KIO::del( const KURL::List& src, bool shred )
 {
-  DeleteJob *job = new DeleteJob( src );
+  DeleteJob *job = new DeleteJob( src, shred );
   return job;
 }
 

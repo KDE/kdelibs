@@ -32,7 +32,7 @@ libkio_la_SOURCES = \
 	kopenwith.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
-	kmimetype.cpp kmimemagic.cpp \
+	kmimetype.cpp kmimemagic.cpp kshred.cpp \
 	kservice.cpp kservicefactory.cpp \
 	kautomount.cpp kdirwatch.cpp scheduler.cpp \
 	connection.cpp filter.cpp \
@@ -52,7 +52,7 @@ METASOURCES = AUTO
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
-	ktar.h ktrader.h kopenwith.h
+	kshred.h ktar.h ktrader.h kopenwith.h
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h renamedlg.h \

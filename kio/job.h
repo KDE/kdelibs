@@ -45,6 +45,18 @@ namespace KIO {
 
     /**
      * The base class for all jobs.
+     * For all jobs created in an application, the code looks like
+     *
+     *   KIO::Job * job = KIO::someoperation( some parameters );
+     *   connect( job, SIGNAL( result( KIO::Job * ) ),
+     *            this, SLOT( slotResult( KIO::Job * ) ) );
+     *   (other connects, specific to the job)
+     *
+     * And slotResult is usually at least:
+     *
+     *  if ( job->error() )
+     *      job->showErrorDialog();
+     *
      */
     class Job : public QObject {
 	Q_OBJECT
@@ -62,19 +74,21 @@ namespace KIO {
 	 */
 	int error() { return m_error; }
 	/**
-	 * @return a string to help understand the error
+	 * @return a string to help understand the error, usually the url
+         * related to the error.
 	 * Only call if @ref error is not 0.
-	 * This is mostly internal, better use errorString or errorDialog.
+	 * This is really internal, better use errorString or errorDialog.
 	 */
         const QString & errorText() { return m_errorText; }
 
   	/**
    	 * Converts an error code and a non-i18n error message into an
    	 * error message in the current language. The low level (non-i18n)
-   	 * error message is put into the translated error message using %1.
+   	 * error message (usually a url) is put into the translated error
+         * message using %1.
    	 * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
    	 *   i18n( "Could not read\n%1" ).arg( errortext );
-   	 * Mostly internal, use @ref KIO::ErrorDialog.
+   	 * Use this to display the error yourself, but for a dialog box use @ref KIO::ErrorDialog.
    	 */
   	QString errorString();
 
@@ -124,7 +138,13 @@ namespace KIO {
 	QString m_errorText;
     };
 
-    // A simple job (one url and one command)
+    /**
+     * A simple job (one url and one command)
+     * This is the base class for all jobs that are scheduled.
+     * Other jobs are high-level jobs (CopyJob, DeleteJob, FIleCopyJob...)
+     * that manage subjobs but aren't scheduled directly.
+     * This is why you can @ref kill a SimpleJob, but not high-level jobs.
+     */
     class SimpleJob : public KIO::Job {
 	Q_OBJECT
     public:
@@ -138,12 +158,14 @@ namespace KIO {
         virtual void kill();
 
         /**
+         * @internal
          * Called by the scheduler when a slave gets to
 	 * work on this job.
 	 **/
 	virtual void start( Slave *slave );
 	
         /**
+         * @internal
          * Slave in use by this job
          **/
 	Slave *slave() { return m_slave; }
@@ -153,7 +175,7 @@ namespace KIO {
         /**
 	 * Called when the slave marks the job
 	 * as finished.
-	 **/
+	 */
         virtual void slotFinished( );
 
         virtual void slotError( int , const QString & );
@@ -534,7 +556,7 @@ namespace KIO {
         Q_OBJECT
 
     public:
-	DeleteJob( const KURL::List& src );
+	DeleteJob( const KURL::List& src, bool shred );
 
     protected:
         void startNextJob();
@@ -551,10 +573,17 @@ namespace KIO {
         KURL::List files;
         KURL::List dirs;
         KURL::List m_srcList;
+        bool m_shred;
     };
 
-    DeleteJob *del( const KURL& src );
-    DeleteJob *del( const KURL::List& src );
+    /**
+     * Delete a file or directory
+     * @param src file to delete
+     * @param shred if true, delete in a way that makes recovery impossible
+     * (only supported for local files currently)
+     */
+    DeleteJob *del( const KURL& src, bool shred = false );
+    DeleteJob *del( const KURL::List& src, bool shred = false );
 };
 
 #endif
