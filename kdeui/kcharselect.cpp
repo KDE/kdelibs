@@ -356,7 +356,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     QHBox *bar = new QHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
 
-    QLabel *lFont = new QLabel( i18n( "	 Font:	" ), bar );
+    QLabel *lFont = new QLabel( i18n( "Font:" ), bar );
     lFont->resize( lFont->sizeHint() );
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
@@ -367,7 +367,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( fontCombo, SIGNAL( activated( const QString & ) ), this, SLOT( fontSelected( const QString & ) ) );
 
-    QLabel *lTable = new QLabel( i18n( "  Table:  " ), bar );
+    QLabel *lTable = new QLabel( i18n( "Table:" ), bar );
     lTable->resize( lTable->sizeHint() );
     lTable->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lTable->setMaximumWidth( lTable->sizeHint().width() );
