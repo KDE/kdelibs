@@ -63,16 +63,20 @@ struct KIO::AuthKey
   bool persist;
 };
 
+class KIO::SlaveList: public QList<Slave>
+{
+   public:
+      SlaveList() { }
+};
 
 class KIO::Scheduler::ProtocolInfo
 {
   public:
-     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5)
+     ProtocolInfo() : maxSlaves(3)
 	{ joblist.setAutoDelete(false); }
 
      QList<SimpleJob> joblist;
-     int activeSlaves;
-     int idleSlaves;
+     SlaveList activeSlaves;
      int maxSlaves;
 };
 
@@ -100,11 +104,6 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &_key)
   return info;
 }
 
-class KIO::SlaveList: public QList<Slave>
-{
-   public:
-      SlaveList() { }
-};
 
 Scheduler::Scheduler()
     : QObject(0, "scheduler"),
@@ -152,7 +151,7 @@ Scheduler::debug_info()
     {
         ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
         kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << " " << slave->port() << " pid: " << slave->slave_pid() << endl;
-        kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
+        kdDebug(7006) << " -- active: " << protInfo->activeSlaves.count() << endl;
     }
     kdDebug(7006) << "Idle Slaves: " << idleSlaves->count() << endl;
     slave = idleSlaves->first();
@@ -197,6 +196,14 @@ QCStringList Scheduler::functions()
 }
 
 void Scheduler::_doJob(SimpleJob *job) {
+    newJobs.append(job);
+    QString protocol = job->url().protocol();
+    //kdDebug(7006) << "Scheduler::_doJob protocol=" << protocol << endl;
+    mytimer.start(0, true);
+}
+
+void Scheduler::_scheduleJob(SimpleJob *job) {
+    newJobs.removeRef(job);
     QString protocol = job->url().protocol();
     //kdDebug(7006) << "Scheduler::_doJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
@@ -214,147 +221,203 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         _jobFinished( job, slave );
 	slotSlaveDied( slave);
     } else { // was not yet running (don't call this on a finished job!)
+        newJobs.removeRef(job);
         QString protocol = job->url().protocol();
         ProtocolInfo *protInfo = protInfoDict->get(protocol);
-        protInfo->joblist.remove(job);
+        protInfo->joblist.removeRef(job);
     }
 }
 
 void Scheduler::startStep()
 {
+    while(newJobs.count())
+    {
+       (void) startJobDirect();
+    }
     QDictIterator<KIO::Scheduler::ProtocolInfo> it(*protInfoDict);
     while(it.current())
     {
-       if (startStep(it.current())) return;
+       if (startJobScheduled(it.current())) return;
        ++it;
     }
 }
 
-bool Scheduler::startStep(ProtocolInfo *protInfo)
+bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 {
-    while (protInfo->joblist.count())
-    {
+    if (protInfo->joblist.isEmpty())
+       return false;
+
 //       kdDebug(7006) << "Scheduling job" << endl;
-       debug_info();
-       SimpleJob *job = protInfo->joblist.at(0);
-       // Look for a slave matching the protocol we want to use, i.e.
-       // the slaveProtocol. For FTP-proxy, it's http.
-       QString protocol = KProtocolManager::slaveProtocol( job->url().protocol() );
-       QString host = job->url().host();
-       int port = job->url().port();
-       QString user = job->url().user();
-       QString passwd = job->url().pass();
+    debug_info();
+    SimpleJob *job = protInfo->joblist.at(0);
+    // Look for a slave matching the protocol we want to use, i.e.
+    // the slaveProtocol. For FTP-proxy, it's http.
 
-       bool newSlave = false;
+    bool newSlave = false;
 
-       // Look for matching slave
-       Slave *slave = 0;
-       if (!slave)
+    // Look for matching slave
+    Slave *slave = findIdleSlave(protInfo, job);
+
+    if (!slave)
+    {
+       if (protInfo->activeSlaves.count() < protInfo->maxSlaves)
        {
-          if (slaveOnHold)
-          {
-             // Make sure that the job wants to do a GET or a POST
-             if (job->command() == CMD_GET || (job->inherits("KIO::TransferJob") && (job->command() == CMD_SPECIAL)))
-             {
-                if (job->url() == urlOnHold)
-                {
-kdDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
-                   slave = slaveOnHold;
-                   protInfo->idleSlaves++; // Will be decreased later on.
-                }
-                else
-                {
-kdDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
-                   slaveOnHold->kill();
-                }
-                slaveOnHold = 0;
-                urlOnHold = KURL();
-             }
-          }
+          newSlave = true;
+          slave = createSlave(protInfo, job);
        }
-
-       if (!slave)
-       {
-          for( slave = idleSlaves->first();
-               slave;
-               slave = idleSlaves->next())
-          {
-             if ((protocol == slave->slaveProtocol()) &&
-                  (host == slave->host()) &&
-                  (port == slave->port()) &&
-                  (user == slave->user()))
-                 break;
-          }
-       }
-
-       if (!slave)
-       {
-          if ((protInfo->activeSlaves+protInfo->idleSlaves) < protInfo->maxSlaves)
-          {
-             int error;
-             QString errortext;
-             slave = Slave::createSlave(job->url(), error, errortext);
-             if (slave)
-             {
-                protInfo->idleSlaves++;
-                newSlave = true;
-                slaveList->append(slave);
-                idleSlaves->append(slave);
-                connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
-			            SLOT(slotSlaveDied(KIO::Slave *)));
-                connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
-                        SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
-                connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&)),
-                        SLOT(slotAuthenticationKey(const QCString&, const QCString&)));
-             }
-             else
-             {
-                 kdError() << "ERROR " << error << ": couldn't create slave : "
-                           << errortext << endl;
-                 protInfo->joblist.remove(job);
-                 job->slotError( error, errortext );
-                 return false;
-             }
-          }
-       }
-
-       if (!slave)
-       {
-          // Look for slightly matching slave
-          slave = idleSlaves->first();
-          for(; slave; slave = idleSlaves->next())
-          {
-             if (protocol == slave->slaveProtocol())
-                break;
-          }
-       }
-
-       if (!slave)
-       {
-//          kdDebug(7006) << "No slaves available" << endl;
-//          kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
-	  return false;
-       }
-
-       protInfo->idleSlaves--;
-       protInfo->activeSlaves++;
-       idleSlaves->removeRef(slave);
-       protInfo->joblist.removeRef(job);
-//       kdDebug(7006) << "scheduler: job started " << job << endl;
-       if ((newSlave) ||
-           (slave->host() != host) ||
-           (slave->port() != port) ||
-           (slave->user() != user) ||
-           (slave->passwd() != passwd))
-       {
-           slave->setHost(host, port, user, passwd);
-       }
-       job->start(slave);
-kdDebug(7006) << "PROTOCOL = " << protocol << " idle = " << protInfo->idleSlaves << endl;
-       mytimer.start(0, true);
-       return true;
     }
-    return false;
+
+    if (!slave)
+    {
+//          kdDebug(7006) << "No slaves available" << endl;
+//          kdDebug(7006) << " -- active: " << protInfo->activeSlaves.count() << endl;
+       return false;
+    }
+
+    protInfo->activeSlaves.append(slave);
+    idleSlaves->removeRef(slave);
+    protInfo->joblist.removeRef(job);
+//       kdDebug(7006) << "scheduler: job started " << job << endl;
+
+    KURL url =job->url();
+    QString host = url.host();
+    int port = url.port();
+    QString user = url.user();
+    QString passwd = url.pass();
+
+    if ((newSlave) ||
+        (slave->host() != host) ||
+        (slave->port() != port) ||
+        (slave->user() != user) ||
+        (slave->passwd() != passwd))
+    {
+        slave->setHost(host, port, user, passwd);
+    }
+    job->start(slave);
+    mytimer.start(0, true);
+    return true;
+}
+
+bool Scheduler::startJobDirect()
+{
+    debug_info();
+    SimpleJob *job = newJobs.take(0);
+    QString protocol = job->url().protocol();
+    ProtocolInfo *protInfo = protInfoDict->get(protocol);
+
+    // Look for a slave matching the protocol we want to use, i.e.
+    // the slaveProtocol. For FTP-proxy, it's http.
+    bool newSlave = false;
+
+    // Look for matching slave
+    Slave *slave = findIdleSlave(protInfo, job);
+
+    if (!slave)
+    {
+       newSlave = true;
+       slave = createSlave(protInfo, job);
+    }
+
+    if (!slave)
+       return false;
+
+    idleSlaves->removeRef(slave);
+//       kdDebug(7006) << "scheduler: job started " << job << endl;
+
+    KURL url =job->url();
+    QString host = url.host();
+    int port = url.port();
+    QString user = url.user();
+    QString passwd = url.pass();
+
+    if ((newSlave) ||
+        (slave->host() != host) ||
+        (slave->port() != port) ||
+        (slave->user() != user) ||
+        (slave->passwd() != passwd))
+    {
+        slave->setHost(host, port, user, passwd);
+    }
+    job->start(slave);
+    return true;
+}
+
+Slave *Scheduler::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job)
+{
+    Slave *slave = 0;
+    if (slaveOnHold)
+    {
+       // Make sure that the job wants to do a GET or a POST
+       if (job->command() == CMD_GET || (job->inherits("KIO::TransferJob") && (job->command() == CMD_SPECIAL)))
+       {
+          if (job->url() == urlOnHold)
+          {
+kdDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
+             slave = slaveOnHold;
+          }
+          else
+          {
+kdDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
+             slaveOnHold->kill();
+          }
+          slaveOnHold = 0;
+          urlOnHold = KURL();
+       }
+       if (slave)
+          return slave;
+    }
+
+    QString protocol = KProtocolManager::slaveProtocol( job->url().protocol() );
+    QString host = job->url().host();
+    int port = job->url().port();
+    QString user = job->url().user();
+
+    for( slave = idleSlaves->first();
+         slave;
+         slave = idleSlaves->next())
+    {
+       if ((protocol == slave->slaveProtocol()) &&
+           (host == slave->host()) &&
+           (port == slave->port()) &&
+           (user == slave->user()))
+           return slave;
+    }
+
+    // Look for slightly matching slave
+    for( slave = idleSlaves->first();
+         slave;
+         slave = idleSlaves->next())
+    {
+       if (protocol == slave->slaveProtocol())
+          return slave;
+    }
+    return 0;
+}
+
+Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job)
+{
+   int error;
+   QString errortext;
+   Slave *slave = Slave::createSlave(job->url(), error, errortext);
+   if (slave)
+   {
+      slaveList->append(slave);
+      idleSlaves->append(slave);
+      connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
+                SLOT(slotSlaveDied(KIO::Slave *)));
+      connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
+                SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
+      connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&)),
+                SLOT(slotAuthenticationKey(const QCString&, const QCString&)));
+   }
+   else
+   {
+      kdError() << "ERROR " << error << ": couldn't create slave : "
+                << errortext << endl;
+      protInfo->joblist.removeRef(job);
+      job->slotError( error, errortext );
+   }
+   return slave;
 }
 
 #if 0
@@ -373,11 +436,10 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
     slave->disconnect(job);
-    protInfo->activeSlaves--;
+    protInfo->activeSlaves.removeRef(slave);
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
-       protInfo->idleSlaves++;
        slave->setIdle();
        _scheduleCleanup();
        slave->connection()->send( CMD_SLAVE_STATUS );
@@ -485,24 +547,16 @@ void Scheduler::delCachedAuthKeys( const AuthKeyList& list )
 void Scheduler::slotSlaveDied(KIO::Slave *slave)
 {
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
+    protInfo->activeSlaves.removeRef(slave);
     if (slave == slaveOnHold)
     {
        slaveOnHold = 0;
        urlOnHold = KURL();
     }
-    if (idleSlaves->removeRef(slave))
-    {
-       protInfo->idleSlaves--;
-//       kdDebug(7006) << "Scheduler: Slave died while in idleSlaves list! PID=" << slave->slave_pid() << endl;
-    }
-    else
-    {
-//       kdDebug(7006) << "Scheduler: Slave died while NOT in idleSlaves list! PID=" << slave->slave_pid() << endl;
-    }
+    idleSlaves->removeRef(slave);
 
     if (!slaveList->removeRef(slave))
        kdDebug(7006) << "Scheduler: BUG!! Slave died, but is NOT in slaveList!!!\n" << endl;
-//    kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
     delete slave;
 }
 
@@ -514,8 +568,6 @@ void Scheduler::slotCleanIdleSlaves()
       {
 //         kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
          Slave *removeSlave = slave;
-         ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
-         protInfo->idleSlaves--;
          slave = idleSlaves->next();
          idleSlaves->removeRef(removeSlave);
          slaveList->removeRef(removeSlave);
@@ -541,12 +593,7 @@ void Scheduler::_scheduleCleanup()
 void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
 {
    Slave *slave = job->slave();
-   ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
    slave->disconnect(job);
-//WABA:
-// Maybe it's better to count 'slaveOnHold' as an active slave.
-// For now, this is needed to keep the count consistent.
-   protInfo->activeSlaves--;
 
    if (slaveOnHold)
    {

@@ -23,6 +23,7 @@
 #define _kio_scheduler_h
 
 #include "kio/job.h"
+#include "kio/jobclasses.h"
 #include <qtimer.h>
 
 #include <dcopobject.h>
@@ -43,6 +44,8 @@ namespace KIO {
 
 	static void doJob(SimpleJob *job)
 		{ self()->_doJob(job); }
+	static void scheduleJob(SimpleJob *job)
+		{ self()->_scheduleJob(job); }
 	static void cancelJob(SimpleJob *job)
 		{ self()->_cancelJob(job); }
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
@@ -72,7 +75,8 @@ namespace KIO {
         void slotAuthenticationKey( const QCString&, const QCString& );
 
     protected:
-        bool startStep(ProtocolInfo *protInfo);
+        bool startJobScheduled(ProtocolInfo *protInfo);
+        bool startJobDirect();
 	Scheduler();
 
     private:
@@ -83,11 +87,14 @@ namespace KIO {
 	static Scheduler *self();
 	static Scheduler *instance;
 	void _doJob(SimpleJob *job);
+	void _scheduleJob(SimpleJob *job);
 	void _cancelJob(SimpleJob *job);
         void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
         void _scheduleCleanup();
         void _putSlaveOnHold(KIO::SimpleJob *job, const KURL &url);
         void _removeSlaveOnHold();
+        Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job);
+        Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job);
 
 	QTimer mytimer;
 	QTimer cleanupTimer;
@@ -111,6 +118,8 @@ namespace KIO {
 
     typedef QList<AuthKey> AuthKeyList;
     AuthKeyList cachedAuthKeys;
+
+    QList<SimpleJob> newJobs;
 
     /**
      * Checks whether the password daemon kdesud is

@@ -179,7 +179,7 @@ protected:
     ////////////////
 
     virtual bool dispatch();
-    virtual void dispatch( int _cmd, const QByteArray &data );
+    virtual bool dispatch( int _cmd, const QByteArray &data );
 
     /**
      * Prompt user for authentication info (login & password).

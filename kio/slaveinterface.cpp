@@ -55,11 +55,10 @@ bool SlaveInterface::dispatch()
     if (m_pConnection->read( &cmd, data ) == -1)
 	return false;
 
-    dispatch( cmd, data );
-    return true;
+    return dispatch( cmd, data );
 }
 
-void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
+bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
     //kdDebug(7007) << "dispatch " << _cmd << endl;
 
@@ -224,8 +223,10 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     default:
-	assert( 0 );
+        kdWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;
+	return false;
     }
+    return true;
 }
 
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
