@@ -496,10 +496,22 @@ void MimetypeJob::slotMimetype( const QString& mimetype )
 void MimetypeJob::slotFinished( )
 {
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
-    // Do stuff
-
-    // Return slave to the scheduler
-    TransferJob::slotFinished();
+    if ( m_redirectionURL.isEmpty() || m_error )
+    {
+        // Return slave to the scheduler
+        TransferJob::slotFinished();
+    } else {
+        kdDebug(7007) << "Redirection to " << m_redirectionURL.url() << endl;
+        staticData.truncate(0);
+        m_suspended = false;
+        m_url = m_redirectionURL;
+        m_redirectionURL = KURL();
+        m_packedArgs.truncate(0);
+        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        stream << m_url.path();
+        m_slave = 0L;
+        Scheduler::doJob(this);
+    }
 }
 
 MimetypeJob *KIO::mimetype(const KURL& url )
