@@ -221,6 +221,9 @@ protected:
     bool modified;
 };
 
+QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
+QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+
 /**
  * This class provides an interface for parsing
  *

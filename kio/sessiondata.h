@@ -49,6 +49,7 @@ public slots:
 private:
     struct AuthData;
     class AuthDataList;
+    friend class AuthDataList;
     AuthDataList* authData;
 
     class SessionDataPrivate;
