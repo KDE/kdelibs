@@ -9,6 +9,7 @@
 
 #include <kstatusbar.h>
 #include <kapp.h>
+#include <kcombobox.h>
 #include <khelpmenu.h>
 #include <ktmainwindow.h>
 #include <kmenubar.h>
@@ -102,7 +103,7 @@ testWindow::testWindow (QWidget *, const char *name)
     toolBar = new KToolBar(this);
 
     // and set it to full width
-    toolBar->setFullWidth(TRUE);
+    toolBar->setFullSize(TRUE);
 
 
     
@@ -277,7 +278,7 @@ void testWindow::slotOpen()
 {
   if (pr == 0)
     pr = new QProgressBar (statusBar);
-  statusBar->message(pr);
+//  statusBar->message(pr);
   timer = new QTimer (pr);
 
   connect (timer, SIGNAL(timeout()), this, SLOT(slotGoGoGoo()));
@@ -441,6 +442,7 @@ void testWindow::slotToggle (bool on)
 
 void testWindow::slotFrame()
 {
+#if 0
   if (greenF == FALSE)
    {
      tb1->insertFrame(10, 100);
@@ -468,6 +470,7 @@ void testWindow::slotFrame()
      tb1->removeItem (10);
      greenF = FALSE;
    }
+#endif
 }
 
 void testWindow::slotMessage(int, bool boo)
