@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
  * Sources imported
  *
@@ -20,9 +23,16 @@
  * Merged changes from 0.6.3
  *
  * Revision 1.3  1997/01/15 20:01:58  kalle
+
  * merged changes from 0.52
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
+#include <X11/Xos.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/extensions/shape.h>
 #ifdef HAVE_X11_EXTENSTIONS_SHAPE_H
 #include <X11/extensions/shape.h>
 #else

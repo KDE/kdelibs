@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.7  1997/07/25 19:46:40  kalle
+ * SGI changes
+ *
  * Revision 1.6  1997/07/18 05:49:15  ssk
  * Taj: All kdecore doc now in javadoc format (hopefully).
  *
@@ -34,11 +37,6 @@
  * Revision 1.3  1996/12/07 22:34:54  kalle
  * DOC++ tags corrected
 #include <qapp.h>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
-#include <X11/extensions/shape.h>
 
 #include <stdio.h>
 #ifdef STDC_HEADERS
