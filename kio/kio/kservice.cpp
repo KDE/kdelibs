@@ -102,6 +102,14 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
   entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
 
+  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  entryMap.remove("Hidden");
+  if (m_bDeleted)
+  {
+    m_bValid = false;
+    return;
+  }
+
   m_strName = config->readEntry( "Name" );
   entryMap.remove("Name");
   if ( m_strName.isEmpty() )
@@ -110,13 +118,6 @@ KService::init( KDesktopFile *config )
     return;
   }
 
-  m_bDeleted = config->readBoolEntry( "Hidden", false );
-  entryMap.remove("Hidden");
-  if (m_bDeleted)
-  {
-    m_bValid = false;
-    return;
-  }
   m_strType = config->readEntry( "Type" );
   entryMap.remove("Type");
   if ( m_strType.isEmpty() )
