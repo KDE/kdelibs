@@ -231,6 +231,7 @@ protected:
    *
    * This function is useful if you need to handle multiple configuration files.
    *
+   * @since 3.3
    * @return a pointer to the KConfigDialogManager in use
    * @param config the KConfigSkeleton to use
    * @param widget the widget to watch
@@ -239,6 +240,8 @@ protected:
 
   /**
    * Sets the quick help.
+   *
+   * @since 3.3
    */
   void setQuickHelp( const QString& help );
 
