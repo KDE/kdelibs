@@ -185,5 +185,3 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
 }
 
 KServiceFactory *KServiceFactory::_self = 0;
-
-#include "kservicefactory.moc"

@@ -34,12 +34,6 @@
 KServiceTypeFactory::KServiceTypeFactory()
  : KSycocaFactory( KST_KServiceTypeFactory )
 {
-   if (KSycoca::self()->isBuilding())
-   {
-      // Read servicetypes first, since they might be needed to read mimetype properties
-      (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
-      (*m_pathList) += KGlobal::dirs()->resourceDirs( "mime" );
-   }
    _self = this;
 }
 
@@ -96,14 +90,6 @@ KServiceTypeFactory * KServiceTypeFactory::self()
   if (!_self)
     _self = new KServiceTypeFactory();
   return _self;
-}
-
-KServiceType * KServiceTypeFactory::findServiceTypeRef(const QString &_name)
-{
-   assert (KSycoca::self()->isBuilding());
-   // We're building a database - the service type must be in memory
-   KSycocaEntry * servType = (*m_entryDict)[ _name ];
-   return (KServiceType *) servType;
 }
 
 KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
@@ -346,5 +332,3 @@ KServiceType * KServiceTypeFactory::createServiceType(int offset)
 }
 
 KServiceTypeFactory *KServiceTypeFactory::_self = 0;
-
-#include "kservicetypefactory.moc"

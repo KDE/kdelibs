@@ -108,7 +108,7 @@ KService::KService( KSimpleConfig& config )
   QStringList::Iterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-    KServiceType * s = KServiceTypeFactory::self()->findServiceTypeRef( *it );
+    KServiceType * s = KServiceTypeFactory::self()->findServiceTypeByName( *it );
     if ( s )
     {
       const QMap<QString,QVariant::Type>& pd = s->propertyDefs();
@@ -243,20 +243,6 @@ QStringList KService::propertyNames() const
 
   return res;
 }
-
-/*
-QDataStream& operator>>( QDataStream& _str, KService& s )
-{
-  s.load( _str );
-  return _str;
-}
-
-QDataStream& operator<<( QDataStream& _str, KService& s )
-{
-  s.save( _str );
-  return _str;
-}
-*/
 
 KService::List KService::allServices()
 {

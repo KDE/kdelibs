@@ -188,16 +188,3 @@ KServiceType::List KServiceType::allServiceTypes()
   return KServiceTypeFactory::self()->allServiceTypes();
 }
 
-/*
-QDataStream& operator>>( QDataStream& _str, KServiceType& s )
-{
-  s.load( _str );
-  return _str;
-}
-
-QDataStream& operator<<( QDataStream& _str, KServiceType& s )
-{
-  s.save( _str );
-  return _str;
-}
-*/

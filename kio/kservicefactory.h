@@ -20,7 +20,6 @@
 #ifndef __kservicefactory_h__
 #define __kservicefactory_h__
 
-#include <qobject.h>
 #include <qstringlist.h>
 
 #include "kservice.h"
@@ -35,9 +34,8 @@ class KSycocaDict;
  * It loads the services from parsing directories (e.g. applnk/)
  * but can also create service from data streams or single config files
  */
-class KServiceFactory : public QObject, public KSycocaFactory
+class KServiceFactory : public KSycocaFactory
 {
-  Q_OBJECT
   K_SYCOCAFACTORY( KST_KServiceFactory );
 public:
   /**

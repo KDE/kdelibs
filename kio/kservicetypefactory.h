@@ -20,7 +20,6 @@
 #ifndef __k_service_type_factory_h__
 #define __k_service_type_factory_h__
 
-#include <qobject.h>
 #include <qstringlist.h>
 
 #include "ksycocafactory.h"
@@ -40,9 +39,8 @@ class KExecMimeType;
  * It loads the service types from parsing directories (e.g. mimelnk/)
  * but can also create service types from data streams or single config files
  */
-class KServiceTypeFactory : public QObject, public KSycocaFactory
+class KServiceTypeFactory : public KSycocaFactory
 {
-  Q_OBJECT
   K_SYCOCAFACTORY( KST_KServiceTypeFactory );
 public:
   /**
@@ -59,13 +57,9 @@ public:
 
   /**
    * Find a service type in the database file (allocates it)
+   * Overloaded by KBuildServiceTypeFactory to return a memory one.
    */
-  KServiceType * findServiceTypeByName(const QString &_name);
-
-  /**
-   * Find a service type in memory (returns a pointer to it)
-   */
-  KServiceType * findServiceTypeRef(const QString &_name);
+  virtual KServiceType * findServiceTypeByName(const QString &_name);
 
   /**
    * Find a mimetype from a filename (using the pattern list)
