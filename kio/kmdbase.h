@@ -116,8 +116,11 @@ public:
    * ERR_NONE                   no error occured. [default]
    * ERR_ALREADY_FINALIZED      @ref finalize() has already been invoked.
    * ERR_NOT_YET_FINALIZED      @ref digest() or @ref rawDigest() invoked before finalize().
+   * ERR_CANNOT_READ_FILE       indicates a problem while trying to read the given file.
+   * ERR_CANNOT_CLOSE_FILE      indicates a problem while trying to close the given file.
    */
-  enum ErrorType { ERR_NONE, ERR_ALREADY_FINALIZED, ERR_NOT_YET_FINALIZED };
+  enum ErrorType { ERR_NONE, ERR_ALREADY_FINALIZED, ERR_NOT_YET_FINALIZED,
+                   ERR_CANNOT_READ_FILE, ERR_CANNOT_CLOSE_FILE };
 
   /**
    * Default constructor that only performs initialization.
@@ -172,8 +175,15 @@ public:
 
   /**
    * Same as above except it accepts a pointer to FILE.
+   *
+   * NOTE that the file must have been already opened.  If you
+   * want the file to be automatically closed, set @p closeFile
+   * to TRUE.
+   *
+   * @param file       a pointer to FILE as returned by calls like f{d,re}open
+   * @param closeFile  if true closes the file using fclose.  
    */
-  void update (FILE *file);
+  void update (FILE *file, bool closeFile = false );
 
   /**
    * Finalizes the message digest calculation.

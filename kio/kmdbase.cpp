@@ -282,14 +282,14 @@ KMD5::KMD5( const QCString& input )
 KMD5::KMD5( const QString& input )
 {
     init();
-    update( input.utf8() );
+    update( input );
     finalize();
 }
 
 KMD5::KMD5(FILE *f)
 {
     init();
-    update(f);
+    update( f, true );
     finalize ();
 }
 
@@ -352,15 +352,22 @@ void KMD5::update( Q_UINT8 *input, int len )
     memcpy(m_buffer+buffer_index, input+input_index, input_length-input_index);
 }
 
-void KMD5::update(FILE *file)
+void KMD5::update( FILE *file, bool closeFile )
 {
     Q_UINT8 buffer[1024];
     int len;
 
     while ((len=fread(buffer, 1, 1024, file)))
         update(buffer, len);
-
-    fclose (file);
+    
+	// Check if we got to this point because
+	// we reached EOF or an error.
+	if ( !feof( file ) )
+	    m_error = ERR_CANNOT_READ_FILE;
+    
+	// Close the file iff the flag is set.
+    if ( closeFile && fclose (file) )
+	    m_error = ERR_CANNOT_CLOSE_FILE;
 }
 
 // KMD5 finalization.  Ends an KMD5 message-digest operation,
