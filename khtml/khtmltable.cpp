@@ -1369,7 +1369,7 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
     FOR_EACH_CELL(r, c, cell)
     {
         HTMLObject *obj = cell->checkPoint( _x-x, _y-(y - ascent) );
-        if (obj);
+        if (obj)
 	    return obj;
     }
     END_FOR_EACH
