@@ -59,9 +59,10 @@ namespace KJS {
 FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
   : InternalFunctionImp(
       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-      ), param(0L), ident(n), line0(-1), line1(-1), sid(-1)
+      ), param(0L), line0(-1), line1(-1), sid(-1)
 {
   //fprintf(stderr,"FunctionImp::FunctionImp this=%p\n");
+  ident = n;
 }
 
 FunctionImp::~FunctionImp()
@@ -474,11 +475,13 @@ void ActivationImp::mark()
 // ------------------------------ GlobalFunc -----------------------------------
 
 
-GlobalFuncImp::GlobalFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto, int i, int len)
+GlobalFuncImp::GlobalFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+			     int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  ident = _ident;
 }
 
 CodeType GlobalFuncImp::codeType() const

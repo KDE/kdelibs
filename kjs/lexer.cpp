@@ -107,6 +107,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   eatNextIdentifier = false;
   stackToken = -1;
   lastToken = -1;
+  foundBad = false;
   pos = 0;
   code = c;
   length = len;
@@ -541,6 +542,7 @@ int Lexer::lex()
     token = NUMBER;
     break;
   case Bad:
+    foundBad = true;
     fprintf(stderr, "KJS: yylex: ERROR.\n");
     return -1;
   default:

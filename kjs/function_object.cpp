@@ -32,6 +32,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <iostream.h>
 
 using namespace KJS;
 
@@ -41,11 +42,17 @@ FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
   : InternalFunctionImp(0)
 {
   Value protect(this);
-  putDirect(toStringPropertyName, new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(toStringPropertyName,
+	    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0, toStringPropertyName),
+	    DontEnum);
   static const Identifier applyPropertyName("apply");
-  putDirect(applyPropertyName,    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2), DontEnum);
+  putDirect(applyPropertyName,
+	    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2, applyPropertyName),
+	    DontEnum);
   static const Identifier callPropertyName("call");
-  putDirect(callPropertyName,     new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1), DontEnum);
+  putDirect(callPropertyName,
+	    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1, callPropertyName),
+	    DontEnum);
   putDirect(lengthPropertyName, 0, DontDelete|ReadOnly|DontEnum);
 }
 
@@ -66,12 +73,13 @@ Value FunctionPrototypeImp::call(ExecState */*exec*/, Object &/*thisObj*/, const
 
 // ------------------------------ FunctionProtoFuncImp -------------------------
 
-FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState */*exec*/,
-                                         FunctionPrototypeImp *funcProto, int i, int len)
+FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+					   int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  ident = _ident;
 }
 
 
@@ -95,17 +103,19 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
       exec->setException(err);
       return err;
     }
+
     if (thisObj.inherits(&DeclaredFunctionImp::info)) {
        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
                                  (thisObj.imp());
        return String("function " + fi->name().ustring() + "(" +
          fi->parameterString() + ") " + fi->body->toCode());
-    } else if (thisObj.inherits(&FunctionImp::info) &&
-        !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
-      result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name().ustring() + "()");
+    } else if (thisObj.inherits(&InternalFunctionImp::info) &&
+        !static_cast<InternalFunctionImp*>(thisObj.imp())->name().isNull()) {
+      result = String("\nfunction " + static_cast<InternalFunctionImp*>(thisObj.imp())->name().ustring() + "() {\n"
+		      "    [native code]\n}\n");
     }
     else {
-      result = String("(Internal function)");
+      result = Undefined();
     }
     }
     break;

@@ -136,7 +136,9 @@ DatePrototypeImp::DatePrototypeImp(ExecState *,
 
 Value DatePrototypeImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  return lookupGetFunction<DateProtoFuncImp, ObjectImp>( exec, propertyName, &dateTable, this );
+  Value v = lookupGetFunction<DateProtoFuncImp, ObjectImp>( exec, propertyName, &dateTable, this );
+  setFunctionName(v,propertyName);
+  return v;
 }
 
 // ------------------------------ DateProtoFuncImp -----------------------------

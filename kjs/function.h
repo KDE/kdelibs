@@ -56,18 +56,14 @@ namespace KJS {
     virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
-    Identifier name() const { return ident; }
     int firstLine() const { return line0; }
     int lastLine() const { return line1; }
     int sourceId() const { return sid; }
-
-    void setName(const Identifier &name) { ident = name; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   protected:
     Parameter *param;
-    Identifier ident;
     int line0;
     int line1;
     int sid;
@@ -134,7 +130,8 @@ namespace KJS {
 
   class GlobalFuncImp : public InternalFunctionImp {
   public:
-    GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len);
+    GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
+		  int i, int len, const Identifier &_ident);
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
     virtual CodeType codeType() const;

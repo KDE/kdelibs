@@ -226,7 +226,7 @@ void TypeOfNode::streamTo(SourceStream &s) const
 
 void PrefixNode::streamTo(SourceStream &s) const
 {
-  s << expr << (oper == OpPlusPlus ? "++" : "--");
+  s << (oper == OpPlusPlus ? "++" : "--") << expr;
 }
 
 void UnaryPlusNode::streamTo(SourceStream &s) const

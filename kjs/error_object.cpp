@@ -63,6 +63,7 @@ ErrorProtoFuncImp::ErrorProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *
 {
   Value protect(this);
   putDirect(lengthPropertyName, NumberImp::zero(), DontDelete|ReadOnly|DontEnum);
+  ident = "toString";
 }
 
 bool ErrorProtoFuncImp::implementsCall() const
@@ -145,7 +146,7 @@ NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState */*exec*/, ErrorProto
 
 // ------------------------------ NativeErrorImp -------------------------------
 
-const ClassInfo NativeErrorImp::info = {"Error", &InternalFunctionImp::info, 0, 0};
+const ClassInfo NativeErrorImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
 NativeErrorImp::NativeErrorImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
                                const Object &prot)
@@ -165,7 +166,7 @@ bool NativeErrorImp::implementsConstruct() const
 
 Object NativeErrorImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *imp = new ObjectImp(proto);
+  ObjectImp *imp = new ErrorInstanceImp(proto);
   Object obj(imp);
   if (args[0].type() != UndefinedType)
     imp->putDirect(messagePropertyName, new StringImp(args[0].toString(exec)));

@@ -37,8 +37,8 @@ namespace KJS {
 
   class RegExpProtoFuncImp : public InternalFunctionImp {
   public:
-    RegExpProtoFuncImp(ExecState *exec,
-                       FunctionPrototypeImp *funcProto, int i, int len);
+    RegExpProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len,
+                       const Identifier &_ident);
 
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);

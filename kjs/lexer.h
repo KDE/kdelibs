@@ -68,6 +68,7 @@ namespace KJS {
 
     bool scanRegExp();
     UString pattern, flags;
+    bool hadError() const { return foundBad; }
 
   private:
     int yylineno;
@@ -85,6 +86,7 @@ namespace KJS {
     bool eatNextIdentifier;
     int stackToken;
     int lastToken;
+    bool foundBad;
 
     State state;
     void setDone(State s);

@@ -648,6 +648,8 @@ int yyerror (const char *)  /* Called by yyparse on error */
 /* may we automatically insert a semicolon ? */
 bool automatic()
 {
+  if (Lexer::curr()->hadError())
+    return false;
   if (yychar == '}' || yychar == 0)
     return true;
   else if (Lexer::curr()->prevTerminator())

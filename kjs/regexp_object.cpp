@@ -50,20 +50,24 @@ RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
   // The constructor will be added later in RegExpObject's constructor (?)
 
   static const Identifier execPropertyName("exec");
-  putDirect(execPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0), DontEnum);
+  putDirect(execPropertyName,
+	    new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0, execPropertyName), DontEnum);
   static const Identifier testPropertyName("test");
-  putDirect(testPropertyName,     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0), DontEnum);
-  putDirect(toStringPropertyName, new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(testPropertyName,
+	    new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0, testPropertyName), DontEnum);
+  putDirect(toStringPropertyName,
+	    new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0, toStringPropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
 
-RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState */*exec*/,
-                                       FunctionPrototypeImp *funcProto, int i, int len)
+RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+                                       int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  ident = _ident;
 }
 
 bool RegExpProtoFuncImp::implementsCall() const

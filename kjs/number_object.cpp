@@ -57,29 +57,30 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  putDirect(toStringPropertyName,
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,1),DontEnum);
-  putDirect(toLocaleStringPropertyName,
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString,0),DontEnum);
-  putDirect(valueOfPropertyName,
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,0),DontEnum);
-  putDirect("toFixed",
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToFixed,1),DontEnum);
-  putDirect("toExponential",
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToExponential,1),DontEnum);
-  putDirect("toPrecision",
-	    new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToPrecision,1),DontEnum);
+  putDirect(toStringPropertyName,new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,
+							1,toStringPropertyName),DontEnum);
+  putDirect(toLocaleStringPropertyName,new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString,
+							      0,toLocaleStringPropertyName),DontEnum);
+  putDirect(valueOfPropertyName,new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,
+						       0,valueOfPropertyName),DontEnum);
+  putDirect("toFixed", new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToFixed,
+					      1,"toFixed"),DontEnum);
+  putDirect("toExponential",new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToExponential,
+						   1,"toExponential"),DontEnum);
+  putDirect("toPrecision",new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToPrecision,
+						 1,"toPrecision"),DontEnum);
 }
 
 
 // ------------------------------ NumberProtoFuncImp ---------------------------
 
-NumberProtoFuncImp::NumberProtoFuncImp(ExecState */*exec*/,
-                                       FunctionPrototypeImp *funcProto, int i, int len)
+NumberProtoFuncImp::NumberProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+                                       int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  ident = _ident;
 }
 
 
@@ -371,8 +372,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
 // ------------------------------ NumberObjectImp ------------------------------
 
-const ClassInfo NumberObjectImp::info = {"Number", &InternalFunctionImp::info, &numberTable, 0};
-//const ClassInfo NumberObjectImp::info = {"Number", 0, &numberTable, 0};
+const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info, &numberTable, 0};
 
 /* Source for number_object.lut.h
 @begin numberTable 5

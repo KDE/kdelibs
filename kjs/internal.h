@@ -390,7 +390,14 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+    Identifier name() const { return ident; }
+    void setName(Identifier _ident) { ident = _ident; }
+
+  protected:
+    Identifier ident;
   };
+
+  void setFunctionName(Value v, const Identifier &propertyName);
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16
   double roundValue(ExecState *exec, const Value &v);

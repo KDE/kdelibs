@@ -2236,15 +2236,19 @@ Completion ForInNode::execute(ExecState *exec)
     KJS_CHECKEXCEPTION
   }
 
-  Object v = expr->evaluate(exec).toObject(exec);
+  Value v = expr->evaluate(exec);
+  if (v.isA(NullType) || v.isA(UndefinedType))
+    return Completion(Normal, retval);
+
+  Object o = v.toObject(exec);
   KJS_CHECKEXCEPTION
-  ReferenceList propList = v.propList(exec);
+  ReferenceList propList = o.propList(exec);
 
   ReferenceListIterator propIt = propList.begin();
 
   while (propIt != propList.end()) {
     Identifier name = propIt->getPropertyName(exec);
-    if (!v.hasProperty(exec,name)) {
+    if (!o.hasProperty(exec,name)) {
       propIt++;
       continue;
     }

@@ -39,23 +39,23 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
   : ObjectImp() // [[Prototype]] is Null()
 {
   Value protect(this);
-  putDirect(toStringPropertyName,
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
-  putDirect(toLocaleStringPropertyName,
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString, 0), DontEnum);
-  putDirect(valueOfPropertyName, 
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
-  putDirect("hasOwnProperty",
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::HasOwnProperty,1),DontEnum);
-  putDirect("isPrototypeOf",
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::IsPrototypeOf,1),DontEnum);
-  putDirect("propertyIsEnumerable",
-	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::PropertyIsEnumerable,1),DontEnum);
+  putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString,
+							 0, toStringPropertyName), DontEnum);
+  putDirect(toLocaleStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString,
+							       0, toLocaleStringPropertyName), DontEnum);
+  putDirect(valueOfPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,
+							0, valueOfPropertyName), DontEnum);
+  putDirect("hasOwnProperty", new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::HasOwnProperty,
+						     1,"hasOwnProperty"),DontEnum);
+  putDirect("isPrototypeOf", new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::IsPrototypeOf,
+						    1,"isPrototypeOf"),DontEnum);
+  putDirect("propertyIsEnumerable", new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::PropertyIsEnumerable,
+							   1,"propertyIsEnumerable"),DontEnum);
 
 #ifndef KJS_PURE_ECMA // standard compliance location is the Global object
   // see http://www.devguru.com/Technologies/ecmascript/quickref/object.html
   put(exec, "eval",
-      Object(new GlobalFuncImp(exec, funcProto,GlobalFuncImp::Eval, 1)),
+      Object(new GlobalFuncImp(exec, funcProto,GlobalFuncImp::Eval, 1, "eval")),
       DontEnum);
 #endif
 }
@@ -64,11 +64,12 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
 
 ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState */*exec*/,
                                        FunctionPrototypeImp *funcProto,
-                                       int i, int len)
+                                       int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  ident = _ident;
 }
 
 

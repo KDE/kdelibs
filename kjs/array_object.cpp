@@ -419,7 +419,9 @@ ArrayPrototypeImp::ArrayPrototypeImp(ExecState */*exec*/,
 Value ArrayPrototypeImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   //fprintf( stderr, "ArrayPrototypeImp::get(%s)\n", propertyName.ascii() );
-  return lookupGetFunction<ArrayProtoFuncImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
+  Value v = lookupGetFunction<ArrayProtoFuncImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
+  setFunctionName(v,propertyName);
+  return v;
 }
 
 // ------------------------------ ArrayProtoFuncImp ----------------------------
