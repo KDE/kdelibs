@@ -1,5 +1,5 @@
 <!ENTITY Abstract	"\U-6458\U-8981"	-- GB2312 "摘要" -->
-<!ENTITY Answer		"\U-7B54:"	-- GB2312 "答:" -->
+<!ENTITY Answer		"\U-7B54;:"	-- GB2312 "答:" -->
 <!ENTITY Appendix	"\U-9644\U-5F55"	-- GB2312 "附录" -->
 <!ENTITY Article	"\U-6587\U-7AE0"	-- GB2312 "文章" -->
 <!ENTITY Bibliography	"\U-53C2\U-8003\U-4E66\U-76EE"	-- GB2312 "参考书目" -->
@@ -16,7 +16,7 @@
 <!ENTITY Figure		"\U-56FE\U-5F62"	-- GB2312 "图形" -->
 <!ENTITY GlossSee	"\U-89C1"	-- GB2312 "见" -->
 <!ENTITY GlossSeeAlso	"\U-53E6\U-89C1"	-- GB2312 "另见" -->
-<!ENTITY Glossary	"\U-672F\U-8BED\U-8868"	-- GB2312 "术语表" -->
+<!ENTITY Glossary	"\U-672F\U-8BED\U-8868;"	-- GB2312 "术语表" -->
 <!ENTITY IMPORTANT	"\U-91CD\U-8981"	-- GB2312 "重要" -->
 <!ENTITY ISBN		"ISBN"	-- GB2312 "ISBN" -->
 <!ENTITY Important	"\U-91CD\U-8981"	-- GB2312 "重要" -->
@@ -25,13 +25,13 @@
 <!ENTITY MsgAud		"\U-8BFB\U-8005"	-- GB2312 "读者" -->
 <!ENTITY MsgLevel	"\U-96BE\U-5EA6"	-- GB2312 "难度" -->
 <!ENTITY MsgOrig	"\U-51FA\U-5904"	-- GB2312 "出处" -->
-<!ENTITY NOTE		"\U-6CE8"	-- GB2312 "注" -->
-<!ENTITY Note		"\U-6CE8"	-- GB2312 "注" -->
+<!ENTITY NOTE		"\U-6CE8;"	-- GB2312 "注" -->
+<!ENTITY Note		"\U-6CE8;"	-- GB2312 "注" -->
 <!ENTITY Part		"\U-90E8\U-5206"	-- GB2312 "部分" -->
 <!ENTITY Preface	"\U-524D\U-8A00"	-- GB2312 "前言" -->
 <!ENTITY Procedure	"\U-8FC7\U-7A0B"	-- GB2312 "过程" -->
 <!ENTITY Published	"\U-51FA\U-7248"	-- GB2312 "出版" -->
-<!ENTITY Question	"\U-95EE:"	-- GB2312 "问:" -->
+<!ENTITY Question	"\U-95EE;:"	-- GB2312 "问:" -->
 <!ENTITY RefEntry       ""	-- GB2312 "" -->
 <!ENTITY Reference	"\U-53C2\U-8003"	-- GB2312 "参考" -->
 <!ENTITY RefName	"\U-540D\U-5B57"	-- GB2312 "名字" -->
@@ -64,20 +64,20 @@
 <!ENTITY Edited		"\U-7F16\U-8F91"	-- GB2312 "编辑" -->
 <!ENTITY Editedby	"\U-7F16\U-8F91"	-- GB2312 "编辑" -->
 <!ENTITY and		"\U-548C"	-- GB2312 "和" -->
-<!ENTITY Notes		"\U-6CE8"	-- GB2312 "注" -->
-<!ENTITY TableNotes     "\U-6CE8"	-- GB2312 "注" -->
+<!ENTITY Notes		"\U-6CE8;"	-- GB2312 "注" -->
+<!ENTITY TableNotes     "\U-6CE8;"	-- GB2312 "注" -->
 <!ENTITY nonexistantelement	"\U-4E0D\U-5B58\U-5728\U-7684\U-5143\U-7D20"	-- GB2312 "不存在的元素" -->
 <!ENTITY Pgs 		"\U-9875"	-- GB2312 "页" -->
 <!ENTITY unsupported	"\U-4E0D\U-652F\U-6301"	-- GB2312 "不支持" -->
 <!ENTITY xrefto		"\U-53C2\U-7167"	-- GB2312 "参照" -->
-<!ENTITY unexpectedelementname	"\U-672A\U-9884\U-6599\U-5230\U-7684\U-5143\U-7D20\U-540D"	-- GB2312 "未预料到的元素名" -->
+<!ENTITY unexpectedelementname	"\U-672A\U-9884\U-6599\U-5230\U-7684\U-5143\U-7D20\U-540D;"	-- GB2312 "未预料到的元素名" -->
 <!ENTITY Revisedby      "\U-4FEE\U-8BA2"	-- GB2312 "修订" -->
 
-<!ENTITY ListofTables	"\U-8868\U-683C\U-5217\U-8868"	-- GB2312 "表格列表" -->
-<!ENTITY ListofExamples	"\U-793A\U-4F8B\U-5217\U-8868"	-- GB2312 "示例列表" -->
-<!ENTITY ListofFigures	"\U-56FE\U-5F62\U-5217\U-8868"	-- GB2312 "图形列表" -->
-<!ENTITY ListofEquations	"\U-65B9\U-7A0B\U-5F0F\U-5217\U-8868"	-- GB2312 "方程式列表" -->
-<!ENTITY ListofUnknown	"\U-5176\U-4ED6\U-5185\U-5BB9\U-5217\U-8868"	-- GB2312 "其他内容列表" -->
+<!ENTITY ListofTables	"\U-8868\U-683C\U-5217\U-8868;"	-- GB2312 "表格列表" -->
+<!ENTITY ListofExamples	"\U-793A\U-4F8B\U-5217\U-8868;"	-- GB2312 "示例列表" -->
+<!ENTITY ListofFigures	"\U-56FE\U-5F62\U-5217\U-8868;"	-- GB2312 "图形列表" -->
+<!ENTITY ListofEquations	"\U-65B9\U-7A0B\U-5F0F\U-5217\U-8868;"	-- GB2312 "方程式列表" -->
+<!ENTITY ListofUnknown	"\U-5176\U-4ED6\U-5185\U-5BB9\U-5217\U-8868;"	-- GB2312 "其他内容列表" -->
 
 <!ENTITY nav-prev	"\U-540E\U-9000"	-- GB2312 "后退" -->
 <!ENTITY nav-prev-sibling	"\U-5FEB\U-901F\U-540E\U-9000"	-- GB2312 "快速后退" -->

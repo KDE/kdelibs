@@ -43,7 +43,7 @@
 	(list (normalize "glossary")    "%t")
 	(list (normalize "index")       "%t")
 	(list (normalize "listitem")    "%n")
-	(list (normalize "part")        "µÚ %n &part;")
+	(list (normalize "part")        "µÚ %n &Part;")
 	(list (normalize "preface")     "%t")
 	(list (normalize "procedure")   "&Procedure; %n, %t")
 	(list (normalize "reference")   "&Reference; %n, %t")
