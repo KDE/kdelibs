@@ -312,7 +312,7 @@ void KCmdLineArgs::removeArgs(const char *id)
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
-      if (strcmp(args->id, id) == 0)
+      if (args->id && id && strcmp(args->id, id) == 0)
       {
           if (!parsed)
              parseAllArgs();
