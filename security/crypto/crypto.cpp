@@ -78,6 +78,7 @@
 
 #include "crypto.h"
 #include "certexport.h"
+#include "kdatetimedlg.h"
 
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
@@ -113,6 +114,9 @@ OtherCertItem::OtherCertItem( QListView *view, QString& sub, bool perm, int poli
 KSSLX509Map cert(sub);
     setText(0, cert.getValue("O"));
     setText(1, cert.getValue("CN"));
+
+    if (_exp.date().year() > 3000 || _exp.date().year() < 1900)
+       _exp.setDate(QDate(3000,1,1));
 }
 
 void OtherCertItem::stateChange( bool )
@@ -459,8 +463,8 @@ QString whatstr;
   connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
   untilDate = new KURLLabel("", "", tabOtherSSLCert);
   grid->addWidget(untilDate, 18, 1);
-  untilDate->setEnabled(false);
   connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
+  untilDate->setEnabled(false);
   whatstr = i18n("Select here to make the cache entry permanent.");
   QWhatsThis::add(cachePerm, whatstr);
   whatstr = i18n("Select here to make the cache entry temporary.");
@@ -684,6 +688,7 @@ void KCryptoConfig::load()
 
 #endif
 
+  slotOtherCertSelect();
   emit changed(false);
 }
 
@@ -1021,7 +1026,20 @@ if (!x) return;
 
 
 void KCryptoConfig::slotDatePick() {
-  KMessageBox::information(this, "Sorry, this code is incomplete.", i18n("SSL"));
+KDateTimeDlg kdtd;
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+
+   if (!x || !untilDate->isEnabled()) return;
+
+QDateTime qdt = x->getExpires();
+
+   kdtd.setDateTime(qdt);
+   int rc = kdtd.exec();
+   if (rc == KDialog::Accepted) {
+      x->setExpires(kdtd.getDateTime());
+      untilDate->setText(x->getExpires().toString());
+      configChanged();
+   }
 }
 
 
@@ -1065,7 +1083,7 @@ QString iss = "";
             untilDate->setText(x ? x->getExpires().toString()
                             : QDateTime::currentDateTime().toString());
          else untilDate->setText("");
-         untilDate->setEnabled(true);
+         untilDate->setEnabled(x && !x->isPermanent());
          delete cert;
       } else {
          validFrom->setText("");
@@ -1092,6 +1110,11 @@ QString iss = "";
       otherSSLVerify->setEnabled(false);
       otherSSLRemove->setEnabled(false);
       policyGroup->setEnabled(false);
+      cachePerm->setChecked(false);
+      cacheUntil->setChecked(false);
+      policyAccept->setChecked(false);
+      policyReject->setChecked(false);
+      policyPrompt->setChecked(false);
       cachePerm->setEnabled(false);
       cacheUntil->setEnabled(false);
       validFrom->setText("");
@@ -1099,6 +1122,7 @@ QString iss = "";
       untilDate->setText("");
       untilDate->setEnabled(false);
    }
+
 
    oSubject->setValues(x ? x->getSub() : QString(""));
    oIssuer->setValues(iss);

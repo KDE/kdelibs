@@ -169,7 +169,7 @@ private:
   QGridLayout *oGrid;
 
   QVButtonGroup *policyGroup;
-  QButton *policyAccept, *policyReject, *policyPrompt;
+  QRadioButton *policyAccept, *policyReject, *policyPrompt;
   QRadioButton *cacheUntil, *cachePerm;
   QLabel *validFrom, *validUntil;
   KURLLabel *untilDate;
