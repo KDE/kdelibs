@@ -618,7 +618,9 @@ Value Window::get(ExecState *exec, const UString &p) const
 
   // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
   // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
+#ifdef KJS_VERBOSE
   kdDebug(6070) << "WARNING: Window::get property not found: " << p.qstring() << endl;
+#endif
   return Undefined();
 }
 
