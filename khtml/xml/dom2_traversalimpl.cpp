@@ -665,8 +665,8 @@ Node TreeWalkerImpl::getPreviousSibling(Node n)
 
 Node TreeWalkerImpl::getNextSibling(Node n)
 {
- short _result;
     Node _tempCurrent;
+    short _result;
 
     if( n.isNull() || _tempCurrent == rootNode)
         return Node();
