@@ -401,7 +401,13 @@ namespace KJS {
   bool operator==(const UString& s1, const UString& s2);
   bool operator<(const UString& s1, const UString& s2);
   bool operator==(const UString& s1, const char *s2);
+  inline bool operator!=(const UString& s1, const char *s2) {
+    return !KJS::operator==(s1, s2);
+  }
   bool operator==(const char *s1, const UString& s2);
+  inline bool operator!=(const char *s1, const UString& s2) {
+    return !KJS::operator==(s1, s2);
+  }
   bool operator==(const CString& s1, const CString& s2);
   UString operator+(const UString& s1, const UString& s2);
 
