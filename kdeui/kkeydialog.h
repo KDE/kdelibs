@@ -155,7 +155,7 @@ class KKeyChooser : public QWidget
  protected:
 	ActionType m_type;
 	bool m_bAllowLetterShortcuts;
-	bool m_bAllowWinKey;
+	bool m_bAllowWinKey; // unused KDE4 remove
 	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
 	//  otherwise aDefaultKeycode.
 	bool m_bPreferFourModifierKeys;

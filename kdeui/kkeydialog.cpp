@@ -117,7 +117,6 @@ class KKeyChooserPrivate
 
 	QMap<QString, KShortcut> mapGlobals;
 
-	bool bAllowWinKey;
 	// If this is set, then shortcuts require a modifier:
 	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
 	// Note, however, that this only applies to printable characters.
@@ -277,7 +276,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_type = type;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
 
-  d->bAllowWinKey = (m_type == Global || m_type == ApplicationGlobal);
   d->bPreferFourModifierKeys = KGlobalAccel::useFourModifierKeys();
 
   //
@@ -654,11 +652,6 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 		const KKeySequence& seq = cut.seq(i);
 		const KKey& key = seq.key(0);
 
-		if( !d->bAllowWinKey && (key.modFlags() & KKey::WIN) ) {
-			QString s = i18n("The Win key is not allowed in this context.");
-			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
-			return;
-		}
 		if( !d->bAllowLetterShortcuts && key.modFlags() == 0
 		    && key.sym() < 0x3000 && QChar(key.sym()).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "

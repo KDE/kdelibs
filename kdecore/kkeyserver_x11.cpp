@@ -547,7 +547,7 @@ bool keyQtToMod( int keyQt, uint& mod )
 	if( keyQt & Qt::SHIFT )    mod |= KKey::SHIFT;
 	if( keyQt & Qt::CTRL )     mod |= KKey::CTRL;
 	if( keyQt & Qt::ALT )      mod |= KKey::ALT;
-	if( keyQt & (Qt::ALT<<1) ) mod |= KKey::WIN;
+	if( keyQt & Qt::META ) mod |= KKey::WIN;
 
 	return true;
 }

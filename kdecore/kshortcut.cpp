@@ -93,6 +93,7 @@ bool KKey::init( const QKeyEvent* pEvent )
 	if( pEvent->state() & Qt::ShiftButton )   keyQt |= Qt::SHIFT;
 	if( pEvent->state() & Qt::ControlButton ) keyQt |= Qt::CTRL;
 	if( pEvent->state() & Qt::AltButton )     keyQt |= Qt::ALT;
+	if( pEvent->state() & Qt::MetaButton )     keyQt |= Qt::META;
 	return init( keyQt );
 }
 

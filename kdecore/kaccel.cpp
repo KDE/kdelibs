@@ -99,6 +99,7 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		if( key.modFlags() & KKey::SHIFT ) state |= Qt::ShiftButton;
 		if( key.modFlags() & KKey::CTRL )  state |= Qt::ControlButton;
 		if( key.modFlags() & KKey::ALT )   state |= Qt::AltButton;
+		if( key.modFlags() & KKey::WIN )   state |= Qt::MetaButton;
 
 		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
 		ke.ignore();
