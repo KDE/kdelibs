@@ -31,7 +31,7 @@
 
 #include "kcalendarsystemhijri.h"
 
-#define GREGORIAN_CROSSOVER 2299161
+static const int GREGORIAN_CROSSOVER = 2299161;
 
 /* radians per degree (pi/180) */
 static const double RadPerDeg = 0.01745329251994329577;
