@@ -21,6 +21,7 @@
     */
 
 #include "anyref.h"
+#include "core.h"
 #include <assert.h>
 
 using namespace Arts;
@@ -60,6 +61,8 @@ string AnyRefBase::type() const
 		case repLongSeq:	return tsLong;
 		case repFloatSeq:	return tsFloat;
 		case repStringSeq:	return tsString;
+
+		case repAny:		return ((Any *)data)->type;
 	}
 	assert(false);
 }
@@ -104,6 +107,9 @@ void AnyRefBase::_write(Buffer *b) const
 			break;
 
 		case repStringSeq:	b->writeStringSeq(*(vector<string> *)data);
+			break;
+
+		case repAny:		b->write(((Any *)data)->value);
 			break;
 
 		default:			assert(false);

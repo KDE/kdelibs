@@ -35,6 +35,7 @@
 
 namespace Arts {
 
+class Any;
 class AnyRefBase {
 protected:
 	void *data;
@@ -65,7 +66,8 @@ protected:
 		repByteSeq = 510,
 		repLongSeq = 520,
 		repFloatSeq = 530,
-		repStringSeq = 540
+		repStringSeq = 540,
+		repAny = 1000			  /* may hold any type */
 	} rep;
 
 	void _write(Buffer *b) const;
@@ -101,6 +103,8 @@ public:
 	AnyConstRef(const std::vector<std::string>& v)
 										: AnyRefBase(&v,repStringSeq) { };
 
+	AnyConstRef(const Any& value)		: AnyRefBase(&value,repAny) { };
+
 	AnyConstRef(const AnyConstRef& ref) : AnyRefBase(ref) { }
 	void write(Buffer *b) const			{ _write(b); }
 };
@@ -122,7 +126,7 @@ public:
 	AnyRef(std::vector<long>& value)		: AnyRefBase(&value,repLongSeq) { };
 	AnyRef(std::vector<float>& value)		: AnyRefBase(&value,repFloatSeq) { };
 	AnyRef(std::vector<std::string>& value)	: AnyRefBase(&value,repStringSeq){};
-	
+
 	AnyRef(const AnyRef& ref) : AnyRefBase(ref) { }
 
 	void read(Buffer *b) const			{ _read(b);  }

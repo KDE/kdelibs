@@ -651,4 +651,12 @@ interface Object {
 	sequence<string> _queryChildren();
 };
 
+/**
+ * a simple struct which can hold any other type
+ */
+struct Any {
+	string type;
+	sequence<byte> value;
+};
+
 };

@@ -274,6 +274,21 @@ public:
 	void writeType(Arts::Buffer& stream) const;
 };
 
+class Any : public Arts::Type {
+public:
+	Any();
+	Any(const std::string& type, const std::vector<Arts::mcopbyte>& value);
+	Any(Arts::Buffer& stream);
+	Any(const Any& copyType);
+	Any& operator=(const Any& assignType);
+	std::string type;
+	std::vector<Arts::mcopbyte> value;
+
+// marshalling functions
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
+};
+
 };
 namespace Arts {
 class InterfaceRepo;
