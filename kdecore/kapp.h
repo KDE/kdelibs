@@ -42,6 +42,9 @@ typedef unsigned long Atom;
 #include <qpixmap.h>
 #include <kinstance.h>
 #include <kurl.h>
+#if QT_VERSION < 300
+#include <kdesktopwidget.h>
+#endif
 
 struct _IceConn;
 class QPopupMenu;
@@ -528,6 +531,14 @@ public:
    */
   void removeKipcEventMask(int id);
 
+#if QT_VERSION < 300
+  /**
+   * Return a desktop widget that overrides the one in QT.  This is to
+   * provide Xinerama support.
+   */
+  static KDesktopWidget *desktop();
+#endif
+
 public slots:
   /**
    * Tell KApplication about one more operation that should be finished
@@ -795,6 +806,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.217  2001/05/17 20:08:40  waba
+// KDE 2.2alpha2
+//
 // Revision 1.216  2001/05/03 00:15:40  mueller
 // update version string
 //
