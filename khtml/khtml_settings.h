@@ -105,6 +105,7 @@ public:
 								KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice);
   static const char* adviceToStr(KJavaScriptAdvice _advice);
 
+    QString settingsToCSS() const;
 
 private:
   bool m_bChangeCursor;
