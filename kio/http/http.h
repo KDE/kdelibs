@@ -26,19 +26,18 @@
 #include <qstringlist.h>
 #include <qstrlist.h>
 
-#include <kio/global.h>
-#include <kio/slavebase.h>
 #include <ksock.h>
 #include <kurl.h>
 #include <kmdcodec.h>
+#include <kio/slavebase.h>
 
 // Default ports.. you might want to change this if you're trying to dodge
 // a proxy with some creative network address translation..  HTTP_PORT
 // is used for HTTP and WebDAV/WebFolders, HTTPS_PORT is well used for
 // HTTPS. Duh.
+#define DEFAULT_FTP_PORT        21
 #define DEFAULT_HTTP_PORT       80
 #define DEFAULT_HTTPS_PORT      443
-#define DEFAULT_FTP_PORT        21
 
 class DCOPClient;
 
@@ -175,7 +174,7 @@ protected:
     */
   void addEncoding(QString, QStringList &);
 
-  void configAuth(const char *, bool, bool firstCall = true );
+  void configAuth( const char *, bool );
 #ifdef DO_SSL
   void initSSL();
   void closeSSL();
@@ -359,6 +358,8 @@ protected:
   HTTP_AUTH Authentication;
   HTTP_AUTH ProxyAuthentication;
   bool m_bUnauthorized;
+  short unsigned int m_iProxyAuthCount;
+  short unsigned int m_iWWWAuthCount;
 
   // Persistant connections
   bool m_bKeepAlive;

@@ -535,7 +535,7 @@ bool
 HTTPProtocol::http_openConnection()
 {
     m_bKeepAlive = false;
-#if 0
+/*
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
       m_sock = 0;
@@ -545,122 +545,116 @@ HTTPProtocol::http_openConnection()
 
     // Set socket non-blocking.
     fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL)|O_NDELAY));
-#else
+*/
     KExtendedSocket ks;
-#endif
-
     // do we still want a proxy after all that?
-    if ( m_state.do_proxy ) {
-      QString proxy_host = m_proxyURL.host();
-      int proxy_port = m_proxyURL.port();
-      kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
-      // yep... open up a connection to the proxy instead of our host
-#if 0
-      if (!KSocket::initSockaddr(&m_proxySockaddr, proxy_host.latin1(), proxy_port)) {
-        error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
-        return false;
-      }
-
-      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
-
-      if (KSocks::self()->connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
-        if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
-          // Error
-          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-          kdDebug(7103) << "Could not connect to PROXY server!!" << endl;
-          return false;
-        }
-        // Wait for connection
-        if (!waitForConnect(m_sock, m_proxyConnTimeout))
+    if ( m_state.do_proxy )
+    {
+        QString proxy_host = m_proxyURL.host();
+        int proxy_port = m_proxyURL.port();
+        kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
+        // yep... open up a connection to the proxy instead of our host
+/*
+        if (!KSocket::initSockaddr(&m_proxySockaddr, proxy_host.latin1(), proxy_port))
         {
-          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-          kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
-          return false;
+            error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
+            return false;
         }
-      }
-#else
-      ks.setAddress(proxy_host, proxy_port);
-      ks.setTimeout(m_proxyConnTimeout);
+        infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
+        if (KSocks::self()->connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr)))
+        {
+            if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK))
+            {
+                // Error
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+                kdDebug(7103) << "Could not connect to PROXY server!!" << endl;
+                return false;
+            }
+            // Wait for connection
+            if (!waitForConnect(m_sock, m_proxyConnTimeout))
+            {
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+                kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
+                return false;
+            }
+        }
+*/
+        ks.setAddress(proxy_host, proxy_port);
+        ks.setTimeout(m_proxyConnTimeout);
+        infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
+        if (ks.connect() < 0)
+        {
+            if (ks.status() == IO_LookupError)
+                error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
+            else
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+            return false;
+        }
+        m_sock = ks.fd();
 
-      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
-
-      if (ks.connect() < 0)
-	{
-	  if (ks.status() == IO_LookupError)
-	    error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
-	  else
-	    error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-	  return false;
-	}
-      m_sock = ks.fd();
-#endif
-
-      // SSL proxying requires setting up a tunnel through the proxy server
-      // with the CONNECT directive.
+        // SSL proxying requires setting up a tunnel through the proxy server
+        // with the CONNECT directive.
 #ifdef DO_SSL
-      if (m_bUseSSL) {   // we might have DO_SSL but not m_bUseSSL someday
-      kdDebug(7113) << "http proxy for SSL - setting up" << endl;
-      // Set socket blocking.
-      fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
-
-      QString proxyconheader = QString("CONNECT %1:%2 HTTP/1.1\r\n\r\n").arg(m_request.hostname).arg(m_request.port);
-      // WARNING: ugly hack alert!  We don't want to use the SSL routines
-      //          for this code so we have to disabled it temporarily.
-      kdDebug(7113) << "Sending connect header: " << proxyconheader << endl;
-      bool useSSLSaved = m_bUseSSL;
-      m_bUseSSL = false;
-      bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length())
+        if (m_bUseSSL)
+        {
+            // we might have DO_SSL but not m_bUseSSL someday
+            kdDebug(7113) << "http proxy for SSL - setting up" << endl;
+            // Set socket blocking.
+            fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
+            QString proxyconheader = QString("CONNECT %1:%2 HTTP/1.1\r\n\r\n").arg(m_request.hostname).arg(m_request.port);
+            // WARNING: ugly hack alert!  We don't want to use the SSL routines
+            //          for this code so we have to disabled it temporarily.
+            kdDebug(7113) << "Sending connect header: " << proxyconheader << endl;
+            bool useSSLSaved = m_bUseSSL;
+            m_bUseSSL = false;
+            bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length())
                            == (ssize_t) proxyconheader.length());
-      char buffer[513];
-      if (!sendOk) {
-        // FIXME: do we have to close() the connection here?
-        //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-        m_bUseSSL = useSSLSaved;
-        return false;
-      }
+            char buffer[513];
+            if (!sendOk)
+            {
+                // FIXME: do we have to close() the connection here?
+                //        also the error code should be changed
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+                m_bUseSSL = useSSLSaved;
+                return false;
+            }
+            if (!waitForHeader(m_sock, m_remoteRespTimeout) )
+            {
+                // FIXME: a good workaround would be to fallback to non-proxy mode
+                //        here if we can.
+                // FIXME: do we have to close() the connection here?
+                //        also the error code should be changed
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+                m_bUseSSL = useSSLSaved;
+                return false;
+            }
 
-      if (!waitForHeader(m_sock, m_remoteRespTimeout) ) {
-        // FIXME: a good workaround would be to fallback to non-proxy mode
-        //        here if we can.
-        // FIXME: do we have to close() the connection here?
-        //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-        m_bUseSSL = useSSLSaved;
-        return false;
-      }
-
-      // In SSL mode we normally don't use this.  Does it cause a resource
-      // leak that I'm not cleaning this up here if we're in SSL mode?
-      int rhrc = KSocks::self()->read(m_sock, buffer, sizeof(buffer)-1);
-      buffer[sizeof(buffer)-1] = 0;  // just in case so we don't run away!
-      if (rhrc == -1 || strncmp(buffer, "HTTP/1.0 200", 12)) {
-        // FIXME: a good workaround would be to fallback to non-proxy mode
-        //        here if we can.
-        // FIXME: do we have to close() the connection here?
-        //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-        m_bUseSSL = useSSLSaved;
-        return false;
-      }
-
-      m_bUseSSL = useSSLSaved;
-      }  // if m_bUseSSL
-#if 0
-      m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
-#else
-      KSocketAddress *sa = ks.peerAddress();
-      m_ssl_ip = i18n("Proxied by %1.").arg(sa->pretty());
-#endif
-
+            // In SSL mode we normally don't use this.  Does it cause a resource
+            // leak that I'm not cleaning this up here if we're in SSL mode?
+            int rhrc = KSocks::self()->read(m_sock, buffer, sizeof(buffer)-1);
+            buffer[sizeof(buffer)-1] = 0;  // just in case so we don't run away!
+            if (rhrc == -1 || strncmp(buffer, "HTTP/1.0 200", 12))
+            {
+                // FIXME: a good workaround would be to fallback to non-proxy mode
+                // here if we can.
+                // FIXME: do we have to close() the connection here? also the error
+                // code should be changed
+                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+                m_bUseSSL = useSSLSaved;
+                return false;
+            }
+            m_bUseSSL = useSSLSaved;
+        }  // if m_bUseSSL
+        // m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
+        KSocketAddress *sa = ks.peerAddress();
+        m_ssl_ip = i18n("Proxied by %1.").arg(sa->pretty());
 #endif // DO_SSL
-
-#if 1
-      ks.release();
-#endif
-    } else {
+        ks.release();
+    }
+    else
+    {
       // apparently we don't want a proxy.  let's just connect directly
-#if 0
+/*
       ksockaddr_in server_name;
 
       if(!KSocket::initSockaddr(&server_name, m_state.hostname.latin1(), m_state.port)) {
@@ -689,42 +683,33 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
-#else
-
-      ks.setAddress(m_state.hostname, m_state.port);
-      ks.setTimeout(m_remoteConnTimeout);
-      if (ks.connect() < 0)
-	{
-	  if (ks.status() == IO_LookupError)
-	    error(ERR_UNKNOWN_HOST, m_state.hostname);
-	  else
-	    {
-	      if (m_state.port != m_DefaultPort)
-		error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
-	      else
-		error(ERR_COULD_NOT_CONNECT, m_state.hostname );
-	    }
-	  return false;
-	}
-      m_sock = ks.fd();
-#endif
+*/
+        ks.setAddress(m_state.hostname, m_state.port);
+        ks.setTimeout(m_remoteConnTimeout);
+        if (ks.connect() < 0)
+        {
+            if (ks.status() == IO_LookupError)
+                error(ERR_UNKNOWN_HOST, m_state.hostname);
+            else
+            {
+                if (m_state.port != m_DefaultPort)
+                    error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
+                else
+                    error(ERR_COULD_NOT_CONNECT, m_state.hostname );
+            }
+            return false;
+         }
+         m_sock = ks.fd();
 
 #ifdef DO_SSL
-#if 0
-        m_ssl_ip = inet_ntoa(server_name.sin_addr);
-#else
-	KSocketAddress *sa = ks.peerAddress();
-	if (sa->isA("KInetSocketAddress"))
-	  m_ssl_ip = ((KInetSocketAddress*)sa)->prettyHost();
-	else
-	  m_ssl_ip = sa->pretty();
+        // m_ssl_ip = inet_ntoa(server_name.sin_addr);
+        KSocketAddress *sa = ks.peerAddress();
+        if (sa->isA("KInetSocketAddress"))
+            m_ssl_ip = ((KInetSocketAddress*)sa)->prettyHost();
+        else
+            m_ssl_ip = sa->pretty();
 #endif
-#endif
-
-#if 1
-	ks.release();
-#endif
-
+        ks.release();
     }
 
     // Set socket blocking.
@@ -736,11 +721,9 @@ HTTPProtocol::http_openConnection()
       error( ERR_COULD_NOT_CONNECT, m_state.hostname );
       return false;
     }
-
     kdDebug(7103) << time(0L) << " Sending connected" << endl;
     // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
     connected();
-
     return true;
 }
 
@@ -895,6 +878,8 @@ bool HTTPProtocol::http_open()
 
   // Let's also clear out some things, so bogus values aren't used.
   // m_HTTPrev = HTTP_Unknown;
+  m_iWWWAuthCount = 0;
+  m_iProxyAuthCount = 0;
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
   m_qContentEncodings.clear();
@@ -904,7 +889,7 @@ bool HTTPProtocol::http_open()
   m_bErrorPage = (metaData("errorPage") != "false");
   m_iSize = -1;
 
-  // let's try to open up our socket if we don't have one already.
+  // Let's try to open up our socket if we don't have one already.
   if (!m_sock)
   {
     if (!http_openConnection())
@@ -1287,7 +1272,6 @@ bool HTTPProtocol::readHeader()
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
-  int proxyAuthCount = 1;
   char buffer[4097];
   bool cont = false;
   bool cacheValidated = false; // Revalidation was successfull
@@ -1598,9 +1582,6 @@ bool HTTPProtocol::readHeader()
 
     // check for proxy-based authentication
     else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0) {
-      if ( proxyAuthCount++ > 1 )
-        configAuth(trimLead(buffer + 19), true, false);
-      else
         configAuth(trimLead(buffer + 19), true);
     }
 
@@ -1908,10 +1889,8 @@ bool HTTPProtocol::readHeader()
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
   if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
-      (m_strMimeType.isEmpty() && m_request.method == HTTP_HEAD) ) )
+      m_request.method == HTTP_HEAD) )
   {
-     if( m_strMimeType.isEmpty() )
-        m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
      mimeType( m_strMimeType );
   }
@@ -1970,9 +1949,9 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   }
 }
 
-void HTTPProtocol::configAuth( const char *p, bool b, bool firstCall )
+void HTTPProtocol::configAuth( const char *p, bool b )
 {
-  HTTP_AUTH f;
+  HTTP_AUTH f = AUTH_None;
   const char *strAuth = p;
 
   while( *p == ' ' ) p++;
@@ -1997,15 +1976,33 @@ void HTTPProtocol::configAuth( const char *p, bool b, bool firstCall )
   {
     kdWarning(7103) << "Unsupported or invalid authorization type requested" << endl;
     kdWarning(7103) << "Request Authorization: " << p << endl;
-    if ( firstCall && b )
-      ProxyAuthentication = AUTH_None;
-    return;
   }
 
-  // Always prefer the stronger authentication mode:
-  // AUTH_NONE < AUTH_BASIC < AUTH_DIGEST...
-  if ( (b && f < ProxyAuthentication) || (!b && f < Authentication) )
+  /*
+     This check ensures the following:
+     1.) Rejection of any unknown/unsupported authentication schemes
+     2.) Useage of the strongest possible authentication schemes if
+         and when multiple Proxy-Authenticate or WWW-Authenticate
+         header field is sent.
+  */
+  if ( f == AUTH_None ||
+       (b && m_iProxyAuthCount > 0 && f < ProxyAuthentication) ||
+       (!b && m_iWWWAuthCount > 0 && f < Authentication) )
+  {
+    // Since I purposefully made the Proxy-Authentication settings
+    // persistent to reduce the number of round-trips to kdesud we
+    // have to take special care when an unknown/unsupported auth-
+    // scheme is received. This check accomplishes just that...
+    if ( b )
+    {
+      if ( !m_iProxyAuthCount )
+        ProxyAuthentication = f;
+      m_iProxyAuthCount++;
+    }
+    else
+      m_iWWWAuthCount++;
     return;
+  }
 
   while (*p)
   {
