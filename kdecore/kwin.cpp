@@ -690,19 +690,17 @@ NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
     return d->info->windowType( supported_types );
 }
 
+QString KWin::WindowInfo::visibleNameMatchingState() const
+{
+    if( mappingState() == NET::Iconic )
+        return visibleIconName();
+    else
+        return visibleName();
+}
+
 QString KWin::WindowInfo::visibleNameWithState() const
 {
     QString s = visibleName();
-    if ( isMinimized() ) {
-	s.prepend('(');
-	s.append(')');
-    }
-    return s;
-}
-
-QString KWin::WindowInfo::visibleIconNameWithState() const
-{
-    QString s = visibleIconName();
     if ( isMinimized() ) {
 	s.prepend('(');
 	s.append(')');

@@ -896,7 +896,9 @@ public:
     /**
        Returns the iconic name of the window in UTF-8 format. Note that this has
        nothing to do with icons, but it's for "iconic"
-       representations of the window, i.e. taskbars etc.
+       representations of the window (taskbars etc.), that should be shown
+       when the window is in iconic state. See description of _NET_WM_ICON_NAME
+       for details.
        
        @return the iconic name
     **/
@@ -905,7 +907,9 @@ public:
     /**
        Returns the visible iconic name as set by the window manager in UTF-8 format.
        Note that this has nothing to do with icons, but it's for "iconic"
-       representations of the window, i.e. taskbars etc.
+       representations of the window (taskbars etc.), that should be shown
+       when the window is in iconic state. See description of _NET_WM_VISIBLE_ICON_NAME
+       for details.
 
        @return the visible iconic name
     **/
@@ -1011,17 +1015,17 @@ public:
     void setVisibleName(const char *visibleName);
 
     /**
-       Sets the icon name for the application window.
+       Sets the iconic name for the application window.
 
-       @param name the new icon name
+       @param name the new iconic name
     **/
     void setIconName(const char *name);
 
     /**
-       For Window Managers only: set the visible icon name ( i.e. xterm, xterm <2>,
+       For Window Managers only: set the visible iconic name ( i.e. xterm, xterm <2>,
        xterm <3>, ... )
 
-       @param visibleName the new visible icon name
+       @param visibleName the new visible iconic name
     **/
     void setVisibleIconName(const char *name);
 
