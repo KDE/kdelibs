@@ -30,6 +30,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kurllabel.h>
+#include <kactivelabel.h>
 #include "ktextedit.h"
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
@@ -103,6 +104,11 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     QString authorPageTitle = authorCount == 1 ?
       i18n("A&uthor") : i18n("A&uthors");
     KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
+
+    KActiveLabel* activeLabel = new KActiveLabel( authorPage );
+    activeLabel->setText( i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly." ) );
+    authorPage->addWidget( activeLabel );
+
     QValueList<KAboutPerson>::ConstIterator it;
     for (it = aboutData->authors().begin();
 	 it != aboutData->authors().end(); ++it)
