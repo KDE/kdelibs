@@ -945,16 +945,17 @@ void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
 
 void KConfigBase::parseConfigFiles(void) 
 { 
-    backEnd->parseConfigFiles(); 
+  backEnd->parseConfigFiles(); 
 } 
 
 void KConfigBase::sync()
 {
-      if (isReadOnly())
-	   return;
-
-      backEnd->sync(true);
-      rollback();
+  if (isReadOnly())
+    return;
+  
+  backEnd->sync(true);
+  if (bDirty)
+    rollback();
 }  
 
 #include "kconfigbase.moc"

@@ -98,7 +98,9 @@ void KSimpleConfig::sync()
 {
    if (isReadOnly()) 
        return; 
-   backEnd->sync(false); 
-   rollback(); 
+   backEnd->sync(false);
+
+   if (isDirty())
+     rollback(); 
 }   
 

@@ -80,6 +80,7 @@
 #include <qplatinumstyle.h>
 #include <qcdestyle.h>
 #include <kconfig.h>
+#include <kstddirs.h>
 
 KCharsets* KApplication::pCharsets = 0L;
 
@@ -172,14 +173,11 @@ void KApplication::init()
 
   // try to read a global application file
   QString aGlobalAppConfigName = kde_configdir() + "/" + aAppName + "rc";
-  QFile aGlobalAppConfigFile( aGlobalAppConfigName );
   // try to open read-only
-  bool bSuccess = aGlobalAppConfigFile.open( IO_ReadOnly );
+  bool bSuccess = ::access(aGlobalAppConfigName.ascii(), R_OK);
   if( !bSuccess )
-	// there is no global app config file
-	aGlobalAppConfigName = "";
-  aGlobalAppConfigFile.close();
-
+    // there is no global app config file or we can't read it
+    aGlobalAppConfigName = "";
 
   // now for the local app config file
   QString aConfigName = KApplication::localkdedir();
@@ -1268,20 +1266,12 @@ QString KApplication::localconfigdir()
 }
 
 
-bool KApplication::getKDEFonts(QStrList *fontlist)
+bool KApplication::getKDEFonts(QStringList &fontlist)
 {
   QString fontfilename;
 
-  if(fontlist == 0L)
-    return false;
-
-  fontfilename = KApplication::localconfigdir();
-
-  if(fontfilename.isEmpty()){
-    return false;
-  }
-
-  fontfilename = fontfilename + "/kdefonts";
+  fontfilename = localconfigdir();
+  fontfilename += "/kdefonts";
 
   QFile fontfile(fontfilename);
 
@@ -1292,16 +1282,13 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
     return false;
   }
 
-  if (!fontfile.isReadable())
-    return false;
-
   QTextStream t(&fontfile);
 
 
   while ( !t.eof() ) {
     QString s = t.readLine();
     if(!s.isEmpty())
-      fontlist->append( s.ascii() );
+      fontlist.append( s );
   }
 
   fontfile.close();

@@ -343,15 +343,16 @@ public:
   static QString findFile( const QString& file );
 
   /**
-	* Get the KDE font list.
-
-	* This method allows you to get the KDE font list which was
-	* composed by the user with kfontmanager. Usually you should
-	* work only with those fonts in your kapplication.
-	*
-	*  @return true on success.
-	*/
-  bool getKDEFonts(QStrList *fontlist);
+   * Get the KDE font list.
+   *
+   * This method allows you to get the KDE font list which was
+   * composed by the user with kfontmanager. Usually you should
+   * work only with those fonts in your kapplication.
+   *
+   * @param fontlist a reference to a list to fill with fonts.
+   * @return true on success.
+   */
+  bool getKDEFonts(QStringList &fontlist);
 
 
   /**
@@ -644,6 +645,13 @@ private:
 #endif
 
 // $Log$
+// Revision 1.79  1999/05/25 16:17:24  kulow
+// two changes:
+//   kde_icondir() has been removed. Use locate("icon", pixmap) instead
+//   KIconLoader::loadMiniIcon has been removed. It does the same as
+//   loadApplicationMiniIcon and the later is less confusing in what it
+//   does (loading icons out of share/icons/mini)
+//
 // Revision 1.78  1999/05/23 17:04:51  kulow
 // let KGlobal create the IconLoader instance. Removed KApplication::getIconLoader.
 // Steffen's idea - just more consequent ;)

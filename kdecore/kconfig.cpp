@@ -98,7 +98,6 @@ KConfig::KConfig( const QString& pGlobalFileName,
   // add the "default group" marker to the map
   KEntryKey groupKey = { "<default>", QString() };
   aEntryMap.insert(groupKey, KEntry());
-
   // need to set this before we actually parse so as to avoid
   // infinite looping when parseConfigFiles calls things like
   // hasGroup, putData, etc. which would then try to load

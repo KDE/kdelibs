@@ -247,10 +247,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.open( IO_ReadWrite );
       // Set uid/gid (neccesary for SUID programs)
       chown(aConfigFile.name().ascii(), getuid(), getgid());
-      if (aConfigFile.isWritable()) {
-	bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
-	bLocalGood = true;
-      }
+      bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
+      bLocalGood = true;
       aConfigFile.close();
     }
   }
@@ -264,10 +262,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
       // is it writable?
       QFile aConfigFile( aGlobalFileName );
       aConfigFile.open( IO_ReadWrite );
-      if (aConfigFile.isWritable()) {
-	bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
-	bLocalGood = true;
-      }
+      bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
+      bLocalGood = true;
       aConfigFile.close();
     }
   }
@@ -291,19 +287,15 @@ void KConfigINIBackEnd::sync(bool bMerge)
       QFileInfo aInfo( aConfigFile );
       // can we allow the write? (see above)
       if (checkAccess ( aFileName, W_OK )) {
-	if (( aInfo.exists() && aInfo.isWritable()) ||
-	    (!aInfo.exists() &&
-	     QFileInfo(aInfo.dirPath(true)).isWritable())) {
-	  aConfigFile.open( IO_ReadWrite );
-	  // Set uid/gid (neccesary for SUID programs)
-	  chown(aConfigFile.name().ascii(), getuid(), getgid());
-	  writeConfigFile( aConfigFile, true, bMerge );
-	  break;
-	}
+	aConfigFile.open( IO_ReadWrite );
+	// Set uid/gid (neccesary for SUID programs)
+	chown(aConfigFile.name().ascii(), getuid(), getgid());
+	writeConfigFile( aConfigFile, true, bMerge );
+	aConfigFile.close();
       }
     }
   }
-
+  
 }
 
 bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
@@ -360,7 +352,6 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
     
     // truncate file
     delete pStream;
-    rConfigFile.close();
   } else {
     // don't merge, just get the regular entry map and use that.
     aTempMap = pConfig->internalEntryMap();
@@ -369,6 +360,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
+  rConfigFile.close();
 
   // Does program run SUID and user would not be allowed to write
   // to the file, if it doesn't run  SUID?
