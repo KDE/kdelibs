@@ -1254,7 +1254,7 @@ HlDownloadDialog::HlDownloadDialog(QWidget *parent, const char *name, bool modal
   connect(getIt,SIGNAL(data(KIO::Job *, const QByteArray &)),
     this, SLOT(listDataReceived(KIO::Job *, const QByteArray &)));
 //        void data( KIO::Job *, const QByteArray &data);
-
+  resize(450, 400);
 }
 
 HlDownloadDialog::~HlDownloadDialog(){}
