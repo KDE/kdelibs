@@ -65,3 +65,33 @@ bool VCardConverter::addresseeToVCard( const Addressee &addr, QString &str, Vers
 
   return false;
 }
+
+
+/* Helper functions */
+
+QString KABC::dateToVCardString( const QDateTime &dateTime )
+{
+  return dateTime.toString("yyyyMMddThhmmss");
+}
+
+QString KABC::dateToVCardString( const QDate &date )
+{
+  return date.toString("yyyyMMdd");
+}
+
+QDateTime KABC::VCardStringToDate( const QString &dateString )
+{
+  QDate date;
+  QTime time;
+  QString d( dateString );
+
+  d = d.remove('-').remove(':');
+
+  if (d.length()>=8)
+    date = QDate( d.mid(0,4).toUInt(), d.mid(4,2).toUInt(), d.mid(6,2).toUInt() );
+  if (d.length()>9 && d[8].upper()=='T')
+    time = QTime( d.mid(9,2).toUInt(), d.mid(11,2).toUInt(), d.mid(13,2).toUInt() );
+
+  return QDateTime( date, time );
+}
+

@@ -191,8 +191,6 @@ public:
   QValueList<QString> qualifiers;
   QValueList<QString> parameters;
   bool isValid() const;
-  void qpEncode(QString& x);
-  void qpDecode(QString& x);
 };
 
 /**

@@ -79,5 +79,35 @@ private:
   VCardConverterData *d;
 };
 
+
+/**
+    Helper functions
+  */
+
+/**
+  * Converts a QDateTime to a date string as it is used in VCard and LDIF files.
+  * The return value is in the form "yyyyMMddThhmmss" (e.g. "20031201T120000")
+  * @param dateTime date and time to be converted 
+  * @since 3.2
+  */
+QString dateToVCardString( const QDateTime &dateTime );
+
+/**
+  * Converts a QDate to a short date string as it is used in VCard and LDIF files.
+  * The return value is in the form "yyyyMMdd" (e.g. "20031201")
+  * @param date date to be converted 
+  * @since 3.2
+  */
+QString dateToVCardString( const QDate &date );
+
+/**
+  * Converts a date string as it is used in VCard and LDIF files to a QDateTime value.
+  * If the date string does not contain a time value, it will be returned as 00:00:00.
+  * (e.g. "20031201T120000" will return a QDateTime for 2003-12-01 at 12:00)
+  * @param dateString string representing the date and time.
+  * @since 3.2
+  */
+QDateTime VCardStringToDate( const QString &dateString );
+
 }
 #endif
