@@ -425,8 +425,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         }
         else
             ret = KMessageBox::warningContinueCancelList( viewWidget(),
-                i18n("Do you really want to delete these %1 items?")
-                .arg( items.count() ),
+                i18n("Do you really want to delete 1 item?", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
                                                     i18n("Delete") );
