@@ -346,9 +346,6 @@ void SimpleJob::slaveDone()
 
 void SimpleJob::slotFinished( )
 {
-    // Return slave to the scheduler
-    slaveDone();
-
     if (subjobs.isEmpty())
     {
         if ( !m_error )
@@ -369,7 +366,16 @@ void SimpleJob::slotFinished( )
                     allDirNotify.FileRenamed( src, dst );
             }
         }
-        emitResult();
+
+        if ( m_progressId ) // Did we get an ID from the observer ?
+          Observer::self()->jobFinished( m_progressId );
+
+        emit result(this);
+
+        // Return slave to the scheduler, only now
+        slaveDone();
+
+        delete this;
     }
 }
 
