@@ -470,7 +470,8 @@ void KPasswordDialog::enableOkBtn()
       bool match = ((strcmp(m_pEdit->password(), m_pEdit2->password()))==0)
                    && (strcmp(m_pEdit->password(), "") != 0);
       enableButtonOK( match );
-      d->m_MatchLabel->setText( match?QString(i18n("Passwords match")):QString(i18n("Passwords do not match")) );
+      d->m_MatchLabel->setText( match? i18n("Passwords match")
+                                      :i18n("Passwords do not match") );
    }
 }
 
