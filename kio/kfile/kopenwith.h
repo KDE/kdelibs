@@ -20,13 +20,9 @@
 #ifndef __open_with_h__
 #define __open_with_h__
 
-#include <qwidget.h>
-#include <qfileinfo.h>
 #include <qdialog.h>
 
-#include <kapp.h>
 #include <kurl.h>
-#include <klistview.h>
 #include <krun.h>
 
 #include <kservice.h>
@@ -34,10 +30,11 @@
 class KApplicationTree;
 class KURLRequester;
 
+class QWidget;
 class QCheckBox;
 class QPushButton;
 class QLabel;
-class QStringList;
+
 
 /* ------------------------------------------------------------------------- */
 
@@ -179,69 +176,6 @@ public:
 };
 #endif
 
-
-/* ------------------------------------------------------------------------- */
-
-/**
- * @internal
- */
-class KAppTreeListItem : public QListViewItem
-{
-    bool parsed;
-    bool directory;
-    QString path;
-    QString exec;
-
-protected:
-    QString key(int column, bool ascending) const;
-
-    void init(const QPixmap& pixmap, bool parse, bool dir, QString _path, QString exec);
-
-public:
-    KAppTreeListItem( KListView* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, QString p, QString c );
-    KAppTreeListItem( QListViewItem* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, QString p, QString c );
-    bool isDirectory();
-
-protected:
-    virtual void activate();
-    virtual void setOpen( bool o );
-
-    friend class KApplicationTree;
-};
-
-/* ------------------------------------------------------------------------- */
-
-/**
- * @internal
- */
-class KApplicationTree : public KListView
-{
-    Q_OBJECT
-public:
-    KApplicationTree( QWidget *parent );
-
-    /**
-     * Add a group of .desktop/.kdelnk entries
-     */
-    void addDesktopGroup( QString relPath, KAppTreeListItem *item = 0 );
-
-    KAppTreeListItem *it;
-    bool isDirSel();
-
-protected:
-    void resizeEvent( QResizeEvent *_ev );
-    KAppTreeListItem* currentitem;
-
-public slots:
-    void slotItemHighlighted(QListViewItem* i);
-    void slotSelectionChanged(QListViewItem* i);
-
-signals:
-    void selected( const QString& _name, const QString& _exec );
-    void highlighted( const QString& _name, const  QString& _exec );
-};
 
 /* ------------------------------------------------------------------------- */
 

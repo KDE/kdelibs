@@ -37,7 +37,7 @@ include_HEADERS = kfiledialog.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h
 
 noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
-	kfilebookmarkhandler.h kfilemetainfowidget.h
+	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h
 
 libkfile_la_SOURCES = kfiledialogconf.cpp \
 	kfilefiltercombo.cpp \

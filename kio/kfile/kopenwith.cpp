@@ -57,8 +57,9 @@
 #include <ksycoca.h>
 
 #include "kopenwith.h"
-#include <kdebug.h>
+#include "kopenwith_p.h"
 
+#include <kdebug.h>
 #include <assert.h>
 #include <stdlib.h>
 
