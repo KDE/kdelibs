@@ -157,7 +157,7 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     return false; // always continue processing
 }
 
-void KRootPixmap::desktopChanged( int desk )
+void KRootPixmap::desktopChanged( int )
 {
     repaint(true);
 }
