@@ -294,6 +294,8 @@ void KJavaUploader::jobCommand( int cmd )
         case KJAS_STOP: {
             kdDebug(6100) << "jobCommand(" << d->loaderID << ") stop" << endl;
 	    d->finished = true;
+            if (d->job->isSuspended())
+                d->job->resume();
             break;
         }
     }
