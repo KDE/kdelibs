@@ -45,7 +45,7 @@ KServiceTypeFactory::KServiceTypeFactory()
       (*m_str) >> i;
       m_otherPatternOffset = i;
       (*m_str) >> n;
-      
+
       if (n > 1024)
       {
          KSycoca::flagError();
@@ -97,7 +97,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 
 QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 {
-   if (!m_sycocaDict) 
+   if (!m_sycocaDict)
       return QVariant::Invalid; // Error!
 
    assert (!KSycoca::self()->isBuilding());
@@ -185,10 +185,10 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    QStringList::const_iterator it = m_patterns.begin();
    QStringList::const_iterator end = m_patterns.end();
    QValueVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
-   
+
   for ( ; it != end; ++it, ++it_offset )
    {
-      if ( KStringHandler::matchFilename( _filename, *it ) )
+      if ( KStringHandler::matchFileName( _filename, *it ) )
       {
          matchingOffset = *it_offset;
          break;
