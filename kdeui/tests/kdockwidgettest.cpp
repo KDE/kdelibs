@@ -149,10 +149,10 @@ void DockApplication::initToolBars()
 {
   QPixmap p(folder);
   KToolBar* tool_bar_0 = toolBar(0);
-  tool_bar_0->setFullWidth(false);
+  tool_bar_0->setFullSize(false);
   tool_bar_0->insertButton( p, 1 );
   tool_bar_0->insertButton(p, 2 );
-  tool_bar_0->setFullWidth( true );
+  tool_bar_0->setFullSize( true );
 }
 
 void DockApplication::initStatusBar()
