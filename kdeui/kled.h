@@ -82,7 +82,7 @@ public:
    * @param name     will be handed over to QWidget
    * @short Constructor
    */
-KLed(KLed::Color ledcolor, QWidget *parent = 0, const char *name = 0);
+KLed( KLed::Color ledcolor, QWidget *parent = 0, const char *name = 0 );
 
   /**
    * Constructor with the ledcolor, ledstate, ledlook,
@@ -97,28 +97,36 @@ KLed(KLed::Color ledcolor, QWidget *parent = 0, const char *name = 0);
    * @param name     will be handed over to QWidget
    * @short Constructor
    */
-KLed(KLed::Color ledcolor, KLed::State state, KLed::Look look, QWidget *parent = 0, const char *name = 0);
+KLed( KLed::Color ledcolor, KLed::State state, KLed::Look look, QWidget *parent = 0, const char *name = 0 );
 
   /**
    * Hands back the current state of the widget (on/off)
    * see enum State
    * @short returns led state
    */
-  State getState() const { return led_state; }
+  inline State getState() const;
 
   /**
    * Hands back the color of the widget
    * see enum Color
    * @short returns led color
    */
-  Color getColor() const { return led_color; }
+  inline Color getColor() const;
+
+  /**
+   * Hands back the color of the widget in RGB value.
+   * The value depends on the state of the the led (on, off)
+   * see QRgb
+   * @short returns led color in RGB value
+   */
+  inline QRgb getRgbColor() const;
 
   /**
    * Hands back the look of the widget
    * see enum Look
    * @short returns led look
    */
-  Look getLook() const { return led_look; }
+  inline  Look getLook() const;
 
   /**
    * sets the state of the widget to On or Off.
@@ -128,44 +136,40 @@ KLed(KLed::Color ledcolor, KLed::State state, KLed::Look look, QWidget *parent =
    * @param state the led state on or off
    * @short set led state
    */
-  void setState( State state ) { led_state = state;
-    current_color=led_state ? lightcolor[led_color] : darkcolor[led_color];
-    repaint(); }
+  inline void setState( State state );
 
   /**
-   * toggles the state of the led from Off to On an vice versa.
-   * The widget repaints itself immediately.
+   * toggles the state of the led from Off to On and vice versa.
+   * The widget will be repainted when returning to the main
+   * event loop.
    * @short toggles led on->off / off->on
    */
-  void toggleState() { led_state = (State)!led_state;
-    current_color=led_state ? lightcolor[led_color] : darkcolor[led_color];
-    repaint(); }
+  inline void toggleState();
 
   /**
    * Sets the color of the widget.
-   * The widget doesn't calls the repaint method, so it will
-   * be updated with the next repainting call.
+   * The widget calls the update method, so it will
+   * be updated when entering the main event loop.
    *
    * see also: enum Color
    *
    * @param color new Color of the led
    * @short sets the led color
    */
-  void setColor( KLed::Color color) { led_color = color;
-    current_color=led_state ? lightcolor[led_color] : darkcolor[led_color]; }
+  inline void setColor( KLed::Color color );
 
   /**
    * Sets the look of the widget.
    * the look may be flat, round or sunken.
-   * The widget doesn't calls the repaint method, so it will
-   * be updated with the next repainting call.
+   * The widget calls the update method, so it will
+   * be updated when entering the main event loop.
    *
    * see also: enum Look
    *
    * @param look new look of the led
    * @short sets led look
    */
-  void setLook( Look look ) { led_look = look; }
+  inline void setLook( Look look );
 
 public slots:
 
@@ -173,24 +177,24 @@ public slots:
    * toggles the state of the led from Off to On an vice versa.
    * The widget repaints itself immediately.
    */
-  void toggle() { toggleState(); };
+  inline void toggle();
 
   /**
    * sets the state of the widget to On.
    * The widget will be painted immediately.
-   * see also: off(), toggle(), toggleState(), setState()
+   * see off(), toggle(), toggleState(), setState()
    */  
-  void on() { setState(On); };
+  inline void on();
 
   /**
    * sets the state of the widget to Off.
    * The widget will be painted immediately.
    * see also: on(), toggle(), toggleState(), setState()
    */
-  void off() { setState(Off); };
+  inline void off();
 
 protected:
-  void paintEvent(QPaintEvent *);
+  void paintEvent( QPaintEvent * );
 
 private:
   void paintflat();
@@ -204,5 +208,69 @@ private:
   QRgb current_color;
 };
 
+KLed::State
+KLed::getState() const
+{ return led_state; }
+
+KLed::Color
+KLed::getColor() const
+{ return led_color; }
+
+QRgb
+KLed::getRgbColor() const
+{ return current_color; }
+
+KLed::Look
+KLed::getLook() const
+{ return led_look; }
+
+void
+KLed::setState( State state )
+{
+  if (led_state != state) {
+    led_state = state;
+    current_color=led_state ? lightcolor[led_color] : darkcolor[led_color];
+    update();
+  }
+}
+
+void
+KLed::toggleState()
+{
+  led_state = (State)!led_state;
+  current_color = led_state ? lightcolor[led_color] : darkcolor[led_color];
+  update();
+ }
+
+void
+KLed::setColor( KLed::Color color)
+{ 
+  if (led_color != color) {
+    led_color = color;
+    current_color = led_state ? lightcolor[led_color] : darkcolor[led_color];
+    update(); 
+  }
+}
+
+void
+KLed::setLook( Look look )
+{
+  if (led_look != look) {
+    led_look = look;
+    update();
+  }
+}
+
+void
+KLed::toggle()
+{ toggleState(); };
+
+void
+KLed::on()
+{ setState(On); };
+
+void
+KLed::off()
+{ setState(Off); };
 
 #endif

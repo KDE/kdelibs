@@ -55,7 +55,7 @@ void
 KLed::paintEvent(QPaintEvent *)
 {
 #ifdef PAINT_BENCH
-  int rounds = 1000;
+  const int rounds = 1000;
   QTime t;
   t.start();
   for (int i=0; i<rounds; i++) 
@@ -67,7 +67,7 @@ KLed::paintEvent(QPaintEvent *)
   }
 #ifdef PAINT_BENCH
   int ready = t.elapsed();
-  fprintf(stderr,"elapsed: %d msec. for %d rounds\n", ready, rounds);
+  debug("elapsed: %d msec. for %d rounds", ready, rounds);
 #endif
 }
 
@@ -89,22 +89,26 @@ KLed::paintflat()
   // draw light grey upper left circle
   c.setRgb(0xCFCFCF);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 45*16, 180*16);
+  //  p.drawArc(x,y,w,h, 45*16, 180*16);
+  p.drawArc(x,y,w,h, 45*16, -180*16);
 
   // draw white upper left circle
   c.setRgb(0xFFFFFF);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 90*16, 90*16);
+  //  p.drawArc(x,y,w,h, 90*16, 90*16);
+  p.drawArc(x,y,w,h, 0, -90*16);
 
   // draw dark grey lower right circle
   c.setRgb(0xA0A0A0);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 45*16, -180*16);
+  //  p.drawArc(x,y,w,h, 45*16, -180*16);
+  p.drawArc(x,y,w,h, 45*16, 180*16);
 
   // draw black lower right circle
   c.setRgb(0x000000);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 0, -90*16);
+  //  p.drawArc(x,y,w,h, 0, -90*16);
+  p.drawArc(x,y,w,h, 90*16, 90*16);
 
   // make led smaller for shading
   w-=2; h-=2;
@@ -134,22 +138,26 @@ KLed::paintround()
   // draw light grey upper left circle
   c.setRgb(0xCFCFCF);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 45*16, 180*16);
+  //  p.drawArc(x,y,w,h, 45*16, 180*16);
+  p.drawArc(x,y,w,h, 45*16, -180*16);
 
   // draw white upper left circle
   c.setRgb(0xFFFFFF);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 90*16, 90*16);
+  //  p.drawArc(x,y,w,h, 90*16, 90*16);
+  p.drawArc(x,y,w,h, 0, -90*16);
 
   // draw dark grey lower right circle
   c.setRgb(0xA0A0A0);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 45*16, -180*16);
+  //  p.drawArc(x,y,w,h, 45*16, -180*16);
+  p.drawArc(x,y,w,h, 45*16, 180*16);
 
   // draw black lower right circle
   c.setRgb(0x000000);
   p.setPen(c);
-  p.drawArc(x,y,w,h, 0, -90*16);
+  //  p.drawArc(x,y,w,h, 0, -90*16);
+  p.drawArc(x,y,w,h, 90*16, 90*16);
 
   // make led smaller for shading
   w-=2; h-=2;
