@@ -356,6 +356,14 @@ namespace KJS {
      */
     unsigned long toULong(bool *ok = 0L) const;
     /**
+     * Returns this string converted to lower case characters
+     */
+    UString toLower() const;
+    /**
+     * Returns this string converted to upper case characters
+     */
+    UString toUpper() const;
+    /**
      * @return Position of first occurence of f starting at position pos.
      * -1 if the search was not successful.
      */

@@ -426,6 +426,22 @@ unsigned long UString::toULong(bool *ok) const
   return static_cast<unsigned long>(d);
 }
 
+UString UString::toLower() const
+{
+  UString u = *this;
+  for (int i = 0; i < size(); i++)
+    u[i] = u[i].toLower();
+  return u;
+}
+
+UString UString::toUpper() const
+{
+  UString u = *this;
+  for (int i = 0; i < size(); i++)
+    u[i] = u[i].toUpper();
+  return u;
+}
+
 int UString::find(const UString &f, int pos) const
 {
   if (isNull())

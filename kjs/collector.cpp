@@ -38,7 +38,7 @@ namespace KJS {
     ~CollectorBlock();
     int size;
     int filled;
-    void** mem;
+    ValueImp** mem;
     CollectorBlock *prev, *next;
   };
 
@@ -52,8 +52,8 @@ CollectorBlock::CollectorBlock(int s)
     prev(0L),
     next(0L)
 {
-  mem = new void*[size];
-  memset(mem, 0, size * sizeof(void*));
+  mem = new ValueImp*[size];
+  memset(mem, 0, size * sizeof(ValueImp*));
 }
 
 CollectorBlock::~CollectorBlock()
@@ -102,7 +102,7 @@ void* Collector::allocate(size_t s)
     }
   }
 
-  void *m = malloc(s);
+  ValueImp *m = static_cast<ValueImp*>(malloc(s));
 #ifdef KJS_DEBUG_MEM
   //fprintf( stderr, "allocate: size=%d valueimp=%p\n",s,m);
 #endif
@@ -135,7 +135,7 @@ void* Collector::allocate(size_t s)
   }
   currentBlock = block;
   // look for a free spot in the block
-  void **r = block->mem;
+  ValueImp **r = block->mem;
   while (*r)
     r++;
   *r = m;
@@ -162,7 +162,7 @@ bool Collector::collect()
   // MARK: first unmark everything
   CollectorBlock *block = root;
   while (block) {
-    ValueImp **r = (ValueImp**)block->mem;
+    ValueImp **r = block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
       if (*r) {
@@ -185,7 +185,7 @@ bool Collector::collect()
   // mark any other objects that we wouldn't delete anyway
   block = root;
   while (block) {
-    ValueImp **r = (ValueImp**)block->mem;
+    ValueImp **r = block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
     {
@@ -205,13 +205,11 @@ bool Collector::collect()
   // 1st step: destruct all objects
   block = root;
   while (block) {
-    ValueImp **r = (ValueImp**)block->mem;
+    ValueImp **r = block->mem;
     for (int i = 0; i < block->size; i++, r++) {
       ValueImp *imp = (*r);
-      // Can delete if refcount==0, created==true, gcAllowed==true, and marked==false
-      // Make sure to update the test if you add more bits to _flags.
-      if (imp &&
-          !imp->refcount && imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
+      // Can delete if marked==false
+      if (imp && (imp->_flags & ValueImp::VI_MARKED) == 0) {
         // emulate destructing part of 'operator delete()'
         //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
         imp->~ValueImp();
@@ -223,7 +221,7 @@ bool Collector::collect()
   // 2nd step: free memory
   block = root;
   while (block) {
-    ValueImp **r = (ValueImp**)block->mem;
+    ValueImp **r = block->mem;
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
       ValueImp *imp = (*r);
@@ -273,7 +271,7 @@ void Collector::finalCheck()
 {
   CollectorBlock *block = root;
   while (block) {
-    ValueImp **r = (ValueImp**)block->mem;
+    ValueImp **r = block->mem;
     for (int i = 0; i < block->size; i++, r++) {
       if (*r ) {
         fprintf( stderr, "Collector::finalCheck() still having ValueImp %p (%s)  [marked:%d gcAllowed:%d created:%d refcount:%d]\n",
