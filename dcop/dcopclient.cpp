@@ -28,6 +28,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qvariant.h>
 // end of qt <-> dcop integration
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/file.h>
 
@@ -92,7 +94,7 @@ public:
     QList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
-
+    int opcode;
 
     CARD32 time;
 };
@@ -166,6 +168,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     if ( pMsg->time > d->time )
 	d->time = pMsg->time;
 
+    d->opcode = opcode;
     switch (opcode ) {
     case DCOPCallRejected:
 	if ( replyWait ) {
@@ -1346,6 +1349,8 @@ QCString DCOPClient::defaultObject() const
 DCOPClientTransaction *
 DCOPClient::beginTransaction()
 {
+    if (d->opcode == DCOPSend)
+       return 0;
     if (!d->transactionList)
 	d->transactionList = new QList<DCOPClientTransaction>;
 
@@ -1373,6 +1378,9 @@ void
 DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
 			    QByteArray &replyData)
 {
+    if ( !trans )
+        return;
+
     if ( !isAttached() )
 	return;
 
