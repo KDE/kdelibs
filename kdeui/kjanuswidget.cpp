@@ -717,7 +717,7 @@ void KJanusWidget::slotFontChanged()
 {
   if( mTitleLabel != 0 )
   {
-    mTitleLabel->setFont( KGlobal::generalFont() );
+    mTitleLabel->setFont( KGlobalSettings::generalFont() );
     QFont titleFont( mTitleLabel->font() );
     titleFont.setBold( true );
     mTitleLabel->setFont( titleFont );
