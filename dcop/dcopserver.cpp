@@ -853,6 +853,7 @@ int main( int argc, char* argv[] )
 
   signal(SIGHUP, sighandler);
   signal(SIGTERM, sighandler);
+  signal(SIGPIPE, SIG_IGN);
 
   QApplication a( argc, argv );
 
