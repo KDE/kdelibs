@@ -41,8 +41,10 @@
 #include <kaboutdialog_private.h>
 #include <kdebug.h>
 
+//MOC_SKIP_BEGIN
 template class QMemArray<QWidget*>;
 template class QPtrList<KAboutContributor>;
+//MOC_SKIP_END
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3
