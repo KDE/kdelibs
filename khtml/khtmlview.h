@@ -179,7 +179,7 @@ protected:
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
 
     void keyPressEvent( QKeyEvent *_ke );
-
+    void keyReleaseEvent( QKeyEvent *_ke );
 protected:
     // ------------------------------------- member variables ------------------------------------
 

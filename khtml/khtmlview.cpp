@@ -42,6 +42,10 @@
 #include <kimgio.h>
 
 #include <stdio.h>
+#include <qlist.h>
+#include <qrect.h>
+#include <qscrollview.h>
+#include <qwidget.h>
 
 
 #define SCROLLBARWIDTH 16
@@ -604,6 +608,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     default:
 	QScrollView::keyPressEvent( _ke );
     }
+}
+
+void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
+{
+    if(m_part->keyReleaseHook(_ke)) return;
+    QScrollView::keyReleaseEvent( _ke);
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
