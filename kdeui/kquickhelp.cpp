@@ -25,22 +25,27 @@
 //
 // ---------------------------------------------------------------------------
 
-#include "kquickhelp.h"
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <stdio.h>
-#include <kapp.h>
-#include <qpopupmenu.h>
-#include <qbitmap.h>
-#include <qregexp.h>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_VFORK_H
+#include <vfork.h>
+#endif
+
+#include "kquickhelp.h"
+
+#include <kapp.h>
+
+#include <qbitmap.h>
+#include <qpainter.h>
+#include <qpixmap.h>
+#include <qpopupmenu.h>
+#include <qregexp.h>
 
 // this selects wheter we want shapes or not
 #define QH_SHAPE
@@ -233,12 +238,11 @@ void KQuickHelp::hyperlinkRequested(QString link) {
     {
       // lets give this URL to kfm, he knows better what
       // to do with it
-      if(fork() > 0) {
+      if(vfork() > 0) {
 	// drop setuid, setgid
 	setgid(getgid());
 	setuid(getuid());
 	
-	QString s = "kfmclient exec " + link + " &";
 	execlp("kfmclient", "kfmclient", "exec", link.data(), 0);
 	_exit(0);
       }
