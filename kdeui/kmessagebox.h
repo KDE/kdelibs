@@ -223,6 +223,12 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further questions can be turned off. If turned off
+  *                all questions will be automatically answered with the
+  *                last answer (either Yes or No). 
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   * @param notify  Emit a KNotify event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
@@ -242,6 +248,14 @@ public:
                                 const QString &caption = QString::null,
                                 const QString &buttonYes = QString::null,  
                                 const QString &buttonNo = QString::null, bool notify=true);
+
+  static int warningYesNoCancel(QWidget *parent,
+                                const QString &text,
+                                const QString &caption,
+                                const QString &buttonYes,  
+                                const QString &buttonNo, 
+                                const QString &dontAskAgainName,
+                                bool notify=true);
 
  /**
   * Display an "Error" dialog. 
