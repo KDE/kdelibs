@@ -140,8 +140,8 @@ int kdemain(int argc, char **argv)
                       "Arts::Dispatcher. Do you want to try again or disable "
                       "aRts sound output?"),
                  i18n("KNotify Problem"),
-                 i18n("Try Again"),
-                 i18n("Disable aRts Output"),
+                 i18n("&Try Again"),
+                 i18n("D&isable aRts Output"),
                  "KNotifyStartProgress",
                  0 /* don't call KNotify :) */
                  )
@@ -176,8 +176,8 @@ int kdemain(int argc, char **argv)
                       "KNotify. Do you want to try again or disable "
                       "aRts sound output?"),
                  i18n("KNotify Problem"),
-                 i18n("Try Again"),
-                 i18n("Disable aRts Output"),
+                 i18n("&Try Again"),
+                 i18n("D&isable aRts Output"),
                  "KNotifyStartProgress",
                  0 /* don't call KNotify :) */
                  )
@@ -587,7 +587,7 @@ bool KNotify::notifyByExecute(const QString &command, const QString& event,
         QString execLine = KMacroExpander::expandMacrosShellQuote( command, subst );
         if ( execLine.isEmpty() )
             execLine = command; // fallback
-        
+
 	KProcess p;
 	p.setUseShell(true);
 	p << execLine;
