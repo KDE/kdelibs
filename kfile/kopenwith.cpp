@@ -429,7 +429,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 void KOpenWithDlg::slotOK()
 {
   if (haveApp)
-    m_pService = KService::service( qName );
+    m_pService = KService::serviceByName( qName );
   else {
     m_pService = 0L;
     // no service was found, maybe they typed the name into the text field
@@ -517,7 +517,7 @@ void KOpenWithDlg::slotOK()
 	    retType, replyData);
 
   // get the new service pointer
-  m_pService = KService::service( path );
+  m_pService = KService::serviceByDesktopPath( path );
 
   haveApp = false;
   accept();
