@@ -215,6 +215,7 @@ void Job::slotSpeedTimeout()
 
 void Job::showErrorDialog( QWidget * parent )
 {
+  kdDebug(7007) << "Job::showErrorDialog parent=" << parent << endl;
   // If we are displaying a progress dialog, remove it first.
   if ( m_progressId )
     Observer::self()->jobFinished( m_progressId );
@@ -1582,8 +1583,7 @@ void CopyJob::startNextJob()
         // Finished - tell the world
         KDirNotify_stub allDirNotify("*", "KDirNotify*");
         KURL url( m_dest );
-        // If copyAs, the destination is a file. Otherwise it's a dir.
-        if ( m_asMethod )
+        if ( destinationState != DEST_IS_DIR )
             url.setPath( url.directory() );
         kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.prettyURL() << endl;
         allDirNotify.FilesAdded( url );

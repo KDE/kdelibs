@@ -220,6 +220,13 @@ void KFileItem::refreshMimeType()
   init( false ); // Will determine the mimetype
 }
 
+void KFileItem::setURL( const KURL &url )
+{
+  m_url = url;
+  m_strName = url.fileName();
+  m_strText = KIO::decodeFileName( m_strName );
+}
+
 QString KFileItem::linkDest() const
 {
   // Extract it from the KIO::UDSEntry

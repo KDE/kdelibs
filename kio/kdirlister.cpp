@@ -634,7 +634,21 @@ void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
         m_rootFileItem->setURL( dst );
         slotRedirection( 0L, dst );
     }
-
+    else
+    {
+        QListIterator<KFileItem> kit ( m_lstFileItems );
+        for( ; kit.current(); ++kit )
+        {
+          if ( (*kit)->url().cmp( src, true /* ignore trailing slash */ ) )
+          {
+              kdDebug( 7003 ) << "Found item, renamed it" << endl;
+              (*kit)->setURL( dst );
+              KFileItemList lst;
+              lst.append( *kit );
+              emit refreshItems( lst );
+          }
+        }
+    }
 }
 
 void KDirLister::setAutoUpdate( bool enable )
