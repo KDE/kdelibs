@@ -4240,6 +4240,8 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 
     HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
     int cell_width = 90;
+    int percent = 0;
+    int padding = 10;
 
     stringTok->tokenize( str + 5, " >" );
     while ( stringTok->hasMoreTokens() )
@@ -4247,7 +4249,10 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 	const char* token = stringTok->nextToken();
 	if ( strncasecmp( token, "width=", 6 ) == 0 )
 	{
-	    cell_width = atoi( token + 6 );
+	    if ( strchr( token+6, '%' ) )
+            percent = atoi( token + 6 );
+        else
+            cell_width = atoi( token + 6 );
 	}
 	else if ( strncasecmp( token, "align=", 6 ) == 0 )
 	{
@@ -4256,12 +4261,16 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 	    else if ( strcasecmp( token + 6, "right" ) == 0 )
 		gridHAlign = HTMLClue::Right;
 	}
+	else if ( strncasecmp( token, "padding=", 8 ) == 0 )
+	{
+        padding = atoi( token + 8 );
+    }
     }
     
     HTMLClue::VAlign valign = HTMLClue::Top;
     HTMLClue::HAlign halign = gridHAlign;
     
-    HTMLClueV *vc = new HTMLCell( 0, 0, cell_width, 0, url, target ); // fixed width
+    HTMLClueV *vc = new HTMLCell( 0, 0, cell_width, percent, url, target );
     
     _clue->append( vc );
     vc->setVAlign( valign );
@@ -4274,8 +4283,11 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     str = parseBody( vc, end );
     popBlock( ID_CELL, vc );
 
-    vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
-    _clue->append( vc );
+    if ( padding )
+    {
+        vc = new HTMLClueV( 0, 0, padding, 0 ); // fixed width
+        _clue->append( vc );
+    }
 
     indent = oldindent;
     divAlign = olddivalign;
