@@ -15,7 +15,6 @@
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY ie     "<abbrev>és a dir</abbrev>">
 <!ENTITY infocenter	"<application>Centre d'informació</application>">
 <!ENTITY kcontrolcenter	"<application>Centre de control del &kde;</application>">
 <!ENTITY LMB    "botó <mousebutton>esquerra</mousebutton> del ratolí">
