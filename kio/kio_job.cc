@@ -351,6 +351,28 @@ bool KIOJob::preget( const char *_url, int _max_size )
   return get( _url );
 }
 
+bool KIOJob::getSize( const char *_url )
+{
+  assert( !m_pSlave );
+
+  list<K2URL> lst;
+  if ( !K2URL::split( _url, lst ) )
+  {
+    slotError( ERR_MALFORMED_URL, _url );
+    return false;
+  }
+
+  string error;
+  int errid;
+  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  {
+    slotError( errid, error.c_str() );
+    return false;
+  }
+
+  return IOJob::getSize( _url );
+}
+
 void KIOJob::cont()
 {
   if ( !m_strPreGetMimeType.empty() )
@@ -761,26 +783,6 @@ QDialog* KIOJob::createDialog( const char *_text )
   dlg->show();
 
   return dlg;
-}
-
-
-void KIOJob::setConnectTimeout( int _timeout ) {
-  ProtocolManager::self()->setConnectTimeout( _timeout );
-}
-
-
-void KIOJob::setReadTimeout( int _timeout ) {
-  ProtocolManager::self()->setReadTimeout( _timeout );
-}
-
-
-void KIOJob::setReadTimeoutNoResume( int _timeout ) {
-  ProtocolManager::self()->setReadTimeoutNoResume( _timeout );
-}
-
-
-void KIOJob::setMarkPartial( bool _mode ) {
-  ProtocolManager::self()->setMarkPartial( _mode );
 }
 
 

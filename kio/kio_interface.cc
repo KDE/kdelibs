@@ -44,6 +44,18 @@ bool ConnectionSignals::get( const char *_url )
   return true;
 }
 
+bool ConnectionSignals::getSize( const char *_url )
+{
+  assert( m_pConnection );
+  
+  int l = strlen( _url );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  m_pConnection->send( CMD_GET_SIZE, static_cast<const char*>(_url), l + 1 );
+  return true;
+}
+
 bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume )
 {
   assert( m_pConnection );
@@ -545,6 +557,9 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case CMD_GET:
       slotGet( (const char*)(_p) );
+      break;
+    case CMD_GET_SIZE:
+      slotGetSize( (const char*)(_p) );
       break;
     case CMD_TESTDIR:
       slotTestDir( (const char*)(_p) );

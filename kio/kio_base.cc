@@ -88,6 +88,17 @@ bool IOJob::get( const char *_url )
   return ConnectionSignals::get( _url );
 }
 
+bool IOJob::getSize( const char* _url )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_GET_SIZE;
+  
+  m_bIsReady = false;
+  m_bError = false;
+
+  return ConnectionSignals::getSize( _url );
+}
+
 bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume )
 {
   assert( m_cmd == CMD_NONE );

@@ -90,6 +90,7 @@ public:
   virtual bool copy( QStrList& _source, const char *_dest );
   virtual bool copy( const char* _source, const char *_dest );
   virtual bool get( const char *_url );
+  virtual bool getSize( const char *_url );
   virtual bool listDir( const char *_url );
   virtual bool testDir( const char *_url );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
@@ -141,48 +142,6 @@ public:
    */
   virtual void kill( bool quiet = false );
   
-  /**
-   * Set this flag if you want slaves to add extension .PART to all files during transfer.
-   * This extension will be removed when file is transfered.
-   *
-   * This is a better way to discern finished transfers in case of transfer errors.
-   * Default value is false - don't add extension.
-   *
-   * NOT YET IMPLEMENTED !!!
-   */
-  static void setMarkPartial( bool _mode );
-  
-  /**
-   * Sets timeout for connecting to the server.
-   * This applies to ftp and http connections.
-   * If after this timeout slave still can't connect, it's stopped with alarm command.
-   *
-   * NOT YET IMPLEMENTED !!!
-   */
-  static void setConnectTimeout( int _timeout );
-
-  /**
-   * Sets timeout for read operations. This applies to ftp and http connections.
-   * If after this timeout read doesn't finish reading packet, read operation is
-   * stopped with alarm command and starts reading again.
-   * This value is used if remote server supports resuming.
-   * For opposite case see @ref #setReadTimeoutNoResume
-   *
-   * NOT YET IMPLEMENTED !!!
-   */
-  static void setReadTimeout( int _timeout );
-
-  /**
-   * Sets timeout for read operations. This applies to ftp and http connections.
-   * If after this timeout read doesn't finish reading packet, read operation is
-   * stopped with alarm command and starts reading again.
-   * This value is used if remote server does not support resuming.
-   * For opposite case see @ref #setReadTimeout
-   *
-   * NOT YET IMPLEMENTED !!!
-   */
-  static void setReadTimeoutNoResume( int _timeout );
-
   /**
    * Call this before you use any other function of this class and before you create
    * an instance of this class.

@@ -25,6 +25,7 @@
 // This hack is needed, since a parameter can not be as big as it wants to.
 #define CMD_SOURCE 14 
 #define CMD_COPY_SINGLE 15
+#define CMD_GET_SIZE 16
 
 #define INF_TOTAL_SIZE 50
 #define INF_TOTAL_COUNT_OF_FILES 51
@@ -94,6 +95,8 @@
 #define ERR_COULD_NOT_CLOSEDIR 38
 #define ERR_CANNOT_RESUME 39
 #define ERR_COULD_NOT_READSIZE 40
+#define ERR_CANNOT_RENAME 41
+
 /************
  *
  * Universal Directory Service
@@ -148,6 +151,7 @@ public:
   ///////////
 
   virtual bool get( const char *_url );
+  virtual bool getSize( const char *_url );
   /**
    * @param _mode may be -1. In this case no special permission mode is set.
    */
@@ -223,6 +227,7 @@ public:
   ///////////
 
   virtual void slotGet( const char *_url ) { };
+  virtual void slotGetSize( const char *_url ) { };
   virtual void slotPut( const char *_url, int _mode, bool _overwrite, bool _resume) { };
   virtual void slotCopy( const char* _source, const char *_dest ) { };
   virtual void slotCopy( list<string>& _source, const char *_dest ) { };

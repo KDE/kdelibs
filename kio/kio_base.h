@@ -14,6 +14,7 @@ public:
   
   virtual bool put( const char *_url, int _mode, bool _overwrite, bool _resume );
   virtual bool get( const char *_url );
+  virtual bool getSize( const char *_url );
   virtual bool mkdir( const char *_url, int _mode );
   virtual bool listDir( const char *_url );
   virtual bool copy( const char* _source, const char *_dest );
