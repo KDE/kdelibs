@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -409,6 +409,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	// switch according to the element to insert
 	switch(id)
 	{
+	case ID_COMMENT:
+	     break;
 	case ID_HEAD:
 	    if(inBody)
 	    {
@@ -585,6 +587,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		    break;
 		}
 	    }
+	    case ID_COMMENT:
+		break;
 	    // Fall through!
 	    default:
 		e = new HTMLTableSectionElementImpl(document, ID_TBODY);
@@ -598,6 +602,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_TBODY:
 	    switch(id)
 	    {
+	    case ID_COMMENT: 
+		break;
 	    case ID_COL:
 	    case ID_COLGROUP:
 	    case ID_P:
@@ -612,6 +618,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_TR:
 	    switch(id)
 	    {
+	    case ID_COMMENT:
+		break;
 	    case ID_COL:
 	    case ID_COLGROUP:
 	    case ID_P:
