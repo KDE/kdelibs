@@ -146,8 +146,7 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
 
     reset();
 
-    current = i;
-    current->ref();
+    setCurrent(i);
 
     inBody = true;
 }
