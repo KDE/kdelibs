@@ -1,22 +1,25 @@
-/**
- * ksyntaxhighlighter.cpp
- *
- * Copyright (c) 2003 Trolltech AS
- * Copyright (c) 2003 Scott Wheeler <wheeler@kde.org>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+/*
+ ksyntaxhighlighter.cpp
+
+ Copyright (c) 2003 Trolltech AS
+ Copyright (c) 2003 Scott Wheeler <wheeler@kde.org>
+
+ This file is part of the KDE libraries
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License version 2 as published by the Free Software Foundation.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public License
+ along with this library; see the file COPYING.LIB.  If not, write to
+ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+*/
 
 #include <qcolor.h>
 #include <qregexp.h>
@@ -48,8 +51,8 @@ public:
 class KSpellingHighlighter::KSpellingHighlighterPrivate
 {
 public:
-    
-    KSpellingHighlighterPrivate() : 
+
+    KSpellingHighlighterPrivate() :
 	alwaysEndsWithSpace( true ),
 	intraWordEditing( false ) {}
 
@@ -68,7 +71,7 @@ public:
 	wordCount( 0 ),
 	errorCount( 0 ),
 	autoReady( false ) {}
-    
+
     ~KDictSpellingHighlighterPrivate() {
 	delete spell;
     }
@@ -85,7 +88,7 @@ public:
 };
 
 KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
-					  bool colorQuoting, 
+					  bool colorQuoting,
 					  QColor depth0,
 					  QColor depth1,
 					  QColor depth2,
@@ -130,8 +133,8 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
 }
 
 KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
-					    QColor spellColor, 
-					    bool colorQuoting, 
+					    QColor spellColor,
+					    bool colorQuoting,
 					    QColor depth0,
 					    QColor depth1,
 					    QColor depth2,
@@ -235,10 +238,10 @@ QDict<int> KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDict( 500
 QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
 
 KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
-						    bool spellCheckingActive , 
-						    bool autoEnable, 
-						    QColor spellColor, 
-						    bool colorQuoting, 
+						    bool spellCheckingActive ,
+						    bool autoEnable,
+						    QColor spellColor,
+						    bool colorQuoting,
 						    QColor depth0,
 						    QColor depth1,
 						    QColor depth2,
