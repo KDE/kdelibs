@@ -666,7 +666,7 @@ protected:
    */
   virtual void viewportPaintEvent(QPaintEvent*);
 
-private slots:
+protected slots:
   /**
    * Update internal settings whenever the global ones change.
    * @internal
@@ -715,9 +715,10 @@ private slots:
    */
   void slotAutoSelect();
 
-private:
+protected:
   /**
    * Handle dropEvent when itemsMovable() is set to true.
+   * ### for 3.0 : make this virtual
    */
   void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
 
