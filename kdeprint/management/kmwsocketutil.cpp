@@ -2,7 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -194,6 +193,7 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 		port_ = dlg->port_->currentText().toInt();
 		timeout_ = dlg->tout_->text().toInt();
 	}
+        delete dlg;
 }
 
 //----------------------------------------------------------------------------------------
