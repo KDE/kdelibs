@@ -40,7 +40,6 @@
 #  include <dirent.h>
 #endif
 
-#define PTY_FILENO 3    /* keep in sync with kpty */
 #define TTY_GROUP "tty"
 
 int main (int argc, char *argv[])
@@ -52,11 +51,12 @@ int main (int argc, char *argv[])
   uid_t         uid;
   mode_t        mod;
   char*         tty;
+  int           fd;
 
   /* check preconditions **************************************************/
-  if (argc != 2 || (strcmp(argv[1],"--grant") && strcmp(argv[1],"--revoke")))
+  if (argc != 3 || (strcmp(argv[1],"--grant") && strcmp(argv[1],"--revoke")))
   {
-    printf("usage: %s (--grant|--revoke)\n"
+    printf("usage: %s (--grant|--revoke) <file descriptor>\n"
            "%s is a helper for the KDE core libraries.\n"
            "It is not intended to be called from the command line.\n"
            "It needs to be installed setuid root to function.\n",
@@ -85,6 +85,7 @@ int main (int argc, char *argv[])
   /* Get the group ID of the special `tty' group.  */
   p = getgrnam(TTY_GROUP);            /* posix */
   gid = p ? p->gr_gid : getgid ();    /* posix */
+  fd = atoi(argv[2]);
 
   /* get slave pty name from master pty file handle in PTY_FILENO *********/
 
@@ -110,7 +111,7 @@ int main (int argc, char *argv[])
     DIR *dp;
     struct stat dsb;
 
-    if (fstat(PTY_FILENO, &dsb) != -1) {
+    if (fstat(fd, &dsb) != -1) {
       if ((dp = opendir(_PATH_DEV)) != NULL) {
         while ((dirp = readdir(dp))) {
           if (dirp->d_fileno != dsb.st_ino)
@@ -131,8 +132,8 @@ int main (int argc, char *argv[])
     }
   }
 #else
-  /* Check that PTY_FILENO is a valid master pseudo terminal.  */
-  pty = ttyname(PTY_FILENO);          /* posix */
+  /* Check that fd is a valid master pseudo terminal.  */
+  pty = ttyname(fd);          /* posix */
 #endif
 
   if (pty == NULL)
@@ -140,7 +141,7 @@ int main (int argc, char *argv[])
     fprintf(stderr,"%s: cannot determine the name of device.\n",argv[0]);
     return 1; /* FAIL */
   }
-  close(PTY_FILENO);
+  close(fd);
 
   /* matches /dev/pty?? */
   if (strlen(pty) < 8 || strncmp(pty,"/dev/pty",8))

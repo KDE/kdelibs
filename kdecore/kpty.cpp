@@ -156,7 +156,6 @@ public:
    int cmdFd;
 };
 
-#define PTY_FILENO 3
 #define BASE_CHOWN "kgrantpty"
 
 
@@ -501,13 +500,9 @@ bool KPty::chownpty(bool grant)
   pid_t pid = fork();
   if (pid == 0)
   {
-    /* We pass the master pseudo terminal as file descriptor PTY_FILENO. */
-    if (d->masterFd != PTY_FILENO && 
-        dup2(d->masterFd , PTY_FILENO) < 0)
-      exit(1);
     QString path = locate("exe", BASE_CHOWN);
-    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke", (void *)0, 
-    	NULL);
+    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke",
+	   QString::number(d->masterFd).ascii(), (void *)0, (void *)0);
     exit(1); // should not be reached
   }
   else if (pid > 0)
