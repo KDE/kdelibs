@@ -119,11 +119,7 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
     name.append( "()" );
     res << name;
 
-#if QT_VERSION < 300
-    if ( metaProp->writeable() )
-#else
     if ( metaProp->writable() )
-#endif
     {
       QCString setName = it.current();
       setName[ 0 ] = toupper( setName[ 0 ] );
