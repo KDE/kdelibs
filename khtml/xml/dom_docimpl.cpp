@@ -1832,12 +1832,12 @@ void DocumentImpl::recalcStyleSelector()
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
-    QString sheetUsed = view() ? view()->part()->d->m_sheetUsed : QString();
+    QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
     bool autoselect = sheetUsed.isEmpty();
     if (autoselect && !m_preferredStylesheetSet.isEmpty())
         sheetUsed = m_preferredStylesheetSet.string();
     NodeImpl *n;
-    for (;;) {
+    for (int i=0 ; i<2 ; i++) {
         m_availableSheets.clear();
         m_availableSheets << i18n("Basic Page Style");
         bool canResetSheet = false;
