@@ -74,14 +74,13 @@ class KStandardDirsPrivate;
 * @li data - Where applications store data.
 * @li exe - Executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account.
 * @li html - HTML documentation.
-* @li icon - Icons.
+* @li icon - Icons, see @ref KIconLoader.
 * @li lib - Libraries.
 * @li locale - Translation files for @ref KLocale.
 * @li mime - Mime types.
 * @li services - Services.
 * @li servicetypes - Service types.
 * @li sound - Application sounds.
-* @li toolbar - Toolbar pictures.
 * @li wallpaper - Wallpapers.
 *
 * @sect KStandardDirs supports the following environment variables:
