@@ -398,48 +398,6 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-
-void HTMLTablePartElementImpl::recalcTable()
-{
-    NodeImpl *table = parentNode();
-    while (table && !(table->isElementNode() && table->id() == ID_TABLE))
-	table = table->parentNode();
-    if (table) {
-//	table->setChanged(true);
-	if (table->renderer())
-	    static_cast<RenderTable*>(table->renderer())->setCellsChanged(true);
-    }
-}
-
-NodeImpl *HTMLTablePartElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
-{
-    NodeImpl *result = HTMLElementImpl::insertBefore(newChild,refChild);
-    recalcTable();
-    return result;
-}
-
-NodeImpl *HTMLTablePartElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
-{
-    NodeImpl *result = HTMLElementImpl::replaceChild(newChild,oldChild);
-    recalcTable();
-    return result;
-}
-
-NodeImpl *HTMLTablePartElementImpl::removeChild ( NodeImpl *oldChild )
-{
-    NodeImpl *result = HTMLElementImpl::removeChild(oldChild);
-    recalcTable();
-    return result;
-}
-
-NodeImpl *HTMLTablePartElementImpl::appendChild ( NodeImpl *newChild )
-{
-    NodeImpl *result = HTMLElementImpl::appendChild(newChild);
-    recalcTable();
-    setChanged(true);
-    return result;
-}
-
 void HTMLTablePartElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
@@ -660,12 +618,12 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ROWSPAN:
 	// ###
 	rSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(rSpan < 1) rSpan = 1; // ### allow rowspan=0 (actually valid)
+	if(rSpan < 1) rSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_COLSPAN:
 	// ###
 	cSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(cSpan < 0) cSpan = 0;
+	if(cSpan < 1) cSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_NOWRAP:
 	nWrap = (attr->val() != 0);
@@ -710,8 +668,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 	{
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
 	    cell->setRowSpan(rSpan);
-	    cell->setColSpan(cSpan ? cSpan : 1);
-	    cell->setSpansRemaining(cSpan == 0);
+	    cell->setColSpan(cSpan);
             cell->setNoWrap(nWrap);
 	}
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);

@@ -654,7 +654,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
             // Fall through!
             default:
                 e = new HTMLTableCellElementImpl(document, ID_TD);
-		static_cast<HTMLTableCellElementImpl*>(e)->setAttribute(ATTR_COLSPAN,"0");
                 insertNode(e);
                 handled = true;
 		break;
