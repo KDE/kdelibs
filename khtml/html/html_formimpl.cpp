@@ -1162,12 +1162,6 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
     if(m_type != IMAGE) encoding += fixUpfromUnicode(codec, nme);
 
     switch (m_type) {
-        case HIDDEN:
-        case TEXT:
-        case PASSWORD:
-            // always successful
-            encoding += fixUpfromUnicode(codec, value().string());
-            return true;
         case CHECKBOX:
 
             if( checked() ) {
@@ -1225,59 +1219,60 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case FILE:
         {
-            // can't submit file on GET
             // don't submit if display: none or display: hidden
-            if(!multipart || !renderer() || renderer()->style()->visibility() != khtml::VISIBLE)
+            if(!renderer() || renderer()->style()->visibility() != khtml::VISIBLE)
                 return false;
 
             QString local;
             QCString dummy("");
 
-            // if no filename at all is entered, return successful, however empty
-            // null would be more logical but netscape posts an empty file. argh.
-            if(value().isEmpty()) {
-                encoding += dummy;
-                return true;
-            }
+            // can't submit file in www-url-form encoded
+            if (multipart) {
+                KURL fileurl(value().string());
+                KIO::UDSEntry filestat;
 
-            KURL fileurl(value().string());
-            KIO::UDSEntry filestat;
-
-            if (!KIO::NetAccess::stat(fileurl, filestat)) {
-                KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                return false;
-            }
-
-            KFileItem fileitem(filestat, fileurl, true, false);
-            if(fileitem.isDir()) {
-                encoding += dummy;
-                return false;
-            }
-
-            if ( KIO::NetAccess::download(KURL(value().string()), local) )
-            {
-                QFile file(local);
-                if (file.open(IO_ReadOnly))
-                {
-                    QCString filearray(file.size()+1);
-                    int readbytes = file.readBlock( filearray.data(), file.size());
-                    if ( readbytes >= 0 )
-                        filearray[readbytes] = '\0';
-                    file.close();
-
-                    encoding += filearray;
-                    KIO::NetAccess::removeTempFile( local );
-
-                    return true;
+                if (!KIO::NetAccess::stat(fileurl, filestat)) {
+                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
+                    return false;
                 }
-                return false;
+
+                KFileItem fileitem(filestat, fileurl, true, false);
+                if(fileitem.isDir()) {
+                    encoding += dummy;
+                    return false;
+                }
+
+                if ( KIO::NetAccess::download(KURL(value().string()), local) ) {
+                    QFile file(local);
+                    if (file.open(IO_ReadOnly)) {
+                        QCString filearray(file.size()+1);
+                        int readbytes = file.readBlock( filearray.data(), file.size());
+                        if ( readbytes >= 0 )
+                            filearray[readbytes] = '\0';
+                        file.close();
+
+                        encoding += filearray;
+                        KIO::NetAccess::removeTempFile( local );
+
+                        return true;
+                    }
+                    return false;
+                }
+                else {
+                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
+                    return false;
+                }
+
+                break;
             }
-            else {
-                KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                return false;
-            }
-            break;
+            // else fall through
         }
+        case HIDDEN:
+        case TEXT:
+        case PASSWORD:
+            // always successful
+            encoding += fixUpfromUnicode(codec, value().string());
+            return true;
         case ISINDEX:
             encoding += fixUpfromUnicode(codec, m_value.string());
             return true;
