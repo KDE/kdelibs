@@ -1612,7 +1612,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  const QString val2( value.stripWhiteSpace() );
 	  //kdDebug(6080) << "parsing color " << val2 << endl;
 	  QColor c;
-	  khtml::setNamedColor(c, val2);
+	  khtml::setNamedColor(c, val2, !m_bnonCSSHint);
 	  if(!c.isValid() && (val2 != "transparent" ) && !val2.isEmpty() ) return false;
 	  //kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	  parsedValue = new CSSPrimitiveValueImpl(c);

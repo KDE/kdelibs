@@ -189,7 +189,7 @@ static HTMLColors *htmlColors = 0L;
 
 static KStaticDeleter<HTMLColors> hcsd;
 
-void khtml::setNamedColor(QColor &color, const QString &_name)
+void khtml::setNamedColor(QColor &color, const QString &_name, bool strictParsing)
 {
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
@@ -201,8 +201,12 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
 
     int len = name.length();
 
-    if(len == 0 || (len == 11 && name.find("transparent", 0, false) == 0) )
-    {
+    if (!len || (strictParsing && len < 3)) {
+        color = QColor();
+        return;
+    }
+
+    if(len == 11 && name.find("transparent", 0, false) == 0) {
         color = QColor(); // invalid color == transparent
         return;
     }
@@ -218,7 +222,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
             return;
         }
         // recognize #12345 (duplicate the last character)
-        if(name[0] == '#') {
+        if(!strictParsing && name[0] == '#') {
             bool ok;
             int val = name.right(5).toInt(&ok, 16);
             if(ok) {
@@ -271,7 +275,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         else {
             color.setNamedColor(name);
             if ( !color.isValid() )  color.setNamedColor( name.lower() );
-            if(!color.isValid()) {
+            if(!strictParsing && !color.isValid()) {
                 bool hasalpha = false;
                 for(unsigned int i = 0; i < name.length(); i++)
                     if(name[i].isLetterOrNumber()) {
