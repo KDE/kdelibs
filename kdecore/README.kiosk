@@ -250,3 +250,26 @@ The following applications currently have support for this:
 * kdesktop - By marking the kdesktoprc config file as immutable, the desktop
 will be "locked down" and it will no longer be possible to select
 "Configure Desktop" from its menus.
+
+
+
+Expansion of environment variables in KDE config files.
+=======================================================
+
+In KDE3.1 arbitrary entries in configuration files can contain environment
+variables. In order to use this the entry must be marked with [$e]. 
+
+Example:
+Name[$e]=$USER
+
+When the "Name" entry is read $USER will be replaced with the value of the
+$USER environment variable. Note that the application will replace $USER
+with the value of the environment variable after saving. To prevent this
+combine the $e option with $i (immmutable) option.
+
+Example:
+Name[$ei]=$USER
+
+The above will make that the "Name" entry will always return the value of
+the $USER environment variable. The user will not be able to change this entry.
+
