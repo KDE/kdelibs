@@ -30,27 +30,10 @@
 #include <kdebug.h>
 
 KServiceTypeFactory::KServiceTypeFactory(bool buildDatabase)
- : m_pathList(0), m_entryList(0)
+ : KSycocaFactory( buildDatabase, KST_KServiceTypeFactory )
 {
-   if (!buildDatabase)
+   if (buildDatabase)
    {
-      QDataStream *str = KSycoca::registerFactory( factoryId() );
-
-      // Read position of index tables....
-      Q_INT32 entryDictOffset;
-      (*str) >> entryDictOffset;
-
-      // Init index tables
-      m_entryDict = new KSycocaDict(str, entryDictOffset);   
-   }
-   else
-   {
-      // Build new database!
-      m_pathList = new QStringList();
-      m_entryList = new KServiceTypeList();
-      m_entryList->setAutoDelete(true);
-      m_entryDict = new KSycocaDict();
-
       // Read servicetypes first, since they might be needed to read mimetype properties
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "mime" );
@@ -108,63 +91,9 @@ KServiceTypeFactory::createEntry(const QString &file)
   return e;
 }
 
-
 KServiceTypeFactory::~KServiceTypeFactory()
 {
-   delete m_pathList;
-   delete m_entryList;
-   delete m_entryDict;
 }
-
-void
-KServiceTypeFactory::save(QDataStream &str)
-{
-   if (!m_entryList) return; // Error! Function should only be called when
-                             // building database
-
-   if (!m_entryDict) return; // Error!
-
-   int startOfFactoryData = str.device()->at();
-   Q_INT32 entryDictOffset = 0;
-
-   // Write header (pass #1)
-   str << entryDictOffset;
-   
-   // Write all entries.
-   for(KServiceType *entry = m_entryList->first(); 
-       entry; 
-       entry=m_entryList->next())
-   {
-      entry->save(str);
-   }
-
-   // Write indices...
-   entryDictOffset = str.device()->at();      
-
-   m_entryDict->save(str);
-
-   int endOfFactoryData = str.device()->at();
-
-   // Update header (pass #2)
-   str.device()->at(startOfFactoryData);
-   str << entryDictOffset;
-
-   // Seek to end.
-   str.device()->at(endOfFactoryData);
-}
-
-void 
-KServiceTypeFactory::add(KServiceType *newEntry)
-{
-   if (!m_entryList) return; // Error! Function should only be called when
-                             // building database
-
-   if (!m_entryDict) return; // Error!
-
-   m_entryList->append(newEntry);
-   m_entryDict->add(newEntry->name(), newEntry);
-}
-
 
 // Static function!
 KServiceType *

@@ -30,7 +30,7 @@ ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 ksycocatest_SOURCES = main.cpp
 
 libkio_la_SOURCES = \
-	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp \
+	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp ksycocafactory.cc \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
 	kservice.cc kservicefactory.cpp \

@@ -22,6 +22,7 @@
 #include "ksycocatype.h"
 
 #include <qdatastream.h>
+#include <qlist.h>
 
 class KSycocaEntry
 {
@@ -38,6 +39,11 @@ public:
     */
    KSycocaEntry( QDataStream &_str) : mOffset(0) { load(_str); }
 
+   /**
+    * @return the name of this entry
+    */
+   virtual QString name() const = 0L;
+  
    int offset() { return mOffset; }
    void setOffset(int _offset) { mOffset = _offset; }
 
@@ -54,6 +60,12 @@ public:
 
 private:
    int mOffset;
+};
+
+class KSycocaEntryList : public QList<KSycocaEntry>
+{
+public:
+   KSycocaEntryList() { };
 };
 
 #endif

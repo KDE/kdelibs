@@ -31,30 +31,17 @@
 #include <kstddirs.h>
 
 KServiceFactory::KServiceFactory(bool buildDatabase)
- : m_pathList(0), m_entryList(0)
+ : KSycocaFactory( buildDatabase, KST_KServiceFactory )
 {
-   if (!buildDatabase)
+   if (buildDatabase)
    {
-      QDataStream *str = KSycoca::registerFactory( factoryId() );
-
-      // Read position of index tables....
-      Q_INT32 entryDictOffset;
-      (*str) >> entryDictOffset;
-
-      // Init index tables
-      m_entryDict = new KSycocaDict(str, entryDictOffset);   
-   }
-   else
-   {
-      // Build new database!
-      m_pathList = new QStringList();
-      m_entryList = new KServiceList();
-      m_entryList->setAutoDelete(true);
-      m_entryDict = new KSycocaDict();
-
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
    }
+}
+
+KServiceFactory::~KServiceFactory()
+{
 }
 
 /*
@@ -100,3 +87,59 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
 }
 */
 
+// Static function!
+KService *
+KServiceFactory::findServiceByName(const QString &_name)
+{
+   if (!self)
+      self = new KServiceFactory();
+   return self->_findServiceByName(_name);   
+}
+
+KService *
+KServiceFactory::_findServiceByName(const QString &_name)
+{
+   if (!m_entryDict) return 0; // Error!
+   int offset = m_entryDict->find_string( _name );
+
+   if (!offset) return 0; // Not found
+
+   KService *newService = createService(offset);
+
+   // Check whether the dictionary was right.
+   if (newService && (newService->name() != _name))
+   {
+      // No it wasn't...
+      delete newService;
+      newService = 0; // Not found
+   }
+   return newService;
+}
+
+KService *
+KServiceFactory::createService(int offset)
+{
+   KService *newEntry = 0;
+   KSycocaType type; 
+   QDataStream *str = KSycoca::findEntry(offset, type);
+   switch(type)
+   {
+     case KST_KService:
+        newEntry = new KService(*str);
+        break;
+
+     default:
+        QString tmp = i18n("KServiceFactory: unexpected object entry in KSycoca database (type = %1)\n");
+        KMessageBox::error( 0L, tmp.arg((int)type) );
+        break;
+   } 
+   if (!newEntry->isValid())
+   {
+      KMessageBox::error( 0L, i18n("KServiceFactory: corrupt object in KSycoca database!\n") );
+      delete newEntry;
+      newEntry = 0;
+   }   
+   return newEntry;
+}
+
+KServiceFactory *KServiceFactory::self = 0;

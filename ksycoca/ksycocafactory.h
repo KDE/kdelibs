@@ -23,6 +23,10 @@
 
 #include <qlist.h>
 class KSycoca;
+class QStringList;
+class KSycocaDict;
+class KSycocaEntry;
+class KSycocaEntryList;
 
 /**
  * Base class for sycoca factories
@@ -32,25 +36,45 @@ class KSycocaFactory
 public:
    virtual KSycocaFactoryId factoryId() const = 0;
  
-public:
+protected: // virtual class
    /**
     * Create a factory which can be used to lookup from/create a database
     */
-   KSycocaFactory() { }
+   KSycocaFactory( bool buildDatabase, KSycocaFactoryId factory_id );
 
-   virtual ~KSycocaFactory() { }
+public:
+   virtual ~KSycocaFactory();
 
+   /**
+    * @return the position of the factory in the sycoca file
+    */
    int offset() { return mOffset; }
+   /**
+    * Store the position of the factory in the sycoca file
+    */
    void setOffset(int _offset) { mOffset = _offset; }
+
+   void add(KSycocaEntry *newEntry);
 
    /**
     * Saves all entries it maintains as well as index files
     * for these entries to the stream 'str'.
     */
-   virtual void save(QDataStream &str) = 0;
+   virtual void save(QDataStream &str);
+
+   /**
+    * @return the path for which this factory is responsible.
+    *         Please note that the return value may not have a trailing '/'.
+    */
+   virtual const QStringList * pathList() const { return m_pathList; }
 
 private:
    int mOffset;
+
+protected:
+   QStringList *m_pathList;
+   KSycocaEntryList *m_entryList;
+   KSycocaDict *m_entryDict;
 };
 
 // (David) what about a typedef here ?

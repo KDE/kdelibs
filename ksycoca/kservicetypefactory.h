@@ -54,19 +54,6 @@ public:
   
   virtual ~KServiceTypeFactory();
 
-  /**
-   * Saves all entries it maintains as well as index files
-   * for these entries to the stream 'str'.
-   */
-  virtual void save(QDataStream &str);
-
-  /**
-   * @return the path for which this factory is responsible.
-   *         Please note that the return value may not have a trailing '/'.
-   */
-  virtual const QStringList * pathList() const { return m_pathList; }
-
-  void add(KServiceType *newEntry);
   static KServiceType *findServiceTypeByName( const QString &_name);
 
 protected:
@@ -88,9 +75,6 @@ signals:
 // End of usefull test
   
 private:
-  QStringList *m_pathList;
-  KServiceTypeList *m_entryList;
-  KSycocaDict *m_entryDict;
   static KServiceTypeFactory *self;
 };
 

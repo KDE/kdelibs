@@ -45,15 +45,8 @@ public:
    * Create factory
    */
   KServiceFactory(bool buildDatabase = false);
-  virtual ~KServiceFactory() { };
+  virtual ~KServiceFactory();
   
-  /**
-   * @return the path for which this factory is responsible.
-   *         Please note that the return value may not have a trailing '/'.
-   */
-  virtual const QStringList * pathList() const { return m_pathList; }
-
-  void add(KService *newEntry);
   static KService *findServiceByName( const QString &_name);
 
 protected:
@@ -61,9 +54,6 @@ protected:
   KService *createService(int offset);
 
 private:
-  QStringList *m_pathList;
-  KServiceList *m_entryList;
-  KSycocaDict *m_entryDict;
   static KServiceFactory *self;
 };
 

@@ -106,7 +106,7 @@ public:
   /**
    * @return the name of the service.
    */
-  QString name() const { return m_strName; }
+  virtual QString name() const { return m_strName; }
   /**
    * @return the command that the service executes.
    */
