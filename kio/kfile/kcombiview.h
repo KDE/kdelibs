@@ -103,6 +103,13 @@ protected slots:
 
 private:
     KFileView *focusView( KFileView *preferred ) const;
+    
+    // in nextItem() and prevItem(), we have to switch views, when the first
+    // view returns 0L. So we need to remember which view was used in the
+    // previous call to next/prevItem(). Yes, it's a hack, but it works for
+    // some cases at least.
+    mutable KFileView *m_lastViewForNextItem;
+    mutable KFileView *m_lastViewForPrevItem;
 
 protected:
     virtual void virtual_hook( int id, void* data );
