@@ -302,7 +302,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
 
   m_str = database.dataStream();
 
-  kdDebug(7021) << "Recreating ksycoca file" << endl;
+  kdDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSYCOCA_VERSION << ")" << endl;
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
