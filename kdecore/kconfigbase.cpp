@@ -595,7 +595,7 @@ int KConfigBase::readNumEntry( const char *pKey, int nDefault) const
   else
     {
       rc = aValue.toInt( &ok );
-      return( ok ? rc : 0 );
+      return( ok ? rc : nDefault );
     }
 }
 
@@ -616,7 +616,7 @@ unsigned int KConfigBase::readUnsignedNumEntry( const char *pKey, unsigned int n
   else
     {
       rc = aValue.toUInt( &ok );
-      return( ok ? rc : 0 );
+      return( ok ? rc : nDefault );
     }
 }
 
@@ -637,7 +637,7 @@ long KConfigBase::readLongNumEntry( const char *pKey, long nDefault) const
   else
     {
       rc = aValue.toLong( &ok );
-      return( ok ? rc : 0 );
+      return( ok ? rc : nDefault );
     }
 }
 
@@ -658,7 +658,7 @@ unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned 
   else
     {
       rc = aValue.toULong( &ok );
-      return( ok ? rc : 0 );
+      return( ok ? rc : nDefault );
     }
 }
 
@@ -678,7 +678,7 @@ double KConfigBase::readDoubleNumEntry( const char *pKey, double nDefault) const
   else
     {
       rc = aValue.toDouble( &ok );
-      return( ok ? rc : 0 );
+      return( ok ? rc : nDefault );
     }
 }
 

@@ -136,8 +136,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key or a null string if no value
-   *      was found.
+   * @return The value for this key.
    */
    QString readEntry( const QString& pKey,
                      const QString& aDefault = QString::null ) const;
@@ -148,7 +147,11 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the given type.
    *
-   * @return An invalid @ref QVariant if the key was not found.
+   * @deprecated
+   *
+   * @param pKey The key to search for.
+   * @return An invalid @ref QVariant if the key was not found or if the
+   * read value cannot be converted to the given QVariant::Type.
    *
    * Note that only the following @ref QVariant::Type are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
@@ -161,6 +164,9 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the type of the given default value.
    *
+   * @param pKey The key to search for.
+   * @param aDefault A default value returned if the key was not found or
+   * if the read value cannot be converted to the QVariant::Type.
    * @return The value for the key or the default value if the key was not
    *         found.
    *
@@ -214,7 +220,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key or a null string if no value was found.
+   * @return The value for this key..
    */
   QString readPathEntry( const QString& pKey, const QString & aDefault = QString::null ) const;
   QString readPathEntry( const char *pKey, const QString & aDefault = QString::null ) const;
@@ -226,8 +232,9 @@ public:
    * and interpret it numerically.
    *
    * @param pKey The key to search for.
-   * @param nDefault A default value returned if the key was not found.
-   * @return The value for this key or 0 if no value was found.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
    */
   int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
   int readNumEntry( const char *pKey, int nDefault = 0 ) const;
@@ -239,8 +246,9 @@ public:
    * and interpret it numerically.
    *
    * @param pKey The key to search for.
-   * @param nDefault A default value returned if the key was not found.
-   * @return The value for this key or 0 if no value was found.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
    */
   unsigned int readUnsignedNumEntry( const QString& pKey, unsigned int nDefault = 0 ) const;
   unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const;
@@ -253,8 +261,9 @@ public:
    * and interpret it numerically.
    *
    * @param pKey The key to search for.
-   * @param nDefault A default value returned if the key was not found.
-   * @return The value for this key or 0 if no value was found.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
    */
   long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
   long readLongNumEntry( const char *pKey, long nDefault = 0 ) const;
@@ -266,8 +275,9 @@ public:
    * and interpret it numerically.
    *
    * @param pKey The key to search for.
-   * @param nDefault A default value returned if the key was not found.
-   * @return The value for this key or 0 if no value was found.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
    */
   unsigned long readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault = 0 ) const;
   unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const;
@@ -279,8 +289,9 @@ public:
    * and interpret it numerically.
    *
    * @param pKey The key to search for.
-   * @param nDefault A default value returned if the key was not found.
-   * @return The value for this key or 0 if no value was found.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
    */
   double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
   double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
@@ -291,9 +302,10 @@ public:
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a font object.
    *
-   * @param pKey                The key to search for.
-   * @param pDefault    A default value returned if the key was not found.
-   * @return The value for this key or a default font if no value was found.
+   * @param pKey The key to search for.
+   * @param pDefault A default value (null QFont by default) returned if the
+   * key was not found or if the read value cannot be interpreted.
+   * @return The value for this key.
    */
   QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const;
   QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const;
@@ -305,11 +317,9 @@ public:
    * and interpret it as a boolean value. Currently "on" and "true" are
    * accepted as true, everything else if false.
    *
-   * @param pKey                The key to search for
-   * @param bDefault    A default value returned if the key was not
-   *                                    found.
-   * @return The value for this key or a default value if no value was
-   * found.
+   * @param pKey The key to search for
+   * @param bDefault A default value returned if the key was not found.
+   * @return The value for this key.
    */
   bool readBoolEntry( const QString& pKey, const bool bDefault = false ) const;
   bool readBoolEntry( const char *pKey, const bool bDefault = false ) const;
@@ -320,11 +330,10 @@ public:
    * Read the value of an entry specified by pKey in the current group
    * and interpret it as a @ref QRect object.
    *
-   * @param pKey                The key to search for
-   * @param pDefault    A default value returned if the key was not
-   *                                    found.
-   * @return The value for this key or a default rectangle if no value
-   * was found.
+   * @param pKey The key to search for
+   * @param pDefault A default value (null QRect by default) returned if the
+   * key was not found or if the read value cannot be interpreted.
+   * @return The value for this key.
    */
   QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
   QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const;
@@ -335,11 +344,10 @@ public:
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a @ref QPoint object.
    *
-   * @param pKey                The key to search for
-   * @param pDefault    A default value returned if the key was not
-   *                                    found.
-   * @return The value for this key or a default point if no value
-   * was found.
+   * @param pKey The key to search for
+   * @param pDefault A default value (null QPoint by default) returned if the
+   * key was not found or if the read value cannot be interpreted.
+   * @return The value for this key.
    */
   QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const;
   QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const;
@@ -350,11 +358,10 @@ public:
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a @ref QSize object.
    *
-   * @param pKey                The key to search for
-   * @param pDefault    A default value returned if the key was not
-   *                                    found.
-   * @return The value for this key or a default point if no value
-   * was found.
+   * @param pKey The key to search for
+   * @param pDefault A default value (null QSize by default) returned if the
+   * key was not found or if the read value cannot be interpreted.
+   * @return The value for this key.
    */
   QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
   QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const;
@@ -366,10 +373,10 @@ public:
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a color.
    *
-   * @param pKey                The key to search for.
-   * @param pDefault    A default value returned if the key was not found.
-   * @return The value for this key or a default color if no value
-   * was found.
+   * @param pKey The key to search for.
+   * @param pDefault A default value (null QColor by default) returned if the
+   * key was not found or if the value cannot be interpreted.
+   * @return The value for this key.
    */
   QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const;
   QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
@@ -380,10 +387,11 @@ public:
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a date and time.
    *
-   * @param pKey                The key to search for.
-   * @param pDefault    A default value returned if the key was not found.
-   * @return The value for this key or a @ref currentDateTime()
-   *  (Qt global function) if no value was found.
+   * @param pKey The key to search for.
+   * @param pDefault A default value (@ref currentDateTime() by default)
+   * returned if the key was not found or if the read value cannot be
+   * interpreted.
+   * @return The value for this key.
    */
   QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const;
   QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const;
