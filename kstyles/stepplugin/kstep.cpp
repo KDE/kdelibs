@@ -121,11 +121,10 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
     bool act = btn->isOn() || btn->isDown();
-    p->setPen(act ? nextGrp.light() : nextGrp.text());
     drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
-             AlignCenter | ShowPrefix, nextGrp, btn->isEnabled(),
+             AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
              btn->pixmap(), btn->text(), -1,
-             act ? &nextGrp.light() : &nextGrp.text());
+             act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
 }
 
 void KStepStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
