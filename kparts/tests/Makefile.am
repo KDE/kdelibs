@@ -1,11 +1,11 @@
 
-INCLUDES= -I$(top_srcdir)/kparts/lib $(all_includes)
+INCLUDES= -I$(top_srcdir)/kparts $(all_includes)
 LDFLAGS	= $(all_libraries)
-LDADD = ../lib/libkparts2.la $(LIB_KDECORE)
+LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
 noinst_PROGRAMS = example
 
 example_SOURCES = example.cpp notepad.cpp
 
-example_METASOURCES = AUTO
+METASOURCES = AUTO
 

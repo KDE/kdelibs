@@ -2,17 +2,17 @@
 
 INCLUDES= -I$(srcdir)/../ $(all_includes)
 LDFLAGS	= $(all_libraries)  -version-info 1:0:0
-libkparts2_la_LIBADD  = $(LIB_KIO)
+libkparts_la_LIBADD  = $(LIB_KIO)
 
 ####### Files
 
-lib_LTLIBRARIES = libkparts2.la
+lib_LTLIBRARIES = libkparts.la
 
-libkparts2_la_SOURCES = kpart.cpp kplugin.cpp kpartmanager.cpp kpartsmainwindow.cpp kxmlgui.cpp
+libkparts_la_SOURCES = kpart.cpp kplugin.cpp kpartmanager.cpp kpartsmainwindow.cpp kxmlgui.cpp
 
 include_HEADERS = kpart.h kplugin.h kpartmanager.h kpartsmainwindow.h kxmlgui.h
 
-libkparts2_la_METASOURCES = AUTO
+libkparts_la_METASOURCES = AUTO
 
 servicetype_DATA = kpart.desktop
 servicetypedir = $(kde_servicetypesdir)
