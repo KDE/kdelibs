@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "../dcopref.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 
 static DCOPClient* dcop = 0;
 
@@ -90,30 +91,58 @@ bool mkBool( const QString& s )
     return FALSE;
 }
 
-QPoint mkPoint( const QString& s )
+QPoint mkPoint( const QString &str )
 {
-    QStringList l = QStringList::split( ',', s.mid( 7, s.length() - 8 ) );
-    return QPoint( l[0].toInt(), l[1].toInt() );
+    const char *s = str.latin1();
+    char *end;
+    while(*s && !isdigit(*s)) s++;
+    int x = strtol(s, &end, 10);
+    s = (const char *)end;
+    while(*s && !isdigit(*s)) s++;
+    int y = strtol(s, &end, 10);
+    return QPoint( x, y );
 }
 
-QSize mkSize( const QString& s )
+QSize mkSize( const QString &str )
 {
-    QStringList l = QStringList::split( ',', s.mid( 6, s.length() - 7 ) );
-    return QSize( l[0].toInt(), l[1].toInt() );
+    const char *s = str.latin1();
+    char *end;
+    while(*s && !isdigit(*s)) s++;
+    int w = strtol(s, &end, 10);
+    s = (const char *)end;
+    while(*s && !isdigit(*s)) s++;
+    int h = strtol(s, &end, 10);
+    return QSize( w, h );
 }
 
-QRect mkRect( const QString& s )
+QRect mkRect( const QString &str )
 {
-    QStringList l = QStringList::split( ',', s.mid( 6, s.length() - 7 ) );
-    return QRect( l[0].toInt(), l[1].toInt(), l[2].toInt(), l[3].toInt() );
+    const char *s = str.latin1();
+    char *end;
+    while(*s && !isdigit(*s)) s++;
+    int p1 = strtol(s, &end, 10);
+    s = (const char *)end;
+    bool legacy = (*s == 'x');
+    while(*s && !isdigit(*s)) s++;
+    int p2 = strtol(s, &end, 10);
+    s = (const char *)end;
+    while(*s && !isdigit(*s)) s++;
+    int p3 = strtol(s, &end, 10);
+    s = (const char *)end;
+    while(*s && !isdigit(*s)) s++;
+    int p4 = strtol(s, &end, 10);
+    if (legacy)
+    {
+       return QRect( p3, p4, p1, p2 );
+    }
+    return QRect( p1, p2, p3, p4 );
 }
 
 QColor mkColor( const QString& s )
 {
-    int r=s.mid(8,2).toInt(0,16);
-    int g=s.mid(10,2).toInt(0,16);
-    int b=s.mid(12,2).toInt(0,16);
-    return QColor( r,g,b );
+    QColor c;
+    c.setNamedColor(s);
+    return c;
 }
 
 void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
@@ -219,17 +248,25 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    arg << s;
 	else if ( type == "QCString" )
 	    arg << QCString( s.latin1() );
+	else if ( type == "QColor" )
+	    arg << mkColor( s );
+	else if ( type == "QPoint" )
+	    arg << mkPoint( s );
+	else if ( type == "QSize" )
+	    arg << mkSize( s );
+	else if ( type == "QRect" )
+	    arg << mkRect( s );
 	else if ( type == "QVariant" ) {
 	    if ( s == "true" || s == "false" )
 		arg << QVariant( mkBool( s ), 42 );
 	    else if ( s.left( 7 ) == "QPoint(" )
-		arg << QVariant( mkPoint( s ) );
+		arg << QVariant( mkPoint( s.mid(7, s.length()-8) ) );
 	    else if ( s.left( 6 ) == "QSize(" )
-		arg << QVariant( mkSize( s ) );
+		arg << QVariant( mkSize( s.mid(6, s.length()-7) ) );
 	    else if ( s.left( 6 ) == "QRect(" )
-		arg << QVariant( mkRect( s ) );
-	    else if ( s.left( 8 ) == "QColor(#" )
-		arg << QVariant( mkColor( s ) );
+		arg << QVariant( mkRect( s.mid(6, s.length()-7) ) );
+	    else if ( s.left( 7 ) == "QColor(" )
+		arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
 	    else
 		arg << QVariant( s );
 	} else {
@@ -285,6 +322,22 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    reply >> l;
 	    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it )
 		printf( "%s\n", (*it).latin1() );
+	} else if (replyType == "QColor") {
+	    QColor c;
+	    reply >> c;
+	    printf( "%s\n", c.name().latin1() );
+	} else if (replyType == "QSize") {
+	    QSize s;
+	    reply >> s;
+	    printf( "%dx%d\n", s.width(), s.height() );
+	} else if (replyType == "QPoint") {
+	    QPoint p;
+	    reply >> p;
+	    printf( "+%d+%d\n", p.x(), p.y() );
+	} else if (replyType == "QRect") {
+	    QRect r;
+	    reply >> r;
+	    printf( "%dx%d+%d+%d\n", r.width(), r.height(), r.x(), r.y() );
 	} else if (replyType == "QVariant") {
 	    QVariant v;
 	    reply >> v;
