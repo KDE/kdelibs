@@ -74,7 +74,7 @@ return tokens;
 
 
 void KSSLX509Map::parse(const QString& name) {
-QValueList<QString> vl = tokenizeBy(name, QRegExp("/"), false);
+QValueList<QString> vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
 
   m_pairs.clear();
 
