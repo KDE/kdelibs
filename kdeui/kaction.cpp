@@ -204,7 +204,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	setWhatsThis( item.whatsThis() );
 }
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+// KDE 4: remove
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
@@ -263,7 +263,7 @@ KAction::KAction( QObject* parent, const char* name )
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
 }
-#endif // KDE_VERSION < 4.0.0
+// KDE 4: remove end
 
 KAction::~KAction()
 {
@@ -470,10 +470,10 @@ bool KAction::setShortcut( const KShortcut& cut )
     insertKAccel( kaccel );
 
   if( bChanged ) {
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+    // KDE 4: remove
     if ( d->m_kaccel )
       d->m_kaccel->setShortcut( name(), cut );
-#endif
+    // KDE 4: remove end
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
@@ -534,12 +534,12 @@ void KAction::removeKAccel( KAccel* kaccel )
   }
 }
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+// KDE 4: remove
 void KAction::setAccel( int keyQt )
 {
   setShortcut( KShortcut(keyQt) );
 }
-#endif
+// KDE 4: remove end
 
 void KAction::updateShortcut( int i )
 {
@@ -855,10 +855,10 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+  // KDE 4: remove
   if (d->m_kaccel)
     d->m_kaccel->setEnabled(name(), enable);
-#endif
+  // KDE 4: remove end
 
   for ( uint i = 0; i < d->m_kaccelList.count(); i++ )
     d->m_kaccelList[i]->setEnabled( name(), enable );
@@ -891,13 +891,13 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+  // KDE 4: remove
   if (d->m_kaccel) {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
       pAction->setLabel( text );
   }
-#endif
+  // KDE 4: remove end
 
   for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
     KAccelAction* pAction = d->m_kaccelList[i]->actions().actionPtr(name());
@@ -1120,13 +1120,13 @@ void KAction::slotDestroyed()
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* o = sender();
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+  // KDE 4: remove
   if ( o == d->m_kaccel )
   {
     d->m_kaccel = 0;
     return;
   }
-#endif
+  // KDE 4: remove end
 
   for( uint i = 0; i < d->m_kaccelList.count(); i++ )
   {
@@ -3120,7 +3120,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
   setInstance( instance );
 }
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+// KDE 4: remove
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
@@ -3142,7 +3142,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
   d = new KActionCollectionPrivate;
   *this = copy;
 }
-#endif
+// KDE 4: remove end
 
 KActionCollection::~KActionCollection()
 {
@@ -3630,7 +3630,7 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
   return 0;
 }
 
-#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
+// KDE 4: remove
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
   kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
@@ -3668,7 +3668,7 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 
   return *this;
 }
-#endif
+// KDE 4: remove end
 
 //---------------------------------------------------------------------
 // KActionShortcutList
