@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
        }
    }
 
-   //********************************************************* Duplicate cookies test in terms of values
+   // Add cookies...
    arg1 = "http://w.y.z/";
    printf("Set-Cookie request for: %s\n", arg1.latin1());
    arg2 = "Set-Cookie: some_value=value1; Path=\"/\"; expires=Fri, 04-May-2002 01:00:00 GMT";
@@ -115,26 +115,33 @@ int main(int argc, char *argv[])
 
    arg1 = "http://x.y.z/";
    printf("Set-Cookie request for: %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: some_value=value2\"; Path=\"/\"; expires=Fri, May-04-2002 01:00:00 GMT";
+   arg2 = "Set-Cookie: some_value=value2; Path=\"/\"; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
-/*
-   arg1 = "http://x.y.z/";
-   printf("Set-Cookie request for: %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: some_value=value3; Path=\"/\"; domain=\".y.z\"; expires=Fri, May-04-2002 01:00:00 GMT";
-   addCookies(arg1, arg2);
-*/
+
    arg1 = "http://foo.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: some_value=value1; expires=Fri, 04-May-2002 01:00:00 GMT";
+   arg2 = "Set-Cookie: some_value=value3; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
 
    arg1 = "http://www.foo.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: some_value=value2; expires=Fri, 04-May-2002 01:00:00 GMT";
+   arg2 = "Set-Cookie: some_value=value4; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
-
    
-   arg1 = "http://x.y.z/";
+   arg1 = "http://www.acme.com";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value5; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+   
+   arg1 = "http://acme.com";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_value=value6; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
+   
+   
+   
+   // Find cookies...   
+   arg1 = "http://w.y.z/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
@@ -144,21 +151,26 @@ int main(int argc, char *argv[])
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
 
-   arg1 = "http://x.y.z/";
+   arg1 = "http://www.foo.com/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
 
-   arg1 = "http://x.y.z/";
+   arg1 = "http://foo.com/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
 
-   arg1 = "http://x.y.z/";
+   arg1 = "http://www.acme.com/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
 
+   arg1 = "http://acme.com/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("RESULT: %s\n\n", result.latin1() );
+   
    /********************************************************* Space in the value test
    arg1 = "http://x.y.z/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
