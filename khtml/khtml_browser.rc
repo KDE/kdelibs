@@ -23,7 +23,6 @@
   <Action name="security" />
   <Action name="setEncoding" />
   <Action name="useStylesheet" />
-  <Separator />
   <Action name="debugScript" />
 <!--
   <Separator />

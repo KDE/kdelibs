@@ -197,8 +197,8 @@ void KJSProxyImpl::clear() {
     if (debugWin) {
       if (debugWin->getExecState() &&
           debugWin->getExecState()->interpreter() == m_script)
-        debugWin->stop();
-      debugWin->clear(m_script);
+        debugWin->slotStop();
+      debugWin->clearInterpreter(m_script);
     }
 #endif
     m_script->clear();

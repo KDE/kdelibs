@@ -49,13 +49,13 @@ public:
 
   void endData();
 
-  bool isValid()
-   { return m_valid; }
+  bool isComplete()
+   { return m_complete; }
 
   KHTMLPageCacheDelivery *fetchData(QObject *recvObj, const char *recvSlot);
 private:
   long m_id;
-  bool m_valid;
+  bool m_complete;
   QValueList<QByteArray> m_data;
   KTempFile *m_file;
 };
@@ -70,7 +70,7 @@ public:
   bool deliveryActive;
 };
 
-KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_valid(false)
+KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_complete(false)
 {
   QString path = locateLocal("tmp", "khtmlcache");
   m_file = new KTempFile(path);
@@ -93,7 +93,7 @@ KHTMLPageCacheEntry::addData(const QByteArray &data)
 void
 KHTMLPageCacheEntry::endData()
 {
-  m_valid = true;
+  m_complete = true;
   if ( m_file->status() == 0) {
     m_file->dataStream()->device()->flush();
     m_file->dataStream()->device()->at(0);
@@ -184,9 +184,15 @@ KHTMLPageCache::cancelEntry(long id)
 bool
 KHTMLPageCache::isValid(long id)
 {
+  return (d->dict.find(id) != 0);
+}
+
+bool
+KHTMLPageCache::isComplete(long id)
+{
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   if (entry)
-     return entry->isValid();
+     return entry->isComplete();
   return false;
 }
 

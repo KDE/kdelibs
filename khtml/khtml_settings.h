@@ -150,9 +150,11 @@ public:
     bool isBackRightClickEnabled();
 
     // Java and JavaScript
+    // ### BIC make these const
     bool isJavaEnabled( const QString& hostname = QString::null );
     bool isJavaScriptEnabled( const QString& hostname = QString::null );
     bool isJavaScriptDebugEnabled( const QString& hostname = QString::null );
+    bool isJavaScriptErrorReportingEnabled( const QString& hostname = QString::null ) const;
     bool isPluginsEnabled( const QString& hostname = QString::null );
     KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString::null ) const;
     KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString::null ) const;

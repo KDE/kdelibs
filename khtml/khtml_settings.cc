@@ -68,6 +68,7 @@ public:
     bool m_underlineLink : 1;
     bool m_hoverLink : 1;
     bool m_bEnableJavaScriptDebug : 1;
+    bool m_bEnableJavaScriptErrorReporting : 1;
     bool enforceCharset : 1;
     bool m_bAutoLoadImages : 1;
     bool m_formCompletionEnabled : 1;
@@ -380,8 +381,13 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "Java/JavaScript Settings" );
 
     // The global setting for JavaScript debugging
+    // This is currently always enabled by default
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
-      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
+      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", true );
+
+    // The global setting for JavaScript error reporting
+    if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )
+      d->m_bEnableJavaScriptErrorReporting = config->readBoolEntry( "ReportJavaScriptErrors", true );
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
@@ -602,6 +608,12 @@ bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
 {
   // debug setting is global for now, but could change in the future
   return d->m_bEnableJavaScriptDebug;
+}
+
+bool KHTMLSettings::isJavaScriptErrorReportingEnabled( const QString& /*hostname*/ ) const
+{
+  // error reporting setting is global for now, but could change in the future
+  return d->m_bEnableJavaScriptErrorReporting;
 }
 
 bool KHTMLSettings::isPluginsEnabled( const QString& hostname )

@@ -23,7 +23,7 @@
 
 #include <qglobal.h>
 
-//#define KJS_DEBUGGER
+#define KJS_DEBUGGER
 
 #ifdef KJS_DEBUGGER
 
@@ -53,12 +53,11 @@ namespace KJS {
   class SourceFile : public DOM::DomShared
   {
    public:
-    SourceFile(QString u, QString c, int i, Interpreter *interp) 
-	: url(u), code(c), index(i), interpreter(interp) {}
+    SourceFile(QString u, QString c, Interpreter *interp) 
+	: url(u), code(c), interpreter(interp) {}
     QString getCode();
     QString url;
     QString code;
-    int index;
     Interpreter *interpreter;
   };
 
@@ -80,11 +79,12 @@ namespace KJS {
   class SourceFragment
   {
   public:
-    SourceFragment(int sid, int bl, SourceFile *sf);
+    SourceFragment(int sid, int bl, int el, SourceFile *sf);
     ~SourceFragment();
 
     int sourceId;
     int baseLine;
+    int errorLine;
     SourceFile *sourceFile;
   };
 
@@ -95,13 +95,14 @@ namespace KJS {
     virtual ~KJSErrorDialog();
 
     bool debugSelected() const { return m_debugSelected; }
+    bool dontShowAgain() const { return m_dontShowAgainCb->isChecked(); }
 
   protected slots:
     virtual void slotUser1();
 
   private:
+    QCheckBox *m_dontShowAgainCb;
     bool m_debugSelected;
-
   };
 
   /**
@@ -136,7 +137,7 @@ namespace KJS {
     void setNextSourceInfo(QString url, int baseLine);
     bool inSession() const { return !m_execStates.isEmpty(); }
     void setMode(Mode m) { m_mode = m; }
-    void clear(Interpreter *interp);
+    void clearInterpreter(Interpreter *interpreter);
     ExecState *getExecState() const { return m_execStates.top(); }
 
     // functions overridden from KJS:Debugger
@@ -149,20 +150,20 @@ namespace KJS {
     bool exitContext(ExecState *exec, const Completion &completion);
 
   public slots:
-    void next();
-    void step();
-    void cont();
-    void stop();
-    void breakNext();
-    void toggleBreakpoint();
-    void showFrame(int frameno);
-    void sourceSelected(int sourceSelIndex);
-    void eval();
+    void slotNext();
+    void slotStep();
+    void slotContinue();
+    void slotStop();
+    void slotBreakNext();
+    void slotToggleBreakpoint();
+    void slotShowFrame(int frameno);
+    void slotSourceSelected(int sourceSelIndex);
+    void slotEval();
 
   protected:
 
-    virtual void closeEvent(QCloseEvent *e);
-    virtual bool eventFilter(QObject *obj, QEvent *evt);
+    void closeEvent(QCloseEvent *e);
+    bool eventFilter(QObject *obj, QEvent *evt);
     void disableOtherWindows();
     void enableOtherWindows();
 
@@ -178,9 +179,7 @@ namespace KJS {
     void displaySourceFile(SourceFile *sourceFile);
     void updateContextList();
 
-    Context getContext(int depth);
     QString contextStr(const Context &ctx);
-    int contextDepth();
 
     struct Breakpoint {
       int sourceId;
@@ -206,13 +205,14 @@ namespace KJS {
     QString m_nextSourceUrl;
     int m_nextSourceBaseLine;
     QPtrStack<ExecState> m_execStates;
-
-    Context m_currentContext;
-    Context m_steppingContext;
+    ExecState **m_execs;
+    int m_execsCount;
+    int m_execsAlloc;
+    int m_steppingDepth;
 
     QMap<QString,SourceFile*> m_sourceFiles; /* maps url->SourceFile */
     QMap<int,SourceFragment*> m_sourceFragments; /* maps SourceId->SourceFragment */
-    QMap<int,SourceFile*> m_sourceSelFiles; /* maps combobox index->SourceFile */
+    QPtrList<SourceFile> m_sourceSelFiles; /* maps combobox index->SourceFile */
 
     KActionCollection *m_actionCollection;
     QPixmap m_stopIcon;

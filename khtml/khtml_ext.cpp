@@ -471,7 +471,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
     if ( !destURL.isMalformed() )
     {
         bool saved = false;
-        if (KHTMLPageCache::self()->isValid(cacheId))
+        if (KHTMLPageCache::self()->isComplete(cacheId))
         {
             if (destURL.isLocalFile())
             {

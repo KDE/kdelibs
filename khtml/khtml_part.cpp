@@ -196,7 +196,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "certificate.<p> "
 				       "Hint: if the image shows a closed lock, the page has been transmitted over a "
 				       "secure connection.") );
-  d->m_paDebugScript = new KAction( "Script Debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
+  d->m_paDebugScript = new KAction( "JavaScript &Debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( "Print Rendering Tree to STDOUT", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( "Print DOM Tree to STDOUT", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
@@ -2815,7 +2815,7 @@ void KHTMLPart::slotViewDocumentSource()
 {
   KURL url(m_url);
   bool isTempFile = false;
-  if (!(url.isLocalFile()) && KHTMLPageCache::self()->isValid(d->m_cacheId))
+  if (!(url.isLocalFile()) && KHTMLPageCache::self()->isComplete(d->m_cacheId))
   {
      KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
      if (sourceFile.status() == 0)
@@ -2877,7 +2877,7 @@ void KHTMLPart::slotViewFrameSource()
   {
        long cacheId = static_cast<KHTMLPart *>(frame)->d->m_cacheId;
 
-       if (KHTMLPageCache::self()->isValid(cacheId))
+       if (KHTMLPageCache::self()->isComplete(cacheId))
        {
            KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
            if (sourceFile.status() == 0)
@@ -4122,7 +4122,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     d->m_view->setContentsPos( xOffset, yOffset );
 
     d->m_extension->setURLArgs( args );
-    if (!KHTMLPageCache::self()->isValid(d->m_cacheId))
+    if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
     {
        d->m_restored = true;
        openURL( u );

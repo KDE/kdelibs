@@ -64,7 +64,7 @@ public:
 
   /**
    * Signal end of data for the cache entry with id @p id.
-   * After calling this the entry is marked valid 
+   * After calling this the entry is marked complete 
    */
   void endData(long id);
 
@@ -74,10 +74,17 @@ public:
   void cancelEntry(long id);
 
   /**
-   * @return true when the cache entry with id @p is still valid.
-   * and can be accessed for reading.
+   * @return true when the cache entry with id @p is still valid,
+   * and at least some of the data is available for reading (the
+   * complete data may not yet be loaded)
    */
   bool isValid(long id);
+
+  /**
+   * @return true when the cache entry with id @p is still valid,
+   * and the complete data is available for reading
+   */
+  bool isComplete(long id);
   
   /**
    * Fetch data for cache entry @p id and send it to slot @p recvSlot
