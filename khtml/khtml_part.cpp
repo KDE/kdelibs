@@ -3,7 +3,7 @@
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
- *		       2000 Simon Hausmann <hausmann@kde.org>
+ *                     2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -235,22 +235,22 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-	PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader *docLoader)
-	{
-	    m_part = part;
-	    if (docLoader)
-		docLoader->requestStyleSheet(url, DOMString());
-	    else
-		Cache::requestStyleSheet(url, DOMString(),false);
-	}
+        PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader *docLoader)
+        {
+            m_part = part;
+            if (docLoader)
+                docLoader->requestStyleSheet(url, DOMString());
+            else
+                Cache::requestStyleSheet(url, DOMString(),false);
+        }
 
-	virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
-	{
-	    m_part->m_userSheet = sheet;
-	    m_part->m_userSheetUrl = url;
-	    delete this;
-	}
-	KHTMLPartPrivate *m_part;
+        virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+        {
+            m_part->m_userSheet = sheet;
+            m_part->m_userSheetUrl = url;
+            delete this;
+        }
+        KHTMLPartPrivate *m_part;
     };
 };
 
@@ -263,12 +263,12 @@ static QString splitUrlTarget(const QString &url, QString *target=0)
       result = u.ref();
       if (target)
          *target = u.host();
-   }	
+   }
    return result;
 }
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
-		      GUIProfile prof )
+                      GUIProfile prof )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
   setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
@@ -336,19 +336,19 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   */
 
   connect( this, SIGNAL( completed() ),
-	   this, SLOT( updateActions() ) );
+           this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
-	   this, SLOT( updateActions() ) );
+           this, SLOT( updateActions() ) );
 
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 
   connect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject *) ),
-	   this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
+           this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
 
   findTextBegin(); //reset find variables
 
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
-	   this, SLOT( slotRedirect() ) );
+           this, SLOT( slotRedirect() ) );
 }
 
 KHTMLPart::~KHTMLPart()
@@ -359,7 +359,7 @@ KHTMLPart::~KHTMLPart()
   clear();
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
-	      this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
+              this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
   if ( d->m_view )
   {
     d->m_view->hide();
@@ -664,7 +664,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
     if (d->m_bReloading)
-	d->m_doc->setReloading();
+        d->m_doc->setReloading();
 
     d->m_workingURL = KURL();
   }
@@ -741,11 +741,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 void KHTMLPart::write( const char *str, int len )
 {
     if ( !d->m_decoder ) {
-	d->m_decoder = new khtml::Decoder();
-	if(d->m_encoding != QString::null)
-	    d->m_decoder->setEncoding(d->m_encoding.latin1(), d->m_haveEncoding);
-	else
-	    d->m_decoder->setEncoding(settings()->encoding().latin1(), d->m_haveEncoding);
+        d->m_decoder = new khtml::Decoder();
+        if(d->m_encoding != QString::null)
+            d->m_decoder->setEncoding(d->m_encoding.latin1(), d->m_haveEncoding);
+        else
+            d->m_decoder->setEncoding(settings()->encoding().latin1(), d->m_haveEncoding);
     }
   if ( len == 0 )
     return;
@@ -782,8 +782,8 @@ void KHTMLPart::end()
 {
     // make sure nothing's left in there...
     if(d->m_decoder && !d->m_decoder->encoding()) {
-	d->m_decoder->setEncoding("iso8859-1");
-	write(" ");
+        d->m_decoder->setEncoding("iso8859-1");
+        write(" ");
     }
     d->m_doc->finishParsing();
 }
@@ -989,7 +989,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
     // ### hack!!!!
     if(!d->m_settings->charset() == QFont::Unicode)
-	d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
+        d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
 
     // reload document
     closeURL();
@@ -1026,7 +1026,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   {
     n = d->m_doc->getElementById(name);
   }
-	
+
   if(!n) return false;
 
   int x = 0, y = 0;
@@ -1082,57 +1082,57 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
     if(!d->m_findNode) d->m_findNode = d->m_doc->body();
 
     if ( !d->m_findNode ||
-	 d->m_findNode->id() == ID_FRAMESET )
+         d->m_findNode->id() == ID_FRAMESET )
       return false;
 
     while(1)
     {
-	if(d->m_findNode->id() == ID_TEXT)
-	{
-	    DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
-	    QConstString s(t->s, t->l);
-	    d->m_findPos = s.string().find(exp, d->m_findPos+1);
-	    if(d->m_findPos != -1)
-	    {
-		int x = 0, y = 0;
-		d->m_findNode->renderer()->absolutePosition(x, y);
-		d->m_view->setContentsPos(x-50, y-50);
-		return true;
-	    }
-	}
-	d->m_findPos = -1;
-	
-	NodeImpl *next;
-	
-	if ( forward )
-	{
-     	  next = d->m_findNode->firstChild();
-	
-	  if(!next) next = d->m_findNode->nextSibling();
-	  while(d->m_findNode && !next) {
-	      d->m_findNode = d->m_findNode->parentNode();
-	      if( d->m_findNode ) {
-		  next = d->m_findNode->nextSibling();
-              }
-	  }
-	}
-	else
-	{
-     	  next = d->m_findNode->lastChild();
-	
-	  if (!next ) next = d->m_findNode->previousSibling();
-	  while ( d->m_findNode && !next )
-	  {
-	    d->m_findNode = d->m_findNode->parentNode();
-	    if( d->m_findNode )
-	    {
-	      next = d->m_findNode->previousSibling();
-	    }
-	  }
-	}
+        if(d->m_findNode->id() == ID_TEXT)
+        {
+            DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
+            QConstString s(t->s, t->l);
+            d->m_findPos = s.string().find(exp, d->m_findPos+1);
+            if(d->m_findPos != -1)
+            {
+                int x = 0, y = 0;
+                d->m_findNode->renderer()->absolutePosition(x, y);
+                d->m_view->setContentsPos(x-50, y-50);
+                return true;
+            }
+        }
+        d->m_findPos = -1;
 
-	d->m_findNode = next;
-	if(!d->m_findNode) return false;
+        NodeImpl *next;
+
+        if ( forward )
+        {
+          next = d->m_findNode->firstChild();
+
+          if(!next) next = d->m_findNode->nextSibling();
+          while(d->m_findNode && !next) {
+              d->m_findNode = d->m_findNode->parentNode();
+              if( d->m_findNode ) {
+                  next = d->m_findNode->nextSibling();
+              }
+          }
+        }
+        else
+        {
+          next = d->m_findNode->lastChild();
+
+          if (!next ) next = d->m_findNode->previousSibling();
+          while ( d->m_findNode && !next )
+          {
+            d->m_findNode = d->m_findNode->parentNode();
+            if( d->m_findNode )
+            {
+              next = d->m_findNode->previousSibling();
+            }
+          }
+        }
+
+        d->m_findNode = next;
+        if(!d->m_findNode) return false;
     }
 }
 
@@ -1141,67 +1141,67 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
     if(!d->m_findNode) d->m_findNode = d->m_doc->body();
 
     if ( !d->m_findNode ||
-	 d->m_findNode->id() == ID_FRAMESET )
+         d->m_findNode->id() == ID_FRAMESET )
       return false;
 
     while(1)
     {
-	if(d->m_findNode->id() == ID_TEXT)
-	{
-	    DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
-	    QConstString s(t->s, t->l);
-	    d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
-	    if(d->m_findPos != -1)
-	    {
-		int x = 0, y = 0;
-		d->m_findNode->renderer()->absolutePosition(x, y);
-		d->m_view->setContentsPos(x-50, y-50);
-		
-		d->m_selectionStart = d->m_findNode;
-		d->m_startOffset = d->m_findPos;
-		d->m_selectionEnd = d->m_findNode;
-		d->m_endOffset = d->m_findPos + str.length();
-		d->m_startBeforeEnd = true;
-				
-		d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
-					d->m_selectionEnd.handle(), d->m_endOffset );
-		emitSelectionChanged();
-		return true;
-	    }
-	}
-	d->m_findPos = -1;
+        if(d->m_findNode->id() == ID_TEXT)
+        {
+            DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
+            QConstString s(t->s, t->l);
+            d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
+            if(d->m_findPos != -1)
+            {
+                int x = 0, y = 0;
+                d->m_findNode->renderer()->absolutePosition(x, y);
+                d->m_view->setContentsPos(x-50, y-50);
 
-	NodeImpl *next;
-	
-	if ( forward )
-	{
-     	  next = d->m_findNode->firstChild();
-	
-	  if(!next) next = d->m_findNode->nextSibling();
-	  while(d->m_findNode && !next) {
-	      d->m_findNode = d->m_findNode->parentNode();
-	      if( d->m_findNode ) {
-		  next = d->m_findNode->nextSibling();
+                d->m_selectionStart = d->m_findNode;
+                d->m_startOffset = d->m_findPos;
+                d->m_selectionEnd = d->m_findNode;
+                d->m_endOffset = d->m_findPos + str.length();
+                d->m_startBeforeEnd = true;
+
+                d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+                                        d->m_selectionEnd.handle(), d->m_endOffset );
+                emitSelectionChanged();
+                return true;
+            }
+        }
+        d->m_findPos = -1;
+
+        NodeImpl *next;
+
+        if ( forward )
+        {
+          next = d->m_findNode->firstChild();
+
+          if(!next) next = d->m_findNode->nextSibling();
+          while(d->m_findNode && !next) {
+              d->m_findNode = d->m_findNode->parentNode();
+              if( d->m_findNode ) {
+                  next = d->m_findNode->nextSibling();
               }
-	  }
-	}
-	else
-	{
-     	  next = d->m_findNode->lastChild();
-	
-	  if (!next ) next = d->m_findNode->previousSibling();
-	  while ( d->m_findNode && !next )
-	  {
-	    d->m_findNode = d->m_findNode->parentNode();
-	    if( d->m_findNode )
-	    {
-	      next = d->m_findNode->previousSibling();
-	    }
-	  }
-	}
-	
-	d->m_findNode = next;
-	if(!d->m_findNode) return false;
+          }
+        }
+        else
+        {
+          next = d->m_findNode->lastChild();
+
+          if (!next ) next = d->m_findNode->previousSibling();
+          while ( d->m_findNode && !next )
+          {
+            d->m_findNode = d->m_findNode->parentNode();
+            if( d->m_findNode )
+            {
+              next = d->m_findNode->previousSibling();
+            }
+          }
+        }
+
+        d->m_findNode = next;
+        if(!d->m_findNode) return false;
     }
 }
 
@@ -1212,28 +1212,28 @@ QString KHTMLPart::selectedText() const
   while(!n.isNull()) {
       if(n.nodeType() == DOM::Node::TEXT_NODE) {
         QString str = static_cast<TextImpl *>(n.handle())->data().string();
-	if(n == d->m_selectionStart && n == d->m_selectionEnd)
-	  text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
-	else if(n == d->m_selectionStart)
-	  text = str.mid(d->m_startOffset);
-	else if(n == d->m_selectionEnd)
-	  text += str.left(d->m_endOffset);
-	else
-	 text += str;
+        if(n == d->m_selectionStart && n == d->m_selectionEnd)
+          text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
+        else if(n == d->m_selectionStart)
+          text = str.mid(d->m_startOffset);
+        else if(n == d->m_selectionEnd)
+          text += str.left(d->m_endOffset);
+        else
+         text += str;
       }
       else if(n.elementId() == ID_BR)
-	    text += "\n";
-	else if(n.elementId() == ID_P || n.elementId() == ID_TD)
-	    text += "\n\n";
-	if(n == d->m_selectionEnd) break;
-	DOM::Node next = n.firstChild();
-	if(next.isNull()) next = n.nextSibling();
-	while( next.isNull() && !n.parentNode().isNull() ) {
-	    n = n.parentNode();
-	    next = n.nextSibling();
-	}
+            text += "\n";
+        else if(n.elementId() == ID_P || n.elementId() == ID_TD)
+            text += "\n\n";
+        if(n == d->m_selectionEnd) break;
+        DOM::Node next = n.firstChild();
+        if(next.isNull()) next = n.nextSibling();
+        while( next.isNull() && !n.parentNode().isNull() ) {
+            n = n.parentNode();
+            next = n.nextSibling();
+        }
 
-	n = next;
+        n = next;
     }
     return text;
 }
@@ -1241,7 +1241,7 @@ QString KHTMLPart::selectedText() const
 bool KHTMLPart::hasSelection() const
 {
   return ( !d->m_selectionStart.isNull() &&
-	   !d->m_selectionEnd.isNull() );
+           !d->m_selectionEnd.isNull() );
 }
 
 DOM::Range KHTMLPart::selection() const
@@ -1280,7 +1280,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     // TODO : use KIO::stat() and create a KFileItem out of its result,
    // to use KFileItem::statusBarText()
     QCString path = QFile::encodeName( u.path() );
-	
+
     struct stat buff;
     stat( path.data(), &buff );
 
@@ -1294,9 +1294,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     {
       QString tmp;
       if ( com.isNull() )
-	tmp = i18n( "Symbolic Link");
+        tmp = i18n( "Symbolic Link");
       else
-	tmp = i18n("%1 (Link)").arg(com);
+        tmp = i18n("%1 (Link)").arg(com);
       char buff_two[1024];
       text += " -> ";
       int n = readlink ( path.data(), buff_two, 1022);
@@ -1304,8 +1304,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
       {
         text2 += "  ";
         text2 += tmp;
-	emit setStatusBarText( text2 );
-	return;
+        emit setStatusBarText( text2 );
+        return;
       }
       buff_two[n] = 0;
 
@@ -1316,11 +1316,11 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     else if ( S_ISREG( buff.st_mode ) )
     {
       if (buff.st_size < 1024)
-	text = i18n("%1 (%2 bytes)").arg(text2).arg((long) buff.st_size);
+        text = i18n("%1 (%2 bytes)").arg(text2).arg((long) buff.st_size);
       else
       {
-	float d = (float) buff.st_size/1024.0;
-	text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
+        float d = (float) buff.st_size/1024.0;
+        text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
       }
       text += "  ";
       text += com;
@@ -1429,7 +1429,7 @@ void KHTMLPart::slotSaveBackground()
   KURL backgroundURL( m_url, relURL );
 
   KFileDialog *dlg = new KFileDialog( QString::null, "*",
-					d->m_view , "filedialog", true );
+                                        d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save background image as"));
 
   dlg->setSelection( backgroundURL.fileName() );
@@ -1456,7 +1456,7 @@ void KHTMLPart::slotSaveDocument()
     srcURL.setFileName( "index.html" );
 
   KFileDialog *dlg = new KFileDialog( QString::null, i18n("HTML files|* *.html *.htm"),
-				      d->m_view , "filedialog", true );
+                                      d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save as"));
 
   dlg->setSelection( srcURL.fileName() );
@@ -1482,9 +1482,9 @@ void KHTMLPart::slotSetEncoding()
 {
     // first Item is always auto
     if(d->m_paSetEncoding->currentItem() == 0)
-	setEncoding(QString::null, false);
+        setEncoding(QString::null, false);
     else
-	setEncoding(d->m_paSetEncoding->currentText(), true);
+        setEncoding(d->m_paSetEncoding->currentText(), true);
 }
 
 void KHTMLPart::updateActions()
@@ -1533,7 +1533,7 @@ void KHTMLPart::updateActions()
 }
 
 void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
-			      const QStringList &params )
+                              const QStringList &params )
 {
   kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
@@ -1553,7 +1553,7 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
 }
 
 void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
-			       const QStringList &params )
+                               const QStringList &params )
 {
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
@@ -1605,16 +1605,16 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     if ( !part )
       return;
 
-    child->m_serviceType = mimetype;
-    if ( child->m_frame )
-      child->m_frame->setWidget( part->widget() );
-
     //CRITICAL STUFF
     if ( child->m_part )
     {
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
       delete (KParts::ReadOnlyPart *)child->m_part;
     }
+
+    child->m_serviceType = mimetype;
+    if ( child->m_frame )
+      child->m_frame->setWidget( part->widget() );
 
     if ( child->m_bFrame )
       partManager()->addPart( part );
@@ -1624,11 +1624,11 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     if ( child->m_bFrame )
     {
       connect( part, SIGNAL( started( KIO::Job *) ),
-  	       this, SLOT( slotChildStarted( KIO::Job *) ) );
+               this, SLOT( slotChildStarted( KIO::Job *) ) );
       connect( part, SIGNAL( completed() ),
-	       this, SLOT( slotChildCompleted() ) );
+               this, SLOT( slotChildCompleted() ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
-	       this, SIGNAL( setStatusBarText( const QString & ) ) );
+               this, SIGNAL( setStatusBarText( const QString & ) ) );
     }
 
     child->m_extension = static_cast<KParts::BrowserExtension *>( part->child( 0L, "KParts::BrowserExtension" ) );
@@ -1636,25 +1636,25 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     if ( child->m_extension )
     {
       connect( child->m_extension, SIGNAL( openURLNotify() ),
-	       d->m_extension, SIGNAL( openURLNotify() ) );
+               d->m_extension, SIGNAL( openURLNotify() ) );
 
       connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-	       this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+               this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
 
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
-	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
+               d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
 
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
-	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
+               d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
-	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
-	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
+               d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
-	       d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
+               d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
     }
 
   }
@@ -1679,9 +1679,9 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
-					     QObject *parent, const char *name, const QString &mimetype,
-					     QString &serviceName, QStringList &serviceTypes,
-					     const QStringList &params )
+                                             QObject *parent, const char *name, const QString &mimetype,
+                                             QString &serviceName, QStringList &serviceTypes,
+                                             const QStringList &params )
 {
   QString constr = QString::fromLatin1( "('KParts/ReadOnlyPart' in ServiceTypes)" );
 
@@ -1727,7 +1727,7 @@ KParts::PartManager *KHTMLPart::partManager()
   {
     d->m_manager = new KParts::PartManager( d->m_view );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
-	     this, SLOT( updateActions() ) );
+             this, SLOT( updateActions() ) );
   }
 
   return d->m_manager;
@@ -1909,7 +1909,7 @@ KHTMLPart *KHTMLPart::parentPart()
 }
 
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args,
-						     bool callParent )
+                                                     bool callParent )
 {
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( args.frameName );
 
@@ -2010,7 +2010,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   setFontSizes( fSizes );
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
-	 >> frameURLs >> frameStateBuffers;
+         >> frameURLs >> frameStateBuffers;
 
   d->m_bComplete = false;
 
@@ -2041,21 +2041,21 @@ void KHTMLPart::restoreState( QDataStream &stream )
       if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
       {
         child->m_bPreloaded = true;
-	child->m_name = *fNameIt;
-	child->m_serviceName = *fServiceNameIt;
-	processObjectRequest( child, *fURLIt, *fServiceTypeIt );
+        child->m_name = *fNameIt;
+        child->m_serviceName = *fServiceNameIt;
+        processObjectRequest( child, *fURLIt, *fServiceTypeIt );
       }
 
       if ( child->m_part )
       {
         child->m_bCompleted = false;
         if ( child->m_extension )
-	{
-	  QDataStream frameStream( *fBufferIt, IO_ReadOnly );
-	  child->m_extension->restoreState( frameStream );
-	}
-	else
-	  child->m_part->openURL( *fURLIt );
+        {
+          QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+          child->m_extension->restoreState( frameStream );
+        }
+        else
+          child->m_part->openURL( *fURLIt );
       }
     }
 
@@ -2092,12 +2092,12 @@ void KHTMLPart::restoreState( QDataStream &stream )
       if ( childFrame.data().m_part )
       {
         if ( childFrame.data().m_extension )
-	{
-	  QDataStream frameStream( *fBufferIt, IO_ReadOnly );
-	  childFrame.data().m_extension->restoreState( frameStream );
-	}
-	else
-	  childFrame.data().m_part->openURL( *fURLIt );
+        {
+          QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+          childFrame.data().m_extension->restoreState( frameStream );
+        }
+        else
+          childFrame.data().m_part->openURL( *fURLIt );
       }
     }
 
@@ -2160,7 +2160,7 @@ void KHTMLPart::setFontBaseInternal( int base, bool absolute )
       d->m_fontBase += base;
 
     if ( d->m_fontBase < 0 )
-	d->m_fontBase = 0;
+        d->m_fontBase = 0;
 
    d->m_paDecFontSizes->setEnabled( d->m_fontBase > 0 );
 
@@ -2315,15 +2315,15 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
       if ( !innerNode.isNull() )
       {
         d->m_selectionStart = innerNode;
-	d->m_startOffset = event->offset();
-	d->m_selectionEnd = innerNode;
-	d->m_endOffset = d->m_startOffset;
-	d->m_doc->clearSelection();
+        d->m_startOffset = event->offset();
+        d->m_selectionEnd = innerNode;
+        d->m_endOffset = d->m_startOffset;
+        d->m_doc->clearSelection();
       }
       else
       {
         d->m_selectionStart = DOM::Node();
-	d->m_selectionEnd = DOM::Node();
+        d->m_selectionEnd = DOM::Node();
       }
       emitSelectionChanged();
       startAutoScroll();
@@ -2360,25 +2360,25 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
-	  QStringList uris;
-	  KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-	  uris.append( u.url() );
-	  QUriDrag *udrag = new QUriDrag( d->m_view->viewport() );
-	  udrag->setUnicodeUris( uris );
-	  drag = udrag;
-	  p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
+          QStringList uris;
+          KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
+          uris.append( u.url() );
+          QUriDrag *udrag = new QUriDrag( d->m_view->viewport() );
+          udrag->setUnicodeUris( uris );
+          drag = udrag;
+          p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
-	  HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
-	  if( i ) {
-	      khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
-	      if(r) {
-		  drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
-		  kdDebug(0) << " creating image drag " << endl;
-		  p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
-	      }
-	  }
+          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+          if( i ) {
+              khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+              if(r) {
+                  drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
+                  kdDebug(0) << " creating image drag " << endl;
+                  p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
+              }
+          }
       }
-	
+
     if ( !p.isNull() )
       drag->setPixmap(p);
     else
@@ -2388,7 +2388,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     stopAutoScroll();
     if(drag)
-	drag->drag();
+        drag->drag();
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
@@ -2422,44 +2422,44 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
   // selection stuff
   if( d->m_bMousePressed && !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE ) {
-	d->m_selectionEnd = innerNode;
-	d->m_endOffset = event->offset();
-	//	kdDebug( 6000 ) << "setting end of selection to " << innerNode << "/" << offset << endl;
+        d->m_selectionEnd = innerNode;
+        d->m_endOffset = event->offset();
+        //      kdDebug( 6000 ) << "setting end of selection to " << innerNode << "/" << offset << endl;
 
-	// we have to get to know if end is before start or not...
-	DOM::Node n = d->m_selectionStart;
-	d->m_startBeforeEnd = false;
-	while(!n.isNull()) {
-	    if(n == d->m_selectionEnd) {
-		d->m_startBeforeEnd = true;
-		break;
-	    }
-	    DOM::Node next = n.firstChild();
-	    if(next.isNull()) next = n.nextSibling();
-	    while( next.isNull() && !n.parentNode().isNull() ) {
-	        n = n.parentNode();
-		next = n.nextSibling();
-	    }
-	    n = next;
-	    //viewport()->repaint(false);
-	}
-	
-	if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
-	{
-  	  if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
-	       d->m_doc
-	    	  ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
-			         d->m_selectionEnd.handle(),d->m_startOffset);
-	  else if (d->m_startBeforeEnd)
-	      d->m_doc
-	    	  ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-			         d->m_selectionEnd.handle(),d->m_endOffset);
-	  else
-	      d->m_doc
-	    	  ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
-			         d->m_selectionStart.handle(),d->m_startOffset);
-	}
-	
+        // we have to get to know if end is before start or not...
+        DOM::Node n = d->m_selectionStart;
+        d->m_startBeforeEnd = false;
+        while(!n.isNull()) {
+            if(n == d->m_selectionEnd) {
+                d->m_startBeforeEnd = true;
+                break;
+            }
+            DOM::Node next = n.firstChild();
+            if(next.isNull()) next = n.nextSibling();
+            while( next.isNull() && !n.parentNode().isNull() ) {
+                n = n.parentNode();
+                next = n.nextSibling();
+            }
+            n = next;
+            //viewport()->repaint(false);
+        }
+
+        if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
+        {
+          if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
+               d->m_doc
+                  ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
+                                 d->m_selectionEnd.handle(),d->m_startOffset);
+          else if (d->m_startBeforeEnd)
+              d->m_doc
+                  ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+                                 d->m_selectionEnd.handle(),d->m_endOffset);
+          else
+              d->m_doc
+                  ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
+                                 d->m_selectionStart.handle(),d->m_startOffset);
+        }
+
     }
 }
 
@@ -2507,51 +2507,51 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
    }
 
   if(!innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE) {
-  //	kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
-	d->m_selectionEnd = innerNode;
-	d->m_endOffset = event->offset();
+  //    kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
+        d->m_selectionEnd = innerNode;
+        d->m_endOffset = event->offset();
     }
 
     // delete selection in case start and end position are at the same point
     if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
-	d->m_selectionStart = 0;
-	d->m_selectionEnd = 0;
-	d->m_startOffset = 0;
-	d->m_endOffset = 0;
+        d->m_selectionStart = 0;
+        d->m_selectionEnd = 0;
+        d->m_startOffset = 0;
+        d->m_endOffset = 0;
         emitSelectionChanged();
     } else {
-	// we have to get to know if end is before start or not...
-	DOM::Node n = d->m_selectionStart;
-	d->m_startBeforeEnd = false;
-	while(!n.isNull()) {
-	    if(n == d->m_selectionEnd) {
-		d->m_startBeforeEnd = true;
-		break;
-	    }
-	    DOM::Node next = n.firstChild();
-	    if(next.isNull()) next = n.nextSibling();
-	    while( next.isNull() && !n.parentNode().isNull() ) {
-	        n = n.parentNode();
-		next = n.nextSibling();
-	    }	
-	    n = next;
-	}
-	if(!d->m_startBeforeEnd)
-	{
-	    DOM::Node tmpNode = d->m_selectionStart;
-	    int tmpOffset = d->m_startOffset;
-	    d->m_selectionStart = d->m_selectionEnd;
-	    d->m_startOffset = d->m_endOffset;
-	    d->m_selectionEnd = tmpNode;
-	    d->m_endOffset = tmpOffset;
-	    d->m_startBeforeEnd = true;
-	}
-	// get selected text and paste to the clipboard
-	QString text = selectedText();
-	text.replace(QRegExp(QChar(0xa0)), " ");
-	QClipboard *cb = QApplication::clipboard();
-	cb->setText(text);
-	//kdDebug( 6000 ) << "selectedText = " << text << endl;
+        // we have to get to know if end is before start or not...
+        DOM::Node n = d->m_selectionStart;
+        d->m_startBeforeEnd = false;
+        while(!n.isNull()) {
+            if(n == d->m_selectionEnd) {
+                d->m_startBeforeEnd = true;
+                break;
+            }
+            DOM::Node next = n.firstChild();
+            if(next.isNull()) next = n.nextSibling();
+            while( next.isNull() && !n.parentNode().isNull() ) {
+                n = n.parentNode();
+                next = n.nextSibling();
+            }
+            n = next;
+        }
+        if(!d->m_startBeforeEnd)
+        {
+            DOM::Node tmpNode = d->m_selectionStart;
+            int tmpOffset = d->m_startOffset;
+            d->m_selectionStart = d->m_selectionEnd;
+            d->m_startOffset = d->m_endOffset;
+            d->m_selectionEnd = tmpNode;
+            d->m_endOffset = tmpOffset;
+            d->m_startBeforeEnd = true;
+        }
+        // get selected text and paste to the clipboard
+        QString text = selectedText();
+        text.replace(QRegExp(QChar(0xa0)), " ");
+        QClipboard *cb = QApplication::clipboard();
+        cb->setText(text);
+        //kdDebug( 6000 ) << "selectedText = " << text << endl;
         emitSelectionChanged();
     }
 }
@@ -2685,7 +2685,7 @@ void KHTMLPart::selectAll()
   d->m_startBeforeEnd = true;
 
   d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
-			  d->m_selectionEnd.handle(), d->m_endOffset );
+                          d->m_selectionEnd.handle(), d->m_endOffset );
 
   emitSelectionChanged();
 }
@@ -2699,8 +2699,8 @@ bool KHTMLPart::checkLinkSecurity(KURL linkURL)
        m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
   {
     KMessageBox::error( 0,
-			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
-			i18n( "Security Alert" ));
+                        i18n( "This page is untrusted\nbut it contains a link to your local file system."),
+                        i18n( "Security Alert" ));
     return false;
   }
   return true;
