@@ -591,7 +591,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
 {
     _type = TEXT;
     m_checked = false;
-    m_value = "";
     _maxLen = -1;
     _size = 20;
     _clicked = false;
@@ -606,7 +605,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 {
     _type = TEXT;
     m_checked = false;
-    m_value = "";
     _maxLen = -1;
     _size = 20;
     _clicked = false;
@@ -882,7 +880,7 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
 
             if( checked() )
             {
-                encoding += ( m_value.isEmpty() ? QCString("on") : m_value.string().local8Bit() );
+                encoding += ( m_value.isNull() ? QCString("on") : m_value.string().local8Bit() );
                 return true;
             }
             break;
@@ -987,6 +985,16 @@ void HTMLInputElementImpl::setChecked(bool _checked)
         _form->radioClicked(this);
     setChanged(true);
 }
+
+
+DOMString HTMLInputElementImpl::value() const
+{
+    if(m_value.isNull())
+        return DOMString(""); // some JS sites obviously need this
+
+    return m_value;
+}
+
 
 void HTMLInputElementImpl::setValue(DOMString val)
 {
@@ -1265,7 +1273,7 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
     if (!successful && !m_multiple && m_size <= 1 && m_listItems.size() &&
         (m_listItems[0]->id() == ID_OPTION) ) {
         HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[0]);
-        if (option->value().isNull() || option->value() == "")
+        if (option->value().isNull())
             encoded_values += option->text().string().stripWhiteSpace().local8Bit();
         else
             encoded_values += option->value().string().local8Bit();
