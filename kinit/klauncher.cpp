@@ -1283,8 +1283,8 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
 void 
 KLauncher::slotSlaveStatus(IdleSlave *slave)
 {
-    for(SlaveWaitRequest *waitRequest=mSlaveWaitRequest.first();
-        waitRequest; waitRequest = mSlaveWaitRequest.next())
+    SlaveWaitRequest *waitRequest = mSlaveWaitRequest.first();
+    while(waitRequest)
     {
        if (waitRequest->pid == slave->pid())
        {
