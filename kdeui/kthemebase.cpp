@@ -343,8 +343,10 @@ void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
                              true, true);
     outConfig.setGroup("KDE");
     inConfig.setGroup("KDE");
-    outConfig.writeEntry("Contrast",
-                         inConfig.readEntry("Contrast", " "), true, true);
+
+    if(inConfig.hasKey("Contrast"))
+        outConfig.writeEntry("Contrast",
+                             inConfig.readEntry("Contrast", " "), true, true);
     outConfig.writeEntry("widgetStyle",
                          inConfig.readEntry("widgetStyle", " "), true,
                          true);
