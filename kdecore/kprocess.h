@@ -155,7 +155,7 @@ public:
    * If communication for more than one channel is required,
    * the values have to be or'ed together, for example to get
    * communication with stdout as well as with stdin, you would
-   * specify @p Stdin @p | @p Stdout
+   * specify @p Stdin | @p Stdout
    *
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
@@ -224,6 +224,8 @@ public:
    *  p << "ls" << "-l" << "/usr/local/bin"
    *  </pre>
    *
+   * @param arg the argument to add
+   * @return a reference to this KProcess
    **/
   KProcess &operator<<(const QString& arg);
   /**
@@ -232,12 +234,16 @@ public:
   KProcess &operator<<(const char * arg);
   /**
    * Similar to previous method, takes a QCString, supposed to be in locale 8 bit already.
+   * @param arg the argument to add
+   * @return a reference to this KProcess
    */
   KProcess &operator<<(const QCString & arg);
 
   /**
    * Sets the executable and the command line argument list for this process,
    * in a single method call, or add a list of arguments.
+   * @param arg the arguments to add
+   * @return a reference to this KProcess
    **/
   KProcess &operator<<(const QStringList& args);
 
@@ -261,6 +267,7 @@ public:
    *  @li The starting of the process failed (could not fork).
    *  @li The executable was not found.
    *
+   *  @param runmode The Run-mode for the process.
    *  @param comm  Specifies which communication links should be
    *  established to the child process (stdin/stdout/stderr). By default,
    *  no communication takes place and the respective communication
@@ -281,7 +288,8 @@ public:
   virtual bool kill(int signo = SIGTERM);
 
   /**
-     @return @p true if the process is (still) considered to be running
+   * Checks whether the process is running.
+   * @return @p true if the process is (still) considered to be running
   */
   bool isRunning() const;
 
@@ -293,6 +301,7 @@ public:
    *
    *  Calling it before any child process has been started by this
    *  KProcess instance causes pid() to return 0.
+   * @return the pid of the process or 0 if no process has been started yet.
    **/
   pid_t pid() const;
 
@@ -329,6 +338,7 @@ public:
    * cleanly (i.e., @ref KProcess::normalExit() returns @p true) before calling
    * this function because if the process did not exit normally,
    * it does not have a valid exit status.
+   * @return the exit status of the process
   */
   int  exitStatus() const;
 
@@ -356,6 +366,9 @@ public:
    * again until either a @ref wroteStdin() signal indicates that the
    * data has been sent or a @ref processHasExited() signal shows that
    * the child process is no longer alive...
+   * @param buffer the buffer to write. Do not free or modify it until
+   * you got a @ref wroteStdin() or @ref processHasExited() signal
+   * @return false if an error has occurred
    **/
   bool writeStdin(const char *buffer, int buflen);
 
@@ -388,8 +401,8 @@ public:
 
   /**
    * Lets you see what your arguments are for debugging.
+   * @return the list of arguments
    */
-
   const QValueList<QCString> &args() { return arguments; }
 
   /**
@@ -397,18 +410,22 @@ public:
    * setuid/segid privileges or whether it should keep them
    *
    * The default is @p false : drop privileges
+   * @param true to keep the privileges
    */
   void setRunPrivileged(bool keepPrivileges);
 
   /**
    * Returns whether the started process will drop any
    * setuid/segid privileges or whether it will keep them
+   * @return true if the process runs privileged
    */
   bool runPrivileged() const;
   
   /**
    * Modifies the environment of the process to be started.
    * This function must be called before starting the process.
+   * @param name the name of the environment variable
+   * @param value the new value for the environment variable
    */
   void setEnvironment(const QString &name, const QString &value);
 
@@ -416,6 +433,7 @@ public:
    * Changes the current working directory (CWD) of the process 
    * to be started.
    * This function must be called before starting the process.
+   * @param dir the new directory
    */
   void setWorkingDirectory(const QString &dir);
 
@@ -429,6 +447,9 @@ public:
    * When using a shell, the caller should make sure that all filenames etc.
    * are properly quoted when passed as argument.
    * @see quote()
+   * @param useShell true if the command should be started via a shell
+   * @param shell the path to the shell that will execute the process, or
+   *              0 to use the standard shell
    */
   void setUseShell(bool useShell, const char *shell = 0);
 
@@ -437,6 +458,8 @@ public:
    * the shell processes it properly. This is e. g. necessary for
    * user-provided file names which may contain spaces or quotes.
    * It also prevents expansion of wild cards and environment variables.
+   * @param arg the argument to quite
+   * @return the quoted argument
    */
   static QString quote(const QString &arg);
 
@@ -457,6 +480,7 @@ signals:
    * Emitted after the process has terminated when
    * the process was run in the @p NotifyOnExit  (==default option to
    * @ref start()) or the @ref Block mode.
+   * @param proc a pointer to the process that has exited
    **/
   void processExited(KProcess *proc);
 
@@ -469,6 +493,7 @@ signals:
    * these signals, the respective communication link (stdout/stderr)
    * has to be turned on in @ref start().
    *
+   * @param proc a pointer to the process that has received the output
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
    *
@@ -493,6 +518,8 @@ signals:
    * to it, otherwise this signal will not be emitted.
    * 
    * The data still has to be read from file descriptor @p fd.
+   * @param fd the file descriptor that provides the data
+   * @param len the number of bytes that have been read from fd must be written here
    **/
   void receivedStdout(int fd, int &len);
 
@@ -504,6 +531,7 @@ signals:
    * these signals, the respective communication link (stdout/stderr)
    * has to be turned on in @ref start().
    *
+   * @param proc a pointer to the process that has received the data
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
    *
@@ -516,6 +544,7 @@ signals:
    * Emitted after all the data that has been
    * specified by a prior call to @ref writeStdin() has actually been
    * written to the child process.
+   * @param proc a pointer to the process
    **/
   void wroteStdin(KProcess *proc);
 
@@ -525,12 +554,14 @@ protected slots:
  /**
   * This slot gets activated when data from the child's stdout arrives.
   * It usually calls "childOutput"
+  * @param the file descriptor for the output
   */
   void slotChildOutput(int fdno);
 
  /**
   * This slot gets activated when data from the child's stderr arrives.
   * It usually calls "childError"
+  * @param the file descriptor for the output
   */
   void slotChildError(int fdno);
   /*
@@ -541,6 +572,7 @@ protected slots:
    * Called when another bulk of data can be sent to the child's
    * stdin. If there is no more data to be sent to stdin currently
    * available, this function must disable the QSocketNotifier "innot".
+   * @param dummy ignore this argument
    */
   void slotSendData(int dummy);
 
