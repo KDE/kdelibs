@@ -134,7 +134,7 @@ public:
    *                    and IconText will be honored
    */
   KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
-    
+
   /**
    * Insert a button (a @ref KToolbarButton) with a pixmap.  The
    * pixmap is loaded by the button itself based on the global icon
@@ -969,7 +969,7 @@ private slots:
     void slotContextAboutToShow();
 
 private:
-    void init( bool readConfig = true );
+    void init( bool readConfig = true, bool honorStyle = false );
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
     void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );

@@ -177,15 +177,15 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
     : QToolBar( QString( name ), parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0, parent, FALSE, name )
 {
-    init( readConfig );
-    d->m_honorStyle = b;
+    init( readConfig, b );
 }
 
-void KToolBar::init( bool readConfig )
+void KToolBar::init( bool readConfig, bool honorStyle )
 {
     setFullSize( TRUE );
     setGeometry( -10, -10, 0, 0 );
     d = new KToolBarPrivate;
+    d->m_honorStyle = honorStyle;
     context = 0;
     layoutTimer = new QTimer( this );
     connect( layoutTimer, SIGNAL( timeout() ),
@@ -791,6 +791,7 @@ void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
         return;
+
     if ( d->hasRealPos ) {
         if ( d->realPos != (QMainWindow::ToolBarDock)bpos ) {
             d->realPos = (QMainWindow::ToolBarDock)bpos;
@@ -1055,6 +1056,8 @@ void KToolBar::saveState()
 
     config->writeEntry("Position", position);
     config->writeEntry("IconText", icontext);
+    config->writeEntry("IconSize", iconSize());
+
     if ( !index.isEmpty() )
         config->writeEntry( "Index", index );
     if ( !offset.isEmpty() )
@@ -1414,7 +1417,7 @@ void KToolBar::slotReadConfig()
     bool highlight;
     int transparent;
     QString icontext;
-    int iconsize;
+    int iconsize = 0;
     QString position;
     QString index( "0" ), offset( "-1" ), nl( "false" );
 
@@ -1434,9 +1437,8 @@ void KToolBar::slotReadConfig()
         else
             icontext = "IconOnly";
 
-        // Use the default icon size for toolbar icons. This is not specified in
-        // the [Toolbar style] section but in the [Icons] section.
-        iconsize = 0;
+	// Use the default icon size for toolbar icons.
+	iconsize = config->readNumEntry(attrSize, 0);
 
         position = config->readEntry(attrPosition, "Top");
         index = config->readEntry(attrIndex, index );
@@ -1454,9 +1456,9 @@ void KToolBar::slotReadConfig()
                 // now we always read in the IconText property
             icontext = config->readEntry(attrIconText, "icontext");
 
-            // now get the size: FIXME: Sizes are not yet saved.
-            // iconsize = config->readNumEntry(attrSize, iconsize);
-
+	    // now get the size
+	    iconsize = config->readNumEntry(attrSize, iconsize);
+ 
             // finally, get the position
             position = config->readEntry(attrPosition, position);
             position = config->readEntry(attrPosition, "Top");
@@ -1480,9 +1482,9 @@ void KToolBar::slotReadConfig()
     else
         icon_text = IconOnly;
 
-  // check if the icon/text has changed
+ // check if the icon/text has changed
     if (icon_text != d->m_iconText) {
-        setIconText(icon_text, false);
+	setIconText(icon_text, false);
         doUpdate = true;
     }
 
