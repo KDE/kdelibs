@@ -44,15 +44,9 @@ KRestrictedLine::~KRestrictedLine()
 
 void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
-  if (e->key() == Key_Enter || e->key() == Key_Return)
-    {
-      emit returnPressed();
-      return;
-    }
-
-  // let QLineEdit process "special" keys
+  // let QLineEdit process "special" keys and return/enter
   // so that we still can use the default key binding
-  if (e->ascii() < 32)
+  if (e->key() == Key_Enter || e->key() == Key_Return || e->ascii() < 32)
     {
       QLineEdit::keyPressEvent(e);
       return;
