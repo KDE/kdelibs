@@ -34,21 +34,69 @@
 using namespace std;
 using namespace Arts;
 
-AttachedProducer::AttachedProducer(ByteSoundProducer sender,
-										ByteStreamToAudio receiver)
+void SoundServerJob::detach(const Object&)
 {
-	_sender = sender;
-	_receiver = receiver;
+	// nothing by default
 }
 
-ByteSoundProducer AttachedProducer::sender()
+SoundServerJob::~SoundServerJob()
 {
-	return _sender;
+	// virtual destructor, since we've got virtual functions
 }
 
-ByteStreamToAudio AttachedProducer::receiver()
+PlayWavJob::PlayWavJob(const string& filename) :terminated(false)
 {
-	return _receiver;
+	printf("Play '%s'!\n",filename.c_str());
+
+	connect(wav,out);
+	wav.filename(filename);
+	wav.start();
+	out.start();
+}
+
+void PlayWavJob::terminate()
+{
+	terminated = true;
+}
+
+bool PlayWavJob::done()
+{
+	return terminated || wav.finished();
+}
+
+PlayStreamJob::PlayStreamJob(ByteSoundProducer bsp) : sender(bsp)
+{
+	printf("Attach ByteSoundProducer!\n");
+
+//	convert->samplingRate(bsp->samplingRate());
+//	convert->channels(bsp->channels());
+//	convert->bits(bsp->bits());
+
+	connect(sender,"outdata",convert,"indata");
+	connect(convert,out);
+
+	convert.start();
+	out.start();
+}
+
+void PlayStreamJob::detach(const Object& object)
+{
+	if(object._isEqual(sender))
+		terminate();
+}
+
+void PlayStreamJob::terminate()
+{
+	sender = ByteSoundProducer::null();
+}
+
+bool PlayStreamJob::done()
+{
+	// when the sender is not alive any longer, assign a null object
+	if(!sender.isNull() && sender.error())
+		sender = ByteSoundProducer::null();
+
+	return sender.isNull() && !convert.running();
 }
 
 /*
@@ -69,10 +117,14 @@ ByteStreamToAudio AttachedProducer::receiver()
  */
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
+	soundcardBus.busname("out_soundcard");
+	connect(soundcardBus,"left",addLeft);
+	connect(soundcardBus,"right",addRight);
 	connect(addLeft,_outstack,"inleft");
 	connect(addRight,_outstack,"inright");
 	connect(_outstack,playSound);
 
+	soundcardBus.start();
 	addLeft.start();
 	addRight.start();
 	playSound.start();
@@ -93,17 +145,7 @@ SimpleSoundServer_impl::~SimpleSoundServer_impl()
 
 long SimpleSoundServer_impl::play(const string& filename)
 {
-	printf("Play '%s'!\n",filename.c_str());
-
-	Synth_PLAY_WAV playwav;
-
-	connect(playwav,"left",addLeft);
-	connect(playwav,"right",addRight);
-
-	playwav.filename(filename);
-	playwav.start();
-
-	activeWavs.push_back(playwav);
+	jobs.push_back(new PlayWavJob(filename));
 	return 1;
 }
 
@@ -131,50 +173,16 @@ float SimpleSoundServer_impl::minStreamBufferTime()
 
 void SimpleSoundServer_impl::attach(ByteSoundProducer bsp)
 {
-	printf("Attach ByteSoundProducer!\n");
-
-	ByteStreamToAudio convert;
-
-//	convert->samplingRate(bsp->samplingRate());
-//	convert->channels(bsp->channels());
-//	convert->bits(bsp->bits());
-
-	connect(bsp,"outdata",convert,"indata");
-	connect(convert,"left",addLeft);
-	connect(convert,"right",addRight);
-
-	convert.start();
-
-	activeProducers.push_back(new AttachedProducer(bsp,convert));
+	jobs.push_back(new PlayStreamJob(bsp));
 }
 
 void SimpleSoundServer_impl::detach(ByteSoundProducer bsp)
 {
 	printf("Detach ByteSoundProducer!\n");
-	list<AttachedProducer *>::iterator p;
+	list<SoundServerJob *>::iterator j;
 
-	for(p = activeProducers.begin();p != activeProducers.end();p++)
-	{
-		AttachedProducer *prod = (*p);
-		ByteSoundProducer sender = prod->sender();
-		if(bsp._isEqual(sender))
-		{
-			/* 
-			 * Hint: the order of the next lines is not unimportant:
-			 *
-			 * delete prod involves _release()ing remote objects,
-			 * and while this is happening, other producers could
-			 * attach/detach and we could end up doing something wrong
-             */
-			activeProducers.erase(p);
-
-			activeConverters.push_back(prod->receiver());
-			delete prod;
-
-			return;
-		}
-	}
-	assert(false);		// you shouldn't detach things you never attached!
+	for(j = jobs.begin();j != jobs.end();j++)
+		(*j)->detach(bsp);
 }
 
 StereoEffectStack SimpleSoundServer_impl::outstack()
@@ -197,55 +205,24 @@ void SimpleSoundServer_impl::notifyTime()
 	 * active - if yes, keep, if no, remove
 	 */
 
-	/* look for WAVs which may have terminated by now */
-	list<Synth_PLAY_WAV>::iterator i;
+	/* look for jobs which may have terminated by now */
+	list<SoundServerJob *>::iterator i;
 
-	i = activeWavs.begin();
-	while(i != activeWavs.end())
+	i = jobs.begin();
+	while(i != jobs.end())
 	{
-		if(i->finished())
+		SoundServerJob *job = *i;
+
+		if(job->done())
 		{
-			activeWavs.erase(i);
-			cout << "finished" << endl;
-			i = activeWavs.begin();
+			delete job;
+			jobs.erase(i);
+			cout << "job finished" << endl;
+			i = jobs.begin();
 		}
 		else i++;
 	}
 
-	/* look for producers which servers have died */
-	list<AttachedProducer *>::iterator p;
-
-	p = activeProducers.begin();
-	while(p != activeProducers.end())
-	{
-		AttachedProducer *prod = (*p);
-		if(prod->sender().error())
-		{
-			activeProducers.erase(p);
-
-			cout << "stream closed (client died)" << endl;
-			activeConverters.push_back(prod->receiver());
-			delete prod;
-
-			p = activeProducers.begin();
-		}
-		else p++;
-	}
-
-	/* look for converters which are no longer running */
-	list<ByteStreamToAudio>::iterator ci;
-
-	ci = activeConverters.begin();
-	while(ci != activeConverters.end())
-	{
-		if(!ci->running())
-		{
-			activeConverters.erase(ci);
-			cout << "converter (for stream) finished" << endl;
-			ci = activeConverters.begin();
-		}
-		else ci++;
-	}
 /*
  * AutoSuspend
  */

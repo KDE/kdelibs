@@ -86,13 +86,15 @@ static void handleArgs(int argc, char **argv)
 	}
 }
 
-static bool publishReferences(SimpleSoundServer server, bool silent)
+static bool publishReferences(SimpleSoundServer server,
+								AudioManager audioManager, bool silent)
 {
 	ObjectManager *om = ObjectManager::the();
 	bool result;
 
 	result=om->addGlobalReference(server,"Arts_SimpleSoundServer")
-        && om->addGlobalReference(server,"Arts_PlayObjectFactory");
+        && om->addGlobalReference(server,"Arts_PlayObjectFactory")
+        && om->addGlobalReference(audioManager,"Arts_AudioManager");
 	
 	if(!result && !silent)
 	{
@@ -102,14 +104,27 @@ static bool publishReferences(SimpleSoundServer server, bool silent)
 "       If you are sure it is not already running, remove the relevant files:"
               << endl << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl << endl;
+"       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_AudioManager") << endl << endl;
 	}
 	return result;
 }
 
-static void cleanUnusedReferences()
+static int cleanReference(const string& reference)
 {
 	Object test;
+	test = Reference("global:"+reference);
+	if(test.isNull())
+	{
+		Dispatcher::the()->globalComm().erase(reference);
+		return 1;
+	}
+	else
+		return 0;
+}
+
+static void cleanUnusedReferences()
+{
 	int i = 0;
 
 	cerr << "There are already artsd objects registered, "
@@ -117,19 +132,9 @@ static void cleanUnusedReferences()
 
 	sleep(1); // maybe an artsd process has just started (give it some time)
 
-	test = Reference("global:Arts_SimpleSoundServer");
-	if(test.isNull())
-	{
-		i++;
-		Dispatcher::the()->globalComm().erase("Arts_SimpleSoundServer");
-	}
-
-	test = Reference("global:Arts_PlayObjectFactory");
-	if(test.isNull())
-	{
-		i++;
-		Dispatcher::the()->globalComm().erase("Arts_PlayObjectFactory");
-	}
+	i += cleanReference("Arts_SimpleSoundServer");	
+	i += cleanReference("Arts_PlayObjectFactory");
+	i += cleanReference("Arts_AudioManager");
 
 	if(i)
 		cerr << "... cleaned " <<i<< " unused mcop global references." << endl;
@@ -150,12 +155,13 @@ int main(int argc, char **argv)
 
 	/* start sound server implementation */
 	SimpleSoundServer server;
+	AudioManager audioManager;
 
 	/* make global MCOP references available */
-	if(!publishReferences(server,true))
+	if(!publishReferences(server,audioManager,true))
 	{
 		cleanUnusedReferences();
-		if(!publishReferences(server,false)) return 1;
+		if(!publishReferences(server,audioManager,false)) return 1;
 	}
 
 	dispatcher.run();

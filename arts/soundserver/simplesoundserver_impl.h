@@ -32,15 +32,44 @@
 
 namespace Arts {
 
-class AttachedProducer {
+class SoundServerJob
+{
+public:
+	long ID;
+	virtual ~SoundServerJob();
+
+	virtual void detach(const Object& object);
+	virtual void terminate() = 0;
+	virtual bool done() = 0;
+};
+
+class PlayWavJob : public SoundServerJob
+{
 protected:
-	ByteSoundProducer _sender;
-	ByteStreamToAudio _receiver;
+	Synth_PLAY_WAV wav;
+	Synth_AMAN_PLAY out;
+	bool terminated;
 
 public:
-	AttachedProducer(ByteSoundProducer sender, ByteStreamToAudio receiver);
-	ByteSoundProducer sender();
-	ByteStreamToAudio receiver();
+	PlayWavJob(const string& filename);
+
+	void terminate();
+	bool done();
+};
+
+class PlayStreamJob : public SoundServerJob
+{
+protected:
+	ByteSoundProducer sender;
+	ByteStreamToAudio convert;
+	Synth_AMAN_PLAY out;
+
+public:
+	PlayStreamJob(ByteSoundProducer bsp);
+
+	void detach(const Object& object);
+	void terminate();
+	bool done();
 };
 
 class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
@@ -49,9 +78,8 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 protected:
 	Synth_PLAY playSound;
 	Synth_MULTI_ADD addLeft, addRight;
-	std::list<Synth_PLAY_WAV> activeWavs;
-	std::list<ByteStreamToAudio> activeConverters;
-	std::list<AttachedProducer *> activeProducers;
+	Synth_BUS_DOWNLINK soundcardBus;
+	std::list<SoundServerJob *> jobs;
 	StereoEffectStack _outstack;
 	long asCount;
 
