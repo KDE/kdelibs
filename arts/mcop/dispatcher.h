@@ -46,6 +46,10 @@ class ObjectManager;
 class Object_skel;
 class ReferenceClean;
 
+extern "C" {
+  typedef void (*mcop_sighandler)(int); 
+}
+
 class Dispatcher {
 protected:
 	static Dispatcher *_instance;
@@ -67,7 +71,7 @@ protected:
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
 
-	void (*orig_sigpipe)(int);			// original signal handler for SIG_PIPE
+	mcop_sighandler orig_sigpipe;		// original signal handler for SIG_PIPE
 	Connection *_activeConnection;		// internal use only (for refcounting)
 
 public:
