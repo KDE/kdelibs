@@ -26,6 +26,7 @@
 #include "dom/dom_exception.h"
 #include "dom/dom2_range.h"
 #include "xml/dom2_eventsimpl.h"
+#include "khtmlpart_p.h"
 
 #include <kdebug.h>
 
@@ -142,12 +143,12 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
 typedef QPtrList<ScriptInterpreter> InterpreterList;
 static InterpreterList *interpreterList;
 
-ScriptInterpreter::ScriptInterpreter( const Object &global, KHTMLPart* part )
-  : Interpreter( global ), m_part( part ), m_domObjects(1021),
+ScriptInterpreter::ScriptInterpreter( const Object &global, khtml::ChildFrame* frame )
+  : Interpreter( global ), m_frame( frame ), m_domObjects(1021),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_part << endl;
+  kdDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame << endl;
 #endif
   if ( !interpreterList )
     interpreterList = new InterpreterList;
@@ -157,7 +158,7 @@ ScriptInterpreter::ScriptInterpreter( const Object &global, KHTMLPart* part )
 ScriptInterpreter::~ScriptInterpreter()
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_part << endl;
+  kdDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame << endl;
 #endif
   assert( interpreterList && interpreterList->contains( this ) );
   interpreterList->remove( this );
@@ -187,6 +188,10 @@ void ScriptInterpreter::mark()
   QPtrDictIterator<DOMObject> it( m_domObjects );
   for( ; it.current(); ++it )
     it.current()->mark();
+}
+
+KParts::ReadOnlyPart* ScriptInterpreter::part() const {
+    return m_frame->m_part;
 }
 
 bool ScriptInterpreter::isWindowOpenAllowed() const

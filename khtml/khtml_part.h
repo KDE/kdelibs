@@ -891,7 +891,15 @@ public:
    */
   bool frameExists( const QString &frameName );
 
+  /**
+   * Returns child frame framePart its script interpreter
+   */
+  KJSProxy *framejScript(KParts::ReadOnlyPart *framePart);
 
+  /**
+   * Finds a frame by name. Returns 0L if frame can't be found.
+   */
+  KParts::ReadOnlyPart *findFramePart( const QString &f );
   /**
    * Called by KJS.
    * Sets the StatusBarText assigned

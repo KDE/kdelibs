@@ -31,7 +31,13 @@
 #include <kurl.h>
 #include <kjs/lookup.h>
 
-class KHTMLPart;
+namespace KParts {
+  class ReadOnlyPart;
+}
+
+namespace khtml {
+  class ChildFrame;
+}
 
 namespace KJS {
 
@@ -86,7 +92,7 @@ namespace KJS {
   class ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter( const Object &global, KHTMLPart* part );
+    ScriptInterpreter( const Object &global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
@@ -110,7 +116,7 @@ namespace KJS {
      * Mark objects in the DOMObject cache.
      */
     virtual void mark();
-    KHTMLPart* part() const { return m_part; }
+    KParts::ReadOnlyPart* part() const;
 
     virtual int rtti() { return 1; }
 
@@ -126,7 +132,7 @@ namespace KJS {
     bool isWindowOpenAllowed() const;
 
   private:
-    KHTMLPart* m_part;
+    khtml::ChildFrame* m_frame;
     QPtrDict<DOMObject> m_domObjects;
     DOM::Event *m_evt;
     bool m_inlineCode;

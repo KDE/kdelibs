@@ -249,7 +249,7 @@ KJSDebugWin * KJSDebugWin::kjs_html_debugger = 0;
 QString SourceFile::getCode()
 {
   if (interpreter) {
-    KHTMLPart *part = static_cast<ScriptInterpreter*>(interpreter)->part();
+    KHTMLPart *part = ::qt_cast<KHTMLPart*>(static_cast<ScriptInterpreter*>(interpreter)->part());
     if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
       Decoder *decoder = part->createDecoder();
       QByteArray data;
@@ -710,7 +710,7 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
     if (!m_nextSourceUrl.isEmpty()) {
 
       QString code = source.qstring();
-      KHTMLPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
+      KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
       if (m_nextSourceUrl == part->url().url()) {
 	// Only store the code here if it's not from the part's html page... in that
 	// case we can get it from KHTMLPageCache
@@ -792,11 +792,12 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
   if (inTryCatch)
     return true;
 
-  KHTMLPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
-  if (!part->settings()->isJavaScriptErrorReportingEnabled())
+  KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
+  KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart*>(part);
+  if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
     return true;
 
-  QWidget *dlgParent = (m_evalDepth == 0) ? (QWidget*)part->view() : (QWidget*)this;
+  QWidget *dlgParent = (m_evalDepth == 0) ? (QWidget*)part->widget() : (QWidget*)this;
 
   QString exceptionMsg = value.toString(exec).qstring();
 

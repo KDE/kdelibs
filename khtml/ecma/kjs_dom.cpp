@@ -912,10 +912,11 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     Window* active = Window::retrieveActive(exec);
     // Complete the URL using the "active part" (running interpreter). We do this for the security
     // check and to make sure we load exactly the same url as we have verified to be safe
-    if (active->part()) {
+    KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(active->part());
+    if (khtmlpart) {
       // Security: only allow documents to be loaded from the same host
-      QString dstUrl = active->part()->htmlDocument().completeURL(s).string();
-      KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
+      QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
+      KParts::ReadOnlyPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
       if (part->url().host() == KURL(dstUrl).host()) {
 	kdDebug(6070) << "JavaScript: access granted for document.load() of " << dstUrl << endl;
 	doc.load(dstUrl);
@@ -1093,11 +1094,14 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
   case DOMDOMImplementation::CreateDocument: { // DOM2
     // Initially set the URL to document of the creator... this is so that it resides in the same
     // host/domain for security checks. The URL will be updated if Document.load() is called.
-    Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
-    KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
-    KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
-    static_cast<DocumentImpl*>(doc.handle())->setURL(url.url());
-    return getDOMNode(exec,doc);
+    KHTMLPart *part = ::qt_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
+    if (part) {
+      Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
+      KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
+      static_cast<DocumentImpl*>(doc.handle())->setURL(url.url());
+      return getDOMNode(exec,doc);
+    }
+    break;
   }
   case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2
     return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));

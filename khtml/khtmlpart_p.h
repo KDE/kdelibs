@@ -64,16 +64,23 @@ namespace KParts
 
 namespace khtml
 {
-  struct ChildFrame
+  struct ChildFrame : public QObject
   {
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() {
+      ChildFrame() : QObject (0L, "khtml_child_frame") {
+          m_jscript = 0L;
+          m_kjs_lib = 0;
           m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;
           m_bPendingRedirection = false;
       }
 
-      ~ChildFrame() { if (m_run) m_run->abort(); }
+      ~ChildFrame() {
+          if (m_run) m_run->abort();
+          delete m_jscript;
+          if ( m_kjs_lib)
+              m_kjs_lib->unload();
+      }
 
     QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -81,6 +88,8 @@ namespace khtml
     QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
     QString m_serviceName;
     QString m_serviceType;
+    KJSProxy *m_jscript;
+    KLibrary *m_kjs_lib;
     bool m_bCompleted;
     QString m_name;
     KParts::URLArgs m_args;
@@ -95,7 +104,7 @@ namespace khtml
 
 }
 
-struct KHTMLFrameList : public QValueList<khtml::ChildFrame>
+struct KHTMLFrameList : public QValueList<khtml::ChildFrame*>
 {
     Iterator find( const QString &name ) KDE_NO_EXPORT;
 };
@@ -107,16 +116,15 @@ static int khtml_part_dcop_counter = 0;
 
 class KHTMLPartPrivate
 {
+  KHTMLPartPrivate(const KHTMLPartPrivate & other);
 public:
   KHTMLPartPrivate(QObject* parent)
   {
     m_doc = 0L;
     m_decoder = 0L;
-    m_jscript = 0L;
     m_wallet = 0L;
     m_bWalletOpened = false;
     m_runningScripts = 0;
-    m_kjs_lib = 0;
     m_job = 0L;
     m_bComplete = true;
     m_bLoadEventEmitted = true;
@@ -214,17 +222,15 @@ public:
     delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
-    delete m_jscript;
     delete m_wallet;
-    if ( m_kjs_lib)
-       m_kjs_lib->unload();
 #ifndef Q_WS_QWS
     //delete m_javaContext;
 #endif
   }
 
+  QGuardedPtr<khtml::ChildFrame> m_frame;
   KHTMLFrameList m_frames;
-  QValueList<khtml::ChildFrame> m_objects;
+  KHTMLFrameList m_objects;
 
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
@@ -241,9 +247,7 @@ public:
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
 
-  KJSProxy *m_jscript;
   KWallet::Wallet* m_wallet;
-  KLibrary *m_kjs_lib;
   int m_runningScripts;
   bool m_bOpenMiddleClick :1;
   bool m_bBackRightClick :1;

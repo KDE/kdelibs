@@ -585,7 +585,10 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString method = args[0].toString(exec).qstring();
-      KURL url = KURL(Window::retrieveActive(exec)->part()->document().completeURL(args[1].toString(exec).qstring()).string());
+      KHTMLPart *part = ::qt_cast<KHTMLPart *>(Window::retrieveActive(exec)->part());
+      if (!part)
+        return Undefined();
+      KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {
