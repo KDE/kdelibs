@@ -47,6 +47,6 @@ debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man
 debian/tmp/usr/lib/kde3/kaddprinterwizard.la
 debian/tmp/usr/lib/kde3/kaddprinterwizard.so
-debian/tmp/usr/lib/knotify.la
-debian/tmp/usr/lib/knotify.so
+debian/tmp/usr/lib/kde3/knotify.la
+debian/tmp/usr/lib/kde3/knotify.so
 
