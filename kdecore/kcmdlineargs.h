@@ -351,6 +351,12 @@ public:
    *          present on the command line the default is returned.
    *          If the option was present more than the value of the
    *          last occurence is used.
+   *
+   *  The option must have a corresponding KCmdLineOptions entry
+   *  of the form:
+   *  <pre>
+   *    { "option <argument>", I18N_NOOP("Description"), "default" }
+   *  </pre>
    */
   QCString getOption(const char *option) const;
 
@@ -361,6 +367,12 @@ public:
    *
    *  @return A list of all option values. If no option was present
    *          on the command line, an empty list is returned.
+   *
+   *  The option must have a corresponding KCmdLineOptions entry
+   *  of the form:
+   *  <pre>
+   *    { "option <argument>", I18N_NOOP("Description"), "default" }
+   *  </pre>
    */
   QCStringList getOptionList(const char *option) const;
 
