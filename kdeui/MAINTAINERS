@@ -55,7 +55,7 @@ kmainwindow.cpp
 kmainwindowiface.cpp
 kmenubar.cpp
 kmessagebox.cpp		Waldo Bastian <bastian@kde.org>
-knuminput.cpp
+knuminput.cpp           Dirk Mueller <mueller@kde.org>
 knumvalidator.cpp
 kpanelapplet.cpp
 kpanelappmenu.cpp
