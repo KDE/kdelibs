@@ -7,18 +7,18 @@
 
 int main(int argc, char *argv[])
 {
-   KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+   KApplication k(argc,argv,"getalltest",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
-for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
+//for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
    kdDebug() << "All services" << endl;
    KService::List services = KService::allServices();
    kdDebug() << "got " << services.count() << " services" << endl;
    QValueListIterator<KService::Ptr> s = services.begin();
    for ( ; s != services.end() ; ++s )
    {
-     kdDebug() << (*s)->name() << endl;
+     kdDebug() << (*s)->name() << " " << (*s)->desktopEntryPath() << endl;
    }
-}
+//}
    
    kdDebug() << "All mimeTypes" << endl;
    KMimeType::List mimeTypes = KMimeType::allMimeTypes();
