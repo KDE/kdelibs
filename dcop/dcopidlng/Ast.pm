@@ -48,44 +48,4 @@ sub GetProps {
 	return keys %{$this};
 }
 
-sub Visit {
-    # Converts each of this AstNode's properties into global variables.
-    # The global variables are introduced into package "main"
-    # At the same time, a piece of code is  formed to undo this work above -
-    # $endCode essentially contains the values of these global variables
-    # before  they are mangled. endCode gets pushed into a stack (endCodes),
-    # which is unwound by UnVisit().
-
-    local ($this, $pack) = @_;
-
-
-    my $code = ""; 
-    my $endCode = "";
-
-
-    foreach my $k (keys %{$this}) {
-
-	my $glob = $pack."::".$k;
-
-	if ( defined $$glob ) {
-
-		if ( ${$glob} ne "" ) {
-			$$glob =~ s/\'/\\\'/g; 
-		}
-
-	    $endCode .= '$'.$pack.'::'.$k. " = '".$$glob."';";
-	} else {
-	    $endCode .= '$'.$pack . "::". $k . ' = "";';
-	}
-	$code .= '$'.$pack . "::" . $k . "= \$this->{\"$k\"};";
-    }
-    push (@endCodes, $endCode);
-    eval($code) if $code;
-}
-
-sub UnVisit {
-    my $code = pop(@endCodes);
-    eval($code) if ($code);
-}
-
 1;

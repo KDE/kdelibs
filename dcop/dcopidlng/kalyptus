@@ -338,10 +338,7 @@ sub writeDocumentation
 {
 	foreach my $node ( values %rootNodes ) {
 		# postprocess
-		kdocAstUtil::linkNamespaces( $node );
 		kdocAstUtil::makeInherit( $node, $node );
-		kdocAstUtil::linkReferences( $node, $node );
-		kdocAstUtil::calcStats( \%stats, $node, $node );
 
 		# write
 		no strict "refs";
