@@ -105,23 +105,11 @@ KFind::Result KReplace::replace()
 #ifdef DEBUG_REPLACE
     kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
 #endif
-    Q_ASSERT( m_index != INDEX_NOMATCH );
-
-#if 0 // This was wrong. If there was a match, then slotReplace or slotSkip moves on.
-    if ( m_lastResult == Match )
+    if ( m_index == INDEX_NOMATCH && m_lastResult == Match )
     {
-        // Move on before doing a match
-        if (m_options & KFindDialog::FindBackwards) {
-            m_index--;
-            if ( m_index == -1 ) // don't call KFind::find with -1, it has a special meaning
-            {
-                m_lastResult = NoMatch;
-                return NoMatch;
-            }
-        } else
-            m_index++;
+        m_lastResult = NoMatch;
+        return NoMatch;
     }
-#endif
 
     do // this loop is only because validateMatch can fail
     {

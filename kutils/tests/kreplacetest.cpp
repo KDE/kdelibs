@@ -129,6 +129,7 @@ void KReplaceTest::print()
    Valid possibilities are User1 (replace all) and User3 (replace) */
 static void testReplaceSimple( int options, int button = 0 )
 {
+    kdDebug() << "testReplaceSimple: " << options << endl;
     KReplaceTest test( QString( "hellohello" ), button );
     test.replace( "hello", "HELLO", options );
     QStringList textLines = test.textLines();
@@ -142,6 +143,7 @@ static void testReplaceSimple( int options, int button = 0 )
 
 static void testReplaceLonger( int options, int button = 0 )
 {
+    kdDebug() << "testReplaceLonger: " << options << endl;
     // Standard test of a replacement string longer than the matched string
     KReplaceTest test( QString( "aaaa" ), button );
     test.replace( "a", "bb", options );
@@ -155,6 +157,7 @@ static void testReplaceLonger( int options, int button = 0 )
 
 static void testReplaceLongerInclude( int options, int button = 0 )
 {
+    kdDebug() << "testReplaceLongerInclude: " << options << endl;
     // Similar test, where the replacement string includes the search string
     KReplaceTest test( QString( "a foo b" ), button );
     test.replace( "foo", "foobar", options );
@@ -168,6 +171,7 @@ static void testReplaceLongerInclude( int options, int button = 0 )
 
 static void testReplaceLongerInclude2( int options, int button = 0 )
 {
+    kdDebug() << "testReplaceLongerInclude2: " << options << endl;
     // Similar test, but with more chances of matches inside the replacement string
     KReplaceTest test( QString( "aaaa" ), button );
     test.replace( "a", "aa", options );
@@ -187,18 +191,30 @@ int main( int argc, char **argv )
     testReplaceSimple( 0 );
     testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceSimple( KReplaceDialog::FindBackwards, 0 );
+    testReplaceSimple( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceSimple( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLonger( 0 );
     testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLonger( KReplaceDialog::FindBackwards, 0 );
+    testReplaceLonger( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLonger( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLongerInclude( 0 );
     testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLongerInclude( KReplaceDialog::FindBackwards, 0 );
+    testReplaceLongerInclude( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceLongerInclude2( 0 );
     testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceLongerInclude2( KReplaceDialog::FindBackwards, 0 );
+    testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
 
     QString text = "This file is part of the KDE project.\n"

@@ -82,7 +82,9 @@ bool KFind::needData() const
 {
     // always true when m_text is empty.
     if (m_options & KFindDialog::FindBackwards)
-        return m_index < 0;
+        // m_index==-1 and m_lastResult==Match means we haven't answered nomatch yet
+        // This is important in the "replace with a prompt" case.
+        return ( m_index < 0 && m_lastResult != Match );
     else
         // "index over length" test removed: we want to get a nomatch before we set data again
         // This is important in the "replace with a prompt" case.
