@@ -43,6 +43,7 @@ libksycoca_la_SOURCES = \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c kprotocolinfo.cpp kprotocolinfofactory.cpp \
+	chmodjob.cpp \
 	ksycoca.skel
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
@@ -93,7 +94,7 @@ kioinclude_HEADERS = connection.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
 	renamedlg.h skipdlg.h \
-	observer.h 
+	observer.h chmodjob.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \

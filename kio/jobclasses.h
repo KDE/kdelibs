@@ -861,44 +861,6 @@ namespace KIO {
         QTimer *m_reportTimer;
     };
 
-    struct ChmodInfo
-    {
-        KURL url;
-        int permissions;
-    };
-
-    /**
-     * This job changes permissions on a list of files or directories,
-     * optionally in a recursive manner.
-     */
-    class ChmodJob : public KIO::Job
-    {
-        Q_OBJECT
-    public:
-        ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
-                  int newOwner, int newGroup,
-                  bool recursive, bool showProgressInfo );
-
-    protected:
-        void chmodNextFile();
-
-    protected slots:
-
-        virtual void slotResult( KIO::Job *job );
-        void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
-        void processList();
-
-    private:
-        enum { STATE_LISTING, STATE_CHMODING } state;
-        int m_permissions;
-        int m_mask;
-        int m_newOwner;
-        int m_newGroup;
-        bool m_recursive;
-        KFileItemList m_lstItems;
-        QValueList<ChmodInfo> m_infos;
-    };
-
 };
 
 #endif
