@@ -26,7 +26,7 @@
 #include <klocale.h>
 
 // some forward declarations (see kmwquota.cpp)
-char* unitKeyword(int);
+const char* unitKeyword(int);
 int findUnit(int&);
 
 KMPropQuota::KMPropQuota(QWidget *parent, const char *name)
