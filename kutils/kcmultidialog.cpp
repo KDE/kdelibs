@@ -95,6 +95,12 @@ void KCMultiDialog::apply()
         if( m->changed() )
         {
             m->save();
+            if( m->changed() )
+            {
+                kdWarning( 710 ) << "The KCModule says it is changed right "
+                    "after it saved its configuration. A call to setChanged(false) in the save() method is missing." << endl;
+                m->setChanged( false );
+            }
             QStringList * names = moduleParentComponents[ m ];
             kdDebug(710) << k_funcinfo << *names << " saved and added to the list" << endl;
             for( QStringList::ConstIterator it = names->begin(); it != names->end(); ++it )
