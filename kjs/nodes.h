@@ -1039,8 +1039,10 @@ namespace KJS {
 
   class FuncExprNode : public Node {
   public:
+    FuncExprNode(FunctionBodyNode *b)
+      : param(0), body(b) { }
     FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
-	: param(p->next), body(b) { p->next = 0; }
+      : param(p->next), body(b) { p->next = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;

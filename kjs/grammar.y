@@ -600,7 +600,7 @@ FunctionDeclarationInternal:
 ;
 
 FunctionExpr:
-    FUNCTION '(' ')' FunctionBody  { $$ = new FuncExprNode(0L, $4); }
+    FUNCTION '(' ')' FunctionBody  { $$ = new FuncExprNode($4); }
   | FUNCTION '(' FormalParameterList ')' FunctionBody
                                    { $$ = new FuncExprNode($3, $5); }
 
