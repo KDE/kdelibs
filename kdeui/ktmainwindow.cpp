@@ -31,7 +31,6 @@
 #include <kdebug.h>
 #include <khelpmenu.h>
 #include <kmenubar.h>
-#include <ktmlayout.h>
 #include <kstatusbar.h>
 
 #include <klocale.h>
