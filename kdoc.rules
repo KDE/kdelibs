@@ -33,6 +33,10 @@ kab_LIBS = -lkdecore -lkdeui -lqt
 kom_FILES = *.idl
 kom_PATH = corba/kom
 
-kpartsui_FILES = *.idl
+kparts_FILES = *.idl *.h
+kparts_PATH = corba/parts
+kparts_LIBS = -lkom
+
+kpartsui_FILES = *.idl *.h
 kpartsui_PATH = corba/partsui
 kpartsui_LIBS = -lkom
