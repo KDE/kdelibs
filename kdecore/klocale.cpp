@@ -27,7 +27,7 @@
 
 // Overloading of all standard locale functions makes no sense
 // Let application use them
-#ifdef HAVE_LOCALE_H 
+#ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
 
@@ -59,7 +59,7 @@ char *k_textdomain (const QString& __domainname);
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
 char *k_bindtextdomain (const char* __domainname,
-			const char* __dirname);  
+			const char* __dirname);
 
 
 #include "klocale.h"
@@ -73,7 +73,7 @@ char *k_bindtextdomain (const char* __domainname,
    to a default value.  */
 # define LC_MESSAGES (-1)
 #endif
- 
+
 #define SYSTEM_MESSAGES "kdelibs"
 
 #ifdef ENABLE_NLS
@@ -84,12 +84,12 @@ static const char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
 QString KLocale::mergeLocale(const QString& lang,const QString& country,
 				   const QString& charset)
 {
-    if (lang.isEmpty()) 
+    if (lang.isEmpty())
 	return "C";
     QString ret = lang;
-    if (!country.isEmpty()) 
+    if (!country.isEmpty())
 	ret += "_" + country;
-    if (!charset.isEmpty()) 
+    if (!charset.isEmpty())
 	ret+= "." +charset;
     return ret;
 }
@@ -98,7 +98,7 @@ void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
 			  QString& chset){
-   
+
     QString str = aStr.copy();
 
     // just in case, there is another language appended
@@ -110,21 +110,21 @@ void KLocale::splitLocale(const QString& aStr,
     country=QString::null;
     chset=QString::null;
     lang=QString::null;
-    
+
     f = str.find('.');
     if (f >= 0) {
 	chset = str.right(str.length() - f - 1);
 	str.truncate(f);
     }
-    
+
     f = str.find('_');
-    if (f >= 0) { 
+    if (f >= 0) {
 	country = str.right(str.length() - f - 1);
 	str.truncate(f);
     }
-    
+
     lang = str;
-    
+
     if (chset.isEmpty() && kapp != 0){
 	QString dir, location;
 
@@ -138,7 +138,7 @@ void KLocale::splitLocale(const QString& aStr,
 	    location = locate("locale", lang + "/charset");
 	}
 	if (!location.isNull()){
-	    QFile f(location);   
+	    QFile f(location);
 	    if (f.exists() && f.open(IO_ReadOnly)){
 		char *buf=new char[256];
 		int l=f.readLine(buf,256);
@@ -149,8 +149,8 @@ void KLocale::splitLocale(const QString& aStr,
 		delete [] buf;
 		f.close();
 	    }
-	}    
-    }  
+	}
+    }
 }
 
 #ifdef ENABLE_NLS
@@ -165,81 +165,81 @@ KLocale::KLocale( const QString& _catalogue )
     setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
-    
+
     QString catalogue;
 
     if (_catalogue.isNull())
       catalogue = kapp->name();
     else
       catalogue = _catalogue;
-    
+
     catalogues = new QStrList(true);
-        
+
     initLanguage(KGlobal::_config, catalogue);
 }
 
-void KLocale::initLanguage(KConfig *config, const QString& catalogue) 
+void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 {
   if (!config || _inited)
     return;
-  
+
   KConfigGroupSaver saver(config, "Locale");
 
   const char *g_lang = getenv("KDE_LANG");
   QString languages(g_lang);
-    
+
   bool set_locale_vars=false;
-  
+
   if (kapp) {
     QString setting;
-    if (!g_lang) 
+    if (!g_lang)
       languages = config->readEntry("Language", "default");
 #ifdef HAVE_SETLOCALE
     // override environment with KDE configuration values
     setting = config->readEntry("Collate", "default");
-    if (setting!="default") 
+    if (setting!="default")
       setlocale (LC_COLLATE, setting.ascii());
     setting = config->readEntry("Time", "default");
-    if (setting!="default") 
+    if (setting!="default")
       setlocale (LC_TIME, setting.ascii());
     setting = config->readEntry("Monetary", "default");
-    if (setting!="default") 
+    if (setting!="default")
       setlocale (LC_MONETARY, setting.ascii());
     setting = config->readEntry("CType", "default");
-    if (setting!="default") 
+    if (setting!="default")
       setlocale (LC_CTYPE, setting.ascii());
     setting = config->readEntry("Numeric", "default");
-    if (setting!="default") 
+    if (setting!="default")
       setlocale (LC_NUMERIC, setting.ascii());
 #endif
     set_locale_vars  = config->readBoolEntry("SetLocaleVariables"
 					     , false);
   }
-  else 
+  else
     if (!g_lang) languages = "default";
-    
+
 #ifdef HAVE_SETLOCALE
   // setlocale reads variables LC_* and LANG, and it may use aliases,
   // so we don't have to do it
   g_lang = setlocale(LC_MESSAGES, 0);
-#else   
+#else
   g_lang = getenv("LANG");
 #endif
-    
+
   if (languages.isEmpty() || (languages == "default")) {
     if (g_lang && g_lang[0]!=0) // LANG value is set and is not ""
       languages = g_lang;
     else
       languages = "C";
-  } else 
+  } else
     languages = languages + ":C";
 
   QString ln,ct,chrset;
-   
+
   QString _lang;
 
   // save languages list requested by user
-  langs=languages;    
+  langs=languages;
   while (1) {
     int f = languages.find(':');
     if (f > 0) {
@@ -265,11 +265,11 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     lng[counter++]=ln;
 
     int i;
-    for(i=0; !lng[i+1].isNull(); i++) 
+    for(i=0; !lng[i+1].isNull(); i++)
       if (!locate("locale", lng[i] + "/LC_MESSAGES/" + catalogue + ".mo").isNull() &&
-	  !locate("locale", lng[i] + "/LC_MESSAGES/" + SYSTEM_MESSAGES + ".mo").isNull()) 
+	  !locate("locale", lng[i] + "/LC_MESSAGES/" + SYSTEM_MESSAGES + ".mo").isNull())
 	{
-		    
+		
 	  _lang = lng[i];
 	  break;
 	}
@@ -278,12 +278,12 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
       break;
   }
   lang = _lang; // taking deep copy
-    
+
   chset=chrset;
 #ifdef HAVE_SETLOCALE
   setlocale(LC_MESSAGES,lang.ascii());
   lc_numeric  = setlocale(LC_NUMERIC, 0); // save these values
-  lc_monetary = setlocale(LC_MONETARY, 0); 
+  lc_monetary = setlocale(LC_MONETARY, 0);
   lc_time     = setlocale(LC_TIME, 0);
   setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
   setlocale(LC_MONETARY, "C");        // by default disable LC_MONETARY
@@ -305,7 +305,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   if ( !lc_ctype.isEmpty() && lc_ctype!="C"){
     splitLocale(getLocale("LC_CTYPE"),ln,ct,chrset);
     if (!chrset.isEmpty()) chset=chrset;
-  }  
+  }
 #else
   lc_numeric="C";
   lc_monetary="C";
@@ -315,7 +315,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   insertCatalogue( catalogue );
   insertCatalogue( SYSTEM_MESSAGES );
-  if (chset.isEmpty() || !KGlobal::charsets()->isAvailable(chset)) 
+  if (chset.isEmpty() || !KGlobal::charsets()->isAvailable(chset))
     chset="us-ascii";
 
   aliases.setAutoDelete(true);
@@ -396,7 +396,7 @@ void KLocale::initFormat()
   _timefmt = config->readEntry("TimeFormat");
   if (_timefmt.isNull())
     _timefmt = timentry.readEntry("TimeFormat", "%I:%M:%S %p");
-    
+
   _datefmt = config->readEntry("DateFormat");
   if (_datefmt.isNull())
     _datefmt = timentry.readEntry("DateFormat", "%m/%d/%y");
@@ -413,15 +413,15 @@ void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QSt
 }
 
 QString KLocale::language() const
-{ 
+{
   ASSERT(_inited);
-  return lang; 
+  return lang;
 }
 
 void KLocale::insertCatalogue( const QString& catalogue )
 {
-    k_bindtextdomain ( catalogue.ascii() , 
-		       KGlobal::dirs()->findResourceDir("locale", 
+    k_bindtextdomain ( catalogue.ascii() ,
+		       KGlobal::dirs()->findResourceDir("locale",
 			     lang + "/LC_MESSAGES/" + catalogue + ".mo").ascii());
 
     catalogues->append(catalogue.ascii());
@@ -435,11 +435,11 @@ KLocale::~KLocale()
 QString KLocale::translate(const char* msgid) const
 {
     ASSERT(_inited);
-      
+
     const char *text = msgid;
 
-    for (const char* catalogue = catalogues->first(); catalogue; 
-	 catalogue = catalogues->next()) 
+    for (const char* catalogue = catalogues->first(); catalogue;
+	 catalogue = catalogues->next())
     {
 	text = k_dcgettext( catalogue, msgid, lang.ascii());
 	if ( text != msgid) // we found it
@@ -602,7 +602,9 @@ QString KLocale::formatNumber(double num, int precision) const
         res.insert(pos, thousandsSeparator()); // thousend sep
 
     // How can we know where we should put the sign?
-    res.prepend(neg?negativeSign():positiveSign());
+    if ( neg )
+	res.prepend( negativeSign() );
+    // res.prepend(neg?negativeSign():positiveSign());
 
     return res;
 }
@@ -625,17 +627,17 @@ double KLocale::readMoney(const QString &str, bool * ok) const
 
     QString buf = monetaryDecimalSymbol();
     int pos = str.find(buf);
-    
+
     QString major = str.left(pos);
     QString minior;
     if (pos != -1) minior = str.mid(pos + buf.length());
-    
+
     for (pos = major.length(); pos >= 0; pos--)
         if (!major.at(pos).isNumber()) major.remove(pos, 1);
-        
+
     for (pos = minior.length(); pos >= 0; pos--)
         if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
-        
+
     QString tot;
     if (neg) tot = '-';
     tot += major + "." + minior;
@@ -648,17 +650,17 @@ double KLocale::readNumber(const QString &str, bool * ok) const
 
     QString buf = decimalSymbol();
     int pos = str.find(buf);
-    
+
     QString major = str.left(pos);
     QString minior;
     if (pos != -1) minior = str.mid(pos + buf.length());
-    
+
     for (pos = major.length(); pos >= 0; pos--)
         if (!major.at(pos).isNumber()) major.remove(pos, 1);
-        
+
     for (pos = minior.length(); pos >= 0; pos--)
         if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
-        
+
     QString tot;
     if (neg) tot = '-';
     tot += major + "." + minior;
@@ -788,7 +790,7 @@ QString KLocale::getLocale(const QString& cat){
     cat.upper();
     if (cat=="LC_NUMERIC") return lc_numeric;
     if (cat=="LC_MONETARY") return lc_monetary;
-#ifdef HAVE_SETLOCALE        
+#ifdef HAVE_SETLOCALE
     else if (cat=="LC_MESSAGES") return setlocale(LC_MESSAGES,0);
     else if (cat=="LC_COLLATE") return setlocale(LC_COLLATE,0);
     else if (cat=="LC_TIME") return setlocale(LC_TIME,0);
@@ -807,7 +809,7 @@ void KLocale::enableNumericLocale(bool on){
     setlocale(LC_MONETARY, "C");
   }
   numeric_enabled=on;
-#else  
+#else
   numeric_enabled=false;
 #endif
 }
@@ -815,7 +817,7 @@ void KLocale::enableNumericLocale(bool on){
 bool KLocale::numericLocaleEnabled() const {
   return numeric_enabled;
 }
- 
+
 QStringList KLocale::languageList() const
 {
 
@@ -823,7 +825,7 @@ QStringList KLocale::languageList() const
     QStringList list;
 // temporary copy of language list
     QString str(langs);
-    
+
     while(!str.isEmpty()){
       int f = str.find(':');
       if (f >= 0) {
@@ -834,7 +836,7 @@ QStringList KLocale::languageList() const
         list.append(str);
         str="";
       }
-    }   
+    }
     return list;
 }
 
@@ -844,7 +846,7 @@ KLocale::KLocale( QString ) : _inited(true), lang(0)
 {
 }
 
-KLocale::~KLocale() 
+KLocale::~KLocale()
 {
 }
 
@@ -949,7 +951,7 @@ QString KLocale::getLocale(const QString& ) {
 
 void  KLocale::enableNumericLocale(bool enable) {
 }
- 
+
 QStringList KLocale::languageList() const {
     return QStringList();
 }
@@ -969,17 +971,17 @@ QString i18n(const char* text) {
 #ifdef ENABLE_NLS
   register KLocale *instance = KGlobal::locale();
   if (instance)
-     return instance->translate(text); 
+     return instance->translate(text);
 #endif
   return text;
 }
 
 void KLocale::initInstance() {
-  if (KGlobal::_locale) 
+  if (KGlobal::_locale)
      return;
 
   KApplication *app = KApplication::kApplication();
   if (app)
     KGlobal::_locale = new KLocale(app->name());
- 
+
 }
