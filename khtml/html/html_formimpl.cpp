@@ -339,20 +339,35 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
     m_encCharset = QString::null;
 }
 
+static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
+{
+    KURL k(e.getDocument()->URL());
+    k.setRef(QString::null);
+    k.setQuery(QString::null);
+    // ensure that we have the user / password inside the url
+    // otherwise we might have a potential security problem
+    // by saving passwords under wrong lookup key.
+    QString name = e.getAttribute(ATTR_NAME).string().stripWhiteSpace();
+    return k.url() + '#' + name;
+}
+
 void HTMLFormElementImpl::doAutoFill()
 {
+    QString key = calculateAutoFillKey(*this);
+
+    if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
+                                         KWallet::Wallet::FormDataFolder,
+                                         key) )
+        return;
+
     // assert(view())
     KWallet::Wallet* w = getDocument()->view()->part()->wallet();
 
     if (w) {
-        KURL k(getDocument()->URL());
-        k.setRef(QString::null);
-        // ensure that we have the user / password inside the url
-        // otherwise we might have a potential security problem
-        // by saving passwords under wrong lookup key.
-        QString name = getAttribute(ATTR_NAME).string().stripWhiteSpace();
-        QString key = k.url() + '#' + name;
-
+        if (!w->hasFolder(KWallet::Wallet::FormDataFolder)) {
+            if (!w->createFolder(KWallet::Wallet::FormDataFolder))
+                return; // failed
+        }
         w->setFolder(KWallet::Wallet::FormDataFolder);
         QMap<QString, QString> map;
         if (w->readMap(key, map))
@@ -465,9 +480,7 @@ void HTMLFormElementImpl::submit(  )
 
             KWallet::Wallet* w = view->part()->wallet();
             if (w)  {
-                KURL k(getDocument()->URL());
-                k.setRef(QString::null);
-                QString key = k.url() + '#' + name;
+                QString key = calculateAutoFillKey(*this);
                 // ensure that we have the user / password inside the url
                 // otherwise we might have a potential security problem
                 // by saving passwords under wrong lookup key.

@@ -5762,16 +5762,12 @@ void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
 
 KWallet::Wallet* KHTMLPart::wallet()
 {
-
-  // disabled for now, coolo gets on my nerves
-  return 0;
-
   // ### close wallet after a certain timeout period automatically
   // ### close wallet after screensaver was enabled
 
   KHTMLPart* p;
 
-  for (p = parentPart(); p; p = p->parentPart())
+  for (p = this; p->parentPart(); p = p->parentPart())
     ;
 
   if (p)
@@ -5781,7 +5777,6 @@ KWallet::Wallet* KHTMLPart::wallet()
     d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet());
     if (d->m_wallet) connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
   }
-
   return d->m_wallet;
 }
 
