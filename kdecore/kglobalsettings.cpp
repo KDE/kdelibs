@@ -336,6 +336,12 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
         *s_trashPath += "/";
+    // We need to save it in any case, in case the language changes later on,
+    if ( !config->hasKey( "Trash" ) )
+    {
+      config->writeEntry( "Trash", *s_trashPath, true, true );
+      config->sync();
+    }
 
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart" + "/";
