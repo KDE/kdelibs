@@ -951,6 +951,37 @@ void KDirListerCache::slotResult( KIO::Job* j )
 
   if ( job->error() )
   {
+    bool archiveCase=false;
+
+    if ((job->error()==KIO::ERR_IS_FILE) && (jobUrl.isLocalFile())) {
+       		KURL u=jobUrl;
+                KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,false);
+                        if (ptr!=0) {
+                                if (ptr->is("inode/directory")) {
+                                        QString proto=ptr->property("X-KDE-LocalProtocol").toString();
+                                        if (!proto.isEmpty()) {
+                                                u.setProtocol(proto);
+						    for ( kdl = listers->first(); kdl; kdl = listers->next() )
+						    {
+						      uint numjobs=kdl->numJobs();
+						      kdl->jobDone(job);
+						      if ( kdl->numJobs() != numjobs )
+						      {
+							kdl->redirection(u);
+							kdl->redirection(jobUrl,u);
+							listDir( kdl, u, true,true); //kdl->_keep, kdl->_reload );
+						      }
+						    }
+
+						archiveCase=true;
+					}
+                                }
+                        }
+                
+        }
+
+    
+    if (!archiveCase)
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
       kdl->jobDone(job);
@@ -1219,9 +1250,39 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   if ( job->error() )
   {
+    bool archiveCase=false;
+
+    if ((job->error()==KIO::ERR_IS_FILE) && (jobUrl.isLocalFile())) {
+       		KURL u=jobUrl;
+                KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,false);
+                        if (ptr!=0) {
+                                if (ptr->is("inode/directory")) {
+                                        QString proto=ptr->property("X-KDE-LocalProtocol").toString();
+                                        if (!proto.isEmpty()) {
+                                                u.setProtocol(proto);
+						    for ( kdl = listers->first(); kdl; kdl = listers->next() )
+						    {
+						      uint numjobs=kdl->numJobs();
+						      kdl->jobDone(job);
+						      if ( kdl->numJobs() != numjobs )
+						      {
+							kdl->redirection(u);
+							kdl->redirection(jobUrl,u);
+							listDir( kdl, u,true,true); //kdl->_url, kdl->_keep, kdl->_reload );
+						      }
+						    }
+						archiveCase=true;
+
+					}
+                                }
+                        }
+                
+    }
+    if (!archiveCase);
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
       kdl->jobDone(job);
+
       //don't bother the user
       //kdl->handleError( job );
 

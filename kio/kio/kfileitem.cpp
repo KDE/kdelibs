@@ -534,7 +534,15 @@ bool KFileItem::isDir() const
     kdDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
   }
-  return S_ISDIR(m_fileMode);
+  return (S_ISDIR(m_fileMode));
+/*
+  if  (!S_ISDIR(m_fileMode)) {
+	if (m_url.isLocalFile()) {
+		KMimeType::Ptr ptr=KMimeType::findByURL(m_url,0,true,true);
+		if ((ptr!=0) && (ptr->is("directory/inode"))) return true;
+	}
+	return false
+  } else return true;*/
 }
 
 bool KFileItem::acceptsDrops()
