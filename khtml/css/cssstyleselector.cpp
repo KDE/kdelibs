@@ -528,6 +528,37 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if(pos < (int)str.length() && str[pos] != ' ') return false;
             break;
         }
+        case CSSSelector::Contain:
+        {
+            //kdDebug( 6080 ) << "checking for contains match" << endl;
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, strictParsing);
+            if(pos == -1) return false;
+            break;
+        }
+        case CSSSelector::Begin:
+        {
+            //kdDebug( 6080 ) << "checking for beginswith match" << endl;
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, strictParsing);
+            if(pos != 0) return false;
+            break;
+        }
+        case CSSSelector::End:
+        {
+            //kdDebug( 6080 ) << "checking for endswith match" << endl;
+            QString str = value.string();
+            QString selStr = sel->value.string();
+	    if (strictParsing && !str.endsWith(selStr)) return false;
+	    if (!strictParsing) {
+	        int pos = str.length() - selStr.length();
+		if (pos < 0 || pos != str.find(selStr, pos, false) )
+		    return false;
+	    }
+            break;
+        }
         case CSSSelector::Hyphen:
         {
             // ### still doesn't work. FIXME

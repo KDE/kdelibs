@@ -67,7 +67,10 @@ public:
 	Set,
 	List,
 	Hyphen,
-	Pseudo
+	Pseudo,
+	Contain,   // css3: E[foo*="bar"]
+	Begin,     // css3: E[foo^="bar"]
+	End        // css3: E[foo$="bar"]
     };
 
     enum Relation
@@ -79,7 +82,7 @@ public:
     };
 
     Relation relation 	: 2;
-    Match 	 match 	: 3;
+    Match 	 match 	: 4;
     bool	nonCSSHint : 1;
     unsigned int 	pseudoId : 3;
     int          attr;
