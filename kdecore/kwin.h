@@ -279,6 +279,7 @@ public:
  	long unsigned int state;
       /// The mapping state.
 	bool isMinimized() const;
+	bool isIconified() const;
 	NET::MappingState mappingState;
       /// The strut.
 	NETStrut strut;

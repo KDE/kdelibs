@@ -661,6 +661,11 @@ bool KWin::Info::isMinimized() const
     return icccmCompliantMappingState() ? false : true;
 }
 
+bool KWin::Info::isIconified() const
+{
+    return isMinimized();
+}
+
 bool KWin::icccmCompliantMappingState()
 {
     static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
