@@ -152,7 +152,6 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value)
 	result.convertFromImage(tmpImg);
 	break;
     }
-    result.save("save.png", "PNG");
     return result;
 }
 
