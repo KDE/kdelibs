@@ -45,10 +45,8 @@ Slave::Slave(KServerSocket *socket, const QString &protocol)
 
 void Slave::gotInput( int )
 {
-fprintf(stderr, "Slave: Got input\n");
     if (!dispatch())
     {
-fprintf(stderr, "Slave died.\n");
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
@@ -59,25 +57,22 @@ fprintf(stderr, "Slave died.\n");
 
 void Slave::gotAnswer( int )
 {
-fprintf(stderr, "Slave: Got answer\n");
     int cmd;
     QByteArray data;
     bool ok = true;
 
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
- 
+
     if (ok && (cmd != MSG_READY))
         ok = false;
 
     if (ok)
     {
         slaveconn.connect(this, SLOT(gotInput(int)));
-fprintf(stderr, "Slave: Connection OK\n");
     }
     else
     {
-fprintf(stderr, "Slave: Connection Failed\n");
         slaveconn.close();
         // TODO: Report start up error to someone who is interested
         dead = true;
@@ -98,7 +93,6 @@ void Slave::openConnection( const QString &host, int port,
     m_passwd = passwd;
 
     slaveconn.connect(this, SLOT(gotAnswer(int)));
-fprintf(stderr, "Slave: Open Connection\n");
 
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
@@ -154,7 +148,6 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     QDataStream output(reply, IO_ReadOnly);
     QString ticket;
     output >> ticket;
-    debug("got %s", debugString(ticket));
 
     if (ticket.left(5) == QString::fromLatin1("error")) {
 	error_text = ticket.mid(6);

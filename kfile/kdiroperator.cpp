@@ -142,7 +142,7 @@ void KDirOperator::resetCursor()
     finished = false;
     if (progress)
 	progress->hide();
-    kDebugInfo(kfile_area, "\ndone %ld\n", time(0));
+    kDebugInfo(kfile_area, "done %ld", time(0));
 }
 
 void KDirOperator::activatedMenu( const KFileViewItem *item )

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <kdebug.h>
 
 using namespace KIO;
 
@@ -40,7 +41,6 @@ void SlaveWrapper::dispatchLoop()
 
 	retval = select(QMAX(parconn.fd_from(), appconn.fd_from()) + 1, &rfds, NULL, NULL, &tv);
 	/* Don't rely on the value of tv now! */
-	debug("select");
 
 	if (retval > 0) {
 	    if (FD_ISSET(parconn.fd_from(), &rfds)) { // dispatch master messages
@@ -48,10 +48,10 @@ void SlaveWrapper::dispatchLoop()
 		QByteArray data;
                 if (parconn.read(&cmd, data) == -1)
                 {
-                   debug("Connection with master failed.\n");
+                   kDebugInfo(7019, "Connection with master failed.\n");
                    exit(0);
                 }
-		debug("master said %c", cmd);
+		kDebugInfo(7019, "master said %c", cmd);
 
 		QDataStream stream(data, IO_ReadOnly);
 		QString str;
@@ -68,18 +68,18 @@ void SlaveWrapper::dispatchLoop()
 		QByteArray data;
                 if ( appconn.read(&cmd, data) != -1 )
                 {
-		  debug("app said %c", cmd);
+		  kDebugInfo(7019, "app said %c", cmd);
 		  slave->dispatch(cmd, data);
                 } else // some error occured, perhaps no more application
                 {
 // When the app exits, should the slave be put back in the pool ?
-                  debug("slavewrapper: some error occured, perhaps no more application");
+                  kDebugInfo(7019, "slavewrapper: some error occured, perhaps no more application");
                   exit(0);
                 }
 	    }
 	} else if (retval == -1) // error
         {
-          debug("slavewrapper: select returned error %s (%d)", errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown",errno);
+          kDebugInfo(7019, "slavewrapper: select returned error %s (%d)", errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown",errno);
           exit(0);
         }
     }

@@ -54,7 +54,6 @@ QString KIODaemon::createTicket()
 	    }
 	    ++it;
 	}
-	debug("ticket %s %d", tmp.ascii(), ok);
     } while (!ok);
 
     return tmp;
@@ -75,7 +74,7 @@ void KIODaemon::connectSlave(const QString& ticket, const QString& path)
     }
 
     if (!theone) {
-	debug("there is no such slave pending for %s", ticket.ascii());
+	kDebugInfo(7019, "there is no such slave pending for %s", ticket.ascii());
 	return;
     }
 
@@ -123,7 +122,7 @@ QString KIODaemon::createSlave(const QString& protocol)
 	lt_dlhandle handle = lt_dlopen( protocol_library );
 
 	if ( !handle ) {
-	    qDebug("trying to load support for %s failed with %s", protocol.ascii(), lt_dlerror() );
+	    kDebugInfo(7019, "trying to load support for %s failed with %s", protocol.ascii(), lt_dlerror() );
 	    ::write(fd[1], errors + ERR_LOADING, 1);
 	    exit(0);
 	}
@@ -142,7 +141,7 @@ QString KIODaemon::createSlave(const QString& protocol)
 	SlaveBase *serv = func();
 	
 	if( !serv ) {
-	    qDebug("KLibrary: The library does not offer a KDE compatible factory");
+	    kDebugInfo(7019, "KLibrary: The library does not offer a KDE compatible factory");
 	    exit(1); // that was it
 	}
 
@@ -190,15 +189,12 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
     if (KUniqueApplication::process(fun, data, replyType, replyData))
 	return true;
 
-    debug("fun " + fun);
-
     QDataStream stream(data, IO_ReadOnly);
     QDataStream output(replyData, IO_WriteOnly);
 
     if (fun == "createSlave(QString)") {
 	QString protocol;
 	stream >> protocol;
-	debug("createSlave(%s)", debugString(protocol));
 	replyType = "QString";
 	protocol = createSlave(protocol);
 	output << protocol;
@@ -208,7 +204,6 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
     if (fun == "connectSlave(QString,QString)") {
 	QString ticket, path;
 	stream >> ticket >> path;
-	debug("connectSlave(%s, %s)", debugString(ticket), debugString(path));
 	connectSlave(ticket, path);
 	return true;
     }

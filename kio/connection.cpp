@@ -88,7 +88,7 @@ void Connection::dequeue()
     if (tasks.count() == 0)
 	return;
 
-    debug("dequeue");
+    kDebugInfo(7017, "dequeue");
 
     tasks.first();
     Task *task = tasks.take();
@@ -135,7 +135,7 @@ void Connection::connect(QObject *_receiver, const char *_member)
 bool Connection::sendnow( int _cmd, const QByteArray &data )
 {
     if (f_out == 0) {
-	debug("write: not yet inited.");
+	kDebugInfo(7017, "write: not yet inited.");
 	return false;
     }
 
@@ -164,7 +164,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 int Connection::read( int* _cmd, QByteArray &data )
 {
     if (!fd_in) {
-	debug("read: not yet inited");
+	kDebugInfo(7017, "read: not yet inited");
 	return -1;
     }
 
