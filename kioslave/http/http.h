@@ -43,6 +43,14 @@
 #define DEFAULT_HTTP_PORT	80
 #define DEFAULT_HTTPS_PORT	443
 
+typedef struct
+{
+	KURL  url;
+	int   postDataSize;
+	bool  reload;
+	unsigned long offset;
+} HTTPState;
+
 class HTTPProtocol : public IOProtocol
 {
 public:
@@ -56,8 +64,13 @@ public:
 
   virtual void slotGet( const char *_url );
   virtual void slotGetSize( const char *_url );
+  virtual void slotPut( const char *_url, int _mode, bool _overwrite,
+		                bool _resume, int _len );
   virtual void slotCopy( const char *_source, const char *_dest );
   
+  virtual void slotData(void *_p, int _len);
+  virtual void slotDataEnd();
+
   virtual bool error( int _err, const char *_txt );
 
   void jobError( int _errid, const char *_txt );
@@ -77,7 +90,7 @@ protected:
     * The only shortcomming is that it uses the "global" file handles and
     * soforth.  So you can't really use this on individual files/sockets.
     */
-  ssize_t write (const void *buf, size_t nbytes);
+  ssize_t write(const void *buf, size_t nbytes);
 
   /**
     * Another "smart" wrapper, this time around read that will
@@ -112,7 +125,7 @@ protected:
 
   size_t sendData();
 
-  bool http_open( KURL &_url, const char* _post_data, int _post_data_len, bool _reload, unsigned long _offset = 0 );
+  bool http_open( KURL &_url, int _post_data_len, bool _reload, unsigned long _offset = 0 );
   void http_close();
 
   void clearError() { m_iSavedError = 0; }
@@ -122,6 +135,7 @@ protected:
     m_iSavedError = 0;
   }
 
+  bool readHeader();
 
   /**
     * Return the proper UserAgent string.
@@ -135,6 +149,8 @@ protected:
   const char *getUserAgentString();
 
 protected: // Members
+  bool m_bHaveHeader;
+  HTTPState m_state;
   int m_cmd, m_sock, m_iSize;
   FILE* m_fsocket;
   enum HTTP_REV m_HTTPrev;

@@ -154,7 +154,7 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
       p+=10;
       while (p[i] != '"' ) i++;
       algorithm.assign(p, i);
-      fprintf(stderr, "Algorith is :%s:\n", algorithm.c_str());
+      fprintf(stderr, "Algorithm is :%s:\n", algorithm.c_str());
     } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
       p+=11;
       while (p[i] != '"') i++;
@@ -224,13 +224,14 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   t1 += "\r\n";
 
   return strdup(t1.data());
+}
 #else
 char *create_digest_auth (const char *, const char *, const char *, const char *)
 {
   //error(ERR_COULD_NOT_AUTHENTICATE, "digest");
   return strdup("\r\n");
-#endif
 }
+#endif
 
 char *create_basic_auth (const char *header, const char *user, const char *passwd)
 {
@@ -255,11 +256,11 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
 
 /*****************************************************************************/
 
-/* Domain suffix match. E.g. return 1 if host is "cuzco.inka.de" and
+/* Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
    nplist is "inka.de,hadiko.de" or if host is "localhost" and
    nplist is "localhost" */
    
-int revmatch(const char *host, const char *nplist)
+bool revmatch(const char *host, const char *nplist)
 {
     const char *hptr = host + strlen( host ) - 1;
     const char *nptr = nplist + strlen( nplist ) - 1;
@@ -275,13 +276,13 @@ int revmatch(const char *host, const char *nplist)
                 ;
         } else {
             if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') {
-                return 1;
+                return true;
             }
             hptr-=2;
         }
     }
 
-    return 0;
+    return false;
 }
 
 #ifdef DO_SSL
@@ -334,6 +335,8 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   ProxyAuthentication = AUTH_None;
 
   m_HTTPrev = HTTP_Unknown;
+
+  m_bHaveHeader = false;
 }
 
 #ifdef DO_SSL
@@ -378,10 +381,17 @@ int HTTPProtocol::openStream() {
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
 #ifdef DO_SSL
-  if (m_bUseSSL)
-    return SSL_write(hand, (char *)buf, nbytes);
+	if (m_bUseSSL)
+		return SSL_write(hand, (char *)buf, nbytes);
 #endif
-  return ::write(m_sock, buf, nbytes);
+	int n;
+keeptrying:
+	if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
+	{
+		if (n == -1 && errno == EINTR)
+			goto keeptrying;
+	}
+	return n;
 }
 
 char *HTTPProtocol::gets (char *s, int size)
@@ -419,280 +429,466 @@ bool HTTPProtocol::eof()
   return m_bEOF;
 }
 
-// It's reasonably safe to assume that it's a vaild protocol..
-// altho it might be a good idea to add an assert trap somewhere
-bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
+/**
+ * This function is responsible for opening up the connection to the remote
+ * HTTP server and sending the header.  If this requires special
+ * authentication or other such fun stuff, then it will handle it.  This
+ * function will NOT receive anything from the server, however.  This is in
+ * contrast to previous incarnations of 'http_open'.
+ *
+ * The reason for the change is due to one small fact: some requests require
+ * data to be sent in addition to the header (POST requests) and there is no
+ * way for this function to get that data.  This function is called in the
+ * slotPut() or slotGet() functions which, in turn, are called (indirectly) as
+ * a result of a KIOJob::put() or KIOJob::get().  It is those latter functions
+ * which are responsible for starting up this ioslave in the first place.
+ * This means that 'http_open' is called (essentially) as soon as the ioslave
+ * is created -- BEFORE any data gets to this slave.
+ *
+ * The basic process now is this:
+ *
+ * 1) Open up the socket and port
+ * 2) Format our request/header
+ * 3) Send the header to the remote server
+ * 4a) If this is a GET request, then immediately go to slotData() to
+ *     receive our response
+ * 4b) If this is a POST request, then send the 'ready()' signal to
+ *     signal our client that we are ready to receive the data that we
+ *     need to send to the server.
+ */
+bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
+                             unsigned long _offset )
 {
-  int do_proxy, port = _url.port(), len=1;
-  char c_buffer[64], f_buffer[1024];
-  bool unauthorized = false;
+	// let's store our current state
+	m_state.url    = _url;
+	m_state.reload = _reload;
+	m_state.offset = _offset;
+	m_state.postDataSize = _post_data_size;
 
-  if ( port == -1 ) {
+	// try to ensure that the port is something reasonable
+	int port = _url.port();
+	if ( port == -1 )
+	{
 #ifdef DO_SSL
-    if (_url.protocol()=="https")
-      port = DEFAULT_HTTPS_PORT;
-    else
+		if (_url.protocol()=="https")
+			port = DEFAULT_HTTPS_PORT;
+		else
 #endif
-    if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
-	    port = DEFAULT_HTTP_PORT;
+			if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
+				port = DEFAULT_HTTP_PORT;
+			else
+			{
+				fprintf(stderr, "Got a weird protocol (%s), assuming port is 80\n", _url.protocol().ascii()); fflush(stderr);
+				port = 80;
+			}
+	}
 
-    else {
-      fprintf(stderr, "Got a werid protocol (%s), assuming port is 80\n", _url.protocol().ascii());
-      fflush(stderr);
-      port=80;
-    }
-  }
-
-  if (_url.protocol() == "https") {
+	// make sure that we can support what we are asking for
+	if (_url.protocol() == "https")
+	{
 #ifdef DO_SSL
-    m_bUseSSL=true;
+		m_bUseSSL=true;
 #else
-    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
+		error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
 #endif
-  }
-  m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-  if ( m_sock < 0 )  {
-    error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
-    return false;
-  }
+	}
 
-  do_proxy = m_bUseProxy;
-  memset(c_buffer, 0, 64);
+	// okay, we know now that our URL is at least half-way decent.  let's
+	// try to open up our socket
+	m_sock = ::socket(PF_INET,SOCK_STREAM,0);
+	if (m_sock < 0)
+	{
+		error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
+		return false;
+	}
 
-  if ( do_proxy && !m_strNoProxyFor.isEmpty() ) 
-    do_proxy = !revmatch( _url.host(), m_strNoProxyFor );    
+	// do we want to use a proxy?
+	bool do_proxy = m_bUseProxy;
 
-  if( do_proxy ) {
-    debug( "http_open 0");
-    if( !KSocket::initSockaddr( &m_proxySockaddr, m_strProxyHost, m_strProxyPort ) ) {
-	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost );
-	return false;
-      }
+	// if so, we had first better make sure that our host isn't on the
+	// No Proxy list
+	if (do_proxy && !m_strNoProxyFor.isEmpty()) 
+		do_proxy = !revmatch(_url.host(), m_strNoProxyFor);    
 
-    if( ::connect( m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof( m_proxySockaddr ) ) ) {
-      error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
-      return false;
-    }
-  } else {
-    struct sockaddr_in server_name;
+	// do we still want a proxy after all that?
+	if( do_proxy )
+	{
+		debug( "http_open 0");
+		// yep... open up a connection to the proxy instead of our host
+		if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost,
+					               m_strProxyPort))
+		{
+			error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
+			return false;
+		}
 
-    if( !KSocket::initSockaddr( &server_name, _url.host(), port ) ) {
-      error( ERR_UNKNOWN_HOST, _url.host() );
-      return false;
-    }
+		if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr),
+					 sizeof(m_proxySockaddr)))
+		{
+			error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
+			return false;
+		}
+	}
+	else
+	{
+		// apparently we don't want a proxy.  let's just connect directly
+		struct sockaddr_in server_name;
 
-    if( ::connect( m_sock, (struct sockaddr*)( &server_name ), sizeof( server_name ) ) ) {
-      error( ERR_COULD_NOT_CONNECT, _url.host() );
-      return false;
-    }
-  }
+		if(!KSocket::initSockaddr(&server_name, _url.host(), port))
+		{
+			error( ERR_UNKNOWN_HOST, _url.host() );
+			return false;
+		}
 
-  // Placeholder
-  if (!openStream())
-    error( ERR_COULD_NOT_CONNECT, _url.host() );
+		if(::connect(m_sock, (struct sockaddr*)( &server_name ),
+		             sizeof(server_name)))
+		{
+			error(ERR_COULD_NOT_CONNECT, _url.host());
+			return false;
+		}
+	}
 
-  QString command;
+	// Placeholder
+	if (!openStream())
+		error( ERR_COULD_NOT_CONNECT, _url.host() );
 
-  if ( _post_data ) {
-    _reload = true;     /* no caching allowed */
-    command = "POST ";
-  }
-  else
-    command = "GET ";
+	// this will be the entire header
+	QString header;
 
-  if( do_proxy ) {
-    sprintf(c_buffer, ":%i", port);
-    command += "http://";
-    command += _url.host();
-    command += c_buffer;
-  }
+	// determine if this is a POST or GET method
+	if (_post_data_size > 0)
+	{
+		_reload = true;     /* no caching allowed */
+		header = "POST ";
+	}
+	else
+		header = "GET ";
 
-  // Let the path be "/" if it is empty ( => true )
-  QString tmp = _url.encodedPathAndQuery( 0, true );
-  command += tmp;
+	// format the URI
+	char c_buffer[64];
+	memset(c_buffer, 0, 64);
+	if(do_proxy)
+	{
+		sprintf(c_buffer, ":%i", port);
+		header += "http://";
+		header += _url.host();
+		header += c_buffer;
+	}
 
-  command += " HTTP/1.1\r\n"; /* start header */
-  command += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
-  command += "User-Agent: "; /* User agent */
-  command += getUserAgentString();
-  command += "\r\n";
+	// Let the path be "/" if it is empty ( => true )
+	header += _url.encodedPathAndQuery(0, true);
 
-  if ( _offset > 0 ) {
-    sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
-    command += c_buffer;
-    debug( "kio_http : Range = %s", c_buffer);
-  }
+	header += " HTTP/1.1\r\n"; /* start header */
+	header += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
+	header += "User-Agent: "; /* User agent */
+	header += getUserAgentString();
+	header += "\r\n";
 
-  if ( _reload ) /* No caching for reload */ {
-    command += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
-    command += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
-  }
+	if ( _offset > 0 )
+	{
+		sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
+		header += c_buffer;
+		debug( "kio_http : Range = %s", c_buffer);
+	}
+
+	if ( _reload ) /* No caching for reload */
+	{
+		header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
+		header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
+	}
 
 #ifdef DO_GZIP
-  // Content negotiation
-  command += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
+	// Content negotiation
+	header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
 #endif
 
-  // Charset negotiation:
-  if ( !m_strCharsets.isEmpty() )
-    command += "Accept-Charset: " + m_strCharsets + "\r\n";
-	   
-  // Language negotiation:
-  if ( !m_strLanguages.isEmpty() )
-    command += "Accept-Language: " + m_strLanguages + "\r\n";
-  
-  command += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
-  command += _url.host();
-  if (_url.port() != 0) {
-    memset(c_buffer, 0, 64);
-    sprintf(c_buffer, ":%i", port);
-    command += c_buffer;
-  }
-  command += "\r\n";
+	// Charset negotiation:
+	if ( !m_strCharsets.isEmpty() )
+		header += "Accept-Charset: " + m_strCharsets + "\r\n";
 
-  if (_post_data ) {
-    command += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-    memset(c_buffer, 0, 64);
-    sprintf(c_buffer, "%i\r\n", _post_data_size);
-    command += c_buffer;
-  }
+	// Language negotiation:
+	if ( !m_strLanguages.isEmpty() )
+		header += "Accept-Language: " + m_strLanguages + "\r\n";
 
-  if (_url.pass() ||_url.user()) {
-    if (Authentication == AUTH_Basic){
-      command += create_basic_auth("Authorization", _url.user(), _url.pass());
-    } else if (Authentication == AUTH_Digest) {
-      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strAuthString);
-    }
-    command+="\r\n";
-  }
+	header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
+	header += _url.host();
+	if (_url.port() != 0)
+	{
+		memset(c_buffer, 0, 64);
+		sprintf(c_buffer, ":%i", port);
+		header += c_buffer;
+	}
+	header += "\r\n";
 
-  if( do_proxy ) {
-    debug( "http_open 3");
-    if( m_strProxyUser != "" && m_strProxyPass != "" ) {
-      if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic)
-	command += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
-      else if (ProxyAuthentication == AUTH_Digest)
-	command += create_digest_auth("Proxy-Authorization", m_strProxyUser, m_strProxyPass, m_strProxyAuthString);
-    }
-  }
+	if (_post_data_size > 0 )
+	{
+		header += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
+		memset(c_buffer, 0, 64);
+		sprintf(c_buffer, "%i\r\n", _post_data_size);
+		header += c_buffer;
+	}
 
-  command += "\r\n";  /* end header */
+	// check if we need to login
+	if (_url.pass() ||_url.user())
+	{
+		if (Authentication == AUTH_Basic)
+		{
+			header += create_basic_auth("Authorization", _url.user(),
+			                             _url.pass());
+		}
+		else if (Authentication == AUTH_Digest)
+		{
+			header+= create_digest_auth("Authorization", _url.user(),
+			                             _url.pass(), m_strAuthString);
+		}
+		header+="\r\n";
+	}
 
-  int n;
-repeat1:
-  if ( ( n = write(command, command.length() ) ) != (int)command.length() ) {
-    if ( n == -1 && errno == EINTR )
-      goto repeat1;    
-    error( ERR_CONNECTION_BROKEN, _url.host() );
-    return false;
-  }
-repeat2:
-  if ( _post_data && ( n = write(_post_data, _post_data_size ) != _post_data_size ) ) {
-    if ( n == -1 && errno == EINTR )
-      goto repeat2;
-    error( ERR_CONNECTION_BROKEN, _url.host() );
-    return false;
-  }
-    
-  // Jacek:
-  // to get rid of those "Open with" dialogs...
-  // however at least extensions should be checked
-  m_strMimeType = "text/html";
+	// the proxy might need authorization of it's own. do that now
+	if( do_proxy )
+	{
+		debug( "http_open 3");
+		if( m_strProxyUser != "" && m_strProxyPass != "" )
+		{
+			if (ProxyAuthentication == AUTH_None ||
+			    ProxyAuthentication == AUTH_Basic)
+			{
+				header += create_basic_auth("Proxy-authorization",
+				                             m_strProxyUser, m_strProxyPass);
+			}
+			else
+			{
+				if (ProxyAuthentication == AUTH_Digest)
+				{
+					header += create_digest_auth("Proxy-Authorization",
+							m_strProxyUser,
+							m_strProxyPass,
+							m_strProxyAuthString);
+				}
+			}
+		}
+	}
+  	header += "\r\n";  /* end header */
 
-  while( len && (gets( f_buffer, 1024) ) ) { 
-    len = strlen( f_buffer );
-    while( len && (f_buffer[ len-1 ] == '\n' || f_buffer[ len-1 ] == '\r') )
-      f_buffer[ --len ] = 0;
+	// now that we have our formatted header, let's send it!
+	if (write(header, header.length()) == -1)
+	{
+		error( ERR_CONNECTION_BROKEN, _url.host() );
+		return false;
+	}
+	
+	// okay.. now things get tricky.  if we are in a GET method, then we are
+	// done sending things.  what we want to do now is just go to a method
+	// that will get us the response from the remote server.  however, if we
+	// are in a POST method, then we (and the server) will be expecting more
+	// data.  the client is responsible for sending this data to us with the
+	// KIOJob::data(..) command.  we are responsible for letting the client
+	// know that we are ready to receive the data, though
+	// in any event, we didn't receive the header yet...
+	m_bHaveHeader = false;
+	if (_post_data_size > 0)
+		ready();
+	else
+		slotDataEnd();
 
-    debug( "kio_http : Header: %s", f_buffer );
-    if ( strncasecmp(f_buffer, "Accept-Ranges:", 14) == 0 ) {
-      if (strncasecmp(trimLead(f_buffer+14), "none", 4)==0)
-       m_bCanResume = false;
-    }    
-
-    else if (strncasecmp(f_buffer, "Content-length:", 15)==0)
-      m_iSize = atol(trimLead(f_buffer+15));
-    else if (strncasecmp(f_buffer, "Content-Type:", 13)==0) {
-      // Jacek: We can't send mimeType signal now,
-      // because there may be another Content-Type to come
-      m_strMimeType = trimLead(f_buffer+13);
-    } else if (strncasecmp(f_buffer, "Warning:", 8)==0) {
-      error(ERR_WARNING, trimLead(f_buffer+8));
-    } else if (strncasecmp(f_buffer, "HTTP/1.0 ", 9)==0) {
-      m_HTTPrev = HTTP_10;
-      // Unauthorized access
-      if ( strncmp( f_buffer + 9, "401", 3 ) == 0 ) {
-	unauthorized = true;
-      } else if ( f_buffer[9] == '4' ||  f_buffer[9] == '5' ) {
-	// Let's first send an error message
-	// this will be moved to slotErrorPage(), when it will be written
-	http_close();
-	error( ERR_ACCESS_DENIED, _url.url() );
-	return false;
-
-	// Tell that we will only get an error page here.
-	errorPage();
-      }
-    } else if ( strncasecmp(f_buffer, "HTTP/1.1 ", 9) == 0 ) {
-      m_HTTPrev = HTTP_11;
-      Authentication = AUTH_None;
-      // Unauthorized access
-      if ( (strncmp(f_buffer+9, "401", 3)==0) || (strncmp(f_buffer+9, "407", 3)==0) ) {
-	unauthorized = true;
-      } else if ( f_buffer[9] == '4' ||  f_buffer[9] == '5' ) {
-	// Tell that we will only get an error page here.
-	errorPage();
-      }
-    }
-    // In fact we should do redirection only if we got redirection code
-    else if ( strncmp(f_buffer, "Location:", 9) == 0 ) {
-      http_close();
-      KURL u( _url, trimLead(f_buffer+9) );
-      redirection( u.url() );
-      return http_open(u, _post_data, _post_data_size, _reload, _offset);
-    } else if (strncasecmp(f_buffer, "WWW-Authenticate:", 17)==0) {
-      configAuth(trimLead(f_buffer+17), false);
-    } else if (strncasecmp(f_buffer, "Proxy-Authenticate:", 19)==0) {
-      configAuth(trimLead(f_buffer+19), true);
-    } else if (m_HTTPrev == HTTP_11) {
-      if (strncasecmp(f_buffer, "Connection:", 11) == 0) {
-	if (strncasecmp(trimLead(f_buffer+11), "Close", 5)==0)
-	  /*m_bPersistant=false*/;
-	else if (strncasecmp(trimLead(f_buffer+11), "Keep-Alive", 10)==0)
-	  /*m_bPersistant=true*/;
-      } else if (strncasecmp(f_buffer, "Transfer-Encoding:", 18) == 0) {
-	// If multiple encodings have been applied to an entity, the transfer-
-	// codings MUST be listed in the order in which they were applied.
-	addEncoding(trimLead(f_buffer+18), &m_qTransferEncodings);
-      } else if (strncasecmp(f_buffer, "Content-Encoding:", 17) == 0) {
-	addEncoding(trimLead(f_buffer+17), &m_qContentEncodings);
-      } else if (strncasecmp(f_buffer, "Content-MD5:", 12)==0) {
-	m_sContentMD5 = strdup(trimLead(f_buffer+12));
-      }
-    }
-    memset(f_buffer, 0, 1024);
-  }
-  if (unauthorized) {
-    http_close();
-    QString user = _url.user();
-    QString pass = _url.pass();
-    if (m_strRealm.isEmpty())
-      m_strRealm = _url.host();
-    if ( !open_PassDlg(m_strRealm, user, pass) ) {
-      error( ERR_ACCESS_DENIED, _url.url() );
-      return false;
-    }
-    
-    KURL u(_url);
-    u.setUser(user);
-    u.setPass(pass);
-    return http_open(u, _post_data, _post_data_size, _reload, _offset);
-  }
-
-  mimeType(m_strMimeType);
-  return true;
+	return true;
 }
 
+/**
+ * This function will read in the return header from the server.  It will
+ * not read in the body of the return message.  It will also not transmit
+ * the header to our client as the client doesn't need to know the gory
+ * details of HTTP headers.
+ *
+ * This function will likely be called from slotData() if the header has
+ * not already been read in.
+ */
+bool HTTPProtocol::readHeader()
+{
+	// to get rid of those "Open with" dialogs...
+	// however at least extensions should be checked
+	m_strMimeType = "text/html";
+
+	// read in 1024 bytes at a time
+	int len = 1;
+	char buffer[1024];
+	bool unauthorized = false;
+	while(len && (gets(buffer, 1024)))
+	{ 
+		// strip off \r and \n if we have them
+		len = strlen(buffer);
+		while(len && (buffer[len-1] == '\n' || buffer[len-1] == '\r'))
+			buffer[--len] = 0;
+
+		debug( "kio_http : Header: %s", buffer );
+
+		// are we allowd to resume?  this will tell us
+		if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0)
+		{
+			if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
+				m_bCanResume = false;
+		}    
+
+		// get the size of our data
+		else if (strncasecmp(buffer, "Content-length:", 15) == 0)
+		{
+			m_iSize = atol(trimLead(buffer + 15));
+		}
+
+		// what type of data do we have?
+		else if (strncasecmp(buffer, "Content-Type:", 13) == 0)
+		{
+			// Jacek: We can't send mimeType signal now,
+			// because there may be another Content-Type to come
+			m_strMimeType = trimLead(buffer + 13);
+		}
+		
+		// whoops.. we received a warning
+		else if (strncasecmp(buffer, "Warning:", 8) == 0)
+		{
+			error(ERR_WARNING, trimLead(buffer + 8));
+		}
+		
+		// oh no.. i think we're about to get a page not found
+		else if (strncasecmp(buffer, "HTTP/1.0 ", 9) == 0)
+		{
+			m_HTTPrev = HTTP_10;
+
+			// unauthorized access
+			if (strncmp(buffer + 9, "401", 3) == 0)
+			{
+				unauthorized = true;
+			}
+			else if (buffer[9] == '4' || buffer[9] == '5')
+			{
+				// Let's first send an error message
+				// this will be moved to slotErrorPage(), when it will be written
+				http_close();
+				error(ERR_ACCESS_DENIED, m_state.url.url());
+
+				// Tell that we will only get an error page here.
+				errorPage();
+
+				return false;
+			}
+		}
+		
+		// this is probably not a good sign either... sigh
+		else if (strncasecmp(buffer, "HTTP/1.1 ", 9) == 0)
+		{
+			m_HTTPrev = HTTP_11;
+			Authentication = AUTH_None;
+
+			// Unauthorized access
+			if ((strncmp(buffer + 9, "401", 3) == 0) ||
+			    (strncmp(buffer + 9, "407", 3) == 0))
+			{
+				unauthorized = true;
+			}
+			else if (buffer[9] == '4' || buffer[9] == '5')
+			{
+				// Tell that we will only get an error page here.
+				errorPage();
+			}
+		}
+
+		// In fact we should do redirection only if we got redirection code
+		else if (strncmp(buffer, "Location:", 9) == 0 )
+		{
+			http_close();
+			KURL u(m_state.url, trimLead(buffer + 9));
+			redirection(u.url());
+
+			return http_open(u, m_state.postDataSize, m_state.reload,
+			                 m_state.offset);
+		}
+
+		// check for direct authentication
+		else if (strncasecmp(buffer, "WWW-Authenticate:", 17) == 0)
+		{
+			configAuth(trimLead(buffer + 17), false);
+		}
+		
+		// check for proxy-based authentication
+		else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0)
+		{
+			configAuth(trimLead(buffer + 19), true);
+		}
+
+		// continue only if we know that we're HTTP/1.1
+		else if (m_HTTPrev == HTTP_11)
+		{
+			// let them tell us if we should stay alive or not
+			if (strncasecmp(buffer, "Connection:", 11) == 0)
+			{
+				if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0)
+				{
+					/*m_bPersistant=false*/;
+				}
+				else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0)
+				{
+					/*m_bPersistant=true*/;
+				}
+
+			}
+			
+			// what kind of encoding do we have?  transfer?
+			else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0)
+			{
+				// If multiple encodings have been applied to an entity, the
+				// transfer-codings MUST be listed in the order in which they
+				// were applied.
+				addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
+			}
+			
+			// content?
+			else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0)
+			{
+				addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
+			}
+			
+			// md5?
+			else if (strncasecmp(buffer, "Content-MD5:", 12) == 0)
+			{
+				m_sContentMD5 = strdup(trimLead(buffer + 12));
+			}
+		}
+
+		// clear out our buffer for further use
+		memset(buffer, 0, 1024);
+	}
+
+	// DONE receiving the header!
+
+	// we need to try to login again if we failed earlier
+	if (unauthorized)
+	{
+		http_close();
+		QString user = m_state.url.user();
+		QString pass = m_state.url.pass();
+		if (m_strRealm.isEmpty())
+			m_strRealm = m_state.url.host();
+
+		if (!open_PassDlg(m_strRealm, user, pass))
+		{
+			error(ERR_ACCESS_DENIED, m_state.url.url());
+			return false;
+		}
+
+		KURL u(m_state.url);
+		u.setUser(user);
+		u.setPass(pass);
+		return http_open(u, m_state.postDataSize, m_state.reload,
+		                 m_state.offset);
+	}
+
+	// FINALLY, let the world know what kind of data we are getting
+	// and that we do indeed have a header
+	mimeType(m_strMimeType);
+	m_bHaveHeader = true;
+
+	return true;
+}
 
 void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 {
@@ -788,35 +984,31 @@ void HTTPProtocol::http_close()
 }
 
 
-void HTTPProtocol::slotGetSize( const char *_url )
+void HTTPProtocol::slotGetSize(const char *_url)
 {
-  KURL usrc( _url );
-  if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, _url );
-    m_cmd = CMD_NONE;
-    return;
-  }
+	KURL usrc(_url);
+	if (usrc.isMalformed())
+	{
+		error(ERR_MALFORMED_URL, _url);
+		m_cmd = CMD_NONE;
+		return;
+	}
 
-  if (!isValidProtocol(&usrc)) {
-    error( ERR_INTERNAL, "kio_http got non http/https/httpf url" );
-    m_cmd = CMD_NONE;
-    return;
-  }
+	if (!isValidProtocol(&usrc))
+	{
+		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+		m_cmd = CMD_NONE;
+		return;
+	}
 
-  m_cmd = CMD_GET_SIZE;
+	m_cmd = CMD_GET_SIZE;
 
-  m_bIgnoreErrors = false;  
-  if ( !http_open( usrc, 0L, 0, false ) ) {
-    m_cmd = CMD_NONE;
-    return;
-  }
-  
-  totalSize( m_iSize );
-  http_close();
-
-  finished();
-
-  m_cmd = CMD_NONE;
+	m_bIgnoreErrors = false;  
+	if (!http_open(usrc, 0, false))
+	{
+		m_cmd = CMD_NONE;
+		return;
+	}
 }
 
 
@@ -832,140 +1024,104 @@ const char *HTTPProtocol::getUserAgentString ()
 #ifdef DO_SSL
   user_agent+="; Supports SSL/HTTPS";
 #endif
-  return user_agent.data();
+  return user_agent.ascii();
 }
 
-
+/**
+ * This is one of the "big" functions in an ioslave -- slotGet() is
+ * responsible for "getting" data from the remote server.  In the case
+ * of HTTP, that means that this function will get called for the vast
+ * majority of requests.  Pretty much the only major request that isn't
+ * serviced through this function is the POST requests (handled by
+ * slotPut).  This is called in response to the client sending a
+ * KIOJob::get(const char* _url)
+ *
+ * The basic procedure is *very* simple now with a lot of the actual work
+ * being done elsewhere:
+ * 
+ * 1) Make sure that this URL is valid
+ * 2) Let the world know that we are doing a Get
+ * 3) Start the process going with an http_open() -- everything else is
+ *    done automagically.
+ */
 void HTTPProtocol::slotGet( const char *_url )
 {
-  unsigned int old_len=0;
-  
-  KURL usrc( _url );
-  if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, strdup(_url) );
-    m_cmd = CMD_NONE;
-    return;
-  }
+	// transform this URL into a KURL for easy manipulating
+	KURL usrc(_url);
 
-  if (!isValidProtocol(&usrc)) {
-    error( ERR_INTERNAL, "kio_http got non http/https/httpf url" );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  m_cmd = CMD_GET;
-
-  m_bIgnoreErrors = false;  
-  if ( !http_open( usrc, 0L, 0, false ) ) {
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  ready();
-
-  gettingFile( _url );
-
-  time_t t_start = time( 0L );
-  time_t t_last = t_start;
-
-  char buffer[ 2048 ];
-  long nbytes=0, sz=0;
-
-#ifdef DO_MD5
-  char buf[18], *enc_digest;
-  MD5_CTX context;
-  MD5Init(&context);
-#endif
-  while (!eof()) {
-    nbytes = read(buffer, 2048);
-    if (nbytes > 0) {
-      if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
-#ifdef DO_MD5
-	if (!m_sContentMD5.isEmpty()) {
-	  MD5Update(&context, (const unsigned char*)buffer, nbytes);
+	// make sure it is a "good" URL in more ways than one
+	if (usrc.isMalformed())
+	{
+		error(ERR_MALFORMED_URL, strdup(_url));
+		m_cmd = CMD_NONE;
+		return;
 	}
-#endif
-	data(buffer, nbytes);
-	sz+=nbytes;
-      } else {
-	old_len=big_buffer.size();
-	big_buffer.resize(old_len+nbytes);
-	memcpy(big_buffer.data()+old_len, buffer, nbytes);
-      }
-    }
-    if (nbytes == -1) {
-      //error( ERR_CONNECTION_BROKEN, usrc.host() );
-      //m_cmd = CMD_NONE;
-      break;
-    }
-  }
 
-  http_close();  // Must we close the connection?
+	if (!isValidProtocol(&usrc))
+	{
+		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+		m_cmd = CMD_NONE;
+		return;
+	}
 
-  if (!big_buffer.isNull()) {
-    char *enc;
-    while (!m_qTransferEncodings.isEmpty()) {
-      enc = m_qTransferEncodings.pop();
-      if (!enc)
-	break;
-      if (strncasecmp(enc, "gzip", 4)==0)
-	decodeGzip();
-      else if (strncasecmp(enc, "chunked", 7)==0) {
-	decodeChunked();
-      }
-    }
-    // From HTTP 1.1 Draft 6:
-    // The MD5 digest is computed based on the content of the entity-body,
-    // including any content-coding that has been applied, but not including
-    // any transfer-encoding applied to the message-body. If the message is
-    // received with a transfer-encoding, that encoding MUST be removed
-    // prior to checking the Content-MD5 value against the received entity.
-#ifdef DO_MD5
-    MD5Update(&context, (const unsigned char*)big_buffer.data(), big_buffer.size());
-#endif
-    while (!m_qContentEncodings.isEmpty()) {
-      enc = m_qContentEncodings.pop();
-      if (!enc)
-	break;
-      if (strncasecmp(enc, "gzip", 4)==0)
-	decodeGzip();
-      else if (strncasecmp(enc, "chunked", 7)==0) {
-	decodeChunked();
-      }
-    }
-    sz = sendData();
-  }
+	m_cmd = CMD_GET;
 
-#ifdef DO_MD5
-  MD5Final((unsigned char*)buf, &context); // Wrap everything up
-  enc_digest = base64_encode_string(buf, 18);
-  if (m_sContentMD5 != "" ) {
-    int f;
-    if ((f=m_sContentMD5.find("="))<=0)
-      f=m_sContentMD5.length();
-    if (m_sContentMD5.left(f) != enc_digest) {
-      fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.ascii());
-    } else
-      fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
-  } else 
-    fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
-  fflush(stderr);
-  free(enc_digest);
-#endif
-
-  t_last = time(0L);
-  if (t_last - t_start)
-    speed( sz / ( t_last - t_start ) );
-  else
-    speed(0);
-  finished();
-  if (nbytes == -1) {
-    error( ERR_CONNECTION_BROKEN, usrc.host() );
-    m_cmd = CMD_NONE;
-    return;
-  }
+	m_bIgnoreErrors = false;  
+	if (!http_open(usrc, 0, false))
+	{
+		m_cmd = CMD_NONE;
+		return;
+	}
 }
 
+/**
+ * This is one of the other "big" functions in an ioslave -- slotPut()
+ * is responsible for those requests where data needs to be sent or "put"
+ * on the remote server.  In the case of HTTP, this means (mostly) POST
+ * requests.  It's possible that WebDAV requests will also start from
+ * here later.. but that's not the case now. This is called in response
+ * to the client sending a KIOJob::put(...)
+ *
+ * The basic procedure is *very* simple now with a lot of the actual work
+ * being done elsewhere:
+ * 
+ * 1) Make sure that this URL is valid
+ * 2) Let the world know that we are doing a Put
+ * 3) Start the process going with an http_open() -- everything else is
+ *    done automagically.
+ */
+void HTTPProtocol::slotPut(const char *_url, int _mode, bool _overwrite,
+                           bool _resume, int _len)
+{
+	// transform this URL into a KURL for easy manipulating
+	KURL usrc(_url);
+
+	// make sure it is a "good" URL in more ways than one
+	if (usrc.isMalformed())
+	{
+		error(ERR_MALFORMED_URL, strdup(_url));
+		m_cmd = CMD_NONE;
+		return;
+	}
+
+	if (!isValidProtocol(&usrc))
+	{
+		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+		m_cmd = CMD_NONE;
+		return;
+	}
+
+	// let's not be shy about our intentions... besides, we'll
+	// need this later
+	m_cmd = CMD_PUT;
+
+	m_bIgnoreErrors = false;  
+	if (!http_open(usrc, _len, false))
+	{
+		m_cmd = CMD_NONE;
+		return;
+	}
+}
 
 void HTTPProtocol::decodeChunked()
 {
@@ -1094,6 +1250,7 @@ size_t HTTPProtocol::sendData()
   return sz;
 }
 
+/* THIS FUNCTION IS LIKELY BROKEN RIGHT NOW */
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   IOProtocol::slotCopy(_source, _dest);
@@ -1206,7 +1363,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
       m_bIgnoreErrors = true;
       debug( "slotCopy 0");
-      if ( !http_open( u1, 0L, 0, false, offset ) ) {
+      if ( !http_open( u1, 0, false, offset ) ) {
 	debug( "slotCopy 1");
 	m_bIgnoreErrors = false;
 	/* if ( !m_bGUI )
@@ -1454,6 +1611,213 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   m_cmd = CMD_NONE;
 }
 
+/**
+ * This function is called in response to a client KIOJob::data(..)
+ * request.  In practice, this is during a client "put" event.  The
+ * procedure is like:
+ * 
+ * 1) Client sends KIOJob::put(..)
+ * 2) HTTPProtocol::slotPut(...) gets called and, in the process,
+ *    calls HTTPProtocol::http_open(...).
+ * 3) HTTPProtocol::http_open(...) calls IOJob::ready()
+ * 4) The client's slotReady() is called.  This function will execute
+ *    KIOJob::data(..) with the data to send to the server
+ * 5) This function is called with that data.  It sends it to the
+ *    remote server.
+ */
+void HTTPProtocol::slotData(void *_p, int _len)
+{
+	// this *should* be for a PUT method.  make sure
+	if (m_cmd != CMD_PUT)
+	{
+		abort();
+		return;
+	}
+
+	// good.  now send our data to the remote server
+	if (write(_p, _len) == -1)
+	{
+		error(ERR_CONNECTION_BROKEN, m_state.url.host());
+		return;
+	}
+}
+
+/**
+ * This function is our "receive" function.  It is responsible for
+ * downloading the message (not the header) from the HTTP server.  It
+ * is called either as a response to a client's KIOJob::dataEnd()
+ * (meaning that the client is done sending data) or by 'http_open()'
+ * (if we are in the process of a Get request).
+ */
+void HTTPProtocol::slotDataEnd()
+{
+	// make sure that we already have our header.  get it if we don't
+	if (!m_bHaveHeader)
+	{
+		// we won't show an error if we can't read in the header since
+		// it was probably flagged earlier
+		if (!readHeader())
+			return;
+	}
+
+	// don't bother getting the entire data if we just want the
+	// size of the data
+	if (m_cmd == CMD_GET_SIZE)
+	{
+  		totalSize( m_iSize );
+		http_close();
+
+		finished();
+
+		m_cmd = CMD_NONE;
+
+		return;
+	}
+
+	// we are getting the following URL
+	gettingFile(m_state.url.url());
+
+	// get the starting time.  this is used later to compute the transfer
+	// speed.
+	time_t t_start = time(0L);
+	time_t t_last = t_start;
+
+	long nbytes = 0, sz = 0;
+	char buffer[2048];
+#ifdef DO_MD5
+  MD5_CTX context;
+  MD5Init(&context);
+#endif
+	// this is the main incoming loop.  gather everything while we can...
+	while (!eof())
+	{
+		// 2048 bytes seems to be a nice number of bytes to receive
+		// at a time
+		nbytes = read(buffer, 2048);
+
+		// make sure that this wasn't an error, first
+		if (nbytes == -1)
+		{
+			// erg.  oh well, log an error and bug out
+			error(ERR_CONNECTION_BROKEN, m_state.url.host());
+			m_cmd = CMD_NONE;
+			break;
+		}
+
+		// i guess that nbytes == 0 isn't an error.. but we certainly
+		// won't work with it!
+		if (nbytes == 0)
+			continue;
+
+		// check on the encoding.  can we get away with it as is?
+		if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty())
+		{
+#if DO_MD5
+			if (!m_sContentMD5.isEmpty())
+				MD5Update(&context, (const unsigned char*)buffer, nbytes);
+#endif
+			// yep, let the world know that we have some data
+			data(buffer, nbytes);
+			sz += nbytes;
+		}
+		else
+		{
+			// nope.  slap this all onto the end of a big buffer
+			// for later use
+			unsigned int old_len = 0;
+			old_len = big_buffer.size();
+			big_buffer.resize(old_len + nbytes);
+			memcpy(big_buffer.data() + old_len, buffer, nbytes);
+		}
+	}
+
+	// okay.. we're all done receiving data from the server.  close this
+	// connection
+	http_close();
+
+	// if we have something in big_buffer, then we know that we have
+	// encoded data.  of course, we need to do something about this
+	if (!big_buffer.isNull())
+	{
+		char *enc;
+		// decode all of the transfer encodings
+		while (!m_qTransferEncodings.isEmpty())
+		{
+			enc = m_qTransferEncodings.pop();
+			if (!enc)
+				break;
+			if (strncasecmp(enc, "gzip", 4)==0)
+				decodeGzip();
+			else if (strncasecmp(enc, "chunked", 7)==0)
+			{
+				decodeChunked();
+			}
+		}
+
+		// From HTTP 1.1 Draft 6:
+		// The MD5 digest is computed based on the content of the entity-body,
+		// including any content-coding that has been applied, but not including
+		// any transfer-encoding applied to the message-body. If the message is
+		// received with a transfer-encoding, that encoding MUST be removed
+		// prior to checking the Content-MD5 value against the received entity.
+#ifdef DO_MD5
+		MD5Update(&context, (const unsigned char*)big_buffer.data(),
+		          big_buffer.size());
+#endif
+		
+		// now decode all of the content encodings
+		while (!m_qContentEncodings.isEmpty())
+		{
+			enc = m_qContentEncodings.pop();
+			if (!enc)
+				break;
+			if (strncasecmp(enc, "gzip", 4)==0)
+				decodeGzip();
+			else if (strncasecmp(enc, "chunked", 7)==0)
+			{
+				decodeChunked();
+			}
+		}
+		sz = sendData();
+	}
+
+	// this block is all final MD5 stuff
+#ifdef DO_MD5
+	char buf[18], *enc_digest;
+	MD5Final((unsigned char*)buf, &context); // Wrap everything up
+	enc_digest = base64_encode_string(buf, 18);
+	if (m_sContentMD5 != "" )
+	{
+		int f;
+		if ((f = m_sContentMD5.find("=")) <= 0)
+			f = m_sContentMD5.length();
+
+		if (m_sContentMD5.left(f) != enc_digest)
+		{
+			fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.ascii());
+		}
+		else
+			fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
+	}
+	else 
+		fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
+
+	fflush(stderr);
+	free(enc_digest);
+#endif
+
+	// FINALLY, we compute our final speed and let everybody know that we
+	// are done
+	t_last = time(0L);
+	if (t_last - t_start)
+		speed(sz / (t_last - t_start));
+	else
+		speed(0);
+
+	finished();
+
+	m_cmd = CMD_NONE;
+}
 
 void HTTPProtocol::jobError( int _errid, const char *_txt )
 {
