@@ -36,6 +36,11 @@ extern "C"
   }
 };
 
+const char *mocs[] = {
+#include "libkhtml_la_mocs_byhand.h"
+0
+};
+
 KInstance *KHTMLFactory::s_instance = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
@@ -45,6 +50,7 @@ KHTMLFactory::KHTMLFactory()
   s_instance = 0;
   s_about = 0;
   s_settings = 0;
+  setMocClasses(mocs);
 }
 
 KHTMLFactory::~KHTMLFactory()
