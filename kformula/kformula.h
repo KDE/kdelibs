@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Ilya Baran (ibaran@acs.bu.edu)
+    Copyright (C) 1999 Ilya Baran (ibaran@mit.edu)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -72,7 +72,7 @@ enum ErrorType {
  * The other use of KFormula is with KFormulaEdit--it's much cooler
  * that way.
  * @short Parse and display formulas
- * @author Ilya Baran <ibaran@acs.bu.edu>
+ * @author Ilya Baran <ibaran@mit.edu>
  */
 class KFormula {
 private:
@@ -166,7 +166,7 @@ public:
  * by any KDE application using the @ref KFormula class. @ref KFormulaEdit
  * can be used to WYSIWYG-edit formulas, with @ref KFormulaToolBar allowing
  * better integration within a full KDE application.
- * @author Ilya Baran <ibaran@acs.bu.edu>
+ * @author Ilya Baran <ibaran@mit.edu>
  */
 
 

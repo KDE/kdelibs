@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Ilya Baran (ibaran@acs.bu.edu)
+    Copyright (C) 1999 Ilya Baran (ibaran@mit.edu)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -63,7 +63,7 @@ struct _cursorInfo { //private
  * Keyboard shortcuts are availiable, but it's probably easier to
  * use a KFormulaToolBar (which see).
  * @short A WYSIWYG formula editor widget.
- * @author Ilya Baran <ibaran@acs.bu.edu>
+ * @author Ilya Baran <ibaran@mit.edu>
  * @version $Id$
  */
 class KFormulaEdit : public QWidget
