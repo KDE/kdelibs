@@ -393,7 +393,7 @@ static char B64[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 // the mime base64 disctionary used for decoding
-static char b64dec[] = {
+static signed char b64dec[] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 10
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 20
