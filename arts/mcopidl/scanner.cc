@@ -1816,7 +1816,9 @@ YY_BUFFER_STATE b;
 
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
+#if !defined(__GLIBC__) || (__GLIBC__ < 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ < 2))
 extern int isatty YY_PROTO(( int ));
+#endif
 #endif
 #endif
 
