@@ -72,9 +72,10 @@ public:
 static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates", 
-			      "module", "qtplugins", 
-			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu", 0 };
+			      "wallpaper", "lib", "pixmap", "templates",
+			      "module", "qtplugins",
+			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu",
+                              "kcfg", 0 };
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -555,7 +556,7 @@ KStandardDirs::findAllResources( const char *type,
     return findAllResources(type, filter, recursive, unique, relList);
 }
 
-QString 
+QString
 KStandardDirs::realPath(const QString &dirname)
 {
     char realpath_buffer[MAXPATHLEN + 1];
@@ -644,7 +645,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                 prefixList = &(d->xdgconf_prefixes);
             else
                 prefixList = &prefixes;
-               
+
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
                  pit++)
@@ -861,6 +862,8 @@ QString KStandardDirs::kde_default(const char *type) {
         return "desktop-directories/";
     if (!strcmp(type, "xdgconf-menu"))
         return "menus/";
+    if (!strcmp(type, "kcfg"))
+	return "share/config.kcfg";
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
@@ -876,7 +879,7 @@ QString KStandardDirs::saveLocation(const char *type,
     {
        QStringList *dirs = relatives.find(type);
        if (!dirs && (
-                     (strcmp(type, "socket") == 0) || 
+                     (strcmp(type, "socket") == 0) ||
                      (strcmp(type, "tmp") == 0) ||
                      (strcmp(type, "cache") == 0) ))
        {
@@ -1124,7 +1127,7 @@ void KStandardDirs::addKDEDefaults()
              dir += '/';
            xdgdirList.append(dir+"share/");
         }
-	
+
         xdgdirList.append("/usr/local/share/");
         xdgdirList.append("/usr/share/");
     }
