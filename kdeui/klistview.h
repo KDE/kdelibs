@@ -207,7 +207,7 @@ public:
    *
    * @return the current width of the drop-visualizer.
    */
-  inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
+  int dropVisualizerWidth () const;
 
   /**
    * @return the "extended" selection mode of this listview.
@@ -655,7 +655,7 @@ protected:
    *
    * The API is unaffected.
    */
-  virtual void paintEvent(QPaintEvent*);
+  virtual void viewportPaintEvent(QPaintEvent*);
 
 private slots:
   /**
@@ -726,9 +726,6 @@ private:
   class KListViewPrivate;
   class Tooltip;
   KListViewPrivate *d;
-
-  QRect mOldDropVisualizer;
-  int mDropVisualizerWidth;
 };
 
 #endif

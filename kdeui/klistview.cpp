@@ -102,6 +102,11 @@ public:
   bool showContextMenusOnPress;
 
   bool wasShiftEvent;
+
+  QRect mOldDropVisualizer;
+  int mDropVisualizerWidth;
+  QListViewItem *afterItemDrop;
+  QListViewItem *parentItemDrop;
 };
 
 
@@ -161,8 +166,7 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 
 KListView::KListView( QWidget *parent, const char *name )
   : QListView( parent, name ),
-	d (new KListViewPrivate()),
-	mDropVisualizerWidth (4)
+	d (new KListViewPrivate())
 {
   {
 	d->editor=new KListViewLineEdit(this);
@@ -179,7 +183,7 @@ KListView::KListView( QWidget *parent, const char *name )
 	d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 	d->validDrag = false;
     d->dragDelay = KGlobalSettings::dndEventDelay();
-
+	d->mDropVisualizerWidth=4;
 	connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
   }
 
@@ -598,20 +602,16 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
   {
     event->accept();
     //Clean up the view
-    QListViewItem *afterme;
-    QListViewItem *parent;
-    findDrop(event->pos(), parent, afterme);
 
+    findDrop(event->pos(), d->parentItemDrop, d->afterItemDrop);
     if (dropVisualizer())
     {
-      QRect tmpRect = drawDropVisualizer(0, parent, afterme);
-
-      if (tmpRect != mOldDropVisualizer)
+      QRect tmpRect = drawDropVisualizer(0, d->parentItemDrop, d->afterItemDrop);
+      if (tmpRect != d->mOldDropVisualizer)
       {
         cleanDropVisualizer();
-
-        QPainter painter(viewport());
-        mOldDropVisualizer = drawDropVisualizer(&painter,parent, afterme);
+        d->mOldDropVisualizer=tmpRect;
+        viewport()->repaint(viewport()->rect());
       }
     }
   }
@@ -626,10 +626,10 @@ void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 
 void KListView::cleanDropVisualizer()
 {
-  if (mOldDropVisualizer.isValid())
+  if (d->mOldDropVisualizer.isValid())
   {
-    viewport()->repaint (mOldDropVisualizer, true);
-    mOldDropVisualizer = QRect();
+    viewport()->repaint (d->mOldDropVisualizer, true);
+    d->mOldDropVisualizer = QRect();
   }
 }
 
@@ -793,7 +793,7 @@ void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
 
 void KListView::setDropVisualizerWidth (int w)
 {
-  mDropVisualizerWidth = w > 0 ? w : 1;
+  d->mDropVisualizerWidth = w > 0 ? w : 1;
 }
 
 QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
@@ -807,12 +807,12 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
 
 	  insertmarker.setLeft (0);
 	  insertmarker.setRight (viewport()->width());
-	  insertmarker.setTop (insertmarker.bottom() - mDropVisualizerWidth/2 + 1);
-	  insertmarker.setBottom (insertmarker.bottom() + mDropVisualizerWidth/2);
+	  insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
+	  insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
 	}
   else
 	{
-	  insertmarker = QRect (0, 0, viewport()->width(), mDropVisualizerWidth/2);
+	  insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
 	}
 
   if (p)
@@ -1177,13 +1177,31 @@ void KListView::emitContextMenu (QListViewItem* i, const QPoint& p, int)
 
 void KListView::setAcceptDrops (bool val)
 {
-	QListView::setAcceptDrops (val);
-	viewport()->setAcceptDrops (val);
+  QListView::setAcceptDrops (val);
+  viewport()->setAcceptDrops (val);
 }
 
-void KListView::paintEvent(QPaintEvent *e)
+int KListView::dropVisualizerWidth () const
 {
-	QListView::paintEvent(e);
+	return d->mDropVisualizerWidth;
+}
+
+
+void KListView::viewportPaintEvent(QPaintEvent *e)
+{
+  QListView::viewportPaintEvent(e);
+  if (d->mOldDropVisualizer.isValid())
+  {
+    static bool invalidated=false;
+    if (!invalidated)
+    {
+      invalidated=true;
+      viewport()->repaint(d->mOldDropVisualizer);
+    }
+    QPainter painter(viewport());
+    drawDropVisualizer(&painter, d->parentItemDrop, d->afterItemDrop);
+    invalidated=false;
+  }
 }
 
 #include "klistview.moc"
