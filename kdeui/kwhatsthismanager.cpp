@@ -84,7 +84,7 @@ bool KWhatsThisUndefined::clicked (const QString& href)
         body . append ("\nPlease type in your what's this help between these lines: "
                 "\n--%-----------------------------------------------------------------------\n"
                 "\n--%-----------------------------------------------------------------------");
-        kapp -> invokeMailer ("mailto:quality-whatsthis@kde.org", "", "", subj, body);
+        kapp -> invokeMailer ("quality-whatsthis@kde.org", "", "", subj, body);
     }
     return TRUE;
 }
