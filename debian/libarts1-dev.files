@@ -1,4 +1,5 @@
 usr/bin/artsc-config
+usr/bin/mcopidl
 usr/lib/libmcop.so
 usr/lib/libmcop_mt.so
 usr/lib/libartsflow_idl.so
