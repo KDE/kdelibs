@@ -915,9 +915,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   Window *window = static_cast<Window *>(thisObj.imp());
   QString str, str2;
 
-  if (!window->m_part)
-    return Undefined();
-
   KHTMLPart *part = window->m_part;
   if (!part)
     return Undefined();
