@@ -1927,7 +1927,7 @@ long HTMLOptionElementImpl::index() const
     for(int i = 0; i < l; i++) {
         if(items[i]->id() == ID_OPTION)
         {
-            if (items[i] == this)
+            if (static_cast<HTMLOptionElementImpl*>(items[i]) == this)
                 return optionIndex;
             optionIndex++;
         }
