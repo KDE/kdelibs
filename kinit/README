@@ -69,13 +69,9 @@ kicker_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 The following lines need to be added to make a library version useable 
 by kdeinit:
 
-kde_module_LTLIBRARIES = kicker.la
+lib_LTLIBRARIES = kicker.la
 libkicker_la_LIBADD = $(top_builddir)/libkonq/libkonq.la
 libkicker_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module                    
-
-(The first line should be lib_LTLIBRARIES for KDE 2.0, but
-this has changed in KDE 2.1 to kde_module_LTLIBRARIES although
-.la files installed in lib still work.)
 
 Disadvantages
 =============
