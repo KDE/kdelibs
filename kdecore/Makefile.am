@@ -22,6 +22,7 @@ INCLUDES = $(all_includes)
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
+	kdesktopfile.h \
 	kconfigbackend.h kcolorgroup.h kapp.h kcharsets.h \
 	kurl.h ksock.h drag.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
@@ -34,6 +35,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
+	kdesktopfile.cpp \
 	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
 	kprocess.cpp kprocctrl.cpp libintl.cpp klocale.cpp \
 	 fakes.cpp kiconloader.cpp kdebug.cpp \
@@ -51,7 +53,7 @@ libkdecore_la_LIBADD = -lXext $(LIB_QT) $(LIBDL) $(LIB_DMALLOC)
 libkdecore_la_METASOURCES = drag.moc kapp.moc \
 	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \
 	kiconloader.moc kprocctrl.moc kprocess.moc ksimpleconfig.moc \
-	ksock.moc kstyle.moc
+	ksock.moc kstyle.moc kdesktopfile.moc
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 
