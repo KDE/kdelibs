@@ -306,16 +306,20 @@ DCOPClient *KApplication::dcopClient()
 
   // create an instance specific DCOP client object
   // if dcopserver lockfile not present, start the server.
-  QCString fName(::getenv("HOME"));
-  fName += "/.DCOPserver";
-  if (::access(fName.data(), R_OK) == -1) {
-    QString srv = KStandardDirs::findExe(QString::fromLatin1("dcopserver"));
-    QApplication::flushX();
-    if (fork() == 0) {
-      execl(srv.latin1(), srv.latin1(), 0);
-      _exit(1);
-    } else {
-      sleep(1); // give server some startup time. Race condition, I know...
+  // GJ: Do we really want to do this?
+  QCString fName(::getenv("DCOPSERVER"));
+  if (fName.isEmpty()) {
+    fName = ::getenv("HOME");
+    fName += "/.DCOPserver";
+    if (::access(fName.data(), R_OK) == -1) {
+      QString srv = KStandardDirs::findExe(QString::fromLatin1("dcopserver"));
+      QApplication::flushX();
+      if (fork() == 0) {
+	execl(srv.latin1(), srv.latin1(), 0);
+	_exit(1);
+      } else {
+	sleep(1); // give server some startup time. Race condition, I know...
+      }
     }
   }
 
