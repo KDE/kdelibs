@@ -366,6 +366,8 @@ KHTMLPart::~KHTMLPart()
   config->setGroup( "HTML Settings" );
   config->writeEntry( "AutomaticDetectionLanguage", d->m_automaticDetectionLanguage );
 
+  delete m_automaticDetection;
+  delete m_manualDetection;
 
   delete d->m_find;
   d->m_find = 0;
