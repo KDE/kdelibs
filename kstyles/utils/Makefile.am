@@ -1,1 +1,2 @@
-SUBDIRS= settheme
+SUBDIRS= installtheme
+
