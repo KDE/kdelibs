@@ -1115,13 +1115,23 @@ DOMRGBColor::~DOMRGBColor()
 
 Value DOMRGBColor::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "red")
-    return getDOMCSSValue(exec,rgbColor.red());
-  if (p == "green")
-    return getDOMCSSValue(exec,rgbColor.green());
-  if (p == "blue")
-    return getDOMCSSValue(exec,rgbColor.blue());
-  return DOMObject::tryGet(exec,p);
+  return DOMObjectLookupGetValue<DOMRGBColor,DOMObject>(exec, p,
+						       &DOMRGBColorTable,
+						       this);
+}
+
+Value DOMRGBColor::getValueProperty(ExecState *exec, int token) const
+{
+  switch (token) {
+  case Red:
+    return getDOMCSSValue(exec, rgbColor.red());
+  case Green:
+    return getDOMCSSValue(exec, rgbColor.green());
+  case Blue:
+    return getDOMCSSValue(exec, rgbColor.blue());
+  default:
+    return Value();
+  }
 }
 
 Value KJS::getDOMRGBColor(ExecState *, DOM::RGBColor c)
@@ -1148,15 +1158,24 @@ DOMRect::~DOMRect()
 
 Value DOMRect::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "top")
-    return getDOMCSSValue(exec,rect.top());
-  if (p == "right")
-    return getDOMCSSValue(exec,rect.right());
-  if (p == "bottom")
-    return getDOMCSSValue(exec,rect.bottom());
-  if (p == "left")
-    return getDOMCSSValue(exec,rect.left());
-  return DOMObject::tryGet(exec,p);
+  return DOMObjectLookupGetValue<DOMRect,DOMObject>(exec, p,
+						    &DOMRectTable, this);
+}
+
+Value DOMRect::getValueProperty(ExecState *exec, int token) const
+{
+  switch (token) {
+  case Top:
+    return getDOMCSSValue(exec, rect.top());
+  case Right:
+    return getDOMCSSValue(exec, rect.right());
+  case Bottom:
+    return getDOMCSSValue(exec, rect.bottom());
+  case Left:
+    return getDOMCSSValue(exec, rect.left());
+  default:
+    return Value();
+  }
 }
 
 Value KJS::getDOMRect(ExecState *exec, DOM::Rect r)
@@ -1181,14 +1200,22 @@ DOMCounter::~DOMCounter()
 
 Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
 {
-  if (p == "identifier")
-    return getString(counter.identifier());
-  if (p == "listStyle")
-    return getString(counter.listStyle());
-  if (p == "separator")
-    return getString(counter.separator());
+  return DOMObjectLookupGetValue<DOMCounter,DOMObject>(exec, p,
+						       &DOMCounterTable, this);
+}
 
-  return DOMObject::tryGet(exec,p);
+Value DOMCounter::getValueProperty(ExecState *, int token) const
+{
+  switch (token) {
+  case Identifier:
+    return getString(counter.identifier());
+  case ListStyle:
+    return getString(counter.listStyle());
+  case Separator:
+    return getString(counter.separator());
+  default:
+    return Value();
+  }
 }
 
 Value KJS::getDOMCounter(ExecState *exec, DOM::Counter c)

@@ -251,6 +251,7 @@ namespace KJS {
     DOMRGBColor(DOM::RGBColor c) : rgbColor(c) { }
     ~DOMRGBColor();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -266,6 +267,7 @@ namespace KJS {
     DOMRect(ExecState *, DOM::Rect r) : rect(r) { }
     ~DOMRect();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -281,6 +283,7 @@ namespace KJS {
     DOMCounter(ExecState *, DOM::Counter c) : counter(c) { }
     ~DOMCounter();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
