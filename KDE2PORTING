@@ -181,9 +181,9 @@ are necessary to convert your old KDND-based stuff to Qt DND.
    KFM::download         -> KIONetAccess::download (kdelibs/kio/kio_netaccess.h)
    KFM::removeTempFile   -> KIONetAccess::removeTempFile
    refreshDesktop, sortDesktop, selectRootIcons : removed; kdesktop handles it
-   KFM::configure        -> will probably be in konqueror's IDL
+   KFM::configure        -> see konqueror interface (IDL, soon DCOP)
    KFM::openURL          -> "(void) new KRun (url)" (kdelibs/kio/krun.h)
-   KFM::refreshDirectory -> TODO in kdebase/libkonq
+   KFM::refreshDirectory -> not needed anymore since konqy/kdesktop use KDirWatch
    KFM::openProperties   -> "(void) new PropertiesDialog (url)" (kdebase/libkonq/kpropsdlg.h)
    KFM::exec             -> "(void) new KRun (url)" (kdelibs/kio/krun.h)
    KFM::copy, KFM::move  -> KIOJob (async, see kio_job.h)
@@ -443,6 +443,17 @@ namespace. Finally you should not longer include userpaths.h, it has been
 renamed to kuserpaths.h, the old include will work for a while, but you
 will get a warning message. If you have any questions about the changes
 then mail me (rich@kde.org).
+
+Conversion table (new names on the left) :
+KUDSAtom <- UDSAtom;
+KIOProtocol <- IOProtocol;
+KUDSEntry <- UDSEntry;
+KIOConnection <- Connection;
+KIOConnectionSignals <- ConnectionSignals;
+KIOConnectionSlots <- ConnectionSlots;
+KIOJobBase <- IOJob;
+KIOSlave <- Slave;
+KIOFilter <- Filter; 
 
 ////////////////////////////////////////////////////////////////////////
 // * kstring.h / KString
