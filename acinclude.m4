@@ -310,16 +310,27 @@ AC_DEFUN(AC_CHECK_BOOL,
                 AC_MSG_RESULT(yes) ; AC_DEFINE(HAVE_BOOL),
                 AC_MSG_RESULT(no))])
 
-AC_DEFUN(AC_CHECK_DEBUG,
-[AC_ARG_ENABLE(debug,debug 	creates debugging code,
-[test "$CFLAGS" = "" && CFLAGS="-g -Wall" 
+AC_DEFUN(AC_SET_DEBUG,
+[
+ test "$CFLAGS" = "" && CFLAGS="-g -Wall" 
  test "$CXXFLAGS" = "" && CXXFLAGS="-g -Wall"
  LDFLAGS=""
-] , [
+])
+
+AC_DEFUN(AC_SET_NODEBUG,
+[
  test "$CFLAGS" = "" && CFLAGS="-O2 -Wall"
  test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
  test "$LDFLAGS" = "" && LDFLAGS="-s"
 ])
+
+AC_DEFUN(AC_CHECK_DEBUG,
+[AC_ARG_ENABLE(debug,[ --enable-debug 	creates debugging code [default=no]],
+[ if [ $enableval = "no"]; then AC_SET_NODEBUG
+else AC_SET_DEBUG 
+fi
+],
+AC_SET_NODEBUG)
 ])
 
 dnl just a test
