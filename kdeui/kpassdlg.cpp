@@ -86,7 +86,7 @@ class KPasswordDialog::KPasswordDialogPrivate
 	KPasswordDialogPrivate()
 	 : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false ),
 	   minimumPasswordLength(0), maximumPasswordLength(KPasswordEdit::PassLen - 1),
-	   passwordStrengthWarningLevel(1)
+	   passwordStrengthWarningLevel(1), m_strengthBar(0)
 	    {}
 	QLabel *m_MatchLabel;
 	QString iconName;
@@ -511,10 +511,9 @@ void KPasswordDialog::slotOk()
 	    erase();
 	    return;
 	}
-    }
-    if ( (m_Type == NewPassword) && (d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) ) {
-	int retVal = KMessageBox::warningYesNo(this,
-		i18n(	"The password you have entered has a low strength. "
+	if (d->m_strengthBar && d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) {
+	    int retVal = KMessageBox::warningYesNo(this,
+		i18n(   "The password you have entered has a low strength. "
 			"To improve the strength of "
 			"the password, try:\n"
 			" - using a longer password;\n"
@@ -523,7 +522,8 @@ void KPasswordDialog::slotOk()
 			"\n"
 			"Would you like to use this password anyway?"),
 		i18n("Low Password Strength"));
-	if (retVal == KMessageBox::No) return;
+	    if (retVal == KMessageBox::No) return;
+	}
     }
     if (!checkPassword(m_pEdit->password())) {
 	erase();
