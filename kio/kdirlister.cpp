@@ -39,6 +39,7 @@ public:
     KDirListerPrivate() { }
     KURL::List lstPendingUpdates;
     bool autoUpdate;
+    bool urlChanged;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -53,6 +54,7 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_bDelayedMimeTypes = _delayedMimeTypes;
   m_isShowingDotFiles = false;
   d->autoUpdate = true;
+  d->urlChanged = false;
 }
 
 KDirLister::~KDirLister()
@@ -129,6 +131,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
 
   m_bComplete = false;
 
+  d->urlChanged = false;
   m_url = _url; // keep a copy
   m_job = KIO::listDir( m_url, false /* no default GUI */ );
   connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
@@ -244,6 +247,7 @@ void KDirLister::updateDirectory( const KURL& _dir )
   m_bComplete = false;
   m_buffer.clear();
 
+  d->urlChanged = false;
   m_url = _dir;
   m_job = KIO::listDir( m_url, false /* no default GUI */ );
   connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
@@ -404,7 +408,7 @@ bool KDirLister::showingDotFiles() const
   return m_isShowingDotFiles;
 }
 
-KFileItem* KDirLister::find( const KURL& _url )
+KFileItem* KDirLister::find( const KURL& _url ) const
 {
   QListIterator<KFileItem> it = m_lstFileItems;
   for( ; it.current(); ++it )
@@ -416,7 +420,7 @@ KFileItem* KDirLister::find( const KURL& _url )
   return 0L;
 }
 
-KFileItem* KDirLister::findByName( const QString& name )
+KFileItem* KDirLister::findByName( const QString& name ) const
 {
   QListIterator<KFileItem> it = m_lstFileItems;
   for( ; it.current(); ++it )
@@ -449,7 +453,7 @@ KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
                           true /* url is the directory */ );
 }
 
-bool KDirLister::matchesFilter( const KFileItem *item )
+bool KDirLister::matchesFilter( const KFileItem *item ) const
 {
     assert( item != 0L );
     static const QString& dotdot = KGlobal::staticQString("..");
@@ -543,6 +547,26 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
   deleteUnmarkedItems();
 }
 
+void KDirLister::FilesChanged( const KURL::List & fileList )
+{
+  QListIterator<KFileItem> kit ( m_lstFileItems );
+  KURL::List::ConstIterator it = fileList.begin();
+  for ( ; it != fileList.end() ; ++it )
+  {
+    kit.toFirst();
+    for( ; kit.current(); ++kit )
+    {
+      if ( (*kit)->url().cmp( (*it), true /* ignore trailing slash */ ) )
+      {
+          (*kit)->refresh();
+          KFileItemList lst;
+          lst.append( *kit );
+          emit refreshItems( lst );
+      }
+    }
+  }
+}
+
 void KDirLister::setAutoUpdate( bool enable )
 {
     if ( d->autoUpdate == enable )
@@ -582,16 +606,23 @@ bool KDirLister::setURL( const KURL& url )
 
     stop();
     forgetDirs();
+    d->urlChanged = (url != m_url);
     m_url = url;
     return true;
 }
 
 void KDirLister::listDirectory()
 {
-    openURL( m_url, showingDotFiles() );
+    if ( m_bComplete && !d->urlChanged ) {
+	emit clear();
+	emit newItems( m_lstFileItems );
+	emit completed();
+    }
+    else
+	openURL( m_url, showingDotFiles() );
 }
 
-bool KDirLister::validURL( const KURL& url )
+bool KDirLister::validURL( const KURL& url ) const
 {
   if ( url.isMalformed() )
   {
