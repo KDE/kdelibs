@@ -1,6 +1,11 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.2  - 1 Oct 1998 (Waldo Bastian)
+--------------
+
+Automatically close dangling tag's. 
+
 Version 0.13.1  - 26 Sep 1998 (Martin Jones)
 --------------
 
