@@ -77,6 +77,7 @@
 # endif
 #endif
 
+extern char **environ;
 
 extern int lt_dlopen_flag;
 static int X11fd = -1;
