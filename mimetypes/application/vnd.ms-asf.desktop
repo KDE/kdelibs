@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/vnd.ms-asf
+Icon=video
+Patterns=*.asf;*.ASF;
+Comment=ASF Media
