@@ -47,7 +47,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ktextbrowser.h>
 #include <kiconeffect.h>
 #include <kglobalsettings.h>
+
+#ifdef Q_WS_X11
 #include <kwin.h>
+#endif
 
 #include "ktip.h"
 
@@ -201,10 +204,11 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     mDatabase = db;
 
     setCaption(i18n("Tip of the Day"));
+#ifdef Q_WS_X11
     KWin::setIcons( winId(),
                     KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 32 ),
                     KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 16 ) );
-
+#endif
     QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
 
    if (isTipDialog)
