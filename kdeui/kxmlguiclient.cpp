@@ -152,8 +152,10 @@ void KXMLGUIClient::setInstance( KInstance *instance )
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc )
 {
   // store our xml file name
-  if ( !_file.isNull() )
+  if ( !_file.isNull() ) {
     d->m_xmlFile = _file;
+    actionCollection()->setXMLFile( _file );
+  }
 
   if ( !setXMLDoc )
     return;
