@@ -5329,12 +5329,16 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 
     if( d->m_activeFrame && !d->m_activeFrame->inherits( "KHTMLPart" ) )
     {
-        factory()->removeClient( d->m_activeFrame );
+        if (factory()) {
+            factory()->removeClient( d->m_activeFrame );
+        }
         removeChildClient( d->m_activeFrame );
     }
     if( part && !part->inherits( "KHTMLPart" ) )
     {
-        factory()->addClient( part );
+        if (factory()) {
+            factory()->addClient( part );
+        }
         insertChildClient( part );
     }
 
