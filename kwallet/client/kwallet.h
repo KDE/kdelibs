@@ -81,6 +81,8 @@ class Wallet : public QObject, public DCOPObject {
 		// Entry management functions
 		virtual QStringList entryList();
 
+		virtual int renameEntry(const QString& oldName, const QString& newName);
+
 		virtual int readEntry(const QString& key, QByteArray& value);
 
 		virtual int readMap(const QString& key, QMap<QString,QString>& value);

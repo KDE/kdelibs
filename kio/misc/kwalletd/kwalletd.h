@@ -80,6 +80,9 @@ class KWalletD : public KDEDModule {
 		virtual QMap<QString,QString> readMap(int handle, const QString& folder, const QString& key);
 		virtual QString readPassword(int handle, const QString& folder, const QString& key);
 
+		// Rename an entry.  rc=0 on success.
+		virtual int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName);
+
 		// Write an entry.  rc=0 on success.
 		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value);
 		virtual int writeMap(int handle, const QString& folder, const QString& key, const QMap<QString,QString>& value);

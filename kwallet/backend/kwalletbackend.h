@@ -84,6 +84,9 @@ class Backend {
 		// The list of entries in this folder.
 		QStringList entryList() const;
 
+		// Rename an entry in this folder.
+		int renameEntry(const QString& oldName, const QString& newName);
+
 		int ref() { return ++_ref; }
 
 		int deref() { return --_ref; }

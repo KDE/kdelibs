@@ -315,6 +315,22 @@ return rc;
 }
 
 
+int Wallet::renameEntry(const QString& oldName, const QString& newName) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("renameEntry", _handle, _folder, oldName, newName);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
 int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 int rc = -1;
 

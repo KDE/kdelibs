@@ -528,4 +528,17 @@ void KWalletD::doCloseSignals(int handle, const QString& wallet) {
 		emitDCOPSignal("allWalletsClosed()", QByteArray());
 	}
 }
+
+
+int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName) {
+KWallet::Backend *b;
+
+	if ((b = getWallet(handle))) {
+		b->setFolder(folder);
+		return b->renameEntry(oldName, newName);
+	}
+
+return -1;
+}
+
 #include "kwalletd.moc"

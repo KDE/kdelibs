@@ -509,6 +509,22 @@ return true;
 }
 
 
+int Backend::renameEntry(const QString& oldName, const QString& newName) {
+EntryMap& emap = _entries[_folder];
+EntryMap::Iterator oi = emap.find(oldName);
+EntryMap::Iterator ni = emap.find(newName);
+
+	if (oi != emap.end() && ni == emap.end()) {
+		Entry *e = oi.data();
+		emap.remove(oi);
+		emap[newName] = e;
+		return 0;
+	}
+
+return -1;
+}
+
+
 void Backend::writeEntry(Entry *e) {
 	if (!_open)
 		return;
