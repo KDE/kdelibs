@@ -2,6 +2,16 @@
 
 #include <config.h>
 
+#ifdef __linux__
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
+#include <features.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -585,9 +595,9 @@ void FileProtocol::del( const KURL& url, bool isfile)
 
     if (isfile) {
 	kdDebug( 7101 ) <<  "Deleting file "<< url.url() << endl;
-	
+
 	// TODO deletingFile( source );
-	
+
 	if ( unlink( _path.data() ) == -1 ) {
             if ((errno == EACCES) || (errno == EPERM))
                error( KIO::ERR_ACCESS_DENIED, url.path());
@@ -598,20 +608,20 @@ void FileProtocol::del( const KURL& url, bool isfile)
 	    return;
 	}
     } else {
-	
+
 	/*****
 	 * Delete empty directory
 	 *****/
-	
+
 	kdDebug(7101) << "Deleting directory " << url.url() << endl;
 
 	// TODO deletingFile( source );
-	
+
 
       /*****
        * Delete empty directory
        *****/
-	
+
       kdDebug( 7101 ) << "Deleting directory " << url.url() << endl;
 
       if ( ::rmdir( _path.data() ) == -1 ) {
@@ -635,13 +645,13 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
     atom.m_uds = KIO::UDS_NAME;
     atom.m_str = filename;
     entry.append( atom );
-	
+
     mode_t type;
     mode_t access;
     struct stat buff;
 
 	if ( lstat( path.data(), &buff ) == 0 )  {
-	
+
 	    if (S_ISLNK(buff.st_mode)) {
 
 		char buffer2[ 1000 ];
@@ -680,14 +690,14 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
             kdWarning() << "lstat didn't work on " << path.data() << endl;
 	    return false;
 	}
-	
+
 	type = buff.st_mode & S_IFMT; // extract file type
 	access = buff.st_mode & 07777; // extract permissions
 
 	atom.m_uds = KIO::UDS_FILE_TYPE;
 	atom.m_long = type;
 	entry.append( atom );
-	
+
 	atom.m_uds = KIO::UDS_ACCESS;
 	atom.m_long = access;
 	entry.append( atom );
@@ -897,14 +907,14 @@ void FileProtocol::special( const QByteArray &data)
       {
 	QString fstype, dev, point;
 	Q_INT8 iRo;
-	
+
 	stream >> iRo >> fstype >> dev >> point;
-	
+
 	bool ro = ( iRo != 0 );
-	
+
 	kdDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro << endl;
 	mount( ro, fstype.ascii(), dev, point );
-	
+
       }
       break;
     case 2:
