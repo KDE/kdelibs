@@ -2151,20 +2151,7 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
-  if ( widget->inherits("QMenuBar") )
-  {
-    QMenuBar* bar = static_cast<QMenuBar*>( widget );
-    int id;
-    id = bar->insertItem( text(), d->m_popup, -1, index );
-
-    bar->setItemEnabled( id, isEnabled() );
-
-    addContainer( bar, id );
-    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    return containerCount() - 1;
-  }
-  else if ( widget->inherits("QPopupMenu") )
+  if ( widget->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
@@ -2220,9 +2207,9 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( widget->inherits( "KMenuBar" ) )
+  else if ( widget->inherits( "QMenuBar" ) )
   {
-    KMenuBar *bar = static_cast<KMenuBar *>( widget );
+    QMenuBar *bar = static_cast<QMenuBar *>( widget );
 
     int id;
 
@@ -2240,16 +2227,6 @@ int KActionMenu::plug( QWidget* widget, int index )
 
 void KActionMenu::unplug( QWidget* widget )
 {
-  if ( widget->inherits("QMenuBar") )
-  {
-    QMenuBar* bar = static_cast<QMenuBar*>( widget );
-    int i = findContainer( bar );
-    if ( i != -1 )
-    {
-      bar->removeItem( itemId( i ) );
-      removeContainer( i );
-    }
-  }
   if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( widget );
@@ -2264,9 +2241,9 @@ void KActionMenu::unplug( QWidget* widget )
 
     return;
   }
-  else if ( widget->inherits( "KMenuBar" ) )
+  else if ( widget->inherits( "QMenuBar" ) )
   {
-    KMenuBar *bar = static_cast<KMenuBar *>( widget );
+    QMenuBar *bar = static_cast<QMenuBar *>( widget );
     int i = findContainer( bar );
     if ( i != -1 )
     {
@@ -2443,9 +2420,9 @@ int KActionSeparator::plug( QWidget *widget, int index )
 
     return containerCount() - 1;
   }
-  else if ( widget->inherits( "KMenuBar" ) )
+  else if ( widget->inherits( "QMenuBar" ) )
   {
-    KMenuBar *menuBar = static_cast<KMenuBar *>( widget );
+    QMenuBar *menuBar = static_cast<QMenuBar *>( widget );
 
     int id = menuBar->insertSeparator( index );
 
@@ -2483,9 +2460,9 @@ void KActionSeparator::unplug( QWidget *widget )
       removeContainer( i );
     }
   }
-  else if ( widget->inherits( "KMenuBar" ) )
+  else if ( widget->inherits( "QMenuBar" ) )
   {
-    KMenuBar *menuBar = static_cast<KMenuBar *>( widget );
+    QMenuBar *menuBar = static_cast<QMenuBar *>( widget );
 
     int i = findContainer( menuBar );
 
