@@ -1209,14 +1209,19 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
     return fname;
 
   // Does the path only consist of '/' characters ?
-  if ( len == 1 && m_strPath[ 1 ] == '/' )
+  if ( len == 1 && m_strPath[ 0 ] == '/' )
     return fname;
 
   int i = m_strPath.findRev( '/', len - 1 );
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, return the whole path
-  if ( i == -1 )
-    return m_strPath;
+  if ( i == -1 ) {
+    if ( len == m_strPath.length() )
+      return m_strPath;
+    else
+      // Might get here if _strip_trailing_slash is true
+      return m_strPath.left( len );
+  }
 
   fname = m_strPath.mid( i + 1, len - i - 1 ); // TO CHECK
   // fname.assign( m_strPath, i + 1, len - i - 1 );
@@ -1264,8 +1269,10 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
     return result;
 
   int i = result.findRev( "/" );
+  // If ( i == -1 ) => the first character is not a '/'
+  // So it's some URL like file:blah.tgz, with no path 
   if ( i == -1 )
-    return result;
+    return QString::null;
 
   if ( i == 0 )
   {
