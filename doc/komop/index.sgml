@@ -41,10 +41,10 @@ author/creator/master/god of KOM/OpenParts.
 
 <sect>The KDE Object Model (KOM)
 
-<sect1>First ways of communication - the KOM::Base interface
+<sect1>First ways of communication - the <idx/KOM::Base interface/
 
 <p>
-The Base interface and its implementation in libkom provide the basic
+The Base interface and its implementation in <tt/<cdx/libkom// provide the basic
 functionality for a standardized communication between CORBA objects using
 KOM. This includes
 
@@ -55,7 +55,7 @@ KOM. This includes
 <item>reference counting
 </itemize>
 
-<sect1>Signals and Slots
+<sect1><idx/Signals and Slots/
 
 <p>
 KOM supports signals and slots just like in the Qt toolkit, with a few
@@ -65,14 +65,14 @@ compiler generating meta data for KOM signals/slots to enable type checking at
 run-time, when connecting.
 
 Another difference is the way you declare signal and slot functions. Signals
-have to be declared with the <tt>SIGNAL_IMPL</tt> macro from komBase.h,
+have to be declared with the <tt><cdx/SIGNAL_IMPL/</tt> macro from <tt/<cdx/komBase.h//,
 without  specifying any signal arguments. Slot methods have to be defined in
 your CORBA  interface description.
- 
-For KOM signals the equivalent to the "emit" keyword from Qt is the
-<tt>SIGNAL_CALLx</tt> macro, were "x" is one of 0, 1, 2, depending on the
-number of arguments.
 
+For KOM signals the equivalent to the "emit" keyword from Qt is the
+<tt><cdx/SIGNAL_CALL/x</tt> macro, were "x" is one of 0, 1, 2, depending on the
+number of arguments.
+<nidx/KOM::Base/
 Example:
 
 In your CORBA interface description:
@@ -118,7 +118,7 @@ it easier for other developers to use your interface because they aren't require
 to seek in the implementation sources just to find out about the signals this
 object emits. Another way is to simply document the existence of the signal
 in the interface description, without defining a method. From the technical
-point only the <tt>SIGNAL_CALLx</tt> macro counts when emitting the signal.
+point only the <tt><cdx/SIGNAL_CALL/x</tt> macro counts when emitting the signal.
 
 What's left is connecting and disconnecting. In the above described example it
 could like this:
@@ -142,15 +142,15 @@ Events, sent to a specified object, can be imagined as being put through a
 pipe until they reach the destination object. This "pipe" is filled with
 installed  event filters. There are three kinds of filters.
 <itemize>
-<item>reading filters ( <tt>FM_READ</tt> )
-<item>writing filters ( <tt>FM_WRITE</tt> )
-<item>implementing filters ( <tt>FM_IMPLEMENT</tt> )
+<item>reading filters ( <tt><cdx/FM_READ/</tt> )
+<item>writing filters ( <tt><cdx/FM_WRITE/</tt> )
+<item>implementing filters ( <tt><cdx/FM_IMPLEMENT/</tt> )
 </itemize>
 
 In the current implementation in KOM these filter modes only specify the order
 how the event is processed. When an event is emitted it gets first filtered by
-all event filters with the filter mode <tt>FM_WRITE</tt>, then followed by
-<tt>FM_IMPLEMENT</tt> and finally by <tt>FM_READ</tt>. Event filters have two
+all event filters with the filter mode <tt><cdx/FM_WRITE/</tt>, then followed by
+<tt><cdx/FM_IMPLEMENT/</tt> and finally by <tt><cdx/FM_READ/</tt>. Event filters have two
 possibilities what they can do with the actual event: They can just
 <bf>read</bf> it or they can <bf>discard</bf>  it, which means the event is
 discarded and will never receive its destination  object.
@@ -159,7 +159,7 @@ The actual event name has a special meaning in regard to event filters.  When
 installing an event filter to an object you have to specify, beside a
 reference to the filter object and the name of the filter mapping function, a
 sequence of so called event type patterns. An event type pattern can be the
-name of a  single event as well as a special pattern (see kom.idl for more
+name of a  single event as well as a special pattern (see <tt/<cdx/kom.idl// for more
 information about event type patterns) .
 
 When an event is meant to be processed by a filter, the specified filter
@@ -169,19 +169,19 @@ should be discarded or not.
 
 When all filtering is done and none of the installed filters discarded the
 event, it is finally received by the destination object, by calling the
-object's event() method, defined in the KOM::Base interface. The default
+object's <tt/<cdx/event()// method, defined in the <idx/KOM::Base/ interface. The default
 implementation does actually nothing, so you may want to re-implement this
 virtual function.
 
 The very low-level usage of events is to call the receive/receiveASync methods
-of an object for sending an event and to re-implement KOMBase::event for
+of an object for sending an event and to re-implement <cdx/KOMBase::event/ for
 mapping an event. But KOM provides some nice macros which simplify the
 processing of events.
 
 <sect2>Sending Events
 <p>
 
-For sending komBase.h defines some useful <tt>EMIT_EVENT</tt> macros, all
+For sending komBase.h defines some useful <tt><cdx/EMIT_EVENT/</tt> macros, all
 using the same syntax:
 <verb>EMIT_EVENT_x( destination_object, event_name, event_argument)</verb>
 
@@ -198,7 +198,7 @@ are in particular:
       for example. (and don't forget to compile your idl file with the "--any"
       option, so that the idl compiler generates the necessary operator
       methods)
-<item><tt>EMIT_EVENT_BOOLEAN</tt>, useful for boolean event arguments. The
+<item><tt><cdx/EMIT_EVENT_BOOLEAN/</tt>, useful for boolean event arguments. The
       only difference to the <tt>EMIT_EVENT</tt> macro is that it uses
       CORBA::Any::from_boolean for you to convert the boolean value. So it
       doesn't really matter whether you use:
@@ -207,18 +207,18 @@ are in particular:
       or
 <verb>    EMIT_EVENT_BOOLEAN( receiver, name, value );</verb>
 
-<item><tt>EMIT_EVENT_OCTET</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
-      CORBA::Octet values.
-<item><tt>EMIT_EVENT_CHAR</tt>, similar to EMIT_EVENT_BOOLEAN, useable for char
-      (CORBA::Char) values.
-<item><tt>EMIT_EVENT_WCHAR</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
-      CORBA::WChar values.
-<item><tt>EMIT_EVENT_STRING</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
-      char * (CORBA::Char*) values.
-<item><tt>EMIT_EVENT_WSTRING</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
-      CORBA::WChar* values.
-<item><tt>EMIT_EVENT_OBJECT</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
-      CORBA objects (CORBA::Object).
+<item><tt><cdx/EMIT_EVENT_OCTET/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+      <cdx/CORBA::Octet/ values.
+<item><tt><cdx/EMIT_EVENT_CHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for char
+      (<cdx/CORBA::Char/) values.
+<item><tt><cdx/EMIT_EVENT_WCHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+      <cdx/CORBA::WChar/ values.
+<item><tt><cdx/EMIT_EVENT_STRING/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+      char * (<cdx/CORBA::Char*/) values.
+<item><tt><cdx/EMIT_EVENT_WSTRING/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+      <cdx/CORBA::WChar*/ values.
+<item><tt><cdx/EMIT_EVENT_OBJECT/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+      CORBA objects (<cdx/CORBA::Object/).
 </itemize>
 
 <sect2>Receiving Events
@@ -226,11 +226,11 @@ are in particular:
 
 The process of receiving events is a little bit more difficult, compared
 to sending, since we have to process all kinds of events an object can receive
-in one handler method, KOM::Base::event (IDL) / KOMBase::event (C++) . Just
+in one handler method, <idx/KOM::Base/::event (<idx/IDL/) / KOMBase::event (C++) . Just
 like with sending events you can again do everything on low CORBA level, but
 why should we go the hard way? KOM again provides very nice and easy-to-use
 macros for this (defined in komBase.h) :-) . Usually all this looks like the
-following example:
+following example:<nidx/KOM::Base/
 <verb>
 #include &lt;kom.idl&gt;
 
@@ -369,7 +369,7 @@ there are three ways to hold a reference to an object:
 Hint: Using the <tt>KOMVar</tt> template makes handling KOM references much
 easier, they can be used similar to the CORBA _var types.
 
-<sect1>THE component - the KOM::Component interface
+<sect1>THE component - the <idx/KOM::Component/ interface
 <p>
 The Component interface, being derived from the Base interface, additionally
 provides a kind of small interface repository for only this component,
@@ -388,7 +388,7 @@ There are five kinds of interfaces:
 
 Builtin interfaces are all interfaces the object directly implements. This
 means they are part of the actual object implementation and can be specified
-via the <tt>ADD_INTERFACE</tt> macro (in komComponent.h) . So for example if
+via the <tt><cdx/ADD_INTERFACE/</tt> macro (in <cdx/komComponent.h/) . So for example if
 your interface description looks like this:
 <verb>
 module Foo
@@ -402,6 +402,7 @@ module Foo
 
 You should add the following line into the constructor of an implementation of
 this interface:
+<nidx/IDL/
 <verb>
 ConstructorNameOfMyInterface::ConstructorNameOfMyInterface( ... )
 {
@@ -416,7 +417,7 @@ This way you tell your component that it supports the interface
 <tt>getInterface()</tt>, <tt>interfaces()</tt> and
 <tt>supportsInterface()</tt> .
 
-<sect1>Extend your component by aggregation - KOM::Aggregate
+<sect1>Extend your component by aggregation - <idx/KOM::Aggregate/
 <p>
 
 Aggregates solve a problem with distributed objects, the problem of
@@ -431,7 +432,7 @@ but you do not change the behaviour of the object itself.
 
 Builtin aggregate interfaces are the interfaces of aggregate implementations
 which run in the same process as our component. See in komComponent.h the four
-functions of the KOMComponent class for adding builtin aggregates,  it's easy.
+functions of the <tt/<cdx/KOMComponent// class for adding builtin aggregates,  it's easy.
 
 <sect2>Dynamic Aggregates
 <p>
@@ -440,13 +441,13 @@ Dynamic aggregates are similar to builtin aggregates, with two differences:
 
 <itemize>
 <item>They can (are) be installed from "outside" of the component,
-      using  AggregateFactories (see kom.idl) . This way they do neither have
+      using  AggregateFactories (see <idx/kom.idl/) . This way they do neither have
       to run  within the same process nor on the same computer.
 <item>They can depend on other available interfaces. KOM does the job of resolving
       these dependencies for you.
 </itemize>
 
-<sect1>Plugins - the KOM::Plugin interface
+<sect1>Plugins - the <idx/KOM::Plugin/ interface
 <p>
 
 Plugins are the kind of counterpart to aggregates. They do not extend the
@@ -457,7 +458,7 @@ change the behaviour of it, by
 <item>providing special plugin interfaces
 </enum>
 
-<sect1>Collect your components - the KOM::Container interface
+<sect1>Collect your components - the <idx/KOM::Container/ interface
 <p>
 
 Containers do something simple but extremly useful: They act as repository for
@@ -465,7 +466,7 @@ Container members. A container member structure consists of two elements:
 
 <itemize>
 <item>the member name, a freely chooseable and unique string identifier
-<item>the member object, a KOM::Base type You can add, remove, replace, list
+<item>the member object, a <idx/KOM::Base/ type You can add, remove, replace, list
       and lookup container members or just clear  the whole container. In
       addition the container emits signals whenever a  member has been added
       or removed.
@@ -476,8 +477,8 @@ Container members. A container member structure consists of two elements:
 
 KOM contains two abstract factory interfaces:
 <enum>
-<item>KOM::AggregateFactory
-<item>KOM::PluginFactory
+<item><idx/KOM::AggregateFactory/
+<item><idx/KOM::PluginFactory/
 </enum>
 
 They both serve the job of creating objects and are needed for the creation of
@@ -485,19 +486,19 @@ dynamic plugin and aggregate components. Whenever you want to install a such a
 dynamically created object to a component you have to provide an
 implementation of a factory interface.
 
-<sect1>KOMApplication
+<sect1><idx/KOMApplication/
 <p>
 
-KOMApplication is the drop-in replacement for KApplication, required when
+<idx/KOMApplication/ is the drop-in replacement for <idx/KApplication/, required when
 using CORBA in your KDE Application. It, internally, combines CORBA event
-handling with Qt event handling and initializes the ORB and the BOA on
+handling with Qt event handling and initializes the <idx/ORB/ and the <idx/BOA/ on
 startup.  komApplication.h defines two smart macros to get a reference to the
 ORB/BOA: <tt>komapp_orb</tt> and <tt>komapp_boa</tt> . Usually you will want
 to use your own application class, derived from KOMApplication, and
 re-implement <tt>start()</tt> and/or <tt>restore()</tt> , which will be called
->from <tt>KOMApplication::exec()</tt>, depending on the BOA's state about
+>from <tt><cdx/KOMApplication::exec()/</tt>, depending on the BOA's state about
 restoring objects. For further information about KOMApplication's API see
-komApplication.h .
+<cdx/komApplication.h/ .
 
 <sect>OpenParts
 <p>
@@ -537,32 +538,32 @@ or toolbars, dynamically on demand.
 In the implementation of OpenParts every element consists usually of two
 classes, the interface implementation, where the class name ends with "If",
 and the Qt/KDE object. So for example the OpenParts StatusBar element is
-represented by two classes: <tt>OPStatusBar</tt>, being derived from
-KStatusBar,  handles the Qt/KDE specific extensions, and
-<tt>OPStatusBarIf</tt> which is  responsible for providing an implementation
-of the actual OpenPartsUI::StatusBar  interface by "translating" the interface
+represented by two classes: <tt><cdx/OPStatusBar/</tt>, being derived from
+<cdx/KStatusBar/,  handles the Qt/KDE specific extensions, and
+<tt><cdx/OPStatusBarIf/</tt> which is  responsible for providing an implementation
+of the actual <cdx/OpenPartsUI::StatusBar/  interface by "translating" the interface
 functionality into Qt/KDE function  calls.
 
 Since every Qt/KDE object in OpenParts is most often bound to such an
 interface, like described above, there is usually an interface() function
 which returns a reference to the OpenParts interface of the element. In case
-of the above example <tt>OPStatusBar::interface()</tt> returns a reference to
-an <tt>OPStatusBarIf</tt> object which is directly bound to this
-<tt>OPStatusBar</tt> object.
+of the above example <tt><cdx/OPStatusBar::interface()/</tt> returns a reference to
+an <tt><cdx/OPStatusBarIf/</tt> object which is directly bound to this
+<tt><cdx/OPStatusBar/</tt> object.
 
-<sect1>OPApplication
+<sect1><idx/OPApplication/
 <p>
 
-Similar to KOMApplication, the class OPApplication (derived from
+Similar to <cdx/KOMApplication/, the class <cdx/OPApplication/ (derived from
 KOMApplication) is required when using OpenParts.
 
-<sect1>QWidget as Component? - the OpenParts::Part interface
+<sect1><cdx/QWidget/ as Component? - the OpenParts::Part interface
 <p>
 
 In OpenParts every window which has its own GUI and which is meant to be
 displayed in a MainWindow is called a Part (just like the formula editor view
 or the word processor document view in the above described example) , and
-implements the OpenParts::Part interface by deriving from the class
+implements the <cdx/OpenParts::Part/ interface by deriving from the class
 <tt>OPPartIf</tt>.
 
 If you want to make a widget class a full-featured Part component then you
@@ -570,7 +571,7 @@ have to handle some things different than you might be used to, in regard to
 the standard Qt/KDE widget framework. In fact now a widget is no more a simple
 window in which you display some data, no, a Part is much more than this. In
 particular a Part has, beside it's window (widget, which may of course contain
-sub-windows or even other Parts (see <tt>OPFrame</tt> documentation) ) a
+sub-windows or even other Parts (see <tt><cdx/OPFrame/</tt> documentation) ) a
 full-featured GUI, consisting of a menubar with menus, toolbar(s) and a
 statusbar.
 
@@ -590,30 +591,30 @@ framework for this:
 </itemize>
 
 The very first step you have to make is to tell the OpenParts Part Interface
-(<tt>OPPartIf</tt>) , the class you have to inherit from, what the actual
-widget is, because <tt>OPartIf</tt> does not inherit from QWidget. This gives
+(<tt><cdx/OPPartIf/</tt>) , the class you have to inherit from, what the actual
+widget is, because <tt><cdx/OPartIf/</tt> does not inherit from QWidget. This gives
 you the  flexibility to separate your Part component from your actualy widget,
 but you  don't have to do this. You can simply multiply inherit from
-<tt>OPPartIf</tt> and QWidget or the appropriate widget class. In any way you
+<tt>OPPartIf</tt> and <tt/<cdx/QWidget// or the appropriate widget class. In any way you
 specify your Part  widget by calling <tt>setWidget( your_widget_here )</tt> .
 In most cases, when  the Part component is the widget at the same time, you
 simply call <tt>setWidget( this )</tt> :-) . Make sure this call is done in
 the constructor of your class!
 
 The next important point is that you will want to re-implement the virtual
-<tt>init()</tt> function of <tt>OPPartIf</tt> . This is highly recommended
+<tt>init()</tt> function of <tt><cdx/OPPartIf/</tt> . This is highly recommended
 since this function is called after your Part got registered by a MainWindow.
 The idea  behind this function is that at the time the constructor of a Part
 gets executed, the Part itself is definitely not registered to a MainWindow,
 yet. But in fact you need to know when your Part gets registered, in order to
 register your Part at the GUI servant objects, which are only available via
 the MainWindow's interface. A reference to the MainWindow is available through
-the <tt>m_vMainWindow</tt> variable, which will be automatically initialized
+the <tt><cdx/m_vMainWindow/</tt> variable, which will be automatically initialized
 when the MainWindow  registration is done, so don't use this variable before
 your <tt>init()</tt> function gets called (<tt>m_vMainWindow</tt> will be nil
 anyway) .
 
-Now over to the details of the <tt>init()</tt> function. Here you should place
+Now over to the details of the <tt><cdx/init()/</tt> function. Here you should place
 all initialisation stuff which depends on being registered to a MainWindow.
 In addition you can do the above mentioned registration at the GUI managing
 objects. Usually this looks like the following example:
@@ -645,7 +646,7 @@ Note that the registration calls for these three GUI element types are only
 necessary if you really want to use them. For example if your Part does not
 want to display any toolbar you should leave out the corresponding call.  In
 addition you might come up with the situation that for example the
-<tt>toolBarManager()</tt> call returns a nil reference, which indicates that
+<tt><cdx/toolBarManager()/</tt> call returns a nil reference, which indicates that
 the MainWindow does not allow its Parts to have a toolbar. Obviously the same
 applies for the menubar and the statusbar.
 
@@ -663,7 +664,7 @@ The attached argument is a <tt>OpenPartsUI::ToolBarFactory</tt>
 
 Depending on whether a Part wants to display a menubar and/or toolbar, the
 managing objects emit these two events to it. In regard to your implementation
-this means that you have to re-implement the <tt>event()</tt> function
+this means that you have to re-implement the <tt><cdx/event()/</tt> function
 (remember: A Part is a full-featured KOM Component) .
 
 The attached event arguments indicate whether the toolbar(s) or the menubar
@@ -672,13 +673,13 @@ are to be created or cleared. Check these arguments against
 
 The OpenParts StatusBar is handled different compared to the
 MenuBar/ToolBar(s) . In fact it is easier: When registering at the OpenParts
-StatusBarManager you receive your <tt>OpenParts::StatusBar</tt> as return
+StatusBarManager you receive your <tt><cdx/OpenParts::StatusBar/</tt> as return
 value. You can then use the StatusBar everywhere in your Part, independend
->from whether it is visible (active) or not.
+from whether it is visible (active) or not.
 
-In the <tt>init()</tt> function a lot of registration stuff is done, and
-corresponding to this in the <tt>cleanUp()</tt> function (see chapter about
-KOM::Base) you have to unregister from the GUI servant objects and free all
+In the <tt><cdx/init()/</tt> function a lot of registration stuff is done, and
+corresponding to this in the <tt><cdx/cleanUp()/</tt> function (see chapter about
+<idx/KOM::Base/) you have to unregister from the GUI servant objects and free all
 appropriate references, following KOM's model of symmetric references and
 connections. Usually the code looks like this:
 <verb>
@@ -720,23 +721,23 @@ A Part Child is a usual Part with three extra features:
       events.
 <item>The Parent Child receives events whenever there are any child related focus
       changes. Since the Part Child functionality is integrated in the
-      <tt>OpenParts::Part</tt> interface and it's implementation,
-      <tt>OPPartIf</tt>, you don't have to deal  with additional classes when
+      <tt><cdx/OpenParts::Part/</tt> interface and it's implementation,
+      <tt><cdx/OPPartIf/</tt>, you don't have to deal  with additional classes when
       using Child Parts. Simply leave out the mapping of the OpenParts GUI
       events in the Child Part and instead map the Child Part events described
-      below and assign the Parent Part via <tt>setParent()</tt>. See the
-      interface description of <tt>OpenParts::Part</tt> , in openparts.idl,
+      below and assign the Parent Part via <tt><cdx/setParent()/</tt>. See the
+      interface description of <tt><cdx/OpenParts::Part/</tt> , in <cdx/openparts.idl/,
       for further information about the events and the API in general.
 </enum>
 
-<sect1>How to embed a Part - the OPFrame class
+<sect1>How to embed a Part - the <cdx/OPFrame/ class
 <p>
 
 Now that you know how to create full-featured Part components it is still
 unexplained how Parts are really displayed/shown. Since Parts are no simple
 QWidgets but CORBA objects we need a helping hand here, which is the
-<tt>OPFrame</tt> class. In fact <tt>OPFrame</tt> is a QWidget, but in
-conjuction with Qt's QXEmbed it embeds the Part's widget window. The usage of
+<tt>OPFrame</tt> class. In fact <tt><cdx/OPFrame/</tt> is a <cdx/QWidget/, but in
+conjuction with Qt's <cdx/QXEmbed/ it embeds the Part's widget window. The usage of
 <tt>OPFrame</tt> is really easy, usually the code looks like this:
 
 <verb>
@@ -746,12 +747,12 @@ myFrame->attach( a_reference_to_the_part_we_want_to_embed );
 myFrame->show();
 </verb>
 
-In addition to the above example you can <tt>detach()</tt> your Part, which
-you should usually do on exit. Just have a look at opFrame.h , it is
+In addition to the above example you can <tt><cdx/detach()/</tt> your Part, which
+you should usually do on exit. Just have a look at <cdx/opFrame.h/, it is
 documented.
 
 
-One last important thing you have to know about <tt>OPFrame</tt> is that this
+One last important thing you have to know about <tt><cdx/OPFrame/</tt> is that this
 class internally uses KOM referencing (using a <tt>KOMVar</tt> variable) to
 hold the Part.  This means that there are two possible situations when using
 <tt>OPFrame</tt> :
@@ -774,8 +775,8 @@ hold the Part.  This means that there are two possible situations when using
 <sect1>The center of OpenParts - the OpenParts::MainWindow interface
 <p>
 
-Another important component is the so called OpenParts::MainWindow, being
-derived from a KTMainWindow in the implementation (and therefore the top-level
+Another important component is the so called <cdx/OpenParts::MainWindow/, being
+derived from a <cdx/KTMainWindow/ in the implementation (and therefore the top-level
 window of your application) and being the shell around visible sub-windows and
 shared GUI elements.
 
@@ -783,13 +784,13 @@ The MainWindow's functionality is extended by some builtin aggregates, the
 managing objects for the menu-/tool-/statusbar. These objects are either
 available directly via the <tt>*barManager()</tt> methods of the MainWindow's
 interface or indirectly by being aggregates and therefore available via the
-components interface repository (<tt>getInterface()</tt>,
-<tt>supportsInterface()</tt>, ...) .
+components interface repository (<tt><cdx/getInterface()/</tt>,
+<tt><cdx/supportsInterface()/</tt>, ...) .
 
 A Part can only be displayed in a MainWindow and the MainWindow has to know
 about this. So before you can display a Part you have to register it to the
 MainWindow. This is done by calling the Part Interface's
-<tt>setMainWindow()</tt> method (see previous chapter for further information
+<tt><cdx/setMainWindow()/</tt> method (see previous chapter for further information
 about the process of registration) and this will give the Part a unique ID
 (which is for example used when addressing the part's GUI via the *bar manager
 objects) .
@@ -809,9 +810,9 @@ appropriate manager and also creates a new one if it does not exist yet. It is
 recommended to perform these calls in the constructor of your MainWindow.
 
 The creation/handling of the skeleton GUI is explained later in the chapters
-about OPMenu(Bar)/OPToolBar .
+about <cdx/OPMenu/(Bar)/<cdx/OPToolBar/ .
 
-Your MainWindow emits a Qt signal (<tt>activePartChanged</tt>) which informs
+Your MainWindow emits a Qt signal (<tt><cdx/activePartChanged/</tt>) which informs
 you about a focus change of the active part, meaning whenever the user clicks
 on a non-active Part and it accepts the focus. Beside the pure informative
 sense  of this signal it is recommended to connect to this signal and perform
@@ -819,10 +820,10 @@ the  following two steps in the slot implementation:
 
 <enum>
 <item>deactivate the previous active Part's GUI by calling the *bar managers
-      <tt>clear()</tt> function, which will do the job and, beside some
+      <tt><cdx/clear()/</tt> function, which will do the job and, beside some
       internal stuff, emit the GUI events (see previous chapter) to the Part.
 <item>activate the new active Part's GUI by calling the *bar managers
-      <tt>create()</tt> function, which will, similar to the activation, emit
+      <tt><cdx/create()/</tt> function, which will, similar to the activation, emit
       events to the Part. This is not really required but it is highly
       recommended. The following code is usually used for this:
 
@@ -849,7 +850,7 @@ their own window captions, but how does OpenParts handle this?
 
 Well, there are two ways:
 <enum>
-<item><tt>OPMainWindow</tt> provides you a so called <tt>AutoCaption</tt> mode
+<item><tt><cdx/OPMainWindow/</tt> provides you a so called <tt><cdx/AutoCaption/</tt> mode
       which automatically changes the MainWindow's caption whenever the active
       part changes. This is enabled by default.
 <item>But sometimes the shell wants to have full control over the window's
@@ -862,38 +863,38 @@ Well, there are two ways:
 <p>
 
 Well, now that we know when we have to construct/destruct a Part's GUI,
-via the OpenPartsUI events, we have to learn how to really create it, because
-we don't have the common KMenuBar, KToolBar, etc. classes anymore available.
+via the <cdx/OpenPartsUI/ events, we have to learn how to really create it, because
+we don't have the common <cdx/KMenuBar/, <cdx/KToolBar/, etc. classes anymore available.
 The replacement for them are CORBA Objects, described in openparts_ui.idl which
 is, together with the corresponding implementations, a part of the partsui
 module. The interfaces are 98%; similar to the KDE/Qt classes, so they're
 quite easy to use. Instead of bloating up this documentation with example code
 I rather suggest reading the tutorials in kdelibs/corba/tutorials .
 
-<sect1>Pixmaps and Strings in OpenParts - OPUIUtils
+<sect1><idx/Pixmaps/ and <idx/Strings/ in OpenParts - <cdx/OPUIUtils/
 <p>
 
 Toolbars and menus are usually beautified with pixmaps, using QPixmap classes.
-As we now use a CORBA interface to access our GUI elements, QPixmap has become
-OpenPartsUI::Pixmap for OpenParts applications. OpenPartsUI::Pixmap is just
+As we now use a CORBA interface to access our GUI elements, <cdx/QPixmap/ has become
+<cdx/OpenPartsUI::Pixmap/ for OpenParts applications. OpenPartsUI::Pixmap is just
 a "stringified" QPixmap, and opUIUtils.(h,cc) contains some easy
 to use conversion routines.
 
 In addition OPUIUtils contains string conversion routines between CORBA::WChar*
-and QString. This is necessary since Qt version >=2.0 supports Unicode,
+and <cdx/QString/. This is necessary since Qt version >=2.0 supports <cdx/Unicode/,
 via QString, all over the place, and obviously GUI elements like menus or
 toolbars have been converted to support this. OpenParts has been converted,
-too, by using "wstring" (CORBA::WChar *) in the interfaces and by
+too, by using "wstring" (<cdx/CORBA::WChar */) in the interfaces and by
 using and providing conversion routines. These routines are static member
 functions of the OPUIUtils  class, just like with the pixmap conversion. To
-simplify the usage, two macros have been defined: <tt>Q2C</tt> and
-<tt>C2Q</tt> . The first one converts a QString into a CORBA::WChar * string
+simplify the usage, two macros have been defined: <tt><cdx/Q2C/</tt> and
+<tt><cdx/C2Q/</tt> . The first one converts a QString into a CORBA::WChar * string
 and the second one vice-versa.
 
 When converting from QString to CORBA::WChar * the conversion routine
-allocates memory. To avoid memory leaks it is highly recommended to use
+allocates memory. To avoid <idx/memory leaks/ it is highly recommended to use
 CORBA::WString_var variables. Exactly the same applies for QPixmap ->
-OpenPartsUI::Pixmap conversions: Use OpenPartsUI::Pixmap_var , and you don't
+OpenPartsUI::Pixmap conversions: Use <cdx/OpenPartsUI::Pixmap_var/ , and you don't
 have to worry about leaks :-) .
 
 Here's some example code, to show how to do it right:
@@ -909,7 +910,7 @@ Here's some example code, to show how to do it right:
 
 Similar things have to be done with QString's:
 
-<verb>  
+<verb>
     ...
     CORBA::WString_var text = Q2C( QString_here );
     someMenuBar->insertItem7( text, ... );
@@ -921,10 +922,10 @@ Similar things have to be done with QString's:
 
 One note left: When you return a "wide string" (CORBA::WChar *) as
 a function result by using <tt>Q2C</tt>, make sure not to use
-<tt>CORBA::wstring_dup()</tt>.
+<tt><cdx/CORBA::wstring_dup()/</tt>.
 
 Example:
-<verb>  
+<verb>
   return CORBA::string_dup( Q2C( QString_here ) ); //!!!! WRONG!!!!!
   ...
   return Q2C( QString_here ); // RIGHT! because Q2C already allocates the string
@@ -940,3 +941,6 @@ TODO:
 </itemize>
 
 </article>
+
+
+

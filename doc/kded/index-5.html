@@ -28,7 +28,7 @@ kded is system (session) wide available, your object becomes available for any
 client which is able to connect to kded.
 <P>
 <P>There's not much to explain here :-} , so I suggest having a look at the KNaming
-API, in knaming.h .
+API, in <CODE>knaming.h</CODE>.
 <P>
 <P>Example code can be, again, found in kdelibs/corba/tutorials/kded . Here's just
 a short real example situation:
@@ -37,7 +37,7 @@ a short real example situation:
 It provides some functionality via CORBA, just have a look at kdesktop.idl to
 see what I'm talking about. Now the problem for KDesktop is: How can it provide
 this service to other apps in the system? Writing an IOR into some file is no
-clean solution IMHO, and using KActiator doesn't work because KDesktop does not
+clean solution IMHO, and using KActivator doesn't work because KDesktop does not
 get started by kded but by the startkde script on KDE startup. So we find a better
 way and make KDesktop register it's object at KNaming. This is done by the following
 lines:

@@ -23,7 +23,7 @@
 <H3><A NAME="ss2.1">2.1 First ways of communication - the KOM::Base interface</A>
 </H3>
 
-<P>The Base interface and its implementation in libkom provide the basic
+<P>The Base interface and its implementation in <CODE>libkom</CODE> provide the basic
 functionality for a standardized communication between CORBA objects using
 KOM. This includes
 <P>
@@ -43,13 +43,17 @@ that signals and slots are no more typesafe again, meaning there's no moc
 compiler generating meta data for KOM signals/slots to enable type checking at
 run-time, when connecting.
 <P>Another difference is the way you declare signal and slot functions. Signals
-have to be declared with the <CODE>SIGNAL_IMPL</CODE> macro from komBase.h,
+have to be declared with the <CODE>SIGNAL_IMPL</CODE> macro from <CODE>komBase.h</CODE>,
 without  specifying any signal arguments. Slot methods have to be defined in
 your CORBA  interface description.
 <P>For KOM signals the equivalent to the "emit" keyword from Qt is the
 <CODE>SIGNAL_CALLx</CODE> macro, were "x" is one of 0, 1, 2, depending on the
 number of arguments.
-<P>Example:
+<!--
+KOM::Base
+-->
+
+Example:
 <P>In your CORBA interface description:
 <PRE>
   #include &lt;kom.idl&gt;
@@ -130,7 +134,7 @@ discarded and will never receive its destination  object.
 installing an event filter to an object you have to specify, beside a
 reference to the filter object and the name of the filter mapping function, a
 sequence of so called event type patterns. An event type pattern can be the
-name of a  single event as well as a special pattern (see kom.idl for more
+name of a  single event as well as a special pattern (see <CODE>kom.idl</CODE> for more
 information about event type patterns) .
 <P>When an event is meant to be processed by a filter, the specified filter
 function gets called, with the event name and the event value as arguments.
@@ -138,7 +142,7 @@ This filter function has to return (through a boolean value) whether the event
 should be discarded or not.
 <P>When all filtering is done and none of the installed filters discarded the
 event, it is finally received by the destination object, by calling the
-object's event() method, defined in the KOM::Base interface. The default
+object's <CODE>event()</CODE> method, defined in the KOM::Base interface. The default
 implementation does actually nothing, so you may want to re-implement this
 virtual function.
 <P>The very low-level usage of events is to call the receive/receiveASync methods
@@ -206,6 +210,10 @@ like with sending events you can again do everything on low CORBA level, but
 why should we go the hard way? KOM again provides very nice and easy-to-use
 macros for this (defined in komBase.h) :-) . Usually all this looks like the
 following example:
+<!--
+KOM::Base
+-->
+
 <PRE>
 #include &lt;kom.idl&gt;
 
@@ -372,6 +380,10 @@ module Foo
 </PRE>
 <P>You should add the following line into the constructor of an implementation of
 this interface:
+<!--
+IDL
+-->
+
 <PRE>
 ConstructorNameOfMyInterface::ConstructorNameOfMyInterface( ... )
 {
@@ -401,7 +413,7 @@ but you do not change the behaviour of the object itself.
 <P>
 <P>Builtin aggregate interfaces are the interfaces of aggregate implementations
 which run in the same process as our component. See in komComponent.h the four
-functions of the KOMComponent class for adding builtin aggregates,  it's easy.
+functions of the <CODE>KOMComponent</CODE> class for adding builtin aggregates,  it's easy.
 <P>
 <H4>Dynamic Aggregates</H4>
 

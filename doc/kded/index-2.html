@@ -35,7 +35,7 @@ has to
 specific client. In general you have to choices:
 <P>
 <UL>
-<LI>If your application already uses KOM, then you're fine with using 
+<LI>If your application already uses KOM, then you're fine with using
 KOMApplication (as you need it anyway) .</LI>
 <LI>If you don't want to use KOM, then you can initialize the ORBA "manually":
 <PRE>
@@ -52,7 +52,7 @@ making KDE apps able to serve CORBA Objects.</LI>
 <P>
 <P>Although kded uses CORBA extensively, the API is kept simple and free from
 complicated CORBA stuff. In fact when talking about kded and it's API not the
-kded server is meant but the KDE Daemon library. This library contains the 
+kded server is meant but the KDE Daemon library. This library contains the
 interface to the server (for the clients) as well as the whole server functionality.
 The reason for this is based on the idea that an application using kded should
 not be forced to rely on an existing kded server binary nor a running server at
@@ -72,15 +72,15 @@ a kded instance is specific to a X display and therefore to your KDE session.</L
 <P>To sum it up: libkded will always make sure that the services of kded are available
 for your client application, no matter in what alien environment the app is 
 running :-) . And, although you don't have to care about this, you can optionally
-control this behaviour of libkded by adding one of the following three commandline
-arguments to your app:
+control this behaviour of libkded by adding one of the following three commandline arguments
+to your app:
 <UL>
-<LI>"-kdedlocal" , which will make libkded <B>always</B> start a process-local 
+<LI>"-kdedlocal" , which will make libkded <B>always</B> start a process-local
 instance of kded and it's services.</LI>
-<LI>"-kdedremote" , which will make libkded try to look for a running kded 
+<LI>"-kdedremote" , which will make libkded try to look for a running kded
 instance before starting a local one.</LI>
-<LI>"-kdedior ior_here" , which will make libkded connect to the kded server 
-specified by the given IOR.      </LI>
+<LI>"-kdedior ior_here" , which will make libkded connect to the kded server
+specified by the given IOR.</LI>
 </UL>
 <P>
 <P>Your actual interface to kded and it's services is the <CODE>KdedInstance</CODE> class,
@@ -97,11 +97,11 @@ instance before this line) , then you're fine by specifying <CODE>komapp_orb</CO
 reference to the ORB.
 <P>
 <P>As there is always only one single instance of this class, you can simply access
-it by the static <CODE>self()</CODE> method of the class from anywhere you want. No 
+it by the static <CODE>self()</CODE> method of the class from anywhere you want. No
 need to pass KdedInstance arguments all around in your program ;-) .
 <P>
 <P>For further information about <CODE>KdedInstance</CODE> you might want to read
-kded_instance.h , it's pretty good documented.
+<CODE>kded_instance.h</CODE> , it's pretty good documented.
 <P>
 <P ALIGN="RIGHT">
 

@@ -107,7 +107,7 @@ like the menubar manager for example.</LI>
 widget is, because <CODE>OPartIf</CODE> does not inherit from QWidget. This gives
 you the  flexibility to separate your Part component from your actualy widget,
 but you  don't have to do this. You can simply multiply inherit from
-<CODE>OPPartIf</CODE> and QWidget or the appropriate widget class. In any way you
+<CODE>OPPartIf</CODE> and <CODE>QWidget</CODE> or the appropriate widget class. In any way you
 specify your Part  widget by calling <CODE>setWidget( your_widget_here )</CODE> .
 In most cases, when  the Part component is the widget at the same time, you
 simply call <CODE>setWidget( this )</CODE> :-) . Make sure this call is done in
@@ -182,7 +182,7 @@ are to be created or cleared. Check these arguments against
 MenuBar/ToolBar(s) . In fact it is easier: When registering at the OpenParts
 StatusBarManager you receive your <CODE>OpenParts::StatusBar</CODE> as return
 value. You can then use the StatusBar everywhere in your Part, independend
->from whether it is visible (active) or not.
+from whether it is visible (active) or not.
 <P>In the <CODE>init()</CODE> function a lot of registration stuff is done, and
 corresponding to this in the <CODE>cleanUp()</CODE> function (see chapter about
 KOM::Base) you have to unregister from the GUI servant objects and free all
@@ -255,7 +255,7 @@ myFrame->attach( a_reference_to_the_part_we_want_to_embed );
 myFrame->show();
 </PRE>
 <P>In addition to the above example you can <CODE>detach()</CODE> your Part, which
-you should usually do on exit. Just have a look at opFrame.h , it is
+you should usually do on exit. Just have a look at opFrame.h, it is
 documented.
 <P>
 <P>One last important thing you have to know about <CODE>OPFrame</CODE> is that this
@@ -410,7 +410,6 @@ have to worry about leaks :-) .
 <P>Similar things have to be done with QString's:
 <P>
 <PRE>
-  
     ...
     CORBA::WString_var text = Q2C( QString_here );
     someMenuBar->insertItem7( text, ... );
@@ -424,7 +423,6 @@ a function result by using <CODE>Q2C</CODE>, make sure not to use
 <CODE>CORBA::wstring_dup()</CODE>.
 <P>Example:
 <PRE>
-  
   return CORBA::string_dup( Q2C( QString_here ) ); //!!!! WRONG!!!!!
   ...
   return Q2C( QString_here ); // RIGHT! because Q2C already allocates the string
