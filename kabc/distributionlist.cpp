@@ -100,6 +100,12 @@ DistributionList::Entry::List DistributionList::entries() const
 DistributionListManager::DistributionListManager( AddressBook *ab ) :
   mAddressBook( ab )
 {
+  mLists.setAutoDelete( true );
+}
+
+DistributionListManager::~DistributionListManager()
+{
+  mLists.clear();
 }
 
 DistributionList *DistributionListManager::list( const QString &name )
@@ -194,6 +200,7 @@ bool DistributionListManager::save()
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
+  cfg.deleteGroup( mAddressBook->identifier() );
   cfg.setGroup( mAddressBook->identifier() );
   
   DistributionList *list;

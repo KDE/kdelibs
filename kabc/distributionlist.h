@@ -118,6 +118,11 @@ class DistributionListManager
     DistributionListManager( AddressBook * );
     
     /**
+      Destructor.
+    */
+    ~DistributionListManager();
+
+    /**
       Return distribution list with given name.
     */
     DistributionList *list( const QString &name );    
