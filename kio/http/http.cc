@@ -364,7 +364,13 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   m_bEOF=false;
 #ifdef DO_SSL
-  m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
+  KConfig *config = new KConfig("cryptodefaults");
+  config->setGroup("TLSv1");
+  m_bUseTLS1 = config->readBoolEntry("Enabled", false);
+  config->setGroup("SSLv2");
+  m_bUseSSL2 = config->readBoolEntry("Enabled", true);
+  config->setGroup("SSLv3");
+  m_bUseSSL3 = config->readBoolEntry("Enabled", true);
   m_bUseSSL=true;
   m_bssl_init=false;
   meth=0; ctx=0; hand=0;
@@ -419,22 +425,58 @@ void HTTPProtocol::initSSL() {
   //         I have found some sites that don't work with SSL3
   //         recently.  This may be an OpenSSL problem but in any
   //         case, we have to make Konqueror work.
-  // m_bUseSSL3 = false;
-  if (m_bUseSSL2 && m_bUseSSL3)
+  KConfig *config = new KConfig("cryptodefaults");
+  config->setGroup("TLSv1");
+  m_bUseTLS1 = config->readBoolEntry("Enabled", false);
+  config->setGroup("SSLv2");
+  m_bUseSSL2 = config->readBoolEntry("Enabled", true);
+  config->setGroup("SSLv3");
+  m_bUseSSL3 = config->readBoolEntry("Enabled", true);
+
+  // TLS1 goes first - it excludes SSL2/3
+  // FIXME: we should be able to force SSL off entirely.
+  //        This logic here makes v2 a "default" if no other SSL
+  //        version is turned on.  IMHO this is the safest one to
+  //        use as the default anyways, so I'm not changing it yet.
+  if (m_bUseTLS1)
+    meth=TLSv1_client_method();
+  else if (m_bUseSSL2 && m_bUseSSL3)
     meth=SSLv23_client_method();
   else if (m_bUseSSL3)
     meth=SSLv3_client_method();
   else
     meth=SSLv2_client_method();
 
-  SSLeay_add_all_algorithms();
+  SSLeay_add_all_algorithms();  // is this really necessary?
   SSLeay_add_ssl_algorithms();
   ctx=SSL_CTX_new(meth);
   if (ctx == NULL) {
+    // FIXME: This is a critical error - we should do more here.
     kdDebug(7103) << "Can't create SSL context!" << endl;
     fflush(stderr);
   }
+
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
+
+#if 0
+  // now we use only the ciphers that the user wants
+  if (!m_bUseTLS1) {
+    QString clist;
+    QString tcipher;
+    // The user might have v2 and v3 enabled so we start with an
+    // empty buffer and add v2 if needed, then v3 if needed.
+    // we assume that the config file will have consecutive entries.
+    config->setGroup("SSLv2");
+    for(int i = 0;; i++) {
+      tcipher.sprintf("cipher_%d", i);
+      
+    }
+    config->setGroup("SSLv3");
+    
+    SSL_CTX_set_cipher_list(ctx, clist.ascii());
+  }
+#endif
+
   hand=SSL_new(ctx);
   m_bssl_init = true;
 }
@@ -460,10 +502,9 @@ void HTTPProtocol::resetSSL() {
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
   if (m_bUseSSL) {
-    initSSL();
+    initSSL();     // incase it's not initialised somehow - it's wrapped though
     SSL_set_fd(hand, m_sock);
     if (SSL_connect(hand) == -1) {
-      closeSSL();
       return false;
     }
     return true;
@@ -1798,6 +1839,9 @@ void HTTPProtocol::http_closeConnection()
   if ( m_sock )
     ::close( m_sock );
   m_sock = 0;
+#ifdef DO_SSL
+  closeSSL();
+#endif
 }
 
 void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
