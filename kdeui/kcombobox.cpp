@@ -1,8 +1,8 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
-                 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
-                 2000 Stefan Schimanski <1Stein@gmx.de>
+   Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,6 @@ public:
     KComboBoxPrivate()
     {
         ignoreDoubleKeyEvents = true;
-        hasReference = false;
         handleURLDrops = true;
         completionBox = 0L;
         popupMenu = 0L;
@@ -60,7 +59,6 @@ public:
 
     bool ignoreDoubleKeyEvents;
     bool handleURLDrops;
-    bool hasReference;
     KCompletionBox *completionBox;
     QPopupMenu* popupMenu;
     QPopupMenu* subMenu;
@@ -311,7 +309,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 }
                 else
                 {
-                    if ( !len && d->completionBox && 
+                    if ( !len && d->completionBox &&
                          d->completionBox->isVisible() )
                         d->completionBox->hide();
                 }
@@ -320,7 +318,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             else if ( mode == KGlobalSettings::CompletionShell )
             {
                 int key = ( keys[TextCompletion] == 0 ) ?
-                          KStdAccel::key(KStdAccel::TextCompletion) : 
+                          KStdAccel::key(KStdAccel::TextCompletion) :
                           keys[TextCompletion];
                 if ( KStdAccel::isEqual( e, key ) )
                 {
@@ -347,8 +345,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             if ( mode != KGlobalSettings::CompletionNone )
             {
                 // Handles previousMatch.
-                int key = ( keys[PrevCompletionMatch] == 0 ) ? 
-                          KStdAccel::key(KStdAccel::PrevCompletion) : 
+                int key = ( keys[PrevCompletionMatch] == 0 ) ?
+                          KStdAccel::key(KStdAccel::PrevCompletion) :
                           keys[PrevCompletionMatch];
                 if ( KStdAccel::isEqual( e, key ) )
                 {
@@ -360,8 +358,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 }
 
                 // Handles nextMatch.
-                key = ( keys[NextCompletionMatch] == 0 ) ? 
-                      KStdAccel::key(KStdAccel::NextCompletion) : 
+                key = ( keys[NextCompletionMatch] == 0 ) ?
+                      KStdAccel::key(KStdAccel::NextCompletion) :
                       keys[NextCompletionMatch];
                 if ( KStdAccel::isEqual( e, key ) )
                 {
@@ -375,7 +373,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         }
         d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
     }
-    
+
 //     // read-only combobox
 //     else if ( !edit )
 //     {
@@ -388,7 +386,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 //             return;
 //         }
 //     }
-    
+
     QComboBox::keyPressEvent( e );
 }
 
@@ -402,7 +400,31 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         KCursor::autoHideEventFilter( edit, ev );
 
         int type = ev->type();
-        if ( type == QEvent::KeyPress )
+        if ( type == QEvent::AccelOverride )
+        {
+            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+            KeyBindingMap keys = getKeyBindings();            
+            int tc_key = ( keys[TextCompletion] == 0 ) ?
+                           KStdAccel::key(KStdAccel::TextCompletion) :
+                           keys[TextCompletion];
+            int nc_key = ( keys[NextCompletionMatch] == 0 ) ?
+                           KStdAccel::key(KStdAccel::NextCompletion) :
+                           keys[NextCompletionMatch];
+            int pc_key = ( keys[PrevCompletionMatch] == 0 ) ?
+                           KStdAccel::key(KStdAccel::PrevCompletion) :
+                           keys[PrevCompletionMatch];
+
+            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack() ) ||
+                 KStdAccel::isEqual( e, KStdAccel::deleteWordForward() ) ||
+                 KStdAccel::isEqual( e, tc_key ) ||
+                 KStdAccel::isEqual( e, nc_key ) ||
+                 KStdAccel::isEqual( e, pc_key ) )
+            {
+                e->accept();
+                return true;
+            }
+        }
+        else if ( type == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
 
@@ -442,21 +464,11 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 if( !m_bEnableMenu )
                     return true;
 
-                if ( !d->popupMenu )
-                {
-                    d->hasReference = false;
-                    d->popupMenu = contextMenuInternal();
-                }
-
-                initPopup();
-
                 KGlobalSettings::Completion oldMode = completionMode();
-                int result = d->popupMenu->exec( e->globalPos() );
 
-                if ( !d->hasReference ) {
-                    delete d->popupMenu;
-                    d->popupMenu = 0L;
-                }
+                d->popupMenu = contextMenuInternal();
+                initPopup();
+                int result = d->popupMenu->exec( e->globalPos() );
 
                 if ( result == Cut )
                     edit->cut();
@@ -482,6 +494,10 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                     setCompletionMode( KGlobalSettings::CompletionShell );
                 else if ( result == PopupCompletion )
                     setCompletionMode( KGlobalSettings::CompletionPopup );
+
+                // Delete the on demand popup menu :)
+                delete d->popupMenu;
+                d->popupMenu = 0L;
 
                 if ( oldMode != completionMode() )
                 {
@@ -677,36 +693,35 @@ void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 
 QPopupMenu* KComboBox::contextMenu()
 {
-    d->hasReference = true;
-    return contextMenuInternal();
+    return d->popupMenu;
 }
 
 QPopupMenu* KComboBox::contextMenuInternal()
 {
-    if( !d->popupMenu )
+
+    d->popupMenu = new QPopupMenu( this );
+    d->popupMenu->insertItem( SmallIconSet("editcut"),
+                              i18n( "Cut" ), Cut );
+    d->popupMenu->insertItem( SmallIconSet("editcopy"),
+                              i18n( "Copy" ), Copy );
+    d->popupMenu->insertItem( SmallIconSet("editpaste"),
+                              i18n( "Paste" ), Paste );
+    d->popupMenu->insertItem( SmallIconSet("editclear"),
+                              i18n( "Clear" ), Clear );
+    // Create and insert the completion sub-menu if a
+    // completion object is present.
+    if ( compObj() )
     {
-        d->popupMenu = new QPopupMenu( this );
-        d->popupMenu->insertItem( SmallIconSet("editcut"),
-                                  i18n( "Cut" ), Cut );
-        d->popupMenu->insertItem( SmallIconSet("editcopy"),
-                                  i18n( "Copy" ), Copy );
-        d->popupMenu->insertItem( SmallIconSet("editpaste"),
-                                  i18n( "Paste" ), Paste );
-        d->popupMenu->insertItem( SmallIconSet("editclear"),
-                                  i18n( "Clear" ), Clear );
-        // Create and insert the completion sub-menu if a completion object
-        // is present.
-        if ( compObj() )
-        {
-            d->subMenu = new QPopupMenu( d->popupMenu );
-            d->popupMenu->insertSeparator();
-            d->popupMenu->insertItem( SmallIconSet("completion"),
-                                      i18n("Completion"), d->subMenu );
-        }
+        d->subMenu = new QPopupMenu( d->popupMenu );
         d->popupMenu->insertSeparator();
-        d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
-        d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
+        d->popupMenu->insertItem( SmallIconSet("completion"),
+                                  i18n("Completion"), d->subMenu );
     }
+    d->popupMenu->insertSeparator();
+    d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
+    d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
+    connect ( d->popupMenu, SIGNAL(aboutToShow()),
+              SIGNAL(aboutToShowContextMenu()) );
     return d->popupMenu;
 }
 
@@ -755,17 +770,15 @@ KHistoryCombo::KHistoryCombo( bool useCompletion,
 void KHistoryCombo::init( bool useCompletion )
 {
     if ( useCompletion )
-	completionObject()->setOrder( KCompletion::Weighted );
+        completionObject()->setOrder( KCompletion::Weighted );
 
     setInsertionPolicy( NoInsertion );
     myIterateIndex = -1;
     myRotated = false;
     myPixProvider = 0L;
 
-    contextMenu()->insertSeparator();
-    contextMenu()->insertItem( i18n("Empty contents"),
-			       this, SLOT( slotClear()));
-
+    connect( this, SIGNAL(aboutToShowContextMenu()),
+             SLOT(addContextMenuItems()) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
 }
@@ -810,7 +823,14 @@ void KHistoryCombo::clearHistory()
 {
     KComboBox::clear();
     if ( useCompletion() )
-	completionObject()->clear();
+        completionObject()->clear();
+}
+
+void KHistoryCombo::addContextMenuItems()
+{
+    contextMenu()->insertSeparator();
+    contextMenu()->insertItem( i18n("Empty contents"),
+                               this, SLOT( slotClear()));
 }
 
 void KHistoryCombo::addToHistory( const QString& item )
@@ -848,7 +868,7 @@ void KHistoryCombo::addToHistory( const QString& item )
     }
 
     if ( useComp )
-	completionObject()->addItem( item );
+        completionObject()->addItem( item );
 }
 
 bool KHistoryCombo::removeFromHistory( const QString& item )
@@ -881,13 +901,13 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     // going up in the history, rotating when reaching QListBox::count()
     if ( KStdAccel::isEqual( e, KStdAccel::rotateUp() ) ) {
         myIterateIndex++;
-	
-	// skip duplicates/empty items
-	while ( myIterateIndex < count()-1 &&
-		(currentText() == text( myIterateIndex ) ||
-		 text( myIterateIndex ).isEmpty()) )
-	    myIterateIndex++;
-	
+
+        // skip duplicates/empty items
+        while ( myIterateIndex < count()-1 &&
+                (currentText() == text( myIterateIndex ) ||
+                text( myIterateIndex ).isEmpty()) )
+            myIterateIndex++;
+
         if ( myIterateIndex >= count() ) {
             myRotated = true;
             myIterateIndex = -1;
@@ -908,13 +928,13 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     else if ( KStdAccel::isEqual( e, KStdAccel::rotateDown() ) ) {
         myIterateIndex--;
 
-	// skip duplicates/empty items
-	while ( myIterateIndex >= 0 &&
-		(currentText() == text( myIterateIndex ) ||
-		 text( myIterateIndex ).isEmpty()) )
-	    myIterateIndex--;
-	
-	
+        // skip duplicates/empty items
+        while ( myIterateIndex >= 0 &&
+                (currentText() == text( myIterateIndex ) ||
+                text( myIterateIndex ).isEmpty()) )
+            myIterateIndex--;
+
+
         if ( myIterateIndex < 0 ) {
             if ( myRotated && myIterateIndex == -2 ) {
                 myRotated = false;

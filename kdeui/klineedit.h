@@ -8,7 +8,7 @@
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
     Completely re-designed:
-    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
+    Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -279,15 +279,19 @@ public:
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
 
     /**
-     * Returns a pointer to the popup widget used for the
-     * context menu.
+     * Returns a pointer to the on demand context (popup) menu.
      *
-     * This method allows to extend the popup menu by inserting
-     * your own context menu items.
+     * This method provides access to the on demand context menu
+     * such that you can add or modify the entries in it before it
+     * is displayed.
      *
-     * <u>NOTE:</u> The popupmenu widget returned by this method
-     * is automatically deleted whenever this widget's destructor
-     * is called!
+     * Carefully note that the context menu is created and destroyed
+     * on demand.  That means this function will only return a valid
+     * popup menu if and only if it is called from withing a SLOT that
+     * is connected to the @ref aboutToShowContextMenu() signal!
+     * Otherwise, this function will always return NULL pointer.
+     *
+     * @return the context menu if one is present, a NULL object otherwise.
      */
     QPopupMenu* contextMenu();
 
@@ -329,6 +333,17 @@ signals:
      * popupmenu.
      */
     void completionModeChanged( KGlobalSettings::Completion );
+
+    /**
+     * Emitted whenever the context menu is about to be displayed.
+     *
+     * IMPORTANT NOTE: the only way you can add your own entries into
+     * the context menu is by connecting to this signal and then
+     * calling @ref contextMenu() to get an instance of the popup menu.
+     *
+     * See @ref contextMenu() for details.
+     */
+    void aboutToShowContextMenu();
 
 public slots:
 

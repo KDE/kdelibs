@@ -5,8 +5,8 @@
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
    Re-designed for KDE 2.x by
-   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
-   Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000, 2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (c) 2000, 2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,6 @@ class KLineEdit::KLineEditPrivate
 public:
     KLineEditPrivate()
     {
-        hasReference = false;
         grabReturnKeyEvents = false;
         handleURLDrops = true;
         completionBox = 0L;
@@ -61,7 +60,6 @@ public:
 
     bool grabReturnKeyEvents;
     bool handleURLDrops;
-    bool hasReference;
     KCompletionBox *completionBox;
     QPopupMenu* popupMenu;
     QPopupMenu* subMenu;
@@ -299,20 +297,11 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         if ( !m_bEnableMenu )
             return;
 
-        if ( !d->popupMenu )
-        {
-            d->popupMenu = contextMenuInternal();
-            d->hasReference = false;
-        }
-
-        initPopup();
-
         KGlobalSettings::Completion oldMode = completionMode();
+
+        d->popupMenu = contextMenuInternal();
+        initPopup();
         int result = d->popupMenu->exec( e->globalPos() );
-        if ( !d->hasReference ) {
-            delete d->popupMenu;
-            d->popupMenu = 0;
-        }
 
         if ( result == Cut )
             cut();
@@ -338,6 +327,9 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             setCompletionMode( KGlobalSettings::CompletionShell );
         else if ( result == PopupCompletion )
             setCompletionMode( KGlobalSettings::CompletionPopup );
+
+        delete d->popupMenu;
+        d->popupMenu = 0L;
 
         if ( oldMode != completionMode() )
         {
@@ -420,7 +412,31 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
     if( o == this )
     {
         KCursor::autoHideEventFilter( this, ev );
-        if( ev->type() == QEvent::KeyPress )
+        if ( ev->type() == QEvent::AccelOverride )
+        {
+            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+            KeyBindingMap keys = getKeyBindings();
+            int tc_key = ( keys[TextCompletion] == 0 ) ?
+                           KStdAccel::key(KStdAccel::TextCompletion) :
+                           keys[TextCompletion];
+            int nc_key = ( keys[NextCompletionMatch] == 0 ) ?
+                           KStdAccel::key(KStdAccel::NextCompletion) :
+                           keys[NextCompletionMatch];
+            int pc_key = ( keys[PrevCompletionMatch] == 0 ) ?
+                           KStdAccel::key(KStdAccel::PrevCompletion) :
+                           keys[PrevCompletionMatch];
+
+            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack() ) ||
+                 KStdAccel::isEqual( e, KStdAccel::deleteWordForward() ) ||
+                 KStdAccel::isEqual( e, tc_key ) ||
+                 KStdAccel::isEqual( e, nc_key ) ||
+                 KStdAccel::isEqual( e, pc_key ) )
+            {
+                e->accept();
+                return true;
+            }
+        }
+        else if( ev->type() == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
 
@@ -545,30 +561,29 @@ void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
 
 QPopupMenu* KLineEdit::contextMenu()
 {
-    d->hasReference = true;
-    return contextMenuInternal();
+    return d->popupMenu;
 }
 
 QPopupMenu* KLineEdit::contextMenuInternal()
 {
-    if( !d->popupMenu )
+    d->popupMenu = new QPopupMenu( this );
+    d->popupMenu->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
+    d->popupMenu->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
+    d->popupMenu->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
+    d->popupMenu->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
+    // Create and insert the completion sub-menu iff a
+    // completion object is present.
+    if ( compObj() )
     {
-        d->popupMenu = new QPopupMenu( this );
-        d->popupMenu->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
-        d->popupMenu->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
-        d->popupMenu->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
-        d->popupMenu->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
-        // Create and insert the completion sub-menu iff a completion object is present.
-        if ( compObj() )
-        {
-            d->subMenu = new QPopupMenu( d->popupMenu );
-            d->popupMenu->insertSeparator();
-            d->popupMenu->insertItem( SmallIconSet("completion"), i18n("Completion"), d->subMenu );
-        }
+        d->subMenu = new QPopupMenu( d->popupMenu );
         d->popupMenu->insertSeparator();
-        d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
-        d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
+        d->popupMenu->insertItem( SmallIconSet("completion"), i18n("Completion"), d->subMenu );
     }
+    d->popupMenu->insertSeparator();
+    d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
+    d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
+    connect ( d->popupMenu, SIGNAL(aboutToShow()),
+              SIGNAL(aboutToShowContextMenu()) );
     return d->popupMenu;
 }
 

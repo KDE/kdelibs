@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
-                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -132,7 +132,7 @@ class KComboBox : public QComboBox, public KCompletionBase
   Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
 
 public:
-	
+
     /**
     * Construct a read-only or rather select-only combo box with a
     * parent object and a name.
@@ -336,11 +336,19 @@ public:
     KCompletionBox * completionBox( bool create );
 
     /**
-     * Returns a pointer to the popup used as the a context menu.
+     * Returns a pointer to the on demand context (popup) menu.
      *
-     * <u>NOTE:</u> The popupmenu is automatically deleted whenever
-     * this widget is destroyed!  Do not use after you destroy this
-     * combobox, unless you want to crash and burn!
+     * This method provides access to the on demand context menu
+     * such that you can add or modify the entries in it before it
+     * is displayed.
+     *
+     * Carefully note that the context menu is created and destroyed
+     * on demand.  That means this function will only return a valid
+     * popup menu if and only if it is called from withing a SLOT that
+     * is connected to the @ref aboutToShowContextMenu() signal!
+     * Otherwise, this function will always return NULL pointer.
+     *
+     * @return the context menu if one is present, a NULL object otherwise.
      */
     QPopupMenu* contextMenu();
 
@@ -405,6 +413,17 @@ signals:
      */
     void completionModeChanged( KGlobalSettings::Completion );
 
+    /**
+     * Emitted whenever the context menu is about to be displayed.
+     *
+     * IMPORTANT NOTE: the only way you can add your own entries into
+     * the context menu is by connecting to this signal and then
+     * calling @ref contextMenu() to get an instance of the popup menu.
+     *
+     * See @ref contextMenu() for details.
+     */
+    void aboutToShowContextMenu();
+
 public slots:
 
     /**
@@ -463,11 +482,13 @@ protected slots:
     /**
      * @deprecated
      */
+    // BCI: Remove me in KDE 3.0
     void slotAboutToShow() {}
 
     /**
      * @deprecated
      */
+    // BCI: Remove me in KDE 3.0
     void slotCancelled() {}
 
 protected:
@@ -516,8 +537,6 @@ private:
     /** Creates the completion box */
     void makeCompletionBox();
     /** Returns the context menu, creates a new one if did not exist. */
-    // BCI: make virtual in KDE 3.0, so that KonqHistoryCombo can add its item
-    // Currently it has to create the menu in the constructor, losing the "on demand" benefits
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
@@ -758,6 +777,11 @@ private slots:
      * calls clearHistory() and emits cleared()
      */
     void slotClear();
+
+    /**
+     * Appends our own context menu entry.
+     */
+    void addContextMenuItems();
 
 private:
     void init( bool useCompletion );
