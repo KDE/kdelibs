@@ -176,15 +176,6 @@ class KDirWatch : public QObject
     */
    void deleted (const QString& dir);
      
- protected:
-   void resetList (bool reallyall);
-   void addDir(const QString& path, void *_entry);
-   void removeDir(const QString& path, void *_entry);
-   
- protected slots:
-   void slotRescan();
-   void famEventReceived();
-   
  private:
   KDirWatchPrivate *d;
   static KDirWatch* s_pSelf;

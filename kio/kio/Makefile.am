@@ -101,7 +101,7 @@ kioinclude_HEADERS = connection.h \
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	kimageiofactory.h kdirwatch_dnotify.h \
+	kimageiofactory.h kdirwatch_p.h \
 	kprotocolinfofactory.h # old stuff \
 	renamedlg.h skipdlg.h
         
