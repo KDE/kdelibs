@@ -83,6 +83,7 @@ static Atom kde_net_wm_window_type_override   = 0;
 static Atom kde_net_wm_window_type_topmenu    = 0;
 
 // application protocols
+static Atom wm_protocols = 0;
 static Atom net_wm_ping = 0;
 
 // application window types
@@ -199,7 +200,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 54;
+static const int netAtomCount = 55;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -262,7 +263,8 @@ static void create_atoms(Display *d) {
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
 	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
 
-	    "WM_STATE"
+	    "WM_STATE",
+	    "WM_PROTOCOLS"
 	    };
 
     Atom atoms[netAtomCount], *atomsp[netAtomCount] =
@@ -327,6 +329,7 @@ static void create_atoms(Display *d) {
 	    &kde_net_wm_window_type_topmenu,
 
 	    &xa_wm_state,
+	    &wm_protocols
 	    };
 
     int i = netAtomCount;
@@ -531,7 +534,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
         p->properties[ i ] = properties[ i ];
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames; // the only thing that can be changed by clients
+    p->client_properties = DesktopNames // the only thing that can be changed by clients
+			    | WMPing; // or they can reply to this
 
     role = WindowManager;
 
@@ -572,7 +576,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] = properties;
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames; // the only thing that can be changed by clients
+    p->client_properties = DesktopNames // the only thing that can be changed by clients
+			    | WMPing; // or they can reply to this
 
     role = WindowManager;
 
@@ -625,6 +630,14 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     if (doActivate) activate();
 }
 
+
+NETRootInfo2::NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
+			 unsigned long properties[], int properties_size,
+                         int screen, bool doActivate)
+    : NETRootInfo( display, supportWindow, wmName, properties, properties_size,
+	screen, doActivate )
+{
+}
 
 // Copy an existing NETRootInfo object.
 
@@ -1362,6 +1375,29 @@ void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
+void NETRootInfo2::sendPing( Window window, Time timestamp )
+{
+    if (role != WindowManager) return;
+#ifdef   NETWMDEBUG
+    fprintf(stderr, "NETRootInfo2::setPing: window 0x%lx, timestamp %lu\n",
+	window, timestamp );
+#endif
+    XEvent e;
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = wm_protocols;
+    e.xclient.display = p->display;
+    e.xclient.window = window,
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = net_wm_ping;
+    e.xclient.data.l[1] = timestamp;
+    e.xclient.data.l[2] = 0;
+    e.xclient.data.l[3] = 0;
+    e.xclient.data.l[4] = 0;
+
+    XSendEvent(p->display, window, False, 0, &e);
+}
+
+
 
 // assignment operator
 
@@ -1539,6 +1575,32 @@ unsigned long NETRootInfo::event(XEvent *event) {
     return dirty & p->client_properties;
 }
 
+
+unsigned long NETRootInfo2::event(XEvent *event) {
+    unsigned long dirty = 0;
+
+    // the window manager will be interested in client messages... no other
+    // client should get these messages
+    if (role == WindowManager && event->type == ClientMessage &&
+	event->xclient.format == 32) {
+#ifdef    NETWMDEBUG
+	fprintf(stderr, "NETRootInfo2::event: handling ClientMessage event\n");
+#endif
+
+	if (event->xclient.message_type == wm_protocols
+	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
+	    dirty = WMPing;
+
+#ifdef   NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo2::event: gotPing(0x%lx,%lu)\n",
+		event->xclient.window, event->xclient.data.l[1]);
+#endif
+
+	    gotPing( event->xclient.window, event->xclient.data.l[1]);
+	}
+    }
+    return NETRootInfo::event( event ) | ( dirty & p->client_properties );
+}
 
 // private functions to update the data we keep
 

@@ -72,7 +72,7 @@ public:
        @param properties An array of elements listing all properties and protocols
        the window manager supports. The elements contain OR'ed values of constants
        from the NET base class, in the following order: [0]= NET::Property,
-       [2]= NET::WindowTypeMask (not NET::WindowType!), [3]= NET::State.
+       [1]= NET::WindowTypeMask (not NET::WindowType!), [2]= NET::State.
        In future versions, the list may be extended. In case you pass less elements,
        the missing ones will be replaced with default values.
        
@@ -617,8 +617,23 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     NETRootInfoPrivate *p;
+    friend class NETRootInfo2;
 };
 
+class NETRootInfo2
+    : public NETRootInfo
+{
+public:
+    NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
+		unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+    void sendPing( Window window, Time timestamp );
+    // note it's NOT virtual
+    unsigned long event(XEvent *event);
+protected:
+    virtual void gotPing( Window, Time ) {};
+// no private data, use NETRootInfoPrivate
+};
 
 /**
    Common API for application window properties/protocols.
