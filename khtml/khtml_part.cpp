@@ -4537,11 +4537,11 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
   if (callingHtmlPart == this)
     return true; // trivial
 
-  if (!htmlDocument().isNull()) {
+  if (htmlDocument().isNull()) {
 #ifdef DEBUG_FINDFRAME
-    kdDebug(6050) << "KHTMLPart::checkFrameAccess: Empty part " << this << endl;
+    kdDebug(6050) << "KHTMLPart::checkFrameAccess: Empty part " << this << " URL = " << m_url << endl;
 #endif
-    return true; // we are empty?
+    return false; // we are empty?
   }
 
   // now compare the domains
@@ -4683,7 +4683,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+  kdDebug( 6050 ) << "KHTMLPart::saveState this = " << this << " saving URL " << m_url.url() << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY()
          << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight() << (Q_INT32) d->m_view->marginWidth() << (Q_INT32) d->m_view->marginHeight();
