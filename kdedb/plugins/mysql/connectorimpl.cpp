@@ -191,22 +191,40 @@ ConnectorImpl::fields(const QString & tableName)
         // datatype (native) 
         // let's normalize the type, since in show fields is reported an e.g. varchar(50)
         // and we need to pass VARCHAR to the NToK call.
+        // We try also to estract length and precision.
         QString norm;
-        QString type = cur[1].asString();
-        int idx;
-                
+        QString type = cur[1].toString();
+        int leftPar, rightPar, comma;
+        int len = 0;
+        int prec = 0;
         //kdDebug(20012) << "Start type = " << type << endl;
 
-        if ((idx = type.find('(') ) != -1 )
-            norm = type.left(idx).upper();
-        else
+        if ((leftPar = type.find('(') ) != -1 ) {
+            norm = type.left(leftPar).upper();
+            rightPar = type.find(')', leftPar);
+            comma = type.find(',', leftPar);
+            len = type.mid(leftPar + 1,
+                           comma == -1 ? rightPar - leftPar - 1 : comma - leftPar - 1).toInt();
+            if ( comma  != -1 )
+                prec = type.mid(comma + 1, rightPar - comma -  1).toInt();
+        } else {
             norm = type.upper();
+        }
         
         //kdDebug(20012) << "Normalized type = " << norm << endl;
 
         r << Value(norm);
+        r << Value(len);
+        r << Value(prec);
 
-        // TODO: where is the rest of the field def ?!?
+        // does the field accept nulls?
+        if (cur[2].toString() == "YES")
+            r << Value("Y");
+        else
+            r << Value("N");
+
+        //TODO: default value for numeric and datetime fields, constraints and comments
+
         
         res << r;
     }
