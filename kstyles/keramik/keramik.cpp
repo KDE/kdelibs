@@ -804,7 +804,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
-			if (opt.lineWidth())
+			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
+				: opt.lineWidth();
+			if (lw)
 			{
 				p->setPen(cg.dark());
 				p->drawLine(x2, y, x2, y2);
@@ -819,8 +821,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			//Keramik::ScaledPainter( keramik_toolbar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
+			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
+				: opt.lineWidth();
 
-			if (opt.lineWidth())
+			if (lw)
 			{
 				p->setPen(cg.dark());
 				p->drawLine(x2, y, x2, y2);
@@ -833,8 +837,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		{
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
+			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
+				: opt.lineWidth();
 
-			if (opt.lineWidth())
+			if (lw)
 			{
 				p->setPen(cg.light());
 				p->drawLine(x, y, x2-1, y);
