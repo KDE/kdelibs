@@ -9,6 +9,12 @@
 	* rendering/render_line.cpp (paintDecorations): avoid underlining elements that
 	have no dimension in itself (#68728)
 
+2003-11-22  Koos Vriezen  <koos.vriezen@xs4all.nl>
+
+        * html_miscimpl.cpp (HTMLCollectionImpl): Make
+        window.xxx == document.xxx for APPLET/OBJECT/EMBED elements, using
+        ID or NAME attributes, behave alike
+
 2003-11-22  Germain Garand  <germain@ebooksfrance.org>
 
         * dom/css_value.cpp (getPropertyPriority): const version was declared
