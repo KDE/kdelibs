@@ -330,6 +330,8 @@ Completion DateProtoFunc::execute(const List &args)
   const int bufsize=100;
   char timebuffer[bufsize];
   char *oldlocale = setlocale(LC_TIME,NULL);
+  if (!oldlocale)
+    oldlocale = setlocale(LC_ALL, NULL);
   Object thisObj = Object::dynamicCast(thisValue());
   KJSO v = thisObj.internalValue();
   double milli = v.toNumber().value();
@@ -411,7 +413,7 @@ Completion DateProtoFunc::execute(const List &args)
     result = Undefined();
     break;
   case GetTimezoneOffset:
-#if defined BSD && !defined(__APPLE__)
+#if defined BSD || defined(__APPLE__)
     result = Number(-( t->tm_gmtoff / 60 ) + ( t->tm_isdst ? 60 : 0 ));
 #else
 #  if defined(__BORLANDC__)
