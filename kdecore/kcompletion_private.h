@@ -23,15 +23,7 @@
 
 #include <qlist.h>
 #include <qstring.h>
-
-// #define PDEBUG 1
-
-#if defined(PDEBUG)
-#define debugC debug
-#else
-inline void debugC(const char *,...) {};
-#endif
-
+#include "kdebug.h"
 
 class KCompTreeNode;
 typedef QValueList<KCompTreeNode *> KCompTreeChildren;
@@ -95,7 +87,7 @@ private:
  * A KCompFork stores one node in the tree, an index describing the current
  * index of its children-list and a string representing the string from the
  * root of the tree to (and including) that node.
- 
+
  * @short A fork in the KCompletionTree
  * @internal
  */
@@ -130,7 +122,7 @@ public:
 	  fork->index = index;
       }
 
-      debugC("*** Appending fork: %s", fork->string.ascii());
+      kDebugInfo(250, "*** Appending fork: %s", debugString(fork->string));
       KCompForkBaseList::append( fork );
       return fork;
   }

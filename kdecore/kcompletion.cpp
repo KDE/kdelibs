@@ -109,7 +109,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( myCompletionMode == KGlobal::CompletionNone )
         return QString::null;
 
-    debugC("KCompletion: completing: %s", debugString( string ));
+    kDebugInfo(250, "KCompletion: completing: %s", debugString( string ));
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
@@ -155,7 +155,7 @@ QString KCompletion::nextMatch()
     QString completion;
 
     if ( myForkList.count() == 0 ) {
-        debugC("KCompletion::nextMatch(): no forks available");
+        kDebugInfo(250, "KCompletion::nextMatch(): no forks available");
 	completion = findCompletion( myLastString );
 	emit match( completion );
 	return completion;
@@ -166,7 +166,7 @@ QString KCompletion::nextMatch()
         fork = myForkList.last();
 
     if ( fork->string.find( QString::fromLatin1("kfiledialog" )) == 0 )
-      debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
+      kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
     fork->index++;
 
     // if no further child of this fork -> jump to previous fork(s)
@@ -177,12 +177,12 @@ QString KCompletion::nextMatch()
 	    fork = fork2;
 	    fork->index++;
     if ( fork->string.find( QString::fromLatin1("kfiledialog" )) == 0 )
-	    debugC("             ++ (fork: %s), %i",fork->string.ascii(), fork->index);
+	    kDebugInfo(250, "             ++ (fork: %s), %i",fork->string.ascii(), fork->index);
 	}
 	
 	else { // no previous fork available -> rotation
     if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-debugC("   -> fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
+kDebugInfo(250, "   -> fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
 	    completion = findCompletion( myLastString );
 	    emit match( completion );
 	    return completion;
@@ -206,7 +206,7 @@ debugC("   -> fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->i
     }
 
     if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-    debugC(" -> completed: %s", completion.ascii());
+    kDebugInfo(250, " -> completed: %s", completion.ascii());
     myItemIndex++;
 
     emit match( completion );
@@ -220,9 +220,9 @@ QString KCompletion::previousMatch()
     QString completion;
 
     if ( myForkList.count() == 0 || myItemIndex == 0 ) {
-      debugC("     myItemIndex: %i", myItemIndex);
+      kDebugInfo(250, "     myItemIndex: %i", myItemIndex);
         myBackwards = true;
-        debugC("KCompletion::previousMatch(): no forks available");
+        kDebugInfo(250, "KCompletion::previousMatch(): no forks available");
 	completion = findCompletion( myLastString );
 	myBackwards = false;
 
@@ -235,7 +235,7 @@ QString KCompletion::previousMatch()
         fork = myForkList.first();
 
     if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
+kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
     fork->index--;
 
     // if we have traveled all children, go to the previous fork(s)
@@ -246,7 +246,7 @@ debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index
 	    fork = fork2;
 	    fork->index--;
     if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-	    debugC("             -- (fork: %s, %i)",fork->string.ascii(),
+	    kDebugInfo(250, "             -- (fork: %s, %i)",fork->string.ascii(),
 		  fork->index);
 	}
 
@@ -261,7 +261,7 @@ debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index
 
     //    completion = findCompletion( fork );
     if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
+kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
 
     int index = fork->index;
     const KCompTreeNode *node = fork->node;
@@ -281,7 +281,7 @@ debugC("  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index
 	node = node->lastChild();
     }
 
-    debugC(" -> completed: %s", completion.ascii());
+    kDebugInfo(250, " -> completed: %s", completion.ascii());
     myItemIndex--;
 
     emit match( completion );
@@ -378,7 +378,7 @@ QString KCompletion::findCompletion( KCompFork *fork )
 
 const QStringList& KCompletion::findAllCompletions( const QString& string )
 {
-  debugC("*** finding all completions for %s", string.ascii() );
+    kDebugInfo(250, "*** finding all completions for %s", string.ascii() );
     myMatches.clear();
 
     if ( string.isEmpty() )
@@ -465,8 +465,8 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 
 void KCompletion::doBeep()
 {
-    if ( myBeep && 
-	 (myCompletionMode == KGlobal::CompletionShell || 
+    if ( myBeep &&
+	 (myCompletionMode == KGlobal::CompletionShell ||
 	  myCompletionMode == KGlobal::CompletionMan) )
         kapp->beep();
 }
