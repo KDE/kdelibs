@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include "config.h"
@@ -115,7 +114,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    for( int i = 0; i < len; ++i )
 		if ( str[i+pos].category() == QChar::Separator_Space )
 		    ++numSpaces;
-	}  
+	}
 
 	const int totWidth = width( str, slen, pos, len );
 	if ( d == QPainter::RTL ) {
@@ -232,7 +231,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	else x += preSegmentWidth;
 
         const int startx = d == QPainter::RTL ? x-segmentWidth : x;
-        
+
 	// optionally draw background
 	if ( bg.isValid() )
 	    p->fillRect( startx, uy, segmentWidth, h, bg );
