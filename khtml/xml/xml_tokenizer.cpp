@@ -136,7 +136,8 @@ bool XMLHandler::startDocument()
 }
 
 
-bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/, const QString& qName, const QXmlAttributes& atts )
+bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/,
+                               const QString& qName, const QXmlAttributes& atts )
 {
     if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
@@ -403,8 +404,11 @@ void XMLTokenizer::write( const QString &str, bool appendData )
         return;
     if ( appendData ) {
         m_source.appendXML( str );
-        m_noErrors = m_reader.parseContinue();
+
+    } else {
+        m_source.setData( str );
     }
+    m_noErrors = m_reader.parseContinue();
 }
 
 void XMLTokenizer::end()
@@ -417,6 +421,7 @@ void XMLTokenizer::end()
 
 void XMLTokenizer::finish()
 {
+    m_source.setFinished( true );
     if (!m_noErrors) {
         // An error occurred during parsing of the code. Display an error page to the user (the DOM
         // tree is created manually and includes an excerpt from the code where the error is located)
