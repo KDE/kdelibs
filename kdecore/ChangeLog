@@ -1,3 +1,8 @@
+1998-07-23  Waldo Bastian  <w.bastian@kde.org>
+
+	* kurl.cpp: Fixed the bug in the bugfix of the fix of the NULL-bug.
+	  ( Thou shall use 0L instead of NULL )        
+
 1998-07-17  Jochen Küpper  <jochen@uni-duesseldorf.de>
 
 	* kdebugareas.txt: Added krot to the list of area codes.
