@@ -181,8 +181,9 @@ void KPassivePopup::moveNear( QRect target )
     else
 	x = x - w;
 
+    // It's apparently trying to go off screen, so display it ALL at the bottom.
     if ( (y + h) > qApp->desktop()->height() )
-	y = y - h + target.height();
+	y = qApp->desktop()->height() - h;
 
 #ifdef OLD_BITS
     if ( (x - w) >= 0  )
