@@ -30,7 +30,7 @@ artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
   synthschedule.h fft.h artsflow.idl audioio.h resample.h \
   cpuinfo.h
 
-DISTCLEANFILES = artsflow.cc artsflow.h
+DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 
 ######## Build rules
 
