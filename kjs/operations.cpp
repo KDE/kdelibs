@@ -180,7 +180,8 @@ int KJS::relation(ExecState *exec, const Value& v1, const Value& v2)
   Value p1 = v1.toPrimitive(exec,NumberType);
   Value p2 = v2.toPrimitive(exec,NumberType);
 
-  if (p1.type() == StringType && p2.type() == StringType)
+  // When comparing a string and a number, we want to use a string comparison
+  if (p1.type() == StringType || p2.type() == StringType)
     return p1.toString(exec) < p2.toString(exec) ? 1 : 0;
 
   double n1 = p1.toNumber(exec);
