@@ -10,7 +10,6 @@ Architecture: any
 Section: non-US/main
 Depends: ${shlibs:Depends}, libssl095a | libssl09
 Replaces: kdelibs3-cvs
-Conflicts: kdelibs3-cvs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -20,7 +19,6 @@ Architecture: all
 Section: non-US/main
 Suggests: kdelibs3 (= ${Source-Version}), kdelibs3-dev (= ${Source-Version}), libqt2.2-dev
 Replaces: kdelibs3-doc-cvs
-Conflicts: kdelibs3-doc-cvs
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
@@ -33,7 +31,7 @@ Replaces: kdelibs-dev, kdelibs2g-dev
 Depends: kdelibs3 (= ${Source-Version}), libqt2.2-dev, libjpeg62-dev, xlib6g-dev
 Suggests: kdelibs-doc
 Replaces: kdelibs3-dev-cvs
-Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-dev-cvs
+Conflicts: kdelibs0-dev, kdelibs2g-dev
 Provides: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
