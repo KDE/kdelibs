@@ -656,7 +656,7 @@ QString paramString(const QString &s, const CfgEntry *e, int i)
     }
     else
     {
-      tmp = QString("%1").arg(i);
+      tmp = QString::number(i);
     }
 
     result.replace(needle, tmp);
