@@ -670,7 +670,7 @@ int main(int argc, char *argv[])
      //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
      //KURL url3("file:////atlas/dfaure");
      //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
-     
+
      KURL url4(url2, "//remotehost/home/root");
      check("KURL::host()", url4.host(), "remotehost");
      check("KURL::path()", url4.path(), "/home/root");
@@ -709,6 +709,7 @@ int main(int argc, char *argv[])
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("locale8bit",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel"); // escaping the letter would be correct too
   check("pretty",uloc.prettyURL(),"file:///home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
+  check("pretty",uloc.prettyURL(0, KURL::StripFileProtocol),"/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   // 106 is MIB for UTF-8
   check("UTF8",uloc.url(0, 106),"file:///home/dfaure/konqtests/Mat%C3%A9riel");
   uloc = KURL("file:///home/dfaure/konqtests/Mat%C3%A9riel", 106);
