@@ -166,17 +166,12 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
-  // look in base class (Document)
-  KJSO result;
-  result = DOMDocument::tryGet(p);
+  DOM::HTMLCollection coll = doc.all();
+  DOM::HTMLElement element = coll.namedItem(p.string());
+  if(!element.isNull())
+      return getDOMNode(element);
 
-  if (result.isA(UndefinedType)) {
-      DOM::HTMLCollection coll = doc.all();
-      DOM::HTMLElement element = coll.namedItem(p.string());
-      if(!element.isNull())
-          return result = getDOMNode(element);
-  }
-  else if (p == "title")
+  if (p == "title")
     return getString(doc.title());
   else if (p == "referrer")
     return getString(doc.referrer());
@@ -214,8 +209,12 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
   else if (p == "getElementsByName")
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
-
-  return result;
+  else {
+      // look in base class (Document)
+      KJSO result;
+      result = DOMDocument::tryGet(p);
+      return result;
+  }
 }
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
