@@ -5,6 +5,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qasciidict.h>
+#include <qlist.h>
 
 #include "ltdl.h"
 
