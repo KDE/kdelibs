@@ -67,7 +67,7 @@ struct DCOPRequest {
 
 class KUniqueApplicationPrivate {
 public:
-   QList <DCOPRequest> requestList;
+   QPtrList <DCOPRequest> requestList;
    bool processingRequest;
    bool firstInstance;
 };
@@ -83,29 +83,6 @@ void
 KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineArgs::addCmdLineOptions(kunique_options, 0, "kuniqueapp", "kde" );
-}
-
-static int kunique_app_my_system (const char *command) {
-   int pid, status;
-
-   QApplication::flushX();
-   pid = fork();
-   if (pid == -1)
-      return -1;
-   if (pid == 0) {
-      const char* shell = "/bin/sh";
-      if (getenv("SHELL"))
-         shell = getenv("SHELL");
-      execl(shell, shell, "-c", command, 0L);
-      exit(127);
-   }
-   do {
-      if (waitpid(pid, &status, 0) == -1) {
-         if (errno != EINTR)
-            return -1;
-       } else
-            return status;
-   } while(1);
 }
 
 bool
