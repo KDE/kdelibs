@@ -143,9 +143,9 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_portrait->setChecked(true);
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
-	QRadioButton	*m_dupnone = new QRadioButton(i18n("&None"), m_duplexbox);
-	QRadioButton	*m_duplong = new QRadioButton(i18n("Lon&g side"), m_duplexbox);
-	QRadioButton	*m_dupshort = new QRadioButton(i18n("S&hort side"), m_duplexbox);
+	QRadioButton	*m_dupnone = new QRadioButton(i18n("duplex orientation", "&None"), m_duplexbox);
+	QRadioButton	*m_duplong = new QRadioButton(i18n("duplex orientation", "Lon&g side"), m_duplexbox);
+	QRadioButton	*m_dupshort = new QRadioButton(i18n("duplex orientation", "S&hort side"), m_duplexbox);
 	m_dupnone->setChecked(true);
 	m_duplexpix = new QLabel(m_duplexbox);
 	m_duplexpix->setAlignment(Qt::AlignCenter);

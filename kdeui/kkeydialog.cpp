@@ -312,7 +312,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   d->kbGroup->hide();
   d->kbGroup->setExclusive( true );
 
-  m_prbNone = new QRadioButton( i18n("&None"), d->fCArea );
+  m_prbNone = new QRadioButton( i18n("no key", "&None"), d->fCArea );
   d->kbGroup->insert( m_prbNone, NoKey );
   m_prbNone->setEnabled( false );
   //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
@@ -320,7 +320,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   QWhatsThis::add( m_prbNone, i18n("The selected action will not be associated with any key.") );
   connect( m_prbNone, SIGNAL(clicked()), SLOT(slotNoKey()) );
 
-  m_prbDef = new QRadioButton( i18n("De&fault"), d->fCArea );
+  m_prbDef = new QRadioButton( i18n("default key", "De&fault"), d->fCArea );
   d->kbGroup->insert( m_prbDef, DefaultKey );
   m_prbDef->setEnabled( false );
   //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
