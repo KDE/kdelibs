@@ -225,8 +225,9 @@ public:
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
     unsigned short elementId(DOMStringImpl *_name);
-    DOMStringImpl *elementName(unsigned short _id) const { return m_elementNames[_id-1000]; }
+    DOMStringImpl *elementName(unsigned short _id) const;
     virtual QList<StyleSheetImpl> authorStyleSheets();
+    QList<StyleSheetImpl> htmlAuthorStyleSheets();
 
     void addXMLStyleSheet(StyleSheetImpl *_styleSheet);
 

@@ -193,14 +193,16 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
 
 ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
+    ElementImpl *e = 0;
     // ### somehow set the namespace for html elements to http://www.w3.org/1999/xhtml ?
     if (_namespaceURI == "http://www.w3.org/1999/xhtml") {
 	QString qName = _qualifiedName.string();
 	int colonPos = qName.find(':',0);
-	return createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
+	e = createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
     }
-    else
-	return new XMLElementImpl(this,_qualifiedName.implementation(),_namespaceURI.implementation());
+    if (!e)
+	e = new XMLElementImpl(this,_qualifiedName.implementation(),_namespaceURI.implementation());
+    return e;
 }
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
@@ -458,8 +460,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 	break;
 
     default:
-	// ### don't allow this for normal HTML documents
-	n = DocumentImpl::createElement(name);
+	break;
     }
     return n;
 }
@@ -1215,8 +1216,15 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
 {
+    unsigned short id = 0;
+    // note: this does not take namespaces into account, as it is only really used for css at the moment
+
+    if (_name->isLower()) // use the html id instead (if one exists)
+	id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l);
+    if (id)
+	return id;
+
     // first try and find the element
-    unsigned short id;
     for (id = 0; id < m_elementNameCount; id++)
 	if (!strcmp(m_elementNames[id],_name))
 	    return id+1000;
@@ -1240,9 +1248,55 @@ unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
     return id+1000;
 }
 
+DOMStringImpl *DocumentImpl::elementName(unsigned short _id) const
+{
+    if (_id >= 1000)
+	return m_elementNames[_id-1000];
+    else
+	return getTagName(_id).implementation()->lower();
+}
+
 QList<StyleSheetImpl> DocumentImpl::authorStyleSheets()
 {
-    return m_xmlStyleSheets;
+    // return stylesheets obtained from XML processing instructions and XHTML elements
+    QList<StyleSheetImpl> xml = m_xmlStyleSheets;
+    QList<StyleSheetImpl> html = htmlAuthorStyleSheets();
+    QList<StyleSheetImpl> list;
+    QListIterator<StyleSheetImpl> xmlIt(xml);
+    for (; xmlIt.current(); ++xmlIt)
+	list.append(xmlIt.current());
+    QListIterator<StyleSheetImpl> htmlIt(html);
+    for (; htmlIt.current(); ++htmlIt)
+	list.append(htmlIt.current());
+    return list;
+}
+
+QList<StyleSheetImpl> DocumentImpl::htmlAuthorStyleSheets()
+{
+    QList<StyleSheetImpl> list;
+    NodeImpl *n = this;
+    while (n) {
+	if (n->id() == ID_LINK)
+	    list.append(static_cast<HTMLLinkElementImpl*>(n)->sheet());
+	else if (n->id() == ID_STYLE)
+	    list.append(static_cast<HTMLStyleElementImpl*>(n)->sheet());
+	else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
+	    list.append(static_cast<HTMLBodyElementImpl*>(n)->sheet());
+
+	if (n->id() == ID_BODY)
+	    n = 0; // no style info should be beyond here anyway
+	else if (n->firstChild())
+	    n = n->firstChild();
+	else if (n->nextSibling())
+	    n = n->nextSibling();
+	else {
+	    while (n && !n->nextSibling())
+		n = n->parentNode();
+	    if (n)
+		n = n->nextSibling();
+	}
+    }
+    return list;
 }
 
 void DocumentImpl::addXMLStyleSheet(StyleSheetImpl *_styleSheet)

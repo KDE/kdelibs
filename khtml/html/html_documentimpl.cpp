@@ -162,7 +162,6 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-
 ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
 {
     return createHTMLElement(name);
@@ -170,43 +169,7 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
 
 QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
 {
-    QList<StyleSheetImpl> styleSheets;
-    NodeImpl *test = documentElement(); // should be html element
-    if(!test) return styleSheets;
-    test = test->firstChild();
-    if(!test) return styleSheets;
-    while(test && (test->id() != ID_HEAD))
-	test = test->nextSibling();
-    if(test) {
-	HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
-
-	// all LINK and STYLE elements have to be direct children of the HEAD element
-	test = head->firstChild();
-	while(test)
-	{
-	    if(test->id() == ID_LINK)
-	    {
-		HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
-		styleSheets.append(link->sheet());
-	    }
-	    else if(test->id() == ID_STYLE)
-	    {
-		HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
-		styleSheets.append(style->sheet());
-	    }
-	    test = test->nextSibling();
-	}
-    }
-    HTMLElementImpl *e = body();
-    if(e && e->id() == ID_BODY)
-    {
-	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
-	if(body->sheet())
-	{
-	    styleSheets.append(body->sheet());
-	}
-    }
-    return styleSheets;
+    return htmlAuthorStyleSheets();
 }
 
 //------------------------------------------------------------------------------

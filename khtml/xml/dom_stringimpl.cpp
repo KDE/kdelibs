@@ -247,4 +247,21 @@ QList<Length> *DOMStringImpl::toLengthList() const
     return list;
 }
 
+bool DOMStringImpl::isLower() const
+{
+    unsigned int i;
+    for (i = 0; i < l; i++)
+	if (s[i].lower() != s[i])
+	    return false;
+    return true;
+}
+
+DOMStringImpl *DOMStringImpl::lower()
+{
+    QChar *c = QT_ALLOC_QCHAR_VEC(l);
+    unsigned int i;
+    for (i = 0; i < l; i++)
+	c[i] = s[i].lower();
+    return new DOMStringImpl(c,l);
+}
 

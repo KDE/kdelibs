@@ -340,19 +340,21 @@ void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
 
 NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 {
-    if(!child->isTextNode()) return 0;
-
-    DOMString text = static_cast<TextImpl *>(child)->string();
-
-    kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
-
-    if(m_sheet) m_sheet->deref();
-    m_sheet = new CSSStyleSheetImpl(this);
-    m_sheet->ref();
-    m_sheet->parseString( text, (document->parseMode() == DocumentImpl::Strict) );
-
+    NodeImpl *r = NodeBaseImpl::addChild(child);
+    reparseSheet();
     sheetLoaded();
-    return NodeBaseImpl::addChild(child);
+    return r;
+}
+
+void HTMLStyleElementImpl::setChanged(bool b)
+{
+    // TextImpl sets it's parent to be changed when appendData() is called (hack)
+    // ### make this work properly in all situations
+    if (b) {
+	reparseSheet();
+	sheetLoaded();
+    }
+    HTMLElementImpl::setChanged(b);
 }
 
 bool HTMLStyleElementImpl::isLoading()
@@ -365,6 +367,25 @@ bool HTMLStyleElementImpl::isLoading()
 void HTMLStyleElementImpl::sheetLoaded()
 {
     document->createSelector();
+}
+
+void HTMLStyleElementImpl::reparseSheet()
+{
+    DOMString text = "";
+    NodeImpl *n;
+    for (n = _first; n; n = n->nextSibling()) {
+	if (n->nodeType() == Node::TEXT_NODE ||
+	    n->nodeType() == Node::CDATA_SECTION_NODE ||
+	    n->nodeType() == Node::COMMENT_NODE)
+	text += static_cast<CharacterDataImpl*>(n)->data();
+    }
+
+    kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
+
+    if(m_sheet) m_sheet->deref();
+    m_sheet = new CSSStyleSheetImpl(this);
+    m_sheet->ref();
+    m_sheet->parseString( text, (document->parseMode() == DocumentImpl::Strict) );
 }
 
 // -------------------------------------------------------------------------

@@ -232,14 +232,10 @@ TextImpl::~TextImpl()
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l || (long)offset < 0)
+    if (offset > str->l || (long)offset < 0) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
-
-    if (!_parent) // ### should	we still return the splitted text, and just not insert it into the tree?
-	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-
-    if ( exceptioncode )
 	return 0;
+    }
 
     TextImpl *newText = static_cast<TextImpl*>(cloneNode(true,exceptioncode));
     if ( exceptioncode )
@@ -250,7 +246,8 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
     deleteData(offset,str->l-offset,exceptioncode);
     if ( exceptioncode )
 	return 0;
-    _parent->insertBefore(newText,_next, exceptioncode );
+    if (_parent)
+	_parent->insertBefore(newText,_next, exceptioncode );
     if ( exceptioncode )
 	return 0;
 

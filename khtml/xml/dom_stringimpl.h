@@ -56,6 +56,8 @@ public:
     khtml::Length toLength() const;
     int toInt() const;
     QList<khtml::Length> *toLengthList() const;
+    bool isLower() const;
+    DOMStringImpl *lower();
 
     unsigned int l;
     QChar *s;

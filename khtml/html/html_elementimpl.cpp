@@ -454,7 +454,10 @@ HTMLGenericElementImpl::~HTMLGenericElementImpl()
 
 const DOMString HTMLGenericElementImpl::nodeName() const
 {
-    return getTagName(_id);
+    if (document->isHTMLDocument())
+	return getTagName(_id);
+    else
+	return getTagName(_id).string().lower();
 }
 
 

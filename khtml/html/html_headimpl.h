@@ -159,9 +159,11 @@ public:
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttrImpl *attr);
     virtual NodeImpl *addChild(NodeImpl *child);
+    virtual void setChanged(bool b=true);
 
     bool isLoading();
     virtual void sheetLoaded();
+    void reparseSheet();
 
 protected:
     StyleSheetImpl *m_sheet;
