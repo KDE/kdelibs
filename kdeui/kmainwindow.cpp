@@ -777,14 +777,16 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
   QRect size( desk.width(), width(), desk.height(), height() );
-  if(size != d->defaultWindowSize){
-    config->writeEntry(QString::fromLatin1("Width %1").arg(desk.width()), width() );
-    config->writeEntry(QString::fromLatin1("Height %1").arg(desk.height()), height() );
-  }
-  else{
-    config->revertToDefault(QString::fromLatin1("Width %1").arg(desk.width()));
-    config->revertToDefault(QString::fromLatin1("Height %1").arg(desk.height()));
-  }
+  bool defaultSize = (size == d->defaultWindowSize);
+  QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
+  QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
+  (!config->hasDefault(widthString) && defaultSize) ?
+    config->revertToDefault(widthString) :
+    config->writeEntry(widthString, width() );
+  
+  (!config->hasDefault(heightString) && defaultSize) ?
+    config->revertToDefault(heightString) :
+    config->writeEntry(heightString, height() );
 }
 
 void KMainWindow::restoreWindowSize( KConfig * config )
