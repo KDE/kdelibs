@@ -1504,6 +1504,10 @@ void KDockWidget::makeDockVisible()
   if ( parentDockTabGroup() ){
     parentDockTabGroup()->showPage( this );
   }
+  if (parentDockContainer()) {
+    QWidget *contWid=parentDockContainer();
+	dynamic_cast<KDockContainer*>(contWid)->showWidget(this);
+  }
   if ( isVisible() ) return;
 
   QWidget* p = parentWidget();
@@ -2934,6 +2938,9 @@ QStringList KDockContainer::containedWidgets() const {
 	}
 
 	return tmp;
+}
+
+void KDockContainer::showWidget(KDockWidget *) {
 }
 
 void KDockContainer::insertWidget (KDockWidget *dw, QPixmap, const QString &, int &)

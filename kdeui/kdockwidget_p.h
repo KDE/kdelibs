@@ -47,6 +47,7 @@ public:
   virtual ~KDockContainer();
   virtual KDockWidget *parentDockWidget();
   virtual void insertWidget (KDockWidget *, QPixmap, const QString &, int &);
+  virtual void showWidget(KDockWidget *);
   virtual void removeWidget(KDockWidget*);
   virtual void undockWidget(KDockWidget*);
   virtual void save(KConfig *cfg);
