@@ -1368,68 +1368,52 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
                 
         d->timerId = 0;        
         
-        scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+        //scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
-    else if (e->timerId()==d->repaintTimerId)
-    {
        
-        if( m_part->xmlDocImpl() ) {
-            DOM::DocumentImpl *document = m_part->xmlDocImpl();
-            khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
-            resizeContents(root->docWidth(), root->docHeight());
-        }
-        setStaticBackground(d->useSlowRepaints);
+    if( m_part->xmlDocImpl() ) {
+	DOM::DocumentImpl *document = m_part->xmlDocImpl();
+	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+	resizeContents(root->docWidth(), root->docHeight());
+    }
+    setStaticBackground(d->useSlowRepaints);
 
                 
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
-        killTimer(d->repaintTimerId);
-        updateContents( d->updateRect );
+    killTimer(d->repaintTimerId);
+    updateContents( d->updateRect );
         
-        d->repaintTimerId = 0;
-    }    
+    d->repaintTimerId = 0;
 }
 
 void KHTMLView::scheduleRelayout()
 {
-    if (!d->layoutSchedulingEnabled)
+    if (!d->layoutSchedulingEnabled || d->timerId)
         return;
-               
-    // lets relayout once after beginning to get something quickly,
-    // after that, we'll just keep extending the timer.
-    /*if (d->firstRelayout)
-    {
-        if ( !d->timerId ) 
-            d->timerId = startTimer( 300 );
-        return;
-    }*/
-         
-                
-    if ( d->timerId ) 
-    {
-        killTimer(d->timerId);        
-    }   
-    
-    
+
     bool parsing = false;
     if( m_part->xmlDocImpl() ) {
         parsing = m_part->xmlDocImpl()->parsing();
     }        
             
-    d->timerId = startTimer( parsing?400:0 );
+    d->timerId = startTimer( parsing ? 1000 : 0 );
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 {
-//    kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
+    
+//     kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
 
+    
     bool parsing = false;
     if( m_part->xmlDocImpl() ) {
         parsing = m_part->xmlDocImpl()->parsing();
     }
-    
-//    kdDebug() << "parsing " << parsing << endl;
-//    kdDebug() << "complete " << d->complete << endl;
-    
+
+//     kdDebug() << "parsing " << parsing << endl;
+//     kdDebug() << "complete " << d->complete << endl;
+   
     int time;
 
     // if complete...
@@ -1444,35 +1428,31 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
         else
             // not complete, not parsing, extend the timer if it exists
             // otherwise, repaint immediatly
-            time = d->repaintTimerId?400:0;
-                 
+            time = d->repaintTimerId ? 400 : 0;
     }
     
-    if (d->repaintTimerId)
-    {
+    if (d->repaintTimerId) {
         killTimer(d->repaintTimerId);
         d->updateRect = d->updateRect.unite(QRect(x,y,w,h)); 
-//        kdDebug() << "expanding rect" << endl;                 
-    }
-    else
+    } else
         d->updateRect = QRect(x,y,w,h);    
               
     d->repaintTimerId = startTimer( time );
     
-//    kdDebug() << "starting timer " << time << endl;       
+//     kdDebug() << "starting timer " << time << endl;       
 }
 
 
 void KHTMLView::complete()
 {
-//    kdDebug() << "KHTMLView::complete()" << endl;
+//     kdDebug() << "KHTMLView::complete()" << endl;
  
     d->complete = true;
        
     // is there a relayout pending?
     if (d->timerId)
     {
-//        kdDebug() << "requesting relayout now" << endl;
+//         kdDebug() << "requesting relayout now" << endl;
         // do it now
         killTimer(d->timerId);
         d->timerId = startTimer( 0 );           
@@ -1481,9 +1461,9 @@ void KHTMLView::complete()
     // is there a repaint pending?
     if (d->repaintTimerId)
     {
-//        kdDebug() << "requesting repaint now" << endl;
+//         kdDebug() << "requesting repaint now" << endl;
         // do it now
         killTimer(d->repaintTimerId);
-        d->repaintTimerId = startTimer( 0 );           
+        d->repaintTimerId = startTimer( 1 );           
     }
 }
