@@ -1031,7 +1031,7 @@ namespace KIO {
         void deleting( KIO::Job *, const KURL& file );
 
     protected:
-        void startNextJob();
+        void statNextSrc();
         void deleteNextFile();
         void deleteNextDir();
 
@@ -1047,8 +1047,8 @@ namespace KIO {
         void slotReport();
 
     private:
-       enum { STATE_STATING, STATE_LISTING,
-       STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
+        enum { STATE_STATING, STATE_LISTING,
+               STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
         KIO::filesize_t m_totalSize;
         KIO::filesize_t m_processedSize;
         KIO::filesize_t m_fileProcessedSize;
@@ -1059,8 +1059,9 @@ namespace KIO {
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
-        KURL::List m_srcList; // is emptied while deleting
-        KURL::List m_srcListCopy;
+        KURL::List m_srcList;
+        KURL::List::Iterator m_currentStat;
+	QStringList m_parentDirs;
         bool m_shred;
         QTimer *m_reportTimer;
     protected:

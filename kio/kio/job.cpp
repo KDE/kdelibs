@@ -54,6 +54,7 @@ extern "C" {
 #include "slave.h"
 #include "kio/job.h"
 #include "scheduler.h"
+#include "kdirwatch.h"
 #include "kmimemagic.h"
 #include "kprotocolinfo.h"
 #include "kprotocolmanager.h"
@@ -646,7 +647,7 @@ void StatJob::slotRedirection( const KURL &url)
 
 void StatJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed()) 
+    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed())
     {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
@@ -2914,11 +2915,9 @@ CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo
 //////////
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-: Job(showProgressInfo)
-, m_srcList(src)
-, m_srcListCopy(src)
-, m_shred(shred)
-, m_reportTimer(0)
+: Job(showProgressInfo), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
+  m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
+  m_srcList(src), m_currentStat(m_srcList.begin()), m_shred(shred), m_reportTimer(0)
 {
   if ( showProgressInfo ) {
 
@@ -2949,7 +2948,7 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 
 void DeleteJob::slotStart()
 {
-  startNextJob();
+  statNextSrc();
 }
 
 //this is called often, so calling the functions
@@ -2961,24 +2960,30 @@ void DeleteJob::slotReport()
       return;
 
    Observer * observer = Observer::self();
-   if (state==STATE_DELETING_DIRS)
-   {
-      emit processedDirs( this, m_processedDirs );
-      observer->slotProcessedDirs(this,m_processedDirs);
-      emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
-   };
 
    emit deleting( this, m_currentURL );
    observer->slotDeleting(this,m_currentURL);
 
-   if (state==STATE_DELETING_FILES)
-   {
-      observer->slotProcessedFiles(this,m_processedFiles);
-      emit processedFiles( this, m_processedFiles );
-      if (!m_shred)
-         emitPercent( m_processedFiles, m_totalFilesDirs );
-   };
-};
+   switch( state ) {
+        case STATE_STATING:
+        case STATE_LISTING:
+            emit totalSize( this, m_totalSize );
+            emit totalFiles( this, files.count() );
+            emit totalDirs( this, dirs.count() );
+            break;
+        case STATE_DELETING_DIRS:
+            emit processedDirs( this, m_processedDirs );
+            observer->slotProcessedDirs(this,m_processedDirs);
+            emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
+            break;
+        case STATE_DELETING_FILES:
+            observer->slotProcessedFiles(this,m_processedFiles);
+            emit processedFiles( this, m_processedFiles );
+            if (!m_shred)
+               emitPercent( m_processedFiles, m_totalFilesDirs );
+            break;
+   }
+}
 
 
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
@@ -3034,45 +3039,32 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 }
 
 
-void DeleteJob::startNextJob()
+void DeleteJob::statNextSrc()
 {
-    // Each source file starts a different copying operation
-    // Maybe this shouldn't be the case (for a better overall
-    // progress report), but while it's the case, initialise
-    // the stuff here:
-    m_totalSize=0;
-    m_processedSize=0;
-    m_fileProcessedSize=0;
-    m_processedFiles=0;
-    m_processedDirs=0;
-
-    //kdDebug(7007) << "startNextJob" << endl;
-    files.clear();
-    symlinks.clear();
-    dirs.clear();
-    KURL::List::Iterator it = m_srcList.begin();
-    if (it != m_srcList.end())
+    //kdDebug(7007) << "statNextSrc" << endl;
+    if ( m_currentStat != m_srcList.end() )
     {
-        // Stat first
-        KIO::SimpleJob * job = KIO::stat( *it, true, 1, false );
-        Scheduler::scheduleJob(job);
-        //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).prettyURL() << endl;
+        m_currentURL = (*m_currentStat);
+        // Stat it
         state = STATE_STATING;
+        KIO::SimpleJob * job = KIO::stat( m_currentURL, true, 1, false );
+        Scheduler::scheduleJob(job);
+        //kdDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL.prettyURL() << endl;
         addSubjob(job);
-        if ( m_progressId ) // Did we get an ID from the observer ?
-          Observer::self()->slotDeleting( this, *it ); // show asap
-        m_srcList.remove(it);
+        //if ( m_progressId ) // Did we get an ID from the observer ?
+        //  Observer::self()->slotDeleting( this, *it ); // show asap
     } else
     {
-        // Finished - tell the world
-        if ( !m_srcListCopy.isEmpty() )
-        {
-            KDirNotify_stub allDirNotify("*", "KDirNotify*");
-            allDirNotify.FilesRemoved( m_srcListCopy );
-        }
-        if (m_reportTimer!=0)
-           m_reportTimer->stop();
-        emitResult();
+        m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
+        slotReport();
+        // Now we know which dirs hold the files we're going to delete.
+        // To speed things up and prevent double-notification, we disable KDirWatch
+        // on those dirs temporarily (using KDirWatch::self, that's the instanced
+        // used by e.g. kdirlister).
+        for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
+            KDirWatch::self()->stopDirScan( *it );
+        state = STATE_DELETING_FILES;
+	deleteNextFile();
     }
 }
 
@@ -3160,8 +3152,20 @@ void DeleteJob::deleteNextDir()
             dirs.remove(it);
         } while ( !dirs.isEmpty() );
     }
-    // We have finished deleting
-    startNextJob();
+
+    // Re-enable watching on the dirs that held the deleted files
+    for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
+        KDirWatch::self()->restartDirScan( *it );
+
+    // Finished - tell the world
+    if ( !m_srcList.isEmpty() )
+    {
+        KDirNotify_stub allDirNotify("*", "KDirNotify*");
+        allDirNotify.FilesRemoved( m_srcList );
+    }
+    if (m_reportTimer!=0)
+       m_reportTimer->stop();
+    emitResult();
 }
 
 void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
@@ -3235,13 +3239,15 @@ void DeleteJob::slotResult( Job *job )
 
          KURL url = ((SimpleJob*)job)->url();
 
+         subjobs.remove( job );
+         assert( subjobs.isEmpty() );
+
          if (bDir && !bLink)
          {
             // Add toplevel dir in list of dirs
             dirs.append( url );
-
-            subjobs.remove( job );
-            assert( subjobs.isEmpty() );
+            if ( url.isLocalFile() && !m_parentDirs.contains( url.path(-1) ) )
+                m_parentDirs.append( url.path(-1) );
 
             //kdDebug(7007) << " Target is a directory " << endl;
             // List it
@@ -3256,74 +3262,27 @@ void DeleteJob::slotResult( Job *job )
          }
          else
          {
-            subjobs.remove( job );
-            assert( subjobs.isEmpty() );
-
-            //kdDebug(7007) << " Target is a file (or a symlink) " << endl;
-            // Remove it
-
-            m_currentURL=url;
-            //emit deleting( this, url );
-            m_totalSize = size == (KIO::filesize_t)-1 ? 0 : size;
-            m_totalFilesDirs = 1;
-            emit totalSize( this, size );
-            state = STATE_DELETING_FILES;
-            SimpleJob *newjob;
-            if ( m_shred && url.isLocalFile() && !bLink )
-            {
-               // KShred your KTie
-               KIO_ARGS << int(3) << url.path();
-               newjob = KIO::special(KURL("file:/"), packedArgs, false);
-               Scheduler::scheduleJob(newjob);
-               addSubjob(newjob);
-               connect( newjob, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+            if ( bLink ) {
+                //kdDebug(7007) << " Target is a symlink" << endl;
+                symlinks.append( url );
+            } else {
+                //kdDebug(7007) << " Target is a file" << endl;
+                files.append( url );
             }
-            else
-            {
-               // Normal deletion
-               newjob = KIO::file_delete(url, false/*no GUI*/);
-               Scheduler::scheduleJob(newjob);
-               addSubjob( newjob );
-            }
+            if ( url.isLocalFile() && !m_parentDirs.contains( url.directory(-1) ) )
+                m_parentDirs.append( url.directory(-1) );
+            ++m_currentStat;
+            statNextSrc();
          }
       }
       break;
    case STATE_LISTING:
       if ( job->error() )
       {
-         /*
-          Job::slotResult( job ); // will set the error and emit result(this)
-          */
          // Try deleting nonetheless, it may be empty (and non-listable)
-         subjobs.remove( job );
-         assert( subjobs.isEmpty() );
-         state = STATE_DELETING_DIRS;
-         deleteNextDir();
-         return;
-//         Job::slotResult( job ); // will set the error and emit result(this)
-//         return;
       }
-      subjobs.remove( job );
-      assert( subjobs.isEmpty() );
-      //kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count()+symlinks.count() << " dirs: " << dirs.count() << endl;
-
-      // emit all signals for total numbers
-      emit totalSize( this, m_totalSize );
-      emit totalFiles( this, files.count()+symlinks.count() );
-      emit totalDirs( this, dirs.count() );
-      // This is just in case we are job number two (several source URLs)
-      // Remove this when we do all in one operation
-      if (m_progressId)
-      {
-         Observer::self()->slotProcessedDirs(this,0);
-         Observer::self()->slotProcessedFiles(this,0);
-      };
-      //emit processedFiles( this, 0 );
-      //emit processedDirs( this, 0 );
-      m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
-
-      state = STATE_DELETING_FILES;
-      deleteNextFile();
+      ++m_currentStat;
+      statNextSrc();
       break;
    case STATE_DELETING_FILES:
       if ( job->error() )
