@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.21  1997/08/30 15:51:57  kdecvs
+// Kalle: BINARY INCOMPATIBLE!!!!!
+// KApplication provides an IconLoader
+// KConfig writes a cookie to the start of every config file
+// KIconLoader now in kdecore (KIconLoaderDialog and KIconLoaderCanvas stay
+// in kdeui)
+//
 // Revision 1.20  1997/08/30 00:09:56  kdecvs
 // Kalle: new signal appearanceChanged when either font, palette or GUI style has changed
 //
@@ -219,6 +226,8 @@ void reaper(int)
   (void)signal(SIGCHLD, reaper);
 #include "kwm.h"
   KApp = this;
+
+  pIconLoader = NULL;
 #include <qtstream.h>
   pConfigStream = NULL;
 
