@@ -28,9 +28,12 @@ LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
 
-lib_LTLIBRARIES  = libDCOP.la dcopserver.la
+lib_LTLIBRARIES  = libDCOP.la dcopserver.la libDCOPC.la
 libDCOP_la_LIBADD = $(LIBSM) -lICE  $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
+
+libDCOPC_la_LIBADD = -lICE $(LIBDL)
+libDCOPC_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h
@@ -39,6 +42,7 @@ METASOURCES = AUTO
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
+libDCOPC_la_SOURCES = dcopc.c
 
 dcopserver_la_LDFLAGS = -module -avoid-version
 dcopserver_la_SOURCES = dcopserver.cpp
