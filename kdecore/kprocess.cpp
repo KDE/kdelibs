@@ -126,6 +126,11 @@ KProcess::~KProcess()
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
 
+  // Clean up open fd's and socket notifiers.
+  closeStdin();
+  closeStdout();
+  closeStderr();
+
   // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
@@ -459,7 +464,9 @@ void KProcess::processHasExited(int state)
 
     // also emit a signal if the process was run Blocking
     if (DontCare != run_mode)
+    {
       emit processExited(this);
+    }
   }
 }
 
