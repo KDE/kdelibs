@@ -1437,7 +1437,7 @@ int LightStyleV2::pixelMetric( PixelMetric metric,
 	break;
 
     case PM_ProgressBarChunkWidth:
-	ret = 2;
+	ret = 1;
 	break;
 
     case PM_DockWindowSeparatorExtent:
