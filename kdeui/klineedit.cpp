@@ -813,10 +813,10 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
-enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
 QPopupMenu *KLineEdit::createPopupMenu()
 {
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
     // Return if popup menu is not enabled !!
     if ( !m_bEnableMenu )
         return 0;

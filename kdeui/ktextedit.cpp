@@ -149,10 +149,10 @@ void KTextEdit::deleteWordForward()
     removeSelectedText();
 }
 
-enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
 QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 {
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
     QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
 
     int id = menu->idAt(0);
