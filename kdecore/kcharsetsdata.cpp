@@ -128,13 +128,14 @@ void KCharsetConverterData::setInputSettings(){
 
   const char *name=input->name;
   
-  if ( ! stricmp(name,"utf-7") ){
-    warning("Sorry, UTF-7 encoding is not supported yet\n");
-    inputEnc=UTF7;
-    inBits=0;
-    unicodeIn=TRUE;
-  }  
-  else if ( ! stricmp(name,"utf-8") ){
+//  if ( ! stricmp(name,"unicode-1-1-utf-7") ){
+//    warning("Sorry, UTF-7 encoding is not supported yet\n");
+//    inputEnc=UTF7;
+//    inBits=0;
+//    unicodeIn=TRUE;
+//  }  
+//  else
+  if ( ! stricmp(name,"unicode-1-1-utf-8") ){
     inputEnc=UTF8;
     inBits=0;
     unicodeIn=TRUE;
@@ -160,18 +161,20 @@ void KCharsetConverterData::setOutputSettings(){
 
   const char *name=output->name;
   
-  if ( ! stricmp(name,"utf-7") ){
-    warning("Sorry, UTF-7 encoding is not supported yet\n");
-    outputEnc=UTF7;
-    outBits=0;
-    unicodeOut=TRUE;
-  }  
-  else if ( ! stricmp(name,"utf-8") ){
+//  if ( ! stricmp(name,"unicode-1-1-utf-7") ){
+//    warning("Sorry, UTF-7 encoding is not supported yet\n");
+//    outputEnc=UTF7;
+//    outBits=0;
+//    unicodeOut=TRUE;
+//  }  
+//  else
+  if ( ! stricmp(name,"unicode-1-1-utf-8") ){
     outputEnc=UTF8;
     outBits=0;
     unicodeOut=TRUE;
   }  
-  else if ( ! stricmp(name,"unicode") ){
+  else if ( ! stricmp(name,"unicode-1-1") ){
+    warning("Sorry, Unicode probably doesn't work (except UTF-8)\n");
     outputEnc=none;
     outBits=16;
     unicodeOut=TRUE;

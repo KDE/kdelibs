@@ -189,8 +189,11 @@ KLocale::KLocale( const char *catalogue )
     // we should use LC_CTYPE, not LC_MESSAGES for charset
     // however in most cases it should be the same for messages
     // to be readable (there is no i18n messages charset conversion yet)
-    if (getLocale(LC_CTYPE)!="C"){
-      splitLocale(getLocale(LC_CTYPE),ln,ct,chrset);
+    // So when LC_CTYPE is not set (is set to "C") better stay
+    // with LC_MESSAGES
+    QString lc_ctype=getLocale("LC_CTYPE");
+    if ( !lc_ctype.isEmpty() && lc_ctype!="C"){
+      splitLocale(getLocale("LC_CTYPE"),ln,ct,chrset);
       if (!chrset.isEmpty()) chset=chrset;
     }  
 #else

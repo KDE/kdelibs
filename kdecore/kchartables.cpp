@@ -433,9 +433,9 @@ KCharsetEntry KCharsetsData::charsets[]={
     	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE},
     	{ "adobe-symbol",QFont::AnyCharSet,symbol_tbl,FALSE},
     	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE},
-       	{ "utf-7",QFont::AnyCharSet,null_tbl,TRUE},
-       	{ "utf-8",QFont::AnyCharSet,null_tbl,TRUE},
-       	{ "unicode",QFont::AnyCharSet,null_tbl,FALSE},
+//     	{ "unicode-1-1-utf-7",QFont::AnyCharSet,null_tbl,TRUE}, // not supported yet 
+       	{ "unicode-1-1-utf-8",QFont::AnyCharSet,null_tbl,TRUE},
+       	{ "unicode-1-1",QFont::AnyCharSet,null_tbl,FALSE},      // not really supported, but maybe it works
        	{0,QFont::AnyCharSet,null_tbl,FALSE}};
 
 

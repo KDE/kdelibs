@@ -158,8 +158,8 @@ int KCharset::bits()const{
   if ( stricmp(name(),"unicode") == 0 ) return 16;
   else if ( stricmp(name(),"iso-10640") == 0 ) return 16;
   else if ( stricmp(name(),"us-ascii") ==0 ) return 7;
-  else if ( stricmp(name(),"UTF-8") == 0 ) return 8;
-  else if ( stricmp(name(),"UTF-7") == 0 ) return 7;
+  else if ( stricmp(name(),"unicode-1-1-utf-8") == 0 ) return 8;
+  else if ( stricmp(name(),"unicode-1-1-utf-7") == 0 ) return 7;
   else return 8;
 }
 
