@@ -56,8 +56,8 @@ class KApplicationPrivate;
 * Controls and provides information to all KDE applications.
 *
 * Only one object of this class can be instantiated in a single app.
-* This instance is always accessible via the kApplication() method,
-* or via the kapp global variable.
+* This instance is always accessible via the 'kapp' global variable.
+* See cut() for an example.
 *
 * This class provides the following services to all KDE applications.
 *
