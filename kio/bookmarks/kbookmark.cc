@@ -385,9 +385,8 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
                 visitLeave(stack.top());
             bk = stack.pop();
             bk = stack.top().next(bk);
-            if (bk.isNull()) {
+            if (bk.isNull())
                 continue;
-            }
         } 
 
         if (bk.isGroup()) 
