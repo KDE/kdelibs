@@ -4316,7 +4316,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
   }
-  //kdDebug() << k_funcinfo << "right=" << right << " offset=" << offset << " len=" << len << endl;
+  //kdDebug() << "extendSelection right=" << right << " offset=" << offset << " len=" << len << " Starting at obj=" << obj << endl;
   QChar ch;
   do {
     // Last char was ok, point to it
@@ -4331,6 +4331,8 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
       obj = right ? obj->objectBelow() : obj->objectAbove();
       //kdDebug() << "obj=" << obj << endl;
       if ( obj ) {
+        //kdDebug() << "isText=" << obj->isText() << endl;
+        str = QString::null;
         if ( obj->isText() )
           str = static_cast<khtml::RenderText *>(obj)->data().string();
         else if ( obj->isBR() )
