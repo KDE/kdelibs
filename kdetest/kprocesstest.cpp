@@ -30,7 +30,7 @@ und\nnun\nsollen\nseine\ngeister\nsich\nnach\nmeinem\nwillen\nregen\nseine\nwort
 werke\nmerkt\nich\nund\nden\nbrauch\nund\nmit\ngeistesstaerke\ntu\nich\nwunder\nauch\n";
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
  KProcess p1, p2, p3, p4;
  Dummy dummy; 
@@ -117,4 +117,6 @@ void main(int argc, char *argv[])
 
  printf("Entering man Qt event loop -- press <CTRL><C> to abort\n");
  app.exec();
+
+ return 0;
 }

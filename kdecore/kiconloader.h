@@ -25,7 +25,7 @@
 #define KICONLOADER_H
 
 #ifndef _KCONFIG_H
-#include <Kconfig.h>
+#include <kconfig.h>
 #endif
 
 #include <qapp.h>

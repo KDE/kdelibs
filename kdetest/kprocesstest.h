@@ -25,7 +25,7 @@ class Dummy : public QObject
      printf("Process %d exited!\n", (int)proc->getPid()); 
    } 
  
-   void gotOutput(KProcess *proc, char *buffer, int len)
+   void gotOutput(KProcess*, char *buffer, int len)
    {
     char result[1025];             // this is ugly since it relys on the internal buffer size of KProcess,
     memcpy(result, buffer, len);   // NEVER do that in your own application... ;-) 

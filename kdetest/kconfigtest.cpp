@@ -2,6 +2,9 @@
 
  * $Log$
  *
+ * Revision 1.8  1997/10/04 19:42:49  kalle
+ * new KConfig
+ *
  * Revision 1.7  1997/09/24 19:00:25  kalle
  * Iterators
  *
@@ -115,7 +118,7 @@
 // Standard Qt widgets
 
 #include <qlabel.h>
-#include <Kconfig.h>
+#include <qlined.h>
 #include <qpushbt.h>
 
 // KDE includes
@@ -192,7 +195,7 @@
   // Quit button
   pQuitButton = new QPushButton( this, "quitbutton" );
   pQuitButton->setText( "Quit" );
-  pConfig = new KConfig();
+  pConfig = new KConfig( NULL );
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
   // create a default KConfig object in order to be able to start right away
@@ -227,13 +230,9 @@ void KConfigTestView::appConfigEditReturnPressed()
       delete pStream;
       pStream = 0L;
     }
-      pFile = new QFile( pAppFileEdit->text() );
-	  pFile->open( IO_ReadWrite );
-	  pStream = new QTextStream( pFile );
+
   // create a new config object
   if( strlen( pAppFileEdit->text() ) )
-  pConfig = new KConfig( pStream );
-
     {
 	  pConfig = new KConfig( pAppFileEdit->text() );
     }
@@ -243,8 +242,8 @@ void KConfigTestView::appConfigEditReturnPressed()
 
 void KConfigTestView::groupEditReturnPressed()
 {
-  aText.sprintf( "Group set to %s", pConfig->getGroup().isEmpty() ?
-		 "<default>" : (const char*)pConfig->getGroup() );
+  pConfig->setGroup( pGroupEdit->text() );
+  // according to the Qt doc, this is begging for trouble, but for a
   // test program this will do
   QString aText;
   aText.sprintf( "Group set to %s", QString( pConfig->group() ).isEmpty() ?
@@ -305,6 +304,11 @@ int main( int argc, char **argv )
 	  ++(*pIt);
 	};
   delete pIt;
+
+  QString aOldGroup = pConfig->group();
+  pConfig->setGroup( "Test" );
+  pConfig->writeEntry( "TestKey", "TestValue", true, false, true );
+  pConfig->setGroup( aOldGroup );
 	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile );
   else
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );

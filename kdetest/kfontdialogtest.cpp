@@ -22,6 +22,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.3  1997/09/10 13:53:13  kdecvs
+    Kalle: Use KApplication instead of QApplication
+
     Revision 1.2  1997/04/15 20:01:58  kalle
     Kalles changes for 0.8
 
@@ -40,7 +43,7 @@
 
 #include <kapp.h>
 #include "kfontdialog.h"
-#include <Kconfig.h>
+#include <kconfig.h>
 
 
  int main( int argc, char **argv )

@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.37  1997/10/02 22:09:49  ettrich
+// Matthias: BINARY INCOMPATIBLE CHANGES:
+//      * enhancements to icon loading and additional features for kwm modules
+//      * automatic icon loading in KApplication
+//
 // Revision 1.36  1997/09/29 19:56:01  kalle
 // Bugfix: automatic derivation of logical from physical appname (reported by Coolo)
 //
@@ -296,11 +301,24 @@
 
   if (NULL == theKProcessController) 
 #include <kiconloader.h>
+#include <klocale.h>
+#include <kcharsets.h>
+#include <kdebug.h>
 #include "kwm.h"
   pIconLoader = NULL;
-  pLocale = new KLocale(aAppName);
-#include <qtstream.h>
   pConfigStream = NULL;
+#include <qtstream.h>
+#include <qregexp.h>
+  QString aGlobalAppConfigName = kdedir() + "/config/" + aAppName + "rc";
+#include <sys/stat.h>
+#endif
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h> // getenv()
+#include <signal.h>
+
+
+#include <qwidcoll.h>
 
 #include "kprocctrl.h"
 
@@ -308,71 +326,41 @@ KCharsets* KApplication::pCharsets = 0L;
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
-  if( getenv( "USE_OLD_CONFIG_LOCATION" ) )
-       aConfigName += "/.";
-  else  
-       aConfigName += "/.kde/config/";
+  aConfigName += "/.kde/config/";
 
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
-  KApp = this;
-   
-  pConfigFile = new QFile( aConfigName );
+{
+  QString aArgv0 = argv[0];
   int nSlashPos = aArgv0.findRev( '/' );
   if( nSlashPos != -1 )
-  bool bSuccess = pConfigFile->open( IO_ReadWrite ); 
+	aAppName = aArgv0.remove( 0, nSlashPos+1 );
   else
 	aAppName = aArgv0;
-
-	  bSuccess = pConfigFile->open( IO_ReadOnly );
-
-  parseCommandLine( argc, argv );
-
-		  pConfig = new KConfig();
-
-
-KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
-  QApplication( argc, argv )
-{
-		  pConfigStream = new QTextStream( pConfigFile );
-		  pConfig = new KConfig( pConfigStream );
 
   init();
 
   parseCommandLine( argc, argv );
 
 }
-	  pConfigStream = new QTextStream( pConfigFile );
-	  pConfig = new KConfig( pConfigStream );
+
+
+KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
+  QApplication( argc, argv )
+{
+  aAppName = rAppName;
+
+  init();
+
+  parseCommandLine( argc, argv );
+
+}
+
 void KApplication::init()
 {
   // this is important since we fork() to launch the help (Matthias)
-  
-  // try to read a global application file
-  {
-    QString aConfigName;
-    aConfigName = kdedir();
-    aConfigName += "/config/";
-    aConfigName += aAppName;
-    aConfigName += "rc";
-    QFile pConfigFile( aConfigName );
-    // try to open read-only
-    bSuccess = pConfigFile.open( IO_ReadOnly );
-    if( bSuccess )
-      {
-	// we succeeded to open an app-config file read-only
-	{
-	  QTextStream  pConfigStream( &pConfigFile );
-	  pConfig->parseOneConfigFile( &pConfigStream );
-	}
-	// parse the application file again to preserve priority
-	if( eConfigState != APPCONFIG_NONE )
-	  {
-		pConfig->parseOneConfigFile(pConfigStream);
-	  }
-      }
-    pConfigFile.close();
-  }
+  fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
+
   rootDropZone = 0L;
 
   // CC: install KProcess' signal handler
@@ -551,10 +539,6 @@ KLocale* KApplication::getLocale()
       aDummyString2 += " ";
       break;
     case miniicon:
-  if( pConfigStream )
-	delete pConfigStream;
-  pConfigFile->close();
-  delete pConfigFile;
         aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
       aDummyString2 += parameter_strings[miniicon-1];
       aDummyString2 += " ";
@@ -842,8 +826,8 @@ QString KApplication::findFile( const char *file )
 
 const char* KApplication::getCaption() const
 {
-	KConfig config;
-	
+  KConfig* config = getConfig();
+  else
 	return aAppName;
 }
 	// This is the default light gray for KDE
@@ -854,68 +838,68 @@ const char* KApplication::getCaption() const
 		  return;
 
 void KApplication::buildSearchPaths()
-	config.setGroup( "Color Scheme");
-	str = config.readEntry( "InactiveTitleBarColor" );
+  // Torben
+	str = config->readEntry( "InactiveTitleBarColor" );
 	if ( !str.isNull() )
 		inactiveTitleColor.setNamedColor( str );
 	else
 		inactiveTitleColor = gray;
 		
-	str = config.readEntry( "InactiveTitleTextColor" );
+	str = config->readEntry( "InactiveTitleTextColor" );
 	if ( !str.isNull() )
 		inactiveTextColor.setNamedColor( str );
 	else
 		inactiveTextColor = col;
 		
-	str = config.readEntry( "ActiveTitleBarColor" );
+	str = config->readEntry( "ActiveTitleBarColor" );
 	if ( !str.isNull() )
 		activeTitleColor.setNamedColor( str );
 	else
 		activeTitleColor = black;
 		
-	str = config.readEntry( "ActiveTitleTextColor" );
+	str = config->readEntry( "ActiveTitleTextColor" );
 	if ( !str.isNull() )
 		activeTextColor.setNamedColor( str );
 	else
 		activeTextColor = white;
 		
-	str = config.readEntry( "TextColor" );
+	str = config->readEntry( "TextColor" );
 	if ( !str.isNull() )
 		textColor.setNamedColor( str );
 	else
 		textColor = black;
 		
-	str = config.readEntry( "BackgroundColor" );
+	str = config->readEntry( "BackgroundColor" );
 	if ( !str.isNull() )
 		backgroundColor.setNamedColor( str );
 	else
 		backgroundColor = col;
 		
-	str = config.readEntry( "SelectColor" );
+	str = config->readEntry( "SelectColor" );
 	if ( !str.isNull() )
 		selectColor.setNamedColor( str );
 	else
 		selectColor = black;	
 	
-	str = config.readEntry( "SelectTextColor" );
+	str = config->readEntry( "SelectTextColor" );
 	if ( !str.isNull() )
 		selectTextColor.setNamedColor( str );
 	else
 		selectTextColor = white;
 		
-	str = config.readEntry( "WindowColor" );
+	str = config->readEntry( "WindowColor" );
 	if ( !str.isNull() )
 		windowColor.setNamedColor( str );
 	else
 		windowColor = white;
 		
-	str = config.readEntry( "WindowTextColor" );
+	str = config->readEntry( "WindowTextColor" );
 	if ( !str.isNull() )
 		windowTextColor.setNamedColor( str );
 	else
 		windowTextColor = black;
 		
-	str = config.readEntry( "Contrast" );
+	str = config->readEntry( "Contrast" );
 	if ( !str.isNull() )
 		contrast = atoi( str );
 	else
@@ -927,28 +911,28 @@ void KApplication::buildSearchPaths()
 	selectTextColor.setNamedColor( str );
 
 void KApplication::appendSearchPath( const char *path )
-	config.setGroup( "General Font" );
-	str = config.readEntry( "Family" );
+	str = config->readEntry( "WindowColor", "#FFFFFF" );
+	windowColor.setNamedColor( str );
 
   // return if this path has already been added
 	str = config->readEntry( "WindowTextColor", "#000000" ); 
-	str = config.readEntry( "Point Size" );
+
   pSearchPaths->append( path );
 }
 	generalFont = QFont("helvetica", 12, QFont::Normal);
-	str = config.readEntry( "Weight" );
+void KApplication::readSettings()
 	config->setGroup( "General Font" );
   // use the global config files
 	int num = config->readNumEntry( "Charset",-1 );
-	str = config.readEntry( "Italic" );
+	if ( num>=0 )
 		generalFont.setCharSet((QFont::CharSet)num);
   QString str;
 	str = config->readEntry( "Family" );
 	if ( !str.isNull() )
 		generalFont.setFamily(str.data());
 	
-	config.setGroup( "GUI Style" );
-	str = config.readEntry( "Style" );
+	str = config->readEntry( "Point Size" );
+		if ( !str.isNull() )
 		generalFont.setPointSize(atoi(str.data()));
   inactiveTitleColor.setNamedColor( str );
 				

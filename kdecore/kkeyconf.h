@@ -4,7 +4,7 @@
 #include <qdict.h>
 #include <qaccel.h>
 
-#include <Kconfig.h>
+#include <kconfig.h>
 #include <kkeydata.h>
 
 /** Pointer to current KKeyConfig object. */

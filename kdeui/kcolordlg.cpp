@@ -6,7 +6,7 @@
 #include <qevent.h>
 #include <qpushbt.h>
 #include <qlabel.h>
-#include <Kconfig.h>
+#include <kconfig.h>
 #include "kcolordlg.h"
 #include "kcolordlg.moc"
 #include "dither.h"

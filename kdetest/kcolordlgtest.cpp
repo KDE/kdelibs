@@ -1,7 +1,7 @@
 
 #include <kapp.h>
 #include "kcolordlg.h"
-#include <Kconfig.h>
+#include <kconfig.h>
 
 int main( int argc, char *argv[] )
 {

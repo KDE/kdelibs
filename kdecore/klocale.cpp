@@ -34,7 +34,7 @@ char *k_bindtextdomain (const char *__domainname,
 
 #include "klocale.h"
 #include <kapp.h>
-#include <Kconfig.h>
+#include <kconfig.h>
 
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
@@ -66,9 +66,9 @@ KLocale::KLocale( const char *_catalogue )
     
     if (! g_lang ) {
       
-      KConfig config;
-      config.setGroup("Locale");
-      languages = config.readEntry("Language", "C");
+      KConfig* config = kapp->getConfig();
+      config->setGroup("Locale");
+      languages = config->readEntry("Language", "C");
     } else
       languages = g_lang;
     

@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+//
+// Revision 1.34  1997/10/17 17:32:08  ettrich
+// Matthias: typo in documentation :)
+//
 // Revision 1.33  1997/10/17 13:30:18  ettrich
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
 //           Introduced new registration model
@@ -169,9 +173,7 @@
 // Revision 1.25  1997/10/04 19:42:45  kalle
 // new KConfig
 //
-#ifndef _KCONFIG_H
-#include <Kconfig.h>
-#endif
+// Revision 1.24  1997/09/29 19:27:03  kalle
 // Save icon and mini-icon pixmap
 // SORRY, BUTTHH THIS IS AGAIN BINARY INCOMPATIBLE!!!!!!!!!!!!!!!
 //
@@ -399,6 +401,14 @@ class KApplication : public QApplication
 	* @param bUnsaved true, if there if data should be saved before exiting
 	*/
   void setUnsavedData( bool bUnsaved );
+
+
+  /**
+	* Return a text for the window caption.
+	*
+	* This would be set either by
+	* "-caption", otherwise it will be equivalent to the name of the
+	* executable.
 	*/
   const char* getCaption() const;
 
@@ -507,6 +517,7 @@ private slots:
 
   Atom KDEChangePalette;
   bool bUnsavedData; // there is data to be saved before the app should exit
+  Atom KDEChangeGeneral;
 
  private slots:
  void appHelpActivated();

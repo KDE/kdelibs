@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+// There are some left in mediatool, but this is not C++
+//
+// Revision 1.4  1997/10/16 11:14:29  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
 //
@@ -20,7 +23,7 @@
 // Initial revision
 //
 //
-#include <Kconfig.h>
+// KColorGroup header file - provide consistent colors for applications
 //
 // (C) 1996 Matthias Kalle Dalheimer <mda@stardivision.de>
 

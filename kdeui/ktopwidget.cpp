@@ -2,7 +2,7 @@
 #include <ktopwidget.moc>
 #include <kapp.h>
 #include <kdebug.h>
-#include <Kconfig.h>
+#include <kconfig.h>
 #include <qstrlist.h>
 //#include <qobjcoll.h>
 

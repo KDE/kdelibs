@@ -1,7 +1,7 @@
 #ifndef _KCONFIG_TEST_H
 #define _KCONFIG_TEST_H
 
-#include <Kconfig.h>
+#include <kconfig.h>
 
 //
 // KConfigTestView contains lots of Qt widgets.

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+// Imported sorces fromkde
+//
+// Revision 1.4  1997/10/16 11:14:28  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
 //
@@ -46,35 +49,14 @@ KColorGroup::KColorGroup( const QColor& rForeground, const QColor& rBackground,
 KColorGroup::~KColorGroup()
 {
   delete pQColorGroup;
-  QColor aForeColor( rConfig.readEntry( "Foreground-Red" ).toInt(),
-		     rConfig.readEntry( "Foreground-Green" ).toInt(),
-		     rConfig.readEntry( "Foreground-Blue" ).toInt() );
-  
-  QColor aBackColor( rConfig.readEntry( "Background-Red" ).toInt(),
-		     rConfig.readEntry( "Background-Green" ).toInt(),
-		     rConfig.readEntry( "Background-Blue" ).toInt() );
-  
-  QColor aLightColor( rConfig.readEntry( "Light-Red" ).toInt(),
-		      rConfig.readEntry( "Light-Green" ).toInt(),
-		      rConfig.readEntry( "Light-Blue" ).toInt() );
-  
-  QColor aMidColor( rConfig.readEntry( "Mid-Red" ).toInt(),
-		    rConfig.readEntry( "Mid-Green" ).toInt(),
-		    rConfig.readEntry( "Mid-Blue" ).toInt() );
-  
-  QColor aDarkColor( rConfig.readEntry( "Dark-Red" ).toInt(),
-		     rConfig.readEntry( "Dark-Green" ).toInt(),
-		     rConfig.readEntry( "Dark-Blue" ).toInt() );
-  
-  QColor aTextColor( rConfig.readEntry( "Text-Red" ).toInt(),
-		     rConfig.readEntry( "Text-Green" ).toInt(),
-		     rConfig.readEntry( "Text-Blue" ).toInt() );
-  
-  QColor aBaseColor( rConfig.readEntry( "Base-Red" ).toInt(),
-		     rConfig.readEntry( "Base-Green" ).toInt(),
-		     rConfig.readEntry( "Base-Blue" ).toInt() );
-  
-  delete pQColorGroup;
+}
+
+void KColorGroup::load( KConfig& rConfig, QString* pString )
+{
+  QString aOldGroup = rConfig.getGroup();
+
+  QString aGroupName;
+  if (pString) 
 	aGroupName = *pString;
   aGroupName += "ColorGroup";
   rConfig.setGroup( aGroupName );
@@ -90,58 +72,14 @@ KColorGroup::~KColorGroup()
 								  aBaseColor );
 
   rConfig.setGroup( aOldGroup );
-  QString aRedName;
-  QString aGreenName;
-  QString aBlueName;
+}
 
-  aRedName.setNum( pQColorGroup->foreground().red() );
-  aGreenName.setNum( pQColorGroup->foreground().green() );
-  aBlueName.setNum( pQColorGroup->foreground().blue() );
-  rConfig.writeEntry( "Foreground-Red", aRedName );  
-  rConfig.writeEntry( "Foreground-Green", aGreenName );  
-  rConfig.writeEntry( "Foreground-Blue", aBlueName );
+void KColorGroup::save( KConfig& rConfig, QString* pString )
+{
+  QString aOldGroup = rConfig.getGroup();
 
-  aRedName.setNum( pQColorGroup->background().red() );
-  aGreenName.setNum( pQColorGroup->background().green() );
-  aBlueName.setNum( pQColorGroup->background().blue() );
-  rConfig.writeEntry( "Background-Red", aRedName );  
-  rConfig.writeEntry( "Background-Green", aGreenName );  
-  rConfig.writeEntry( "Background-Blue", aBlueName );
-
-  aRedName.setNum( pQColorGroup->light().red() );
-  aGreenName.setNum( pQColorGroup->light().green() );
-  aBlueName.setNum( pQColorGroup->light().blue() );
-  rConfig.writeEntry( "Light-Red", aRedName );  
-  rConfig.writeEntry( "Light-Green", aGreenName );  
-  rConfig.writeEntry( "Light-Blue", aBlueName );
-
-  aRedName.setNum( pQColorGroup->mid().red() );
-  aGreenName.setNum( pQColorGroup->mid().green() );
-  aBlueName.setNum( pQColorGroup->mid().blue() );
-  rConfig.writeEntry( "Mid-Red", aRedName );  
-  rConfig.writeEntry( "Mid-Green", aGreenName );  
-  rConfig.writeEntry( "Mid-Blue", aBlueName );
-
-  aRedName.setNum( pQColorGroup->dark().red() );
-  aGreenName.setNum( pQColorGroup->dark().green() );
-  aBlueName.setNum( pQColorGroup->dark().blue() );
-  rConfig.writeEntry( "Dark-Red", aRedName );  
-  rConfig.writeEntry( "Dark-Green", aGreenName );  
-  rConfig.writeEntry( "Dark-Blue", aBlueName );
-
-  aRedName.setNum( pQColorGroup->text().red() );
-  aGreenName.setNum( pQColorGroup->text().green() );
-  aBlueName.setNum( pQColorGroup->text().blue() );
-  rConfig.writeEntry( "Text-Red", aRedName );  
-  rConfig.writeEntry( "Text-Green", aGreenName );  
-  rConfig.writeEntry( "Text-Blue", aBlueName );
-
-  aRedName.setNum( pQColorGroup->base().red() );
-  aGreenName.setNum( pQColorGroup->base().green() );
-  aBlueName.setNum( pQColorGroup->base().blue() );
-  rConfig.writeEntry( "Base-Red", aRedName );  
-  rConfig.writeEntry( "Base-Green", aGreenName );  
-  rConfig.writeEntry( "Base-Blue", aBlueName );
+  QString aGroupName;
+  if (pString) 
 	aGroupName = *pString;
   aGroupName += "ColorGroup";
   rConfig.setGroup( aGroupName );
