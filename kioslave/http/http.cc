@@ -9,8 +9,10 @@
 #endif
 
 #ifdef HAVE_SSL_H
-#define DO_SSL
+//#define DO_SSL
 #endif
+
+#undef DO_SSL
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -67,7 +69,7 @@ extern "C" {
 int main( int, char ** )
 {
   signal(SIGCHLD, IOProtocol::sigchld_handler);
-  signal(SIGSEGV, IOProtocol::sigsegv_handler);
+//  signal(SIGSEGV, IOProtocol::sigsegv_handler);
 
   Connection parent( 0, 1 );
 
@@ -303,7 +305,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   meth=0; ctx=0; hand=0;
 #endif
 
-  m_sContentMD5 = QString::null;
+  m_sContentMD5 = "";
   Authentication = AUTH_None;
   ProxyAuthentication = AUTH_None;
 
@@ -439,7 +441,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_state.postDataSize = _post_data_size;
 
   // Let's also clear out some things, so bogus values aren't used.
-  m_sContentMD5 = QString::null;
+  m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
   m_bHaveHeader = false;
 
@@ -447,13 +449,21 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   unsigned short int port = _url.port();
   if ( port == 0 ) {
 #ifdef DO_SSL
-    if (_url.protocol()=="https")
-      port = DEFAULT_HTTPS_PORT;
-    else
+    if (_url.protocol()=="https") {
+      struct servent *sent = getservbyname("https", "tcp");
+      if (sent) {
+        port = ntohs(sent->s_port);
+      } else
+        port = DEFAULT_HTTPS_PORT;
+    } else
 #endif
-      if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
-	port = DEFAULT_HTTP_PORT;
-      else {
+      if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") ) {
+        struct servent *sent = getservbyname("http", "tcp");
+	if (sent) {
+	  port = ntohs(sent->s_port);
+	} else
+	  port = DEFAULT_HTTP_PORT;
+      } else {
 	fprintf(stderr, "Got a weird protocol (%s), assuming port is 80\n", _url.protocol().ascii()); fflush(stderr);
 	port = 80;
       }
@@ -929,7 +939,7 @@ void HTTPProtocol::slotGetSize(const char *_url)
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("($Revision$)");
+  QString user_agent("kio_http ($Revision$)");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
@@ -939,7 +949,7 @@ const char *HTTPProtocol::getUserAgentString ()
 #ifdef DO_SSL
   user_agent+="; Supports SSL/HTTPS";
 #endif
-  return user_agent.ascii();
+  return strdup(user_agent.ascii());
 }
 
 /**
@@ -1580,12 +1590,12 @@ void HTTPProtocol::slotDataEnd()
 
 		return;
 	}
-
+debug("BAH");
 	// we are getting the following URL
 	gettingFile(m_state.url.url());
+debug("BAH$");
 
 	totalSize( m_iSize );
-
 	// get the starting time.  this is used later to compute the transfer
 	// speed.
 	time_t t_start = time(0L);
@@ -1698,12 +1708,11 @@ void HTTPProtocol::slotDataEnd()
 			f = m_sContentMD5.length();
 
 		if (m_sContentMD5.left(f) != enc_digest) {
-			error(ERR_CHECKSUM_MISMATCH, m_state.url);
+			error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
 		} else {
 			fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
 		}
-	}
-	else 
+	} else 
 		fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
 
 	fflush(stderr);
@@ -1714,11 +1723,11 @@ void HTTPProtocol::slotDataEnd()
 	// are done
 	t_last = time(0L);
 	if (t_last - t_start)
-		speed(sz / (t_last - t_start));
-	else
-		speed(0);
+	  speed(sz / (t_last - t_start));
+	else;
+	  speed(0);
 
-	finished();
+	//finished();
 
 	m_cmd = CMD_NONE;
 }
