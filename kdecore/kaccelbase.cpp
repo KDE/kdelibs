@@ -654,19 +654,15 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
-	//kdDebug(125) << QString( "insertItem("+sAction+", 0x%1, 0x%2)\n" ).arg(keyDef3.key(),0,16).arg(keyDef4.key(),0,16);
 	if( actionPtr( sAction ) )
 		return false;
 
-	//kdDebug(125) << "KAccelActions::insertAction() resize" << endl;
 	resize( size() + 1 );
-	//kdDebug(125) << "KAccelActions::insertAction() back().init" << endl;
 	back().init( sAction, sDesc,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
 		nIDMenu, pMenu,
 		bConfigurable, bEnabled );
-	//kdDebug(125) << "KAccelActions::insertAction() end" << endl;
 
 	return &back();
 }
@@ -678,7 +674,6 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
-	//kdDebug(125) << QString( "insertItem("+sAction+", 0x%1, 0x%2)\n" ).arg(keyDef3.key(),0,16).arg(keyDef4.key(),0,16);
 	if( actionPtr( sAction ) )
 		return false;
 
@@ -688,7 +683,6 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 		pObjSlot, psMethodSlot,
 		nIDMenu, pMenu,
 		bConfigurable, bEnabled );
-	//kdDebug(125) << "KAccelActions::insertAction() end" << endl;
 
 	return &back();
 }
@@ -713,15 +707,16 @@ void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConf
 	for( iterator it = begin(); it != end(); ++it ) {
 		KAccelAction& action = *it;
 
-		QString sEntry = pConfig->readEntry( action.m_sName );
-		if( !sEntry.isNull() ) {
-			if( sEntry == "none" )
-				action.clearShortcuts();
-			else
-				action.m_rgShortcuts.init( sEntry );
+		if( action.m_bConfigurable ) {
+			QString sEntry = pConfig->readEntry( action.m_sName );
+			if( !sEntry.isNull() ) {
+				if( sEntry == "none" )
+					action.clearShortcuts();
+				else
+					action.m_rgShortcuts.init( sEntry );
+			}
+			kdDebug(125) << "\t" << action.m_sName << " = '" << sEntry << "'" << endl;
 		}
-
-		kdDebug(125) << "\t" << action.m_sName << " = '" << sEntry << "'" << endl;
 	}
 
 	emitKeycodeChanged();
@@ -1179,7 +1174,7 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 				}
 				// There is a key conflict.  A full update
 				//  check is necessary.
-				else
+				else if( m_mapKeyToAction[key] != &action )
 					return updateConnections();
 			}
 		}
@@ -1198,7 +1193,7 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 			KAccelSequence& seq = shortcut.front();
 			for( KKeySequences::iterator itKey = seq.begin(); itKey != seq.end(); ++itKey ) {
 				KKeySequence& key = *itKey;
-				if( !m_mapKeyToAction.contains( key ) && m_mapKeyToAction[key] == &action ) {
+				if( m_mapKeyToAction.contains( key ) && m_mapKeyToAction[key] == &action ) {
 					m_mapKeyToAction.remove( key );
 					disconnectKey( action, key );
 				}

@@ -185,9 +185,18 @@ class KAccelShortcuts : public QValueVector<KAccelShortcut>
 	static bool equal( KAccelShortcuts&, KAccelShortcuts& );
 
 	bool operator ==( KAccelShortcuts& cuts );
-	bool operator ==( const KAccelShortcuts& );
+	bool operator ==( const KAccelShortcuts& cuts );
 	bool operator ==( KAccelShortcuts& cuts ) const;
 	bool operator ==( const KAccelShortcuts& cuts ) const;
+
+	bool operator !=( KAccelShortcuts& cuts )
+		{ return !(*this == cuts); }
+	bool operator !=( const KAccelShortcuts& cuts )
+		{ return !(*this == cuts); }
+	bool operator !=( KAccelShortcuts& cuts ) const
+		{ return !(*this == cuts); }
+	bool operator !=( const KAccelShortcuts& cuts ) const
+		{ return !(*this == cuts); }
 };
 
 //----------------------------------------------------
@@ -434,7 +443,7 @@ class KAccelBase
 	//                     const QObject* receiver, const char *member );
 
 	bool updateConnections();
-	bool updateConnectionsIncremental( KAccelAction& action );
+	//bool updateConnectionsIncremental( KAccelAction& action );
 
 	bool setShortcuts( const QString& sAction, const KAccelShortcuts& rgCuts );
 
