@@ -594,14 +594,12 @@ KWin::WindowInfo::WindowInfo( const WindowInfo& wininfo )
 KWin::WindowInfo& KWin::WindowInfo::operator=( const WindowInfo& wininfo )
 {
     if( d != wininfo.d ) {
-	if( d != NULL ) {
-	    if( --d->ref == 0 ) {
+	if( d != NULL )
+	    if( --d->ref == 0 )
 		delete d;
-	    }
 	d = wininfo.d;
 	if( d != NULL )
 	    ++d->ref;
-	}
     }
     return *this;
 }
