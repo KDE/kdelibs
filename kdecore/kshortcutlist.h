@@ -81,6 +81,9 @@ class KDECORE_EXPORT KShortcutList
 	 */
 	virtual QString whatsThis( uint index ) const = 0;
 
+	// TODO KDE4: add virtual QString toolTip( uint index ) const = 0
+	// Will then be used by the listview in kkeydialog
+
 	/**
 	 * Returns the shortcut with the given @p index.
 	 * @param index the index of the shortcut (must be < count())
