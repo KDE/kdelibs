@@ -56,8 +56,8 @@ namespace KJS {
     regex_t preg;
 #else
     pcre *pcregex;
-    uint nrSubPatterns;
 #endif
+    uint nrSubPatterns;
 
     RegExp();
   };
