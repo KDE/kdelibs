@@ -161,12 +161,6 @@ zu	Zulu
 <!-- end of KDE languages -->
 <!-- Languages could be made compulsory for books -->
 
-<!-- DocBook Reference Documentation recommends switching these off
-     if not used: it massively reduces the ESIS size (~ what you get
-     from nsgmls).  Should anyone need any of these attributes, let
-     me know.  It's easy to add them on again.  -->
-<!ENTITY % effectivity.attrib "">
-
 <!ENTITY % remap.attrib "">
 
 <!-- Not used -->
