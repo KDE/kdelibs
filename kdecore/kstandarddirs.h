@@ -553,6 +553,7 @@ public:
 
 	void checkConfig() const;
 	void applyDataRestrictions(const QString &) const;
+	void createSpecialResource(const char*);
 };
 
 /**
