@@ -53,6 +53,10 @@ class HTMLTokenizer;
 class KHTMLParser;
 class KHTMLView;
 
+namespace DOM {
+  class HTMLDocumentImpl;
+}
+
 namespace khtml {
     class CachedScript;
     class Token;
@@ -61,6 +65,21 @@ namespace khtml {
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
+
+class Tokenizer : public QObject
+{
+    Q_OBJECT
+public:
+    virtual void begin() = 0;
+    virtual void write( const QString &str ) = 0;
+    virtual void end() = 0;
+    virtual void finish() = 0;
+
+signals:
+    void finishedParsing();
+
+};
+
 //-----------------------------------------------------------------------------
 
 /**
@@ -68,21 +87,18 @@ namespace khtml {
  * This class takes QStrings as input, and splits up the input streams into
  * tokens, which are passed on to the @ref KHTMLParser.
  */
-class HTMLTokenizer : public QObject, public khtml::CachedObjectClient
+class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
-    HTMLTokenizer(KHTMLParser *, KHTMLView * = 0);
-    ~HTMLTokenizer();
+    HTMLTokenizer(DOM::HTMLDocumentImpl *, KHTMLView * = 0);
+    virtual ~HTMLTokenizer();
 
     void begin();
     void setPlainText();
     void write( const QString &str );
     void end();
     void finish();
-
-signals:
-    void finishedParsing();
 
 protected:
     void reset();

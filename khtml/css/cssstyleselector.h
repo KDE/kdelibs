@@ -74,19 +74,14 @@ namespace khtml
     {
     public:
 	/**
-	 * creates a new StyleSelector for a XML Document.
+	 * creates a new StyleSelector for a Document.
 	 * goes through all StyleSheets defined in the document and
 	 * creates a list of rules it needs to apply to objects
 	 *
-	 * Basically the same as the constructor for a HTMLDocument,
-	 * but the defaultStyle (which is html only) will not be used.
+	 * Also takes into account special cases for HTML documents,
+	 * including the defaultStyle (which is html only)
 	 */
 	CSSStyleSelector(DOM::DocumentImpl *doc);
-	/**
-	 * does the same for an HTML document. Initializes the default style
-	 * for html.
-	 */
-	CSSStyleSelector(DOM::HTMLDocumentImpl *doc);
 	/**
 	 * same as above but for a single stylesheet.
 	 */

@@ -611,6 +611,27 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 
 // -------------------------------------------------------------------------
 
+XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name) : ElementImpl(doc)
+{
+    m_name = _name;
+    if (m_name)
+	m_name->ref();
+}
+
+XMLElementImpl::~XMLElementImpl()
+{
+    if (m_name)
+	m_name->deref();
+}
+
+const DOMString XMLElementImpl::nodeName() const
+{
+    return m_name;
+}
+
+
+// -------------------------------------------------------------------------
+
 NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e) : element(e)
 {
     attrs = 0;

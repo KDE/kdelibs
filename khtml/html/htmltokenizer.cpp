@@ -67,13 +67,13 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
 
 // ----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
+HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
 {
     view = _view;
     buffer = 0;
     scriptCode = 0;
     charsets = KGlobal::charsets();
-    parser = p;
+    parser = new KHTMLParser(_view, _doc);
     currToken = 0;
     cachedScript = 0;
     executingScript = false;
@@ -1524,6 +1524,7 @@ void HTMLTokenizer::processToken()
 HTMLTokenizer::~HTMLTokenizer()
 {
     reset();
+    delete parser;
 }
 
 

@@ -27,9 +27,7 @@
 #include "khtml_part.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
-#include "misc/loader.h"
 
-#include "htmlparser.h"
 #include "htmltokenizer.h"
 #include "htmlhashes.h"
 
@@ -43,66 +41,34 @@
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
-#include "rendering/render_style.h"
-#include "rendering/render_root.h"
 #include <stdlib.h>
-
 #include <qstack.h>
 
+template class QStack<DOM::NodeImpl>;
 
 using namespace DOM;
 using namespace khtml;
 
-template class QStack<DOM::NodeImpl>;
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
-    parser = 0;
-    tokenizer = 0;
-
     bodyElement = 0;
     htmlElement = 0;
-
-    m_loadingSheet = false;
-
-    m_elemSheet=0;
-    m_sheet = 0;
-    m_docLoader = new DocLoader();
-
-    visuallyOrdered = false;
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     : DocumentImpl(v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor2 this = " << this << endl;
-    parser = 0;
-    tokenizer = 0;
-
     bodyElement = 0;
     htmlElement = 0;
 
     m_styleSelector = new CSSStyleSelector(this);
-
-    m_loadingSheet = false;
-
-    m_elemSheet=0;
-    m_sheet = 0;
-    m_docLoader = new DocLoader();
-
-    visuallyOrdered = false;
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
-    kdDebug( 6090 ) << "HTMLDocumentImpl destructor this = " << this << endl;
-    delete m_docLoader;
-    kdDebug() << "HTMLDocumentImpl::~HTMLDocumentImpl sheet = " << m_elemSheet << endl; 
-     if (m_elemSheet )
- 	m_elemSheet->deref();
-
-     delete m_sheet;
 }
 
 DOMString HTMLDocumentImpl::referrer() const
@@ -117,13 +83,6 @@ DOMString HTMLDocumentImpl::domain() const
     KURL u(url.string());
     return u.host();
 }
-
-DOMString HTMLDocumentImpl::baseURL() const
-{
-    if(!view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
-    return url;
-}
-
 
 HTMLElementImpl *HTMLDocumentImpl::body()
 {
@@ -163,89 +122,10 @@ void HTMLDocumentImpl::setBody(const HTMLElement &/*_body*/)
     // ###
 }
 
-void HTMLDocumentImpl::open(  )
+Tokenizer *HTMLDocumentImpl::createTokenizer()
 {
-    //kdDebug( 6030 ) << "HTMLDocumentImpl::open()" << endl;
-    clear();
-    parser = new KHTMLParser(m_view, this);
-    tokenizer = new HTMLTokenizer(parser, m_view);
-    connect(tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
-    tokenizer->begin();
+    return new HTMLTokenizer(this,m_view);
 }
-
-void HTMLDocumentImpl::close(  )
-{
-    if (m_render)
-        m_render->close();
-
-    if(parser) delete parser;
-    parser = 0;
-    if(tokenizer) delete tokenizer;
-    tokenizer = 0;
-}
-
-void HTMLDocumentImpl::write( const DOMString &text )
-{
-    if(tokenizer)
-        tokenizer->write(text.string());
-}
-
-void HTMLDocumentImpl::write( const QString &text )
-{
-    if(tokenizer)
-        tokenizer->write(text);
-}
-
-void HTMLDocumentImpl::writeln( const DOMString &text )
-{
-    write(text);
-    write(DOMString("\n"));
-}
-
-void HTMLDocumentImpl::finishParsing (  )
-{
-    if(tokenizer)
-        tokenizer->finish();
-}
-
-ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
-{
-    QStack<NodeImpl> nodeStack;
-    NodeImpl *current = _first;
-
-    while(1)
-    {
-        if(!current)
-        {
-            if(nodeStack.isEmpty()) break;
-            current = nodeStack.pop();
-            current = current->nextSibling();
-        }
-        else
-        {
-            if(current->isElementNode())
-            {
-                ElementImpl *e = static_cast<ElementImpl *>(current);
-                if(e->getAttribute(ATTR_ID) == elementId)
-                    return e;
-            }
-
-            NodeImpl *child = current->firstChild();
-            if(child)
-            {
-                nodeStack.push(current);
-                current = child;
-            }
-            else
-            {
-                current = current->nextSibling();
-            }
-        }
-    }
-
-    return 0;
-}
-
 
 NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
 {
@@ -361,16 +241,6 @@ StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
 // not part of the DOM
 // --------------------------------------------------------------------------
 
-void HTMLDocumentImpl::clear()
-{
-    if(parser) delete parser;
-    if(tokenizer) delete tokenizer;
-    parser = 0;
-    tokenizer = 0;
-
-    // #### clear tree
-}
-
 bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
                                   int, int, DOMString &url,
                                    NodeImpl *&innerNode, long &offset)
@@ -383,16 +253,6 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
         inside = n->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
     //kdDebug(0) << "documentImpl::mouseEvent " << n->id() << " " << inside << endl;
     return inside;
-}
-
-void HTMLDocumentImpl::attach(KHTMLView *w)
-{
-    m_view = w;
-    if(!m_styleSelector) createSelector();
-    m_render = new RenderRoot(w);
-    recalcStyle();
-
-    NodeBaseImpl::attach(w);
 }
 
 void HTMLDocumentImpl::detach()
@@ -409,110 +269,6 @@ void HTMLDocumentImpl::detach()
     m_view = 0;
 
     DocumentImpl::detach();
-}
-
-void HTMLDocumentImpl::setVisuallyOrdered()
-{
-    visuallyOrdered = true;
-    if(!m_style) return;
-    m_style->setVisuallyOrdered(true);
-}
-
-void HTMLDocumentImpl::createSelector()
-{
-    applyChanges();
-}
-
-// ### this function should not be needed in the long run. The one in
-// DocumentImpl should be enough.
-void HTMLDocumentImpl::applyChanges(bool,bool force)
-{
-    if(m_styleSelector) delete m_styleSelector;
-    m_styleSelector = new CSSStyleSelector(this);
-    if(!m_render) return;
-
-    recalcStyle();
-
-    // a style change can influence the children, so we just go
-    // through them and trigger an appplyChanges there too
-    NodeImpl *n = _first;
-    while(n) {
-        n->applyChanges(false,force || changed());
-        n = n->nextSibling();
-    }
-
-    // force a relayout of this part of the document
-    m_render->layout();
-    // force a repaint of this part.
-    // ### if updateSize() changes any size, it will already force a
-    // repaint, so we might do double work here...
-    m_render->repaint();
-    setChanged(false);
-}
-
-void HTMLDocumentImpl::recalcStyle()
-{
-    QTime qt;
-    qt.start();
-    if( !m_render ) return;
-    if( m_style ) delete m_style;
-    m_style = new RenderStyle();
-    m_style->setDisplay(BLOCK);
-    m_style->setVisuallyOrdered( visuallyOrdered );
-    // ### make the font stuff _really_ work!!!!
-    const KHTMLSettings *settings = m_view->part()->settings();
-    QValueList<int> fs = settings->fontSizes();
-    int size = fs[3];
-    if(size < settings->minFontSize())
-        size = settings->minFontSize();
-    QFont f = KGlobalSettings::generalFont();
-    f.setFamily(settings->stdFontName());
-    f.setPointSize(size);
-    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl;
-    KGlobal::charsets()->setQFont(f, settings->charset());
-    m_style->setFont(f);
-
-    m_style->setHtmlHacks(true); // enable html specific rendering tricks
-    if(m_render)
-	m_render->setStyle(m_style);
-
-    NodeImpl *n;
-    for (n = _first; n; n = n->nextSibling())
-	n->recalcStyle();
-    kdDebug( ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
-}
-
-void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
-{
-    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
-    m_sheet = new CSSStyleSheetImpl(this, url);
-    m_sheet->ref();
-    m_sheet->parseString(sheet);
-    m_loadingSheet = false;
-
-    createSelector();
-}
-
-CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
-{
-    if (!m_elemSheet) {
-        m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
-	m_elemSheet->ref();
-    }
-    return m_elemSheet;
-}
-
-
-void HTMLDocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)
-{
-    static_cast<RenderRoot*>(m_render)
-        ->setSelection(s->renderer(),sp,e->renderer(),ep);
-}
-
-void HTMLDocumentImpl::clearSelection()
-{
-    static_cast<RenderRoot*>(m_render)
-        ->clearSelection();
 }
 
 int HTMLDocumentImpl::findHighestTabIndex()
@@ -616,28 +372,12 @@ void HTMLDocumentImpl::slotFinishedParsing()
     }
     if ( !onloadScript.isEmpty() )
 	m_view->part()->executeScript( Node(this), onloadScript );
-    emit finishedParsing();
+    DocumentImpl::slotFinishedParsing();
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 {
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
-
-void HTMLDocumentImpl::setReloading()
-{
-    m_docLoader->reloading = true;
-}
-
-void HTMLDocumentImpl::updateRendering()
-{
-    QListIterator<NodeImpl> it(changedNodes);
-    for (; it.current(); ++it) {
-	if( it.current()->changed() )
-	    it.current()->applyChanges( true, true );
-    }
-     changedNodes.clear();
-}
-
 
 #include "html_documentimpl.moc"

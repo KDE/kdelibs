@@ -27,11 +27,14 @@
 
 #include <qlist.h>
 #include <qstringlist.h>
+#include <qobject.h>
 
 class KHTMLView;
+class Tokenizer;
 
 namespace khtml {
     class CSSStyleSelector;
+    class DocLoader;
 }
 
 namespace DOM {
@@ -48,6 +51,10 @@ namespace DOM {
     class TreeWalkerImpl;
     class NodeFilterImpl;
 
+    class StyleSheetImpl;
+    class StyleSheetListImpl;
+    class CSSStyleSheetImpl;
+
 class DOMImplementationImpl : public DomShared
 {
 public:
@@ -61,8 +68,9 @@ public:
 /**
  * @internal
  */
-class DocumentImpl : public NodeBaseImpl
+class DocumentImpl : public QObject, public NodeBaseImpl
 {
+    Q_OBJECT
 public:
     DocumentImpl();
     DocumentImpl(KHTMLView *v);
@@ -135,6 +143,42 @@ public:
     QList<NodeImpl> changedNodes;
     virtual void setChanged(bool b=true);
     virtual void recalcStyle();
+    virtual void updateRendering();
+    khtml::DocLoader *docLoader() { return m_docLoader; }
+    void setReloading();
+    virtual void attach(KHTMLView *w);
+
+    // to get visually ordered hebrew and arabic pages right
+    void setVisuallyOrdered();
+
+    void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
+    void clearSelection();
+
+    virtual void open (  );
+    virtual void close (  );
+    virtual void write ( const DOMString &text );
+    virtual void write ( const QString &text );
+    virtual void writeln ( const DOMString &text );
+    virtual void finishParsing (  );
+    void clear();
+    // moved from HTMLDocument in DOM2
+    ElementImpl *getElementById ( const DOMString &elementId );
+    DOMString URL() const { return url; }
+    void setURL(DOMString _url) { url = _url; }
+
+    DOMString baseURL() const;
+
+    // from cachedObjectClient
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+
+    CSSStyleSheetImpl* elementSheet();
+    virtual Tokenizer *createTokenizer();
+
+signals:
+    virtual void finishedParsing();
+
+public slots:
+    virtual void slotFinishedParsing();
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
@@ -143,6 +187,15 @@ protected:
     QStringList m_state;
 
     khtml::RenderStyle *m_style;
+    khtml::DocLoader *m_docLoader;
+    bool visuallyOrdered;
+    Tokenizer *tokenizer;
+    DOMString url;
+
+    StyleSheetImpl *m_sheet;
+    bool m_loadingSheet;
+
+    CSSStyleSheetImpl *m_elemSheet;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

@@ -70,53 +70,56 @@ static PseudoState pseudoState;
 
 static RenderStyle::PseudoId dynamicPseudo;
 
-CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
+CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
-    // ### parse the xml for processing instructions containing style sheet info
-    authorStyle = new CSSStyleSelectorList();
-}
 
-CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
-{
-    if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
+    if (doc->isHTMLDocument()) {
+        HTMLDocumentImpl *htmlDoc = static_cast<HTMLDocumentImpl*>(doc);
 
-    authorStyle = new CSSStyleSelectorList();
-    // ### go through DOM tree for style elements
+	if(!defaultStyle) loadDefaultStyle(htmlDoc->view()->part()->settings());
 
-    NodeImpl *test = doc->html(); // should be html element
-    if(!test) return;
-    test = test->firstChild();
-    if(!test) return;
-    while(test && (test->id() != ID_HEAD))
-        test = test->nextSibling();
-    if(test) {
-	HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
+	authorStyle = new CSSStyleSelectorList();
+	// ### go through DOM tree for style elements
 
-    // all LINK and STYLE elements have to be direct children of the HEAD element
-	test = head->firstChild();
-	while(test)
-	{
-	    if(test->id() == ID_LINK)
-	    {
-		HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
-		authorStyle->append(link->sheet());
-	    }
-	    else if(test->id() == ID_STYLE)
-	    {
-		HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
-		authorStyle->append(style->sheet());
-	    }
+	NodeImpl *test = htmlDoc->html(); // should be html element
+	if(!test) return;
+	test = test->firstChild();
+	if(!test) return;
+	while(test && (test->id() != ID_HEAD))
 	    test = test->nextSibling();
+	if(test) {
+	    HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
+
+	    // all LINK and STYLE elements have to be direct children of the HEAD element
+	    test = head->firstChild();
+	    while(test)
+	    {
+		if(test->id() == ID_LINK)
+		{
+		    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
+		    authorStyle->append(link->sheet());
+		}
+		else if(test->id() == ID_STYLE)
+		{
+		    HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
+		    authorStyle->append(style->sheet());
+		}
+		test = test->nextSibling();
+	    }
+	}
+	HTMLElementImpl *e = htmlDoc->body();
+	if(e && e->id() == ID_BODY)
+	{
+	    HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
+	    if(body->sheet())
+	    {
+		authorStyle->append(body->sheet());
+	    }
 	}
     }
-    HTMLElementImpl *e = doc->body();
-    if(e && e->id() == ID_BODY)
-    {
-        HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
-        if(body->sheet())
-        {
-            authorStyle->append(body->sheet());
-        }
+    else { // just a normal XML document
+	// ### parse the xml for processing instructions containing style sheet info
+	authorStyle = new CSSStyleSelectorList();
     }
 }
 

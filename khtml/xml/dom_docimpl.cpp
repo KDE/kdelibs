@@ -31,9 +31,12 @@
 #include "dom2_traversalimpl.h"
 
 #include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
 
 #include <qstring.h>
+#include <qstack.h>
 #include "misc/htmlhashes.h"
+#include "misc/loader.h"
 #include <kdebug.h>
 
 #include "html_baseimpl.h"
@@ -48,11 +51,26 @@
 #include "html_miscimpl.h"
 #include "html_tableimpl.h"
 #include "html_objectimpl.h"
+#include "htmltokenizer.h"
+#include "xml_tokenizer.h"
 
 #include "rendering/render_object.h"
+#include "rendering/render_root.h"
+#include "rendering/render_style.h"
+
+#include "khtmlview.h"
+#include "khtml_part.h"
+
+#include <kglobal.h>
+#include <kcharsets.h>
+#include <kglobalsettings.h>
+#include "khtml_settings.h"
+#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
+
+//template class QStack<DOM::NodeImpl>; // needed ?
 
 
 DOMImplementationImpl::DOMImplementationImpl()
@@ -78,6 +96,12 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_styleSelector = 0;
     m_view = 0;
     m_style = 0;
+    m_docLoader = new DocLoader();
+    visuallyOrdered = false;
+    m_loadingSheet = false;
+    m_sheet = 0;
+    m_elemSheet = 0;
+    tokenizer = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -85,12 +109,24 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_styleSelector = 0;
     m_view = v;
     m_style = 0;
+    m_docLoader = new DocLoader();
+    visuallyOrdered = false;
+    m_loadingSheet = false;
+    m_sheet = 0;
+    m_elemSheet = 0;
+    tokenizer = 0;
 }
 
 DocumentImpl::~DocumentImpl()
 {
+    delete m_sheet;
     delete m_styleSelector;
     delete m_style;
+    delete m_docLoader;
+    if (m_elemSheet )
+	m_elemSheet->deref();
+    if (tokenizer)
+	delete tokenizer;
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -113,6 +149,12 @@ ElementImpl *DocumentImpl::documentElement() const
 ElementImpl *DocumentImpl::createElement( const DOMString &name )
 {
     uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
+
+    // ### preserve case-sensitivity of xml element names
+    if (!id) {
+	// ### only allow for non-HTML documents ???
+        return new XMLElementImpl(this,name.implementation());
+    }
 
     ElementImpl *n = 0;
     switch(id)
@@ -379,8 +421,7 @@ StyleSheetListImpl *DocumentImpl::styleSheets()
 
 void DocumentImpl::createSelector()
 {
-    if(m_styleSelector) delete m_styleSelector;
-    m_styleSelector = new CSSStyleSelector(this);
+    applyChanges();
 }
 
 // Used to maintain list of all forms in document
@@ -435,22 +476,22 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long /*w
 
 void DocumentImpl::applyChanges(bool,bool force)
 {
-    createSelector();
+    if(m_styleSelector) delete m_styleSelector;
+    m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
 
-    if (force || changed())
-	recalcStyle();
+    recalcStyle();
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges(true,force || changed());
-	n = n->nextSibling();
+        n->applyChanges(false,force || changed());
+        n = n->nextSibling();
     }
 
     // force a relayout of this part of the document
-    m_render->updateSize();
+    m_render->layout();
     // force a repaint of this part.
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
@@ -467,9 +508,36 @@ void DocumentImpl::setChanged(bool b)
 
 void DocumentImpl::recalcStyle()
 {
-    if (m_render)
+    QTime qt;
+    qt.start();
+    if( !m_render ) return;
+    if( m_style ) delete m_style;
+    m_style = new RenderStyle();
+    m_style->setDisplay(BLOCK);
+    m_style->setVisuallyOrdered( visuallyOrdered );
+    // ### make the font stuff _really_ work!!!!
+    const KHTMLSettings *settings = m_view->part()->settings();
+    QValueList<int> fs = settings->fontSizes();
+    int size = fs[3];
+    if(size < settings->minFontSize())
+        size = settings->minFontSize();
+    QFont f = KGlobalSettings::generalFont();
+    f.setFamily(settings->stdFontName());
+    f.setPointSize(size);
+    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl;
+    KGlobal::charsets()->setQFont(f, settings->charset());
+    m_style->setFont(f);
+
+    m_style->setHtmlHacks(true); // enable html specific rendering tricks
+    if(m_render)
 	m_render->setStyle(m_style);
+
+    NodeImpl *n;
+    for (n = _first; n; n = n->nextSibling())
+	n->recalcStyle();
+    kdDebug( ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 }
+
 
 
 // ------------------------------------------------------------------------
@@ -497,6 +565,173 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 {
     return new TagNodeListImpl( this, tagname );
+}
+
+void DocumentImpl::updateRendering()
+{
+    QListIterator<NodeImpl> it(changedNodes);
+    for (; it.current(); ++it) {
+	if( it.current()->changed() )
+	    it.current()->applyChanges( true, true );
+    }
+     changedNodes.clear();
+}
+
+void DocumentImpl::setReloading()
+{
+    m_docLoader->reloading = true;
+}
+
+void DocumentImpl::attach(KHTMLView *w)
+{
+    m_view = w;
+    if(!m_styleSelector) createSelector();
+    m_render = new RenderRoot(w);
+    recalcStyle();
+
+    NodeBaseImpl::attach(w);
+}
+
+void DocumentImpl::slotFinishedParsing()
+{
+    emit finishedParsing();
+}
+
+void DocumentImpl::setVisuallyOrdered()
+{
+    visuallyOrdered = true;
+    if(!m_style) return;
+    m_style->setVisuallyOrdered(true);
+}
+
+void DocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)
+{
+    static_cast<RenderRoot*>(m_render)
+        ->setSelection(s->renderer(),sp,e->renderer(),ep);
+}
+
+void DocumentImpl::clearSelection()
+{
+    static_cast<RenderRoot*>(m_render)
+        ->clearSelection();
+}
+
+Tokenizer *DocumentImpl::createTokenizer()
+{
+    return new XMLTokenizer(this,m_view);
+}
+
+void DocumentImpl::open(  )
+{
+    clear();
+    tokenizer = createTokenizer();
+    connect(tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
+    tokenizer->begin();
+}
+
+void DocumentImpl::close(  )
+{
+    if (m_render)
+        m_render->close();
+
+    if(tokenizer) delete tokenizer;
+    tokenizer = 0;
+}
+
+void DocumentImpl::write( const DOMString &text )
+{
+    if(tokenizer)
+        tokenizer->write(text.string());
+}
+
+void DocumentImpl::write( const QString &text )
+{
+    if(tokenizer)
+        tokenizer->write(text);
+}
+
+void DocumentImpl::writeln( const DOMString &text )
+{
+    write(text);
+    write(DOMString("\n"));
+}
+
+void DocumentImpl::finishParsing (  )
+{
+    if(tokenizer)
+        tokenizer->finish();
+}
+
+void DocumentImpl::clear()
+{
+    if(tokenizer) delete tokenizer;
+    tokenizer = 0;
+
+    // #### clear tree
+}
+
+ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
+{
+    QStack<NodeImpl> nodeStack;
+    NodeImpl *current = _first;
+
+    while(1)
+    {
+        if(!current)
+        {
+            if(nodeStack.isEmpty()) break;
+            current = nodeStack.pop();
+            current = current->nextSibling();
+        }
+        else
+        {
+            if(current->isElementNode())
+            {
+                ElementImpl *e = static_cast<ElementImpl *>(current);
+                if(e->getAttribute(ATTR_ID) == elementId)
+                    return e;
+            }
+
+            NodeImpl *child = current->firstChild();
+            if(child)
+            {
+                nodeStack.push(current);
+                current = child;
+            }
+            else
+            {
+                current = current->nextSibling();
+            }
+        }
+    }
+
+    return 0;
+}
+
+DOMString DocumentImpl::baseURL() const
+{
+    if(!view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
+    return url;
+}
+
+void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+{
+    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
+    m_sheet = new CSSStyleSheetImpl(this, url);
+    m_sheet->ref();
+    m_sheet->parseString(sheet);
+    m_loadingSheet = false;
+
+    createSelector();
+}
+
+CSSStyleSheetImpl* DocumentImpl::elementSheet()
+{
+    if (!m_elemSheet) {
+        m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
+	m_elemSheet->ref();
+    }
+    return m_elemSheet;
 }
 
 // ----------------------------------------------------------------------------

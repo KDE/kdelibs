@@ -510,7 +510,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 	child->setPreviousSibling(prev);
 	child->setNextSibling(refChild);
 	if (attached())
-	    child->attach(document->view());
+	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 
 	prev = child;
 	child = nextChild;
@@ -587,7 +587,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 	child->setPreviousSibling(prev);
 	child->setNextSibling(next);
 	if (attached())
-	    child->attach(document->view());
+	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 	prev = child;
 	child = nextChild;
     }
@@ -679,7 +679,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 	    _first = _last = child;
 	}
 	if (attached())
-		child->attach(document->view());
+	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 
 	child = nextChild;
     }
@@ -765,7 +765,11 @@ bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
 
 bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
 {
-    return checkChild(id(), newChild->id());
+    // ### check xml element allowedness according to DTD
+    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
+	return checkChild(id(), newChild->id());
+    else
+	return true;
 }
 
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)

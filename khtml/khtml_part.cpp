@@ -193,7 +193,7 @@ public:
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
-  DOM::HTMLDocumentImpl *m_doc;
+  DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
   long m_cacheId;
@@ -627,8 +627,17 @@ bool KHTMLPart::closeURL()
 
 DOM::HTMLDocument KHTMLPart::htmlDocument() const
 {
-  return d->m_doc;
+  if (d->m_doc->isHTMLDocument())
+    return static_cast<HTMLDocumentImpl*>(d->m_doc);
+  else
+    return static_cast<HTMLDocumentImpl*>(0);
 }
+
+DOM::Document KHTMLPart::document() const
+{
+    return d->m_doc;
+}
+
 
 KParts::BrowserExtension *KHTMLPart::browserExtension() const
 {
@@ -930,8 +939,15 @@ bool KHTMLPart::openFile()
 
 DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 {
+    if ( d && d->m_doc && d->m_doc->isHTMLDocument() )
+        return static_cast<HTMLDocumentImpl*>(d->m_doc);
+    return 0;
+}
+
+DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
+{
     if ( d )
-        return d->m_doc;
+	return d->m_doc;
     return 0;
 }
 
@@ -983,6 +999,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     QString charset = d->m_job->queryMetaData("charset");
     if ( !charset.isEmpty() )
         setCharset( charset, true );
+
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -1075,10 +1092,16 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   else
     emit setWindowCaption( i18n( "* Unknown *" ) );
 
-  d->m_doc = new HTMLDocumentImpl( d->m_view );
+  // ### proper detection of html or xml
+  if (m_url.url().right(3).lower() == "xml")
+    d->m_doc = new DocumentImpl( d->m_view );
+  else
+    d->m_doc = new HTMLDocumentImpl( d->m_view );
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
+
+
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
   // clear widget
@@ -1452,7 +1475,12 @@ void KHTMLPart::findTextBegin()
 
 bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 {
-    if(!d->m_findNode) d->m_findNode = d->m_doc->body();
+    if(!d->m_findNode) {
+	if (d->m_doc->isHTMLDocument())
+	    d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+	else
+	    d->m_findNode = d->m_doc;
+    }
 
     if ( !d->m_findNode ||
          d->m_findNode->id() == ID_FRAMESET )
@@ -1512,7 +1540,12 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive )
 {
-    if(!d->m_findNode) d->m_findNode = d->m_doc->body();
+    if(!d->m_findNode) {
+	if (d->m_doc->isHTMLDocument())
+	    d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+	else
+	    d->m_findNode = d->m_doc;
+    }
 
     if ( !d->m_findNode ||
          d->m_findNode->id() == ID_FRAMESET )
@@ -1876,7 +1909,11 @@ void KHTMLPart::slotViewFrameSource()
 
 void KHTMLPart::slotSaveBackground()
 {
-  QString relURL = d->m_doc->body()->getAttribute( ATTR_BACKGROUND ).string();
+  // ### what about XML documents? get from CSS?
+  if (!d->m_doc->isHTMLDocument())
+    return;
+
+  QString relURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   KURL backgroundURL( m_url, relURL );
 
@@ -1991,8 +2028,8 @@ void KHTMLPart::updateActions()
 
   // ### frames
 
-  if ( d->m_doc && d->m_doc->body() && !d->m_bClearing )
-    bgURL = d->m_doc->body()->getAttribute( ATTR_BACKGROUND ).string();
+  if ( d->m_doc && d->m_doc->isHTMLDocument() && static_cast<HTMLDocumentImpl*>(d->m_doc)->body() && !d->m_bClearing )
+    bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 }
@@ -3296,7 +3333,11 @@ void KHTMLPart::slotAutoScroll()
 
 void KHTMLPart::selectAll()
 {
-  NodeImpl *first = d->m_doc->body();
+  NodeImpl *first;
+  if (d->m_doc->isHTMLDocument())
+    first = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+  else
+    first = d->m_doc;
   NodeImpl *next;
 
   while ( first && first->id() != ID_TEXT )
@@ -3312,7 +3353,11 @@ void KHTMLPart::selectAll()
     first = next;
   }
 
-  NodeImpl *last = d->m_doc->body();
+  NodeImpl *last;
+  if (d->m_doc->isHTMLDocument())
+    last = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+  else
+    last = d->m_doc;
   while ( last && last->id() != ID_TEXT )
   {
     next = last->lastChild();

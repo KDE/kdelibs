@@ -179,6 +179,23 @@ protected: // member variables
     khtml::RenderStyle *m_style;
 };
 
+
+class XMLElementImpl : public ElementImpl
+{
+
+public:
+    XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name);
+    ~XMLElementImpl();
+
+    virtual const DOMString nodeName() const;
+
+protected:
+    DOMStringImpl *m_name;
+
+};
+
+
+
 class NamedAttrMapImpl : public NamedNodeMapImpl
 {
 public:

@@ -27,18 +27,11 @@
 
 //#include "dtd.h"
 #include "dom_docimpl.h"
-#include <qobject.h>
 #include "misc/loader_client.h"
 
 //#include "html_baseimpl.h"
 
-class KHTMLParser;
-class HTMLTokenizer;
 class KHTMLView;
-
-namespace khtml {
-    class DocLoader;
-};
 
 namespace DOM {
 
@@ -52,7 +45,7 @@ namespace DOM {
     class StyleSheetListImpl;
     class CSSStyleSheetImpl;
     
-class HTMLDocumentImpl : public QObject, public khtml::CachedObjectClient, public DocumentImpl
+class HTMLDocumentImpl : public DocumentImpl, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
@@ -65,22 +58,12 @@ public:
 
     DOMString referrer() const;
     DOMString domain() const;
-    DOMString URL() const { return url; }
-    void setURL(DOMString _url) { url = _url; }
-
-    DOMString baseURL() const;
 
     HTMLElementImpl *body();
     HTMLElementImpl *html();
     void setBody(const HTMLElement &_body);
 
-    void open (  );
-    void close (  );
-    void write ( const DOMString &text );
-    void write ( const QString &text );
-    void writeln ( const DOMString &text );
-    void finishParsing (  );
-    ElementImpl *getElementById ( const DOMString &elementId );
+    virtual Tokenizer *createTokenizer();
     NodeListImpl *getElementsByName ( const DOMString &elementName );
 
     virtual StyleSheetListImpl *styleSheets();
@@ -99,32 +82,13 @@ public:
 			     int _tx, int _ty, DOMString &url,
                              NodeImpl *& innerNode, long &offset);
 
-    virtual void attach(KHTMLView *w);
     virtual void detach();
 
-    virtual void createSelector();
-    virtual void applyChanges(bool top = true, bool force = true);
-    virtual void recalcStyle();
-    
-    void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
-    void clearSelection();
-
-    // to get visually ordered hebrew and arabic pages right
-    void setVisuallyOrdered();
-
-    // from cachedObjectClient
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
-
-    CSSStyleSheetImpl* elementSheet();
-
-    khtml::DocLoader *docLoader() { return m_docLoader; }
-    void setReloading();
     virtual bool childAllowed( NodeImpl *newChild );
-    void updateRendering();
 
     void setOnload( const QString &script ) { onloadScript = script; }
     void setOnunload( const QString &script ) { onUnloadScript = script; }
-    
+
 signals:
     void finishedParsing();
 
@@ -132,21 +96,8 @@ public slots:
     void slotFinishedParsing();
 
 protected:
-    void clear();
-
-    KHTMLParser *parser;
-    HTMLTokenizer *tokenizer;
-
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
-    DOMString url;
-
-    StyleSheetImpl *m_sheet;
-    bool m_loadingSheet;
-    bool visuallyOrdered;
-    
-    CSSStyleSheetImpl *m_elemSheet;
-    khtml::DocLoader *m_docLoader;
 
     QString onloadScript;
     QString onUnloadScript;

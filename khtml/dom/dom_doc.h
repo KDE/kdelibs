@@ -33,6 +33,7 @@
 #include <dom/dom_node.h>
 
 class KHTMLView;
+class KHTMLPart;
 
 namespace DOM {
 
@@ -122,6 +123,8 @@ protected:
  */
 class Document : public Node
 {
+    friend class ::KHTMLView;
+    friend class ::KHTMLPart;
 public:
     Document();
     /**

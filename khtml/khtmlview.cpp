@@ -126,8 +126,8 @@ KHTMLView::~KHTMLView()
     {
 	//WABA: Is this Ok? Do I need to deref it as well?
 	//Does this need to be done somewhere else?
-	DOM::HTMLDocumentImpl *doc = m_part->docImpl();
-	if (doc && doc->body())
+	DOM::DocumentImpl *doc = m_part->xmlDocImpl();
+	if (doc)
 	    doc->detach();
     }
     lstViews->removeRef( this );
@@ -205,12 +205,7 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-   NodeImpl *body = 0;
-
-    if( m_part->docImpl() )
-        body = m_part->docImpl()->body();
-
-    if(!body) {
+    if(!m_part->xmlDocImpl()) {
         p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
@@ -233,7 +228,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
         // ### fix this for frames...
         d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
-        m_part->docImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
+        m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
 
         p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
         py += PAINT_BUFFER_HEIGHT;
@@ -246,21 +241,23 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 void KHTMLView::layout(bool)
 {
     //### take care of frmaes (hide scrollbars,...)
-    if( m_part->docImpl() ) {
-        DOM::HTMLDocumentImpl *document = m_part->docImpl();
+    if( m_part->xmlDocImpl() ) {
+        DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 
-        NodeImpl *body = document->body();
-        if(body && body->id() == ID_FRAMESET) {
-            QScrollView::setVScrollBarMode(AlwaysOff);
-            QScrollView::setHScrollBarMode(AlwaysOff);
-            _width = visibleWidth();
-            body->renderer()->setLayouted(false);
-            body->renderer()->layout();
-	    root->layout();
-            return;
-        }
+        if (document->isHTMLDocument()) {
+	    NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
+	    if(body && body->id() == ID_FRAMESET) {
+		QScrollView::setVScrollBarMode(AlwaysOff);
+		QScrollView::setHScrollBarMode(AlwaysOff);
+		_width = visibleWidth();
+		body->renderer()->setLayouted(false);
+		body->renderer()->layout();
+		root->layout();
+		return;
+	    }
+	}
 
         _height = visibleHeight();
         _width = visibleWidth();
@@ -298,7 +295,7 @@ void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
 
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
-    if(!m_part->docImpl()) return;
+    if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -318,7 +315,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     DOMString url;
     NodeImpl *innerNode=0;
     long offset=0;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
     d->underMouse = innerNode;
 
@@ -328,7 +325,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
-    if(!m_part->docImpl()) return;
+    if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -338,7 +335,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     DOMString url;
     NodeImpl *innerNode=0;
     long offset=0;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick, 0, 0, url, innerNode, offset );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick, 0, 0, url, innerNode, offset );
 
     khtml::MouseDoubleClickEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
@@ -350,9 +347,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
-
-    if(!m_part->docImpl()) return;
-
+    if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -360,7 +355,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     DOMString url;
     NodeImpl *innerNode=0;
     long offset=0;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
@@ -419,7 +414,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
-    if ( !m_part->docImpl() ) return;
+    if ( !m_part->xmlDocImpl() ) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -429,7 +424,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOMString url=0;
     NodeImpl *innerNode=0;
     long offset = 0;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
 
     khtml::MouseReleaseEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
@@ -703,8 +698,8 @@ bool KHTMLView::gotoPrevLink()
 
 void KHTMLView::print()
 {
-    if(!m_part->docImpl()) return;
-    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->docImpl()->renderer());
+    if(!m_part->xmlDocImpl()) return;
+    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
     QPrinter *printer = new QPrinter;
@@ -737,7 +732,7 @@ void KHTMLView::print()
         for ( int i = 0; printFontSizes[i] != 0; i++ )
             fontSizes << printFontSizes[ i ];
         m_part->setFontSizes(fontSizes);
-        m_part->docImpl()->applyChanges();
+        m_part->xmlDocImpl()->applyChanges();
 
         // ok. now print the pages.
         kdDebug(6000) << "printing: html page width = " << root->docWidth()
@@ -777,7 +772,7 @@ void KHTMLView::print()
         // and now reset the layout to the usual one...
         root->setPrintingMode(false);
         m_part->setFontSizes(oldSizes);
-        m_part->docImpl()->applyChanges();
+        m_part->xmlDocImpl()->applyChanges();
     }
     delete printer;
 }
