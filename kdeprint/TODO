@@ -38,7 +38,8 @@ WISHES
   templates and produce printable HTML reports.
 
 - in CUPS possibility to filter printer using printer-type attribute,
-  to get only printers having a specified capability
+  to get only printers having a specified capability. Service Location
+  Protocol might be useful here (perhaps via the Knot).
 
 - show information from Foomatic DB in some way (comments)
 
@@ -46,7 +47,7 @@ WISHES
 
 - raw printing option
 
-- add a generic option edit line to lewt the user specify any option
+- add a generic option edit line to let the user specify any option
   he wants
 
 - support new options for N-up printing in CUPS, put everything in
