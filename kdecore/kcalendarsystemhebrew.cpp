@@ -24,7 +24,7 @@
 
 #include "kcalendarsystemhebrew.h"
 
-static int hebrewDaysInYear(int y);
+static int hebrewDaysElapsed(int y);
 static QString num2heb(int num, bool includeMillenium);
 
 class h_date
@@ -46,9 +46,9 @@ static class h_date * hebrewToGregorian(int y, int m, int d)
   int s;
 
   y -= 3744;
-  s = hebrewDaysInYear(y);
+  s = hebrewDaysElapsed(y);
   d += s;
-  s = hebrewDaysInYear(y + 1) - s;    /* length of year */
+  s = hebrewDaysElapsed(y + 1) - s;    /* length of year */
 
   if (s > 365 && m > 6 )
   {
@@ -107,12 +107,12 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
 
   /* compute the year */
   y += 16;
-  s = hebrewDaysInYear(y);
-  m = hebrewDaysInYear(y + 1);
+  s = hebrewDaysElapsed(y);
+  m = hebrewDaysElapsed(y + 1);
   while(d >= m) {  /* computed year was underestimated */
     s = m;
     y++;
-    m = hebrewDaysInYear(y + 1);
+    m = hebrewDaysElapsed(y + 1);
   }
   d -= s;
   s = m-s;  /* size of current year */
@@ -191,7 +191,7 @@ static const int WEEK = 7*DAY;
  * @internal
  * no. of days in y years
  */
-static int hebrewDaysInYear(int y)
+static int hebrewDaysElapsed(int y)
 {
   int m, nm, dw, s, l;
 
@@ -221,7 +221,16 @@ static int hebrewDaysInYear(int y)
  */
 static int long_cheshvan(int year)
 {
-  return (((hebrewDaysInYear(year + 1) - hebrewDaysInYear(year)) % 10) == 5);
+  QDate first, last;
+  class h_date *gd;
+
+  gd = hebrewToGregorian(year, 1, 1);
+  first.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+
+  gd = hebrewToGregorian(year + 1, 1, 1);
+  last.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+
+  return (first.daysTo(last) % 10 == 5);
 }
 
 /**
@@ -230,7 +239,16 @@ static int long_cheshvan(int year)
  */
 static int short_kislev(int year)
 {
-  return (((hebrewDaysInYear(year + 1) - hebrewDaysInYear(year)) % 10) == 3);
+  QDate first, last;
+  class h_date * gd;
+
+  gd = hebrewToGregorian(year, 1, 1);
+  first.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+
+  gd = hebrewToGregorian(year + 1, 1, 1);
+  last.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+
+  return (first.daysTo(last) % 10 == 3);
 }
 
 static bool is_leap_year(int year)
@@ -420,15 +438,14 @@ QString KCalendarSystemHebrew::monthNamePossessive(int month, int year,
 
 bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 {
-
-  class h_date * gd = hebrewToGregorian( y, m, d );
-
   if( y < minValidYear() || y > maxValidYear() )
     return false;
   if( m < 1 || m > (is_leap_year(y) ? 13 : 12) )
     return false;
   if( d < 1 || d > hndays(m,y) )
     return false;
+
+  class h_date * gd = hebrewToGregorian( y, m, d );
 
   return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
@@ -474,12 +491,18 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
 
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
-  class h_date *sd = toHebrew(date);
-  return hndays(sd->hd_mon, sd->hd_year);
+  return hndays(month(date), year(date));
 }
 
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
+  if ( mon == 6 && is_leap_year(year) )
+    mon = 13; /*Adar I*/
+  else if ( mon == 7 && is_leap_year(year) )
+    mon = 14; /*Adar II*/
+  else if ( mon > 7 && is_leap_year(year) )
+    mon--; //Because of Adar II
+
   if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
     mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ ||
     mon == 14 /*ADAR 2*/||
