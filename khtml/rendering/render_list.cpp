@@ -157,6 +157,7 @@ RenderListMarker::~RenderListMarker()
 {
     if(listImage)
 	listImage->deref(this);
+    delete m_style;
 }
 
 void RenderListMarker::setStyle(RenderStyle *s)
@@ -194,7 +195,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     QPointArray a( 5, points );
     p->drawPolyline( a );
 #endif
-    
+
     int xoff = 0;
     int yoff = fm.ascent() - offset;
 
