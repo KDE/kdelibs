@@ -20,8 +20,8 @@
  * [eventname]
  * friendly=FriendlyNameOfEvent
  * description=DescriptionOfEvent
- * sound=/path/to/sound/file
- * presentation=1
+ * default_sound=/path/to/sound/file
+ * default_presentation=1
  *  ...
  * </pre>
  * This class works, but is still in testing.
@@ -59,7 +59,7 @@ public:
 	*/
 	KNotifyClient(const QString &message, const QString &text=0,
 	             Presentation present=Default,
-	             const QString &soundfile=0,
+	             const QString &file=0,
 	             DCOPClient* client=0);
 
 	virtual ~KNotifyClient();
@@ -87,18 +87,42 @@ public: //static methods
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
 	 * @param present The error message level, one again, defaulting to "Default"
-	 * @param soundfile The sound file to play if selected with present
+	 * @param file The sound file to play if selected with present
 	 */
 	static bool userEvent(const QString &text=0, Presentation present=Default,
-	                      const QString &soundfile=0);
+	                      const QString &file=0);
 	
 	/**
-	 * Gets the sound file associated with a certain event name
-	 * The control panel module will list all the event names
-	 * This has the potential for being slow
-	 * [Not Yet Implemented!]
+	 * Gets the presentation associated with a certain event name
+	 * Remeber that they may be ORed:
+	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
 	 */
-	static QString soundFileByName(const QString &eventname);
+	static Presentation getPresentation(const QString &eventname);
+	
+	/**
+	 * Gets the default file associated with a certain event name
+	 * The control panel module will list all the event names
+	 * This has the potential for being slow.
+	 * [Not Yet Implemented!]
+	 *
+	 * This gets it for this app only!
+	 */
+	static QString getFile(const QString &eventname, Presentation present);
+	
+	/**
+	 * Gets the default presentation for the event of this program.
+	 * Remember that the Presentation may be ORed.  Try this:
+	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
+	 */
+	static Presentation getDefaultPresentation(const QString &eventname);
+	
+	/**
+	 * Gets the default File for the event of this program.
+	 * It gets it in relation to present.
+	 * Some events don't apply to this function ("Message Box")
+	 * Some do (Sound)
+	 */
+	static QString getDefaultFile(const QString &eventname, Presentation present);
 
 private:
 	/**
@@ -111,7 +135,7 @@ private:
 		QString message;
 		QString text;
 		Presentation present;
-		QString soundfile;
+		QString file;
 		DCOPClient *client;
 	} *levent;
 	

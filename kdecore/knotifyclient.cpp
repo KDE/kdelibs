@@ -24,7 +24,7 @@
 
 
 KNotifyClient::KNotifyClient(const QString &message, const QString &text,
-                             Presentation present, const QString &soundfile,
+                             Presentation present, const QString &file,
                              DCOPClient* client)
 {
 	if (!client) client=KApplication::kApplication()->dcopClient();
@@ -32,7 +32,7 @@ KNotifyClient::KNotifyClient(const QString &message, const QString &text,
 	levent->message=message;
 	levent->text=text;
 	levent->present=present;
-	levent->soundfile=soundfile;
+	levent->file=file;
 	levent->client=client;
 }
 
@@ -51,7 +51,7 @@ bool KNotifyClient::send()
 
 	QByteArray data;
 	QDataStream ds(data, IO_WriteOnly);
-	ds << levent->message << KApplication::kApplication()->argv()[0] << levent->text << levent->soundfile << (int)levent->present;
+	ds << levent->message << KApplication::kApplication()->argv()[0] << levent->text << levent->file << (int)levent->present;
 
 	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,Presentation)", data);
 }
@@ -63,16 +63,40 @@ bool KNotifyClient::event(const QString &message, const QString &text)
 }
 
 bool KNotifyClient::userEvent(const QString &text, Presentation present,
-                              const QString &soundfile)
+                              const QString &file)
 {
-	KNotifyClient c(0, text, present, soundfile);
+	KNotifyClient c(0, text, present, file);
 	return c.send();
 }
 
-QString KNotifyClient::soundFileByName(const QString &eventname)
+KNotifyClient::Presentation KNotifyClient::getPresentation(const QString &eventname)
 {
 	(void)eventname;
+	return None;
+}
+
+QString KNotifyClient::getFile(const QString &eventname, Presentation present)
+{
+	(void)eventname;
+	(void)present;
+	return "";
+
+}
+
+KNotifyClient::Presentation KNotifyClient::getDefaultPresentation(const QString &eventname)
+{
+	(void)eventname;
+	return None;
+}
+
+QString KNotifyClient::getDefaultFile(const QString &eventname, Presentation present)
+{
+	(void)eventname;
+	(void)present;
 	return "";
 }
 
+
+
 #include "knotifyclient.moc"
+
