@@ -71,8 +71,8 @@ struct uiColors {
     const char * name;
     const char * configGroup;
     const char * configEntry;
-    const QPalette::ColorGroup group;
-    const QColorGroup::ColorRole role;
+    QPalette::ColorGroup group;
+    QColorGroup::ColorRole role;
 };
 
 const char * const wmgroup = "WM";
