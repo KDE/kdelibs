@@ -19,10 +19,12 @@
  **/
 
 #include <config.h>
+
+#include <kdebug.h>
+#include <ktrader.h>
 #include <kmimetype.h>
 #include <klibloader.h>
-#include <ktrader.h>
-#include <kdebug.h>
+#include <kstaticdeleter.h>
 #include <kparts/componentfactory.h>
 
 #include "kurifilter.h"
@@ -67,6 +69,7 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
 KURIFilterData::~KURIFilterData()
 {
     delete d;
+    d = 0;
 }
 
 void KURIFilterData::init( const KURL& url )
@@ -166,7 +169,15 @@ void KURIFilterPlugin::setArguments( KURIFilterData& data, const QString& args )
 }
 
 //********************************************  KURIFilter **********************************************
-KURIFilter *KURIFilter::ms_pFilter = 0;
+KURIFilter *KURIFilter::m_self = 0;
+KStaticDeleter<KURIFilter> kurifiltersd;
+
+KURIFilter *KURIFilter::self()
+{
+    if (!m_self)
+        m_self = kurifiltersd.setObject(new KURIFilter);
+    return m_self;
+}
 
 KURIFilter::KURIFilter()
 {
@@ -174,12 +185,9 @@ KURIFilter::KURIFilter()
     loadPlugins();
 }
 
-KURIFilter *KURIFilter::self()
+KURIFilter::~KURIFilter()
 {
-    if (!ms_pFilter)
-        ms_pFilter = new KURIFilter();
-
-    return ms_pFilter;
+    m_self = 0;
 }
 
 bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
@@ -188,7 +196,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     KURIFilterPluginList use_plugins;
 
     // If we have a filter list, only include the once
-    // explicitly specified by it.  Otherwise use all 
+    // explicitly specified by it.  Otherwise use all
     // available filters...
     if( filters.isEmpty() )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...

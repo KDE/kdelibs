@@ -467,6 +467,10 @@ private:
 class KURIFilter
 {
 public:
+    /**
+     *  Destructor
+     */
+    ~KURIFilter ();
 
     /**
      * Return a static instance of KURIFilter.
@@ -577,7 +581,7 @@ protected:
 
 private:
 
-    static KURIFilter *ms_pFilter;
+    static KURIFilter *m_self;
     KURIFilterPluginList m_lstPlugins;
     KURIFilterPrivate *d;
 
