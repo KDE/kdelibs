@@ -143,7 +143,7 @@ void KIOSimpleProgressDlg::slotPercent( int, unsigned long _percent )
   m_pProgressBar->setValue( _percent );
   switch(mode) {
   case Copy:
-    tmp.append(i18n(" (Deleting)"));
+    tmp.append(i18n(" (Copying)"));
     break;
   case Delete:
     tmp.append(i18n(" (Deleting)"));
