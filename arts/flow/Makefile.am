@@ -43,28 +43,10 @@ DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
-$(srcdir)/stdsynthmodule.cc: artsflow.h
-$(srcdir)/synthschedule.cc: artsflow.h
-$(srcdir)/synth_play_impl.cc: artsflow.h
-$(srcdir)/bus.cc: artsflow.h
-$(srcdir)/gslschedule.cc: artsflow.h
-$(srcdir)/virtualports.cc: artsflow.h
-$(srcdir)/audiomanager_impl.cc: artsflow.h
-$(srcdir)/audiotobytestream_impl.cc: artsflow.h
-$(srcdir)/bytestreamtoaudio_impl.cc: artsflow.h
-$(srcdir)/stereoeffectstack_impl.cc: artsflow.h
-$(srcdir)/stereofftscope_impl.cc: artsflow.h
-$(srcdir)/stereovolumecontrol_impl.cc: artsflow.h
-$(srcdir)/synth_add_impl.cc: artsflow.h
-$(srcdir)/synth_frequency_impl.cc: artsflow.h
-$(srcdir)/synth_mul_impl.cc: artsflow.h
-$(srcdir)/synth_multi_add_impl.cc: artsflow.h
-$(srcdir)/synth_play_wav_impl.cc: artsflow.h
-$(srcdir)/synth_record_impl.cc: artsflow.h
-$(srcdir)/synth_wave_sin_impl.cc: artsflow.h
+$(patsubst %,$(srcdir)/%,$(libartsflow_la_SOURCES)): artsflow.h
 
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
-	$(MCOPIDL) -t $(top_srcdir)/arts/flow/artsflow.idl
+	$(MCOPIDL) -t $<
 
 ######## install idl typeinfo files
 
