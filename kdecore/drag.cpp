@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.12  1997/10/04 14:51:31  kulow
+ * added some prototypes in case the shape.h is not found. I'm not sure,
+ * if this works, but it helps for compiling
  *
  * Revision 1.11  1997/09/18 12:47:15  kulow
  * uups. The error message is not valid for the cpp file
@@ -36,6 +39,18 @@
  *
  * Revision 1.3  1997/01/15 20:01:58  kalle
  * merged changes from 0.52
+ *
+ * Revision 1.2  1996/12/07 22:21:18  kalle
+ */
+
+#else
+#error Declare functions needed from stdlib.h and string.h
+#include "drag.h"
+
+#include <stdio.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>

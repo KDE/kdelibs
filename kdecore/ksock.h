@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1.1.1  1997/12/09 22:02:46  jacek
+ * Imported sorces fromkde
+ *
+ * Revision 1.13  1998/01/23 02:23:40  torben
  * Torben: Supports UNIX domain sockets now.
  *
  * Revision 1.12  1998/01/18 14:39:05  kulow
@@ -45,7 +49,7 @@
  * Source imported
  *
  * Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
-//#include <sys/types.h>
+ * Sources imported
  *
  * Revision 1.4  1997/01/15 20:34:14  kalle
  * merged changes from 0.52

@@ -1,6 +1,10 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.1.1.1  1997/12/09 22:02:46  jacek
+ * Imported sorces fromkde
+ *
+ * Revision 1.16  1998/01/23 02:23:38  torben
  * Torben: Supports UNIX domain sockets now.
  *
  * Revision 1.15  1998/01/18 14:39:03  kulow
@@ -78,6 +82,9 @@
  * Revision 1.4  1997/05/30 20:04:38  kalle
  * Kalle:
  * 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
+ * 		patch to KIconLoader by Christian Esken
+ * 		slightly better look for KTabCtl
+ * 		kdecore Makefile does not expect current dir to be in path
  * 		Better Alpha support
  *
  * Revision 1.3  1997/05/09 15:10:11  kulow

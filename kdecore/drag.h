@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * false to FALSE
+ * Revision 1.1.1.3  1997/12/11 07:19:09  jacek
+ * Imported sources from KDE CVS
  *
  * Revision 1.1.1.2  1997/12/10 07:08:28  jacek
  * Imported sources from KDE CVS
@@ -51,23 +54,11 @@
  *
  * Revision 1.3  1996/12/07 22:34:54  kalle
  * DOC++ tags corrected
-#include <qapp.h>
-
-#include <stdio.h>
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#else
-#error Declare functions needed from stdlib.h and string.h
-#endif
-
+ *
  * Revision 1.2  1996/12/07 22:22:06  kalle
-#include <qlist.h>
  * autoconf, KApplication merged with my KApplication (and moved to kapp.h)
-#include <qcursor.h>
-#include <qbitmap.h>
  * formatting
-
-#include<X11/X.h>
+ *
  *
  * Drag and Drop for KDE
  * Torben Weis <weis@stud.uni-frankfurt.de>
