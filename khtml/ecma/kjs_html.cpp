@@ -287,7 +287,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   if (entry) {
     switch (entry->value) {
     case Title:
-      return getString(doc.title());
+      return String(doc.title());
     case Referrer:
       return String(doc.referrer()); // not getString - DOMTS HTMLDocument02.html
     case Domain:
