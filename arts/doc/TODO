@@ -1,5 +1,6 @@
 - VERSION-INFO for modules?
 - md5auth isn't initialized properly in conjunction with ARTS_SERVER
+- make it possible to use C API and C++ API together
 
 ## BIC changes
 
