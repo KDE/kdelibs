@@ -121,6 +121,9 @@ void KMWDriverTest::slotTest()
 	if (!m_printer) return;
 
 	QString	name = "tmpprinter_"+KApplication::randomString(8);
+	// save printer name (can be non empty when modifying a printer)
+	QString	oldname = m_printer->name();
+
 	m_printer->setName(name);
 	m_printer->setPrinterName(name);
 	m_printer->setDriver(m_driver);
@@ -135,8 +138,11 @@ void KMWDriverTest::slotTest()
 	}
 	else
 		KMessageBox::error(this,i18n("Unable to create temporary printer."));
-	m_printer->setName(QString::null);
-	m_printer->setPrinterName(QString::null);
+
+	// restoring old name
+	m_printer->setName(oldname);
+	m_printer->setPrinterName(oldname);
+
 	m_driver = m_printer->takeDriver();
 }
 
