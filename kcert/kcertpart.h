@@ -64,6 +64,7 @@ protected:
 
   QFrame *_frame;
   QLabel *_filenameLabel, *_validFrom, *_validUntil, *_serialNum, *_certState;
+  QLabel *_digest;
   QMultiLineEdit *_pubkey;
   KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
