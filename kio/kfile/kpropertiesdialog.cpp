@@ -1226,7 +1226,7 @@ public:
   mode_t partialPermissions;
   KFilePermissionsPropsPlugin::PermissionsMode pmode;
   bool canChangePermissions;
-  bool isIrregular; 
+  bool isIrregular;
 };
 
 #define UniOwner    (S_IRUSR|S_IWUSR|S_IXUSR)
@@ -1242,19 +1242,19 @@ const mode_t KFilePermissionsPropsPlugin::permissionsMasks[3] = {UniOwner, UniGr
 const mode_t KFilePermissionsPropsPlugin::standardPermissions[4] = { 0, UniRead, UniRead|UniWrite, (mode_t)-1 };
 
 // synced with PermissionsMode and standardPermissions
-const char *KFilePermissionsPropsPlugin::permissionsTexts[4][4] = { 
+const char *KFilePermissionsPropsPlugin::permissionsTexts[4][4] = {
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can Read"),
     I18N_NOOP("Can Read and Write"),
-    0 }, 
+    0 },
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can View Content"),
     I18N_NOOP("Can View and Modify Content"),
-    0 }, 
+    0 },
   { 0, 0, 0, 0}, // no texts for links
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can View Content and Read"),
-    I18N_NOOP("Can View/Read and Modify/Write"), 
+    I18N_NOOP("Can View/Read and Modify/Write"),
     0 }
 };
 
@@ -1290,8 +1290,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     for ( ++it /*no need to check the first one again*/ ; it.current(); ++it )
     {
       if (!d->isIrregular)
-	d->isIrregular |= isIrregular((*it)->permissions(), 
-				      (*it)->isDir() == isDir, 
+	d->isIrregular |= isIrregular((*it)->permissions(),
+				      (*it)->isDir() == isDir,
 				      (*it)->isLink() == isLink);
       if ( (*it)->isLink() != isLink )
         isLink = false;
@@ -1310,7 +1310,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     }
   }
 
-  if (isLink) 
+  if (isLink)
     d->pmode = PermissionsOnlyLinks;
   else if (isDir)
     d->pmode = PermissionsOnlyDirs;
@@ -1360,12 +1360,11 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
-    d->explanationLabel->setText(i18n("This file is a link and does not have permissions.", 
-				      "All files are links and do not have permissions.", 
+    d->explanationLabel->setText(i18n("This file is a link and does not have permissions.",
+				      "All files are links and do not have permissions.",
 				      properties->items().count()));
   else if (!d->canChangePermissions)
-    d->explanationLabel->setText(i18n("Only the owner can change the permissions."));
-
+    d->explanationLabel->setText(i18n("Only the owner can change permissions."));
   gl->addMultiCellWidget(l, 0, 0, 0, 1);
 
   lbl = new QLabel( i18n("O&wner:"), gb);
@@ -1393,14 +1392,14 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QWhatsThis::add(l, i18n("Specifies the actions that all users, who are neither owner nor in the group, are allowed to do."));
 
   if (!isLink) {
-    l = d->extraCheckbox = new QCheckBox(hasDir ? i18n("Only own&er can rename and delete directory content") : 
-					 i18n("Is &executable"), 
+    l = d->extraCheckbox = new QCheckBox(hasDir ? i18n("Only own&er can rename and delete directory content") :
+					 i18n("Is &executable"),
 					 d->m_frame );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addMultiCellWidget(l, 4, 4, 0, 1);
-    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to delete or rename the contained files and directories. Other users can only add new files, which requires the 'Modify Content' permission.") 
+    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to delete or rename the contained files and directories. Other users can only add new files, which requires the 'Modify Content' permission.")
 		    : i18n("Enable this option to mark the file as executable. This only makes sense for programs and scripts. It is required when you want to execute them."));
-    
+
     l = new QPushButton(i18n("A&dvanced Permissions..."), gb);
     gl->addWidget(l, 5, 1);
     connect(l, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
@@ -1556,14 +1555,14 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
-  KDialogBase dlg(0, 0, true, i18n("Advanced Permissions"), 
+  KDialogBase dlg(0, 0, true, i18n("Advanced Permissions"),
 		  KDialogBase::Ok|KDialogBase::Cancel);
 
   QLabel *l, *cl[3];
   QGroupBox *gb;
   QGridLayout *gl;
 
-  // Group: Access Permissions 
+  // Group: Access Permissions
   gb = new QGroupBox ( i18n("Access Permissions"), &dlg );
   dlg.setMainWidget(gb);
 
@@ -1578,7 +1577,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     l = new QLabel( i18n("Read"), gb );
   gl->addWidget (l, 1, 1);
-  QString readWhatsThis; 
+  QString readWhatsThis;
   if (isDir)
     readWhatsThis = i18n("This flag allows viewing the content of the directory.");
   else
@@ -1590,7 +1589,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     l = new QLabel( i18n("Write"), gb );
   gl->addWidget (l, 1, 2);
-  QString writeWhatsThis; 
+  QString writeWhatsThis;
   if (isDir)
     writeWhatsThis = i18n("This flag allows adding, renaming and deleting of files. Note that deleting and renaming can be limited using the Sticky flag.");
   else
@@ -1633,7 +1632,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   l = new QLabel(i18n("Set UID"), gb);
   gl->addWidget(l, 2, 5);
-  QString setUidWhatsThis; 
+  QString setUidWhatsThis;
   if (isDir)
     setUidWhatsThis = i18n("If this flag is set, the owner of this directory will be the owner of all new files.");
   else
@@ -1642,7 +1641,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
-  QString setGidWhatsThis; 
+  QString setGidWhatsThis;
   if (isDir)
     setGidWhatsThis = i18n("If this flag is set, the group of this directory will be set for all new files.");
   else
@@ -1651,7 +1650,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   l = new QLabel(i18n("File permission, sets user or group ID on execution", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
-  QString stickyWhatsThis; 
+  QString stickyWhatsThis;
   if (isDir)
     stickyWhatsThis = i18n("If the Sticky flag is set on a directory, only the owner and root can delete or rename files. Otherwise everybody with write permissions can do this.");
   else
@@ -1664,15 +1663,15 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   if (!d->isIrregular) {
     switch (d->pmode) {
     case PermissionsOnlyFiles:
-      getPermissionMasks(aPartialPermissions, 
-			 dummy1, 
+      getPermissionMasks(aPartialPermissions,
+			 dummy1,
 			 aPermissions,
 			 dummy2);
       break;
     case PermissionsOnlyDirs:
     case PermissionsMixed:
-      getPermissionMasks(dummy1, 
-			 aPartialPermissions, 
+      getPermissionMasks(dummy1,
+			 aPartialPermissions,
 			 dummy2,
 			 aPermissions);
       break;
@@ -1687,7 +1686,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     aPartialPermissions = d->partialPermissions;
   }
 
-  // Draw Checkboxes 
+  // Draw Checkboxes
   QCheckBox *cba[3][4];
   for (int row = 0; row < 3 ; ++row) {
     for (int col = 0; col < 4; ++col) {
@@ -1698,7 +1697,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
       {
         cb->setTristate();
         cb->setNoChange();
-      } 
+      }
       else if (d->cbRecursive && d->cbRecursive->isChecked())
 	cb->setTristate();
 
@@ -1755,7 +1754,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   d->isIrregular = false;
   KFileItemList items = properties->items();
   for (KFileItemListIterator it(items); it.current(); ++it) {
-    if (isIrregular(((*it)->permissions() & andPermissions) | orPermissions, 
+    if (isIrregular(((*it)->permissions() & andPermissions) | orPermissions,
 		    (*it)->isDir(), (*it)->isLink())) {
       d->isIrregular = true;
       break;
@@ -1785,7 +1784,7 @@ bool KFilePermissionsPropsPlugin::supports( KFileItemList /*_items*/ )
 }
 
 // sets a combo box in the Access Control frame
-void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsTarget target, 
+void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsTarget target,
 						  mode_t permissions, mode_t partial) {
   combo->clear();
   if (d->pmode == PermissionsOnlyLinks) {
@@ -1800,7 +1799,7 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
     if ((standardPermissions[textIndex]&tMask) == (permissions&tMask&(UniRead|UniWrite)))
       break;
   Q_ASSERT(standardPermissions[textIndex] != (mode_t)-1); // must not happen, would be irreglar
-  
+
   for (int i = 0; permissionsTexts[(int)d->pmode][i]; i++)
     combo->insertItem(i18n(permissionsTexts[(int)d->pmode][i]));
 
@@ -1816,13 +1815,13 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
 bool KFilePermissionsPropsPlugin::isIrregular(mode_t permissions, bool isDir, bool isLink) {
   if (isLink)                             // links are always ok
     return false;
-  
+
   mode_t p = permissions;
   if (p & (S_ISUID | S_ISGID))  // setuid/setgid -> irregular
     return true;
   if (isDir) {
     p &= ~S_ISVTX;          // ignore sticky on dirs
-    
+
     // check supported flag combinations
     mode_t p0 = p & UniOwner;
     if ((p0 != 0) && (p0 != (S_IRUSR | S_IXUSR)) && (p0 != UniOwner))
@@ -1837,7 +1836,7 @@ bool KFilePermissionsPropsPlugin::isIrregular(mode_t permissions, bool isDir, bo
   }
   if (p & S_ISVTX) // sticky on file -> irregular
     return true;
-  
+
   // check supported flag combinations
   mode_t p0 = p & UniOwner;
   bool usrXPossible = !p0; // true if this file could be an executable
@@ -1845,29 +1844,29 @@ bool KFilePermissionsPropsPlugin::isIrregular(mode_t permissions, bool isDir, bo
     if ((p0 == S_IXUSR) || (p0 == (S_IWUSR | S_IXUSR)))
       return true;
     usrXPossible = true;
-  } 
+  }
   else if (p0 == S_IWUSR)
     return true;
-  
+
   p0 = p & UniGroup;
   bool grpXPossible = !p0; // true if this file could be an executable
   if (p0 & S_IXGRP) {
     if ((p0 == S_IXGRP) || (p0 == (S_IWGRP | S_IXGRP)))
       return true;
     grpXPossible = true;
-  } 
+  }
   else if (p0 == S_IWGRP)
     return true;
   if (p0 == 0)
     grpXPossible = true;
-  
+
   p0 = p & UniOthers;
   bool othXPossible = !p0; // true if this file could be an executable
   if (p0 & S_IXOTH) {
     if ((p0 == S_IXOTH) || (p0 == (S_IWOTH | S_IXOTH)))
       return true;
     othXPossible = true;
-  } 
+  }
   else if (p0 == S_IWOTH)
     return true;
 
@@ -1886,11 +1885,11 @@ void KFilePermissionsPropsPlugin::enableAccessControls(bool enable) {
 
 // updates all widgets in the Access Control frame
 void KFilePermissionsPropsPlugin::updateAccessControls() {
-  setComboContent(d->ownerPermCombo, PermissionsOwner, 
+  setComboContent(d->ownerPermCombo, PermissionsOwner,
 		  permissions, d->partialPermissions);
-  setComboContent(d->groupPermCombo, PermissionsGroup, 
+  setComboContent(d->groupPermCombo, PermissionsGroup,
 		  permissions, d->partialPermissions);
-  setComboContent(d->othersPermCombo, PermissionsOthers, 
+  setComboContent(d->othersPermCombo, PermissionsOthers,
 		  permissions, d->partialPermissions);
 
   switch(d->pmode) {
@@ -1899,9 +1898,10 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
   case PermissionsOnlyFiles:
     enableAccessControls(d->canChangePermissions && !d->isIrregular);
-    d->explanationLabel->setText(d->isIrregular ? 
-				 i18n("This file uses advanced permissions", 
-				      "These files use advanced permissions.", 
+    if (d->canChangePermissions)
+      d->explanationLabel->setText(d->isIrregular ?
+				   i18n("This file uses advanced permissions",
+				      "These files use advanced permissions.",
 				      properties->items().count()) : "");
     if (d->partialPermissions & UniExec) {
       d->extraCheckbox->setTristate();
@@ -1914,9 +1914,10 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
   case PermissionsOnlyDirs:
     enableAccessControls(d->canChangePermissions && !d->isIrregular);
-    d->explanationLabel->setText(d->isIrregular ? 
-				 i18n("This directory uses advanced permissions.", 
-				      "These directories use advanced permissions.", 
+    if (d->canChangePermissions)
+      d->explanationLabel->setText(d->isIrregular ?
+				   i18n("This directory uses advanced permissions.",
+				      "These directories use advanced permissions.",
 				      properties->items().count()) : "");
     if (d->partialPermissions & S_ISVTX) {
       d->extraCheckbox->setTristate();
@@ -1929,8 +1930,9 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
   case PermissionsMixed:
     enableAccessControls(d->canChangePermissions && !d->isIrregular);
-    d->explanationLabel->setText(d->isIrregular ? 
-				 i18n("These files use advanced permissions.") : "");
+    if (d->canChangePermissions)
+      d->explanationLabel->setText(d->isIrregular ?
+				   i18n("These files use advanced permissions.") : "");
     break;
     if (d->partialPermissions & S_ISVTX) {
       d->extraCheckbox->setTristate();
@@ -1945,22 +1947,22 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
 }
 
 // gets masks for files and dirs from the Access Control frame widgets
-void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions, 
-						     mode_t &andDirPermissions, 
+void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
+						     mode_t &andDirPermissions,
 						     mode_t &orFilePermissions,
 						     mode_t &orDirPermissions) {
   andFilePermissions = ~UniSpecial;
   andDirPermissions = ~(S_ISUID|S_ISGID);
   orFilePermissions = 0;
   orDirPermissions = 0;
-  if (d->isIrregular || !d->canChangePermissions)
+  if (d->isIrregular)
     return;
 
   mode_t m = standardPermissions[d->ownerPermCombo->currentItem()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniOwner;
-    if ((m & UniOwner) && 
-	((d->pmode == PermissionsMixed) || 
+    if ((m & UniOwner) &&
+	((d->pmode == PermissionsMixed) ||
 	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
       andFilePermissions &= ~(S_IRUSR | S_IWUSR);
     else {
@@ -1978,8 +1980,8 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
   m = standardPermissions[d->groupPermCombo->currentItem()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniGroup;
-    if ((m & UniGroup) && 
-	((d->pmode == PermissionsMixed) || 
+    if ((m & UniGroup) &&
+	((d->pmode == PermissionsMixed) ||
 	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
       andFilePermissions &= ~(S_IRGRP | S_IWGRP);
     else {
@@ -1997,8 +1999,8 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
   m = standardPermissions[d->othersPermCombo->currentItem()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniOthers;
-    if ((m & UniOthers) && 
-	((d->pmode == PermissionsMixed) || 
+    if ((m & UniOthers) &&
+	((d->pmode == PermissionsMixed) ||
 	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QButton::NoChange))))
       andFilePermissions &= ~(S_IROTH | S_IWOTH);
     else {
@@ -2028,9 +2030,12 @@ void KFilePermissionsPropsPlugin::applyChanges()
   mode_t andFilePermissions;
   mode_t andDirPermissions;
 
+  if (!d->canChangePermissions)
+    return;
+
   if (!d->isIrregular)
-    getPermissionMasks(andFilePermissions, 
-		       andDirPermissions, 
+    getPermissionMasks(andFilePermissions,
+		       andDirPermissions,
 		       orFilePermissions,
 		       orDirPermissions);
   else {
@@ -2999,7 +3004,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
 
   QStringList devices;
   QPtrList<KMountPoint> mountPoints = KMountPoint::possibleMountPoints();
-	
+
   for(KMountPoint *mp = mountPoints.first();
       mp; mp = mountPoints.next())
   {
@@ -3012,7 +3017,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
                         + mountPoint + QString::fromLatin1(")") );
         m_devicelist.append(device);
         d->mountpointlist.append(mountPoint);
-     } 
+     }
   }
 
   QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, KDialog::marginHint(),
