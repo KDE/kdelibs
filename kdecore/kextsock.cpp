@@ -27,12 +27,6 @@
 #include <arpa/inet.h>
 #include <sys/un.h>
 
-#ifdef HAVE_RES_INIT
-# include <arpa/nameser.h>
-# include <resolv.h>
-extern "C" int res_init();
-#endif
-
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -46,7 +40,6 @@ extern "C" int res_init();
 #include <qstring.h>
 #include <qiodevice.h>
 #include <qsocketnotifier.h>
-#include <qdns.h>
 #include <qguardedptr.h>
 
 #include "kresolver.h"
@@ -848,12 +841,12 @@ int KExtendedSocket::listen(int N)
   KResolverResults res = d->resRemote.results();
   for (it = res.begin(); it != res.end(); ++it)
     {
-      kdDebug(170) << "Trying to listen on " << (*it).address().toString() << endl;
+      //kdDebug(170) << "Trying to listen on " << (*it).address().toString() << endl;
       sockfd = ::socket((*it).family(), (*it).socketType(), (*it).protocol());
       if (sockfd == -1)
 	{
 	  // socket failed creating
-	  kdDebug(170) << "Failed to create: " << perror << endl;
+	  //kdDebug(170) << "Failed to create: " << perror << endl;
 	  continue;
 	}
 	
@@ -865,7 +858,7 @@ int KExtendedSocket::listen(int N)
       cleanError();
       if (KSocks::self()->bind(sockfd, (*it).address().address(), (*it).length()) == -1)
 	{
-	  kdDebug(170) << "Failed to bind: " << perror << endl;
+	  //kdDebug(170) << "Failed to bind: " << perror << endl;
 	  ::close(sockfd);
 	  sockfd = -1;
 	  continue;
@@ -881,7 +874,7 @@ int KExtendedSocket::listen(int N)
   if (sockfd == -1)
     {
       setError(IO_ListenError, errno);
-      kdDebug(170) << "Listen error - sockfd is -1 " << endl;
+      //kdDebug(170) << "Listen error - sockfd is -1 " << endl;
       return -1;
     }
 
@@ -1008,15 +1001,15 @@ int KExtendedSocket::connect()
   KResolverResults remote = d->resRemote.results(),
     local = d->resLocal.results();
   KResolverResults::const_iterator it, it2;
-  kdDebug(170) << "Starting connect to " << host() << '|' << port() 
+  //kdDebug(170) << "Starting connect to " << host() << '|' << port() 
                << ": have " << local.count() << " local entries and "
                << remote.count() << " remote" << endl;
   for (it = remote.begin(), it2 = local.begin(); it != remote.end(); ++it)
     {
-      kdDebug(170) << "Trying to connect to " << (*it).address().toString() << endl;
+      //kdDebug(170) << "Trying to connect to " << (*it).address().toString() << endl;
       if (it2 != local.end())
 	{
-//	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
+//	  //kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
 	  if ((*it).family() != (*it2).family())
 	    // differing families, scan local for a matching family
 	    for (it2 = local.begin(); it2 != local.end(); ++it2)
@@ -1026,12 +1019,12 @@ int KExtendedSocket::connect()
 	  if ((*it).family() != (*it2).family())
 	    {
 	      // no matching families for this
-	      kdDebug(170) << "No matching family for bind socket\n";
+	      //kdDebug(170) << "No matching family for bind socket\n";
 	      it2 = local.begin();
 	      continue;
 	    }
 
-	  kdDebug(170) << "Binding on " << (*it2).address().toString() << " before connect" << endl;
+	  //kdDebug(170) << "Binding on " << (*it2).address().toString() << " before connect" << endl;
 	  errno = 0;
 	  sockfd = ::socket((*it).family(), (*it).socketType(), (*it).protocol());
 	  setError(IO_ConnectError, errno);
@@ -1044,7 +1037,7 @@ int KExtendedSocket::connect()
 	  cleanError();
 	  if (KSocks::self()->bind(sockfd, (*it2).address(), (*it2).length()))
 	    {
-	      kdDebug(170) << "Bind failed: " << perror << endl;
+	      //kdDebug(170) << "Bind failed: " << perror << endl;
 	      ::close(sockfd);
 	      sockfd = -1;
 	      continue;
@@ -1082,7 +1075,7 @@ int KExtendedSocket::connect()
 	      // this could be EWOULDBLOCK
 	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 		{
-		  kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
+		  //kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 		  setError(IO_ConnectError, errno);
 		  ::close(sockfd);
 		  sockfd = -1;
@@ -1131,8 +1124,8 @@ int KExtendedSocket::connect()
 	      if (retval == -1 || errcode != 0)
 		{
 		  // socket did not connect
-		  kdDebug(170) << "Socket " << sockfd << " did not connect: "
-			    << strerror(errcode) << endl;
+		  //kdDebug(170) << "Socket " << sockfd << " did not connect: "
+		  //	    << strerror(errcode) << endl;
 		  ::close(sockfd);
 		  sockfd = -1;
 
@@ -1165,8 +1158,8 @@ int KExtendedSocket::connect()
 	  // without timeouts
 	  if (KSocks::self()->connect(sockfd, (*it).address(), (*it).length()) == -1)
 	    {
-	      kdDebug(170) << "Socket " << sockfd << " to " << (*it).address().toString() 
-			   << " did not connect: " << perror << endl;
+	      //kdDebug(170) << "Socket " << sockfd << " to " << (*it).address().toString() 
+	      //	   << " did not connect: " << perror << endl;
 	      setError(IO_ConnectError, errno);
 	      ::close(sockfd);
 	      sockfd = -1;
@@ -1185,7 +1178,7 @@ int KExtendedSocket::connect()
 
   // getting here means no socket connected or stuff like that
   emit connectionFailed(d->syserror);
-  kdDebug(170) << "Failed to connect\n";
+  //kdDebug(170) << "Failed to connect\n";
   return -1;
 }
 
@@ -1954,6 +1947,8 @@ void KExtendedSocket::startAsyncConnectSlot()
 int KExtendedSocket::resolve(sockaddr *sock, ksocklen_t len, QString &host,
 			     QString &port, int flags)
 {
+  kdDebug(170) << "Deprecated function called:" << k_funcinfo << endl;
+
   int err;
   char h[NI_MAXHOST], s[NI_MAXSERV];
 
@@ -1975,6 +1970,8 @@ int KExtendedSocket::resolve(::KSocketAddress *sock, QString &host, QString &por
 QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
 					    int userflags, int *error)
 {
+  kdDebug(170) << "Deprecated function called:" << k_funcinfo << endl;
+
   int socktype, familyMask, flags;
   unsigned i;
   QPtrList<KAddressInfo> l;
