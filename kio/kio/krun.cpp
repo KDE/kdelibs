@@ -61,19 +61,27 @@ public:
     KRunPrivate() { m_showingError = false; }
 
     bool m_showingError;
+    bool m_runExecutables;
+    
     QString m_preferredService;
     QGuardedPtr <QWidget> m_window;
 };
 
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 {
-    return runURL( u, _mimetype, false );
+    return runURL( u, _mimetype, false, true );
+}
+
+pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
+{
+    return runURL( u, _mimetype, tempFile, true );
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
+pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool runExecutables )
 {
-
+  bool noRun = false;
+  bool noAuth = false;
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
@@ -82,27 +90,52 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
   }
   else if ( _mimetype == "application/x-desktop" )
   {
-    if ( u.isLocalFile() )
+    if ( u.isLocalFile() && runExecutables)
       return KDEDesktopMimeType::run( u, true );
   }
   else if ( _mimetype == "application/x-executable"  ||
             _mimetype == "application/x-shellscript")
   {
+    if ( u.isLocalFile() && runExecutables)
+    {
+      if (kapp->authorize("shell_access"))
+      {
+        QString path = u.path();
+        shellQuote( path );
+        return (KRun::runCommand(path)); // just execute the url as a command
+        // ## TODO implement deleting the file if tempFile==true
+      }
+      else
+      {
+        noAuth = true;
+      }
+    }
+    else if (_mimetype == "application/x-executable")
+      noRun = true;
+  }
+  else if ( isExecutable(_mimetype) )
+  {
+    if (!runExecutables)
+      noRun = true;
+
     if (!kapp->authorize("shell_access"))
-    {
-      KMessageBoxWrapper::error( 0L,
-            i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(u.htmlURL()) );
-      return 0;
-    }
-    if ( u.isLocalFile() )
-    {
-      QString path = u.path();
-      shellQuote( path );
-      return (KRun::runCommand(path)); // just execute the url as a command
-      // ## TODO implement deleting the file if tempFile==true
-    }
+      noAuth = true;
   }
 
+  if ( noRun )
+  {
+    KMessageBox::sorry( 0L, 
+        i18n("<qt>The file <b>%1</b> is an executable program. "
+             "Out of safety concerns it will not be started.</qt>").arg(u.htmlURL()));
+    return 0;
+  }
+  if ( noAuth )
+  {
+    KMessageBoxWrapper::error( 0L,
+        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(u.htmlURL()) );
+    return 0;
+  }
+  
   KURL::List lst;
   lst.append( u );
 
@@ -633,6 +666,7 @@ void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFil
   m_bIsLocalFile = isLocalFile;
   m_mode = mode;
   d = new KRunPrivate;
+  d->m_runExecutables = true;
   d->m_window = window;
 
   // Start the timer. This means we will return to the event
@@ -983,7 +1017,7 @@ void KRun::foundMimeType( const QString& type )
       }
   }
 
-  if (!m_bFinished && KRun::runURL( m_strURL, type )){
+  if (!m_bFinished && KRun::runURL( m_strURL, type, false, d->m_runExecutables )){
     m_bFinished = true;
   }
   else{
@@ -1024,6 +1058,19 @@ void KRun::abort()
 void KRun::setPreferredService( const QString& desktopEntryName )
 {
     d->m_preferredService = desktopEntryName;
+}
+
+void KRun::setRunExecutables(bool b)
+{
+    d->m_runExecutables = b;
+}
+
+bool KRun::isExecutable( const QString& serviceType )
+{
+    return ( serviceType == "application/x-desktop" ||
+             serviceType == "application/x-executable" ||
+             serviceType == "application/x-msdos-program" ||
+             serviceType == "application/x-shellscript" );
 }
 
 /****************/

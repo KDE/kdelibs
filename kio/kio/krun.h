@@ -152,6 +152,14 @@ public:
   void setPreferredService( const QString& desktopEntryName );
 
   /**
+   * Sets whether executables, .desktop files or shell scripts should
+   * be run by KRun. This is enabled by default.
+   * @see isExecutable()
+   * @since 3.2
+   */
+  void setRunExecutables(bool b);
+
+  /**
    * Open a list of URLs with a certain service (application).
    *
    * @param _service the service to run
@@ -193,9 +201,14 @@ public:
    * @param _mimetype the mime type of the resource
    * @param tempFile if true and _url is a local file, it will be deleted
    *        when the launched application exits.
+   * @param runExecutables if false then local .desktop files, 
+   *        executables and shell scripts will not be run.
+   *        See also @ref isExecutable().
    * @return the process id, or 0 on error
    */
-  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile );
+  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables);
+  // BIC merge with method above, using runExecutables=true
+  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile);
   // BIC merge with method above, using tempFiles=false
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
@@ -272,6 +285,13 @@ public:
    * @since 3.1
    */
   static QString binaryName( const QString & execLine, bool removePath );
+
+  /**
+   * Returns whether @p serviceType refers to an executable program instead
+   * of a data file.
+   * @since 3.2
+   */
+  static bool isExecutable( const QString& serviceType );
 
 signals:
   /**
