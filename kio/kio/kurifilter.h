@@ -272,6 +272,12 @@ public:
     bool checkForExecutables() const { return m_bCheckForExecutables; }
 
     /**
+     * @return the string as typed by the user, before any URL processing is done
+     * @since 3.2
+     */
+    QString typedString() const;
+
+    /**
      * Overloaded assigenment operator.
      *
      * This function allows you to easily assign a KURL
@@ -297,7 +303,13 @@ protected:
      * Initializes the KURIFilterData on construction.
      * @param url the URL to initialize the object with
      */
-    void init( const KURL& url = QString::null );
+    void init( const KURL& url);
+
+    /**
+     * Initializes the KURIFilterData on construction.
+     * @param url the URL to initialize the object with
+     */
+    void init( const QString& url = QString::null );
 
 private:
     bool m_bCheckForExecutables;

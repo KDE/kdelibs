@@ -53,6 +53,7 @@ public:
     KURIFilterDataPrivate() {};
     QString abs_path;
     QString args;
+    QString typedString;
 };
 
 KURIFilterData::KURIFilterData( const KURIFilterData& data )
@@ -82,6 +83,24 @@ void KURIFilterData::init( const KURL& url )
     m_bCheckForExecutables = true;
     m_bChanged = true;
     d = new KURIFilterDataPrivate;
+    d->typedString = url.url();
+}
+
+void KURIFilterData::init( const QString& url )
+{
+    m_iType = KURIFilterData::UNKNOWN;
+    m_pURI = url;
+    m_strErrMsg = QString::null;
+    m_strIconName = QString::null;
+    m_bCheckForExecutables = true;
+    m_bChanged = true;
+    d = new KURIFilterDataPrivate;
+    d->typedString = url;
+}
+
+QString KURIFilterData::typedString() const
+{
+    return d->typedString;
 }
 
 void KURIFilterData::setCheckForExecutables( bool check )
