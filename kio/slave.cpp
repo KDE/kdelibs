@@ -56,7 +56,7 @@ using namespace KIO;
 
 void Slave::accept(KSocket *socket)
 {
-    kdDebug() << "slave has connected to application" << endl;
+    kdDebug(7002) << "slave has connected to application" << endl;
     slaveconn.init(socket);
     delete serv;
     serv = 0;
@@ -81,7 +81,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 
 Slave::~Slave()
 {
-    kdDebug() << "destructing slave object pid = " << m_pid << endl;
+    kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
     m_pid = 99999;
 }
 
@@ -109,13 +109,13 @@ void Slave::gotInput()
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
-        kdDebug() << "slave died (1) pid = " << m_pid << endl;
+        kdDebug(7002) << "slave died (1) pid = " << m_pid << endl;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
-        kdDebug() << "slave died (2) pid = " << m_pid << endl;
+        kdDebug(7002) << "slave died (2) pid = " << m_pid << endl;
         // Tell the scheduler about the problem.
         emit slaveDied(this);
-        kdDebug() << "slave died (3) pid = " << m_pid << endl;
+        kdDebug(7002) << "slave died (3) pid = " << m_pid << endl;
     }
 }
 
@@ -128,7 +128,7 @@ void Slave::gotAnswer()
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
 
-    kdDebug() << "got answer " << cmd << endl;
+    kdDebug(7002) << "got answer " << cmd << endl;
 
     if (ok)
     {
@@ -149,7 +149,7 @@ void Slave::gotAnswer()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
-    kdDebug() << "killing slave (" << debugString(m_protocol) << "://" << debugString(m_host) << ")" << endl;
+    kdDebug(7002) << "killing slave (" << debugString(m_protocol) << "://" << debugString(m_host) << ")" << endl;
     if (m_pid)
     {
        ::kill(m_pid, SIGTERM);
@@ -175,7 +175,7 @@ void Slave::setHost( const QString &host, int port,
 
 Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 {
-    kdDebug() << "createSlave for " << debugString(url.url()) << endl;
+    kdDebug(7002) << "createSlave for " << debugString(url.url()) << endl;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -185,7 +185,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     // Check kioslave is running
     if (!client->isApplicationRegistered( "kioslave" ))
     {
-        kdDebug() << "Trying to start kioslave" << endl;
+        kdDebug(7002) << "Trying to start kioslave" << endl;
         // Launch the kioslave service
         QString errort;
         QCString dcopName;
@@ -237,7 +237,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
         delete slave;
 	return 0;
     }
-    kdDebug() << "PID of slave = " << pid << endl;
+    kdDebug(7002) << "PID of slave = " << pid << endl;
     slave->setPID(pid);
 
     return slave;
