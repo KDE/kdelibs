@@ -739,7 +739,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null, 0), null );
+	null = sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null, 0) );
     return null;
 }
 
