@@ -193,9 +193,9 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
 
     RenderStyle* pseudo = child->style()->getPseudoStyle(type);
 
-    if (pseudo)
-    {
-        if (pseudo->contentType()==CONTENT_TEXT)
+    if (pseudo) {
+        pseudo->ref();
+        if (pseudo->display() != NONE && pseudo->contentType()==CONTENT_TEXT)
         {
             RenderObject* po = new (renderArena()) RenderFlow(0 /* anonymous box */);
 	    po->setParent(this); // Set the parent now, so setStyle will be able to find a renderArena.
@@ -215,7 +215,7 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
             t->close();
             po->close();
         }
-        else if (pseudo->contentType()==CONTENT_OBJECT)
+        else if (pseudo->display() != NONE && pseudo->contentType()==CONTENT_OBJECT)
         {
             RenderObject* po = new (renderArena()) RenderImage(0);
             po->setParent(this); // Set the parent now, so setStyle will be able to find a renderArena.
@@ -224,7 +224,7 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
             addChild(po, beforeChild);
             po->close();
         }
-
+        pseudo->deref();
     }
 }
 
