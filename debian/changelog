@@ -17,7 +17,7 @@ kdelibs (4:2.2-alpha1-1) experimental; urgency=low
          None yet..have to figure them out
   * Add flex to build-depends as well as other deps
   * Add Debian menu items: cupsdconf
-  * New packages: kdelibs3-cups, libkdb-mysql libkdb-postgres
+  * New packages: kdelibs3-cups, libkdb-mysql libkdb-postgresql
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 11 Apr 2001 12:23:00 -0700
 

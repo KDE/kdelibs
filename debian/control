@@ -11,7 +11,7 @@ Section: libs
 Replaces: kdelibs2g, kdebase-libs (<< 4:2.1-20010109-1), kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
 Depends: ${shlibs:Depends}
 Recommends: libarts | libarts-alsa, libkmid | libkmid-alsa, kdelibs3-cups
-Suggests: kdelibs3-crypto, task-anti-aliasing, gdb, libkdb-mysql, libkdb-postgres
+Suggests: kdelibs3-crypto, task-anti-aliasing, gdb, libkdb-mysql, libkdb-postgresql
 Conflicts: kdebase-libs (<< 4:2.1-20010109-1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
@@ -37,13 +37,13 @@ Description: KDE DB libraries (mysql libraries)
  .
  This package contains the mysql interface libraries
 
-Package: libkdb-postgres
+Package: libkdb-postgresql
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<< 4:2.2-alpha1-1)
+Replaces: kdelibs3 (<< 4:2.2-alpha1-1), libkdb-postgres
 Depends: ${shlibs:Depends}
-Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
-Description: KDE DB libraries (postgres libraries)
+Conflicts: kdelibs3 (<< 4:2.2-alpha1-1), libkdb-postgres
+Description: KDE DB libraries (postgresql libraries)
  KDE Database libraries.
  .
  This package contains the postgresql interface libraries
