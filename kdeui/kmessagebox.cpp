@@ -27,6 +27,7 @@
 #include <qmessagebox.h>
 #include <qstringlist.h>
 #include <qvbox.h>
+#include <qvgroupbox.h>
 
 #include <kapp.h>
 #include <kconfig.h>
@@ -53,7 +54,7 @@
 
 static bool KMessageBox_queue = false;
 
-static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn)
+static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn, const QString &details=QString::null)
 {
     QVBox *topcontents = new QVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
@@ -84,6 +85,14 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     {
        checkbox = new QCheckBox(ask, topcontents);
        extraSize = QSize(50,0);
+    }
+
+    if (!details.isEmpty())
+    {
+       QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details:"), dialog);
+       QLabel *label3 = new QLabel(details, detailsGroup);
+       label3->setMinimumSize(label3->sizeHint());
+       dialog->setDetailsWidget(detailsGroup);
     }
 
     dialog->setMainWidget(topcontents);
@@ -308,6 +317,21 @@ KMessageBox::error(QWidget *parent,  const QString &text,
 }
 
 void
+KMessageBox::detailedError(QWidget *parent,  const QString &text,
+                   const QString &details,
+                   const QString &caption, bool /*notify*/)
+{
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Error") : caption,
+                       KDialogBase::Yes,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "error", true, true,
+                       i18n("&OK"));
+
+    createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0, details);
+}
+
+void
 KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption, bool /*notify*/)
 {
@@ -319,6 +343,21 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
                        i18n("&OK"));
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
+}
+
+void
+KMessageBox::detailedSorry(QWidget *parent, const QString &text,
+                   const QString &details,
+                   const QString &caption, bool /*notify*/)
+{
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Sorry") : caption,
+                       KDialogBase::Yes | KDialogBase::Details,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "sorry", true, true,
+                       i18n("&OK"));
+
+    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, details);
 }
 
 void

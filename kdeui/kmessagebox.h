@@ -271,6 +271,38 @@ public:
                     const QString &caption = QString::null, bool notify=true);
 
  /**
+  * Displays an "Error" dialog with a "Details >>" button.
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string. May contain newlines.
+  * @param details Detailed message string. May contain newlines.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Error").
+  * @param notify  Emit a KNotify event.
+  *
+  * Your program messed up and now it's time to inform the user.
+  * To be used for important things like "Sorry, I deleted your hard disk."
+  *
+  * The @p details message can conatin additional information about
+  * the problem and can be shown on request to advanced/interested users.
+  * 
+  * If your program detects the action specified by the user is somehow
+  * not allowed, this should never be reported with error(). Use sorry()
+  * instead to explain to the user that this action is not allowed. 
+  *
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  *
+  * NOTE: The OK button will always have the i18n'ed text '&OK'.
+  */
+  static void detailedError(QWidget *parent, 
+                    const QString &text,
+                    const QString &details,
+                    const QString &caption = QString::null, bool notify=true);
+
+
+ /**
   * Display an "Sorry" dialog. 
   *
   * @param parent  If @p parent is 0, then the message box becomes an 
@@ -294,6 +326,39 @@ public:
   
   static void sorry(QWidget *parent, 
                     const QString &text,
+                    const QString &caption = QString::null, bool notify=true);
+
+ /**
+  * Displays a "Sorry" dialog with a "Details >>" button.
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string. May contain newlines.
+  * @param details Detailed message string. May contain newlines.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Sorry").
+  * @param notify  Emit a KNotify event.
+  *
+  * Either your program messed up and asks for understanding
+  * or your user did something stupid.
+  *
+  * To be used for small problems like 
+  * "Sorry, I can't find the file you specified."
+  *
+  * And then @p details can contain something like
+  * "foobar.txt was not found in any of 
+  *  the following directories:
+  *  /usr/bin,/usr/local/bin,/usr/sbin"
+  *
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  *
+  * NOTE: The ok button will always have the i18n'ed text '&OK'.
+  */
+  
+  static void detailedSorry(QWidget *parent, 
+                    const QString &text,
+                    const QString &details,
                     const QString &caption = QString::null, bool notify=true);
 
  /**
