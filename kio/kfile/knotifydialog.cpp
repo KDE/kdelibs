@@ -21,6 +21,7 @@
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kaudioplayer.h>
+#include <kcombobox.h>
 #include <kconfig.h>
 #include <kcursor.h>
 #include <kdebug.h>
@@ -47,6 +48,52 @@
 #include <qvbox.h>
 
 using namespace KNotify;
+
+//
+// I don't feel like subclassing KComboBox and find ways to insert that into
+// the .ui file...
+//
+namespace KNotify
+{
+    class SelectionCombo
+    {
+    public:
+        //
+        // Mind the order in fill() and type()
+        //
+        static void fill( KComboBox *combo )
+        {
+            combo->insertItem( i18n("Sounds") );
+            combo->insertItem( i18n("Logging") );
+            combo->insertItem( i18n("Program Execution") );
+            combo->insertItem( i18n("Message Windows") );
+            combo->insertItem( i18n("Passive Windows") );
+            combo->insertItem( i18n("Standard Error Output") );
+        }
+        
+        static int type( KComboBox *combo )
+        {
+            switch( combo->currentItem() )
+            {
+                case 0:
+                    return KNotifyClient::Sound;
+                case 1:
+                    return KNotifyClient::Logfile;
+                case 2:
+                    return KNotifyClient::Execute;
+                case 3:
+                    return KNotifyClient::Messagebox;
+                case 4:
+                    return KNotifyClient::PassivePopup;
+                case 5:
+                    return KNotifyClient::Stderr;
+            }
+            
+            return KNotifyClient::None;
+        }
+    };
+};
+
 
 int KNotifyDialog::configure( QWidget *parent, const char *name,
                               const KAboutData *aboutData )
@@ -105,6 +152,7 @@ void KNotifyDialog::slotDefault()
 
 
 //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 
 // simple access to all knotify-handled applications
@@ -113,11 +161,15 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" )
 {
     m_apps.setAutoDelete( true );
-    layout()->setSpacing( KDialog::spacingHint() );
-    layout()->setMargin( KDialog::marginHint() );
+
+    layout()->setMargin( 0 );
+    layout()->setSpacing( KDialogBase::spacingHint() );
 
     if ( !handleAllApps )
         m_affectAllApps->hide();
+
+    SelectionCombo::fill( m_comboEnable );
+    SelectionCombo::fill( m_comboDisable );
     
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
@@ -154,6 +206,9 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     connect( m_extension, SIGNAL( clicked() ), 
              SLOT( toggleAdvanced()) );
+    
+    connect( m_buttonEnable, SIGNAL( clicked() ), SLOT( enableAll() ));
+    connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
     
     showAdvanced( false );
 }
@@ -592,27 +647,34 @@ void KNotifyWidget::playSound()
     KAudioPlayer::play( m_soundPath->url() );
 }
 
-/*
-void KNotifyWidget::disableAllSounds( const EventList& events )
+void KNotifyWidget::enableAll()
 {
-    EventListIterator event( events );
-    for ( ; event.current(); ++event )
-        (*event)->presentation &= ~KNotifyClient::Sound;
-
-    updateView();
+    bool enable = (sender() == m_buttonEnable);
+    enableAll( SelectionCombo::type(enable ? m_comboEnable : m_comboDisable),
+               enable );
 }
 
-void KNotifyWidget::enableAllSounds( const EventList& events )
+void KNotifyWidget::enableAll( int what, bool enable )
 {
-    EventListIterator event( events );
-    for ( ; event.current(); ++event )
+    ApplicationListIterator appIt( m_apps );
+    for ( ; appIt.current(); ++appIt )
     {
-        if ( !(*event)->soundfile.isNull() )
-            (*event)->presentation |= KNotifyClient::Sound;
+        const EventList& events = appIt.current()->eventList();
+        EventListIterator it( events );
+        for ( ; it.current(); ++it )
+        {
+            if ( enable )
+                it.current()->presentation |= what;
+            else
+                it.current()->presentation &= ~what;
+        }
     }
-    updateView();
+    
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        item = m_listview->firstChild();
+    selectItem( item );
 }
-*/
 
 
 //////////////////////////////////////////////////////////////////////

@@ -404,6 +404,9 @@
                                     <property name="text">
                                         <string>Turn O&amp;ff All:</string>
                                     </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Allows you to change the behavior for all events at once</string>
+                                    </property>
                                 </widget>
                                 <widget class="QPushButton" row="0" column="0">
                                     <property name="name">
@@ -412,63 +415,16 @@
                                     <property name="text">
                                         <string>Turn O&amp;n All:</string>
                                     </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Allows you to change the behavior for all events at once</string>
+                                    </property>
                                 </widget>
                                 <widget class="KComboBox" row="0" column="1">
-                                    <item>
-                                        <property name="text">
-                                            <string>Sounds</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Logging</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Program Execution</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Message Windows</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Passive Windows</string>
-                                        </property>
-                                    </item>
                                     <property name="name">
                                         <cstring>m_comboEnable</cstring>
                                     </property>
                                 </widget>
                                 <widget class="KComboBox" row="1" column="1">
-                                    <item>
-                                        <property name="text">
-                                            <string>Sounds</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Logging</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Program Execution</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Message Windows</string>
-                                        </property>
-                                    </item>
-                                    <item>
-                                        <property name="text">
-                                            <string>Passive Windows</string>
-                                        </property>
-                                    </item>
                                     <property name="name">
                                         <cstring>m_comboDisable</cstring>
                                     </property>

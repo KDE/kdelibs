@@ -135,6 +135,7 @@ namespace KNotify
          */
         Event * currentEvent();
         virtual void showEvent( QShowEvent * );
+        virtual void enableAll( int what, bool enable );
 
     protected slots:
         void playSound();
@@ -156,8 +157,8 @@ namespace KNotify
         void openExecDialog( KURLRequester * );
 
         void updateWidgets( const Event& event );
-//         void disableAllSounds();
-//         void enableAllSounds();
+
+        void enableAll();
 
     private:
         QString makeRelative( const QString& );
