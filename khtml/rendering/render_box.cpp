@@ -229,15 +229,13 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 	int sy = 0;
 	
 	if( !m_style->backgroundAttachment() ) {
-	    kdDebug(0) << "fixed background" << endl;
+	    //kdDebug(0) << "fixed background" << endl;
 	    QRect r = viewRect();
 	    sx = _tx - r.x();
 	    sy = _ty - r.y();
-	    
-	} else
-	    kdDebug(0) << "scrolling background" << endl;
-	    
-        
+	
+	} 	
+
 	switch(m_style->backgroundRepeat()) {
 	case NO_REPEAT:
 	    if(m_bgImage->pixmap().width() < w)

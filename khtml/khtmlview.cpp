@@ -158,6 +158,11 @@ void KHTMLView::clear()
     setVScrollBarMode(Auto);
     setHScrollBarMode(Auto);
 
+    if(d->useSlowRepaints) {
+	delete paintBuffer;
+	paintBuffer = 0;
+    }
+	
     delete d;
     d = new KHTMLViewPrivate();
     connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
@@ -212,14 +217,17 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	//contentsToViewport(ex, ey, tx, ty);
 	//p->setClipping(false);
 	//p->setClipRect(tx, ty, ew, eh);
+	if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
+	    paintBuffer->resize( visibleWidth(), visibleHeight() );
+	}
+    } else {
+	if ( paintBuffer->width() < visibleWidth() ) {
+	    paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
+	}
     }
-
-    if ( paintBuffer->width() < visibleWidth() ) {
-	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
-    }
-
-    //    QTime qt;
-    //    qt.start();
+    
+        QTime qt;
+        qt.start();
 
     int py=0;
     while (py < eh) {
@@ -242,6 +250,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 		
 	py += PAINT_BUFFER_HEIGHT;
     }
+    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
 
 void KHTMLView::layout(bool force)
