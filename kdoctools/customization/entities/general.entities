@@ -338,6 +338,7 @@
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
+<!ENTITY SuSE	'<trademark class="registered"><acronym>SuSE</acronym></trademark>'>
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
 <!ENTITY tkmidi	"<application>tkmidi</application>">
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
