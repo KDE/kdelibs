@@ -31,17 +31,12 @@
 #define MAX_REQUEST_JOBS 2
 
 #include <qscrollview.h>
-//#include <qpoint.h>
-//#include <qcolor.h>
-//#include <qlist.h>
 #include <qstring.h>
-//#include <qstrlist.h>
-//#include <qobject.h>
-//#include <qtimer.h>
 
 class QPainter;
 class KBrowser;
 class KHTMLDecoder;
+class HTMLSettings;
 
 #include "html_document.h"
 #include "khtmlio.h"
@@ -179,7 +174,7 @@ public:
     /**
      * Get the text the user has marked.
      */
-    //virtual QString selectedText();
+    virtual QString selectedText();
 
     /**
      * Get all text in the HTML page.
@@ -307,7 +302,7 @@ public:
      *
      * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
-    void resetFontSizes( void );
+    void resetFontSizes();
 
     /**
      * Sets the standard font style.
@@ -666,6 +661,9 @@ protected:
     bool m_bEnableImages;
 
 private:
+
+    HTMLSettings *defaultSettings;
+    HTMLSettings *settings;
 
     bool bIsTextSelected;
     bool _isFrame;

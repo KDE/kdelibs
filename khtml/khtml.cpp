@@ -29,6 +29,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <khtml.h>
+#include <khtmldata.h>
 
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -82,7 +83,8 @@ KHTMLWidget::~KHTMLWidget()
       }
   if(decoder) delete decoder;
   if(cache) delete cache;
-
+  if(defaultSettings) delete defaultSettings;
+  if(settings) delete settings;
 }
 
 void KHTMLWidget::init()
@@ -111,8 +113,10 @@ void KHTMLWidget::init()
 
   document = 0;
   decoder = 0;
-    cache = new KHTMLCache(this);
-    _width = width()- SCROLLBARWIDTH - 10;
+  cache = new KHTMLCache(this);
+  defaultSettings = new HTMLSettings;
+  settings = 0;
+  _width = width()- SCROLLBARWIDTH - 10;
 }
 
 KHTMLWidget* KHTMLWidget::topView()
@@ -227,6 +231,11 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     // ###
     //emit documentStarted();
+
+    if ( settings )
+    	delete settings;
+
+    settings = new HTMLSettings( *defaultSettings);
 
     m_bParsing = true;
 }
@@ -637,20 +646,22 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
 
 void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
 {
-  setDefaultTextColors( _textc, _linkc, _vlinkc );
+    defaultSettings->fontBaseColor = _textc;
+    defaultSettings->linkColor = _linkc;
+    defaultSettings->vLinkColor = _vlinkc;
 
-  Child *c;
-  for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-    c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
+    Child *c;
+    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
+	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
 }
 
 void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 {
-  setDefaultBGColor( bgcolor );
+    defaultSettings->bgColor = bgcolor;
 
-  Child *c;
-  for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-    c->m_pBrowser->setDefaultBGColor( bgcolor );
+    Child *c;
+    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
+	c->m_pBrowser->setDefaultBGColor( bgcolor );
 }
 
 QString KHTMLWidget::completeURL( const QString &_url )
@@ -1110,4 +1121,46 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	QString pressedTarget;
 	urlSelected( m_strSelectedURL.data(), _mouse->button(), pressedTarget.data() );
     }
+}
+
+QString KHTMLWidget::selectedText()
+{
+    // ###
+    return QString::null;
+}
+
+void
+KHTMLWidget::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
+{
+    defaultSettings->setFontSizes(newFontSizes, newFixedFontSizes);
+}
+
+void
+KHTMLWidget::fontSizes(int *newFontSizes, int *newFixedFontSizes)
+{
+    defaultSettings->getFontSizes(newFontSizes, newFixedFontSizes);
+}
+
+void
+KHTMLWidget::resetFontSizes(void)
+{
+    defaultSettings->resetFontSizes();
+}
+
+void
+KHTMLWidget::setStandardFont( const QString &name )
+{	
+    defaultSettings->fontBaseFace = name;
+}
+
+void
+KHTMLWidget::setFixedFont( const QString &name )
+{	
+    defaultSettings->fixedFontFace = name;
+}
+
+void
+KHTMLWidget::setUnderlineLinks( bool ul )
+{
+    defaultSettings->underlineLinks = ul;
 }
