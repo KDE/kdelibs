@@ -74,7 +74,7 @@ class KReplaceNextDialog;
  *              m_replace->setData( <current text fragment> );
  *
  *          // Let KReplace inspect the text fragment, and display a dialog if a match is found
- *          res = m_replace->res();
+ *          res = m_replace->replace();
  *
  *          if ( res == KFind::NoMatch ) {
  *              <Move to the next text fragment, honoring the FindBackwards setting for the direction>
