@@ -28,6 +28,7 @@
 
 #include "kshred.h"
 #include <time.h>
+#include <klocale.h>
 #include <kdebug.h>
 #include <stdlib.h>
 
@@ -214,51 +215,70 @@ KShred::shred()
   unsigned char p[6][3] = {{'\222', '\111', '\044'}, {'\111', '\044', '\222'},
                            {'\044', '\222', '\111'}, {'\155', '\266', '\333'},
                            {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
-
+  QString msg = i18n("Shredding:  pass %1 of 35");
+ 
   kdDebug() << "KShred::shred" << endl;
 
   emit processedSize(0);
 
   // thirty-five times writing the entire file size
   totalBytes = fileSize * 35;
-  int iteration = 0;
+  int iteration = 1;
 
   for (int ctr = 0; ctr < 4; ctr++)
     if (!fillrandom())
       return false;
     else
-      kdDebug() << "KShred::shred " << ++iteration << endl;
+    {
+      emit infoMessage(msg.arg(iteration));
+      kdDebug() << "KShred::shred " << iteration++ << endl;
+    }
 
   if (!fillbyte((unsigned int) 0x55))     // '0x55' is 01010101
     return false;
-  kdDebug() << "KShred::shred " << ++iteration << endl;
+  emit infoMessage(msg.arg(iteration));
+  kdDebug() << "KShred::shred " << iteration++ << endl;
 
   if (!fillbyte((unsigned int) 0xAA))     // '0xAA' is 10101010
     return false;
-  kdDebug() << "KShred::shred " << ++iteration << endl;
+  emit infoMessage(msg.arg(iteration));
+  kdDebug() << "KShred::shred " << iteration++ << endl;
 
   for (unsigned int ctr = 0; ctr < 3; ctr++)
     if (!fillpattern(p[ctr], 3))  // '0x92', '0x49', '0x24'
       return false;
     else
-      kdDebug() << "KShred::shred " << ++iteration << endl;
+    {
+      emit infoMessage(msg.arg(iteration));
+      kdDebug() << "KShred::shred " << iteration++ << endl;
+    }
 
   for (unsigned int ctr = 0; ctr <= 255 ; ctr += 17)
     if (!fillbyte(ctr))    // sequence of '0x00', '0x11', ..., '0xFF'
       return false;
     else
-      kdDebug() << "KShred::shred " << ++iteration << endl;
+    {
+      emit infoMessage(msg.arg(iteration));
+      kdDebug() << "KShred::shred " << iteration++ << endl;
+    }
+
   for (unsigned int ctr = 0; ctr < 6; ctr++)
     if (!fillpattern(p[ctr], 3))  // '0x92', '0x49', '0x24'
       return false;
     else
-      kdDebug() << "KShred::shred " << ++iteration << endl;
+    {
+      emit infoMessage(msg.arg(iteration));
+      kdDebug() << "KShred::shred " << iteration++ << endl;
+    }
 
   for (int ctr = 0; ctr < 4; ctr++)
     if (!fillrandom())
       return false;
     else
-      kdDebug() << "KShred::shred " << ++iteration << endl;
+    {
+      emit infoMessage(msg.arg(iteration));
+      kdDebug() << "KShred::shred " << iteration++ << endl;
+    }
 
   if (!file->remove())
     return false;

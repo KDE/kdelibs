@@ -118,6 +118,12 @@ class KShred : public QObject {
          */
         void processedSize(unsigned long bytes);
 
+        /**
+         * Shows a message in the progress dialog
+	 * @param the message to display
+         */
+        void infoMessage(const QString &);
+
     private:
 	/**
 	 * @internal write the data to the file
