@@ -153,15 +153,8 @@ KUniqueApplication::start()
            }
 
            // Try to launch kdeinit.
-           kdError() << "KUniqueApplication: Trying to launch kdeinit." << endl;
-           QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
-           if (srv.isEmpty())
-               srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
-           if (!srv.isEmpty())
-           {
-              kunique_app_my_system(QFile::encodeName(srv)+" --suicide");
-              regName = dc->registerAs(appName, s_multipleInstances);
-           }
+           startKdeinit();
+           regName = dc->registerAs(appName, s_multipleInstances);
            if (regName.isEmpty())
            {
               kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;

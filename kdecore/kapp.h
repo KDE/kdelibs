@@ -657,6 +657,11 @@ public:
   static bool loadedByKdeinit;
 
   /**
+   * @internal
+   */
+  static void startKdeinit();
+
+  /**
    * Valid values for the settingsChanged signal
    */
   enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
@@ -843,6 +848,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.224  2001/07/08 19:05:59  faure
+// Committing patch by Lubos to fix startup notification for the kfmclient case.
+// Not that I can really review it, but who can ? :)
+//
 // Revision 1.223  2001/06/25 20:07:37  waba
 // -#define KDE_VERSION_STRING "2.2alpha2"
 // +#define KDE_VERSION_STRING "2.2beta1"

@@ -1004,6 +1004,18 @@ void KApplication::saveState( QSessionManager& sm )
         sm.cancel();
 }
 
+void KApplication::startKdeinit()
+{
+  // Try to launch kdeinit.
+  QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+  if (srv.isEmpty())
+     srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
+  if (srv.isEmpty())
+     return;
+  setOverrideCursor( Qt::waitCursor ); 
+  my_system(QFile::encodeName(srv)+" --suicide");
+  restoreOverrideCursor();
+}
 
 void KApplication::dcopFailure(const QString &msg)
 {
@@ -1011,13 +1023,7 @@ void KApplication::dcopFailure(const QString &msg)
   failureCount++;
   if (failureCount == 1)
   {
-     // Try to launch kdeinit.
-     QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
-     if (srv.isEmpty())
-        srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
-     if (srv.isEmpty())
-        return;
-     my_system(QFile::encodeName(srv)+" --suicide");
+     startKdeinit();
      return;
   }
   if (failureCount == 2)
