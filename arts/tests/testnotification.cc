@@ -76,6 +76,7 @@ struct TestNotification : public TestCase
 		Notification n;
 		n.receiver = &r;
 		n.data = new string(text);
+		n.internal = 0;
 		n.setDestroy(destroyString);
 		NotificationManager::the()->send(n);
 	}
