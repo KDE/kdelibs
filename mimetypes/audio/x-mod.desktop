@@ -2,7 +2,7 @@
 Type=MimeType
 MimeType=audio/x-mod
 Icon=sound
-Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*.m15;*.M15;*.mtm;*.MTM;*.669;
+Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*.m15;*.M15;*.mtm;*.MTM;*.669;*.it;*.IT;
 Comment=Amiga soundtracker audio
 Comment[ca]=Àudio Amiga soundtracker
 Comment[de]=Amiga Soundtracker-Audio
