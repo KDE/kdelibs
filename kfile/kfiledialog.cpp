@@ -1074,7 +1074,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 
 
 
-void KFileDialog::toolbarPressedCallback(int i)
+void KFileDialog::toolbarPressedCallback(int /*i*/)
 {
 }
 
