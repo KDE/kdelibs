@@ -69,22 +69,10 @@
 # endif
 #endif
 
-#ifdef MAKE_KFILE_LIB
-# define KFILE_EXPORT KDE_EXPORT
-#else
-# define KFILE_EXPORT KDE_IMPORT
-#endif
-
 #ifdef MAKE_DCOP_LIB
 # define DCOP_EXPORT KDE_EXPORT
 #else
 # define DCOP_EXPORT KDE_IMPORT
-#endif
-
-#ifdef MAKE_KSSL_LIB
-# define KSSL_EXPORT KDE_EXPORT
-#else
-# define KSSL_EXPORT KDE_IMPORT
 #endif
 
 #ifdef MAKE_KPARTS_LIB
@@ -105,10 +93,10 @@
 # define KABC_EXPORT KDE_IMPORT
 #endif
 
-#ifdef MAKE_KDERESOURCES_LIB
-# define KDERESOURCES_EXPORT KDE_EXPORT
+#ifdef MAKE_KRESOURCES_LIB
+# define KRESOURCES_EXPORT KDE_EXPORT
 #else
-# define KDERESOURCES_EXPORT KDE_IMPORT
+# define KRESOURCES_EXPORT KDE_IMPORT
 #endif
 
 // all KStyle libs
