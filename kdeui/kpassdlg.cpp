@@ -30,6 +30,7 @@
 #include <qregexp.h>
 #include <qhbox.h>
 #include <qwhatsthis.h>
+#include <qptrdict.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -50,6 +51,32 @@
 /*
  * Password line editor.
  */
+
+// BCI: Add a real d-pointer and put the int into that
+
+static QPtrDict<int>* d_ptr = 0;
+
+static void cleanup_d_ptr() {
+	delete d_ptr;
+}
+
+static int * ourMaxLength( const KPasswordEdit* const e ) {
+	if ( !d_ptr ) {
+		d_ptr = new QPtrDict<int>;
+		qAddPostRoutine( cleanup_d_ptr );
+	}
+	int* ret = d_ptr->find( (void*) e );
+	if ( ! ret ) {
+		ret = new int;
+		d_ptr->replace( (void*) e, ret );
+	}
+	return ret;
+}
+
+static void delete_d( const KPasswordEdit* const e ) {
+	if ( d_ptr )
+		d_ptr->remove( (void*) e );
+}
 
 const int KPasswordEdit::PassLen = 200;
 
@@ -112,7 +139,8 @@ void KPasswordEdit::init()
 {
     setEchoMode(QLineEdit::Password); // Just in case
     setAcceptDrops(false);
-    setMaxLength(3 * (PassLen - 1)); // 3 * the internal max length
+    int* t = ourMaxLength(this);
+    *t = (PassLen - 1); // the internal max length
     m_Password = new char[PassLen];
     m_Password[0] = '\000';
     m_Length = 0;
@@ -122,6 +150,7 @@ KPasswordEdit::~KPasswordEdit()
 {
     memset(m_Password, 0, PassLen * sizeof(char));
     delete[] m_Password;
+    delete_d(this);
 }
 
 void KPasswordEdit::insert(const QString &txt)
@@ -248,7 +277,8 @@ void KPasswordEdit::setMaxPasswordLength(int newLength)
 {
     if (newLength >= PassLen) newLength = PassLen - 1; // belt and braces
     if (newLength < 0) newLength = 0;
-    setMaxLength(3 * newLength); // at most it needs 3 stars per character
+    int* t = ourMaxLength(this);
+    *t = newLength; 
     while (m_Length > newLength) {
         m_Password[m_Length] = '\000';
         --m_Length;
@@ -258,7 +288,7 @@ void KPasswordEdit::setMaxPasswordLength(int newLength)
 
 int KPasswordEdit::maxPasswordLength() const
 {
-    return (maxLength() / 3);
+    return *(ourMaxLength(this));
 }
 /*
  * Password dialog.
