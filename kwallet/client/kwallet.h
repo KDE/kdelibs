@@ -313,6 +313,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  @param value A buffer to fill with the value.  The key in
 		 *               the map is the entry key.
 		 *  @return Returns 0 on success, non-zero on error.
+		 *  @since 3.4
 		 */
 		int readEntryList(const QString& key, QMap<QString, QByteArray>& value);
 
@@ -325,6 +326,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  @return Returns 0 on success, non-zero on error.  Will
 		 *          return an error if the key was not originally
 		 *          written as a map.
+		 *  @since 3.4
 		 */
 		int readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value);
 
@@ -337,6 +339,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  @return Returns 0 on success, non-zero on error.  Will
 		 *          return an error if the key was not originally
 		 *          written as a password.
+		 *  @since 3.4
 		 */
 		int readPasswordList(const QString& key, QMap<QString, QString>& value);
 
