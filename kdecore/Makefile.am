@@ -42,7 +42,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kextsock.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	kdesktopwidget.h
+	kdesktopwidget.h klargefile.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 4:0
