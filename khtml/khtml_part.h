@@ -32,6 +32,7 @@
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kdemacros.h>
+#include <kfinddialog.h>
 
 #include <qregexp.h>
 
@@ -659,6 +660,34 @@ public:
   QCursor urlCursor() const;
 
   /**
+   * Extra Find options that can be used when calling the extended findText().
+   * @since 3.3
+   */
+  enum FindOptions
+  {
+  	FindLinksOnly = 1 * KFindDialog::MinimumUserOption,
+  	FindNoPopups  = 2 * KFindDialog::MinimumUserOption
+  };
+
+  /**
+   * Starts a new search by popping up a dialog asking the user what he wants to
+   * search for.
+   * @since 3.3
+   */
+  void findText();
+
+  /**
+   * Starts a new search, but bypasses the user dialog.
+   * @param str The string to search for.
+   * @param options Find options.
+   * @param parent Parent used for centering popups like "string not found".
+   * @param findDialog Optionally, you can supply your own dialog.
+   * @since 3.3
+   */
+  void findText( const QString &str, long options, QWidget *parent = 0,
+                 KFindDialog *findDialog = 0 );
+
+  /**
    * Initiates a text search.
    */
   void findTextBegin();
@@ -666,8 +695,16 @@ public:
   /**
    * Finds the next occurrence of the string or expression.
    * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
+   * @DEPRECATED
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
+
+  /**
+   * Finds the next occurence of a string set by @ref findText()
+   * @return true if a new match was found.
+   * @since 3.3
+   */
+  bool findTextNext();
 
   /**
    * Sets the Zoom factor. The value is given in percent, larger values mean a
@@ -1440,8 +1477,7 @@ private:
   void emitLoadEvent();
 
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
-  void findText();
-  void findTextNext();
+
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   /** extends the current selection to the given content-coordinates @p x, @p y
    * @param x content x-coordinate
@@ -1471,7 +1507,7 @@ private:
   void emitCaretPositionChanged(const DOM::Node &node, long offset);
 
   void setDebugScript( bool enable );
-  
+
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

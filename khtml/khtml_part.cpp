@@ -2621,11 +2621,20 @@ void KHTMLPart::findText()
   d->m_findDialog->setFindHistory( d->m_lastFindState.history );
   d->m_findDialog->setOptions( d->m_lastFindState.options );
 
-  d->m_lastFindState.options = -1; // force update in findTextNext
-
   d->m_findDialog->show();
   connect( d->m_findDialog, SIGNAL(okClicked()), this, SLOT(slotFindNext()) );
   connect( d->m_findDialog, SIGNAL(finished()), this, SLOT(slotFindDialogDestroyed()) );
+
+  findText( d->m_findDialog->pattern(), 0 /*options*/, widget(), d->m_findDialog );
+}
+
+void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFindDialog *findDialog )
+{
+  // First do some init to make sure we can search in this frame
+  if ( !d->m_doc )
+    return;
+
+  d->m_lastFindState.options = options;
 
 #ifndef QT_NO_CLIPBOARD
   connect( kapp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
@@ -2633,22 +2642,29 @@ void KHTMLPart::findText()
 
   // Create the KFind object
   delete d->m_find;
-  d->m_find = new KFind( d->m_findDialog->pattern(), 0 /*options*/, widget(), d->m_findDialog );
-  d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want another dlg popping up
+  d->m_find = new KFind( str, options, parent, findDialog );
+  if(findDialog == 0)
+  {
+    d->m_find->setPattern( str );
+    d->m_find->setOptions( options );
+  }
+  d->m_find->closeFindNextDialog(); // we don't use KFindDialog, so we don't want other dlg popping up
   connect(d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
           this, SLOT( slotHighlight( const QString &, int, int ) ) );
   //connect(d->m_find, SIGNAL( findNext() ),
   //        this, SLOT( slotFindNext() ) );
+
+  initFindNode( false, options & KFindDialog::FindBackwards, false );
 }
 
 // New method
-void KHTMLPart::findTextNext()
+bool KHTMLPart::findTextNext()
 {
   if (!d->m_find)
   {
     // We didn't show the find dialog yet, let's do it then (#49442)
     findText();
-    return;
+    return false;
   }
 
   long options = 0;
@@ -2722,7 +2738,28 @@ void KHTMLPart::findTextNext()
         }
         else if ( obj->isText() )
         {
-          if ( obj->parent()!=tmpTextArea )
+          bool isLink = false;
+
+          // checks whether the node has a <A> parent
+          if ( options & FindLinksOnly )
+          {
+            NodeImpl *parent = obj->element();
+            while ( parent )
+            {
+              if ( parent->nodeType() == Node::ELEMENT_NODE && parent->id() == ID_A )
+              {
+                isLink = true;
+                break;
+              }
+              parent = parent->parentNode();
+            }
+          }
+          else
+          {
+            isLink = true;
+          }
+
+          if ( isLink && obj->parent()!=tmpTextArea )
           {
             s = static_cast<khtml::RenderText *>(obj)->data().string();
             s = s.replace(0xa0, ' ');
@@ -2781,7 +2818,8 @@ void KHTMLPart::findTextNext()
 
   if ( res == KFind::NoMatch ) // i.e. we're done
   {
-    if ( d->m_find->shouldRestart() )
+    kdDebug() << "No more matches." << endl;
+    if ( !(options & FindNoPopups) && d->m_find->shouldRestart() )
     {
       //kdDebug(6050) << "Restarting" << endl;
       initFindNode( false, options & KFindDialog::FindBackwards, false );
@@ -2796,7 +2834,10 @@ void KHTMLPart::findTextNext()
       d->m_find->resetCounts();
       slotClearSelection();
     }
+    kdDebug() << "Dialog closed." << endl;
   }
+
+  return res == KFind::Match;
 }
 
 void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
@@ -5371,7 +5412,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   DOM::DOMString url = event->url();
   DOM::DOMString target = event->target();
   DOM::Node innerNode = event->innerNode();
-  
+
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
       ( (!d->m_strSelectedURL.isEmpty() && !isEditable())
@@ -5383,13 +5424,13 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     HTMLImageElementImpl *img = 0L;
     QDragObject *drag = 0;
     KURL u;
-    
+
     // qDebug("****************** Event URL: %s", url.string().latin1());
     // qDebug("****************** Event Target: %s", target.string().latin1());
-    
+
     // Normal image...
     if ( url.length() == 0 && innerNode.handle() && innerNode.handle()->id() == ID_IMG )
-    {      
+    {
       img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KURL( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
       pix = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
