@@ -32,7 +32,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 14
+#define KSYCOCA_VERSION 15
 
 /**
  * @internal
@@ -78,9 +78,9 @@ public:
     */
    QDataStream *findFactory( KSycocaFactoryId id);
    /**
-    * @internal - returns stream to the header (see DESIGN)
+    * @internal - returns kfsstnd stored inside database
     */
-   QDataStream *findHeader();
+   QString kfsstnd_prefixes();
     
    /**
     * @internal - add a factory
@@ -106,7 +106,7 @@ signals:
    void databaseChanged();
 
 protected:
-   void checkVersion();
+   bool checkVersion(bool abortOnError=true);
    void openDatabase();
    void closeDatabase();
    KSycocaFactoryList *m_lstFactories;

@@ -43,7 +43,7 @@ KSycoca::KSycoca()
    _self = this;
 
    // Register app as able to receive DCOP messages
-   if (!kapp->dcopClient()->isAttached())
+   if (kapp && !kapp->dcopClient()->isAttached())
    {
       kapp->dcopClient()->attach();
    }
@@ -157,7 +157,7 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
    return m_str;
 }
 
-void KSycoca::checkVersion()
+bool KSycoca::checkVersion(bool abortOnError)
 {
    if ( !m_str )
       openDatabase();
@@ -166,11 +166,13 @@ void KSycoca::checkVersion()
    (*m_str) >> aVersion;
    if ( aVersion != KSYCOCA_VERSION )
    {
+      if (!abortOnError) return false;
       // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
       kDebugError( 7011, "Outdated database ! Stop kded and restart it !" );
       kDebugError( 7011, "Found version %d, expecting version %d.", aVersion, KSYCOCA_VERSION );
       abort();
    }
+   return true;
 }
 
 QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
@@ -199,9 +201,9 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    return 0;
 }
 
-QDataStream * KSycoca::findHeader()
+QString KSycoca::kfsstnd_prefixes()
 {
-   checkVersion();
+   if (!checkVersion(false)) return "";
    Q_INT32 aId;
    Q_INT32 aOffset;
    // skip factories offsets
@@ -214,7 +216,9 @@ QDataStream * KSycoca::findHeader()
         break; // just read 0
    }
    // We now point to the header
-   return m_str;
+   QString prefixes;
+   (*m_str) >> prefixes;
+   return prefixes;
 }
 
 QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )
