@@ -330,7 +330,8 @@ void HTMLEmbedElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
+HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc)
+    : LiveConnectElementImpl(doc)
 {
     needWidgetUpdate = false;
     m_renderAlternative = false;
