@@ -191,6 +191,11 @@ signals:
   void dockWindowRemove(Window);
 
   /**
+   * The window region has changed
+   */
+  void windowRegionChange();
+
+  /**
     * Play/register/unregister a sound
     */
   void playSound(QString);

@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.18  1999/01/18 10:57:18  kulow
+    .moc files are back in kdelibs. Built fine here using automake 1.3
+
     Revision 1.17  1999/01/15 09:31:37  kulow
     it's official - kdelibs builds with srcdir != builddir. For this I
     automocifized it, the generated rules are easier to maintain than
@@ -104,6 +107,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom sound;
   static Atom register_sound;
   static Atom unregister_sound;
+  static Atom kwm_window_region_changed;
 
   Atom a;
   Window w;
@@ -157,6 +161,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 				   "KDE_REGISTER_SOUND_EVENT", False);
       unregister_sound = XInternAtom(qt_xdisplay(),
 				     "KDE_UNREGISTER_SOUND_EVENT", False);
+
+      kwm_window_region_changed = XInternAtom(qt_xdisplay(), "KWM_WINDOW_REGION_CHANGED", False);
 
       atoms = true; // was missing --Bernd
     }
@@ -316,6 +322,10 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       c[i] = '\0';
       QString com = c;
       emit unregisterSound(com);
+    }
+
+    else if (a == kwm_window_region_changed){
+      emit windowRegionChange();
     }
 
     return TRUE;
