@@ -716,13 +716,18 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     }
     else
         m_appLocal = 0L;
-
+    connect(m_urlEdit->lineEdit(),SIGNAL(textChanged ( const QString & )),this,SLOT(urlChanged(const QString & )));
     m_edit->setFocus();
     setMainWidget( box );
 }
 
 KURLBarItemDialog::~KURLBarItemDialog()
 {
+}
+
+void KURLBarItemDialog::urlChanged(const QString & text )
+{
+    enableButtonOK( !text.isEmpty() );
 }
 
 KURL KURLBarItemDialog::url() const

@@ -560,6 +560,9 @@ private:
     class KURLBarItemDialogPrivate;
     KURLBarItemDialogPrivate *d;
 
+public slots:
+    void urlChanged(const QString & );
+
 };
 
 
