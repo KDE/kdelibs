@@ -57,6 +57,8 @@ public:
 		{	textCol = col; }
 	void setCharset( QFont::CharSet ch )
 	    {	chset=ch;  dirty = true; }
+	void setVOffset( int _vOffset )
+	    {   VOffset = _vOffset; } 
 
 	QString family() const
 		{	return font.family(); }
@@ -73,7 +75,10 @@ public:
 	const QColor &textColor() const
 		{	return textCol; }
 	const QFont::CharSet charset () const
-        {	return chset; }
+		{	return chset; }
+        const int vOffset() const
+		{       return VOffset; }
+        
 	const int size () const
 		{	return fsize; }
 
@@ -96,6 +101,7 @@ private:
 	int    fsize;
 	int    pointsize;
 	bool dirty;
+	int    VOffset;
 };
 
 inline HTMLFont::HTMLFont( const HTMLFont& f ) : font( f.font )
@@ -104,6 +110,7 @@ inline HTMLFont::HTMLFont( const HTMLFont& f ) : font( f.font )
 	fsize = f.fsize;
 	chset = f.chset;
 	pointsize = f.pointsize;
+	VOffset = f.VOffset;
 }
 
 inline const HTMLFont& HTMLFont::operator=( const HTMLFont& f )
@@ -113,6 +120,7 @@ inline const HTMLFont& HTMLFont::operator=( const HTMLFont& f )
 	fsize = f.fsize;
 	chset = f.chset;
 	pointsize = f.pointsize;
+	VOffset = f.VOffset;
 
 	return *this;
 }
@@ -129,6 +137,7 @@ inline bool HTMLFont::operator==( const HTMLFont& f )
 		textCol.blue() == f.textCol.blue() &&
 		fsize == f.fsize &&
 		chset == f.chset &&
+		VOffset == f.VOffset &&
 		pointsize == f.pointsize);
 }
 

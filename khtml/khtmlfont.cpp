@@ -45,6 +45,7 @@ HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7],
     else setCharset(KGlobal::charsets()->charsetForLocale());
     pointsize = fontSizes[ _size ];
     dirty = true;
+    VOffset = 0;
 }
 
 HTMLFontManager::HTMLFontManager()

@@ -352,6 +352,17 @@ HTMLText::HTMLText(HTMLString _text, const HTMLFont *_font, QPainter *_painter)
     width = _painter->fontMetrics().width( _text );
     selStart = 0;
     selEnd = 0;
+    if (font->vOffset())
+    {
+printf("Text has a vOffset! ascent = %d descent = %d\n", ascent, descent);
+       ascent += font->vOffset();
+       if (ascent < 0)
+           ascent = 0;
+       descent -= font->vOffset();
+       if (descent < 1)
+           descent = 1;
+printf("After ascent = %d descent = %d\n", ascent, descent);
+    }
 }
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
@@ -364,6 +375,17 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     setSeparator( true );
     selStart = 0;
     selEnd = 0;
+    if (font->vOffset())
+    {
+printf("Text has a vOffset! ascent = %d descent = %d\n", ascent, descent);
+       ascent += font->vOffset();
+       if (ascent < 0)
+           ascent = 0;
+       descent -= font->vOffset();
+       if (descent < 1)
+           descent = 1;
+printf("After ascent = %d descent = %d\n", ascent, descent);
+    }
 }
 
 HTMLText::~HTMLText()
@@ -515,6 +537,15 @@ void HTMLText::recalcBaseSize( QPainter *_painter )
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent() + 1;
     width = _painter->fontMetrics().width( text );
+    if (font->vOffset())
+    {
+       ascent += font->vOffset();
+       if (ascent < 0)
+           ascent = 0;
+       descent -= font->vOffset();
+       if (descent < 1)
+           descent = 1;
+    }
     _painter->setFont( oldFont );
 }
 
@@ -544,23 +575,24 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
+    int vOffset = font->vOffset();
 
     if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
-	_painter->drawText( x + _tx, y + _ty, text, selStart );
+	_painter->drawText( x + _tx, y - vOffset + _ty, text, selStart );
 	int fillStart = _painter->fontMetrics().width( text, selStart );
 	int fillEnd = _painter->fontMetrics().width( text, selEnd );
 	_painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
 		fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
 	_painter->setPen( kapp->palette().normal().highlightedText() );
-	_painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
+	_painter->drawText( x + _tx + fillStart, y - vOffset + _ty, text + selStart,
 		selEnd - selStart );
 	_painter->setPen( font->textColor() );
-	_painter->drawText( x + _tx + fillEnd, y + _ty, text + selEnd );
+	_painter->drawText( x + _tx + fillEnd, y - vOffset + _ty, text + selEnd );
     }
     else
     {
-	_painter->drawText( x + _tx, y + _ty, text );
+	_painter->drawText( x + _tx, y - vOffset + _ty, text );
     }
 }
 
@@ -1090,6 +1122,7 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 
     text = owner->text + posStart;
     font = owner->font;
+    int vOffset = font->vOffset();
 
     _painter->setPen( font->textColor() );
     _painter->setFont( *font );
@@ -1105,7 +1138,7 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
 		    fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
 	        _painter->setPen( kapp->palette().normal().highlightedText() );
-	        _painter->drawText( x + _tx + fillStart, y + _ty, text,
+	        _painter->drawText( x + _tx + fillStart, y - vOffset + _ty, text,
 	            posLen );
 	        return;
     	    }
@@ -1126,23 +1159,23 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 	    	    selStart = posLen;
 	    	
 		_painter->setPen( font->textColor() );
-	    	_painter->drawText( x + _tx, y + _ty, text, selStart );
+	    	_painter->drawText( x + _tx, y - vOffset + _ty, text, selStart );
 	    	int fillStart = _painter->fontMetrics().width( text, selStart );
 	        int fillEnd = _painter->fontMetrics().width( text, selEnd );
 	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
 		    fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
 	        _painter->setPen( kapp->palette().normal().highlightedText() );
-	        _painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
+	        _painter->drawText( x + _tx + fillStart, y - vOffset + _ty, text + selStart,
 	            selEnd - selStart );
 	        _painter->setPen( font->textColor() );
-	        _painter->drawText( x + _tx + fillEnd, y + _ty, text + selEnd, posLen - selEnd );
+	        _painter->drawText( x + _tx + fillEnd, y - vOffset + _ty, text + selEnd, posLen - selEnd );
 	        return;
 	    }
 	}
     }
 
     _painter->setPen( font->textColor() );
-    _painter->drawText( x + _tx, y + _ty, text, posLen );
+    _painter->drawText( x + _tx, y - vOffset + _ty, text, posLen );
 }
 
 //-----------------------------------------------------------------------------

@@ -142,11 +142,12 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
         newStyle->text.halign = CSSStyleText::halLeft;
         newStyle->text.indent = 0;
         newStyle->text.height = CSSStyleText::heightNormal;
+        newStyle->text.valign = CSSStyleText::valBaseline;
+        newStyle->text.valignOffset = 0;
 
         newStyle->list.type = CSSStyleList::liDisc;
     }
 
-    newStyle->text.valign = CSSStyleText::valBaseline;
     newStyle->box.marginF = 0;
     newStyle->box.marginP = UNDEFINED;
     newStyle->box.paddingF = 0;

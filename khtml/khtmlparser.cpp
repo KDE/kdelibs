@@ -225,8 +225,8 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagStrike,	&KHTMLParser::parseTagEnd,	// ID_STRIKE
 &KHTMLParser::parseTagStrong,	&KHTMLParser::parseTagEnd,	// ID_STRONG
 &KHTMLParser::parseTagStyle,		0,			// ID_STYLE
-&KHTMLParser::parseTagSub,		0,			// ID_SUB
-&KHTMLParser::parseTagSup,		0,			// ID_SUP
+&KHTMLParser::parseTagSub,	&KHTMLParser::parseTagEnd, 	// ID_SUB
+&KHTMLParser::parseTagSup,	&KHTMLParser::parseTagEnd, 	// ID_SUP
 &KHTMLParser::parseTagTable,		0,			// ID_TABLE
 	0,		0,		// ID_TBODY (Tables only)
 	0,		0,		// ID_TD (Tables only)
@@ -353,6 +353,10 @@ void KHTMLParser::setFont(void)
     f.setTextColor( currentStyle->font.color );
     f.setUnderline( currentStyle->font.decoration == CSSStyleFont::decUnderline );
     f.setStrikeOut( currentStyle->font.decoration == CSSStyleFont::decLineThrough );
+    if (currentStyle->text.valign == CSSStyleText::valOffset)
+    {
+       f.setVOffset( currentStyle->text.valignOffset );
+    }
 
     const HTMLFont *fp = pFontManager->getFont( f );
 
@@ -2560,17 +2564,25 @@ void KHTMLParser::parseTagStrong()
 
 void KHTMLParser::parseTagStyle()
 {
-    // Style sheets, not impl.
+    // Style, not impl. yet
 }
 
 void KHTMLParser::parseTagSub()
 {
-    // Subscript, not impl. yet
+    pushBlock(tagID, 1 );
+    currentStyle->font.size -= 2;
+    currentStyle->text.valign = CSSStyleText::valOffset;
+    currentStyle->text.valignOffset -= currentStyle->font.fp->pointSize() / 2 ;
+    setFont();
 }
 
 void KHTMLParser::parseTagSup()
 {
-    // Superscript, not impl. yet
+    pushBlock(tagID, 1 );
+    currentStyle->font.size -= 2;
+    currentStyle->text.valign = CSSStyleText::valOffset;
+    currentStyle->text.valignOffset += currentStyle->font.fp->pointSize() / 2 ;
+    setFont();
 }
 
 void KHTMLParser::parseTagTable(void)

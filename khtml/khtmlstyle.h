@@ -106,7 +106,7 @@ class CSSStyleText
 public:
 	enum valEnum { valBaseline = 0, valOffset, valTop, valTextTop, valMiddle,
 		valBottom, valTextBottom };
-	int     valign; 
+	valEnum valign; 
 	int     valignOffset; // sub, super and percentage set valOffset and
 	                      // should specify with valigOffset the number of 
 	                      // pixels the element should be raised above the
