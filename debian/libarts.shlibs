@@ -1,12 +1,12 @@
-libmcop 0 libarts
-libmcop_mt 0 libarts
-libartsc 0 libarts
-libartscbackend 0 libarts
-libartsdsp 0 libarts
-libartsflow 0 libarts
-libartsflow_idl 0 libarts
-libartswavplayobject 0 libarts
-libkmedia2_idl 0 libarts
-libkmedia2 0 libarts
-libsoundserver_idl 0 libarts
-libx11globalcomm 0 libarts
+libmcop 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libmcop_mt 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartsc 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartscbackend 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartsdsp 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartsflow 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartsflow_idl 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libartswavplayobject 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libkmedia2_idl 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libkmedia2 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libsoundserver_idl 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)
+libx11globalcomm 0 libarts (>= 4:2.2.0-0beta1-0) | libarts-alsa (>= 4:2.2.0-0beta1-0)

@@ -5,6 +5,7 @@ kdelibs (4:2.2.0-0beta1-4) unstable; urgency=low
   * Fix http proxy support
   * More js fixes
   * Update standards version
+  * Re-establish shlibs for libarts (Closes: #103655)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Jul 2001 14:37:00 -0700
 
