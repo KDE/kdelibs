@@ -111,6 +111,7 @@ public:
                  KConfigSkeleton *config,
 		 KDialogBase::DialogType dialogType = KDialogBase::IconList,
 		 int dialogButtons = KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help,
+		 KDialogBase::ButtonCode defaultButton = Ok,
 		 bool modal=false );
 
   /**

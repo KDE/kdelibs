@@ -49,9 +49,10 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  KConfigSkeleton *config,
 		  KDialogBase::DialogType dialogType,
 		  int dialogButtons,
+		  KDialogBase::ButtonCode defaultButton,
 		  bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder,
-		  parent, name, modal, i18n("Configure"), dialogButtons ),
+		  parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
     d(new KConfigDialogPrivate(dialogType)) 
 {		  
   openDialogs.insert(name, this);
