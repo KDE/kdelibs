@@ -420,7 +420,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   // itemsInUse does not contain. (otherwise it might crash in findByName()).
   KURL::List lstDirsCopy = lister->d->lstDirs;
   lister->d->lstDirs.clear();
-  
+
   for ( KURL::List::Iterator it = lstDirsCopy.begin();
         it != lstDirsCopy.end(); ++it )
   {
@@ -620,19 +620,22 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
         }
     }
 
-    // in case of a dir, check if we have any known children, there's much to do in that case
-    // (stopping jobs, removing dirs from cache etc.)
-    deleteDir( *it );
-
-    // now remove the (dir)item itself
+    // Tell the views about it before deleting the KFileItems. They might need the subdirs'
+    // file items (see the dirtree).
     if ( fileitem )
     {
       QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url()];
       if ( listers )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->emitDeleteItem( fileitem );
-      delete fileitem;
     }
+
+    // in case of a dir, check if we have any known children, there's much to do in that case
+    // (stopping jobs, removing dirs from cache etc.)
+    deleteDir( *it );
+
+    // now remove the (dir)item itself
+    delete fileitem;
   }
 }
 
@@ -1273,6 +1276,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
   while ( (item = lstItems->current()) )
     if ( !item->isMarked() )
     {
+      //kdDebug() << k_funcinfo << item->name() << endl;
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->emitDeleteItem( item );
 
@@ -1288,6 +1292,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
 
 void KDirListerCache::deleteDir( const KURL& dirUrl )
 {
+  //kdDebug() << k_funcinfo << dirUrl.prettyURL() << endl;
   // unregister and remove the childs of the deleted item.
   // Idea: tell all the KDirListers that they should forget the dir
   //       and then remove it from the cache.
@@ -1325,8 +1330,9 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
           // lister's root is the deleted item
           if ( kdl->d->url == deletedUrl )
           {
-            forgetDirs( kdl );
+            // tell the view first. It might need the subdirs' items (which forgetDirs will delete)
             emit kdl->deleteItem( kdl->d->rootFileItem );
+            forgetDirs( kdl );
             kdl->d->rootFileItem = 0;
           }
           else
@@ -1557,7 +1563,7 @@ void KDirLister::emitChanges()
       {
         oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter )
 		 && doMimeExcludeFilter( (*kit)->mimetype(), d->oldMimeExcludeFilter );
-        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter ) 
+        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter )
 		&& doMimeExcludeFilter( (*kit)->mimetype(), d->mimeExcludeFilter );
 
         if ( oldMime && !newMime )
