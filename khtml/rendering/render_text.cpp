@@ -55,26 +55,36 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     p->drawText(x + _tx, y + _ty, s.string());
 }
 
-void TextSlave::printSelection(QPainter *p, int tx, int ty, int endPos)
+void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int endPos)
 {
+    if(startPos > len) return;
+    if(startPos < 0) startPos = 0;
+
     int _len = len;
     int _width = m_width;
     if(endPos > 0 && endPos < len) {
 	_len = endPos;
     }
-    QConstString s(m_text , _len);
+    _len -= startPos;
+    
+    QConstString s(m_text+startPos , _len);
 
     if (_len != len)
     	_width = p->fontMetrics().width(s.string());
 
+    int _offset = 0;
+    if ( startPos > 0 ) {
+	QConstString aStr(m_text, startPos);
+	_offset = p->fontMetrics().width(aStr.string());
+    }
     QColor c("#001000");
     p->setPen( "#ffffff" );
-    p->fillRect(x + tx, y + ty, _width, m_height, c);
+    p->fillRect(x + tx + _offset, y + ty, _width, m_height, c);
 
     ty += m_baseline;
 
     //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
-    p->drawText(x + tx, y + ty, s.string());
+    p->drawText(x + tx + _offset, y + ty, s.string());
 
 
 }
@@ -312,20 +322,32 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     if (selectionState() != SelectionNone)
     {
     	int endPos, startPos;
+	bool breakAtEnd = false;
 	if (selectionState()==SelectionInside)
 	{
-	    startPos=endPos=-1;
+	    startPos = 0;
+	    endPos = -1;
 	}
 	else
 	{
 	    selectionStartEnd(startPos,endPos);
+	    breakAtEnd = true;
+	    if(selectionState() == SelectionStart) {
+		endPos = -1;
+		breakAtEnd = false;
+	    }
+	    else if(selectionState() == SelectionEnd)
+		startPos = 0;
+	    printf("selectionstartend start=%d end=%d\n", startPos, endPos);
 	}
 	
 	while(s && endPos)
 	{
 	    if(s->checkVerticalPoint(y, ty, h))
-	    	s->printSelection(p, tx, ty, endPos);
+	    	s->printSelection(p, tx, ty, startPos, endPos);
 	    endPos -= s->len;
+	    startPos -= s->len;
+	    if(breakAtEnd && endPos < 0) break;
 	    s=s->next();	
 	}
     }

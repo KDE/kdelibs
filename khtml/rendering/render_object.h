@@ -264,7 +264,8 @@ public:
     	SelectionNone,
     	SelectionStart,
 	SelectionInside,
-    	SelectionEnd
+    	SelectionEnd,
+	SelectionBoth
     };
 
     virtual SelectionState selectionState() const { return SelectionNone;}

@@ -36,7 +36,7 @@ namespace khtml
 {
     class RenderText;
     class RenderStyle;
-    
+
 class TextSlave
 {
 public:
@@ -61,7 +61,7 @@ public:
     bool checkPoint(int _x, int _y, int _tx, int _ty);
     bool checkVerticalPoint(int _y, int _ty, int _h)
 { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
-    void printSelection(QPainter *p, int tx, int ty, int endPos);
+    void printSelection(QPainter *p, int tx, int ty, int startPos, int endPos);
 
 
     void setNext(TextSlave *_n) { n = _n; }
@@ -147,7 +147,7 @@ protected:
     short m_maxWidth;
     short m_contentHeight;
 
-    SelectionState m_selectionState : 2 ;
+    SelectionState m_selectionState : 3 ;
 
     QFontMetrics *fm;
     DOM::DOMStringImpl *str;

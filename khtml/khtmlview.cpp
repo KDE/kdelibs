@@ -489,10 +489,10 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	
 	if (d->startBeforeEnd)
 	    m_part->docImpl()
-	    	->setSelection(d->selectionStart,-1,d->selectionEnd,-1);
+	    	->setSelection(d->selectionStart,d->startOffset,d->selectionEnd,d->endOffset);
 	else
 	    m_part->docImpl()
-	    	->setSelection(d->selectionEnd,-1,d->selectionStart,-1);
+	    	->setSelection(d->selectionEnd,d->endOffset,d->selectionStart,d->startOffset);
 	
     }
 }

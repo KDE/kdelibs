@@ -34,11 +34,11 @@ RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     m_minWidth = view->frameWidth();
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
-    
+
     selectionStart = 0;
     selectionEnd = 0;
     selectionStartPos = -1;
-    selectionEndPos = -1;    
+    selectionEndPos = -1;
     setParsing();
 }
 
@@ -95,7 +95,7 @@ void RenderRoot::updateHeight()
 //    printf("%s(RenderRoot)::updateSize()\n", renderName());
     //int oldMin = m_minWidth;
     setLayouted(false);
-    
+
     if (parsing())
     {
 	if (!updateTimer.isNull() && updateTimer.elapsed()<300)
@@ -119,7 +119,7 @@ void RenderRoot::updateHeight()
 
 void RenderRoot::close()
 {
-    setParsing(false);    
+    setParsing(false);
     updateSize();
     repaint();
 //    printTree();
@@ -136,12 +136,12 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     while (s->firstChild())
     	s = s->firstChild();
     while (e->lastChild())
-    	e = e->lastChild(); 
+    	e = e->lastChild();
 
     selectionStart = s;
     selectionEnd = e;
     selectionStartPos = sp;
-    selectionEndPos = ep;     
+    selectionEndPos = ep;
 	
     RenderObject* o = s;
     while (o && o!=e)
@@ -163,9 +163,10 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 	o=no;    	
     }
     s->setSelectionState(SelectionStart);
-    e->setSelectionState(SelectionEnd);     
+    e->setSelectionState(SelectionEnd);
+    if(s == e) s->setSelectionState(SelectionBoth);
     e->repaint();
-   
+
 }
 
 
@@ -191,10 +192,10 @@ void RenderRoot::clearSelection()
     }
     if (selectionEnd)
     {
-    	selectionEnd->setSelectionState(SelectionNone);     
+    	selectionEnd->setSelectionState(SelectionNone);
     	selectionEnd->repaint();
     }
-   
+
 }
 
 void RenderRoot::selectionStartEnd(int& spos, int& epos)
