@@ -48,6 +48,8 @@
 #include "ltdl.h"
 #include "klauncher_cmds.h"
 
+#include <X11/Xlib.h>
+
 int waitForPid;
 
 /* Group data */
@@ -705,6 +707,13 @@ static void kdeinit_library_path()
    setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
 }
 
+static int kdeinit_xio_errhandler( Display * )
+{
+    qWarning( "kdeinit: Fatal IO error: client killed" );
+    exit( 1 );
+    return 0;
+}
+
 int main(int argc, char **argv, char **envp)
 {
    int i;
@@ -788,6 +797,13 @@ int main(int argc, char **argv, char **envp)
     * requests.
     */
    init_kdeinit_socket();
+
+   // Install default error handlers
+   XSetIOErrorHandler( kdeinit_xio_errhandler );
+
+   // Open connection to X server
+   Display * dpy = XOpenDisplay( 0L ); // use $DISPLAY
+   qDebug( "kdeinit: connection opened to display %s", DisplayString(dpy) );
 
    if (fork() > 0) // Go into background
       exit(0);
