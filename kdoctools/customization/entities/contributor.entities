@@ -106,6 +106,8 @@
 <!ENTITY Patrick.Dowler.mail '<email>dowler@morgul.fsh.uvic.ca</email>'>
 <!ENTITY Jonathan.Drews '<personname><firstname>Jonathan</firstname><surname>Drews</surname></personname>'>
 <!ENTITY Jonathan.Drews.mail '<email>j.e.drews@att.net</email>'>
+<!ENTITY Craig.Drummond '<personname><firstname>Craig</firstname><surname>Drummond</surname></personname>'>
+<!ENTITY Craig.Drummond.Mail '<email>craig@kde.org</email>'>
 <!ENTITY Daniel.M.Duley '<personname><firstname>Daniel</firstname><othername>M.</othername><surname>Duley</surname></personname>'>
 <!ENTITY Daniel.M.Duley.mail '<email>dan.duley@verizon.net</email>'>
 <!ENTITY Alexander.Dymo '<personname><firstname>Alexander</firstname><surname>Dymo</surname></personname>'>
@@ -222,6 +224,8 @@
 <!ENTITY Stephan.Kulow '<personname><firstname>Stephan</firstname><surname>Kulow</surname></personname>'>
 <!ENTITY Stephan.Kulow.mail '<email>coolo@kde.org</email>'>
 
+<!ENTITY Brian.C.Ledbetter '<personname><firstname>Brian</firstname><othername>C.</othername><surname>Ledbetter</surname></personname>'>
+<!ENTITY Brian.C.Ledbetter.mail '<email>brian@shadowcom.net</email>'>
 <!ENTITY James.Lindenschmidt '<personname><firstname>James</firstname><surname>Lindenschmidt</surname></personname>'>
 <!ENTITY James.Lindenschmidt.mail '<email><!-- FIXME --></email>'>
 <!ENTITY Erwan.Loisant '<personname><firstname>Erwan</firstname><surname>Loisant</surname></personname>'>
@@ -294,6 +298,8 @@
 <!ENTITY Frerich.Raabe.mail '<email>raabe@kde.org</email>'>
 <!ENTITY Torsten.Rahn '<personname><firstname>Torsten</firstname><surname>Rahn</surname></personname>'>
 <!ENTITY Torsten.Rahn.mail '<email>tackat@kde.org</email>'>
+<!ENTITY Ravikiran.Rajagopal '<personname><firstname>Ravikiran</firstname><surname>Rajagopal</surname></personname>'>
+<!ENTITY Ravikiran.Rajagopal.mail '<email>ravi@ee.eng.ohio-state.edu</email>'>
 <!ENTITY Artur.Rataj '<personname><firstname>Artur</firstname><surname>Rataj</surname></personname>'>
 <!ENTITY Artur.Rataj.mail '<email>art@zeus.polsl.gliwice.pl</email>'>
 <!ENTITY Roman.Razilov '<personname><firstname>Roman</firstname><surname>Razilov</surname></personname>'>
@@ -312,6 +318,8 @@
 <!ENTITY Seth.Rothberg.mail '<email>sethmr@bellatlantic.org</email>'>
 <!ENTITY David.Rugge '<personname><firstname>David</firstname><surname>Rugge</surname></personname>'>
 <!ENTITY David.Rugge.mail '<email>davidrugge@mediaone.net</email>'>
+<!ENTITY Teemu.Rytilahti '<personname><firstname>Teemu</firstname><surname>Rytilahti</surname></personname>'>
+<!ENTITY Teemu.Rytilahti.mail '<email>teemu.rytilahti@d5k.net</email>'>
 
 <!ENTITY Charles.Samuels '<personname><firstname>Charles</firstname><surname>Samuels</surname></personname>'>
 <!ENTITY Charles.Samuels.mail '<email>charles@altair.dhs.org</email>'>

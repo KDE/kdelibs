@@ -278,6 +278,7 @@
 <!ENTITY ksokoban	"<application>KSokoban</application>">
 <!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
 <!ENTITY kspell	"<application>KSpell</application>">
+<!ENTITY ksplash "<application>KSplash</application>">
 <!ENTITY kspread	"<application>KSpread</application>">
 <!ENTITY kstars	"<application>KStars</application>">
 <!ENTITY kstart	"<application>kstart</application>">
