@@ -246,10 +246,9 @@ void Collector::finalCheck()
   CollectorBlock *block = root;
   while (block) {
     Imp **r = (Imp**)block->mem;
-    int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
       if (*r) {
-        fprintf( stderr, "Collector::finalCheck() still having Imp %p (%s)\n", (*r),
+        fprintf( stderr, "Collector::finalCheck() still having Imp %p (%s)\n", (void*)(*r),
                  typeid( **r ).name() );
       }
     }
