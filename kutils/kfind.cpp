@@ -40,11 +40,11 @@ public:
 // Create the dialog.
 KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
     KDialogBase(parent, 0, false,  // non-modal!
-        i18n("Find"),
+        i18n("Find Next"),
         User1 | Close,
         User1,
         false,
-        i18n("&Yes"))
+        i18n("&Find"))
 {
     setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>").arg(pattern), this ) );
 }
