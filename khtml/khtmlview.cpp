@@ -278,6 +278,11 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
     KApplication::sendPostedEvents(viewport(), QEvent::Paint);
 }
 
+// this is to get rid of a compiler virtual overload mismatch warning. do not remove
+void KHTMLView::drawContents( QPainter* p)
+{
+}
+
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
     if(!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {

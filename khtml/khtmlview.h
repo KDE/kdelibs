@@ -166,7 +166,7 @@ public:
      */
     void setMediaType( const QString &medium );
     QString mediaType() const;
-    
+
     void resetCursor();
 
 signals:
@@ -180,6 +180,7 @@ protected:
     virtual void hideEvent ( QHideEvent *);
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
+    virtual void drawContents( QPainter* );
 
     virtual void viewportMousePressEvent( QMouseEvent * );
     virtual void focusOutEvent( QFocusEvent * );
