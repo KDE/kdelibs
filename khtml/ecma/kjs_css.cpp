@@ -139,11 +139,11 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &propertyName
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << propertyName.qstring() << endl;
 #endif
   if (propertyName == "cssText") {
-    styleDecl.setCssText(value.toString(exec).value().string());
+    styleDecl.setCssText(value.toString(exec).string());
   }
   else {
     QString prop = jsNameToProp(propertyName);
-    QString propvalue = value.toString(exec).value().qstring();
+    QString propvalue = value.toString(exec).qstring();
 
     if(prop.left(4) == "css-")
       prop = prop.mid(4);
@@ -182,13 +182,13 @@ Value DOMCSSStyleDeclarationProtoFunc::tryCall(ExecState *exec, Object &thisObj,
       result = getString(styleDecl.getPropertyPriority(s));
       break;
     case DOMCSSStyleDeclaration::SetProperty:
-      styleDecl.setProperty(args[0].toString(exec).value().string(),
-                            args[1].toString(exec).value().string(),
-                            args[2].toString(exec).value().string());
+      styleDecl.setProperty(args[0].toString(exec).string(),
+                            args[1].toString(exec).string(),
+                            args[2].toString(exec).string());
       result = Undefined();
       break;
     case DOMCSSStyleDeclaration::Item:
-      result = getString(styleDecl.item(args[0].toNumber(exec).intValue()));
+      result = getString(styleDecl.item(args[0].toInteger(exec)));
       break;
     default:
       result = Undefined();
@@ -337,7 +337,7 @@ Value DOMStyleSheetListFunc::tryCall(ExecState *exec, Object &thisObj, const Lis
   Value result;
   DOM::StyleSheetList styleSheetList = static_cast<DOMStyleSheetList *>(thisObj.imp())->toStyleSheetList();
   if (id == DOMStyleSheetList::Item)
-    result = getDOMStyleSheet(exec, styleSheetList.item(args[0].toNumber(exec).intValue()));
+    result = getDOMStyleSheet(exec, styleSheetList.item(args[0].toInteger(exec)));
   return result;
 }
 
@@ -386,7 +386,7 @@ Value DOMMediaList::tryGet(ExecState *exec, const UString &p) const
 void DOMMediaList::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
   if (propertyName == "mediaText")
-    mediaList.setMediaText(value.toString(exec).value().string());
+    mediaList.setMediaText(value.toString(exec).string());
   else
     DOMObject::tryPut(exec, propertyName, value, attr);
 }
@@ -410,12 +410,12 @@ Value KJS::DOMMediaListProtoFunc::tryCall(ExecState *exec, Object &thisObj, cons
   DOM::MediaList mediaList = static_cast<DOMMediaList *>(thisObj.imp())->toMediaList();
   switch (id) {
     case DOMMediaList::Item:
-      return getString(mediaList.item(args[0].toNumber(exec).intValue()));
+      return getString(mediaList.item(args[0].toInteger(exec)));
     case DOMMediaList::DeleteMedium:
-      mediaList.deleteMedium(args[0].toString(exec).value().string());
+      mediaList.deleteMedium(args[0].toString(exec).string());
       return Undefined();
     case DOMMediaList::AppendMedium:
-      mediaList.appendMedium(args[0].toString(exec).value().string());
+      mediaList.appendMedium(args[0].toString(exec).string());
       return Undefined();
     default:
       return Undefined();
@@ -461,15 +461,15 @@ Value DOMCSSStyleSheetProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
 {
   DOM::CSSStyleSheet styleSheet = static_cast<DOMCSSStyleSheet *>(thisObj.imp())->toCSSStyleSheet();
   Value result;
-  String str = args[0].toString(exec);
-  DOM::DOMString s = str.value().string();
+  UString str = args[0].toString(exec);
+  DOM::DOMString s = str.string();
 
   switch (id) {
     case DOMCSSStyleSheet::InsertRule:
-      result = Number(styleSheet.insertRule(args[0].toString(exec).value().string(),(long unsigned int)args[1].toNumber(exec).intValue()));
+      result = Number(styleSheet.insertRule(args[0].toString(exec).string(),(long unsigned int)args[1].toInteger(exec)));
       break;
     case DOMCSSStyleSheet::DeleteRule:
-      styleSheet.deleteRule(args[0].toNumber(exec).intValue());
+      styleSheet.deleteRule(args[0].toInteger(exec));
       break;
     default:
       result = Undefined();
@@ -514,7 +514,7 @@ Value DOMCSSRuleListFunc::tryCall(ExecState *exec, Object &thisObj, const List &
   DOM::CSSRuleList cssRuleList = static_cast<DOMCSSRuleList *>(thisObj.imp())->toCSSRuleList();
   switch (id) {
     case DOMCSSRuleList::Item:
-      return getDOMCSSRule(exec,cssRuleList.item(args[0].toNumber(exec).intValue()));
+      return getDOMCSSRule(exec,cssRuleList.item(args[0].toInteger(exec)));
     default:
       return Undefined();
   }
@@ -611,7 +611,7 @@ void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Valu
     case DOM::CSSRule::STYLE_RULE: {
         DOM::CSSStyleRule rule = static_cast<DOM::CSSStyleRule>(cssRule);
         if (propertyName == "selectorText") {
-          rule.setSelectorText(value.toString(exec).value().string());
+          rule.setSelectorText(value.toString(exec).string());
           return;
         }
         break;
@@ -619,7 +619,7 @@ void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Valu
     case DOM::CSSRule::PAGE_RULE: {
         DOM::CSSPageRule rule = static_cast<DOM::CSSPageRule>(cssRule);
         if (propertyName == "selectorText") {
-          rule.setSelectorText(value.toString(exec).value().string());
+          rule.setSelectorText(value.toString(exec).string());
           return;
         }
         break;
@@ -627,7 +627,7 @@ void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Valu
     case DOM::CSSRule::CHARSET_RULE: {
         DOM::CSSCharsetRule rule = static_cast<DOM::CSSCharsetRule>(cssRule);
         if (propertyName == "encoding") {
-          rule.setEncoding(value.toString(exec).value().string());
+          rule.setEncoding(value.toString(exec).string());
           return;
         }
         break;
@@ -647,9 +647,9 @@ Value DOMCSSRuleFunc::tryCall(ExecState *exec, Object &thisObj, const List &args
   if (cssRule.type() == DOM::CSSRule::MEDIA_RULE) {
     DOM::CSSMediaRule rule = static_cast<DOM::CSSMediaRule>(cssRule);
     if (id == DOMCSSRule::InsertRule)
-      result = Number(rule.insertRule(args[0].toString(exec).value().string(),args[1].toNumber(exec).intValue()));
+      result = Number(rule.insertRule(args[0].toString(exec).string(),args[1].toInteger(exec)));
     else if (id == DOMCSSRule::DeleteRule)
-      rule.deleteRule(args[0].toNumber(exec).intValue());
+      rule.deleteRule(args[0].toInteger(exec));
   }
 
   return result;
@@ -755,7 +755,7 @@ Value DOMCSSValue::tryGet(ExecState *exec, const UString &p) const
 void DOMCSSValue::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
   if (propertyName == "cssText")
-    cssValue.setCssText(value.toString(exec).value().string());
+    cssValue.setCssText(value.toString(exec).string());
   else
     DOMObject::tryPut(exec, propertyName, value, attr);
 }
@@ -853,14 +853,14 @@ Value DOMCSSPrimitiveValueFunc::tryCall(ExecState *exec, Object &thisObj, const 
 
   switch (id) {
     case SetFloatValue:
-      val.setFloatValue(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).value());
+      val.setFloatValue(args[0].toInteger(exec),args[1].toNumber(exec));
       result = Undefined();
       break;
     case GetFloatValue:
-      result = Number(val.getFloatValue(args[0].toNumber(exec).intValue()));
+      result = Number(val.getFloatValue(args[0].toInteger(exec)));
       break;
     case SetStringValue:
-      val.setStringValue(args[0].toNumber(exec).intValue(),args[1].toString(exec).value().string());
+      val.setStringValue(args[0].toInteger(exec),args[1].toString(exec).string());
       result = Undefined();
       break;
     case GetStringValue:
@@ -954,7 +954,7 @@ Value DOMCSSValueListFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
   switch (id) {
     case Item:
-      result = getDOMCSSValue(exec,valueList.item(args[0].toNumber(exec).intValue()));
+      result = getDOMCSSValue(exec,valueList.item(args[0].toInteger(exec)));
       break;
     default:
       result = Undefined();

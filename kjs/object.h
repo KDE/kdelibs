@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 
@@ -549,12 +548,12 @@ namespace KJS {
     Value toPrimitive(ExecState *exec,
                       Type preferredType = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    Number toInteger(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    int toInteger(ExecState *exec) const;
     int toInt32(ExecState *exec) const;
     unsigned int toUInt32(ExecState *exec) const;
     unsigned short toUInt16(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     ValueImp* getDirect(const UString& propertyName) const;

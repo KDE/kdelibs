@@ -204,9 +204,9 @@ Value Navigator::get(ExecState *exec, const UString &propertyName) const
 }
 
 
-String Navigator::toString(ExecState *) const
+UString Navigator::toString(ExecState *) const
 {
-  return UString("[object Navigator]");
+  return "[object Navigator]";
 }
 
 /*******************************************************************/

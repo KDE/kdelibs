@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include "nodes.h"
@@ -273,7 +272,7 @@ bool ElisionNode::deref()
 Value ElisionNode::evaluate(ExecState *exec)
 {
   if (elision)
-    return Number(elision->evaluate(exec).toNumber(exec).value() + 1);
+    return Number(elision->evaluate(exec).toNumber(exec) + 1);
   else
     return Number(1);
 }
@@ -455,7 +454,7 @@ Value PropertyValueNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
   Value v = a.getValue(exec);
 
-  obj.put(exec,n.toString(exec).value(), v);
+  obj.put(exec,n.toString(exec), v);
 
   return obj;
 }
@@ -1002,7 +1001,7 @@ Value UnaryPlusNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
   Value v = e.getValue(exec);
 
-  return v.toNumber(exec);
+  return Number(v.toNumber(exec)); /* TODO: optimize */
 }
 
 // ------------------------------ NegateNode -----------------------------------
@@ -1284,7 +1283,7 @@ Value RelationalNode::evaluate(ExecState *exec)
           return throwError(exec,  TypeError,
                              "Shift expression not an object into IN expression." );
       Object o2 = static_cast<ObjectImp*>(v2.imp());
-      b = o2.hasProperty(exec,v1.toString(exec).value());
+      b = o2.hasProperty(exec,v1.toString(exec));
   } else {
     if (v2.type() != ObjectType)
         return throwError(exec,  TypeError,
@@ -1562,8 +1561,8 @@ Value AssignNode::evaluate(ExecState *exec)
       v = Number(i1 |= i2);
       break;
     case OpModEq: {
-      double d1 = v1.toNumber(exec).value();
-      double d2 = v2.toNumber(exec).value();
+      double d1 = v1.toNumber(exec);
+      double d2 = v2.toNumber(exec);
       v = Number(fmod(d1,d2));
     }
       break;

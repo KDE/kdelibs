@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -81,9 +80,9 @@ void ValueImp::operator delete(void*)
 }
 
 // ECMA 9.4
-Number ValueImp::toInteger(ExecState *exec) const
+int ValueImp::toInteger(ExecState *exec) const
 {
-  return Number(roundValue(exec,const_cast<ValueImp*>(this)));
+  return int(roundValue(exec,const_cast<ValueImp*>(this)));
 }
 
 int ValueImp::toInt32(ExecState *exec) const
@@ -275,12 +274,12 @@ bool Value::toBoolean(ExecState *exec) const
   return rep->toBoolean(exec);
 }
 
-Number Value::toNumber(ExecState *exec) const
+double Value::toNumber(ExecState *exec) const
 {
   return rep->toNumber(exec);
 }
 
-Number Value::toInteger(ExecState *exec) const
+int Value::toInteger(ExecState *exec) const
 {
   return rep->toInteger(exec);
 }
@@ -300,7 +299,7 @@ unsigned short Value::toUInt16(ExecState *exec) const
   return rep->toUInt16(exec);
 }
 
-String Value::toString(ExecState *exec) const
+UString Value::toString(ExecState *exec) const
 {
   return rep->toString(exec);
 }

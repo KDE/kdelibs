@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "kjs_window.h"
@@ -196,7 +195,7 @@ Value DOMEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &a
       result = Undefined();
       break;
     case InitEvent:
-      event.initEvent(args[0].toString(exec).value().string(),args[1].toBoolean(exec),args[2].toBoolean(exec));
+      event.initEvent(args[0].toString(exec).string(),args[1].toBoolean(exec),args[2].toBoolean(exec));
       result = Undefined();
       break;
   };
@@ -292,11 +291,11 @@ Value DOMUIEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List 
   switch (id) {
     case InitUIEvent: {
       DOM::AbstractView v = toAbstractView(args[3]);
-      static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0].toString(exec).value().string(),
+      static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0].toString(exec).string(),
                                                      args[1].toBoolean(exec),
                                                      args[2].toBoolean(exec),
                                                      v,
-                                                     args[4].toNumber(exec).intValue());
+                                                     args[4].toInteger(exec));
       }
       result = Undefined();
       break;
@@ -358,20 +357,20 @@ Value DOMMouseEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const Li
 
   switch (id) {
     case InitMouseEvent:
-      mouseEvent.initMouseEvent(args[0].toString(exec).value().string(), // typeArg
+      mouseEvent.initMouseEvent(args[0].toString(exec).string(), // typeArg
                                 args[1].toBoolean(exec), // canBubbleArg
                                 args[2].toBoolean(exec), // cancelableArg
                                 toAbstractView(args[3]), // viewArg
-                                args[4].toNumber(exec).intValue(), // detailArg
-                                args[5].toNumber(exec).intValue(), // screenXArg
-                                args[6].toNumber(exec).intValue(), // screenYArg
-                                args[7].toNumber(exec).intValue(), // clientXArg
-                                args[8].toNumber(exec).intValue(), // clientYArg
+                                args[4].toInteger(exec), // detailArg
+                                args[5].toInteger(exec), // screenXArg
+                                args[6].toInteger(exec), // screenYArg
+                                args[7].toInteger(exec), // clientXArg
+                                args[8].toInteger(exec), // clientYArg
                                 args[9].toBoolean(exec), // ctrlKeyArg
                                 args[10].toBoolean(exec), // altKeyArg
                                 args[11].toBoolean(exec), // shiftKeyArg
                                 args[12].toBoolean(exec), // metaKeyArg
-                                args[13].toNumber(exec).intValue(), // buttonArg
+                                args[13].toInteger(exec), // buttonArg
                                 toNode(args[14])); // relatedTargetArg
       result = Undefined();
       break;
@@ -445,14 +444,14 @@ Value DOMMutationEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const
 
   switch (id) {
     case InitMutationEvent:
-      mutationEvent.initMutationEvent(args[0].toString(exec).value().string(), // typeArg,
+      mutationEvent.initMutationEvent(args[0].toString(exec).string(), // typeArg,
                                       args[1].toBoolean(exec), // canBubbleArg
                                       args[2].toBoolean(exec), // cancelableArg
                                       toNode(args[3]), // relatedNodeArg
-                                      args[4].toString(exec).value().string(), // prevValueArg
-                                      args[5].toString(exec).value().string(), // newValueArg
-                                      args[6].toString(exec).value().string(), // attrNameArg
-                                      args[7].toNumber(exec).intValue()); // attrChangeArg
+                                      args[4].toString(exec).string(), // prevValueArg
+                                      args[5].toString(exec).string(), // newValueArg
+                                      args[6].toString(exec).string(), // attrNameArg
+                                      args[7].toInteger(exec)); // attrChangeArg
       result = Undefined();
       break;
   };

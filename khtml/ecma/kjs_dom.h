@@ -48,7 +48,7 @@ namespace KJS {
     static const ClassInfo info;
 
     virtual Value toPrimitive(ExecState *exec, Type preferred = UndefinedType) const;
-    virtual String toString(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     void setListener(ExecState *exec, int eventId, Value func) const;
     Value getListener(int eventId) const;
     virtual List eventHandlerScope(ExecState *exec) const;

@@ -552,15 +552,15 @@ bool ObjectImp::toBoolean(ExecState */*exec*/) const
   return true;
 }
 
-Number ObjectImp::toNumber(ExecState *exec) const
+double ObjectImp::toNumber(ExecState *exec) const
 {
   Value prim = toPrimitive(exec,NumberType);
   if (exec->hadException()) // should be picked up soon in nodes.cpp
-    return Number(0);
+    return 0.0;
   return prim.toNumber(exec);
 }
 
-Number ObjectImp::toInteger(ExecState *exec) const
+int ObjectImp::toInteger(ExecState *exec) const
 {
   return ValueImp::toInteger(exec);
 }
@@ -580,11 +580,11 @@ unsigned short ObjectImp::toUInt16(ExecState *exec) const
   return ValueImp::toUInt16(exec);
 }
 
-String ObjectImp::toString(ExecState *exec) const
+UString ObjectImp::toString(ExecState *exec) const
 {
   Value prim = toPrimitive(exec,StringType);
   if (exec->hadException()) // should be picked up soon in nodes.cpp
-    return String("");
+    return "";
   return prim.toString(exec);
 }
 

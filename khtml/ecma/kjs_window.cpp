@@ -340,9 +340,9 @@ bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/, bool /*recu
 #endif
 }
 
-String Window::toString(ExecState *) const
+UString Window::toString(ExecState *) const
 {
-  return UString( "[object Window]" );
+  return "[object Window]";
 }
 
 Value Window::get(ExecState *exec, const UString &p) const
@@ -697,7 +697,7 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
     m_part->setJSDefaultStatusBarText(s.value().qstring());
   }
   else if (p == "location") {
-    QString str = v.toString(exec).value().qstring();
+    QString str = v.toString(exec).qstring();
     KHTMLPart* p = Window::retrieveActive(exec)->m_part;
     if ( p )
       m_part->scheduleRedirection(0, p->htmlDocument().
@@ -797,7 +797,7 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
   }
   else if (p == "name") {
     if (isSafeScript(exec))
-      m_part->setName( v.toString(exec).value().qstring().local8Bit().data() );
+      m_part->setName( v.toString(exec).qstring().local8Bit().data() );
   }
   else {
     if (isSafeScript(exec))
@@ -904,8 +904,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
 
   KHTMLView *widget = part->view();
   Value v = args[0];
-  String s = v.toString(exec);
-  str = s.value().qstring();
+  UString s = v.toString(exec);
+  str = s.qstring();
 
   switch (id) {
   case Alert:
@@ -925,7 +925,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
 #if QT_VERSION >= 300
                                    QLineEdit::Normal,
 #endif
-                                   args[1].toString(exec).value().qstring());
+                                   args[1].toString(exec).qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", str);
     result = String(str2);
@@ -953,7 +953,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
       v = args[2];
       QString features;
       if (!v.isNull()) {
-	features = v.toString(exec).value().qstring();
+	features = v.toString(exec).qstring();
 	// specifying window params means false defaults
 	winargs.menuBarVisible = false;
 	winargs.toolBarsVisible = false;
@@ -1006,7 +1006,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
 
         KParts::URLArgs uargs;
         uargs.frameName = !args[1].isNull() ?
-			  args[1].toString(exec).value().qstring()
+			  args[1].toString(exec).qstring()
 			  : QString("_blank");
         uargs.serviceType = "text/html";
 
@@ -1095,7 +1095,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
   case SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
+      int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       result = Number(r);
     }
     else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
@@ -1107,7 +1107,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
 #endif
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
+      int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       result = Number(r);
     }
     else
@@ -1116,7 +1116,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
   case SetInterval:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
+      int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
       result = Number(r);
     }
     else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
@@ -1128,7 +1128,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
 #endif
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
+      int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
       result = Number(r);
     }
     else
@@ -1176,7 +1176,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args
     result = Undefined();
     break;
   case ToString:
-    result = window->toString(exec);
+    result = String(window->toString(exec));
     break;
   }
   return result;
@@ -1392,7 +1392,7 @@ Value Location::get(ExecState *exec, const UString &p) const
   else if (p == "search")
     str = url.query();
   else if (p == "[[==]]")
-    return toString(exec);
+    return String(toString(exec));
   else if (p == "toString")
     return /*Function*/(new LocationFunc(this, LocationFunc::ToString));
   else if (ObjectImp::hasProperty(exec,p))
@@ -1415,7 +1415,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
   if (m_part.isNull())
     return;
 
-  QString str = v.toString(exec).value().qstring();
+  QString str = v.toString(exec).qstring();
   KURL url;
 
   if (p == "href") {
@@ -1448,15 +1448,15 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
 
 Value Location::toPrimitive(ExecState *exec, Type) const
 {
-    return toString(exec);
+    return String(toString(exec));
 }
 
-String Location::toString(ExecState *) const
+UString Location::toString(ExecState *) const
 {
  if (!m_part->url().hasPath())
-        return String(m_part->url().prettyURL()+"/");
+        return m_part->url().prettyURL()+"/";
     else
-        return String(m_part->url().prettyURL());
+        return m_part->url().prettyURL();
 }
 
 Value LocationFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
@@ -1466,7 +1466,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &ar
     switch (id) {
     case Replace:
     {
-      QString str = args[0].toString(exec).value().qstring();
+      QString str = args[0].toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->part();
       if ( p )
         part->scheduleRedirection(0, p->htmlDocument().
@@ -1477,8 +1477,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &ar
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/?#" ) );
       break;
     case ToString:
-      Value result = location->toString(exec);
-      return result;
+      return String(location->toString(exec));
     }
   } else
     kdDebug(6070) << "LocationFunc::tryExecute - no part!" << endl;

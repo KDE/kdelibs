@@ -57,7 +57,7 @@ Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const 
           result = Undefined(); // throw exception?
         else
           result = getDOMCSSStyleDeclaration(exec,abstractView.getComputedStyle(static_cast<DOM::Element>(arg0),
-                                                                                args[1].toString(exec).value().string()));
+                                                                                args[1].toString(exec).string()));
       }
       break;
   }

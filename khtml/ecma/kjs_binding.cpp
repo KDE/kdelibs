@@ -74,9 +74,9 @@ void DOMObject::put(ExecState *exec, const UString &propertyName,
   }
 }
 
-String DOMObject::toString(ExecState *) const
+UString DOMObject::toString(ExecState *) const
 {
-  return String("[object " + className() + "]");
+  return "[object " + className() + "]";
 }
 
 Value DOMFunction::get(ExecState *exec, const UString &propertyName) const
@@ -215,10 +215,10 @@ QVariant KJS::ValueToVariant(ExecState* exec, const Value &val) {
     res = QVariant(val.toBoolean(exec), 0);
     break;
   case NumberType:
-    res = QVariant(val.toNumber(exec).value());
+    res = QVariant(val.toNumber(exec));
     break;
   case StringType:
-    res = QVariant(val.toString(exec).value().qstring());
+    res = QVariant(val.toString(exec).qstring());
     break;
   default:
     // everything else will be 'invalid'

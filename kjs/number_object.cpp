@@ -94,10 +94,10 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*a
   switch (id) {
   case ToString:
   case ToLocaleString: /* TODO */
-    result = v.toString(exec);
+    result = String(v.toString(exec));
     break;
   case ValueOf:
-    result = v.toNumber(exec);
+    result = Number(v.toNumber(exec));
     break;
   }
 
@@ -188,5 +188,5 @@ Value NumberObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
   if (args.isEmpty())
     return Number(0);
   else
-    return args[0].toNumber(exec);
+    return Number(args[0].toNumber(exec));
 }

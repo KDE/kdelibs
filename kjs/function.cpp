@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include "function.h"
@@ -28,6 +27,7 @@
 #include "function_object.h"
 #include "lexer.h"
 #include "nodes.h"
+#include "operations.h"
 #include "debugger.h"
 
 #include <stdio.h>
@@ -356,7 +356,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     if (x.type() != StringType)
       return x;
     else {
-      UString s = x.toString(exec).value();
+      UString s = x.toString(exec);
 
       int sid;
       int errLine;
@@ -426,12 +426,12 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     sscanf(str.value().ascii(), "%lf", &d);
     res = Number(d);
   } else if (id == IsNaN) {
-    res = Boolean(args[0].toNumber(exec).isNaN());
+    res = Boolean(isNaN(args[0].toNumber(exec)));
   } else if (id == IsFinite) {
     Number n = args[0].toNumber(exec);
     res = Boolean(!n.isNaN() && !n.isInf());
   } else if (id == Escape) {
-    UString r = "", s, str = args[0].toString(exec).value();
+    UString r = "", s, str = args[0].toString(exec);
     const UChar *c = str.data();
     for (int k = 0; k < str.size(); k++, c++) {
       int u = c->unicode();
@@ -450,7 +450,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     }
     res = String(r);
   } else if (id == UnEscape) {
-    UString s, str = args[0].toString(exec).value();
+    UString s, str = args[0].toString(exec);
     int k = 0, len = str.size();
     while (k < len) {
       const UChar *c = str.data() + k;

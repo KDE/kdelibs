@@ -60,7 +60,7 @@ Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
 void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
   if (propertyName == "data")
-    static_cast<DOM::CharacterData>(node).setData(value.toString(exec).value().string());
+    static_cast<DOM::CharacterData>(node).setData(value.toString(exec).string());
   else
     DOMNode::tryPut(exec, propertyName,value,attr);
 }
@@ -71,22 +71,22 @@ Value DOMCharacterDataFunction::tryCall(ExecState *exec, Object & /*thisObj*/, c
 
   switch(id) {
     case SubstringData:
-      result = getString(data.substringData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue()));
+      result = getString(data.substringData(args[0].toInteger(exec),args[1].toInteger(exec)));
       break;
     case AppendData:
-      data.appendData(args[0].toString(exec).value().string());
+      data.appendData(args[0].toString(exec).string());
       result = Undefined();
       break;
     case InsertData:
-      data.insertData(args[0].toNumber(exec).intValue(),args[1].toString(exec).value().string());
+      data.insertData(args[0].toInteger(exec),args[1].toString(exec).string());
       result = Undefined();
       break;
     case DeleteData:
-      data.deleteData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue());
+      data.deleteData(args[0].toInteger(exec),args[1].toInteger(exec));
       result = Undefined();
       break;
     case ReplaceData:
-      data.replaceData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue(),args[2].toString(exec).value().string());
+      data.replaceData(args[0].toInteger(exec),args[1].toInteger(exec),args[2].toString(exec).string());
       result = Undefined();
       break;
     default:
@@ -117,7 +117,7 @@ Value DOMTextFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List
 
   switch(id) {
     case SplitText:
-      result = getDOMNode(exec,text.splitText(args[0].toNumber(exec).intValue()));
+      result = getDOMNode(exec,text.splitText(args[0].toInteger(exec)));
       break;
     default:
       result = Undefined();

@@ -176,7 +176,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (!oldlocale)
     oldlocale = setlocale(LC_ALL, NULL);
   Value v = thisObj.internalValue();
-  double milli = v.toNumber(exec).value();
+  double milli = v.toNumber(exec);
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
@@ -357,7 +357,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     if (p.type() == StringType)
       value = parseDate(p.toString(exec));
     else
-      value = p.toNumber(exec);
+      value = Number(p.toNumber(exec));
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));

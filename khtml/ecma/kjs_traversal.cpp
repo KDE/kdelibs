@@ -330,7 +330,7 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
       List args;
       args.append(getDOMNode(exec,n));
       Value result = acceptNodeFunc.call(exec,filter,args);
-      return result.toNumber(exec).intValue();
+      return result.toInteger(exec);
     }
   }
 

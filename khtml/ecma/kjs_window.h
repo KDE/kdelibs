@@ -93,7 +93,7 @@ namespace KJS {
     Location *location() const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
     void clear();
-    virtual String toString(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
 
     // Set the current "event" object
     void setCurrentEvent( DOM::Event *evt );
@@ -172,7 +172,7 @@ namespace KJS {
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual Value toPrimitive(ExecState *exec, Type preferred) const;
-    virtual String toString(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     KHTMLPart *part() const { return m_part; }
   private:
     friend class Window;

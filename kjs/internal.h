@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifndef _INTERNAL_H_
@@ -57,8 +56,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     static UndefinedImp *staticUndefined;
@@ -73,8 +72,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     static NullImp *staticNull;
@@ -90,8 +89,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     static BooleanImp *staticTrue;
@@ -110,8 +109,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
   private:
@@ -128,8 +127,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
   private:
@@ -149,8 +148,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     Value getBase() const { return base; }
@@ -173,8 +172,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     ComplType complType() const { return comp; }
@@ -214,8 +213,8 @@ namespace KJS {
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
-    Number toNumber(ExecState *exec) const;
-    String toString(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
     void append(const Value& val);

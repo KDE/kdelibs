@@ -129,9 +129,9 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
-    UString str = v.toString(exec).value();
+    UString str = v.toString(exec);
     for (int i = 1; i < args.size(); i++)
-      str += args[i].toString(exec).value();
+      str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
     doc.write(str.string());
@@ -139,12 +139,10 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
     break;
   }
   case HTMLDocument::GetElementById:
-    s = v.toString(exec);
-    result = getDOMNode(exec,doc.getElementById(s.value().string()));
+    result = getDOMNode(exec,doc.getElementById(v.toString(exec).string()));
     break;
   case HTMLDocument::GetElementsByName:
-    s = v.toString(exec);
-    result = getDOMNodeList(exec,doc.getElementsByName(s.value().string()));
+    result = getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
     break;
   }
 
@@ -152,7 +150,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   if (id == HTMLDocument::Images || id == HTMLDocument::Applets || id == HTMLDocument::Links ||
       id == HTMLDocument::Forms || id == HTMLDocument::Anchors || id == HTMLDocument::All) {
     bool ok;
-    UString s = args[0].toString(exec).value();
+    UString s = args[0].toString(exec);
     unsigned int u = s.toULong(&ok);
     if (ok)
       element = coll.item(u);
@@ -315,17 +313,17 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
 
   switch (token) {
   case Title:
-    doc.setTitle(value.toString(exec).value().string());
+    doc.setTitle(value.toString(exec).string());
     break;
   case Body:
     doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
     break;
   case Cookie:
-    doc.setCookie(value.toString(exec).value().string());
+    doc.setCookie(value.toString(exec).string());
     break;
   case Location: {
     KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
-    QString str = value.toString(exec).value().qstring();
+    QString str = value.toString(exec).qstring();
     part->scheduleRedirection(0, str);
     break;
   }
@@ -987,7 +985,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName,
     return DOMElement::hasProperty(exec, propertyName, recursive);
 }
 
-String KJS::HTMLElement::toString(ExecState *exec) const
+UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
@@ -1046,7 +1044,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         result = Undefined();
       }
       else if (id == Remove) {
-        select.remove(args[0].toNumber(exec).intValue());
+        select.remove(int(args[0].toNumber(exec)));
         result = Undefined();
       }
       else if (id == Blur) {
@@ -1128,9 +1126,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         result = Undefined();
       }
       else if (id == InsertRow)
-        result = getDOMNode(exec,table.insertRow(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,table.insertRow(args[0].toInteger(exec)));
       else if (id == DeleteRow) {
-        table.deleteRow(args[0].toNumber(exec).intValue());
+        table.deleteRow(args[0].toInteger(exec));
         result = Undefined();
       }
     }
@@ -1140,9 +1138,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
       if (id == InsertRow)
-        result = getDOMNode(exec,tableSection.insertRow(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,tableSection.insertRow(args[0].toInteger(exec)));
       else if (id == DeleteRow) {
-        tableSection.deleteRow(args[0].toInt32(exec));
+        tableSection.deleteRow(args[0].toInteger(exec));
         result = Undefined();
       }
     }
@@ -1150,9 +1148,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if (id == InsertCell)
-        result = getDOMNode(exec,tableRow.insertCell(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,tableRow.insertCell(args[0].toInteger(exec)));
       else if (id == DeleteCell) {
-        tableRow.deleteCell(args[0].toInt32(exec));
+        tableRow.deleteCell(args[0].toInteger(exec));
         result = Undefined();
       }
     }
@@ -1164,7 +1162,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
 
 void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v, int attr)
 {
-  DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString(exec).value().string();
+  DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString(exec).string();
   DOM::Node n = (new DOMNode(exec, KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -1255,7 +1253,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       // read-only: type
-      if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber(exec).intValue()); return; }
+      if (p == "selectedIndex")        { select.setSelectedIndex(v.toInteger(exec)); return; }
       else if (p == "value")           { select.setValue(str); return; }
       else if (p == "length")          { // read-only according to the NS spec, but webpages need it writeable
                                          Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
@@ -1268,8 +1266,8 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "disabled")        { select.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "multiple")        { select.setMultiple(v.toBoolean(exec)); return; }
       else if (p == "name")            { select.setName(str); return; }
-      else if (p == "size")            { select.setSize(v.toNumber(exec).intValue()); return; }
-      else if (p == "tabIndex")        { select.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "size")            { select.setSize(v.toInteger(exec)); return; }
+      else if (p == "tabIndex")        { select.setTabIndex(v.toInteger(exec)); return; }
     }
     break;
     case ID_OPTGROUP: {
@@ -1312,12 +1310,12 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "alt")             { input.setAlt(str); return; }
       else if (p == "checked")         { input.setChecked(v.toBoolean(exec)); return; }
       else if (p == "disabled")        { input.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "maxLength")       { input.setMaxLength(v.toNumber(exec).intValue()); return; }
+      else if (p == "maxLength")       { input.setMaxLength(v.toInteger(exec)); return; }
       else if (p == "name")            { input.setName(str); return; }
       else if (p == "readOnly")        { input.setReadOnly(v.toBoolean(exec)); return; }
       else if (p == "size")            { input.setSize(str); return; }
       else if (p == "src")             { input.setSrc(str); return; }
-      else if (p == "tabIndex")        { input.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { input.setTabIndex(v.toInteger(exec)); return; }
       // read-only: type
       else if (p == "useMap")          { input.setUseMap(str); return; }
       else if (p == "value")           { input.setValue(str); return; }
@@ -1328,12 +1326,12 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       if      (p == "defaultValue")    { textarea.setDefaultValue(str); return; }
       // read-only: form
       else if (p == "accessKey")       { textarea.setAccessKey(str); return; }
-      else if (p == "cols")            { textarea.setCols(v.toNumber(exec).intValue()); return; }
+      else if (p == "cols")            { textarea.setCols(v.toInteger(exec)); return; }
       else if (p == "disabled")        { textarea.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "name")            { textarea.setName(str); return; }
       else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean(exec)); return; }
-      else if (p == "rows")            { textarea.setRows(v.toNumber(exec).intValue()); return; }
-      else if (p == "tabIndex")        { textarea.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "rows")            { textarea.setRows(v.toInteger(exec)); return; }
+      else if (p == "tabIndex")        { textarea.setTabIndex(v.toInteger(exec)); return; }
       // read-only: type
       else if (p == "value")           { textarea.setValue(str); return; }
     }
@@ -1344,7 +1342,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       if (p == "accessKey")            { button.setAccessKey(str); return; }
       else if (p == "disabled")        { button.setDisabled(v.toBoolean(exec)); return; }
       else if (p == "name")            { button.setName(str); return; }
-      else if (p == "tabIndex")        { button.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { button.setTabIndex(v.toInteger(exec)); return; }
       // read-only: type
       else if (p == "value")           { button.setValue(str); return; }
     }
@@ -1377,7 +1375,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
       if      (p == "compact")         { oList.setCompact(v.toBoolean(exec)); return; }
-      else if (p == "start")           { oList.setStart(v.toNumber(exec).intValue()); return; }
+      else if (p == "start")           { oList.setStart(v.toInteger(exec)); return; }
       else if (p == "type")            { oList.setType(str); return; }
     }
     break;
@@ -1399,7 +1397,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     case ID_LI: {
       DOM::HTMLLIElement li = element;
       if      (p == "type")            { li.setType(str); return; }
-      else if (p == "value")           { li.setValue(v.toNumber(exec).intValue()); return; }
+      else if (p == "value")           { li.setValue(v.toInteger(exec)); return; }
     }
     break;
     case ID_DIV: {
@@ -1433,7 +1431,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     break;
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
-      if      (p == "width")           { pre.setWidth(v.toNumber(exec).intValue()); return; }
+      if      (p == "width")           { pre.setWidth(v.toInteger(exec)); return; }
     }
     break;
     case ID_BR: {
@@ -1481,7 +1479,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "rel")             { anchor.setRel(str); return; }
       else if (p == "rev")             { anchor.setRev(str); return; }
       else if (p == "shape")           { anchor.setShape(str); return; }
-      else if (p == "tabIndex")        { anchor.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { anchor.setTabIndex(v.toInteger(exec)); return; }
       else if (p == "target")          { anchor.setTarget(str); return; }
       else if (p == "type")            { anchor.setType(str); return; }
     }
@@ -1518,7 +1516,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "hspace")          { object.setHspace(str); return; }
       else if (p == "name")            { object.setName(str); return; }
       else if (p == "standby")         { object.setStandby(str); return; }
-      else if (p == "tabIndex")        { object.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { object.setTabIndex(v.toInteger(exec)); return; }
       else if (p == "type")            { object.setType(str); return; }
       else if (p == "useMap")          { object.setUseMap(str); return; }
       else if (p == "vspace")          { object.setVspace(str); return; }
@@ -1564,7 +1562,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "href")            { area.setHref(str); return; }
       else if (p == "noHref")          { area.setNoHref(v.toBoolean(exec)); return; }
       else if (p == "shape")           { area.setShape(str); return; }
-      else if (p == "tabIndex")        { area.setTabIndex(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { area.setTabIndex(v.toInteger(exec)); return; }
       else if (p == "target")          { area.setTarget(str); return; }
     }
     break;
@@ -1607,7 +1605,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       if      (p == "align")           { tableCol.setAlign(str); return; }
       else if (p == "ch")              { tableCol.setCh(str); return; }
       else if (p == "chOff")           { tableCol.setChOff(str); return; }
-      else if (p == "span")            { tableCol.setSpan(v.toNumber(exec).intValue()); return; }
+      else if (p == "span")            { tableCol.setSpan(v.toInteger(exec)); return; }
       else if (p == "vAlign")          { tableCol.setVAlign(str); return; }
       else if (p == "width")           { tableCol.setWidth(str); return; }
     }
@@ -1645,11 +1643,11 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "bgColor")         { tableCell.setBgColor(str); return; }
       else if (p == "ch")              { tableCell.setCh(str); return; }
       else if (p == "chOff")           { tableCell.setChOff(str); return; }
-      else if (p == "colSpan")         { tableCell.setColSpan(v.toNumber(exec).intValue()); return; }
+      else if (p == "colSpan")         { tableCell.setColSpan(v.toInteger(exec)); return; }
       else if (p == "headers")         { tableCell.setHeaders(str); return; }
       else if (p == "height")          { tableCell.setHeight(str); return; }
       else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean(exec)); return; }
-      else if (p == "rowSpan")         { tableCell.setRowSpan(v.toNumber(exec).intValue()); return; }
+      else if (p == "rowSpan")         { tableCell.setRowSpan(v.toInteger(exec)); return; }
       else if (p == "scope")           { tableCell.setScope(str); return; }
       else if (p == "vAlign")          { tableCell.setVAlign(str); return; }
       else if (p == "width")           { tableCell.setWidth(str); return; }
@@ -1791,10 +1789,10 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   case KJS::HTMLCollection::Tags:
   {
     DOM::HTMLElement e = coll.base();
-    return getDOMNodeList(exec, e.getElementsByTagName( args[0].toString(exec).value().string() ) );
+    return getDOMNodeList(exec, e.getElementsByTagName(args[0].toString(exec).string()));
   }
   case KJS::HTMLCollection::NamedItem:
-    return getDOMNode(exec,coll.namedItem(args[0].toString(exec).value().string()));
+    return getDOMNode(exec,coll.namedItem(args[0].toString(exec).string()));
   default:
     return Undefined();
   }
@@ -1825,7 +1823,7 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
 #endif
   // resize ?
   if (propertyName == "length") {
-    long newLen = value.toInt32(exec);
+    long newLen = value.toInteger(exec);
     long diff = element.length() - newLen;
 
     if (diff < 0) { // add dummy elements
@@ -1902,9 +1900,9 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
     // #### exec->setException ?
   }
   if (sz > 0)
-    t.setData( args[0].toString(exec).value().string() ); // set the text
+    t.setData(args[0].toString(exec).string()); // set the text
   if (sz > 1)
-    opt.setValue(args[1].toString(exec).value().string());
+    opt.setValue(args[1].toString(exec).string());
   if (sz > 2)
     opt.setDefaultSelected(args[2].toBoolean(exec));
   if (sz > 3)

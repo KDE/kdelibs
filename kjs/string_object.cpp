@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -127,19 +126,19 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       return err;
     }
 
-    return thisObj.internalValue().toString(exec);
+    return String(thisObj.internalValue().toString(exec));
   }
 
-  String s2;
+  UString s2;
   Number n, m;
   UString u, u2, u3;
   int pos, p0, i;
-  double d, d2;
+  double d = 0.0, d2;
 
   Value tv = thisObj;
-  String s = tv.toString(exec);
+  UString s = tv.toString(exec);
 
-  int len = s.value().size();
+  int len = s.size();
   Value a0 = args[0];
   Value a1 = args[1];
 
@@ -154,7 +153,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (pos < 0 || pos >= len)
       u = "";
     else
-      u = s.value().substr(pos, 1);
+      u = s.substr(pos, 1);
     result = String(u);
     break;
   case CharCodeAt:
@@ -163,7 +162,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
-      UChar c = s.value()[pos];
+      UChar c = s[pos];
       d = (c.high() << 8) + c.low();
     }
     result = Number(d);
@@ -173,25 +172,25 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (a1.type() == UndefinedType)
       pos = 0;
     else
-      pos = a1.toInteger(exec).intValue();
-    d = s.value().find(s2.value(), pos);
+      pos = a1.toInteger(exec);
+    d = s.find(s2, pos);
     result = Number(d);
     break;
   case LastIndexOf:
     s2 = a0.toString(exec);
-    d = a1.toNumber(exec).value();
+    d = a1.toNumber(exec);
     if (a1.type() == UndefinedType || KJS::isNaN(d) || KJS::isPosInf(d))
       pos = len;
     else
-      pos = a1.toInteger(exec).intValue();
+      pos = a1.toInteger(exec);
     if (pos < 0)
       pos = 0;
-    d = s.value().rfind(s2.value(), pos);
+    d = s.rfind(s2, pos);
     result = Number(d);
     break;
   case Match:
   case Search: {
-    u = s.value();
+    u = s;
     RegExp* reg = 0;
     if (a0.isA(ObjectType) && a0.toObject(exec).inherits(&RegExpImp::info))
       {
@@ -202,7 +201,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     else if (a0.isA(StringType))
       {
         //s2 = a0.toString();
-        reg = new RegExp( a0.toString(exec).value(), RegExp::None );
+        reg = new RegExp(a0.toString(exec), RegExp::None);
       }
     else
       {
@@ -232,22 +231,22 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
   case Replace:
     // TODO: this is just a hack to get the most common cases going
-    u = s.value();
+    u = s;
     if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
       s2 = Object::dynamicCast(a0).get(exec,"source").toString(exec);
-      RegExp reg(s2.value());
+      RegExp reg(s2);
       UString mstr = reg.match(u, -1, &pos);
       len = mstr.size();
     } else {
       s2 = a0.toString(exec);
-      u2 = s2.value();
+      u2 = s2;
       pos = u.find(u2);
       len = u2.size();
     }
     if (pos == -1)
-        result = s;
+        result = String(s);
     else {
-        u3 = u.substr(0, pos) + a1.toString(exec).value() +
+        u3 = u.substr(0, pos) + a1.toString(exec) +
              u.substr(pos + len);
         result = String(u3);
     }
@@ -271,19 +270,19 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
             break;
         }
         //printf( "Slicing from %d to %d \n", begin, end );
-        result = String( s.value().substr(begin, end-begin) );
+        result = String(s.substr(begin, end-begin));
         break;
     }
     case Split: {
     Object constructor = exec->interpreter()->builtinArray();
     Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
     result = res;
-    u = s.value();
+    u = s;
     i = p0 = 0;
-    d = (a1.type() != UndefinedType) ? a1.toInteger(exec).intValue() : -1; // optional max number
+    d = (a1.type() != UndefinedType) ? a1.toInteger(exec) : -1; // optional max number
     if (a0.type() == ObjectType && Object::dynamicCast(a0.imp()).inherits(&RegExpImp::info)) {
       Object obj0 = Object::dynamicCast(a0);
-      RegExp reg(obj0.get(exec,"source").toString(exec).value());
+      RegExp reg(obj0.get(exec,"source").toString(exec));
       if (u.isEmpty() && !reg.match(u, 0).isNull()) {
 	// empty string matched by regexp -> empty array
 	res.put(exec,"length", Number(0));
@@ -304,7 +303,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	}
       }
     } else if (a0.type() != UndefinedType) {
-      u2 = a0.toString(exec).value();
+      u2 = a0.toString(exec);
       if (u2.isEmpty()) {
 	if (u.isEmpty()) {
 	  // empty separator matches empty string -> empty array
@@ -339,7 +338,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       d2 = len - d;
     else
       d2 = min(max(m.value(), 0), len - d);
-    result = String(s.value().substr((int)d, (int)d2));
+    result = String(s.substr((int)d, (int)d2));
     break;
   case Substring: {
     n = a0.toInteger(exec);
@@ -365,64 +364,64 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       end = start;
       start = temp;
     }
-    result = String(s.value().substr((int)start, (int)(end-start)));
+    result = String(s.substr((int)start, (int)(end-start)));
     }
     break;
   case ToLowerCase:
-    u = UString(s.value());
+    u = s;
     for (i = 0; i < len; i++)
       u[i] = u[i].toLower();
     result = String(u);
     break;
   case ToUpperCase:
-    u = UString(s.value());
+    u = s;
     for (i = 0; i < len; i++)
       u[i] = u[i].toUpper();
     result = String(u);
     break;
 #ifndef KJS_PURE_ECMA
   case Big:
-    result = String("<BIG>" + s.value() + "</BIG>");
+    result = String("<BIG>" + s + "</BIG>");
     break;
   case Small:
-    result = String("<SMALL>" + s.value() + "</SMALL>");
+    result = String("<SMALL>" + s + "</SMALL>");
     break;
   case Blink:
-    result = String("<BLINK>" + s.value() + "</BLINK>");
+    result = String("<BLINK>" + s + "</BLINK>");
     break;
   case Bold:
-    result = String("<B>" + s.value() + "</B>");
+    result = String("<B>" + s + "</B>");
     break;
   case Fixed:
-    result = String("<TT>" + s.value() + "</TT>");
+    result = String("<TT>" + s + "</TT>");
     break;
   case Italics:
-    result = String("<I>" + s.value() + "</I>");
+    result = String("<I>" + s + "</I>");
     break;
   case Strike:
-    result = String("<STRIKE>" + s.value() + "</STRIKE>");
+    result = String("<STRIKE>" + s + "</STRIKE>");
     break;
   case Sub:
-    result = String("<SUB>" + s.value() + "</SUB>");
+    result = String("<SUB>" + s + "</SUB>");
     break;
   case Sup:
-    result = String("<SUP>" + s.value() + "</SUP>");
+    result = String("<SUP>" + s + "</SUP>");
     break;
   case Fontcolor:
-    result = String("<FONT COLOR=" + a0.toString(exec).value() + ">"
-		    + s.value() + "</FONT>");
+    result = String("<FONT COLOR=" + a0.toString(exec) + ">"
+		    + s + "</FONT>");
     break;
   case Fontsize:
-    result = String("<FONT SIZE=" + a0.toString(exec).value() + ">"
-		    + s.value() + "</FONT>");
+    result = String("<FONT SIZE=" + a0.toString(exec) + ">"
+		    + s + "</FONT>");
     break;
   case Anchor:
-    result = String("<a name=" + a0.toString(exec).value() + ">"
-		    + s.value() + "</a>");
+    result = String("<a name=" + a0.toString(exec) + ">"
+		    + s + "</a>");
     break;
   case Link:
-    result = String("<a href=" + a0.toString(exec).value() + ">"
-		    + s.value() + "</a>");
+    result = String("<a href=" + a0.toString(exec) + ">"
+		    + s + "</a>");
     break;
 #endif
   }
@@ -459,14 +458,14 @@ Object StringObjectImp::construct(ExecState *exec, const List &args)
   Object proto = exec->interpreter()->builtinStringPrototype();
   Object obj(new StringInstanceImp(proto ));
 
-  String s;
+  UString s;
   if (args.size() > 0)
     s = args.begin()->toString(exec);
   else
-    s = String("");
+    s = UString("");
 
-  obj.setInternalValue(s);
-  obj.put(exec,"length",Number(s.value().size()),ReadOnly|DontEnum|DontDelete);
+  obj.setInternalValue(String(s));
+  obj.put(exec, "length", Number(s.size()), ReadOnly|DontEnum|DontDelete);
 
   return obj;
 }
@@ -483,7 +482,7 @@ Value StringObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     return String("");
   else {
     Value v = args[0];
-    return v.toString(exec);
+    return String(v.toString(exec));
   }
 }
 

@@ -114,7 +114,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   {
     if ( comp.complType() == Throw )
     {
-        UString msg = comp.value().toString(m_script->globalExec()).value();
+        UString msg = comp.value().toString(m_script->globalExec());
         kdWarning(6070) << "Script throwed exception: " << msg.qstring() << endl;
     }
     return QVariant();
@@ -220,7 +220,7 @@ public:
 
 Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
-  fprintf(stderr,"--> %s\n",args[0].toString(exec).value().ascii());
+  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
   return Undefined();
 }
 

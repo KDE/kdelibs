@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -168,13 +167,13 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     UString str = "";
 
     if (args.size() > 0)
-      separator = args[0].toString(exec).value();
+      separator = args[0].toString(exec);
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
       Value element = thisObj.get(exec,UString::from(k));
       if (element.type() != UndefinedType && element.type() != NullType)
-        str += element.toString(exec).value();
+        str += element.toString(exec);
     }
     result = String(str);
     break;
@@ -361,7 +360,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
                 cmp = sortFunction.call(exec,thisObj, l ).toInt32(exec);
               }
             else
-              cmp = ( jObj.toString(exec).value() < minObj.toString(exec).value() ) ? -1 : 1;
+              cmp = (jObj.toString(exec) < minObj.toString(exec)) ? -1 : 1;
             if ( cmp < 0 )
               {
                 themin = j;

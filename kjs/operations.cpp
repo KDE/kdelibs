@@ -18,7 +18,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -109,9 +108,9 @@ bool KJS::equal(ExecState *exec, const Value& v1, const Value& v2)
     if (t1 == UndefinedType || t1 == NullType)
       return true;
     if (t1 == NumberType)
-      return (v1.toNumber(exec).value() == v2.toNumber(exec).value()); /* TODO: NaN, -0 ? */
+      return (v1.toNumber(exec) == v2.toNumber(exec)); /* TODO: NaN, -0 ? */
     if (t1 == StringType)
-      return (v1.toString(exec).value() == v2.toString(exec).value());
+      return (v1.toString(exec) == v2.toString(exec));
     if (t1 == BooleanType)
       return (v1.toBoolean(exec) == v2.toBoolean(exec));
 
@@ -156,8 +155,8 @@ bool KJS::strictEqual(ExecState *exec, const Value &v1, const Value &v2)
   if (t1 == UndefinedType || t1 == NullType)
     return true;
   if (t1 == NumberType) {
-    double n1 = v1.toNumber(exec).value();
-    double n2 = v2.toNumber(exec).value();
+    double n1 = v1.toNumber(exec);
+    double n2 = v2.toNumber(exec);
     if (isNaN(n1) || isNaN(n2))
       return false;
     if (n1 == n2)
@@ -165,7 +164,7 @@ bool KJS::strictEqual(ExecState *exec, const Value &v1, const Value &v2)
     /* TODO: +0 and -0 */
     return false;
   } else if (t1 == StringType) {
-    return v1.toString(exec).value() == v2.toString(exec).value();
+    return v1.toString(exec) == v2.toString(exec);
   } else if (t2 == BooleanType) {
     return v1.toBoolean(exec) == v2.toBoolean(exec);
   }
@@ -182,15 +181,15 @@ int KJS::relation(ExecState *exec, const Value& v1, const Value& v2)
   Value p2 = v2.toPrimitive(exec,NumberType);
 
   if (p1.type() == StringType && p2.type() == StringType)
-    return p1.toString(exec).value() < p2.toString(exec).value() ? 1 : 0;
+    return p1.toString(exec) < p2.toString(exec) ? 1 : 0;
 
-  Number n1 = p1.toNumber(exec);
-  Number n2 = p2.toNumber(exec);
+  double n1 = p1.toNumber(exec);
+  double n2 = p2.toNumber(exec);
   /* TODO: check for NaN */
-  if (n1.value() == n2.value())
+  if (n1 == n2)
     return 0;
   /* TODO: +0, -0 and Infinity */
-  return (n1.value() < n2.value());
+  return (n1 < n2);
 }
 
 double KJS::max(double d1, double d2)
@@ -212,21 +211,19 @@ Value KJS::add(ExecState *exec, const Value &v1, const Value &v2, char oper)
   Value p2 = v2.toPrimitive(exec);
 
   if ((p1.type() == StringType || p2.type() == StringType) && oper == '+') {
-    String s1 = p1.toString(exec);
-    String s2 = p2.toString(exec);
+    UString s1 = p1.toString(exec);
+    UString s2 = p2.toString(exec);
 
-    UString s = s1.value() + s2.value();
-
-    return String(s);
+    return String(s1 + s2);
   }
 
-  Number n1 = p1.toNumber(exec);
-  Number n2 = p2.toNumber(exec);
+  double n1 = p1.toNumber(exec);
+  double n2 = p2.toNumber(exec);
 
   if (oper == '+')
-    return Number(n1.value() + n2.value());
+    return Number(n1 + n2);
   else
-    return Number(n1.value() - n2.value());
+    return Number(n1 - n2);
 }
 
 // ECMA 11.5

@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifndef _KJS_VALUE_H_
@@ -116,12 +115,12 @@ namespace KJS {
     virtual Value toPrimitive(ExecState *exec,
                               Type preferredType = UnspecifiedType) const = 0;
     virtual bool toBoolean(ExecState *exec) const = 0;
-    virtual Number toNumber(ExecState *exec) const = 0;
-    virtual Number toInteger(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const = 0;
+    virtual int toInteger(ExecState *exec) const;
     virtual int toInt32(ExecState *exec) const;
     virtual unsigned int toUInt32(ExecState *exec) const;
     virtual unsigned short toUInt16(ExecState *exec) const;
-    virtual String toString(ExecState *exec) const = 0;
+    virtual UString toString(ExecState *exec) const = 0;
     virtual Object toObject(ExecState *exec) const = 0;
 
     // Reference operations
@@ -200,12 +199,12 @@ namespace KJS {
     /**
      * Performs the ToNumber type conversion operation on this value (ECMA 9.3)
      */
-    Number toNumber(ExecState *exec) const;
+    double toNumber(ExecState *exec) const;
 
     /**
      * Performs the ToInteger type conversion operation on this value (ECMA 9.4)
      */
-    Number toInteger(ExecState *exec) const;
+    int toInteger(ExecState *exec) const;
 
     /**
      * Performs the ToInt32 type conversion operation on this value (ECMA 9.5)
@@ -225,7 +224,7 @@ namespace KJS {
     /**
      * Performs the ToString type conversion operation on this value (ECMA 9.8)
      */
-    String toString(ExecState *exec) const;
+    UString toString(ExecState *exec) const;
 
     /**
      * Performs the ToObject type conversion operation on this value (ECMA 9.9)

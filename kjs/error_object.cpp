@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -68,12 +67,12 @@ Value ErrorProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*ar
 
   Value v = thisObj.get(exec,"name");
   if (v.type() != UndefinedType) {
-    s = v.toString(exec).value();
+    s = v.toString(exec);
   }
 
   v = thisObj.get(exec,"message");
   if (v.type() != UndefinedType) {
-    s += ": "+v.toString(exec).value();
+    s += ": "+v.toString(exec);
   }
 
   return String(s);
@@ -103,7 +102,7 @@ Object ErrorObjectImp::construct(ExecState *exec, const List &args)
   Object obj = new ObjectImp(proto);
 
   if (!args.isEmpty() && args[0].type() != UndefinedType) {
-    obj.put(exec,"message",args[0].toString(exec));
+    obj.put(exec,"message", String(args[0].toString(exec)));
   }
 
   return obj;
@@ -157,7 +156,7 @@ Object NativeErrorImp::construct(ExecState *exec, const List &args)
 {
   Object obj = new ObjectImp(proto);
   if (args[0].type() != UndefinedType)
-    obj.put(exec,"message",args[0].toString(exec));
+    obj.put(exec, "message", String(args[0].toString(exec)));
   return obj;
 }
 

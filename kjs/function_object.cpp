@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "function_object.h"
@@ -195,12 +194,12 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   if (argsSize == 0) {
     body = "";
   } else if (argsSize == 1) {
-    body = args[0].toString(exec).value();
+    body = args[0].toString(exec);
   } else {
-    p = args[0].toString(exec).value();
+    p = args[0].toString(exec);
     for (int k = 1; k < argsSize - 1; k++)
-      p += "," + args[k].toString(exec).value();
-    body = args[argsSize-1].toString(exec).value();
+      p += "," + args[k].toString(exec);
+    body = args[argsSize-1].toString(exec);
   }
 
   // parse the source code

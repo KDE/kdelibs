@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <stdio.h>
@@ -83,14 +82,14 @@ bool UndefinedImp::toBoolean(ExecState */*exec*/) const
   return false;
 }
 
-Number UndefinedImp::toNumber(ExecState */*exec*/) const
+double UndefinedImp::toNumber(ExecState */*exec*/) const
 {
-  return Number(NaN);
+  return NaN;
 }
 
-String UndefinedImp::toString(ExecState */*exec*/) const
+UString UndefinedImp::toString(ExecState */*exec*/) const
 {
-  return String("undefined");
+  return "undefined";
 }
 
 Object UndefinedImp::toObject(ExecState *exec) const
@@ -114,14 +113,14 @@ bool NullImp::toBoolean(ExecState */*exec*/) const
   return false;
 }
 
-Number NullImp::toNumber(ExecState */*exec*/) const
+double NullImp::toNumber(ExecState */*exec*/) const
 {
-  return Number(0);
+  return 0.0;
 }
 
-String NullImp::toString(ExecState */*exec*/) const
+UString NullImp::toString(ExecState */*exec*/) const
 {
-  return String("null");
+  return "null";
 }
 
 Object NullImp::toObject(ExecState *exec) const
@@ -146,14 +145,14 @@ bool BooleanImp::toBoolean(ExecState */*exec*/) const
   return val;
 }
 
-Number BooleanImp::toNumber(ExecState */*exec*/) const
+double BooleanImp::toNumber(ExecState */*exec*/) const
 {
-  return Number(val ? 1 : 0);
+  return val ? 1.0 : 0.0;
 }
 
-String BooleanImp::toString(ExecState */*exec*/) const
+UString BooleanImp::toString(ExecState */*exec*/) const
 {
-  return String(val ? "true" : "false");
+  return val ? "true" : "false";
 }
 
 Object BooleanImp::toObject(ExecState *exec) const
@@ -180,14 +179,14 @@ bool StringImp::toBoolean(ExecState */*exec*/) const
   return (val.size() > 0);
 }
 
-Number StringImp::toNumber(ExecState */*exec*/) const
+double StringImp::toNumber(ExecState */*exec*/) const
 {
-  return Number(val.toDouble());
+  return val.toDouble();
 }
 
-String StringImp::toString(ExecState */*exec*/) const
+UString StringImp::toString(ExecState */*exec*/) const
 {
-  return String(val);
+  return val;
 }
 
 Object StringImp::toObject(ExecState *exec) const
@@ -214,14 +213,14 @@ bool NumberImp::toBoolean(ExecState *) const
   return !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
 }
 
-Number NumberImp::toNumber(ExecState *) const
+double NumberImp::toNumber(ExecState *) const
 {
-  return Number(val);
+  return val;
 }
 
-String NumberImp::toString(ExecState *) const
+UString NumberImp::toString(ExecState *) const
 {
-  return String(UString::from(val));
+  return UString::from(val);
 }
 
 Object NumberImp::toObject(ExecState *exec) const
@@ -259,18 +258,18 @@ bool ReferenceImp::toBoolean(ExecState */*exec*/) const
   return false;
 }
 
-Number ReferenceImp::toNumber(ExecState */*exec*/) const
+double ReferenceImp::toNumber(ExecState */*exec*/) const
 {
   // invalid for Reference
   assert(false);
   return 0;
 }
 
-String ReferenceImp::toString(ExecState */*exec*/) const
+UString ReferenceImp::toString(ExecState */*exec*/) const
 {
   // invalid for Reference
   assert(false);
-  return 0;
+  return UString::null;
 }
 
 Object ReferenceImp::toObject(ExecState */*exec*/) const
@@ -390,18 +389,18 @@ bool CompletionImp::toBoolean(ExecState */*exec*/) const
   return false;
 }
 
-Number CompletionImp::toNumber(ExecState */*exec*/) const
+double CompletionImp::toNumber(ExecState */*exec*/) const
 {
   // invalid for Completion
   assert(false);
   return 0;
 }
 
-String CompletionImp::toString(ExecState */*exec*/) const
+UString CompletionImp::toString(ExecState */*exec*/) const
 {
   // invalid for Completion
   assert(false);
-  return 0;
+  return UString::null;
 }
 
 Object CompletionImp::toObject(ExecState */*exec*/) const
@@ -431,18 +430,18 @@ bool ListImp::toBoolean(ExecState */*exec*/) const
   return false;
 }
 
-Number ListImp::toNumber(ExecState */*exec*/) const
+double ListImp::toNumber(ExecState */*exec*/) const
 {
   // invalid for List
   assert(false);
   return 0;
 }
 
-String ListImp::toString(ExecState */*exec*/) const
+UString ListImp::toString(ExecState */*exec*/) const
 {
   // invalid for List
   assert(false);
-  return 0;
+  return UString::null;
 }
 
 Object ListImp::toObject(ExecState */*exec*/) const
@@ -1143,7 +1142,7 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       break;
     }
     // Can't use two UString::ascii() in the same fprintf call
-    char * vString = strdup( v.toString(exec).value().ascii() );
+    char * vString = strdup( v.toString(exec).ascii() );
 
     fprintf(stderr, "KJS: %s: %s : %s (%p)",
             s, vString, name.ascii(), (void*)v.imp());

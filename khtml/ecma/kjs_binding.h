@@ -48,7 +48,7 @@ namespace KJS {
                         const Value& value, int attr = None)
       { ObjectImp::put(exec,propertyName,value,attr); }
 
-    virtual String toString(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
   };
 
   /** Base class for all functions in this binding - get() and call() run
@@ -67,7 +67,7 @@ namespace KJS {
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
       { return ObjectImp::call(exec, thisObj, args); }
     virtual bool toBoolean(ExecState *) const { return true; }
-    virtual String toString(ExecState *) const { return UString("[function]"); }
+    virtual UString toString(ExecState *) const { return UString("[function]"); }
   };
 
   /**

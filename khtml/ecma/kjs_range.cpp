@@ -101,11 +101,11 @@ Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
     case SetStart:
-      range.setStart(toNode(args[0]),args[1].toNumber(exec).intValue());
+      range.setStart(toNode(args[0]),args[1].toInteger(exec));
       result = Undefined();
       break;
     case SetEnd:
-      range.setEnd(toNode(args[0]),args[1].toNumber(exec).intValue());
+      range.setEnd(toNode(args[0]),args[1].toInteger(exec));
       result = Undefined();
       break;
     case SetStartBefore:
@@ -137,7 +137,7 @@ Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       result = Undefined();
       break;
     case CompareBoundaryPoints:
-      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toNumber(exec).intValue()),toRange(args[1])));
+      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toInteger(exec)),toRange(args[1])));
       break;
     case DeleteContents:
       range.deleteContents();
