@@ -10,6 +10,12 @@
  * kdelibs. This means that it is a bit more comlicated to create an
  * instance of the editor, but only a little bit more complicated.
  *
+ * To check if kregexpeditor in kdeutils is installed and available use this line:
+ * 
+ * <pre>
+ * bool installed=!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty();
+ * </pre>
+ *
  * The following is a template for what you need to do to create an instance of the
  * regular expression dialog:
  *
