@@ -377,7 +377,8 @@ void KEditToolbarWidget::setupLayout()
   m_inactiveList->setAllColumnsShowFocus(true);
   m_inactiveList->header()->hide();
   m_inactiveList->addColumn("");
-  m_inactiveList->addColumn("");
+  int column2 = m_inactiveList->addColumn("");
+  m_inactiveList->setSorting( column2 );
   inactive_label->setBuddy(m_inactiveList);
   connect(m_inactiveList, SIGNAL(selectionChanged(QListViewItem *)),
           this,           SLOT(slotInactiveSelected(QListViewItem *)));
