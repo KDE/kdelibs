@@ -21,13 +21,14 @@
 #include "connect.h"
 #include "flowsystem.h"
 #include <assert.h>
+#include "debug.h"
 
 // NDEBUG is the symbol name that can remove the assertions
 #ifdef NDEBUG
 #define mywarning(a,b)
 #else
 #include <iostream.h>
-#define mywarning(a,b) if (!(a)) cerr<<"MCOP connection warning: "<<b<<endl;
+#define mywarning(a,b) if (!(a)) arts_warning("MCOP connection warning: %s",b)
 #endif
 
 using namespace std;

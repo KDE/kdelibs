@@ -151,7 +151,7 @@ VPortConnection::VPortConnection(VPort *source, VPort *dest, Style style)
 	if(style == vcTransport)
 	{
 #ifdef VPORT_DEBUG
-		printf("emit a connection consumer = %s, producer = %s\n",
+		arts_debug("emit a connection consumer = %s, producer = %s",
 			dest->name(), source->name());
 #endif
 		dest->port->connect(source->port);
@@ -188,7 +188,7 @@ VPortConnection::~VPortConnection()
 	if(style == vcTransport)
 	{
 #ifdef VPORT_DEBUG
-		printf("delete connection %s -> %s\n",dest->name(), source->name());
+		arts_debug("delete connection %s -> %s",dest->name(), source->name());
 #endif
 		dest->port->disconnect(source->port);
 	}

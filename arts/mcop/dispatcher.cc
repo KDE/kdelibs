@@ -31,6 +31,7 @@
 #include "md5auth.h"
 #include "mcoputils.h"
 #include "loopback.h"
+#include "debug.h"
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -97,7 +98,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 		if(!unixServer->running())
 		{
 			delete unixServer;
-			fprintf(stderr,"MCOP Warning: couldn't start UnixServer\n");
+			arts_warning("MCOP: couldn't start UnixServer");
 			unixServer = 0;
 		}
 	}
@@ -109,7 +110,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 		if(!tcpServer->running())
 		{
 			delete tcpServer;
-			fprintf(stderr,"MCOP Warning: couldn't start TCPServer\n");
+			arts_warning("MCOP: couldn't start TCPServer");
 			tcpServer = 0;
 		}
 	}

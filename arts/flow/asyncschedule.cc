@@ -21,6 +21,7 @@
     */
 
 #include "asyncschedule.h"
+#include "debug.h"
 #include <iostream>
 
 using namespace std;
@@ -106,7 +107,7 @@ void ASyncPort::sendPacket(GenericDataPacket *packet)
 
 void ASyncPort::connect(Port *xsource)
 {
-	cout << "port(" << _name << ")::connect" << endl;
+	arts_debug("port(%s)::connect",_name.c_str());
 
 	ASyncPort *source = xsource->asyncPort();
 	assert(source);
@@ -120,7 +121,7 @@ void ASyncPort::connect(Port *xsource)
 
 void ASyncPort::disconnect(Port *xsource)
 {
-	cout << "port::disconnect" << endl;
+	arts_debug("port::disconnect");
 
 	ASyncPort *source = xsource->asyncPort();
 	assert(source);

@@ -57,7 +57,6 @@ public:
 	void streamInit() {
 		as = AudioSubSystem::the();
 
-		//cout << "Synth_RECORD: streamInit() called." << endl;
 		channels = as->channels();
 		maxsamples = 0;
 		inblock = 0;
@@ -65,13 +64,13 @@ public:
 		haveSubSys = as->attachConsumer(this);
 		if(!haveSubSys)
 		{
-			printf("Synth_RECORD: audio subsystem is already used\n");
+			arts_info("Synth_RECORD: audio subsystem is already used");
 			return;
 		}
 	}
 
 	void streamEnd() {
-		artsdebug("Synth_RECORD: detaching\n");
+		arts_debug("Synth_RECORD: detaching");
 		if(haveSubSys) as->detachConsumer();
 
 		if(inblock)

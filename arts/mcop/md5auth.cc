@@ -43,6 +43,7 @@
 
 #include "md5.h"
 #include "md5auth.h"
+#include "debug.h"
 
 struct random_info {
 	struct timeval tv;
@@ -153,8 +154,8 @@ static int md5_load_cookie(const char *filename, char *cookie)
 					return 1;
 				}
 			}
-			fprintf(stderr,"mcop warning: "
-					"authority file has wrong size (just being written?)\n");
+			arts_warning("MCOP: "
+					"authority file has wrong size (just being written?)");
 			sleep(1);
 		}
 	}
@@ -190,10 +191,8 @@ void md5_auth_init_seed(const char *seedname)
 void md5_auth_set_cookie(const char *cookie)
 {
 	if(strlen(cookie) != MD5_COOKIE_LEN)
-	{
-		fprintf(stderr,"bad md5 cookie\n");
-		exit(1);
-	}
+		arts_fatal("bad md5 cookie");
+
 	strncpy(md5_cookie,cookie,MD5_COOKIE_LEN);
 	md5_cookie[MD5_COOKIE_LEN] = 0;
 	md5_init = 1;

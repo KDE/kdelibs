@@ -22,6 +22,7 @@
 
 #include "dynamicrequest.h"
 #include "core.h"
+#include "debug.h"
 #include <iostream.h>
 
 using namespace Arts;
@@ -128,7 +129,7 @@ bool DynamicRequest::invoke(const AnyRef& returnCode)
 
 		if(d->methodID == -1)
 		{
-			cerr << "DynamicRequest: invalid method called" << endl;
+			arts_warning("DynamicRequest: invalid method called");
 			return false;
 		}
 	}

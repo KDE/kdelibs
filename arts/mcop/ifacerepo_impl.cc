@@ -21,6 +21,7 @@
     */
 
 #include "ifacerepo_impl.h"
+#include "debug.h"
 #include <iostream>
 #include <stdio.h>
 
@@ -127,7 +128,7 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 					string filename = string(EXTENSION_DIR)
 					                + "/" + types->front();
 
-					cout << "InterfaceRepo: loading " << filename << endl;
+					arts_debug("InterfaceRepo: loading %s", filename.c_str());
 
 					FILE *extfile = fopen(filename.c_str(),"r");
 					Buffer b;
@@ -147,8 +148,8 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 
 	if(def.name == "")
 	{
-		cout << "MCOP error: no information about the interface "
-			 << name << " is known" << endl;
+		arts_warning("InterfaceRepo: no information about the interface %s "
+					 "is known", name.c_str());
 	}
 		 
 	return def;
@@ -168,8 +169,8 @@ TypeDef InterfaceRepo_impl::queryType(const string& name)
 		}
 	}
 
-	cout << "MCOP error: no information about the type "
-		 << name << " is known" << endl;
+	arts_warning("InterfaceRepo: no information about the type %s is known.",
+		name.c_str());
 	return TypeDef();
 }
 
@@ -187,8 +188,8 @@ EnumDef InterfaceRepo_impl::queryEnum(const string& name)
 		}
 	}
 
-	cout << "MCOP error: no information about the enum "
-		 << name << " is known" << endl;
+	arts_warning("InterfaceRepo: no information about the enum %s is known.",
+		name.c_str());
 	return EnumDef();
 }
 

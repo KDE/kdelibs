@@ -217,8 +217,7 @@ void Cache::shutdown()
 		}
 		else
 		{
-			cerr << "warning: cache shutdown while still active"
-			        " objects in cache" << endl;
+			arts_warning("cache shutdown while still active objects in cache");
 		}
 	}
 }

@@ -22,6 +22,7 @@
 
 #include "mcoputils.h"
 #include "mcopconfig.h"
+#include "debug.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -40,35 +41,21 @@ string MCOPUtils::createFilePath(string name)
 
 	string tmpdir = "/tmp/mcop-"+logname;
 	if(mkdir(tmpdir.c_str(),0700) != 0 && errno != EEXIST)
-	{
-		cerr << "MCOP error: can't create " << tmpdir <<
-		        " (" << strerror(errno) << ")" << endl;
-		exit(1);
-	}
+		arts_fatal("can't create %s (%s)", tmpdir.c_str(),strerror(errno));
 
 	/** check that /tmp/mcop-<username>/ is a secure temporary dir **/
 	struct stat st;
 	if(lstat(tmpdir.c_str(),&st) != 0)
-	{
-		cerr << "MCOP error: can't stat " << tmpdir <<
-		        " (" << strerror(errno) << ")" << endl;
-		exit(1);
-	}
+		arts_fatal("can't stat %s (%s)", tmpdir.c_str(),strerror(errno));
+
 	if (st.st_uid != getuid ())
-    {
-		cerr << "MCOP error: " << tmpdir << " not owned by user" << endl;
-		exit(1);
-	}
+		arts_fatal("%s is not owned by user", tmpdir.c_str());
+
 	if(st.st_mode & 0077)
-	{
-		cerr << "MCOP error: " << tmpdir << " accessible by others" << endl;
-		exit(1);
-	}
+		arts_fatal("%s is accessible owned by user", tmpdir.c_str());
+
 	if(!S_ISDIR(st.st_mode))
-	{
-		cerr << "MCOP error: " << tmpdir << " is not a directory" << endl;
-		exit(1);
-	}
+		arts_fatal("%s is not a directory", tmpdir.c_str());
 
 	string::iterator si;
 	for(si = name.begin(); si != name.end(); si++)

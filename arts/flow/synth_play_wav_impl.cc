@@ -25,6 +25,7 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
 #include "utils.h"
+#include "debug.h"
 #include "cachedwav.h"
 #include "convert.h"
 #include <stdio.h>
@@ -99,21 +100,21 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 
 	if(lstat(filename.c_str(),&oldstat) == -1)
 	{
-		cerr << "CachedWav: Can't stat file '" << filename << "'" << endl;
+		arts_info("CachedWav: Can't stat file '%s'", filename.c_str());
 		return;
 	}
 
 	file = afOpenFile(filename.c_str(), "r", NULL);
 	if(!file)
 	{
-		cerr << "CachedWav: Can't read file '" << filename << "'" << endl;
+		arts_info("CachedWav: Can't read file '%s'", filename.c_str());
 		return;
 	}
 
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	if(frameCount <= 0)
 	{
-		cerr << "CachedWav: Invalid length for '" << filename << "'" << endl;
+		arts_info("CachedWav: Invalid length for '%s'", filename.c_str());
 		afCloseFile(file);
 		return;
 	}
@@ -124,10 +125,10 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	// we want everything converted to little endian unconditionally
 	afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_LITTLEENDIAN);
 
-	printf("loaded wav %s\n",filename.c_str());
-	printf("  sample format: %d, sample width: %d\n",
+	arts_debug("loaded wav %s\n",filename.c_str());
+	arts_debug("  sample format: %d, sample width: %d\n",
 		sampleFormat,sampleWidth);
-	printf("  channelCount: %d\n",channelCount);
+	arts_debug("  channelCount: %d\n",channelCount);
 
 	// different handling required for other sample widths
 	assert(sampleWidth == 16 || sampleWidth == 8);

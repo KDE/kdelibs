@@ -47,7 +47,7 @@ SoundServerJob::~SoundServerJob()
 
 PlayWavJob::PlayWavJob(const string& filename) :terminated(false)
 {
-	printf("Play '%s'!\n",filename.c_str());
+	arts_debug("play '%s'!\n",filename.c_str());
 
 	connect(wav,out);
 	wav.filename(filename);
@@ -245,7 +245,7 @@ void SimpleSoundServer_impl::notifyTime()
 		{
 			delete job;
 			jobs.erase(i);
-			cout << "job finished" << endl;
+			arts_debug("job finished");
 			i = jobs.begin();
 		}
 		else i++;
@@ -261,7 +261,7 @@ void SimpleSoundServer_impl::notifyTime()
 		if(asCount > 300)
 		{
 			Dispatcher::the()->flowSystem()->suspend();
-			cout << "[artsd] suspend" << endl;
+			arts_info("suspend");
 		}
 	}
 	else

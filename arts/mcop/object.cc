@@ -25,6 +25,7 @@
 #include "flowsystem.h"
 #include "weakreference.h"
 #include "namedstore.h"
+#include "debug.h"
 #include <stdio.h>
 #include <iostream>
 
@@ -92,8 +93,8 @@ Object_base::~Object_base()
 {
 	if(!_deleteOk)
 	{
-		cerr << "error: reference counting violation - you may not" << endl;
-		cerr << "       call delete manually - use _release() instead" << endl;
+		arts_fatal("reference counting violation - you may not call delete "
+		           "manually - use _release() instead");
 	}
 	assert(_deleteOk);
 
@@ -358,8 +359,7 @@ void Object_skel::_useRemote()
 	Connection *conn = Dispatcher::the()->activeConnection();
 	if(_remoteSendCount == 0)
 	{
-		cerr << "warning: _useRemote without prior _copyRemote() -"
-					" this might fail sometimes" << endl;
+		arts_warning("_useRemote without prior _copyRemote() - this might fail sometimes");
 	}
 	else
 	{
@@ -382,8 +382,7 @@ void Object_base::_cancelCopyRemote()
 
 	if(_skel()->_remoteSendCount == 0)
 	{
-		cerr << "warning: _cancelCopyRemote without prior _copyRemote() -"
-					" this might fail sometimes" << endl;
+		arts_warning("_cancelCopyRemote without prior _copyRemote() - this might fail sometimes");
 	}
 	else _skel()->_remoteSendCount--;
 }
@@ -408,7 +407,7 @@ void Object_skel::_disconnectRemote(Connection *conn)
 	}
 
 	while(rcount) {
-		cerr << "client disconnected: dropped one object reference" << endl;
+		arts_debug("client disconnected: dropped one object reference");
 		rcount--;
 		_release();
 	}
@@ -427,8 +426,8 @@ void Object_skel::_referenceClean()
 		}
 		else
 		{
-			cerr << "_referenceClean: found unused " << _interfaceName()
-			     << " object marked by _copyRemote => releasing" << endl;
+			arts_debug("_referenceClean: found unused object marked by "
+			           "_copyRemote => releasing");
 			_remoteSendCount = 0;
 			_refCnt++;
 			_release();
@@ -598,8 +597,9 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 		}
 		mcount++;
 	}
-	cout << "warning: _lookupMethod " << md.type << " " << md.name << " failed." << endl;
-	cout << "  this is caused by incompatible IDL files and is likely to result in crashes" << endl; 
+	arts_warning("_lookupMethod %s %s failed a this is caused by "
+	             "incompatible IDL files and is likely to result in crashes",
+				 md.type.c_str(),md.name.c_str());
 	return -1;
 }
 

@@ -85,7 +85,7 @@ public:
 		haveSubSys = as->attachProducer(this);
 		if(!haveSubSys)
 		{
-			printf("Synth_PLAY: audio subsystem is already used\n");
+			arts_info("Synth_PLAY: audio subsystem is already used");
 			return;
 		}
 
@@ -94,14 +94,14 @@ public:
 		{
 			if(Dispatcher::the()->flowSystem()->suspended())
 			{
-				cerr << "[artsd] /dev/dsp currently unavailable (retrying)\n";
+				arts_info("/dev/dsp currently unavailable (retrying)");
 				Dispatcher::the()->ioManager()->addTimer(1000, this);
 				retryOpen = true;
 			}
 			else
 			{
-				printf("Synth_PLAY: audio subsystem init failed\n");
-				printf("ASError = %s\n",as->error());
+				arts_info("Synth_PLAY: audio subsystem init failed\n");
+				arts_info("ASError = %s\n",as->error());
 			}
 		}
 	}
@@ -114,14 +114,13 @@ public:
 		if(audiofd >= 0)
 		{
 			streamStart();
-			cerr << "[artsd] ok" << endl;
+			arts_info("/dev/dsp ok");
 			Dispatcher::the()->ioManager()->removeTimer(this);
 			retryOpen = false;
 		}
 	}
 
 	void streamStart() {
-		//cout << "Synth_PLAY: streamStart() called." << endl;
 		if(audiofd >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();
@@ -136,7 +135,7 @@ public:
 		if(retryOpen)
 			Dispatcher::the()->ioManager()->removeTimer(this);
 
-		artsdebug("Synth_PLAY: closing audio fd\n");
+		arts_debug("Synth_PLAY: closing audio fd");
 		if(audiofd >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();
@@ -187,12 +186,7 @@ public:
 	 */
 	void notifyIO(int fd, int type)
 	{
-		if(!as->running())
-		{
-			printf("Synth_PLAY: got notifyIO while audio subsystem"
-				 	"is down\n");
-			return;
-		}
+		arts_return_if_fail(as->running());
 		assert(fd == audiofd);
 
 		if(inProgress)

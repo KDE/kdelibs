@@ -31,6 +31,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include "x11globalcomm.h"
+#include "debug.h"
 #include <iostream>
 
 using namespace std;
@@ -44,9 +45,9 @@ protected:
 	map<string,string> propertyMap;
 	bool init;
 
-	void warn(string what)
+	void warn(const char *what)
 	{
-		cerr << "X11GlobalComm warning: " << what << endl;
+		arts_warning("X11GlobalComm: %s", what);
 	}
 public:
 	X11GlobalComm_impl() :rootWin(0), atom(0)

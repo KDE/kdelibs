@@ -75,7 +75,7 @@ void Connection::receive(unsigned char *data, long len)
 	rcbuf->write(data,len);
 
 #ifdef DEBUG_IO
-	printf("read %ld bytes\n",len);
+	arts_debug("read %ld bytes",len);
 #endif
 
 	if(remaining == 0)

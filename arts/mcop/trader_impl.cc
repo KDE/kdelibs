@@ -1,4 +1,5 @@
 #include "core.h"
+#include "debug.h"
 #include <iostream>
 #include <fstream>
 #include <sys/types.h>
@@ -95,7 +96,7 @@ TraderOffer_impl::TraderOffer_impl(const string& interfaceName,
 			char c = *i;
 			unsigned char uc = static_cast<unsigned char>(c);
 
-			if(c == '\n') cout << "mcop warning: newline in trader" << endl;
+			if(c == '\n') arts_warning("newline in trader");
 
 			if(state == sKey)
 			{
@@ -203,7 +204,7 @@ TraderHelper::~TraderHelper()
 
 void TraderHelper::addDirectory(const string& directory, const string& iface)
 {
-	cout << "addDirectory(" << directory << "," << iface << ");" << endl;
+	arts_debug("addDirectory(%s,%s)", directory.c_str(), iface.c_str());
 	DIR *dir = opendir(directory.c_str());
 	if(!dir) return;
 

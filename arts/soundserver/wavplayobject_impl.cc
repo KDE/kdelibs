@@ -6,6 +6,7 @@
 #include "cachedwav.h"
 #include "stdsynthmodule.h"
 #include "convert.h"
+#include "debug.h"
 #include <iostream>
 #include <math.h>
 
@@ -29,12 +30,12 @@ public:
 	 */
 	WavPlayObject_impl() :wav(0), flpos(0.0), _state(posIdle)
 	{
-		cout << "WavPlayObject_impl" << endl;
+		arts_debug("WavPlayObject_impl");
 	}
 
 	virtual ~WavPlayObject_impl()
 	{
-		cout << "~WavPlayObject_impl" << endl;
+		arts_debug("~WavPlayObject_impl");
 		if(wav) wav->decRef();
 	}
 
@@ -43,7 +44,7 @@ public:
 	 */
 	
 	bool loadMedia(const string &filename) {
-		cout << "loadMedia" << endl;
+		arts_debug("Wav: loadMedia %s", filename.c_str());
 		wav = CachedWav::load(Cache::the(), filename);
 		return (wav != 0);
 	}
@@ -84,12 +85,12 @@ public:
 	}
 
 	void play() {
-		cout << "play" << endl;
+		arts_debug("play");
 		_state = posPlaying;
 	}
 
 	void halt() {
-		cout << "stop" << endl;
+		arts_debug("stop");
 		_state = posIdle;
 		flpos = 0.0;
 	}
@@ -115,7 +116,7 @@ public:
 	}
 
 	void pause() {
-		cout << "pause" << endl;
+		arts_debug("pause");
 		_state = posPaused;
 	}
 
@@ -125,11 +126,11 @@ public:
 	 */
 
 	void streamInit() {
-		cout << "streamInit" << endl;
+		arts_debug("streamInit");
 	}
 
 	void streamStart() {
-		cout << "streamStart" << endl;
+		arts_debug("streamStart");
 	}
 
 	void calculateBlock(unsigned long samples) {
@@ -161,7 +162,7 @@ public:
 	}
 
 	void streamEnd() {
-		cout << "streamEnd" << endl;
+		arts_debug("streamEnd");
 	}
 };
 

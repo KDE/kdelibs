@@ -32,6 +32,7 @@
 #include "synthschedule.h"
 #include "tcpserver.h"
 #include "cpuusage.h"
+#include "debug.h"
 
 using namespace std;
 using namespace Arts;
@@ -59,6 +60,8 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
+	fprintf(stderr,"-l <level>          information level\n");
+	fprintf(stderr,"  3: quiet, 2: warnings, 1: info, 0: debug\n");
 	exit(1);	
 }
 
@@ -67,12 +70,13 @@ static int  					cfgSamplingRate	= 0;
 static int  					cfgFragmentCount= 0;
 static int  					cfgFragmentSize	= 0;
 static int  					cfgPort			= 0;
+static int  					cfgDebugLevel	= 1;
 static bool  					cfgFullDuplex	= 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hd")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hdl:")) > 0)
 	{
 		switch(optch)
 		{
@@ -86,6 +90,8 @@ static void handleArgs(int argc, char **argv)
 			case 'S': cfgFragmentSize = atoi(optarg);
 				break;
 			case 'd': cfgFullDuplex = true;
+				break;
+			case 'l': cfgDebugLevel = atoi(optarg);
 				break;
 			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
 				break;
@@ -155,6 +161,8 @@ static void cleanUnusedReferences()
 int main(int argc, char **argv)
 {
 	handleArgs(argc, argv);
+
+	Debug::init("[artsd]", static_cast<Debug::Level>(cfgDebugLevel));
 
 	if(cfgPort)			 TCPServer::setPort(cfgPort);
 

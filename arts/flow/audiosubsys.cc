@@ -485,7 +485,7 @@ void AudioSubSystem::handleIO(int type)
 				 * output data as well. Bad luck. Might produce a
 				 * buffer underrun - but we can't help here.
 				 */
-				printf("FULL DUPLEX WARNING: client->needMore() failed; no more data available\n");
+				arts_info("full duplex: no more data available (underrun)");
 				return;
 			}
 		}
@@ -528,7 +528,7 @@ void AudioSubSystem::read(void *buffer, int size)
 
 		int rc = select(audio_fd+1,&readfds,NULL,NULL,&select_timeout);
 		if(rc <= 0)
-			cout << "full duplex: timeout occured" << endl;
+			arts_info("full duplex: timeout occured");
 		handleIO(ioRead);
 	}
 	int rSize = rBuffer.read(size,buffer);

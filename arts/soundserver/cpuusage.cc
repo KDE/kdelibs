@@ -1,5 +1,6 @@
 #include "cpuusage.h"
 #include "dispatcher.h"
+#include "debug.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -96,12 +97,9 @@ void CPUUsage::check()
 		else
 			d->stalled=0;
 
+		// ok, cancel synthesis due to cpu overload! brutal method
 		if(d->stalled > 15)
-		{
-			// ok, cancel synthesis due to cpu overload! brutal method
-			cerr << "[artsd] cpu overload, aborting" << endl;
-			abort();
-		}
+			arts_fatal("cpu overload, aborting");
 	}
 
 	// prepare for next checkpoint

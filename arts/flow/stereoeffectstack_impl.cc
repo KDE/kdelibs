@@ -23,6 +23,7 @@
 #include "artsflow.h"
 #include "flowsystem.h"
 #include "stdsynthmodule.h"
+#include "debug.h"
 #include <iostream>
 
 using namespace std;
@@ -135,8 +136,8 @@ public:
 			else ei++;
 		}
 		if(!found) {
-			cout << "StereoEffectStack::remove failed. id "
-					<< ID << "not found?" << endl;
+			arts_warning("StereoEffectStack::remove failed. id %d not found?",
+							ID);
 		}
 		reconnect();
 	}

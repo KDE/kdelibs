@@ -89,7 +89,6 @@ public:
 	enum { packetCapacity = 4096 };
 	void handle_eof()
 	{
-		cout << "EOF" << endl;
 		/*
 		 * cleanup
 		 */

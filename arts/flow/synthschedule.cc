@@ -339,10 +339,7 @@ void StdScheduleNode::accessModule()
 
 	module = (SynthModule_base *)_object->_cast("Arts::SynthModule");
 	if(!module)
-	{
-		cerr << "Only SynthModule derived classes should carry streams."
-			<< endl;
-	}
+		arts_warning("Only SynthModule derived classes should carry streams.");
 }
 
 StdScheduleNode::StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem) : ScheduleNode(object)
@@ -579,17 +576,17 @@ void StdScheduleNode::disconnect(string port,
 
 AttributeType StdScheduleNode::queryFlags(const std::string& port)
 {
-	cout << "findPort(" << port << ")" << endl;
-	cout << "have " << ports.size() << " ports" << endl;
+	arts_debug("findPort(%s)", port.c_str());
+	arts_debug("have %ld ports", ports.size());
 	Port *p1 = findPort(port);
-	cout << "done" << endl;
+	arts_debug("done");
 
 	if(p1)
 	{
-		cout << "result" << (long)p1->flags() << endl;
+		arts_debug("result %d",(long)p1->flags());
 		return p1->flags();
 	}
-	cout << "failed" << endl;
+	arts_debug("failed");
 	return (AttributeType)0;
 }
 
@@ -840,7 +837,7 @@ void StdFlowSystem::stopObject(Object node)
 void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 					Object destObject, const std::string& destPort)
 {
-	cout << "connect port " << sourcePort << " to " << destPort << endl;
+	arts_debug("connect port %s to %s", sourcePort.c_str(), destPort.c_str());
 	StdScheduleNode *sn =
 		(StdScheduleNode *)sourceObject._node()->cast("StdScheduleNode");
 	assert(sn);
@@ -868,7 +865,7 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 		receiver = remoteFs.createReceiver(destObject, destPort, FlowSystemSender::_from_base(netsend));
 
 		netsend->setReceiver(receiver);
-		cout << "connected an asyncnetsend" << endl;		
+		arts_debug("connected an asyncnetsend");
 	}
 }
 
@@ -908,7 +905,7 @@ FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
 
 	if(ap)
 	{
-		cout << "creating packet receiver" << endl;
+		arts_debug("creating packet receiver");
 		/*
 		 * TODO: FIXME: this is to prevent the receiver from just disappearing
 		 * which has the disadvantage that then datapackets which are still

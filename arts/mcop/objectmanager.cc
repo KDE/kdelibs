@@ -26,6 +26,7 @@
 #include "objectmanager.h"
 #include "dispatcher.h"
 #include "extensionloader.h"
+#include "debug.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <iostream>
@@ -91,11 +92,13 @@ Object_skel *ObjectManager::create(string name)
 			}
 		}
 		else {
-			cerr << "MCOP ObjectManager: warning: Could not load extension " << library << endl;
+			arts_warning("MCOP ObjectManager: Could not load extension %s.",
+							library.c_str());
 			delete e;
 		}
 	}
-	cerr << "MCOP ObjectManager: warning: can't find implementation for " << name << endl;
+	arts_warning("MCOP ObjectManager: can't find implementation for %s.",
+							name.c_str());
 	return 0;
 }
 
