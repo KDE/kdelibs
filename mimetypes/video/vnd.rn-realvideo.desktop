@@ -1,8 +1,27 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-MimeType=audio/vnd.rn-realvideo
+MimeType=video/vnd.rn-realvideo
 Icon=video
 Patterns=*.rv;*.RV;
 Comment=RealVideo File
+Comment[be]=Файл RealAudio
+Comment[bg]=Файл на RealVideo
+Comment[ca]=Fitxer de RealVideo
+Comment[cs]=Soubor RealVideo
+Comment[da]=RealVideo fil
+Comment[de]=RealVideo-Datei
+Comment[es]=Archivo de RealVideo
+Comment[fi]=RealVideo-tiedosto
+Comment[fr]=Fichier RealVideo
+Comment[he]=קובץ RealVideo
+Comment[hu]=RealVideo fájl
+Comment[it]=File RealVideo
+Comment[pt]=Ficheiro RealVideo
+Comment[pt_BR]=Arquivo RealVideo
+Comment[sr]=RealVideo фајл
+Comment[sv]=Realvideo-fil
+Comment[tr]=RealVideo Dosyası
+Comment[uk]=Файл RealVideo
+Comment[uz]=RealVideo-файли
 
