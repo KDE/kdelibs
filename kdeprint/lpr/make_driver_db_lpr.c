@@ -1,3 +1,4 @@
+#include <config.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -47,7 +48,7 @@ int parseApsFile(const char *filename, FILE *output)
 		if (d)
 		{
 			*d = 0;
-			strncpy(modelname, d+1, 255);
+			strlcpy(modelname, d+1, 255);
 			simplifyModel(modelname);
 			fprintf(output, "MANUFACTURER=%s\n", buf);
 			fprintf(output, "MODELNAME=%s\n", modelname);
@@ -56,7 +57,7 @@ int parseApsFile(const char *filename, FILE *output)
 		}
 		else
 		{
-			strncpy(modelname, buf, 255);
+			strlcpy(modelname, buf, 255);
 			simplifyModel(modelname);
 			fprintf(output, "MANUFACTURER=Unknown\n");
 			fprintf(output, "MODELNAME=%s\n", modelname);
@@ -126,9 +127,9 @@ int parseIfhpFile(const char *filename, FILE *output)
 		if (*c == '#')
 			continue;
 		if (strncmp(c, "IfhpModel:", 10) == 0)
-			strncpy(model, nextWord(c+11), 31);
+			strlcpy(model, nextWord(c+11), 31);
 		else if (strncmp(c, "Description:", 12) == 0)
-			strncpy(desc, nextWord(c+13), 255);
+			strlcpy(desc, nextWord(c+13), 255);
 		else if (strncmp(c, "EndEntry", 8) == 0)
 		{
 			char	*d = desc, *e, make[32] = {0};
@@ -142,14 +143,14 @@ int parseIfhpFile(const char *filename, FILE *output)
 				{
 					char	*f = strchr(d, ' ');
 					if (f)
-						strncpy(make, d, f-d);
+						strlcpy(make, d, f-d);
 					first_time = 0;
 				}
 				if (strstr(d, "Family") == NULL)
 				{
 					char	modelname[256] = {0};
 
-					strncpy(modelname, d, 255);
+					strlcpy(modelname, d, 255);
 					simplifyModel(modelname);
 					fprintf(output, "FILE=lprngtool/%s\n", model);
 					fprintf(output, "MANUFACTURER=%s\n", make);
