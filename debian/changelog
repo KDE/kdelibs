@@ -1,3 +1,9 @@
+kdelibs (4:3.1.90+cvs20030109-2) unstable; urgency=low
+
+  * HEAD build 
+
+ -- David Pashley <david@davidpashley.com>  Thu,  9 Jan 2003 18:21:22 +0000
+
 kdelibs (4:3.0.99+cvs20021212-1) unstable; urgency=low
 
   * New Upstream.
