@@ -363,13 +363,12 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
 KSocket::~KSocket()
 {
-	delete readNotifier;
-	delete writeNotifier;
- 	kdDebug() << "~KSocket " << sock << endl;
-	if (sock != -1) {
-	  kdDebug() << "closing " << sock << endl;
-          ::close( sock );
-    }
+  delete readNotifier;
+  delete writeNotifier;
+  
+  if (sock != -1) {
+    ::close( sock );
+  }
 }
 
 
