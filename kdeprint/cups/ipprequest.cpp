@@ -148,7 +148,7 @@ void IppRequest::init()
 		request_ = 0;
 	}
 	request_ = ippNew();
-	kdDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
+	//kdDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
         QCString langstr = KGlobal::locale()->language().latin1();
 	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)
