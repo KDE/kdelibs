@@ -1,4 +1,4 @@
-/*  $Id:$
+/*  $Id$
 
     This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)
@@ -40,6 +40,7 @@ class KIONetAccess : public QObject
 {
   Q_OBJECT
 
+public:
     /**
      * This function downloads a file from an arbitrary URL (source) to a
      * temporary file on the local filesystem (target). If the argument
