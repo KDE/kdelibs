@@ -30,6 +30,8 @@
 #define HTML_ELEMENT_H
 
 #include <dom/dom_element.h>
+#include <kdelibs_export.h>
+
 class KHTMLView;
 
 namespace DOM {
@@ -64,7 +66,7 @@ class HTMLCollection;
  * interface is reserved for future usage.
  *
  */
-class HTMLElement : public Element
+class KHTML_EXPORT HTMLElement : public Element
 {
     friend class HTMLDocument;
     friend class ::KHTMLView;

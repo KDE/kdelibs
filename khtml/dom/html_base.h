@@ -32,6 +32,8 @@
 
 #include <dom/html_element.h>
 
+#include <kdelibs_export.h>
+
 namespace DOM {
 
 class HTMLBodyElementImpl;
@@ -45,7 +47,7 @@ class DOMString;
  * BODY element definition </a> in HTML 4.0.
  *
  */
-class HTMLBodyElement : public HTMLElement
+class KHTML_EXPORT HTMLBodyElement : public HTMLElement
 {
 public:
     HTMLBodyElement();
@@ -158,7 +160,7 @@ class DOMString;
  * FRAME element definition </a> in HTML 4.0.
  *
  */
-class HTMLFrameElement : public HTMLElement
+class KHTML_EXPORT HTMLFrameElement : public HTMLElement
 {
 public:
     HTMLFrameElement();
@@ -304,7 +306,7 @@ class DOMString;
  * FRAMESET element definition </a> in HTML 4.0.
  *
  */
-class HTMLFrameSetElement : public HTMLElement
+class KHTML_EXPORT HTMLFrameSetElement : public HTMLElement
 {
 public:
     HTMLFrameSetElement();
@@ -357,7 +359,7 @@ class HTMLIFrameElementImpl;
  * IFRAME element definition </a> in HTML 4.0.
  *
  */
-class HTMLIFrameElement : public HTMLElement
+class KHTML_EXPORT HTMLIFrameElement : public HTMLElement
 {
 public:
     HTMLIFrameElement();
@@ -531,7 +533,7 @@ class DOMString;
  * HEAD element definition </a> in HTML 4.0.
  *
  */
-class HTMLHeadElement : public HTMLElement
+class KHTML_EXPORT HTMLHeadElement : public HTMLElement
 {
 public:
     HTMLHeadElement();
@@ -572,7 +574,7 @@ class DOMString;
  * HTML element definition </a> in HTML 4.0.
  *
  */
-class HTMLHtmlElement : public HTMLElement
+class KHTML_EXPORT HTMLHtmlElement : public HTMLElement
 {
 public:
     HTMLHtmlElement();

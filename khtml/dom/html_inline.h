@@ -31,6 +31,8 @@
 
 #include <dom/html_element.h>
 
+#include <kdelibs_export.h>
+
 namespace DOM {
 class HTMLGenericElementImpl;
 class HTMLAnchorElementImpl;
@@ -42,7 +44,7 @@ class DOMString;
  * element definition </a> in HTML 4.0.
  *
  */
-class HTMLAnchorElement : public HTMLElement
+class KHTML_EXPORT HTMLAnchorElement : public HTMLElement
 {
 public:
     HTMLAnchorElement();
@@ -246,7 +248,7 @@ class HTMLBRElementImpl;
  * element definition </a> in HTML 4.0.
  *
  */
-class HTMLBRElement : public HTMLElement
+class KHTML_EXPORT HTMLBRElement : public HTMLElement
 {
 public:
     HTMLBRElement();
@@ -289,7 +291,7 @@ class DOMString;
  * deprecated in HTML 4.0.
  *
  */
-class HTMLFontElement : public HTMLElement
+class KHTML_EXPORT HTMLFontElement : public HTMLElement
 {
 public:
     HTMLFontElement();
@@ -359,7 +361,7 @@ class DOMString;
  * DEL </a> element definitions in HTML 4.0.
  *
  */
-class HTMLModElement : public HTMLElement
+class KHTML_EXPORT HTMLModElement : public HTMLElement
 {
 public:
     HTMLModElement();
@@ -417,7 +419,7 @@ class HTMLQuoteElementImpl;
  * element. To resolve ambiquities, we use this one for the \c Q
  * element only.
  */
-class HTMLQuoteElement : public HTMLElement
+class KHTML_EXPORT HTMLQuoteElement : public HTMLElement
 {
 public:
     HTMLQuoteElement();

@@ -29,6 +29,7 @@
 #include <qcstring.h>
 #include <qvaluelist.h>
 #include "kstreamsocket.h"
+#include <kdelibs_export.h>
 
 class KIOBufferBase;
 
@@ -48,7 +49,7 @@ class KBufferedSocketPrivate;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KBufferedSocket: public KStreamSocket
+class KDECORE_EXPORT KBufferedSocket: public KStreamSocket
 {
   Q_OBJECT
 public:
