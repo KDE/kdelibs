@@ -1,0 +1,382 @@
+# Makefile.in generated automatically by automake 1.1n from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy, distribute and modify it.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = true
+PRE_INSTALL = true
+POST_INSTALL = true
+NORMAL_UNINSTALL = true
+PRE_UNINSTALL = true
+POST_UNINSTALL = true
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CC = @CC@
+CXX = @CXX@
+LIBCOMPAT = @LIBCOMPAT@
+LIBSOCKET = @LIBSOCKET@
+LIBTOOL = @LIBTOOL@
+MISCOBJS = @MISCOBJS@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
+all_includes = @all_includes@
+all_libraries = @all_libraries@
+kde_includes = @kde_includes@
+kde_libraries = @kde_libraries@
+qt_includes = @qt_includes@
+qt_libraries = @qt_libraries@
+topdir = @topdir@
+x_includes = @x_includes@
+x_libraries = @x_libraries@
+
+MOC = @MOC@
+INCLUDES= -I@qt_includes@ -I@x_includes@ -I../kdecore
+EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
+CLEANFILES = *.moc
+SUFFIXES = .moc
+
+lib_LTLIBRARIES = libkdeui.la
+libkdeui_la_LDFLAGS = -version-info 0:7  -rpath $(libdir)
+
+include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
+		dither.h kdatepik.h kdatetbl.h kedit.h keditconstants.h \
+		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
+		ktreelist.h
+
+libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
+		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp kedit.cpp \
+		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
+		ktreelist.cpp
+
+BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
+		kselect.moc ktabctl.moc kdatepik.moc kedit.moc\
+		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
+		kfontdialog.moc
+
+data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libkdeui_la_LIBADD = 
+libkdeui_la_OBJECTS =  kledlamp.lo kprogress.lo kpanner.lo kcolordlg.lo \
+kselect.lo dither.lo kdatepik.lo kdatetbl.lo kedit.lo kfontdialog.lo \
+kmsgbox.lo kpopmenu.lo ktabctl.lo ktreelist.lo
+CXXFLAGS = @CXXFLAGS@
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+CXXLINK = $(LIBTOOL) --mode=link $(CXX) $(LDFLAGS) -o $@
+DATA =  $(data_DATA)
+
+HEADERS =  $(include_HEADERS)
+
+DIST_COMMON =  AUTHORS Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/dither.P .deps/kcolordlg.P .deps/kdatepik.P \
+.deps/kdatetbl.P .deps/kedit.P .deps/kfontdialog.P .deps/kledlamp.P \
+.deps/kmsgbox.P .deps/kpanner.P .deps/kpopmenu.P .deps/kprogress.P \
+.deps/kselect.P .deps/ktabctl.P .deps/ktreelist.P
+CXXMKDEP = $(CXX) -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+SOURCES = $(libkdeui_la_SOURCES)
+OBJECTS = $(libkdeui_la_OBJECTS)
+
+default: all
+
+.SUFFIXES:
+.SUFFIXES: .c .o .lo .cpp .moc
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu kdeui/Makefile
+
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(libdir)/$$p; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	rm -f *.o core
+
+clean-compile:
+
+distclean-compile:
+	rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	rm -f *.lo
+
+clean-libtool:
+	rm -rf .libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libkdeui.la: $(libkdeui_la_OBJECTS) $(libkdeui_la_DEPENDENCIES)
+	$(CXXLINK) -rpath lib $(libkdeui_la_LDFLAGS) $(libkdeui_la_OBJECTS) $(libkdeui_la_LIBADD) $(LIBS)
+.cpp.o:
+	$(CXXCOMPILE) -c $<
+.cpp.lo:
+	$(LTCXXCOMPILE) -c $<
+
+install-dataDATA: $(data_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(datadir)
+	@list='$(data_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(datadir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(datadir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(datadir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(datadir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-dataDATA:
+	$(NORMAL_UNINSTALL)
+	list='$(data_DATA)'; for p in $$list; do \
+	  rm -f $(datadir)/$$p; \
+	done
+
+install-includeHEADERS: $(include_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(includedir)
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  echo " $(INSTALL_DATA) $(srcdir)/$$p $(includedir)/$$p"; \
+	  $(INSTALL_DATA) $(srcdir)/$$p $(includedir)/$$p; \
+	done
+
+uninstall-includeHEADERS:
+	$(NORMAL_UNINSTALL)
+	list='$(include_HEADERS)'; for p in $$list; do \
+	  rm -f $(includedir)/$$p; \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES)
+	here=`pwd` && cd $(srcdir) && mkid -f$$here/ID $(SOURCES) $(HEADERS)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	done; \
+	test -z "$(ETAGS_ARGS)$(SOURCES)$(HEADERS)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $(SOURCES) $(HEADERS) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = kdeui
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+MKDEP = gcc -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+
+-include .deps/.P
+.deps/.P:
+	test -d .deps || mkdir .deps
+	echo > $@
+
+-include $(DEP_FILES)
+$(DEP_FILES): .deps/.P
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	rm -rf .deps
+
+.deps/%.P: $(srcdir)/%.c
+	@echo "Computing dependencies for $<..."
+	@o='o';				\
+	test -n "$o" && o='$$o';	\
+	$(MKDEP) $< | sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," > $@
+
+.deps/%.P: $(srcdir)/%.cpp
+	@echo "Computing dependencies for $<..."
+	@o='o';				\
+	$(CXXMKDEP) $< | sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," > $@
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: install-libLTLIBRARIES
+	@$(NORMAL_INSTALL)
+
+install-data: install-dataDATA install-includeHEADERS
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: uninstall-libLTLIBRARIES uninstall-dataDATA uninstall-includeHEADERS
+
+all: $(LTLIBRARIES) $(BUILT_SOURCES) $(DATA) $(HEADERS) Makefile
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
+installdirs:
+	$(mkinstalldirs)  $(libdir) $(datadir) $(includedir)
+
+
+mostlyclean-generic:
+	test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	rm -f Makefile $(DISTCLEANFILES)
+	rm -f config.cache config.log stamp-h
+	test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+clean:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean
+
+distclean:  distclean-libLTLIBRARIES distclean-compile distclean-libtool \
+		distclean-tags distclean-depend distclean-generic clean
+	rm -f config.status
+	rm -f libtool
+
+maintainer-clean:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: default mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-dataDATA install-dataDATA \
+uninstall-includeHEADERS install-includeHEADERS tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+%.moc: %.h
+	$(MOC) $< -o $@
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

@@ -1,0 +1,39 @@
+Matthias Kalle Dalheimer <kalle@kde.org>:
+classes KConfig, KTextStream, KColorSet, 
+automake, autoconf, maintenance
+
+Richard Moore <moorer@cs.man.ac.uk>:
+KLedLamp class
+
+Martynas Kunigelis <algikun@santaka.ktu.lt>:
+KProgress class
+
+Steffen Hansen <stefh@dit.ou.dk>:
+KURL class
+
+Torben Weis <weis@stud.uni-frankfurt.de>
+DnD stuff, KSocket and KServerSocket classes, KPixmap
+
+Alexander Sanda <alex@darkstar.ping.at>
+Read and write numerical config entries, KPanner, KTabControl,
+KPopupMenu, KMessageBox, KEdit widgets. 
+
+Martin Jones <mjones@powerup.com.au>
+Bugfixes in KPixmap and KURL, KColorDialog, KSelector
+
+Keith Brown <kbrown@pdq.net>
+KTreeList class
+
+Bernd Johannes Wuebben <wuebben@math.cornell.edu>
+KFontDialog class
+
+Tim D. Gilman <tdgilman@best.com>
+KDatePicker, KDateTable class
+
+Nicolas Hadacek <hadacek@via.ecp.fr>
+Key configuration classes, bug fixes
+
+
+
+
+

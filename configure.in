@@ -1,0 +1,87 @@
+# Original Author was Kalle@kde.org
+# I lifted it in some mater. (Stephan Kulow)
+# I used much code from Janos Farkas
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(acinclude.m4) dnl a source file from your sub dir
+AC_CANONICAL_SYSTEM 
+AC_ARG_PROGRAM
+
+dnl Automake doc recommends to do this only here. (Janos)
+AM_INIT_AUTOMAKE(kdebase, 0.7) dnl searches for some needed programs
+
+dnl We have a good optimizing compiler.
+test "$CFLAGS" = "" && CFLAGS="-O2 -Wall"
+test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
+test "$LDFLAGS" = "" && LDFLAGS="-s"
+
+dnl make $KDEDIR the default for the installation
+AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local})
+
+dnl version and name (not really needed)
+VERSION=0.7
+AC_SUBST(VERSION)
+PACKAGE=kdecore
+AC_SUBST(PACKAGE) 
+
+dnl generate the config header
+AM_CONFIG_HEADER(config.h) dnl at the distribution this done
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AM_PROG_LIBTOOL dnl for libraries
+
+dnl find out some variables (not supported yet)
+AC_AIX
+AC_MINIX
+
+dnl Checks for libraries.
+dnl Checks for the QT environment.  Set QTDIR if it's not in a standard place.
+dnl sets @qt_includes@ @qt_libraries@
+AC_PATH_QT
+AC_PATH_KDE
+
+dnl Checks for libraries. 
+AC_CHECK_LIB(qt, main)
+AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
+AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
+
+dnl Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h)
+all_includes="-I$x_includes -I$qt_includes -I$kde_includes"
+all_libraries="-L$x_libraries -L$qt_libraries -L$kde_libraries"
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_TIME
+
+dnl check if the compiler has bool
+AC_CHECK_BOOL
+
+dnl Checks for library functions. MISCOBJS is for kdecore
+AC_CHECK_FUNCS(socket)
+AC_CHECK_FUNC(setenv, [], MISCOBJS="$MISCOBJS setenv.lo")
+
+dnl Perform program name transformation
+AC_ARG_PROGRAM
+
+dnl output files
+topdir=`pwd`
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+AC_SUBST(x_includes)
+AC_SUBST(x_libraries)
+AC_SUBST(topdir)
+AC_SUBST(MISCOBJS)
+AC_SUBST(LIBSOCKET)
+AC_SUBST(LIBCOMPAT)
+
+AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile)

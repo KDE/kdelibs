@@ -1,0 +1,59 @@
+v0.7:		Default installation directory is $KDEDIR.
+			KPanner widget included
+			KPixmap reads formats other than XPM again
+			KPixmap::load returns bool (like QPixmap::load)
+			KTextStream removed, KConfig uses QTextStream
+			KConfig::writeEntry makes a deep copy of the value.
+			Changes from libkde 0.6.4 merged
+			KColorDialog widget included
+			Some patches to KURL applied
+			KMessageBox widget included
+			KPopupMenu included
+			KTabControl included
+			KTreeList included
+			KFontDialog included
+			KEdit included
+			KDatePicker and KDateTable included
+			KKeyConfig included and initialized in KApplication
+			some bugfixes to KConfig
+			KApplication::appName()
+			KApplication searches for app config file in
+				~/.kde/config/.appnamerc is USE_NEW_CONFIG_LOCATION is
+				set
+
+V0.6:		all method names start with a small letter
+			Read and write numerical config entries.
+			Possibility to set a logical app name in the KApplication 
+				constructor
+			State of the application config object can be queried.
+			Merged Torben´s changes to KApplication and DND stuff
+			Better XPM support from Matthias
+
+v0.5:		Drag and Drop stuff from kfm included into libkdecore
+(08.12.96)	(classes KDNDDropZone, KDNDIcon, KDNDWidget, KPixmap and
+				additions to KApplication) 
+			KSocket and KServerSocket included
+			Bugfix in KApplication's config handling
+
+v0.4:		new: libkdeui (contains KLedLamp and KProgress)
+(01.12.96)	kconfigtest should now handle writes to app-specific files
+				correctly 
+			new: KURL class in libkdecore
+			new: KApplication class in libkdecore
+			KConfig can now roll back changes.
+
+v0.3:		KTextStream class to provide a ReadLine() method
+(23.11.96)	config entries may contain spaces
+			KColorGroup class for reading/saving ColorGroups
+				from/to KConfig objects  
+
+v0.2:		Write access for the KConfig class.
+(20.11.96)	Documentation in the doc directory (generated directly from 
+				the header files with DOC++)
+
+v0.1a:		Check if the C++ compiler supports the bool datatype
+				(SPARCworks C++ 4.1 does not!) - not released
+
+v0.1:		KConfig class (same as stand alone version 0.2)
+			autoconf-configurable
+

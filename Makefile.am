@@ -1,0 +1,1 @@
+SUBDIRS = kdecore kdeui khtmlw 
