@@ -95,7 +95,7 @@ void KIOCopyProgressDlg::totalFiles( unsigned long _files )
 
 void KIOCopyProgressDlg::processedSize( unsigned long _bytes )
 {
-  if ( _bytes == 0 )
+  if ( _bytes == 0 || m_iTotalSize == 0 )
     return;
   
   m_iProcessedSize = _bytes;
