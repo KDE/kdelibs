@@ -554,7 +554,6 @@ void KListView::contentsDropEvent (QDropEvent* e)
 
 void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
-	kdDebug() << "dragmoveevent" << endl;
   if (acceptDrops() && acceptDrag (event))
 	{
 	  //Clean up the view
@@ -637,10 +636,8 @@ QListViewItem *KListView::lastItem() const
 
 void KListView::startDrag()
 {
-	kdDebug() << "startdrag" << endl;
   QDragObject *drag = dragObject();
   
- kdDebug() << "object " << drag << endl;
   if (!drag)
 	return;
 
@@ -810,7 +807,6 @@ void KListView::doneEditing(QListViewItem *item, int row)
 
 bool KListView::acceptDrag(QDropEvent* e) const
 {
-	kdDebug() << "accepting e " << e <<endl;
 	e->accept();
 	return true;
 }
