@@ -54,7 +54,10 @@ public:
   KProgress(QWidget *parent=0, const char *name=0, WFlags f = 0);
 
   /**
-   * Construct a progress bar with minimum, maximum and initial values.
+   * Construct a progress bar with a total number of steps.
+   * The totalSteps is the total number of steps that need to be completed for the operation which this progress
+   * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
+   * the first file, call setProgress(0); call setProgress(50) after examining the last file.
    */
   KProgress(int totalSteps, QWidget *parent=0, const char *name=0, WFlags f = 0);
 
@@ -70,7 +73,7 @@ public:
   void setTextEnabled(bool);
 
   /**
-   * @depricated Retrieves the current status, use progress() instead
+   * @deprecated Retrieves the current status, use progress() instead
    *
    * @see setValue()
    */
@@ -91,13 +94,13 @@ public:
   QString format() const;
 
   /**
-   * @depricated but kept for source compatibility with KDE2's KProgress.
+   * @deprecated but kept for source compatibility with KDE2's KProgress.
    * Use @ref setTotalSteps() instead
    */
   void setRange(int min, int max);
 
   /**
-   * @depricated used @ref totalSteps() instead
+   * @deprecated used @ref totalSteps() instead
    */
   int maxValue();
 
@@ -126,7 +129,7 @@ public slots:
   virtual void setProgress(int progress);
 
   /**
-    * @depricated. Use @ref setProgress(int) instead
+    * @deprecated. Use @ref setProgress(int) instead
     */
   void setValue(int progress);
 
