@@ -1,9 +1,7 @@
 #include "kautomount.h"
 #include "kio_job.h"
 #include "kio_error.h"
-
-// This function is implemeneted in kfmgui.cc and in kfmlib
-extern void openFileManagerWindow( const char *_url );
+#include "krun.h"
 
 /***********************************************************************
  *
@@ -32,7 +30,7 @@ void KAutoMount::slotFinished( int )
   QString mp = KIOJob::findDeviceMountPoint( m_strDevice );
 
   if ( m_bShowFilemanagerWindow )
-    openFileManagerWindow( mp );
+    KFileManager::getFileManager()->openFileManagerWindow( mp );
 
   // TODO: Fake update of window which contains the kdelnk file which is used for
   //       mount/unmount

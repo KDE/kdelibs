@@ -15,20 +15,19 @@
 #include <unistd.h>
 #include <string.h>
 
-// This function is implemeneted in kfmgui.cc and in kfmlib
-extern void openFileManagerWindow( const char *_url );
+KFileManager * KFileManager::pFileManager = 0L;
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
   
   if ( strcmp( _mimetype, "text/html" ) == 0 )
   {
-    openFileManagerWindow( _url );
+    KFileManager::getFileManager()->openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory" ) == 0 )
   {
-    openFileManagerWindow( _url );
+    KFileManager::getFileManager()->openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )

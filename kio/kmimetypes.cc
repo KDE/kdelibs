@@ -19,9 +19,6 @@
 #include <kurl.h>
 #include <kdebug.h>
 
-// This function is implemented in kfmgui.cc and in kfmlib
-extern void openFileManagerWindow( const char *_url );
-
 QDict<KMimeType>* KMimeType::s_mapTypes = 0L;
 KMimeType* KMimeType::s_pDefaultType = 0L;
 
@@ -555,7 +552,7 @@ bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
     QString mp2 = "file:";
     mp2 += mp;
     // Open a new window
-    openFileManagerWindow( mp2 );
+    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
   }
   else
   {    

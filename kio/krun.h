@@ -128,4 +128,29 @@ protected:
   static void shellQuote( string &_str );
 };
 
+
+/*
+ * This class handles the openFileManagerWindow call
+ * It is not implemented in libkio, so any program that wants to use it
+ * must derive from its class and override the method.
+ * At least konqueror and libkfm will do.
+ */ 
+class KFileManager
+{
+public:
+  KFileManager() { pFileManager = this; } ;
+  virtual ~KFileManager() {} ;
+
+  virtual void openFileManagerWindow( const char *_url ) = 0L;
+  
+  static KFileManager * getFileManager() { 
+    if (!pFileManager)
+      debug("PROGRAM ERROR : program uses a 'run' method in kio, but doesn't implement KFileManager::openFileManagerWindow(const char*)\n");
+    return pFileManager;
+  }
+
+private:
+  static KFileManager * pFileManager;
+};
+
 #endif
