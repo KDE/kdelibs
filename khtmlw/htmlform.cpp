@@ -40,29 +40,36 @@
 
 QString HTMLElement::encodeString( const QString &e )
 {
-	static char *special = "=&%+<>;";
+	static char *safe = "$-._!*(),"; /* RFC 1738 */
 	unsigned pos = 0;
 	QString encoded;
 	char buffer[5];
 
 	while ( pos < e.length() )
 	{
-		unsigned c = (unsigned char) e[pos];
+		unsigned char c = (unsigned char) e[pos];
 
-		if ( c == ' ' )
-			encoded += '+';
-		else if ( c > 127 || strchr( special, c ) )
+		if ( (( c >= 'A') && ( c <= 'Z')) ||
+		     (( c >= 'a') && ( c <= 'z')) ||
+		     (( c >= '0') && ( c <= '9')) ||
+		     (strchr(safe, c))
+		   )
 		{
-			debug( "c = %d", (int)c );
-			sprintf( buffer, "%%%02X", (int)c );
-			encoded += buffer;
+			encoded += c;
+		}
+		else if ( c == ' ' )
+		{
+			encoded += '+';
 		}
 		else if ( c == '\n' )
 		{
 			encoded += "%0D%0A";
 		}
 		else if ( c != '\r' )
-			encoded += c;
+		{
+			sprintf( buffer, "%%%02X", (int)c );
+			encoded += buffer;
+		}
 		pos++;
 	}
 
