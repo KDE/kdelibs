@@ -353,8 +353,8 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   l->addWidget(edit);
 
   completion = new KURLCompletion();
-  connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
-  connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
+  connect ( edit, SIGNAL (completion(const QString&)), completion, SLOT (make_completion()));
+  connect ( edit, SIGNAL (rotateDown()), completion, SLOT (make_rotation()));
   // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
   connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT ( insert(const QString&)));
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
