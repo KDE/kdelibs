@@ -73,8 +73,8 @@ KAutoConfig::~KAutoConfig(){
 }
 
 void KAutoConfig::addWidget(QWidget *widget, const QString &group){
-  d->widgets.append(widget);
   d->groups.insert(widget, group);
+  d->widgets.append(widget);
   QPtrList<QWidget> newAutoConfigWidget;
   d->autoWidgets.insert(widget, newAutoConfigWidget );
 }
@@ -135,7 +135,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 
   // Go through all of the children of the widgets and find all known widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget;
+  QWidget *widget = 0;
   bool usingDefaultValues = false;
   while ( (widget = it.current()) != 0 ) {
     ++it;
@@ -156,7 +156,7 @@ bool KAutoConfig::saveSettings() {
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget;
+  QWidget *widget = 0;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -209,7 +209,7 @@ bool KAutoConfig::hasChanged() const {
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget;
+  QWidget *widget = 0;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -242,7 +242,7 @@ bool KAutoConfig::isDefault() const {
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget;
+  QWidget *widget = 0;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -273,7 +273,7 @@ void KAutoConfig::resetSettings(){
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget;
+  QWidget *widget = 0;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
