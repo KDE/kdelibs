@@ -410,7 +410,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::UInt:
           return QVariant( readUnsignedNumEntry( pKey ) );
       case QVariant::Bool:
-          return QVariant( static_cast<int>(readBoolEntry( pKey )) );
+          return QVariant( readBoolEntry( pKey ), 0 );
       case QVariant::Double:
           return QVariant( readDoubleNumEntry( pKey ) );
 
