@@ -3,11 +3,11 @@
  * for using kab's addressbook files within other programs.
  * Parse it with kdoc to get the API documentation.
  * 
- * the KDE addressbook.
- * copyright:  (C) Mirko Sucker, 1998
+ * the KDE addressbook
+ * copyright:  (C) Mirko Sucker, 1998, 1999
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL
+ * mail to:    Mirko Sucker <mirko@kde.org>
+ * requires:   recent C++-compiler, at least Qt 2.0
  * $Revision$
  */
 
