@@ -1647,7 +1647,7 @@ void QIconViewItem::calcTmpText()
     if ( view->d->wordWrapIconText || !fm || !wordWrapDirty )
 	return;
     wordWrapDirty = FALSE;
-    
+
     int w = iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
 					   iconRect().width() ) - 4;
     if ( fm->width( itemText ) < w ) {
@@ -2129,6 +2129,7 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 	if ( !after || after == d->lastItem ) {
 	    d->lastItem->next = item;
 	    item->prev = d->lastItem;
+	    item->next = 0;
 	    d->lastItem = item;
 	} else {
 	    QIconViewItem *i = d->firstItem;
