@@ -134,9 +134,9 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QString attrIconSize = element.attribute( "iconSize" ).lower();
 
     if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
-      bar->setFullWidth( true );
+      bar->setFullSize( true );
     else
-      bar->setFullWidth( false );
+      bar->setFullSize( false );
 
     if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 )
     {

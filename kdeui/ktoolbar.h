@@ -313,18 +313,6 @@ public:
   int insertLineSeparator(int index=-1);
 
   /**
-   * @deprecated
-   * This function is deprecated and will be removed. Use @ref #insertWidget
-   * to insert anything.
-   * Inserts frame with specified width. You can get
-   * pointer to this frame with @ref #getFrame
-   * Frame can be autosized to full width.
-   * @see #setItemAutoSized
-   * @return Returns item index
-   */
-  int insertFrame(int id, int width, int index =-1);
-
-  /**
    * Insert a user-defined widget.  The widget @bf must have this
    * toolbar as its parent.
    *
@@ -579,23 +567,6 @@ public:
   void alignItemRight (int id, bool right = true);
 
   /**
-   * @deprecated
-   * This function is @deprecated and might be removed. Use @ref #insertWidget
-   * and @ref #getWidget instead.<br>
-   * Returns pointer to inserted frame. Wrong ids are not tested.
-   * Example:
-   * <pre>
-   * QFrame *frame = toolbar->getframe (frameid);
-   * </pre>
-   * You can do with this frame whatever you want,
-   * except change its height (hardcoded). If you change its width
-   * you will probbably have to call toolbar->@ref #updateRects (true)
-   * @see QFrame
-   * @see #updateRects
-   */
-  QFrame * getFrame (int id);
-
-  /**
    * Retrieve a pointer to an inserted widget.
    *
    * Wrong ids are not tested.
@@ -645,12 +616,6 @@ public:
    * Show item.
    */
   void showItem (int id);
-
-  /**
-   * Obsolete! This function has been replaced by @ref setFullSize().
-   * @deprecated
-   */
-  void setFullWidth(bool flag = true);
 
   /**
    * Set toolbar to full parent size (default).

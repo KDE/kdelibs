@@ -202,7 +202,7 @@ void KDockMainWindow::setMainDockWidget( KDockWidget* mdw )
       toolbar->setButton( 3, true );
       toolbar->setButton( 4, true );
 
-      toolbar->setFullWidth( false );
+      toolbar->setFullSize( false );
       toolbar->show();
       connect( toolbar, SIGNAL(toggled(int)), SLOT(slotToggled(int)) );
       addToolBar( toolbar );

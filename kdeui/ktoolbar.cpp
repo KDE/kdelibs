@@ -1529,32 +1529,6 @@ int KToolBar::insertLineSeparator( int index )
 }
 
 
-/********* Frame **********/
-/// inserts QFrame
-
-int KToolBar::insertFrame (int _id, int _size, int _index)
-{
-  debug ("insertFrame is deprecated. use insertWidget");
-
-  QFrame *frame;
-  bool mine = false;
-
-  // ok I'll do it for you;
-  frame = new QFrame (this);
-  mine = true;
-
-  KToolBarItem *item = new KToolBarItem(frame, KToolBarItem::Frame, _id, mine);
-
-  if (_index == -1)
-    d->m_items->append (item);
-  else
-    d->m_items->insert(_index, item);
-  item-> resize (_size, d->m_approxItemSize-2);
-  if (d->m_position != Flat)
-    item->show();
-  updateRects(true);
-  return d->m_items->at();
-}
 /* A poem all in G-s! No, any widget */
 
 int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
@@ -1618,7 +1592,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
     QToolTip::add( lined, tooltiptext );
   connect( lined, signal, receiver, slot );
   lined->setText(text);
-  item->resize(size, d->m_approxItemSize-2);
+  item->resize(size, fontMetrics().lineSpacing() + 5);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1668,7 +1642,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     size += fontMetrics().maxWidth() * 3;
   }
 
-  item->resize(size, 30);
+  item->resize(size, fontMetrics().lineSpacing() + 5);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1714,7 +1688,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     size += fontMetrics().maxWidth() * 3;
   }
   
-  item->resize(size, 30);
+  item->resize(size, fontMetrics().lineSpacing() + 5);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1745,7 +1719,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
 
-  item->resize(size, 30);
+  item->resize(size, fontMetrics().lineSpacing() + 5);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -2163,20 +2137,6 @@ KToolBarButton* KToolBar::getButton( int id )
   return 0;
 }
 
-QFrame *KToolBar::getFrame (int id)
-{
-  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
-    if (b->ID() == id )
-    {
-      if ( b->getItem()->inherits("QFrame") )
-        return ((QFrame *) b->getItem());
-      else
-        kdWarning(220) << "getFrame : item " << id << " is not a QFrame." << endl;
-      break;
-    }
-  return 0;
-}
-
 QWidget *KToolBar::getWidget (int id)
 {
   for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
@@ -2201,12 +2161,6 @@ KAnimWidget *KToolBar::animatedWidget( int id )
 
 
 /// Toolbar itself
-
-void KToolBar::setFullWidth(bool flag)
-{
-  fullSizeMode = flag;
-}
-
 void KToolBar::setFullSize( bool flag )
 {
   fullSizeMode = flag;
