@@ -194,6 +194,7 @@ bool DistributionListManager::save()
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
+  cfg.deleteGroup( mAddressBook->identifier() );
   cfg.setGroup( mAddressBook->identifier() );
   
   DistributionList *list;
