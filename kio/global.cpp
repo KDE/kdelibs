@@ -116,7 +116,7 @@ QString KIO::decodeFileName( const QString & _str )
 {
   QString str;
 
-  uint i = 0;
+  unsigned int i = 0;
   for ( ; i < _str.length() ; ++i )
   {
     if ( _str[i]=='%' )
