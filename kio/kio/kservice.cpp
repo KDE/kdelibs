@@ -144,12 +144,11 @@ KService::init( KDesktopFile *config )
   if ( (m_strType == "Application") &&
        (!resource.isEmpty()) &&
        (resource != "apps") &&
-       (resource != "vfolder") &&
        !absPath)
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << " but is located under \"" << resource
-           << "\" instead of \"apps\" or \"vfolder\"" << endl;
+           << "\" instead of \"apps\"" << endl;
     m_bValid = false;
     return;
   }
