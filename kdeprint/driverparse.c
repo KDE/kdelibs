@@ -134,7 +134,7 @@ void readValue(FILE *f, char *value, int len)
 	value[p] = 0;
 }
 
-int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model)
+int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model, char* recomm)
 {
 	char	filePath[256];
 	FILE	*xmlFile;
@@ -145,7 +145,7 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 	xmlFile = fopen(filePath, "r");
 	if (xmlFile == NULL)
 		return 0;
-	while (!feof(xmlFile) && n < 2)
+	while (!feof(xmlFile) && n < 3)
 	{
 		tag[0] = 0;
 		nextTag(xmlFile, tag, 32);
@@ -153,10 +153,12 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 		{
 			char	*c;
 
-			if (strcmp(tag, "make") == 0)
+			if (!make[0] && strcmp(tag, "make") == 0)
 				c = make;
-			else if (strcmp(tag, "model") == 0)
+			else if (!model[0] && strcmp(tag, "model") == 0)
 				c = model;
+			else if (!recomm[0] && strcmp(tag, "driver") == 0)
+				c = recomm;
 			else
 				continue;
 			n++;
@@ -170,7 +172,7 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 int parseMaticFile(const char *driver, FILE *output)
 {
 	FILE	*drFile;
-	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0};
+	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0}, recomm[64] = {0};
 	char	id[128];
 	char	path[256], *c;
 
@@ -194,11 +196,14 @@ int parseMaticFile(const char *driver, FILE *output)
 				fprintf(output, "FILE=foomatic/%s/%s\n", id+8, name);
 				make[0] = 0;
 				model[0] = 0;
-				getMaticPrinterInfos(path, id, make, model);
+				recomm[0] = 0;
+				getMaticPrinterInfos(path, id, make, model, recomm);
 				fprintf(output, "MANUFACTURER=%s\n", make);
 				fprintf(output, "MODELNAME=%s\n", model);
 				fprintf(output, "MODEL=%s\n", model);
 				fprintf(output, "DESCRIPTION=%s %s (Foomatic + %s)\n", make, model, name);
+				if (recomm[0] && strcmp(name, recomm) == 0)
+					fprintf(output, "RECOMMANDED=yes\n");
 				fprintf(output, "\n");
 			}
 			else if (strcmp(tag, "/printers") == 0)

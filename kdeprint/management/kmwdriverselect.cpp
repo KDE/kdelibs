@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -66,10 +66,19 @@ void KMWDriverSelect::initPrinter(KMPrinter *p)
 	if (m_entries)
 	{
 		KMDBEntryListIterator	it(*m_entries);
+		int	recomm(0);
 		for (;it.current();++it)
-			m_list->insertItem(it.current()->description);
+		{
+			QString	s(it.current()->description);
+			if (it.current()->recommanded)
+			{
+				recomm = m_list->count();
+				s.append(i18n(" [recommanded]"));
+			}
+			m_list->insertItem(s);
+		}
 		if (m_entries->count() > 0)
-			m_list->setSelected(0,true);
+			m_list->setSelected(recomm, true);
 	}
 }
 

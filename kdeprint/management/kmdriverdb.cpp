@@ -234,6 +234,8 @@ void KMDriverDB::loadDbFile()
 				entry->pnpmodel = words[1];
 			else if (words[0] == "DESCRIPTION" && entry)
 				entry->description = words[1];
+			else if (words[0] == "RECOMMANDED" && entry && words[1].lower() == "yes")
+				entry->recommanded = true;
 		}
 		if (entry)
 			insertEntry(entry);

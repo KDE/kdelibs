@@ -23,6 +23,10 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
+KMDBEntry::KMDBEntry() : recommanded(false)
+{
+}
+
 bool KMDBEntry::validate(bool checkIt)
 {
 	// check model: if one of "model" or "modelname" is empty, replace

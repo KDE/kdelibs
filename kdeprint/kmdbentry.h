@@ -38,7 +38,10 @@ struct KMDBEntry
 	QString	pnpmodel;
 	// short driver description (if any)
 	QString	description;
+	// tell whether this is the recommanded driver
+	bool recommanded;
 
+	KMDBEntry();
 	bool validate(bool checkIt = true);
 };
 

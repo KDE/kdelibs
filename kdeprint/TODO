@@ -49,3 +49,5 @@ WISHES
 
 - in CUPS possibility to filter printer using printer-type attribute,
   to get only printers having a specified capability
+
+- show information from Foomatic DB in some way (comments)
