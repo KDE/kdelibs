@@ -74,6 +74,19 @@ KURL::KURL( const KURL& _u )
   m_iPort = _u.m_iPort;
 }
 
+KURL::KURL( const QUrl &u )
+{
+  m_strProtocol = u.protocol();
+  m_strUser = u.user();
+  m_strPass = u.pass();
+  m_strHost = u.host();
+  m_strPath = u.path( FALSE );
+  m_strQuery_encoded = u.query();
+  m_strRef_encoded = u.ref();
+  m_bIsMalformed = !u.isValid();
+  m_iPort = u.port();
+}
+
 KURL::KURL( const KURL& _u, const QString& _rel_url )
 {
   if ( _rel_url[0] == '#' )
@@ -92,7 +105,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
     {
         m_strPath = QString::null;
     }
-    else 
+    else
     {
        int pos = m_strPath.findRev( '/' );
        if (pos >= 0)
@@ -314,7 +327,7 @@ void KURL::parse( const QString& _url )
   //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
   //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
   //m_strRef_encoded.ascii(), m_iPort );
-  if (m_strProtocol == "file") 
+  if (m_strProtocol == "file")
   {
     if (!m_strHost.isEmpty())
     {
@@ -354,6 +367,21 @@ KURL& KURL::operator=( const QString& _url )
   reset();
   parse( _url );
 
+  return *this;
+}
+
+KURL& KURL::operator=( const QUrl & u )
+{
+  m_strProtocol = u.protocol();
+  m_strUser = u.user();
+  m_strPass = u.pass();
+  m_strHost = u.host();
+  m_strPath = u.path( FALSE );
+  m_strQuery_encoded = u.query();
+  m_strRef_encoded = u.ref();
+  m_bIsMalformed = !u.isValid();
+  m_iPort = u.port();
+  
   return *this;
 }
 
@@ -589,7 +617,7 @@ QString KURL::url( int _trailing ) const
   // !!WABA!! There is a small but subtle difference between not
   // having a query-string and having an empty query string!
   // Therefor we check against isNull() and not against isEmpty()!
-  if ( !m_strQuery_encoded.isNull() ) 
+  if ( !m_strQuery_encoded.isNull() )
   {
     u += "?";
     u += m_strQuery_encoded;

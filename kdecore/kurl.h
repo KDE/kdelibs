@@ -22,9 +22,10 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
+#include <qurl.h>
 
 /**
- * Mention that KURL has some restrictions regarding the path 
+ * Mention that KURL has some restrictions regarding the path
  * encoding. KURL works intern with the decoded path and
  * and encoded query. For example in
  * <pre>
@@ -50,11 +51,12 @@ public:
   KURL();
   KURL( const QString& _url );
   KURL( const KURL& _u );
+  KURL( const QUrl &u );
   /**
    * @param _rel_url is considered to be encoded.
    */
   KURL( const KURL& _u, const QString& _rel_url );
-  
+
   QString protocol() const { return m_strProtocol; }
   void setProtocol( const QString& _txt ) { m_strProtocol = _txt; }
 
@@ -98,10 +100,10 @@ public:
    *      and the ? does not indicate the start of the query part.
    *      The query is not changed by this function.
    */
-  void setPath( const QString& _txt ) { m_strPath = _txt; }  
+  void setPath( const QString& _txt ) { m_strPath = _txt; }
   bool hasPath() const { return !m_strPath.isEmpty(); }
 
-  /** Removes all multiple directory separators ('/') and 
+  /** Removes all multiple directory separators ('/') and
    * resolves any "." or ".." found in the path.
    * Calls QDir::cleanDirPath but saves the trailing slash if any.
    */
@@ -130,7 +132,7 @@ public:
    * @return the encoded query. This has a good reason: The query may contain the 0 character.
    */
   QString query() const { return m_strQuery_encoded; }
-  
+
   /**
    * The reference is NEVER decoded automatically.
    */
@@ -147,7 +149,7 @@ public:
    *         tar:/kde/README#http://www.kde.org/kdebase.tgz it would return true, too.
    */
   bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
-  
+
   /**
    * @return the HTML style reference. The HTML style reference can only be the
    *         last of all references. For example in tar:/#gzip:/decompress#file:/home/x.tgz#ref1
@@ -238,7 +240,7 @@ public:
    *
    * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
    *                                          If the path is empty or just "/" then this flag has no effect.
-   * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and 
+   * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and
    *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/</tt>
    *                                       or <tt>/hallo</tt> depending on the other flag
    */
@@ -258,7 +260,7 @@ public:
    * @param zapRef if true, delete the HTML style reference.
    */
   bool cd( const QString& _dir, bool zapRef = true );
-  
+
   /**
    * @return the complete encoded URL.
    */
@@ -293,10 +295,11 @@ public:
    * @param _zapRef tells whether the HTML style reference should be stripped
    */
   KURL upURL( bool _zapRef = true ) const;
-  
+
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
-
+  KURL& operator=( const QUrl & u );
+    
   bool operator==( const KURL& _u ) const;
   bool operator==( const QString& _u ) const;
   bool operator!=( const KURL& _u ) const { return !( *this == _u ); }
@@ -308,7 +311,7 @@ public:
    * @see path
    */
   bool cmp( KURL &_u, bool _ignore_trailing = false );
-  
+
   /**
    * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.
    * An URL like tar:/kde/README.html#http://www.kde.org#ref1 will be split in
@@ -336,7 +339,7 @@ public:
    * joined URL.
    */
   static QString join( const List& _list );
-  
+
   /**
    * Decode the string, this means decoding "%20" into a space for example. Note that "%00" is
    * not handled correctly here.
@@ -347,7 +350,7 @@ public:
    * Reverse of @ref decode
    */
   static void encode( QString& _url );
-  
+
 protected:
   void reset();
   void parse( const QString& _url );
@@ -362,7 +365,7 @@ private:
   QString m_strPath;
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
-  
+
   bool m_bIsMalformed;
   unsigned short int m_iPort;
 };
