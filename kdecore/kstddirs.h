@@ -39,8 +39,10 @@
 * @li cgi - CGIs to run from kdehelp
 * @li config - configuration files
 * @li apps - applications menu (.desktop files)
+* @li data - where applications store data (add application subdir)
 * @li html - HTML documentation 
 * @li icon - icons
+* @li mini - miniature icons
 * @li locale - translation files for KLocale
 * @li mime - mime types
 * @li services - services
