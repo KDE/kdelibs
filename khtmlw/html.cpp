@@ -191,6 +191,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     pal.setNormal( newGroup );
     setPalette( pal );
 
+    setBackgroundColor( lightGray );
+
     QString f = kapp->kdedir().copy();
     f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
@@ -673,7 +675,7 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 	newPainter = TRUE;
     }
 
-    painter->setBackgroundColor( backgroundColor() );
+    painter->setBackgroundColor( settings->bgColor );
 
     positionFormElements();
 
@@ -1311,17 +1313,13 @@ void KHTMLWidget::parse()
     // move to the first token
     ht->first();
 
-    // clear page
-    bDrawBackground = true;
-    if ( bgPixmap.isNull() )
-	painter->eraseRect( 0, 0, width(), height() );
-    else
-	drawBackground( x_offset, y_offset, 0, 0, width(), height() );
-
     if ( !bgPixmap.isNull() )
 	bgPixmap.resize( -1, -1 );
-    else
-	bDrawBackground = false;
+
+    // clear page
+    bDrawBackground = true;
+    drawBackground( x_offset, y_offset, 0, 0, width(), height() );
+
 /*
     if ( colorContext )
     {
@@ -1394,7 +1392,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 
     debugM("Synchronizing painter's background\n");
     // FE: synchronize painter's backgroundColor
-    painter->setBackgroundColor( backgroundColor() );
+    painter->setBackgroundColor( settings->bgColor );
 
     // If the visible rectangle was not filled before the parsing and
     // if we have something to display in the visible area now then repaint.
@@ -1970,6 +1968,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	bodyParsed = true;
 	bool bgColorSet = FALSE;
 	bool bgPixmapSet = FALSE;
+	QColor bgColor;
 	stringTok->tokenize( str + 5, " >" );
 	while ( stringTok->hasMoreTokens() )
 	{
@@ -1980,10 +1979,10 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		{
 		    QString col = "#";
 		    col += token+8;
-		    settings->bgColor.setNamedColor( col );
+		    bgColor.setNamedColor( col );
 		}
 		else
-		    settings->bgColor.setNamedColor( token+8 );
+		    bgColor.setNamedColor( token+8 );
 		bgColorSet = TRUE;
 	    }
 	    else if ( strncasecmp( token, "background=", 11 ) == 0 )
@@ -2017,7 +2016,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    }
 	}
 
-	if ( !bgColorSet && !bgPixmapSet )
+	if ( !bgColorSet )
 	{
 	    QPalette pal = palette().copy();
 	    QColorGroup cg = pal.normal();
@@ -2029,13 +2028,16 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 
 	    // simply testing if QColor == QColor fails!?, so we must compare
 	    // each RGB
-	    if ( defaultSettings->bgColor.red() != backgroundColor().red() ||
-		defaultSettings->bgColor.green() != backgroundColor().green() ||
-		defaultSettings->bgColor.blue() != backgroundColor().blue() ||
+	    if ( defaultSettings->bgColor.red() != settings->bgColor.red() ||
+		defaultSettings->bgColor.green() != settings->bgColor.green() ||
+		defaultSettings->bgColor.blue() != settings->bgColor.blue() ||
 		bDrawBackground )
-    		setBackgroundColor( defaultSettings->bgColor );
+	    {
+		settings->bgColor = defaultSettings->bgColor;
+		setBackgroundColor( settings->bgColor );
+	    }
 	}
-	else if ( bgColorSet && !bgPixmapSet )
+	else
 	{
 	    QPalette pal = palette().copy();
 	    QColorGroup cg = pal.normal();
@@ -2044,15 +2046,15 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    pal.setNormal( newGroup );
 	    setPalette( pal );
 
-	    if ( settings->bgColor.red() != backgroundColor().red() ||
-		settings->bgColor.green() != backgroundColor().green() ||
-		settings->bgColor.blue() != backgroundColor().blue() ||
+	    if ( settings->bgColor.red() != bgColor.red() ||
+		settings->bgColor.green() != bgColor.green() ||
+		settings->bgColor.blue() != bgColor.blue() ||
 		bDrawBackground )
-    		setBackgroundColor( settings->bgColor );
+	    {
+    		settings->bgColor = bgColor;
+		setBackgroundColor( settings->bgColor );
+	    }
 	}
-
-	if ( painter )
-	    painter->setBackgroundColor( backgroundColor() );
     }
     else if ( strncmp( str, "br", 2 ) == 0 )
     {
@@ -4137,6 +4139,10 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 		painter->eraseRect( _x, _y, _w, _h );
 		return;
 	}
+
+	// if the background pixmap is transparent we must erase the bg
+	if ( bgPixmap.mask() )
+	    painter->eraseRect( _x, _y, _w, _h );
 
 	int pw = bgPixmap.width();
 	int ph = bgPixmap.height();
