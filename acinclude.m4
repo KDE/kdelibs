@@ -413,7 +413,7 @@ if eval "test \"`echo $ac_cv_lib_jpeg`\" = no"; then
 	   ac_cv_lib_jpeg="-L\${topdir} -ljpegkde"
 	else if test -f "$kde_libraries/libjpeg.sl"; then
 	   test -f ./libjpegkde.sl ||$LN_S $kde_libraries/libjpeg.sl ./libjpegkde.sl
-	   ac_cv_lib_jpeg=""-L\${topdir} -ljpegkde"	
+	   ac_cv_lib_jpeg="-L\${topdir} -ljpegkde"	
 	else if test -f "$kde_libraries/libjpeg.a"; then
 	   test -f ./libjpegkde.a || $LN_S $kde_libraries/libjpeg.a ./libjpegkde.a
 	   ac_cv_lib_jpeg="-L\${topdir} -ljpegkde"
