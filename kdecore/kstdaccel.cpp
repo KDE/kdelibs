@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#define __KSTDACCEL_CPP_ 1
 
 #include "kstdaccel.h"
 
@@ -346,7 +347,6 @@ bool ShortcutList::save() const
 	return writeSettings( QString::null, 0, false, true );
 }
 
-#ifndef KDE_NO_COMPAT
 QString action(StdAccel id)
 	{ return name(id); }
 QString description(StdAccel id)
@@ -361,6 +361,7 @@ bool isEqual(const QKeyEvent* ev, int keyQt)
 	KKey key1( ev ), key2( keyQt );
 	return key1 == key2;
 }
-#endif // !KDE_NO_COMPAT
 
 };
+
+#undef __KSTDACCEL_CPP_

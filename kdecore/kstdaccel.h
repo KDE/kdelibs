@@ -98,7 +98,7 @@ namespace KStdAccel
    * uses this key sequence, or AccelNone if none of them do.
    * This is used by class KKeyChooser.
    * @param keySeq the key sequence to search
-   * @return the id of the standard accelerator, or AccelNone if there 
+   * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
   StdAccel findStdAccel( const KKeySequence &keySeq );
@@ -374,7 +374,7 @@ namespace KStdAccel
    */
   const KShortcut& showMenubar();
 
-#ifndef KDE_NO_COMPAT
+#if !defined(KDE_NO_COMPAT) && !defined(__KSTDACCEL_CPP_)
   /**
    * @deprecated
    * Obsolete.  Use name().  Returns a string representation for @p accel.
