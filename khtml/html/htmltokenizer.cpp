@@ -906,7 +906,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		bool beginTag = (tagID < ID_CLOSE_TAG);
 		if( beginTag && tagID != ID_IMG && tagID != ID_INPUT ) {
 		    // Ignore Space/LF's after a start tag
-		    discard = AllDiscard;
+		    discard = LFDiscard;
 		} else if (!beginTag) {
 		    // Don't ignore CR/LF's after a close tag
 		    discard = NoneDiscard;
@@ -1144,7 +1144,8 @@ void HTMLTokenizer::write( const QString &str )
 	    if (src[0] == '/')
 	    {
 		// Start of an End-Tag
-		pending = NonePending; // Ignore leading Spaces/LFs
+		if(pending == LFPending)
+		    pending = NonePending; // Ignore leading Spaces/LFs
 	    }
 	    else if ( (src[0].lower() >= 'a') && (src[0].lower() <= 'z'))
 	    {
