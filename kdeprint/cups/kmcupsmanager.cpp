@@ -31,10 +31,10 @@
 #include "kmfactory.h"
 #include "kmdbentry.h"
 #include "cupsaddsmb2.h"
+#include "ippreportdlg.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qtextedit.h>
 #include <qregexp.h>
 #include <kdebug.h>
 #include <kapplication.h>
@@ -870,22 +870,7 @@ void KMCupsManager::printerIppReport()
 
 void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption)
 {
-	QString	report;
-	QTextStream	t(&report, IO_WriteOnly);
-
-	if (req.htmlReport(group, t))
-	{
-		QTextEdit	*edit = new QTextEdit;
-		edit->setReadOnly(true);
-		edit->setText(report);
-		KDialogBase	dlg(KDialogBase::Swallow, caption, KDialogBase::Close, KDialogBase::Close, 0, 0, true, false, QString::null);
-		dlg.setMainWidget(edit);
-		dlg.resize(540, 500);
-		dlg.setFocusProxy(edit);
-		dlg.exec();
-	}
-	else
-		KMessageBox::error(0, i18n("Internal error: unable to generate HTML report."));
+	IppReportDlg::report(&req, group, caption);
 }
 
 //*****************************************************************************************************
