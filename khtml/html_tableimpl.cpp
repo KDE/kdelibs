@@ -35,6 +35,7 @@
 #include <qstack.h>
 #include <qbrush.h>
 #include <qpainter.h>
+#include <qpixmap.h>
 #include <qpalette.h>
 #include <qdrawutil.h>
 
@@ -97,6 +98,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
 
     row = 0;
     col = 0;
+
+    background = 0;
 
     maxColSpan = 1;
     totalColInfos = 0;
@@ -322,6 +325,10 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_BGCOLOR:
 	setNamedColor( bg, attr->value().string() );
+	break;
+    case ATTR_BACKGROUND:
+        bgURL = attr->value();
+	break;
     case ATTR_FRAME:
 	if ( strcasecmp( attr->value(), "void" ) == 0 )
 	    frame = Void;
@@ -1686,6 +1693,72 @@ void HTMLTableElementImpl::updateSize()
     HTMLPositionedElementImpl::updateSize();
 }
 
+void HTMLTableElementImpl::attach(KHTMLWidget *)
+{
+    if(bgURL.length())
+    {
+	printf("TableCell: Requesting URL=%s\n", bgURL.string().ascii() );
+	bgURL = document->requestImage(this, bgURL);
+    }	
+}
+
+void HTMLTableElementImpl::detach()
+{
+    KHTMLCache::free(bgURL, this);
+    NodeBaseImpl::detach();
+}
+
+void  HTMLTableElementImpl::setPixmap( QPixmap *p )
+{
+    background = p;
+}
+
+void  HTMLTableElementImpl::pixmapChanged( QPixmap *p )
+{
+    background = p;
+}
+
+// --------------------------------------------------------------------------
+
+void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_BGCOLOR:
+	setNamedColor( bg, attr->value().string() );
+	break;
+    case ATTR_BACKGROUND:
+        bgURL = attr->value();
+	break;
+    default:
+	HTMLBlockElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLTablePartElementImpl::attach(KHTMLWidget *)
+{
+    if(bgURL.length())
+    {
+	printf("TableCell: Requesting URL=%s\n", bgURL.string().ascii() );
+	bgURL = document->requestImage(this, bgURL);
+    }	
+}
+
+void HTMLTablePartElementImpl::detach()
+{
+    KHTMLCache::free(bgURL, this);
+    NodeBaseImpl::detach();
+}
+
+void  HTMLTablePartElementImpl::setPixmap( QPixmap *p )
+{
+    background = p;
+}
+
+void  HTMLTablePartElementImpl::pixmapChanged( QPixmap *p )
+{
+    background = p;
+}
 
 // -------------------------------------------------------------------------
 
@@ -1897,9 +1970,6 @@ void HTMLTableRowElementImpl::parseAttribute(Attribute *attr)
 {
     switch(attr->id)
     {
-    case ATTR_BGCOLOR:
-	setNamedColor( bg, attr->value().string() );
-	break;
     case ATTR_VALIGN:
 	if ( strcasecmp( attr->value(), "top" ) == 0 )
 	    valign = Top;
@@ -1911,7 +1981,7 @@ void HTMLTableRowElementImpl::parseAttribute(Attribute *attr)
 	    valign = Baseline;
 	break;	
     default:
-	HTMLBlockElementImpl::parseAttribute(attr);
+	HTMLTablePartElementImpl::parseAttribute(attr);
     }
 }
 
@@ -1957,9 +2027,6 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
     case ATTR_HEIGHT:
 	predefinedHeight = attr->val()->toLength();
 	break;
-    case ATTR_BGCOLOR:
-	setNamedColor( bg, attr->value().string() );
-	break;
     case ATTR_ALIGN:
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
 	    halign = Left;
@@ -1979,7 +2046,7 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
 	    valign = Baseline;
 	break;
     default:
-	HTMLBlockElementImpl::parseAttribute(attr);
+	HTMLTablePartElementImpl::parseAttribute(attr);
     }
 }
 
@@ -2038,6 +2105,19 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     int padding = table->cellPadding();
     int pad = padding/2;
 
+    QPixmap *pix = background;
+    if(!pix || pix->isNull())
+	pix = static_cast<HTMLTableRowElementImpl *>(parentNode())->bgPixmap();
+    if(!pix || pix->isNull())
+	pix = table->bgPixmap();
+
+    if(pix && !pix->isNull())
+    {
+	p->drawTiledPixmap( _tx - pad , _ty - pad, width + padding, rowHeight, 
+			   *pix);
+	return;
+    }
+
     QColor back = bg;
     if(!back.isValid())
 	back = static_cast<HTMLTableRowElementImpl *>(parentNode())->bgColor();
@@ -2050,6 +2130,8 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
 	p->fillRect( _tx - pad , _ty - pad,
 		     width + padding, rowHeight, brush );
     }
+
+
 }
 
 void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline) 

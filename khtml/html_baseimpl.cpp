@@ -69,6 +69,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     }
     case ATTR_BACKGROUND:
         bgURL = attr->value();
+	break;
 	// ### add the other attrs...
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);

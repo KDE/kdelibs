@@ -30,6 +30,7 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
+#include "khtmlio.h"
 
 #include <stdio.h>
 
@@ -50,7 +51,8 @@ class HTMLTableCaptionElement;
 class HTMLElement;
 class HTMLCollection;
 
-class HTMLTableElementImpl : public HTMLBlockElementImpl
+class HTMLTableElementImpl : public HTMLBlockElementImpl,
+  public HTMLImageRequester
 {
 public:
     enum Rules {
@@ -120,7 +122,10 @@ public:
     int cellSpacing() { return spacing; }
     int cellPadding() { return padding; }
     Rules getRules() { return rules; }
+
     QColor bgColor() { return bg; }
+    QPixmap *bgPixmap() { return background; }
+
     virtual bool isFloating() {return halign==Left || halign==Right; }
     virtual bool isInline() {return false; }
 
@@ -146,6 +151,11 @@ public:
     virtual void updateSize();
     
     virtual VAlign vAlign() { return valign; } 
+
+    void attach(KHTMLWidget *);
+    void detach();
+    virtual void setPixmap( QPixmap * );
+    virtual void pixmapChanged( QPixmap * );
 
 protected:    
     /*
@@ -238,6 +248,9 @@ protected:
     VAlign valign;
 
     QColor bg;
+    QPixmap *background;
+    DOMString bgURL;
+
     Frame frame;
     Rules rules;
 
@@ -246,18 +259,21 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLTablePartElementImpl : public HTMLBlockElementImpl
+class HTMLTablePartElementImpl : public HTMLBlockElementImpl,
+				 public HTMLImageRequester
 {
 public:
     HTMLTablePartElementImpl(DocumentImpl *doc)
 	: HTMLBlockElementImpl(doc) 
-	{ table = 0; valign=VNone; }
+	{ table = 0; valign=VNone; background = 0; }
     HTMLTablePartElementImpl(DocumentImpl *doc, HTMLTableElementImpl *t)
 	: HTMLBlockElementImpl(doc) 
 	{ table = t; }
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
     void setRowImpl(HTMLTableRowElementImpl *r) { rowimpl = r; }
+
+    virtual void parseAttribute(Attribute *attr);
 
     virtual NodeImpl *addChild(NodeImpl *child)
 	{
@@ -287,10 +303,21 @@ public:
     
     virtual VAlign vAlign() { return valign; } 
 
+    void attach(KHTMLWidget *);
+    void detach();
+    virtual void setPixmap( QPixmap * );
+    virtual void pixmapChanged( QPixmap * );
+
+    QColor bgColor() { return bg; }
+    QPixmap *bgPixmap() { return background; }
+
 protected:
     VAlign valign;
     HTMLTableElementImpl *table;    
     HTMLTableRowElementImpl *rowimpl;
+    DOMString bgURL;
+    QPixmap *background;
+    QColor bg;
 };
 
 // -------------------------------------------------------------------------
@@ -348,8 +375,6 @@ public:
     HTMLElementImpl *insertCell ( long index );
     void deleteCell ( long index );
 
-    QColor bgColor() { return bg; }
-
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(Attribute *attr);
@@ -357,7 +382,6 @@ public:
 protected:
     // relative to the current section!
     int rIndex;
-    QColor bg;
     int ncols;
 };
 

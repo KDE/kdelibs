@@ -235,7 +235,7 @@ public:
      * @param _point the point to test for the presence of a URL.  The
      * point is relative to this widget.
      */
-    QString getURL( const QPoint &_point ) const;
+    const QString &url( const QPoint &_point ) const;
 
     /**
      * @return the width of the parsed HTML code. Remember that
