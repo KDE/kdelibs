@@ -109,6 +109,38 @@ long HTMLFormElementImpl::length() const
     return len;
 }
 
+static QCString expandLF(const QCString& s)
+{
+    // LF -> CRLF
+    unsigned crs = s.contains( '\n' );
+    if (crs == 0)
+       return s;
+    unsigned len = s.length();
+
+    QCString r(len + s.contains( '\n') *2 + 1);
+    unsigned pos2 = 0;
+    for(unsigned pos = 0; pos < len; pos++)
+    {
+       char c = s[pos];
+       switch(c)
+       {
+         case '\n':
+           r[pos2++] = '\r';
+           r[pos2++] = '\n';
+           break;
+
+         case '\r':
+           break;
+
+         default:
+           r[pos2++]= c;
+           break;
+       }
+    }
+    r.truncate(pos2);
+    return r;
+}
+
 static QCString encodeCString(const QCString& e)
 {
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
@@ -285,9 +317,10 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                     // append body
                     unsigned int old_size = form_data.size();
-                    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
+                    QCString body = expandLF(*it);
+                    form_data.resize( old_size + hstr.length() + body.size() + 1);
                     memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
-                    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
+                    memcpy(form_data.data() + old_size + hstr.length(), body.data(), body.size());
                     form_data[form_data.size()-2] = '\r';
                     form_data[form_data.size()-1] = '\n';
                 }
