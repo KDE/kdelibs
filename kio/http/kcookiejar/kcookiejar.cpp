@@ -394,8 +394,7 @@ static void stripDomain(const QString &_fqdn, QString &_domain)
 static QString stripDomain( KHttpCookiePtr cookiePtr)
 {
     QString domain; // We file the cookie under this domain.
-    if (cookiePtr->domain().isEmpty() ||
-        (cookiePtr->host() == cookiePtr->domain()))
+    if (cookiePtr->domain().isEmpty())
        stripDomain( cookiePtr->host(), domain);
     else
        domain = cookiePtr->domain();
@@ -426,25 +425,15 @@ bool KCookieJar::parseURL(const QString &_url,
     return true;
 }
 
-bool KCookieJar::extractDomains(const QString &_fqdn,
+void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains)
 {
+    // Allow checking under the hostname itself!
+    _domains.append( _fqdn );
+
     // Use fqdn only if the fqdn consists of numbers.
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
-    {
-        // Normalize the numerical hostname.  We return
-        // false if the given hostname cannot be normalized
-        // i.e it is not a true numerical representation.
-/*
-        struct in_addr in;
-        if( !inet_aton( _fqdn.latin1(), &in ) )
-            return false;
-
-       _domains.append( inet_ntoa( in ) );
-*/
-       _domains.append( _fqdn );
-       return true;
-    }
+       return;
 
     QStringList partList = QStringList::split('.', _fqdn, false);
     if (partList.count())
@@ -461,17 +450,20 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
               (partList[1].length() == 2))
              break; // This is a TLD.
        }
-       QString domain = "."+partList.join(".");
+       QString domain = partList.join(".");
+       _domains.append(domain);
+       domain.insert( 0, '.' );
        _domains.append(domain);
        partList.remove(partList.begin()); // Remove part
     }
+
+    // Only URLs that should reach this point are of type
+    // "host.foo" or "host.co.fo" so simply append a '.'
+    // on top to make sure they are stored under the proper
+    // cookie domain.
     if (_domains.isEmpty())
-        // Only URLs that would get in here are of type
-        // "host.foo" or "host.co.fo" so simply append
-        // a '.' on top to make sure they are stored under
-        // the proper cookie domain.
        _domains.append( "." + _fqdn );
-    return true;
+
 }
 
 //
@@ -725,41 +717,32 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
     QStringList domains;
-    if (!extractDomains(cookiePtr->host(), domains))
-       return KCookieReject;
+    extractDomains(cookiePtr->host(), domains);
 
-    bool isEmptyDomain = cookiePtr->domain().isEmpty();
-
-    if (!isEmptyDomain )
+    QString domain = cookiePtr->domain();
+    if ( domain.isEmpty() )
     {
        // Cookie specifies a domain. Check whether it is valid.
        bool valid = false;
 
-       // Hmmm this means we accept "Domain=" entries
-       // that do not start with a "dot".  But hey if
-       // the cookie's domain entry matches the hostname
-       // we have no problems.  We will just fix up what
-       // it will be stored under!!  Incidentally, only
-       // IP-based addresses get entries in the list that
-       // do not begin without a "dot"!!
-       if (cookiePtr->domain() == cookiePtr->host())
-       {
-          cookiePtr->fixDomain( domains[0] );
+       if (domains.contains(domain))
           valid = true;
-       }
-       
+
        if (!valid)
        {
-          if (domains.contains(cookiePtr->domain()))
+          // Maybe the domain doesn't start with a "."
+          QString _domain = "."+cookiePtr->domain();
+          if (domains.contains(_domain))
              valid = true;
        }
 
        if (!valid)
        {
-          // Maybe the domain doesn't start with a "."
-          QString domain = "."+cookiePtr->domain();
-          if (domains.contains(domain))
+          // Maybe domain == hostname...
+          if ( domain == cookiePtr->host())
+          {
              valid = true;
+          }
        }
 
        if (!valid)
@@ -770,23 +753,10 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           return KCookieReject;
        }
     }
-
-#if 0
-    if ((cookiePtr->name().find('\"') != -1) ||
-        (cookiePtr->value().find('\"') != -1))
-    {
-        qWarning("WARNING: Host %s tries to set a suspicious cookie for domain %s",
-              cookiePtr->host().latin1(), cookiePtr->domain().latin1());
-        return KCookieReject;
-    }
-#endif
-    // For empty domain use the FQDN to find a
-    // matching advice for the pending cookie.
-    QString domain;
-    if ( isEmptyDomain )
-       domain = domains[0];
     else
-       domain = cookiePtr->domain();
+    {
+       domain = domains[0];
+    }
 
     KHttpCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;

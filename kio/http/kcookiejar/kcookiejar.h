@@ -296,7 +296,7 @@ public:
     /**
      * Returns a list of domains (_domainList) relevant for this host.
      */
-    static bool extractDomains(const QString &_fqdn,
+    static void extractDomains(const QString &_fqdn,
                                QStringList &_domainList);
 
     static QString adviceToStr(KCookieAdvice _advice);

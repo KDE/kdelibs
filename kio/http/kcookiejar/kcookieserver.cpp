@@ -135,8 +135,8 @@ bool KCookieServer::cookiesPending( const QString &url )
      return false;
   if (!KCookieJar::parseURL(url, fqdn, path))
      return false;
-  if (!KCookieJar::extractDomains( fqdn, domains))
-     return false;
+
+  KCookieJar::extractDomains( fqdn, domains);
   for( KHttpCookie *cookie = mPendingCookies->first();
        cookie;
        cookie = mPendingCookies->next())
