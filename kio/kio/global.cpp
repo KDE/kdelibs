@@ -1263,7 +1263,6 @@ extern "C" void endvfsent( );
 
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
-    //kdDebug( 7007 ) << "findDeviceMountPoint " << filename << endl;
     QString result;
 
 #ifdef HAVE_VOLMGT
@@ -1289,7 +1288,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	}
 
 	devname = volpath;
-	devname += QFile::encodeName( filename.local8Bit() );
+	devname += QFile::encodeName( filename );
 	devname += '/';
 	len = devname.length();
 //	kdDebug( 7007 ) << "findDeviceMountPoint: "
@@ -1311,9 +1310,10 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 		 *  or the device name without the slice#
 		 */
 		if( strncmp( devname.data(), mnt.mnt_special, len ) == 0
-			|| (strncmp( devname.data(),
-				mnt.mnt_special, len - 3 ) == 0
-				&& mnt.mnt_special[len - 3] == '/' )) {
+			|| (strncmp( devname.data(), mnt.mnt_special, len - 3 ) == 0
+				&& mnt.mnt_special[len - 3] == '/' )
+			|| (strcmp(QFile::encodeName(filename).data()
+					, mnt.mnt_special)==0)) {
 			result = mnt.mnt_mountp;
 			break;
 		}
