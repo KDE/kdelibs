@@ -81,6 +81,12 @@ public:
      */
     void setGuiItem( const KGuiItem& item );
 
+    /**
+     * Sets the Icon Set for this button. It also takes into account hte
+     * KGlobalSettings::showIconsOnPushButtons() setting.
+     */
+    void setIconSet( const QIconSet &iconSet );
+
 protected:
     /**
      * Reimplement this and return the QDragObject that should be used

@@ -101,7 +101,7 @@ void KPushButton::init( const KGuiItem &item )
 
 bool KPushButton::needIcons()
 {
-    return s_useIcons && d->item.hasIconSet();
+    return ( s_useIcons || text().isEmpty() ) && d->item.hasIconSet();
 }
 
 void KPushButton::readSettings()
@@ -113,17 +113,21 @@ void KPushButton::setGuiItem( const KGuiItem& item )
 {
     d->item = item;
     setText( item.text() );
+    setIconSet( d->item.iconSet() );
+}
+
+void KPushButton::setIconSet( const QIconSet &iconSet )
+{
     if ( needIcons() )
-        setIconSet( d->item.iconSet() );
+        QPushButton::setIconSet( iconSet );
+    else
+        QPushButton::setIconSet( QIconSet() );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
 {
     readSettings();
-    if ( needIcons() )
-        setIconSet( d->item.iconSet() );
-    else
-        setIconSet( QIconSet() );
+    setIconSet( d->item.iconSet() );
 }
 
 void KPushButton::setDragEnabled( bool enable )
