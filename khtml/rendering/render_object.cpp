@@ -186,9 +186,8 @@ void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 
 RenderObject *RenderObject::containingBlock() const
 {
-    if(isTableCell()) {
-        return static_cast<const RenderTableCell *>(this)->table();
-    }
+    if(isTableCell())
+        return parent()->parent()->parent();
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
