@@ -1325,7 +1325,7 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
     }
 
     // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
-    // Remove for KDE 3.0.
+    // Remove for KDE 4.0.
     if (p)
         p->fillRect(insertmarker, Dense4Pattern);
 
