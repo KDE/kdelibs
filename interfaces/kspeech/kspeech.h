@@ -22,25 +22,27 @@
 #define _KSPEECH_H_
 
 #include <dcopobject.h>
+#include <qstringlist.h>
 
 /**
  * @interface kspeech
  *
- * kspeech - the KDE Text-to-speech API.
+ * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 4
+ * @version 1.0 Draft 5
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
  *
- * %KTTSD -- the KDE Text-to-speech Deamon -- is the program that supplies the services
- * in the KDE Text-to-speech API.
+ * %KTTSD -- the KDE Text-to-Speech Deamon -- is the program that supplies the services
+ * in the KDE Text-to-Speech API.
  *
  * @warning The kspeech interface is still being developed and is likely to change in the future.
  *
  * @section Features
  *
- *   - Priority system for Screen Readers, warnings and messages, while still playing regular texts.
+ *   - Priority system for Screen Readers, warnings and messages, while still playing
+ *     regular texts.
  *   - Long text is parsed into sentences.  User may backup by sentence or part, 
  *     replay, pause, and stop playing.
  *   - Handles multiple speaking applications.  Text messages are treated like print jobs.
@@ -54,35 +56,41 @@
  * obtained from 
  * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
  * Festival is distributed with most Linux distros.  Check your distro CDs.  Also works
- * with Hadifax (mbrola and txt2pho), FreeTTS, or any command that can speak text, such as Festival Lite
- * (flite).
+ * with Festival Lite (flite), Hadifax (mbrola and txt2pho), FreeTTS, Epos, or any
+ * command that can speak text.  Additional plugins are being developed.
  *
  * @section goals Design Goals
  *
- * The KDE Text-to-speech API is designed with the following goals:
+ * The KDE Text-to-Speech API is designed with the following goals:
  *
  *   - Support the features enumerated above.
- *   - Plugin-based architecture for support of a wide variety of speech synthesis engines and drivers.
- *   - Permit generation of speech from the command line (or via shell scripts) using the KDE DCOP utilities.
- *   - Provide a lightweight and easily usable interface for applications to generate speech output.
+ *   - Plugin-based architecture for support of a wide variety of speech synthesis
+ *     engines and drivers.
+ *   - Permit generation of speech from the command line (or via shell scripts)
+ *     using the KDE DCOP utilities.
+ *   - Provide a lightweight and easily usable interface for applications to
+ *     generate speech output.
  *   - Applications need not be concerned about contention over the speech device.
- *   - Provide limited support for speech markup languages, such as Sable, Java %Speech Markup Language (JSML),
- *     and %Speech Markup Meta-language (SMML).  Basically, the goal is for %KTTSD to permit pass-thru
- *     of markup to the speech engine.  Generation and transformation of markup is left to higher layers
- *     or individual applications.
+ *   - Provide limited support for speech markup languages, such as Sable,
+ *     Java %Speech Markup Language (JSML), and %Speech Markup Meta-language (SMML).
+ *     Basically, the goal is for %KTTSD to permit pass-thru
+ *     of markup to the speech engine.  Generation and transformation of markup is
+ *     left to higher layers or individual applications.
  *   - Provide limited support for embedded speech markers.
- *   - Threading-based to prevent system blocking.
- *   - Compatible with original %KTTSD API as developed by José Pablo Ezequiel "Pupeno" Fernández
- *     (avoid breaking existing applications).
+ *   - Asynchronous to prevent system blocking.
+ *   - Plugin-based audio architecture.  Currently supports aRts but will support
+ *     additional audio engines in the future, such as gstreamer.
+ *   - Compatible with original %KTTSD API as developed by José Pablo Ezequiel
+ *     "Pupeno" Fernández (avoid breaking existing applications).
  *
- * Architecturally, applications interface with %KTTSD, which performs queueing, speech job managment, and
- * sentence parsing.  %KTTSD interfaces with a %KTTSD speech plugin(s), which then interfaces with the
- * speech engine(s) or driver(s).
+ * Architecturally, applications interface with %KTTSD, which performs queueing,
+ * speech job managment, plugin management and sentence parsing.  %KTTSD interfaces with a
+ * %KTTSD speech plugin(s), which then interfaces with the speech engine(s) or driver(s).
  *
    @verbatim
          application
               ^
-              |  via DCOP (the KDE Speech-to-text API)
+              |  via DCOP (the KDE Text-to-Speech API)
               v
             kttsd
               ^
@@ -97,12 +105,13 @@
  *
  * The %KTTSD Plugin API is documented elsewhere.
  *
- * There is a separate GUI application, called kttsmgr, for providing %KTTSD configuration and job
- * management.
+ * There is a separate GUI application, called kttsmgr, for providing %KTTSD
+ * configuration and job management.
  *
  * @section Using
  *
- * Make sure your speech engine is working.
+ * Make sure your speech engine is working.  See the sections below for tips
+ * on installing and configuring speech engines and plugins.
  *
  * You may need to grant Festival write access to the audio device.
  *
@@ -116,7 +125,7 @@
      kttsmgr
    @endverbatim
  *
- * If using the Festival or Festival Interactive plugins, you'll need to
+ * If using the Festival or Festival Interactive plugins, you'll may to
  * specify the path to the voices.  On most systems, this will be
  *
    @verbatim
@@ -129,9 +138,9 @@
     /usr/local/share/festival/voices
    @endverbatim
  * 
- * Be sure to click the Default button after configuring a speech plugin!
+ * Be sure to click the @e Default button after configuring a speech plugin!
  *
- * To run %KTTSD, either check the Enable Text-to-speech System check box, or
+ * To run %KTTSD, either check the Enable Text-to-Speech System check box, or
  * in a command terminal, enter
  *
    @verbatim
@@ -147,18 +156,21 @@
  *   - Messages
  *   - Text Jobs
  *
- * Method @ref sayScreenReaderOutput speaks Screen Reader output.  It pre-empts any other speech in progress,
- * including other Screen Reader outputs, i.e., it is not a queue.  This method is reserved for use
- * by Screen Readers.
+ * Method @ref sayScreenReaderOutput speaks Screen Reader output.
+ * It pre-empts any other speech in progress,
+ * including other Screen Reader outputs, i.e., it is not a queue.  
+ * This method is reserved for use by Screen Readers.
  *
  * Methods @ref sayWarning and @ref sayMessage place messages into the Warnings and
  * Messages queues respectively.  Warnings take priority over messages, which take priority
- * over text jobs.
+ * over text jobs.  Warnings and messages are spoken when the currently-speaking
+ * sentence of a text job is finished.
  *
- * @ref setText and @ref startText place text into the text job queue.  When one job finishes, the next
- * job begins.  Method @ref appendText adds additional parts to a text job.
- * Within a text job, the application (and user via the kttsmgr GUI), may back up or
- * advance by sentence or part, or rewind to the beginning.
+ * @ref setText places text into the text job queue. @ref startText begins speaking jobs.
+ * When one job finishes, the next job begins.  Method @ref appendText adds
+ * additional parts to a text job.  Within a text job, the application (and user
+ * via the kttsmgr GUI), may back up or advance by sentence or part, or rewind
+ * to the beginning.
  * See @ref jumpToTextPart and @ref moveRelTextSentence.
  * Text jobs may be paused, stopped, and resumed or deleted from the queue.
  * See @ref pauseText, @ref stopText, @ref resumeText, and @ref removeText.
@@ -200,6 +212,8 @@
      dcop kttsd kspeech removeText 0
    @endverbatim
  *
+ * Note: For more information about talker codes, see @ref talkers below.
+ *
  * @section programming Calling KTTSD from a Program
  *
  * To make DCOP calls from your program, follow these steps:
@@ -213,7 +227,8 @@
      class MyPart: public KParts::ReadOnlyPart, public kspeech_stub {
    @endverbatim
  *
- * 2.  In your class constructor, initialize DCOPStub, giving it the sender "kttsd", object "kspeech".
+ * 2.  In your class constructor, initialize DCOPStub, giving it the sender
+ *     "kttsd", object "kspeech".
  *
    @verbatim
      MyPart::MyPart(QWidget *parent, const char *name) :
@@ -257,8 +272,8 @@
  * To receive %KTTSD DCOP signals, follow these steps:
  *
  * 1.  Include kspeechsink.h in your code.  Derive an object from the KSpeechSink interface
- *     and declare a method for each signal you'd like to receive.  For example, if you were coding a KPart
- *     and wanted to receive the KTTSD signal sentenceStarted:
+ *     and declare a method for each signal you'd like to receive.  For example,
+ *     if you were coding a KPart and wanted to receive the KTTSD signal sentenceStarted:
  *
    @verbatim
      #include <kspeechsink.h>
@@ -285,7 +300,8 @@
  *
  *     See below for the signals you can declare.
  *
- * 2.  In your class constructor, initialize DCOPObject with the name of your DCOP receiving object.
+ * 2.  In your class constructor, initialize DCOPObject with the name of your DCOP
+ *     receiving object.
  *
    @verbatim
      MyPart::MyPart(QWidget *parent, const char *name) :
@@ -295,8 +311,9 @@
  *
  *     Use any name you like.
  *
- * 3.  Where appropriate (usually in your constructor), make sure your DCOPClient is registered and
- *     connect the %KTTSD DCOP signals to your declared receiving methods.
+ * 3.  Where appropriate (usually in your constructor), make sure your DCOPClient
+ *     is registered and connect the %KTTSD DCOP signals to your declared receiving
+ *     methods.
  *
    @verbatim
      // Register DCOP client.
@@ -346,7 +363,7 @@
      libmypart_la_LIBADD = libktts
    @endverbatim
  *
- * @section talkers Talkers
+ * @section talkers Talkers, Talker Codes, and Plugins
  *
  * Many of the methods permit you to specify a desired "talker".  At this time, this
  * should be a language code, such as "en" for English, "sp" for Spanish, etc.
@@ -355,19 +372,266 @@
  * In the future, you will be able to configure more than one talker for each language,
  * with different voices, genders, volumes, and talking speeds.
  *
+ * WARNING:  The following has not yet been implemented.
+ *
+ * Talker codes serve two functions:
+ * - They identify configured plugins, and
+ * - They provide a way for applications to specify the desired speaking attributes
+ *   that influence the choice of plugin to speak text.
+ *
+ * A Talker Code consists of a series of space-separated attributes in
+ * XML format.  An example of a full Talker Code with all attributes specified is
+ *
+ *   <voice lang="en" name="kal" gender="male"/>
+ *   <prosody volume="soft" rate="fast"/>
+ *   <kttsd synthesizer="Festival" codec="Local"/>
+ *
+ * (The @e voice and @e prosody tags are adapted from the W3C Speech Synthesis
+ * Markup Language (SSML) and Java Speech Markup Language (JSML).
+ * The @e kttsd tag is an extension to the SMML and JSML languages to support
+ * named synthesizers and text encodings.)
+ * %KTTS doesn't really care about the @e voice, @e prosody, and @e kttsd tags.  In fact,
+ * they may be omitted and just the attributes specified.  The example above then
+ * becomes
+ *
+ *   lang="en" name="kal" gender="male" volume="soft" rate="fast"
+ *   synthesizer="Festival" codec="Local"
+ *
+ * Since this is the preferred format for Talker Codes, the rest of the discussion
+ * will omit the @e voice, @e prosody, and @e kttsd tags.
+ *
+ * The attributes may be specified in any order.
+ * The attributes that make up a talker code are:
+ *
+ * - @e lang.         Language code.  Examples: en, sp, en-GB.
+ * - @e synthesizer.  The name of the synthesizer (plugin) used to produce the speech.
+ * - @e codec.        May be any of the text encoding names returned by QTextCodec::names().
+ * - @e gender.       May be either "male", "female", or "neutral".
+ * - @e name.         The name of the voice code.
+ *                    The choice of voice codes is synthesizer-specific.
+ * - @e volume.       May be "loud", "medium", or "quiet".  A synonym for "quiet" is
+ *                    "soft".
+ * - @e rate.         May be "fast", "medium", or "slow".
+ *
+ * Each plugin, once it has been configured by a user in kttsmgr, returns a
+ * fully-specified talker code to identify itself.  If the plugin supports it,
+ * the user may configure another instance of the plugin with a different set
+ * of attributes.  This is the difference between a "plugin" and a "talker".
+ * A talker is a configured instance of a plugin.  Each plugin (if it supports it)
+ * may be configured as multiple talkers.
+ *
+ * When the user configures %KTTSD, she configures one or more talkers and then
+ * places them in preferred order, top to bottom in kttsmgr.  In effect,
+ * she specifies her preferences for each of the talker attributes.
+ *
+ * When applications specify a talker code, they need not (and typically do not)
+ * give a full specification.  An example of a talker code with only some of the
+ * attributes specified might be
+ *
+ *   lang="en" gender="female"
+ *
+ * If the talker code is not in XML attribute format, it assumed to be a @e lang 
+ * attribute.  So the talker code
+ *
+ *   en-US
+ *
+ * is interpreted as
+ *
+ *   lang="en-US"
+ *
+ * When a program requests a talker code in calls to @ref setText, @ref appendText,
+ * @ref sayMessage, @ref sayWarning, and @ref sayScreenReaderOutput,
+ * %KTTSD tries to match the requested talker code to the closest matching
+ * configured talker.
+ *
+ * The @e lang attribute has highest priority (attempting to speak English with
+ * a Spanish synthesizer would likely be unintelligible).  So the language
+ * attribute is said to have "priority".  
+ * If an application does not specify a language attribute, a default one will be assumed.
+ * The rest of the attributes are said to be "preferred".  If %KTTSD cannot find
+ * a talker with the exact preferred attributes requested, the closest matching
+ * talker will likely still be understandable.
+ *
+ * An application may specify that one or more of the attributes it gives in a talker
+ * code have priority by preceeding each priority attribute with an asterisk.
+ * For example, the following talker code
+ *
+ *  lang="en" gender="*female" volume="soft"
+ *
+ * means that the application wants to use a talker that supports American English language
+ * and Female gender.  If there is more than one such talker, one that supports
+ * Soft volume would be preferred.  Notice that a talker configured as English, Male,
+ * and Soft volume would not be picked as long as an English Female talker is
+ * available.
+ *
+ * The algorithm used by %KTTSD to find a matching talker is as follows:
+ *
+ * - If language code is not specified by the application, assume default configured
+ *   by user.  The primary language code automatically has priority.
+ * - If there are no talkers configured in the language, %KTTSD will attempt
+ *   to automatically configure one (see automatic configuraton discussion below)
+ * - The talker that matches on the most priority attributes wins.
+ * - If a tie, the one that matches on the most preferred attributes wins.
+ * - If still a tie, the one that matches the most user preferences wins.
+ * - If there is still a tie, the one nearest the top of the kttsmgr display
+ *   (first configured) will be chosen.
+ *
+ * This is best explained using examples.  Suppose the user has configured the
+ * following talkers.
+ *
+  @verbatim
+  #  lang synthesizer      codec   gender    name   volume  rate
+  -  ---- ---------------- ------  -------   ------ ------- -------
+  1   en  Festival Lite    Local   male      Kal    medium  medium
+  2   en  Festival Lite    Local   female    Us1    soft    medium
+  3   en  Festival Int     Local   male      Kal    medium  slow
+  4   de  Hadifax          Local   male      de1    medium  medium
+  @endverbatim
+ *
+ * In this example, the user has specified that his default language code is en,
+ * He prefers to use the Festival Lite synthesizer. If not specified, text is
+ * assumed to be encoded using his desktop encoding. American Male (Kal) is the
+ * preferred gender and voice, and medium volume and rate are preferred.
+ * The numbers in the table above are to make the following discussion simpler.
+ *
+ * Given the table above, a setText call with the following talker codes
+ * would use the indicated numbered talker for synthesis:
+ *
+  @verbatim
+  setText talker code             plugin #  explanation
+  ------------------------------- --------  -------------------------
+  0 (none)                        1         None match, #1 is user preference.
+                                            
+  lang="en"                       1         #1 thru #3 match, #1 is user preference.
+                                            
+  gender="male"                   1         #1 and #3 match, #1 is user preference.
+                                            #4 has the wrong language code.
+                                            
+  lang="de"                       4         Single match on language.
+  
+  gender="female"                 2         Single match on gender.
+  
+  synthesizer="Festival Int"      3         #2 and #3 partially match.
+  gender="female"                           User preference order takes precedence.
+                                            
+  synthesizer="Festival Int"      2         #2 with two matches wins over #3 with
+  gender="female" volume="soft"             only one match.
+                                            
+  lang="sp" synthesizer="Epos"    1         None of the talkers match at all. KTTSD
+                                            attempted to configure a Spanish plugin
+                                            but none were found.  User preference chosen.
+                                            
+  gender="*female"                2         #2 is the only one that matches priority
+  volume="medium" rate="slow"               attribute
+                                            
+  gender="*male" rate="slow"      3         Three match priority attribute, but #3
+                                            also matches preferred attribute.
+                                            
+  name="de1" volume="medium"      1         Since language was not specified, it
+                                            defaulted to en, thereby eliminating #4,
+                                            and #1 is user preference.
+                                            
+  lang="cz"                       -         KTTSD automatically loaded and configured
+                                            the Epos plugin to speak Czech.
+  
+  @endverbatim
+ *
+ * When picking a talker, %KTTSD will automatically determine if text contains
+ * markup and pick a talker that supports that markup, if available.  This
+ * overrides all other attributes, i.e, it is treated as an automatic "top priority"
+ * attribute.
+ *
+ * Language codes actually consist of two parts, a primary language and a
+ * secondary language.  For example, en-GB is Welsh English.  (en by itself is
+ * assumed to be American English.)  The primary language code is treated as
+ * a priority attribute, but the secondary language (if specified) is treated
+ * as preferred.  So for example, if an application requests the following
+ * talker code
+ *
+ *   lang="en-GB" gender="male" volume="medium"
+ *
+ * then a talker configured as lang="en" gender="male" volume="medium" would be
+ * picked over one configured as lang="en-GB" gender="female" volume="soft",
+ * since the former matches on two preferred attributes and the latter only on the
+ * preferred attribute GB. An application can override this and make the secondary
+ * language attribute priority with an asterisk.  For example,
+ *
+ *   lang="*en-GB" gender="male" volume="medium"
+ *
+ * To specify that American English is priority, put an asterisk in front of
+ * en, like this.
+ *
+ *   lang="*en" gender="male" volume="medium"
+ *
+ * Here the application is indicating that a talker that speaks American English
+ * has priorty over one that speaks a different form of English.
+ *
+ * If a language code is specified, and no plugin is currently configured
+ * with a matching primary language code, %KTTSD will attempt to automatically
+ * load and configure a plugin to support the requested primary language.  If
+ * there is no such plugin, or there is a plugin but it cannot automatically
+ * configure itself, %KTTSD will pick one of the configured plugins using the
+ * algorithm given above.
+ *
+ * Notice that %KTTSD will always pick a talker, even if it is a terrible match.
+ * (The principle is that something heard is better than nothing at all.  If
+ * it sounds terrible, user will change his configuration.)
+ * If an attribute is absolutely mandatory -- in other words the application
+ * must speak with the attribute or not at all -- the application can determine if
+ * there are any talkers configured with the attribute by calling @ref getTalkers,
+ * and if there are none, display an error message to the user.
+ *
+ * Applications can implement their own talker-matching algorithm by
+ * calling @ref getTalkers, then finding the desired talker from the returned
+ * list.  When the full talker code is passed in, %KKTSD will find an exact
+ * match and use the specified talker.  Applications can also determine what
+ * the user preferences are for attributes by calling @ref userTalkerPreferences.
+ *
+ * If an application requires a configuration that user has not created,
+ * it should display a message to user instructing them to run kttsmgr and
+ * configure the desired talker.  (This must be done interactively because
+ * plugins often need user assistance locating voice files, etc.)
+ *
+ * The above scheme is designed to balance the needs 
+ * of applications against user preferences.  Applications are given the control
+ * they @e might need, without unnecessarily burdening the application author.
+ * If you are an application author, the above discussion might seem overly
+ * complicated.  It isn't really all that complicated.  Here are rules of thumb:
+ *
+ *   - It is legitimate to give a NULL (0) talker code, in which case, the user's default
+ *     talker will be used.
+ *   - If you know the language code, give that in the talker code, otherwise
+ *     leave it out.
+ *   - If there is an attribute your application @e requires for proper functioning,
+ *     specify that with an asterisk in front of it.  For example, your app might
+ *     speak in two different voices, Male and Female.  (Since your
+ *     app requires both genders, call @ref getTalkers to determine if both genders
+ *     are available, and if not, advise user to configure them.  Better yet,
+ *     give the user a choice of available distinquishing attributes
+ *     (loud/soft, fast/slow, etc.)
+ *   - If there are other attributes you would prefer, specify those without an
+ *     asterisk, but leave them out if it doesn't really make any difference
+ *     to proper functioning of your application.  Let the user decide them
+ *     when they configure %KTTS.
+ *
+ * One final note about talkers.  %KTTSD does talker matching for each sentence
+ * spoken, just before the sentence is sent to a plugin for synthesis.  Therefore,
+ * the user can change the effective talker in mid processing of a text job by
+ * changing his preferences, or even deleting or adding new talkers to the configuration.
+ *
  * @section markup Speech Markup
  *
  * Note: %Speech Markup is not yet implemented in %KTTSD.
  *
- * Each of the four methods for queueing text to be spoken -- @ref sayScreenReaderOutput,
- * @ref setText, @ref sayMessage, and
+ * Each of the five methods for queueing text to be spoken -- @ref sayScreenReaderOutput,
+ * @ref setText, @ref appendText, @ref sayMessage, and
  * @ref sayWarning -- may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
  * languages currently supported by plugins are:
  *
  *   - Sable 2.0: Festival
  *   - Java %Speech Markup Language (JSML): Festival (partial)
- *   - %Speech Markup Meta-language (SMML): none at this time
+ *   - %Speech Synthesis Markup language (SSML): none at this time
  *
  * TODO: Issue: Do Hadifax and FreeTTS support markup?
  *
@@ -379,7 +643,7 @@
  *
  * Note: Markers are not yet implemented in %KTTSD.
  *
- * When using a speech markup language, such as Sable, JSML, or SMML, the application may embed
+ * When using a speech markup language, such as Sable, JSML, or SSML, the application may embed
  * named markers into the text.  If the user's chosen speech plugin supports markers, %KTTSD
  * will emit DCOP signal @ref markerSeen when the speech engine encounters the marker.
  * Depending upon the speech engine and plugin, this may occur either when the speech engine
@@ -389,11 +653,12 @@
  *
  * @section sentenceparsing Sentence Parsing
  *
- * Not all speech engines provide robust capabilities for stopping speech that is in progress.
- * To compensate for this, %KTTSD parses text jobs given to it by the @ref setText method into
- * sentences and sends the sentences to the speech plugin one at a time.  In this way, should
- * the user wish to stop the speech output, they can do so, and the worst that will happen
- * is that the last sentence will be completed.
+ * Not all speech engines provide robust capabilities for stopping synthesis that is in progress.
+ * To compensate for this, %KTTSD parses text jobs given to it by the @ref setText and 
+ * @ref appendText methods into sentences and sends the sentences to the speech
+ * plugin one at a time.  In this way, should the user wish to stop the speech
+ * output, they can do so, and the worst that will happen is that the last sentence
+ * will be completed.
  *
  * Sentence parsing also permits the user to rewind by sentences.
  *
@@ -401,18 +666,19 @@
  *
  *   - A period (.), question mark (?), exclamation mark (!), colon (:), or
  *     semi-colon (;) followed by whitespace (including newline), or
- *   - A newline.
+ *   - Two newlines in a row separated by optional whitespace.
  *
  * When given text containing speech markup, %KTTSD automatically determines the markup type
  * and parses based on the sentence semantics of the markup language.
  * TODO: ISSUE: Can this be reasonably done?
  *
  * An application may change the sentence delimiter by calling @ref setSentenceDelimiter
- * prior to calling @ref setText.
+ * prior to calling @ref setText.  Changing the delimeter does not affect other
+ * applications.
  *
- * Text given to %KTTSD via the @ref sayWarning and @ref sayMessage methods is @e not parsed
- * into sentences.  For this reason, applications should @e not send long messages with
- * these methods.
+ * Text given to %KTTSD via the @ref sayWarning, @ref sayMessage, and @ref sayScreenReaderOutput
+ * methods is @e not parsed into sentences.  For this reason, applications
+ * should @e not send long messages with these methods.
  *
  * @section festival Using with Festival
  *
@@ -424,6 +690,21 @@
  * So I added the Festival (Interactive) plugin that interfaces with Festival interactively
  * via pipes ("festival --interactive").  
  *
+ * Festival can be obtained from
+ * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
+ * Festival is distributed with most Linux distros.  Check your distro CDs.  Debian
+ * users can simply do
+ *
+ *   apt-get install festival
+ *
+ * You will need to install at least one language.  Follow the instructions that come
+ * with Festival.  (Festival in combination with mbrola does work.)
+ *
+ * Start kttsmgr, choose the appropriate language code and add Festival Interactive.
+ * Click the Configure button.  If the Festival voice files are not in the default
+ * location (/usr/share/festival/voices/), try /usr/local/share/festival/voices/.
+ * Click the Rescan button, pick a voice, and click the Test button.
+ *
  * @section festivalcs Using with Festival Client/Server
  *
  * Festival (Client/Server), festivalcs, is still under development.
@@ -433,6 +714,7 @@
  * Obtain Festival Lite here:
  *
  * <a href="http://www.speech.cs.cmu.edu/flite/index.html">http://www.speech.cs.cmu.edu/flite/index.html</a>.
+ * Debian users: apt-get install flite
  *
  * Build and install following the instructions in the README that comes with flite.
  *
@@ -442,16 +724,15 @@
      kttsmgr
    @endverbatim
  *
- * Choose the Command plugin and enter the following as the command
- *
-   @verbatim
-     flite -t "%t"
-   @endverbatim
+ * Choose the English (en) language code. then add the Flite plugin.  Click the
+ * Configure button.
+ * If flite is not in the path, specify the path to the
+ * flite executable.  Click the Test button to test.
  *
  * @section hadifax Using with Hadifax (mbrola and txt2pho)
  *
- * Hadifax consists of the mbrola diphone to speech synthesizer and txt2pho, a utility for converting
- * german text to diphones.
+ * Hadifax consists of the mbrola diphone to speech synthesizer and txt2pho,
+ * a utility for converting german text to diphones.
  *
  * If you do not already have Hadifax installed, do this:
  *
@@ -465,9 +746,26 @@
  http://www.ikp.uni-bonn.de/dt/forsch/phonetik/hadifix/HADIFIXforMBROLA.html</a>
  * - Unzip txt2pho to /usr/local/txt2pho.
  * - Edit txt2phorc file, putting correct data paths in.
- * - Either copy txt2phorc to ~/.txt2phorc or to /etc/txt2pho.  Note that you drop the "rc" in file name.
- * - In kttsmgr, choose the German language (de), and add Hadifax.  On the properties page configure
- *   a voice and the paths to mbrola and txt2pho.
+ * - Either copy txt2phorc to ~/.txt2phorc or to /etc/txt2pho.  
+ *   Note that you drop the "rc" in latter's file name.
+ * - In kttsmgr, choose the German language (de), and add Hadifax.  On the Properties
+ *   page configure a voice and the paths to mbrola and txt2pho.  Click the Test button
+ *   to test.
+ *
+ * There are some other "txt2pho" programs available that support other languages.
+ * The author has tried some of them without success, but your mileage may vary.
+ *
+ * @section epos Using with Epos
+ *
+ * Download epos from <a href="http://epos.ure.cas.cz/">http://epos.ure.cas.cz/</a>.
+ *
+ * Debian users: apt-get install epos.
+ *
+ * Start kttsmgr, choose Czeck or Slovak language code (cz or sk) and add Epos.
+ * Click Configure button.  If the epos server executable and client are not
+ * in your PATH, specify the paths to these executables.  The options boxes
+ * permit you to pass additional options to the server and client.  In a konsole,
+ * type "epos -h" or "say -h" for information.
  *
  * @author José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
  * @author Gary Cramblitt <garycramblitt@comcast.net>
@@ -500,7 +798,7 @@ class kspeech : virtual public DCOPObject {
         {
             mtPlain = 0,                 /**< Plain text */
             mtJsml = 1,                  /**< Java %Speech Markup Language */
-            mtSmml = 2,                  /**< %Speech Markup Meta-language */
+            mtSsml = 2,                  /**< %Speech Synthesis Markup Language */
             mtSable = 3                  /**< Sable 2.0 */
         };
     
@@ -575,12 +873,24 @@ class kspeech : virtual public DCOPObject {
         *
         * The default sentence delimiter is
           @verbatim
-              ([\\.\\?\\!\\:\\;])\\s
+              ([\\.\\?\\!\\:\\;]\\s)|(\\n *\\n)
           @endverbatim
         *
         * Note that backward slashes must be escaped.
+        * When %KTTSD parses the text, it replaces all tabs, spaces, and formfeeds
+        * with a single space, and then replaces the sentence delimiters using
+        * the following statement:
+          @verbatim
+              temp.replace(sentenceDelimiter, "\\1\t");
+          @endverbatim
+        *
+        * which replaces all sentence delimiters with a tab, but
+        * preserving the first capture text (first parenthesis).  In other
+        * words, the sentence punctuation is preserved.
+        * The tab is later used to separate the text into sentences.
         *
         * Changing the sentence delimiter does not affect other applications.
+        *
         * @see sentenceparsing
         */
         virtual ASYNC setSentenceDelimiter(const QString &delimiter) = 0;
@@ -595,15 +905,17 @@ class kspeech : virtual public DCOPObject {
         * @return               Job number.
         *
         * Plain text is parsed into individual sentences using the current sentence delimiter.
-        * Call @ref setSentenceDelimiter to change the sentence delimiter prior to calling setText.
+        * Call @ref setSentenceDelimiter to change the sentence delimiter prior to
+        * calling setText.
         * Call @ref getTextCount to retrieve the sentence count after calling setText.
         *
-        * The text may contain speech mark language, such as Sable, JSML, or SMML,
+        * The text may contain speech mark language, such as Sable, JSML, or SSML,
         * provided that the speech plugin/engine support it.  In this case,
         * sentence parsing follows the semantics of the markup language.
         *
         * Call @ref startText to mark the job as speakable and if the
         * job is the first speakable job in the queue, speaking will begin.
+        *
         * @see getTextCount
         * @see startText
         */
@@ -620,6 +932,7 @@ class kspeech : virtual public DCOPObject {
         * The text is parsed into individual sentences.  Call getTextCount to retrieve
         * the sentence count.  Call startText to mark the job as speakable and if the
         * job is the first speakable job in the queue, speaking will begin.
+        *
         * @see setText.
         * @see startText.
         */
@@ -638,12 +951,13 @@ class kspeech : virtual public DCOPObject {
         * Call @ref setSentenceDelimiter to change the sentence delimiter prior to calling setText.
         * Call @ref getTextCount to retrieve the sentence count after calling setText.
         *
-        * The text may contain speech mark language, such as Sable, JSML, or SMML,
+        * The text may contain speech mark language, such as Sable, JSML, or SSML,
         * provided that the speech plugin/engine support it.  In this case,
         * sentence parsing follows the semantics of the markup language.
         *
         * Call @ref startText to mark the job as speakable and if the
         * job is the first speakable job in the queue, speaking will begin.
+        *
         * @see getTextCount
         * @see startText
         */
@@ -667,6 +981,7 @@ class kspeech : virtual public DCOPObject {
         * @return               Job number of the current text job. 0 if no jobs.
         *
         * Note that the current job may not be speaking. See @ref isSpeakingText.
+        *
         * @see getTextJobState.
         * @see isSpeakingText
         */
@@ -815,6 +1130,7 @@ class kspeech : virtual public DCOPObject {
         * If the job is currently speaking, the @ref textPaused signal is emitted and the job stops speaking.
         * Depending upon the speech engine and plugin used, speeking may not stop immediately
         * (it might finish the current sentence).
+        *
         * @see resumeText
         */
         virtual ASYNC pauseText(const uint jobNum=0) = 0;
@@ -833,9 +1149,19 @@ class kspeech : virtual public DCOPObject {
         * when finished this job will begin speaking where it left off.
         *
         * The @ref textResumed signal is emitted when the job resumes.
+        *
         * @see pauseText
         */
         virtual ASYNC resumeText(const uint jobNum=0) = 0;
+        
+        /**
+        * Get a list of the talkers configured in KTTS.
+        * @return               A QStringList of fully-specified talker codes, one
+        *                       for each talker user has configured.
+        *
+        * @see talkers
+        */
+        virtual QStringList getTalkers() { };
         
         /**
         * Change the talker for a text job.
@@ -848,6 +1174,20 @@ class kspeech : virtual public DCOPObject {
         *                       defaults to the user's default talker.
         */
         virtual ASYNC changeTextTalker(const uint jobNum=0, const QString &talker=NULL) = 0;
+        
+        /**
+        * Get the user's preferred talker attributes.
+        * @return               A fully-specified talker code which is a concatenation of
+        *                       all the user's preferred talker attributes.
+        *
+        * Note that the returned talker code may not exactly match any of the
+        * configured talkers, but there will be at least one talker that matches
+        * each talker code attribute.
+        *
+        * @see talkers
+        * @see getTalkers
+        */
+        virtual QString userTalkerPreferences() { };
         
         /**
         * Move a text job down in the queue so that it is spoken later.
@@ -931,6 +1271,7 @@ class kspeech : virtual public DCOPObject {
         * This signal is emitted when the speech engine/plugin encounters a marker in the text.
         * @param appId          DCOP application ID of the application that queued the text.
         * @param markerName     The name of the marker seen.
+        *
         * @see markers
         */
         void markerSeen(const QCString& appId, const QString& markerName);
@@ -939,6 +1280,7 @@ class kspeech : virtual public DCOPObject {
         * @param appId          DCOP application ID of the application that queued the text.
         * @param jobNum         Job number of the text job.
         * @param seq            Sequence number of the text.
+        *
         * @see getTextCount
         */
         void sentenceStarted(const QCString& appId, const uint jobNum, const uint seq);
@@ -947,6 +1289,7 @@ class kspeech : virtual public DCOPObject {
         * @param appId          DCOP application ID of the application that queued the text.
         * @param jobNum         Job number of the text job.
         * @param seq            Sequence number of the text.
+        *
         * @see getTextCount
         */        
         void sentenceFinished(const QCString& appId, const uint jobNum, const uint seq);
