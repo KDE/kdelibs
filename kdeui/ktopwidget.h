@@ -13,18 +13,21 @@
           * A Widget that provides toolbars, a status line and a frame.
           * It should be used as a toplevel (parent-less) widget and
           * manages the geometry for all its children, including your
-          * main widget (set with @ref setView ).
+          * main widget (set with @ref ::setView ).
 	  *
-          * Normaly, you will inherit from KTopLevelWidget (further: KTW). 
+          * Normally, you will inherit from KTopLevelWidget (further: KTW). 
 	  * You have to
-          * follow some simple rules. First, @ref ::updateRects is the function 	  * that calculates the layout of all elements (toolbars, statusbar, 
+          * follow some simple rules. First, @ref ::updateRects is the function
+ 	  * that calculates the layout of all elements (toolbars, statusbar, 
 	  * main widget, etc).
-          * It is called from @ref resizeEvent, and signals that indicate chang[5~ing position
+          * It is called from @ref ::resizeEvent, and signals that indicate 
+	  * changing position
           * of toolbars and menubar are connected to it. If you reimplement
-          * resizeEvent you have to call this function. KTW now handles fixed-size main views
-          * propperly. Just setFixedSize on your main widget.
+          * resizeEvent you have to call this function. KTW now handles 
+	  * fixed-size main views
+          * properly. Just setFixedSize on your main widget.
           * @short KDE top level widget
-          * @author Maintained by Sven Radej <a9509961@unet.univie.ac.at>
+          * @author Maintained by Sven Radej (a9509961@unet.univie.ac.at)
           */
 class KTopLevelWidget : public QWidget {
     Q_OBJECT
@@ -171,7 +174,7 @@ public:
    * is not changed and False returned.
    * 
    * That means clients could simply do the following:
-   *
+   * <pre>
    * if (kapp->isRestored()){
    *   int n = 1;
    *   while (KTopLevelWidget::canBeRestored(n)){
@@ -182,7 +185,7 @@ public:
    * } else {
    * // create default application as usual
    * }
-   *
+   * </pre>
    * Note that "show()" is called implicit in restore.
    *
    * With this you can easily restore all toplevel windows of your
@@ -261,7 +264,7 @@ protected slots:
      * Updates child widget geometry. This function is now virtual
      * This is automatically called when the widget is created,
      * new components are added or the widget is resized, or showed.
-     * updateRects handles fixed-size widgets propperly.
+     * updateRects handles fixed-size widgets properly.
      *
      * Override it if you intend to manage the children yourself.
      * You normally do not need to do this.
