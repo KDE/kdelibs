@@ -1406,7 +1406,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
     return;
   }
 
-  cert->chain().setChain(policies->readListEntry("Chain"));
+  cert->chain().setCertChain(policies->readListEntry("Chain"));
 
   KSSLCertificate::KSSLValidation v = cert->revalidate(KSSLCertificate::SSLServer);
 
