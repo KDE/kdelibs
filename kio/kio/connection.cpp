@@ -87,6 +87,7 @@ void Connection::close()
     // close the file-stream as well otherwise we leak memory. 
     // As a result we close the file descriptor twice, but that should
     // be harmless
+    // KDE4: fix this
     if (f_out)
        fclose(f_out);
     f_out = 0;
