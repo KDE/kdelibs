@@ -609,9 +609,7 @@ void HTMLTableSectionElementImpl::deleteRow( long index, int &exceptioncode )
     NodeListImpl *children = childNodes();
     int numRows = children ? (int)children->length() : 0;
     if( index >= 0 && index < numRows )
-    {
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
-    }
     else
         exceptioncode = DOMException::INDEX_SIZE_ERR;
     delete children;
@@ -685,35 +683,40 @@ long HTMLTableRowElementImpl::sectionRowIndex() const
     return rIndex;
 }
 
-HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index )
+HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index, int &exceptioncode )
 {
-    HTMLTableCellElementImpl *c = new HTMLTableCellElementImpl(docPtr(), ID_TD);
-
+    HTMLTableCellElementImpl *c = 0L;
     NodeListImpl *children = childNodes();
-    int exceptioncode = 0;
-    if(!children || (int)children->length() <= index)
-        appendChild(c, exceptioncode);
-    else {
-        NodeImpl *n;
-        if(index < 1)
-            n = firstChild();
-        else
-            n = children->item(index);
-        insertBefore(c, n, exceptioncode);
+    int numCells = children ? children->length() : 0;
+    if ( index < 0 || index > numCells )
+        exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
+    else
+    {
+        c = new HTMLTableCellElementImpl(docPtr(), ID_TD);
+        if(numCells == index)
+            appendChild(c, exceptioncode);
+        else {
+            NodeImpl *n;
+            if(index < 1)
+                n = firstChild();
+            else
+                n = children->item(index);
+            insertBefore(c, n, exceptioncode);
+        }
     }
-    if(children) delete children;
+    delete children;
     return c;
 }
 
-void HTMLTableRowElementImpl::deleteCell( long index )
+void HTMLTableRowElementImpl::deleteCell( long index, int &exceptioncode )
 {
-    if(index < 0) return;
     NodeListImpl *children = childNodes();
-    if(children && (int)children->length() > index) {
-        int exceptioncode = 0;
+    int numCells = children ? children->length() : 0;
+    if( index >= 0 && index < numCells )
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
-    }
-    if(children) delete children;
+    else
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    delete children;
 }
 
 // -------------------------------------------------------------------------

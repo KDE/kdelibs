@@ -165,8 +165,8 @@ public:
     long rowIndex() const;
     long sectionRowIndex() const;
 
-    HTMLElementImpl *insertCell ( long index );
-    void deleteCell ( long index );
+    HTMLElementImpl *insertCell ( long index, int &exceptioncode );
+    void deleteCell ( long index, int &exceptioncode );
 
 protected:
     int ncols;
