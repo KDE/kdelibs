@@ -1,0 +1,22 @@
+[Desktop Entry]
+Comment=XSL Formating Object file
+Comment[ar]=ملف الهيئة الهدفية ل XSL
+Comment[bg]=XSL - Файл за форматиране на Обекти
+Comment[da]=XSL Formatering af objektfil
+Comment[de]=Objektdatei für die XSL-Formatierung
+Comment[es]=Archivo de objeto de formato XSL
+Comment[fi]=XSL muotoinen objektitiedosto
+Comment[fr]=Fichier de formatage d'objet XSL
+Comment[he]=קובץ אובייקט עיצוב XSL
+Comment[hu]=XSL-formázási objektumfájl
+Comment[lt]=XSL Formating Object byla
+Comment[lv]=XSL Formatēšanas Objektu Fails
+Comment[nl]=XSL-Formatterings-Object-bestand
+Comment[pt]=Ficheiro XSL Formatting Object
+Comment[pt_BR]=Arquivo Objeto XSL 
+Comment[sk]=Objektový súbor formátovania XSL
+Comment[sv]=XSL-formateringsobjektfil
+Icon=xslfo
+MimeType=text/x-xslfo
+Patterns=*.fo;*.xslfo
+Type=MimeType

@@ -1,0 +1,21 @@
+[Desktop Entry]
+Comment=XSLT Stylesheet file
+Comment[be]=Табліца стыляў XSLT
+Comment[da]=XSLT Stilarkfil
+Comment[de]=XSLT-Stilvorlage
+Comment[es]=Archivo de hoja de estilo XSLT
+Comment[fi]=XSLT tyylitiedosto
+Comment[fr]=Feuille de style XSLT
+Comment[he]=קובץ גיליון סגנון XSLT
+Comment[hu]=XSLT stíluslap
+Comment[lt]=XSLT stiliaus aprašymo byla
+Comment[lv]=XSLT Stilutabulas fails
+Comment[nl]=XSLT stijlblad-bestand
+Comment[pt]=Transformação XSLT
+Comment[pt_BR]=Arquivo de Folha de Estilo XSLT
+Comment[sk]=Súbor štýlu XSLT stylesheet
+Comment[sv]=XSLT-stilmallsfil
+Icon=xslt
+MimeType=text/x-xslt
+Patterns=*.xslt;
+Type=MimeType
