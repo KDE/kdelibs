@@ -71,9 +71,10 @@ void yyerror( const char *s )
   double _float;
 }
 
+%nonassoc T_UNIMPORTANT
 %token <_char> T_CHARACTER_LITERAL
 %token <_float> T_DOUBLE_LITERAL
-%token <_str> T_IDENTIFIER
+%right <_str> T_IDENTIFIER
 %token <_int> T_INTEGER_LITERAL
 %token <_str> T_STRING_LITERAL
 %token <_str> T_INCLUDE
@@ -100,7 +101,7 @@ void yyerror( const char *s )
 %token T_PLUS
 %token T_MINUS
 %token T_COMMA
-%token T_ASTERISK
+%right T_ASTERISK
 %token T_TILDE
 %token T_LESS
 %token T_GREATER
@@ -301,7 +302,7 @@ dcop_signal_area_begin
 	;
 	
 Identifier
-	: T_IDENTIFIER {
+	: T_IDENTIFIER %prec T_UNIMPORTANT {
 	  $$ = $1;
 	}
 	| T_IDENTIFIER T_SCOPE Identifier {
@@ -599,7 +600,7 @@ type
 		$$ = tmp;
 	     }
 	  }
-	| T_CONST type_name {
+	| T_CONST type_name %prec T_UNIMPORTANT {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;
@@ -609,7 +610,7 @@ type
 		yyerror("in dcop areas are only const references allowed!");
 	  }
 
-	| type_name {
+	| type_name %prec T_UNIMPORTANT {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
