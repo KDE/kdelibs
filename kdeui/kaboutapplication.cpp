@@ -106,7 +106,10 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
 
     KActiveLabel* activeLabel = new KActiveLabel( authorPage );
-    activeLabel->setText( i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly." ) );
+    if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
+       activeLabel->setText( i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly." ) );
+    else
+       activeLabel->setText( i18n( "Please use <a href=\"mailto:%1\">%1</a> to report bugs, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress()) );
     authorPage->addWidget( activeLabel );
 
     QValueList<KAboutPerson>::ConstIterator it;
