@@ -83,6 +83,6 @@ struct DCOPMsg {
   CARD32 key;
 };
 
-#endif //Q_OS_UNIX
+#endif /* Q_OS_UNIX */
 
 #endif
