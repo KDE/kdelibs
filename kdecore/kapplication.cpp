@@ -133,7 +133,7 @@ bool KApplication::s_dcopClientNeedsPostInit = false;
 
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
-#if KDE_IS_VERSION( 3, 2, 90 )
+#if KDE_IS_VERSION( 3, 90, 0 )
 #warning Obsolete, remove.
 // remove atom_KdeNetUserTime related stuff
 #endif

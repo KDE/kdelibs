@@ -538,7 +538,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      d.sym = lt_dlsym( d.handle, "kdemain");
      if (!d.sym )
      {
-#if ! KDE_IS_VERSION( 3, 0, 90 )
+#if ! KDE_IS_VERSION( 3, 90, 0 )
         d.sym = lt_dlsym( d.handle, "main");
 #endif
         if (!d.sym )
