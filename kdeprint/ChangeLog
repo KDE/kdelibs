@@ -1,0 +1,21 @@
+Since 2.2 release, Michael Goffioul <goffioul@imec.be>
+  * automatic filtering: if the input file format is not directly supported
+    by the print spooler, kdeprint will try to convert the file to the
+    primary supported input format (usually PostScript). To achieve this, 
+    kdeprint uses the available filters (defined in XML files) and tries to
+    build up a filter chain.
+  * mime type checking: when building a filter chain, kdeprint checks that
+    each output format is supported as an input by the next filter
+  * possibility to specify input file from the print dialog in StandAlone
+    mode (like XPP)
+  * kmvirtualmanager.cpp: KMPrinter::Virtual is only set for pure virtual
+    printers (== non empty instance name). This makes KPrinter::isVirtual()
+    more useful.
+  * CUPS plugin:
+  	- support for quotas and user access restrictions (in wizard and
+	  print manager)
+	- added missing options in server configuration tool
+
+27/08/2001 Michael Goffioul <goffioul@imec.be>
+  * implementation of "Schedule" tab in print dialog for the CUPS plugin
+    (job-hold-until attribute).
