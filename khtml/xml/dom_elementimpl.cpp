@@ -259,7 +259,11 @@ ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 
 ElementImpl::~ElementImpl()
 {
+    if (m_render)
+        detach();
+    
     delete m_style;
+            
     namedAttrMap->detachFromElement();
     namedAttrMap->deref();
 }
@@ -462,8 +466,7 @@ void ElementImpl::detach()
 {    
     NodeBaseImpl::detach();    
     
-    if(m_render)
-	delete m_render;
+    delete m_render;
     
     m_render = 0;
 }
@@ -473,7 +476,7 @@ void ElementImpl::applyChanges(bool top, bool force)
     // ### find a better way to handle non-css attributes
     if(!m_render) return;
 
-    if (force || changed())
+    if (top)
 	recalcStyle();
 
     // a style change can influence the children, so we just go
