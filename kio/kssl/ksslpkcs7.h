@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,9 +17,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
-// As of yet, this class is being defined.  if you use it, let it be known
-// that BC will break on you until this message is removed.
 
 #ifndef _KSSLPKCS7_H
 #define _KSSLPKCS7_H
@@ -47,90 +44,124 @@ class KSSL;
 class KSSLPKCS7Private;
 class KOpenSSLProxy;
 
-
+/**
+ * KDE PKCS#7 Certificate
+ *
+ * This class represents a PKCS#7 certificate
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL
+ * @short KDE PKCS#7 Certificate
+ */
 class KSSLPKCS7 {
 friend class KSSL;
 
 public:
-  virtual ~KSSLPKCS7();
+	/**
+	 *  Destroy this PKCS#7 certificate
+	 */
+	virtual ~KSSLPKCS7();
 
-  /*
-   *   The name of this certificate.  This can be used to refer to the
-   *   certificate instead of passing the object itself.
-   */
-  QString name();
+	/**
+	 *  The name of this certificate.  This can be used to refer to the
+	 *  certificate instead of passing the object itself.
+	 *  @return the name of the certificate
+	 */
+	QString name();
 
-  /*
-   *   Create a KSSLPKCS7 object from a Base64 in a QString.  Returns NULL
-   *   on failure.
-   */
-  static KSSLPKCS7* fromString(QString base64);
+	/**
+	 *  Create a KSSLPKCS7 object from a Base64 in a QString.
+	 *  @param base64 the base64 representation of the certificate
+	 *  @return a PKCS#7 object, or NULL on failure
+	 */
+	static KSSLPKCS7* fromString(QString base64);
 
-  /*
-   *   Create a KSSLPKCS7 object by reading a PKCS#7 file.  Returns NULL
-   *   on failure.
-   */
-  static KSSLPKCS7* loadCertFile(QString filename);
+	/**
+	 *  Create a KSSLPKCS7 object by reading a PKCS#7 file.
+	 *  @param filename the filename to read the certificate from
+	 *  @return a PKCS#7 object, or NULL on failure
+	 */
+	static KSSLPKCS7* loadCertFile(QString filename);
 
-  /*
-   *   Convert to a Base64 string.
-   */
-  QString toString();
+	/**
+	 *  Convert to a Base64 string.
+	 *  @return the PKCS#7 object in base64 form
+	 */
+	QString toString();
 
-  /*
-   *   Raw set the PKCS7 object.
-   */
-  void setCert(PKCS7 *c);
+	/**
+	 *  Raw set the PKCS7 object.
+	 *  @param the PKCS7 object
+	 *  @internal
+	 */
+	void setCert(PKCS7 *c);
 
-  /*
-   *   Get the bottom level X.509 certificate
-   */
-  KSSLCertificate *getCertificate();
+	/**
+	 *  Get the bottom level X.509 certificate.
+	 *  @return the certificate, or NULL on failure
+	 *  @see KSSLCertificate
+	 */
+	KSSLCertificate *getCertificate();
 
+	/**
+	 *  Get the certificate chain.
+	 *  @return the certificate chain
+	 *  @see KSSLCertChain
+	 */
+	KSSLCertChain *getChain();
 
-  /*
-   *   Get the certificate chain
-   */
-  KSSLCertChain *getChain();
+	/**
+	 *  Write the PKCS#7 to a file in raw mode.
+	 *  @param the filename to write
+	 *  @return true on success
+	 */
+	bool toFile(QString filename);
 
+	/**
+	 *  Check the chain to make sure it's valid.
+	 *  @return the result of the validation procedure
+	 */
+	KSSLCertificate::KSSLValidation validate();
 
-  /*
-   *   Write the PKCS#7 to a file in raw mode
-   */
-  bool toFile(QString filename);
+	/**
+	 *  Check the chain to make sure it's valid for a specified purpose.
+	 *  @param p the purpose to validate for
+	 *  @return the result of the validation procedure
+	 *  @see KSSLCertificate
+	 */
+	KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
 
+	/**
+	 *  Check the chain to make sure it's valid.
+	 *  Ignore any cached validation result.
+	 *  @return the result of the validation
+	 *  @see KSSLCertificate
+	 */
+	KSSLCertificate::KSSLValidation revalidate();
 
-  /*
-   *   Check the chain to make sure it's valid.
-   */
-  KSSLCertificate::KSSLValidation validate();
-  KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
+	/**
+	 *  Check the chain to make sure it's valid for a specific purpose.
+	 *  Ignore any cached validation result.
+	 *  @param p the purpose to validate for
+	 *  @return the result of the validation
+	 *  @see KSSLCertificate
+	 */
+	KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
-
-  /*
-   *   Check the chain to make sure it's valid.
-   *   Ignore any cached validation result.
-   */
-  KSSLCertificate::KSSLValidation revalidate();
-  KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
-
-
-  /*
-   *   Return true if the chain is valid.
-   */
-  bool isValid();
-
-
+	/**
+	 *  Return true if the chain is valid.
+	 */
+	bool isValid();
 
 protected:
-  KSSLPKCS7();
+	KSSLPKCS7();
 
 private:
-  KSSLPKCS7Private *d;
-  PKCS7 *_pkcs;
-  KOpenSSLProxy *kossl;
-  KSSLCertificate *_cert;
-  KSSLCertChain *_chain;
+	KSSLPKCS7Private *d;
+	PKCS7 *_pkcs;
+	KOpenSSLProxy *kossl;
+	KSSLCertificate *_cert;
+	KSSLCertChain *_chain;
 };
 
 
