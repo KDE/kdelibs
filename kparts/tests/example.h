@@ -7,15 +7,17 @@
 #include <kembedmanager.h>
 
 class QSplitter;
+class QMultiLineEdit;
 
 class Shell : public KShell
 {
   Q_OBJECT
 public:
-  Shell( KPart *part1, KPart *part2 );
+  Shell( KReadOnlyPart *part1, KPart *part2 );
   virtual ~Shell();
 
 protected slots:
+  void slotFileOpen();
   void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:
@@ -23,7 +25,8 @@ protected:
   virtual void resizeEvent( QResizeEvent * );
   
 private:
-  KPart *m_part1, *m_part2;
+  KReadOnlyPart *m_part1;
+  KPart *m_part2;
   KEmbedManager *m_manager;
   QSplitter *m_splitter;
 };
@@ -39,6 +42,7 @@ protected:
 
 protected:
   virtual QString configFile() const;
+  QMultiLineEdit * m_edit;
 };
 
 class Part2 : public KPart

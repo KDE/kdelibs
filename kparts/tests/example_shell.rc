@@ -2,6 +2,7 @@
 <kpartgui>
 <MenuBar>
   <Menu name="File"><text>File</text>
+   <Action name="open_file"/>
    <Action name="shell_quit"/>
   </Menu>
 </MenuBar>

@@ -2,16 +2,23 @@
 #include "example.h"
 
 #include <qsplitter.h>
+#include <qlayout.h>
+#include <qfile.h>
+#include <qdir.h>
+#include <qtextstream.h>
+#include <qmultilinedit.h>
 
 #include <kapp.h>
+#include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
 
-Shell::Shell( KPart *part1, KPart *part2 )
+Shell::Shell( KReadOnlyPart *part1, KPart *part2 )
 {
   m_part1 = part1;
   m_part2 = part2;
 
+  (void)new KAction( i18n( "&Open example file" ), 0, this, SLOT( slotFileOpen() ), actionCollection(), "open_file" );
   (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "shell_quit" );
 
   m_manager = new KEmbedManager( this );
@@ -27,7 +34,7 @@ Shell::Shell( KPart *part1, KPart *part2 )
   
   m_part1->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
   m_part2->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
-  
+
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
 
@@ -36,6 +43,12 @@ Shell::Shell( KPart *part1, KPart *part2 )
 
 Shell::~Shell()
 {
+}
+
+void Shell::slotFileOpen()
+{
+  if ( ! m_part1->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+    KMessageBox::error(this,"Couldn't open file !");
 }
 
 void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
@@ -59,6 +72,9 @@ void Shell::resizeEvent( QResizeEvent * )
 Part1::Part1()
  : KReadOnlyPart( 0, "Part1" )
 {
+  QBoxLayout * box = new QBoxLayout(this, QBoxLayout::TopToBottom);
+  m_edit = new QMultiLineEdit(this);
+  box->addWidget( m_edit );
 }
 
 Part1::~Part1()
@@ -68,6 +84,18 @@ Part1::~Part1()
 bool Part1::openFile()
 {
   debug("Part1: opening %s", m_file.ascii());
+  // Hehe this is from a tutorial I did some time ago :)
+  QFile f(m_file);
+  QString s;
+  if ( f.open(IO_ReadOnly) ) {
+    QTextStream t( &f );
+    while ( !t.eof() ) {
+      s += t.readLine() + "\n";
+    }
+    f.close();
+  }
+  m_edit->setText(s);
+  // can a part set the caption ? setCaption(m_url); // what the user sees is m_url
   return true;
 }
 
