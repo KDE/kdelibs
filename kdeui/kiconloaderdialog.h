@@ -1,6 +1,9 @@
-/*  This file is part of the KDE libraries
+/*  vi: ts=8 sts=4 sw=4
+ *
+ *  This file is part of the KDE libraries
  *  Copyright (C) 1997 Christoph Neerfeld <chris@kde.org>
  *            (C) 2000 Kurt Granroth <granroth@kde.org>
+ *            (C) 2000 Geert Jansen <jansen@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,60 +21,54 @@
  *  Boston, MA 02111-1307, USA.
  *
  */
-#ifndef KICONLOADERDIALOG_H
-#define KICONLOADERDIALOG_H
 
-#include <qpixmap.h>
+#ifndef __KIconLoaderDialog_h__
+#define __KIconLoaderDialog_h__
+
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qpushbutton.h>
-#include <kiconview.h>
-#include <kdialogbase.h>
-#include <kiconloader.h>
+
+#include "kdialogbase.h"
+#include "kiconview.h"
 
 class QComboBox;
-class QLabel;
-class QLineEdit;
-class KProgress;
 class QTimer;
+class QKeyEvent;
+class QRadioButton;
+class KProgress;
+class KIconLoader;
 
 /**
-* Internal display class for @ref KIconLoaderDialog
-* @short Internal display class for KIconLoaderDialog
-* @version $Id$
-* @author Christoph.Neerfeld@bonn.netsurf.de
-*/
-class KIconLoaderCanvas : public KIconView
+ * Canvas for the iconloader dialog.
+ */
+class KIconLoaderCanvas: public KIconView
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
-    KIconLoaderCanvas (QWidget *parent=0, const char* name=0);
+    KIconLoaderCanvas(QWidget *parent=0L, const char *name=0L);
     virtual ~KIconLoaderCanvas();
 
-    void loadFiles( QStringList files );
-    QString getCurrent( void );
-
-signals:
-    void nameChanged( const QString& );
-    void doubleClicked();
-    void interrupted();
-    void startLoading( int steps );
-    void progress( int p );
-    void finished();
+    void loadFiles(QStringList files);
+    QString getCurrent();
 
 protected:
-    /**
-     * Makes sure Key_Escape is ignored
-     */
     virtual void keyPressEvent(QKeyEvent *e);
+
+signals:
+    void nameChanged(QString);
+    void startLoading(int);
+    void progress(int);
+    void finished();
 
 private slots:
     void slotLoadFiles();
-    void slotCurrentChanged( QIconViewItem *item );
+    void slotCurrentChanged(QIconViewItem *item);
 
 private:
     QStringList mFiles;
-    QTimer *loadTimer;
+    QTimer *mpTimer;
     KIconLoader *mpLoader;
 
     class KIconLoaderCanvasPrivate;
@@ -86,145 +83,104 @@ private:
  * It provides one function selectIcon() which displays a dialog.
  * This dialog lets you select the icons within the IconPath by image.
  */
-class KIconLoaderDialog : public KDialogBase
+class KIconLoaderDialog: public KDialogBase
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     /**
-     * The KIconLoaderDialog is a modal dialog; i.e. it has its own eventloop
-     * and the normal program will stop after a call to selectIcon() until
-     * selectIcon() returns.
-     * This constructor creates a KIconLoaderDialog that will call
-     * KApplication::getKApplication()->getIconLoader() to load any icons.
-     * Note that it will not use this KIconLoader to display the icons, but
-     * the QPixmap that it returns will be know to this KIconLoader.
-     * KIconLoaderDialog caches all icons it has loaded as long as they
-     * are in the same directory between two calls to selectIcon(). So it
-     * is a good idea to delete the KIconLoaderDialog when it is not
-     * needed anymore.
+     * Construct the iconloader dialog. This uses the global iconloader to
+     * query the available system icons.
      */
-    KIconLoaderDialog ( QWidget *parent=0, const char *name=0 );
+    KIconLoaderDialog(QWidget *parent=0L, const char *name=0L);
 
     /**
-     * If you want to use another KIconLoader you can create the
-     * KIconLoaderDialog with this constructor which accepts a pointer to a
-     * KIconLoader. Make sure that this pointer is valid.
+     * Alternate constructor to use a different iconloader.
      */
-    KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0,
-			const char *name=0  );
+    KIconLoaderDialog(KIconLoader *loader, QWidget *parent=0, 
+	    const char *name=0);
+
+    ~KIconLoaderDialog();
 
     /**
-     * Destructor
+     * Pops up the dialog an lets the user select an icon.
+     * @param group The icon group this icon is intended for. This makes
+     * sure that the icons are shown with the same size and effects that they 
+     * will have when used outside this dialog.
+     * @param context The initial icon context. Initially, the icons having
+     * the desired context are visible, but the user can change that.
+     * @return The name of the icon. The name is suitable for use with 
+     * @ref #KIconLoader, i.e. a relative name for installed icons and an
+     * absolute path for user supplied ones.
      */
-    ~KIconLoaderDialog ();
+    QString selectIcon(int group=0, int context=0);
 
-    /**
-     * Get an icon from a modal selector dialog.
-     * This method pops up a modal dialog and lets you select an icon by its
-     * picture not name. The function returns a QPixmap object and the icons
-     * name in 'name'.
-     * if the user has selected an icon, or null if the user has pressed the
-     * cancel button. So check the result before taking any action.
-     * The argument filter specifies a filter for the names of the icons to
-     * display. For example "*" displays all icons and "mini*" displays only
-     * those icons which names start with 'mini'.
-     */
-    QPixmap selectIcon( QString &name, int group, int context=KIcon::Any );
-
-    int exec(int group, int context);
-
-protected:
-    void init();
-
-protected slots:
-    void typeChanged(int);
-    //void needReload();
-
-    void initProgressBar( int steps );
-    void progress( int p );
-    void hideProgressBar( void );
-
-protected:
-    int mGroup, mContext;
-    KIconLoaderCanvas *canvas;
-    QLabel	      *l_name;
-    QLabel	      *text;
-    QComboBox	      *cb_types;
-    KIconLoader	      *icon_loader;
-    KProgress	      *progressBar;
+private slots:
+    void slotButtonClicked(int);
+    void slotContext(int);
+    void slotStartLoading(int);
+    void slotProgress(int);
+    void slotFinished();
 
 private:
+    void init();
+    void showIcons();
+
+    int mGroup, mContext, mType;
+    QStringList mFileList;
+    QComboBox *mpCombo;
+    QPushButton *mpBrowseBut;
+    QRadioButton *mpRb1, *mpRb2;
+    KProgress *mpProgress;
+    KIconLoader *mpLoader;
+    KIconLoaderCanvas *mpCanvas;
+
     class KIconLoaderDialogPrivate;
     KIconLoaderDialogPrivate *d;
 };
 
 /**
- * This is a button that uses the @ref KIconLoaderDialog.
- * It shows the currently selected icon. Pressing on
- * the icon will open the dialog. If the icon changes, a
- * signal is emitted and the buttons pixmap becomes updated.
+ * A pushbutton for choosing an icon. Pressing on the button will open a
+ * dialog for the user to select an icon. The icon will be displayed on 
+ * the button.
  */
-class KIconLoaderButton : public QPushButton
+class KIconLoaderButton: public QPushButton
 {
-    Q_OBJECT
+    Q_OBJECT;
+
 public:
-    /**
-     * Create a new button.
-     */
-    KIconLoaderButton( QWidget *_parent );
-    /**
-     * Create a new button.
-     *
-     * @param _icon_loader The @ref KIconLoader which should be used by
-     *  this button.
-     */
-    KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_parent );
+    /** Creates a new KIconLoaderButton. */
+    KIconLoaderButton(QWidget *parent=0L, const char *name=0L);
+
+    /** Alternate constructor for use with a different iconloader. */
+    KIconLoaderButton(KIconLoader *loader, QWidget *parent, 
+	    const char *name=0L);
+
     ~KIconLoaderButton();
 
-    /**
-     * Set the icon group and context. The group determines the visual
-     * appearance of the icons, the context limits the number of icons to
-     * choose from.
-     */
+    /** Set the icon group and context. */
     void setIconType(int group, int context);
 
-    /**
-     * Set the button's icon.
-     *
-     * @param _icon A parameter as usually passed to @ref KIconLoader.
-     */
-    void setIcon( const QString& _icon );
+    /** Set the button's initial icon. */
+    void setIcon(QString icon);
 
-    /**
-     * @return The name of the icon without path.
-     */
-    const QString icon() { return iconStr; }
-
-    /**
-     * @return A reference to the icon loader dialog used.
-     */
-    KIconLoaderDialog* iconLoaderDialog() { return loaderDialog; }
-
-public slots:
-    void slotChangeIcon();
+    /** Returns the selected icon name. */
+    const QString icon() { return mIcon; }
 
 signals:
-    /**
-     * Emitted if the icon has changed.
-     */
-    void iconChanged( const QString& icon );
+    void iconChanged(QString icon);
 
-protected:
-    int mGroup, mContext;
-    KIconLoaderDialog *loaderDialog;
-    QString iconStr;
-    QString resType;
-    KIconLoader *iconLoader;
+private slots:
+    void slotChangeIcon();
 
 private:
+    int mGroup, mContext;
+    QString mIcon;
+    KIconLoaderDialog *mpDialog;
+    KIconLoader *mpLoader;;
+
     class KIconLoaderButtonPrivate;
     KIconLoaderButtonPrivate *d;
 };
 
-#endif // KICONLOADERDIALOG_H
+#endif // __KIconLoaderDialog_h__

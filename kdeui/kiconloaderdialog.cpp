@@ -1,7 +1,5 @@
-/*
+/* vi: ts=8 sts=4 sw=4
  *  -*- C++ -*-
- *
- *  kiconloaderdialog.
  *
  *  Copyright (C) 1997 Christoph Neerfeld
  *  email:  Christoph.Neerfeld@home.ivm.de or chris@kde.org
@@ -21,195 +19,195 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
+ *  Revamped April 2000 by Geert Jansen <jansen@kde.org>
  */
-#include <qapplication.h>
-#include <qdir.h>
-#include <qpainter.h>
-#include <qwmatrix.h>
+
 #include <qlayout.h>
 #include <qstring.h>
 #include <qstringlist.h>
-
+#include <qimage.h>
+#include <qpixmap.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtimer.h>
-#include <kprogress.h>
+#include <qbuttongroup.h>
+#include <qradiobutton.h>
+#include <qfileinfo.h>
 
-#include "kiconloaderdialog.h"
-
-#include <kpixmap.h>
-#include <klineedit.h>
+#include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstddirs.h>
-#include <kapp.h>
 #include <kiconloader.h>
 #include <kglobal.h>
+#include <kprogress.h>
 
-//
-//----------------------------------------------------------------------
-//---------------  KICONLOADERCANVAS   ---------------------------------
-//----------------------------------------------------------------------
-//
-KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
-    : KIconView( parent, name )
+#include "kiconview.h"
+#include "kiconloaderdialog.h"
+
+
+/*
+ * KIconLoaderCanvas: Iconview for the iconloader dialog.
+ */
+
+KIconLoaderCanvas::KIconLoaderCanvas(QWidget *parent, const char *name)
+    : KIconView(parent, name)
 {
     mpLoader = KGlobal::iconLoader();
-    setGridX( 65 );
-    loadTimer = new QTimer( this );
-    connect( loadTimer, SIGNAL( timeout() ), this, SLOT( slotLoadFiles() ) );
-    connect( this, SIGNAL( currentChanged( QIconViewItem * ) ),
-	     this, SLOT( slotCurrentChanged( QIconViewItem * ) ) );
-    setWordWrapIconText( FALSE );
-    setShowToolTips( TRUE );
+    mpTimer = new QTimer(this);
+    connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
+    connect(this, SIGNAL(currentChanged(QIconViewItem *)),
+	    SLOT(slotCurrentChanged(QIconViewItem *)));
+
+    setGridX(65);
+    setWordWrapIconText(false);
+    setShowToolTips(true);
 }
 
 KIconLoaderCanvas::~KIconLoaderCanvas()
 {
-    delete loadTimer;
+    delete mpTimer;
 }
 
-void KIconLoaderCanvas::loadFiles( QStringList files )
+void KIconLoaderCanvas::loadFiles(QStringList files)
 {
     clear();
     mFiles = files;
-    loadTimer->start( 0, TRUE );
+    mpTimer->start(0, true);
 }
 
 void KIconLoaderCanvas::slotLoadFiles()
 {
-    setResizeMode( Fixed );
+    setResizeMode(Fixed);
+    emit startLoading(mFiles.count());
+    QApplication::setOverrideCursor(waitCursor);
 
-    int i = 0;
-    QApplication::setOverrideCursor( waitCursor );
-    emit startLoading( mFiles.count() );
+    int i;
     QStringList::ConstIterator it;
-    for (it=mFiles.begin(); it != mFiles.end(); ++it, ++i ) {
-	emit progress( i );
+    for (it=mFiles.begin(), i=0; it!=mFiles.end(); it++, i++)
+    {
+	emit progress(i);
 	kapp->processEvents();
-	KPixmap new_xpm;
-	new_xpm.load( *it, 0, KPixmap::LowColor );
-	if( new_xpm.isNull() )
+	QImage img;
+	img.load(*it);
+	if (img.isNull())
 	    continue;
-    
-	if( new_xpm.width() > 60 || new_xpm.height() > 60 ) {
-	    QWMatrix m;
-	    float scale;
-	    if( new_xpm.width() > new_xpm.height() )
-		scale = 60 / (float) new_xpm.width();
-	    else
-		scale = 60 / (float) new_xpm.height();
-	    m.scale( scale, scale );
-	    new_xpm = new_xpm.xForm(m);
+	if (img.width() > 60 || img.height() > 60) 
+	{
+	    if (img.width() > img.height())
+	    {
+		int height = (int) ((60.0 / img.width()) * img.height());
+		img = img.smoothScale(60, height);
+	    } else 
+	    {
+		int width = (int) ((60.0 / img.height()) * img.width());
+		img = img.smoothScale(width, 60);
+	    }
 	}
-    
-	QFileInfo fi( *it );
-	QIconViewItem *item = new QIconViewItem( this, fi.baseName(), new_xpm );
-	item->setKey( *it );
-	item->setRenameEnabled( FALSE );
-	item->setDragEnabled( FALSE );
-	item->setDropEnabled( FALSE );
+	QPixmap pm;
+	pm.convertFromImage(img);
+	QFileInfo fi(*it);
+	QIconViewItem *item = new QIconViewItem(this, fi.baseName(), pm);
+	item->setKey(*it);
+	item->setDragEnabled(false);
+	item->setDropEnabled(false);
     }
+
     QApplication::restoreOverrideCursor();
     emit finished();
-
-    setResizeMode( Adjust );
+    setResizeMode(Adjust);
 }
 
-
-void KIconLoaderCanvas::slotCurrentChanged( QIconViewItem *item )
-{
-    emit nameChanged( (item != 0 ? item->text() : QString::null) );
-}
-
-QString KIconLoaderCanvas::getCurrent( void )
+QString KIconLoaderCanvas::getCurrent()
 {
     if (!currentItem())
 	return QString::null;
-    QString current = currentItem()->key();
-
-    // Strip path and extension
-    int n = current.findRev('/');
-    current = current.mid(n+1);
-    n = current.findRev('.');
-    current = current.left(n);
-    return current;
+    return currentItem()->key();
 }
 
-//
-// 1999-10-17 Espen Sand
-// Added this one so that the KIconLoaderDialog can be closed by pressing
-// Key_Escape when KIconLoaderCanvas has focus.
-//
+void KIconLoaderCanvas::slotCurrentChanged(QIconViewItem *item)
+{
+    emit nameChanged((item != 0L) ? item->text() : QString::null);
+}
+
+/*
+ * Ignore escape when having focus (Espen Sand).
+ */
 void KIconLoaderCanvas::keyPressEvent(QKeyEvent *e)
 {
-    if( e->key() == Key_Escape )
-    {
+    if (e->key() == Key_Escape)
         e->ignore();
-    }
     else
-    {
         KIconView::keyPressEvent(e);
-    }
 }
 
 
-//
-//----------------------------------------------------------------------
-//---------------  KICONLOADERDIALOG   ---------------------------------
-//----------------------------------------------------------------------
-//
-KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
-    : KDialogBase( parent, name, TRUE, i18n("Select Icon"), Help|Ok|Cancel, Ok )
+/*
+ * KIconLoaderDialog: Dialog for selecting icons. Both system and user
+ * specified icons can be chosen.
+ */
+
+KIconLoaderDialog::KIconLoaderDialog(QWidget *parent, const char *name)
+    : KDialogBase(parent, name, true, i18n("Select Icon"), Help|Ok|Cancel, Ok)
 {
-    icon_loader = KGlobal::iconLoader();
+    mpLoader = KGlobal::iconLoader();
     init();
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent,
-				       const char *name )
-    : KDialogBase( parent, name, TRUE, i18n("Select Icon"), Help|Ok|Cancel, Ok )
+KIconLoaderDialog::KIconLoaderDialog(KIconLoader *loader, QWidget *parent,
+	const char *name)
+    : KDialogBase(parent, name, true, i18n("Select Icon"), Help|Ok|Cancel, Ok)
 {
-    icon_loader = loader;
+    mpLoader = loader;
     init();
 }
 
-void KIconLoaderDialog::init( void )
+void KIconLoaderDialog::init()
 {
-    QWidget *page = new QWidget( this );
-    setMainWidget( page );
+    mGroup = mContext = mType = 0;
 
-    QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
-    QHBoxLayout *hbox = new QHBoxLayout();
-    topLayout->addLayout(hbox);
+    QWidget *main = new QWidget( this );
+    setMainWidget(main);
 
-    cb_types = new QComboBox(FALSE, page);
-    cb_types->insertItem("Action");
-    cb_types->insertItem("Application");
-    cb_types->insertItem("Device");
-    cb_types->insertItem("Filesystem");
-    cb_types->insertItem("MimeType");
-    hbox->addWidget( cb_types, 10 );
-    hbox->addStretch(10);
+    QVBoxLayout *top = new QVBoxLayout(main, marginHint(), spacingHint());
 
-    canvas = new KIconLoaderCanvas(page);
-    canvas->setMinimumSize( 500, 125 );
-    topLayout->addWidget( canvas );
+    QButtonGroup *bgroup = new QButtonGroup(i18n("Icon source"), main);
+    top->addWidget(bgroup);
+    connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
+    QGridLayout *grid = new QGridLayout(bgroup, 3, 2, marginHint(), spacingHint());
+    grid->addRowSpacing(0, 15);
+    mpRb1 = new QRadioButton(i18n("System icons:"), bgroup);
+    grid->addWidget(mpRb1, 1, 0);
+    mpCombo = new QComboBox(main);
+    connect(mpCombo, SIGNAL(activated(int)), SLOT(slotContext(int)));
+    grid->addWidget(mpCombo, 1, 1);
+    mpRb2 = new QRadioButton(i18n("Other icons:"), bgroup);
+    grid->addWidget(mpRb2, 2, 0);
+    mpBrowseBut = new QPushButton(i18n("Browse"), bgroup);
+    grid->addWidget(mpBrowseBut, 2, 1);
 
-    progressBar = new KProgress( page );
-    topLayout->addWidget( progressBar );
+    mpCanvas = new KIconLoaderCanvas(main);
+    connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(accept()));
+    mpCanvas->setMinimumSize(400, 125);
+    top->addWidget(mpCanvas);
 
-    connect( canvas, SIGNAL(executed( QIconViewItem * )), this, SLOT(accept()) );
-    //connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
-    connect( cb_types, SIGNAL(activated(int)), this, SLOT(typeChanged(int)) );
-    connect( canvas, SIGNAL( startLoading( int ) ),
-	     this, SLOT( initProgressBar( int ) ) );
-    connect( canvas, SIGNAL( progress( int ) ),
-	     this, SLOT( progress( int ) ) );
-    connect( canvas, SIGNAL( finished () ),
-	     this, SLOT( hideProgressBar() ) );
+    mpProgress = new KProgress(main);
+    top->addWidget(mpProgress);
+    connect(mpCanvas, SIGNAL(startLoading(int)), SLOT(slotStartLoading(int)));
+    connect(mpCanvas, SIGNAL(progress(int)), SLOT(slotProgress(int)));
+    connect(mpCanvas, SIGNAL(finished()), SLOT(slotFinished()));
 
-    incInitialSize( QSize(0,100) );
+    // The order must match the context definitions in KIcon.
+    mpCombo->insertItem(i18n("Actions"));
+    mpCombo->insertItem(i18n("Applications"));
+    mpCombo->insertItem(i18n("Devices"));
+    mpCombo->insertItem(i18n("Filesystems"));
+    mpCombo->insertItem(i18n("Mimetypes"));
+    mpCombo->setFixedSize(mpCombo->sizeHint());
+    mpBrowseBut->setFixedSize(mpCombo->sizeHint());
+
+    // Make the dialog a little taller
+    incInitialSize(QSize(0,100));
 }
 
 
@@ -217,108 +215,125 @@ KIconLoaderDialog::~KIconLoaderDialog()
 {
 }
 
-void KIconLoaderDialog::initProgressBar( int steps )
+void KIconLoaderDialog::showIcons()
 {
-    //
-    // 1999-10-17 Espen Sand
-    // If we are going to display a small number of new icons then it
-    // looks quite stupid to display a progressbar that is only going
-    // to be visible in a fraction of a second. The number below used as
-    // a threshold is of course a compromise.
-    //
-    if( steps < 10 )
+    mpCanvas->clear();
+    if (mType == 0)
+	mpCanvas->loadFiles(mpLoader->queryIcons(mGroup, mContext));
+    else
+	mpCanvas->loadFiles(mFileList);
+}
+	
+void KIconLoaderDialog::slotButtonClicked(int id)
+{
+    QStringList lst;
+
+    switch (id)
     {
-        hideProgressBar();
+    case 0:
+	mType = 0;
+	mpBrowseBut->setEnabled(false);
+	mpCombo->setEnabled(true);
+	showIcons();
+	break;
+
+    case 1:
+	mType = 1;
+	mpBrowseBut->setEnabled(true);
+	mpCombo->setEnabled(false);
+	showIcons();
+	break;
+
+    case 2:
+	// TODO: Add file to mFileList
+	break;
     }
+}
+	
+void KIconLoaderDialog::slotContext(int id)
+{
+    mContext = id+1;
+    showIcons();
+}
+
+void KIconLoaderDialog::slotStartLoading(int steps)
+{
+    if (steps < 10)
+	mpProgress->hide();
     else
     {
-        progressBar->setRange( 0, steps );
-        progressBar->setValue( 0 );
-        progressBar->show();
+        mpProgress->setRange(0, steps);
+        mpProgress->setValue(0);
+        mpProgress->show();
     }
 }
 
-void KIconLoaderDialog::progress( int p )
+void KIconLoaderDialog::slotProgress(int p)
 {
-    progressBar->setValue( p );
+    mpProgress->setValue(p);
 }
 
-void KIconLoaderDialog::hideProgressBar( void )
+void KIconLoaderDialog::slotFinished()
 {
-    //
-    // 1999-10-17 Espen Sand
-    // Sometimes the progressbar is not hidden even if I tell it to
-    // do so. This happens both with the old version and with this one
-    // (which relies on Qt layouts). The 'processOneEvent()' seems to kill
-    // this "feature".
-    //
-    for( int i=0; i<100 && progressBar->isVisible() == true; i++ )
-    {
-        progressBar->hide();
-        kapp->processOneEvent();
-    }
+    mpProgress->hide();
 }
 
-int KIconLoaderDialog::exec(int group, int context)
+QString KIconLoaderDialog::selectIcon(int group, int context)
 {
     mGroup = group;
+    mType = 0;
+    mpRb1->setChecked(true);
+    mpRb2->setChecked(false);
+    mpCombo->setEnabled(true);
+    mpBrowseBut->setEnabled(false);
     mContext = context;
-    setResult( 0 );
-    QStringList icons = icon_loader->queryIcons( group, context );
-    cb_types->setCurrentItem(context-1);
-    canvas->loadFiles( icons );
-    show();
-    return result();
-}
-
-void KIconLoaderDialog::typeChanged(int index)
-{
-    mContext = index+1;
-    QStringList icons = icon_loader->queryIcons(mGroup, mContext);
-    canvas->loadFiles(icons);
-}
-
-QPixmap KIconLoaderDialog::selectIcon( QString &name, int group, 
-	int context )
-{
-    QPixmap pixmap;
-
-    QString pix_name;
-    if (exec( group, context ))
+    mpCombo->setCurrentItem(mContext-1);
+    showIcons();
+    KDialogBase::exec();
+    
+    if (result() == Accepted)
     {
-	pix_name = canvas->getCurrent();
-	if (!pix_name.isEmpty())
-	    pixmap = icon_loader->loadIcon( pix_name, group );
+	QString name = mpCanvas->getCurrent();
+	if (name.isEmpty() || (mType == 1))
+	    return name;
+	QFileInfo fi(name);
+	return fi.baseName();
     }
-    name = pix_name;
-    return pixmap;
+    return QString::null;
 }
 
 
-//
-//----------------------------------------------------------------------
-//---------------  KICONLOADERBUTTON   ---------------------------------
-//----------------------------------------------------------------------
-//
-KIconLoaderButton::KIconLoaderButton( QWidget *_parent )
-    : QPushButton( _parent )
+/*
+ * KIconLoaderButton: A "choose icon" pushbutton.
+ */
+
+KIconLoaderButton::KIconLoaderButton(QWidget *parent, const char *name)
+    : QPushButton(parent, name)
 {
-    iconStr = "";
-    mGroup = KIcon::Desktop; mContext = KIcon::Action; // arbitrary
-    connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
-    iconLoader = KGlobal::iconLoader();
-    loaderDialog = new KIconLoaderDialog( this );
+    // arbitrary
+    mGroup = KIcon::Desktop; 
+    mContext = KIcon::Application;
+
+    mpLoader = KGlobal::iconLoader();
+    mpDialog = new KIconLoaderDialog(this);
+    connect(this, SIGNAL(clicked()), SLOT(slotChangeIcon()));
 }
 
-KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader,
-				      QWidget *_parent )
-    : QPushButton( _parent )
+KIconLoaderButton::KIconLoaderButton(KIconLoader *loader,
+	QWidget *parent, const char *name)
+    : QPushButton(parent, name)
 {
-    iconStr = "";
-    mGroup = KIcon::Desktop; mContext = KIcon::Action; // arbitrary
-    connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
-    loaderDialog = new KIconLoaderDialog( _icon_loader, this );
-    iconLoader = _icon_loader;
+    mGroup = KIcon::Desktop; 
+    mContext = KIcon::Application;
+
+    mpLoader = loader;
+    mpDialog = new KIconLoaderDialog(mpLoader, this);
+    connect(this, SIGNAL(clicked()), SLOT(slotChangeIcon()));
+}
+
+KIconLoaderButton::~KIconLoaderButton()
+{
+    delete mpDialog;
 }
 
 void KIconLoaderButton::setIconType(int group, int context)
@@ -327,27 +342,22 @@ void KIconLoaderButton::setIconType(int group, int context)
     mContext = context;
 }
 
+void KIconLoaderButton::setIcon(QString icon)
+{
+    mIcon = icon;
+    setPixmap(mpLoader->loadIcon(mIcon, mGroup));
+}
+
 void KIconLoaderButton::slotChangeIcon()
 {
-    QString name;
-    QPixmap pix = loaderDialog->selectIcon( name, mGroup, mContext );
-    if (!pix.isNull())
-    {
-        setPixmap(pix);
-        iconStr = name;
-        emit iconChanged( iconStr );
-    }
+    QString name = mpDialog->selectIcon(mGroup, mContext);
+    if (name.isNull())
+	return;
+    QPixmap pm = mpLoader->loadIcon(name, mGroup);
+    setPixmap(pm);
+    mIcon = name;
+    emit iconChanged(name);
 }
 
-void KIconLoaderButton::setIcon(const QString& _icon)
-{
-    iconStr = _icon;
-    setPixmap( iconLoader->loadIcon(iconStr, mGroup) );
-}
-
-KIconLoaderButton::~KIconLoaderButton()
-{
-    delete loaderDialog;
-}
 
 #include "kiconloaderdialog.moc"
