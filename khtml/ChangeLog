@@ -1,3 +1,8 @@
+2003-10-19  Dirk Mueller  <dmuell@gmx.net>
+
+	* html/html_headimpl.cpp (childrenChanged): make sure that we respect the media
+	attribute of <style> (#47786).
+
 2003-10-19  Harri Porten  <porten@kde.org>
 
 	* html/html_documentimpl.cpp (setCookie): use latin1 encoding to

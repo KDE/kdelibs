@@ -410,6 +410,8 @@ void HTMLStyleElementImpl::childrenChanged()
         m_sheet = new CSSStyleSheetImpl(this);
         m_sheet->ref();
         m_sheet->parseString( text, (getDocument()->parseMode() == DocumentImpl::Strict) );
+        MediaListImpl* media = new MediaListImpl( m_sheet, DOMString( m_media ) );
+        m_sheet->setMedia( media );
         m_loading = false;
     }
 

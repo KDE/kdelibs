@@ -157,8 +157,7 @@ public:
 
     virtual Id id() const;
 
-    const StyleSheetImpl *sheet() const { return m_sheet; }
-    StyleSheetImpl *sheet() { return m_sheet; }
+    CSSStyleSheetImpl *sheet() { return m_sheet; }
 
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttributeImpl *attr);
@@ -170,7 +169,7 @@ public:
     void sheetLoaded();
 
 protected:
-    StyleSheetImpl *m_sheet;
+    CSSStyleSheetImpl *m_sheet;
     DOMString m_type;
     QString m_media;
     bool m_loading;
