@@ -94,7 +94,7 @@ install-arch: build
 
 	# Install dh-make template for KDE packages
 	install -d debian/tmp/$(KDEDEVDIR)/dh-make
-	install -p debian/dh-make/*           debian/tmp/$(KDEDEVDIR)/dh-make
+	-install -p debian/dh-make/*           debian/tmp/$(KDEDEVDIR)/dh-make
 	install -p admin/debianrules          debian/tmp/$(KDEDEVDIR)/dh-make
 
 	# make artswrapper suidroot
