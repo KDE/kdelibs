@@ -383,6 +383,11 @@ public:
   void paint(QPainter *, const QRect &, int = 0, bool * = 0);
 
   /**
+   * Stops all animated images on the current page.
+   */
+  void stopAnimations();
+
+  /**
    * Mainly used internally.
    *
    * Sets the document's base URL.

@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="5">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="6">
 <Menu name="popupmenu">
  <Action name="reloadframe" group="reload" />
  <Separator weakSeparator="1" />
@@ -8,6 +8,7 @@
  <Action name="selectAll" />
  <Separator weakSeparator="1" />
  <Action name="copylinklocation" />
+ <Action name="stopanimations" />
  <Action name="copyimagelocation" />
  <Action name="viewimage" />
  <Separator weakSeparator="1" />

@@ -1428,6 +1428,25 @@ void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     d->m_view->paint(p, rc, yOff, more);
 }
 
+void KHTMLPart::stopAnimations()
+{
+  // TODO: 
+  // -stop animations in all frames, not only in the current one
+  // -show "Stop Animations" option only if there actually are animations
+  // -stop background animations, too
+  HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
+  unsigned long i = 0;
+  for (; i <= 1; i++ )
+  {
+    DOM::NodeImpl *node = imgColl.item( i );
+    if ( node && node->id() == ID_IMG ) {
+      khtml::RenderImage *r = static_cast<khtml::RenderImage *>(node->renderer());
+      if(r)
+        r->stopAnimations();
+    }
+  }
+}
+
 void KHTMLPart::slotFinishedParsing()
 {
   d->m_bParsing = false;

@@ -52,6 +52,8 @@ public:
 
     virtual void layout();
 
+    virtual void stopAnimations();
+	
     virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 
     QPixmap pixmap() const { return pix; }
@@ -90,6 +92,7 @@ private:
 
     CachedImage *image;
     bool berrorPic : 1;
+    bool is_stopped;
 };
 
 

@@ -258,6 +258,7 @@ public:
   KAction *m_paSaveLinkAs;
   KAction *m_paSaveImageAs;
   KAction *m_paCopyLinkLocation;
+  KAction *m_paStopAnimations;
   KAction *m_paCopyImageLocation;
   KAction *m_paViewImage;
   KAction *m_paReloadFrame;
@@ -298,6 +299,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     d->m_paCopyLinkLocation = new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
                                            actionCollection(), "copylinklocation" );
   }
+
+  d->m_paStopAnimations = new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
+                                       actionCollection(), "stopanimations" );
 
   DOM::Element e;
   e = khtml->nodeUnderMouse();
@@ -342,6 +346,11 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
   QApplication::clipboard()->setText( d->m_url.url() );
+}
+
+void KHTMLPopupGUIClient::slotStopAnimations()
+{
+  d->m_khtml->stopAnimations();
 }
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()

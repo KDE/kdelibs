@@ -49,12 +49,20 @@ RenderImage::RenderImage()
     setParsing(false);
     image = 0;
     berrorPic = false;
+    is_stopped = false;
 }
 
 RenderImage::~RenderImage()
 {
     if(image) image->deref(this);
 }
+
+
+void RenderImage::stopAnimations()
+{
+    is_stopped = true;
+}
+
 
 void RenderImage::setStyle(RenderStyle* _style)
 {
@@ -65,6 +73,11 @@ void RenderImage::setStyle(RenderStyle* _style)
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
+    if( is_stopped ) {
+    	// TODO: call QMovie->stop()
+        return;
+    }
+    
     if(o != image) {
         RenderReplaced::setPixmap(p, r, o, manualUpdate);
         return;
