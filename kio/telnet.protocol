@@ -1,5 +1,5 @@
 [Protocol]
-exec=konsole -e telnet `echo %u | sed -e 's/telnet://'`
+exec=konsole -e telnet `echo %u | sed -e 's,telnet:/*,,'`
 protocol=telnet
 input=none
 output=none

@@ -1,5 +1,5 @@
 [Protocol]
-exec=konsole -e rlogin `echo %u | sed -e 's/rlogin://'`
+exec=konsole -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
 protocol=rlogin
 input=none
 output=none
