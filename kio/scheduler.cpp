@@ -148,9 +148,19 @@ void Scheduler::startStep()
            (slave->passwd() != passwd))
        {
            slave->openConnection(host, port, user, passwd);
+	   // halt the queue til we know it's connected
+	   slave->queueOnly(true);
+	   connect(slave, SIGNAL(connectFinished()),
+		   SLOT(slotSlaveConnected()));
        }
        job->start(slave);
     }
+}
+
+void Scheduler::slotSlaveConnected() {
+    kDebugInfo(7006, "slave connected");
+    Slave *slave = (Slave*)sender();
+    slave->queueOnly(false);
 }
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)

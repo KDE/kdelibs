@@ -311,6 +311,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         QString passwd;
 	stream >> str1 >> i >> str2 >> passwd;
 	openConnection( str1, i, str2, passwd );
+	m_pConnection->send( INF_CONNECT_FINISHED );
     }
     break;
     case CMD_DISCONNECT:

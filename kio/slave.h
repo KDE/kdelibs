@@ -20,8 +20,6 @@ namespace KIO {
 	
     public:
 	Slave(KServerSocket *unixdomain, const QString &protocol);
-	void resume() {}
-	void suspend() {}
 
 	/**
 	 * Force termination
@@ -83,7 +81,9 @@ namespace KIO {
 	 * @return @ref m_pSlave on success or 0L on failure.
 	 */
 	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
-	
+
+	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }
+
     public slots:
         void accept(KSocket *socket);
 	void gotInput(int socket);

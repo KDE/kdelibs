@@ -135,6 +135,9 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	
 	emit processedDirs( ul );
 	break;
+    case INF_CONNECT_FINISHED:
+	emit connectFinished();
+	break;
     case INF_SCANNING_DIR:
 	stream >> str1;
 	emit scanningDir( str1 );
@@ -194,16 +197,17 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {
+    debug("openPassDlg");
     PassDlg dlg( 0L, 0L, true, 0, head, user, pass );
     QByteArray packedArgs;
 
     if ( dlg.exec() ) {
 	QDataStream stream( packedArgs, IO_WriteOnly );
 	stream <<  dlg.user()<< dlg.password();
-	m_pConnection->send( CMD_USERPASS, packedArgs );
+	m_pConnection->sendnow( CMD_USERPASS, packedArgs );
     }
     else
-	m_pConnection->send( CMD_NONE, packedArgs );
+	m_pConnection->sendnow( CMD_NONE, packedArgs );
 }
 
 #include "slaveinterface.moc"

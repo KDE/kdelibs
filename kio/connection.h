@@ -44,6 +44,9 @@ namespace KIO {
 	// send (queues the command to be sent)
 	void send(int cmd, const QByteArray &arr = QByteArray());
 
+	// send (without queue)
+	bool sendnow( int _cmd, const QByteArray &data );
+
 	/**
 	 * Receive data
 	 *
@@ -61,14 +64,17 @@ namespace KIO {
          * Resume handling of incoming data
          */
         void resume();
-	
+
+	void queueOnly(bool queue);
+
     protected slots:
         void dequeue();
 	
     protected:
-	bool sendnow( int _cmd, const QByteArray &data = QByteArray() );
+	
 	
     private:
+	bool queueonly;
 	int fd_in;
 	FILE *f_out;
 	KSocket *socket;

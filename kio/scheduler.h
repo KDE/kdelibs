@@ -45,6 +45,7 @@ namespace KIO {
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
+	void slotSlaveConnected();
 
     protected slots:
         void startStep();

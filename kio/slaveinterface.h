@@ -71,7 +71,8 @@ class Connection;
    INF_ERROR_PAGE,
    INF_WARNING,
    INF_GETTING_FILE,
-   INF_DELETING_FILE
+   INF_DELETING_FILE,
+   INF_CONNECT_FINISHED
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -151,6 +152,7 @@ public:
     void warning( const QString & ) ;
     void gettingFile( const QString & ) ;
     void deletingFile( const QString & ) ;
+    void connectFinished();
 
     /////////////////
     // Dispatching

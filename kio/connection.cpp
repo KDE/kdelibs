@@ -36,6 +36,7 @@ Connection::Connection()
     notifier = 0;
     receiver = 0;
     member = 0;
+    queueonly = false;
 }
 
 Connection::~Connection()
@@ -69,7 +70,7 @@ void Connection::close()
 
 void Connection::send(int cmd, const QByteArray& data)
 {
-    if (!inited() || tasks.count() > 0) {
+    if (!inited() || queueonly || tasks.count() > 0) {
 	kDebugInfo( 7007, "pending queue %d", cmd);
 	Task *task = new Task();
 	task->cmd = cmd;
@@ -79,8 +80,14 @@ void Connection::send(int cmd, const QByteArray& data)
 	sendnow( cmd, data );
     }
 
-    if (tasks.count() > 0)
+    if (tasks.count() > 0 && !queueonly)
 	QTimer::singleShot(100, this, SLOT(dequeue()));
+}
+
+void Connection::queueOnly(bool queue) {
+    queueonly = queue;
+    if (!queueonly && tasks.count() > 0)
+	dequeue();
 }
 
 void Connection::dequeue()
@@ -95,7 +102,7 @@ void Connection::dequeue()
     sendnow( task->cmd, task->data );
     delete task;
 
-    if (tasks.count() > 0)
+    if (tasks.count() > 0 && !queueonly)
 	QTimer::singleShot(100, this, SLOT(dequeue()));
 }
 
@@ -138,6 +145,8 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 	kDebugInfo(7017, "write: not yet inited.");
 	return false;
     }
+
+    debug("sendnow %d", _cmd);
 
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
