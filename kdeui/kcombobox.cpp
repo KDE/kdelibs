@@ -253,20 +253,20 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
     // Non-editable combobox cannot have a line edit.
-    if (!editable ())
-      return;
-      
+//    if (!editable ())
+    //    return;
+
     QComboBox::setLineEdit( edit );
     d->klineEdit = dynamic_cast<KLineEdit*>( edit );
     setDelegate( d->klineEdit );
-    
+
     // Connect the returnPressed signal for both Q[K]LineEdits'
     if (edit)
         connect( edit, SIGNAL( returnPressed() ), SIGNAL( returnPressed() ));
-    
+
     if ( d->klineEdit )
-    {        
-        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )), 
+    {
+        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )),
                  SIGNAL( returnPressed( const QString& ) ));
 
         connect( d->klineEdit, SIGNAL( completion( const QString& )),
