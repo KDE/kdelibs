@@ -99,7 +99,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mTreeListResizeMode = QSplitter::KeepSize;
 
       mTreeList = new KListView( splitter );
-      mTreeList->addColumn( QString::fromLatin1("") );
+      mTreeList->addColumn( QString::null );
       mTreeList->header()->hide();
       mTreeList->setRootIsDecorated(true);
       mTreeList->setSorting( -1 );
@@ -113,7 +113,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       QFrame *p = new QFrame( splitter );
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
-      hbox->addSpacing( KDialog::spacingHint() );
+      hbox->addSpacing( KDialog::marginHint() );
 
       page = new QFrame( p );
       hbox->addWidget( page, 10 );
@@ -130,7 +130,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mIconList->verticalScrollBar()->installEventFilter( this );
       hbox->addWidget( mIconList );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
-      hbox->addSpacing( KDialog::spacingHint() );
+      hbox->addSpacing( KDialog::marginHint() );
       page = new QFrame( this );
       hbox->addWidget( page, 10 );
     }
@@ -155,7 +155,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 
     mPageStack = new QWidgetStack( page );
     connect(mPageStack, SIGNAL(aboutToShow(QWidget *)),
-            this, SIGNAL(aboutToShowPage(QWidget *)));
+            SIGNAL(aboutToShowPage(QWidget *)));
     vbox->addWidget( mPageStack, 10 );
   }
   else if( mFace == Tabbed )
