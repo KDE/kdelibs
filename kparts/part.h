@@ -23,6 +23,61 @@ class PartPrivate;
 class PartActivateEvent;
 class PartSelectEvent;
 class GUIActivateEvent;
+class PartBasePrivate;
+
+class PartBase : public XMLGUIServant
+{
+public:
+  PartBase( QObject *partObj );
+  virtual ~PartBase();
+
+  QAction* action( const char* name );
+  QActionCollection* actionCollection() const;
+
+  virtual QAction *action( const QDomElement &element );
+
+  /**
+   * @return The instance (@ref KInstance) for this part.
+   */
+  virtual KInstance *instance() const;
+
+  /**
+   * @return The parsed XML in a @ref QDomDocument, set by @ref setXMLFile() or @ref setXML()
+   */
+  virtual QDomDocument document() const;
+
+protected:  
+  /**
+   * Set the instance (@ref KInstance) for this part.
+   *
+   * Call this first in the inherited class constructor.
+   * (At least before @ref setXMLFile().)
+   */
+  virtual void setInstance( KInstance *instance, bool loadPlugins = true );
+
+    /**
+     * Set the name of the rc file containing the XML for the part.
+     *
+     * Call this in the Part-inherited class constructor.
+     *
+     * @param file Either an absolute path for the file, or simply the filename,
+     *             which will then be assumed to be installed in the "data" resource,
+     *             under a directory named like the instance.
+     **/
+    virtual void setXMLFile( QString file );
+
+    /**
+     * Set the XML for the part.
+     *
+     * Call this in the Part-inherited class constructor if you
+     *  don't call @ref setXMLFile().
+     **/
+    virtual void setXML( const QString &document );
+
+private:
+    PartBasePrivate *d;
+    QObject *m_obj;
+};
 
 /**
  * Base class for parts.
@@ -48,19 +103,12 @@ class GUIActivateEvent;
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
  */
-class Part : public QObject, public XMLGUIServant
+class Part : public QObject, public PartBase
 {
   Q_OBJECT
 public:
     Part( QObject *parent = 0, const char* name = 0 );
     virtual ~Part();
-
-    QAction* action( const char* name );
-    QActionCollection* actionCollection();
-
-    virtual Plugin* plugin( const char* libname );
-
-    virtual QAction *action( const QDomElement &element );
 
     /**
      * Embed this part into a host widget.
@@ -81,22 +129,12 @@ public:
      */
     virtual QWidget *widget();
 
-    /**
-     * @return The instance (@ref KInstance) for this part.
-     */
-    virtual KInstance *instance();
-
     // Only called by PartManager - should be protected and using friend ?
     virtual void setManager( PartManager * manager );
     /**
      * @return The part manager handling this part, if any (0L otherwise).
      */
     PartManager * manager();
-
-    /**
-     * @return The parsed XML in a @ref QDomDocument, set by @ref setXMLFile() or @ref setXML()
-     */
-    virtual QDomDocument document() const;
 
     /**
      * @internal
@@ -119,13 +157,6 @@ signals:
     void setStatusBarText( const QString & text );
 
 protected:
-    /**
-     * Set the instance (@ref KInstance) for this part.
-     *
-     * Call this first in the inherited class constructor.
-     * (At least before @ref setXMLFile().)
-     */
-    virtual void setInstance( KInstance *instance, bool loadPlugins = true );
 
     /**
      * Set the main widget.
@@ -133,26 +164,6 @@ protected:
      * Call this in the Part-inherited class constructor.
      */
     virtual void setWidget( QWidget * widget );
-
-    /**
-     * Set the name of the rc file containing the XML for the part.
-     *
-     * Call this in the Part-inherited class constructor.
-     *
-     * @param file Either an absolute path for the file, or simply the filename,
-     *             which will then be assumed to be installed in the "data" resource,
-     *             under a directory named like the instance.
-     **/
-    virtual void setXMLFile( QString file );
-
-    //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
-    /**
-     * Set the XML for the part.
-     *
-     * Call this in the Part-inherited class constructor if you
-     *  don't call @ref setXMLFile().
-     **/
-    virtual void setXML( const QString &document );
 
     virtual bool event( QEvent *event );
 
@@ -167,12 +178,7 @@ private slots:
 
 private:
     QGuardedPtr<QWidget> m_widget;
-    KInstance * m_instance;
-    /**
-     * Holds the contents of the config file
-     */
-    QString m_config;
-    QActionCollection m_collection;
+
     PartManager * m_manager;
 
     PartPrivate *d;

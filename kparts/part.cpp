@@ -28,6 +28,22 @@ namespace KParts
 
 template class QList<XMLGUIServant>;
 
+class PartBasePrivate
+{
+public:
+  PartBasePrivate()
+  {
+  }
+  ~PartBasePrivate()
+  {
+  }
+
+  KInstance *m_instance;
+
+  QDomDocument m_doc;
+  QActionCollection m_actionCollection;
+};
+
 class PartPrivate
 {
 public:
@@ -40,13 +56,77 @@ public:
   }
 
   bool m_bSelectable;
+};
+};
 
-  QDomDocument m_doc;
-};
-};
+PartBase::PartBase( QObject *partObj )
+{
+  d = new PartBasePrivate; 
+  m_obj = partObj; 
+}
+
+PartBase::~PartBase()
+{
+  delete d; 
+}
+
+QAction *PartBase::action( const char *name )
+{
+  return d->m_actionCollection.action( name ); 
+}
+
+QActionCollection *PartBase::actionCollection() const
+{
+  return &d->m_actionCollection; 
+}
+
+QAction *PartBase::action( const QDomElement &element )
+{
+  static QString attrName = QString::fromLatin1( "name" ); 
+  return action( element.attribute( attrName ).ascii() );
+}
+
+KInstance *PartBase::instance() const
+{
+  return d->m_instance; 
+} 
+
+QDomDocument PartBase::document() const
+{
+  return d->m_doc; 
+} 
+
+void PartBase::setInstance( KInstance *instance, bool loadPlugins )
+{
+  d->m_instance = instance;
+  if ( loadPlugins )
+    Plugin::loadPlugins( m_obj, d->m_instance );
+} 
+
+void PartBase::setXMLFile( QString file )
+{
+  if ( file[0] != '/' )
+  {
+    file = locate( "data", QString(instance()->instanceName())+"/"+file );
+    if ( file.isEmpty() )
+    {
+      kDebugError( 1000, "File not found : %s", file.ascii() );
+      return;
+    }
+  }
+
+  QString xml = XMLGUIFactory::readConfigFile( file );
+  setXML( xml );
+}
+
+void PartBase::setXML( const QString &document )
+{
+  d->m_doc.setContent( document ); 
+} 
+
 
 Part::Part( QObject *parent, const char* name )
-    : QObject( parent, name ), m_collection( this )
+ : QObject( parent, name ) , PartBase( this )
 {
   d = new PartPrivate;
   m_widget = 0L;
@@ -78,11 +158,6 @@ QWidget *Part::widget()
   return m_widget;
 }
 
-KInstance *Part::instance()
-{
-  return m_instance;
-}
-
 void Part::setManager( PartManager *manager )
 {
   m_manager = manager;
@@ -91,11 +166,6 @@ void Part::setManager( PartManager *manager )
 PartManager *Part::manager()
 {
   return m_manager;
-}
-
-QDomDocument Part::document() const
-{
-  return d->m_doc;
 }
 
 Part *Part::hitTest( QWidget *widget, const QPoint & )
@@ -112,71 +182,6 @@ void Part::setWidget( QWidget *widget )
   m_widget = widget;
   connect( m_widget, SIGNAL( destroyed() ),
 	   this, SLOT( slotWidgetDestroyed() ) );
-}
-
-void Part::setXMLFile( QString file )
-{
-  if ( file[0] != '/' )
-  {
-    file = locate( "data", QString(instance()->instanceName())+"/"+file );
-    if ( file.isEmpty() )
-    {
-      kDebugError( 1000, "File not found : %s", file.ascii() );
-      return;
-    }
-  }
-
-  QString xml = XMLGUIFactory::readConfigFile( file );
-  setXML( xml );
-}
-
-void Part::setXML( const QString &document )
-{
-  d->m_doc.setContent( document );
-}
-
-void Part::setInstance( KInstance *instance, bool loadPlugins )
-{
-  m_instance = instance;
-  if ( loadPlugins )
-    Plugin::loadPlugins( this, m_instance );
-}
-
-QAction* Part::action( const char* name )
-{
-    return m_collection.action( name );
-}
-
-QActionCollection* Part::actionCollection()
-{
-    return &m_collection;
-}
-
-Plugin* Part::plugin( const char* libname )
-{
-    QObject* ch = child( libname, "KParts::Plugin" );
-    //if ( ch )
-	return (Plugin*)ch;
-    // Plugin::loadPlugins has loaded all plugins, so this is useless, right ? (David)
-    //return Plugin::loadPlugin( this, libname );
-}
-
-QAction *Part::action( const QDomElement &element )
-{
-  QString pluginAttr = element.attribute( "plugin" );
-  QString name = element.attribute( "name" );
-
-  if ( !pluginAttr.isEmpty() )
-  {
-    Plugin *thePlugin = plugin( pluginAttr );
-
-    if ( !thePlugin )
-      return 0;
-
-    return thePlugin->action( name );
-  }
-
-  return action( name.ascii() );
 }
 
 void Part::setSelectable( bool selectable )
@@ -231,9 +236,9 @@ QWidget *Part::hostContainer( const QString &containerName )
 {
   if ( !factory() )
     return 0L;
-  
+
   return factory()->container( containerName, this );
-} 
+}
 
 void Part::slotWidgetDestroyed()
 {
