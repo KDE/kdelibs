@@ -140,6 +140,8 @@ class KLineEdit : public QLineEdit, public KCompletionBase
     Q_OBJECT
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+    Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
+
 
 public:
 
@@ -400,7 +402,7 @@ protected slots:
      * @deprecated.  Will be removed in the next major release!
      */
     void slotCancelled() {}
-    
+
     void userCancelled(const QString & cancelText);
 
 protected:
@@ -459,11 +461,11 @@ protected:
 
 
     /**
-     * Sets the widget in userSelection mode or in automatic completion 
+     * Sets the widget in userSelection mode or in automatic completion
      * selection mode. This changes the colors of selections.
      */
     void setUserSelection( bool userSelection );
-    
+
     /**
      * Reimplemented for internal reasons, the API is not affected.
      */
@@ -477,16 +479,16 @@ private slots:
     void setTextWorkaround( const QString& text );
 
 private:
+
     // Constants that represent the ID's of the popup menu.
-    // TODO: See if we can replace this mess with KActionMenu
-    // in the future though it's working lovely.
-    enum MenuID {
+    enum MenuID
+    {
         Default = 42,
         NoCompletion,
         AutoCompletion,
         ShellCompletion,
         PopupCompletion,
-        SemiAutoCompletion,
+        ShortAutoCompletion,
         PopupAutoCompletion
     };
 

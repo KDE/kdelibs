@@ -52,13 +52,13 @@ public:
     {
         completionBox = 0L;
         handleURLDrops = true;
-        grabReturnKeyEvents = false;        
+        grabReturnKeyEvents = false;
 
         userSelection = true;
         autoSuggest = false;
         disableRestoreSelection = false;
 
-        if ( !initialized ) 
+        if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
             backspacePerformsCompletion = config.readBoolEntry( "Backspace performs completion", false );
@@ -67,25 +67,26 @@ public:
         }
 
     }
-    
+
     ~KLineEditPrivate()
     {
         delete completionBox;
     }
 
-    bool userSelection               : 1;
-    bool autoSuggest                 : 1;
-    bool disableRestoreSelection     : 1;
+    static bool initialized;
     static bool backspacePerformsCompletion; // Configuration option
+
     QColor previousHighlightColor;
     QColor previousHighlightedTextColor;
 
-    static bool initialized;
-    
-    int squeezedEnd;    
+    bool userSelection: 1;
+    bool autoSuggest : 1;
+    bool disableRestoreSelection: 1;
+    bool handleURLDrops:1;
+    bool grabReturnKeyEvents:1;
+
+    int squeezedEnd;
     int squeezedStart;
-    bool handleURLDrops;
-    bool grabReturnKeyEvents;
     BackgroundMode bgMode;
     QString squeezedText;
     KCompletionBox *completionBox;
@@ -138,7 +139,7 @@ void KLineEdit::init()
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 {
     KGlobalSettings::Completion oldMode = completionMode();
-    
+
     if ( oldMode != mode && (oldMode == KGlobalSettings::CompletionPopup ||
          oldMode == KGlobalSettings::CompletionPopupAuto ) &&
          d->completionBox && d->completionBox->isVisible() )
@@ -151,7 +152,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
     if ( kapp && !kapp->authorize("lineedit_text_completion") )
         mode = KGlobalSettings::CompletionNone;
-       
+
     if ( mode == KGlobalSettings::CompletionPopupAuto ||
          mode == KGlobalSettings::CompletionAuto ||
          mode == KGlobalSettings::CompletionMan )
@@ -194,7 +195,13 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
        (type == KCompletionBase::PrevCompletionMatch ||
         type == KCompletionBase::NextCompletionMatch ) )
     {
-       QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
+       QString input;
+
+       if (type == KCompletionBase::PrevCompletionMatch)
+          comp->previousMatch();
+       else
+          comp->nextMatch();
+
        // Skip rotation if previous/next match is null or the same text
        if ( input.isNull() || input == displayText() )
             return;
@@ -206,15 +213,19 @@ void KLineEdit::makeCompletion( const QString& text )
 {
     KCompletion *comp = compObj();
     KGlobalSettings::Completion mode = completionMode();
+
     if ( !comp || mode == KGlobalSettings::CompletionNone )
         return;  // No completion object...
 
     QString match = comp->makeCompletion( text );
-    if ( mode == KGlobalSettings::CompletionPopup || mode == KGlobalSettings::CompletionPopupAuto )
+
+    if ( mode == KGlobalSettings::CompletionPopup ||
+         mode == KGlobalSettings::CompletionPopupAuto )
     {
         if ( match.isNull() )
         {
-            if ( d->completionBox ) {
+            if ( d->completionBox )
+            {
                 d->completionBox->hide();
                 d->completionBox->clear();
             }
@@ -720,7 +731,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    uint selectedLength=selectedText().length();
+    uint selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
@@ -780,8 +791,8 @@ QPopupMenu *KLineEdit::createPopupMenu()
         subMenu->insertItem( i18n("Manual"), ShellCompletion );
         subMenu->insertItem( i18n("Automatic"), AutoCompletion );
         subMenu->insertItem( i18n("Dropdown List"), PopupCompletion );
-        subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
-        subMenu->insertItem( i18n("Dropdown List & Automatic"), PopupAutoCompletion );
+        subMenu->insertItem( i18n("Short Automatic"), ShortAutoCompletion );
+        subMenu->insertItem( i18n("Dropdown List and Automatic"), PopupAutoCompletion );
 
         subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
 
@@ -794,7 +805,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
                                  mode == KGlobalSettings::CompletionPopup );
         subMenu->setItemChecked( AutoCompletion,
                                  mode == KGlobalSettings::CompletionAuto );
-        subMenu->setItemChecked( SemiAutoCompletion,
+        subMenu->setItemChecked( ShortAutoCompletion,
                                  mode == KGlobalSettings::CompletionMan );
         subMenu->setItemChecked( PopupAutoCompletion,
                                  mode == KGlobalSettings::CompletionPopupAuto );
@@ -828,7 +839,7 @@ void KLineEdit::completionMenuActivated( int id )
         case AutoCompletion:
             setCompletionMode( KGlobalSettings::CompletionAuto );
             break;
-        case SemiAutoCompletion:
+        case ShortAutoCompletion:
             setCompletionMode( KGlobalSettings::CompletionMan );
             break;
         case ShellCompletion:
@@ -1114,7 +1125,8 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 
 void KLineEdit::setUserSelection(bool userSelection)
 {
-    QPalette p=palette();
+    QPalette p = palette();
+
     if (userSelection)
     {
         p.setColor(QColorGroup::Highlight, d->previousHighlightColor);
@@ -1127,13 +1139,16 @@ void KLineEdit::setUserSelection(bool userSelection)
         color=p.color(QPalette::Active, QColorGroup::Base);
         p.setColor(QColorGroup::Highlight, color);
     }
+
     d->userSelection=userSelection;
     setPalette(p);
 }
 
 void KLineEdit::slotRestoreSelectionColors()
 {
-    if (d->disableRestoreSelection) return;
+    if (d->disableRestoreSelection)
+      return;
+
     setUserSelection(true);
 }
 
