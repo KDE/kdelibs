@@ -179,10 +179,15 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &b
 {
     element.appendChild( bm.internalElement() );
 
-    if (emitSignal)
-        emit mgr->notifier().addedBookmark(
-                                 mgr->path(), bm.url().url(),
-                                 bm.fullText(), bm.address(), bm.icon() );
+    if (emitSignal) {
+        if ( bm.hasExtraMetaData() ) {
+            mgr->notifyCompleteChange( "" );
+        } else {
+            emit mgr->notifier().addedBookmark(
+                                     mgr->path(), bm.url().url(),
+                                     bm.fullText(), bm.address(), bm.icon() );
+        }
+    }
 
     return bm;
 }
@@ -395,6 +400,27 @@ static QDomNode findOrCreateMetadata( QDomNode& parent )
     }
     metadataElement.setAttribute( "owner", kdeOwner );
     return metadataElement;
+}
+
+bool KBookmark::hasExtraMetaData() const
+{
+    static const QString &timeAdded = KGlobal::staticQString( "time_added" );
+    static const QString &timeVisited = KGlobal::staticQString( "time_visited" );
+    static const QString &visitCount = KGlobal::staticQString( "visit_count" );
+
+    QDomNode n = cd_or_create( internalElement(), "info" );
+    n = findOrCreateMetadata( n );
+    for ( n = n.firstChild(); !n.isNull(); n = n.nextSibling() ) {
+        if ( !n.isElement() ) {
+            continue;
+        }
+        const QString tagName = n.toElement().tagName();
+        if ( tagName != timeAdded && tagName != timeVisited && tagName != visitCount ) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void KBookmark::updateAccessMetadata()

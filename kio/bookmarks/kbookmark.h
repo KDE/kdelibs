@@ -180,6 +180,9 @@ protected:
     // The KBookmarks are created on the fly, as wrappers
     // around internal QDomElements. Any additional information
     // has to be implemented as an attribute of the QDomElement.
+
+private:
+    bool hasExtraMetaData() const;
 };
 
 /**
