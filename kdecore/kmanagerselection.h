@@ -93,8 +93,6 @@ class KSelectionWatcher
         const int screen;
         Window selection_owner;
         static Atom manager_atom;
-        static bool no_error;
-        static int err_handler( Display* dpy, XErrorEvent* ev );
     protected:
         virtual void virtual_hook( int id, void* data );
     private:

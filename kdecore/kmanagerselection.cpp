@@ -48,6 +48,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <qwidget.h>
 #include <kapplication.h>
+#include <kxerrorhandler.h>
 #include <X11/Xatom.h>
 
 class KSelectionOwnerPrivate
@@ -407,29 +408,17 @@ void KSelectionWatcher::init()
         }
     }    
 
-bool KSelectionWatcher::no_error;
-
-int KSelectionWatcher::err_handler( Display*, XErrorEvent* )
-    {
-    no_error = false;
-    return 0;
-    }
-    
 Window KSelectionWatcher::owner()
     {
     Display* const dpy = qt_xdisplay();
-    XSync( dpy, False );
-    no_error = true;
-    int (*old_handler)( Display*, XErrorEvent* ) = XSetErrorHandler( err_handler );
+    KXErrorHandler handler;
     Window current_owner = XGetSelectionOwner( dpy, selection );
     if( current_owner == None )
         return None;
     if( current_owner == selection_owner )
         return selection_owner;
     XSelectInput( dpy, current_owner, StructureNotifyMask );
-    XSync( dpy, False );
-    XSetErrorHandler( old_handler );
-    if( no_error && current_owner == XGetSelectionOwner( dpy, selection ))
+    if( !handler.error( true ) && current_owner == XGetSelectionOwner( dpy, selection ))
         {
 //        kdDebug() << "isOwner: " << current_owner << endl;
         selection_owner = current_owner;
@@ -438,7 +427,7 @@ Window KSelectionWatcher::owner()
         selection_owner = None;
     return selection_owner;
     }
-    
+
 // void return value in order to allow more watchers in one process
 void KSelectionWatcher::filterEvent( XEvent* ev_P )
     {
