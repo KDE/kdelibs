@@ -120,7 +120,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			 data, replyType, replyData );
 
     if ( !b )
-	qWarning("DCOP failure in applicaton %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+	qWarning("DCOP failure in application %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
 
     if (opcode != DCOPCall)
       return;
