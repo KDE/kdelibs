@@ -11,7 +11,13 @@ Section: libs
 Architecture: all
 Depends: kdelibs4 (>= ${Source-Version}), kdelibs-bin (>= ${Source-Version}), kdelibs-data (>= ${Source-Version})
 Description: KDE core libraries metapackage
- KDE core libraries metapackage.
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package depends on the minimum required packages to run a KDE
+ application.
 
 Package: kdelibs-bin
 Section: libs
@@ -20,7 +26,14 @@ Depends: ${shlibs:Depends}, netpbm, python
 Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core binaries
- KDE core binaries.
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package contains all the binaries with are used by KDE
+ applications.
+ .
  You need these binaries to run kde applications.
 
 Package: kdelibs-data
@@ -29,7 +42,13 @@ Architecture: all
 Conflicts: kchart (<< 1:1.2), kdeartwork-style (<< 3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
 Replaces: kchart (<< 1:1.2), kdeartwork-style (<< 3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
 Description: KDE core shared data
- KDE core shared data
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package contains all the data files used by KDE programs.
+ .
  You need these data files to run kde applications.
 
 Package: kdelibs4
@@ -39,7 +58,14 @@ Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= $
 Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core libraries
- KDE core libraries.
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package contains all the libraries needed to run a KDE
+ application.
+ .
  You need these libraries to run kde applications.
 
 Package: kdelibs4-dev
@@ -50,7 +76,14 @@ Provides: kdelibs-dev
 Conflicts: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Description: KDE core libraries (development files)
- KDE core libraries.
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package contains all the header files needed to develop with the
+ core KDE libraries.
+ .
  You need these include files to compile kde applications.
 
 Package: kdelibs4-doc
@@ -60,5 +93,11 @@ Provides: kdelibs-doc
 Conflicts: kdelibs-doc
 Replaces: kdelibs-doc
 Description: KDE core library documentation
- KDE core library documentation.
- You need this documentation to develop KDE applications.
+ KDE is a powerful Open Source graphical desktop environment 
+ for Unix workstations. It combines ease of use, contemporary 
+ functionality, and outstanding graphical design with the 
+ technological superiority of the Unix operating system. 
+ .
+ This package contains all the documentation for the core KDE libraries.
+ .
+ You may want to use this documentation to develop KDE applications.
