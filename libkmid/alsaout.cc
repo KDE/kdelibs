@@ -117,7 +117,9 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
   convertrate=10;
 #endif
   volumepercentage=100;
+#ifdef HAVE_LIBASOUND
   printf("%d %d %d %s\n",device, di->tgtclient, di->tgtport, di->tgtname);
+#endif
 
   map=new MidiMapper(NULL);
 
