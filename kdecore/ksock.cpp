@@ -435,7 +435,7 @@ bool KServerSocket::init( const char *_path )
 
   if ( chmod( _path, 0600) < 0 )
   {
-    qWarning("Could not setupt premissions for server socket\n");
+    qWarning("Could not setup permissions for server socket\n");
     ::close( sock );
     sock = -1;
     return false;
