@@ -24,7 +24,7 @@ kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
 kio_http_cache_cleaner_LDFLAGS = $(KDE_RPATH)
 
 kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
-kio_http_cache_cleaner_la_LIBADD  = $(LIB_KDECORE)
+kio_http_cache_cleaner_la_LIBADD  = $(LIB_KIO)
 kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 
 noinst_HEADERS = http.h extern_md5.h base64.h
