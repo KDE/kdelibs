@@ -1114,6 +1114,7 @@ KSelectAction::KSelectAction( QObject* parent, const char* name )
 
 KSelectAction::~KSelectAction()
 {
+  delete d->m_menu;
   delete d; d = 0;
 }
 
@@ -1166,7 +1167,7 @@ QPopupMenu* KSelectAction::popupMenu()
 {
   if ( !d->m_menu )
   {
-    d->m_menu = new QPopupMenu;
+    d->m_menu = new QPopupMenu(0L, "KSelectAction::popupMenu()");
     QStringList::ConstIterator it = d->m_list.begin();
     int id = 0;
     for( ; it != d->m_list.end(); ++it ) {
@@ -2015,7 +2016,7 @@ class KActionMenu::KActionMenuPrivate
 public:
   KActionMenuPrivate()
   {
-    m_popup = new KPopupMenu;
+    m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
     m_popup->setFont(KGlobalSettings::menuFont());
   }
   ~KActionMenuPrivate()
