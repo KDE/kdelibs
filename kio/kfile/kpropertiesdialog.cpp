@@ -635,7 +635,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   d->m_frame = properties->addPage (i18n("&General"));
 
-  QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
+  QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, 0,
                                       KDialog::spacingHint(), "vbl");
   QGridLayout *grid = new QGridLayout(0, 3); // unknown rows
   grid->setColStretch(0, 0);
@@ -1403,7 +1403,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   d->m_frame = properties->addPage(i18n("&Permissions"));
 
-  QBoxLayout *box = new QVBoxLayout( d->m_frame, KDialog::spacingHint() );
+  QBoxLayout *box = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint() );
 
   QWidget *l;
   QLabel *lbl;
@@ -2226,7 +2226,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
 {
   d = new KURLPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("U&RL"));
-  QVBoxLayout * layout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
+  QVBoxLayout *layout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
 
   QLabel *l;
   l = new QLabel( d->m_frame, "Label_1" );
@@ -2340,7 +2340,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
   mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
 
-  QBoxLayout * mainlayout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
+  QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
   QLabel* tmpQLabel;
 
   tmpQLabel = new QLabel( d->m_frame, "Label_1" );
@@ -2516,7 +2516,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      }
   }
 
-  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, KDialog::marginHint(),
+  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, 0,
                                         KDialog::spacingHint());
   layout->setColStretch(1, 1);
 
@@ -2673,8 +2673,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   QFrame *frame = properties->addPage(i18n("&Application"));
-  QVBoxLayout * mainlayout = new QVBoxLayout( frame );
-  mainlayout->setSpacing( KDialog::spacingHint() );
+  QVBoxLayout *mainlayout = new QVBoxLayout( frame, 0, KDialog::spacingHint() );
 
   w = new KPropertiesDesktopBase(frame);
   mainlayout->addWidget(w);
@@ -2987,8 +2986,8 @@ void KDesktopPropsPlugin::slotBrowseExec()
 void KDesktopPropsPlugin::slotAdvanced()
 {
   KDialogBase dlg(w, "KPropertiesDesktopAdv", true,
-                  i18n("Advanced Options for %1").arg(properties->kurl().fileName()),
-                  KDialogBase::Close, KDialogBase::Close);
+      i18n("Advanced Options for %1").arg(properties->kurl().fileName()),
+      KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
   KPropertiesDesktopAdvBase *w = new KPropertiesDesktopAdvBase(&dlg);
 
   dlg.setMainWidget(w);
@@ -3069,25 +3068,26 @@ void KDesktopPropsPlugin::slotAdvanced()
   connect( w->suidEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
 
-  dlg.exec();
-
-  m_terminalOptionStr = w->terminalEdit->text().stripWhiteSpace();
-  m_terminalBool = w->terminalCheck->isChecked();
-  m_suidBool = w->suidCheck->isChecked();
-  m_suidUserStr = w->suidEdit->text().stripWhiteSpace();
-  m_startupBool = w->startupInfoCheck->isChecked();
-
-  if (w->terminalCloseCheck->isChecked())
+  if ( dlg.exec() == QDialog::Accepted )
   {
-     m_terminalOptionStr.append(" --noclose");
-  }
+    m_terminalOptionStr = w->terminalEdit->text().stripWhiteSpace();
+    m_terminalBool = w->terminalCheck->isChecked();
+    m_suidBool = w->suidCheck->isChecked();
+    m_suidUserStr = w->suidEdit->text().stripWhiteSpace();
+    m_startupBool = w->startupInfoCheck->isChecked();
 
-  switch(w->dcopCombo->currentItem())
-  {
-    case 1:  m_dcopServiceType = "multi"; break;
-    case 2:  m_dcopServiceType = "unique"; break;
-    case 3:  m_dcopServiceType = "wait"; break;
-    default: m_dcopServiceType = "none"; break;
+    if (w->terminalCloseCheck->isChecked())
+    {
+      m_terminalOptionStr.append(" --noclose");
+    }
+
+    switch(w->dcopCombo->currentItem())
+    {
+      case 1:  m_dcopServiceType = "multi"; break;
+      case 2:  m_dcopServiceType = "unique"; break;
+      case 3:  m_dcopServiceType = "wait"; break;
+      default: m_dcopServiceType = "none"; break;
+    }
   }
 }
 
@@ -3138,8 +3138,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 {
   d = new KExecPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("E&xecute"));
-  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
-  mainlayout->setSpacing( KDialog::spacingHint() );
+  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, 0,
+      KDialog::spacingHint());
 
   // Now the widgets in the top layout
 
@@ -3451,7 +3451,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 {
   d = new KApplicationPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("&Application"));
-  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
+  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint());
 
   QIconSet iconSet;
   QPixmap pixMap;

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>KPropertiesDesktopBase</class>
 <widget class="QWidget">
     <property name="name">
@@ -8,149 +8,21 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>471</width>
-            <height>323</height>
+            <width>449</width>
+            <height>304</height>
         </rect>
     </property>
-    <vbox>
+    <property name="caption">
+        <string>KPropertiesDesktopBase</string>
+    </property>
+    <grid>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout2</cstring>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel" row="0" column="0">
-                    <property name="name">
-                        <cstring>nameLabel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Name:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>nameEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="0" column="1" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>nameEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="1" column="0">
-                    <property name="name">
-                        <cstring>textLabel2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Description:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>genNameEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="1" column="1" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>genNameEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>textLabel3</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Comm&amp;ent:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>commentEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here any comment you think is useful.</string>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="2" column="1" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>commentEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here any comment you think is useful.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="3" column="0">
-                    <property name="name">
-                        <cstring>textLabel4</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Co&amp;mmand:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>commandEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the command to start this application.
-
-Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
-%f - a single file name
-%F - a list of files; use for applications that can open several local files at once
-%u - a single URL
-%U - a list of URLs
-%d - the directory of the file to open
-%D - a list of directories
-%i - the icon
-%m - the mini-icon
-%c - the caption</string>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="3" column="1">
-                    <property name="name">
-                        <cstring>commandEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Type here the command to start this application.
-
-Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
-%f - a single file name
-%F - a list of files; use for applications that can open several local files at once
-%u - a single URL
-%U - a list of URLs
-%d - the directory of the file to open
-%D - a list of directories
-%i - the icon
-%m - the mini-icon
-%c - the caption</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton" row="3" column="2">
-                    <property name="name">
-                        <cstring>browseButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Browse...</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+B</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Click here to browse your file system in order to find the desired executable.</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <spacer>
+        <property name="margin">
+            <number>0</number>
+        </property>
+        <spacer row="4" column="3" rowspan="1" colspan="2">
             <property name="name">
                 <cstring>spacer6</cstring>
             </property>
@@ -167,7 +39,7 @@ Following the command, you can have several place holders which will be replaced
                 </size>
             </property>
         </spacer>
-        <widget class="QLabel">
+        <widget class="QLabel" row="5" column="0" rowspan="1" colspan="7">
             <property name="name">
                 <cstring>textLabel7</cstring>
             </property>
@@ -183,7 +55,7 @@ Following the command, you can have several place holders which will be replaced
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application can't handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
-        <widget class="KListView">
+        <widget class="KListView" row="6" column="0" rowspan="1" colspan="7">
             <column>
                 <property name="text">
                     <string>Mimetype</string>
@@ -226,95 +98,205 @@ Following the command, you can have several place holders which will be replaced
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application can't handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
-        <widget class="QLayoutWidget">
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
             <property name="name">
-                <cstring>layout4</cstring>
+                <cstring>nameLabel</cstring>
             </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>addFiletypeButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Add...</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Click on this button if you want to add a type of files (mimetype) that your application can handle.</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer31_2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>MinimumExpanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>delFiletypeButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Remove</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>If you want to remove a type of files (mimetype) that your application can't handle, select the mimetype in the list above and click on this button.</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer31_3</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>MinimumExpanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>advancedButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Ad&amp;vanced Options...</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+V</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>
-                    </property>
-                </widget>
-            </hbox>
+            <property name="text">
+                <string>&amp;Name:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>nameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
+            </property>
         </widget>
-    </vbox>
+        <widget class="KLineEdit" row="0" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>nameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel2</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Description:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>genNameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="1" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>genNameEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel3</cstring>
+            </property>
+            <property name="text">
+                <string>Comm&amp;ent:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>commentEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here any comment you think is useful.</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="2" column="2" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>commentEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here any comment you think is useful.</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel4</cstring>
+            </property>
+            <property name="text">
+                <string>Co&amp;mmand:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>commandEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the command to start this application.
+
+Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
+%f - a single file name
+%F - a list of files; use for applications that can open several local files at once
+%u - a single URL
+%U - a list of URLs
+%d - the directory of the file to open
+%D - a list of directories
+%i - the icon
+%m - the mini-icon
+%c - the caption</string>
+            </property>
+        </widget>
+        <widget class="KLineEdit" row="3" column="2" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>commandEdit</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Type here the command to start this application.
+
+Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
+%f - a single file name
+%F - a list of files; use for applications that can open several local files at once
+%u - a single URL
+%U - a list of URLs
+%d - the directory of the file to open
+%D - a list of directories
+%i - the icon
+%m - the mini-icon
+%c - the caption</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="3" column="6">
+            <property name="name">
+                <cstring>browseButton</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Browse...</string>
+            </property>
+            <property name="accel">
+                <string>Alt+B</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click here to browse your file system in order to find the desired executable.</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="7" column="0">
+            <property name="name">
+                <cstring>addFiletypeButton</cstring>
+            </property>
+            <property name="text">
+                <string>Add...</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click on this button if you want to add a type of files (mimetype) that your application can handle.</string>
+            </property>
+        </widget>
+        <spacer row="7" column="1" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>spacer31_2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>MinimumExpanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>53</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="7" column="3">
+            <property name="name">
+                <cstring>delFiletypeButton</cstring>
+            </property>
+            <property name="text">
+                <string>Remove</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>If you want to remove a type of files (mimetype) that your application can't handle, select the mimetype in the list above and click on this button.</string>
+            </property>
+        </widget>
+        <spacer row="7" column="4">
+            <property name="name">
+                <cstring>spacer31_3</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>MinimumExpanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>53</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="7" column="5" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>advancedButton</cstring>
+            </property>
+            <property name="text">
+                <string>Ad&amp;vanced Options...</string>
+            </property>
+            <property name="accel">
+                <string>Alt+V</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>
+            </property>
+        </widget>
+    </grid>
 </widget>
 <includes>
     <include location="global" impldecl="in implementation">klineedit.h</include>
     <include location="global" impldecl="in implementation">klistview.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>klineedit.h</includehint>
-    <includehint>klistview.h</includehint>
-</includehints>
 </UI>

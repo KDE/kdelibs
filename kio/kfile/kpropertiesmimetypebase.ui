@@ -1,9 +1,26 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>KPropertiesMimetypeBase</class>
 <widget class="QWidget">
+    <property name="name">
+        <cstring>widget2</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>265</width>
+            <height>213</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>unnamed</string>
+    </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
         </property>
         <widget class="QLabel">
             <property name="name">
@@ -53,7 +70,4 @@
     <include location="global" impldecl="in implementation">klistview.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>klistview.h</includehint>
-</includehints>
 </UI>
