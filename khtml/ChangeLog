@@ -1,3 +1,9 @@
+2004-05-06 Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
+
+	* html/htmlparser.cpp (class KHTMLParser): fixed a memory leak
+	whenever the parser is used on a DocumentFragment
+	(i.e. when setting innerHTML via JavaScript).
+
 2004-02-09  David Faure  <faure@kde.org>
 
 	* ecma/kjs_events.h (clear): set listener object to Null(), not to an invalid Object(),
