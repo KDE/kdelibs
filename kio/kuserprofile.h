@@ -25,8 +25,7 @@
 #include <qlist.h>
 #include <qvaluelist.h>
 
-class KService;
-class KServiceTypeProfile;
+#include <kservice.h>
 
 /**
  * This class holds the characteristics of a service offer
@@ -38,13 +37,13 @@ class KServiceOffer
 public:
   KServiceOffer();
   KServiceOffer( const KServiceOffer& );
-  KServiceOffer( const KService* _service,
+  KServiceOffer( KService::Ptr _service,
 		 int _pref, bool _default );
   
   bool operator< ( const KServiceOffer& ) const;
   bool allowAsDefault() const { return m_bAllowAsDefault; }
   int preference() const { return m_iPreference; }
-  const KService* service() const { return m_pService; }
+  KService::Ptr service() const { return m_pService; }
   bool isValid() const { return m_iPreference >= 0; }
   
 private:
@@ -56,7 +55,7 @@ private:
    * Is it allowed to use this service for default actions.
    */
   bool m_bAllowAsDefault;
-  const KService* m_pService;
+  KService::Ptr m_pService;
 };
 
 /**
@@ -85,12 +84,20 @@ public:
   QString serviceType() const { return m_strServiceType; }
   
   /**
+   * @return the preferred service (convenience method)
+   */
+  static KService::Ptr preferredService( const QString & _serviceType);
+
+  /**
    * @return the profile for the requested service type.
    */
   static KServiceTypeProfile* serviceTypeProfile( const QString& _servicetype );
 
+  /**
+   * @return the offers associated with a given servicetype
+   */
   static OfferList offers( const QString& _servicetype );
-
+  
   static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
   
 protected:

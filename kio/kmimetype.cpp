@@ -1,3 +1,21 @@
+/*  This file is part of the KDE libraries
+ *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *                     David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 // $Id$
 
 #include <sys/types.h>
@@ -10,9 +28,10 @@
 #include <unistd.h>
 
 #include "kio_job.h"
-#include "kmimetypes.h"
+#include "kmimetype.h"
+#include "kservicetypefactory.h"
 #include "kmimemagic.h"
-#include "kservices.h"
+#include "kservice.h"
 #include "krun.h"
 #include "kautomount.h"
 
@@ -25,25 +44,13 @@
 #include <kurl.h>
 #include <kdebug.h>
 
-QDict<KMimeType>* KMimeType::s_mapMimeTypes = 0L;
-KMimeType* KMimeType::s_pDefaultType = 0L;
+KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
-
-void KMimeType::initStatic()
-{
-  if ( s_mapMimeTypes != 0L )
-    return;
-
-  s_mapMimeTypes = new QDict<KMimeType>;
-}
 
 void KMimeType::check()
 {
   if ( s_bChecked )
     return;
-  initStatic();
-
-  kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapMimeTypes->count() );
 
   s_bChecked = true; // must be done before building mimetypes
 
@@ -60,8 +67,8 @@ void KMimeType::check()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
-  if ( s_mapMimeTypes->count() <= 1 )
-    KMessageBox::error( 0, i18n( "No mime types installed!" ));
+  if ( !KServiceTypeFactory::self()->checkMimeTypes() )
+    KMessageBox::error( 0L, i18n( "No mime types installed!" ) );
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
@@ -87,8 +94,10 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 {
   QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
 
-  KMessageBox::sorry( 0, tmp);
+  KMessageBox::sorry( 0, tmp );
 
+  // We can't emulate missing mimetypes anymore...
+  /*
   QStringList dummy;
 
   KMimeType *e;
@@ -100,24 +109,27 @@ void KMimeType::errorMissingMimeType( const QString& _type )
     e = new KExecMimeType( _type, "unknown.xpm", "", dummy );
   else
     e = new KMimeType( _type, "unknown.xpm", "", dummy );
-
-  s_mapMimeTypes->insert( _type, e );
+  */
 }
 
-KMimeType* KMimeType::mimeType( const QString& _name )
+KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
-  check();
-
-  assert( s_mapMimeTypes );
-
-  KMimeType* mime = (*s_mapMimeTypes)[ _name ];
-  if ( !mime )
+  KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
+    
+  if ( !mime || !mime->isType( KST_KMimeType ) )
     return s_pDefaultType;
 
-  return mime;
+  // We got a mimetype
+  return KMimeType::Ptr((KMimeType *) mime);
 }
 
-KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
+KMimeType::List KMimeType::allMimeTypes()
+{
+  check();
+  return KServiceTypeFactory::self()->allMimeTypes();
+}
+
+KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 				 bool _is_local_file, bool _fast_mode )
 {
   check();
@@ -141,52 +153,57 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
     {
       QString path ( _url.path( 0 ) );
       if ( access( path.data(), R_OK ) == -1 )
-	return find( "inode/directory-locked" );
+	return mimeType( "inode/directory-locked" );
     }
-    return find( "inode/directory" );
+    return mimeType( "inode/directory" );
   }
   if ( S_ISCHR( _mode ) )
-    return find( "inode/chardevice" );
+    return mimeType( "inode/chardevice" );
   if ( S_ISBLK( _mode ) )
-    return find( "inode/blockdevice" );
+    return mimeType( "inode/blockdevice" );
   if ( S_ISFIFO( _mode ) )
-    return find( "inode/fifo" );
+    return mimeType( "inode/fifo" );
   if ( S_ISSOCK( _mode ) )
-    return find( "inode/socket" );
+    return mimeType( "inode/socket" );
   // KMimeMagic can do that better for local files
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
-    return find( "application/x-executable" );
+    return mimeType( "application/x-executable" );
 
   QString path ( _url.path( 0 ) );
 
   if ( ! path.isNull() )
     {
       // Try to find it out by looking at the filename
-      assert( s_mapMimeTypes );
-      QDictIterator<KMimeType> it( *s_mapMimeTypes );
-      for( ; it.current() != 0L; ++it )
-	if ( it.current()->matchFilename( path.data() ) )
-	  return it.current();
+
+#warning FIXME Create another index, for file mask matching, with (mask, mimetype offset)
+      //
+      //The current solution works but is slow and memory eating
+      //
+      KMimeType::List list = allMimeTypes();
+      QValueListIterator<KMimeType::Ptr> it = list.begin();
+      for( ; it != list.end(); ++it )
+	if ( (*it)->matchFilename( path.data() ) )
+	  return (*it);
       
       // Another filename binding, hardcoded, is .desktop:
       if ( path.right(8) == ".desktop" )
-	return find( "application/x-desktop" );
+	return mimeType( "application/x-desktop" );
       // Another filename binding, hardcoded, is .kdelnk;
       // this is preserved for backwards compatibility
       if ( path.right(7) == ".kdelnk" )
-	return find( "application/x-desktop" );
+	return mimeType( "application/x-desktop" );
     }
 
   if ( !_is_local_file || _fast_mode )
   {
     QString path = _url.path();
     if ( path.right(1) == "/" || path.isEmpty() )
-      return find( "inode/directory" );
+      return mimeType( "inode/directory" );
   }
 
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
-    return find( "application/octet-stream" );
+    return mimeType( "application/octet-stream" );
 
   // Do some magic for local files
   kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
@@ -194,65 +211,44 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )  /* !result->mimeType() || result->mimeType()[0] == 0 ) */
-    return find( "application/octet-stream" );
+    return mimeType( "application/octet-stream" );
 
   // The mimemagic stuff was successful
-  return find( result->mimeType() );
+  return mimeType( result->mimeType() );
 }
 
 KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		      const QStringList& _patterns )
   : KServiceType( _type, _icon, _comment )
 {
-  initStatic();
-
-  assert( s_mapMimeTypes );
-
-  s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
 
 KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
 {
-  initStatic();
-
   _cfg.setDesktopGroup();
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
-  if ( isValid() )
-  {
-    // kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
-    s_mapMimeTypes->insert( m_strName, this );
-  } else
+  if ( !isValid() )
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
-KMimeType::KMimeType( QDataStream& _str ) : KServiceType() // don't pass _str !
+KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
 {
-  initStatic();
-  load( _str ); // will do the complete loading
+  load( _str, true ); // load our specific stuff
 }
 
-KMimeType::KMimeType() : KServiceType()
+void KMimeType::load( QDataStream& _str, bool _parentLoaded )
 {
-  initStatic();
-}
+  if ( !_parentLoaded )
+    KServiceType::load( _str );
 
-void KMimeType::load( QDataStream& _str )
-{
-  if ( !m_strName.isEmpty() )
-    s_mapMimeTypes->remove( m_strName );
-
-  KServiceType::load( _str );
   // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : loading list of patterns");
   _str >> m_lstPatterns;
-
-  if ( !m_strName.isEmpty() )
-    s_mapMimeTypes->insert( m_strName, this );
   // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : done");
 }
 
-void KMimeType::save( QDataStream& _str ) const
+void KMimeType::save( QDataStream& _str )
 {
   KServiceType::save( _str );
   _str << m_lstPatterns;
@@ -285,7 +281,6 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
-  s_mapMimeTypes->remove( m_strName );
 }
 
 bool KMimeType::matchFilename( const QString& _filename ) const
@@ -549,7 +544,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
 
 bool KDEDesktopMimeType::runApplication( const QString& , KSimpleConfig &cfg )
 {
-  KService s( cfg, false );
+  KService s( cfg );
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return false;
@@ -578,6 +573,7 @@ bool KDEDesktopMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
 bool KDEDesktopMimeType::runMimeType( const QString& , KSimpleConfig & )
 {
   // HACK: TODO
+  // How ? (David) Showing up the properties dialog ? That's in libkonq !
   return false;
 }
 
@@ -601,7 +597,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
-      KMessageBox::error( 0, tmp );
+      KMessageBox::error( 0, tmp);
     }
     else
     {
@@ -700,9 +696,6 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 	       _service.m_strIcon );
     return;
   }
-  /* else if ( _service.m_type == ST_PROPERTIES )
-  {
-  } */
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
     kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
@@ -713,7 +706,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
-      KMessageBox::error( 0, tmp);
+      KMessageBox::error( 0, tmp );
       return;
     }
     QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
@@ -759,4 +752,3 @@ KExecMimeType::KExecMimeType( const QString& _type, const QString& _icon, const 
   : KMimeType( _type, _icon, _comment, _patterns )
 {
 }
-

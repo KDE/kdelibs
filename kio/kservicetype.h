@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+                       1999 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +21,8 @@
 #ifndef __kservicetype_h__
 #define __kservicetype_h__
 
+#include "ksycocaentry.h"
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlist.h>
@@ -28,29 +31,39 @@
 #include <qdatastream.h>
 #include <qvariant.h>
 
-#include <ksharedptr.h>
 #include <ksimpleconfig.h>
 
-#include "ktypecode.h"
+#include <kservice.h>
 
 /**
- * A service type is the generic notion for a mimetype.
+ * A service type is the generic notion for a mimetype, a type of service
+ * instead of a type of file.
+ * For instance, KOfficeFilter is a service type.
  * It is associated to services according to the user profile (kuserprofile.h)
- * and there are factories and registry entry classes for it (kregfactories.h)
  */
-class KServiceType : public KShared
+class KServiceType : public KSycocaEntry
 {
-  K_TYPECODE( TC_KServiceType );
+  K_SYCOCATYPE( KST_KServiceType, KSycocaEntry );
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
+  /**
+   * Constructor.  You may pass in arguments to create a servicetype with
+   * specific properties
+   */
   KServiceType( const QString& _name, const QString& _icon, 
 		const QString& _comment );
+  /**
+   * Construct a service type and take all informations from a @ref KSimpleConfig object.
+   */
   KServiceType( KSimpleConfig& _cfg );
-  KServiceType( QDataStream& _str ) { initStatic(); load( _str ); }
-  KServiceType() { initStatic(); m_bValid = false; }
+  /**
+   * @internal construct a service from a stream. 
+   * The stream must already be positionned at the correct offset
+   */
+  KServiceType( QDataStream& _str, int offset );
   
   virtual ~KServiceType();
   
@@ -62,6 +75,7 @@ public:
    *         others.  
    */
   virtual QString icon() const { return m_strIcon; }
+
   /**
    * @return the descriptive comment associated, if any.
    */
@@ -81,27 +95,39 @@ public:
   virtual QStringList propertyDefNames() const;
   virtual const QMap<QString,QVariant::Type>& propertyDefs() const { return m_mapPropDefs; }
 
+  /**
+   * Save ourselves to the data stream. 
+   */
+  virtual void save( QDataStream& );
+
+  /**
+   * Load ourselves from the data stream. 
+   */
   virtual void load( QDataStream& );
-  virtual void save( QDataStream& ) const;
   
   /**  
    * @return a pointer to the servicetype '_name' or 0L if the
    *         service type is unknown.  
+   * VERY IMPORTANT : don't store the result in a KServiceType * !
    */
-  static KServiceType* serviceType( const QString& _name );
+  static KServiceType::Ptr serviceType( const QString& _name );
+
+  /**
+   * @return all services supporting the given servicetype name
+   * This doesn't take care of the user profile.
+   * In fact it is used by the KServiceTypeProfile,
+   * which is the one you should use.
+   */
+  static KService::List offers( const QString& _servicetype );
 
   /** 
    * @return a list of all the supported servicetypes. Useful for 
    *         showing the list of available mimetypes in a listbox,
    *         for example.
    */
-  static const QList<KServiceType>& serviceTypes() { return *s_lstServiceTypes; }
+  //static const KServiceType>& serviceTypes();
 
 protected:
-  /**
-   * Check for static variables initialised. Called by constructor.
-   */
-  static void initStatic();
 
   QString m_strName;
   QString m_strIcon;
@@ -110,11 +136,15 @@ protected:
   QMap<QString,QVariant::Type> m_mapPropDefs;
 
   bool m_bValid;
-  
-  static QList<KServiceType>* s_lstServiceTypes;
 };
 
-QDataStream& operator>>( QDataStream& _str, KServiceType& s );
-QDataStream& operator<<( QDataStream& _str, const KServiceType& s );
+class KServiceTypeList : public QValueList<KServiceType::Ptr>
+{
+public:
+   KServiceTypeList() { };
+};
+
+//QDataStream& operator>>( QDataStream& _str, KServiceType& s );
+//QDataStream& operator<<( QDataStream& _str, KServiceType& s );
 
 #endif

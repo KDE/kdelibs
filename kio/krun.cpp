@@ -20,7 +20,7 @@
 #include "kio_job.h"
 #include "krun.h"
 #include "kuserprofile.h"
-#include "kmimetypes.h"
+#include "kmimetype.h"
 #include "kmimemagic.h"
 #include "kio_error.h"
 #include "kio_openwith.h"
@@ -34,7 +34,6 @@
 #include <kstddirs.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
-KServiceProvider * KServiceProvider::pServiceProvider = 0L;
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
@@ -65,7 +64,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   QStringList lst;
   lst.append( _url );
 
-  KService::Ptr offer = KServiceProvider::getServiceProvider()->serviceByServiceType( _mimetype );
+  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype );
   
   if ( !offer )
   {
@@ -355,7 +354,7 @@ void KRun::init()
       m_mode = buff.st_mode;
     }
 
-    KMimeType* mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
+    KMimeType::Ptr mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
     assert( mime );
     kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
     foundMimeType( mime->mimeType().ascii() );
@@ -591,30 +590,6 @@ bool KFileManager::openFileManagerWindow( const char *_url )
   cmd += _url;
   system( cmd.ascii() );
   return true; // assume kfmclient succeeded
-}
-
-KService::Ptr KServiceProvider::serviceByServiceType( const char *mime_type )
-{
-  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( mime_type );
-
-  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
-  {
-    kdebug( KDEBUG_INFO, 7010, "No Offers" );
-    return 0L;
-  }
-
-  KService *s = (KService*)( *offers.begin() ).service();
-  return KService::Ptr( s );
-}
-
-KService::Ptr KServiceProvider::serviceByName( const QString &name )
-{
-  KService *s = KService::service( name );
-  
-  if ( !s )
-    return 0L;
-    
-  return KService::Ptr( s );
 }
 
 #include "krun.moc"

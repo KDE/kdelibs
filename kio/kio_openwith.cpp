@@ -405,7 +405,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 void KOpenWithDlg::slotOK()
 {
     if( haveApp ) 
-        m_pService = KServiceProvider::getServiceProvider()->serviceByName( qName );
+        m_pService = KService::service( qName );
 
     if( terminal->isChecked() ) {
         KConfig conf("konquerorrc", true, false);

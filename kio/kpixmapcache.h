@@ -7,9 +7,9 @@
 #include <qstring.h>
 
 #include <kurl.h>
+#include <kmimetype.h>
 
 class QPixmap;
-class KMimeType;
 
 class KPixmapCache
 {
@@ -46,12 +46,12 @@ public:
    * no URL is passed, it is impossible to obey icon hints in desktop
    * entries for example.  
    */
-  static QPixmap* pixmapForMimeType( KMimeType *_mime_type, bool _mini );
+  static QPixmap* pixmapForMimeType( KMimeType::Ptr _mime_type, bool _mini );
   /** 
    * May return 0L if the pixmap and the default pixmap is not
    * available 
    */
-  static QPixmap* pixmapForMimeType( KMimeType *_mime_type, const KURL& _url, bool _is_local_file, bool _mini );
+  static QPixmap* pixmapForMimeType( KMimeType::Ptr _mime_type, const KURL& _url, bool _is_local_file, bool _mini );
   /** 
    * Never returns an empty string. If the image was not found, then
    * the default pixmap is returned.

@@ -24,8 +24,6 @@
 
 /**
  * This is a little service class providing information on user's paths
- * It also provides methods for ensuring application-specific directories
- * are created (in user's local kde dir).
  * <P>
  * Note: All these paths end with a '/'.
  */

@@ -1,30 +1,43 @@
+/*  This file is part of the KDE libraries
+ *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *                     David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
+#include "kservice.h"
 #include "kservicetype.h"
+#include "kservicetypefactory.h"
+#include "kservicefactory.h"
 
 #include <assert.h>
+#include <kdebug.h>
 #include <qsmartptr.h>
-
-QList<KServiceType>* KServiceType::s_lstServiceTypes = 0L;
-
-void KServiceType::initStatic()
-{
-  if ( s_lstServiceTypes == 0 )
-    s_lstServiceTypes = new QList<KServiceType>;
-}
 
 KServiceType::KServiceType( KSimpleConfig& _cfg )
 {
-  initStatic();
   _cfg.setDesktopGroup();
 
   // Is it a mimetype ?
   m_strName = _cfg.readEntry( "MimeType" );
 
   // Or is it a servicetype ?
-  if ( m_strName.isEmpty() ) {
+  if ( m_strName.isEmpty() ) 
+  {
     m_strName = _cfg.readEntry( "X-KDE-ServiceType" );
-    s_lstServiceTypes->insert( 0, this ); // servicetypes first in the list !
-  } else
-    s_lstServiceTypes->append( this ); // mimetypes at the end
+  }
 
   m_strComment = _cfg.readEntry( "Comment" );
   m_strIcon = _cfg.readEntry( "Icon" );
@@ -59,21 +72,38 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
 
 KServiceType::KServiceType( const QString& _type, const QString& _icon, const QString& _comment )
 {
-  initStatic();
-  s_lstServiceTypes->append( this );
-
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::~KServiceType()
+KServiceType::KServiceType( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
 {
-  s_lstServiceTypes->removeRef( this );
+  load( _str);
 }
 
-KServiceType::PropertyPtr KServiceType::property( const QString& _name ) const
+void
+KServiceType::load( QDataStream& _str )
+{
+  Q_INT8 b;
+  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs >> b;
+  m_bValid = b;
+}
+
+void 
+KServiceType::save( QDataStream& _str )
+{
+  KSycocaEntry::save( _str );
+  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs << (Q_INT8)m_bValid;
+}
+
+KServiceType::~KServiceType()
+{
+}
+
+KServiceType::PropertyPtr 
+KServiceType::property( const QString& _name ) const
 {
   QVariant* p = 0;
 
@@ -97,7 +127,8 @@ KServiceType::PropertyPtr KServiceType::property( const QString& _name ) const
   return KServiceType::PropertyPtr( p );
 }
 
-QStringList KServiceType::propertyNames() const
+QStringList 
+KServiceType::propertyNames() const
 {
   QStringList res;
 
@@ -112,7 +143,8 @@ QStringList KServiceType::propertyNames() const
   return res;
 }
 
-QVariant::Type KServiceType::propertyDef( const QString& _name ) const
+QVariant::Type 
+KServiceType::propertyDef( const QString& _name ) const
 {
   QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.find( _name );
   if ( it == m_mapPropDefs.end() )
@@ -120,7 +152,8 @@ QVariant::Type KServiceType::propertyDef( const QString& _name ) const
   return it.data();
 }
 
-QStringList KServiceType::propertyDefNames() const
+QStringList 
+KServiceType::propertyDefNames() const
 {
   QStringList l;
 
@@ -131,37 +164,35 @@ QStringList KServiceType::propertyDefNames() const
   return l;
 }
 
-void KServiceType::load( QDataStream& _str )
+KServiceType::Ptr KServiceType::serviceType( const QString& _name )
 {
-  Q_INT8 b;
-  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs >> b;
-  m_bValid = b;
+  KServiceType * p = KServiceTypeFactory::self()->findServiceTypeByName( _name );
+  return KServiceType::Ptr( p );
 }
 
-void KServiceType::save( QDataStream& _str ) const
+KService::List KServiceType::offers( const QString& _servicetype )
 {
-  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs << (Q_INT8)m_bValid;
+  KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
+  if ( serv )
+    return KServiceFactory::self()->offers( serv->offset() );
+  else
+  {
+    kdebug(KDEBUG_WARN, 7009, QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ));
+    KService::List l;
+    return l;
+  }
 }
 
-KServiceType* KServiceType::serviceType( const QString& _name )
-{
-  assert( s_lstServiceTypes );
-  QListIterator<KServiceType> it( *s_lstServiceTypes );
-  for( ; it.current(); ++it )
-    if ( it.current()->name() == _name )
-      return it.current();
-
-  return 0;
-}
-
+/*
 QDataStream& operator>>( QDataStream& _str, KServiceType& s )
 {
   s.load( _str );
   return _str;
 }
 
-QDataStream& operator<<( QDataStream& _str, const KServiceType& s )
+QDataStream& operator<<( QDataStream& _str, KServiceType& s )
 {
   s.save( _str );
   return _str;
 }
+*/

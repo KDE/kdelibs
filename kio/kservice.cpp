@@ -1,6 +1,25 @@
-#include <kregistry.h>
-#include <kregfactories.h>
-#include "kservices.h"
+/*  This file is part of the KDE libraries
+ *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *                     David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
+#include "kservicefactory.h"
+#include "kservicetypefactory.h"
+#include "kservice.h"
 #include "kservicetype.h"
 #include "kuserprofile.h"
 
@@ -20,27 +39,6 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
-QList<KService>* KService::s_lstServices = 0L;
-
-void KService::initStatic()
-{
-  if ( !s_lstServices )
-    s_lstServices = new QList<KService>;
-}
-
-KService* KService::service( const QString& _name )
-{
-  initStatic();
-
-  assert( s_lstServices );
-
-  KService *s;
-  for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
-    if ( s->name() == _name )
-      return s;
-
-  return 0L;
-}
 
 KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
                     const QString& _icon, const QStringList& _lstServiceTypes,
@@ -48,13 +46,9 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 		    const QString& _path, const QString& _terminal,
 		    const QString&, const QString& _act_mode,
 		    const QStringList& _repo_ids,
-		    const QString& _lib, int _minor, int _major, const QStringList& deps, bool _put_in_list )
+		    const QString& _lib, int _minor, int _major, const QStringList& deps )
 {
-  initStatic();
   m_bValid = true;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 
   m_strName = _name;
   m_strExec = _exec;
@@ -73,22 +67,16 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
   m_lstLibraryDeps = deps;
 }
 
-KService::KService( bool _put_in_list )
+/*
+KService::KService()
 {
-  initStatic();
   m_bValid = false;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 }
+*/
 
-KService::KService( KSimpleConfig& config, bool _put_in_list )
+KService::KService( KSimpleConfig& config )
 {
-  initStatic();
   m_bValid = true;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 
   config.setDesktopGroup();
   m_strExec = config.readEntry( "Exec" );
@@ -120,7 +108,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   QStringList::Iterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-    KServiceType* s = KServiceType::serviceType( *it );
+    KServiceType * s = KServiceTypeFactory::self()->findServiceTypeRef( *it );
     if ( s )
     {
       const QMap<QString,QVariant::Type>& pd = s->propertyDefs();
@@ -134,19 +122,14 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
 
 }
 
-KService::KService( QDataStream& _str, bool _put_in_list )
+KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
 {
-  initStatic();
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
-
   load( _str );
 }
 
 KService::~KService()
 {
-  s_lstServices->removeRef( this );
+  //debug("KService::~KService()");
 }
 
 void KService::load( QDataStream& s )
@@ -161,8 +144,9 @@ void KService::load( QDataStream& s )
   m_bValid = true;
 }
 
-void KService::save( QDataStream& s ) const
+void KService::save( QDataStream& s )
 {
+  KSycocaEntry::save( s );
   Q_INT8 b = m_bAllowAsDefault;
 
   s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
@@ -260,25 +244,28 @@ QStringList KService::propertyNames() const
   return res;
 }
 
+/*
 QDataStream& operator>>( QDataStream& _str, KService& s )
 {
   s.load( _str );
   return _str;
 }
 
-QDataStream& operator<<( QDataStream& _str, const KService& s )
+QDataStream& operator<<( QDataStream& _str, KService& s )
 {
   s.save( _str );
   return _str;
 }
+*/
 
-const QList<KService>& KService::services()
+KService::List KService::allServices()
 {
-  if ( !s_lstServices)
-  {
-    initStatic();
-    KRegistry::self()->addFactory( new KServiceFactory );
-    KRegistry::self()->load();
-  }
-  return *s_lstServices;
+  return KServiceFactory::self()->allServices();
 }
+
+KService::Ptr KService::service( const QString& _name )
+{
+  KService * s = KServiceFactory::self()->findServiceByName( _name );
+  return KService::Ptr( s );
+}
+

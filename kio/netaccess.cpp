@@ -1,4 +1,4 @@
-/*  $Id:$
+/*  $Id$
 
     This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)
