@@ -790,15 +790,15 @@ void TransferJob::slotDataReq()
        staticData = QByteArray();
     }
     else
-        emit dataReq( this, dataForSlave);
-
-    static const size_t max_size = 14 * 1024 * 1024;
-    if (dataForSlave.size() > max_size) {
-        kdDebug() << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
-        staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
-        dataForSlave.truncate(max_size);
+    {
+       emit dataReq( this, dataForSlave);
+       static const size_t max_size = 14 * 1024 * 1024;
+       if (dataForSlave.size() > max_size) {
+	   kdWarning() << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
+	   staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
+	   dataForSlave.truncate(max_size);
+       }
     }
-
     m_slave->connection()->send( MSG_DATA, dataForSlave );
     if (m_subJob)
     {

@@ -193,7 +193,7 @@ write_all(int fd, const char *buf, size_t len)
 {
    while (len > 0)
    {
-      ssize_t written = write(fd, buf, len);
+      int written = write(fd, buf, len);
       if (written < 0)
       {
           if (errno == EINTR)
