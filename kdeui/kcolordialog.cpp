@@ -464,7 +464,7 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 	    emit colorSelected( cell );
 }
 
-void KColorCells::mouseDoubleClickEvent( QMouseEvent *e )
+void KColorCells::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 {
   int cell = posToCell(mPos);
 
