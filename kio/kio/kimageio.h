@@ -27,18 +27,26 @@
  * \b Formats: \n
  *
  * Currently supported formats include:
- * @li JPEG    \<read\>
- * @li XV      \<read\> \<write\>
+ * @li BMP     \<read\> \<write\>
  * @li EPS     \<read\> \<write\>
- * @li NETPBM  \<incomplete\>
+ * @li G3      \<read\>
+ * @li GIF     \<read\>
+ * @li ICO     \<read\>
+ * @li JP2     \<read\> \<write\>
+ * @li JPEG    \<read\> \<write\>
+ * @li NETPBM  \<read\> \<write\>
+ * @li PCX     \<read\> \<write\>
  * @li PNG     \<read\> \<write, only with newer libraries\>
+ * @li TGA     \<read\> \<write\>
  * @li TIFF    \<read\>
- * @li KRL     \<read\>
+ * @li XBM     \<read\> \<write\>
+ * @li XPM     \<read\> \<write\>
+ * @li XV      \<read\> \<write\>
  *
  * \b Usage:\n
  *
  * Simply call the KImageIO::registerFormats() static method declared
- * in kimgageio.h.
+ * in kimageio.h.
  *
  * \b Example:\n
  *
