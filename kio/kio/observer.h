@@ -115,6 +115,23 @@ public:
                          const QString &buttonYes, const QString &buttonNo );
 
   /**
+   * Popup a message box. See KIO::SlaveBase.
+   * This doesn't use DCOP anymore, it shows the dialog in the application's process.
+   * Otherwise, other apps would block when trying to communicate with UIServer.
+   * @param progressId the progress ID of the job, as returned by newJob()
+   * @param type the type of the message box
+   * @param text the text to show
+   * @param caption the window caption
+   * @param buttonYes the text of the "Yes" button
+   * @param buttonNo the text of the "No button
+   * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
+   *        The string is used to lookup and store the setting in kioslaverc.
+   * @since 3.3
+   */
+  static int messageBox( int progressId, int type, const QString &text, const QString &caption,
+                         const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName );
+
+  /**
    * @internal
    * See renamedlg.h
    */

@@ -364,10 +364,15 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     case INF_MESSAGEBOX: {
 	kdDebug(7007) << "needs a msg box" << endl;
-	QString text, caption, buttonYes, buttonNo;
+	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
         int type;
 	stream >> type >> text >> caption >> buttonYes >> buttonNo;
+	if (stream.atEnd())
 	messageBox(type, text, caption, buttonYes, buttonNo);
+	else {
+	    stream >> dontAskAgainName;
+	    messageBox(type, text, caption, buttonYes, buttonNo, dontAskAgainName);
+	}
 	break;
     }
     case INF_INFOMESSAGE: {
@@ -499,7 +504,13 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
                                  const QString &buttonYes, const QString &buttonNo )
 {
-    kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << endl;
+    messageBox( type, text, _caption, buttonYes, buttonNo, QString::null );
+}
+
+void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
+                                 const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
+{
+    kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
     QDataStream stream( packedArgs, IO_WriteOnly );
 
@@ -509,7 +520,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     emit needProgressId();
     kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
-    int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
+    int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( m_pConnection ) // Don't do anything if deleted meanwhile
     {
         kdDebug(7007) << this << " SlaveInterface result=" << result << endl;

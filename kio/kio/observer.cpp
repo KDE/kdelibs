@@ -261,29 +261,38 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,
                           const QString &buttonNo )
 {
+    return messageBox( progressId, type, text, caption, buttonYes, buttonNo, QString::null );
+}
+
+int Observer::messageBox( int progressId, int type, const QString &text,
+                          const QString &caption, const QString &buttonYes,
+                          const QString &buttonNo, const QString &dontAskAgainName )
+{
     kdDebug() << "Observer::messageBox " << type << " " << text << " - " << caption << endl;
     int result = -1;
+    KConfig *config = new KConfig("kioslaverc");
+    KMessageBox::setDontShowAskAgainConfig(config);
 
     switch (type) {
         case KIO::SlaveBase::QuestionYesNo:
             result = KMessageBox::questionYesNo( 0L, // parent ?
-                                               text, caption, buttonYes, buttonNo );
+                                               text, caption, buttonYes, buttonNo, dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningYesNo:
             result = KMessageBox::warningYesNo( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo );
+                                              text, caption, buttonYes, buttonNo, dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningContinueCancel:
             result = KMessageBox::warningContinueCancel( 0L, // parent ?
-                                              text, caption, buttonYes );
+                                              text, caption, buttonYes, dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningYesNoCancel:
             result = KMessageBox::warningYesNoCancel( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo );
+                                              text, caption, buttonYes, buttonNo, dontAskAgainName );
             break;
         case KIO::SlaveBase::Information:
             KMessageBox::information( 0L, // parent ?
-                                      text, caption );
+                                      text, caption, dontAskAgainName );
             result = 1; // whatever
             break;
         case KIO::SlaveBase::SSLMessageBox:
@@ -337,6 +346,8 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             result = 0;
             break;
     }
+    KMessageBox::setDontShowAskAgainConfig(0);
+    delete config;
     return result;
 #if 0
     QByteArray data, replyData;

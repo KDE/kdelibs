@@ -231,9 +231,7 @@ public:
     enum MessageBoxType { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
 
     /**
-     * Call this to show a message box from the slave (it will in fact be handled
-     * by kio_uiserver, so that the progress info dialog for the slave is hidden
-     * while this message box is shown)
+     * Call this to show a message box from the slave
      * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
      * @param text Message string. May contain newlines.
      * @param caption Message box title.
@@ -249,6 +247,28 @@ public:
                     const QString &caption = QString::null,
                     const QString &buttonYes = QString::null,
                     const QString &buttonNo = QString::null );
+
+    /**
+     * Call this to show a message box from the slave
+     * @param text Message string. May contain newlines.
+     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     * @param caption Message box title.
+     * @param buttonYes The text for the first button.
+     *                  The default is i18n("&Yes").
+     * @param buttonNo  The text for the second button.
+     *                  The default is i18n("&No").
+     * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
+     *       and for Information, none is used.
+     * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
+     *        The string is used to lookup and store the setting in kioslaverc.
+     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     * @since 3.3
+     */
+    int messageBox( const QString &text, MessageBoxType type,
+                    const QString &caption = QString::null,
+                    const QString &buttonYes = QString::null,
+                    const QString &buttonNo = QString::null,
+                    const QString &dontAskAgainName = QString::null );
 
     /**
      * Sets meta-data to be send to the application before the first
