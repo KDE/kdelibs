@@ -29,6 +29,7 @@ namespace KJS {
 KJSO *toPrimitive(KJSO *obj, Type preferred = Undefined);
 KJSO *toBoolean(KJSO *obj);
 KJSO *toNumber(KJSO *obj);
+double round(KJSO *obj);
 KJSO *toInteger(KJSO *obj);
 KJSO *toInt32(KJSO *obj);
 KJSO *toUInt32(KJSO *obj);

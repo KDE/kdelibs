@@ -31,6 +31,9 @@ namespace KJS {
   const double NaN = 0.0/0.;
   const double Inf = 1.0/.0;
   // TODO: -0
+  const double D16 = 65536.0;
+  const double D31 = 2147483648.0;
+  const double D32 = 4294967296.0;
 
 #ifdef KJS_DEBUG_MEM
   int KJSO::count = 0;

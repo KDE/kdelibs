@@ -114,6 +114,9 @@ namespace KJS {
 
   extern const double NaN;
   extern const double Inf;
+  extern const double D16;
+  extern const double D31;
+  extern const double D32;
 };
 
 #include <iostream.h>

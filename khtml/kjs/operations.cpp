@@ -21,6 +21,7 @@
 #include <iostream.h>
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 
 #include "global.h"
 #include "operations.h"
@@ -106,28 +107,53 @@ KJSO *KJS::toNumber(KJSO *obj)
   return new KJSNumber(d);
 }
 
+// helper function for toInteger, toInt32, toUInt32 and toUInt16
+double KJS::round(KJSO *obj)
+{
+  Ptr n = toNumber(obj);
+  if (n->dVal() == 0.0)   /* TODO: -0, NaN, Inf */
+    return 0.0;
+  double d = floor(fabs(n->dVal()));
+  if (n->dVal() < 0)
+    d *= -1;
+
+  return d;
+}
+
 // ECMA 9.4
 KJSO *KJS::toInteger(KJSO *obj)
 {
-  /* TODO */
+  return new KJSNumber(round(obj));
 }
 
 // ECMA 9.5
 KJSO *KJS::toInt32(KJSO *obj)
 {
-  /* TODO */
+  double d = round(obj);
+  double d32 = fmod(d, D32);
+
+  if (d32 >= D16)
+    d32 -= D32;
+
+  return new KJSNumber(d32);
 }
 
 // ECMA 9.6
 KJSO *KJS::toUInt32(KJSO *obj)
 {
-  /* TODO */
+  double d = round(obj);
+  double d32 = fmod(d, D32);
+
+  return new KJSNumber(d32);
 }
 
 // ECMA 9.7
 KJSO *KJS::toUInt16(KJSO *obj)
 {
-  /* TODO */
+  double d = round(obj);
+  double d16 = fmod(d, D16);
+
+  return new KJSNumber(d16);
 }
 
 // ECMA 9.8
