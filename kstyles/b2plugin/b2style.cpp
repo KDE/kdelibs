@@ -142,19 +142,7 @@ void B2Style::polish(QPalette &)
     // everything except one color - the slider groove fill. That doesn't
     // really look good with any of the standard colors and one additional
     // color alloc shouldn't kill psudeocolor display users :P
-    QColor tmpColor(192, 0, 0);
-    if(config->hasKey("SliderColor")){
-        tmpColor = config->readColorEntry("SliderColor", &tmpColor);
-        sliderGrp.setColor(QColorGroup::Mid, tmpColor);
-        sliderGrp.setColor(QColorGroup::Light, tmpColor.light(130));
-        sliderGrp.setColor(QColorGroup::Dark, tmpColor.dark(130));
-    }
-    else{
-        sliderGrp.setColor(QColorGroup::Mid, tmpColor);
-        sliderGrp.setColor(QColorGroup::Light, QColor(255, 0, 0));
-        sliderGrp.setColor(QColorGroup::Dark, QColor(128, 0, 0));
-    }
-    tmpColor.setRgb(0, 0, 192);
+    QColor tmpColor(0, 0, 192);
     if(config->hasKey("RadioOnColor")){
         tmpColor = config->readColorEntry("RadioOnColor", &tmpColor);
         radioOnGrp.setColor(QColorGroup::Mid, tmpColor);
@@ -169,18 +157,6 @@ void B2Style::polish(QPalette &)
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
     
-    tmpColor.setRgb(152, 204, 152);
-    if(config->hasKey("SliderGrooveColor")){
-        tmpColor = config->readColorEntry("SliderGrooveColor", &tmpColor);
-        sliderGrooveGrp.setColor(QColorGroup::Button, tmpColor);
-        sliderGrooveGrp.setColor(QColorGroup::Light, tmpColor.light(130));
-        sliderGrooveGrp.setColor(QColorGroup::Dark, tmpColor.dark(130));
-    }
-    else{
-        sliderGrooveGrp.setColor(QColorGroup::Button, tmpColor);
-        sliderGrooveGrp.setColor(QColorGroup::Light, QColor(192, 255, 192));
-        sliderGrooveGrp.setColor(QColorGroup::Dark, QColor(0, 128, 0));
-    }
     config->setGroup(oldGrp);
 }
 
@@ -189,7 +165,7 @@ void B2Style::polish(QWidget *w)
     if ( !w->isTopLevel() ) {
         if (w->inherits("QPushButton")
             || w->inherits("QComboBox")
-            || w->inherits("QSlider")
+            //|| w->inherits("QSlider")
             || w->inherits("QRadioButton")
             || w->inherits("QCheckBox"))
             w->setAutoMask(true);
@@ -201,7 +177,7 @@ void B2Style::unPolish(QWidget *w)
     if ( !w->isTopLevel() ) {
         if (w->inherits("QPushButton")
             || w->inherits("QComboBox")
-            || w->inherits("QSlider")
+            //|| w->inherits("QSlider")
             || w->inherits("QRadioButton")
             || w->inherits("QCheckBox"))
             w->setAutoMask(false);
@@ -700,65 +676,77 @@ void B2Style::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int)
     p->fillRect(x, y, w, h, Qt::color1);
 }
 
-void B2Style::drawSliderGrooveMask(QPainter *p, int x, int y, int w, int h,
-                                   QCOORD, Orientation)
+void B2Style::drawSlider(QPainter *p, int x, int y, int w, int h,
+                         const QColorGroup &g, Orientation orient,
+                         bool, bool)
 {
-    static QBrush fillBrush(color1, SolidPattern);
     int x2 = x+w-1;
     int y2 = y+h-1;
-    p->fillRect(x, y, w, h, fillBrush);
-    p->setPen(color0);
+    p->fillRect(x, y, w, h, g.background());
+    p->setPen(g.mid());
+    p->drawLine(x, y, x2, y);
+    p->drawLine(x, y, x, y2);
+    p->setPen(Qt::black);
+    p->drawLine(x2, y, x2, y2);
+    p->drawLine(x, y2, x2, y2);
+
+    p->setPen(g.dark());
+    p->drawLine(x2-1, y+1, x2-1, y2-1);
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    p->setPen(g.light());
+    p->drawLine(x+1, y+1, x2-1, y+1);
+    p->drawLine(x+1, y+1, x+1, y2-1);
+
+    p->setPen(g.mid());
+    p->drawLine(x2-2, y+2, x2-2, y2-2);
+    p->drawLine(x+2, y2-2, x2-2, y2-2);
+    p->setPen(g.midlight());
+    p->drawLine(x+2, y+2, x2-2, y+2);
+    p->drawLine(x+2, y+2, x+2, y2-2);
+
+    if (orient == Horizontal){
+        p->setPen(g.light());
+        p->drawLine(x+5, y+4, x+5, y2-4);
+        p->drawLine(x+8, y+4, x+8, y2-4);
+        p->drawLine(x+11, y+4, x+11, y2-4);
+        p->setPen(g.dark());
+        p->drawLine(x+6, y+4, x+6, y2-4);
+        p->drawLine(x+9, y+4, x+9, y2-4);
+        p->drawLine(x+12, y+4, x+12, y2-4);
+    }
+    else{
+        p->setPen(g.light());
+        p->drawLine(x+4, y+5, x2-4, y+5);
+        p->drawLine(x+4, y+8, x2-4, y+8);
+        p->drawLine(x+4, y+11, x2-4, y+11);
+        p->setPen(g.dark());
+        p->drawLine(x+4, y+6, x2-4, y+6);
+        p->drawLine(x+4, y+9, x2-4, y+9);
+        p->drawLine(x+4, y+12, x2-4, y+12);
+    }
+    p->setPen(g.background());
     p->drawPoint(x, y);
     p->drawPoint(x2, y);
     p->drawPoint(x, y2);
     p->drawPoint(x2, y2);
-    
 }
 
-void B2Style::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &, QCOORD, Orientation)
+void B2Style::drawSliderMask(QPainter *p, int x, int y, int w, int h,
+                             Orientation, bool, bool)
 {
-    p->setPen(Qt::black);
-    p->drawRect(x, y, w, h);
-    qDrawShadeRect(p, x+1, y+1, w-2, h-2, sliderGrooveGrp, true, 1, 0,
-                   &sliderGrooveGrp.brush(QColorGroup::Button));
-    int pos;
-    for(pos = x+8; pos < x+w-9; pos +=8){
-        p->setPen(sliderGrooveGrp.light());
-        p->drawLine(pos, y+4, pos, y+h-5);
-        p->setPen(sliderGrooveGrp.dark());
-        p->drawLine(pos+1, y+4, pos+1, y+h-5);
-    }
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    p->fillRect(x, y, w, h, Qt::color1);
+    p->setPen(Qt::color0);
+    p->drawPoint(x, y);
+    p->drawPoint(x2, y);
+    p->drawPoint(x, y2);
+    p->drawPoint(x2, y2);
 }
 
 int B2Style::sliderLength() const
 {
-    return(11);
-}
-
-void B2Style::drawSlider(QPainter *p, int x, int y, int, int h,
-                         const QColorGroup &, Orientation,
-                         bool, bool)
-{
-    static QBitmap blackBmp(9, 15, slider_black_bits, true);
-    static QBitmap darkBmp(9, 15, slider_dark_bits, true);
-    static QBitmap fillBmp(9, 15, slider_fill_bits, true);
-    static QBitmap lightBmp(9, 15, slider_light_bits, true);
-
-    int dy = (h-15)/2;
-    kColorBitmaps(p, sliderGrp, x+1, y+dy, &lightBmp, &fillBmp,
-                  NULL, &darkBmp, &blackBmp);
-}
-
-void B2Style::drawSliderMask(QPainter *p, int x, int y, int, int h,
-                             Orientation, bool, bool)
-{
-    static QBitmap sliderMaskBmp(9, 15, slider_mask_bits, true);
-    if(!sliderMaskBmp.mask())
-        sliderMaskBmp.setMask(sliderMaskBmp);
-    int dy = (h-15)/2;
-    p->setPen(Qt::color1);
-    p->drawPixmap(x+1, y+dy, sliderMaskBmp);
+    return(18);
 }
 
 void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
@@ -1134,15 +1122,17 @@ void B2Style::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
 }
 
 void B2Style::drawFocusRect(QPainter *p, const QRect &r,
-                               const QColorGroup &g, const QColor *,
-                               bool atBorder)
+                            const QColorGroup &g, const QColor *c,
+                            bool atBorder)
 {
+    /*
     p->setPen(g.foreground());
     p->setBrush(NoBrush);
     if ( atBorder )
         p->drawWinFocusRect( QRect( r.x()+1, r.y()+1, r.width()-2, r.height()-2 ) );
     else
-        p->drawWinFocusRect( r );
+    p->drawWinFocusRect( r ); */
+    KStyle::drawFocusRect(p, r, g, c, atBorder);
 }
 
 void B2Style::polishPopupMenu(QPopupMenu *mnu)

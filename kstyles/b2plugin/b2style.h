@@ -101,8 +101,6 @@ public:
     QRect comboButtonRect(int x, int y, int w, int h);
     QRect comboButtonFocusRect(int x, int y, int w, int h);
     int sliderLength() const;
-    void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup& g, QCOORD c, Orientation );
     void drawArrow(QPainter *p, Qt::ArrowType type, bool down,
                    int x, int y, int w, int h, const QColorGroup &g,
                    bool enabled=true, const QBrush *fill = 0);
@@ -138,8 +136,6 @@ public:
                             const QColorGroup &g, QBrush *fill);
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *pen, bool atBorder);
-    void drawSliderGrooveMask(QPainter *p, int x, int y, int w, int h,
-                              QCOORD, Orientation);
     int defaultFrameWidth() const {return(2);}
     void polishPopupMenu(QPopupMenu *mnu);
     /*
@@ -161,7 +157,7 @@ protected:
     void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool down=false);
 private:
-    QColorGroup sliderGrp, sliderGrooveGrp, radioOnGrp;
+    QColorGroup radioOnGrp;
 };
 
 #endif
