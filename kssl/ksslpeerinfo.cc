@@ -66,23 +66,23 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   int err;
   QString cn = certinfo.getValue("CN");
-  QString host, port;
-
-  if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) 
-     host = d->host->nodeName();
 
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
+     QString host, port;
+
+     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) 
+        host = d->host->nodeName();
+
+     kdDebug(7029) << "Matching CN=" << cn << " to " << host << endl;
      if (cnre.match(host) >= 0) return true;
   } else {
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
      cns.setAutoDelete(true);
 
-     /*
      kdDebug(7029) << "The original ones were: " << d->host->nodeName()
                    << " and: " << certinfo.getValue("CN").latin1()
                    << endl;
-     */
 
      for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
         if ((*x).address()->isEqual(d->host)) {
