@@ -555,10 +555,13 @@ bool KPrintDialog::checkOutputFile()
 		}
 		else
 		{
-			if (QFileInfo(f.dirPath(true)).isWritable())
-				value = true;
-			else
+			QFileInfo d( f.dirPath( true ) );
+			if ( !d.exists() )
+				KMessageBox::error( this, i18n( "The output directory does not exist." ) );
+			else if ( !d.isWritable() )
 				KMessageBox::error(this,i18n("You don't have write permissions in that directory."));
+			else
+				value = true;
 		}
 	}
 	return value;
