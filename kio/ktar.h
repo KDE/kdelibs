@@ -88,7 +88,7 @@ public:
   bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
 
   /**
-   * Call @ref doneWriting after writing the data, @see prepareWriting
+   * Call @ref doneWriting after writing the data, @ref prepareWriting
    */
   bool doneWriting( uint size );
 

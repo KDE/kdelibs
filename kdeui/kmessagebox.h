@@ -450,7 +450,8 @@ public:
      *
      * @param parent  If @p parent is 0, then the message box becomes an
      *                application-global modal dialog box. If @p parent is a
-     *                widget, the message box becomes modal relative to parent.     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     *                widget, the message box becomes modal relative to parent.     
+     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
      * @param text Message string. May contain newlines.
      * @param caption Message box title.
      * @param buttonYes The text for the first button.

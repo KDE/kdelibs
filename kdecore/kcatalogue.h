@@ -30,7 +30,7 @@ class KCataloguePrivate;
  * This class abstracs a gettext message catalogue. It will take care of
  * opening the file and reading the catalogue.
  *
- * @sa KLocale
+ * @see KLocale
  */
 class KCatalogue
 {
