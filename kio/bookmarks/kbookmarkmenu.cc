@@ -516,7 +516,7 @@ void KBookmarkMenu::fillBookmarkMenu()
        KActionMenu * actionMenu;
        actionMenu = new KImportedBookmarksActionMenu( 
                               info.name, info.type, 
-                              m_actionCollection, 0L );
+                              m_actionCollection, "kbookmarkmenu" );
 
        actionMenu->setProperty( "type", info.type );
        actionMenu->setProperty( "location", info.location );
@@ -572,7 +572,8 @@ void KBookmarkMenu::fillBookmarkMenu()
     {
       //kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
       KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
-                                                          m_actionCollection, 0L );
+                                                          m_actionCollection, 
+                                                          "kbookmarkmenu" );
       actionMenu->setProperty( "address", bm.address() );
       actionMenu->plug( m_parentMenu );
       m_actions.append( actionMenu );
