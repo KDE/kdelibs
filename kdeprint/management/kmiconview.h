@@ -38,6 +38,7 @@ public:
 
 protected:
 	virtual void paintItem(QPainter*, const QColorGroup&);
+	virtual void calcRect(const QString& text_ = QString::null);
 
 private:
 	int		m_mode;

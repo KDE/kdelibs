@@ -24,6 +24,7 @@
 
 #include <qpainter.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 KMIconViewItem::KMIconViewItem(QIconView *parent, KMPrinter *p)
 : QIconViewItem(parent)
@@ -47,6 +48,46 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 	QIconViewItem::paintItem(p,cg);
 }
 
+void KMIconViewItem::calcRect(const QString&)
+{
+	QRect	ir(rect()), pr, tr;
+
+	// pixmap rect
+	pr.setWidth(pixmap()->width());
+	pr.setHeight(pixmap()->height());
+
+	// text rect
+	QFont	f(iconView()->font());
+	if (m_state & 0x1) f.setBold(true);
+	if (m_state & 0x2) f.setItalic(true);
+	QFontMetrics	fm(f);
+	if (m_mode == QIconView::Bottom)
+		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, AlignHCenter|AlignTop|WordBreak|BreakAnywhere, text());
+	else
+		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, AlignLeft|AlignTop, text()+"X");
+
+	// item rect
+	if (m_mode == QIconView::Bottom)
+	{
+		ir.setHeight(pr.height() + tr.height() + 15);
+		ir.setWidth(QMAX(pr.width(), tr.width()) + 10);
+		pr = QRect((ir.width()-pr.width())/2, 5, pr.width(), pr.height());
+		tr = QRect((ir.width()-tr.width())/2, 10+pr.height(), tr.width(), tr.height());
+	}
+	else
+	{
+		ir.setHeight(QMAX(pr.height(), tr.height()) + 4);
+		ir.setWidth(pr.width() + tr.width() + 6);
+		pr = QRect(2, (ir.height()-pr.height())/2, pr.width(), pr.height());
+		tr = QRect(4+pr.width(), (ir.height()-tr.height())/2, tr.width(), tr.height());
+	}
+
+	// set rects
+	setItemRect(ir);
+	setTextRect(tr);
+	setPixmapRect(pr);
+}
+
 void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 {
 	bool	update(false);
@@ -56,7 +97,10 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0) | (p->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
 		if (p->name() != text() || update)
+		{
+			setText(QString::null);
 			setText(p->name());
+		}
 		setKey(QString::fromLatin1("%1_%2").arg((p->isSpecial() ? "special" : (p->isClass(false) ? "class" : "printer"))).arg(p->name()));
 		m_isclass = p->isClass(false);
 	}
@@ -71,8 +115,8 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 		else
 			setPixmap(SmallIcon(m_pixmap, 0, iconstate));
 	}
-	if (update)
-		repaint();
+	//if (update)
+	//	repaint();
 	setDiscarded(false);
 }
 
@@ -162,7 +206,7 @@ void KMIconView::setViewMode(ViewMode m)
 	setArrangement((big ? QIconView::LeftToRight : QIconView::TopToBottom));
 	setItemTextPos((QIconView::ItemTextPos)mode);
 	//setGridX((big ? 60 : -1));
-	setWordWrapIconText(big);
+	setWordWrapIconText(true);
 }
 
 void KMIconView::slotRightButtonClicked(QIconViewItem *item, const QPoint& p)
