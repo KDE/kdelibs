@@ -80,7 +80,8 @@ int main( int argc, char** argv )
     if ( !in.open( IO_ReadOnly ) )
 	qFatal("Could not read %s", argv[argpos] );
     
-    QDomDocument doc( &in );
+    QDomDocument doc;
+    doc.setContent( &in );
 
     QDomElement de = doc.documentElement();
     ASSERT( de.tagName() == "DCOP-IDL" );
