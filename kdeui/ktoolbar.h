@@ -23,7 +23,7 @@ class KToolBarCombo : public KCombo
 
  public:
    KToolBarCombo (bool wr, int ID,
-                  QWidget *parent, char *name=0);
+                  QWidget *parent, const char *name=0);
 
    void enable (bool enable);
    int ID() {return id;};
@@ -47,7 +47,7 @@ class KToolBarFrame : public QFrame
    Q_OBJECT
 
  public:
-   KToolBarFrame (int ID, QWidget *parent, char *name=0);
+   KToolBarFrame (int ID, QWidget *parent, const char *name=0);
 
    void enable (bool enable);
    int ID() {return id;};
@@ -72,7 +72,7 @@ class KToolBarLined : public KLined
    Q_OBJECT
  public:
    KToolBarLined (const char *text, int ID,
-                  QWidget *parent, char *name=0);
+                  QWidget *parent, const char *name=0);
    void enable (bool enable);
    int ID() {return id;};
    bool isRight () {return right;};
@@ -96,12 +96,12 @@ class KToolBarButton : public KButton
    Q_OBJECT
 
  public:
-   KToolBarButton(QPixmap& pixmap,int ID, QWidget *parent, char *name=NULL);
-   KToolBarButton(QWidget *parent=NULL, char *name=NULL);
+   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=NULL);
+   KToolBarButton(QWidget *parent=NULL, const char *name=NULL);
    void enable(bool enable);
    void makeDisabledPixmap();
    QPixmap disabledPixmap;
-   virtual void setPixmap( QPixmap & );
+   virtual void setPixmap( const QPixmap & );
    int ID() {return id;};
    bool isRight () {return right;};
    void alignRight (bool flag) {right = flag;};
@@ -169,7 +169,7 @@ public:
   /**
    * Constructor
    */
-  KToolBar(QWidget *parent=NULL,char *name=NULL);
+  KToolBar(QWidget *parent=NULL, const char *name=NULL);
 
   /**
    * Destructor
@@ -184,7 +184,7 @@ public:
    * @param index the position of the button. (-1 = at end).
    * @return Returns item index
    */
-  int insertButton(QPixmap& pixmap, int ID, bool enabled = TRUE,
+  int insertButton(const QPixmap& pixmap, int ID, bool enabled = TRUE,
                    const char *ToolTipText = NULL, int index=-1 );
   /**
    * This is the same as above, but with specified signals and
@@ -194,7 +194,7 @@ public:
    * You can add more signals with @ref #addConnection.
    * @return Returns item index
    */
-  int insertButton(QPixmap& pixmap, int ID, const char *signal,
+  int insertButton(const QPixmap& pixmap, int ID, const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = TRUE,
                    const char *tooltiptext = NULL, int index=-1 );
@@ -272,7 +272,7 @@ public:
    * Sets button pixmap.
    * Can be used while button is visible.
    */
-  void setButtonPixmap( int id, QPixmap& _pixmap );
+  void setButtonPixmap( int id, const QPixmap& _pixmap );
 
   /**
    * Makes button a toggle button if flag is TRUE
@@ -502,14 +502,14 @@ public:
    * a warning, and calls @ref #InsertButton
    *
    */
-  int insertItem(QPixmap& pixmap, int ID, bool enabled = TRUE,
+  int insertItem(const QPixmap& pixmap, int ID, bool enabled = TRUE,
                char *ToolTipText = NULL, int index=-1 );
 
   /**
    * This is provided for compatibility with old KToolBar. Writes
    * a warning, and calls @ref #InsertButton
    */
-  int insertItem(QPixmap& pixmap, int ID, const char *signal,
+  int insertItem(const QPixmap& pixmap, int ID, const char *signal,
                const QObject *receiver, const char *slot,
                bool enabled = TRUE,
                char *tooltiptext = NULL, int index=-1 );
@@ -518,7 +518,7 @@ public:
    * This is provided for compatibility with old KToolBar. Writes
    * a warning, and calls @ref #setButtonPixmap
    */
-  void setItemPixmap( int id, QPixmap& _pixmap );
+  void setItemPixmap( int id, const QPixmap& _pixmap );
 
 signals:
     /**

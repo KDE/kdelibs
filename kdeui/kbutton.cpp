@@ -3,7 +3,7 @@
 #include <qpainter.h>
 #include <qdrawutl.h>
 
-KButton::KButton( QWidget *_parent, char *name )
+KButton::KButton( QWidget *_parent, const char *name )
     : QButton( _parent , name)
 {
     raised = 0;

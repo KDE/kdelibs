@@ -12,8 +12,9 @@
 // This does NOT include the border width which we set separately for the statusbar.
 
 
-KStatusBarItem::KStatusBarItem( char *text, int ID,
-								QWidget *parent, char *) : QLabel( parent ) 
+KStatusBarItem::KStatusBarItem( const char *text, int ID,
+				QWidget *parent, const char *) : 
+  QLabel( parent ) 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   id = ID;
   QLabel( parent, name) 
@@ -44,7 +45,7 @@ void KStatusBarItem::mouseReleaseEvent (QMouseEvent *)
 void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
 {
 }
-KStatusBar::KStatusBar( QWidget *parent, char *name )
+
 /***********************************************************************/
 
 KStatusBar::KStatusBar( QWidget *parent, const char *name )
@@ -97,7 +98,7 @@ bool KStatusBar::enable( BarStatus stat )
   return ( isVisible() == mystat );
 }	
 
-int KStatusBar::insertItem( char *text, int id )
+int KStatusBar::insertItem( const char *text, int id )
 {
   KStatusBarItem *label = new KStatusBarItem( text, id, this );
   labels.append( label );	
@@ -118,9 +119,7 @@ void KStatusBar::setInsertOrder(InsertOrder order){
 
   insert_order = order;
 void KStatusBar::updateRects( bool res )
-{
-
-  
+{  
 
 void KStatusBar::updateRects( bool res ){
   
@@ -128,7 +127,6 @@ void KStatusBar::updateRects( bool res ){
 
     int offset= borderwidth;	
     for ( KStatusBarItem *b = items.first(); b; b=items.next() ) {
-
 
       b->setGeometry( offset, borderwidth, b->width(), fieldheight );	
       offset+=b->width() + borderwidth;
@@ -158,7 +156,7 @@ void KStatusBar::updateRects( bool res ){
 		l->setGeometry(borderwidth,borderwidth,offset,fieldheight);
       }
     }
-void KStatusBar::changeItem( char *text, int id )
+void KStatusBar::changeItem( const char *text, int id )
 }
   for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) 
 void KStatusBar::changeItem( const QString& text, int id )

@@ -15,8 +15,8 @@ class KStatusBarItem : public QLabel {
 
 public:
 
-  KStatusBarItem( char *text, int ID, QWidget *parent=NULL,
-                  char *name=NULL );
+  KStatusBarItem( const char *text, int ID, QWidget *parent=NULL,
+                  const char *name=NULL );
 
   /**
 	* Returns id of item. Internal
@@ -71,7 +71,7 @@ public:
   enum Position{Top, Left, Bottom, Right, Floating};
   enum InsertOrder{LeftToRight, RightToLeft};
 
-  KStatusBar(QWidget *parent = NULL, char *name = NULL );
+  KStatusBar(QWidget *parent = NULL, const char *name = NULL );
   ~KStatusBar();
 
   /**
@@ -86,13 +86,13 @@ public:
 	* inserted is always stretched to fit the window width.
 	* @short Insert field into the status bar.
 	*/
-  int insertItem( char *text, int ID );
+  int insertItem( const char *text, int ID );
 	
   /**
 	* Change the text in a status bar field. The field is not resized !!!
 	* @short Change the text in a status bar field.
 	*/
-  void changeItem( char *text, int id );
+  void changeItem( const char *text, int id );
 
   /** 
 	* If order is KStatusBar::LeftToRight the field are inserted from left

@@ -45,19 +45,20 @@
 #define KToolBarItem QWidget
 
 KToolBarFrame::KToolBarFrame (int ID, QWidget *parent,
-                              char *name) : QFrame (parent, name)
+                              const char *name) : QFrame (parent, name)
  {
    id = ID;
  }
 
 KToolBarCombo::KToolBarCombo(bool rw, int ID,
-                             QWidget *parent, char *name) : KCombo (rw, parent, name)
+                             QWidget *parent, const char *name) : KCombo (rw, parent, name)
 { 
   id = ID;
 }
 
 KToolBarLined::KToolBarLined(const char *text, int ID,
-                             QWidget *parent, char *name) : KLined (parent, name)
+                             QWidget *parent, const char *name) : 
+  KLined (parent, name)
 {
   id = ID;
   setText (text);
@@ -75,8 +76,8 @@ void KToolBarCombo::enable (bool enable)
 }
 
 
-KToolBarButton::KToolBarButton( QPixmap& pixmap, int ID,
-		QWidget *parent, char *name) : KButton( parent, name )
+KToolBarButton::KToolBarButton( const QPixmap& pixmap, int ID,
+		QWidget *parent, const char *name) : KButton( parent, name )
 {
   resize(24,24);
   id = ID;
@@ -136,7 +137,7 @@ void KToolBarButton::toggle()
   repaint();
 }
 
-void KToolBarButton::setPixmap( QPixmap &pixmap )
+void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
@@ -199,7 +200,7 @@ void KToolBarButton::paletteChange(const QPalette &)
     }
 }
   bool doUpdate=false;
-KToolBarButton::KToolBarButton( QWidget *parentWidget, char *name )
+KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
   : KButton( parentWidget , name)
 {
   resize(6,6);
@@ -233,7 +234,7 @@ void KToolBarButton::ButtonToggled()
   emit toggled(id);
 }
 
-KToolBar::KToolBar(QWidget *parent, char *name)
+KToolBar::KToolBar(QWidget *parent, const char *name)
   : QFrame( parent, name )
 {
   init();
@@ -729,7 +730,7 @@ void KToolBar::ButtonReleased( int id )
 /***** BUTTONS *****/
 
 /// Inserts a button.
-int KToolBar::insertButton( QPixmap& pixmap, int id, bool enabled,
+int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
 			    const char *tooltiptext, int index )
 {
   KToolBarButton *button = new KToolBarButton( pixmap, id, this );
@@ -752,7 +753,7 @@ int KToolBar::insertButton( QPixmap& pixmap, int id, bool enabled,
 
 /// Inserts a button with connection.
 
-int KToolBar::insertButton( QPixmap& pixmap, int id, const char *signal,
+int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 			    const QObject *receiver, const char *slot, bool enabled,
 			    const char *tooltiptext, int index )
 {
@@ -1005,7 +1006,7 @@ void KToolBar::alignItemRight(int id, bool yes)
 }
 
 /// Butoons
-void KToolBar::setButtonPixmap( int id, QPixmap& _pixmap )
+void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
   for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
     if (getID(b) == id )
@@ -1245,7 +1246,7 @@ bool KToolBar::enable(BarStatus stat)
 /***********    O L D     I N T E R F A C E   ************/
 /*********************************************************/
 
-int KToolBar::insertItem(QPixmap& _pixmap, int _ID, bool enabled,
+int KToolBar::insertItem(const QPixmap& _pixmap, int _ID, bool enabled,
                char *ToolTipText, int index)
 
 {
@@ -1253,7 +1254,7 @@ int KToolBar::insertItem(QPixmap& _pixmap, int _ID, bool enabled,
   return (this->insertButton (_pixmap, _ID, enabled, ToolTipText, index));
 }
 
-int KToolBar::insertItem(QPixmap& _pixmap, int _ID, const char *signal,
+int KToolBar::insertItem(const QPixmap& _pixmap, int _ID, const char *signal,
                const QObject *receiver, const char *slot,
                bool enabled,
                char *tooltiptext, int index)
@@ -1262,8 +1263,7 @@ int KToolBar::insertItem(QPixmap& _pixmap, int _ID, const char *signal,
   return (this->insertButton (_pixmap, _ID, signal, receiver, slot, enabled, tooltiptext, index));
 }
 
-void KToolBar::setItemPixmap( int _id, QPixmap& _pixmap )
-
+void KToolBar::setItemPixmap( int _id, const QPixmap& _pixmap )
 {
   warning ("KToolBar: setItemPixmap is obsolete. Use setButtonPixmap");
   this->setButtonPixmap (_id, _pixmap);
