@@ -24,7 +24,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \
-	kdatepicktest kdialogbasetest \
+	kdatepicktest kdatewidgettest kdialogbasetest \
 	kdockwidgetdemo kdockwidgettest \
 	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
@@ -52,6 +52,7 @@ kcolortest_SOURCES = kcolortest.cpp
 kcomboboxtest_SOURCES = kcomboboxtest.cpp
 kcompletiontest_SOURCES = kcompletiontest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
+kdatewidgettest_SOURCES = kdatewidgettest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
 kedittest_SOURCES = kedittest.cpp
