@@ -1,6 +1,14 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.2  - 14 Oct 1998 (Waldo Bastian)
+--------------
+
+Efficiency improvement for text handling:
+A paragraph of text is now put in a single HTMLTextMaster object which
+spawns off HTMLTextSlave objects during layout for each line in the paragraph.
+Text selection is now reasonable fast. 
+
 Version 0.13.2  - 1 Oct 1998 (Waldo Bastian)
 --------------
 

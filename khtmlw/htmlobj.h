@@ -86,6 +86,15 @@ public:
      * width and height.
      */
     virtual void calcSize( HTMLClue * = 0L ) { }
+
+    /*
+     * This function should cause the HTMLObject to break itself up so 
+     * that it will fit within the given length. Only usefull for text.
+     * If 'startOfLine' is 'false', this function may return 'false' to 
+     * indicate it is not possible to use the specified 'widthLeft'.
+     */
+    virtual bool fitLine( bool startOfLine, int widthLeft ) 
+    { return true; }
     
     /*
      * This function forces a size calculation for objects which
@@ -222,22 +231,27 @@ public:
     void setYPos( int _y ) { y=_y; }
 
     enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-			FixedWidth = 0x08, Aligned = 0x10,
-			Printed = 0x20 };
+			AllSelected = 0x08, FixedWidth = 0x10, Aligned = 0x20,
+			Printed = 0x40, AutoDelete = 0x80};
 
     bool isSeparator() const { return flags & Separator; }
     bool isNewline() const { return flags & NewLine; }
     bool isSelected() const { return flags & Selected; }
+    bool isAllSelected() const { return flags & AllSelected; }
     bool isFixedWidth() const { return flags & FixedWidth; }
     bool isAligned() const { return flags & Aligned; }
     bool isPrinted() const { return flags & Printed; }
+    bool isAutoDelete() const { return flags & AutoDelete; }
+    virtual bool isSlave() const { return 0; }
     
     void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
     void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
     void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
+    void setAllSelected( bool s ) { s ? flags|=AllSelected : flags&=~AllSelected; }
     void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
     void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
+    void setAutoDelete( bool p ) { p ? flags|=AutoDelete : flags&=~AutoDelete; }
     
     /*
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
@@ -287,12 +301,31 @@ protected:
 
 //-----------------------------------------------------------------------------
 
+class HTMLHSpace : public HTMLObject
+{
+public:
+
+    HTMLHSpace( const HTMLFont *, QPainter * );
+    virtual ~HTMLHSpace() { }
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	    int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *, int _tx, int _ty );
+
+    virtual void recalcBaseSize( QPainter *_painter );
+    virtual void getSelectedText( QString & );
+protected:
+    const HTMLFont *font;
+};
+//-----------------------------------------------------------------------------
+
+class HTMLTextSlave;
 class HTMLText : public HTMLObject
 {
+	friend HTMLTextSlave;
 public:
     HTMLText( const char*, const HTMLFont *, QPainter * ,bool _autoDelete=FALSE);
     HTMLText( const HTMLFont *, QPainter * );
-    virtual ~HTMLText() { if (autoDelete) delete [] text; }
+    virtual ~HTMLText();
 
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
@@ -310,11 +343,61 @@ protected:
 protected:
     const char* text;
     const HTMLFont *font;
-    // This is a rediculous waste of memory, but I can't think of another
-    // way at the moment.
     short selStart;
     short selEnd;
-    bool autoDelete;
+};
+
+class HTMLTextMaster : public HTMLText
+{
+	friend HTMLTextSlave;
+public:
+    HTMLTextMaster( const char* _text, const HTMLFont *_font, 
+    				QPainter *_painter, bool _autoDelete=FALSE);
+    	             
+    virtual int  calcMinWidth() { return minWidth; }
+    virtual int  calcPreferredWidth() { return prefWidth; }
+    virtual bool fitLine( bool startOfLine, int widthLeft );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+					    int _height, int _tx, int _ty, bool toPrinter )
+	    { return false; } // Dummy
+    virtual void print( QPainter *, int _tx, int _ty )
+    	{ } // Dummy
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+							 int _y1, int _x2, int _y2, int _tx, int _ty )
+		{ return false; } // Dummy
+protected:
+	int minWidth;
+	int prefWidth;  
+	int strLen;  
+};
+
+class HTMLTextSlave : public HTMLObject
+{
+public:
+    HTMLTextSlave( HTMLTextMaster *_owner, short _posStart, short _posLen);
+    virtual bool fitLine( bool startOfLine, int widthLeft );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & ) { }; // Handled by master
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	    int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *, int _tx, int _ty );
+    virtual int  calcMinWidth() { return 0; }
+    virtual int  calcPreferredWidth() { return 0; }
+
+    virtual bool selectText( const QRegExp &exp );
+    virtual bool isSlave() const { return 1; }
+
+    virtual const char* getURL() const { return owner->getURL(); }
+    virtual const char* getTarget() const { return owner->getTarget(); }
+
+protected:
+    int getCharIndex( int _xpos );
+
+protected:
+	HTMLTextMaster *owner;
+    short posStart;
+    short posLen;
 };
 
 //-----------------------------------------------------------------------------
@@ -322,12 +405,12 @@ protected:
 // This object is text which also has an associated link.  This data is
 // not maintained in HTMLText to conserve memory.
 //
-class HTMLLinkText : public HTMLText
+class HTMLLinkText : public HTMLTextMaster
 {
 public:
     HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
 	    char *_url, const char *_target, bool _autoDelete=FALSE )
-	: HTMLText( _str, _font, _painter,_autoDelete )
+	: HTMLTextMaster( _str, _font, _painter,_autoDelete )
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkText() { }
 

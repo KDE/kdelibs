@@ -147,7 +147,7 @@ void HTMLTokenizer::write( const char *str )
 	// do we need to enlarge the buffer?
 	if ( dest - buffer > size )
 	{
-	    char *newbuf = new char [ size + 1024 ];
+	    char *newbuf = new char [ size + 1024 + 20 ];
 	    memcpy( newbuf, buffer, dest - buffer + 1 );
 	    dest = newbuf + ( dest - buffer );
 	    delete [] buffer;
@@ -509,6 +509,7 @@ void HTMLTokenizer::write( const char *str )
 		}
 		else if ( !space )
 		{
+#if 0
 		    *dest = 0;
 		    appendToken( buffer, dest-buffer );
 		    dest = buffer;
@@ -517,7 +518,10 @@ void HTMLTokenizer::write( const char *str )
 		    *(dest+1) = 0;
 		    appendToken( buffer, 1 );
 		    dest = buffer;
-
+#else
+		    *dest = ' ';
+		    dest++;
+#endif
 		    space = true;
 		}
 	    }
@@ -548,6 +552,7 @@ void HTMLTokenizer::write( const char *str )
 	    }	
 	    else if ( !space )
 	    {
+#if 0
 		*dest = 0;
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
@@ -556,7 +561,10 @@ void HTMLTokenizer::write( const char *str )
 		*(dest+1) = 0;
 		appendToken( buffer, 1 );
 		dest = buffer;
-
+#else
+		*dest = ' ';
+		dest++;
+#endif
 		space = true;
 	    }
 	    src++;
@@ -584,6 +592,7 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    else if ( !space )
 	    {
+#if 0
 		*dest = 0;
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
@@ -592,7 +601,10 @@ void HTMLTokenizer::write( const char *str )
 		*(dest+1) = 0;
 		appendToken( buffer, 1 );
 		dest = buffer;
-
+#else
+		*dest = ' ';
+		dest++;
+#endif
 		space = true;
 	    }
 	    src++;

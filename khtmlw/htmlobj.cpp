@@ -143,7 +143,7 @@ void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     bool _select, int _tx, int _ty )
 {
     const char *u = getURL();
-    if ( u == 0 || *u == '\0' || _select == isSelected() )
+    if ( (u == 0) || (*u == '\0') || (_select == isSelected()) )
 	return;
 	
     setSelected( _select );
@@ -239,24 +239,89 @@ void HTMLVSpace::getSelectedText( QString &_str )
 }
 
 //-----------------------------------------------------------------------------
+HTMLHSpace::HTMLHSpace( const HTMLFont * _font, QPainter *_painter )
+	: HTMLObject()
+{
+    font = _font;
+    ascent = _painter->fontMetrics().ascent();
+    descent = _painter->fontMetrics().descent()+1;
+    width = _painter->fontMetrics().width( ' ' );
+    setSeparator( true );
+}
+
+void HTMLHSpace::recalcBaseSize( QPainter *_painter )
+{
+    const QFont &oldFont = _painter->font();
+    _painter->setFont( *font );
+    ascent = _painter->fontMetrics().ascent();
+    descent = _painter->fontMetrics().descent() + 1;
+    width = _painter->fontMetrics().width( ' ' );
+    _painter->setFont( oldFont );
+}
+
+void HTMLHSpace::getSelectedText( QString &_str )
+{
+    if ( isSelected() )
+    {
+        _str += ' ';
+    }
+}
+
+bool HTMLHSpace::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
+{
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
+	return false;
+
+    if ( toPrinter )
+    {
+	if ( _y + _height < y + descent )
+	    return true;
+	if ( isPrinted() )
+	    return false;
+	setPrinted( true );
+    }
+
+    print( _painter, _tx, _ty );
+
+    return false;
+}
+
+void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
+{
+    _painter->setFont( *font );
+    
+    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    {
+	_painter->fillRect( x + _tx, y - ascent + _ty,
+		width, ascent + descent, kapp->selectColor );
+	_painter->setPen( kapp->selectTextColor );
+    }
+    else
+    {
+        _painter->setPen( font->textColor() );
+    }
+    _painter->drawText( x + _tx, y + _ty, " ", 1);
+}
+
+//-----------------------------------------------------------------------------
 
 HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
                    ,bool _autoDelete)
     : HTMLObject()
 {
-    autoDelete=_autoDelete;
+    setAutoDelete(_autoDelete);
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent()+1;
     width = _painter->fontMetrics().width( (const char*)_text );
     selStart = 0;
-    selEnd = strlen( text );
+    selEnd = 0;
 }
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 {
-    autoDelete=false;
+    setAutoDelete(false);
     text = "";
     font = _font;
     ascent = _painter->fontMetrics().ascent();
@@ -266,6 +331,12 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     selStart = 0;
     selEnd = 0;
 }
+
+HTMLText::~HTMLText() 
+{ 
+    if (isAutoDelete()) delete [] text; 
+}     
+
 
 bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty )
@@ -328,18 +399,16 @@ bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	selEnd = strlen( text );
     }
 
-    if ( selectIt && selStart == selEnd )
+    if ( selectIt && (selStart == selEnd) )
 	selectIt = false;
 
-    if ( selectIt != isSelected() || oldSelStart != selStart ||
-	oldSelEnd != selEnd )
+    if ( (selectIt != isSelected()) || (oldSelStart != selStart) ||
+	(oldSelEnd != selEnd) )
     {
 	setSelected( selectIt );
 	_chain->push( this );
 	_htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
 	_chain->pop();
-//	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-//	print( _painter, _tx, _ty );
     }
 
     return selectIt;
@@ -460,6 +529,571 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
     {
 	_painter->drawText( x + _tx, y + _ty, text );
     }
+}
+
+//-----------------------------------------------------------------------------
+HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
+                                QPainter *_painter, bool _autoDelete)
+  : HTMLText( _text, _font, _painter, _autoDelete)
+{
+    int runWidth = 0;
+    const char *textPtr = _text;
+    QFontMetrics fm(*_font);
+
+    prefWidth = fm.width( (const char*)text );
+    width = 0;
+    minWidth = 0;
+    
+    while (*textPtr)
+    {
+         if (*textPtr != ' ')
+         {
+             runWidth += fm.width( *textPtr);
+         }
+         else
+         {
+             if (runWidth > minWidth)
+             {
+                 minWidth = runWidth;
+             }
+             runWidth = 0;
+         }
+         textPtr++;
+    }
+    if (runWidth > minWidth)
+    {
+        minWidth = runWidth;
+    }
+
+    strLen = strlen(text);
+    if ((strLen > 1) && (text[strLen-1] == ' '))
+    {
+    	// Convert trailing space to HTMLHSpace
+    	// Unless we are the last object, or another space follows
+    	if (next() && !next()->isSeparator())
+    	{
+    	    strLen--;	
+	    HTMLHSpace *HSpace = new HTMLHSpace( _font, _painter);
+	    HSpace->setNext(next());
+	    setNext(HSpace);
+    	}
+    } 
+}
+                                                                                                                 
+
+
+bool HTMLTextMaster::fitLine( bool startOfLine, 
+			      int widthLeft )
+{
+    int startPos;
+    
+    /* split ourselves up :) */
+    if ( isNewline() )
+    	return true;
+
+    // Set font settings in painter for correct width calculation
+//  painter->setFont( *font );
+
+    // Remove existing slaves	
+    HTMLObject *next_obj = next();
+    while (next_obj && next_obj->isSlave())
+    {
+    	setNext(next_obj->next());
+    	delete next_obj;
+    	next_obj = next();
+    }
+
+
+// Always skip a leading space, since it is already added as a HTMLHSpace
+
+//    if ((text[0] == ' ') && startOfLine && (widthLeft >= 0) )
+    if (text[0] == ' ')
+    {
+        // Skip leading space
+        startPos = 1;
+    }
+    else
+    {
+        // Don't skip leading space
+        startPos = 0;
+    }
+ 
+    // Turn all text over to our slave.
+    HTMLTextSlave *text_slave = new HTMLTextSlave( this, 
+    						   startPos, strLen);
+
+    text_slave->setNext(next());
+    setNext(text_slave);
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+HTMLTextSlave::HTMLTextSlave( HTMLTextMaster *_owner, 
+                              short _posStart, short _posLen) 
+        : owner(_owner), 
+          posStart(_posStart), 
+          posLen(_posLen)
+{
+    QFontMetrics fm (*(_owner->font));
+    ascent = _owner->getAscent();
+    descent = _owner->getDescent();
+    width = fm.width( (const char*) &(_owner->text[_posStart]), _posLen );
+}
+
+bool HTMLTextSlave::fitLine( bool startOfLine, 
+                             int widthLeft )
+{
+    int newLen;
+    int newWidth;
+
+    const char *text = owner->text;
+    // Set font settings in painter for correct width calculation
+    QFontMetrics fm( *(owner->font) );
+
+    // Remove existing slaves	
+    HTMLObject *next_obj = next();
+
+    if (next_obj && next_obj->isSlave())
+    {
+	// 
+	printf("TextSlave: recover layout\n");
+	do
+	{
+    	    setNext(next_obj->next());
+            delete next_obj;
+    	    next_obj = next();
+        }
+        while (next_obj && next_obj->isSlave());
+        posLen = owner->strLen-posStart;
+    }
+
+    if (startOfLine && (text[posStart] == ' ') && (widthLeft >= 0) )
+    {
+    	// Skip leading space
+    	posStart++;
+    	posLen--;
+    }
+    text += posStart;
+
+    width = fm.width( text, posLen ); 
+    if ((width <= widthLeft) || (posLen <= 1) || (widthLeft < 0) )
+    {
+        // Text fits completely 
+        return true;
+    }
+
+    char *splitPtr = index( text+1, ' ');
+
+    if (splitPtr)
+    {
+    	newLen = splitPtr - text;
+    	newWidth = fm.width( text, newLen);
+    	if (newWidth > widthLeft)
+    	{
+    	    // Splitting doesn't make it fit
+    	    splitPtr = 0;
+    	}
+    	else
+    	{
+	    int extraLen;
+            int extraWidth;
+            
+            for(;;)
+            {
+                char *splitPtr2 = index( splitPtr+1, ' ');
+                if (!splitPtr2)
+                    break;
+	    	extraLen = splitPtr2 - splitPtr;
+                extraWidth = fm.width( splitPtr, extraLen);
+                if (extraWidth+newWidth <= widthLeft)
+                {
+                    // We can break on the next seperator cause it still fits
+                    newLen += extraLen;
+                    newWidth += extraWidth;
+                    splitPtr = splitPtr2;    
+                }
+                else
+                {	
+                    // Using this seperator would over-do it.
+                    break;
+                }
+            }
+    	}	
+    }
+    
+    if (!splitPtr)
+    {
+    	// No seperator available
+    	if (startOfLine == false)
+    	{
+    	    // Text does not fit, wait for next line
+    	    return false;
+    	}
+    	// Make it fit :]
+    
+	int lastLen;
+	int lastWidth;
+
+	newLen = posLen;
+	newWidth = width;
+	
+//	printf("Make text fit: widthLeft = %d\n", widthLeft);
+
+//	printf("    newLen = %d, newWidth = %d\n", newLen, newWidth);
+    	do {
+    	    lastLen = newLen;
+    	    lastWidth = newWidth;
+    	
+    	    newLen = 1 + (lastLen * widthLeft) / lastWidth;
+    	    if (newLen >= lastLen)
+    	    {
+    	    	newLen = lastLen - 1;
+    	    }
+    	    newWidth = fm.width( text, newLen);
+//	    printf("    newLen = %d, newWidth = %d\n", newLen, newWidth);
+    	}
+    	while (( newWidth > widthLeft) && (newLen > 1));
+	// newLen & newWidth are valid
+    }
+
+    // Move remaining text to our text-slave
+    HTMLTextSlave *textSlave = new HTMLTextSlave( owner, 
+    	posStart + newLen, posLen - newLen);
+
+    textSlave->setNext(next());
+    setNext(textSlave);
+
+    posLen = newLen;
+    width = newWidth;
+
+    return true;
+}
+
+bool HTMLTextSlave::selectText( const QRegExp &exp )
+{
+    return owner->isSelected();
+}
+     
+// get the index of the character at _xpos.
+//
+int HTMLTextSlave::getCharIndex( int _xpos )
+{
+    int charWidth, index = 0, xp = 0;
+    const char *text = &(owner->text[ posStart]);
+
+    QFontMetrics fm( *(owner->font) );
+
+    while ( index < posLen )
+    {
+	charWidth = fm.width( text[ index ] );
+	if ( xp + charWidth/2 >= _xpos )
+	    break;
+	xp += charWidth;
+	index++;
+    }
+
+    return index;
+}
+
+
+bool HTMLTextSlave::selectText( KHTMLWidget *_htmlw, 
+                                        HTMLChain *_chain, 
+                                        int _x1, int _y1, 
+                                        int _x2, int _y2, 
+                                        int _tx, int _ty )
+{
+    // AAAAA
+    // A I B
+    // BBBBB
+    typedef enum { mstA, mstAandI, mstI, 
+    		   mstAandIandB, mstIandB, mstB 
+    		 } metaSelectionType; 
+    
+    metaSelectionType metaSelection;
+
+    short oldSelStart = owner->selStart;
+    short oldSelEnd = owner->selEnd;
+    short newSelStart = oldSelStart;
+    short newSelEnd = oldSelEnd;
+
+    if ( _y1 >= y + descent)
+    {
+	// Only lines behind us are selected
+	metaSelection = mstB;
+    }
+    else if ( _y2 <= y - ascent )
+    {
+    	// Only lines before us are selected
+	metaSelection = mstA;
+    }
+    // start and end are on this line
+    else if ( _y1 >= y - ascent && _y2 <= y + descent )
+    {
+	if ( _x1 > _x2 )
+	{
+	    int tmp = _x1;
+	    _x1 = _x2;
+	    _x2 = tmp;
+	}
+	if ( _x1 >= x + width)
+	{
+	    // Only text behind us is selected
+	    metaSelection = mstB;
+	}
+	else if ( _x2 <= x)
+	{
+	    // Only text in front of us is selected
+	    metaSelection = mstA;
+	}
+	else
+	{
+	    // We are (partly) selected
+	    if ( _x1 > x )
+	    {
+	        // There is no text in front of us selected
+	    	newSelStart = posStart+getCharIndex( _x1 - x );
+		if ( _x2 < x + width )
+		{
+		    newSelEnd = posStart + getCharIndex( _x2 - x );
+		    // There is no text in front or after us selected
+		    metaSelection = mstI;
+		}
+		else
+		{
+		    // There is also text behind us selected
+		    metaSelection = mstIandB;
+		}
+	    }
+	    else
+	    {
+	        // There is text in front of us selected
+		if ( _x2 < x + width )
+		{
+		    newSelEnd = posStart + getCharIndex( _x2 - x );
+		    // There is also text in front of us selected
+		    metaSelection = mstAandI;
+		}
+		else
+		{
+		    // There is also text in front and behind us selected
+		    metaSelection = mstAandIandB;
+		}
+	    }
+	}
+    }
+    // starts on this line and extends past it.
+    else if ( _y1 >= y - ascent && _y2 > y + descent )
+    {
+	if ( _x1 < x + width )
+	{
+	    // We are selected
+	    if ( _x1 > x )
+	    {
+		newSelStart = posStart + getCharIndex( _x1 - x );
+		// There is no text in front of us selected
+		metaSelection = mstIandB;
+	    }
+	    else
+	    {
+	    	// There is text in front of us selected as well
+	    	metaSelection = mstAandIandB;
+	    }
+	}
+	else
+	{
+	    // There is only text behind us selected
+	    metaSelection = mstB;
+	}
+    }
+    // starts before this line and ends on it.
+    else if ( _y1 < y - ascent && _y2 <= y + descent )
+    {
+	if ( _x2 > x )
+	{
+	    // We are selected
+	    if ( _x2 < x + width )
+	    {
+		newSelEnd = posStart+getCharIndex( _x2 - x );
+		// There is no text behind us selected
+		metaSelection = mstAandI;
+	    }
+	    else
+	    {
+	    	// There is text behind us selected as well
+	    	metaSelection = mstAandIandB;
+	    }
+	}
+	else
+	{
+	    // There is only text in front of us selected;
+	    metaSelection = mstA;
+	}
+    }
+    // starts before and ends after this line
+    else if ( _y1 < y - ascent && _y2 > y + descent )
+    {
+	metaSelection = mstAandIandB;
+    }
+
+    switch (metaSelection) 
+    {
+    case mstA:	
+    	    if (newSelEnd > posStart)
+    	        newSelEnd = posStart;
+    	    if (newSelStart > posStart)
+    	        newSelStart = posStart;
+	break;
+		
+    case mstB:  
+	    if (newSelEnd < posStart+posLen)
+ 		newSelEnd = posStart+posLen;
+	    if (newSelStart < posStart+posLen)
+    	        newSelStart = posStart+posLen;
+	break;    	
+
+    case mstAandI:
+    	if (newSelStart > posStart)
+    	    newSelStart = posStart; 	          
+	break;
+
+    case mstI:
+	break;
+
+    case mstIandB:
+    	if (newSelEnd < posStart+posLen)
+    	    newSelEnd = posStart+posLen; 	          
+	break;
+
+    case mstAandIandB:
+    	if (newSelStart > posStart)
+    	    newSelStart = posStart; 	          
+    	if (newSelEnd < posStart+posLen)
+    	    newSelEnd = posStart+posLen; 	          
+	break;
+
+    default:
+    	// Error	
+    	newSelStart = 0;
+    	newSelEnd = 0;
+	break;
+    }
+
+    bool selectIt;
+    bool selectItAll;
+
+    if (newSelStart == newSelEnd)
+    {
+    	selectIt = false;
+    	selectItAll = false;
+	newSelStart = 0;
+	newSelEnd = 0;
+    }
+    else
+    {
+    	selectIt = (newSelStart < (posStart+posLen)) &&
+    		   (newSelEnd   > posStart);
+	selectItAll = (newSelStart <= posStart) &&
+		      (newSelEnd >= posStart+posLen);
+    }
+
+    if ( (selectIt != isSelected()) || (selectItAll != isAllSelected()) ||
+        (oldSelStart != newSelStart) || (oldSelEnd != newSelEnd) )
+    {
+	owner->selStart = newSelStart;
+	owner->selEnd = newSelEnd;
+	owner->setSelected( newSelStart != newSelEnd );
+	setSelected( selectIt );
+	setAllSelected( selectItAll );
+	_chain->push( this );
+	_htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
+	_chain->pop();
+    }
+
+    return selectIt;
+}
+
+bool HTMLTextSlave::print( QPainter *_painter, 
+                                   int _x, int _y, 
+                                   int _width, int _height, 
+                                   int _tx, int _ty, bool toPrinter )
+{
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
+	return false;
+
+    if ( toPrinter )
+    {
+	if ( _y + _height < y + descent )
+	    return true;
+	if ( isPrinted() )
+	    return false;
+	setPrinted( true );
+    }
+
+    print( _painter, _tx, _ty );
+
+    return false;
+}
+
+void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
+{
+    const char *text;
+    const HTMLFont *font;
+
+    text = &(owner->text[posStart]);
+    font = owner->font;
+
+    _painter->setPen( font->textColor() );
+    _painter->setFont( *font );
+    
+    if ( owner->isSelected() && _painter->device()->devType() != PDT_PRINTER )
+    {
+    	if (isSelected())
+    	{
+    	    if (isAllSelected())
+    	    {
+	    	int fillStart = 0;
+	        int fillEnd = _painter->fontMetrics().width( text, posLen );
+	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
+		    fillEnd - fillStart, ascent + descent, kapp->selectColor );
+	        _painter->setPen( kapp->selectTextColor );
+	        _painter->drawText( x + _tx + fillStart, y + _ty, text,
+	            posLen );
+	        return;
+    	    }
+    	    else
+    	    {
+	    	short selStart = owner->selStart - posStart;
+    		short selEnd = owner->selEnd - posStart;
+    	
+		// (partly) selected
+		if (selEnd > posLen)
+	    	    selEnd = posLen;
+	    	else if (selEnd < 0)
+	    	    selEnd = 0;
+
+	    	if (selStart < 0)
+	    	    selStart = 0;
+	    	else if (selStart > posLen)
+	    	    selStart = posLen;
+	    	
+		_painter->setPen( font->textColor() );
+	    	_painter->drawText( x + _tx, y + _ty, text, selStart );
+	    	int fillStart = _painter->fontMetrics().width( text, selStart );
+	        int fillEnd = _painter->fontMetrics().width( text, selEnd );
+	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
+		    fillEnd - fillStart, ascent + descent, kapp->selectColor );
+	        _painter->setPen( kapp->selectTextColor );
+	        _painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
+	            selEnd - selStart );
+	        _painter->setPen( font->textColor() );
+	        _painter->drawText( x + _tx + fillEnd, y + _ty, text + selEnd, posLen - selEnd );
+	        return;
+	    } 
+	}
+    }
+
+    _painter->setPen( font->textColor() );
+    _painter->drawText( x + _tx, y + _ty, text, posLen );
 }
 
 //-----------------------------------------------------------------------------

@@ -1295,7 +1295,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     // make sure children are properly sized
     setMaxWidth( max_width );
 
-    HTMLClue::calcSize( this );
+    HTMLClue::calcSize( parent );
     
     HTMLObject *obj;
     int lmargin = 0;
@@ -1311,6 +1311,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     int d = 0;
     for ( obj = head; obj != 0; obj = obj->next() )
     {
+    	obj->fitLine( true, -1);
 	obj->setXPos( width );
 	width += obj->getWidth();
 	if ( obj->getAscent() > a )
@@ -1441,7 +1442,7 @@ void HTMLClueFlow::getSelectedText( QString &_str )
 // 
 void HTMLClueFlow::calcSize( HTMLClue *parent )
 {
-//    HTMLClue::calcSize( this );
+//    HTMLClue::calcSize( parent );
 
     HTMLObject *obj = head;
     HTMLObject *line = head;
@@ -1532,7 +1533,13 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		    !run->isAligned() )
 	    {
 		run->setMaxWidth( rmargin - lmargin );
-		run->calcSize();
+		if (run->fitLine( (run == line), 
+				  rmargin-lmargin-runWidth) == false)
+		{
+		    newLine = true;
+		    break;		
+		}
+		run->calcSize(parent);
 		runWidth += run->getWidth();
 
 		// If this run cannot fit in the allowed area, break it
@@ -1727,6 +1734,27 @@ int HTMLClueFlow::findPageBreak( int _y )
 
 int HTMLClueFlow::calcMinWidth()
 {
+#if 1
+    HTMLObject *obj;
+    int minWidth = 0;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+    {
+	int w = obj->calcMinWidth();
+	if ( w > minWidth )
+	    minWidth = w;
+    }
+	
+    minWidth += indent;	
+
+    if ( isFixedWidth() )
+    {
+        if (width > minWidth)
+            minWidth = width;
+    }
+
+    return minWidth;
+#else
     HTMLObject *obj = head;
     int minWidth = 0;
     int ow, runWidth = 0;
@@ -1769,6 +1797,7 @@ int HTMLClueFlow::calcMinWidth()
     }
 
     return minWidth + indent;
+#endif
 }
 
 int HTMLClueFlow::calcPreferredWidth()
@@ -1822,9 +1851,9 @@ void HTMLClueAligned::setMaxWidth( int _max_width )
 
 // HTMLClueAligned behaves like a HTMLClueV
 //
-void HTMLClueAligned::calcSize( HTMLClue * )
+void HTMLClueAligned::calcSize( HTMLClue *parent )
 {
-    HTMLClue::calcSize( this );
+    HTMLClue::calcSize( parent );
 
     HTMLObject *obj;
 
