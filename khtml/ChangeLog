@@ -1,3 +1,8 @@
+2003-12-27  Simon Perreault  <nomis80@nomis80.org>
+
+	* khtml_part.cpp: Remove unused zoom actions. Assign CTRL + Key_Plus to
+	zooming in and CTRL + Key_Minus to zooming out.
+
 2003-12-27  Luis Pedro Coelho <luis@luispedro.org>
 
         * misc/loader.cpp : Discard items from cache if they have the wrong type (#68181)

@@ -1218,8 +1218,6 @@ private slots:
 
   void slotIncZoom();
   void slotDecZoom();
-  void slotIncZoomFast();
-  void slotDecZoomFast();
 
   void slotLoadImages();
   void slotWalletClosed();

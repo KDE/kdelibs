@@ -308,19 +308,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
 
   d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
+  d->m_paIncZoomFactor->setShortcut( CTRL + Key_Plus );
   d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
                                             "Make the font in this window bigger. "
 					    "Click and hold down the mouse button for a menu with all available font sizes." ) );
   d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
+  d->m_paDecZoomFactor->setShortcut( CTRL + Key_Minus );
   d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                             "Make the font in this window smaller. "
 					    "Click and hold down the mouse button for a menu with all available font sizes." ) );
-  /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom In Fast"),
-				CTRL + Key_Plus, this, SLOT(slotIncZoomFast()),
-				actionCollection(), "incZoomFast");
-  /*KAction *decZoomFactorFast = */new KAction(i18n("Zoom Out Fast"),
-				CTRL + Key_Minus, this, SLOT(slotDecZoomFast()),
-				actionCollection(), "decZoomFast");
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
   d->m_paFind->setWhatsThis( i18n( "Find text<p>"
@@ -4773,51 +4769,29 @@ static const int zoomSizeCount = (sizeof(zoomSizes) / sizeof(int));
 static const int minZoom = 20;
 static const int maxZoom = 300;
 
-// My idea of useful stepping ;-) (LS)
-static const int fastZoomSizes[] = { 20, 50, 75, 100, 150, 200, 300 };
-static const int fastZoomSizeCount = sizeof fastZoomSizes / sizeof fastZoomSizes[0];
-
 void KHTMLPart::slotIncZoom()
-{
-  zoomIn(zoomSizes, zoomSizeCount);
-}
-
-void KHTMLPart::slotDecZoom()
-{
-  zoomOut(zoomSizes, zoomSizeCount);
-}
-
-void KHTMLPart::slotIncZoomFast() {
-  zoomIn(fastZoomSizes, fastZoomSizeCount);
-}
-
-void KHTMLPart::slotDecZoomFast() {
-  zoomOut(fastZoomSizes, fastZoomSizeCount);
-}
-
-void KHTMLPart::zoomIn(const int stepping[], int count)
 {
   int zoomFactor = d->m_zoomFactor;
 
   if (zoomFactor < maxZoom) {
     // find the entry nearest to the given zoomsizes
-    for (int i = 0; i < count; ++i)
-      if (stepping[i] > zoomFactor) {
-        zoomFactor = stepping[i];
+    for (int i = 0; i < zoomSizeCount; ++i)
+      if (zoomSizes[i] > zoomFactor) {
+        zoomFactor = zoomSizes[i];
         break;
       }
     setZoomFactor(zoomFactor);
   }
 }
 
-void KHTMLPart::zoomOut(const int stepping[], int count)
+void KHTMLPart::slotDecZoom()
 {
     int zoomFactor = d->m_zoomFactor;
     if (zoomFactor > minZoom) {
       // find the entry nearest to the given zoomsizes
-      for (int i = count-1; i >= 0; --i)
-        if (stepping[i] < zoomFactor) {
-          zoomFactor = stepping[i];
+      for (int i = zoomSizeCount-1; i >= 0; --i)
+        if (zoomSizes[i] < zoomFactor) {
+          zoomFactor = zoomSizes[i];
           break;
         }
       setZoomFactor(zoomFactor);
