@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=MS Windows Media File
+Comment[de]=Microsoft Mediaplayer Datei
+Hidden=false
+Icon=video
+MimeType=video/x-ms-asf
+Patterns=*.asf;*.asx
+Type=MimeType
