@@ -1531,7 +1531,8 @@ static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
 
-    maxpmw = QMAX( maxpmw, 20 );
+    if (checkable)
+	maxpmw = QMAX( maxpmw, 20 );
 
     if ( p->font() == KGlobalSettings::generalFont() )
         p->setFont( KGlobalSettings::menuFont() );
