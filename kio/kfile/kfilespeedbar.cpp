@@ -80,7 +80,7 @@ void KFileSpeedBar::save( KConfig *config )
     {
         KConfigGroup conf( config, ConfigGroup );
         // write to kdeglobals
-        config->writeEntry( "Set speedbar defaults", false, true, true );
+        conf.writeEntry( "Set speedbar defaults", false, true, true );
     }
 
     writeConfig( config, "KFileDialog Speedbar" );
