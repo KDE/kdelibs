@@ -759,7 +759,7 @@ bool KZip::closeArchive()
 	extfield[8] = char(time >> 24);
 
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
-        bool ok = ( device()->writeBlock( buffer, bufferSize ) != bufferSize );
+        bool ok = ( device()->writeBlock( buffer, bufferSize ) == bufferSize );
         delete[] buffer;
         if ( !ok )
             return false;
