@@ -152,9 +152,12 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	if ( S_ISREG( buff.st_mode ))
 	  return *it;
     }
-    
-    debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
-          filename.ascii(), type.ascii());
+
+#ifndef NDEBUG
+    if(type != "locale")
+      debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
+            filename.ascii(), type.ascii());
+#endif    
           
     return QString::null;
 }
