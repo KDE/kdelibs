@@ -199,7 +199,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
 
-        if ( mode == KGlobalSettings::CompletionPopup )
+        else if ( mode == KGlobalSettings::CompletionPopup )
         {
             QString prev_txt = text();
             QLineEdit::keyPressEvent( e );
