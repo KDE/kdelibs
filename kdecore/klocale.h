@@ -460,7 +460,7 @@ public:
    * @since 3.1
    */
   int weekStartDay() const;
-  
+
   /**
    * @deprecated
    *
@@ -489,7 +489,7 @@ public:
   QString monthNamePossessive(int i, bool shortName = false) const KDE_DEPRECATED;
 
   /**
-   * @deprecated
+   * @deprecated use calendar()->weekDayName
    *
    * Returns a string containing the name of the week day used in the Gregorian calendar.
    *
@@ -519,7 +519,7 @@ public:
 
   /**
    * Changes the current calendar system to the calendar specified.
-   * Currently is "gregorian" and "hijri" supported. If the calendar 
+   * Currently is "gregorian" and "hijri" supported. If the calendar
    * system specified is not found, gregorian will be used.
    *
    * @param calendarType the name of the calendar type
