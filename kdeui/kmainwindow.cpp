@@ -458,6 +458,12 @@ void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
     }
 
     if( options & Save ){
+        // setupGUI() is typically called in the constructor before show(),
+        // so the default window size will be incorrect unless the application
+        // hard coded the size which they should try not to do (i.e. use 
+        // size hints).
+        if(!isShown())
+          adjustSize();
         setAutoSaveSettings();
     }
 
