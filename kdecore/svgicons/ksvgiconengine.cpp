@@ -24,8 +24,6 @@
 #include <qregexp.h>
 #include <qwmatrix.h>
 
-#include <iostream>
-
 #include <math.h>
 
 #include "ksvgiconpainter.h"
