@@ -1,0 +1,10 @@
+[Image Format]
+Type=TGA
+Header=^\x01\x01[\x02|\x0a]\x01\x01\x01\x01\x01\x01\x01\x01\x01
+Name=Truevision Targa image
+Read=true
+Write=true
+Suffices=tga,TGA
+Mimetype=image/x-targa
+Library=kimg_tga.la
+ 
