@@ -46,6 +46,7 @@ KJSO *KJS::toBoolean(KJSO *obj)
     {
     case Undefined:
     case Null:
+    case Error:
       b = false;
       break;
     case Boolean:
@@ -77,6 +78,7 @@ KJSO *KJS::toNumber(KJSO *obj)
   switch (obj->type())
     {
     case Undefined:
+    case Error:
       d = NaN;
       break;
     case Null:
@@ -138,6 +140,7 @@ KJSO *KJS::toString(KJSO *obj)
   switch (obj->type())
     {
     case Undefined:
+    case Error:
       c = "undefined";
       break;
     case Null:
@@ -177,6 +180,7 @@ KJSO *KJS::toObject(KJSO *obj)
   switch (obj->type())
     {
     case Undefined:
+    case Error:
       return new KJSError(ErrUndefToObject, o);
     case Null:
       return new KJSError(ErrNullToObject, o);
