@@ -584,7 +584,7 @@ void HTMLTokenizer::write( const char *str )
 		if (!discard)
 		    pending = SpacePending;
 	    }
-	    else if ( pre)
+	    else if ( pre || textarea)
 	    {
 	    	if (!discard)
 	    	{
