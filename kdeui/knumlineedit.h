@@ -27,10 +27,15 @@
 
 /**
   LineEdit for integer data.  Uses KIntValidator validator class.
-  This class can use any numeric value between 2 and 36.
+  This class supports an optional enforced range, and can display the integer
+  in any base between 2 and 36.
+  The displayed value is validated in real time if possible, but there are
+  some situations where this cannot work.  Therefore, the display will
+  always be validated and fixed up when the widget loses focus.
 
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.2
+  @include knumlineedit.h
 */
 class KIntLineEdit : public KLineEdit {
 
@@ -40,7 +45,7 @@ class KIntLineEdit : public KLineEdit {
     /**
       Constructor.  The parameters are passed directly to the super class.
     */
-    KIntLineEdit ( QWidget * parent, const char * name=0 );
+    KIntLineEdit ( QWidget * parent, const char * name = 0 );
     /**
       Constructor.  The parent and name parameters are passed directly to the super class.
       @param value   Set the initial numeric value.
@@ -48,36 +53,39 @@ class KIntLineEdit : public KLineEdit {
       @param top     Set the maximum value allowed.
       @param base    Set the numeric base value.
     */
-    KIntLineEdit ( int value, QWidget * parent, int bottom = 0, int top = 0, int base= 10, const char * name=0 );
+    KIntLineEdit ( int value, QWidget * parent, int bottom = 0, int top = 0, int base = 10, const char * name = 0 );
     /**
       Destructor.
     */
     virtual ~KIntLineEdit ();
 
     /**
-      Set the minimum and maximum integer value allowed.
+      Set the minimum and maximum values allowed.
     */
     virtual void setRange(int bottom = 0, int top = 0);
     /**
-      Returns the current minimum value allowed.
+      Return the current minimum value allowed.
     */
     virtual int bottom() const;
     /**
-      Returns the current maximum value allowed.
+      Return the current maximum value allowed.
     */
     virtual int top() const;
 
     /**
-      Set the numeric base value.
+      Set the numeric base value.  This may be any number between 2 and 36.
     */
     virtual void setBase(int base = 10);
     /**
-      Returns the current numeric base value.
+      Return the current numeric base value.
     */
     virtual int base() const;
 
     /**
-      Returns the current validated numeric value.
+      Return the current validated numeric value.
+      The value returned will represent the displayed value, unless the displayed value
+      falls outside of the allowed range.  In other words, this function always returns
+      a validated integer, regardless of what is displayed.
     */
     virtual int value() const;
     /**
@@ -111,10 +119,16 @@ class KIntLineEdit : public KLineEdit {
 };
 
 /**
-  LineEdit for double data.  Uses KFloatValidator validator class.
+  LineEdit for double numeric data.  Uses KFloatValidator validator class.
+  This class supports an optional enforced range.
+  The data type used by this class is double.
+  The displayed value is validated in real time if possible, but there are
+  some situations where this cannot work.  Therefore, the display will
+  always be validated and fixed up when the widget loses focus.
 
   @author Glen Parker <glenebob@nwlink.com>
-  @version 0.0.2
+  @version 0.0.3
+  @include knumlineedit.h
 */
 class KFloatLineEdit : public KLineEdit {
 
@@ -138,19 +152,22 @@ class KFloatLineEdit : public KLineEdit {
     virtual ~KFloatLineEdit ();
 
     /**
-      Set the minimum and maximum integer value allowed.
+      Set the minimum and maximum values allowed.
     */
-    virtual void setRange(float bottom = 0, float top = 0);
+    virtual void setRange(double bottom = 0, double top = 0);
     /**
-      Returns the current minimum value allowed.
+      Return the current minimum value allowed.
     */
-    virtual float bottom() const;
+    virtual double bottom() const;
     /**
-      Returns the current maximum value allowed.
+      Return the current maximum value allowed.
     */
-    virtual float top() const;
+    virtual double top() const;
     /**
-      Returns the current validated numeric value.
+      Return the current validated numeric value.
+      The value returned will represent the displayed value, unless the displayed value
+      falls outside of the allowed range.  In other words, this function always returns
+      a validated number, regardless of what is displayed.
     */
     virtual double value() const;
 

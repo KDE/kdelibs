@@ -143,7 +143,7 @@ void KIntLineEdit::keyPressEvent ( QKeyEvent *e )
     break;
 
   default:
-    QLineEdit::keyPressEvent(e);
+    KLineEdit::keyPressEvent(e);
     break;
 
   }
@@ -152,7 +152,7 @@ void KIntLineEdit::keyPressEvent ( QKeyEvent *e )
 void KIntLineEdit::focusOutEvent ( QFocusEvent *e )
 {
   setValue(__value);
-  QLineEdit::focusOutEvent(e);
+  KLineEdit::focusOutEvent(e);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -181,17 +181,17 @@ KFloatLineEdit::KFloatLineEdit (  double value, QWidget * parent,
 KFloatLineEdit::~KFloatLineEdit ()
 {}
 
-void KFloatLineEdit::setRange(float bottom, float top)
+void KFloatLineEdit::setRange(double bottom, double top)
 {
   ((KFloatValidator*)validator())->setRange(bottom, top);
 }
 
-float KFloatLineEdit::bottom() const
+double KFloatLineEdit::bottom() const
 {
   return ((KFloatValidator*)validator())->bottom();
 }
 
-float KFloatLineEdit::top() const
+double KFloatLineEdit::top() const
 {
   return ((KFloatValidator*)validator())->top();
 }
@@ -255,7 +255,7 @@ void KFloatLineEdit::keyPressEvent ( QKeyEvent *e )
     break;
 
   default:
-    QLineEdit::keyPressEvent(e);
+    KLineEdit::keyPressEvent(e);
     break;
 
   }
@@ -264,7 +264,7 @@ void KFloatLineEdit::keyPressEvent ( QKeyEvent *e )
 void KFloatLineEdit::focusOutEvent ( QFocusEvent *e )
 {
   setValue(__value);
-  QLineEdit::focusOutEvent(e);
+  KLineEdit::focusOutEvent(e);
 }
 
 

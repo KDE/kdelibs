@@ -1,6 +1,6 @@
 /**********************************************************************
 **
-** $Id: $
+** $Id$
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 **
@@ -59,7 +59,7 @@ class KIntValidator : public QValidator {
     */
     virtual void fixup ( QString & ) const;
     /**
-      Set the minimum and maximum integer value allowed.
+      Set the minimum and maximum values allowed.
     */
     virtual void setRange ( int bottom, int top );
     /**
@@ -67,15 +67,15 @@ class KIntValidator : public QValidator {
     */
     virtual void setBase ( int base );
     /**
-      Returns the current minimum value allowed.
+      Return the current minimum value allowed.
     */
     virtual int bottom () const;
     /**
-      Returns the current maximum value allowed.
+      Return the current maximum value allowed.
     */
     virtual int top () const;
     /**
-      Returns the current numeric base.
+      Return the current numeric base.
     */
     virtual int base () const;
 
@@ -87,7 +87,7 @@ class KIntValidator : public QValidator {
 
 /**
   KFloatValidator - see QValidator for more details.
-  Extend the QValidator class to properly validate double numeric data.
+  Extends the QValidator class to properly validate double numeric data.
   This can be used by QLineEdit or subclass to provide validated text entry.
 
   @author Glen Parker <glenebob@nwlink.com>
@@ -117,15 +117,15 @@ class KFloatValidator : public QValidator {
     */
     virtual void fixup ( QString & ) const;
     /**
-      Set the minimum and maximum integer value allowed.
+      Set the minimum and maximum value allowed.
     */
     virtual void setRange ( double bottom, double top );
     /**
-      Returns the current minimum value allowed.
+      Return the current minimum value allowed.
     */
     virtual double bottom () const;
     /**
-      Returns the current maximum value allowed.
+      Return the current maximum value allowed.
     */
     virtual double top () const;
 
