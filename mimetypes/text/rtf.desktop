@@ -49,6 +49,7 @@ Comment[zu]=Isakhelo Sombhalo Ojulile
 Icon=wordprocessing
 Type=MimeType
 Patterns=*.rtf;*.RTF;
+X-KDE-text=true
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.rtf

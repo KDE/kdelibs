@@ -44,3 +44,4 @@ Comment[zu]=Iphepha Lesitayela Lokulandelanisa
 Icon=txt
 Type=MimeType
 Patterns=*.css;*.CSSL;
+X-KDE-text=true
