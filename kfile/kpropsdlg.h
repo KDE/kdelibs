@@ -160,7 +160,7 @@ public:
   /**
    * @return a pointer to the dialog
    */
-  KDialogBase* dialog() const { return tab; }
+  KDialogBase* dialog() const { return m_tab; }
 
   /**
    * If we are building this dialog from a template,
@@ -233,12 +233,12 @@ private:
   /**
    * List of all pages inserted ( first one first )
    */
-  QList<KPropsPage> pageList;
+  QList<KPropsPage> m_pageList;
 
   /**
    * The dialog
    */
-  KDialogBase *tab;
+  KDialogBase *m_tab;
 
 private slots:
   void slotDeleteMyself();
@@ -347,7 +347,8 @@ protected:
   void displaySize( unsigned long size );
 
 protected slots:
-  void slotRenameFinished( KIO::Job * );
+  void slotCopyFinished( KIO::Job * );
+  void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
   void slotDirSizeFinished( KIO::Job * );
 
 private:

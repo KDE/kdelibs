@@ -153,32 +153,32 @@ KPropertiesDialog::KPropertiesDialog( const KURL& _tempUrl, const KURL& _current
 
 void KPropertiesDialog::init()
 {
-  pageList.setAutoDelete( true );
+  m_pageList.setAutoDelete( true );
 
-  tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties Dialog" ),
+  m_tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties Dialog" ),
 			 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, 0L, "propsdlg", false );
 
   // Matthias: let the dialog look like a modal dialog
-  XSetTransientForHint(qt_xdisplay(), tab->winId(), tab->winId());
+  XSetTransientForHint(qt_xdisplay(), m_tab->winId(), m_tab->winId());
 
-  tab->setGeometry( tab->x(), tab->y(), 400, 400 );
+  m_tab->setGeometry( m_tab->x(), m_tab->y(), 400, 400 );
 
   insertPages();
 
-  connect( tab, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
-  connect( tab, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
+  connect( m_tab, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
+  connect( m_tab, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
 
-  tab->resize(tab->sizeHint());
-  tab->show();
+  m_tab->resize(m_tab->sizeHint());
+  m_tab->show();
 }
 
 
 KPropertiesDialog::~KPropertiesDialog()
 {
-  pageList.clear();
+  m_pageList.clear();
   // HACK
   if ( m_bMustDestroyItems ) delete m_items.first();
-  delete tab;
+  delete m_tab;
   delete d;
 }
 
@@ -189,7 +189,7 @@ void KPropertiesDialog::slotDeleteMyself()
 
 void KPropertiesDialog::addPage(KPropsPage *page)
 {
-  pageList.append( page );
+  m_pageList.append( page );
 }
 
 bool KPropertiesDialog::canDisplay( KFileItemList _items )
@@ -210,7 +210,7 @@ void KPropertiesDialog::slotApply()
   // This is because in case of renaming a file, KFilePropsPage will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
-  for ( page = pageList.first(); page != 0L; page = pageList.next() )
+  for ( page = m_pageList.first(); page != 0L; page = m_pageList.next() )
     if ( page->isDirty() )
     {
       kdDebug( 1202 ) << "applying changes for " << page->className() << endl;
@@ -219,8 +219,8 @@ void KPropertiesDialog::slotApply()
     else
       kdDebug( 1202 ) << "skipping page " << page->className() << endl;
 
-  if ( pageList.first()->isA("KFilePropsPage") )
-    static_cast<KFilePropsPage *>(pageList.first())->postApplyChanges();
+  if ( m_pageList.first()->isA("KFilePropsPage") )
+    static_cast<KFilePropsPage *>(m_pageList.first())->postApplyChanges();
 
   emit applied();
   emit propertiesClosed();
@@ -241,43 +241,43 @@ void KPropertiesDialog::insertPages()
   if ( KFilePropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KFilePropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KFilePermissionsPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KFilePermissionsPropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KExecPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KExecPropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KApplicationPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KApplicationPropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KBindingPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KBindingPropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KURLPropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KURLPropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   if ( KDevicePropsPage::supports( m_items ) )
   {
     KPropsPage *p = new KDevicePropsPage( this );
-    pageList.append( p );
+    m_pageList.append( p );
   }
 
   //plugins
@@ -328,11 +328,11 @@ void KPropertiesDialog::insertPages()
     }
 
     KPropsPage *page = static_cast<KPropsPage *>( obj );
-    pageList.append( page );
+    m_pageList.append( page );
   }
 
   KPropsPage *page;
-  for (page = pageList.first(); page != 0L; page = pageList.next() )
+  for (page = m_pageList.first(); page != 0L; page = m_pageList.next() )
     connect( page, SIGNAL( changed() ),
 	     page, SLOT( setDirty() ) );
 }
@@ -460,10 +460,7 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   if ( filename.isEmpty() ) // no template
     filename = properties->kurl().filename();
   else
-  {
     m_bFromTemplate = true;
-    setDirty();
-  }
 
   // Make it human-readable (%2F => '/', ...)
   filename = KIO::decodeFileName( filename );
@@ -543,15 +540,15 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
 					item->mode(),
 					true )->icon( properties->kurl(),
                                                       properties->kurl().isLocalFile() );
-    if ( bDesktopFile )
+    if ( bDesktopFile && properties->kurl().isLocalFile() )
     {
-      KSimpleConfig config( path );
+      KSimpleConfig config( properties->kurl().path() );
       config.setDesktopGroup();
       iconStr = config.readEntry( QString::fromLatin1("Icon") );
     }
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
-    connect( iconButton, SIGNAL( iconChanged(QString &) ),
+    connect( iconButton, SIGNAL( iconChanged(QString) ),
 	     this, SIGNAL( changed() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
@@ -708,79 +705,36 @@ void KFilePropsPage::applyChanges()
   else
     n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
 
-  KIO::Job * job = 0L;
   // Do we need to rename the file ?
   if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
+    KIO::Job * job = 0L;
     KURL oldurl = properties->kurl();
     // Tell properties. Warning, this changes the result of properties->kurl() !
     properties->rename( n );
     kdDebug(1202) << "New URL = " << properties->kurl().url() << endl;
+    kdDebug(1202) << "old = " << oldurl.url() << endl;
 
     // Don't remove the template !!
-    if ( !m_bFromTemplate ) { // (normal renaming)
+    if ( !m_bFromTemplate ) // (normal renaming)
         job = KIO::move( oldurl, properties->kurl() );
-        connect( job, SIGNAL( result( KIO::Job * ) ),
-                 SLOT( slotRenameFinished( KIO::Job * ) ) );
-        kdDebug(1202) << "oldpath = " << oldurl.url() << endl;
-        kdDebug(1202) << "newpath = " << properties->kurl().url() << endl;
-    } else // (writing stuff from a template)
-    {
-        bool bOk;
-        do {
-            // No support for remote urls
-            // We could, but first I'd like to see WHO needs that.
-            if ( !properties->kurl().isLocalFile() )
-            {
-                KMessageBox::error( 0, i18n( "Can't generate a remote file from a template (not implemented)" ) );
-                return;
-            }
-            // We need to check that the destination doesn't exist
-            QString path = properties->kurl().path();
-            bOk = true;
-            struct stat buff;
-            if ( ::stat( QFile::encodeName(path), &buff ) != -1 )
-            {
-                QString newDest;
-                KIO::RenameDlg_Result res = KIO::open_RenameDlg(
-                    i18n("File already exists"),
-                    oldurl.prettyURL(),
-                    path,
-                    (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE),
-                    newDest,
-                    (unsigned long)-1, //unknown (we would need to stat the template too)
-                    buff.st_size,
-                    (time_t)-1, //unknown
-                    buff.st_ctime,
-                    (time_t)-1, //unknown
-                    buff.st_mtime);
+    else // Copying a template
+      job = KIO::copy( oldurl, properties->kurl() );
 
-                switch (res) {
-                    case KIO::R_RENAME:
-                        properties->updateUrl( newDest );
-                        bOk = false; // we need to check this new dest...
-                        break;
-                    case KIO::R_OVERWRITE:
-                        break; //just do it
-                    case KIO::R_CANCEL:
-                    default:
-                        return;
-                }
-            }
-        } while (!bOk);
-    }
-  }
-
-
-  // If we launched a job, wait for it to finish
-  // Otherwise, we can go on straight away
-  if (job)
+    connect( job, SIGNAL( result( KIO::Job * ) ),
+             SLOT( slotCopyFinished( KIO::Job * ) ) );
+    connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
+             SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
     // wait for job
     qApp->enter_loop();
+  }
   else
-    slotRenameFinished( 0L );
+  {
+    // No job, keep going
+    slotCopyFinished( 0L );
+  }
 }
 
-void KFilePropsPage::slotRenameFinished( KIO::Job * job )
+void KFilePropsPage::slotCopyFinished( KIO::Job * job )
 {
   if (job)
   {
@@ -846,6 +800,14 @@ void KFilePropsPage::slotRenameFinished( KIO::Job * job )
     cfg.writeEntry( QString::fromLatin1("Icon"), sIcon );
     cfg.sync();
   }
+}
+
+void KFilePropsPage::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
+{
+    kdDebug(1203) << "KFilePropsPage::slotFileRenamed " << newUrl.url() << endl;
+    // This is called in case of an existing local file during the copy/move operation,
+    // if the user chooses Rename.
+    properties->updateUrl( newUrl );
 }
 
 void KFilePropsPage::postApplyChanges()
@@ -1105,7 +1067,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   }
   else if ((groupList.count() > 1) && isMyFile && isLocal)
   {
-    grpCombo = new QComboBox(gb);
+    grpCombo = new QComboBox(gb, "combogrouplist");
     grpCombo->insertStringList(groupList);
     grpCombo->setCurrentItem(groupList.findIndex(strGroup));
     gl->addWidget(grpCombo, 2, 1);
