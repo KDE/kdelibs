@@ -60,7 +60,7 @@ public:
     void setCookie( const DOMString &);
 
     HTMLElementImpl *body();
-    void setBody(HTMLElementImpl *_body);
+    void setBody(HTMLElementImpl *_body, int& exceptioncode);
 
     virtual Tokenizer *createTokenizer();
 

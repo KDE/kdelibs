@@ -25,6 +25,7 @@
 #include "html_document.h"
 #include "css/csshelper.h"
 #include "dom/html_misc.h"
+#include "dom/dom_exception.h"
 #include "xml/dom_textimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_miscimpl.h"
@@ -133,7 +134,10 @@ HTMLElement HTMLDocument::body() const
 void HTMLDocument::setBody(const HTMLElement &_body)
 {
     if (!impl) return;
-    ((HTMLDocumentImpl *)impl)->setBody(static_cast<HTMLElementImpl *>(_body.handle()));
+    int exceptioncode = 0;
+    ((HTMLDocumentImpl *)impl)->setBody(static_cast<HTMLElementImpl *>(_body.handle()), exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
     return;
 }
 
