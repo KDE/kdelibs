@@ -23,9 +23,6 @@
 1204	kdesktop
 
 1400	khelpcenter (kdebase)
-1401	khcclient (kdebase)
-1402	kmanbrowser (kdebase)
-1403	kinfobrowser (kdebase)
 
 1501	khexedit (kdeutils)
 1601	ark (kdeutils)
