@@ -216,7 +216,7 @@ void KHTMLView::init()
   resizeContents(clipper()->width(), clipper()->height());
 
   selection = 0;
-  
+
   khtml::Cache::init();
 }
 
@@ -244,7 +244,6 @@ void KHTMLView::clear()
 	emit textSelected( false );
     }
 
-    pressed = false;
 
     _baseURL = QString::null;
     _baseTarget = QString::null;
@@ -256,6 +255,8 @@ void KHTMLView::clear()
 
     //    m_strRedirectUrl = QString::null;
     //    m_delayRedirect = 0;
+
+    pressed = false;
 
     setVScrollBarMode(Auto);
     setHScrollBarMode(Auto);
@@ -1027,10 +1028,10 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     }
 
     // ### print selection
-    
+
     //if(selection) {
     //}
-    
+
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
@@ -1143,9 +1144,15 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	    if(selection) delete selection;
 	    selection = 0;
     	    if(innerNode) {
-	    selection = new Range;
-	    selection->setStart(innerNode, offset);
-	    selection->setEnd(innerNode, offset);
+		selection = new Range;
+		try {
+		    selection->setStart(innerNode, offset);
+		    selection->setEnd(innerNode, offset);
+		}
+		catch(...)
+		{
+		    printf("selection: catched range exception\n");
+		}
 	    }
 	    // ### emit some signal
 	}
@@ -1240,7 +1247,13 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     // selection stuff
     if( pressed ) {
-	selection->setEnd(innerNode, offset);
+	try {
+	    selection->setEnd(innerNode, offset);
+	}
+	catch(...)
+	{
+	    printf("selection: catched range exception\n");
+	}
     }
 }
 
@@ -1289,7 +1302,14 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), pressedTarget );
    }
 
-    selection->setEnd(innerNode, offset);
+    try {
+	selection->setEnd(innerNode, offset);
+    }
+    catch(...)
+    {
+	printf("selection: catched range exception\n");
+    }
+
     // ### delete selection in case start and end position are at the same point
 }
 

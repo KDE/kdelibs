@@ -26,6 +26,7 @@
 #include "dom_node.h"
 #include "dom_doc.h"
 #include "dom_string.h"
+#include "dom_text.h"
 #include "dom_exception.h"
 #include "dom_docimpl.h"
 #include <qstring.h>
@@ -129,7 +130,7 @@ Node Range::getCommonAncestorContainer() /*const*/
        return Node();
      }
     return commonAncestorContainer;
-    
+
 }
 
 bool Range::isCollapsed() const
@@ -150,7 +151,7 @@ void Range::setStart( const Node &refNode, long offset )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     while( !_tempNode.isNull() )
     {
         if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
@@ -158,13 +159,26 @@ void Range::setStart( const Node &refNode, long offset )
             _tempNode.nodeType() == Node::NOTATION_NODE ||
             _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
             throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-        
+
         _tempNode = _tempNode.parentNode();
     }
-    
-    if( offset < 0  ||  (unsigned)offset > refNode.childNodes().length() )
+
+    if( offset < 0 )
         throw DOMException( DOMException::INDEX_SIZE_ERR );
-    
+
+    if( !refNode.nodeType() == Node::TEXT_NODE )
+    {
+	if( (unsigned)offset > refNode.childNodes().length() )
+	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+    }
+    else
+    {
+	Text t;
+	t = refNode;
+	if( t.isNull() || (unsigned)offset > t.length() )
+	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+    }
+
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
@@ -172,7 +186,7 @@ void Range::setStart( const Node &refNode, long offset )
     startOffset = offset;
 
     _tempNode = refNode.parentNode();
-    Node rootContainer = getCommonAncestorContainer(); 
+    Node rootContainer = getCommonAncestorContainer();
     while( !_tempNode.isNull() )
     {
         if( _tempNode == rootContainer )
@@ -191,7 +205,7 @@ void Range::setEnd( const Node &refNode, long offset )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     while( !_tempNode.isNull() )
     {
         if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
@@ -208,12 +222,12 @@ void Range::setEnd( const Node &refNode, long offset )
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     endContainer = refNode;
     endOffset = offset;
 
     _tempNode = refNode.parentNode();
-    Node rootContainer = getCommonAncestorContainer(); 
+    Node rootContainer = getCommonAncestorContainer();
     while( !_tempNode.isNull() )
     {
         if( _tempNode == rootContainer )
@@ -232,7 +246,7 @@ void Range::setStartBefore( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     _tempNode = refNode.parentNode();
     while( !_tempNode.isNull() )
     {
@@ -254,7 +268,7 @@ void Range::setStartBefore( const Node &refNode )
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     try
     {
         setStart( refNode.parentNode(), refNode.index() );
@@ -282,7 +296,7 @@ void Range::setStartAfter( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     _tempNode = refNode.parentNode();
     while( !_tempNode.isNull() )
     {
@@ -304,7 +318,7 @@ void Range::setStartAfter( const Node &refNode )
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     try
     {
         setStart( refNode.parentNode(), refNode.index()+1 );
@@ -332,7 +346,7 @@ void Range::setEndBefore( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     _tempNode = refNode.parentNode();
     while( !_tempNode.isNull() )
     {
@@ -354,7 +368,7 @@ void Range::setEndBefore( const Node &refNode )
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     try
     {
         setEnd( refNode.parentNode(), refNode.index() );
@@ -382,7 +396,7 @@ void Range::setEndAfter( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     _tempNode = refNode.parentNode();
     while( !_tempNode.isNull() )
     {
@@ -404,7 +418,7 @@ void Range::setEndAfter( const Node &refNode )
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     try
     {
         setEnd( refNode.parentNode(), refNode.index()+1 );
@@ -431,7 +445,7 @@ void Range::collapse( bool toStart )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     if( toStart )   // collapse to start
     {
         endContainer = startContainer;
@@ -453,7 +467,7 @@ void Range::selectNode( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     _tempNode = refNode.parentNode();
     while( !_tempNode.isNull() )
     {
@@ -502,7 +516,7 @@ void Range::selectNodeContents( const Node &refNode )
     Node _tempNode = refNode;
     if( _tempNode.isNull() )
         throw RangeException( RangeException::NULL_NODE_ERR );
-    
+
     while( !_tempNode.isNull() )
     {
         if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
@@ -542,7 +556,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 {
     if( commonAncestorContainer.ownerDocument() != sourceRange.commonAncestorContainer.ownerDocument() )
         throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
-    
+
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
@@ -577,7 +591,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
         printf( "Function compareBoundaryPoints: No negative offsets allowed\n" );
         return 2;     // undocumented - should throw an exception here
     }
-    
+
     if( containerA == containerB )        // Case 1 in DOM2 pt. 8.5
     {
         if( offsetA < offsetB )  return -1;
@@ -596,7 +610,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
             }
             _tempNode = _tempNode.parentNode();
         }
-        
+
         _tempNode = containerA;           // Case 3 in DOM2 pt. 8.5
         while( !_tempNode.isNull() )
         {
@@ -625,7 +639,7 @@ void Range::deleteContents(  )
 {
 /*    if( isDetached() )
       throw DOMException( DOMException::INVALID_STATE_ERR );
-      
+
       try
       {
       }
@@ -696,23 +710,23 @@ void Range::detach(  )
     throw DOMException(DOMException::INVALID_STATE_ERR);
   else
     detached = true;
-  
-     
-     
+
+
+
 }
 
 DocumentFragment Range::masterTraverse(bool contentExtract)
 {
     /* function description easy case, startContainer == endContainer
      * If we have a text node simply clone/extract the contents between
-     * start & end and put them into the fragment 
+     * start & end and put them into the fragment
      * If we don't have a text node, find the offset and copy/clone the content
      * between the two offsets
      * We end with returning the fragment ofcourse
      */
   Node _clone;
   DocumentFragment _endFragment;
-  
+
   if(startContainer == endContainer)
     {
       if(startOffset == endOffset)            // we have a collapsed range
@@ -774,7 +788,7 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
   Node _tempCurrent = startContainer;
   Node _tempPartial;
   // we still have Node _clone!!
-  
+
   // Special case text is first:
   if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
@@ -798,14 +812,14 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         _clone = _tempCurrent.cloneNode(true);
       else
         _clone = _tempCurrent;   // is this enough? Don't we have to delete the node from the original tree??
-               
+
     }
 
   Node _tempParent;                       // we use this to traverse upwords trough the tree
   Node _cloneParent;                      // this one is used to copy the current parent
   Node _fragmentRoot;                     // this is eventually becomming the root of the DocumentFragment
-  
-  
+
+
   while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
     {                                  // we are in luck, all these node must be cloned because they are partially selected
       _tempParent = _tempCurrent.parentNode();
@@ -855,7 +869,7 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
   _tempCurrent = endContainer;
   Node _tempEnd;
   // we still have Node _clone!!
-  
+
   // Special case text is first:
   if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
@@ -884,10 +898,10 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
       else
         _clone = _tempCurrent.cloneNode(true);
     }
-  
-  
-  
-  
+
+
+
+
   while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
     {                                  // we are in luck, all these node must be cloned because they are partially selected
       _tempParent = _tempCurrent.parentNode();
@@ -911,10 +925,10 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
       Node _nextCurrent;
       Node _stopNode = _tempCurrent;
       _tempCurrent = _tempParent.firstChild();
-      
+
 
       _cloneParent.appendChild(_clone);
-      
+
       while( _tempCurrent != _stopNode && !_tempCurrent.isNull() )
         {
           _nextCurrent = _tempCurrent.nextSibling();
