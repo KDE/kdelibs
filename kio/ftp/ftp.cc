@@ -54,8 +54,6 @@
 #define FTP_LOGIN "anonymous"
 #define FTP_PASSWD "kde-user@kde.org"
 
-//const char* strnextchr( const char * p , char c );
-
 using namespace KIO;
 
 extern "C" { int kdemain(int argc, char **argv); }
@@ -1346,24 +1344,11 @@ void Ftp::get( const KURL & url, bool /*reload*/ )
 
   // Read the size from the response string
   if ( strlen( rspbuf ) > 4 && m_size == 0 ) {
-    // Patch from Alessandro Mirone <alex@greco2.polytechnique.fr>
-    /*
-    const char *p = rspbuf;
-    const char *oldp = 0L;
-    while ( *( p = strnextchr( p , '(' ) ) == '(' )
-    {
-      oldp = p;
-      p++;
-    }
-    p = oldp;
-    */
-    // end patch
-    // Same thing in one call, by David
     const char * p = strrchr( rspbuf, '(' );
     if ( p != 0L ) m_size = atol( p + 1 );
   }
 
-  m_bytesLeft = m_size - offset;
+  size_t bytesLeft = m_size - offset;
 
   totalSize( m_size );
   int processed_size = 0;
@@ -1372,22 +1357,39 @@ void Ftp::get( const KURL & url, bool /*reload*/ )
 
   char buffer[ 2048 ];
   QByteArray array;
+  QByteArray mimetypeBuffer;
 
   bool mimetypeEmitted = false;
 
-  while( m_bytesLeft > 0 )
+  while( bytesLeft > 0 )
   {
     int n = ftpRead( buffer, 2048 );
+    bytesLeft -= n;
 
-    array.setRawData(buffer, n);
+    // Buffer the first 1024 bytes for mimetype determination
     if ( !mimetypeEmitted )
     {
-      KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( array, url.fileName() );
-      mimeType( result->mimeType() );
-      mimetypeEmitted = true;
+      int oldSize = mimetypeBuffer.size();
+      mimetypeBuffer.resize(oldSize + n);
+      memcpy(mimetypeBuffer.data()+oldSize, buffer, n);
+
+      // Found enough data - or we're arriving to the end of the file -> emit mimetype
+      if (mimetypeBuffer.size() >= 1024 || bytesLeft <= 0)
+      {
+        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimetypeBuffer, url.fileName() );
+        kdDebug(7102) << "Emitting mimetype " << result->mimeType() << endl;
+        mimeType( result->mimeType() );
+        mimetypeEmitted = true;
+        data( mimetypeBuffer );
+        mimetypeBuffer.resize(0);
+      }
     }
-    data( array );
-    array.resetRawData(buffer, n);
+    else
+    {
+      array.setRawData(buffer, n);
+      data( array );
+      array.resetRawData(buffer, n);
+    }
 
     processed_size += n;
     time_t t = time( 0L );
@@ -1672,7 +1674,6 @@ bool Ftp::ftpSize( const QString & path, char mode )
 size_t Ftp::ftpRead(void *buffer, long len)
 {
   size_t n = ::read( sData, buffer, len );
-  m_bytesLeft -= n;
   return n;
 }
 
@@ -1680,17 +1681,4 @@ size_t Ftp::ftpWrite(void *buffer, long len)
 {
   return( ::write( sData, buffer, len ) );
 }
-
-// Patch from Alessandro Mirone <alex@greco2.polytechnique.fr>
-// Little helper function
-/*
-const char* strnextchr( const char * p , char c )
-{
-  while( *p != c && *p != 0L ) {
-    p++;
-  }
-  return p;
-}
-*/
-// end patch
 

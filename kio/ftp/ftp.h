@@ -248,7 +248,6 @@ private: // data members
   bool m_bPersistent;
 
   size_t m_size;
-  size_t m_bytesLeft;
 
 };
 
