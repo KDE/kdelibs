@@ -90,3 +90,8 @@ Open Question: The bPersistent flag doesn't seem to be used... could it be remov
 
 Open Question: Is the bNLS flag needed? Localised entries seem to be mostly
 usefull for default files, are they ever created by the suer itself?
+
+Open Question: Would it be worthwhile to lock a user option that is equal to the 
+default so that it doesn't change when the default changes?
+
+
