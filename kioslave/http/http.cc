@@ -538,7 +538,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   command += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
   command += _url.host();
   if (_url.port() != 0) {
-    bzero(c_buffer, 64);
+    memset(c_buffer, 0, 64);
     sprintf(c_buffer, ":%i", port);
     command += c_buffer;
   }
