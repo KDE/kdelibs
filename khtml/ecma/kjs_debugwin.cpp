@@ -85,8 +85,9 @@ QString SourceFile::getCode()
       if (data.size() == 0)
 	str = "";
       else
-	str = decoder->decode(data.data(),data.size());
+	str = decoder->decode(data.data(),data.size()) + decoder->flush();
       delete decoder;
+      return str;
     }
   }
 
