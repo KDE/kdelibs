@@ -41,6 +41,7 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstringhandler.h>
+#include <kstaticdeleter.h>
 
 template class QAsciiDict<QCString>;
 template class QList<KCmdLineArgs>;
@@ -103,6 +104,7 @@ KCmdLineArgsList *KCmdLineArgs::argsList = 0;
 int KCmdLineArgs::argc = 0;
 char **KCmdLineArgs::argv = 0;
 char *KCmdLineArgs::mCwd = 0;
+static KStaticDeleter <char> mCwdd;
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 bool KCmdLineArgs::ignoreUnknown = false;
@@ -162,7 +164,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 
    about = _about;
    parsed = false;
-   mCwd = new char [PATH_MAX+1];
+   mCwd = mCwdd.setObject(new char [PATH_MAX+1], true);
    getcwd(mCwd, PATH_MAX);
    if (!noKApp)
       KApplication::addCmdLineOptions();
@@ -257,7 +259,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    if (mCwd)
       delete [] mCwd;
 
-   mCwd = new char[qCwd.length()+1];
+   mCwd = mCwdd.setObject(new char[qCwd.length()+1], true);
    strncpy(mCwd, qCwd.data(), qCwd.length()+1);
 
    uint count;
