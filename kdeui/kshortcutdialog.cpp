@@ -166,6 +166,9 @@ void KShortcutDialog::updateShortcutDisplay()
 		m_adv->m_txtAlternate->setDefault( false );
 		this->setFocus();
 	}
+	
+	s[0].replace('&',"&&");
+	s[1].replace('&',"&&");
 
 	m_simple->m_txtShortcut->setText( s[0] );
 	m_adv->m_txtPrimary->setText( s[0] );
