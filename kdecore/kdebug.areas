@@ -43,6 +43,9 @@
 1903	kfind (KfindTabDialog::createQuery)
 2000	kfind
 
+# kdeadmin
+3000	ksysv (kdeadmin)
+
 # kdegraphics
 4300	kdvi (kdegraphics)
 
