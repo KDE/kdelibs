@@ -54,7 +54,7 @@ public:
    * Toggles the emission of the @ref readyRead() signal whenever the device
    * is ready for reading. This is useful if you want to know the first time
    * the device is ready for reading and you don't want to read it now.
-   * @param true to enable, false to disable the @ref readyRead() signal
+   * @param enable true to enable, false to disable the @ref readyRead() signal
    */
   virtual void enableRead(bool enable) = 0;
 
@@ -62,7 +62,7 @@ public:
    * Toggles the emission of the @ref readyWrite() signal whenever the device
    * is ready for writing. This is useful if you want to know the first time
    * the device is ready for writing and you don't want to write to it now.
-   * @param true to enable, false to disable the @ref readyWrite() signal
+   * @param enable true to enable, false to disable the @ref readyWrite() signal
    */
   virtual void enableWrite(bool enable) = 0;
 
