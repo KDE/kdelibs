@@ -35,10 +35,10 @@
 #include <qmap.h>
 #include <qcstring.h>
 
-#define CHARSETS_COUNT 32
+#define CHARSETS_COUNT 33
 
 static const char * const language_names[] = {
-    I18N_NOOP( "Other" ),
+	I18N_NOOP( "Other" ),
 	I18N_NOOP( "Arabic" ),
 	I18N_NOOP( "Baltic" ),
 	I18N_NOOP( "Central European" ),
@@ -53,7 +53,8 @@ static const char * const language_names[] = {
 	I18N_NOOP( "Turkish" ),
 	I18N_NOOP( "Western European" ),
 	I18N_NOOP( "Tamil" ),
-	I18N_NOOP( "Unicode" )
+	I18N_NOOP( "Unicode" ),
+	I18N_NOOP( "Northern Saami" )
 };
 
 // this list gives the charsets that can be used to display a file given in a certain encoding.
@@ -103,6 +104,7 @@ static const char* const charsets_for_encoding[] = {
     "euckr",                 "euckr","unicode","iso8859-1", 0,
     "tscii",                 "tscii", 0,
     "pt 154",                "pt 154","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
+    "winsami2",              "winsami2", "cp1252", "unicode", 0,
     0 }; // extra 0 for end
 
 // 0 other
@@ -121,6 +123,7 @@ static const char* const charsets_for_encoding[] = {
 // 13 Western European
 // 14 Tamil
 // 15 Unicode
+// 16 Northern Sami
 static struct LanguageForEncoding
     {
     const char* index;
@@ -165,6 +168,7 @@ static struct LanguageForEncoding
     { "utf7", 15 },
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
+    { "winsami2", 16},
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
@@ -272,6 +276,7 @@ static struct Builtin
     { "tscii", "tscii" },
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
+    { "winsami2", "ws2" },
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
