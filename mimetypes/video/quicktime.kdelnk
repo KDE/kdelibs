@@ -5,3 +5,4 @@ MimeType=video/quicktime
 Icon=video.xpm
 Patterns=*.mov;*.MOV;
 Comment=Quicktime Movies
+Comment[pt_BR]=Filme QuickTime
