@@ -398,6 +398,7 @@ KHTMLPart::~KHTMLPart()
   delete d->m_manualDetection;
 
   delete d->m_find;
+  slotWalletClosed();
   d->m_find = 0;
 
   if ( d->m_manager )
@@ -797,7 +798,7 @@ extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
 
 KJSProxy *KHTMLPart::jScript()
 {
-#if defined K_WS_QTONLY 
+#if defined K_WS_QTONLY
   return 0;
 #endif
 
@@ -5906,7 +5907,7 @@ void KHTMLPart::walletMenu()
   m->popup(QCursor::pos());
 }
 
-void KHTMLPart::slotToggleCaretMode() 
+void KHTMLPart::slotToggleCaretMode()
 {
   setCaretMode(d->m_paToggleCaretMode->isChecked());
 }
