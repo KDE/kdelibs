@@ -936,6 +936,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         break;
                     }
                 }
+		else if ( curchar == '<' && !src.escaped())
+		{
+		    dest = buffer;
+		    tag = NoTag;
+		    tquote = NoQuote;
+		    ++src;
+		    startTag = true;
+		    discard = NoneDiscard;
+		    break;
+                }
                 *dest++ = *src;
                 ++src;
             }

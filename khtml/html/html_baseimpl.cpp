@@ -451,46 +451,6 @@ void HTMLFrameSetElementImpl::attach()
     HTMLElementImpl::attach();
 }
 
-// verifies that we have enough m_rows/m_cols entries for the actual document structure
-// if there are not enough, we add fake ones.
-// ### investigate IE's behaviour in such cases more closely
-bool HTMLFrameSetElementImpl::verifyLayout()
-{
-    QList<khtml::Length>* layoutAttr = 0;
-
-    if(m_cols) layoutAttr = m_cols;
-    if(m_rows) layoutAttr = m_rows;
-
-    if(!layoutAttr) {
-        layoutAttr = new QList<Length>;
-        layoutAttr->setAutoDelete(true);
-        m_rows = layoutAttr;
-        static_cast<khtml::RenderFrameSet*>(m_render)->m_rows = layoutAttr;
-    }
-
-    bool changed = false;
-    unsigned int l = layoutAttr->count();
-    unsigned int i = 0;
-
-    for(HTMLElementImpl* node = static_cast<HTMLElementImpl*>(firstChild());
-        node;
-        node = static_cast<HTMLElementImpl*>(node->nextSibling()), i++) {
-        if(i < l) continue;
-
-        if(node->id() == ID_FRAMESET)
-            layoutAttr->append(new Length(1, khtml::Relative));
-        else
-            layoutAttr->append(new Length(0, khtml::Fixed));
-        changed = true;
-    }
-    if(m_rows)
-        m_totalRows = i;
-    else
-        m_totalCols = i;
-
-    return changed;
-}
-
 bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
                                                  int _tx, int _ty,
                                                  MouseEvent *ev )

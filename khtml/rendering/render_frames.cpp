@@ -96,14 +96,6 @@ RenderFrameSet::~RenderFrameSet()
   delete [] m_vSplitVar;
 }
 
-void RenderFrameSet::close()
-{
-    RenderBox::close();
-
-    if(m_frameset->verifyLayout())
-        setLayouted(false);
-}
-
 void RenderFrameSet::layout( )
 {
     if ( strcmp( parent()->renderName(), "RenderFrameSet" ) != 0 )
