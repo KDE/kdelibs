@@ -206,6 +206,11 @@ void KFileItem::refresh()
   m_permissions = (mode_t)-1;
   m_user = QString::null;
   m_group = QString::null;
+  // Basically, we can't trust any information we got while listing.
+  // Everything could have changed...
+  // Clearing m_entry makes it possible to detect changes in the size of the file,
+  // the time information, etc.
+  m_entry = KIO::UDSEntry();
   init( false );
 }
 
