@@ -33,6 +33,9 @@ class KLibFactoryPrivate;
 class KLibLoaderPrivate;
 class KLibraryPrivate;
 
+#define KDE_EXPORT_COMPONENT_FACTORY( libname, factory ) \
+    extern "C" { void *init_##libname() { return new factory; } };
+
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
  * you should provide a function that returns a pointer to your factory like this:
