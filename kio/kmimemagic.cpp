@@ -1478,7 +1478,9 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 					char *tmp;
 					char buf2[BUFSIZ + BUFSIZ + 4];
 
-					strcpy(buf2, fn);
+					strncpy(buf2, fn, BUFSIZ);
+                    buf2[BUFSIZ] = 0;
+
 					if ((tmp = strrchr(buf2, '/')) == NULL) {
 						tmp = buf; /* in current dir */
 					} else {
