@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 195
-#define KDE_VERSION_STRING "post 1.94 > 20000911"
-#define KDE_VERSION_MAJOR 1
-#define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 5
+#define KDE_VERSION 200
+#define KDE_VERSION_STRING "2.0 Release Candidate 1"
+#define KDE_VERSION_MAJOR 2
+#define KDE_VERSION_MINOR 0
+#define KDE_VERSION_RELEASE 0
 
 class KConfig;
 class KCharsets;
@@ -785,6 +785,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.189  2000/09/11 19:09:47  elter
+// -#define KDE_VERSION_STRING "1.94 >= 20000911"
+// +#define KDE_VERSION_STRING "post 1.94 > 20000911"
+//
+// So we can distinguish bugs reports from CVS users from RC1 bug reports.
+//
 // Revision 1.188  2000/09/11 12:42:49  elter
 // -#define KDE_VERSION 194
 // -#define KDE_VERSION_STRING "1.93 Beta >= 20000813"
