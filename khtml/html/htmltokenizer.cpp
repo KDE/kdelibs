@@ -433,7 +433,10 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
+            QTime dt;
+            dt.start();
             scriptExecution( exScript, QString(), scriptStartLineno );
+            qDebug("script execution time: %d", dt.elapsed());
         }
     }
 
@@ -1066,7 +1069,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttributeImpl* a = 0;
                 scriptSrc = scriptSrcCharset = "";
-                if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
+                if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
+                     parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
+                     view /* are we a regular tokenizer or just for innerHTML ? */
+                    ) {
                     if ( ( a = currToken.attrs->getAttributeItem( ATTR_SRC ) ) )
                         scriptSrc = parser->doc()->completeURL(khtml::parseURL( a->value() ).string() );
                     if ( ( a = currToken.attrs->getAttributeItem( ATTR_CHARSET ) ) )
