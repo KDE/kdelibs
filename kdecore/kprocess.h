@@ -120,7 +120,7 @@ class KProcessPrivate;
  *Returns false if you try to close stdout for a process that has been started
  *without a communication channel to stdout.
  *
- *@li bool @ref closeStdout();
+ *@li bool @ref closeStderr();
  *@li -- Closes the child process's stderr.
  *Returns false if you try to close stderr for a process that has been started
  *without a communication channel to stderr.
