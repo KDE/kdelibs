@@ -68,7 +68,7 @@ kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h renamedlg.h \
         filter.h skipdlg.h slaveinterface.h \
         global.h passdlg.h netaccess.h job.h \
-        paste.h slavebase.h
+        jobclasses.h paste.h slavebase.h
 
 # progressbase.h simpleprogressdlg.h
 # littleprogress_dlg.h listprogressdlg.h
