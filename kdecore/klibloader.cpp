@@ -23,8 +23,6 @@
 #include <qfile.h>
 #include <qtimer.h>
 #include <qobjectdict.h>
-#include <qwidgetlist.h>
-#include <qwidget.h>
 
 #include "kapplication.h"
 #include "klibloader.h"
@@ -33,11 +31,6 @@
 #include "klocale.h"
 
 #include "ltdl.h"
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
-#include <X11/Xatom.h> // schroder
-#endif
 
 template class QAsciiDict<KLibrary>;
 
@@ -561,19 +554,14 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
       /* Well.. let's do something more subtle... convert the clipboard context
          to text. That should be safe as it only uses objects defined by Qt. */
-
-      QWidgetList *widgetlist = QApplication::topLevelWidgets();
-      QWidget *co = widgetlist->first();
-      while (co) {
-        if (qstrcmp(co->name(), "internal clipboard owner") == 0) {
-          if (XGetSelectionOwner(co->x11Display(), XA_PRIMARY) == co->winId())
-	    kapp->clipboard()->setText(kapp->clipboard()->text());
-
-          break;
-        }
-        co = widgetlist->next();
+      if( kapp->clipboard()->ownsSelection()) {
+	kapp->clipboard()->setText(
+            kapp->clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
       }
-      delete widgetlist;
+      if( kapp->clipboard()->ownsClipboard()) {
+	kapp->clipboard()->setText(
+            kapp->clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
+      }
     }
 #else
     // FIXME(E): Implement in Qt Embedded
