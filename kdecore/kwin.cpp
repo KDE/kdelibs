@@ -281,7 +281,10 @@ WId KWin::transientFor( WId win )
 void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    XSetTransientForHint( qt_xdisplay(), subwindow->winId(), mainwindow );
+    if( mainwindow != 0 )
+        XSetTransientForHint( qt_xdisplay(), subwindow->winId(), mainwindow );
+    else
+        XDeleteProperty( qt_xdisplay(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
 #endif
 }
 
