@@ -372,7 +372,8 @@ bool KHTMLPart::openURL( const KURL &url )
        gotoAnchor( url.htmlRef() );
 
     d->m_bComplete = true;
-    d->m_doc->setParsing(false);
+    if (d->m_doc)
+       d->m_doc->setParsing(false);
 
     kdDebug( 6050 ) << "completed..." << endl;
     emit completed();
