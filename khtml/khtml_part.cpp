@@ -5176,6 +5176,75 @@ void KHTMLPart::customEvent( QCustomEvent *event )
   KParts::ReadOnlyPart::customEvent( event );
 }
 
+/** returns the position of the first inline text box of the line at
+ * coordinate y in renderNode
+ *
+ * This is a helper function for line-by-line text selection.
+ */
+static bool firstRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&startNode, long &startOffset)
+{
+    for (khtml::RenderObject *n = renderNode; n; n = n->nextSibling()) {
+        if (n->isText()) {
+            khtml::RenderText *textRenderer = static_cast<khtml::RenderText *>(n);
+            const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
+            for (unsigned i = 0; i != runs.count(); i++) {
+                if (runs[i]->m_y == y) {
+                    startNode = textRenderer->element();
+                    startOffset = runs[i]->m_start;
+                    return true;
+                }
+            }
+        }
+
+        if (firstRunAt(n->firstChild(), y, startNode, startOffset)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/** returns the position of the last inline text box of the line at
+ * coordinate y in renderNode
+ *
+ * This is a helper function for line-by-line text selection.
+ */
+static bool lastRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&endNode, long &endOffset)
+{
+    khtml::RenderObject *n = renderNode;
+    if (!n) {
+        return false;
+    }
+    khtml::RenderObject *next;
+    while ((next = n->nextSibling())) {
+        n = next;
+    }
+
+    while (1) {
+        if (lastRunAt(n->firstChild(), y, endNode, endOffset)) {
+            return true;
+        }
+
+        if (n->isText()) {
+            khtml::RenderText *textRenderer =  static_cast<khtml::RenderText *>(n);
+            const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
+            for (int i = (int)runs.count()-1; i >= 0; i--) {
+                if (runs[i]->m_y == y) {
+                    endNode = textRenderer->element();
+                    endOffset = runs[i]->m_start + runs[i]->m_len;
+                    return true;
+                }
+            }
+        }
+
+        if (n == renderNode) {
+            return false;
+        }
+
+        n = n->previousSibling();
+    }
+}
+
 void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 {
   DOM::DOMString url = event->url();
@@ -5210,6 +5279,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                                event->absX()-innerNode.handle()->renderer()->xPos(),
                                                                event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state );
+          d->m_extendMode = d->ExtendByChar;
 #ifdef KHTML_NO_CARET
           d->m_selectionStart = node;
           d->m_startOffset = offset;
@@ -5224,6 +5294,9 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #else // KHTML_NO_CARET
 	  d->m_view->moveCaretTo(node, offset, (_mouse->state() & ShiftButton) == 0);
 #endif // KHTML_NO_CARET
+	  d->m_initialNode = d->m_selectionStart;
+	  d->m_initialOffset = d->m_startOffset;
+//           kdDebug(6000) << "press: initOfs " << d->m_initialOffset << endl;
       }
       else
       {
@@ -5272,19 +5345,36 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
 
       if ( node && node->renderer() )
       {
-        // Extend selection to a complete word (double-click) or paragraph (triple-click)
-        bool selectParagraph = (event->clickCount() == 3);
+        // Extend selection to a complete word (double-click) or line (triple-click)
+        bool selectLine = (event->clickCount() == 3);
+        d->m_extendMode = selectLine ? d->ExtendByLine : d->ExtendByWord;
 
-        // Extend to the left
-        extendSelection( node, offset, d->m_selectionStart, d->m_startOffset, false, selectParagraph );
-        // Extend to the right
-        extendSelection( node, offset, d->m_selectionEnd, d->m_endOffset, true, selectParagraph );
+	// Extend existing selection if Shift was pressed
+	if (_mouse->state() & ShiftButton) {
+          d->caretNode() = node;
+	  d->caretOffset() = offset;
+          d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
+      			d->m_selectionStart.handle(), d->m_startOffset,
+			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
+          d->m_initialNode = d->m_extendAtEnd ? d->m_selectionStart : d->m_selectionEnd;
+          d->m_initialOffset = d->m_extendAtEnd ? d->m_startOffset : d->m_endOffset;
+	} else {
+	  d->m_selectionStart = d->m_selectionEnd = node;
+	  d->m_startOffset = d->m_endOffset = offset;
+          d->m_startBeforeEnd = true;
+          d->m_initialNode = node;
+          d->m_initialOffset = offset;
+	}
+//         kdDebug(6000) << "dblclk: initOfs " << d->m_initialOffset << endl;
 
-        d->m_endOffset++; // the last char must be in
+        // Extend the start
+        extendSelection( d->m_selectionStart.handle(), d->m_startOffset, d->m_selectionStart, d->m_startOffset, !d->m_startBeforeEnd, selectLine );
+        // Extend the end
+        extendSelection( d->m_selectionEnd.handle(), d->m_endOffset, d->m_selectionEnd, d->m_endOffset, d->m_startBeforeEnd, selectLine );
+
         //kdDebug() << d->m_selectionStart.handle() << " " << d->m_startOffset << "  -  " <<
         //  d->m_selectionEnd.handle() << " " << d->m_endOffset << endl;
 
-        d->m_startBeforeEnd = true;
         emitSelectionChanged();
         d->m_doc
           ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
@@ -5293,16 +5383,57 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
         bool v = d->m_view->placeCaret();
         emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
 #endif
+        startAutoScroll();
       }
     }
   }
 }
 
-void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool selectParagraph )
+void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool selectLines )
 {
   khtml::RenderObject* obj = node->renderer();
+
+  if (obj->isText() && selectLines) {
+    int pos;
+    khtml::RenderText *renderer = static_cast<khtml::RenderText *>(obj);
+    khtml::InlineTextBox *run = renderer->findInlineTextBox( offset, pos );
+    DOMString t = node->nodeValue();
+    DOM::NodeImpl* selNode = 0;
+    long selOfs = 0;
+
+    if (!run)
+      return;
+
+    int selectionPointY = run->m_y;
+
+    // Go up to first non-inline element.
+    khtml::RenderObject *renderNode = renderer;
+    while (renderNode && renderNode->isInline())
+      renderNode = renderNode->parent();
+
+    renderNode = renderNode->firstChild();
+
+    if (right) {
+      // Look for all the last child in the block that is on the same line
+      // as the selection point.
+      if (!lastRunAt (renderNode, selectionPointY, selNode, selOfs))
+        return;
+    } else {
+      // Look for all the first child in the block that is on the same line
+      // as the selection point.
+      if (!firstRunAt (renderNode, selectionPointY, selNode, selOfs))
+        return;
+    }
+
+    selectionNode = selNode;
+    selectionOffset = selOfs;
+    return;
+  }
+
   QString str;
   int len = 0;
+  // make offset point left to current char
+  if (right && offset > 0) offset--;
   if ( obj->isText() ) { // can be false e.g. when double-clicking on a disabled submit button
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
@@ -5358,7 +5489,10 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     // Test that char
     ch = str[ offset ];
     //kdDebug() << " offset=" << offset << " ch=" << QString(ch) << endl;
-  } while ( selectParagraph || (!ch.isSpace() && !ch.isPunct()) );
+  } while ( !ch.isSpace() && !ch.isPunct() );
+
+  // make offset point after last char
+  if (right) selectionOffset++;
 }
 
 #ifndef KHTML_NO_SELECTION
@@ -5371,42 +5505,46 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
       innerNode.handle()->renderer()->checkSelectionPoint( x, y,
                                                            absX-innerNode.handle()->renderer()->xPos(),
                                                            absY-innerNode.handle()->renderer()->yPos(), node, offset, state);
-      if (!node) return;
-
-      d->m_selectionEnd = node;
-      d->m_endOffset = offset;
-      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
+      if (!node || !node->renderer()) return;
 
       // we have to get to know if end is before start or not...
-#if 0
-      DOM::Node n = d->m_selectionStart;
-      d->m_startBeforeEnd = false;
-      while(!n.isNull()) {
-        if(n == d->m_selectionEnd) {
-          d->m_startBeforeEnd = true;
-          break;
-        }
-        DOM::Node next = n.firstChild();
-        if(next.isNull()) next = n.nextSibling();
-        while( next.isNull() && !n.parentNode().isNull() ) {
-          n = n.parentNode();
-          next = n.nextSibling();
-        }
-        n = next;
-        //d->m_view->viewport()->repaint(false);
-      }
-#else
       // shouldn't be null but it can happen with dynamic updating of nodes
       if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          d->m_initialNode.isNull() ||
           !d->m_selectionStart.handle()->renderer() ||
           !d->m_selectionEnd.handle()->renderer()) return;
+
+      if (d->m_extendMode != d->ExtendByChar) {
+        // check whether we should extend at the front, or at the back
+        bool caretBeforeInit = RangeImpl::compareBoundaryPoints(
+      			d->caretNode().handle(), d->caretOffset(),
+			d->m_initialNode.handle(), d->m_initialOffset) <= 0;
+        bool nodeBeforeInit = RangeImpl::compareBoundaryPoints(node, offset,
+			d->m_initialNode.handle(), d->m_initialOffset) <= 0;
+        // have to fix up start to point to the original end
+        if (caretBeforeInit != nodeBeforeInit) {
+//         kdDebug(6000) << "extto cbi: " << caretBeforeInit << " startBefEnd " << d->m_startBeforeEnd << " extAtEnd " << d->m_extendAtEnd << " (" << d->m_startOffset << ") - (" << d->m_endOffset << ")" << " initOfs " << d->m_initialOffset << endl;
+          extendSelection(d->m_initialNode.handle(), d->m_initialOffset,
+	  	d->m_extendAtEnd ? d->m_selectionStart : d->m_selectionEnd,
+		d->m_extendAtEnd ? d->m_startOffset : d->m_endOffset,
+		nodeBeforeInit, d->m_extendMode == d->ExtendByLine);
+	}
+      }
+
+      d->caretNode() = node;
+      d->caretOffset() = offset;
+      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
+
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
-#endif
 
       if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
       {
+//         kdDebug(6000) << "extto: startBefEnd " << d->m_startBeforeEnd << " extAtEnd " << d->m_extendAtEnd << " (" << d->m_startOffset << ") - (" << d->m_endOffset << ")" << " initOfs " << d->m_initialOffset << endl;
+        if (d->m_extendMode != d->ExtendByChar)
+          extendSelection( node, offset, d->caretNode(), d->caretOffset(), d->m_startBeforeEnd ^ !d->m_extendAtEnd, d->m_extendMode == d->ExtendByLine );
+
         if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
           d->m_doc
             ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
@@ -5620,11 +5758,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     d->m_endOffset = 0;
 #endif
     emitSelectionChanged();
-  } else /*if ((_mouse->state() & ShiftButton) == 0)*/ {
+  } else {
     // we have to get to know if end is before start or not...
+//     kdDebug(6000) << "rel: startBefEnd " << d->m_startBeforeEnd << " extAtEnd " << d->m_extendAtEnd << " (" << d->m_startOffset << ") - (" << d->m_endOffset << ")" << endl;
     DOM::Node n = d->m_selectionStart;
     d->m_startBeforeEnd = false;
-    d->m_extendAtEnd = true;
     if( d->m_selectionStart == d->m_selectionEnd ) {
       if( d->m_startOffset < d->m_endOffset )
         d->m_startBeforeEnd = true;
@@ -5662,7 +5800,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
       d->m_selectionEnd = tmpNode;
       d->m_endOffset = tmpOffset;
       d->m_startBeforeEnd = true;
-      d->m_extendAtEnd = false;
+      d->m_extendAtEnd = !d->m_extendAtEnd;
     }
 #ifndef KHTML_NO_CARET
     bool v = d->m_view->placeCaret();
@@ -5678,8 +5816,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();
+//kdDebug(6000) << "rel2: startBefEnd " << d->m_startBeforeEnd << " extAtEnd " << d->m_extendAtEnd << " (" << d->m_startOffset << ") - (" << d->m_endOffset << "), caretOfs " << d->caretOffset() << endl;
   }
 #endif
+  d->m_initialNode = 0;		// don't hold nodes longer than necessary
+  d->m_initialOffset = 0;
 
 }
 

@@ -252,6 +252,9 @@ public:
     /** returns the number of inline text boxes
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }
+    /** returns the array of inline text boxes for this render text.
+     */
+    const InlineTextBoxArray &inlineTextBoxes() const { return m_lines; }
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -260,6 +263,7 @@ public:
 protected:
     void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 
+public:
     /** Find the text box that includes the character at @p offset
      * and return pos, which is the position of the char in the run.
      * @param offset zero-based offset into DOM string

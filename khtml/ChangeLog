@@ -1,4 +1,24 @@
-2004-04-15  Leo Savernik <l.savernik@aon.at>
+2004-04-18  Leo Savernik  <l.savernik@aon.at>
+
+	* khtml_part.cpp: Merged firstRunAt, lastRunAt from WebCore.
+	(khtmlMouse{Press,DoubleClick,Move,Release}Event): Support extending selection
+	by word and by line as mandated by the KDE style guide.
+	(khtmlMousePressDoubleClickEvent): Fixed automatic scrolling when mouse
+	moves off the view while selecting.
+	(extendSelection): Make it support extending by line by merging
+	WebCore's startAndEndLineNodesIncludingNode into it.
+	Fixed issue with double word selection when between two words.
+
+	* khtmlpart_p.h: added m_initialNode, m_initialOffset and
+	m_extendMode.
+
+	* khtmlview.cpp (extendSelection): Initialize all relevant fields for selection.
+
+	* rendering/render_text.h: Merged inlineTextBoxes function, needed by
+	firstRunAt, lastRunAt.
+	(findInlineTextBox): Make it public.
+
+2004-04-15  Leo Savernik  <l.savernik@aon.at>
 
 	* khtml_caret{.cpp,_p.h}: Vast changes.
 	Added classes CaretBox, CaretBoxLine, CaretBoxIterator,
@@ -22,7 +42,7 @@
 	* rendering/render_replaced.h: Add RenderReplaced::isRenderReplaced
 	returning true.
 
-	* rendering/render_text.{cpp,h}: (RenderObject::caretPos) Handle flags.
+	* rendering/render_text.{cpp,h}: (RenderText::caretPos) Handle flags.
 
 	* xml/dom_nodeimpl.{cpp,h}: (NodeImpl::getCaret) Handle DOM Range
 	positions.

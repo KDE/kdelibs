@@ -369,11 +369,14 @@ public:
   long m_startOffset;
   DOM::Node m_selectionEnd;
   long m_endOffset;
+  DOM::Node m_initialNode;	// (Node, Offset) pair on which the
+  long m_initialOffset;		// selection has been initiated
   QString m_overURL;
   QString m_overURLTarget;
 
   bool m_startBeforeEnd:1;
   bool m_extendAtEnd:1;		// true if selection is to be extended at its end
+  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode:2;
   bool m_bDnd:1;
   bool m_bFirstData:1;
   bool m_bClearing:1;

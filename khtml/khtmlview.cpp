@@ -2923,6 +2923,7 @@ bool KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
       startOffset = m_part->d->m_endOffset;
       m_part->d->m_selectionEnd = m_part->d->m_selectionStart;
       m_part->d->m_endOffset = m_part->d->m_startOffset;
+      m_part->d->m_extendAtEnd = true;
     }/*end if*/
 
     bool swapNeeded = false;
