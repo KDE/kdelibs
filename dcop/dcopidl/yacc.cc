@@ -1,5 +1,5 @@
 /* A Bison parser, made from yacc.yy
-   by GNU bison 1.33.  */
+   by GNU bison 1.34.  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
@@ -288,25 +288,25 @@ static const short yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined. */
 static const short yyrline[] =
 {
-       0,   163,   166,   169,   173,   176,   182,   183,   186,   191,
-     194,   197,   200,   200,   212,   215,   218,   221,   224,   227,
-     230,   233,   236,   239,   244,   245,   247,   247,   249,   249,
-     249,   251,   251,   251,   254,   259,   266,   272,   283,   286,
-     293,   299,   307,   311,   318,   322,   330,   334,   341,   344,
-     348,   352,   356,   360,   364,   368,   372,   376,   380,   384,
-     388,   392,   396,   400,   404,   408,   414,   415,   416,   417,
-     420,   421,   424,   425,   428,   429,   430,   431,   432,   435,
-     436,   437,   440,   450,   457,   461,   468,   469,   470,   471,
-     472,   473,   474,   475,   476,   477,   478,   479,   480,   481,
-     482,   483,   484,   485,   486,   487,   490,   491,   494,   498,
-     499,   507,   508,   509,   510,   511,   517,   527,   531,   538,
-     543,   551,   556,   563,   568,   573,   578,   586,   590,   596,
-     605,   613,   621,   624,   627,   633,   636,   639,   642,   645,
-     651,   652,   655,   655,   655,   655,   655,   658,   689,   697,
-     698,   699,   702,   703,   706,   709,   710,   713,   717,   721,
-     725,   731,   737,   743,   755,   761,   762,   763,   766,   767,
-     770,   773,   774,   776,   777,   778,   780,   783,   784,   785,
-     786,   787
+       0,   163,   166,   170,   174,   177,   183,   184,   188,   197,
+     200,   203,   206,   206,   218,   221,   224,   227,   230,   233,
+     236,   239,   242,   245,   251,   252,   255,   255,   257,   257,
+     257,   259,   259,   259,   262,   267,   275,   283,   295,   298,
+     306,   312,   321,   325,   332,   336,   344,   348,   355,   358,
+     362,   366,   370,   374,   378,   382,   386,   390,   394,   398,
+     402,   406,   410,   414,   418,   422,   429,   430,   431,   432,
+     436,   437,   441,   442,   446,   447,   448,   449,   450,   454,
+     455,   456,   460,   470,   478,   482,   489,   490,   491,   492,
+     493,   494,   495,   496,   497,   498,   499,   500,   501,   502,
+     503,   504,   505,   506,   507,   508,   512,   513,   517,   521,
+     522,   530,   531,   532,   533,   534,   540,   551,   555,   563,
+     568,   577,   582,   589,   594,   599,   604,   612,   616,   623,
+     632,   640,   649,   652,   655,   661,   664,   667,   670,   673,
+     679,   680,   684,   684,   684,   684,   684,   688,   719,   728,
+     729,   730,   734,   735,   739,   743,   744,   748,   752,   756,
+     760,   766,   772,   778,   791,   798,   799,   800,   804,   805,
+     809,   813,   814,   817,   818,   819,   822,   826,   827,   828,
+     829,   830
 };
 #endif
 
@@ -341,7 +341,7 @@ static const char *const yytname[] =
   "function_header", "argument", "arguments", "init_item", "init_list", 
   "function", "function_begin", "function_body", "function_lines", 
   "function_line", "Identifier_list_rest", "Identifier_list_entry", 
-  "Identifier_list", "member", NULL
+  "Identifier_list", "member", 0
 };
 #endif
 
@@ -653,12 +653,6 @@ static const short yycheck[] =
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
-#ifdef __cplusplus
-# define YYSTD(x) std::x
-#else
-# define YYSTD(x) x
-#endif
-
 #if ! defined (yyoverflow) || defined (YYERROR_VERBOSE)
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
@@ -681,17 +675,12 @@ static const short yycheck[] =
    /* Pacify GCC's `empty if-body' warning. */
 #  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
 # else
-#  ifdef __cplusplus
-#   include <cstdlib> /* INFRINGES ON USER NAME SPACE */
-#   define YYSIZE_T std::size_t
-#  else
-#   ifdef __STDC__
-#    include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#    define YYSIZE_T size_t
-#   endif
+#  if defined (__STDC__) || defined (__cplusplus)
+#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#   define YYSIZE_T size_t
 #  endif
-#  define YYSTACK_ALLOC YYSTD (malloc)
-#  define YYSTACK_FREE YYSTD (free)
+#  define YYSTACK_ALLOC malloc
+#  define YYSTACK_FREE free
 # endif
 
 /* A type that is properly aligned for any stack member.  */
@@ -746,14 +735,9 @@ union yyalloc
 # define YYSIZE_T size_t
 #endif
 #if ! defined (YYSIZE_T)
-# ifdef __cplusplus
-#  include <cstddef> /* INFRINGES ON USER NAME SPACE */
-#  define YYSIZE_T std::size_t
-# else
-#  ifdef __STDC__
-#   include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-#   define YYSIZE_T size_t
-#  endif
+# if defined (__STDC__) || defined (__cplusplus)
+#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#  define YYSIZE_T size_t
 # endif
 #endif
 #if ! defined (YYSIZE_T)
@@ -832,12 +816,8 @@ while (0)
 #if YYDEBUG
 
 # ifndef YYFPRINTF
-#  ifdef __cplusplus
-#   include <cstdio>  /* INFRINGES ON USER NAME SPACE */
-#  else
-#   include <stdio.h> /* INFRINGES ON USER NAME SPACE */
-#  endif
-#  define YYFPRINTF YYSTD (fprintf)
+#  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
+#  define YYFPRINTF fprintf
 # endif
 
 # define YYDPRINTF(Args)			\
@@ -845,10 +825,8 @@ do {						\
   if (yydebug)					\
     YYFPRINTF Args;				\
 } while (0)
-/* Nonzero means print parse trace. [The following comment makes no
-   sense to me.  Could someone clarify it?  --akim] Since this is
-   uninitialized, it does not stop multiple parsers from coexisting.
-   */
+/* Nonzero means print parse trace.  It is left uninitialized so that
+   multiple parsers can coexist.  */
 int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
@@ -953,7 +931,7 @@ yystpcpy (yydest, yysrc)
 # endif
 #endif
 
-#line 341 "/usr/share/bison/bison.simple"
+#line 319 "/usr/share/bison/bison.simple"
 
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
@@ -963,13 +941,13 @@ yystpcpy (yydest, yysrc)
    to the proper pointer type.  */
 
 #ifdef YYPARSE_PARAM
-# ifdef __cplusplus
+# if defined (__STDC__) || defined (__cplusplus)
 #  define YYPARSE_PARAM_ARG void *YYPARSE_PARAM
 #  define YYPARSE_PARAM_DECL
-# else /* !__cplusplus */
+# else
 #  define YYPARSE_PARAM_ARG YYPARSE_PARAM
 #  define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
-# endif /* !__cplusplus */
+# endif
 #else /* !YYPARSE_PARAM */
 # define YYPARSE_PARAM_ARG
 # define YYPARSE_PARAM_DECL
@@ -1348,59 +1326,63 @@ case 1:
 	  ;
     break;}
 case 3:
-#line 170 "yacc.yy"
+#line 171 "yacc.yy"
 {
 		printf("<INCLUDE>%s</INCLUDE>\n", yyvsp[-1]._str->latin1() );
 	  ;
     break;}
 case 4:
-#line 174 "yacc.yy"
+#line 175 "yacc.yy"
 {
 	  ;
     break;}
 case 5:
-#line 177 "yacc.yy"
+#line 178 "yacc.yy"
 {
           ;
     break;}
 case 6:
-#line 182 "yacc.yy"
+#line 183 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 7:
-#line 183 "yacc.yy"
+#line 184 "yacc.yy"
 { yyval._int = 0; ;
     break;}
 case 8:
-#line 187 "yacc.yy"
+#line 189 "yacc.yy"
 {
 	 	if (yyvsp[-2]._int)
 			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *yyvsp[-4]._str ).latin1(), yyvsp[-3]._str->latin1(), yyvsp[-1]._str->latin1() );
+		// default C++ visibility specifier is 'private'
+		dcop_area = 0;
+		dcop_signal_area = 0;
+
 	  ;
     break;}
 case 9:
-#line 192 "yacc.yy"
-{
-	  ;
-    break;}
-case 10:
-#line 195 "yacc.yy"
-{
-	  ;
-    break;}
-case 11:
 #line 198 "yacc.yy"
 {
 	  ;
     break;}
-case 12:
+case 10:
 #line 201 "yacc.yy"
+{
+	  ;
+    break;}
+case 11:
+#line 204 "yacc.yy"
+{
+	  ;
+    break;}
+case 12:
+#line 207 "yacc.yy"
 {
                       in_namespace += *yyvsp[-1]._str; in_namespace += "::";
                   ;
     break;}
 case 13:
-#line 205 "yacc.yy"
+#line 211 "yacc.yy"
 {
                       int pos = in_namespace.findRev( "::", -3 );
                       if( pos >= 0 )
@@ -1410,77 +1392,78 @@ case 13:
                   ;
     break;}
 case 14:
-#line 213 "yacc.yy"
+#line 219 "yacc.yy"
 {
           ;
     break;}
 case 15:
-#line 216 "yacc.yy"
+#line 222 "yacc.yy"
 {
           ;
     break;}
 case 16:
-#line 219 "yacc.yy"
-{
-	  ;
-    break;}
-case 17:
-#line 222 "yacc.yy"
-{
-	  ;
-    break;}
-case 18:
 #line 225 "yacc.yy"
 {
 	  ;
     break;}
-case 19:
+case 17:
 #line 228 "yacc.yy"
 {
 	  ;
     break;}
-case 20:
+case 18:
 #line 231 "yacc.yy"
 {
 	  ;
     break;}
-case 21:
+case 19:
 #line 234 "yacc.yy"
 {
 	  ;
     break;}
-case 22:
+case 20:
 #line 237 "yacc.yy"
 {
 	  ;
     break;}
-case 23:
+case 21:
 #line 240 "yacc.yy"
 {
 	  ;
     break;}
+case 22:
+#line 243 "yacc.yy"
+{
+	  ;
+    break;}
+case 23:
+#line 246 "yacc.yy"
+{
+	  ;
+    break;}
 case 34:
-#line 255 "yacc.yy"
+#line 263 "yacc.yy"
 {
 	  dcop_area = 0;
 	  dcop_signal_area = 0;
 	;
     break;}
 case 35:
-#line 260 "yacc.yy"
+#line 268 "yacc.yy"
 {
 	  dcop_area = 0;
 	  dcop_signal_area = 0;
 	;
     break;}
 case 36:
-#line 267 "yacc.yy"
+#line 276 "yacc.yy"
 {
 	  dcop_area = 1;
+	  dcop_signal_area = 0;
 	;
     break;}
 case 37:
-#line 273 "yacc.yy"
+#line 284 "yacc.yy"
 {
 	  /*
 	  A dcop signals area needs all dcop area capabilities,
@@ -1491,13 +1474,13 @@ case 37:
 	;
     break;}
 case 38:
-#line 283 "yacc.yy"
+#line 295 "yacc.yy"
 {
 	  yyval._str = yyvsp[0]._str;
 	;
     break;}
 case 39:
-#line 286 "yacc.yy"
+#line 298 "yacc.yy"
 {
 	   QString* tmp = new QString( "%1::%2" );
            *tmp = tmp->arg(*(yyvsp[-2]._str)).arg(*(yyvsp[0]._str));
@@ -1505,7 +1488,7 @@ case 39:
 	;
     break;}
 case 40:
-#line 294 "yacc.yy"
+#line 307 "yacc.yy"
 {
 		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1513,7 +1496,7 @@ case 40:
 	  ;
     break;}
 case 41:
-#line 300 "yacc.yy"
+#line 313 "yacc.yy"
 {
 		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
 		*tmp = tmp->arg( *(yyvsp[-3]._str) + "&lt" + *(yyvsp[-1]._str) + "&gt;" );
@@ -1521,185 +1504,185 @@ case 41:
 	  ;
     break;}
 case 42:
-#line 308 "yacc.yy"
+#line 322 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 43:
-#line 312 "yacc.yy"
+#line 326 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 44:
-#line 319 "yacc.yy"
+#line 333 "yacc.yy"
 {
 		yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 45:
-#line 323 "yacc.yy"
+#line 337 "yacc.yy"
 {
 		/* $$ = $1; */
 		yyval._str = new QString( *(yyvsp[-2]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 46:
-#line 331 "yacc.yy"
+#line 345 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 47:
-#line 335 "yacc.yy"
-{
-		yyval._str = new QString( "" );
-	  ;
-    break;}
-case 48:
-#line 342 "yacc.yy"
-{
-          ;
-    break;}
-case 50:
 #line 349 "yacc.yy"
 {
 		yyval._str = new QString( "" );
 	  ;
     break;}
+case 48:
+#line 356 "yacc.yy"
+{
+          ;
+    break;}
+case 50:
+#line 363 "yacc.yy"
+{
+		yyval._str = new QString( "" );
+	  ;
+    break;}
 case 51:
-#line 353 "yacc.yy"
+#line 367 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-1]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 52:
-#line 357 "yacc.yy"
+#line 371 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-1]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 53:
-#line 361 "yacc.yy"
+#line 375 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 54:
-#line 365 "yacc.yy"
+#line 379 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 55:
-#line 369 "yacc.yy"
+#line 383 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 56:
-#line 373 "yacc.yy"
+#line 387 "yacc.yy"
 {	
 	        yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 57:
-#line 377 "yacc.yy"
+#line 391 "yacc.yy"
 {
  	        yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 58:
-#line 381 "yacc.yy"
+#line 395 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 59:
-#line 385 "yacc.yy"
+#line 399 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 60:
-#line 389 "yacc.yy"
+#line 403 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 61:
-#line 393 "yacc.yy"
+#line 407 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 62:
-#line 397 "yacc.yy"
+#line 411 "yacc.yy"
 {
                 yyval._str = yyvsp[0]._str;
           ;
     break;}
 case 63:
-#line 401 "yacc.yy"
+#line 415 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 64:
-#line 405 "yacc.yy"
+#line 419 "yacc.yy"
 {
                 yyval._str = yyvsp[0]._str;
           ;
     break;}
 case 65:
-#line 409 "yacc.yy"
+#line 423 "yacc.yy"
 {
                 yyval._str = yyvsp[0]._str;
           ;
     break;}
 case 72:
-#line 424 "yacc.yy"
+#line 441 "yacc.yy"
 {;
     break;}
 case 73:
-#line 425 "yacc.yy"
+#line 442 "yacc.yy"
 {;
     break;}
 case 74:
-#line 428 "yacc.yy"
+#line 446 "yacc.yy"
 {;
     break;}
 case 75:
-#line 429 "yacc.yy"
+#line 447 "yacc.yy"
 {;
     break;}
 case 76:
-#line 430 "yacc.yy"
+#line 448 "yacc.yy"
 {;
     break;}
 case 77:
-#line 431 "yacc.yy"
+#line 449 "yacc.yy"
 {;
     break;}
 case 78:
-#line 432 "yacc.yy"
+#line 450 "yacc.yy"
 {;
     break;}
 case 79:
-#line 435 "yacc.yy"
+#line 454 "yacc.yy"
 {;
     break;}
 case 80:
-#line 436 "yacc.yy"
+#line 455 "yacc.yy"
 {;
     break;}
 case 81:
-#line 437 "yacc.yy"
+#line 456 "yacc.yy"
 {;
     break;}
 case 82:
-#line 441 "yacc.yy"
+#line 461 "yacc.yy"
 {
 		if (dcop_area) {
  		  QString* tmp = new QString("<TYPEDEF name=\"%1\" template=\"%2\"><PARAM %3</TYPEDEF>\n");
@@ -1711,130 +1694,130 @@ case 82:
 	  ;
     break;}
 case 83:
-#line 451 "yacc.yy"
+#line 471 "yacc.yy"
 {
 		if (dcop_area)
 		  yyerror("scoped template typedefs are not supported in dcop areas!");
 	  ;
     break;}
 case 84:
-#line 458 "yacc.yy"
+#line 479 "yacc.yy"
 {
 		yyval._int = 0;
 	  ;
     break;}
 case 85:
-#line 462 "yacc.yy"
+#line 483 "yacc.yy"
 {
 		yyval._int = 1;
 	  ;
     break;}
 case 86:
-#line 468 "yacc.yy"
+#line 489 "yacc.yy"
 { yyval._str = new QString("signed int"); ;
     break;}
 case 87:
-#line 469 "yacc.yy"
+#line 490 "yacc.yy"
 { yyval._str = new QString("signed int"); ;
     break;}
 case 88:
-#line 470 "yacc.yy"
+#line 491 "yacc.yy"
 { yyval._str = new QString("unsigned int"); ;
     break;}
 case 89:
-#line 471 "yacc.yy"
+#line 492 "yacc.yy"
 { yyval._str = new QString("unsigned int"); ;
     break;}
 case 90:
-#line 472 "yacc.yy"
+#line 493 "yacc.yy"
 { yyval._str = new QString("signed short int"); ;
     break;}
 case 91:
-#line 473 "yacc.yy"
+#line 494 "yacc.yy"
 { yyval._str = new QString("signed short int"); ;
     break;}
 case 92:
-#line 474 "yacc.yy"
+#line 495 "yacc.yy"
 { yyval._str = new QString("signed long int"); ;
     break;}
 case 93:
-#line 475 "yacc.yy"
+#line 496 "yacc.yy"
 { yyval._str = new QString("signed long int"); ;
     break;}
 case 94:
-#line 476 "yacc.yy"
+#line 497 "yacc.yy"
 { yyval._str = new QString("unsigned short int"); ;
     break;}
 case 95:
-#line 477 "yacc.yy"
+#line 498 "yacc.yy"
 { yyval._str = new QString("unsigned short int"); ;
     break;}
 case 96:
-#line 478 "yacc.yy"
+#line 499 "yacc.yy"
 { yyval._str = new QString("unsigned long int"); ;
     break;}
 case 97:
-#line 479 "yacc.yy"
+#line 500 "yacc.yy"
 { yyval._str = new QString("unsigned long int"); ;
     break;}
 case 98:
-#line 480 "yacc.yy"
+#line 501 "yacc.yy"
 { yyval._str = new QString("int"); ;
     break;}
 case 99:
-#line 481 "yacc.yy"
+#line 502 "yacc.yy"
 { yyval._str = new QString("long int"); ;
     break;}
 case 100:
-#line 482 "yacc.yy"
+#line 503 "yacc.yy"
 { yyval._str = new QString("long int"); ;
     break;}
 case 101:
-#line 483 "yacc.yy"
+#line 504 "yacc.yy"
 { yyval._str = new QString("short int"); ;
     break;}
 case 102:
-#line 484 "yacc.yy"
+#line 505 "yacc.yy"
 { yyval._str = new QString("short int"); ;
     break;}
 case 103:
-#line 485 "yacc.yy"
+#line 506 "yacc.yy"
 { yyval._str = new QString("char"); ;
     break;}
 case 104:
-#line 486 "yacc.yy"
+#line 507 "yacc.yy"
 { yyval._str = new QString("signed char"); ;
     break;}
 case 105:
-#line 487 "yacc.yy"
+#line 508 "yacc.yy"
 { yyval._str = new QString("unsigned char"); ;
     break;}
 case 108:
-#line 495 "yacc.yy"
+#line 518 "yacc.yy"
 {
 		yyval._str = new QString( "" );
 	  ;
     break;}
 case 110:
-#line 500 "yacc.yy"
+#line 523 "yacc.yy"
 {
 		yyval._str = new QString( *(yyvsp[-2]._str) + *(yyvsp[0]._str) );
 	  ;
     break;}
 case 112:
-#line 508 "yacc.yy"
+#line 531 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
 case 113:
-#line 509 "yacc.yy"
+#line 532 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
 case 114:
-#line 510 "yacc.yy"
+#line 533 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
 case 115:
-#line 511 "yacc.yy"
+#line 534 "yacc.yy"
 {
 		QString *tmp = new QString("%1&lt;%2&gt;");
 		*tmp = tmp->arg(*(yyvsp[-3]._str));
@@ -1843,7 +1826,7 @@ case 115:
 	 ;
     break;}
 case 116:
-#line 517 "yacc.yy"
+#line 540 "yacc.yy"
 {
 		QString *tmp = new QString("%1&lt;%2&gt;::%3");
 		*tmp = tmp->arg(*(yyvsp[-5]._str));
@@ -1853,39 +1836,39 @@ case 116:
 	 ;
     break;}
 case 117:
-#line 528 "yacc.yy"
+#line 552 "yacc.yy"
 {
 	    yyval._str = new QString(*(yyvsp[-2]._str) + "," + *(yyvsp[0]._str));
 	  ;
     break;}
 case 118:
-#line 532 "yacc.yy"
+#line 556 "yacc.yy"
 {
  	    yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 119:
-#line 539 "yacc.yy"
+#line 564 "yacc.yy"
 {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  ;
     break;}
 case 120:
-#line 544 "yacc.yy"
+#line 569 "yacc.yy"
 {
  	    yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 121:
-#line 552 "yacc.yy"
+#line 578 "yacc.yy"
 {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  ;
     break;}
 case 122:
-#line 556 "yacc.yy"
+#line 582 "yacc.yy"
 {
 	     if (dcop_area) {
 	  	QString* tmp = new QString("<TYPE  qleft=\"const\" qright=\"" AMP_ENTITY "\">%1</TYPE>");
@@ -1895,7 +1878,7 @@ case 122:
 	  ;
     break;}
 case 123:
-#line 563 "yacc.yy"
+#line 589 "yacc.yy"
 {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1903,14 +1886,14 @@ case 123:
 	;
     break;}
 case 124:
-#line 568 "yacc.yy"
+#line 594 "yacc.yy"
 {
 	     if (dcop_area)
 		yyerror("in dcop areas are only const references allowed!");
 	  ;
     break;}
 case 125:
-#line 573 "yacc.yy"
+#line 599 "yacc.yy"
 {
 		QString* tmp = new QString("<TYPE>%1</TYPE>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
@@ -1918,26 +1901,26 @@ case 125:
 	;
     break;}
 case 126:
-#line 579 "yacc.yy"
+#line 605 "yacc.yy"
 {
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  ;
     break;}
 case 127:
-#line 587 "yacc.yy"
+#line 613 "yacc.yy"
 {
 	    yyval._str = new QString(*(yyvsp[-2]._str) + "," + *(yyvsp[0]._str));
 	  ;
     break;}
 case 128:
-#line 591 "yacc.yy"
+#line 617 "yacc.yy"
 {
  	    yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 case 129:
-#line 597 "yacc.yy"
+#line 624 "yacc.yy"
 {
 		if (dcop_area) {
 		   QString* tmp = new QString("\n        <ARG>%1<NAME>%2</NAME></ARG>");
@@ -1948,7 +1931,7 @@ case 129:
 	  ;
     break;}
 case 130:
-#line 606 "yacc.yy"
+#line 633 "yacc.yy"
 {
 		if (dcop_area) {
 		   QString* tmp = new QString("\n        <ARG>%1</ARG>");
@@ -1958,7 +1941,7 @@ case 130:
 	  ;
     break;}
 case 131:
-#line 614 "yacc.yy"
+#line 641 "yacc.yy"
 {
 		if (dcop_area)
 			yyerror("variable arguments not supported in dcop area.");
@@ -1966,55 +1949,55 @@ case 131:
 	  ;
     break;}
 case 132:
-#line 622 "yacc.yy"
+#line 650 "yacc.yy"
 {
 	  ;
     break;}
 case 133:
-#line 625 "yacc.yy"
+#line 653 "yacc.yy"
 {
 	  ;
     break;}
 case 134:
-#line 628 "yacc.yy"
+#line 656 "yacc.yy"
 {
 	  ;
     break;}
 case 135:
-#line 634 "yacc.yy"
+#line 662 "yacc.yy"
 {
           ;
     break;}
 case 136:
-#line 637 "yacc.yy"
+#line 665 "yacc.yy"
 {
           ;
     break;}
 case 137:
-#line 640 "yacc.yy"
+#line 668 "yacc.yy"
 {
           ;
     break;}
 case 138:
-#line 643 "yacc.yy"
+#line 671 "yacc.yy"
 {
           ;
     break;}
 case 139:
-#line 646 "yacc.yy"
+#line 674 "yacc.yy"
 {
           ;
     break;}
 case 140:
-#line 651 "yacc.yy"
+#line 679 "yacc.yy"
 { yyval._int = 0; ;
     break;}
 case 141:
-#line 652 "yacc.yy"
+#line 680 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 147:
-#line 659 "yacc.yy"
+#line 689 "yacc.yy"
 {
 	     if (dcop_area || dcop_signal_area) {
 		QString* tmp = 0;
@@ -2047,7 +2030,7 @@ case 147:
 	  ;
     break;}
 case 148:
-#line 690 "yacc.yy"
+#line 720 "yacc.yy"
 {
 	     if (dcop_area)
 		yyerror("operators aren't allowed in dcop areas!");
@@ -2055,57 +2038,57 @@ case 148:
 	  ;
     break;}
 case 149:
-#line 697 "yacc.yy"
+#line 728 "yacc.yy"
 {;
     break;}
 case 150:
-#line 698 "yacc.yy"
+#line 729 "yacc.yy"
 {;
     break;}
 case 151:
-#line 699 "yacc.yy"
+#line 730 "yacc.yy"
 {;
     break;}
 case 152:
-#line 702 "yacc.yy"
+#line 734 "yacc.yy"
 {;
     break;}
 case 153:
-#line 703 "yacc.yy"
+#line 735 "yacc.yy"
 {;
     break;}
 case 154:
-#line 706 "yacc.yy"
+#line 739 "yacc.yy"
 {;
     break;}
 case 155:
-#line 709 "yacc.yy"
+#line 743 "yacc.yy"
 {;
     break;}
 case 156:
-#line 710 "yacc.yy"
+#line 744 "yacc.yy"
 {;
     break;}
 case 157:
-#line 714 "yacc.yy"
+#line 749 "yacc.yy"
 {
 	        yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 158:
-#line 718 "yacc.yy"
+#line 753 "yacc.yy"
 {
 		yyval._str = yyvsp[-3]._str;
 	  ;
     break;}
 case 159:
-#line 722 "yacc.yy"
+#line 757 "yacc.yy"
 {
 		yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 160:
-#line 726 "yacc.yy"
+#line 761 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -2113,7 +2096,7 @@ case 160:
 	  ;
     break;}
 case 161:
-#line 732 "yacc.yy"
+#line 767 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -2121,7 +2104,7 @@ case 161:
 	  ;
     break;}
 case 162:
-#line 738 "yacc.yy"
+#line 773 "yacc.yy"
 {
 	      /* The destructor */
   	      assert(!dcop_area);
@@ -2129,7 +2112,7 @@ case 162:
 	  ;
     break;}
 case 163:
-#line 744 "yacc.yy"
+#line 779 "yacc.yy"
 {
               if (dcop_area) {
                  if (dcop_signal_area)
@@ -2142,58 +2125,58 @@ case 163:
 	  ;
     break;}
 case 164:
-#line 756 "yacc.yy"
+#line 792 "yacc.yy"
 {
 		function_mode = 1;
 	;
     break;}
 case 168:
-#line 766 "yacc.yy"
+#line 804 "yacc.yy"
 {;
     break;}
 case 169:
-#line 767 "yacc.yy"
+#line 805 "yacc.yy"
 {;
     break;}
 case 173:
-#line 776 "yacc.yy"
+#line 817 "yacc.yy"
 {;
     break;}
 case 174:
-#line 777 "yacc.yy"
+#line 818 "yacc.yy"
 {;
     break;}
 case 175:
-#line 778 "yacc.yy"
+#line 819 "yacc.yy"
 {;
     break;}
 case 176:
-#line 780 "yacc.yy"
+#line 822 "yacc.yy"
 {;
     break;}
 case 177:
-#line 783 "yacc.yy"
+#line 826 "yacc.yy"
 {;
     break;}
 case 178:
-#line 784 "yacc.yy"
+#line 827 "yacc.yy"
 {;
     break;}
 case 179:
-#line 785 "yacc.yy"
+#line 828 "yacc.yy"
 {;
     break;}
 case 180:
-#line 786 "yacc.yy"
+#line 829 "yacc.yy"
 {;
     break;}
 case 181:
-#line 787 "yacc.yy"
+#line 830 "yacc.yy"
 {;
     break;}
 }
 
-#line 727 "/usr/share/bison/bison.simple"
+#line 705 "/usr/share/bison/bison.simple"
 
 
   yyvsp -= yylen;
@@ -2424,7 +2407,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 789 "yacc.yy"
+#line 833 "yacc.yy"
 
 
 void dcopidlParse( const char *_code )

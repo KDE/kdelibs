@@ -23,7 +23,7 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
-#ifndef _Win32
+#ifndef _WIN32
 #include <unistd.h>
 #else
 #ifndef YY_ALWAYS_INTERACTIVE
@@ -2195,7 +2195,7 @@ YY_BUFFER_STATE b;
 	}
 
 
-#ifndef _Win32
+#ifndef _WIN32
 #include <unistd.h>
 #else
 #ifndef YY_ALWAYS_INTERACTIVE
