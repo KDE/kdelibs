@@ -111,6 +111,14 @@ public:
      */
     QDomElement internalElement() const { return element; }
 
+    /**
+     * Updates the bookmarks access metadata
+     * Call when a user accesses the bookmark
+     * 
+     * @since 3.2
+     */
+    void updateAccessMetadata();
+
     // Utility functions (internal)
 
     /**
@@ -198,6 +206,7 @@ public:
     /**
      * Create a new bookmark folder, as the last child of this group
      * @p text for the folder. If empty, the user will be queried for it.
+     * Note: emits KBookmarkNotifier related signals
      */
     KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString::null, bool emitSignal = true );
     /**
@@ -208,6 +217,7 @@ public:
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      * if this bookmark was added interactively.
+     * Note: emits KBookmarkNotifier related signals
      */
     KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString::null, bool emitSignal = true );
 

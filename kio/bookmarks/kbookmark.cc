@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -111,9 +112,10 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
 
     KBookmarkGroup grp(groupElem);
 
-    if (emitSignal) emit mgr->notifier().createdNewFolder(
-        mgr->path(),
-        grp.fullText(), grp.address() );
+    if (emitSignal) 
+        emit mgr->notifier().createdNewFolder(
+                                mgr->path(), grp.fullText(), 
+                                grp.address() );
 
     return grp;
 
@@ -170,9 +172,10 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
 
     KBookmark bk(elem);
 
-    if (emitSignal) emit mgr->notifier().addedBookmark(
-        mgr->path(),
-        url.url(), text, bk.address(), icon );
+    if (emitSignal)
+        emit mgr->notifier().addedBookmark( 
+                                 mgr->path(), url.url(), 
+                                 text, bk.address(), icon );
     
     return bk;
 }
@@ -323,3 +326,45 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     grp.addBookmark( 0L, text, url, icon, false );
     return grp.first();
 }
+
+static QDomNode cd_or_create(QDomNode node, QString name)
+{
+   QDomNode subnode = node.namedItem(name);
+   if (subnode.isNull()) {
+      subnode = node.ownerDocument().createElement(name);
+      node.appendChild(subnode);
+   }
+   return subnode;
+}
+
+static QDomText get_or_create_text(QDomNode node)
+{
+   QDomNode subnode = node.firstChild();
+   if (subnode.isNull()) {
+      subnode = node.ownerDocument().createTextNode("");
+      node.appendChild(subnode);
+   }
+   return subnode.toText();
+}
+
+void KBookmark::updateAccessMetadata()
+{
+    kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << url().url() << endl;
+
+    QDomNode subnode = cd_or_create(internalElement(), "info");
+    subnode = cd_or_create(subnode, "metadata");
+
+    uint timet = QDateTime::currentDateTime().toTime_t();
+     
+    QDomNode item = cd_or_create(subnode, "time_added");
+    QDomText domtext = get_or_create_text(item);
+    if (domtext.data().isEmpty()) 
+        domtext.setData(QString::number(timet));
+
+    item = cd_or_create(subnode, "time_visited");
+    domtext = get_or_create_text(item);
+    domtext.setData(QString::number(timet));
+
+    // todo - wtf is time_modified???
+}
+
