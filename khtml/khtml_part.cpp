@@ -678,6 +678,9 @@ void KHTMLPart::end()
   d->m_bParsing = false;
   d->m_doc->close();
 
+  if (!d->m_view)
+    return; // We are probably being destructed.
+
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
   else if (d->m_view->contentsY()==0) // check that the view has not been moved by the use
