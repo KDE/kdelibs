@@ -81,7 +81,7 @@ topdir = @topdir@
 x_includes = @x_includes@
 x_libraries = @x_libraries@
 
-SUBDIRS = kdecore kdeui khtmlw 
+SUBDIRS = kdecore kdeui khtmlw kdetest kdedoc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 CONFIG_HEADER_IN = config.h.in
 CONFIG_HEADER_FULL = config.h

@@ -78,4 +78,4 @@ AC_SUBST(MISCOBJS)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
 
-AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile)
+AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile)

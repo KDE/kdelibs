@@ -1,1 +1,1 @@
-SUBDIRS = kdecore kdeui khtmlw 
+SUBDIRS = kdecore kdeui khtmlw kdetest kdedoc
