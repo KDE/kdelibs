@@ -17,7 +17,7 @@
 */
 
 #include "kdualcolorbtn.h"
-#include "kcolordlg.h"
+#include "kcolordialog.h"
 #include "kcolordrag.h"
 #include "dcolorarrow.xbm"
 #include "dcolorreset.xpm"
