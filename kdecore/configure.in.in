@@ -7,7 +7,10 @@ dnl --------
 dnl
 dnl This is to be merged with toplevel configure.in.in soon
 
+kde_safe_LIBS="$LIBS"
+LIBS="$LIBS $all_libraries $X_EXTRA_LIBS"
 AC_CHECK_FUNCS(inet_ntop inet_pton getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
+LIBS="$kde_safe_LIBS"
 
 AC_MSG_CHECKING([for struct addrinfo])
 AC_TRY_COMPILE(dnl
