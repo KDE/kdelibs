@@ -62,6 +62,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
       mAppSocket( QFile::decodeName(app_socket))
 {
     KCrash::setCrashHandler( sigsegv_handler );
+    signal( SIGPIPE, sigpipe_handler );
 
     appconn = new Connection();
     pendingListEntries.setAutoDelete(true);
@@ -303,6 +304,15 @@ void SlaveBase::sigsegv_handler (int)
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     write(2, "kioslave : ###############SEG FAULT#############\n", 49);
+    exit(1);
+}
+
+void SlaveBase::sigpipe_handler (int)
+{
+    // TODO: maybe access the only instance of SlaveBase and call abort() on it
+    // Default implementation of abort would exit(1), but specific slaves can
+    // abort in a nicer way and be ready for more invocations
+    kdDebug(7007) << "SIGPIPE" << endl;
     exit(1);
 }
 

@@ -328,6 +328,10 @@ public:
      * @internal
      */
     static void sigsegv_handler(int);
+    /**
+     * @internal
+     */
+    static void sigpipe_handler(int);
 
     /////////////////
     // Dispatching (internal)

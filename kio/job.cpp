@@ -183,6 +183,9 @@ void SimpleJob::start(Slave *slave)
     connect( m_slave, SIGNAL( error( int , const QString & ) ),
 	     SLOT( slotError( int , const QString & ) ) );
 
+    connect( m_slave, SIGNAL( warning( const QString & ) ),
+	     SLOT( slotWarning( const QString & ) ) );
+
     connect( m_slave, SIGNAL( finished() ),
 	     SLOT( slotFinished() ) );
 
@@ -224,6 +227,11 @@ void SimpleJob::slotError( int error, const QString & errorText )
     m_errorText = errorText;
     // error terminates the job
     slotFinished();
+}
+
+void SimpleJob::slotWarning( const QString & errorText )
+{
+    KMessageBox::information( 0L, errorText );
 }
 
 void SimpleJob::slotTotalSize( unsigned long size )

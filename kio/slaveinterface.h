@@ -182,6 +182,11 @@ protected:
      */
     void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ );
 
+    /**
+     * @internal
+     */
+    static void sigpipe_handler(int);
+
 protected:
     Connection * m_pConnection;
 };

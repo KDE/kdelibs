@@ -33,6 +33,7 @@ using namespace KIO;
 SlaveInterface::SlaveInterface( Connection * connection )
 {
     m_pConnection = connection;
+    signal( SIGPIPE, sigpipe_handler );
 }
 
 bool SlaveInterface::dispatch()
@@ -187,6 +188,13 @@ void SlaveInterface::openPassDlg( const QString& head, const QString& user, cons
     else
         m_pConnection->sendnow( CMD_NONE, packedArgs );		
 
+}
+
+void SlaveInterface::sigpipe_handler(int)
+{
+    kdDebug() << "*** SIGPIPE ***" << endl;
+    // Do nothing.
+    // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
 }
 
 #include "slaveinterface.moc"

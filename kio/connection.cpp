@@ -50,7 +50,6 @@ template class QList<Task>;
 
 Connection::Connection()
 {
-    signal( SIGPIPE, sigpipe_handler );
     f_out = 0;
     fd_in = 0;
     socket = 0;
@@ -255,14 +254,6 @@ int Connection::read( int* _cmd, QByteArray &data )
 
     *_cmd = cmd;
     return len;
-}
-
-void Connection::sigpipe_handler(int)
-{
-    kdDebug() << "*** SIGPIPE ***" << endl;
-    // Do nothing.
-    // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
-    // (or connection with app lost if this connection is in a slave)
 }
 
 #include "connection.moc"

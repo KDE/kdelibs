@@ -695,29 +695,29 @@ void FileProtocol::stat( const QString & path, const QString& /*query*/ )
     for( ; it != entry.end(); it++ ) {
         switch ((*it).m_uds) {
             case KIO::UDS_FILE_TYPE:
-                kdDebug() << "File Type : " << (mode_t)((*it).m_long) << endl;
+                kdDebug(7101) << "File Type : " << (mode_t)((*it).m_long) << endl;
                 break;
             case KIO::UDS_ACCESS:
-                kdDebug() << "Access permissions : " << (mode_t)((*it).m_long) << endl;
+                kdDebug(7101) << "Access permissions : " << (mode_t)((*it).m_long) << endl;
                 break;
             case KIO::UDS_USER:
-                kdDebug() << "User : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "User : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kdDebug() << "Group : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "Group : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kdDebug() << "Name : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "Name : " << ((*it).m_str.ascii() ) << endl;
                 //m_strText = decodeFileName( (*it).m_str );
                 break;
             case KIO::UDS_URL:
-                kdDebug() << "URL : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "URL : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kdDebug() << "MimeType : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "MimeType : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kdDebug() << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
+                kdDebug(7101) << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
                 break;
         }
     }
@@ -760,7 +760,7 @@ void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
     closedir( dp );
     totalSize( entryNames.count() );
 
-    /* set the current dir to the path to speed up 
+    /* set the current dir to the path to speed up
        in not having to pass an absolute path.
        We restore the path later to get out of the
        path - the kernel wouldn't unmount or delete
@@ -825,7 +825,7 @@ void FileProtocol::special( const QByteArray &data)
 	
 	bool ro = ( iRo != 0 );
 	
-	kdDebug(7006) << "!!!!!!!!! MOUNTING " << debugString(fstype) << " " << debugString(dev) << " " << debugString(point) << endl;
+	kdDebug(7101) << "!!!!!!!!! MOUNTING " << debugString(fstype) << " " << debugString(dev) << " " << debugString(point) << endl;
 	mount( ro, fstype, dev, point );
 	
       }
@@ -846,8 +846,9 @@ void FileProtocol::special( const QByteArray &data)
       connect( &shred, SIGNAL( processedSize( unsigned long ) ),
                this, SLOT( slotProcessedSize( unsigned long ) ) );
       if (!shred.shred())
-        error( KIO::ERR_CANNOT_DELETE, filename );
-      finished();
+          error( KIO::ERR_CANNOT_DELETE, filename );
+      else
+          finished();
       break;
     }
     default:
@@ -858,37 +859,70 @@ void FileProtocol::special( const QByteArray &data)
 // Connected to KShred
 void FileProtocol::slotProcessedSize( unsigned long bytes )
 {
-  kdDebug(7006) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
+  kdDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
   processedSize( bytes );
 }
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
+    kdDebug(7101) << "FileProtocol::mount" << endl;
     QString buffer;
 
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
+    QCString dev = QFile::encodeName( _dev );
+    QCString point = QFile::encodeName( _point );
+    QCString fstype = _fstype;
+    QCString readonly = _ro ? "-r" : "";
 
-    // Look in /etc/fstab ?
-    if ( !_fstype || *_fstype == 0 || _point.isEmpty() )
-	buffer.sprintf( "mount %s 2>%s", QFile::encodeName(_dev).data(), tmp );
-    else if ( _ro )
-	buffer.sprintf( "mount -rt %s %s %s 2>%s",_fstype,
-			QFile::encodeName(_dev).data(),
-			QFile::encodeName(_point).data(), tmp );
-    else
-	buffer.sprintf( "mount -t %s %s %s 2>%s", _fstype,
-			QFile::encodeName(_dev).data(),
-			QFile::encodeName(_point).data(), tmp );
+    // Two steps, in case mount doesn't like it when we pass all options
+    for ( int step = 0 ; step <= 1 ; step++ )
+    {
+        // Look in /etc/fstab ? If no fstype nor mountpoint or on second step.
+        if ( (fstype.isEmpty() && point.isEmpty()) || step == 1 )
+            buffer.sprintf( "mount %s 2>%s", dev.data(), tmp );
+        else
+            if ( fstype.isEmpty() && !point.isEmpty() )
+                buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
+            else
+                buffer.sprintf( "mount %s -t %s %s %s 2>%s", readonly.data(),
+                                fstype.data(), dev.data(), point.data(), tmp );
 
-    system( buffer );
+        kdDebug(7101) << buffer << endl;
 
-    QString err = testLogFile( tmp );
-    if ( err.isEmpty() )
-	finished();
-    else
-        error( KIO::ERR_COULD_NOT_MOUNT, err );
+        system( buffer );
+
+        QString err = testLogFile( tmp );
+        if ( err.isEmpty() )
+        {
+            finished();
+            return;
+        }
+        else
+        {
+            // Didn't work - or maybe we just got a warning
+            QString mp = KIO::findDeviceMountPoint( _dev );
+            // Is the device mounted ?
+            if ( !mp.isNull() )
+            {
+                kdDebug(7101) << "mount got a warning: " << err << endl;
+                warning( err );
+                finished();
+                return;
+            }
+            else
+            {
+                if ( step == 0 )
+                    kdDebug(7101) << "Mounting with all options didn't work, trying 'mount device'" << endl;
+                else
+                {
+                    error( KIO::ERR_COULD_NOT_MOUNT, err );
+                    return;
+                }
+            }
+        }
+    }
 }
 
 

@@ -234,6 +234,12 @@ namespace KIO {
         virtual void slotFinished( );
         void slotSpeedTimeout();
 
+        /**
+         * @internal
+         * Called on a slave's warning
+         */
+        virtual void slotWarning( const QString & );
+
     public slots:
         /**
          * @internal
