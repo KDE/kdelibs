@@ -44,6 +44,74 @@ KLibFactory::~KLibFactory()
     delete d;
 }
 
+typedef QValueList<lt_dlhandle> LTList;
+
+static LTList *loaded_stack = 0;
+static LTList *pending_close = 0;
+
+static void add_pending(lt_dlhandle h)
+{
+  if (pending_close == 0) {
+    pending_close = new LTList; 
+  }
+  kdDebug(150) << "add pending close " << h << endl;
+  pending_close->append(h);
+}
+
+static void add_loaded(lt_dlhandle h)
+{
+  if (loaded_stack == 0) {
+    loaded_stack = new LTList;
+  }
+  kdDebug(150) << "add loaded lib " << h << endl;
+  loaded_stack->prepend(h);
+  if (pending_close != 0)
+    pending_close->remove(h);
+}
+
+static void try_close()
+{
+  if (loaded_stack == 0 || pending_close == 0) return;
+  while (!loaded_stack->isEmpty()) {
+    lt_dlhandle h = (*loaded_stack)[0];
+    if (pending_close->contains(h) != 0) {
+      kdDebug(150) << "try to dlclose " << h << ": yes, done." << endl;
+      lt_dlclose(h);
+      pending_close->remove(h);
+      loaded_stack->remove(h);
+    } else {
+      kdDebug(150) << "try to dlclose " << h << ": not yet." << endl;
+      break;
+    }
+  }
+  if (pending_close->isEmpty()) {
+    delete pending_close;
+    pending_close = 0;
+  }
+  if (loaded_stack->isEmpty()) {
+    delete loaded_stack;
+    loaded_stack = 0;
+  }
+}
+
+static void close_all()
+{
+  if (loaded_stack != 0) {
+    LTList::ConstIterator it;
+    for (it = loaded_stack->begin(); it != loaded_stack->end(); ++it) {
+      lt_dlhandle h = *it;
+      kdDebug(150) << "finally close lib " << h << endl;
+      lt_dlclose( h );
+    }
+    delete loaded_stack;
+    loaded_stack = 0;
+  }
+  if (pending_close != 0) {
+    delete pending_close;
+    pending_close = 0;
+  }
+}
+
 // -----------------------------------------------
 
 class KLibraryPrivate {
@@ -101,8 +169,14 @@ KLibrary::~KLibrary()
     // to text. That should be safe as it only uses objects defined by Qt.
     kapp->clipboard()->setText(kapp->clipboard()->text());
 
-    if (!d->do_not_unload)
-        lt_dlclose( m_handle );
+    if (!d->do_not_unload && getenv("KDE_NOUNLOAD")==NULL) {
+        if (getenv("KDE_DLCLOSE") != NULL) 
+            lt_dlclose( m_handle );
+        else
+	    add_pending( m_handle );
+    }
+
+    try_close();
     delete d;
 }
 
@@ -219,6 +293,7 @@ void KLibLoader::cleanUp()
 
   delete s_self;
   s_self = 0;
+  close_all();
 }
 
 KLibLoader::KLibLoader( QObject* parent, const char* name )
@@ -285,6 +360,8 @@ KLibrary* KLibLoader::library( const char *name )
 
     lib = new KLibrary( name, libfile, handle );
     m_libs.insert( name, lib );
+
+    add_loaded( handle );
 
     connect( lib, SIGNAL( destroyed() ),
 	     this, SLOT( slotLibraryDestroyed() ) );
