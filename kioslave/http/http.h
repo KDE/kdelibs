@@ -80,8 +80,9 @@ protected:
   ssize_t write (const void *buf, size_t nbytes);
 
   /**
-    * A "smart" wrapper around read that will use SSL_read or
-    * read(2) depending on whether you've got an SSL connection or not.
+    * Another "smart" wrapper, this time around read that will
+    * use SSL_read or read(2) depending on whether you've got an
+    * SSL connection or not.
     */
   ssize_t read (void *b, size_t nbytes);
 
@@ -95,9 +96,9 @@ protected:
   bool m_bEOF;
 
   /**
-    * Add an encoding on to the appropiate stack
-    * this is nececesary because transfer encodings
-    * and content encodings must be handled separately.
+    * Add an encoding on to the appropiate stack this
+    * is nececesary because transfer encodings and
+    * content encodings must be handled separately.
     */
   void addEncoding(QString, QStack<char> *);
 
@@ -105,6 +106,9 @@ protected:
   bool isValidProtocol (KURL *);
 
   void configAuth(const char *, bool);
+#ifdef DO_SSL
+  void initSSL();
+#endif
 
   size_t sendData();
 
@@ -114,11 +118,20 @@ protected:
   void clearError() { m_iSavedError = 0; }
   void releaseError() {
     if ( m_iSavedError )
-      IOProtocol::error( m_iSavedError, m_strSavedError.c_str() );
+      IOProtocol::error( m_iSavedError, m_strSavedError );
     m_iSavedError = 0;
   }
 
 
+  /**
+    * Return the proper UserAgent string.
+    * Sure, I could make this configurable so
+    * someone could tweak this to their heart's
+    * delight, but right now, this should be
+    * left alone, so if someone complains,
+    * I"m getting weird errors, I can track
+    * down, what version they have.
+    */
   const char *getUserAgentString();
 
 protected: // Members
@@ -130,7 +143,7 @@ protected: // Members
   // Language/Encoding
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
-  string m_sContentMD5, 
+  QString m_sContentMD5, 
          m_strMimeType,
          m_strCharsets,
          m_strLanguages;
@@ -138,21 +151,21 @@ protected: // Members
   // Proxy related members
   bool m_bUseProxy;
   int m_strProxyPort;
-  string m_strNoProxyFor,
+  QString m_strNoProxyFor,
          m_strProxyHost,
          m_strProxyUser,
          m_strProxyPass;
   struct sockaddr_in m_proxySockaddr;
 
   // Authentication
-  string m_strRealm, 
+  QString m_strRealm, 
          m_strAuthString, 
          m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
 
   // Stuff to hold various error state information
   int m_iSavedError;
-  string m_strSavedError;
+  QString m_strSavedError;
   bool m_bIgnoreJobErrors,
        m_bIgnoreErrors; 
 

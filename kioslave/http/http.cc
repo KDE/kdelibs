@@ -57,6 +57,10 @@ extern "C" {
   void sigsegv_handler(int);
   void sigchld_handler(int);
   void sigalrm_handler(int);
+  char *trimLead(char *);
+#ifdef DO_SSL
+  int verify_callback();
+#endif
 };
 
 int main( int argc, char **argv )
@@ -68,6 +72,15 @@ int main( int argc, char **argv )
 
   HTTPProtocol http( &parent );
   http.dispatchLoop();
+}
+
+char * trimLead (char *orig_string) {
+  static unsigned int i=0; // I don't increment the string
+                           // so that this can be called over
+                           // and over
+  while ( (*(orig_string+i) == ' ') || (*(orig_string+i) == ' ') )
+    i++;
+  return orig_string+i;
 }
 
 void sigsegv_handler(int signo)
@@ -113,9 +126,11 @@ void setup_alarm(unsigned int timeout)
 
 char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
 {
+#ifdef DO_MD5
   string domain, realm, algorithm, nonce, opaque, qop;
   const char *p=auth_str;
   int i;
+  HASHHEX HA1, HA2 = "", Response;
 
   if (!user || !passwd)
     return "";
@@ -179,10 +194,6 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   t1 += domain.c_str();
   t1 += "\", ";
 
-#ifdef DO_MD5
-  HASHHEX HA1;
-  HASHHEX HA2 = "";
-  HASHHEX Response;
   char szCNonce[10] = "abcdefghi";
   char szNonceCount[9] = "00000001";
 
@@ -199,7 +210,6 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   t1 += "response=\"";
   t1 += Response;
   t1 += "\", ";
-#endif
 
   if (opaque != "") {
     t1 += "opaque=\"";
@@ -210,6 +220,10 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   t1 += "\r\n";
 
   return strdup(t1.data());
+#else
+  //error(ERR_COULD_NOT_AUTHENTICATE, "digest");
+  return strdup("\r\n");
+#endif
 }
 
 char *create_basic_auth (const char *header, const char *user, const char *passwd)
@@ -264,14 +278,16 @@ int revmatch(const char *host, const char *nplist)
     return 0;
 }
 
-extern "C" {
-  int verify_callback();
-}
-
+#ifdef DO_SSL
+// This is for now a really stupid yes-man callback.
+// If I (or someone else) feels motivated enough to do some
+// real verification a la OpenSSL, then this might be a
+// more useful function.
 int verify_callback ()
 {
   return 1;
-} 
+}
+#endif
 
 /*****************************************************************************/
 
@@ -290,38 +306,21 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_bUseProxy = KProtocolManager::self().useProxy();
 
   if ( m_bUseProxy ) {
-    KURL ur ( KProtocolManager::self().httpProxy().data() );
+    KURL ur ( KProtocolManager::self().httpProxy() );
 
     m_strProxyHost = ur.host();
     m_strProxyPort = ur.port();
     m_strProxyUser = ur.user();
     m_strProxyPass = ur.pass();
 
-    m_strNoProxyFor = KProtocolManager::self().noProxyFor().data();
+    m_strNoProxyFor = KProtocolManager::self().noProxyFor();
   }
 
   m_bEOF=false;
 #ifdef DO_SSL
   m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
   m_bUseSSL=false;
-  if (m_bUseSSL2 && m_bUseSSL3)
-    meth=SSLv23_client_method();
-  else if (m_bUseSSL3)
-    meth=SSLv3_client_method();
-  else
-    meth=SSLv2_client_method();
-#ifdef SIGPIPE
-  signal(SIGPIPE,SIG_IGN);
-#endif
-  SSLeay_add_all_algorithms();
-  SSLeay_add_ssl_algorithms();
-  ctx=SSL_CTX_new(meth);
-  if (ctx == NULL) {
-    fprintf(stderr, "We've got a problem!\n");
-    fflush(stderr);
-  }
-  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
-  hand=SSL_new(ctx);  
+  meth=0; ctx=0; hand=0;
 #endif
 
   m_sContentMD5 = "";
@@ -330,6 +329,29 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
 
   m_HTTPrev = HTTP_Unknown;
 }
+
+#ifdef DO_SSL
+void HTTPProtocol::initSSL() {
+  m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
+  m_bUseSSL=false;
+  if (m_bUseSSL2 && m_bUseSSL3)
+    meth=SSLv23_client_method();
+  else if (m_bUseSSL3)
+    meth=SSLv3_client_method();
+  else
+    meth=SSLv2_client_method();
+
+  SSLeay_add_all_algorithms();
+  SSLeay_add_ssl_algorithms();
+  ctx=SSL_CTX_new(meth);
+  if (ctx == NULL) {
+    fprintf(stderr, "We've got a problem!\n");
+    fflush(stderr);
+  }
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
+  hand=SSL_new(ctx);
+}
+#endif
 
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
@@ -351,7 +373,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
 #ifdef DO_SSL
   if (m_bUseSSL)
-    return SSL_write(hand, buf, nbytes);
+    return SSL_write(hand, (char *)buf, nbytes);
 #endif
   return ::write(m_sock, buf, nbytes);
 }
@@ -376,14 +398,13 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   ssize_t ret;
 #ifdef DO_SSL
   if (m_bUseSSL) {
-    ret=SSL_read(hand, b, nbytes);
+    ret=SSL_read(hand, (char *)b, nbytes);
     if (ret==0) m_bEOF=true;
     return ret;
   }
 #endif
   ret=fread(b, 1, nbytes, m_fsocket);
-//  if (!ret) m_bEOF=feof(m_fsocket);
-  m_bEOF = feof( m_fsocket );
+  m_bEOF = feof(m_fsocket);
   return ret;
 }
 
@@ -432,18 +453,18 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   do_proxy = m_bUseProxy;
   bzero(c_buffer, 64);
 
-  if ( do_proxy && !m_strNoProxyFor.empty() ) 
-    do_proxy = !revmatch( _url.host(), m_strNoProxyFor.c_str() );    
+  if ( do_proxy && !m_strNoProxyFor.isEmpty() ) 
+    do_proxy = !revmatch( _url.host(), m_strNoProxyFor );    
 
   if( do_proxy ) {
     debug( "http_open 0");
-    if( !KSocket::initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) ) {
-	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost.c_str() );
+    if( !KSocket::initSockaddr( &m_proxySockaddr, m_strProxyHost, m_strProxyPort ) ) {
+	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost );
 	return false;
       }
 
     if( ::connect( m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof( m_proxySockaddr ) ) ) {
-      error( ERR_COULD_NOT_CONNECT, m_strProxyHost.c_str() );
+      error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
       return false;
     }
   } else {
@@ -464,7 +485,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   if (!openStream())
     error( ERR_COULD_NOT_CONNECT, _url.host() );
 
-  string command;
+  QString command;
 
   if ( _post_data ) {
     _reload = true;     /* no caching allowed */
@@ -503,15 +524,15 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
 #ifdef DO_GZIP
   // Content negotiation
-  command += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+  command += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
 #endif
 
   // Charset negotiation:
-  if ( !m_strCharsets.empty() )
+  if ( !m_strCharsets.isEmpty() )
     command += "Accept-Charset: " + m_strCharsets + "\r\n";
 	   
   // Language negotiation:
-  if ( !m_strLanguages.empty() )
+  if ( !m_strLanguages.isEmpty() )
     command += "Accept-Language: " + m_strLanguages + "\r\n";
   
   command += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
@@ -534,7 +555,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     if (Authentication == AUTH_Basic){
       command += create_basic_auth("Authorization", _url.user(), _url.pass());
     } else if (Authentication == AUTH_Digest) {
-      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strAuthString.c_str());
+      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strAuthString);
     }
     command+="\r\n";
   }
@@ -543,9 +564,9 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     debug( "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic)
-	command += create_basic_auth("Proxy-authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str());
+	command += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
       else if (ProxyAuthentication == AUTH_Digest)
-	command += create_digest_auth("Proxy-Authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str(), m_strProxyAuthString.c_str());
+	command += create_digest_auth("Proxy-Authorization", m_strProxyUser, m_strProxyPass, m_strProxyAuthString);
     }
   }
 
@@ -553,7 +574,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   int n;
 repeat1:
-  if ( ( n = write(command.c_str(), command.size() ) ) != (int)command.size() ) {
+  if ( ( n = write(command, command.length() ) ) != (int)command.length() ) {
     if ( n == -1 && errno == EINTR )
       goto repeat1;    
     error( ERR_CONNECTION_BROKEN, _url.host() );
@@ -578,18 +599,20 @@ repeat2:
       f_buffer[ --len ] = 0;
 
     debug( "kio_http : Header: %s", f_buffer );
-    if ( strncmp( f_buffer, "Accept-Ranges: none", 19 ) == 0 )
-      m_bCanResume = false;
-    
+    if ( strncasecmp(f_buffer, "Accept-Ranges:", 14) == 0 ) {
+      if (strncasecmp(trimLead(f_buffer+14), "none", 4)==0)
+       m_bCanResume = false;
+    }    
 
-    else if ( strncmp( f_buffer, "Content-length: ", 16 ) == 0 || strncmp( f_buffer, "Content-Length: ", 16 ) == 0 )
-      m_iSize = atol( f_buffer + 16 );
-    else if ( strncmp( f_buffer, "Content-Type: ", 14 ) == 0 || strncmp( f_buffer, "Content-type: ", 14 ) == 0 ) {
+    else if (strncasemp(f_buffer, "Content-length:", 15)==0)
+      m_iSize = atol(trimLead(f_buffer+15));
+    else if (strncasecmp(f_buffer, "Content-Type:", 13)==0) {
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
-      m_strMimeType = f_buffer + 14;
-    }
-    else if ( strncasecmp( f_buffer, "HTTP/1.0 ", 9 ) == 0 ) {
+      m_strMimeType = trimLead(f_buffer+13);
+    } else if (strncasecmp(f_buffer, "Warning:", 8)==0) {
+      error(ERR_WARNING, trimLead(f_buffer+8));
+    } else if (strncasecmp(f_buffer, "HTTP/1.0 ", 9)==0) {
       m_HTTPrev = HTTP_10;
       // Unauthorized access
       if ( strncmp( f_buffer + 9, "401", 3 ) == 0 ) {
@@ -618,25 +641,27 @@ repeat2:
     // In fact we should do redirection only if we got redirection code
     else if ( strncmp(f_buffer, "Location:", 9) == 0 ) {
       http_close();
-      KURL u( _url, f_buffer + 10 );
+      KURL u( _url, trimLead(f_buffer+9) );
       redirection( u.url() );
-      return http_open( u, _post_data, _post_data_size, _reload, _offset );
-    } else if ( strncasecmp(f_buffer, "WWW-Authenticate:", 17) == 0 ) {
-      configAuth(f_buffer+17, false);
-    } else if ( strncasecmp(f_buffer, "Proxy-Authenticate:", 19) ==0 ) {
-      configAuth(f_buffer+19, true);
+      return http_open(u, _post_data, _post_data_size, _reload, _offset);
+    } else if (strncasecmp(f_buffer, "WWW-Authenticate:", 17)==0) {
+      configAuth(trimLead(f_buffer+17), false);
+    } else if (strncasecmp(f_buffer, "Proxy-Authenticate:", 19)==0) {
+      configAuth(trimLead(f_buffer+19), true);
     } else if (m_HTTPrev == HTTP_11) {
-      if (strncasecmp(f_buffer, "Connection: ", 12) == 0) {
-	if (strncasecmp(f_buffer+12, "Close", 5)==0)
+      if (strncasecmp(f_buffer, "Connection:", 11) == 0) {
+	if (strncasecmp(trimLead(f_buffer+11), "Close", 5)==0)
 	  /*m_bPersistant=false*/;
-      } else if (strncasecmp(f_buffer, "Transfer-Encoding: ", 19) == 0) {
+	else if (strncasecmp(trimLead(f_buffer+11), "Keep-Alive", 10)==0)
+	  /*m_bPersistant=true*/;
+      } else if (strncasecmp(f_buffer, "Transfer-Encoding:", 18) == 0) {
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
-	addEncoding(f_buffer+19, &m_qTransferEncodings);
-      } else if (strncasecmp(f_buffer, "Content-Encoding: ", 18) == 0) {
-	addEncoding(f_buffer+18, &m_qContentEncodings);
-      } else if (strncasecmp(f_buffer, "Content-MD5: ", 13)==0) {
-	m_sContentMD5 = strdup(f_buffer+13);
+	addEncoding(trimLead(f_buffer+18), &m_qTransferEncodings);
+      } else if (strncasecmp(f_buffer, "Content-Encoding:", 17) == 0) {
+	addEncoding(trimLead(f_buffer+17), &m_qContentEncodings);
+      } else if (strncasecmp(f_buffer, "Content-MD5:", 12)==0) {
+	m_sContentMD5 = strdup(trimLead(f_buffer+12));
       }
     }
     bzero(f_buffer, 1024);
@@ -645,35 +670,36 @@ repeat2:
     http_close();
     QString user = _url.user();
     QString pass = _url.pass();
-    if (m_strRealm.empty())
+    if (m_strRealm.isEmpty())
       m_strRealm = _url.host();
-    if ( !open_PassDlg(m_strRealm.c_str(), user, pass) ) {
+    if ( !open_PassDlg(m_strRealm, user, pass) ) {
       error( ERR_ACCESS_DENIED, _url.url() );
       return false;
     }
     
-    KURL u( _url );
-    u.setUser( user );
-    u.setPass( pass );
-    return http_open( u, _post_data, _post_data_size, _reload, _offset );
+    KURL u(_url);
+    u.setUser(user);
+    u.setPass(pass);
+    return http_open(u, _post_data, _post_data_size, _reload, _offset);
   }
 
-  mimeType( m_strMimeType.c_str() );
+  mimeType(m_strMimeType);
   return true;
 }
 
 
 void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 {
-  if (encoding.lower() == "chunked") {
+  // Identy is the same as no encoding
+  if (encoding.lower() == "identity") {
+    return;
+  } else if (encoding.lower() == "chunked") {
     encs->push("chunked");
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     m_iSize = 0;
-  } else if (encoding.lower() == "gzip") {
-    encs->push("gzip");
+  } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip") || (encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
+    encs->push(strdup(encoding.lower()));
     m_iSize = 0;
-  } else if (encoding.lower() == "identity") {
-    return;  // Identy is the same as no encoding
   } else {
     fprintf(stderr, "Unknown encoding encountered.  Please write code.\n");
     fflush(stderr);
@@ -684,11 +710,11 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 
 bool HTTPProtocol::isValidProtocol (const char *p)
 {
-  if (strncasecmp(p, "http", 4)==0)  // Standard HTTP
+  if (strcasecmp(p, "https")==0) // Secure HTTP
     return true;
-  if (strncasecmp(p, "https", 5)==0) // Secure HTTP
+  if (strcasecmp(p, "httpf")==0) // Try to use WebDAV
     return true;
-  if (strncasecmp(p, "httpf", 5)==0) // Try to use WebDAV
+  if (strcasecmp(p, "http")==0)  // Standard HTTP
     return true;
   return false;
 }
@@ -706,7 +732,7 @@ bool HTTPProtocol::isValidProtocol (KURL *u)
 void HTTPProtocol::configAuth(const char *p, bool b)
 {
   HTTP_AUTH f;
-  char * strAuth=0;
+  char * strAuth=0, *assign=0;
   int i;
 
   while( *p == ' ' ) p++;
@@ -731,7 +757,10 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     if ( strncasecmp( p, "realm=\"", 7 ) == 0 ) {
       p += 7;
       while( p[i] != '"' ) i++;
-      m_strRealm.assign( p, i );
+      assign=(char *)malloc(i);
+      memcpy((void *)assign, (const void *)p, i);
+      m_strRealm=assign;
+      free(assign);
     }
     p+=i;
     p++;
@@ -787,7 +816,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.041099.2");
+  QString user_agent("Konqueror/1.9.041899.2");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
@@ -846,7 +875,7 @@ void HTTPProtocol::slotGet( const char *_url )
     if (nbytes > 0) {
       if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
 #ifdef DO_MD5
-	if (m_sContentMD5.c_str()) {
+	if (!m_sContentMD5.isEmpty()) {
 	  MD5Update(&context, (const unsigned char*)buffer, nbytes);
 	}
 #endif
@@ -908,8 +937,8 @@ void HTTPProtocol::slotGet( const char *_url )
     int f;
     if ((f=m_sContentMD5.find("="))<=0)
       f=m_sContentMD5.length();
-    if (strncmp(enc_digest, m_sContentMD5.c_str(), f)) {
-      fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.c_str());
+    if (m_sContentMD5.left(f) != enc_digest) {
+      fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.ascii());
     } else
       fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
   } else 
@@ -1062,7 +1091,10 @@ size_t HTTPProtocol::sendData()
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   IOProtocol::slotCopy(_source, _dest);
-  
+
+  fprintf(stderr,"Slot copy called with: :%s:%s:\n", _source, _dest);
+  fflush(stderr);
+
   KURL udest( _dest );
   if ( udest.isMalformed() ) {
     error( ERR_MALFORMED_URL, _dest );
