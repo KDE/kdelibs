@@ -150,7 +150,7 @@ void Slave::setHost( const QString &host, int port,
 {
     m_host = host;
     m_port = port;
-    m_user = user; // Why was this missing ? (David)
+    m_user = user;
     m_passwd = passwd;
 
     slaveconn.connect(this, SLOT(gotAnswer()));

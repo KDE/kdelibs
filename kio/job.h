@@ -70,7 +70,7 @@ namespace KIO {
      * @param data packed data; the meaning is completely dependent on the
      *        slave, but usually starts with an int for the command number.
      */
-    SimpleJob * special( const KURL& url, const QByteArray & data );
+    SimpleJob * special( const KURL& url, const QByteArray & data, bool showProgressInfo = true );
 
     /**
      * Mount, special job for kio_file
@@ -80,14 +80,14 @@ namespace KIO {
      * @param dev device (e.g. /dev/sda0)
      * @param point mount point, can be null
      */
-    SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point );
+    SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
 
     /**
      * Unmount, special job for kio_file
      *
      * @param mount point to unmount
      */
-    SimpleJob *unmount( const QString & point );
+    SimpleJob *unmount( const QString & point, bool showProgressInfo = true );
 
     /**
      * Finds all details for one file or directory.
@@ -98,7 +98,7 @@ namespace KIO {
      * get, aka read.
      * The slave emits the data through @ref data
      */
-    TransferJob *get( const KURL& url, bool reload=false );
+    TransferJob *get( const KURL& url, bool reload=false, bool showProgressInfo = true );
 
     /**
      * put, aka write.
@@ -108,14 +108,15 @@ namespace KIO {
      * @param resume
      */
     TransferJob *put( const KURL& url, int permissions,
-                      bool overwrite, bool resume );
+                      bool overwrite, bool resume, bool showProgressInfo = true );
 
     /**
      * HTTP POST (for form data)
      * @param url where to write data
      * @param postData encoded data to post
      */
-    TransferJob *http_post( const KURL& url, const QByteArray &postData );
+    TransferJob *http_post( const KURL& url, const QByteArray &postData,
+                            bool showProgressInfo = true );
 
     /**
      * Finds mimetype for one file or directory.

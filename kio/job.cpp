@@ -272,24 +272,24 @@ SimpleJob *KIO::chmod( const KURL& url, int permissions )
     return job;
 }
 
-SimpleJob *KIO::special(const KURL& url, const QByteArray & data)
+SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgressInfo)
 {
     kdDebug(7007) << "special " << debugString(url.url()) << endl;
-    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data, false);
+    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
     return job;
 }
 
-SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point )
+SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(1) << Q_INT8( ro ? 1 : 0 )
              << fstype << dev << point;
-    return special( KURL("file:/"), packedArgs );
+    return special( KURL("file:/"), packedArgs, showProgressInfo );
 }
 
-SimpleJob *KIO::unmount( const QString& point )
+SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(2) << point;
-    return special( KURL("file:/"), packedArgs );
+    return special( KURL("file:/"), packedArgs, showProgressInfo );
 }
 
 //////////
@@ -314,11 +314,11 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
     m_statResult = entry;
 }
 
-StatJob *KIO::stat(const KURL& url )
+StatJob *KIO::stat(const KURL& url)
 {
     kdDebug(7007) << "stat " << debugString(url.url()) << endl;
     KIO_ARGS << url.path();
-    StatJob * job = new StatJob(url, CMD_STAT, packedArgs);
+    StatJob * job = new StatJob(url, CMD_STAT, packedArgs );
     return job;
 }
 
@@ -326,8 +326,9 @@ StatJob *KIO::stat(const KURL& url )
 
 TransferJob::TransferJob( const KURL& url, int command,
                           const QByteArray &packedArgs,
-                          const QByteArray &_staticData)
-    : SimpleJob(url, command, packedArgs), staticData( _staticData)
+                          const QByteArray &_staticData,
+                          bool showProgressInfo)
+    : SimpleJob(url, command, packedArgs, showProgressInfo), staticData( _staticData)
 {
     m_suspended = false;
 }
@@ -448,29 +449,29 @@ void TransferJob::start(Slave *slave)
        slave->connection()->suspend();
 }
 
-TransferJob *KIO::get( const KURL& url, bool reload )
+TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url.path() << url.query() << Q_INT8( reload ? 1 : 0);
-    TransferJob * job = new TransferJob( url, CMD_GET, packedArgs );
+    TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, showProgressInfo );
     return job;
 }
 
-TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData )
+TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
     assert( url.protocol() == "http" );
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << url.path() << url.query();
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
-                                         packedArgs, postData );
+                                         packedArgs, postData, showProgressInfo );
     return job;
 }
 
 TransferJob *KIO::put( const KURL& url, int permissions,
-                  bool overwrite, bool resume )
+                  bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions << url.path();
-    TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs );
+    TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, showProgressInfo );
     return job;
 }
 
@@ -478,7 +479,7 @@ TransferJob *KIO::put( const KURL& url, int permissions,
 
 MimetypeJob::MimetypeJob( const KURL& url, int command,
                   const QByteArray &packedArgs )
-    : TransferJob(url, command, packedArgs)
+    : TransferJob(url, command, packedArgs, false)
 {
 }
 

@@ -282,7 +282,8 @@ namespace KIO {
     public:
         TransferJob(const KURL& url, int command,
                     const QByteArray &packedArgs,
-                    const QByteArray &_staticData = QByteArray());
+                    const QByteArray &_staticData = QByteArray(),
+                    bool showProgressInfo = true);
 
         virtual void start(Slave *slave);
 
