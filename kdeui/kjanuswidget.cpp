@@ -166,7 +166,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     topLayout->addWidget( mPlainPage, 10 );
   }
 
-  connect(kapp,SIGNAL(kdisplayFontChanged()),SLOT(slotFontChanged()));
+  if ( kapp )
+    connect(kapp,SIGNAL(kdisplayFontChanged()),SLOT(slotFontChanged()));
   mValid = true;
 
   setSwallowedWidget(0); // Set default size if 'mFace' is Swallow.

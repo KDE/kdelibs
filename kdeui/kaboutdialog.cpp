@@ -683,7 +683,8 @@ void KAboutContainerBase::setProduct( const QString &appName,
     return;
   }
 
-  mIconLabel->setPixmap( kapp->icon() );
+  if ( kapp )
+      mIconLabel->setPixmap( kapp->icon() );
 
   QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
     arg(QString::fromLatin1(KDE_VERSION_STRING));
@@ -988,7 +989,7 @@ KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
   if(name==0 || email==0)
     { // this will nearly never happen (out of memory in about box?)
       kdDebug() << "KAboutContributor::KAboutContributor: Out of memory." << endl;
-      kapp->quit();
+      qApp->quit();
     }
   setFrameStyle(QFrame::Panel | QFrame::Raised);
   // -----
@@ -1299,7 +1300,7 @@ KAboutWidget::KAboutWidget(QWidget *_parent, const char *_name)
   {
     // this will nearly never happen (out of memory in about box?)
     kdDebug() << "KAboutWidget::KAboutWidget: Out of memory." << endl;
-    kapp->quit();
+    qApp->quit();
   }
   // -----
   cont->setText(i18n("Other Contributors:"));
@@ -1487,7 +1488,7 @@ KAboutDialog::KAboutDialog(QWidget *_parent, const char *_name, bool modal)
   {
     // this will nearly never happen (out of memory in about box?)
     kdDebug() << "KAboutDialog::KAboutDialog: Out of memory." << endl;
-    kapp->quit();
+    qApp->quit();
   }
   setMainWidget(about);
   connect(about, SIGNAL(sendEmail(const QString&, const QString&)),
@@ -1590,7 +1591,8 @@ void KAboutDialog::setVersion(const QString &_name)
 
 void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
-  kapp->invokeMailer( email, QString::null );
+  if ( kapp )
+      kapp->invokeMailer( email, QString::null );
   /*
   kdDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
 	<< name << ", " << email << endl;
@@ -1600,7 +1602,8 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 
 void KAboutDialog::openURLSlot(const QString& url)
 {
-  kapp->invokeBrowser( url );
+  if ( kapp )
+      kapp->invokeBrowser( url );
   //kdDebug() << "KAboutDialog::openURLSlot: request to open URL " << url << endl;
   //emit(openURL(url));
 }

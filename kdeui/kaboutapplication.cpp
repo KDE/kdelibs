@@ -33,7 +33,9 @@
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 				      bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close,
+  :KAboutDialog( AbtTabbed|AbtProduct, 
+                 kapp ? kapp->caption() : QString::null, 
+                 Close, Close,
 		 parent, name, modal )
 {
   buildDialog(KGlobal::instance()->aboutData());
@@ -54,7 +56,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     //
     // Recovery
     //
-    setProduct( kapp->caption(), i18n("??"), QString::null, QString::null );
+    setProduct( kapp ? kapp->caption() : QString::null, i18n("??"), QString::null, QString::null );
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
     QString appPageText =

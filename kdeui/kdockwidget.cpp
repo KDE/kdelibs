@@ -18,6 +18,7 @@
 #include "kdockwidget.h"
 #include "kdockwidget_private.h"
 
+#include <qapplication.h>
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjectlist.h>
@@ -27,8 +28,8 @@
 #include <qtabwidget.h>
 
 #ifndef NO_KDE2
-#include <kapp.h>
 #include <kconfig.h>
+#include <kglobal.h>
 #include <ktoolbar.h>
 #include <kpopupmenu.h>
 #include <kwin.h>
@@ -1740,7 +1741,7 @@ void KDockManager::readConfig(QDomElement &base)
 void KDockManager::writeConfig( KConfig* c, QString group )
 {
   //debug("BEGIN Write Config");
-  if ( !c ) c = kapp->config();
+  if ( !c ) c = KGlobal::config();
   if ( group.isEmpty() ) group = "dock_setting_default";
 
   c->setGroup( group );
@@ -1858,7 +1859,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
 #include <qmessagebox.h>
 void KDockManager::readConfig( KConfig* c, QString group )
 {
-  if ( !c ) c = kapp->config();
+  if ( !c ) c = KGlobal::config();
   if ( group.isEmpty() ) group = "dock_setting_default";
 
   c->setGroup( group );

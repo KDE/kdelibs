@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2002/01/22 10:23:55  hausmann
+ * - minor API fix (don't return a const QColor object)
+ *
  * Revision 1.20  2001/10/10 17:40:39  mueller
  * CVS_SILENT: fixincludes
  *
@@ -195,7 +198,7 @@ KLed::paintEvent(QPaintEvent *)
 	  paintRect();
 	  break;
 	default  :
-	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
+	  qWarning("%s: in class KLed: no KLed::Look set",qApp->argv()[0]);
 	}
       break;
     case Circular:
@@ -211,11 +214,11 @@ KLed::paintEvent(QPaintEvent *)
 	  paintSunken();
 	  break;
 	default:
-	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
+	  qWarning("%s: in class KLed: no KLed::Look set",qApp->argv()[0]);
 	}
       break;
     default:
-      qWarning("%s: in class KLed: no KLed::Shape set",kapp->argv()[0]);
+      qWarning("%s: in class KLed: no KLed::Shape set",qApp->argv()[0]);
       break;
     }
 #ifdef PAINT_BENCH

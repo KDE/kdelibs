@@ -153,7 +153,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = QString::fromLatin1( m_aboutData
                                     ? m_aboutData->appName()
-                                    : kapp->name() );
+                                    : qApp->name() );
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;
   for (; index < d->appcombo->count(); index++) {
@@ -381,7 +381,8 @@ void KBugReport::slotSetFrom()
 
 void KBugReport::slotUrlClicked(const QString &urlText)
 {
-  kapp->invokeBrowser( urlText );
+  if ( kapp )
+    kapp->invokeBrowser( urlText );
 
   // When using the web form, a click can also close the window, as there's
 	// not much to do. It also gives the user a direct response to his click:

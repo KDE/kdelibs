@@ -112,7 +112,7 @@ KPopupMenu* KHelpMenu::menu()
     // compatible.
     //
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(qApp->name());
 
     mMenu = new KPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));

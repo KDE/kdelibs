@@ -292,7 +292,7 @@ KCursorPrivate::~KCursorPrivate()
 void KCursorPrivate::start()
 {
     if ( !autoHideTimer ) {
-        autoHideTimer = new QTimer(kapp);
+        autoHideTimer = new QTimer(qApp);
         QObject::connect( autoHideTimer, SIGNAL( timeout() ),
                           this, SLOT( slotHideCursor() ));
     }

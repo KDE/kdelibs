@@ -192,7 +192,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
 
     if (!dontAskAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        QString dontAsk = config->readEntry( dontAskAgainName).lower();
        if (dontAsk == "yes")
@@ -262,7 +262,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
 
     if (!dontAskAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        QString dontAsk = config->readEntry( dontAskAgainName).lower();
        if (dontAsk == "yes")
@@ -336,7 +336,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 
     if (!dontAskAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        QString dontAsk = config->readEntry( dontAskAgainName).lower();
        if (dontAsk == "yes")
@@ -419,7 +419,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
 
     if (!dontAskAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        showMsg = config->readBoolEntry( dontAskAgainName, true);
        if (!showMsg)
@@ -481,7 +481,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
     if (!dontAskAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        QString dontAsk = config->readEntry( dontAskAgainName).lower();
        if (dontAsk == "yes")
@@ -620,7 +620,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     if (!dontShowAgainName.isEmpty())
     {
-       config = kapp->config();
+       config = KGlobal::config();
        KConfigGroupSaver saver( config, grpNotifMsgs );
        showMsg = config->readBoolEntry( dontShowAgainName, true);
        if (!showMsg)
@@ -659,7 +659,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
 void
 KMessageBox::enableAllMessages()
 {
-   KConfig *config = kapp->config();
+   KConfig *config = KGlobal::config();
    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
    if (!config->hasGroup(grpNotifMsgs))
       return;

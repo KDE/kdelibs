@@ -172,14 +172,14 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
   connect(_tipOnStart, SIGNAL(toggled(bool)), this, SLOT(showOnStart(bool)));
 
-  KConfigGroup config(kapp->config(), "TipOfDay");
+  KConfigGroup config(KGlobal::config(), "TipOfDay");
   _tipOnStart->setChecked(config.readBoolEntry("RunOnStart", true));
 }
 
 
 void KTipDialog::showTip(const QString &tipFile, bool force)
 {
-  showTip(kapp->mainWidget(), tipFile, force);
+  showTip(qApp->mainWidget(), tipFile, force);
 }
 
 
@@ -187,7 +187,7 @@ void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
 {
   if (!force)
   {
-    KConfigGroup config(kapp->config(), "TipOfDay");
+    KConfigGroup config(KGlobal::config(), "TipOfDay");
     if (!config.readBoolEntry("RunOnStart", true))
       return;
   }
@@ -216,7 +216,7 @@ void KTipDialog::showOnStart(bool on)
 
 void KTipDialog::setShowOnStart(bool on)
 {
-  KConfigGroup config(kapp->config(), "TipOfDay");
+  KConfigGroup config(KGlobal::config(), "TipOfDay");
   config.writeEntry("RunOnStart", on);
   config.sync();
 }

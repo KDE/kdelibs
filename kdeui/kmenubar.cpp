@@ -61,7 +61,8 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d = new KMenuBarPrivate;
     d->frameStyle = frameStyle();
 
-    connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+    if ( kapp )
+        connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
 
     slotReadConfig();
 }

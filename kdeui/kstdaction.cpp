@@ -138,7 +138,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 case AboutApp:
 			{
 			const KAboutData *aboutData = KGlobal::instance()->aboutData();
-			QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(kapp->name());
+			QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(qApp->name());
 			sLabel = i18n(pInfo->psLabel).arg(appName);
 			}
 			break;
@@ -709,7 +709,7 @@ KAction *preferences(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(qApp->name());
 
     return new KAction(i18n("&Configure %1...").arg(appName), "configure",
                        0, recvr, slot, parent,
@@ -735,7 +735,7 @@ KAction *helpContents(const QObject *recvr, const char *slot,
                                                           QObject *parent, const char *name )
 {
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(qApp->name());
     return new KAction(i18n("%1 &Handbook").arg(appName), "contents",
                        KStdAccel::shortcut(KStdAccel::Help), recvr, slot, parent,
                        name ? name : stdName(HelpContents));
@@ -760,7 +760,7 @@ KAction *aboutApp(const QObject *recvr, const char *slot,
                                                       QObject *parent, const char *name )
 {
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(qApp->name());
     return new KAction(i18n("&About %1").arg(appName),
                        kapp->miniIconName(), 0, recvr,
                        slot, parent, name ? name : stdName(AboutApp));

@@ -633,7 +633,7 @@ KPopupFrame::keyPressEvent(QKeyEvent* e)
   if(e->key()==Key_Escape)
     {
       result=0; // rejected
-      kapp->exit_loop();
+      qApp->exit_loop();
     }
 }
 
@@ -641,7 +641,7 @@ void
 KPopupFrame::close(int r)
 {
   result=r;
-  kapp->exit_loop();
+  qApp->exit_loop();
 }
 
 void
