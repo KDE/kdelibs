@@ -173,8 +173,7 @@ public:
 		m_tempBuffer = 0;
 	}
 
-	/* antlarr: KDE 4: shouldn't this be "const QColor &" ? */
-	Q_UINT32 toArtColor(QColor color)
+	Q_UINT32 toArtColor(const QColor &color)
 	{
 		// Convert in a libart suitable form
 		QString tempName = color.name();
@@ -288,7 +287,7 @@ public:
 			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2.0);
 			double strokeWidth = m_strokeWidth * ratio;
 
-		    ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
+			ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
 			ArtPathStrokeCapType capStyle = ART_PATH_STROKE_CAP_BUTT;
 
 			if(m_joinStyle == "miter")
@@ -713,7 +712,7 @@ public:
 		   (x1, y1) is new point in transformed coordinate space.
 
 		   The arc fits a unit-radius circle in this space.
-	     */
+		*/
 
 		d = (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
 
@@ -1275,8 +1274,7 @@ void KSVGIconPainter::setFillRule(const QString &fillRule)
 	d->helper->m_fillRule = fillRule;
 }
 
-/* antlarr: KDE 4: Make it const QString & */
-Q_UINT32 KSVGIconPainter::parseOpacity(QString data)
+Q_UINT32 KSVGIconPainter::parseOpacity(const QString &data)
 {
 	int opacity = 255;
 
@@ -1506,8 +1504,8 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 	art_affine_scale(affine, rx * 10.0, ry * 10.0);
 
 	temp[i].code = ART_MOVETO;
-	temp[i].x3 = cos(0.0);
-	temp[i].y3 = sin(0.0);
+	temp[i].x3 = 1.0;
+	temp[i].y3 = 0.0;
 
 	i++;
 
@@ -1585,8 +1583,8 @@ void KSVGIconPainter::drawPolyline(QPointArray polyArray, int points)
 
 	polyline = d->helper->allocVPath(3 + points);
 	polyline[0].code = ART_MOVETO;
-    polyline[0].x = polyArray.point(0).x();
-    polyline[0].y = polyArray.point(0).y();
+	polyline[0].x = polyArray.point(0).x();
+	polyline[0].y = polyArray.point(0).y();
 
 	int index;
 	for(index = 1; index < points; index++)
@@ -1615,8 +1613,8 @@ void KSVGIconPainter::drawPolygon(QPointArray polyArray)
 
 	polygon = d->helper->allocVPath(3 + polyArray.count());
 	polygon[0].code = ART_MOVETO;
-    polygon[0].x = polyArray.point(0).x();
-    polygon[0].y = polyArray.point(0).y();
+	polygon[0].x = polyArray.point(0).x();
+	polygon[0].y = polyArray.point(0).y();
 
 	unsigned int index;
 	for(index = 1; index < polyArray.count(); index++)
@@ -1665,11 +1663,11 @@ static const char *getCoord(const char *ptr, double &number)
 		integer = (integer * 10) + *(ptr++) - '0';
 
 	if(*ptr == '.') // read the decimals
-    {
+	{
 		ptr++;
 		while(*ptr != '\0' && *ptr >= '0' && *ptr <= '9')
 			decimal += (*(ptr++) - '0') * (frac *= 0.1);
-    }
+	}
 
 	if(*ptr == 'e' || *ptr == 'E') // read the exponent part
 	{
@@ -1691,7 +1689,7 @@ static const char *getCoord(const char *ptr, double &number)
 			exponent += *ptr - '0';
 			ptr++;
 		}
-    }
+	}
 
 	number = integer + decimal;
 	number *= sign * pow(10.0, expsign * exponent);
@@ -2189,10 +2187,10 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 			command = *(ptr++);
 
 		// Detect reflection points
-		if(lastCommand != 'C' && lastCommand != 'c'
-	      && lastCommand != 'S' && lastCommand != 's'
-		  && lastCommand != 'Q' && lastCommand != 'q'
-		  && lastCommand != 'T' && lastCommand != 't')
+		if(lastCommand != 'C' && lastCommand != 'c' &&
+			lastCommand != 'S' && lastCommand != 's' &&
+			lastCommand != 'Q' && lastCommand != 'q' &&
+			lastCommand != 'T' && lastCommand != 't')
 		{
 			contrlx = curx;
 			contrly = cury;
@@ -2282,8 +2280,8 @@ void KSVGIconPainter::drawImage(double x, double y, QImage &image)
 	affine[1] = d->helper->m_worldMatrix->m12();
 	affine[2] = d->helper->m_worldMatrix->m21();
 	affine[3] = d->helper->m_worldMatrix->m22();
-	affine[4] = x;
-	affine[5] = y;
+	affine[4] = d->helper->m_worldMatrix->dx() + x;
+	affine[5] = d->helper->m_worldMatrix->dy() + y;
 
 	d->helper->art_rgba_rgba_affine(d->helper->m_buffer, 0, 0, d->helper->m_width, d->helper->m_height,
 									d->helper->m_rowstride, image.bits(), image.width(), image.height(),
@@ -2720,7 +2718,7 @@ void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDom
 	d->helper->m_radialGradientElementMap.insert(gradient, element);
 }
 
-Q_UINT32 KSVGIconPainter::toArtColor(QColor color)
+Q_UINT32 KSVGIconPainter::toArtColor(const QColor &color)
 {
 	return d->helper->toArtColor(color);
 }
