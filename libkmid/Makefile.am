@@ -1,9 +1,11 @@
 
 INCLUDES = $(all_includes)
 
-include_HEADERS = midiout.h player.h track.h midimapper.h \
+libkmidincludedir = $(includedir)/libkmid
+libkmidinclude_HEADERS = midiout.h player.h track.h midimapper.h \
 	midfile.h dattypes.h midistat.h deviceman.h synthout.h \
-	fmout.h gusout.h voiceman.h notearray.h libkmid.h
+	fmout.h gusout.h voiceman.h notearray.h mt32togm.h midispec.h \
+	libkmid.h
 
 lib_LTLIBRARIES = libkmid.la
 libkmid_la_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \

@@ -1,14 +1,14 @@
-#include <libkmid.h>
+#include <libkmid/libkmid.h>
 #include <unistd.h>
 #include <stdio.h>
 
-int main (int argc, char **argv)
+int main (int , char **)
 {
   printf("Libkmid test2 . (C) 2000 Antonio Larrosa Jimenez . Malaga (Spain)\n");
   printf("Using libkmid from a simple C++ application\n");
 
   KMidSimpleAPI::kMidInit();
-  KMidSimpleAPI::kMidLoad("Layla.mid");
+  KMidSimpleAPI::kMidLoad("Kathzy.mid");
   KMidSimpleAPI::kMidPlay();
 
   for (int i=0;i<30;i++)

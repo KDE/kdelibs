@@ -31,7 +31,7 @@
 #include "midistat.h"
 #include "mt32togm.h"
 
-#define PLAYERDEBUG
+//#define PLAYERDEBUG
 #define GENERAL_DEBUG_MESSAGES
 
 #define T2MS(ticks) (((double)ticks)*(double)60000L)/((double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)
@@ -738,7 +738,6 @@ void MidiPlayer::play(bool calloutput,void output(void))
 	  }
 	  break;
       }
-
       if (calloutput)
       {
 	midi->sync();

@@ -26,7 +26,7 @@ int main (int argc, char **argv)
 
   kMidSetDevice((int)(c-'0'));
 
-  kMidLoad("Layla.mid");
+  kMidLoad("Kathzy.mid");
   kMidPlay();
 
   for (i=0;i<45;i++)

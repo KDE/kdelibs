@@ -40,8 +40,8 @@
 #endif
 
 
-#define DEVICEMANDEBUG
-#define GENERAL_DEBUG_MESSAGES
+//#define DEVICEMANDEBUG
+//#define GENERAL_DEBUG_MESSAGES
 
 SEQ_DEFINEBUF (4096);
 
@@ -228,7 +228,7 @@ void DeviceManager::openDev(void)
   seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
   if (seqfd==-1)
   {
-    printf("Couldn't open\n");
+    printf("Couldn't open the /dev/sequencer device\n");
     _ok=0;
     return;
   }
