@@ -47,3 +47,26 @@ void KListBox::slotOnViewport()
 	return;
     viewport()->setCursor( oldCursor );
 }
+
+//
+// 2000-16-01 Espen Sand
+// This widget is used in dialogs. It should ignore
+// F1 (and combinations) and Escape since these are used
+// to start help or close the dialog. This functionality
+// should be done in QListView but it is not (at least now)
+//
+void KListBox::keyPressEvent(QKeyEvent *e)
+{
+  if( e->key() == Key_Escape )
+  {
+    e->ignore();
+  }
+  else if( e->key() == Key_F1 )
+  {
+    e->ignore();
+  }
+  else
+  {
+    QListBox::keyPressEvent(e);
+  }
+}
