@@ -144,7 +144,7 @@ kde_findEntity (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 277,
+      TOTAL_KEYWORDS = 278,
       MIN_WORD_LENGTH = 2,
       MAX_WORD_LENGTH = 8,
       MIN_HASH_VALUE = 8,
@@ -177,13 +177,13 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"ccaron", 0x010d},
 #line 183 "kentities.gperf"
       {"int", 0x222b},
-#line 297 "kentities.gperf"
+#line 298 "kentities.gperf"
       {"ucirc", 0x00fb},
 #line 212 "kentities.gperf"
       {"ncaron", 0x0148},
 #line 159 "kentities.gperf"
       {"eta", 0x03b7},
-#line 296 "kentities.gperf"
+#line 297 "kentities.gperf"
       {"uarr", 0x2191},
 #line 252 "kentities.gperf"
       {"radic", 0x221a},
@@ -191,7 +191,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Dcaron", 0x010e},
 #line 89 "kentities.gperf"
       {"Rho", 0x03a1},
-#line 285 "kentities.gperf"
+#line 286 "kentities.gperf"
       {"tcaron", 0x0165},
 #line 83 "kentities.gperf"
       {"Phi", 0x03a6},
@@ -201,17 +201,17 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"ecaron", 0x011b},
 #line 229 "kentities.gperf"
       {"or", 0x22a6},
-#line 284 "kentities.gperf"
+#line 285 "kentities.gperf"
       {"tau", 0x03c4},
 #line 186 "kentities.gperf"
       {"isin", 0x2208},
-#line 290 "kentities.gperf"
+#line 291 "kentities.gperf"
       {"thorn", 0x00fe},
 #line 88 "kentities.gperf"
       {"Rcaron", 0x0158},
 #line 48 "kentities.gperf"
       {"Chi", 0x03a7},
-#line 309 "kentities.gperf"
+#line 310 "kentities.gperf"
       {"zcaron", 0x017e},
 #line 227 "kentities.gperf"
       {"omicron", 0x03bf},
@@ -239,7 +239,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Scaron", 0x0160},
 #line 126 "kentities.gperf"
       {"cap", 0x2229},
-#line 287 "kentities.gperf"
+#line 288 "kentities.gperf"
       {"theta", 0x03b8},
 #line 71 "kentities.gperf"
       {"Ncaron", 0x0147},
@@ -261,7 +261,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Eta", 0x0397},
 #line 237 "kentities.gperf"
       {"part", 0x2202},
-#line 293 "kentities.gperf"
+#line 294 "kentities.gperf"
       {"trade", 0x2122},
 #line 177 "kentities.gperf"
       {"iacute", 0x00ed},
@@ -271,7 +271,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"sdot", 0x22c5},
 #line 63 "kentities.gperf"
       {"Icirc", 0x00ce},
-#line 295 "kentities.gperf"
+#line 296 "kentities.gperf"
       {"uacute", 0x00fa},
 #line 70 "kentities.gperf"
       {"Mu", 0x039c},
@@ -283,11 +283,11 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Ecaron", 0x011a},
 #line 217 "kentities.gperf"
       {"notin", 0x2209},
-#line 286 "kentities.gperf"
+#line 287 "kentities.gperf"
       {"there4", 0x2234},
 #line 220 "kentities.gperf"
       {"nu", 0x03bd},
-#line 299 "kentities.gperf"
+#line 300 "kentities.gperf"
       {"uml", 0x00a8},
 #line 193 "kentities.gperf"
       {"larr", 0x2190},
@@ -347,7 +347,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Iota", 0x0399},
 #line 158 "kentities.gperf"
       {"equiv", 0x2261},
-#line 289 "kentities.gperf"
+#line 290 "kentities.gperf"
       {"thinsp", 0x2009},
 #line 73 "kentities.gperf"
       {"Nu", 0x039d},
@@ -397,9 +397,9 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Ntilde", 0x00d1},
 #line 123 "kentities.gperf"
       {"beta", 0x03b2},
-#line 302 "kentities.gperf"
+#line 303 "kentities.gperf"
       {"uring", 0x016f},
-#line 281 "kentities.gperf"
+#line 282 "kentities.gperf"
       {"sup", 0x2283},
 #line 130 "kentities.gperf"
       {"cent", 0x00a2},
@@ -419,7 +419,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Uacute", 0x00da},
 #line 209 "kentities.gperf"
       {"mu", 0x03bc},
-#line 310 "kentities.gperf"
+#line 311 "kentities.gperf"
       {"zeta", 0x03b6},
 #line 234 "kentities.gperf"
       {"otimes", 0x2297},
@@ -433,7 +433,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Acirc", 0x00c2},
 #line 198 "kentities.gperf"
       {"lowast", 0x2217},
-#line 282 "kentities.gperf"
+#line 283 "kentities.gperf"
       {"supe", 0x2287},
 #line 85 "kentities.gperf"
       {"Prime", 0x2033},
@@ -451,7 +451,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"frac14", 0x00bc},
 #line 196 "kentities.gperf"
       {"le", 0x2264},
-#line 280 "kentities.gperf"
+#line 281 "kentities.gperf"
       {"sup3", 0x00b3},
 #line 78 "kentities.gperf"
       {"Omega", 0x03a9},
@@ -461,15 +461,15 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"real", 0x211c},
 #line 246 "kentities.gperf"
       {"prime", 0x2032},
-#line 279 "kentities.gperf"
+#line 280 "kentities.gperf"
       {"sup2", 0x00b2},
 #line 60 "kentities.gperf"
       {"Gamma", 0x0393},
-#line 306 "kentities.gperf"
+#line 307 "kentities.gperf"
       {"yacute", 0x00fd},
 #line 139 "kentities.gperf"
       {"dArr", 0x21d3},
-#line 283 "kentities.gperf"
+#line 284 "kentities.gperf"
       {"szlig", 0x00df},
 #line 238 "kentities.gperf"
       {"percnt", 0x0025},
@@ -479,7 +479,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"rArr", 0x21d2},
 #line 129 "kentities.gperf"
       {"cedil", 0x00b8},
-#line 304 "kentities.gperf"
+#line 305 "kentities.gperf"
       {"weierp", 0x2118},
 #line 240 "kentities.gperf"
       {"perp", 0x22a5},
@@ -489,7 +489,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"ge", 0x2265},
 #line 143 "kentities.gperf"
       {"deg", 0x00b0},
-#line 294 "kentities.gperf"
+#line 295 "kentities.gperf"
       {"uArr", 0x21d1},
 #line 163 "kentities.gperf"
       {"exist", 0x2203},
@@ -509,6 +509,8 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Delta", 0x0394},
 #line 41 "kentities.gperf"
       {"AMP", 38},
+#line 279 "kentities.gperf"
+      {"supl", 0x00b9},
 #line 179 "kentities.gperf"
       {"iexcl", 0x00a1},
 #line 37 "kentities.gperf"
@@ -527,7 +529,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Uring", 0x016e},
 #line 187 "kentities.gperf"
       {"iuml", 0x00ef},
-#line 303 "kentities.gperf"
+#line 304 "kentities.gperf"
       {"uuml", 0x00fc},
 #line 74 "kentities.gperf"
       {"OElig", 0x0152},
@@ -545,7 +547,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"rsquo", 0x2019},
 #line 264 "kentities.gperf"
       {"rsaquo", 0x203a},
-#line 307 "kentities.gperf"
+#line 308 "kentities.gperf"
       {"yen", 0x00a5},
 #line 258 "kentities.gperf"
       {"rdquo", 0x201d},
@@ -579,7 +581,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"circ", 0x02c6},
 #line 110 "kentities.gperf"
       {"aelig", 0x00e6},
-#line 305 "kentities.gperf"
+#line 306 "kentities.gperf"
       {"xi", 0x03be},
 #line 223 "kentities.gperf"
       {"oelig", 0x0153},
@@ -603,9 +605,9 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"emdash", 0x2014},
 #line 242 "kentities.gperf"
       {"pi", 0x03c0},
-#line 311 "kentities.gperf"
+#line 312 "kentities.gperf"
       {"zwj", 0x200d},
-#line 288 "kentities.gperf"
+#line 289 "kentities.gperf"
       {"thetasym", 0x03d1},
 #line 192 "kentities.gperf"
       {"laquo", 0x00ab},
@@ -617,7 +619,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"lsquo", 0x2018},
 #line 201 "kentities.gperf"
       {"lsaquo", 0x2039},
-#line 312 "kentities.gperf"
+#line 313 "kentities.gperf"
       {"zwnj", 0x200c},
 #line 195 "kentities.gperf"
       {"ldquo", 0x201c},
@@ -637,13 +639,13 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"ograve", 0x00f2},
 #line 180 "kentities.gperf"
       {"igrave", 0x00ec},
-#line 298 "kentities.gperf"
+#line 299 "kentities.gperf"
       {"ugrave", 0x00f9},
 #line 151 "kentities.gperf"
       {"egrave", 0x00e8},
-#line 301 "kentities.gperf"
+#line 302 "kentities.gperf"
       {"upsilon", 0x03c5},
-#line 308 "kentities.gperf"
+#line 309 "kentities.gperf"
       {"yuml", 0x00ff},
 #line 232 "kentities.gperf"
       {"oslash", 0x00f8},
@@ -653,7 +655,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"micro", 0x00b5},
 #line 157 "kentities.gperf"
       {"epsilon", 0x03b5},
-#line 291 "kentities.gperf"
+#line 292 "kentities.gperf"
       {"tilde", 0x02dc},
 #line 146 "kentities.gperf"
       {"divide", 0x00f7},
@@ -681,7 +683,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"Epsilon", 0x0395},
 #line 175 "kentities.gperf"
       {"hearts", 0x2665},
-#line 292 "kentities.gperf"
+#line 293 "kentities.gperf"
       {"times", 0x00d7},
 #line 80 "kentities.gperf"
       {"Oslash", 0x00d8},
@@ -699,7 +701,7 @@ kde_findEntity (register const char *str, register unsigned int len)
       {"alefsym", 0x2135},
 #line 39 "kentities.gperf"
       {"Agrave", 0x00c0},
-#line 300 "kentities.gperf"
+#line 301 "kentities.gperf"
       {"upsih", 0x03d2},
 #line 40 "kentities.gperf"
       {"Alpha", 0x0391},
@@ -744,63 +746,63 @@ kde_findEntity (register const char *str, register unsigned int len)
       158, 159,  -1, 160, 161, 162, 163,  -1,  -1, 164,
       165,  -1, 166, 167, 168, 169, 170,  -1, 171,  -1,
        -1, 172,  -1,  -1, 173, 174, 175,  -1,  -1,  -1,
-      176,  -1,  -1, 177,  -1, 178, 179,  -1,  -1, 180,
-       -1, 181,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 182,
-       -1, 183,  -1,  -1, 184, 185,  -1,  -1,  -1, 186,
-       -1,  -1,  -1,  -1, 187, 188,  -1,  -1,  -1,  -1,
-      189,  -1,  -1,  -1, 190,  -1,  -1,  -1,  -1, 191,
-      192,  -1,  -1,  -1, 193, 194, 195,  -1, 196,  -1,
-      197, 198,  -1,  -1, 199, 200,  -1, 201, 202, 203,
-       -1,  -1,  -1,  -1,  -1, 204,  -1,  -1,  -1,  -1,
-      205, 206, 207,  -1, 208, 209,  -1,  -1,  -1,  -1,
-      210,  -1,  -1,  -1, 211, 212,  -1, 213,  -1,  -1,
-      214,  -1, 215,  -1,  -1,  -1,  -1,  -1,  -1, 216,
-       -1,  -1,  -1,  -1, 217, 218, 219,  -1,  -1,  -1,
-       -1, 220,  -1,  -1, 221, 222, 223, 224,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 225,  -1,
-       -1,  -1,  -1, 226,  -1, 227, 228,  -1,  -1, 229,
-      230, 231,  -1,  -1, 232, 233,  -1,  -1,  -1, 234,
-      235, 236,  -1,  -1, 237,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 238,  -1,  -1,  -1,
-      239, 240,  -1,  -1,  -1,  -1, 241,  -1,  -1,  -1,
-       -1, 242,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 243, 244,  -1, 245,
-       -1, 246,  -1,  -1,  -1, 247,  -1,  -1,  -1,  -1,
-      248,  -1, 249,  -1,  -1, 250, 251,  -1,  -1,  -1,
-       -1, 252,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      253,  -1,  -1, 254,  -1,  -1,  -1,  -1,  -1, 255,
-       -1,  -1,  -1, 256,  -1, 257,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 258,  -1,  -1,  -1,
-       -1, 259,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 260,  -1,  -1,  -1, 261,  -1, 262,  -1,  -1,
-       -1, 263,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      176,  -1,  -1, 177, 178, 179, 180,  -1,  -1, 181,
+       -1, 182,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 183,
+       -1, 184,  -1,  -1, 185, 186,  -1,  -1,  -1, 187,
+       -1,  -1,  -1,  -1, 188, 189,  -1,  -1,  -1,  -1,
+      190,  -1,  -1,  -1, 191,  -1,  -1,  -1,  -1, 192,
+      193,  -1,  -1,  -1, 194, 195, 196,  -1, 197,  -1,
+      198, 199,  -1,  -1, 200, 201,  -1, 202, 203, 204,
+       -1,  -1,  -1,  -1,  -1, 205,  -1,  -1,  -1,  -1,
+      206, 207, 208,  -1, 209, 210,  -1,  -1,  -1,  -1,
+      211,  -1,  -1,  -1, 212, 213,  -1, 214,  -1,  -1,
+      215,  -1, 216,  -1,  -1,  -1,  -1,  -1,  -1, 217,
+       -1,  -1,  -1,  -1, 218, 219, 220,  -1,  -1,  -1,
+       -1, 221,  -1,  -1, 222, 223, 224, 225,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 226,  -1,
+       -1,  -1,  -1, 227,  -1, 228, 229,  -1,  -1, 230,
+      231, 232,  -1,  -1, 233, 234,  -1,  -1,  -1, 235,
+      236, 237,  -1,  -1, 238,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 239,  -1,  -1,  -1,
+      240, 241,  -1,  -1,  -1,  -1, 242,  -1,  -1,  -1,
+       -1, 243,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 244, 245,  -1, 246,
+       -1, 247,  -1,  -1,  -1, 248,  -1,  -1,  -1,  -1,
+      249,  -1, 250,  -1,  -1, 251, 252,  -1,  -1,  -1,
+       -1, 253,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      254,  -1,  -1, 255,  -1,  -1,  -1,  -1,  -1, 256,
+       -1,  -1,  -1, 257,  -1, 258,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 259,  -1,  -1,  -1,
+       -1, 260,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1, 261,  -1,  -1,  -1, 262,  -1, 263,  -1,  -1,
+       -1, 264,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      264, 265,  -1,  -1,  -1,  -1, 266,  -1,  -1, 267,
+      265, 266,  -1,  -1,  -1,  -1, 267,  -1,  -1, 268,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1, 268,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1, 269,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 269,  -1,  -1,  -1,  -1,
-      270,  -1, 271,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 272,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 273,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 270,  -1,  -1,  -1,  -1,
+      271,  -1, 272,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 273,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1, 274,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 275,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 275,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 276,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 276
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 277
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -822,6 +824,6 @@ kde_findEntity (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 313 "kentities.gperf"
+#line 314 "kentities.gperf"
 
 
