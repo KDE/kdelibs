@@ -105,6 +105,35 @@ public:
   virtual void setPixmap(const QPixmap &pixmap);
 
   /**
+   * Set the pixmap directly for this button.  This pixmap should be
+   * the active one.. however, the disabled and default pixmaps will
+   * only be constructed if @ref #generate is true.  In any event,
+   * don't use this function unless you are positive that you don't
+   * want to use @ref setIcon.
+   *
+   * @param pixmap   The active pixmap
+   * @param generate If true, then the other pixmaps will be
+   *                 automatically generated using configurable effects
+   */
+  virtual void setPixmap(const QPixmap &pixmap, bool generate);
+
+  /**
+   * Force the button to use this pixmap as the default one rather
+   * then generating it using effects.
+   *
+   * @param pixmap The pixmap to use as the default (normal) one
+   */
+  virtual void setDefaultPixmap(const QPixmap& pixmap);
+
+  /**
+   * Force the button to use this pixmap when disabled one rather then
+   * generating it using effects.
+   *
+   * @param pixmap The pixmap to use when disabled
+   */
+  virtual void setDisabledPixmap(const QPixmap& pixmap);
+
+  /**
    * Set the text for this button.  The text will be either used as a
    * tooltip (IconOnly) or will be along side the icon
    *
@@ -120,7 +149,35 @@ public:
    *
    * @param icon The name of the active pixmap
    */
-  void setIcon(const QString &icon);
+  virtual void setIcon(const QString &icon);
+
+  /**
+   * Set the active icon for this button.  The pixmap itself is loaded
+   * internally based on the icon size...  .. the disabled and default
+   * pixmaps, however will only be constructed if @ref #generate is
+   * true.  This function is preferred over @ref setPixmap
+   *
+   * @param icon     The name of the active icon
+   * @param generate If true, then the other icons are automagically
+   *                 generated from this one
+   */
+  virtual void setIcon(const QString &icon, bool generate);
+
+  /**
+   * Force the button to use this icon as the default one rather
+   * then generating it using effects.
+   *
+   * @param icon The icon to use as the default (normal) one
+   */
+  virtual void setDefaultIcon(const QString& icon);
+
+  /**
+   * Force the button to use this icon when disabled one rather then
+   * generating it using effects.
+   *
+   * @param icon The icon to use when disabled
+   */
+  virtual void setDisabledIcon(const QString& icon);
 
   /**
    * Turn this button on or off

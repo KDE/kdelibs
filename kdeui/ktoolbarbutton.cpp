@@ -69,6 +69,9 @@ public:
     m_iconSize    = KIconLoader::Small;
     m_delayTimer  = 0L;
     m_popup       = 0L;
+
+    m_disabledIconName = QString::null;
+    m_defaultIconName  = QString::null;
   }
   ~KToolBarButtonPrivate()
   {
@@ -96,6 +99,8 @@ public:
 
   QString m_text;
   QString m_iconName;
+  QString m_disabledIconName;
+  QString m_defaultIconName;
 
   KToolBar *m_parent;
   KToolBar::IconText m_iconText;
@@ -196,6 +201,10 @@ void KToolBarButton::modeChange()
     d->m_iconSize = d->m_parent->iconSize();
     if (!d->m_iconName.isNull())
       setIcon(d->m_iconName);
+    if (!d->m_disabledIconName.isNull())
+      setDisabledIcon(d->m_disabledIconName);
+    if (!d->m_defaultIconName.isNull())
+      setDefaultIcon(d->m_defaultIconName);
   }
 
   // we'll go with the size of our pixmap (plus a bit of padding) as
@@ -266,12 +275,36 @@ void KToolBarButton::setText( const QString& text)
 
 void KToolBarButton::setIcon( const QString &icon )
 {
+  setIcon( icon, true );
+}
+
+void KToolBarButton::setIcon( const QString &icon, bool generate )
+{
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
-  setPixmap( BarIcon(icon, d->m_parent->iconSize()) );
+  setPixmap( BarIcon(icon, d->m_parent->iconSize()), generate );
+}
+
+void KToolBarButton::setDisabledIcon( const QString &icon )
+{
+  d->m_disabledIconName = icon;
+  d->m_iconSize         = d->m_parent->iconSize();
+  setDisabledPixmap( BarIcon(icon, d->m_parent->iconSize()) );
+}
+
+void KToolBarButton::setDefaultIcon( const QString &icon )
+{
+  d->m_defaultIconName = icon;
+  d->m_iconSize        = d->m_parent->iconSize();
+  setDefaultPixmap( BarIcon(icon, d->m_parent->iconSize()) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
+{
+  setPixmap( pixmap, true );
+}
+
+void KToolBarButton::setPixmap( const QPixmap &pixmap, bool generate )
 {
   QPixmap tmp_pixmap(pixmap);
   // if our pixmap is null, then try to load the "unknown" icon
@@ -291,11 +324,33 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
 
   activePixmap = tmp_pixmap;
 
-  // the default pixmap is derived from the active on.  if the active
-  // pixmap is 8 bits, then they will be identical
-  makeDefaultPixmap();
-  makeDisabledPixmap();
+  if ( generate )
+  {
+    // the default pixmap is derived from the active on.  if the active
+    // pixmap is 8 bits, then they will be identical
+    makeDefaultPixmap();
+    makeDisabledPixmap();
+  }
+  else
+  {
+    if (defaultPixmap.isNull())
+      defaultPixmap = activePixmap;
+    if (disabledPixmap.isNull())
+      disabledPixmap = activePixmap;
+  }
 
+  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+}
+
+void KToolBarButton::setDefaultPixmap( const QPixmap &pixmap )
+{
+  defaultPixmap = pixmap;
+  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+}
+
+void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
+{
+  disabledPixmap = pixmap;
   QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
 }
 
