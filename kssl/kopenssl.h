@@ -77,6 +77,11 @@ public:
    int SSL_connect(SSL *ssl);
 
    /*
+    *   SSL_get_error - get the error code
+    */
+   int SSL_get_error(SSL *ssl, int rc);
+
+   /*
     *   SSL_read - read bytes from a TLS/SSL connection.
     */
    int SSL_read(SSL *ssl, void *buf, int num);

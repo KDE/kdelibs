@@ -89,6 +89,7 @@ static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**,
 static void (*K_EVP_PKEY_free) (EVP_PKEY *) = NULL;
 static int (*K_SSL_CTX_use_PrivateKey) (SSL_CTX*, EVP_PKEY*) = NULL;
 static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
+static int (*K_SSL_get_error) (SSL*, int) = NULL;
 #endif    
 };
 
@@ -236,6 +237,7 @@ KConfig *cfg;
       K_SSL_CIPHER_description = (char * (*)(SSL_CIPHER *, char *, int)) _sslLib->symbol("SSL_CIPHER_description");
       K_SSL_CTX_use_PrivateKey = (int (*)(SSL_CTX*, EVP_PKEY*)) _sslLib->symbol("SSL_CTX_use_PrivateKey");
       K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) _sslLib->symbol("SSL_CTX_use_certificate");
+      K_SSL_get_error = (int (*)(SSL*, int)) _sslLib->symbol("SSL_get_error");
 #endif
 
 
@@ -625,6 +627,10 @@ int KOpenSSLProxy::SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x) {
 }
 
 
+int KOpenSSLProxy::SSL_get_error(SSL *ssl, int rc) {
+   if (K_SSL_get_error) return (K_SSL_get_error)(ssl,rc);
+   else return -1;
+}
 
 #endif
 
