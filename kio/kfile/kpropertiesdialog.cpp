@@ -957,7 +957,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&, unsigned long kBSize
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
                                .arg(KIO::convertSizeFromKB(kBAvail))
                                .arg(KIO::convertSizeFromKB(kBSize))
-                               .arg( (int)(100.0 * kBUsed / kBSize) ) );
+                               .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 // attention: copy&paste below, due to compiler bug
@@ -967,7 +967,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize, const u
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
                                .arg(KIO::convertSizeFromKB(kBAvail))
                                .arg(KIO::convertSizeFromKB(kBSize))
-                               .arg( (int)(100.0 * kBUsed / kBSize) ) );
+                               .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
