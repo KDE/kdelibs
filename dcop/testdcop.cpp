@@ -54,35 +54,6 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
   return false;
 }
 
-void emitDCOPSignal( const QCString &fun, const QByteArray &data)
-{
-  kapp->dcopClient()->send("DCOPServer", "emit", fun, data);
-}
-
-bool connectDCOPSignal( const QCString &sender, const QCString &signal,
-  const QCString &receiverObj, const QCString &slot, bool Volatile)
-{
-  QCString replyType;
-  QByteArray data, replyData;
-  Q_INT8 iVolatile = Volatile ? 1 : 0;
- 
-  QDataStream args(data, IO_WriteOnly );
-  args << sender << signal << receiverObj << slot << iVolatile;
-  
-  if (!kapp->dcopClient()->call("DCOPServer", 0, 
-	"connectSignal(QCString,QCString,QCString,QCSQtring,bool)",
-	data, replyType, replyData))
-     return false;
-
-  if (replyType != "bool")
-     return false;
-
-  QDataStream reply(replyData, IO_ReadOnly );
-  Q_INT8 result;
-  reply >> result;
-  return (result != 0);
-}
-
 int main(int argc, char **argv)
 {
   KApplication app(argc, argv, "testdcop");
@@ -99,11 +70,11 @@ int main(int argc, char **argv)
   if ( client->isApplicationRegistered( app.name() ) )
       qDebug("indeed, we are registered!");
 
-  emitDCOPSignal("alive()", QByteArray());
+  client->emitDCOPSignal("alive()", QByteArray());
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  connectDCOPSignal("", "alive()", "object1", "isAliveSlot()", false);
+  client->connectDCOPSignal("", "alive()", "object1", "isAliveSlot()", false);
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;

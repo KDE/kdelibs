@@ -254,6 +254,47 @@ class DCOPClient : public QObject
 	    bool useEventLoop=false, bool fast=false);
 
   /**
+   * Emit @p signal as DCOP signal with @data as arguments
+   */
+  void emitDCOPSignal( const QCString &signal, const QByteArray &data);  
+
+  /**
+   * Connect to a DCOP signal
+   * @param sender the name of the client that emits the signal. When empty
+   * the signal will be passed from any client.
+   * @param signal the name of the signal. The arguments should match with slot.
+   * @param receiverObj The name of the object to call
+   * @param slot The name of the slot to call. Its arguments should match with signal.
+   * @param Volatile If true, the connection will not be reestablished when 
+   * @p sender unregisters and reregisters with DCOP. In this case the @p sender
+   * must be registered when the connection is made.
+   * If false, the connection will be reestablished when @p sender reregisters. 
+   * In this case the connection can be made even if @p sender is not registered
+   * at that time.
+   *
+   * @return false if a connection could not be established. 
+   * This will only be the case when @p Volatile is true and @p sender 
+   * does not exist.
+   */
+  bool connectDCOPSignal( const QCString &sender, const QCString &signal,
+                          const QCString &receiverObj, const QCString &slot,
+                          bool Volatile);
+
+  /**
+   * Disconnect to a DCOP signal
+   * @param sender the name of the client that emits the signal.
+   * @param signal the name of the signal. The arguments should match with slot.
+   * @param receiverObj The name of the object the signal is connected to.
+   * If empty all objects will be disconnected.
+   * @param slot The name of the slot the signal is connected to.
+   * If empty all slots will be disconnected.
+   *
+   * @return false if no connection(s) where removed.
+   */
+  bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
+                          const QCString &receiverObj, const QCString &slot);
+   
+  /**
    * Reimplement to handle app-wide function calls unassociated w/an object.
    *
    * Note that @p fun is normalized. See @ref normalizeFunctionSignature().
@@ -330,8 +371,6 @@ class DCOPClient : public QObject
   bool find(const QCString &app, const QCString &obj,
 	    const QCString &fun, const QByteArray& data,
 	    QCString& replyType, QByteArray &replyData);
-
-
 
   /**
    * Normalize the function signature @p fun.

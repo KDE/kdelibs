@@ -1059,5 +1059,61 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     delete trans;
 }
 
+void 
+DCOPClient::emitDCOPSignal( const QCString &signal, const QByteArray &data)
+{
+    send("DCOPServer", "emit", normalizeFunctionSignature(signal), data);
+}
+
+bool 
+DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &signal,
+  const QCString &receiverObj, const QCString &slot, bool Volatile)
+{
+  QCString replyType;
+  QByteArray data, replyData;
+  Q_INT8 iVolatile = Volatile ? 1 : 0;
+ 
+  QDataStream args(data, IO_WriteOnly );
+  args << sender << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot) << iVolatile;
+  
+  if (!call("DCOPServer", 0, 
+	"connectSignal(QCString,QCString,QCString,QCSQtring,bool)",
+	data, replyType, replyData))
+     return false;
+
+  if (replyType != "bool")
+     return false;
+
+  QDataStream reply(replyData, IO_ReadOnly );
+  Q_INT8 result;
+  reply >> result;
+  return (result != 0);
+}
+
+bool 
+DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal,
+  const QCString &receiverObj, const QCString &slot)
+{
+  QCString replyType;
+  QByteArray data, replyData;
+ 
+  QDataStream args(data, IO_WriteOnly );
+  args << sender << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot);
+  
+  if (!call("DCOPServer", 0, 
+	"disconnectSignal(QCString,QCString,QCString,QCSQtring)",
+	data, replyType, replyData))
+     return false;
+
+  if (replyType != "bool")
+     return false;
+
+  QDataStream reply(replyData, IO_ReadOnly );
+  Q_INT8 result;
+  reply >> result;
+  return (result != 0);
+}
+
+
 #include <dcopclient.moc>
 
