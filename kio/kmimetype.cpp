@@ -603,11 +603,11 @@ pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _service
   if (s.substituteUid() && !user.isEmpty())
   {
     if (s.terminal())
-      cmd = QString("konsole %1 -e su -- %2 -c \"%3\"").arg(opts).arg(user).arg(cmd);
+      cmd = QString("konsole %1 -e su %2 -c \"%3\"").arg(opts).arg(user).arg(cmd);
     else
       cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
   } else if (s.terminal())
-    cmd = QString("konsole %1 -e /bin/sh -- -c \"%2\"").arg(opts).arg(cmd);
+    cmd = QString("konsole %1 -e /bin/sh -c \"%2\"").arg(opts).arg(cmd);
   else
   {
     // No special options, do straight run
