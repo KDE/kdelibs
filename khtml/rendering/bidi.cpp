@@ -27,7 +27,7 @@ using namespace khtml;
 
 #include "kdebug.h"
 
-#define BIDI_DEBUG 1
+//#define BIDI_DEBUG 1
 
 // ---------------------------------------------------------------------
 
@@ -803,7 +803,7 @@ void RenderFlow::layoutInlineChildren()
 	}
     }
     m_height += toAdd;
-    
+
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
