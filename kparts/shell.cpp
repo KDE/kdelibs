@@ -11,7 +11,7 @@
 #include <qstatusbar.h>
 #include <qobjectlist.h>
 
-Shell::Shell( QWidget* parent, const char* name )
+Shell::Shell( QWidget* /*parent*/, const char* name )
     : KTMainWindow( name ), m_collection( this )
 {
     m_toolbars.setAutoDelete( TRUE );

@@ -38,7 +38,7 @@ void ContainerPart::paintEverything( QPainter& painter, const QRect& rect, bool 
     paintChildren( painter, rect, view );
 }
 
-void ContainerPart::paintChildren( QPainter& painter, const QRect& rect, View* view )
+void ContainerPart::paintChildren( QPainter& painter, const QRect& /*rect*/, View* view )
 {
     QListIterator<PartChild> it( m_children );
     for( ; it.current(); ++it )
