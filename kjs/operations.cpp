@@ -21,6 +21,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#ifndef HAVE_FLOAT_H
+#define HAVE_FLOAT_H 0
+#endif
 
 #include <stdio.h>
 #include <assert.h>
@@ -33,6 +36,10 @@
 #endif
 #endif /* HAVE_FUNC_ISINF */
 
+#if HAVE_FLOAT_H /* for Windows */
+#include <float.h>
+#endif
+
 #include "object.h"
 #include "types.h"
 #include "operations.h"
@@ -43,6 +50,8 @@ bool KJS::isNaN(double d)
 {
 #ifdef HAVE_FUNC_ISNAN
   return isnan(d);
+#elif defined HAVE_FLOAT_H
+  return _isnan(d) != 0;	
 #else
   return !(d == d);
 #endif
@@ -52,9 +61,11 @@ bool KJS::isInf(double d)
 {
 #ifdef HAVE_FUNC_ISINF
   return isinf(d);
+#elif defined HAVE_FLOAT_H
+  return _finite(d) == 0 && d == d;
 #else
 #ifdef HAVE_FUNC_FINITE
-  return !finite(d) && d == d;
+  return finite(d) == 0 && d == d;
 #else
   return false;
 #endif /* HAVE_FUNC_FINITE */

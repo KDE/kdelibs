@@ -1138,14 +1138,14 @@ Completion TryNode::execute()
 
   c = block->execute();
 
-  if (!_finally) {
+  if (!_final) {
     if (c.complType() != Throw)
       return c;
     return _catch->execute(c.value());
   }
 
   if (!_catch) {
-    c2 = _finally->execute();
+    c2 = _final->execute();
     return (c2.complType() == Normal) ? c : c2;
   }
 
@@ -1155,7 +1155,7 @@ Completion TryNode::execute()
       c = c2;
   }
 
-  c2 = _finally->execute();
+  c2 = _final->execute();
   return (c2.complType() == Normal) ? c : c2;
 }
 

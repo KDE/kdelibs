@@ -675,12 +675,12 @@ namespace KJS {
   class TryNode : public StatementNode {
   public:
     TryNode(StatementNode *b, Node *c = 0L, Node *f = 0L)
-      : block(b), _catch((CatchNode*)c), _finally((FinallyNode*)f) {}
+      : block(b), _catch((CatchNode*)c), _final((FinallyNode*)f) {}
     Completion execute();
   private:
     StatementNode *block;
     CatchNode *_catch;
-    FinallyNode *_finally;
+    FinallyNode *_final;
   };
 
   class ParameterNode : public Node {

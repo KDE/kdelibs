@@ -51,7 +51,7 @@ namespace KJS {
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
     virtual Completion execute(const List &) = 0;
-    bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
+    bool hasAttribute(FunctionAttribute a) const { return (attr & a) != 0; }
     virtual CodeType codeType() const = 0;
     KJSO thisValue() const;
     void addParameter(const UString &n);

@@ -20,6 +20,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifndef HAVE_SYS_TIMEB_H
+#define HAVE_SYS_TIMEB_H 0
+#endif
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -31,10 +34,13 @@
 #  include <time.h>
 # endif
 #endif
-
+#if HAVE_SYS_TIMEB_H
+#include <sys/timeb.h>
+#endif
+#ifdef BSD
 #include <sys/param.h>
+#endif
 
-#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <locale.h>
@@ -103,14 +109,19 @@ Completion DateObject::execute(const List &)
 Object DateObject::construct(const List &args)
 {
   KJSO value;
-  double utc;
 
   int numArgs = args.size();
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
+#if HAVE_SYS_TIMEB_H
+    struct _timeb timebuffer;
+    _ftime(&timebuffer);
+    double utc = floor((double)timebuffer.time * 1000.0 + (double)timebuffer.millitm);
+#else
     struct timeval tv;
     gettimeofday(&tv, 0L);
-    utc = floor((double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0);
+    double utc = floor((double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0);
+#endif
     value = Number(utc);
   } else if (numArgs == 1) {
     KJSO p = args[0].toPrimitive();

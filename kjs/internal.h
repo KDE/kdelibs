@@ -65,7 +65,6 @@ namespace KJS {
 
   class BooleanImp : public Imp {
   public:
-    BooleanImp();
     virtual ~BooleanImp() { }
     BooleanImp(bool v = false) : val(v) { }
     bool value() const { return val; }

@@ -580,7 +580,7 @@ int Lexer::matchPunctuator(unsigned short c1, unsigned short c2,
   }
 }
 
-unsigned char Lexer::singleEscape(unsigned short c) const
+unsigned short Lexer::singleEscape(unsigned short c) const
 {
   switch(c) {
   case 'b':

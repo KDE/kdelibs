@@ -95,7 +95,7 @@ namespace KJS {
 
     int matchPunctuator(unsigned short c1, unsigned short c2,
 			unsigned short c3, unsigned short c4);
-    unsigned char singleEscape(unsigned short c) const;
+    unsigned short singleEscape(unsigned short c) const;
     unsigned short convertOctal(unsigned short c1, unsigned short c2,
                                 unsigned short c3) const;
   public:
