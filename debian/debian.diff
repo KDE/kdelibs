@@ -314,43 +314,6 @@
  			;;
  		    *)
  			os=-nto$os
---- kdelibs-2.2.0-0beta1.orig/admin/acinclude.m4.in
-+++ kdelibs-2.2.0-0beta1/admin/acinclude.m4.in
-@@ -2129,14 +2129,14 @@
- 
-   if test "$GCC" = "yes"; then
-     if test "$kde_use_debug_code" = "yes"; then
--      CFLAGS="-g -O2 $CFLAGS"
-+      CFLAGS="-g -O3 $CFLAGS"
-       case $host in
-         *-*-linux-gnu)	
-           CFLAGS="-ansi -W -Wall -pedantic -Wshadow -Wpointer-arith -Wmissing-prototypes -Wwrite-strings -D_XOPEN_SOURCE=500 -D_BSD_SOURCE $CFLAGS"
-         ;;
-       esac
-     else
--      CFLAGS="-O2 $CFLAGS"
-+      CFLAGS="-O3 $CFLAGS"
-     fi
-   fi
- 
-@@ -2159,7 +2159,7 @@
- 
-   if test "$GXX" = "yes"; then
-     if test "$kde_use_debug_code" = "yes"; then
--      CXXFLAGS="-g -O2 -Wall -pedantic -W -Wpointer-arith -Wmissing-prototypes -Wwrite-strings $CXXFLAGS"
-+      CXXFLAGS="-g -O3 -Wall -pedantic -W -Wpointer-arith -Wmissing-prototypes -Wwrite-strings $CXXFLAGS"
- 
-       KDE_CHECK_COMPILER_FLAG(Wno-long-long,[CXXFLAGS="-Wno-long-long $CXXFLAGS"])
-       KDE_CHECK_COMPILER_FLAG(Wnon-virtual-dtor,[CXXFLAGS="-Wnon-virtual-dtor $CXXFLAGS"])
-@@ -2179,7 +2179,7 @@
-         CXXFLAGS="-Wold-style-cast -Wredundant-decls -Wconversion $CXXFLAGS"
-       fi
-     else
--      CXXFLAGS="-O2 $CXXFLAGS"
-+      CXXFLAGS="-O3 $CXXFLAGS"
-     fi
-   fi
- 
 --- kdelibs-2.2.0-0beta1.orig/kdoctools/Makefile.am
 +++ kdelibs-2.2.0-0beta1/kdoctools/Makefile.am
 @@ -1,7 +1,7 @@

@@ -1,3 +1,10 @@
+kdelibs (4:2.2.0-0.1beta1-1) unstable; urgency=low
+ 
+  * synce with upstream
+  * Drop optimization down for cross arch building
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 17 Jul 2001 12:44:00 -0700
+
 kdelibs (4:2.2.0-0beta1-6) unstable; urgency=low
  
   * synce with upstream
