@@ -259,7 +259,10 @@ bool KFileMetaInfo::isValid() const
     return d != Data::makeNull();
 }
 
-const QStringList KFileMetaInfo::preferredKeys() const
+// ### Rolf, can you add some comment, what this method does? 
+// It copies all keys from the map into a QStringList and then
+// sorts them in some strange way? What for?
+QStringList KFileMetaInfo::preferredKeys() const
 {
     QMapIterator<QString, KFileMetaInfoItem> it;
     QStringList list;
@@ -267,7 +270,7 @@ const QStringList KFileMetaInfo::preferredKeys() const
     kdDebug(7033) << "preferredKeys(), we have " << d->preferredKeys.size() << endl;
     kdDebug(7033) << "preferredKeys(), and " << d->items.size() << endl;
 
-    if (d == Data::makeNull()) kdWarning(7033) << "s.th. tries to get the prefferedKeys of an invalid metainfo object\n";
+    if (d == Data::makeNull()) kdWarning(7033) << "s.th. tries to get the preferredKeys of an invalid metainfo object";
     
     for (it = d->items.begin(); it!=d->items.end(); ++it)
     {
@@ -341,7 +344,7 @@ KFilePlugin * const KFileMetaInfo::plugin() const
     return prov->plugin( d->mimetype );
 }
 
-const QStringList KFileMetaInfo::supportedKeys() const
+QStringList KFileMetaInfo::supportedKeys() const
 {
     return d->supportedKeys;
 }
@@ -380,13 +383,13 @@ QMap<QString, KFileMetaInfoItem>* KFileMetaInfo::Internal::map() const
     return &d->items;
 }
 
-void KFileMetaInfo::Internal::setSupportedKeys(QStringList keys)
+void KFileMetaInfo::Internal::setSupportedKeys(const QStringList& keys)
 {
     if (isValid())
         d->supportedKeys = keys;
 }
 
-void KFileMetaInfo::Internal::setPreferredKeys(QStringList keys)
+void KFileMetaInfo::Internal::setPreferredKeys(const QStringList& keys)
 {
     if (isValid())
         d->preferredKeys = keys;

@@ -197,7 +197,7 @@ public:
     /**
      * @return The list of keys the plugin knows about. No variable keys.
      */
-    const QStringList supportedKeys() const;
+    QStringList supportedKeys() const;
 
    /**
     * @return all keys that the file has, but in preference order. The
@@ -205,7 +205,7 @@ public:
     *         Any key in the file that isn't specified in the .desktop will
     *         be appended to the end
     */
-    const QStringList preferredKeys() const;
+    QStringList preferredKeys() const;
 
    /**
     * @return true if the mimetype supports adding or removing arbitrary keys,
@@ -274,7 +274,7 @@ public:
     Internal() : KFileMetaInfo() {}
 
     /**
-     * Copy constructor to topy a @ref KFileMetaInfo object into a
+     * Copy constructor to copy a @ref KFileMetaInfo object into a
      * KFileMetaInfo::Internal
      **/
     Internal( KFileMetaInfo& info ) : KFileMetaInfo(info) {}
@@ -294,13 +294,13 @@ public:
      * (e.g. common keys for which a translation is available) should be
      * specified with this function.
      **/
-    void setSupportedKeys(QStringList keys);
+    void setSupportedKeys(const QStringList& keys);
 
     /**
      * Specify the list of preferred keys. Most plugins just write the
      * list they get on the constructor.
      **/
-    void setPreferredKeys(QStringList keys);
+    void setPreferredKeys(const QStringList& keys);
     
     /**
      * Specify if the object supports variable keys, i.e. arbitrary key/value
@@ -395,6 +395,11 @@ public:
 protected:
     QString       m_mimetype;
     QStringList   m_preferred;
+
+private:
+    class KFilePluginPrivate;
+    KFilePluginPrivate *d;
+
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -440,6 +445,9 @@ protected:
 
 private:
     static KFileMetaInfoProvider * s_self;
+
+    class KFileMetaInfoProviderPrivate;
+    KFileMetaInfoProviderPrivate *d;
 
 };
 
