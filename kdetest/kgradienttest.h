@@ -8,6 +8,7 @@
 #define __KGRADIENT_TEST_H
 
 #include <qwidget.h>
+#include <kpixmap.h>
 
 class KGradientWidget : public QWidget
 {
@@ -16,6 +17,8 @@ public:
         : QWidget(parent, name){;}
 protected:
     void paintEvent(QPaintEvent *ev);
+private:
+    KPixmap pix;
 };
 
 #endif

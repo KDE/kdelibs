@@ -1,15 +1,13 @@
 #include "kgradienttest.h"
 #include <kapp.h>
-#include <kpixmap.h>
 #include <qpainter.h>
 
 void KGradientWidget::paintEvent(QPaintEvent *ev)
 {
-    KPixmap pm;
-    pm.resize(width(), height());
-    pm.gradientFill(Qt::red, Qt::black, KPixmap::Diagonal);
+    pix.resize(width(), height());
+    pix.gradientFill(Qt::red, Qt::black, KPixmap::Diagonal);
     QPainter p(this);
-    p.drawPixmap(0, 0, pm);
+    p.drawPixmap(0, 0, pix);
 }
 
 int main(int argc, char **argv)
