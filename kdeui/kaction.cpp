@@ -39,6 +39,7 @@
 #include <kglobalsettings.h>
 #include <kcombobox.h>
 #include <kdebug.h>
+#include <assert.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -1117,12 +1118,12 @@ KSelectAction::~KSelectAction()
 void KSelectAction::setCurrentItem( int id )
 {
     if ( id < 0 ) {
-        qAssert(id >= 0);
+        ASSERT(id >= 0);
         return;
     }
 
     if ( id >= (int)d->m_list.count() ) {
-        qAssert(id < (int)d->m_list.count());
+        ASSERT(id < (int)d->m_list.count());
         return;
     }
 
