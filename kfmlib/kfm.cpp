@@ -393,6 +393,10 @@ void KFM::slotDirEntry(const char* _name, const char* _access, const char* _owne
   emit dirEntry( entry );
 }
 
+//static
+void KFM::setSilent(bool _silent) { silent = _silent; }
+bool KFM::silent = false;
+
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )
 {
