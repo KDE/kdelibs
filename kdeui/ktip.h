@@ -148,7 +148,7 @@ public:
      * @param force If true, the dialog is show, even when the users
      *              disabled it.
      */
-    static void showTip(QWidget *parent, const QStringList &tipFiles, bool force=false);
+    static void showMultiTip(QWidget *parent, const QStringList &tipFiles, bool force=false);
 
     /**
      * Shows a tip.

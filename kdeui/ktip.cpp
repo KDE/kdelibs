@@ -304,10 +304,10 @@ void KTipDialog::showTip(const QString &tipFile, bool force)
 
 void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 {
-  showTip( parent, QStringList(tipFile), force );
+  showMultiTip( parent, QStringList(tipFile), force );
 }
 
-void KTipDialog::showTip(QWidget *parent, const QStringList &tipFiles, bool force)
+void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool force)
 {
     const bool runOnStart = KConfigGroup(kapp->config(), "TipOfDay")
                                         .readBoolEntry("RunOnStart", true);
