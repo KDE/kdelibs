@@ -2316,7 +2316,10 @@ ElementImpl *DocumentImpl::ownerElement() const
     KHTMLPart *childPart = childView->part();
     if (!childPart)
         return 0;
-    ChildFrame *childFrame = childPart->d->m_frame;
+    KHTMLPart *parent = childPart->parentPart();
+    if (!parent)
+        return 0;
+    ChildFrame *childFrame = parent->frame(childPart);
     if (!childFrame)
         return 0;
     RenderPart *renderPart = childFrame->m_frame;
