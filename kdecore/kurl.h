@@ -166,6 +166,7 @@ public:
 
   /**
    * Retrieve the port number included in the URL.
+   * If there is no port number specified in the URL, returns 0.
    **/
   unsigned short int port() const { return m_iPort; }
   /**
