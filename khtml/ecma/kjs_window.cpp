@@ -1004,7 +1004,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           if (pos >= 0) {
             key = s.left(pos).stripWhiteSpace().lower();
             val = s.mid(pos + 1).stripWhiteSpace().lower();
-	    QRect screen = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(widget));
+
+            int scnum = QApplication::desktop()->screenNumber(widget->parentWidget());
+
+	    QRect screen = QApplication::desktop()->screenGeometry(scnum);
             if (key == "left" || key == "screenx") {
               winargs.x = val.toInt() + screen.x();
 	      if (winargs.x < screen.x() || winargs.x > screen.right())
