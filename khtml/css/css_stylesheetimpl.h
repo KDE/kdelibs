@@ -29,6 +29,7 @@
 #include "dom/dom_string.h"
 #include "css/css_base.h"
 #include "misc/loader_client.h"
+#include "xml/dom_docimpl.h"
 
 namespace khtml {
     class CachedCSSStyleSheet;
@@ -99,13 +100,17 @@ public:
 
     virtual bool parseString( const DOMString &string, bool strict = true );
 
-    bool isLoading();
+    bool isLoading() const;
     void setNonCSSHints();
 
-    virtual void checkLoaded();
-    khtml::DocLoader *docLoader();
-    DocumentImpl *doc() { return m_doc; }
-    bool implicit() { return m_implicit; }
+    virtual void checkLoaded() const;
+
+    // ### remove? (clients should use sheet->doc()->docLoader())
+    khtml::DocLoader *docLoader() const
+    { return m_doc ? m_doc->docLoader() : 0; }
+
+    DocumentImpl *doc() const { return m_doc; }
+    bool implicit() const { return m_implicit; }
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
@@ -140,10 +145,9 @@ public:
         : StyleBaseImpl(parentSheet) {}
     MediaListImpl( CSSStyleSheetImpl *parentSheet,
                    const DOM::DOMString &media );
-    //MediaListImpl( CSSRuleImpl *parentRule );
     MediaListImpl( CSSRuleImpl *parentRule, const DOM::DOMString &media );
 
-    virtual bool isMediaList() { return true; }
+    virtual bool isMediaList() const { return true; }
 
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;

@@ -65,20 +65,19 @@ public:
 
     // add a whole, unparsed property
     void setProperty ( const DOMString &propertyString);
-    DOM::DOMString item ( unsigned long index );
+    DOM::DOMString item ( unsigned long index ) const;
 
     DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
 
-    virtual bool isStyleDeclaration() { return true; }
-
+    virtual bool isStyleDeclaration() const { return true; }
     virtual bool parseString( const DOMString &string, bool = false );
 
     CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
     DOMString getPropertyValue( int propertyID ) const;
     bool getPropertyPriority( int propertyID ) const;
 
-    QPtrList<CSSProperty> *values() { return m_lstValues; }
+    QPtrList<CSSProperty> *values() const { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
 
     void setChanged();
@@ -98,17 +97,15 @@ private:
 class CSSValueImpl : public StyleBaseImpl
 {
 public:
-    CSSValueImpl();
-
-    virtual ~CSSValueImpl();
+    CSSValueImpl() : StyleBaseImpl() {}
 
     virtual unsigned short cssValueType() const = 0;
 
     virtual DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
 
-    virtual bool isValue() { return true; }
-    virtual bool isFontValue() { return false; }
+    virtual bool isValue() const { return true; }
+    virtual bool isFontValue() const { return false; }
 };
 
 class CSSInheritedValueImpl : public CSSValueImpl
@@ -125,14 +122,14 @@ public:
 class CSSValueListImpl : public CSSValueImpl
 {
 public:
-    CSSValueListImpl();
+    CSSValueListImpl() : CSSValueImpl() {}
 
     virtual ~CSSValueListImpl();
 
     unsigned long length() const { return m_values.count(); }
     CSSValueImpl *item ( unsigned long index ) { return m_values.at(index); }
 
-    virtual bool isValueList() { return true; }
+    virtual bool isValueList() const { return true; }
 
     virtual unsigned short cssValueType() const;
 
@@ -163,9 +160,7 @@ public:
 
     void cleanup();
 
-    unsigned short primitiveType() const {
-	    return m_type;
-    }
+    unsigned short primitiveType() const { return m_type; }
 
     /*
      * computes a length in pixels out of the given CSSValue. Need the RenderStyle to get
@@ -184,9 +179,7 @@ public:
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
     void setFloatValue ( unsigned short unitType, double floatValue, int &exceptioncode );
-    double getFloatValue ( unsigned short/* unitType */) const {
-	return m_value.num;
-    }
+    double floatValue ( unsigned short/* unitType */) const { return m_value.num; }
 
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue () const {
@@ -215,7 +208,7 @@ public:
     virtual bool parseString( const DOMString &string, bool = false);
     virtual DOM::DOMString cssText() const;
 
-    virtual bool isQuirkValue() { return false; }
+    virtual bool isQuirkValue() const { return false; }
 
 protected:
     int m_type;
@@ -241,7 +234,7 @@ public:
 
     virtual ~CSSQuirkPrimitiveValueImpl() {}
 
-    virtual bool isQuirkValue() { return true; }
+    virtual bool isQuirkValue() const { return true; }
 };
 
 class CounterImpl : public khtml::Shared<CounterImpl> {
@@ -261,10 +254,10 @@ public:
     RectImpl();
     ~RectImpl();
 
-    CSSPrimitiveValueImpl *top() { return m_top; }
-    CSSPrimitiveValueImpl *right() { return m_right; }
-    CSSPrimitiveValueImpl *bottom() { return m_bottom; }
-    CSSPrimitiveValueImpl *left() { return m_left; }
+    CSSPrimitiveValueImpl *top() const { return m_top; }
+    CSSPrimitiveValueImpl *right() const { return m_right; }
+    CSSPrimitiveValueImpl *bottom() const { return m_bottom; }
+    CSSPrimitiveValueImpl *left() const { return m_left; }
 
     void setTop( CSSPrimitiveValueImpl *top );
     void setRight( CSSPrimitiveValueImpl *right );
@@ -280,7 +273,7 @@ protected:
 class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient
 {
 public:
-    CSSImageValueImpl(const DOMString &url, StyleBaseImpl *style);
+    CSSImageValueImpl(const DOMString &url, const StyleBaseImpl *style);
     CSSImageValueImpl();
     virtual ~CSSImageValueImpl();
 
@@ -309,7 +302,7 @@ public:
 
     virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
 
-    virtual bool isFontValue() { return true; }
+    virtual bool isFontValue() const { return true; }
 
     CSSPrimitiveValueImpl *style;
     CSSPrimitiveValueImpl *variant;
@@ -352,7 +345,7 @@ public:
 	}
     }
 
-    CSSValueImpl *value() { return m_value; }
+    CSSValueImpl *value() const { return m_value; }
 
     // make sure the following fits in 4 bytes.
     int  m_id 		: 29;

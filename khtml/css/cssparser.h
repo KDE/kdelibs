@@ -128,7 +128,7 @@ namespace DOM {
 	bool important;
 	bool nonCSSHint;
 	unsigned int id;
-	DOM::StyleListImpl *styleElement;
+	DOM::StyleListImpl* styleElement;
 	DOM::CSSRuleImpl *rule;
 	ValueList *valueList;
 	CSSProperty **parsedProperties;

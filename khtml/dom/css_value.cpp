@@ -351,7 +351,7 @@ float CSSPrimitiveValue::getFloatValue( unsigned short unitType )
     // ### add unit conversion
     if(primitiveType() != unitType)
 	throw CSSException(CSSException::SYNTAX_ERR);
-    return ((CSSPrimitiveValueImpl *)impl)->getFloatValue( unitType );
+    return ((CSSPrimitiveValueImpl *)impl)->floatValue( unitType );
 }
 
 void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMString &stringValue )

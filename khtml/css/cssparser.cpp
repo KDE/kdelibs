@@ -40,10 +40,6 @@ using namespace DOM;
 
 #include <stdlib.h>
 
-#ifdef APPLE_CHANGES
-void qFatal ( const char * msg ) {}
-#endif
-
 ValueList::ValueList()
 {
     values = (Value *) malloc( 16 * sizeof ( Value ) );
@@ -324,12 +320,12 @@ void CSSParser::clearProperties()
 
 DOM::DocumentImpl *CSSParser::document() const
 {
-    StyleBaseImpl *root = styleElement;
+    const StyleBaseImpl* root = styleElement;
     DocumentImpl *doc = 0;
     while (root->parent())
 	root = root->parent();
     if (root->isCSSStyleSheet())
-	doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
+	doc = static_cast<const CSSStyleSheetImpl*>(root)->doc();
     return doc;
 }
 

@@ -307,6 +307,16 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
     setChanged();
 }
 
+void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint, bool _multiLength )
+{
+    bool parseMode = strictParsing;
+    strictParsing = false;
+    multiLength = _multiLength;
+    setProperty( id, value, important, nonCSSHint);
+    strictParsing = parseMode;
+    multiLength = false;
+}
+
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
     if(!m_lstValues) {
@@ -319,22 +329,12 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     setChanged();
 }
 
-void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint, bool _multiLength )
-{
-    bool parseMode = strictParsing;
-    strictParsing = false;
-    multiLength = _multiLength;
-    setProperty( id, value, important, nonCSSHint);
-    strictParsing = parseMode;
-    multiLength = false;
-}
-
 unsigned long CSSStyleDeclarationImpl::length() const
 {
     return m_lstValues ? m_lstValues->count() : 0;
 }
 
-DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ )
+DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ ) const
 {
     // ###
     //return m_lstValues->at(index);
@@ -367,15 +367,6 @@ bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 
 // --------------------------------------------------------------------------------------
 
-CSSValueImpl::CSSValueImpl()
-    : StyleBaseImpl()
-{
-}
-
-CSSValueImpl::~CSSValueImpl()
-{
-}
-
 DOM::DOMString CSSValueImpl::cssText() const
 {
     return DOM::DOMString();
@@ -391,11 +382,6 @@ DOM::DOMString CSSInheritedValueImpl::cssText() const
     return DOMString("inherited");
 }
 // ----------------------------------------------------------------------------------------
-
-CSSValueListImpl::CSSValueListImpl()
-    : CSSValueImpl()
-{
-}
 
 CSSValueListImpl::~CSSValueListImpl()
 {
@@ -562,7 +548,7 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPa
         return -1;
     }
 
-    return getFloatValue(type)*factor;
+    return floatValue(type)*factor;
 }
 
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, double floatValue, int &exceptioncode )
@@ -753,15 +739,15 @@ void RectImpl::setLeft( CSSPrimitiveValueImpl *left )
 
 // -----------------------------------------------------------------
 
-CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl *style)
+CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const StyleBaseImpl* style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
     khtml::DocLoader *docLoader = 0;
-    StyleBaseImpl *root = style;
+    const StyleBaseImpl *root = style;
     while (root->parent())
 	root = root->parent();
     if (root->isCSSStyleSheet())
-	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
+	docLoader = static_cast<const CSSStyleSheetImpl*>(root)->docLoader();
 
     if (docLoader)
 	m_image = docLoader->requestImage(url);

@@ -472,6 +472,7 @@ public:
      * specified unit.
      *
      */
+    // ### KDE 4: make this const!
     float getFloatValue ( unsigned short unitType );
 
     /**
@@ -516,6 +517,7 @@ public:
      * string value.
      *
      */
+    // ### KDE4: make this const!
     DOM::DOMString getStringValue (  );
 
     /**
@@ -531,6 +533,7 @@ public:
      * Counter value.
      *
      */
+    // ### KDE4: make this const!
     Counter getCounterValue (  );
 
     /**
@@ -546,6 +549,7 @@ public:
      * Rect value.
      *
      */
+    // ### KDE4: make this const!
     Rect getRectValue (  );
 
     /**
@@ -562,6 +566,7 @@ public:
      * return a RGB color value.
      *
      */
+    // ### KDE4: make this const!
     RGBColor getRGBColorValue (  );
 };
 

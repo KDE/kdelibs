@@ -39,14 +39,14 @@
 #include "css_valueimpl.h"
 using namespace DOM;
 
-void StyleBaseImpl::checkLoaded()
+void StyleBaseImpl::checkLoaded() const
 {
     if(m_parent) m_parent->checkLoaded();
 }
 
 StyleSheetImpl* StyleBaseImpl::stylesheet()
 {
-    StyleBaseImpl *b = this;
+    StyleBaseImpl* b = this;
     while(b && !b->isStyleSheet())
         b = b->m_parent;
     return static_cast<StyleSheetImpl *>(b);
@@ -70,9 +70,7 @@ DOMString StyleBaseImpl::baseURL()
 
     if(!sheet->ownerNode()) return DOMString();
 
-    DocumentImpl *doc = sheet->ownerNode()->getDocument();
-
-    return doc->baseURL();
+    return sheet->ownerNode()->getDocument()->baseURL();
 }
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
@@ -130,7 +128,7 @@ void CSSSelector::print(void)
     kdDebug( 6080 ) << "    specificity = " << specificity() << endl;
 }
 
-unsigned int CSSSelector::specificity()
+unsigned int CSSSelector::specificity() const
 {
     if ( nonCSSHint )
         return 0;
@@ -233,7 +231,7 @@ void CSSSelector::extractPseudoType() const
 }
 
 
-bool CSSSelector::operator == ( const CSSSelector &other )
+bool CSSSelector::operator == ( const CSSSelector &other ) const
 {
     const CSSSelector *sel1 = this;
     const CSSSelector *sel2 = &other;

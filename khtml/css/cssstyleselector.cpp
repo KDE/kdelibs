@@ -1369,11 +1369,11 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
 	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
+	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
-	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
 	else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
-	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
+	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
 	else if ( ok )
 	    *ok = false;
     }
@@ -2108,7 +2108,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+	l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
 	return;
       style->setBackgroundXPosition(l);
@@ -2122,7 +2122,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+	l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
 	return;
       style->setBackgroundYPosition(l);
@@ -2491,9 +2491,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed,
                            primitiveValue->isQuirkValue());
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+                l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
 	    else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
-		l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
+		l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
             else
                 return;
             apply = true;
@@ -2571,7 +2571,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+                l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
             else
                 return;
             apply = true;
@@ -2635,7 +2635,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed );
 	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	    l = Length( int( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
+	    l = Length( int( primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
 
 	  style->setVerticalAlign( LENGTH );
 	  style->setVerticalAlignLength( l );
@@ -2700,7 +2700,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) );
             }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+                size = int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                         * parentStyle->font().pixelSize()) / 100;
             else
                 return;
@@ -2746,7 +2746,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             } else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
                 return; // Error case.
 	    else {
-		z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
+		z_index = (int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER);
 	    }
 	}
 
@@ -2770,9 +2770,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
+                lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
             else if(type == CSSPrimitiveValue::CSS_NUMBER)
-                lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+                lineHeight = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
             else
                 return;
 	}

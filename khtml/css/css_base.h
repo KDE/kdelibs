@@ -73,11 +73,11 @@ namespace DOM {
 	DOMString selectorText() const;
 
 	// checks if the 2 selectors (including sub selectors) agree.
-	bool operator == ( const CSSSelector &other );
+	bool operator == ( const CSSSelector &other ) const;
 
 	// tag == -1 means apply to all elements (Selector = *)
 
-	unsigned int specificity();
+	unsigned int specificity() const;
 
 	/* how the attribute value has to match.... Default is Exact */
 	enum Match
@@ -126,12 +126,11 @@ namespace DOM {
             PseudoSelection
 	};
 
-	inline PseudoType pseudoType() const
-	    {
-		if (_pseudoType == PseudoNotParsed)
-		    extractPseudoType();
-		return _pseudoType;
-	    }
+	PseudoType pseudoType() const {
+            if (_pseudoType == PseudoNotParsed)
+                extractPseudoType();
+            return _pseudoType;
+        }
 
 	mutable DOM::DOMString value;
 	CSSSelector *tagHistory;
@@ -163,26 +162,27 @@ namespace DOM {
 	virtual ~StyleBaseImpl() {}
 
 	// returns the url of the style sheet this object belongs to
+        // not const
 	DOMString baseURL();
 
 	virtual bool isStyleSheet() const { return false; }
 	virtual bool isCSSStyleSheet() const { return false; }
 	virtual bool isStyleSheetList() const { return false; }
-	virtual bool isMediaList() { return false; }
-	virtual bool isRuleList() { return false; }
-	virtual bool isRule() { return false; }
-	virtual bool isStyleRule() { return false; }
-	virtual bool isCharetRule() { return false; }
-	virtual bool isImportRule() { return false; }
-	virtual bool isMediaRule() { return false; }
-	virtual bool isFontFaceRule() { return false; }
-	virtual bool isPageRule() { return false; }
-	virtual bool isUnknownRule() { return false; }
-	virtual bool isStyleDeclaration() { return false; }
-	virtual bool isValue() { return false; }
+	virtual bool isMediaList() const { return false; }
+	virtual bool isRuleList() const { return false; }
+	virtual bool isRule() const { return false; }
+	virtual bool isStyleRule() const { return false; }
+	virtual bool isCharetRule() const { return false; }
+	virtual bool isImportRule() const { return false; }
+	virtual bool isMediaRule() const { return false; }
+	virtual bool isFontFaceRule() const { return false; }
+	virtual bool isPageRule() const { return false; }
+	virtual bool isUnknownRule() const { return false; }
+	virtual bool isStyleDeclaration() const { return false; }
+	virtual bool isValue() const { return false; }
 	virtual bool isPrimitiveValue() const { return false; }
-	virtual bool isValueList() { return false; }
-	virtual bool isValueCustom() { return false; }
+	virtual bool isValueList() const { return false; }
+	virtual bool isValueCustom() const { return false; }
 
 	void setParent(StyleBaseImpl *parent) { m_parent = parent; }
 
@@ -191,11 +191,12 @@ namespace DOM {
 
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 
-	virtual void checkLoaded();
+	virtual void checkLoaded() const;
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
 	bool useStrictParsing() const { return strictParsing; }
 
+        // not const
 	StyleSheetImpl* stylesheet();
 
     protected:
@@ -210,11 +211,10 @@ namespace DOM {
     public:
 	StyleListImpl() : StyleBaseImpl() { m_lstChildren = 0; }
 	StyleListImpl(StyleBaseImpl *parent) : StyleBaseImpl(parent) { m_lstChildren = 0; }
-
 	virtual ~StyleListImpl();
 
-	unsigned long length() { return m_lstChildren->count(); }
-	StyleBaseImpl *item(unsigned long num) { return m_lstChildren->at(num); }
+	unsigned long length() const { return m_lstChildren->count(); }
+	StyleBaseImpl *item(unsigned long num) const { return m_lstChildren->at(num); }
 
 	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
 

@@ -207,7 +207,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
     return true;
 }
 
-bool CSSStyleSheetImpl::isLoading()
+bool CSSStyleSheetImpl::isLoading() const
 {
     StyleBaseImpl *rule;
     for ( rule = m_lstChildren->first(); rule != 0; rule = m_lstChildren->next() )
@@ -230,7 +230,7 @@ bool CSSStyleSheetImpl::isLoading()
     return false;
 }
 
-void CSSStyleSheetImpl::checkLoaded()
+void CSSStyleSheetImpl::checkLoaded() const
 {
     if(isLoading()) return;
     if(m_parent) m_parent->checkLoaded();
@@ -248,14 +248,6 @@ void CSSStyleSheetImpl::setNonCSSHints()
     }
 }
 
-khtml::DocLoader *CSSStyleSheetImpl::docLoader()
-{
-    if ( !m_doc ) // doc is 0 for the user- and default-sheet!
-        return 0;
-
-    // ### remove? (clients just use sheet->doc()->docLoader())
-    return m_doc->docLoader();
-}
 
 // ---------------------------------------------------------------------------
 

@@ -49,7 +49,7 @@ public:
     CSSRuleImpl(StyleBaseImpl *parent)
         : StyleBaseImpl(parent), m_type(CSSRule::UNKNOWN_RULE) {}
 
-    virtual bool isRule() { return true; }
+    virtual bool isRule() const { return true; }
     unsigned short type() const { return m_type; }
 
     CSSStyleSheetImpl *parentStyleSheet() const;
@@ -70,7 +70,7 @@ public:
     CSSCharsetRuleImpl(StyleBaseImpl *parent)
         : CSSRuleImpl(parent) { m_type = CSSRule::CHARSET_RULE; }
 
-    virtual bool isCharsetRule() { return true; }
+    virtual bool isCharsetRule() const { return true; }
 
     DOMString encoding() const { return m_encoding; }
     void setEncoding(DOMString _encoding) { m_encoding = _encoding; }
@@ -89,7 +89,7 @@ public:
 
     CSSStyleDeclarationImpl *style() const { return m_style; }
 
-    virtual bool isFontFaceRule() { return true; }
+    virtual bool isFontFaceRule() const { return true; }
 
 protected:
     CSSStyleDeclarationImpl *m_style;
@@ -110,7 +110,7 @@ public:
     MediaListImpl *media() const { return m_lstMedia; }
     CSSStyleSheetImpl *styleSheet() const { return m_styleSheet; }
 
-    virtual bool isImportRule() { return true; }
+    virtual bool isImportRule() const { return true; }
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
@@ -163,7 +163,7 @@ public:
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
     void deleteRule ( unsigned long index ) { m_lstCSSRules->deleteRule( index ); }
 
-    virtual bool isMediaRule() { return true; }
+    virtual bool isMediaRule() const { return true; }
 
     /* Not part of the DOM */
     unsigned long append( CSSRuleImpl *rule );
@@ -182,7 +182,7 @@ public:
 
     CSSStyleDeclarationImpl *style() const { return m_style; }
 
-    virtual bool isPageRule() { return true; }
+    virtual bool isPageRule() const { return true; }
 
     DOM::DOMString selectorText() const;
     void setSelectorText(DOM::DOMString str);
@@ -201,7 +201,7 @@ public:
 
     CSSStyleDeclarationImpl *style() const { return m_style; }
 
-    virtual bool isStyleRule() { return true; }
+    virtual bool isStyleRule() const { return true; }
 
     DOM::DOMString selectorText() const;
     void setSelectorText(DOM::DOMString str);
@@ -227,7 +227,7 @@ class CSSUnknownRuleImpl : public CSSRuleImpl
 public:
     CSSUnknownRuleImpl(StyleBaseImpl *parent) : CSSRuleImpl(parent) {}
 
-    virtual bool isUnknownRule() { return true; }
+    virtual bool isUnknownRule() const { return true; }
 };
 
 
