@@ -71,7 +71,7 @@ class FtpSocket;
 class FtpTextReader
 {
 public:
-        FtpTextReader()        { textClear();  }
+        FtpTextReader()         { textClear();  }
 
 /**
   * Resets the status of the object, also called from xtor
@@ -150,11 +150,11 @@ public:
             m_server = -1;
           }
           
-          ~FtpSocket()
-          { 
-            closeSocket();
-          }
+          ~FtpSocket()       {  closeSocket();  }
           
+/**
+  * Resets the status of the object, also called from xtor
+  */
   void    closeSocket();
   
 /**
@@ -223,7 +223,7 @@ private:
   int          m_server;   // socket override, see setSock()
 };
 #else
-   class FtpSocket
+   class FtpSocket;
 #endif // KIO_FTP_PRIVATE_INCLUDE
 
 //===============================================================================
@@ -266,22 +266,37 @@ public:
 
   virtual void slave_status();
 
-// virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
+  /**
+   * Handles the case that one side of the job is a local file
+   */
+  //virtual void copy( const KURL &src, const KURL &dest, int permissions, bool overwrite );
 
 private:
-
-  // All the methods named ftpXyz do NOT emit errors, they simply return true
-  // or false (they are lowlevel methods). The methods not named this way
-  // emit error on error (they are highlevel methods).
+  // ------------------------------------------------------------------------
+  // All the methods named ftpXyz are lowlevel methods that are not exported.
+  // The implement functionality used by the public high-level methods. Some
+  // low-level methods still use error() to emit errors. This behaviour is not
+  // recommended - please return a boolean status or an error code instead!
+  // ------------------------------------------------------------------------
 
   /**
-   * loginMode for ftpOpenConnection
+   * Status Code returned from ftpPut() and ftpGet(), used to select
+   * source or destination url for error messages 
    */
-  enum {
+  typedef enum {
+    statusSuccess,
+    statusClientError,
+    statusServerError
+  } StatusCode;
+  
+  /**
+   * Login Mode for ftpOpenConnection
+   */
+  typedef enum {
     loginDefered,
     loginExplicit,
     loginImplicit
-  };
+  } LoginMode;
   
   /**
    * Connect and login to the FTP server.
@@ -293,7 +308,7 @@ private:
    *
    * @return true on success (a login failure would return false).
    */
-  bool ftpOpenConnection (int loginMode);
+  bool ftpOpenConnection (LoginMode loginMode);
 
   /**
    * Executes any auto login macro's as specified in a .netrc file.
@@ -349,7 +364,12 @@ private:
    * @return false on error (line doesn't start with '2')
    */
   bool ftpCloseCommand();
-
+  
+  /**
+   * Send "TYPE I" or "TYPE A" only if required, see m_cDataMode.
+   */
+  bool Ftp::ftpDataMode(char cMode);
+  
   //void ftpAbortTransfer();
 
   /**
@@ -396,21 +416,31 @@ private:
     */
   bool ftpReadDir(FtpEntry& ftpEnt);
   
-  void createUDSEntry( const QString & filename, FtpEntry& ftpEnt, KIO::UDSEntry& entry, bool isDir );
-  void shortStatAnswer( const QString& filename, bool isDir );
-  void statAnswerNotFound( const QString & path, const QString & filename );
+  /**
+    * Helper to fill an UDSEntry
+    */
+  void ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, KIO::UDSEntry& entry, bool isDir );
+  
+  void ftpShortStatAnswer( const QString& filename, bool isDir );
+  
+  void ftpStatAnswerNotFound( const QString & path, const QString & filename );
 
+  /**
+   * This is the internal implementation of rename() - set put().
+   *
+   * @return true on success.
+   */
   bool ftpRename( const QString & src, const QString & dst, bool overwrite );
 
   /**
    * Called by openConnection. It opens the control connection to the ftp server.
    *
    * @return true on success.
-    */
+   */
   bool ftpOpenContolConnection( const QString & host, unsigned short int port );
 
   /**
-    * closes the socket holding the control connection (see ftpOpenContolConnection)
+   * closes the socket holding the control connection (see ftpOpenContolConnection)
    */
   void ftpCloseContolConnection();
 
@@ -424,13 +454,57 @@ private:
    */
   const char* ftpResponse(int iOffset);
   
-private: // data members
+  /**
+   * This is the internal implementation of get() - see copy().
+   *
+   * IMPORTANT: the caller should call ftpCloseCommand() on return.
+   * The function does not call error(), the caller should do this.
+   *
+   * @param iError      set to an ERR_xxxx code on error
+   * @param iCopyFile   -1 -or- handle of a local destination file
+   * @param hCopyOffset local file only: non-zero for resume
+   * @return 0 for success, -1 for server error, -2 for client error
+   */
+  StatusCode ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fileoffset_t hCopyOffset);
+  
+  /**
+   * This is the internal implementation of put() - see copy().
+   *
+   * IMPORTANT: the caller should call ftpCloseCommand() on return.
+   * The function does not call error(), the caller should do this.
+   *
+   * @param iError      set to an ERR_xxxx code on error
+   * @param iCopyFile   -1 -or- handle of a local source file
+   * @return 0 for success, -1 for server error, -2 for client error
+   */
+  StatusCode ftpPut(int& iError, int iCopyFile, const KURL& url, int permissions, bool overwrite, bool resume);
+  
+  /**
+   * helper called from copy() to implement FILE -> FTP transfers
+   *
+   * @param iError      set to an ERR_xxxx code on error
+   * @param iCopyFile   [out] handle of a local source file
+   * @param sCopyFile   path of the local source file
+   * @return 0 for success, -1 for server error, -2 for client error
+   */
+  //StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
+  
+  /**
+   * helper called from copy() to implement FTP -> FILE transfers
+   *
+   * @param iError      set to an ERR_xxxx code on error
+   * @param iCopyFile   [out] handle of a local source file
+   * @param sCopyFile   path of the local destination file
+   * @return 0 for success, -1 for server error, -2 for client error
+   */
+  //StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
 
+private: // data members
+    
   QString m_host;
   unsigned short int m_port;
   QString m_user;
   QString m_pass;
-
   /**
    * Where we end up after connecting
    */
@@ -448,9 +522,27 @@ private: // data members
   int  m_iRespType;
 
   /**
-   * true if logged on (ksControl should also be non-NULL)
+   * This flag is maintained by ftpDataMode() and contains I or A after
+   * ftpDataMode() has successfully set the mode.
+   */
+  char m_cDataMode;
+
+  /**
+   * true if logged on (m_control should also be non-NULL)
    */
   bool m_bLoggedOn;
+  
+  /**
+   * true if a data stream is open, used in closeConnection().
+   *
+   * When the user cancels a get or put command the Ftp dtor will be called,
+   * which in turn calls closeConnection(). The later would try to send QUIT
+   * which won't work until timeout. ftpOpenCommand sets the m_bBusy flag so
+   * that the sockets will be closed immedeately - the server should be
+   * capable of handling this and return an error code on thru the control
+   * connection. The m_bBusy gets cleared by the ftpCloseCommand() routine.
+   */
+  bool m_bBusy;
   
   bool m_bPasv;
   bool m_bUseProxy;
@@ -465,7 +557,8 @@ private: // data members
     epsvAllUnknown = 0x02,
     eprtUnknown = 0x04,
     epsvAllSent = 0x10,
-    pasvUnknown = 0x20
+    pasvUnknown = 0x20,
+    chmodUnknown = 0x100
   };
   int m_extControl;
   
