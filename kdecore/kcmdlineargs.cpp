@@ -465,16 +465,20 @@ KCmdLineArgs::parseAllArgs()
 {
    bool allowArgs = false;
    bool inOptions = true;
+   bool everythingAfterArgIsArgs = false;
    KCmdLineArgs *appOptions = argsList->last();
    if (!appOptions->id)
    {
      const KCmdLineOptions *option = appOptions->options;
      while(option && option->name)
      {
-       if (option->name[0] == '+' ||
-           ( option->name[0] == '!' && option->name[1] == '+' ) )
-          allowArgs = true;
-
+       if (option->name[0] == '+')
+           allowArgs = true;
+       if ( option->name[0] == '!' && option->name[1] == '+' )
+       {
+           allowArgs = true;
+           everythingAfterArgIsArgs = true;
+       }
        option++;
      }
    }
@@ -557,6 +561,8 @@ KCmdLineArgs::parseAllArgs()
          else
          {
             appOptions->addArgument(argv[i]);
+            if (everythingAfterArgIsArgs)
+                inOptions = false;
          }
       }
    }
