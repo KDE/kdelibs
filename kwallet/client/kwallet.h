@@ -119,7 +119,8 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  Open the wallet @p name.  The user will be prompted to
 		 *  allow your application to open the wallet, and may be
-		 *  prompted for a password.
+		 *  prompted for a password.  You are responsible for deleting
+		 *  this object when you are done with it.
 		 *  @param name The name of the wallet to open.
 		 *  @param ot    If Asynchronous, the call will return
 		 *               immediately with a non-null pointer to an
@@ -153,11 +154,17 @@ class Wallet : public QObject, public DCOPObject {
 
 		/**
 		 *  The standardized name of the password folder.
+		 *  It is automatically created when a wallet is created, but
+		 *  the user may still delete it so you should check for its
+		 *  existence and recreate it if necessary and desired.
 		 */
 		static const QString PasswordFolder();
 
 		/**
 		 *  The standardized name of the form data folder.
+		 *  It is automatically created when a wallet is created, but
+		 *  the user may still delete it so you should check for its
+		 *  existence and recreate it if necessary and desired.
 		 */
 		static const QString FormDataFolder();
 
@@ -355,6 +362,8 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  Determine if a folder does not exist in a wallet.  This
 		 *  does not require decryption of the wallet.
+		 *  This is a handy optimization to avoid prompting the user
+		 *  if your data is certainly not in the wallet.
 		 *  @param wallet The wallet to look in.
 		 *  @param folder The folder to look up.
 		 *  @return Returns true if the folder does NOT exist in the
@@ -365,6 +374,8 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  Determine if an entry in a folder does not exist in a
 		 *  wallet.  This does not require decryption of the wallet.
+		 *  This is a handy optimization to avoid prompting the user
+		 *  if your data is certainly not in the wallet.
 		 *  @param wallet The wallet to look in.
 		 *  @param folder The folder to look in.
 		 *  @param key The key to look up.
