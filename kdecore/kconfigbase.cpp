@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.25  1998/03/30 15:40:08  kalle
+// Accepting non-null numerical values as true when reading bool entries
+//
 // Revision 1.24  1998/03/29 19:07:29  kalle
 // Methods for reading and writing bool, unsigned int, long, unsigned long,
 // double, QRect, QSize, QPoint
@@ -355,6 +358,10 @@ int KConfigBase::readNumEntry( const char* pKey, int nDefault) const
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
 	return nDefault;
+  else if( aValue = "true" )
+	return 1;
+  else if( aValue = "on" )
+	return 1;
   else
 	{
 	  rc = aValue.toInt( &ok );
