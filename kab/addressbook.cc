@@ -698,7 +698,8 @@ bool AddressBook::add(const Entry& entry, string& key)
 	 || !map->insert("emails", entry.emails)
 	 || !map->insert("keywords", entry.keywords)
 	 || !map->insert("state", entry.state)
-	 || !map->insert("zip", entry.zip))
+	 || !map->insert("zip", entry.zip)
+	 || !map->insert("country", entry.country))
 	{ //       errors again may not happen:
 	  cerr << i18n("Unable to create key-value-map for entry.") << endl;
 	  ::exit(-1);
