@@ -398,6 +398,7 @@ void TCPSlaveBase::cleanSSL()
 
     if (m_bIsSSL) {
         delete d->kssl;
+        d->kssl = 0;
     }
     d->militantSSL = false;
 }
