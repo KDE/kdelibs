@@ -3,11 +3,7 @@ Konqueror.
 -----------------------------------------------------------------------------
 
 
-1)  Pages containing mixed SSL and non-SSL elements are not detected currently.
-  This means that a malicious site could embed parts of a valid site inside
-an invalid site and trick the browser into thinking that the whole site is
-valid.  This is incomplete code.
-
+1)  Caching should be done on a per-host basis, not per-certificate.
 
 2)  Autocompletion in form fields in HTTPS mode will result in various fields
 such as pin numbers and possibly credit cards or other sensitive information
