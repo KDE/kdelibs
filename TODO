@@ -1,0 +1,10 @@
+This file is meant to be a place to track of medium to large-scale API changes
+that we would like to make for the next binary incompatible release.
+
+- Remove the smart-to-dumb-pointer conversion operator from KSharedPointer
+  and replace it with a T* Get() member function. An implict conversion is
+  far too dangerous.
+  See: http://groups.google.com/groups?selm=4ognb0%243cd%40linda.teleport.com&oe=UTF-8&output=gplain
+
+- Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
+  (Contributors to that thread, please add specific items here.)
