@@ -677,6 +677,7 @@ public:
   /**
    * Returns the part that contains @p frame and that may be accessed
    * by @p callingPart
+   * @since 3.3
    */
   BrowserHostExtension *findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame);
 
