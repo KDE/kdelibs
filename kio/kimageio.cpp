@@ -8,9 +8,7 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 
-#ifdef HAVE_CONFIG_H
 #include"config.h"
-#endif
 
 #include <qdir.h>
 #include <kapp.h>

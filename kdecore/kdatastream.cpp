@@ -1,9 +1,7 @@
 
 #include <kdatastream.h>
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #if SIZEOF_LONG == 8
 QDataStream & operator << (QDataStream & str, long l)

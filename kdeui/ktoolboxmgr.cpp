@@ -23,9 +23,7 @@
 #include <qobject.h>
 #include <qapplication.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <ktoolboxmgr.h>
 
@@ -33,6 +31,10 @@ template class QList<QRect>;
 
  // $Id$
  // $Log$
+ // Revision 1.19  2000/06/08 16:49:48  ettrich
+ //
+ // Progress on the NET_WM window manager front
+ //
  // Revision 1.18  1999/12/13 23:01:49  kulow
  // some "real C++" fixes. I wish gcc -ansi would serve real ANSI ;(
  //

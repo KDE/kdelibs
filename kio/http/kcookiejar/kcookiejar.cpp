@@ -32,9 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // RFC2109 as much as we can.
 //
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef HAVE_SYS_PARAM_H

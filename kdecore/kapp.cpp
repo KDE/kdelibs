@@ -19,9 +19,7 @@
 
 // $Id$
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <qdir.h> // must be at the front
 #include <qcollection.h>

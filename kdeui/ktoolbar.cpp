@@ -30,9 +30,7 @@
 #include <qstring.h>
 #include <qrect.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "klineedit.h"
 #include "kseparator.h"

@@ -52,9 +52,7 @@
 #include <string.h>
 #include <kconfig.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 class KDebugEntry;
 template class QList<KDebugEntry>;

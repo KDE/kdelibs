@@ -20,9 +20,7 @@
 
 // $Id$
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <ksock.h>
 #include <qtimer.h>

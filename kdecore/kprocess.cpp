@@ -42,9 +42,7 @@
 #define _MAY_INCLUDE_KPROCESSCONTROLLER_
 #include "kprocctrl.h"
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <qfile.h>
 #include <qregexp.h>

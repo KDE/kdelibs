@@ -16,9 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -321,9 +319,7 @@ QString Job::errorString()
 #include <stdio.h>
 #include <qfile.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>

@@ -24,9 +24,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -532,6 +530,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.53  2000/06/03 21:00:11  bieker
+* DOn't include headers we don't use.
+*
 * Revision 1.52  2000/06/03 01:18:17  gehrmab
 * KGlobal <-> KGlobalSettings <-> KApplication cleanup
 *

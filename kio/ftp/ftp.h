@@ -22,9 +22,7 @@
 #ifndef __ftp_h__
 #define __ftp_h__
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <stdio.h>
 #include <sys/types.h>
