@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.26  1999/01/18 10:56:20  kulow
+   .moc files are back in kdelibs. Built fine here using automake 1.3
+
    Revision 1.25  1999/01/15 09:30:37  kulow
    it's official - kdelibs builds with srcdir != builddir. For this I
    automocifized it, the generated rules are easier to maintain than
@@ -83,13 +86,13 @@ QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
 
   addPath( KApplication::kde_toolbardir() );
   addPath( KApplication::kde_icondir() );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-
 
   addPath(KApplication::localkdedir() + "/share/toolbar" ); 
   addPath(KApplication::localkdedir() + "/share/icons" ); 
+
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
   addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
   addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
 
   name_list.setAutoDelete(TRUE);
@@ -119,13 +122,13 @@ Stephan: See above
 
   addPath( KApplication::kde_toolbardir() );
   addPath( KApplication::kde_icondir() );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-
 
   addPath(KApplication::localkdedir() + "/share/toolbar" ); 
   addPath(KApplication::localkdedir() + "/share/icons" ); 
+
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
   addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
   addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
 
   name_list.setAutoDelete(TRUE);
