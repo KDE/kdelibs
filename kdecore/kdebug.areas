@@ -50,6 +50,8 @@
 703        kutils (KPluginInfo)
 704        kutils (KSettings::ComponentsDialog)
 710        kutils (KCMultiDialog)
+711        kutils (KCModuleProxy)
+712        kutils (KCModuleInfo)
 750        kspell (kdelibs)
 760        kmdi
 800        kabapi (kdelibs)
