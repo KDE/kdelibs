@@ -63,7 +63,7 @@ KSSLD::KSSLD(const QCString &name) : KDEDModule(name)
 {
 // ----------------------- FOR THE CACHE ------------------------------------	
   cfg = new KSimpleConfig("ksslpolicies", false);
-  if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
+  if (!KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl")) {
      //    kdDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
   }
   cacheLoadDefaultPolicies();
