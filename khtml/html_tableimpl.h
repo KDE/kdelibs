@@ -507,7 +507,7 @@ public:
 
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
-    Length width() { return predefinedWidth; }
+    Length width();
 
     virtual NodeImpl *addChild(NodeImpl *child);
     

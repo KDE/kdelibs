@@ -2267,6 +2267,7 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 	_currentCol++;
 	return child;
     }
+    return child;
 
 }
 
@@ -2294,6 +2295,15 @@ void HTMLTableColElementImpl::parseAttribute(Attribute *attr)
 	HTMLElementImpl::parseAttribute(attr);
     }
 
+}
+
+Length HTMLTableColElementImpl::width() 
+{ 
+    if (predefinedWidth.type == Undefined 
+	&& _parent && _parent->id()==ID_COLGROUP)
+	return static_cast<HTMLTableColElementImpl*>(_parent)->width();
+    else
+	return predefinedWidth;	
 }
 
 // -------------------------------------------------------------------------
