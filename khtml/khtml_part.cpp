@@ -3570,8 +3570,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
              (target.lower() != "_self") &&
              (target.lower() != "_parent"))
     {
-      KHTMLPart *destpart = findFrame(target);
-      if (!destpart)
+      KHTMLPart *p = this;
+      while (p->parentPart())
+          p = p->parentPart();
+      if (!p->frameExists(target))
         extra = i18n(" (In new window)");
       else
         extra = i18n(" (In other frame)");
@@ -4670,8 +4672,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
       if (d->m_strSelectedURLTarget.lower() == "_blank")
         args.setForcesNewWindow(true);
       else {     
-        KHTMLPart *destpart = findFrame(d->m_strSelectedURLTarget);
-        if (!destpart)
+	KHTMLPart *p = this;
+	while (p->parentPart())
+	  p = p->parentPart();
+	if (!p->frameExists(d->m_strSelectedURLTarget))
           args.setForcesNewWindow(true);
       }
     }
