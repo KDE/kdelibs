@@ -243,6 +243,11 @@ public:
      * @see setItems
      */
     QStringList items() const;
+    
+    /**
+     * Returns true when the completion object contains no entries.
+     */
+    bool isEmpty() const;
 
     /**
      * Sets the completion mode to Auto/Manual, Shell or None.
@@ -392,7 +397,7 @@ public:
      */
     void disableSounds() { myBeep = false; }
 #endif
-
+    
 public slots:
     /**
      * Attempts to complete "string" and emits the completion via match().
@@ -694,51 +699,39 @@ public:
      * Destructor.
      */
     virtual ~KCompletionBase();
-
+    
     /**
      * Returns a pointer to the current completion object.
      *
-     * If the object does not exist, it is automatically
-     * created.  Note that the completion object created
-     * here is used by default to handle the signals
-     * internally.  It is also deleted when this object's
-     * destructor is invoked.  If you do not want these
-     * default settings, use setAutoDeleteCompletionObject
-     * and setHandleSignals to change the behavior.
-     * Alternatively, you can set the boolean parameter to
-     * false to disable the automatic handling of the signals
-     * by this object.  Note that the boolean argument will be
-     * ignored if there already exists a completion object since
-     * no new object needs to be created. You need to use either
-     * setHandleSignals or setCompletionObject for
-     * such cases depending on your requirement.
+     * If the completion object does not exist, it is automatically created and
+     * by default handles all the completion signals internally unless @p hsig
+     * is set to false. It is also automatically destroyed when the destructor
+     * is called. You can change this default behavior using the 
+     * @ref setAutoDeleteCompletionObject and @ref setHandleSignals member 
+     * functions.
      *
-     * @param hsig if true, handles signals internally.
+     * See also @ref compObj.
+     *
+     * @param hsig if true, handles completion signals internally.
      * @return a pointer the completion object.
      */
     KCompletion* completionObject( bool hsig = true );
-
+    
     /**
      * Sets up the completion object to be used.
      *
-     * This method assigns the completion object and sets it
-     * up to automatically handle the completion and rotation
-     * signals internally.  You should use this function if
-     * you want to share one completion object among you widgets
-     * or need to use a customized completion object.
+     * This method assigns the completion object and sets it up to automatically
+     * handle the completion and rotation signals internally.  You should use 
+     * this function if you want to share one completion object among your
+     * widgets or need to use a customized completion object.
      *
-     * The object assigned through this method is not deleted
-     * when this object's destructor is invoked unless you
-     * explicitly call setAutoDeleteCompletionObject after
-     * calling this method.  Also if you do not want the signals
-     * to be handled by an internal implementation, be sure to
-     * set the bool argument to false.
-     *
-     * This method is also called when a completion-object is created
-     * automatically, when completionObject() is called the first time.
+     * The object assigned through this method is not deleted when this object's
+     * destructor is invoked unless you explicitly call @ref setAutoDeleteCompletionObject
+     * after calling this method. Be sure to set the bool argument to false, if
+     * you want to handle the completion signals yourself.
      *
      * @param compObj a KCompletion() or a derived child object.
-     * @param hsig if true, handles signals internally.
+     * @param hsig if true, handles completion signals internally.
      */
     virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
 

@@ -89,7 +89,6 @@ void KCompletion::insertItems( const QStringList& items )
     }
 }
 
-
 QStringList KCompletion::items() const
 {
     KCompletionMatchesWrapper list; // unsorted
@@ -99,6 +98,10 @@ QStringList KCompletion::items() const
     return list.list();
 }
 
+bool KCompletion::isEmpty() const
+{
+  return (myTreeRoot->childrenCount() == 0);
+}
 
 void KCompletion::addItem( const QString& item )
 {
@@ -288,7 +291,6 @@ void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 {
     myCompletionMode = mode;
 }
-
 
 QStringList KCompletion::allMatches()
 {
@@ -615,7 +617,6 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
         }
     }
 }
-
 
 void KCompletion::doBeep( BeepMode mode ) const
 {
