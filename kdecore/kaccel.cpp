@@ -29,7 +29,7 @@
 
 #include "kaccel.h"
 
-KAccel::KAccel( QWidget * parent, const char * name ): 
+KAccel::KAccel( QWidget * parent, const char * name ):
   aKeyDict(100){
 	aAvailableId = 1;
 	bEnabled = true;
@@ -124,7 +124,7 @@ void  KAccel::disconnectItem( const char * action,
 			      const QObject* receiver, const char* member )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
-    if ( !pEntry ) 
+    if ( !pEntry )
 		return;
 	
 	pAccel->disconnectItem( pEntry->aAccelId, receiver, member  );
@@ -166,7 +166,7 @@ bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
 	return TRUE;
 }
 
-bool KAccel::insertItem( const char* descr, const char * action, 
+bool KAccel::insertItem( const char* descr, const char * action,
 					   const char * keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
@@ -182,7 +182,17 @@ bool KAccel::insertItem( const char* descr, const char * action,
 }
 
 
+bool KAccel::insertItem( const char * action, uint keyCode,
+			 bool configurable )
+{
+    insertItem(action, action, keyCode, configurable);
+}
 
+bool KAccel::insertItem( const char * action,
+			 const char * keyCode, bool configurable )
+{
+    insertItem(action, action, keyCode, configurable);
+}
 
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	const char *action )
@@ -212,11 +222,11 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 			       StdAccel accel ){
-  changeMenuAccel(menu, id, stdAction(accel)); 
+  changeMenuAccel(menu, id, stdAction(accel));
 }
 
 
-const char * KAccel::insertStdItem( StdAccel id, const char* descr )
+bool KAccel::insertStdItem( StdAccel id, const char* descr )
 {
 	const char* action=0, *key=0, *name = 0;
 	switch( id ) {
@@ -293,11 +303,10 @@ const char * KAccel::insertStdItem( StdAccel id, const char* descr )
 			key = "F1";
 			break;
 		default:
-			return 0;
+			return false;
 			break;
 	}
-	insertItem( descr?descr:name, stdAction(id), key, false );
-	return action;
+	return insertItem( descr?descr:name, stdAction(id), key, false );
 }
 
 bool KAccel::isEnabled()
@@ -340,11 +349,11 @@ void KAccel::readSettings(KConfig* config)
 	
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			pAccel->disconnectItem( pE->aAccelId, pE->receiver, 
+			pAccel->disconnectItem( pE->aAccelId, pE->receiver,
 						pE->member );
 			pAccel->removeItem( pE->aAccelId );
 			pAccel->insertItem( pE->aCurrentKeyCode, pE->aAccelId );
-			pAccel->connectItem( pE->aAccelId, pE->receiver, 
+			pAccel->connectItem( pE->aAccelId, pE->receiver,
 					     pE->member);
 		}
 		++aKeyIt;
@@ -357,11 +366,11 @@ void KAccel::removeItem( const char * action )
 
     KKeyEntry *pEntry = aKeyDict[ action ];
 	
-    if ( !pEntry ) 
+    if ( !pEntry )
 		return;
 	
 	if ( pEntry->aAccelId ) {
-		pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver, 
+		pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
 					pEntry->member);
 		pAccel->removeItem( pEntry->aAccelId );
 	}
@@ -387,7 +396,7 @@ void KAccel::setItemEnabled( const char * action, bool activate )
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
 		QString str;
-		str.sprintf( 
+		str.sprintf(
 			"KAccel : cannont enable action %s"\
 			"which is not in the object dictionary", action );
 		warning( str );
@@ -408,7 +417,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	while( pE ) {
 		QString s;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			pAccel->disconnectItem( pE->aAccelId, pE->receiver, 
+			pAccel->disconnectItem( pE->aAccelId, pE->receiver,
 						pE->member );
 			pAccel->removeItem( pE->aAccelId );
 		}
@@ -445,7 +454,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-			pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, 
+			pAccel->connectItem( pEntry->aAccelId, pEntry->receiver,
 					     pEntry->member);
 		}
 		++*aKeyIt;
@@ -574,11 +583,11 @@ const QString keyToString( uint keyCode, bool i18_n )
 	}
 	if (!i18_n){
 	  if ( keyCode & SHIFT ){
-	    res += ("SHIFT"); 
+	    res += ("SHIFT");
 	    res += "+";
 	  }
 	  if ( keyCode & CTRL ){
-	    res +=("CTRL"); 
+	    res +=("CTRL");
 	    res += "+";
 	  }
 	  if ( keyCode & ALT ){
@@ -588,11 +597,11 @@ const QString keyToString( uint keyCode, bool i18_n )
 	}
 	else {
 	  if ( keyCode & SHIFT ){
-	    res = i18n("SHIFT"); 
+	    res = i18n("SHIFT");
 	    res += "+";
 	  }
 	  if ( keyCode & CTRL ){
-	    res += i18n("CTRL"); 
+	    res += i18n("CTRL");
 	    res += "+";
 	  }
 	  if ( keyCode & ALT ){

@@ -1,26 +1,29 @@
-/* 
+/*
 
    $Id$
 
    This file is part of the KDE libraries
    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-   
+
    $Log$
+   Revision 1.24  1998/09/17 19:22:09  radej
+   sven: made it work with egcs-1.1
+
    Revision 1.23  1998/09/01 20:21:29  kulow
    I renamed all old qt header files to the new versions. I think, this looks
    nicer (and gives the change in configure a sense :)
@@ -143,8 +146,8 @@ bool KProcess::setExecutable(const char *proc)
   return TRUE;
 }
 
- 
- 
+
+
 
 
 
@@ -179,7 +182,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	return FALSE;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
-  run_mode = runmode; 
+  run_mode = runmode;
   status = 0;
 
   arglist = (char **)malloc( (n+1)*sizeof(char *));
@@ -201,7 +204,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	  debug("Could not finish comm setup in child!");
 
 	// Matthias
-	if (run_mode == DontCare) 
+	if (run_mode == DontCare)
           setpgid(0,0);
 
 	execvp(arglist[0], arglist);
@@ -228,7 +231,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	  processHasExited(status);
 	}
   }
-  free(arglist);    
+  free(arglist);
   return TRUE;
 }
 
@@ -282,7 +285,7 @@ bool KProcess::writeStdin(char *buffer, int buflen)
 
   // if there is still data pending, writing new data
   // to stdout is not allowed (since it could also confuse
-  // kprocess... 
+  // kprocess...
   if (0 != input_data)
     return FALSE;
 
@@ -363,7 +366,7 @@ void KProcess::processHasExited(int state)
   status = state;
 
   commClose(); // cleanup communication sockets
-  
+
   // also emit a signal if the process was run Blocking
   if (DontCare != run_mode)
     emit processExited(this);
@@ -371,14 +374,14 @@ void KProcess::processHasExited(int state)
 
 
 
-int KProcess::childOutput(int fdno) 
+int KProcess::childOutput(int fdno)
 {
   char buffer[1024];
   int len;
 
   len = ::read(fdno, buffer, 1024);
 
-  if (-1 == len) 
+  if (-1 == len)
 	debug("ERROR: %s\n\n", strerror(errno));
 
   if ( 0 < len) {
@@ -389,7 +392,7 @@ int KProcess::childOutput(int fdno)
 
 
 
-int KProcess::childError(int fdno) 
+int KProcess::childError(int fdno)
 {
   char buffer[1024];
   int len;
@@ -408,15 +411,15 @@ int KProcess::setupCommunication(Communication comm)
   int ok;
 
   communication = comm;
- 
+
   ok = 1;
-  if (comm & Stdin) 
+  if (comm & Stdin)
 	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, in) >= 0;
- 
-  if (comm & Stdout) 
+
+  if (comm & Stdout)
 	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, out) >= 0;
 
-  if (comm & Stderr) 
+  if (comm & Stderr)
 	ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, err) >= 0;
 
   return ok;
@@ -434,7 +437,7 @@ int KProcess::commSetupDoneP()
 	if (communication & Stdout)
 	  close(out[1]);
 	if (communication & Stderr)
-	  close(err[1]); 
+	  close(err[1]);
 
 	if (communication & Stdin) {
 	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
@@ -455,7 +458,7 @@ int KProcess::commSetupDoneP()
 
 	if (communication & Stderr) {
 	  ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
-	  errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );    
+	  errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
 	  CHECK_PTR(errnot);
 	  QObject::connect(errnot, SIGNAL(activated(int)),
 					   this, SLOT(slotChildError(int)));
@@ -482,7 +485,7 @@ int KProcess::commSetupDoneC()
 	if (communication & Stdin)
 	  ok &= dup2(in[0],  STDIN_FILENO) != -1;
 	if (communication & Stdout) {
-	  ok &= dup2(out[1], STDOUT_FILENO) != -1;    
+	  ok &= dup2(out[1], STDOUT_FILENO) != -1;
 	  ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
 	}
 	if (communication & Stderr) {
@@ -491,7 +494,7 @@ int KProcess::commSetupDoneC()
 	}
   }
   return ok;
-}  
+}
 
 
 
@@ -503,7 +506,7 @@ void KProcess::commClose()
 		delete innot;
 
 	if (communication & Stdout) {
-		delete outnot;   
+		delete outnot;
 	  while(childOutput(out[0])> 0 )
 		;
 	}
@@ -512,7 +515,7 @@ void KProcess::commClose()
 		delete errnot;
 	  while(childError(err[0]) > 0)
 		;
-	}      
+	}
 	if (communication & Stdin)
 	    close(in[1]);
 	if (communication & Stdout)
@@ -556,7 +559,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// or if no executable has been assigned
   }
 
-  run_mode = runmode; 
+  run_mode = runmode;
   status = 0;
 
   if (0 == shell)
@@ -577,6 +580,11 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     cmd += arguments.at(i);
     cmd += " "; // CC: to separate the arguments
   }
+  
+  // execution in background
+  cmd.stripWhiteSpace();
+  if (cmd[cmd.length()-1] != '&')
+      cmd += '&';
   arglist[2] = cmd.data();
   arglist[3] = 0;
 
@@ -593,7 +601,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	  debug("Could not finish comm setup in child!");
 
 	// Matthias
-	if (run_mode == DontCare) 
+	if (run_mode == DontCare)
           setpgid(0,0);
 
 	execvp(arglist[0], arglist);
@@ -620,7 +628,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	  processHasExited(status);
 	}
   }
-  //  free(arglist);    
+  //  free(arglist);
   return TRUE;
 }
 
@@ -630,7 +638,7 @@ char *KShellProcess::searchShell()
 {
   char *hlp = 0;
   char *copy = 0;
-  
+
 
   // CC: now get the name of the shell we have to use
   hlp = getenv("SHELL");
@@ -654,7 +662,7 @@ char *KShellProcess::searchShell()
 
 
 
-bool KShellProcess::isExecutable(const char *fname) 
+bool KShellProcess::isExecutable(const char *fname)
 {
   struct stat fileinfo;
 

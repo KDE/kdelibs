@@ -38,7 +38,7 @@
  */	
 uint stringToKey( const char * sKey );
 
-/** 
+/**
  * Returns a string corresponding to the key code keyCode, which is empty if
  * keyCode is not recognized or zero.
  */
@@ -54,7 +54,7 @@ struct KKeyEntry {
 	const char* descr;	
 };
 
-/** 
+/**
  * The KAccel class handles keyboard accelerators, allowing a user to configure
  * key bindings through application configuration files or through the
  * KKeyChooser GUI.
@@ -87,7 +87,7 @@ struct KKeyEntry {
  * It is possible for a user to choose to have no key associated with an action.
  *
  * The translated first argument for insertItem is only used in the
- * configuration dialog. 
+ * configuration dialog.
  *
  * KAccel *a = new KAccel( myWindow );
  * a->insertItem( i18n("Scroll up"), "Scroll Up", "Up" );
@@ -96,7 +96,7 @@ struct KKeyEntry {
                                                              // is done automatially with the
                                                             // connect below!
  * a->connectItem(KAccel::Print, myWindow, SLOT( printDoc() ) );
- * 
+ *
  * a->readSettings();
  *
  *
@@ -104,11 +104,11 @@ struct KKeyEntry {
  * is again the KAccel::Print from above.
  *
  * int id;
- * id = popup->insertItem("&Print",this, SLOT(printDoc())); 
+ * id = popup->insertItem("&Print",this, SLOT(printDoc()));
  * a->changeMenuAccel(popup, id, KAccel::Print );
  *
  * If you want a somewhat "exotic" name for your standard print action, like
- *          id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc())); 
+ *          id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
  * it might be a good idea to insert the standard action before as
  *          a->insertStdItem( KAccel::Print, i18n("Print Document") )
  * as well, so that the user can easily find the corresponding function.
@@ -116,26 +116,26 @@ struct KKeyEntry {
  *
  * This technique works for other actions as well, your scroll up function in a menu
  * could be done with
- * 
- *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp())); 
+ *
+ *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp()));
  *    a->changeMenuAccel(popup, id, "Scroll Up" );
- * 
+ *
  * Please keep the order right: first insert all functions in the
  * acceleratior, then call a->readSettings() and _then_ build your menu structure.
  *
  * */
-class KAccel 
-{ 
+class KAccel
+{
  public:
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
 		Paste, Undo, Find, Replace, Insert, Home, End, Prior, Next, Help };
-	/** 
+	/**
 	 * Creates a KAccel object with a parent widget and a name.
 	 */
 	KAccel( QWidget * parent, const char * name = 0 );
 			
-	/** 
-	 * Destroys the accelerator object. 
+	/**
+	 * Destroys the accelerator object.
 	 */
 	~KAccel();
 	
@@ -144,7 +144,7 @@ class KAccel
 	 */
 	void clear();
 	
-	/** 
+	/**
 	 * Connect an accelerator item to a slot/signal in another object.
 	 *
 	 * Arguments:
@@ -161,8 +161,8 @@ class KAccel
 			  const QObject* receiver, const char* member,
 			  bool activate = TRUE );
 
-  
-	/** 
+
+	/**
 	 * Same as connectItem from above, but for standard accelerators.
 	 * If the standard accelerator was not inserted so far, it will be inserted
 	 * automatically.
@@ -171,101 +171,123 @@ class KAccel
 			  const QObject* receiver, const char* member,
 			  bool activate = TRUE );
 
-	/** 
+	/**
 	* Returns the number of accelerator items.
-	*/					  
+	*/					
 	uint count() const;
 	
-	/** 
+	/**
 	* Returns the key code of the accelerator item with the action name
 	* action, or zero if either the action name cannot be found or the current
 	* key is set to no key.
 	*/
 	uint currentKey( const char * action );
 
-	/** 
+	/**
 	* Returns the description  of the accelerator item with the action name
 	* action, or zero if the action name cannot be found. Useful for menus.
 	*/
 	const char*  description( const char * action );
 
-	/** 
+	/**
 	* Returns the default key code of the accelerator item with the action name
 	* action, or zero if the action name cannot be found.
 	*/
 	uint defaultKey( const char * action);
 	
-	/** 
+	/**
 	 * Disconnects an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const char * action,
 							const QObject* receiver, const char* member );
 	
-	/** 
+	/**
 	 * Returns that identifier of the accelerator item with the keycode key,
 	 * or zero if the item cannot be found.
 	 */
 	const char *findKey( int key ) const;
 	
-	/** 
-	 * Inserts an accelerator item and returns -1 if the key code 
+	/**
+	 * Inserts an accelerator item and returns -1 if the key code
 	 * 	defaultKeyCode is not valid.
 	 *	
 	 * Arguments:
 	 *
 	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
+	 *  \item descr is the localized name of the action, useful in menus or the keybinding
+	 *            editor.
+	 *  \item action is the internal accelerator item action name. It is supposed to be the same
+	 *            for all language.
 	 *  \item defaultKeyCode is a key code to be used as the default for the action.
 	 *  \item configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	 
+	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 	 
+	 * 	
 	 */
 	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
 				 bool configurable = TRUE );
 	
-	 /** 
-	 * Inserts an accelerator item and returns -1 if the key code 
+	 /**
+	 * Inserts an accelerator item and returns -1 if the key code
 	 * 	defaultKeyCode is not valid.
 	 *	
 	 * Arguments:
 	 *
 	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
+	 *  \item descr is the localized name of the action, useful in menus or the keybinding
+	 *            editor.
+	 *  \item action is the internal accelerator item action name. It is supposed to be the same
+	 *            for all language.
 	 *  \item defaultKeyCode is a key plus a combination of SHIFT, CTRL
 	 *	and ALT to be used as the default for the action.
 	 *  \item configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	 
+	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 	 
+	 * 	
 	 */
 	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
 				 bool configurable = TRUE );
-				 
-	/** 
+				
+	/**
 	 *	Inserts a standard accelerator item if id equal to Open, New,
 	 *	Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Find, Replace,
 	 *	Insert, Home, End, Prior, Next, or Help.
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 
+	 *
 	 * You can (optional) also assign a description to the standard item which
 	 * may be used a in a popup menu.
 	 */
-	const char *insertStdItem( StdAccel id, const char* descr = 0 );
+	bool insertStdItem( StdAccel id, const char* descr = 0 );
 
 
+	/**
+	 * Convenience function without the need to specify a
+	 * localized function name for the user. This is useful if the accelerator is
+	 * only used internally, without appearing in a menu or a keybinding editor.
+	 */
+	bool insertItem( const char * action, uint defaultKeyCode,
+				 bool configurable = TRUE );
 
-	/** 
+	/**
+	 * Convenience function without the need to specify a
+	 * localized function name for the user. This is useful if the accelerator is
+	 * only used internally, without appearing in a menu or a keybinding editor.
+	 */
+	bool insertItem( const char * action, const char * defaultKeyCode,
+				 bool configurable = TRUE );
+
+
+	/**
 	 * Often (usually?) shortcuts should be visible in the menu
 	 * structure of an application. Use this function for that
 	 * purpose.  Note that the action must have been inserted
@@ -274,7 +296,7 @@ class KAccel
 
 	void changeMenuAccel ( QPopupMenu *menu, int id,
 			       const char* action );
-	/** 
+	/**
 	 * Same as changeMenuAccel but for standard accelerators
 	 */
 	void changeMenuAccel ( QPopupMenu *menu, int id,
@@ -283,32 +305,32 @@ class KAccel
 
 	bool isEnabled();
 	bool isItemEnabled( const char *action );
-				 
-	/** 
+				
+	/**
 	 * Returns the dictionary of accelerator action names and KKeyEntry
 	 * objects. Note that only a shallow copy is returned so that
 	 * items will be lost when the KKeyEntry objects are deleted.
 	 */
 	QDict<KKeyEntry> keyDict();
-				 
-	/** 
+				
+	/**
 	 * Reads all key associations from the application's configuration
 	 * files.
 	 */	
 	void readSettings(KConfig* config = 0);
 		
- 	/** 
+ 	/**
 	 * Removes the accelerator item with the action name action.
 	 */
-	void removeItem( const char * action );  
-    
+	void removeItem( const char * action );
+
 	void setConfigGroup( const char *group );
 	void setConfigGlobal( bool global );
 	
 	const char * configGroup();
 	bool configGlobal();
 	
-	/** 
+	/**
 	 * Enables the accelerator if activate is TRUE, or disables it if
 	 * activate is FALSE..
 	 *
@@ -316,7 +338,7 @@ class KAccel
 	 */
 	void setEnabled( bool activate );
 	
-	/** 
+	/**
 	 * Enables or disables an accelerator item.
 	 *
 	 * Arguments:
@@ -325,18 +347,18 @@ class KAccel
 	 *  \item action is the accelerator item action name.
 	 *	\item activate specifies whether the item should be enabled or
 	 *	disabled.
-	 * 	\end{itemize} 
+	 * 	\end{itemize}
 	 */
 	void setItemEnabled( const char * action, bool activate );
 	
-	/** 
+	/**
 	* Sets the dictionary of accelerator action names and KKeyEntry
 	* objects to nKeyDict.. Note that only a shallow copy is made so
 	* that items will be lost when the KKeyEntry objects are deleted.
 	*/	
 	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
 	
-	/** 
+	/**
 	 *	Returns a standard action name if id equal to Open,
 	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo,
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help
@@ -344,12 +366,12 @@ class KAccel
 	 */
 	static const char *stdAction( StdAccel id );
 
-	/** 
+	/**
 	 * Writes the current configurable associations to the application's
 	 * configuration files
 	 */	
 	void writeSettings(KConfig* config = 0);
-	 
+	
 protected:
  	QAccel *pAccel;
 	int aAvailableId;
@@ -358,7 +380,7 @@ protected:
 	bool bGlobal;
 	QString aGroup;
 	
- 
+
 };
 	
 #endif
