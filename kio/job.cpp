@@ -2876,4 +2876,141 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
   return job;
 }
 
+/////////////////////
+
+ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
+                    bool recursive, bool showProgressInfo )
+    : KIO::Job( showProgressInfo ), state( STATE_LISTING ),
+      m_permissions( permissions ), m_mask( mask ),
+      m_recursive( recursive ), m_lstItems( lstItems )
+{
+    QTimer::singleShot( 0, this, SLOT(processList()) );
+}
+
+void ChmodJob::processList()
+{
+    while ( !m_lstItems.isEmpty() )
+    {
+        KFileItem * item = m_lstItems.first();
+        if ( !item->isLink() ) // don't do anything with symlinks
+        {
+            // File or directory -> remember to chmod
+            ChmodInfo info;
+            info.url = item->url();
+            // took me a while to figure this out...
+            info.permissions = ( m_permissions & m_mask ) | ( item->permissions() & ~m_mask );
+            /*kdDebug(7007) << "\n current permissions=" << QString::number(item->permissions(),8)
+                          << "\n wanted permission=" << QString::number(m_permissions,8)
+                          << "\n with mask=" << QString::number(m_mask,8)
+                          << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~m_mask,8)
+                          << "\n bits we keep =" << QString::number(item->permissions() & ~m_mask,8)
+                          << "\n new permissions = " << QString::number(info.permissions,8)
+                          << endl;*/
+            m_infos.prepend( info );
+            //kdDebug(7007) << "processList : Adding info for " << info.url.prettyURL() << endl;
+            // Directory and recursive -> list
+            if ( item->isDir() && m_recursive )
+            {
+                //kdDebug(7007) << "ChmodJob::processList dir -> listing" << endl;
+                KIO::ListJob * listJob = KIO::listRecursive( item->url(), false /* no GUI */ );
+                connect( listJob, SIGNAL(entries( KIO::Job *,
+                                                  const KIO::UDSEntryList& )),
+                         SLOT( slotEntries( KIO::Job*,
+                                            const KIO::UDSEntryList& )));
+                addSubjob( listJob );
+                return; // we'll come back later, when this one's finished
+            }
+        }
+        m_lstItems.removeFirst();
+    }
+    kdDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING" << endl;
+    // We have finished, move on
+    state = STATE_CHMODING;
+    chmodNextFile();
+}
+
+void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
+{
+    KIO::UDSEntryListConstIterator it = list.begin();
+    KIO::UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it) {
+        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
+        mode_t permissions = 0;
+        bool isLink = false;
+        QString relativePath;
+        for( ; it2 != (*it).end(); it2++ ) {
+          switch( (*it2).m_uds ) {
+            case KIO::UDS_NAME:
+              relativePath = (*it2).m_str;
+              break;
+              //case KIO::UDS_FILE_TYPE:
+              //isDir = S_ISDIR((*it2).m_long);
+              //break;
+            case KIO::UDS_LINK_DEST:
+              isLink = !(*it2).m_str.isEmpty();
+              break;
+            case KIO::UDS_ACCESS:
+              permissions = (mode_t)((*it2).m_long);
+              break;
+            default:
+              break;
+          }
+        }
+        if ( !isLink && relativePath != QString::fromLatin1("..") )
+        {
+            ChmodInfo info;
+            info.url = m_lstItems.first()->url(); // base directory
+            info.url.addPath( relativePath );
+            info.permissions = ( m_permissions & m_mask ) | ( permissions & ~m_mask );
+            // Prepend this info in our todo list.
+            // This way, the toplevel dirs are done last.
+            m_infos.prepend( info );
+            kdDebug(7007) << "Adding info for " << info.url.prettyURL() << endl;
+        }
+    }
+}
+
+void ChmodJob::chmodNextFile()
+{
+    if ( !m_infos.isEmpty() )
+    {
+        ChmodInfo info = m_infos.first();
+        m_infos.remove( m_infos.begin() );
+        kdDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyURL() << " to " << QString::number(info.permissions,8) << endl;
+        KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
+        addSubjob(job);
+    }
+    else
+        // We have finished
+        emitResult();
+}
+
+void ChmodJob::slotResult( KIO::Job * job )
+{
+    //kdDebug(7007) << " ChmodJob::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
+    switch ( state )
+    {
+        case STATE_LISTING:
+            subjobs.remove(job);
+            m_lstItems.removeFirst();
+            kdDebug(7007) << "ChmodJob::slotResult -> processList" << endl;
+            processList();
+            return;
+        case STATE_CHMODING:
+            subjobs.remove(job);
+            kdDebug(7007) << "ChmodJob::slotResult -> chmodNextFile" << endl;
+            chmodNextFile();
+            return;
+        default:
+            assert(0);
+            return;
+    }
+}
+
+ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
+                      bool recursive, bool showProgressInfo )
+{
+    return new ChmodJob( lstItems, permissions, mask, recursive, showProgressInfo );
+}
+
 #include "jobclasses.moc"

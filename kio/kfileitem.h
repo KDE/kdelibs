@@ -133,7 +133,7 @@ public:
 
   /**
    * @returns true if this item represents a link in the UNIX sense of
-   * a link. If yes, then we have to draw the label with an italic font.
+   * a link.
    */
   bool isLink() const { return m_bLink; }
 

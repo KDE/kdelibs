@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 
 #include <kio/global.h>
+#include <kfileitem.h>
 
 class Observer;
 class QTimer;
@@ -395,7 +396,7 @@ namespace KIO {
          * The redirection itself is handled internally
          */
         void redirection( KIO::Job *, const KURL &url );
-    
+
     protected slots:
         void slotStatEntry( const KIO::UDSEntry & entry );
         void slotRedirection( const KURL &url);
@@ -858,6 +859,41 @@ namespace KIO {
          */
         Observer *m_observer;
         QTimer *m_reportTimer;
+    };
+
+    struct ChmodInfo
+    {
+        KURL url;
+        int permissions;
+    };
+
+    /**
+     * This job changes permissions on a list of files or directories,
+     * optionally in a recursive manner.
+     */
+    class ChmodJob : public KIO::Job
+    {
+        Q_OBJECT
+    public:
+        ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
+                  bool recursive, bool showProgressInfo );
+
+    protected:
+        void chmodNextFile();
+
+    protected slots:
+
+        virtual void slotResult( KIO::Job *job );
+        void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
+        void processList();
+
+    private:
+        enum { STATE_LISTING, STATE_CHMODING } state;
+        int m_permissions;
+        int m_mask;
+        bool m_recursive;
+        KFileItemList m_lstItems;
+        QValueList<ChmodInfo> m_infos;
     };
 
 };

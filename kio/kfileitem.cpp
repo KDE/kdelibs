@@ -196,6 +196,8 @@ void KFileItem::refresh()
 {
   m_fileMode = (mode_t)-1;
   m_permissions = (mode_t)-1;
+  m_user = QString::null;
+  m_group = QString::null;
   init( false );
 }
 
