@@ -26,6 +26,8 @@
 #endif
 
 #include <qevent.h>
+#include <qobjectlist.h>
+#include <qaccel.h>
 
 #include <kconfig.h>
 #include "kmenubar.h"
@@ -184,6 +186,20 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   setFrameStyle( NoFrame );
 
   show();
+
+  // in theory, this should reassign our top-level accelerators to our
+  // parent.  in practice, this doesn't seem to do anything.  however,
+  // I'm keeping it here since it *did* work in KDE 1.x and the
+  // accelerators *don't* work now :-(
+  QObjectList   *accelerators = queryList( "QAccel" );
+  QObjectListIt it( *accelerators );
+  for ( ; it.current(); ++it )
+  {
+    QObject *obj = it.current();
+    removeEventFilter(obj);
+    d->m_parent->installEventFilter(obj);
+  }
+
   return false;
 }
 #include "kmenubar.moc"
