@@ -1,3 +1,7 @@
+2004-07-30  Jean-Baptiste Mardelle <bj@altern.org>
+	* khtmlview.{cpp,h} (displayAccessKeys): When accesskeys are activated,
+	small tooltips appear showing existing accesskeys on the page.
+
 2004-07-28  Stephan Kulow  <coolo@kde.org>
 
         * html/html_miscimpl.cpp (getNamedItem): more investigation on tags returned
@@ -20,6 +24,10 @@
 
         * css/parser.y: catching imports that come between rules.
         They have to be ignored (css1/test11.htm)
+	
+2004-07-14 Jean-Baptiste Mardelle <bj@altern.org>
+	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing 
+	the crtl key (#83053).
 
 2004-07-12 Germain Garand <germain@ebooksfrance.org>
 
