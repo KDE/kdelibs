@@ -71,6 +71,7 @@ void KConfigDialogManager::init(bool trackChanges)
     changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QRadioButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QButtonGroup", SIGNAL(clicked(int)));
+    changedMap.insert("QGroupBox", SIGNAL(toggled(bool)));
     changedMap.insert("QComboBox", SIGNAL(activated (int)));
     //qsqlproperty map doesn't store the text, but the value!
     //changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
@@ -174,8 +175,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
           connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
 
-          QButtonGroup *bg = dynamic_cast<QButtonGroup *>(childWidget);
-          if (!bg)
+          QGroupBox *gb = dynamic_cast<QGroupBox *>(childWidget);
+          if (!gb)
             bParseChildren = false;
 
           QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
