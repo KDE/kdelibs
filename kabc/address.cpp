@@ -503,41 +503,33 @@ int Address::findBalancedBracket( const QString &tsection, int pos ) const
 
 QString Address::countryToISO( const QString &cname )
 {
+  // we search a map file for translations from country names to
+  // iso codes, storing caching things in a QMap for faster future 
+  // access.
   QString isoCode = mISOMap[ cname ];
   if ( !isoCode.isEmpty() )
     return isoCode;
 
-  // as we have no clean way of mapping country names (which in vcf
-  // can be in any language) we do wild grepping here. Ideally,
-  // somewhere a QMap<QString,QString> should be stored, which is
-  // only created once (eg. in the global KLocale).
-  // This is an interim solution until we have decided on a better way.
-  QStringList countrylist = KGlobal::dirs()->findAllResources
-    ( "locale", QString::fromLatin1( "l10n/*/entry.desktop" ) );
+  QString mapfile = KGlobal::dirs()->findResource( "data", 
+          QString::fromLatin1( "countrytransl.map" ) );
 
-  QStringList::ConstIterator it;
-  for ( it = countrylist.begin(); it != countrylist.end(); ++it ) {
-    QFile file( *it );
-    if ( file.open( IO_ReadOnly ) ) {
-      QTextStream s( &file );
-
-      QString strbuf = s.readLine();
-      while( !strbuf.isNull() ) {
-        if ( strbuf.contains( cname ) && strbuf.startsWith( QString("Name") ) ) {
-          QString tag = *it;
-          int index = tag.findRev('/');
-          tag.truncate(index);
-          index = tag.findRev('/');
-          tag = tag.mid(index+1);
-          file.close();
-          mISOMap[ cname ] = tag;
-          return tag;
-        }
-        strbuf = s.readLine();
+  QFile file( mapfile );
+  if ( file.open( IO_ReadOnly ) ) {
+    QTextStream s( &file );
+    QString strbuf = s.readLine();
+    while( !strbuf.isNull() ) {
+      if ( strbuf.startsWith( cname ) ) {
+        int index = strbuf.findRev('\t');
+        strbuf.mid(index+1);
+        file.close();
+        mISOMap[ cname ] = strbuf;
+        return strbuf;
       }
-      file.close();
+      strbuf = s.readLine();
     }
+    file.close();
   }
+  
   // fall back to system country
   mISOMap[ cname ] = KGlobal::locale()->country();
   return KGlobal::locale()->country();

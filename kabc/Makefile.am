@@ -109,7 +109,10 @@ kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
 data_DATA = kabc.desktop
 datadir = $(kde_appsdir)/Settings/Components
 
-EXTRA_DIST = $(data_DATA)
+map_DATA = countrytransl.map
+mapdir = $(kde_datadir)/kabc/
+
+EXTRA_DIST = $(data_DATA) $(map_DATA)
 
 include ../admin/Doxyfile.am
 
