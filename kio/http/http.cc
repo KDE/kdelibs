@@ -623,8 +623,8 @@ static bool waitForConnect( int sock, int maxTimeout )
       FD_ZERO(&wr);
       FD_SET(sock, &wr);
 
-      timeout.tv_usec = 1000*1000; // 1 sec
-      timeout.tv_sec = 0;
+      timeout.tv_usec = 0; 
+      timeout.tv_sec = 1; // 1 sec
 
       select(sock + 1, (fd_set *)0, &wr, (fd_set *)0, &timeout);
 
