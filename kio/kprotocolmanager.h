@@ -337,6 +337,11 @@ public:
   static void setNoProxyFor( const QString& _noproxy );
 
   /**
+   * @return the URL of the script for automatic proxy configuration
+   */
+  static QString proxyConfigScript();
+
+  /**
    * Set the URL of the script for automatic proxy configuration
    */
   static void setProxyConfigScript( const QString & /* url */ );
