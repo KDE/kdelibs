@@ -37,10 +37,6 @@ extern "C" void kimgio_init_tiff();
 
 extern "C" void kimgio_init_krl();
 
-#ifdef HAVE_QIMGIO
-#include <qimageio.h>
-#endif
-
 void kimgioRegister()
 {
 	if( registered ) {
@@ -99,10 +95,6 @@ void kimgioRegister()
 	kimgio_init_tiff();
 #endif
 
-#ifdef HAVE_QIMGIO
-        qInitImageIO();
-#endif
-
 }
 
 QString KImageIO::pattern(Mode ) {
@@ -125,10 +117,8 @@ QString KImageIO::pattern(Mode ) {
 
 bool KImageIO::canWrite(const QString& type)
 {
-#ifdef HAVE_QIMGIO
-  if (type == "JPEG")
+  if (type == "JPEG") // now native in Qt
     return true;
-#endif
   if (type == "XPM" || type == "XBM" || type == "PNG" || type == "BMP")
     return true;
 
@@ -148,9 +138,7 @@ QStringList KImageIO::types(Mode ) {
   static QStringList types;
   if (types.isEmpty()) {
 
-#ifdef HAVE_QIMGIO
-    types.append("JPEG");
-#endif
+    types.append("JPEG"); // now native in Qt
     types.append("PNG");
     types.append("XPM");
     types.append("XBM");
@@ -164,10 +152,8 @@ QString KImageIO::suffix(const QString& type)
   if (type == "GIF")
     return "gif";
 
-#ifdef HAVE_QIMGIO
   if (type == "JPEG")
     return "jpg";
-#endif
 
   if (type == "XPM")
     return "xpm";
@@ -209,22 +195,13 @@ QString KImageIO::type(const QString& filename)
   return "PNG";
 }
 
-QStringList KImageIO::mimeTypes( Mode _mode )
+QStringList KImageIO::mimeTypes( Mode /*_mode*/ )
 {
   QStringList mimeList;
 
   mimeList.append( "image/gif" );
   
-  if( _mode == Reading )
-  {
-    mimeList.append( "image/jpeg" );
-  }
-  else
-  {
-    #ifdef HAVE_QIMGIO
-      mimeList.append( "image/jpeg" );
-    #endif
-  }
+  mimeList.append( "image/jpeg" );
 
   mimeList.append( "image/x-bmp" );
   
