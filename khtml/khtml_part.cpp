@@ -221,7 +221,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paFindNext = KStdAction::findNext( this, SLOT( slotFindNext() ), actionCollection(), "findNext" );
   d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
-				       "Find the next occurrence of the text that you " 
+				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
   if ( parentPart() )
   {
@@ -2146,7 +2146,10 @@ void KHTMLPart::findTextNext()
         // Grab text from render object
         QString s;
         if ( obj->isText() )
+        {
           s = static_cast<khtml::RenderText *>(obj)->data().string();
+          s = s.replace(0xa0, ' ');
+        }
         else if ( obj->isBR() )
           s = '\n';
         else if ( !obj->isInline() && !str.isEmpty() )
@@ -2185,7 +2188,6 @@ void KHTMLPart::findTextNext()
 
       if ( !str.isEmpty() )
       {
-        //kdDebug(6050) << "str=" << str << endl;
         d->m_find->setData( str, d->m_findPos );
       }
 
@@ -2599,7 +2601,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  // either ignore the target on javascript: as we do now and is 
+  // either ignore the target on javascript: as we do now and is
   // inconsistent to other browsers, or make sure we don't create a XSS problem here!
   if ( !hasTarget && url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
