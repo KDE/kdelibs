@@ -170,9 +170,26 @@ namespace KIO
 
   /*
    * Returns a translated html error message for @p errorCode using the
-   * additional error information provided by @p errorText.
+   * additional error information provided by @p errorText , @p reqUrl
+   * (the request URL), and the ioslave @p method .
    */
-  QString buildHTMLErrorString(int errorCode, const QString &errorText);
+  QString buildHTMLErrorString(int errorCode, const QString &errorText,
+                                const KURL *reqUrl = 0L, int method = -1 );
+
+  /*
+   * Returns translated error details for @p errorCode using the
+   * additional error information provided by @p errorText , @p reqUrl
+   * (the request URL), and the ioslave @p method .
+   *
+   * Returns the following data:
+   * QString errorName - the name of the error
+   * QString techName - if not null, the more technical name of the error
+   * QString description - a description of the error
+   * QStringList causes - a list of possible causes of the error
+   * QStringList solutions - a liso of solutions for the error
+   */
+  QByteArray rawErrorDetail(int errorCode, const QString &errorText,
+                                const KURL *reqUrl = 0L, int method = -1 );
 
   /**
    * Constants used to specify the type of a KUDSAtom.
