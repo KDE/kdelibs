@@ -199,6 +199,11 @@ protected:
    */
   void closeCacheEntry();
 
+  /**
+   * Quick check whether the cache needs cleaning.
+   */
+  void cleanCache();
+
 protected: // Members
   bool m_bEOF;
   int m_cmd;

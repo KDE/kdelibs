@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <utime.h>
 
 #include <string>
 
@@ -56,6 +57,7 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <dcopclient.h>
+#include <kservice.h>
 
 // Maximum chunk size is 256K
 #define MAX_CHUNK_SIZE (1024*256)
@@ -338,6 +340,8 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
   ProxyAuthentication = AUTH_None;
 
   m_HTTPrev = HTTP_Unknown;
+
+  cleanCache();
 }
 
 
@@ -2266,7 +2270,7 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
-   int result = ::mkdir( dir.ascii(), 0700 );
+   (void) ::mkdir( dir.ascii(), 0700 );
 
    QString filename = m_state.cef + ".new";  // Create a new cache entry
 
@@ -2326,6 +2330,44 @@ HTTPProtocol::closeCacheEntry()
    kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: error closing cache entry.");
 }
 
+void
+HTTPProtocol::cleanCache()
+{
+   const time_t maxAge = 30*60; // 30 Minutes.
+   bool doClean = false;
+   QString cleanFile = m_strCacheDir;
+   if (cleanFile[cleanFile.length()-1] != '/')
+      cleanFile += "/";
+   cleanFile += "cleaned";
+
+   struct stat stat_buf;
+
+   int result = stat(cleanFile.ascii(), &stat_buf);
+   if (result == -1)
+   {
+      int fd = creat( cleanFile.ascii(), 0666);
+      if (fd != -1)
+      {
+         doClean = true;
+         close(fd);
+      }
+   }
+   else
+   {
+      time_t age = (time_t) difftime( time(0), stat_buf.st_mtime );
+      if (age > maxAge) // 
+        doClean = true;
+   }
+   if (doClean)
+   {
+      // Touch file.
+      utime(cleanFile.ascii(), 0);
+      QCString dcopService;
+      QString error;
+      KService::startServiceByDesktopPath("http_cache_cleaner.desktop",
+              QString::null, dcopService, error);
+   }
+} 
 
 /*************************************
  *

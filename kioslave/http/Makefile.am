@@ -27,8 +27,9 @@ libkio_http_cache_cleaner_la_LDFLAGS = -module
 
 noinst_HEADERS = http.h extern_md5.h
 
-
-
 kioconfig_DATA = http.desktop https.desktop
 kioconfigdir = $(kde_confdir)/protocols
+
+kdelnkdir = $(kde_servicesdir)
+kdelnk_DATA = http_cache_cleaner.desktop
 

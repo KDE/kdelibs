@@ -122,6 +122,7 @@ fprintf(stderr, "%s: Expired entry %s\n", appName, CEF.data());
 void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString &strDir)
 {
    QDir dir(strDir);
+   if (!dir.exists()) return;
    
    QFileInfoList *newEntries = (QFileInfoList *) dir.entryInfoList();
 
@@ -150,7 +151,7 @@ int main(int, char **)
 
    DCOPClient *dcop = new DCOPClient();
 
-   if (dcop->registerAs(appName) != appName)
+   if (dcop->registerAs(appName, false) != appName)
    {
       fprintf(stderr, "%s: Already running!\n", appName);
       exit(0);
@@ -169,7 +170,7 @@ int main(int, char **)
       exit(0);
    }
    
-   QStringList dirs = cacheDir.entryList( QDir::Unsorted, QDir::Dirs || QDir::AccessMask );
+   QStringList dirs = cacheDir.entryList( );
 
    FileInfoList cachedEntries;
   
