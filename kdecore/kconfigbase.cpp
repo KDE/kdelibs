@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.19  1998/03/05 19:45:18  wuebben
+// Bernd: several methods in kconfigbase.cpp did not the provided default
+// values on parse error. -- fixed.
+//
 // Revision 1.18  1998/02/03 18:52:03  kulow
 // added a static_cast
 //
@@ -437,37 +441,45 @@ QColor KConfigBase::readColorEntry( const char* pKey,
   QString aValue = readEntry( pKey );
   if( !aValue.isEmpty() )
     {
-      bool bOK;
-      
-      // find first part (red)
-      int nIndex = aValue.find( ',' );
-      
-      if( nIndex == -1 ){
-	// return a sensible default -- Bernd
-	if( pDefault )
-	  aRetColor = *pDefault;
-	return aRetColor;
-      }
-    
-      nRed = aValue.left( nIndex ).toInt( &bOK );
-      
-      // find second part (green)
-      int nOldIndex = nIndex;
-      nIndex = aValue.find( ',', nOldIndex+1 );
+      if ( aValue.left(1) == "#" ) 
+        {
+	  aRetColor.setNamedColor(aValue);
+	} 
+      else
+	{
 
-      if( nIndex == -1 ){
-	// return a sensible default -- Bernd
-	if( pDefault )
-	  aRetColor = *pDefault;
-	return aRetColor;
-      }
-      nGreen = aValue.mid( nOldIndex+1,
-			   nIndex-nOldIndex-1 ).toInt( &bOK );
+	  bool bOK;
       
-      // find third part (blue)
-      nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
-      
-      aRetColor.setRgb( nRed, nGreen, nBlue );
+	  // find first part (red)
+	  int nIndex = aValue.find( ',' );
+	  
+	  if( nIndex == -1 ){
+	    // return a sensible default -- Bernd
+	    if( pDefault )
+	      aRetColor = *pDefault;
+	    return aRetColor;
+	  }
+	  
+	  nRed = aValue.left( nIndex ).toInt( &bOK );
+	  
+	  // find second part (green)
+	  int nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  
+	  if( nIndex == -1 ){
+	    // return a sensible default -- Bernd
+	    if( pDefault )
+	      aRetColor = *pDefault;
+	    return aRetColor;
+	  }
+	  nGreen = aValue.mid( nOldIndex+1,
+			       nIndex-nOldIndex-1 ).toInt( &bOK );
+	  
+	  // find third part (blue)
+	  nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
+	  
+	  aRetColor.setRgb( nRed, nGreen, nBlue );
+	}
     }
   else {
     
