@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=
+Type=MimeType
+MimeType=application/x-dbase
+Patterns=*.dbf;*.DBF;
+Comment=dBASE document
