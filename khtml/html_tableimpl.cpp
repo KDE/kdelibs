@@ -709,7 +709,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	while (tt<=type && !out && tmin)
 	{
 	    tmin = distributeMinWidth(tmin,type,tt,col,span,true);
-    	    switch (type)
+    	    switch (tt)
 	    {
 	    case Undefined:
     	    case Variable: tt=Relative; break;	
@@ -720,13 +720,13 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	}
 	
 	// force spread rest of the minWidth
-
+	
     	tt = Variable;
     	out=false;
 	while (tt<=type && !out && tmin)
 	{
 	    tmin = distributeMinWidth(tmin,type,tt,col,span,false);
-    	    switch (type)
+    	    switch (tt)
 	    {
 	    case Undefined:
     	    case Variable: tt=Relative; break;	
@@ -734,9 +734,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	    case Percent: tt=Fixed; break;
 	    case Fixed: out=true; break;
 	    }
-	}
-
-
+	}    
 
 	for (int c=col; c < col+span ; ++c)
 	    colMaxWidth[c]=MAX(colMinWidth[c],colMaxWidth[c]);	    	
