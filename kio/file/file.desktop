@@ -1,0 +1,14 @@
+# KDE Config File
+[Protocol]
+exec=kio_file
+protocol=file
+input=none
+output=filesystem
+listing=Name,Type,Size,Date,Access,Owner,Group,Link
+reading=true
+writing=true
+makedir=true
+deleting=true
+linking=true
+moving=true
+
