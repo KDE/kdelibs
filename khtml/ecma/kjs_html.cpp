@@ -34,12 +34,15 @@
 #include "html/html_imageimpl.h"
 #include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
+#include "xml/dom2_eventsimpl.h"
+
 #include <kparts/browserextension.h>
 
 #include "khtml_part.h"
 #include "khtmlview.h"
 
 #include "ecma/kjs_css.h"
+#include "ecma/kjs_events.h"
 #include "ecma/kjs_html.h"
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_html.lut.h"
@@ -47,6 +50,7 @@
 #include "java/kjavaappletcontext.h"
 
 #include "misc/htmltags.h"
+#include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
 
@@ -2846,12 +2850,12 @@ DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLCollectionProtoFunc)
 IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
-const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
+const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
+KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
   : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
 
-HTMLCollection::~HTMLCollection()
+KJS::HTMLCollection::~HTMLCollection()
 {
   ScriptInterpreter::forgetDOMObject(collection.handle());
 }
@@ -3183,13 +3187,18 @@ Object ImageConstructorImp::construct(ExecState *exec, const List &)
 const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
 
 /* Source for ImageTable. Use "make hashtables" to regenerate.
-@begin ImageTable 3
+@begin ImageTable 5
   src		Image::Src		DontDelete
+  width		Image::Width		DontDelete|ReadOnly
+  height	Image::Height		DontDelete|ReadOnly
   complete	Image::Complete		DontDelete|ReadOnly
+  onload	Image::OnLoad		DontDelete
 @end
 */
 Image::Image(ExecState* exec, const DOM::Document &d)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype()), doc(d), img(0) { }
+  : DOMObject(exec->interpreter()->builtinObjectPrototype()), doc(d), img(0),
+  m_onLoadListener(0L)
+{ }
 
 Value Image::tryGet(ExecState *exec, const UString &propertyName) const
 {
@@ -3203,6 +3212,18 @@ Value Image::getValueProperty(ExecState *, int token) const
     return String(src);
   case Complete:
     return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
+  case Width:
+    if ( !img )
+      return Undefined();
+    return Number(img->pixmap_size().width());
+  case Height:
+    if ( !img )
+      return Undefined();
+    return Number(img->pixmap_size().height());
+  case OnLoad:
+    if ( m_onLoadListener )
+      return m_onLoadListener->listenerObj();
+    return Undefined();
   default:
     kdWarning() << "Image::getValueProperty unhandled token " << token << endl;
     return Value();
@@ -3211,15 +3232,38 @@ Value Image::getValueProperty(ExecState *, int token) const
 
 void Image::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-  // Not worth using the hashtable
-  if (propertyName == "src") {
+  DOMObjectLookupPut<Image, DOMObject>( exec, propertyName, value, attr, &ImageTable, this );
+}
+
+void Image::putValueProperty(ExecState *exec, int token, const Value& value, int)
+{
+  switch (token) {
+  case Src: {
     String str = value.toString(exec);
     src = str.value();
     if ( img ) img->deref(this);
     img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
     if ( img ) img->ref(this);
-  } else {
-    DOMObject::tryPut(exec, propertyName, value, attr);
+    break;
+  }
+  case OnLoad:
+    m_onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value,true);
+    break;
+  default:
+    kdWarning() << "Image::putValueProperty unhandled token " << token << endl;
+  }
+}
+
+void Image::notifyFinished(khtml::CachedObject * finishedObj)
+{
+  if (img == finishedObj /*&& !loadEventSent*/ && m_onLoadListener ) {
+    //loadEventSent = true;
+    DOM::EventImpl *evt = new DOM::EventImpl( (DOM::EventImpl::EventId)ATTR_ONLOAD, false, false );
+    evt->setTarget( 0 );
+    evt->ref();
+    DOM::Event e(evt);
+    m_onLoadListener->handleEvent( e );
+    evt->deref();
   }
 }
 
