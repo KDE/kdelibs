@@ -314,6 +314,16 @@ public:
      */
     QString originalText() const;
 
+    /**
+     * Set the completion-box to be used in completion mode
+     * KGlobalSettings::CompletionPopup.
+     * This will do nothing if a completion-box already exists.
+     *
+     * @param box The KCompletionBox to set
+     * @since 3.4
+    */
+    void setCompletionBox( KCompletionBox *box );
+
 signals:
 
     /**
@@ -547,6 +557,12 @@ protected:
     */
     virtual void focusInEvent( QFocusEvent* );
 
+    /**
+     * Whether in current state text should be auto-suggested
+     * @since 3.4
+    */
+    bool autoSuggest() const;
+            
 private slots:
     void completionMenuActivated( int id );
     void tripleClickTimeout();  // resets possibleTripleClick
@@ -571,11 +587,6 @@ private:
      * Initializes variables.  Called from the constructors.
      */
     void init();
-
-    /**
-     * Creates the completion box
-     */
-    void makeCompletionBox();
 
     /**
      * Checks whether we should/should not consume a key used as

@@ -1038,12 +1038,12 @@ void KLineEdit::setURL( const KURL& url )
     setText( url.prettyURL() );
 }
 
-void KLineEdit::makeCompletionBox()
+void KLineEdit::setCompletionBox( KCompletionBox *box )
 {
     if ( d->completionBox )
         return;
 
-    d->completionBox = new KCompletionBox( this, "completion box" );
+    d->completionBox = box;
     if ( handleSignals() )
     {
         connect( d->completionBox, SIGNAL(highlighted( const QString& )),
@@ -1167,8 +1167,8 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
     if ( !items.isEmpty() &&
          !(items.count() == 1 && txt == items.first()) )
     {
-        if ( !d->completionBox )
-            makeCompletionBox();
+        // create completion box if non-existent
+        completionBox();
 
         if ( d->completionBox->isVisible() )
         {
@@ -1209,8 +1209,8 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
 KCompletionBox * KLineEdit::completionBox( bool create )
 {
-    if ( create )
-        makeCompletionBox();
+    if ( create && !d->completionBox )
+        setCompletionBox( new KCompletionBox( this, "completion box" ) );
 
     return d->completionBox;
 }
@@ -1291,6 +1291,11 @@ void KLineEdit::focusInEvent( QFocusEvent* ev)
         return;
     
     QLineEdit::focusInEvent(ev);
+}
+
+bool KLineEdit::autoSuggest() const
+{
+    return d->autoSuggest;
 }
 
 void KLineEdit::virtual_hook( int id, void* data )
