@@ -19,30 +19,31 @@
 
 	*/
 
-#include <kdebug.h>
-#include "ksounddispatcher.moc"
+#ifndef KARTSDISPATCHER_H
+#define KARTSDISPATCHER_H
 
-#include "iomanager.h"
-#include "dispatcher.h"
+#include <qobject.h>
 
-Arts::Dispatcher *KSoundDispatcher::artsDispatcher = 0;
-
-KSoundDispatcher::KSoundDispatcher() : QObject()
+namespace Arts
 {
-}
+	class QIOManager;
+	class Dispatcher;
+};
 
-KSoundDispatcher::~KSoundDispatcher()
+class KArtsDispatcher : public QObject
 {
-}
+Q_OBJECT
+public:
+	static void init();
+	static void free();
+	~KArtsDispatcher();
+	
+private:
+	KArtsDispatcher();
 
-void KSoundDispatcher::instance(Arts::IOManager *man)
-{
-	if(KSoundDispatcher::artsDispatcher == 0)
-		KSoundDispatcher::artsDispatcher = new Arts::Dispatcher(man);
-}
+	static int m_refCount;
+	static Arts::Dispatcher *artsDispatcher;
+	static Arts::QIOManager *artsQIOManager;
+};
 
-void KSoundDispatcher::instance()
-{
-	if(KSoundDispatcher::artsDispatcher == 0)
-		KSoundDispatcher::artsDispatcher = new Arts::Dispatcher();
-}
+#endif

@@ -19,29 +19,43 @@
 
 	*/
 
-#ifndef KSOUNDDISPATCHER_H
-#define KSOUNDDISPATCHER_H
+#include <qiomanager.h>
+#include <dispatcher.h>
+#include "kartsdispatcher.moc"
 
-#include <qobject.h>
+int KArtsDispatcher::m_refCount = 0;
+Arts::Dispatcher *KArtsDispatcher::artsDispatcher = 0;
+Arts::QIOManager *KArtsDispatcher::artsQIOManager = 0;
 
-namespace Arts
+KArtsDispatcher::KArtsDispatcher() : QObject()
 {
-    class IOManager;
-	class Dispatcher;
-};
+	m_refCount = 0;
+}
 
-class KSoundDispatcher : public QObject
+KArtsDispatcher::~KArtsDispatcher()
 {
-Q_OBJECT
-public:
-	static void instance(Arts::IOManager *man);
-	static void instance();
-	~KSoundDispatcher();
-	
-private:
-	KSoundDispatcher();
+}
 
-	static Arts::Dispatcher *artsDispatcher;
-};
+void KArtsDispatcher::free()
+{
+	m_refCount--;
 
-#endif
+	if(m_refCount == 0)
+	{
+		delete KArtsDispatcher::artsDispatcher;
+		KArtsDispatcher::artsDispatcher = 0;
+
+		delete KArtsDispatcher::artsQIOManager;
+		KArtsDispatcher::artsQIOManager = 0;
+	}
+}
+
+void KArtsDispatcher::init()
+{
+	m_refCount++;
+	if(KArtsDispatcher::artsDispatcher == 0)
+	{
+		KArtsDispatcher::artsQIOManager = new Arts::QIOManager();
+		KArtsDispatcher::artsDispatcher = new Arts::Dispatcher(KArtsDispatcher::artsQIOManager);
+	}
+}
