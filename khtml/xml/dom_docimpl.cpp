@@ -221,14 +221,9 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 {
     exceptioncode = 0;
 
-    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
-    if (qualifiedName.isNull()) {
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return 0;
-    }
-
     // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!Element::khtmlValidQualifiedName(qualifiedName)) {
+    // (It also says in the argument list that it's ok if it's null)
+    if (!qualifiedName.isNull() && !Element::khtmlValidQualifiedName(qualifiedName)) {
         exceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
     }
@@ -236,6 +231,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     // NAMESPACE_ERR:
     // - Raised if the qualifiedName is malformed,
     // - if the qualifiedName has a prefix and the namespaceURI is null, or
+    // - if the qualifiedName is null and the namespaceURI is different from null
     // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
     //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
     int colonpos = -1;
@@ -246,8 +242,9 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
             colonpos = i;
     }
 
-    if (Element::khtmlMalformedQualifiedName(qualifiedName) ||
+    if ( (!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName)) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
+        (qualifiedName.isNull() && !namespaceURI.isNull()) ||
         (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
          namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
 
