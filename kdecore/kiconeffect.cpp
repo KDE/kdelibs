@@ -33,6 +33,7 @@
 #include "kiconeffect.h"
 
 extern bool qt_use_xrender;
+extern bool qt_has_xft;
 
 class KIconEffectPrivate
 {
@@ -359,7 +360,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	int width  = img.width();
 	int height = img.height();
 	
-	if (qt_use_xrender)
+	if (qt_use_xrender && qt_has_xft )
 	  for (y=0; y<height; y++)
 	  {
 #ifdef WORDS_BIGENDIAN
@@ -425,7 +426,7 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    if ( qt_use_xrender )
+    if ( qt_use_xrender && qt_has_xft )
     {
 	QImage img=pix.convertToImage();
 	semiTransparent(img);
