@@ -571,6 +571,11 @@ public:
     */
    void *X509_get_ext_d2i(X509 *x, int nid, int *crit, int *idx);
 
+   /*
+    *
+    */
+   char *i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *ia5);
+
 
 
 

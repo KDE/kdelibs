@@ -357,6 +357,18 @@ void KSSLCertificate::setChain(void *c) {
 void KSSLCertificate::setCert(X509 *c) {
 #ifdef HAVE_SSL
   d->m_cert = c;
+  if (c) {
+	  int cnt = d->kossl->X509_get_ext_count(c);
+	  for (int i = 0; i < cnt; i++) {
+		  X509_EXTENSION *ext = d->kossl->X509_get_ext(c,i);
+		  // FIXME: delete ext?  delete thisval?
+		  const char *thisobj, *thisval;
+		  thisobj = d->kossl->OBJ_nid2ln(d->kossl->OBJ_obj2nid(ext->object));
+		  thisval = d->kossl->i2s_ASN1_OCTET_STRING(ext->method, ext->value);
+		  kdDebug(7029) << "SSL Certificate: found extension " << thisobj << " = " << thisval << endl;
+		  
+	  }
+  }
 #endif
   d->m_stateCached = false;
   d->m_stateCache = KSSLCertificate::Unknown;

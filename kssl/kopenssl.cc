@@ -117,7 +117,8 @@ static X509_EXTENSION *(*K_X509_get_ext)(X509*, int loc) = NULL;
 static X509_EXTENSION *(*K_X509_delete_ext)(X509*, int) = NULL;
 static int (*K_X509_add_ext)(X509*, X509_EXTENSION*, int) = NULL;
 static void *(*K_X509_get_ext_d2i)(X509*, int, int*, int*) = NULL;
-#endif    
+static char *(*K_i2s_ASN1_OCTET_STRING)(X509V3_EXT_METHOD*, ASN1_OCTET_STRING*) = NULL;
+#endif
 };
 
 
@@ -310,6 +311,7 @@ KConfig *cfg;
       K_X509_delete_ext = (X509_EXTENSION* (*)(X509*,int)) _cryptoLib->symbol("X509_delete_ext");
       K_X509_add_ext = (int (*)(X509*,X509_EXTENSION*,int)) _cryptoLib->symbol("X509_add_ext");
       K_X509_get_ext_d2i = (void* (*)(X509*,int,int*,int*)) _cryptoLib->symbol("X509_get_ext_d2i");
+      K_i2s_ASN1_OCTET_STRING = (char *(*)(X509V3_EXT_METHOD*,ASN1_OCTET_STRING*)) _cryptoLib->symbol("i2s_ASN1_OCTET_STRING");
 
 #endif
    }
@@ -925,6 +927,13 @@ void *KOpenSSLProxy::X509_get_ext_d2i(X509 *x, int nid, int *crit, int *idx) {
    if (K_X509_get_ext_d2i) return (K_X509_get_ext_d2i)(x,nid,crit,idx);
    else return NULL;
 }
+
+
+char *KOpenSSLProxy::i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *ia5) {
+   if (K_i2s_ASN1_OCTET_STRING) return (K_i2s_ASN1_OCTET_STRING)(method,ia5);
+   else return NULL;
+}
+
 
 
 #endif
