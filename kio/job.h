@@ -189,11 +189,18 @@ namespace KIO {
     StatJob * stat( const KURL& url, bool showProgressInfo = true );
     /**
      * Find all details for one file or directory.
-     * This version of the call includes a boolean, @p sideIsSource,
-     * which is true when stating a source file (we will do a get on it if the stat works)
-     * and false when stating a destination file (target of a copy).
+     * This version of the call includes two additional booleans, @p sideIsSource and @p details.
+     *
+     * @param sideIsSource is true when stating a source file (we will do a get on it if
+     * the stat works) and false when stating a destination file (target of a copy).
+     *
+     * @param details selects whether we want all the details about the file or not.
+     * By default this is true (details wanted, including modification time, size, etc.),
+     * but by calling setDetails(false) we'll only get the answer
+     * "it's a file or a directory, or it doesn't exist".
+     * This can be used e.g. when deleting a file, to speed things up.
      */
-    StatJob * stat( const KURL& url, bool sideIsSource, bool showProgressInfo /*= true*/ );
+    StatJob * stat( const KURL& url, bool sideIsSource, bool details, bool showProgressInfo = true );
 
     /**
      * Get (a.k.a. read).

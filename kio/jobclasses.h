@@ -390,6 +390,15 @@ namespace KIO {
         void setSide( bool source ) { m_bSource = source; }
 
         /**
+         * Select whether we want all the details about the file or not.
+         * By default this is true (details wanted, including modification time, size, etc.),
+         * but by calling setDetails(false) we'll only get the answer
+         * "it's a file or a directory, or it doesn't exist".
+         * This can be used e.g. when deleting a file, to speed things up.
+         */
+        void setDetails( bool details ) { m_bDetails = details; }
+
+        /**
          * Call this in the slot connected to @ref result,
          * and only after making sure no error happened.
          */
@@ -418,6 +427,7 @@ namespace KIO {
         UDSEntry m_statResult;
         KURL m_redirectionURL;
         bool m_bSource;
+        bool m_bDetails;
         class StatJobPrivate;
         StatJobPrivate *d;
     };

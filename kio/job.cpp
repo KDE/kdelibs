@@ -497,7 +497,8 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 
 StatJob::StatJob( const KURL& url, int command,
                   const QByteArray &packedArgs, bool showProgressInfo )
-    : SimpleJob(url, command, packedArgs, showProgressInfo)
+    : SimpleJob(url, command, packedArgs, showProgressInfo),
+    m_bSource(true), m_bDetails(true)
 {
 }
 
@@ -505,6 +506,7 @@ void StatJob::start(Slave *slave)
 {
     KIO::MetaData outgoingMetaData;
     outgoingMetaData.insert( "statSide", m_bSource ? "source" : "dest" );
+    outgoingMetaData.insert( "details", m_bDetails ? "yes" : "no" );
     KIO_ARGS << outgoingMetaData;
     slave->connection()->send( CMD_META_DATA, packedArgs );
 
@@ -558,12 +560,13 @@ StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
     return stat( url, true, showProgressInfo );
 }
 
-StatJob *KIO::stat(const KURL& url, bool sideIsSource, bool showProgressInfo)
+StatJob *KIO::stat(const KURL& url, bool sideIsSource, bool details, bool showProgressInfo)
 {
     kdDebug(7007) << "stat " << url.prettyURL() << endl;
     KIO_ARGS << url;
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs, showProgressInfo );
     job->setSide( sideIsSource );
+    job->setDetails( details );
     if ( showProgressInfo )
       Observer::self()->stating( job, url );
     return job;
