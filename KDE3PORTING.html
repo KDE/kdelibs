@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML Level 2//EN//2.0">
+<HTML>
+<HEAD>
+	<TITLE>Guide to Porting Applications to KDE 3.0</TITLE>
+</HEAD>
+<BODY>
+
+<H2>Porting Applications to KDE 3.0</H2>
+This document contains the changes you have to apply to programs written for
+KDE 2.x when you want to port them to KDE 3.0.<P>
+
+As a start you should have a look at doc/porting.doc in the Qt package,
+or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
+
+<H3><A NAME="TOC">Table of Contents</A></H3>
+
+<UL>
+<LI><A HREF="#gettingstarted">Getting Started</A></LI>
+</UL>
+
+<H3><A NAME="gettingstarted">Getting started</A></H3>
+
+  The first step to get your KDE application to compile under KDE 3.0,
+  is to detect KDE 3.0 and Qt 3.x at configure time. The easiest way to
+  get a working autoconf/automake framework, is to either use 
+  <a href="http://www.kdevelop.org">KDevelop</a> or
+  <a href="http://home.earthlink.net/~granroth/kapptemplate/index.html">kapptemplate</a>
+  (available in CVS under the module "kdesdk"), to generate a new
+  application template. Replace the generated source files by yours
+  and adapt Makefile.am accordingly.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<p>
+Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+</BODY>
+</HTML>
