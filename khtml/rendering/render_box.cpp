@@ -295,7 +295,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
 	if ( style()->jsClipMode() )
 	    clipw = w + tx + bl;
 	else
-	    clipw -= w;
+	    clipw -= m_width - bl - br - w;
     }
     if (!style()->clipTop().isVariable())
     {
@@ -309,7 +309,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
 	if ( style()->jsClipMode() )
 	    cliph = h + ty + bt;
 	else
-	    cliph -= h;
+            cliph -= m_height - bt - bb - h;
     }
     //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 
