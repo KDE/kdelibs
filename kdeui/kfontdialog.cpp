@@ -368,14 +368,18 @@ void KFontChooser::style_chosen_slot(const QString& style)
 {
   QString style_string = style;
 
-  if ( style_string.find(i18n("Italic")) != -1)
+  if ( style_string.contains(i18n("Italic"))||
+       style_string.contains(i18n("Bold Italic")) )
     selFont.setItalic(true);
   else
     selFont.setItalic(false);
-  if ( style_string.find(i18n("Bold")) != -1)
+
+  if ( style_string.contains(i18n("Bold")) ||
+       style_string.contains(i18n("Bold Italic")) )
     selFont.setBold(true);
   else
     selFont.setBold(false);
+
   emit fontSelected(selFont);
 }
 
@@ -577,6 +581,14 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.64  2001/07/19 10:20:35  faure
+* Don't try to be clever when choosing a charset, it only hurts.
+* -    charsets->setQFont(selFont, chset);
+* +    selFont.setCharSet(charsets->nameToID(chset));
+* For instance when choosing the Unicode charset, QFontInfo was saying "already
+* using this charset" (when AA is enabled), so setQFont() would do _nothing_.
+* Approved by Lukas.
+*
 * Revision 1.63  2001/07/01 20:10:30  faure
 * Fixed BC breakage (Michael H's commit added a member var to the KFontChooser
 * class). Just got a crash when using KWord compiled against 2.1 running
