@@ -81,8 +81,8 @@ protected:
    QString oldFile;
    QString newFile;
    KConfig *oldConfig1; // Config to read keys from.
-   KSimpleConfig *oldConfig2; // Config to delete keys from.
-   KSimpleConfig *newConfig;
+   KConfig *oldConfig2; // Config to delete keys from.
+   KConfig *newConfig;
 
    QString oldGroup;
    QString newGroup;
@@ -423,10 +423,10 @@ void KonfUpdate::gotFile(const QString &_file)
    if (!oldFile.isEmpty())
    {
       oldConfig1 = new KConfig(oldFile, true, false);
-      oldConfig2 = new KSimpleConfig(oldFile);
+      oldConfig2 = new KConfig(oldFile, false, false);
       if (!newFile.isEmpty())
       {
-         newConfig = new KSimpleConfig(newFile);
+         newConfig = new KConfig(newFile, false, false);
       }
       else
       {
@@ -442,10 +442,7 @@ void KonfUpdate::gotFile(const QString &_file)
       }
       else
       {
-         if (m_bUseConfigInfo)
-         {
-            skip = true;
-         }
+         skip = true;
       }
    }
    else
@@ -713,7 +710,13 @@ void KonfUpdate::gotScript(const QString &_script)
        while(!ts.atEnd())
        {
          QString line = ts.readLine();
-         if (line.startsWith("# DELETE "))
+         if (line.startsWith("["))
+         {
+            int j = line.find(']')+1;
+            if (j > 0)
+               group = line.mid(1, j-2);
+         }
+         else if (line.startsWith("# DELETE "))
          {  
             QString key = line.mid(9);
             if (key[0] == '[')
