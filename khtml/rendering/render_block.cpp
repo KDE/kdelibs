@@ -1361,10 +1361,14 @@ void RenderBlock::positionNewFloats()
                                //kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo << endl;
         if (ro - lo < fwidth)
             fwidth = ro - lo; // Never look for more than what will be available.
-        if (o->style()->floating() == FLEFT)
-        {
+
             if ( o->style()->clear() & CLEFT )
                 y = kMax( leftBottom(), y );
+        if ( o->style()->clear() & CRIGHT )
+            y = kMax( rightBottom(), y );
+
+        if (o->style()->floating() == FLEFT)
+        {
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
@@ -1380,8 +1384,6 @@ void RenderBlock::positionNewFloats()
         }
         else
         {
-            if ( o->style()->clear() & CRIGHT )
-                y = kMax( rightBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
             int fx = rightRelOffset(y,ro, false, &heightRemainingRight);
@@ -1786,7 +1788,7 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
 
 bool RenderBlock::checkClear(RenderObject *child)
 {
-    //kdDebug( 6040 ) << "checkClear oldheight=" << m_height << endl;
+    //kdDebug( 6040 ) << "checkClear on child " << child << " oldheight=" << m_height << endl;
     int bottom = 0;
     switch(child->style()->clear())
     {
