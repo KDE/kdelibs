@@ -77,7 +77,7 @@ public:
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name )
+    : QScrollView( parent, name, WNorthWestGravity )
 //    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase)
 {
     m_part = part;
@@ -196,7 +196,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
        	p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Background));
 	return;
     }
-    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     if ( paintBuffer->width() < visibleWidth() ) {
 	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
@@ -275,10 +275,13 @@ void KHTMLView::layout(bool force)
 	    resizeContents(rw, rh);
 
 //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
-
-	} else {
-	    root->layout(false);
-	}
+	    viewport()->repaint(false);
+	    //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
+	    
+	} 
+	//	else {
+	//   root->layout(false);
+	//}
     } else {
 	_width = visibleWidth();
     }
