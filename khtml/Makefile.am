@@ -79,7 +79,7 @@ khtmlimagepart_la_SOURCES = imgdummy.cpp
 khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
 khtmlimagepart_la_LIBADD = libkhtml.la 
 
-INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
+INCLUDES = -I$(top_srcdir)/kjs -I$(top_builddir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/libltdl \
