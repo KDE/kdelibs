@@ -33,6 +33,8 @@
 class KColorButton : public QPushButton
 {
 	Q_OBJECT
+	Q_PROPERTY( QColor color READ color WRITE setColor )
+
 public:
 	/**
 	* Constructor. Create a KColorButton.
