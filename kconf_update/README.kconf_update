@@ -47,8 +47,9 @@ File format of the update file
 ==============================
 
 Empty lines or lines that start with '#' are considered comments.
-Commas (,) are use to seperate fields and may not occur as part of any
-field.
+Commas (,) are used to seperate fields and may not occur as part 
+of any field and all of the keywords are case-sensitive, i.e. you
+cannot say "key" instead of "Key" for example.
 
 For the rest the file is parsed from top to bottom. Each line can contain
 one entry. The following entries are recognized:
@@ -90,7 +91,8 @@ Group=<oldgroup>
 
 Specifies that configuration information is read from the group <oldgroup>
 and written to <newgroup>. If you only specify <oldgroup>, the information
-is read from as well as written to <oldgroup>.
+is read from as well as written to <oldgroup>. You can use <default> to
+specify keys that are not under any group.
 
 RemoveGroup=<oldgroup>
 
