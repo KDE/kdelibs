@@ -622,19 +622,13 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	// Detect width and height
 	QDomElement rootElement = rootNode.toElement();
 
-	d->width = width;
-
+	d->width = width; // this sets default for no width -> 100% case
 	if(rootElement.hasAttribute("width"))
 		d->width = d->helper->toPixel(rootElement.attribute("width"), true);
-	else
-		d->width = d->helper->toPixel("100%", true);
 
-	d->height = height;
-
+	d->height = height; // this sets default for no height -> 100% case
 	if(rootElement.hasAttribute("height"))
 		d->height = d->helper->toPixel(rootElement.attribute("height"), false);
-	else
-		d->height = d->helper->toPixel("100%", false);
 
 	// Create icon painter
 	d->painter = new KSVGIconPainter(width, height, static_cast<int>(d->width), static_cast<int>(d->height));
