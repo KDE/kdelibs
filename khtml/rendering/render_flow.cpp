@@ -164,11 +164,18 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
             //kdDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << endl;
             lastNode = nod;
             lastOffset = off;
+            // No "return" here, obviously. We must keep looking into the children.
+            break;
         }
     }
-    //kdDebug(6030) << "fallback - SelectionPointAfter" << endl;
-    node = lastNode;
-    offset = lastOffset;
+    // If we are after the last child, return lastNode/lastOffset
+    // But lastNode can be 0L if there is no child, for instance.
+    if ( lastNode )
+    {
+        node = lastNode;
+        offset = lastOffset;
+    }
+    //kdDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset << endl;
     return SelectionPointAfter;
 }
 
