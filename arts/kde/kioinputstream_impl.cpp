@@ -52,6 +52,7 @@ KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(2048)
 	m_streamStarted = false;
 	m_streamSuspended = false;
 	m_streamPulled = false;
+	m_size = 0;
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
@@ -75,6 +76,7 @@ void KIOInputStream_impl::streamStart()
 	if(m_job != 0)
 		m_job->kill();
 	m_job = KIO::get(m_url, false, false);
+
 	m_job->addMetaData("accept", "audio/x-mp3, video/mpeg, application/x-ogg");
 	m_job->addMetaData("UserAgent", QString::fromLatin1("aRts/") + QString::fromLatin1(ARTS_VERSION));
 
@@ -84,6 +86,8 @@ void KIOInputStream_impl::streamStart()
 			 this, SLOT(slotResult(KIO::Job *)));		     
 	QObject::connect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
 			 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
+	QObject::connect(m_job, SIGNAL(totalSize( KIO::Job *, KIO::filesize_t)),
+			 this, SLOT(slotTotalSize(KIO::Job *, KIO::filesize_t)));
 
 	m_streamStarted = true;
 }
@@ -100,6 +104,8 @@ void KIOInputStream_impl::streamEnd()
 						this, SLOT(slotResult(KIO::Job *)));		     
 		QObject::disconnect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
 				 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
+		QObject::disconnect(m_job, SIGNAL(totalSize( KIO::Job *, KIO::filesize_t)),
+				 this, SLOT(slotTotalSize(KIO::Job *, KIO::filesize_t)));
 
 		if ( m_streamPulled )
 			outdata.endPull();
@@ -114,6 +120,7 @@ void KIOInputStream_impl::streamEnd()
 bool KIOInputStream_impl::openURL(const std::string& url)
 {
 	m_url = KURL(url.c_str());
+	m_size = 0;
 	return true;
 }
 
@@ -150,6 +157,11 @@ void KIOInputStream_impl::slotScanMimeType(KIO::Job *, const QString &mimetype)
 	emit mimeTypeFound(mimetype);
 }
 
+void KIOInputStream_impl::slotTotalSize(KIO::Job *, KIO::filesize_t size)
+{
+	m_size = size;
+}
+
 bool KIOInputStream_impl::eof()
 {
 	return (m_finished && m_data.size() == 0);
@@ -162,7 +174,7 @@ bool KIOInputStream_impl::seekOk()
 
 long KIOInputStream_impl::size()
 {
-	return m_data.size();
+	return m_size ? m_size : m_data.size();
 }
 
 long KIOInputStream_impl::seek(long)

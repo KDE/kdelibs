@@ -65,6 +65,7 @@ private slots:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
 	void slotScanMimeType(KIO::Job *, const QString &mimetype);
+	void slotTotalSize(KIO::Job *, KIO::filesize_t size);
 
 private:
 	KURL m_url;
@@ -78,6 +79,7 @@ private:
 
 	unsigned int m_packetBuffer;
 	const unsigned int m_packetSize;
+	KIO::filesize_t m_size;
 	
 	static const unsigned int PACKET_COUNT;
 };
