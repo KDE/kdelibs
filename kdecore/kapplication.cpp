@@ -2302,7 +2302,7 @@ QString KApplication::randomString(int length)
    if (length <=0 ) return QString::null;
 
    QString str;
-   while (--length)
+   while (length--)
    {
       int r=random() % 62;
       r+=48;
