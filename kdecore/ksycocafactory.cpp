@@ -158,6 +158,12 @@ KSycocaEntry::List KSycocaFactory::allEntries()
    m_str->device()->at(m_endEntryOffset);
    Q_INT32 entryCount;
    (*m_str) >> entryCount;
+   
+   if (entryCount > 8192)
+   {
+      KSycoca::flagError();
+      return list;
+   }
 
    Q_INT32 *offsetList = new Q_INT32[entryCount];
    for(int i = 0; i < entryCount; i++)

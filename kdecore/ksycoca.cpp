@@ -46,13 +46,23 @@
 
 template class QPtrList<KSycocaFactory>;
 
+// The following limitations are in place:
+// Maximum length of a single string: 8192 bytes
+// Maximum lenght of a string list: 1024 strings
+// Maximum number of entries: 8192
+//
+// The purpose of these limitations is to limit the impact
+// of database corruption.
+
 struct KSycocaPrivate {
     KSycocaPrivate() {
         database = 0;
+        readError = false;
     }
     QFile *database;
     QStringList changeList;
     QString language;
+    bool readError;
 };
 
 // Read-only constructor
@@ -325,9 +335,9 @@ QString KSycoca::kfsstnd_prefixes()
    }
    // We now point to the header
    QString prefixes;
-   (*m_str) >> prefixes;
+   KSycocaEntry::read(*m_str, prefixes);
    (*m_str) >> m_timeStamp;
-   (*m_str) >> d->language;
+   KSycocaEntry::read(*m_str, d->language);
    return prefixes;
 }
 
@@ -364,6 +374,71 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
 }
 
 KSycoca * KSycoca::_self = 0L;
+
+void KSycoca::flagError()
+{
+   if (_self)
+      _self->d->readError = true;
+}
+
+bool KSycoca::readError()
+{
+   bool b = false;
+   if (_self)
+   {
+      b = _self->d->readError;
+      _self->d->readError = false;
+   }
+   return b;
+}
+
+void KSycocaEntry::read( QDataStream &s, QString &str )
+{
+  Q_UINT32 bytes;
+  s >> bytes;                          // read size of string
+  if ( bytes > 8192 ) {                // null string or too big
+      if (bytes != 0xffffffff)
+         KSycoca::flagError();
+      str = QString::null;
+  } 
+  else if ( bytes > 0 ) {              // not empty
+      int bt = bytes/2;
+      str.setLength( bt );
+      QChar* ch = (QChar *) str.unicode();
+      char t[8192];
+      char *b = t;
+      s.readRawBytes( b, bytes );
+      while ( bt-- ) {
+          *ch++ = (ushort) (((ushort)b[0])<<8) | (uchar)b[1];
+	  b += 2;
+      }
+  } else {
+      str = "";
+  }
+}
+
+void KSycocaEntry::read( QDataStream &s, QStringList &list )
+{
+  list.clear();
+  Q_UINT32 count;
+  s >> count;                          // read size of list
+  if (count >= 1024)
+  {
+     KSycoca::flagError();
+     return;
+  }
+  for(Q_UINT32 i = 0; i < count; i++)
+  {
+     QString str;
+     read(s, str);
+     list.append( str );
+     if (s.atEnd())
+     {
+        KSycoca::flagError();
+        return;
+     }
+  }
+}
 
 void KSycoca::virtual_hook( int id, void* data )
 { DCOPObject::virtual_hook( id, data ); }

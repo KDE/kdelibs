@@ -114,6 +114,16 @@ public:
     * @see KStandardDirs for the various resource types.
     */
    static bool isChanged(const char *type);
+   
+   /**
+    * A read error occurs.
+    */
+   static void flagError();
+   
+   /**
+    * Returns read error status and clears flag.
+    */
+   static bool readError();
 
 k_dcop:
    /**

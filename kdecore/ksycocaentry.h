@@ -21,7 +21,7 @@
 
 #include "ksycocatype.h"
 
-#include <qvaluelist.h>
+#include <qstringlist.h>
 #include <ksharedptr.h>
 class QDataStream;
 
@@ -47,13 +47,19 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    KSycocaEntry(const QString &path) : mOffset(0), m_bDeleted(false), mPath(path) { }
 
    /**
+    * Safe demarshalling functions.
+    */
+   static void read( QDataStream &s, QString &str );
+   static void read( QDataStream &s, QStringList &list );
+
+   /**
     * @internal
     * Restores itself from a stream.
     */
    KSycocaEntry( QDataStream &_str, int offset ) : 
               mOffset( offset ), m_bDeleted(false) 
    { 
-     _str >> mPath;
+     read(_str, mPath);
    }
 
    /**
