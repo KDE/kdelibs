@@ -120,22 +120,25 @@ NodeImpl *RangeImpl::commonAncestorContainer(int &exceptioncode)
 	return 0;
     }
 
-    NodeImpl *parentStart = m_startContainer;
+    NodeImpl *com = commonAncestorContainer(m_startContainer,m_endContainer);
+    if (!com) //  should never happen
+	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+    return com;
+}
 
-    for (parentStart = m_startContainer; parentStart; parentStart = parentStart->parentNode()) {	
-	NodeImpl *parentEnd = m_endContainer;
+NodeImpl *RangeImpl::commonAncestorContainer(NodeImpl *containerA, NodeImpl *containerB)
+{
+    NodeImpl *parentStart;
+
+    for (parentStart = containerA; parentStart; parentStart = parentStart->parentNode()) {	
+	NodeImpl *parentEnd = containerB;
         while( parentEnd && (parentStart != parentEnd) )
             parentEnd = parentEnd->parentNode();
 
         if(parentStart == parentEnd)  break;
     }
 
-    if (!parentStart) { //  should never happen
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-        return 0;
-    }
-    else
-	return parentStart;
+    return parentStart;
 }
 
 bool RangeImpl::collapsed(int &exceptioncode) const
@@ -172,9 +175,17 @@ void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
     setStartContainer(refNode);
     m_startOffset = offset;
 
-    // ### check if different root container (?)
-
-    if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
+    // check if different root container
+    NodeImpl *endRootContainer = m_endContainer;
+    while (endRootContainer->parentNode())
+	endRootContainer = endRootContainer->parentNode();
+    NodeImpl *startRootContainer = m_startContainer;
+    while (startRootContainer->parentNode())
+	startRootContainer = startRootContainer->parentNode();
+    if (startRootContainer != endRootContainer)
+	collapse(true,exceptioncode);
+    // check if new start after end
+    else if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
 	collapse(true,exceptioncode);
 }
 
@@ -202,8 +213,16 @@ void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
     setEndContainer(refNode);
     m_endOffset = offset;
 
-    // ### check if different root container
-
+    // check if different root container
+    NodeImpl *endRootContainer = m_endContainer;
+    while (endRootContainer->parentNode())
+	endRootContainer = endRootContainer->parentNode();
+    NodeImpl *startRootContainer = m_startContainer;
+    while (startRootContainer->parentNode())
+	startRootContainer = startRootContainer->parentNode();
+    if (startRootContainer != endRootContainer)
+	collapse(false,exceptioncode);
+    // check if new end before start
     if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
  	collapse(false,exceptioncode);
 }
@@ -320,8 +339,7 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     }
 
     // case 4: containers A & B are siblings, or children of siblings
-    int exceptioncode;
-    NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
+    NodeImpl *cmnRoot = commonAncestorContainer(containerA,containerB);
     NodeImpl *childA = containerA;
     while (childA->parentNode() != cmnRoot)
 	childA = childA->parentNode();

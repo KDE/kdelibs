@@ -50,6 +50,7 @@ public:
     bool collapsed(int &exceptioncode) const;
 
     NodeImpl *commonAncestorContainer(int &exceptioncode);
+    static NodeImpl *commonAncestorContainer(NodeImpl *containerA, NodeImpl *containerB);
     void setStart ( NodeImpl *refNode, long offset, int &exceptioncode );
     void setEnd ( NodeImpl *refNode, long offset, int &exceptioncode );
     void collapse ( bool toStart, int &exceptioncode );
