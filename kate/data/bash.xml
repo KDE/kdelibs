@@ -37,27 +37,27 @@
                 <contexts>
                         <context name = "Base" attribute = "Normal Text" lineEndContext = "#stay">
                                 <DetectChar attribute="Comment" context="Commentar" char="#" />
-                                
+
                                 <RegExpr attribute="Keyword" context="#stay" String="\bdone\b" insensitive="TRUE" endRegion="dodone1"/>
                                 <RegExpr attribute="Keyword" context="#stay" String="\bdo\b" insensitive="TRUE" beginRegion="dodone1"/>
-                                
+
                                 <RegExpr attribute="Keyword" context="#stay" String="\belif\b" insensitive="TRUE" beginRegion="iffi1" endRegion="iffi1"/>
                                 <RegExpr attribute="Keyword" context="#stay" String="\bif\b" insensitive="TRUE" beginRegion="iffi1"/>
                                 <RegExpr attribute="Keyword" context="#stay" String="\bfi\b" insensitive="TRUE" endRegion="iffi1"/>
-                                
+
                                 <RegExpr attribute="Keyword" context="#stay" String="\bcase\b" insensitive="TRUE" beginRegion="case1"/>
                                 <RegExpr attribute="Keyword" context="#stay" String="\besac\b" insensitive="TRUE" endRegion="case1"/>
-                                
+
                                 <RegExpr attribute="Keyword" context="#stay" String="^[^()]+\)" insensitive="TRUE" beginRegion="subcase1"/>
                                 <StringDetect attribute="Keyword" context="#stay" String=";;" insensitive="TRUE" endRegion="subcase1"/>
-                                
+
                                 <DetectChar attribute="Keyword" context="#stay" char="{" beginRegion="func1"/>
                                 <DetectChar attribute="Keyword" context="#stay" char="}" endRegion="func1"/>
 
                                 <keyword String = "keywords" attribute = "Keyword" context = "#stay"/>
                                 <keyword String = "commands" attribute = "Command" context = "#stay"/>
                                 <Int attribute = "Decimal" context = "#stay"/>
-                                <RegExpr String = "\$[A-Za-z0-9_?{}!]+" attribute = "Parameter" context = "#stay"/>
+                                <RegExpr String = "\$[A-Za-z0-9_?{}!#]+" attribute = "Parameter" context = "#stay"/>
                                 <RangeDetect char = "&quot;" char1 = "&quot;" attribute = "String" context = "#stay"/>
                                 <AnyChar String = "|&lt;&gt;=;" attribute = "Operator" context = "#stay"/>
                                 <DetectChar char="'" attribute = "String" context = "Single Quote"/>
