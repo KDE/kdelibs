@@ -763,10 +763,10 @@ void QIconViewItem::init()
 
 QIconViewItem::~QIconViewItem()
 {
+    view->removeItem( this );
     delete d;
     delete f;
     delete c;
-    view->removeItem( this );
     removeRenameBox();
 }
 
@@ -2240,6 +2240,17 @@ void QIconView::removeItem( QIconViewItem *item )
 
     QRect r = item->rect();
 
+    if ( d->currentItem == item ) {
+	if ( item->prev )
+	    setCurrentItem( item->prev );
+	else if ( item->next )
+	    setCurrentItem( item->next );
+	else
+	    setCurrentItem( 0 );
+    }
+    if ( item->isSelected() )
+	item->setSelected( FALSE );
+    
     if ( item == d->firstItem ) {
 	d->firstItem = d->firstItem->next;
 	if ( d->firstItem )
@@ -2894,7 +2905,7 @@ void QIconView::clear()
 	d->clearing = FALSE;
 	return;
     }
-    
+
     QIconViewItem *item = d->firstItem, *tmp;
     while ( item ) {
 	tmp = item->next;
