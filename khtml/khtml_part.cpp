@@ -869,18 +869,18 @@ void KHTMLPart::checkCompleted()
   //          << " complete: " << d->m_bComplete << endl;
   int requests = 0;
 
-  if ( d->m_bParsing || d->m_bComplete )
-    return;
-
   QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
   QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !it.data().m_bCompleted )
       return;
-
+  
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
   kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
+    return;
+  
+  if ( d->m_bParsing || d->m_bComplete )
     return;
 
   d->m_bComplete = true;
@@ -1856,6 +1856,7 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
   {
     if ( !parentPart() ) // "toplevel" html document? if yes, then notify the hosting browser about the document (url) changes
       emit d->m_extension->openURLNotify();
+    d->m_bComplete = false;
     emit started( job );
   }
 }
@@ -2084,6 +2085,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
       if ( child->m_part )
       {
+        child->m_bCompleted = false;
         if ( child->m_extension )
 	{
 	  QDataStream frameStream( *fBufferIt, IO_ReadOnly );
