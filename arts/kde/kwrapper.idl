@@ -16,4 +16,11 @@ interface KWrapperFactory {
 	PlayObject createPlayObject(string url, string mimetype, boolean createBUS);
 };
 
+/*
+ * notification proxy for floats, used internally!
+ */
+interface KFloatWatchProxy {
+	attribute float value;
+};
+
 };
