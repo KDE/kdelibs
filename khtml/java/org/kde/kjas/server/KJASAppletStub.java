@@ -139,7 +139,7 @@ public final class KJASAppletStub
         failed = true;
         loader.removeStatusListener(panel);
         panel.stopAnimation();
-        panel.showFailed();
+        panel.showFailed(why);
         Main.protocol.sendAppletFailed(context.getID(), appletID, why); 
     }
     
@@ -212,6 +212,10 @@ public final class KJASAppletStub
                             setFailed(e.toString());
                             return;
                         }
+                    }
+                    catch ( Throwable e ) {
+                        setFailed(e.toString());
+                        return;
                     }
                 //} // synchronized
                 if (Thread.interrupted())
