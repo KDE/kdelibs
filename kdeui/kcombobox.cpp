@@ -594,12 +594,6 @@ void KComboBox::setCompletedItems( const QStringList& items )
     }
 }
 
-void KComboBox::clearEdit()
-{
-    d->prevText = QString::null;
-    QComboBox::clearEdit();
-}
-
 // ### merge these two for 3.0
 KCompletionBox * KComboBox::completionBox()
 {

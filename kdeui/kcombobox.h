@@ -440,11 +440,6 @@ public slots:
      */
     void setCompletedItems( const QStringList& items );
 
-    /**
-     * Re-implemented for internal reasons.  API is unaffected.
-     */
-    void clearEdit();
-
 protected slots:
 
     /**
