@@ -287,6 +287,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     m_spin->setLineStep(step);
 
     if(slider) {
+        delete m_slider;
         m_slider = new QSlider(lower, upper, step, m_spin->value(),
                                QSlider::Horizontal, this);
         m_slider->setTickmarks(QSlider::Below);
