@@ -730,6 +730,11 @@ void TransferJob::addMetaData( const QMap<QString,QString> &values)
       m_outgoingMetaData.insert(it.key(), it.data());
 }
 
+MetaData TransferJob::outgoingMetaData()
+{
+    return m_outgoingMetaData;
+}
+
 void TransferJob::suspend()
 {
     m_suspended = true;
@@ -926,6 +931,16 @@ MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
     return job;
 }
 
+//////////////////////////
+
+
+class FileCopyJob::FileCopyJobPrivate
+{
+public:
+    off_t m_sourceSize;
+    SimpleJob *m_delJob;
+};
+
 /*
  * The FileCopyJob works according to the famous Bayern
  * 'Alternating Bittburger Protocol': we either drink a beer or we
@@ -949,7 +964,9 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     m_copyJob = 0;
     m_getJob = 0;
     m_putJob = 0;
-    m_delJob = 0;
+    d = new FileCopyJobPrivate;
+    d->m_delJob = 0;
+    d->m_sourceSize = (off_t) -1;
     if ((src.protocol() == dest.protocol()) &&
         (src.host() == dest.host()) &&
         (src.port() == dest.port()) &&
@@ -972,6 +989,16 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
        m_copyJob = 0;
        startDataPump();
     }
+}
+
+FileCopyJob::~FileCopyJob()
+{
+    delete d;
+}
+
+void FileCopyJob::setSourceSize( off_t size )
+{
+    d->m_sourceSize = size;
 }
 
 void FileCopyJob::startCopyJob()
@@ -1052,7 +1079,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
                 this, i18n("File already exists"),
                 m_src.prettyURL(), m_dest.prettyURL(),
                 (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
-                (unsigned long) -1, offset );
+                d->m_sourceSize, offset );
 
             if ( res == R_OVERWRITE )
                 offset = 0;
@@ -1064,13 +1091,15 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
                 return;
             }
         }
+        else
+            m_resumeAnswerSent = true; // No need for an answer
 
         m_getJob = get( m_src, false, false /* no GUI */ );
         kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
         m_getJob->addMetaData( "errorPage", "false" );
         if (offset)
         {
-            kdDebug(7007) << "Setting metadata for resume" << endl;
+            kdDebug(7007) << "Setting metadata for resume to " << offset << endl;
             m_getJob->addMetaData( "resume", QString::number(offset) );
             // Might or might not get emitted
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
@@ -1185,8 +1214,8 @@ void FileCopyJob::slotResult( KIO::Job *job)
       m_copyJob = 0;
       if (m_move)
       {
-         m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
-         addSubjob(m_delJob);
+         d->m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
+         addSubjob(d->m_delJob);
       }
    }
 
@@ -1208,14 +1237,14 @@ void FileCopyJob::slotResult( KIO::Job *job)
       }
       if (m_move)
       {
-         m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
-         addSubjob(m_delJob);
+         d->m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
+         addSubjob(d->m_delJob);
       }
    }
 
-   if (job == m_delJob)
+   if (job == d->m_delJob)
    {
-      m_delJob = 0; // Finished
+      d->m_delJob = 0; // Finished
    }
    removeSubjob(job);
 }
@@ -2269,7 +2298,9 @@ void CopyJob::copyNextFile()
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
         } else if (m_mode == Move) // Moving a file
         {
-            newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
+            KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
+            moveJob->setSourceSize( (*it).size );
+            newjob = moveJob;
             kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
             if (m_observer!=0)
@@ -2284,7 +2315,9 @@ void CopyJob::copyNextFile()
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
             mode_t permissions = ( !(*it).uSource.isLocalFile() && (*it).uDest.isLocalFile() ) ? (mode_t)-1 : (*it).permissions;
-            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
+            KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
+            copyJob->setSourceSize( (*it).size );
+            newjob = copyJob;
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             //emit copying( this, (*it).uSource, (*it).uDest );
             if (m_observer!=0)

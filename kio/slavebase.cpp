@@ -550,13 +550,18 @@ bool SlaveBase::canResume( unsigned long offset )
     d->needSendCanResume = false;
     KIO_DATA << offset;
     m_pConnection->send( MSG_RESUME, data );
-    int cmd;
-    if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
+    if ( offset )
     {
-        kdDebug() << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
-        return cmd == CMD_RESUMEANSWER;
-    } else
-        return false;
+        int cmd;
+        if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
+        {
+            kdDebug() << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
+            return cmd == CMD_RESUMEANSWER;
+        } else
+            return false;
+    }
+    else // No resuming possible -> no answer to wait for
+        return true;
 }
 
 

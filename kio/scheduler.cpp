@@ -349,8 +349,22 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job)
     Slave *slave = 0;
     if (slaveOnHold)
     {
-       // Make sure that the job wants to do a GET or a POST
-       if (job->command() == CMD_GET || (job->inherits("KIO::TransferJob") && (job->command() == CMD_SPECIAL)))
+       // Make sure that the job wants to do a GET or a POST, and with no offset
+       bool bCanReuse = (job->command() == CMD_GET);
+       KIO::TransferJob * tJob = dynamic_cast<KIO::TransferJob *>(job);
+       if ( tJob )
+       {
+          bCanReuse = (job->command() == CMD_GET || job->command() == CMD_SPECIAL);
+          if ( bCanReuse )
+          {
+            KIO::MetaData outgoing = tJob->outgoingMetaData();
+            QString resume = (!outgoing.contains("resume")) ? QString::null : outgoing["resume"];
+            kdDebug(7006) << "Resume metadata is '" << resume << "'" << endl;
+            bCanReuse = (resume.isEmpty() || resume == "0");
+          }
+       }
+       kdDebug(7006) << "bCanReuse = " << bCanReuse << endl;
+       if (bCanReuse)
        {
           if (job->url() == urlOnHold)
           {

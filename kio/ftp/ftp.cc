@@ -530,10 +530,9 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   }
 
   char rsp = readresp();
-  if (!rsp || ( rsp == '4' /* && ... */))
+  if (!rsp || ( rsp == '4' && rspbuf[1] == '2' ))
   {
-    // The 4 is for "421 No Transfer Timeout (300 seconds): closing control connection"
-    // I don't know if other 4 codes can mean something else. I should read RFC 959.
+    // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
     if ( maxretries > 0 )
     {
       // It might mean a timeout occured, let's try logging in again
@@ -757,7 +756,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     if ( !ftpSendCmd( buf, '3' ) ) {
       if ( rspbuf[0] != '3' ) // other errors were already emitted
         {
-          error( ERR_CANNOT_RESUME, _path );
+          error( ERR_CANNOT_RESUME, _path ); // should never happen
           return false;
         }
     }
@@ -771,10 +770,19 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   }
 
   if ( !ftpSendCmd( tmp, '1' ) ) {
+    if ( _offset > 0 && strcmp(_command, "retr") == 0 && rspbuf[0] == '4')
+    {
+      // Failed to resume
+      errorcode = ERR_CANNOT_RESUME;
+    }
     // The error here depends on the command
     error( errorcode, _path );
     return false;
   }
+
+  // Only now we know for sure that we can resume
+  if ( _offset > 0 && strcmp(_command, "retr") == 0 )
+    canResume();
 
   if ( ( sData = ftpAcceptConnect() ) < 0 )
   {
@@ -1160,7 +1168,9 @@ void Ftp::stat( const KURL &url)
     kdDebug(7102) << e->name << endl;
   }
 
-  if ( !ftpCloseDir() || !bFound )
+  (void) ftpCloseDir();
+
+  if ( !bFound )
   {
     error( ERR_DOES_NOT_EXIST, path );
     return;
@@ -1502,9 +1512,6 @@ void Ftp::get( const KURL & url )
       }
   }
 
-  // Old code used to start by stat'ing, just to make sure it exists
-  // Waste of time, I'd say. (David)
-
   ftpSize( url.path(), 'I' ); // try to find the size of the file
 
   unsigned long offset = 0;
@@ -1512,8 +1519,7 @@ void Ftp::get( const KURL & url )
   if ( !resumeOffset.isEmpty() )
   {
       offset = resumeOffset.toInt();
-      if (offset)
-          canResume();
+      kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
   }
 
   if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
@@ -1529,7 +1535,7 @@ void Ftp::get( const KURL & url )
 
   size_t bytesLeft = m_size - offset;
 
-  totalSize( m_size );
+  kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
   int processed_size = offset;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
@@ -1561,6 +1567,8 @@ void Ftp::get( const KURL & url )
         mimetypeEmitted = true;
         data( mimetypeBuffer );
         mimetypeBuffer.resize(0);
+        // Emit total size AFTER mimetype
+        totalSize( m_size );
       }
     }
     else if ( n > 0 )

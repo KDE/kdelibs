@@ -460,6 +460,11 @@ namespace KIO {
         void addMetaData(const QMap<QString,QString> &values);
 
         /**
+         * @internal. For the scheduler. Do not use.
+         */
+        MetaData outgoingMetaData();
+
+        /**
          * Get meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
          */
@@ -575,6 +580,13 @@ namespace KIO {
         FileCopyJob( const KURL& src, const KURL& dest, int permissions,
                      bool move, bool overwrite, bool resume, bool showProgressInfo);
 
+        ~FileCopyJob();
+        /**
+         * If you know the size of the source file, call this method
+         * to inform this job. It will be displayed in the "resume" dialog.
+         */
+        void setSourceSize( off_t size );
+
         KURL srcURL() const { return m_src; }
         KURL destURL() const { return m_dest; }
 
@@ -623,7 +635,8 @@ namespace KIO {
         SimpleJob *m_copyJob;
         TransferJob *m_getJob;
         TransferJob *m_putJob;
-        SimpleJob *m_delJob;
+        class FileCopyJobPrivate;
+        FileCopyJobPrivate *d;
         unsigned long m_totalSize;
     };
 
