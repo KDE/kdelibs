@@ -18,8 +18,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <assert.h>
-
 #include <qobject.h>
 
 #include <kcompletion.h>
@@ -50,8 +48,6 @@ KCompletionBase::~KCompletionBase()
 
 void KCompletionBase::setDelegate( KCompletionBase *delegate )
 {
-    assert( delegate );
-    
     m_delegate = delegate;
     m_delegate->m_bAutoDelCompObj = m_bAutoDelCompObj;
     m_delegate->m_bHandleSignals  = m_bHandleSignals;
