@@ -572,6 +572,11 @@ public:
   void setIconText(IconText it);
 
   /**
+   * @return the current kind of painting for buttons.
+   */
+  IconText iconText() const;
+
+  /**
    * updateRects() arranges the toolbar items and calculates their
    * position and size. Most of the work is done by layoutHorizontal()
    * and layoutVertical() though. In some cases it may be desirable to

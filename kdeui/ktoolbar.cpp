@@ -1805,6 +1805,11 @@ void KToolBar::setIconText(IconText icontext)
 		updateRects(true);
 }
 
+KToolBar::IconText KToolBar::iconText() const
+{
+  return icon_text;
+} 
+
 bool KToolBar::enable(BarStatus stat)
 {
   bool mystat = isVisible();
