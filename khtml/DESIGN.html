@@ -69,6 +69,7 @@ in a tree like structure. Imagine a some html like
         &lt;H1&gt;
             some red text
         &lt;/h1&gt;
+        more text
         &lt;p&gt;
             a paragraph with an
             &lt;img src="foo.png"&gt;
@@ -125,6 +126,7 @@ HTMLDocumentElement
   \--> HTMLBodyElement
          |--> HTMLHeadingElement
          |      \--> Text
+         |--> Text
          \--> HTMLParagraphElement
                 |--> Text
                 |--> HTMLImageElement
@@ -143,6 +145,7 @@ HTMLDocumentElementImpl*
   \--> HTMLBodyElementImpl*
          |--> HTMLHeadingElementImpl*
          |      \--> TextImpl*
+         |--> TextImpl*
          \--> HTMLParagraphElementImpl*
                 |--> TextImpl*
                 |--> HTMLImageElementImpl*
@@ -223,6 +226,23 @@ anonymous boxes (see CSS specs) that have no DOM counterpart might get inserted 
 rendering tree to satify DOM requirements. Second, the display propery of the style affects which
 type of rendering object is chosen to represent the current DOM object.
 <p>
+In the above example we would get the following rendering tree:
+<pre>
+RenderRoot*
+  \--> RenderBody*
+         |--> RenderFlow* (&lt;H1&gt;)
+         |      \--> RenderText* ("some red text")
+         |--> RenderFlow* (anonymous box)
+         |      \--> RenderText* ("more text")
+         \--> RenderFlow* (&lt;P&gt;)
+                |--> RenderText* ("a paragraph with an")
+                |--> RenderImage*
+                \--> RenderText* ("embedded image.")
+</pre>
+
+As you can see, the conversion to the rendering tree removed the head part of the HTML code, and inserted an
+anonymous render object around the string "more text". For an explanation why this is done, see the CSS specs.
+<p>
 A call to of layout() on the RenderRoot (the root of the rendering tree) object causes the rendering tree to layout
 itself into the available space (width) given by the the KHTMLView. After that, the drawContents()
 method of KHTMLView can call RenderRoot->print() with appropriate parameters to actually paint
@@ -252,6 +272,7 @@ decoder class that converts the incoming stream to unicode.
 the definition of the objects used in the rendering tree, the layouting code, and the RenderStyle objects.
 <dt>xml:
 <dd>The XML part of the DOM implementation, the xml tokenizer.
+</dl>
 
 <h2>Final words...</h2>
 <p>
@@ -286,6 +307,9 @@ that are not completely familiar with khtml post changes touching these critical
 for review before applying them.
 </blockquote>
 
-<p>
+<div style="margin-top: 30px; font-size: large;">
 And now have fun hacking khtml.
-<blockquote>Lars</blockquote>
+<div style="margin-left: 10em;">Lars</div>
+</div>
+</body>
+</html>
