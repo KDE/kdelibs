@@ -129,7 +129,7 @@ QString KFormula::toUgly(QString ugly)
       ugly.insert(i - 2, "sqrt"); // {}@{...}  -->  sqrt{...}
     }
     else { // we have an nth root.  What to do?
-      kDebugWarning("What do you want to do about nth roots?");
+      kdWarning() << "What do you want to do about nth roots?" << endl;
       //for now remove the root sign just to keep the conversion alive
       ugly.remove(i, 1);
     }
@@ -280,7 +280,7 @@ int KFormula::findMatch(QString s, int pos)
       pos++;
     }
 
-    kDebugError("Mismatched delimeters.  String = %s", s.ascii());
+    kdError() << "Mismatched delimeters.  String = " << s << endl;
     return -1;
   }
 
@@ -294,11 +294,11 @@ int KFormula::findMatch(QString s, int pos)
       pos--;
     }
 
-    kDebugError( "Mismatched delimeters.  String = %s", s.ascii());
+    kdError() << "Mismatched delimeters.  String = " << s << endl;
     return -1;
   }
 
-  kDebugError( "Bad delimeters.  String = %s", s.ascii());
+  kdError() << "Bad delimeters.  String = " << s << endl;
   return -1;
 }
 

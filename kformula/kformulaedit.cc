@@ -264,7 +264,7 @@ void KFormulaEdit::redraw(int all)
 QString KFormulaEdit::uglyForm() const
 {
     if (!restricted)
-	kDebugWarning("Called uglyForm on a formula that's not restricted.  God knows what might happen.");
+	kdWarning() << "Called uglyForm on a formula that's not restricted.  God knows what might happen." << endl;
 
   return KFormula::toUgly(formText);
 }
