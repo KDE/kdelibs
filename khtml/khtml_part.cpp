@@ -257,7 +257,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
   setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
-  init( new KHTMLView( this, parentWidget, widgetname ) );
+  init( new KHTMLView( this, parentWidget, widgetname ), DefaultGUI );
 }
 
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name )
@@ -265,14 +265,33 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name )
 {
   setInstance( KHTMLFactory::instance() );
   assert( view );
-  init( view );
+  init( view, DefaultGUI );
 }
 
-void KHTMLPart::init( KHTMLView *view )
+KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
+		      GUIProfile prof )
+: KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
+{
+  setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
+  init( new KHTMLView( this, parentWidget, widgetname ), prof );
+}
+
+KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
+: KParts::ReadOnlyPart( parent, name )
+{
+  setInstance( KHTMLFactory::instance() );
+  assert( view );
+  init( view, prof );
+}
+
+void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 {
   khtml::Cache::ref();
 
-  setXMLFile( "khtml.rc" );
+  if ( prof == DefaultGUI )
+    setXMLFile( "khtml.rc" );
+  else if ( prof == BrowserViewGUI )
+    setXMLFile( "khtml_browser.rc" );
 
   d = new KHTMLPartPrivate;
 
@@ -1277,7 +1296,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     {
        extra = i18n(" (In other window)");
     }
-    
+
     emit setStatusBarText( u.prettyURL()+extra );
   }
 

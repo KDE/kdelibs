@@ -55,15 +55,19 @@ KHTMLFactory::~KHTMLFactory()
     delete s_about;
   if ( s_settings )
     delete s_settings;
-  
+
   s_instance = 0;
   s_about = 0;
   s_settings = 0;
 }
 
-KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *, const QStringList & )
+KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *className, const QStringList & )
 {
-  KHTMLPart *part = new KHTMLPart( parentWidget, widgetName, parent, name );
+  KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
+  if ( strcmp( className, "Browser/View" ) == 0 )
+    prof = KHTMLPart::BrowserViewGUI;
+ 
+  KHTMLPart *part = new KHTMLPart( parentWidget, widgetName, parent, name, prof );
   emit objectCreated( part ) ;
   return part;
 }
@@ -92,6 +96,6 @@ KHTMLSettings *KHTMLFactory::defaultHTMLSettings()
 {
   if ( !s_settings )
     s_settings = new KHTMLSettings();
-  
+
   return s_settings;
 }

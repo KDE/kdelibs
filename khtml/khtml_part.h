@@ -130,6 +130,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
 public:
+  enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
+
   /**
    * Constructs a new KHTMLPart.
    * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data
@@ -142,6 +144,11 @@ public:
              QObject *parent = 0, const char *name = 0 );
 
   KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0 );
+
+  KHTMLPart( QWidget *parentWidget, const char *widgetname,
+             QObject *parent, const char *name, GUIProfile prof ); // BCI: merge with prof = DefaultGUI
+
+  KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof ); // BCI: merge with prof = DefaultGUI
 
   /**
    * Destructor
@@ -623,7 +630,7 @@ private:
 
   void emitSelectionChanged();
 
-  void init( KHTMLView *view );
+  void init( KHTMLView *view, GUIProfile prof );
 
   void clear();
 

@@ -1,0 +1,24 @@
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="khtmlpart" version="1">
+<MenuBar>
+ <Menu name="edit">
+  <Action name="selectAll" />
+  <Separator />
+  <Action name="find" />
+ </Menu>
+ <Menu name="view">
+  <Action name="viewDocumentSource" />
+  <Action name="viewFrameSource" />
+  <Action name="saveBackground" />
+  <Action name="saveDocument" />
+  <Action name="saveFrame" />
+  <Action name="setEncoding" />
+  <Action name="printFrame" group="print" />
+ </Menu>
+</MenuBar>
+<ToolBar name="mainToolBar">
+ <Action name="incFontSizes" />
+ <Action name="decFontSizes" />
+ <Action name="loadImages" />
+</ToolBar>
+</kpartgui>
