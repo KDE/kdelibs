@@ -46,6 +46,7 @@
 #include <qplatinumstyle.h>
 #include <qcdestyle.h>
 #include <kconfig.h>
+#include <ksimpleconfig.h>
 #include <kstddirs.h>
 #include <qtranslator.h>
 
@@ -592,10 +593,10 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
     static bool dlregistered = false;
 
-    KConfig *pConfig = KGlobal::config();
-    QString oldGroup = pConfig->group();
-    pConfig->setGroup("KDE");
-    QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
+    KSimpleConfig pConfig( "kstylerc", true );
+    QString oldGroup = pConfig.group();
+    pConfig.setGroup("KDE");
+    QString styleStr = pConfig.readEntry("widgetStyle", "Platinum");
 
     if(styleHandle){
       // warning("KApp: Unloading previous style plugin.");
@@ -676,8 +677,6 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             }
         }
     }
-
-    pConfig->setGroup(oldGroup);
 }
 
 
