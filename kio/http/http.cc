@@ -1495,59 +1495,64 @@ bool HTTPProtocol::readHeader()
         }
 
       }
+    }
+    // what kind of encoding do we have?  transfer?
+    else if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
+      // If multiple encodings have been applied to an entity, the
+      // transfer-codings MUST be listed in the order in which they
+      // were applied.
+      addEncoding(trimLead(buf + 18), m_qTransferEncodings);
+    }
 
-      // what kind of encoding do we have?  transfer?
-      else if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
-        // If multiple encodings have been applied to an entity, the
-        // transfer-codings MUST be listed in the order in which they
-        // were applied.
-        addEncoding(trimLead(buf + 18), m_qTransferEncodings);
+    // md5 signature
+    else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
+      m_sContentMD5 = strdup(trimLead(buf + 12));
+    }
+    // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
+    else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
+      disposition = trimLead(buf + 20);
+      kdDebug(7113) << "Content-Disposition header: " << disposition << endl;
+      int pos = disposition.find( ';' );
+      if ( pos != -1 )
+      {
+        if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
+          disposition = disposition.mid(pos+1).stripWhiteSpace();
       }
-
-      // md5 signature
-      else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
-        m_sContentMD5 = strdup(trimLead(buf + 12));
-      }
-      // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
-      else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-        disposition = trimLead(buf + 20);
-        int pos = disposition.find( ';' );
-        if ( pos != -1 )
+      pos = disposition.find( QString::fromLatin1("filename"), 0, false);
+      if ( pos >= 0 )
+      {
+        pos += 8; // skip "filename"
+        kdDebug(7113) << "pos=" << pos << endl;
+        int len = disposition.length();
+        while( disposition[pos] == ' ' || disposition[pos] == '=' ||
+               disposition[pos] == '"' )
+            pos++;
+        kdDebug(7113) << "pos now " << pos << " len=" << len << endl;
+        if( pos < len )
         {
-          if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
-            disposition = disposition.mid(pos+1).stripWhiteSpace();
-        }
-        pos = disposition.find( QString::fromLatin1("filename"), 0, false);
-        if ( pos >= 0 )
-        {
-          int len = disposition.length();
-          while( disposition[pos] == ' ' || disposition[pos] == '=' ||
-                 disposition[pos] == '"' )
+          int start = pos;
+          while ( pos < len &&
+                 (disposition[pos] != '"' && disposition[pos] != ';') )
               pos++;
-          if( pos < len )
-          {
-            int start = pos;
-            while ( pos < len &&
-                   (disposition[pos] != '"' && disposition[pos] != ';') )
-                pos++;
-            disposition = disposition.mid(start, pos);
-          }
-          else
-            disposition = QString::null;
+          kdDebug(7113) << "pos finally " << pos << " start=" << start << endl;
+          disposition = disposition.mid(start, pos-start);
         }
         else
           disposition = QString::null;
-
-        // Content-Dispostion is not allowed to dictate directory
-        // path, thus we extract the filename only.
-        if ( !disposition.isEmpty() )
-        {
-          pos = disposition.findRev( '/' );
-          if( pos > -1 )
-            disposition = disposition.mid(pos+1);
-          kdDebug(7113) << "Content-Disposition: " << disposition << endl;
-        }
       }
+      else
+        disposition = QString::null;
+
+      // Content-Dispostion is not allowed to dictate directory
+      // path, thus we extract the filename only.
+      if ( !disposition.isEmpty() )
+      {
+        pos = disposition.findRev( '/' );
+        if( pos > -1 )
+          disposition = disposition.mid(pos+1);
+        kdDebug(7113) << "Content-Disposition: " << disposition << endl;
+      } else
+        kdDebug(7113) << "Content-Disposition header COULD NOT BE PARSED" << endl;
     }
     else if (buf[0] == '<')
     {
