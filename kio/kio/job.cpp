@@ -1869,6 +1869,17 @@ void ListJob::start(Slave *slave)
     SimpleJob::start(slave);
 }
 
+class CopyJob::CopyJobPrivate
+{
+public:
+    // This is the dest URL that was initially given to CopyJob
+    // It is copied into m_dest, which can be changed for a given src URL
+    // (when using the RENAME dialog in slotResult),
+    // and which will be reset for the next src URL.
+    KURL m_globalDest;
+    // The state info about that global dest
+    CopyJob::DestinationState m_globalDestinationState;
+};
 
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
@@ -1880,6 +1891,10 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0)
 {
+    d = new CopyJobPrivate;
+    d->m_globalDest = dest;
+    d->m_globalDestinationState = destinationState;
+
     if ( showProgressInfo ) {
         connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
@@ -1901,6 +1916,11 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
        STATE_DELETING_DIRS (deleteNextDir) (if moving)
        done.
     */
+}
+
+CopyJob::~CopyJob()
+{
+    delete d;
 }
 
 void CopyJob::slotStart()
@@ -1948,7 +1968,6 @@ void CopyJob::slotResultStating( Job *job )
                 info.uDest.addPath( srcurl.fileName() );
 
             files.append( info );
-            ++m_currentStatSrc;
             statNextSrc();
             return;
         }
@@ -1979,11 +1998,13 @@ void CopyJob::slotResultStating( Job *job )
             destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
             //kdDebug(7007) << "CopyJob::slotResultStating dest is dir:" << bDir << endl;
         }
+        if ( m_dest == d->m_globalDest )
+            d->m_globalDestinationState = destinationState;
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
 
         // After knowing what the dest is, we can start stat'ing the first src.
-        statNextSrc();
+        statCurrentSrc();
         return;
     }
     // We were stating the current source URL
@@ -2039,6 +2060,8 @@ void CopyJob::slotResultStating( Job *job )
             // (This even works with other src urls in the list, since the
             //  dir has effectively been created)
             destinationState = DEST_IS_DIR;
+            if ( m_dest == d->m_globalDest )
+                d->m_globalDestinationState = destinationState;
         }
 
         startListing( srcurl );
@@ -2046,7 +2069,6 @@ void CopyJob::slotResultStating( Job *job )
     else
     {
         //kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
-        ++m_currentStatSrc;
         statNextSrc();
     }
 }
@@ -2182,6 +2204,14 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void CopyJob::statNextSrc()
 {
+    m_dest = d->m_globalDest;
+    destinationState = d->m_globalDestinationState;
+    ++m_currentStatSrc;
+    statCurrentSrc();
+}
+
+void CopyJob::statCurrentSrc()
+{
     if ( m_currentStatSrc != m_srcList.end() )
     {
         m_currentSrcURL = (*m_currentStatSrc);
@@ -2218,7 +2248,6 @@ void CopyJob::statNextSrc()
                 }
             }
             files.append( info ); // Files and any symlinks
-            ++m_currentStatSrc;
             statNextSrc(); // we could use a loop instead of a recursive call :)
         }
         // If moving, before going for the full stat+[list+]copy+del thing, try to rename
@@ -2258,7 +2287,6 @@ void CopyJob::statNextSrc()
             // if the file system doesn't support deleting, we do not even stat
             if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
-		++m_currentStatSrc;
                 statNextSrc(); // we could use a loop instead of a recursive call :)
                 return;
             }
@@ -2918,7 +2946,7 @@ void CopyJob::copyNextFile()
             KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             moveJob->setSourceSize64( (*it).size );
             newjob = moveJob;
-            //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
+            //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource << " to " << (*it).uDest << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
@@ -2934,7 +2962,7 @@ void CopyJob::copyNextFile()
             copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize64( (*it).size );
             newjob = copyJob;
-            //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
+            //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
         }
@@ -2970,8 +2998,8 @@ void CopyJob::deleteNextDir()
         if ( !m_bOnlyRenames )
         {
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
-            KURL url( m_dest );
-            if ( destinationState != DEST_IS_DIR || m_asMethod )
+            KURL url( d->m_globalDest );
+            if ( d->m_globalDestinationState != DEST_IS_DIR || m_asMethod )
                 url.setPath( url.directory() );
             //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
             allDirNotify.FilesAdded( url );
@@ -3092,7 +3120,7 @@ void CopyJob::slotResult( Job *job )
                 // but here it's about the base src url being moved/renamed
                 // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
                 // It also means we already stated the dest, here.
-                // On the other hand we haven't stated the src yet (we skipped doing
+                // On the other hand we haven't stated the src yet (we skipped doing it
                 // to save time, since it's not necessary to rename directly!)...
 
                 Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
@@ -3115,7 +3143,7 @@ void CopyJob::slotResult( Job *job )
                     // and/oor to the to-be-stated src urls that might be in the same case...
                     mode = (RenameDlg_Mode) ( mode | M_SINGLE );
                     // we lack mtime info for both the src (not stated)
-                    // and the dest (stated bu this info wasn't stored
+                    // and the dest (stated but this info wasn't stored)
                     RenameDlg_Result r = Observer::self()->open_RenameDlg( this,
                                          err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                          m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
@@ -3134,6 +3162,8 @@ void CopyJob::slotResult( Job *job )
                         }
                         case R_RENAME:
                         {
+                            // Set m_dest to the chosen destination
+                            // This is only for this src url; the next one will revert to d->m_globalDest
                             m_dest.setPath( newPath );
                             KIO::Job* job = KIO::stat( m_dest, false, 2, false );
                             state = STATE_STATING;
@@ -3167,7 +3197,6 @@ void CopyJob::slotResult( Job *job )
             {
                 //kdDebug(7007) << "Renaming succeeded, move on" << endl;
                 emit copyingDone( this, *m_currentStatSrc, dest, true, true );
-                ++m_currentStatSrc;
                 statNextSrc();
             }
         }
@@ -3184,7 +3213,6 @@ void CopyJob::slotResult( Job *job )
             subjobs.remove( job );
             assert ( subjobs.isEmpty() );
 
-            ++m_currentStatSrc;
             statNextSrc();
             break;
         case STATE_CREATING_DIRS:

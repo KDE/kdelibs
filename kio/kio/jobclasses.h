@@ -1277,6 +1277,8 @@ namespace KIO {
 	 */
         CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo );
 
+        virtual ~CopyJob();
+
 	/**
 	 * Returns the list of source URLs.
 	 * @return the list of source URLs.
@@ -1389,6 +1391,7 @@ namespace KIO {
         void copyingLinkDone( KIO::Job *job, const KURL &from, const QString& target, const KURL& to );
 
     protected:
+        void statCurrentSrc();
         void statNextSrc();
 
         // Those aren't slots but submethods for slotResult.
@@ -1422,7 +1425,8 @@ namespace KIO {
     private:
         CopyMode m_mode;
         bool m_asMethod;
-        enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
+        enum DestinationState { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST };
+        DestinationState destinationState;
         enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
                STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,
                STATE_DELETING_DIRS } state;
@@ -1456,7 +1460,9 @@ namespace KIO {
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
-	class CopyJobPrivate* d;
+	class CopyJobPrivate;
+        CopyJobPrivate* d;
+        friend class CopyJobPrivate; // for DestinationState
     };
 
     /**
