@@ -21,12 +21,13 @@
 #include "connectorimpl.h"
 #include "controlimpl.h"
 
+#include <kapp.h>
 #include <kdebug.h>
 #include <iostream.h>
 
 
 PluginImpl::PluginImpl(QObject *parent)
-    : Plugin(parent, "Postgres"), m_control(0L)
+    : Plugin(parent, "PostgreSQL"), m_control(0L)
 {
 }
 
@@ -42,7 +43,7 @@ PluginImpl::info()
   KDB::Plugin::PluginInfo info;
   info.name = name();
   info.description = "A Postgres plugin for KDE-DB";
-  info.version = "2.0pre";
+  info.version = KDE_VERSION_STRING;
   info.author = "Alessandro Praduroux";
   info.e_mail = "pradu@thekompany.com";
   info.copyright = "LGPL";
