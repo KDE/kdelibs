@@ -15,9 +15,10 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# audio:  file(1) magic for sound formats
+# audio:  file(1) magic for sound formats (see also "iff")
 #
-# from Jan Nicolai Langfeldt <janl@ifi.uio.no>,
+# Jan Nicolai Langfeldt (janl@ifi.uio.no), Dan Quinlan (quinlan@yggdrasil.com),
+# and others
 #
 
 # Sun/NeXT audio data
@@ -31,10 +32,13 @@
 >12	belong		7		audio/basic
 
 >12	belong		23		audio/x-adpcm
+>12	belong		24		audio/x-adpcm
+>12	belong		25		audio/x-adpcm
+>12	belong		26		audio/x-adpcm
+>12	belong		27		audio/x-adpcm
 
 # DEC systems (e.g. DECstation 5000) use a variant of the Sun/NeXT format
 # that uses little-endian encoding and has a different magic number
-# (0x0064732E in little-endian encoding).
 0	lelong		0x0064732E
 >12	lelong		1		audio/x-adpcm
 >12	lelong		2		audio/x-adpcm
@@ -46,43 +50,15 @@
 #                                       compressed (G.721 ADPCM)
 >12	lelong		23		audio/x-adpcm
 
-# Bytes 0-3 of AIFF, AIFF-C, & 8SVX audio files are "FORM"
-#					AIFF audio data
-8	string		AIFF		audio/x-aiff
-#					AIFF-C audio data
-8	string		AIFC		audio/x-aiff
-#					IFF/8SVX audio data
-8	string		8SVX		audio/x-aiff
+# Creative Labs AUDIO stuff
+0       string	MThd            	audio/x-midi
+#0	string	CTMF			Creative Music (CMF) data
+#0	string	SBI			SoundBlaster instrument data
+#0	string	Creative\ Voice\ File	Creative Labs voice data
 
-# MIDI
-0       string		MThd            audio/x-midi
-
-# [GRR 950115:  is this also Creative Labs?  Guessing that first line
-#  should be string instead of unknown-endian long...]
-#0	long		0x4e54524b	MultiTrack sound data
-#0	string		NTRK		MultiTrack sound data
-
-# Microsoft WAVE format (*.wav)
-# [GRR 950115:  probably all of the shorts and longs should be leshort/lelong]
-#					Microsoft RIFF
-0	string		RIFF		audio/unknown
-#					- WAVE format
->8	string		WAVE		audio/x-wav
-#                                   	- AVI format
->8	string		AVI\ 		video/x-msvideo
-
-# Microsoft ASF formats (Smoke this magic-shit baby!)
-# ASF_Header_Object
-0	string  \x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C video/x-ms-asf
-
-# Realaudio
-0	belong		0x2e7261fd	application/x-pn-realaudio
-
-# MPEG Layer 3 sound files
-# Modified the 11/20/97 at 15:59:04 by Christophe Prud'homme <christophe.prudhomme@asci.fr>
-0       belong          0xfffb          audio/x-mp3
-# FIXME: Not all ID3v2 tagged files are mp3
-0       string          ID3             audio/x-mp3
+# Real Audio (Magic .ra\0375)
+0	belong		0x2e7261fd	audio/vnd.rn-realaudio
+0	string		.RMF		application/vnd.rn-realmedia
 
 # OGG files
 0	string		OggS		application/ogg
@@ -94,6 +70,60 @@
 
 # FLAC files
 0	string		fLaC		audio/x-flac
+
+#------------------------------------------------------------------------------
+# riff:  file(1) magic for RIFF format
+# See
+#
+#	http://www.seanet.com/users/matts/riffmci/riffmci.htm
+#
+
+#					RIFF (little-endian) data
+0	string		RIFF
+# RIFF MIDI format
+#>8	string		RMID		audio/x-midi?
+# Microsoft WAVE format (*.wav)
+>8	string		WAVE		audio/x-wav
+# Corel Draw Picture
+#>8	string		CDRA		Corel Draw Picture
+# AVI == Audio Video Interleave
+>8	string		AVI\040		video/x-msvideo
+
+#					RIFF (big-endian) data
+0	string		RIFX
+# RIFF MIDI format
+#>8	string		RMID		\b, MIDI
+# Microsoft WAVE format (*.wav)
+>8	string		WAVE		audio/x-wav
+# Corel Draw Picture
+#>8	string		CDRA		\b, Corel Draw Picture
+# AVI == Audio Video Interleave
+>8	string		AVI\040		video/x-msvideo
+
+
+#------------------------------------------------------------------------------
+# iff:	file(1) magic for Interchange File Format (see also "audio" & "images")
+#
+# Daniel Quinlan (quinlan@yggdrasil.com) -- IFF was designed by Electronic
+# Arts for file interchange.  It has also been used by Apple, SGI, and
+# especially Commodore-Amiga.
+#
+# IFF files begin with an 8 byte FORM header, followed by a 4 character
+# FORM type, which is followed by the first chunk in the FORM.
+
+0	string		FORM
+>8	string		AIFF		audio/x-aiff
+#					AIFF-C audio data
+>8	string		AIFC		audio/x-aiff
+#					IFF/8SVX audio data
+>8	string		8SVX		audio/x-aiff
+#>8	string		SAMP		\b, SAMP sampled audio
+#>8	string		DTYP		\b, DTYP datatype description
+#>8	string		PTCH		\b, PTCH binary patch
+# image formats
+#>8	string		ILBMBMHD	\b, ILBM interleaved image
+# other formats
+#>8	string		FTXT		\b, FTXT formatted text
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV
@@ -271,21 +301,8 @@
 # BZIP2
 0	string          BZh             application/x-bzip2
 
-# PKZIP
-0		string			PK\003\004		application/x-zip
-
-# Zoo archiver
-# DF: the continuation lines are a bit useless, since the mimetype is
-# already set at the top level -> commenting out.
-20	lelong		0xfdc4a7dc	application/x-zoo
-#>4	byte		>48		application/x-zoo
-#>>6	byte		>47		application/x-zoo
-#>>>7	byte		>47		application/x-zoo
-#>32	byte		>0		application/x-zoo
-#>>33	byte		x		application/x-zoo
-#>42	lelong		0xfdc4a7dc	application/x-zoo
-#>>70	byte		>0		application/x-zoo
-#>>>71	byte		x		application/x-zoo
+# BZIP
+0	string		BZ		application/x-bzip
 
 # According to gzip.h, this is the correct byte order for packed data.
 0	string		\037\036	application/octet-stream
@@ -318,20 +335,23 @@
 # lzh?
 #0	string		\037\240	LZH compressed data
 
-#POSIX tar file
+#POSIX tar archive
 257	string		ustar\0		application/x-tar
-#GNU tar file
+#GNU tar archive
 257	string		ustar\040\040\0		application/x-tar
 
+# The SVR4 "cpio(4)" hints that there are additional formats, but they
+# are defined as "short"s; I think all the new formats are
+# character-header formats and thus are strings, not numbers.
 0	short		070707		application/x-cpio
+0	short		0143561		application/x-cpio
+0	string		070707		application/x-cpio
 0       string          070701          application/x-cpio
 0       string          070702          application/x-cpio
-#swapped
-0	short		0143561		application/x-cpio
 
-0	string		=<ar>		application/x-archive
-0	string		!<arch>		application/x-archive
->8	string		debian		application/x-debian-package
+0	string		!<arch>\ndebian		application/x-debian-package
+0	string		=<ar>			application/x-archive
+0	string		!<arch>			application/x-archive
 
 #------------------------------------------------------------------------------
 #
@@ -353,26 +373,38 @@
 # crunched
 0	lelong&0x8080ffff	0x0000061a	application/x-arc
 
-0	leshort			0xea60		application/x-arj
-
 # LHARC/LHA archiver (Greg Roelofs, newt@uchicago.edu)
-2	string	-lh0-	application/x-lharc
-2	string	-lh1-	application/x-lharc
-2	string	-lz4-	application/x-lharc
-2	string	-lz5-	application/x-lharc
+2	string	-lh0-	application/x-lha
+2	string	-lh1-	application/x-lha
+2	string	-lz4-	application/x-lha
+2	string	-lz5-	application/x-lha
 #	[never seen any but the last; -lh4- reported in comp.compression:]
 2	string	-lzs-	application/x-lha
-2	string	-lh\ -	application/x-lha
+2	string	-lh\40-	application/x-lha
 2	string	-lhd-	application/x-lha
 2	string	-lh2-	application/x-lha
 2	string	-lh3-	application/x-lha
 2	string	-lh4-	application/x-lha
 2	string	-lh5-	application/x-lha
-# Shell archives
-10	string	#\ This\ is\ a\ shell\ archive	application/x-shellscript
+2	string	-lh6-	application/x-lha
+2	string	-lh7-	application/x-lha
+
+# ARJ archiver (jason@jarthur.Claremont.EDU)
+0	leshort		0xea60			application/x-arj
 
 # RAR archiver (Greg Roelofs, newt@uchicago.edu)
 0	string		Rar!		application/x-rar
+
+# ZIP archives (Greg Roelofs, c/o zip-bugs@wkuvx1.wku.edu)
+0	string		PK\003\004	application/x-zip
+# Alternate ZIP string (amc@arwen.cs.berkeley.edu)
+0	string		PK00PK\003\004	application/x-zip
+
+# Zoo archiver
+20	lelong		0xfdc4a7dc	application/x-zoo
+
+# Shell archives
+10	string	#\ This\ is\ a\ shell\ archive	application/x-shellscript
 
 # ACE archive
 7      string        **ACE**     application/x-ace
@@ -645,35 +677,65 @@
 #------------------------------------------------------------------------------
 # animation:  file(1) magic for animation/movie formats
 #
-# animation formats, originally from vax@ccwf.cc.utexas.edu (VaX#n8)
-#						MPEG file
+# animation formats
+# MPEG, FLI, DL originally from vax@ccwf.cc.utexas.edu (VaX#n8)
+# FLC, SGI, Apple originally from Daniel Quinlan (quinlan@yggdrasil.com)
+
+# MPEG animation format
 0       belong          0x000001b3              video/mpeg
 0       belong          0x000001ba              video/mpeg
+
+# MPEG 1.0 Layer 3
 0       beshort&0xfff0  0xfff0                  audio/x-mp3
+
+# MPEG 1.0 Layer 2
+0       beshort&0xfffe  =0xfffc         	audio/x-mp2
+
+# MPEG 2.0
+0       beshort&0xfff8  =0xfff0
+# Layer 3
+>1      byte            &0x02          		audio/x-mp3
+# Layer 2
+>1      byte            &0x04           	audio/x-mp2
+
+
+#From: Johan Gade <jgade@diku.dk>
+
+# MPEG-4 Advanced Audio Coding (AAC) file (perhaps also MPEG-2 ACC?)
+16	string		M4A			audio/mp4
 
 # FLI animation format
 0	leshort		0xAF11				video/x-flic
 # FLC animation format
 0	leshort		0xAF12				video/x-flic
-#
+
 # SGI and Apple formats
-#
 0	string		MOVI				video/sgi
 4	string		moov				video/quicktime
 4	string		mdat				video/quicktime
-# The contributor claims:
-#   I couldn't find a real magic number for these, however, this
-#   -appears- to work.  Note that it might catch other files, too,
-#   so BE CAREFUL!
-#
-# Note that title and author appear in the two 20-byte chunks
-# at decimal offsets 2 and 22, respectively, but they are XOR'ed with
-# 255 (hex FF)! DL format SUCKS BIG ROCKS.
-#
-#						DL file version 1 , medium format (160x100, 4 images/screen)
-#0	byte		1			video/unknown
-#0	byte		2			video/unknown
-#
+4	string		wide				video/quicktime
+4	string		free				video/quicktime
+
+# DIF digital video file format <mpruett@sgi.com>
+#0	belong&0xffffff00	0x1f070000      DIF
+
+# Microsoft Advanced Streaming Format (ASF) <mpruett@sgi.com>
+0	belong			0x3026b275	video/x-ms-asf
+
+# MNG Video Format, <URL:http://www.libpng.org/pub/mng/spec/>
+0	string			\x8aMNG		video/x-mng
+
+# JNG Video Format, <URL:http://www.libpng.org/pub/mng/spec/>
+#0	string			\x8bJNG		JNG video data,
+
+# Vivo video (Wolfram Kleff)
+#3	string		\x0D\x0AVersion:Vivo	Vivo video data
+
+# VRML (Virtual Reality Modelling Language)
+#0       string/b        #VRML\ V1.0\ ascii	VRML 1 file
+#0	string/b	#VRML\ V2.0\ utf8	ISO/IEC 14772 VRML 97 file
+
+#------------------------------------------------------------------------------
 # Databases
 #
 # GDBM magic numbers
