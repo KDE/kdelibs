@@ -21,17 +21,17 @@
  *   - strings,
  *   - integers and
  *   - floating point values
- *   (bools possibly supported in future, 
- *    string lists partly n.i.)
+ *   (bools possibly supported in future)
  * - easy syntax of files, in general it is supposed to be a 
  *   kind of guarantee  ( you know that free software  never 
  *   guarantess anything, don't you?)  that every value that 
- *   has been  stored  by one of the  member function of the 
+ *   has been  stored  by one of the member functions of the 
  *   class like 
  *      insert(const string& key, [value&]);
  *   can also be retrieved using 
  *      get(const string& key, [value&]);
- *   (please report anything that does not do so!)
+ *   without being modified.
+ *   (Please report anything that does not do so!)
  *
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998

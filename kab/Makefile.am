@@ -33,6 +33,8 @@ libkab_la_SOURCES	= \
 	kabapi.cc \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
+	PageSetupWidget.cpp \
+	PageSetupWidgetData.cpp \
 	SearchDialog.cpp \
 	SearchDialogData.cpp \
 	StringListDialog.cpp \
@@ -163,9 +165,9 @@ PrintDialog.cpp:PrintDialog.moc PrintDialogData.moc
 PrintDialog.moc:PrintDialog.h
 PrintDialogData.moc:PrintDialogData.h
 
-#TalkDialog.cpp:TalkDialog.moc TalkDialogData.moc
-#TalkDialog.moc:TalkDialog.h
-#TalkDialogData.moc:TalkDialogData.h
+PageSetupWidget.cpp:PageSetupWidget.moc PageSetupWidgetData.moc
+PageSetupWidget.moc:PageSetupWidget.h
+PageSetupWidgetData.moc:PageSetupWidgetData.h
 
 StringListDialog.cpp:StringListDialog.moc StringListDialogData.moc
 StringListDialog.moc:StringListDialog.h

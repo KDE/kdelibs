@@ -69,7 +69,7 @@ void BusinessCard::paintEvent(QPaintEvent*)
 	   : (!background->isNull() && tile));
   if(useTile)
     {
-      CHECK(background!=0 && !background.isNull);
+      CHECK(background!=0 && !background->isNull());
       p.drawTiledPixmap(0, 0, width(), height(), *background);
     } else {
       p.setPen(bgColor);

@@ -1,4 +1,4 @@
-/* -*- C++ -*-
+ /* -*- C++ -*-
  * This test creates a database of adresses and 
  * configuration values. It also reports any errors
  * that happen using the database functionality.
@@ -92,7 +92,7 @@ public:
     string modem; 
     string URL; 
   };
-  /** An aggregat of all declared fields:
+  /** An aggregat containing the keys of all declared fields:
     */
   static const char* Fields[];
   /** The number of elements in Fields.
@@ -161,6 +161,11 @@ public:
     * key.
     */
   bool getEntry(const string& key, Entry& entry);
+  /** This method returns the entries section directly. 
+   * Be careful, it is the pointer to the ORIGINAL section that is returned!
+    * The method returns false if the entry cannot be found.
+    */
+  bool getEntry(const string& key, Section*& entry);
   /** Using getEntries(..), the caller will get a copy of all entries in the 
     *  database. This might seem unneeded, but the address database can be 
     *  used by multiple instances of the kab API at the same time, so that, 

@@ -71,7 +71,10 @@ void KeyValueMap::clear()
   // map::clear is not implemented for g++
   // data->clear();
   LG(GUARD, "KeyValueMap::clear: erasing map contents...");
-  data->erase(data->begin(), data->end());
+  if(!data->empty())
+    {
+      data->erase(data->begin(), data->end());
+    }
   LG(GUARD, "done.\n");
   ENSURE(data->empty());
   // ########################################################

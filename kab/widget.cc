@@ -311,6 +311,8 @@ bool AddressWidget::updateDB()
   CHECK(isRO());
   updateEntriesMap();
   LG(GUARD, "AddressWidget::updateDB: done.\n");
+  // ----- reset database configuration to the defaults:
+  restoreDefaults();
   return true;
   // ########################################################  
 }

@@ -1,0 +1,34 @@
+The KDE addressbook
+================================================================================
+If you want kab to be extended, please send a mail to me. Also 
+contact me if you want to comment some of the features mentioned 
+below. Send the mail to mirko@kde.org
+Thanks.
+--------------------------------------------------------------------------------
+° [done] change mail addresses to an unlimited list with selection before
+         sending an email
+° allow user to add custom fields
+° a searchable keyword field
+° automatic menus for kmail and ktalk
+° add export methods
+° add import methods:
+  - Netscape messenger
+  - Microsoft outlook
+  - bbdb
+  - Pine
+  - what else?
+° enhance the telephone numbers section, using home/work/..., 
+  fixed/mobile, and so on
+° better dialog to enter the birthday, especially directly
+° some functions in the main display, like clickable parts 
+  (email/talk addresses, possibly telephony support?),
+  possibly using KURLLabel
+° configurable sorting order (already prepared)
+° create and add Max Berger's Qoutlook importer tool
+° add telephony support where the telephone number is automatically dialed
+  using the modem, the user can pick up his telephone after the connection 
+  is created
+  HELP WANTED: Does anybody know how to do that?
+--------------------------------------------------------------------------------
+                                                    Mirko Sucker, September 1998.
+

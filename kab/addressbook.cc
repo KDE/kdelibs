@@ -269,15 +269,15 @@ void AddressBook::restoreDefaults()
   // ########################################################
   CHECK(configSection()!=0);
   KeyValueMap* keys=configSection()->getKeys();
-  CHECK(keys!=0);
-  keys->clear();
-  CHECK(keys->empty());
   unsigned int index;
   const unsigned int Size=
     (sizeof(Defaults)/sizeof(Defaults[0]));
   list<string> mailParams;
   list<string> talkParams;
   // -----
+  CHECK(keys!=0);
+  keys->clear();
+  CHECK(keys->empty());
   for(index=0; index<Size; index++)
     {
       if(!keys->insertLine(Defaults[index]))
@@ -1060,38 +1060,6 @@ string AddressBook::currentEntry()
   LG(GUARD, "AddressBook::currentEntry: current entry is "
      "%s.\n", (*current).second.c_str());
   return (*current).second;
-  // ########################################################
-}
-
-bool AddressBook::getEntry(const string& key, Entry& ref)
-{
-  ID(bool GUARD=false);
-  LG(GUARD, "AddressBook::getEntry: called.\n");
-  // ########################################################
-  Section* entries;
-  Section* entry;
-  // -----
-  if(noOfEntries()==0)
-    {
-      LG(GUARD, "AddressBook::getEntry: no entries.\n");
-      return false;
-    }
-  entries=entrySection();
-  CHECK(entries!=0);
-  if(entries->find(key, entry))
-    {
-      LG(GUARD, "AddressBook::getEntry: entry found with key"
-	 " %s.\n", key.c_str());
-      if(!makeEntryFromSection(*entry, ref))
-	{ // ----- may simply not happen:
-	  CHECK(false);
-	}
-      LG(GUARD, "AddressBook::getEntry: done.\n");
-      return true;
-    } else {
-      LG(GUARD, "AddressBook::getEntry: no such entry.\n");
-      return false;
-    }
   // ########################################################
 }
 

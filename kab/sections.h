@@ -10,7 +10,7 @@
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
+ * mail to:    Mirko Sucker <mirko@kde.org>
  *                          <mirko.sucker@unibw-hamburg.de>
  * requires:   C++-compiler, STL, string class,
  *             Nana (only for debugging)
