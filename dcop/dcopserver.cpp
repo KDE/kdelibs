@@ -54,8 +54,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <dcopserver.h>
 #include <dcopsignals.h>
-#include <dcopglobal.h>
 #include <dcopclient.h>
+#include <dcopglobal.h>
 #include "dcop-path.h"
 
 // We don't do tcp in the first place.
@@ -70,9 +70,9 @@ template class QPtrList<DCOPListener>;
 #define _DCOPIceSendBegin(x)	\
    int fd = IceConnectionNumber( x );		\
    long fd_fl = fcntl(fd, F_GETFL, 0);		\
-   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);	
+   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);
 #define _DCOPIceSendEnd()	\
-   fcntl(fd, F_SETFL, fd_fl);		
+   fcntl(fd, F_SETFL, fd_fl);
 
 static bool only_local = false;
 
@@ -158,7 +158,7 @@ static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *p
 
 	if (nwritten <= 0)
 	{
-            if (errno == EINTR) 
+            if (errno == EINTR)
                continue;
 
             if (errno == EAGAIN)
@@ -271,7 +271,7 @@ qWarning("DCOPServer: DCOPIceWrite() outputBlocked. Queuing %d bytes.", _data.si
     {
         conn->waitForOutputReady(_data, _data.size() - nleft);
         return;
-    }    
+    }
 }
 
 void DCOPConnection::waitForOutputReady(const QByteArray &_data, int start)
@@ -317,10 +317,10 @@ void DCOPConnection::slotOutputReady()
    int fd = socket();
 
    long fd_fl = fcntl(fd, F_GETFL, 0);
-   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);	
+   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);
    int nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
    int e = errno;
-   fcntl(fd, F_SETFL, fd_fl);		
+   fcntl(fd, F_SETFL, fd_fl);
 
 #ifdef DCOP_DEBUG
 qWarning("DCOPServer: slotOutputReady() %d bytes written", nwritten);
@@ -356,13 +356,13 @@ qWarning("DCOPServer: slotOutputRead() more data to send.");
    }
 }
 
-static void DCOPIceSendData(register IceConn _iceConn, 
+static void DCOPIceSendData(register IceConn _iceConn,
                             const QByteArray &_data)
 {
    if (_iceConn->outbufptr > _iceConn->outbuf)
    {
 #ifdef DCOP_DEBUG
-qWarning("DCOPServer: Flushing data, fd = %d", IceConnectionNumber(_iceConn));      
+qWarning("DCOPServer: Flushing data, fd = %d", IceConnectionNumber(_iceConn));
 #endif
       IceFlush( _iceConn );
    }
@@ -699,7 +699,7 @@ if (opcode == DCOPSend)
 		QCString obj = readQCString(ds);
 		QCString fun = readQCString(ds);
 		QByteArray data = readQByteArray(ds);
-                
+
 		QCString replyType;
 		QByteArray replyData;
 		if ( !receive( toApp, obj, fun, data, replyType, replyData, iceConn ) ) {
@@ -941,7 +941,7 @@ extern "C" int _KDE_IceTransNoListen(const char *protocol);
 #endif
 
 DCOPServer::DCOPServer(bool _only_local, bool _suicide)
-    : QObject(0,0), currentClientNumber(0), appIds(263), clients(263) 
+    : QObject(0,0), currentClientNumber(0), appIds(263), clients(263)
 {
     serverKey = 42;
 
@@ -1000,7 +1000,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 	    QCString fName = DCOPClient::dcopServerFile();
 	    FILE *f;
 	    if(!(f = ::fopen(fName.data(), "w+"))) {
-	        fprintf (stderr, "Can not create file %s: %s\n", 
+	        fprintf (stderr, "Can not create file %s: %s\n",
 			 fName.data(), ::strerror(errno));
 		exit(1);
 	    }
@@ -1348,7 +1348,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->plainAppId = conn->appId.left( c );
 		else
 		    conn->plainAppId = conn->appId;
-                
+
                 if( !oldAppId.isEmpty())
                     broadcastApplicationRegistration( conn,
                         "applicationRemoved(QCString)", oldAppId );
@@ -1556,7 +1556,7 @@ int main( int argc, char* argv[] )
 	    return 0;
 	}
     }
-    
+
     if (serverid)
     {
        if (isRunning(DCOPClient::dcopServerFile(), true))
@@ -1586,7 +1586,7 @@ int main( int argc, char* argv[] )
 	    read(ready[0], &c, 1); // Wait till dcopserver is started
 	    close(ready[0]);
 	    // I am the parent
-	    if (c == 0) 
+	    if (c == 0)
             {
                // Test whether we are functional.
                DCOPClient client;

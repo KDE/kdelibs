@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // end of qt <-> dcop integration
 
 #include <config.h>
+#include <dcopref.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -56,7 +57,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopglobal.h>
 #include <dcopclient.h>
 #include <dcopobject.h>
-#include <dcopref.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xmd.h>
@@ -592,14 +592,14 @@ static bool isServerSocketOwnedByUser(const char*server)
    if (!path)
       return false;
    path++;
-   
+
    struct stat stat_buf;
    if (stat(path, &stat_buf) != 0)
       return false;
-   
+
    return (stat_buf.st_uid == getuid());
 }
-#endif    
+#endif
 
 
 bool DCOPClient::attachInternal( bool registerAsAnonymous )

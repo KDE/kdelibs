@@ -129,12 +129,12 @@ class DCOPClient : public QObject
    * another user.
    */
   bool isAttachedToForeignServer() const;
-  
+
   /**
    * Returns whether the client handles incoming calls.
    */
   bool acceptCalls() const;
-  
+
   /**
    * Specify whether the client should accept incoming calls.
    * By default clients accept incoming calls, but not when connected
@@ -149,7 +149,7 @@ class DCOPClient : public QObject
   bool qtBridgeEnabled(); // ### KDE 4.0: make const
 
   /**
-   * Specify whether Qt objects of the application should be accessible 
+   * Specify whether Qt objects of the application should be accessible
    * via DCOP.
    * By default the DCOP - Qt bridge is enabled.
    */
@@ -213,7 +213,7 @@ class DCOPClient : public QObject
    * See @ref suspend().
    */
   void resume();
-  
+
   /**
    * Returns whether DCOP events are being processed.
    * See @ref suspend() and resume().
@@ -546,7 +546,7 @@ class DCOPClient : public QObject
     * @internal Do not use.
     *
     * Provides information about the last DCOP call for debugging purposes.
-    */ 
+    */
   static const char *postMortemSender();
   static const char *postMortemObject();
   static const char *postMortemFunction();
@@ -555,7 +555,7 @@ class DCOPClient : public QObject
     * File with information how to reach the dcopserver.
     * @param hostname Hostname to use, if empty current hostname of
     * the system is used.
-    * @return Filename that contains information how to contact the 
+    * @return Filename that contains information how to contact the
     * DCOPserver.
     */
   static QCString dcopServerFile(const QCString &hostname=0);
@@ -578,7 +578,7 @@ signals:
    * Indicates that the formerly registered application @p appId has
    * been removed.
    *
-   * You need to call @ref setNotifications() first, to tell the 
+   * You need to call @ref setNotifications() first, to tell the
    * DCOP server that you want to get these events.
    */
   void applicationRemoved( const QCString& appId );
