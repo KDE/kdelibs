@@ -27,6 +27,7 @@
 #include <qradiobutton.h>
 #include <qgroupbox.h>
 #include <qpushbutton.h>
+#include <qapplication.h>
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -111,10 +112,19 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	m_vertgrp->insert(top, 0);
 	m_vertgrp->insert(vcenter, 1);
 	m_vertgrp->insert(bottom, 2);
-	m_horizgrp->insert(left, 0);
-	m_horizgrp->insert(hcenter, 1);
-	m_horizgrp->insert(right, 2);
-	connect(m_vertgrp, SIGNAL(clicked(int)), SLOT(slotPositionChanged()));
+        if ( QApplication::reverseLayout() )
+        {
+            m_horizgrp->insert(left, 2);
+            m_horizgrp->insert(hcenter, 1);
+            m_horizgrp->insert(right, 0);
+        }
+        else
+        {
+            m_horizgrp->insert(left, 0);
+            m_horizgrp->insert(hcenter, 1);
+            m_horizgrp->insert(right, 2);
+        }
+        connect(m_vertgrp, SIGNAL(clicked(int)), SLOT(slotPositionChanged()));
 	connect(m_horizgrp, SIGNAL(clicked(int)), SLOT(slotPositionChanged()));
 	m_vertgrp->setButton(1);
 	m_horizgrp->setButton(1);
