@@ -17,7 +17,7 @@ void sig_handler( int );
 void sig_handler2( int );
 
 
-int main( int argc, char **argv )
+int main( int, char ** )
 {
   signal(SIGCHLD,sig_handler);
   signal(SIGSEGV,sig_handler2);
@@ -66,7 +66,7 @@ void sig_handler( int )
  */
 char sigbreak = 0;
 
-void sig_alarm(int signo)
+void sig_alarm(int )
 {
   sigbreak = 1;
 }            

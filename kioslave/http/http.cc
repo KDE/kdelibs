@@ -63,7 +63,7 @@ extern "C" {
 #endif
 };
 
-int main( int argc, char **argv )
+int main( int, char ** )
 {
   signal(SIGCHLD, sigchld_handler);
   signal(SIGSEGV, sigsegv_handler);
@@ -83,7 +83,7 @@ char * trimLead (char *orig_string) {
   return orig_string+i;
 }
 
-void sigsegv_handler(int signo)
+void sigsegv_handler(int )
 {
   // Debug and printf should be avoided because they might
   // call malloc.. and get in a nice recursive malloc loop
@@ -112,7 +112,7 @@ void sigchld_handler(int signo)
  */
 char sigbreak = 0;
 
-void sigalrm_handler(int signo)
+void sigalrm_handler(int )
 {
   sigbreak = 1;
 }
@@ -233,7 +233,7 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
     char *t1, *t2;
 
     t1 = (char *)malloc(strlen(user) +1+strlen(passwd));
-    bzero(t1, strlen(user)+1+strlen(passwd));
+    memset(t1, 0, strlen(user)+1+strlen(passwd));
     sprintf(t1, "%s:%s", user, passwd);
     t2 = base64_encode_line(t1);
     free(t1);
