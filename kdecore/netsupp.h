@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000,2001 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2003 Thiago Macieira <thiagom@mail.com>
  *
  *  $Id$
  *
@@ -108,19 +108,19 @@ struct kde_sockaddr_in6
 	 (((Q_UINT32 *) (a))[3] == ((Q_UINT32 *) (b))[3]))
 
 #define KDE_IN6_IS_ADDR_MC_NODELOCAL(a) \
-	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x1))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x1))
 
 #define KDE_IN6_IS_ADDR_MC_LINKLOCAL(a) \
-	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x2))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x2))
 
 #define KDE_IN6_IS_ADDR_MC_SITELOCAL(a) \
-	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x5))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x5))
 
 #define KDE_IN6_IS_ADDR_MC_ORGLOCAL(a) \
-	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x8))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x8))
 
 #define KDE_IN6_IS_ADDR_MC_GLOBAL(a) \
-	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0xe))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0xe))
 
 #ifdef NEED_IN6_TESTS
 # define IN6_IS_ADDR_UNSPECIFIED	KDE_IN6_IS_ADDR_UNSPECIFIED
