@@ -29,6 +29,7 @@
 #include "kcolordialog.h"
 #include "kcombobox.h"
 #include "kicondialog.h"
+#include "kiconview.h"
 #include "knuminput.h"
 #include "knuminput.h"
 #include "kkeybutton.h"
@@ -275,6 +276,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KIconButton", widget);
 
+	widget.group = "Views (KDE)";
+	widget.iconSet = "kiconview.png";
+	widget.includeFile = "kiconview.h";
+	widget.toolTip = "Extended Icon View (KDE)";
+	widget.whatsThis = "KIconView";
+	widget.isContainer = false;
+	m_widgets.insert("KIconView", widget);
+
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kintnuminput.png";
 	widget.includeFile = "knuminput.h";
@@ -478,6 +487,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KHistoryCombo(parent, name);
 	if (key == "KIconButton")
 		return new KIconButton(parent, name);
+	if (key == "KIconView")
+		return new KIconView(parent, name);
 	if (key == "KIntNumInput")
 		return new KIntNumInput(parent, name);
 	if (key == "KIntSpinBox")

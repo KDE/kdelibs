@@ -1,5 +1,5 @@
 kdewidgetsdata_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
-             kurlrequester.png kcombobox.png kintspinbox.png \
+             kurlrequester.png kcombobox.png kiconview.png kintspinbox.png \
              kled.png ksqueezedtextlabel.png  kprogress.png kurllabel.png \
              kruler.png kcmodule.png kdoublenuminput.png \
              klistbox.png klistview.png \
