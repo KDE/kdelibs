@@ -379,6 +379,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
+    t->tm_isdst = -1; // reset DST
     result = Number(mktime(t) * 1000.0 + ms);
     thisObj.setInternalValue(result);
   }

@@ -1,3 +1,8 @@
+2004-09-29  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: don't preset DST when changing parts of the
+	date (most notably the month). Patch by Pascal Letourneau.
+	
 2004-06-08  Harri Porten  <porten@kde.org>
 
 	* regexp.cpp (RegExp): check regcomp's return value in non-PCRE
