@@ -77,6 +77,23 @@ extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 static const char * const recentColors = "Recent_Colors";
 static const char * const customColors = "Custom_Colors";
 
+class KColorSpinBox : public QSpinBox
+{
+public:
+  KColorSpinBox(int minValue, int maxValue, int step, QWidget* parent)
+   : QSpinBox(minValue, maxValue, step, parent, "kcolorspinbox")
+  { }
+
+  // Override Qt's braindead auto-selection.
+  virtual void valueChange()
+  {
+      updateDisplay();
+      emit valueChanged( value() );
+      emit valueChanged( currentValueText() );
+  }
+  
+};
+
 
 #define STANDARD_PAL_SIZE 17
 
@@ -857,12 +874,12 @@ public:
     bool bColorPicking;
     QLabel *colorName;
     QLineEdit *htmlName;
-    QSpinBox *hedit;
-    QSpinBox *sedit;
-    QSpinBox *vedit;
-    QSpinBox *redit;
-    QSpinBox *gedit;
-    QSpinBox *bedit;
+    KColorSpinBox *hedit;
+    KColorSpinBox *sedit;
+    KColorSpinBox *vedit;
+    KColorSpinBox *redit;
+    KColorSpinBox *gedit;
+    KColorSpinBox *bedit;
     KColorPatch *patch;
     KHSSelector *hsSelector;
     KPalette *palette;
@@ -944,7 +961,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("H:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
-  d->hedit = new QSpinBox( 0, 359, 1, page );
+  d->hedit = new KColorSpinBox( 0, 359, 1, page );
   d->hedit->setValidator( new QIntValidator( d->hedit ) );
   l_lbot->addWidget(d->hedit, 0, 3);
   connect( d->hedit, SIGNAL( valueChanged(int) ),
@@ -953,7 +970,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
-  d->sedit = new QSpinBox( 0, 255, 1, page );
+  d->sedit = new KColorSpinBox( 0, 255, 1, page );
   d->sedit->setValidator( new QIntValidator( d->sedit ) );
   l_lbot->addWidget(d->sedit, 1, 3);
   connect( d->sedit, SIGNAL( valueChanged(int) ),
@@ -962,7 +979,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
-  d->vedit = new QSpinBox( 0, 255, 1, page );
+  d->vedit = new KColorSpinBox( 0, 255, 1, page );
   d->vedit->setValidator( new QIntValidator( d->vedit ) );
   l_lbot->addWidget(d->vedit, 2, 3);
   connect( d->vedit, SIGNAL( valueChanged(int) ),
@@ -974,7 +991,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("R:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
-  d->redit = new QSpinBox( 0, 255, 1, page );
+  d->redit = new KColorSpinBox( 0, 255, 1, page );
   d->redit->setValidator( new QIntValidator( d->redit ) );
   l_lbot->addWidget(d->redit, 0, 5);
   connect( d->redit, SIGNAL( valueChanged(int) ),
@@ -983,7 +1000,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
-  d->gedit = new QSpinBox( 0, 255,1, page );
+  d->gedit = new KColorSpinBox( 0, 255,1, page );
   d->gedit->setValidator( new QIntValidator( d->gedit ) );
   l_lbot->addWidget(d->gedit, 1, 5);
   connect( d->gedit, SIGNAL( valueChanged(int) ),
@@ -992,7 +1009,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
-  d->bedit = new QSpinBox( 0, 255, 1, page );
+  d->bedit = new KColorSpinBox( 0, 255, 1, page );
   d->bedit->setValidator( new QIntValidator( d->bedit ) );
   l_lbot->addWidget(d->bedit, 2, 5);
   connect( d->bedit, SIGNAL( valueChanged(int) ),
