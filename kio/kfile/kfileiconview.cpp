@@ -289,35 +289,13 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    int size = myIconSize;
-    if ( d->previews->isChecked() && canPreview( i ) )
-        size = myIconSize;
-
-    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this,
-                                                     i->text(),
-                                                     i->pixmap( size ), i);
+    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this, i );
+    initItem( item, i );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
 
-    // see also setSorting()
-    QDir::SortSpec spec = KFileView::sorting();
-
-    if ( spec & QDir::Time )
-        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
-                                  i->isDir(), spec ));
-    else if ( spec & QDir::Size )
-        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
-
-    else // Name or Unsorted
-        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
-
-    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
-
     i->setExtraData( this, item );
-
-    if ( d->previews->isChecked() )
-        d->previewTimer->start( 10, true );
 }
 
 void KFileIconView::slotActivate( QIconViewItem *item )
@@ -429,13 +407,8 @@ void KFileIconView::updateView( bool b )
 void KFileIconView::updateView( const KFileItem *i )
 {
     KFileIconViewItem *item = viewItem( i );
-    if ( item ) {
-        int size = myIconSize;
-        if ( d->previews->isChecked() && canPreview( i ) )
-            size = d->previewIconSize;
-
-        item->setPixmap( i->pixmap( size ) );
-    }
+    if ( item )
+        initItem( item, i );
 }
 
 void KFileIconView::removeItem( const KFileItem *i )
@@ -695,6 +668,34 @@ void KFileIconView::showEvent( QShowEvent *e )
 #if QT_VERSION <= 302
     sort( !isReversed() );
 #endif
+}
+
+
+void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i )
+{
+    int size = myIconSize;
+    if ( d->previews->isChecked() && canPreview( i ) )
+        size = d->previewIconSize;
+
+    item->setText( i->text() );
+    item->setPixmap( i->pixmap( size ) );
+
+    // see also setSorting()
+    QDir::SortSpec spec = KFileView::sorting();
+
+    if ( spec & QDir::Time )
+        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+                                  i->isDir(), spec ));
+    else if ( spec & QDir::Size )
+        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
+
+    else // Name or Unsorted
+        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
+
+    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
+
+    if ( d->previews->isChecked() )
+        d->previewTimer->start( 10, true );
 }
 
 void KFileIconView::virtual_hook( int id, void* data )

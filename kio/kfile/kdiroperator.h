@@ -796,6 +796,7 @@ private slots:
     void slotViewSortingChanged( QDir::SortSpec );
 
     void slotClearView();
+    void slotRefreshItems( const KFileItemList& items );
 
     void slotProperties();
 

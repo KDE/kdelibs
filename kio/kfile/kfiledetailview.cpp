@@ -181,32 +181,14 @@ void KFileDetailView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileListViewItem *item = new KFileListViewItem( (QListView*) this,
-                                                     i->text(),
-                                                   i->pixmap(KIcon::SizeSmall),
-                                                     i );
+    KFileListViewItem *item = new KFileListViewItem( (QListView*) this, i );
+
+    setSortingKey( item, i );
+
+    i->setExtraData( this, item );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
-
-    // see also setSorting()
-    QDir::SortSpec spec = KFileView::sorting();
-
-    if ( spec & QDir::Time )
-        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
-                                  i->isDir(), spec ));
-    else if ( spec & QDir::Size )
-        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
-
-    else // Name or Unsorted
-        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
-
-    item->setText( COL_SIZE,  KGlobal::locale()->formatNumber( i->size(), 0 ));
-    item->setText( COL_DATE,  i->timeString() );
-    item->setText( COL_PERM,  i->permissionsString() );
-    item->setText( COL_OWNER, i->user() );
-    item->setText( COL_GROUP, i->group() );
-    i->setExtraData( this, item );
 }
 
 void KFileDetailView::slotActivate( QListViewItem *item )
@@ -304,10 +286,26 @@ void KFileDetailView::updateView( const KFileItem *i )
     if ( !item )
 	return;
 
-    item->setPixmap( COL_NAME, i->pixmap(KIcon::SizeSmall) );
-    item->setText(   COL_PERM, i->permissionsString() );
+    item->init();
+    setSortingKey( item, i );
 
     //item->repaint(); // only repaints if visible
+}
+
+void KFileDetailView::setSortingKey( KFileListViewItem *item,
+                                     const KFileItem *i )
+{
+    // see also setSorting()
+    QDir::SortSpec spec = KFileView::sorting();
+
+    if ( spec & QDir::Time )
+        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+                                  i->isDir(), spec ));
+    else if ( spec & QDir::Size )
+        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
+
+    else // Name or Unsorted
+        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
 }
 
 
@@ -504,6 +502,20 @@ void KFileDetailView::listingCompleted()
     m_resolver->start();
 }
 /////////////////////////////////////////////////////////////////
+
+
+void KFileListViewItem::init()
+{
+    KFileListViewItem::setPixmap( COL_NAME, inf->pixmap(KIcon::SizeSmall));
+
+    setText( COL_NAME, inf->text() );
+    setText( COL_SIZE, KGlobal::locale()->formatNumber( inf->size(), 0));
+    setText( COL_DATE,  inf->timeString() );
+    setText( COL_PERM,  inf->permissionsString() );
+    setText( COL_OWNER, inf->user() );
+    setText( COL_GROUP, inf->group() );
+}
+
 
 void KFileDetailView::virtual_hook( int id, void* data )
 { KListView::virtual_hook( id, data );

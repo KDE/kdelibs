@@ -43,6 +43,8 @@ public:
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
+    KFileIconViewItem( QIconView *parent, KFileItem *fi )
+	: KIconViewItem( parent ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
 
@@ -194,6 +196,8 @@ private:
             return (KFileIconViewItem *) item->extraData( this );
         return 0L;
     }
+
+    void initItem(KFileIconViewItem *item, const KFileItem *i );
 
 protected:
     virtual void virtual_hook( int id, void* data );

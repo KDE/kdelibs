@@ -40,14 +40,21 @@ public:
     KFileListViewItem( QListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi )
 	: KListViewItem( parent, text ), inf( fi ) {
-	    setPixmap( 0, icon );
+        setPixmap( 0, icon );
+        setText( 0, text );
     }
+
+    KFileListViewItem( QListView *parent, KFileItem *fi )
+        : KListViewItem( parent ), inf( fi ) {
+        init();
+    }
+
     KFileListViewItem( QListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi,
 		       QListViewItem *after)
 	: KListViewItem( parent, after ), inf( fi ) {
-	    setPixmap( 0, icon );
-	    setText( 0, text );
+        setPixmap( 0, icon );
+        setText( 0, text );
     }
     ~KFileListViewItem() {
         inf->removeExtraData( listView() );
@@ -72,6 +79,8 @@ public:
         return QRect( listView()->viewportToContents( r.topLeft() ),
                       QSize( r.width(), r.height() ) );
     }
+
+    void init();
 
 private:
     KFileItem *inf;
@@ -160,6 +169,9 @@ private:
             return (KFileListViewItem *) item->extraData( this );
         return 0L;
     }
+
+    void setSortingKey( KFileListViewItem *item, const KFileItem *i );
+
 
     bool m_blockSortingSignal;
     KMimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
