@@ -482,4 +482,51 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 	updateDirectory( *it ); // update all directories
 }
 
+void KDirLister::FilesAdded( const KURL & directory )
+{
+  kdDebug(1203) << "FilesAdded " << directory.url() << " - we are showing " << m_lstDirs.first().url() << endl;
+  slotURLDirty( directory );
+}
+
+void KDirLister::FilesRemoved( const KURL::List & fileList )
+{
+  kdDebug(1203) << "FilesRemoved" << endl;
+  // Mark all items
+  QListIterator<KFileItem> kit ( m_lstFileItems );
+  for( ; kit.current(); ++kit )
+    (*kit)->mark();
+
+  KURL::List::ConstIterator it = fileList.begin();
+  for ( ; it != fileList.end() ; ++it )
+  {
+    // For each file removed: look in m_lstFileItems to see if we know it,
+    // and if found, unmark it (for deletion)
+    kit.toFirst();
+    for( ; kit.current(); ++kit )
+    {
+      if ( (*kit)->url().cmp( (*it), true /* ignore trailing slash */ ) )
+      {
+        kdDebug(1203) << "FilesRemoved : unmarking " << (*kit)->url().url() << endl;
+        (*kit)->unmark();
+        break;
+      }
+    }
+
+    if ( !kit.current() ) // we didn't find it
+    {
+      // maybe it's the dir we're listing ?
+      // Check for dir in m_lstDirs
+      for ( KURL::List::ConstIterator dit = m_lstDirs.begin(); dit != m_lstDirs.end(); ++dit )
+        if ( (*dit).cmp( (*it), true /* ignore trailing slash */ ) )
+        {
+          kdDebug(1203) << "emit closeView for " << (*dit).url() << endl;
+          emit closeView( (*dit) );
+          break;
+        }
+    }
+  }
+
+  deleteUnmarkedItems();
+}
+
 #include "kdirlister.moc"

@@ -21,6 +21,7 @@
 #define kdirlister_h
 
 #include "kfileitem.h"
+#include "kdirnotify.h"
 
 #include <qtimer.h>
 #include <qstringlist.h>
@@ -52,7 +53,7 @@ namespace KIO { class Job; class ListJob; }
  *
  *@short Helper class for the kiojob used to list and update a directory.
  */
-class KDirLister : public QObject
+class KDirLister : public QObject, public KDirNotify
 {
   Q_OBJECT
 public:
@@ -146,6 +147,23 @@ public:
    */
   bool matchesFilter( const QString& name ) const;
 
+  /**
+   * Notify that files have been added in @p directory
+   * The receiver will list that directory again to find
+   * the new items (since it needs more than just the names anyway).
+   * Reimplemented from KDirNotify.
+   */
+  virtual void FilesAdded( const KURL & directory );
+
+  /**
+   * Notify that files have been deleted.
+   * This call passes the exact urls of the deleted files
+   * so that any view showing them can simply remove them
+   * or be closed (if its current dir was deleted)
+   * Reimplemented from KDirNotify.
+   */
+  virtual void FilesRemoved( const KURL::List & fileList );
+
 signals:
   /**
    * Tell the view that we started to list _url.
@@ -173,6 +191,13 @@ signals:
    * Note: KFileItem::refresh has already been called on those items.
    */
   void refreshItems( const KFileItemList & items );
+
+  /**
+   * Instruct the view to close itself, since the dir was just deleted
+   * The directory is passed as an argument for views that show multiple
+   * dirs (tree views).
+   */
+  void closeView( const KURL & directory );
 
 protected slots:
   // internal slots used by the directory lister (connected to the job)
