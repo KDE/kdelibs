@@ -22,7 +22,7 @@
 
 INCLUDES = $(all_includes)
 
-CXXFLAGS = @CXXFLAGS@ @KDE_FORCE_INLINE@
+AM_DEFS = $(KDE_FORCE_INLINE)
 
 noinst_LTLIBRARIES = libklmalloc.la
 
