@@ -56,10 +56,9 @@ public:
         m_firstLine = firstLine;
     }
     ~TextSlave();
-    void print( QPainter *pt, int _tx, int _ty);
     void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
-    void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
+    void printSelection(const Font *f, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics * fm, int & offset, short lineheight);
@@ -145,7 +144,7 @@ public:
     QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
-    virtual unsigned int width(unsigned int from, unsigned int len, const QFontMetrics *fm) const;
+    virtual unsigned int width(unsigned int from, unsigned int len, const Font *f) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
     virtual short width() const;
     virtual int height() const;
@@ -190,6 +189,7 @@ public:
 
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     const QFontMetrics &metrics(bool firstLine) const;
+    const Font *htmlFont(bool firstLine) const;
 
 protected:
     void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);

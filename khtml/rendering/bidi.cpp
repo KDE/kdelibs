@@ -1046,14 +1046,14 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                 pos = len;
                 len = 0;
             } else {
-                QFontMetrics fm = t->metrics( firstLine );
+                const Font *f = t->htmlFont( firstLine );
                 // proportional font, needs a bit more work.
                 int lastSpace = pos;
                 bool isPre = style()->whiteSpace() == PRE;
                 while(len) {
                     if( (isPre && str[pos] == '\n') ||
                         (!isPre && isBreakable( str, pos, strlen ) ) ) {
-		    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
+		    tmpW += t->width(lastSpace, pos - lastSpace, f);
 #ifdef DEBUG_LINEBREAKS
 		    kdDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).latin1() << "' adding " << tmpW << " new width = " << w << endl;
 #endif
@@ -1087,7 +1087,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 		len--;
 	    }
             // IMPORTANT: pos is > length here!
-            tmpW += t->width(lastSpace, pos - lastSpace, &fm);
+            tmpW += t->width(lastSpace, pos - lastSpace, f);
             }
         } else
             KHTMLAssert( false );

@@ -41,18 +41,7 @@ TextSlave::~TextSlave()
 {
 }
 
-void TextSlave::print( QPainter *pt, int _tx, int _ty)
-{
-    if (!m_text || m_len <= 0)
-        return;
-
-    QConstString s(m_text, m_len);
-    //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-
-    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string(), -1, m_reversed ? QPainter::RTL : QPainter::LTR);
-}
-
-void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
+void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
@@ -65,14 +54,13 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     _len -= startPos;
 
     //kdDebug(6040) << "TextSlave::printSelection startPos (relative)=" << startPos << " len (of selection)=" << _len << "  (m_len=" << m_len << ")" << endl;
-    QConstString s(m_text+startPos , _len);
 
     if (_len != m_len)
-        _width = p->fontMetrics().width(s.string());
+        _width = f->width(m_text + startPos, _len );
 
     int _offset = 0;
     if ( startPos > 0 )
-        _offset = p->fontMetrics().width(QConstString( m_text, startPos ).string());
+        _offset = f->width(m_text, startPos );
 
     p->save();
     QColor c = style->color();
@@ -83,7 +71,8 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(m_x + tx + _offset, m_y + ty, s.string(), -1, m_reversed ? QPainter::RTL : QPainter::LTR);
+    f->drawText(p, m_x + tx + _offset, m_y + ty, m_text + startPos, _len, 
+		/* ### */0, m_reversed ? QPainter::RTL : QPainter::LTR);
     p->restore();
 }
 
@@ -555,6 +544,8 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         linerects.append(new QRect());
 
 	bool renderOutline = style()->outlineWidth()!=0;
+	
+	const Font *font = &style()->htmlFont();
 
         // run until we find one that is outside the range, then we
         // know we can stop
@@ -562,8 +553,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             s = m_lines[si];
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
 
-            if(_style->font() != p->font())
+            if(_style->font() != p->font()) {
                 p->setFont(_style->font());
+		font = &_style->htmlFont();
+	    }
             if((hasSpecialObjects()  &&
                 (parent()->isInline() || pseudoStyle)) &&
                (!pseudoStyle || s->m_firstLine))
@@ -573,7 +566,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
 
-            s->print(p, tx, ty);
+	    if (s->m_text && s->m_len > 0)
+		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, s->m_text, s->m_len, 
+			       0 /* ### */, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
             if(d != TDNONE)
             {
@@ -584,7 +579,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if (selectionState() != SelectionNone && endPos > 0)
             {
                 //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
-                s->printSelection(p, _style, tx, ty, startPos, endPos);
+                s->printSelection(font, p, _style, tx, ty, startPos, endPos);
 
                 int diff;
                 if(si < (int)m_lines.count()-1)
@@ -668,7 +663,7 @@ void RenderText::calcMinMaxWidth()
     m_hasBreakableChar = false;
 
     // ### not 100% correct for first-line
-    const QFontMetrics &_fm = metrics( false );
+    const Font *f = htmlFont( false );
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
@@ -680,7 +675,7 @@ void RenderText::calcMinMaxWidth()
         } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
-            int w = _fm.width(QConstString(str->s+i, wordlen).string());
+            int w = f->width(str->s+i, wordlen);
             currMinWidth += w;
             currMaxWidth += w;
         }
@@ -699,7 +694,7 @@ void RenderText::calcMinMaxWidth()
             {
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
-                currMaxWidth += _fm.width( *(str->s+i+wordlen) );
+                currMaxWidth += f->width( *(str->s+i+wordlen) );
             }
             /* else if( c == '-')
             {
@@ -840,22 +835,20 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
-    const QFontMetrics &fm = metrics(firstLine);
-    return width( from, len, &fm);
+    const Font *f = htmlFont( firstLine );
+    return width( from, len, f );
 }
 
-unsigned int RenderText::width(unsigned int from, unsigned int len, const QFontMetrics *_fm) const
+unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *f) const
 {
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
-    if ( _fm == &style()->fontMetrics() && from == 0 && len == str->l )
+    if ( f == &style()->htmlFont() && from == 0 && len == str->l )
  	 w = m_maxWidth;
-    if( len == 1)
-        w = _fm->width( *(str->s+from) );
     else
-        w = _fm->width(QConstString(str->s+from, len).string());
+	w = f->width(str->s+from, len );
 
     // ### add margins and support for RTL
 
@@ -924,6 +917,19 @@ const QFontMetrics &RenderText::metrics(bool firstLine) const
 	    return pseudoStyle->fontMetrics();
     }
     return style()->fontMetrics();
+}
+
+const Font *RenderText::htmlFont(bool firstLine) const
+{
+    const Font *f = 0;
+    if( firstLine && hasFirstLine() ) {
+	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+	if ( pseudoStyle )
+	    f = &pseudoStyle->htmlFont();
+    } else {
+	f = &style()->htmlFont();
+    }
+    return f;
 }
 
 void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)

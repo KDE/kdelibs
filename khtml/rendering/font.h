@@ -48,9 +48,10 @@ namespace khtml
 
 	void update( QPaintDeviceMetrics *devMetrics ) const;
 	
-	void drawText( QPainter *p, int x, int y, QChar *str, int len, int width, QPainter::TextDirection d );
+	void drawText( QPainter *p, int x, int y, QChar *str, int len, int width, QPainter::TextDirection d ) const;
 	
-	int width( QChar *str, int len );
+	int width( QChar *str, int len ) const;
+	int width( QChar ch ) const;
 	
 	FontDef fontDef;
 	mutable QFont f;

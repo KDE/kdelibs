@@ -5,7 +5,7 @@
 
 using namespace khtml;
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int width, QPainter::TextDirection d )
+void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int width, QPainter::TextDirection d ) const
 {
     // ### fixme for RTL
     if ( !letterSpacing && !wordSpacing || d == QPainter::RTL ) {
@@ -19,14 +19,14 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int width, 
 	    x += fm.charWidth( s, i );
 	    if ( letterSpacing )
 		x += letterSpacing;
-	    if ( str[i].isSpace() && wordSpacing )
-		s += wordSpacing;
+	    if ( wordSpacing && str[i].isSpace() )
+		x += wordSpacing;
 	}
     }
 }
 
 
-int Font::width( QChar *chs, int len )
+int Font::width( QChar *chs, int len ) const
 {
     int w = fm.width( QConstString( chs, len).string(), len );
     
@@ -40,6 +40,18 @@ int Font::width( QChar *chs, int len )
 		w += wordSpacing;
 	}
     }	
+    return w;
+}
+
+int Font::width( QChar ch ) const
+{
+    int w = fm.width( ch );
+    
+    if ( letterSpacing )
+	w += letterSpacing;
+    
+    if ( wordSpacing && ch.isSpace() )
+		w += wordSpacing;
     return w;
 }
 
