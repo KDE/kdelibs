@@ -46,8 +46,8 @@
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
 KCrash::HandlerType KCrash::_crashHandler = 0;
-QString *KCrash::appName = 0;
-QString *KCrash::appPath = 0;
+const char *KCrash::appName = 0;
+const char *KCrash::appPath = 0;
 
 // This function sets the function which should be called when the 
 // application crashes and the
@@ -94,6 +94,7 @@ KCrash::setCrashHandler (HandlerType handler)
 void
 KCrash::defaultCrashHandler (int signal)
 {
+  // WABA: Do NOT use kdDebug() in this function because it is much too risky!
   // Handle possible recursions
   static int crashRecursionCounter = 0;
   crashRecursionCounter++; // Nothing before this, please !
@@ -105,92 +106,97 @@ KCrash::defaultCrashHandler (int signal)
     crashRecursionCounter++; // 
   }
   
-  if (crashRecursionCounter < 3 && appName) {
-    kdDebug(0) << "KCrash: crashing.... crashRecursionCounter = " << crashRecursionCounter << "\n";
-    kdDebug(0) << "KCrash: Appname = " << appName << " apppath = " << appPath << "\n";
-    pid_t pid = fork();
-
-    if (pid <= 0) {
-      // this code is leaking, but this should not hurt cause we will do a
-      // exec() afterwards. exec() is supposed to clean up.
-      char * argv[16]; // don't forget to update this
-      int i = 0;
-
-      // argument 0 has to be drkonqi
-      argv[i++] = qstrdup("drkonqi");
-
-      // start up on the correct display
-      argv[i++] = qstrdup("-display");
-      argv[i++] = XDisplayString(qt_xdisplay());
-
-      // we have already tested this
-      argv[i++] = qstrdup("--appname");
-      argv[i++] = qstrdup(appName->latin1());
-      if (KApplication::loadedByKdeinit)
-        argv[i++] = qstrdup("--kdeinit");
-
-      // only add apppath if it's not NULL
-      if (appPath) {
-	argv[i++] = qstrdup("--apppath");
-	argv[i++] = qstrdup(appPath->latin1());
-      }
-
-      // signal number -- will never be NULL
-      QCString tmp;
-      tmp.setNum(signal);
-      argv[i++] = qstrdup("--signal");
-      argv[i++] = qstrdup(tmp.data());
-
-      // pid number -- only include if this is the child
-      // the debug stuff will be disabled if we was not able to fork
-      if (pid == 0) {
-	tmp.setNum(getppid());
-	argv[i++] = qstrdup("--pid");
-	argv[i++] = qstrdup(tmp.data());
-      }
-
-      const KInstance *instance = KGlobal::_instance;
-      const KAboutData *about = instance ? instance->aboutData() : 0;
-      if (about) {
-	if (!about->version().isNull()) {
-	  argv[i++] = qstrdup("--appversion");
-	  argv[i++] = qstrdup(about->version().utf8());
-	}
-
-	if (!about->programName().isNull()) {
-	  argv[i++] = qstrdup("--programname");
-	  argv[i++] = qstrdup(about->programName().utf8());
-	}
-
-	if (!about->bugAddress().isNull()) {
-	  argv[i++] = qstrdup("--bugaddress");
-	  argv[i++] = qstrdup(about->bugAddress().utf8());
-	}
-      }
-
-      // NULL terminated list
-      argv[i++] = NULL;
-
-      execvp("drkonqi", argv);
-
-      // we could clean up here
-      // i = 0;
-      // while (argv[i])
-      //   free(argv[i++]);
-    }
-    else
+  if (crashRecursionCounter < 3)
+  {
+    if (appName) 
     {
-      // wait for child to exit
-      waitpid(pid, NULL, 0);
-      _exit(253);
+      fprintf(stderr, "KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
+      fprintf(stderr, "KCrash: Application Name = %s path = %s\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>");
+      pid_t pid = fork();
+
+      if (pid <= 0) {
+        // this code is leaking, but this should not hurt cause we will do a
+        // exec() afterwards. exec() is supposed to clean up.
+        char * argv[16]; // don't forget to update this
+        int i = 0;
+
+        // argument 0 has to be drkonqi
+        argv[i++] = qstrdup("drkonqi");
+
+        // start up on the correct display
+        argv[i++] = qstrdup("-display");
+        argv[i++] = XDisplayString(qt_xdisplay());
+
+        // we have already tested this
+        argv[i++] = qstrdup("--appname");
+        argv[i++] = qstrdup(appName);
+        if (KApplication::loadedByKdeinit)
+          argv[i++] = qstrdup("--kdeinit");
+
+        // only add apppath if it's not NULL
+        if (appPath) {
+          argv[i++] = qstrdup("--apppath");
+          argv[i++] = qstrdup(appPath);
+        }
+
+        // signal number -- will never be NULL
+        QCString tmp;
+        tmp.setNum(signal);
+        argv[i++] = qstrdup("--signal");
+        argv[i++] = qstrdup(tmp.data());
+
+        // pid number -- only include if this is the child
+        // the debug stuff will be disabled if we was not able to fork
+        if (pid == 0) {
+	  tmp.setNum(getppid());
+          argv[i++] = qstrdup("--pid");
+	  argv[i++] = qstrdup(tmp.data());
+        }
+
+        const KInstance *instance = KGlobal::_instance;
+        const KAboutData *about = instance ? instance->aboutData() : 0;
+        if (about) {
+	  if (!about->version().isNull()) {
+	    argv[i++] = qstrdup("--appversion");
+	    argv[i++] = qstrdup(about->version().utf8());
+	  }
+
+	  if (!about->programName().isNull()) {
+	    argv[i++] = qstrdup("--programname");
+	    argv[i++] = qstrdup(about->programName().utf8());
+	  }
+
+	  if (!about->bugAddress().isNull()) {
+	    argv[i++] = qstrdup("--bugaddress");
+	    argv[i++] = qstrdup(about->bugAddress().utf8());
+	  }
+        }
+
+        // NULL terminated list
+        argv[i++] = NULL;
+
+        execvp("drkonqi", argv);
+
+        // we could clean up here
+        // i = 0;
+        // while (argv[i])
+        //   free(argv[i++]);
+      }
+      else
+      {
+        // wait for child to exit
+        waitpid(pid, NULL, 0);
+        _exit(253);
+      }
+    }
+    else {
+      fprintf(stderr, "Unknown appname\n");
     }
   }
-  else
-    kdDebug(0) << "Unknown appname\n";
    
   if (crashRecursionCounter < 4)
   {
-     kdDebug(0) << "Unable to start dr. konqi\n";
+     fprintf(stderr, "Unable to start dr. konqi\n");
   }
   _exit(255);
 }
