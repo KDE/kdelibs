@@ -1727,7 +1727,7 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	}
 	else
 	    _painter->drawPixmap( QPoint( x + _tx + border,
-				  y - ascent + _ty + border), *pixptr, rect );
+				  y - ascent + _ty + border), pm, rect );
 
 	if ( overlay )
 	    _painter->drawPixmap( QPoint( x + _tx + border,
