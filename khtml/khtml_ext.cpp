@@ -114,7 +114,7 @@ void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
 {
     QWidget *oldWidget = m_editableFormWidget;
 
-    m_editableFormWidget = widget;
+    m_editableFormWidget = 0;
     enableAction( "cut", false );
     enableAction( "paste", false );
     m_part->emitSelectionChanged();
