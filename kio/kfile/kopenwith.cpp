@@ -301,8 +301,23 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                       "the browse button.</qt>").arg(serviceType);
   qServiceType = serviceType;
   init( text, value );
-  remember->setChecked( true );
-  remember->hide();
+  if (remember)
+  {
+      remember->setChecked( true );
+      remember->hide();
+  }
+}
+
+KOpenWithDlg::KOpenWithDlg( QWidget *parent)
+             :KDialogBase( parent, 0L, true, QString::null,
+              Ok|Cancel, Ok, true )
+{
+  setCaption(i18n("Choose Application"));
+  QString text = i18n("<qt>Select a program. "
+                      "If the program is not listed, enter the name or click "
+                      "the browse button.</qt>");
+  qServiceType = QString::null;
+  init( text, QString::null );
 }
 
 void KOpenWithDlg::setServiceType( const KURL::List& _urls )

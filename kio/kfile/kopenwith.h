@@ -81,6 +81,14 @@ public:
     KOpenWithDlg( const QString& serviceType, const QString& value, QWidget *parent = 0L );
 
     /**
+     * Create a dialog to select an application
+     * Note that this dialog doesn't apply to URLs.
+     *
+     * @param parent parent widget
+     */
+    KOpenWithDlg( QWidget *parent = 0L );
+
+    /**
      * Destructor
      */
     ~KOpenWithDlg();
