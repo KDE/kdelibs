@@ -44,6 +44,7 @@ public:
     virtual bool isInline() const { return false; }
     virtual bool isRoot() const { return true; }
 
+    virtual void layout(bool deep);
     virtual void calcWidth();
     virtual void absolutePosition(int &xPos, int&yPos);
     virtual void updateSize();

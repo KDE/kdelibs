@@ -50,6 +50,41 @@ void RenderRoot::calcWidth()
     if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
 }
 
+
+void RenderRoot::layout(bool deep)
+{
+    if (deep)
+    	RenderFlow::layout(true);        
+
+    // resize so that body height >= viewport height
+    if (style()->htmlHacks())
+    {
+    	RenderObject* child = firstChild();
+	if (!deep)
+	{
+	    setLayouted(false);
+	    child->setLayouted(false);
+	    if (child->firstChild())
+	    	child->firstChild()->setLayouted(false);
+	    layout(true);
+	}
+	
+        if (m_height < m_view->visibleHeight())
+    	    m_height=m_view->visibleHeight();
+	
+	int h = m_height;
+	if (child)
+	{
+    	    h -= child->marginTop()+child->marginBottom();
+    	    child->setHeight(h);
+    	    child = child->firstChild();
+    	    if (child)	
+    		child->setHeight(h - child->marginTop()+child->marginBottom());
+	}
+    }
+
+}
+
 QScrollView *RenderRoot::view()
 {
     return m_view;

@@ -293,6 +293,11 @@ void KHTMLView::layout(bool force)
 	    printf("TIME: layout() dt=%d\n",qt.elapsed());
 
 	    viewport()->repaint(false);
+	} 
+	else 
+	{
+	    document->renderer()->layout(false);
+	    viewport()->repaint(false);
 	}
     }
     else
