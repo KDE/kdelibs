@@ -32,7 +32,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kstdaccel.h kwinmodule.h kwin.h krootprop.h kpixmap.h  \
-	kaccel.h kglobalaccel.h kcatalogue.h \
+	kkey.h kkey_x11.h kaccel.h kglobalaccel.h kcatalogue.h \
 	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kde_dmalloc.h kallocator.h kcrash.h krfcdate.h \
@@ -54,13 +54,13 @@ noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapplication.cpp \
 	kconfigbase.cpp kstyle.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
-	kconfigbackend.cpp kglobalaccel.cpp  \
+	kconfigbackend.cpp  \
 	kstandarddirs.cpp kuniqueapplication.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
-	kurl.cpp kregexp.cpp \
+	kpixmap.cpp kckey.cpp kkey.cpp kkey_x11.cpp kaccel.cpp \
+	kglobalaccel.cpp kcrash.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \

@@ -22,7 +22,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kaccel.h>
+#include <kkey.h>
 
 uint KStdAccel::key(StdAccel id)
 {
@@ -32,7 +32,7 @@ uint KStdAccel::key(StdAccel id)
        return defaultKey(id);
 
     QString s = saver.config()->readEntry(a);
-    return KAccel::stringToKey(s);
+    return KKey::stringToKeyQt(s);
 }
 
 bool KStdAccel::isEqual(QKeyEvent* ev, int skey)
@@ -115,7 +115,7 @@ QString KStdAccel::action(StdAccel id)
 
 uint KStdAccel::defaultKey(StdAccel id)
 {
-    if( KAccel::useFourModifierKeys() )
+    if( KKey::useFourModifierKeys() )
         return defaultKey4( id );
     else
         return defaultKey3( id );

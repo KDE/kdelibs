@@ -46,6 +46,8 @@
 #endif
 #include <string.h>
 
+#include "kkey_x11.h"
+
 #ifdef KeyPress
 const int XKeyPress = KeyPress;
 #undef KeyPress
@@ -192,7 +194,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action,
   KKeyEntry entry;
   entry.aDefaultKeyCode = defaultKeyCode3.key();
   //entry.aDefaultKeyCode4 = defaultKeyCode4.key();
-  entry.aCurrentKeyCode = /*try.aConfigKeyCode = KAccel::useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
+  entry.aCurrentKeyCode = /*try.aConfigKeyCode = KKey::useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
   entry.bConfigurable = configurable;
   entry.bEnabled = false;
   entry.aAccelId = 0;
@@ -252,14 +254,14 @@ void KGlobalAccel::readSettings(KConfig* config)
 		KKeyNative keyNative;
 
 		if ( keyStr.isEmpty() || keyStr.startsWith( "default" ))
-			keyQt = /*KAccel::useFourModifierKeys() ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
+			keyQt = /*KKey::useFourModifierKeys() ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
 		else
-			keyQt = KAccel::stringToKey( keyStr );
+			keyQt = KKey::stringToKeyQt( keyStr );
 		if( d->keyNativeMap.contains( it.key() ) )
 			keyNative = d->keyNativeMap[ it.key() ];
 
 		// Get X keycodes for current X keymap.
-		KAccel::keyQtToKeyX( keyQt, &keyCodeX, 0, &keyModX );
+		KKeyX11::keyQtToKeyX( keyQt, &keyCodeX, 0, &keyModX );
 
 		kdDebug(125) << QString( it.key()+" = "+keyStr+" key: 0x%1 curKey: 0x%2 enabled: %3\n" )
 			.arg( keyQt, 0, 16 ). arg( (*it).aCurrentKeyCode, 0, 16 ).arg( (*it).bEnabled );
@@ -400,27 +402,27 @@ static uint g_keyModMaskXOnOrOff = 0;
 
 static void calculateGrabMasks()
 {
-	KAccel::readModifierMapping();
-	g_keyModMaskXAccel = KAccel::accelModMaskX();
+	KKeyX11::readModifierMapping();
+	g_keyModMaskXAccel = KKeyX11::accelModMaskX();
 	g_keyModMaskXAlwaysOff = ~(
-			KAccel::keyModXShift() |
-			KAccel::keyModXLock() |
-			KAccel::keyModXCtrl() |
-			KAccel::keyModXAlt() |
-			KAccel::keyModXNumLock() |
-			KAccel::keyModXModeSwitch() |
-			KAccel::keyModXMeta() |
-			KAccel::keyModXScrollLock() );
+			KKeyX11::keyModXShift() |
+			KKeyX11::keyModXLock() |
+			KKeyX11::keyModXCtrl() |
+			KKeyX11::keyModXAlt() |
+			KKeyX11::keyModXNumLock() |
+			KKeyX11::keyModXModeSwitch() |
+			KKeyX11::keyModXMeta() |
+			KKeyX11::keyModXScrollLock() );
 	g_keyModMaskXOnOrOff =
-			KAccel::keyModXLock() |
-			KAccel::keyModXNumLock() |
-			KAccel::keyModXScrollLock();
+			KKeyX11::keyModXLock() |
+			KKeyX11::keyModXNumLock() |
+			KKeyX11::keyModXScrollLock();
 
 	// X11 seems to treat the ModeSwitch bit differently than the others --
 	//  namely, it won't grab anything if it's set, but both switched and
 	//  unswiched keys if it's not.
 	//  So we always need to XGrabKey with the bit set to 0.
-	g_keyModMaskXAlwaysOff |= KAccel::keyModXModeSwitch();
+	g_keyModMaskXAlwaysOff |= KKeyX11::keyModXModeSwitch();
 }
 #endif
 
@@ -451,7 +453,7 @@ bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 
 	if( bGrab ) {
 		key = aKeyMap[action].aCurrentKeyCode;
-		KAccel::keyQtToKeyX( key.key(), &keyCodeX, 0, &keyModX );
+		KKeyX11::keyQtToKeyX( key.key(), &keyCodeX, 0, &keyModX );
 		keyNative.keyCode = keyCodeX;
 		keyNative.keyMod = keyModX;
 		d->keyNativeMap[action] = keyNative;
@@ -538,10 +540,10 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     if ( event_->type != XKeyPress ) return false;
     if ( !KGlobalAccelPrivate::g_bKeyEventsEnabled ) return false;
 
-    KAccel::keyEventXToKeyX( event_, 0, &keySymX, &keyModX );
+    KKeyX11::keyEventXToKeyX( event_, 0, &keySymX, &keyModX );
     keyModX &= g_keyModMaskXAccel;
 
-    kdDebug(125) << "x11EventFilter: seek " << KAccel::keySymXToString( keySymX, keyModX, false )
+    kdDebug(125) << "x11EventFilter: seek " << KKeyX11::keySymXToString( keySymX, keyModX, false )
     	<< QString( " keyCodeX: %1 state: %2 keySym: %3 keyMod: %4\n" )
     		.arg( event_->xkey.keycode, 0, 16 ).arg( event_->xkey.state, 0, 16 ).arg( keySymX, 0, 16 ).arg( keyModX, 0, 16 );
     if( keySymX == 0 )
@@ -551,8 +553,8 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     KKeyEntry entry;
     QString sConfigKey;
     for (KKeyEntryMap::ConstIterator it = aKeyMap.begin(); it != aKeyMap.end(); ++it) {
-	KAccel::keyQtToKeyX( (*it).aCurrentKeyCode, 0, &keySymX2, &keyModX2 );
-	//kdDebug() << "x11EventFilter: inspecting " << KAccel::keyToString( (*it).aCurrentKeyCode )
+	KKeyX11::keyQtToKeyX( (*it).aCurrentKeyCode, 0, &keySymX2, &keyModX2 );
+	//kdDebug() << "x11EventFilter: inspecting " << KKey::keyToString( (*it).aCurrentKeyCode )
 	//	<< QString( " keySym: %1 keyMod: %2\n" ).arg( keySymX2, 0, 16 ).arg( keyModX2, 0, 16 );
 	if ( keySymX == keySymX2 && keyModX == (keyModX2 & g_keyModMaskXAccel) ) {
 	    entry = *it;
@@ -569,7 +571,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	    kdDebug(125) << "in raw mode !" << endl;
 	}
 	if ( !entry.receiver || !entry.bEnabled ) {
-		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
+		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KKeyX11::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
 	} else {
 		QRegExp r1( "([ ]*int[ ]*)" ), r2( " [0-9]+$" );
@@ -632,7 +634,7 @@ uint keyToXMod( int keyCode )
 uint keyToXSym( int keyCode )
 {
 	uint keySymX;
-	KAccel::keyQtToKeyX( keyCode, 0, &keySymX, 0 );
+	KKeyX11::keyQtToKeyX( keyCode, 0, &keySymX, 0 );
 	return keySymX;
 }
 #endif

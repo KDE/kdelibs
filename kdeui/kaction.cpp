@@ -42,6 +42,7 @@
 #include <kcombobox.h>
 #include <kfontcombo.h>
 #include <kdebug.h>
+#include <kkey_x11.h>
 #include <assert.h>
 
 static QFontDatabase *fontDataBase = 0;
@@ -306,10 +307,10 @@ void KAction::setAccel( int a )
   // Make sure that we are really
   //  using the right modifier combination by converting to it's X equivalent
   //  and back. Neccessary for punctuation keys on varying layouts.
-  uint keySymX, keyModX;
 #ifdef Q_WS_X11
-  KAccel::keyQtToKeyX( a, 0, &keySymX, &keyModX );
-  a = KAccel::keySymXToKeyQt( keySymX, keyModX );
+  uint keySymX, keyModX;
+  KKeyX11::keyQtToKeyX( a, 0, &keySymX, &keyModX );
+  a = KKeyX11::keySymXToKeyQt( keySymX, keyModX );
 #endif
 
   d->m_accel = a;

@@ -49,6 +49,7 @@
 #include "kkeydialog.h"
 
 #include <kaction.h>
+#include <kkey_x11.h>
 #include "kkeybutton.h"
 
 #include <kapp.h>
@@ -127,7 +128,7 @@ KKeyButton::~KKeyButton ()
 void KKeyButton::setKey( uint _key )
 {
 	key = _key;
-	QString keyStr = KAccel::keyToString( key, true );
+	QString keyStr = KKey::keyToString( key, true );
 	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
 }
 
@@ -180,7 +181,7 @@ bool KKeyButton::x11Event( XEvent *pEvent )
 void KKeyButton::keyPressEventX( XEvent *pEvent )
 {
 	uint keyModX = 0, keySymX;
-	KAccel::keyEventXToKeyX( pEvent, 0, &keySymX, 0 );
+	KKeyX11::keyEventXToKeyX( pEvent, 0, &keySymX, 0 );
 
 	//kdDebug(125) << QString( "keycode: 0x%1 state: 0x%2\n" )
 	//			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 );
@@ -189,16 +190,16 @@ void KKeyButton::keyPressEventX( XEvent *pEvent )
 		// Don't allow setting a modifier key as an accelerator.
 		// Also, don't release the focus yet.  We'll wait until
 		//  we get a 'normal' key.
-		case XK_Shift_L:   case XK_Shift_R:	keyModX = KAccel::keyModXShift(); break;
-		case XK_Control_L: case XK_Control_R:	keyModX = KAccel::keyModXCtrl(); break;
-		case XK_Alt_L:     case XK_Alt_R:	keyModX = KAccel::keyModXAlt(); break;
-		case XK_Meta_L:    case XK_Meta_R:	keyModX = KAccel::keyModXMeta(); break;
+		case XK_Shift_L:   case XK_Shift_R:	keyModX = KKeyX11::keyModXShift(); break;
+		case XK_Control_L: case XK_Control_R:	keyModX = KKeyX11::keyModXCtrl(); break;
+		case XK_Alt_L:     case XK_Alt_R:	keyModX = KKeyX11::keyModXAlt(); break;
+		case XK_Meta_L:    case XK_Meta_R:	keyModX = KKeyX11::keyModXMeta(); break;
 		case XK_Super_L:   case XK_Super_R:
 		case XK_Hyper_L:   case XK_Hyper_R:
 		case XK_Mode_switch:
 			break;
 		default:
-			uint keyCombQt = KAccel::keyEventXToKeyQt( pEvent );
+			uint keyCombQt = KKeyX11::keyEventXToKeyQt( pEvent );
 			if( keyCombQt && keyCombQt != Qt::Key_unknown ) {
 				captureKey( false );
 				// The parent must decide whether this is a valid
@@ -215,10 +216,10 @@ void KKeyButton::keyPressEventX( XEvent *pEvent )
 		keyModX = pEvent->xkey.state & ~keyModX;
 
 	QString keyModStr;
-	if( keyModX & KAccel::keyModXMeta() )	keyModStr += i18n("Meta") + "+";
-	if( keyModX & KAccel::keyModXAlt() )	keyModStr += i18n("Alt") + "+";
-	if( keyModX & KAccel::keyModXCtrl() )	keyModStr += i18n("Ctrl") + "+";
-	if( keyModX & KAccel::keyModXShift() )	keyModStr += i18n("Shift") + "+";
+	if( keyModX & KKeyX11::keyModXMeta() )	keyModStr += i18n("Meta") + "+";
+	if( keyModX & KKeyX11::keyModXAlt() )	keyModStr += i18n("Alt") + "+";
+	if( keyModX & KKeyX11::keyModXCtrl() )	keyModStr += i18n("Ctrl") + "+";
+	if( keyModX & KKeyX11::keyModXShift() )	keyModStr += i18n("Shift") + "+";
 
 	// Display currently selected modifiers, or redisplay old key.
 	if( !keyModStr.isEmpty() )
@@ -409,7 +410,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
       act_elem.setAttribute( attrName, action->name() );
     }
     act_elem.setAttribute( attrAccel,
-                           KAccel::keyToString( key.aConfigKeyCode, false) );
+                           KKey::keyToString( key.aConfigKeyCode, false) );
 
     elem.appendChild( act_elem );
   }
@@ -461,7 +462,7 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
   d->map = aKeyMap;
   d->bAllowMetaKey = bAllowMetaKey;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
-  d->bPreferFourModifierKeys = KAccel::useFourModifierKeys();
+  d->bPreferFourModifierKeys = KKey::useFourModifierKeys();
 
   //
   // TOP LAYOUT MANAGER
@@ -543,7 +544,7 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 		} else {
 			(*it).aConfigKeyCode = (*it).aCurrentKeyCode;
 			pItem = new QListViewItem( pParentItem, pItem, (*it).descr,
-					KAccel::keyToString( (*it).aConfigKeyCode, true ) );
+					KKey::keyToString( (*it).aConfigKeyCode, true ) );
 			d->actionMap[pItem] = it;
 			(*it).bConfigurable = true;
 		}
@@ -561,7 +562,7 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 
       QListViewItem * s = new QListViewItem(d->wList,
                                             (*it).descr,
-                                            KAccel::keyToString((*it).aConfigKeyCode, true));
+                                            KKey::keyToString((*it).aConfigKeyCode, true));
       d->actionMap[s] = it;
     }
   }
@@ -698,7 +699,7 @@ void KKeyChooser::readKeysInternal( QDict< int >* dict, const QString& group )
             tmp = tmp.mid( 8, pos - 8 );
     }
     keyCode = new int;
-    *keyCode = KAccel::stringToKey( tmp );
+    *keyCode = KKey::stringToKeyQt( tmp );
     dict->insert( gIt.key(), keyCode);
   }
 }
@@ -746,8 +747,8 @@ void KKeyChooser::toChange( QListViewItem *item )
 	int keyDefault = /*d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
 
 	// Set key strings
-	QString keyStrCfg = KAccel::keyToString( (*it).aConfigKeyCode, true );
-	QString keyStrDef = KAccel::keyToString( keyDefault, true );
+	QString keyStrCfg = KKey::keyToString( (*it).aConfigKeyCode, true );
+	QString keyStrDef = KKey::keyToString( keyDefault, true );
 
         d->bChange->setKey( (*it).aConfigKeyCode );
         item->setText( 1, keyStrCfg );
@@ -826,7 +827,7 @@ void KKeyChooser::defaultKey()
                 (*d->actionMap[item]).aDefaultKeyCode;
 
         item->setText( 1,
-            KAccel::keyToString((*d->actionMap[item]).aConfigKeyCode, true) );
+            KKey::keyToString((*d->actionMap[item]).aConfigKeyCode, true) );
     }
 
     toChange(d->wList->currentItem());
@@ -853,7 +854,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
                 (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
                     /*(useFourModifierKeys) ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
             }
-            at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+            at->setText(1, KKey::keyToString((*it).aConfigKeyCode, true));
     }
     emit keyChange();
 }
@@ -873,7 +874,7 @@ void KKeyChooser::changeKey() {}
 
 void KKeyChooser::capturedKey( uint key )
 {
-	if( KAccel::keyToString( key, true ).isEmpty() )
+	if( KKey::keyToString( key, true ).isEmpty() )
 		d->lInfo->setText( i18n("Undefined key") );
 	else
 		setKey( key );
@@ -888,7 +889,7 @@ void KKeyChooser::listSync()
             KKeyEntryMap::Iterator it = d->actionMap[item];
 
             if ( (*it).bConfigurable )
-                item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
+                item->setText(1, KKey::keyToString((*it).aConfigKeyCode, true));
         }
 
         item = item->itemBelow();
@@ -949,7 +950,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName = gIt.currentKey();
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( *gIt.current(), true );
+            QString keyName = KKey::keyToString( *gIt.current(), true );
 
             QString str =
                 i18n("The %1 key combination has already been "
@@ -978,7 +979,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName( (*d->map)[sIt.currentKey()].descr );
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( *sIt.current(), true );
+            QString keyName = KKey::keyToString( *sIt.current(), true );
 
             QString str =
                 i18n("The %1 key combination has already "
@@ -1004,7 +1005,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName( (*it).descr );
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( kcode, true );
+            QString keyName = KKey::keyToString( kcode, true );
 
             QString str =
                 i18n("The %1 key combination has already "

@@ -22,11 +22,12 @@
 #ifndef _KACCEL_H
 #define _KACCEL_H
 
-
 #include <qmap.h>
 #include <qstring.h>
 #include <qaccel.h>
 #include <kstdaccel.h>
+
+#include "kkey.h"
 
 class QPopupMenu;
 class KConfig;
@@ -34,30 +35,6 @@ class KConfigBase;
 class QObject;
 class QWidget;
 class KAccelPrivate;
-
-class KKey {
-protected:
-	uint	m_keyCombQt;
-public:
-	KKey()					{ m_keyCombQt = 0; }
-	KKey( const KKey& k )			{ m_keyCombQt = k.m_keyCombQt; }
-	KKey( uint keyCombQt )			{ m_keyCombQt = keyCombQt; }
-#ifdef Q_WS_X11
-	KKey( const XEvent * );
-#endif
-	KKey( const QKeyEvent * );
-	KKey( const QString& );
-
-	KKey& operator =( KKey k )		{ m_keyCombQt = k.m_keyCombQt; return *this; }
-	KKey& operator =( uint keyCombQt )	{ m_keyCombQt = keyCombQt; return *this; }
-
-	uint key() const		{ return m_keyCombQt; }
-	uint sym() const		{ return m_keyCombQt & 0xffff; }
-	uint mod() const		{ return m_keyCombQt & ~0xffff; }
-	uint state() const		{ return mod() >> 18; }
-
-	QString toString();
-};
 
 /**
  * Accelerator information, similar to an action.
@@ -182,6 +159,7 @@ class KAccel : public QAccel
 	 * Create a KAccel object with a parent widget and a name.
 	 */
 	KAccel( QWidget * parent, const char *name = 0 );
+	virtual ~KAccel();
 
 	/**
 	 * Remove all accelerator items.
@@ -539,89 +517,10 @@ class KAccel : public QAccel
 	 **/
 	void removeDeletedMenu(QPopupMenu *menu);
 
-	// When bUseFourModifierKeys is on (setting: Global|Keyboard|Use Four Modifier Keys = true | false)
-	//  calls to insertItem will set the current key to aDefaultKeyCode4.
-	static bool useFourModifierKeys();
-	static void useFourModifierKeys( bool b );
-	static bool qtSupportsMetaKey();
-
-	/**
-	 * Retrieve the key code corresponding to the string @p sKey or
-	 * zero if the string is not recognized.
-	 *
-	 * The string must be something like "Shift+A",
-	 * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
-	 * must consist of a key name plus a combination of
-	 * the modifiers Shift, Ctrl and Alt.
-	 *
-	 * N.B.: @p sKey must @em not be @ref i18n()'d!
-	 */
-	static int stringToKey( const QString& sKey );
-
-	/**
-	 * Retrieve a string corresponding to the key code @p keyCode,
-	  * which is empty if
-	 * @p keyCode is not recognized or zero.
-	 */
-	static QString keyToString( int keyCode, bool i18_n = FALSE );
-
-	// X11-Related Functions
-	// I want to move these functions out of KAccel and into their own
-	//  class ASAP.
-	// Naming Proceedure:
-	//  -CodeX	the index of the physical key pressed (keyboard dependent)
-	//  -Sym-	key symbol. Either unicode (like 'A') or special key (like delete)
-	//  -Mod-	contains bits for modifier flags
-	//  -X		Formatted for/by the X sever
-	//  -Qt		Formatted for/by Qt
-	//  keyQt	Qt shortcut key value containing both Qt Sym and Qt Mod.
-	//  keyEvent-	An X or Qt key event
-	// Example:
-	//  keyCodeXToKeyQt() converts the X11 key code & mod into a Qt shortcut key
-	enum ModKeysIndex {
-		ModShiftIndex, ModCapsLockIndex, ModCtrlIndex, ModAltIndex,
-		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
-		MOD_KEYS
-	};
-#ifdef Q_WS_X11
-	static void readModifierMapping();
-#endif
-	static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-	static uint keyCodeXToKeySymX( uchar keyCodeX, uint keyModX );
-#ifdef Q_WS_X11
-	static void keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-	static uint keyEventXToKeyQt( const XEvent *pEvent );
-	static int keySymXIndex( uint keySym );
-	static void keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX );
-	static uint keyCodeXToKeyQt( uchar keyCodeX, uint keyModX );
-	static uint keySymXToKeyQt( uint keySymX, uint keyModX );
-	static void keyQtToKeyX( uint keyCombQt, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-#endif
-	static uint keyEventQtToKeyQt( const QKeyEvent* );
-#ifdef Q_WS_X11
-	static QString keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n );
-	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
-
-	// Return the keyModX containing just the bit set for the given modifier.
-	static uint keyModXShift();		// ShiftMask
-	static uint keyModXLock();		// LockMask
-	static uint keyModXCtrl();		// ControlMask
-	static uint keyModXAlt();		// Normally Mod1Mask
-	static uint keyModXNumLock();		// Normally Mod2Mask
-	static uint keyModXModeSwitch();	// Normally Mod3Mask
-	static uint keyModXMeta();		// Normally Mod4Mask
-	static uint keyModXScrollLock();	// Normally Mod5Mask
-#endif
-
-	// Return the keyMod mask containing the bits set for the modifiers
-	//  which may be used in accelerator shortcuts.
-	static uint accelModMaskQt();		// Normally Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1)
-#ifdef Q_WS_X11
-	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
-#endif
-
-	// Returns true if X has the Meta key assigned to a modifier bit
-	static bool keyboardHasMetaKey();
+	// These are only being kept temporarily for backwards
+	//  compatibility.  9/28/01 -- ellis
+	static QString keyToString( uint key );
+	static uint stringToKey( const QString& s );
 
 signals:
 	void keycodeChanged();
