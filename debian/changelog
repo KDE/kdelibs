@@ -1,3 +1,10 @@
+kdelibs (4:1.1.1-19990701-1) unstable; urgency=low
+
+  * New upstream CVS version 
+  * This is pre-1.1.2 (frozen) 
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 01 Jul 1999 11:45:56 -0400
+
 kdelibs (4:1.1.1-19990624-1) unstable; urgency=low
 
   * New upstream CVS version (pull)
