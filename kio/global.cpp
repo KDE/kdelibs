@@ -57,7 +57,7 @@ QString KIO::convertSize( unsigned long size )
     else
     {
         fsize = (float) size;
-        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
     }
     return s;
 }
