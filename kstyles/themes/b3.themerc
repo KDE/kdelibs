@@ -1,5 +1,6 @@
 [Misc]
 Name=B3/KDE
 Comment=B3/Modification of B2
+Comment[hu]=B3/a B2 módosított változata
 [KDE]
 widgetStyle=b3style.la
