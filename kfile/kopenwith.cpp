@@ -324,8 +324,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
 
-  connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
-  connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
+  connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ),
+           this, SLOT( slotSelected( const QString&, const QString& ) ) );
+  connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ),
+           this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
+  connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
+           this, SLOT( slotOK() ) );
 
   terminal = new QCheckBox( i18n("Run in terminal"), this );
   topLayout->addWidget(terminal);
@@ -399,7 +403,9 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 void KOpenWithDlg::slotOK()
 {
   if (haveApp)
+  {
     m_pService = KService::serviceByName( qName );
+  }
   else {
     m_pService = 0L;
     // no service was found, maybe they typed the name into the text field
@@ -447,7 +453,6 @@ void KOpenWithDlg::slotOK()
       accept();
       return;
     }
-  kdDebug() << "slotOK" << endl;
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
