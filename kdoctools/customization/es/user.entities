@@ -7,6 +7,7 @@
  -->
 <!ENTITY eg     "<abbrev>p.ej.</abbrev>" ><!-- eg -->
 <!ENTITY kcc "<application>Centro de control de KDE</application>" ><!-- kcc -->
+<!ENTITY khelpcenter "<application>Centro de ayuda</application>" >
 <!ENTITY kde "KDE" ><!-- kde -->
 <!ENTITY kcontrolcenter "<application>Centro de control de &kde;</application>">
 <!ENTITY dpi    '<acronym>ppp</acronym>'>
