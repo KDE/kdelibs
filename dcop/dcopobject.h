@@ -117,14 +117,14 @@ class DCOPObject
   static bool hasObject(const QCString &objId);
 
   /**
-   * @return the DCOPObject for the id @param objId.
+   * @return the DCOPObject for the id @p objId.
    *
    * This function does not query the @ref DCOPObjectProxy.
    */
   static DCOPObject *find(const QCString &objId);
 
   /**
-   * Creates an object id for the QObject @param obj. This is done
+   * Creates an object id for the QObject @p obj. This is done
    * using the @ref QObject::name function.
    */
   static QCString objectName( QObject* obj );

@@ -109,13 +109,13 @@ class DCOPClient : public QObject
    * Register at the DCOP server.  If the application was already registered,
    * the registration will be re-done with the new appId.
    *
-   * @param appId is a UNIQUE application/program id that the server
+   * @p appId is a UNIQUE application/program id that the server
    * will use to associate requests with. If there is already an application
    * registered with the same name, the server will add a number to the
    * id to unify it.
    *
    * Registration is necessary if you want to allow other clients to talk
-   * to you.  They can do so using your @param appId as first parameter
+   * to you.  They can do so using your @p appId as first parameter
    * for send() or call(). If you just want to talk to other clients, you
    * do not need to register at the server. In that case attach() is enough.
    * It will implicitely register you as "anonymous".
@@ -181,7 +181,7 @@ class DCOPClient : public QObject
 
   /**
    * reimplement to handle app-wide function calls unassociated w/an object.
-   * Note that @param fun is normalized. See normalizeFunctionSignature().
+   * Note that @p fun is normalized. See normalizeFunctionSignature().
    *
    * If you do not want to reimplement this function for whatever reason,
    * you can also use a DCOPObjectProxy.
@@ -190,7 +190,7 @@ class DCOPClient : public QObject
 		       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Check whether @param remApp is registered with the DCOPServer.
+   * Check whether @p remApp is registered with the DCOPServer.
    * @return true if the remote application is registered, otherwise false.
    */
   bool isApplicationRegistered( const QCString& remApp);
@@ -217,7 +217,7 @@ class DCOPClient : public QObject
 
 
     /**
-     * Normalizes the function signature @param fun.
+     * Normalizes the function signature @p fun.
      *
      * A normalized signature doesn't contain any unnecessary whitespace
      * anymore. The remaining whitespace consists of single blanks only (0x20).
@@ -241,12 +241,12 @@ class DCOPClient : public QObject
 
 signals:
   /**
-   * Indicates that the application @param appId has been registered with
+   * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    */
   void applicationRegistered( const QCString& appId );
   /**
-   * Indicates that the formerly registered application @param appId has
+   * Indicates that the formerly registered application @p appId has
    * been removed.
    */
   void applicationRemoved( const QCString& appId );
