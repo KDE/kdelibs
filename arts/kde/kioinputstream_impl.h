@@ -56,7 +56,7 @@ class KIOInputStream_impl : public QObject, virtual public KIOInputStream_skel, 
     private:
 	KURL m_url;
 	KIO::TransferJob *m_job;
-	queue<DataPacket<mcopbyte> *> m_sendqueue;
+	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
 	bool m_finished;
 };
 
