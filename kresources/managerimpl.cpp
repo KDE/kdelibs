@@ -376,12 +376,25 @@ void ManagerImpl::writeResourceConfig( Resource *resource, bool checkActive )
   
   if ( checkActive ) {
     QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
-    if ( resource->isActive() && !activeKeys.contains( key ) ) {
-      activeKeys.append( resource->identifier() );
-      mConfig->writeEntry( "ResourceKeys", activeKeys );
-    } else if ( !resource->isActive() && activeKeys.contains( key ) ) {
-      activeKeys.remove( key );
-      mConfig->writeEntry( "ResourceKeys", activeKeys );
+    QStringList passiveKeys = mConfig->readListEntry( "PassiveResourceKeys" );
+    if ( resource->isActive() ) {
+      if ( passiveKeys.contains( key ) ) { // remove it from passive list
+        passiveKeys.remove( key );
+        mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
+      }
+      if ( !activeKeys.contains( key ) ) { // add it to active list
+        activeKeys.append( key );
+        mConfig->writeEntry( "ResourceKeys", activeKeys );
+      }
+    } else if ( !resource->isActive() ) {
+      if ( activeKeys.contains( key ) ) { // remove it from active list
+        activeKeys.remove( key );
+        mConfig->writeEntry( "ResourceKeys", activeKeys );
+      }
+      if ( !passiveKeys.contains( key ) ) { // add it to passive list
+        passiveKeys.append( key );
+        mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
+      }
     }
   }
 
