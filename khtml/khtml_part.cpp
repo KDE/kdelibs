@@ -307,6 +307,7 @@ public:
   KAction *m_paSaveFrame;
   KAction *m_paSecurity;
   KSelectAction *m_paSetEncoding;
+  KSelectAction *m_paUseStylesheet;
   KHTMLFontSizeAction *m_paIncFontSizes;
   KHTMLFontSizeAction *m_paDecFontSizes;
   KAction *m_paLoadImages;
@@ -501,6 +502,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   QString foo3 = i18n("Stop Animated Images");
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
+  d->m_paUseStylesheet = new KSelectAction( QString::fromLatin1( "&Use Stylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
@@ -905,8 +907,7 @@ extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
 
 KJSProxy *KHTMLPart::jScript()
 {
-  if ( d->m_bJScriptOverride && !d->m_bJScriptForce || !d->m_bJScriptOverride && !d->m_bJScriptEnabled)
-      return 0;
+  if (!jScriptEnabled()) return 0;
 
   if ( !d->m_jscript )
   {
@@ -1626,6 +1627,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     static_cast<HTMLDocumentImpl*>(d->m_doc)->setDomain( domain, true );
   }
 
+  d->m_paUseStylesheet->setItems(QStringList());
+  d->m_paUseStylesheet->setEnabled( false );
+
   setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
   QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
   if ( !userStyleSheet.isEmpty() )
@@ -1864,6 +1868,16 @@ void KHTMLPart::checkCompleted()
     else
       emit completed();
   }
+
+  // find the alternate stylesheets
+  QStringList sheets;
+  if (d->m_doc)
+     sheets = d->m_doc->availableStyleSheets();
+
+  d->m_paUseStylesheet->setItems( sheets );
+  d->m_paUseStylesheet->setEnabled( !sheets.isEmpty() );
+  if (!sheets.isEmpty())
+    d->m_paUseStylesheet->setCurrentItem(0);
 
   if (!parentPart())
       emit setStatusBarText(i18n("Done."));
@@ -2668,6 +2682,12 @@ void KHTMLPart::slotSetEncoding()
         QString enc = KGlobal::charsets()->encodingForName(d->m_paSetEncoding->currentText());
         setEncoding(enc, true);
     }
+}
+
+void KHTMLPart::slotUseStylesheet()
+{
+  if (d->m_doc)
+    d->m_doc->useStyleSheet(d->m_paUseStylesheet->currentText());
 }
 
 void KHTMLPart::updateActions()

@@ -894,6 +894,11 @@ private slots:
    */
   virtual void slotSetEncoding();
 
+  /**
+   * @internal
+   */
+  virtual void slotUseStylesheet();
+
   virtual void slotFind();
   virtual void slotFindDone();
   virtual void slotFindDialogDestroyed();

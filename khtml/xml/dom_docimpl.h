@@ -282,7 +282,7 @@ public:
     DOMStringImpl* namespaceURI(NodeImpl::Id _id) const;
 
     StyleSheetListImpl* styleSheets();
-    
+
     QStringList availableStyleSheets() const;
     void useStyleSheet( const QString & );
     QString sheetUsed() const { return m_sheetUsed; }
@@ -385,7 +385,7 @@ protected:
     QString m_usersheet;
     QString m_sheetUsed;
     QStringList m_availableSheets;
-    
+
     CSSStyleSheetImpl *m_elemSheet;
 
     QPaintDevice *m_paintDevice;

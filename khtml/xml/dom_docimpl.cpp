@@ -818,7 +818,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
             float size = fs[3] * dpiY / 72.;
             if(size < settings->minFontSize())
                 size = settings->minFontSize();
-	    fontDef.size = size;
+            fontDef.size = int(size);
         }
 
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
@@ -996,7 +996,6 @@ void DocumentImpl::write( const QString &text )
         open();
         write(QString::fromLatin1("<html>"));
     }
-
     m_tokenizer->write(text, false);
 
     if (m_view && m_view->part()->jScript())
@@ -1388,6 +1387,7 @@ bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
                 ev->url = DOMString("target://") + target + DOMString("/#") + href;
             else
                 ev->url = href;
+//            qDebug("url: *%s*", ev->url.string().latin1());
         }
 
         updateRendering();
@@ -1675,7 +1675,9 @@ QStringList DocumentImpl::availableStyleSheets() const
 
 void DocumentImpl::useStyleSheet( const QString &title )
 {
+    if (m_sheetUsed == title) return;
     m_sheetUsed = title;
+    updateStyleSelector();
 }
 
 void DocumentImpl::recalcStyleSelector()
@@ -1721,17 +1723,17 @@ void DocumentImpl::recalcStyleSelector()
 	    ElementImpl *e = static_cast<ElementImpl *>(n);
 	    QString title = e->getAttribute( ATTR_TITLE ).string();
 	    if ( !title.isEmpty() ) {
-		if ( m_usersheet.isEmpty() )
-		    m_usersheet = title;
+		if ( m_sheetUsed.isEmpty() )
+		    m_sheetUsed = title;
 		if ( !m_availableSheets.contains( title ) )
 		    m_availableSheets.append( title );
-		if ( m_usersheet != title )
-		    break;
 	    }
-	    if ( n->id() == ID_LINK )
-		// <LINK> element
-		sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-	    else 
+	    if ( n->id() == ID_LINK ) {
+                // <LINK> element
+                if (title.isEmpty() || title == m_sheetUsed)
+                    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+            }
+	    else
 		// <STYLE> element
 		sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
 	}
@@ -1797,7 +1799,7 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 	    m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
 	    m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
             m_focusNode->setFocus();
-	}
+        }
     }
 }
 
