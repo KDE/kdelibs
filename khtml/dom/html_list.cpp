@@ -173,10 +173,7 @@ DOMString HTMLLIElement::type() const
 
 void HTMLLIElement::setType( const DOMString &value )
 {
-    if(impl) {
-        static_cast<ElementImpl *>(impl)->setAttribute(ATTR_TYPE, value);
-        static_cast<ElementImpl *>(parentNode().impl)->applyChanges();
-    }
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
 long HTMLLIElement::value() const
@@ -383,9 +380,6 @@ DOMString HTMLUListElement::type() const
 
 void HTMLUListElement::setType( const DOMString &value )
 {
-    if(!impl)
-        qDebug("no implementation!");
-
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
