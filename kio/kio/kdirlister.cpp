@@ -573,10 +573,11 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     {
       item->complete = false;
       item->decAutoUpdate();
-      kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
+      // Hmm, this debug output might include login/password from the _dir URL.
+      //kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
     }
-    else
-      kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
+    //else
+      //kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
 
     return false;
   }
