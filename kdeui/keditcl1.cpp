@@ -378,7 +378,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
       e->ignore();
       return;
   }
-    
+
   KKey key(e);
   int keyQt = key.keyCodeQt();
 
@@ -498,9 +498,12 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     setModified(true);
     slotCursorPositionChanged();
   }
-  else if ( d->overwriteEnabled && key == Key_Insert ) {
-    this->setOverwriteMode(!this->isOverwriteMode());
-    emit toggle_overwrite_signal();
+  else if ( key == Key_Insert ) {
+    if (d->overwriteEnabled)
+    {
+      this->setOverwriteMode(!this->isOverwriteMode());
+      emit toggle_overwrite_signal();
+    }
   }
   else
     QMultiLineEdit::keyPressEvent(e);
