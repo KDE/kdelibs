@@ -186,7 +186,7 @@ VCARD::EntityTypeToValueType(EntityType e)
 	//---------------------------------------------------------------//		
 		case EntityClass:		t = ValueClass;		break;
 	//---------------------------------------------------------------//		
-		case EntityGeo:			t = ValueFloat;		break;
+		case EntityGeo:			t = ValueGeo;		break;
 	//---------------------------------------------------------------//		
 		case EntitySource:
 		case EntityURL:			t = ValueURI;		break;

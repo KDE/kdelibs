@@ -83,6 +83,7 @@ enum ValueType {
 	ValueDate,
 	ValueTextList,
 	ValueText,
+	ValueGeo,
 	ValueUnknown
 };
 

@@ -10,6 +10,7 @@
 #include "Entity.cpp"
 #include "Enum.cpp"
 #include "FloatValue.cpp"
+#include "GeoValue.cpp"
 #include "ImageParam.cpp"
 #include "ImageValue.cpp"
 #include "ImgValue.cpp"

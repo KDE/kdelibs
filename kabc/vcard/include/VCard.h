@@ -14,6 +14,7 @@
 #include "VCardEntity.h"
 #include "VCardEnum.h"
 #include "VCardFloatValue.h"
+#include "VCardGeoValue.h"
 #include "VCardGroup.h"
 #include "VCardImageParam.h"
 #include "VCardImageValue.h"

@@ -53,6 +53,7 @@
 #include <VCardTelValue.h>
 #include <VCardTextListValue.h>
 #include <VCardUTCValue.h>
+#include <VCardGeoValue.h>
 
 #include <VCardRToken.h>
 #include <VCardContentLine.h>
@@ -229,6 +230,7 @@ ContentLine::_parse()
 		case ValueImage:	value_ = new ImageValue;	break;
 		case ValueDate:		value_ = new DateValue;		break;
 		case ValueTextList:	value_ = new TextListValue;	break;
+		case ValueGeo:		value_ = new GeoValue;		break;
 		case ValueText:
 		case ValueUnknown:
 		default:		value_ = new TextValue;		break;
@@ -261,7 +263,7 @@ ContentLine::_assemble()
 		line += ":" + value_->asString();
 	else
 		vDebug("No value");
-                
+
 	// Quote newlines
 	line = line.replace( QRegExp( "\n" ), "\\n" );
 		

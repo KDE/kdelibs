@@ -5,6 +5,7 @@ ContentLine Entity
 DateParam Param
 DateValue Value
 EmailParam Param
+GeoValue Value
 Group Entity
 ImageParam Param
 ImageValue Value

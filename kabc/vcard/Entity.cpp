@@ -103,9 +103,8 @@ Entity::~Entity()
 Entity::asString()
 {
 //	vDebug("Entity::asString()");
-
 	assemble();
-	
+
 	return strRep_;
 }
 		
