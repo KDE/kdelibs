@@ -30,13 +30,13 @@ class QWidget;
 class QSqlPropertyMap;
 
 /**
- * @short Provides a means of automatically retrieving, 
+ * @short Provides a means of automatically retrieving,
  * saving and resetting KConfigSkeleton based settings in a dialog.
- * 
+ *
  * The KConfigDialogManager class provides a means of automatically
- * retrieving, saving and resetting basic settings.  
- * It also can emit signals when settings have been changed 
- * (settings were saved) or modified (the user changes a checkbox 
+ * retrieving, saving and resetting basic settings.
+ * It also can emit signals when settings have been changed
+ * (settings were saved) or modified (the user changes a checkbox
  * from on to off).
  *
  * The names of the widgets to be managed have to correspond to the names of the
@@ -47,11 +47,11 @@ class QSqlPropertyMap;
  * KConfigDialogManager uses the QSqlPropertyMap class to determine if it can do
  * anything to a widget.  Note that KConfigDialogManager doesn't  require a
  * database, it simply uses the functionality that is built into the
- * QSqlPropertyMap class.  New widgets can be added to the map using  
+ * QSqlPropertyMap class.  New widgets can be added to the map using
  * QSqlPropertyMap::installDefaultMap().  Note that you can't just add any
  * class.  The class must have a matching Q_PROPERTY(...) macro defined.
- * 
- * For example (note that KColorButton is already added and it doesn't need to 
+ *
+ * For example (note that KColorButton is already added and it doesn't need to
  * manually added):
  *
  * kcolorbutton.h defines the following property:
@@ -60,7 +60,7 @@ class QSqlPropertyMap;
  * \endcode
  *
  * To add KColorButton the following code would be inserted in the main.
- * 
+ *
  * \code
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
  * map.insert("KColorButton", "color");
@@ -73,7 +73,7 @@ class QSqlPropertyMap;
  * @since 3.2
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
- */ 
+ */
 class KConfigDialogManager : public QObject {
 
 Q_OBJECT
@@ -83,7 +83,7 @@ signals:
    * One or more of the settings have been saved (such as when the user
    * clicks on the Apply button).  This is only emitted by updateSettings()
    * whenever one or more setting were changed and consequently saved.
-   */ 
+   */
   void settingsChanged();
 
   /**
@@ -98,7 +98,7 @@ signals:
   /**
    * If retrieveSettings() was told to track changes then if
    * any known setting was changed this signal will be emitted.  Note
-   * that a settings can be modified several times and might go back to the 
+   * that a settings can be modified several times and might go back to the
    * original saved state. hasChanged() will tell you if anything has
    * actually changed from the saved values.
    */
@@ -112,7 +112,7 @@ public:
    * @param parent  Dialog widget to manage
    * @param conf Object that contains settings
    * @param name - Object name.
-   */ 
+   */
    KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf, const char *name=0);
 
   /**
@@ -125,7 +125,7 @@ public:
    * @param widget Additional widget to manage, inlcuding all its children
    */
   void addWidget(QWidget *widget);
-  
+
   /**
    * Returns whether the current state of the known widgets are
    * different from the state in the config object.
@@ -144,7 +144,7 @@ public slots:
    * widgets in the settings object.
    *
    * Example use: User clicks Ok or Apply button in a configure dialog.
-   */ 
+   */
   void updateSettings();
 
   /**
@@ -171,19 +171,19 @@ protected:
    * set true.  This causes the emitting the modified() signal when
    * something changes.
    * TODO: @return bool - True if any setting was changed from the default.
-   */ 
+   */
   void init(bool trackChanges);
-  
+
   /**
    * Recursive function that finds all known children.
-   * Goes through the children of widget and if any are known and not being 
+   * Goes through the children of widget and if any are known and not being
    * ignored, stores them in currentGroup.  Also checks if the widget
    * should be disabled because it is set immutable.
    * @param widget - Parent of the children to look at.
    * @param trackChanges - If true then tracks any changes to the children of
    * widget that are known.
    * @return bool - If a widget was set to something other then its default.
-   */ 
+   */
   bool parseChildren(const QWidget *widget, bool trackChanges);
 
   /**
@@ -218,7 +218,7 @@ protected:
   QSqlPropertyMap *propertyMap;
 
   /**
-   * Map of the classes and the signals that they emit when changed. 
+   * Map of the classes and the signals that they emit when changed.
    */
   QMap<QString, QCString> changedMap;
 
@@ -226,7 +226,7 @@ private:
   class Private;
   /**
    * KConfigDialogManager Private class.
-   */ 
+   */
   Private *d;
 
 };
