@@ -40,7 +40,7 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
     mykapp = a;
     filename = fname;
     filename.detach();
-
+    rb_popup =  0L;
     modified = FALSE;
 
     // set some defaults
