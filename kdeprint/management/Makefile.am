@@ -25,7 +25,7 @@ libkdeprint_management_la_SOURCES = \
 	kmwlocal.cpp kiconselectaction.cpp kmconfigpreview.cpp sidepixmap.cpp \
 	pluginaction.cpp kxmlcommanddlg.cpp kxmlcommandselector.cpp kmconfigcommand.cpp \
 	kmconfigfilter.cpp kmconfigfonts.cpp kmconfigjobs.cpp networkscanner.cpp
-libkdeprint_management_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
+libkdeprint_management_la_LDFLAGS = $(all_libraries) -version-info 5:0:1 -no-undefined
 libkdeprint_management_la_LIBADD = ../libkdeprint.la
 libkdeprint_management_la_METASOURCES = AUTO
 
