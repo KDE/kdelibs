@@ -94,6 +94,7 @@ namespace KJS {
   class ErrorObject;
   class Property;
   class List;
+  class RegExp;
   class Node;
 
   /**
@@ -125,6 +126,7 @@ namespace KJS {
      * for a single object type with @ref isA().
      */
     bool isObject() const { return (type() >= ObjectType); }
+    bool isClass(Class c) const;
 
 #ifdef KJS_DEBUG_MEM
     static int count;
@@ -188,6 +190,9 @@ namespace KJS {
     void setConstructor(KJSO *c);
     bool implementsConstruct() const { return isA(ConstructorType); }
 
+    void setRegExp(RegExp *r) { value.regexp = r; }
+    RegExp *regExp() const { return value.regexp; }
+
     // reference counting
     KJSO *ref() { refCount++; return this; }
     void deref() { assert(refCount > 0); if(!--refCount) delete this; }
@@ -206,6 +211,7 @@ namespace KJS {
       UString *s;
       Compl c;
       KJSO *base;
+      RegExp *regexp;
     };
     Value value;
     // for references and completion target

@@ -17,34 +17,26 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _REGEXP_OBJECT_H_
-#define _REGEXP_OBJECT_H_
+#ifndef _KJS_REGEXP_H_
+#define _KJS_REGEXP_H_
 
-#include "object.h"
-#include "function.h"
+#include "regex.h"
+
+#include "ustring.h"
 
 namespace KJS {
 
-  class RegExpObject : public Constructor {
+  class RegExp {
   public:
-    RegExpObject(Object *proto) : Constructor(proto, 2) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
-  };
-
-  class RegExpPrototype : public Object {
-  public:
-    RegExpPrototype(Object *proto);
-    KJSO *get(const UString &p);
-  };
-
-  class RegExpProtoFunc : public InternalFunction {
-  public:
-    RegExpProtoFunc(int i) : id(i) { }
-    KJSO* execute(const List &);
-    enum { Exec, Test, ToString };
+    enum { None, Global, IgnoreCase, Multiline };
+    RegExp(const UString &p, int f = None);
+    ~RegExp();
+    UString match(const UString &s, int i = -1);
+    bool test(const UString &s, int i = -1);
   private:
-    int id;
+    const UString &pattern;
+    int flags;
+    regex_t preg;
   };
 
 }; // namespace

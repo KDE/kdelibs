@@ -128,6 +128,14 @@ KJSO::~KJSO()
 #endif
 }
 
+bool KJSO::isClass(Class c) const
+{
+  if (!isA(ObjectType))
+    return false;
+
+  return (static_cast<const Object*>(this)->getClass() == c);
+}
+
 KJSO *KJSO::newNull()
 {
   return new Null();

@@ -17,36 +17,39 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _REGEXP_OBJECT_H_
-#define _REGEXP_OBJECT_H_
+#include <stdio.h>
 
 #include "object.h"
-#include "function.h"
+#include "regexp.h"
 
-namespace KJS {
+using namespace KJS;
 
-  class RegExpObject : public Constructor {
-  public:
-    RegExpObject(Object *proto) : Constructor(proto, 2) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
-  };
+RegExp::RegExp(const UString &p, int f)
+ : pattern(p), flags(f)
+{
+  regcomp(&preg, p.ascii(), 0);
+  /* TODO use flags, check for errors */
+}
 
-  class RegExpPrototype : public Object {
-  public:
-    RegExpPrototype(Object *proto);
-    KJSO *get(const UString &p);
-  };
+RegExp::~RegExp()
+{
+  /* TODO: is this really okay after an error ? */
+  regfree(&preg);
+}
 
-  class RegExpProtoFunc : public InternalFunction {
-  public:
-    RegExpProtoFunc(int i) : id(i) { }
-    KJSO* execute(const List &);
-    enum { Exec, Test, ToString };
-  private:
-    int id;
-  };
+UString RegExp::match(const UString &s, int)
+{
+  regmatch_t rmatch[10];
 
-}; // namespace
+  if (regexec(&preg, s.ascii(), 10, rmatch, 0))
+    return "";
 
-#endif
+  return s.substr(rmatch[0].rm_so, rmatch[0].rm_eo - rmatch[0].rm_so);
+}
+
+bool RegExp::test(const UString &s, int)
+{
+  int r = regexec(&preg, s.ascii(), 0, 0, 0);
+
+  return r == 0;
+}

@@ -137,7 +137,7 @@ namespace KJS {
 
     ~UString();
 
-    void append(const UString &);
+    UString &append(const UString &);
 
     // conversions to other string types
     CString cstring() const;
@@ -147,6 +147,7 @@ namespace KJS {
 
     UString &operator=(const char *c);
     UString &operator=(const UString &);
+    UString &operator+=(const UString &s);
 
     const UChar* data() const { return rep->data(); }
     bool is8Bit() const;

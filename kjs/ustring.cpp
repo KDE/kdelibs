@@ -179,7 +179,7 @@ UString::~UString()
   release();
 }
 
-void UString::append(const UString &t)
+UString &UString::append(const UString &t)
 {
   unsigned l = size();
   UChar *n = new UChar[l+t.size()];
@@ -187,6 +187,8 @@ void UString::append(const UString &t)
   memcpy(n+l, t.data(), t.size() * sizeof(UChar));
   release();
   rep = new UStringData(n, l + t.size());
+
+  return *this;
 }
 
 CString UString::cstring() const
@@ -225,6 +227,11 @@ UString &UString::operator=(const UString &str)
   attach(str.rep);
 
   return *this;
+}
+
+UString &UString::operator+=(const UString &s)
+{
+  return append(s);
 }
 
 bool UString::is8Bit() const

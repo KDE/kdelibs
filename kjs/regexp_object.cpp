@@ -17,7 +17,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
+
 #include "kjs.h"
+#include "operations.h"
+#include "regexp.h"
 #include "regexp_object.h"
 
 using namespace KJS;
@@ -29,9 +33,30 @@ KJSO* RegExpObject::execute(const List &)
 }
 
 // ECMA 15.9.3
-Object* RegExpObject::construct(const List &)
+Object* RegExpObject::construct(const List &args)
 {
-  return Object::create(RegExpClass, zeroRef(newUndefined()));
+  /* TODO: regexp arguments */
+  Ptr p = toString(args[0]);
+  Ptr f = toString(args[1]);
+  UString flags = f->stringVal();
+
+  Object *obj = Object::create(RegExpClass);
+
+  bool global = (flags.find("g") >= 0);
+  bool ignoreCase = (flags.find("i") >= 0);
+  bool multiline = (flags.find("m") >= 0);
+  /* TODO: throw an error on invalid flags */
+
+  obj->put("global", zeroRef(newBoolean(global)));
+  obj->put("ignoreCase", zeroRef(newBoolean(ignoreCase)));
+  obj->put("multiline", zeroRef(newBoolean(multiline)));
+
+  obj->put("source", zeroRef(newString(p->stringVal())));
+  obj->put("lastIndex", 0, DontDelete | DontEnum);
+
+  obj->setRegExp(new RegExp(p->stringVal() /* TODO flags */));
+
+  return obj;
 }
 
 // ECMA 15.9.4
@@ -41,7 +66,67 @@ RegExpPrototype::RegExpPrototype(Object *proto)
   // The constructor will be added later in RegExpObject's constructor
 }
 
-KJSO *RegExpPrototype::get(const UString &)
+KJSO *RegExpPrototype::get(const UString &p)
 {
-  return newUndefined();
+  int id = -1;
+  if (p == "exec")
+    id = RegExpProtoFunc::Exec;
+  else if (p == "test")
+    id = RegExpProtoFunc::Test;
+  else if (p == "toString")
+    id = RegExpProtoFunc::ToString;
+
+  if (id >= 0)
+    return new RegExpProtoFunc(id);
+  else
+    return KJSO::get(p);
+}
+
+KJSO* RegExpProtoFunc::execute(const List &args)
+{
+  Ptr result;
+
+  if (!thisValue()->isClass(RegExpClass)) {
+    result = newError(TypeError);
+    return newCompletion(ReturnValue, result);
+  }
+
+  Object *thisObj = static_cast<Object*>(thisValue());
+
+  Ptr s, lastIndex, tmp;
+  UString str;
+  int length, i;
+  switch (id) {
+  case Exec:
+  case Test:
+    s = toString(args[0]);
+    length = s->stringVal().size();
+    lastIndex = thisObj->get("lastIndex");
+    i = toInt32(lastIndex);
+    tmp = thisObj->get("global");
+    if (tmp->boolVal() == false)
+      i = 0;
+    if (i < 0 || i > length) {
+      thisObj->put("lastIndex", 0);
+      result = newNull();
+      break;
+    }
+    str = thisObj->regExp()->match(s->stringVal(), i);
+    if (id == Test) {
+      result = newBoolean(!(str == ""));
+      break;
+    }
+    /* TODO complete */
+    result = newString(str);
+    break;
+  case ToString:
+    s = thisObj->get("source");
+    str = "/";
+    str += s->stringVal();
+    str += "/";
+    result = newString(str);
+    break;
+  }
+
+  return newCompletion(Normal, result);
 }

@@ -47,6 +47,7 @@ namespace KJS {
   class String : public KJSO {
   public:
     String(const UString &s) { value.s = new UString(s); }
+    ~String() { delete value.s; }
     Type type() const { return StringType; }
   };
 
