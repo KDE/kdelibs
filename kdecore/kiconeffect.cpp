@@ -428,10 +428,16 @@ QImage KIconEffect::doublePixels(QImage src)
     void
 KIconEffect::visualActivate(QWidget * widget, QRect rect)
 {
-    unsigned int actCount = 8; //KonqFMSettings::settings()->visualActivateCount();
-    unsigned int actSpeed = 80; //KonqFMSettings::settings()->visualActivateSpeed();
+    KConfig * config = KGlobal::config();
+    KConfigGroupSaver cgs(config, QString::fromLatin1("KDE"));
+    if (!config->readBoolEntry("visualActivate", true))
+        return;
 
-    // actCount ranges from 1..10.
+    uint actSpeed = config->readUnsignedNumEntry("visualActivateSpeed", 50);
+
+    uint actCount = QMIN(rect.width(), rect.height()) / 2;
+
+    // Clip actCount to range 1..10.
 
     if (actCount < 1)
         actCount = 1;
@@ -439,7 +445,7 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
     else if (actCount > 10)
         actCount = 10;
 
-    // actSpeed ranges from 1..100.
+    // Clip actSpeed to range 1..100.
 
     if (actSpeed < 1)
         actSpeed = 1;
