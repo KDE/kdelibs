@@ -116,6 +116,9 @@ void KCModuleInfo::init(KService::Ptr s)
 void
 KCModuleInfo::loadAll() 
 {
+  if( !_service ) /* We have a bogus service. All get functions will return empty/zero values */
+    return;
+
   _allLoaded = true;
 
   // library and factory

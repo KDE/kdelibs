@@ -32,7 +32,12 @@ class QString;
 class QStringList;
 
 /**
- * A class that provides information about a Control Module
+ * A class that provides information about a @ref KCModule
+ *
+ * @description KCModuleInfo provides various technical information, such as icon, library 
+ * etc. about a KCModule.n
+ * @note Any values set with the set* functions is not 
+ * written back with KCModuleInfo it only reads value from the desktop file.
  * 
  * @internal
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org> 
@@ -47,20 +52,50 @@ class KCModuleInfo
 public:
 
   /**
-   * Constructs a KCModuleInfo, note that you will have to take care about the deletion
-   * yourself!
+   * Constructs a KCModuleInfo. 
+   * @note a KCModuleInfo object will have to be manually deleted, it is not 
+   * done automatically for you.
+   * @param desktopFile the desktop file representing the module, or 
+   * the name of the module.
    */
   KCModuleInfo(const QString& desktopFile);
 
   /**
-   * Construct a KCModuleInfo from a KService object.
+   * Same as above but takes a @ref KService::Ptr as argument.
+   *
+   * @param moduleInfo specifies the module
    */
   KCModuleInfo( KService::Ptr moduleInfo );
 
+
+  /**
+   * Same as above but takes a @ref KCModuleInfo as argument.
+   * 
+   * @param rhs specifies the module
+   */
   KCModuleInfo( const KCModuleInfo &rhs );
+
+  /**
+   * Assignment operator
+   */
   KCModuleInfo &operator=( const KCModuleInfo &rhs );
+
+  /**
+   * Equal operator
+   *
+   * @return true if @p rhs equals itself
+   */
+
   bool operator==( const KCModuleInfo &rhs ) const;
+
+  /**
+   * @return true if @p rhs is not equal itself
+   */
   bool operator!=( const KCModuleInfo &rhs ) const;
+
+  /**
+   * Default constructor.
+   */
   ~KCModuleInfo();
 
   /**
@@ -73,11 +108,11 @@ public:
    */
   const QStringList &keywords() const { return _keywords; };
 
-  // changed from name() to avoid ambiguity with QObject::name() on multiple inheritance
   /**
    * @return the module\'s (translated) name
    */
   QString moduleName() const { return _name; };
+  // changed from name() to avoid ambiguity with QObject::name() on multiple inheritance
 
   /**
    * @return a KSharedPtr to KService created from the modules .desktop file
@@ -128,27 +163,85 @@ public:
 
 protected:
 
-  void setKeywords(const QStringList &k) { _keywords = k; };
+  /**
+   * Sets the object's keywords.
+   * @param keyword the new keywords
+   */
+  void setKeywords(const QStringList &keyword) { _keywords = keyword; };
+
+  /**
+   * Sets the object's name.
+   * @param name the new name
+   */
   void setName(const QString &name) { _name = name; };
+
+  /**
+   * Sets the object's name.
+   * @param comment the new comment
+   */
   void setComment(const QString &comment) { _comment = comment; };
+
+  /**
+   * Sets the object's icon.
+   * @param icon the name of the new icon
+   */
   void setIcon(const QString &icon) { _icon = icon; };
+
+  /**
+   * Set the object's library
+   * @param lib the name of the new library without any extensions or prefixs.
+   */
   void setLibrary(const QString &lib) { _lib = lib; };
+
+  /**
+   * Sets the factory name
+   * @param handle The new factory name
+   */
   void setHandle(const QString &handle) { _handle = handle; };
+
+  /**
+   * Sets the object's weight property which determines in what 
+   * order modules will be displayed. Default is 100.
+   *
+   * @param the new weight
+   */
   void setWeight(int weight) { _weight = weight; };
+
+  /**
+   * Toggles whether the represented module needs root privileges. 
+   * Use with caution.
+   * @param needsRootPrivileges if module needs root privilges
+   */
   void setNeedsRootPrivileges(bool needsRootPrivileges)
   { _needsRootPrivileges = needsRootPrivileges; };
+
+  /**
+   * @deprecated
+   */
   void setIsHiddenByDefault(bool isHiddenByDefault)
   { _isHiddenByDefault = isHiddenByDefault; };
+
+  /**
+   * Sets the object's documentation path
+   * @param p the new documentation path
+   */
   void setDocPath(const QString &p) { _doc = p; };
+
+  /**
+   * Reads the service entries specific for @ref KCModule from the desktop file. 
+   * The usual desktop entries are read in @see init.
+   */
   void loadAll();
 
 private:
+
+  /**
+   * Reads the service entries. Called by the constructors.
+   */
   void init(KService::Ptr s);
 
 private:
 
-  // when adding members, don't forget to take care about them in the assignment
-  // operator
   // KDE4 These needs to be moved to KCModuleInfoPrivate
   QStringList _keywords;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
