@@ -207,18 +207,20 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       if ( fileName == ".directory" )
 	return mimeType( "text/plain" );
     }
-/*
+
   if ( !_is_local_file || _fast_mode )
   {
     QString path = _url.path();
     if ( path.right(1) == "/" || path.isEmpty() )
     {
-      // Assume HTML for http/https protocol
-      return (_url.protocol().left(4) == "http") ? mimeType( "text/html" )
-                                                 : mimeType( "inode/directory" );
+      // We have no filename at all. Maybe the protocol has a setting for
+      // which mimetype this means (like html for http...)
+      // Assume inode/directory otherwise.
+      QString def = KProtocolManager::self().defaultMimetype( _url.protocol() );
+      return mimeType( def.isEmpty() ? QString::fromLatin1("inode/directory") : def );
     }
   }
-*/
+
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
     return mimeType( "application/octet-stream" );
@@ -537,11 +539,10 @@ bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg
   // Is the device already mounted ?
   if ( !mp.isNull() )
   {
-    QString mp2 = "file:";
-    mp2 += mp;
+    KURL mpURL;
+    mpURL.setPath( mp );
     // Open a new window
-    //    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
-    KRun::runURL( mp2, "inode/directory" );
+    KRun::runURL( mpURL, QString::fromLatin1("inode/directory") );
   }
   else
   {
