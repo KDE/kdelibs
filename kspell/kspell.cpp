@@ -15,10 +15,6 @@
 
 #include "kspell.moc"
  
-//#define KSDEBUG
-
-#ifdef KSDEBUG
-#endif
 
 #define MAXLINELENGTH 150
 #define TEMPsz  3072
@@ -54,9 +50,13 @@ enum {
 
 
 KSpell::KSpell (QWidget *_parent, const char *_caption,
-		QObject *obj, char *slot, KSpellConfig *_ksc)
+		QObject *obj, const char *slot, KSpellConfig *_ksc)
 {
   proc=0;
+  ksconfig=0;
+  temp=0;
+  ksdlg=0;
+
 
   //won't be using the dialog in ksconfig, just the option values
   if (_ksc!=0)
@@ -67,8 +67,10 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
   kdebug(KDEBUG_INFO, 750, "now here %s/%d", __FILE__, __LINE__);
 
   ok=texmode=dlgon=FALSE;
+  cleaning=FALSE;
   progres=10;
   curprog=0;
+
 
   dialogwillprocess=FALSE;
   dialog3slot="";
@@ -94,6 +96,7 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
 
   startIspell();
 }
+
 
 void
 KSpell::startIspell(void)
@@ -165,7 +168,8 @@ void KSpell::KSpell2 (KProcIO *)
 
 {
   kdebug(KDEBUG_INFO, 750, "KSpell::KSpell2");
-
+  trystart=maxtrystart;  //We've officially started ispell and don't want
+       //to try again if it dies.
   if (proc->fgets (temp, TEMPsz, TRUE)==-1)
     {
       emit ready(this);
@@ -212,7 +216,7 @@ void KSpell::KSpell2 (KProcIO *)
   emit ready(this);
 }
 
-bool KSpell::addPersonal (char *word)
+bool KSpell::addPersonal (const char *word)
 {
   QString qs (word);
 
@@ -221,14 +225,18 @@ bool KSpell::addPersonal (char *word)
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
-  qs.prepend ("*");
+  qs.prepend ("&");
   personaldict=TRUE;
-  //  ignorelist.inSort (origword);
-
+  
   return proc->fputs (qs.data());
 }
 
-bool KSpell::ignore (char *word)
+bool KSpell::writePersonalDictionary (void)
+{
+  return proc->fputs ("#");
+}
+
+bool KSpell::ignore (const char *word)
 {
   QString qs (word);
 
@@ -247,7 +255,7 @@ KSpell::cleanFputsWord (const char *s, bool appendCR)
 {
   QString qs(s);
 
-  for (unsigned i=0;i<qs.length();i++)
+  for (unsigned int i=0;i<qs.length();i++)
   {
     //we need some puctuation for ornaments
     if (qs.at(i)!='\'' && qs.at(i)!='\"')
@@ -262,11 +270,11 @@ bool
 KSpell::cleanFputs (const char *s, bool appendCR)
 {
   QString qs(s);
-  unsigned j=0,l=qs.length();
+  unsigned int j=0,l=qs.length();
   
   if (l<MAXLINELENGTH)
     {
-      for (unsigned i=0;i<l;i++,j++)
+      for (unsigned int i=0;i<l;i++,j++)
 	{
 	  if (//qs.at(i-1)=='\n' && 
 	      ispunct (qs.at(i)) &&
@@ -344,7 +352,7 @@ void KSpell::checkWord3 (void)
 char * KSpell::funnyWord (char *word)
 {
   QString qs;
-  unsigned i;
+  unsigned int i;
 
   for (i=0; word [i]!='\0';i++)
     {
@@ -353,7 +361,7 @@ char * KSpell::funnyWord (char *word)
       if (word [i]=='-')
 	{
 	  QString shorty;
-	  unsigned j;
+	  unsigned int j;
 	  int k;
 	  
 	  for (j=i+1;word [j]!='\0' && word [j]!='+' &&
@@ -440,7 +448,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
       if (e!=-1)
 	{
 	  e++;
-	  if (replacelist.count()>(unsigned)e)
+	  if (replacelist.count()>(unsigned int)e)
 	    strcpy (word,replacelist.at(e));
 	  return REPLACE;
 	}
@@ -453,7 +461,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
 	  qs+=',';
 	  sugg->clear();
 	  i=j=0;
-	  while ((unsigned)i<qs.length())
+	  while ((unsigned int)i<qs.length())
 	    {
 	      strcpy (temp,qs.mid (i,(j=qs.find (',',i))-i).data());
 	      sugg->append (funnyWord (temp));
@@ -500,7 +508,7 @@ void KSpell::checkList2 (void)
   //  disconnect (this, SIGNAL (eza()), this, SLOT (checkList2()));
   if (wordlist->current()==0)
     {
-      if ((unsigned)lastpos>=wordlist->count())
+      if ((unsigned int)lastpos>=wordlist->count())
 	{
 	  NOOUTPUT(checkList3a);
 	  ksdlg->hide();
@@ -686,18 +694,17 @@ void KSpell::check2 (KProcIO *)
 
   proc->ackRead();
 
+
   if (tempe==-1) //we were called, but no data seems to be ready...
     return;
 
   //If there is more to check, then send another line to ISpell.
-  //If not, then hide the dialog box and exit.
-  if ((unsigned)lastline<buffer.length())
+  if ((unsigned int)lastline<buffer.length())
     {
       int i;
       QString qs;
       
       kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
-      //      getchar();
       
       lastpos=(lastlastline=lastline)+offset;
       i=buffer.find('\n', lastline)+1;
@@ -707,12 +714,21 @@ void KSpell::check2 (KProcIO *)
       return;  
     }
   else
+  //This is the end of it all
+    //  if (lastline==-1)
     {
-      //      dsdebug ("done!\n");
       ksdlg->hide();
       buffer=newbuffer.data();
+      kdebug (KDEBUG_WARN, 750, "check2() done");
       emit done (buffer.data());
     }
+
+  /*    {
+      proc->fputs("");
+      lastline=-1;
+    }
+    */
+
 }
 
 void KSpell::check3 ()
@@ -795,9 +811,7 @@ void KSpell::dialog2 (int result)
       ignorelist.inSort (dlgorigword.lower());
       break;
     case KS_ADD:
-      qs="&";
-      qs+=dlgorigword;
-      proc->fputs (qs.lower());
+      addPersonal ((const char*)dlgorigword);
       personaldict=TRUE;
       ignorelist.inSort (dlgorigword.lower());
       break;
@@ -815,17 +829,22 @@ void KSpell::dialog2 (int result)
 
 KSpell:: ~KSpell ()
 {
+  kdebug(KDEBUG_INFO, 750, "KSpell:~KSpell");
 
-  if (proc!=0 && personaldict)
+  if (proc)  
     {
-      proc->fputs ("#");
+      delete proc;
     }
+  if (ksconfig)
+    delete ksconfig;
 
-  
-  if (proc!=0)
-    delete proc;
-    
+  if (temp)
+    delete [] temp;
+
+  if (ksdlg)
+    delete  ksdlg;
 }
+
 
 KSpellConfig KSpell::ksConfig (void) const
 {
@@ -833,9 +852,25 @@ KSpellConfig KSpell::ksConfig (void) const
   return *ksconfig;
 }
 
+void KSpell::cleanUp ()
+{
+  kdebug(KDEBUG_WARN, 750, "KSpell::cleanUp()");
+  if (personaldict)
+    writePersonalDictionary();
+  cleaning=TRUE;
+  proc->closeStdin();
+}
+
 void KSpell::ispellExit (KProcess *)
 {
-  kdebug(KDEBUG_WARN, 750, "KSpell::ispellExit: ISpell died");
+  kdebug(KDEBUG_WARN, 750, "KSpell::ispellExit()");
+
+  if (cleaning)
+    {
+      emit cleanDone(); //you can delete me now
+      return;
+    }
+
   if (trystart<maxtrystart)
     {
       trystart++;

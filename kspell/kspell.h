@@ -16,6 +16,7 @@
 #include "ksconfig.h"
 
 /**
+ *  ?/ ?/98 Entered into CVS
  *  1/ 2/98 KSpell 0.3.1
  * 11/25/97 KSpell 0.2.3
  * 11/  /97 KSpell 0.2.2
@@ -47,9 +48,11 @@ public:
   /**
    * KSpell emits ready() when it has verified that ispell is
    *  working properly.  Pass the name of a slot -- do not pass zero!
+   * Be sure to call cleanUp() when you are done with KSpell.
    */
   KSpell(QWidget *_parent, const char *caption,
-	 QObject *obj, char *slot, KSpellConfig *_kcs=0);
+	 QObject *obj, const char *slot, KSpellConfig *_kcs=0);
+
   /**
    * Be sure your instance of KSpell isOk() before you use it.
    *  isOk()==TRUE would indicate that any memory that needed to be
@@ -64,6 +67,12 @@ public:
    **/
   inline bool isOk (void) { return ok; }
 
+  /**
+   * Clean up ISpell (write out the personal dictionary and close ispell's
+   *  stdin).  A "death()" signal will be emitted when the cleanup is
+   *  complete, but the cleanUp() method will return immediately.
+   **/
+  virtual void cleanUp (void);
   /**
    *  check() will spell check a buffer of many words in plain text 
    *  format
@@ -158,13 +167,13 @@ public:
    *  ignore() returns FALSE if word is not a word or there was an error
    *  communicating with ispell.
    */
-  virtual bool ignore (char *word);
+  virtual bool ignore (const char *word);
 
   /**
    * Add a word to the user's personal dictionary.  Returns FALSE if word
    *  is not a word or there was an error communicating with ispell.
    */
-  virtual bool addPersonal (char *word);
+  virtual bool addPersonal (const char *word);
 
   /**
    * Returns the KSpellConfig object being used by this KSpell.
@@ -242,6 +251,11 @@ signals:
   void done(bool);
 
   /**
+   * emitted when cleanUp() is done
+   **/
+  void cleanDone();
+
+  /**
    * emitted on terminal errors
    */
   void death(KSpell *);
@@ -274,10 +288,10 @@ protected:
   KSpellConfig *ksconfig;
   KSpellDlg *ksdlg;
   QStrList *wordlist, ignorelist, replacelist, sugg;
-
+  
   char *temp;
 
-  bool usedialog, texmode, dlgon, ok, personaldict, dialogwillprocess;
+  bool cleaning, usedialog, texmode, dlgon, ok, personaldict, dialogwillprocess;
 
   QString ispellID, caption, orig;
   QString buffer, newbuffer, cwword, dlgorigword;
@@ -297,6 +311,7 @@ protected:
   bool cleanFputs (const char *s, bool appendCR=TRUE);
   bool cleanFputsWord (const char *s, bool appendCR=TRUE);
   void startIspell(void);
+  bool writePersonalDictionary (void);
 };
 
 #endif

@@ -44,6 +44,7 @@ public:
   virtual bool writeStdin(const char *buffer, bool AppendNewLine=TRUE);
 
   //I like fputs better -- it's the same as writeStdin
+  //inline
   bool fputs (const char *buffer, bool AppendNewLine=TRUE)
     { return writeStdin(buffer, AppendNewLine); }
 
