@@ -139,8 +139,9 @@ static const char *s_protocol;
 static void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
-   //I don't think we can have the same problem here as in the sigsegv handler
-   kdDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
+   //WABA: Don't do anything that requires malloc, we can deadlock on it since
+   //a SIGTERM signal can come in while we are in malloc/free.
+   //kdDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
    //set the flag which will be checked in dispatchLoop() and which *should* be checked
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
