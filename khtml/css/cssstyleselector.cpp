@@ -753,7 +753,10 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
         cleanpath( u );
     }
     //completeURL( attr.string() );
-    pseudoState = KHTMLFactory::vLinks()->contains( u ) ? PseudoVisited : PseudoLink;
+    bool contains = KHTMLFactory::vLinks()->contains( u );
+    if ( !contains && u.contains('/')==2 )
+      contains = KHTMLFactory::vLinks()->contains( u+'/' );
+    pseudoState = contains ? PseudoVisited : PseudoLink;
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
