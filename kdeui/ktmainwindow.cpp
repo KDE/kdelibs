@@ -832,7 +832,11 @@ QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText,
 				    bool showWhatsThis )
 {
     if( mHelpMenu == 0 ) {
-	mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
+        if (aboutAppText.isEmpty())
+           mHelpMenu = new KHelpMenu( this, instance()->aboutData(), showWhatsThis);
+        else
+           mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
+
 	if( mHelpMenu == 0 ) { return( 0 ); }
 	connect( mHelpMenu, SIGNAL(showAboutApplication()),
 		 this, SLOT(showAboutApplication()));
