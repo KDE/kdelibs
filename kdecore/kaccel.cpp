@@ -2,7 +2,6 @@
 
 #include <qaccel.h>
 #include <qpopupmenu.h>
-#include <qregexp.h>
 #include <qstring.h>
 #include <qtimer.h>
 
@@ -84,12 +83,9 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
-		// TODO: If Simon removes this functionality from KAction::initPrivate(), then remove it from here too
-		if( QRegExp("\\(\\s*int\\s*\\)").search( action.methodSlotPtr() ) == -1 ) {
-			((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
-			if( !action.isEnabled() )
-				((QAccel*)m_pAccel)->setItemEnabled( nID, false );
-		}
+		((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
+		if( !action.isEnabled() )
+			((QAccel*)m_pAccel)->setItemEnabled( nID, false );
 	}
 
 	kdDebug(125) << "KAccelPrivate::connectKey( \"" << action.name() << "\", " << key.key().toStringInternal() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
@@ -149,26 +145,6 @@ void KAccelPrivate::slotKeyPressed( int id )
 {
 	kdDebug(125) << "KAccelPrivate::slotKeyPressed( " << id << " )" << endl;
 	
-	if( m_mapIDToAction.contains( id ) ) {
-		KAccelAction* pAction = m_mapIDToAction[id];
-		Q_ASSERT( pAction );
-		if ( !pAction )
-			return;
-		QRegExp rxVal("\\{(.+)\\}");
-		rxVal.setMinimal( true );
-		kdDebug(125) << "pAction->name() = " << pAction->name() << endl;
-		if( rxVal.search( pAction->name() ) >= 0 ) {
-			kdDebug(125) << "pAction->methodSlotPtr() = " << pAction->methodSlotPtr() << endl;
-			if( QRegExp("\\(\\s*int\\s*\\)").search( pAction->methodSlotPtr() ) >= 0 ) {
-				int n = rxVal.cap(1).toInt();
-				kdDebug(125) << "rxVal.cap(0) = " << rxVal.cap(0) << ", rxVal.cap(1) = " << rxVal.cap(1) << ", n = " << n << endl;
-				connect( this, SIGNAL(activateInt(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-				emit activateInt( n );
-				disconnect( this, SIGNAL(activateInt(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-				return;
-			}
-		}
-	} 
 	if( m_mapIDToKey.contains( id ) ) {
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
@@ -198,7 +174,6 @@ void KAccelPrivate::slotShowMenu()
 
 void KAccelPrivate::slotMenuActivated( int iAction )
 {
-	// TODO: take care of slot(int)
 	kdDebug(125) << "KAccelPrivate::slotMenuActivated( " << iAction << " )" << endl;
 	KAccelAction* pAction = actions().actionPtr( iAction );
 	if( pAction ) {
