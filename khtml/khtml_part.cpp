@@ -1125,11 +1125,12 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   errText += QString::fromLatin1( "</P><P>" );
   QString kioErrString = KIO::buildErrorString( errorCode, text );
 
-  // In case the error string has '\n' in it, replace with <BR/>
-  kioErrString.replace( QRegExp("\n"), "<BR/>" );
   kioErrString.replace(QRegExp("&"), QString("&amp;"));
   kioErrString.replace(QRegExp("<"), QString("&lt;"));
   kioErrString.replace(QRegExp(">"), QString("&gt;"));
+
+  // In case the error string has '\n' in it, replace with <BR/>
+  kioErrString.replace( QRegExp("\n"), "<BR/>" );
 
   errText += kioErrString;
   errText += QString::fromLatin1( "</P></BODY></HTML>" );
