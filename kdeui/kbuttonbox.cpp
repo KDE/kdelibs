@@ -25,6 +25,11 @@
 *
  * HISTORY
  *
+ * 11/13/98 Reginald Stadlbauer <reggie@kde.org>
+ * Now in Qt 1.4x motif default buttons have no extra width/height anymore.
+ * So the KButtonBox doesn't add this width/height to default buttons anymore
+ * which makes the buttons look better.
+ *
  * 01/17/98  Mario Weilguni <mweilguni@sime.com>
  * Fixed a bug in sizeHint()
  * Improved the handling of Motif default buttons
@@ -39,8 +44,9 @@
 #include "kbuttonbox.h"
 
 // taken from Qt source
-const int extraMotifWidth = 10;
-const int extraMotifHeight = 10;
+// Reggie: In Qt 1.4x we don't have additional width/height!
+const int extraMotifWidth = 0;
+const int extraMotifHeight = 0;
 
 const int minButtonWidth = 50;
 
