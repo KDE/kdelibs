@@ -97,6 +97,12 @@ public:
   { return codec->name(); }
 
   /**
+   * Returns the MIB for the codec being used.
+   */
+  inline int encodingMib() const
+  { return codec->mibEnum(); }
+
+  /**
    * Sets the encoding being used.
    * This function does not change the global configuration.
    *

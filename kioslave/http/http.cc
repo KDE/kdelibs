@@ -631,12 +631,6 @@ void HTTPProtocol::davSetRequest( const QCString& requestXML )
     m_bufPOST.truncate( m_bufPOST.size() - 1 );
 }
 
-class KRemoteWebDavEncoding : public KRemoteEncoding
-{
-public:
-   int encodingMib() { return codec->mibEnum(); }
-};
-
 void HTTPProtocol::davStatList( const KURL& url, bool stat )
 {
   UDSEntry entry;
@@ -724,7 +718,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
       entry.clear();
 
       QString urlStr = href.text();
-      int encoding = ((KRemoteWebDavEncoding*)remoteEncoding())->encodingMib();
+      int encoding = remoteEncoding()->encodingMib();
       if ((encoding == 106) && (!KStringHandler::isUtf8(KURL::decode_string(urlStr, 4).latin1())))
         encoding = 4; // Use latin1 if the file is not actually utf-8
 
