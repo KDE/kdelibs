@@ -259,6 +259,8 @@ vector<string> *InterfaceRepo_impl::queryChildren(const std::string& name)
 				found = true;
 			}
 		}
+		if((*ii)->inheritedInterfaces.empty() && ((name == "Arts::Object") || (name == "object")) && ((*ii)->name != "Arts::Object"))
+			result->push_back((*ii)->name);
 	}
 
 	return result;
