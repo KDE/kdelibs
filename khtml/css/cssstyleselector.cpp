@@ -534,7 +534,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         case CSS_PROP_FONT_SIZE:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
-	    case CSS_PROP_BACKGROUND_IMAGE:
+	case CSS_PROP_BACKGROUND_IMAGE:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
             break;
@@ -1662,7 +1662,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         QFontDatabase db;
         int oldSize;
         float size = 0;
-        int minFontSize = QMAX(e->ownerDocument()->view()->part()->settings()->minFontSize(), 6);
+        int minFontSize = e->ownerDocument()->view()->part()->settings()->minFontSize();
 
         QValueList<int> standardSizes = e->ownerDocument()->view()->part()->fontSizes();
         if(e->parentNode())
@@ -1715,12 +1715,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 size = computeLength(primitiveValue, parentStyle);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = (int)(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
-                                  * parentStyle->font().pointSize() / 100.);
+                size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+                                  * parentStyle->font().pixelSize()) / 100;
             else
                 return;
 	    // size is now in pixels, for the font we need it in points
-	    size = (int) (size * 72.)/QPaintDevice::x11AppDpiY();
+	    size = (int) (size * 72+36)/QPaintDevice::x11AppDpiY();
         }
 
         if(size <= 0) return;
