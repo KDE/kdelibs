@@ -452,8 +452,6 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
      return result;
   }
 
-qWarning("Exec = '%s'", exec.latin1());
-
   // Move args to result
   bool need_shell = false;
   QStringList result = breakup(exec, &need_shell);
