@@ -515,8 +515,8 @@ bool KBugReport::sendBugReport()
   QString subject = m_subject->text();
   subject = subject.replace(QRegExp("\""), QString::fromLatin1("\\\""));
   command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").
-             arg(KShellProcess::quote(subject)).
-             arg(KShellProcess::quote(recipient)).
+             arg(KProcess::quote(subject)).
+             arg(KProcess::quote(recipient)).
              arg(outputfile.name());
 
   fflush(stdin);
