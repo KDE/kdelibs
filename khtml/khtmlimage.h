@@ -32,7 +32,7 @@ class KInstance;
 namespace khtml
 {
     class CachedImage;
-};
+}
 
 /**
  * @internal
