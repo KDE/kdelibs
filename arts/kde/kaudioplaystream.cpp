@@ -51,14 +51,6 @@ kdDebug( 400 ) << k_funcinfo << endl;
 KAudioPlayStreamPrivate::~KAudioPlayStreamPrivate()
 {
 	kdDebug( 400 ) << k_funcinfo << endl;
-/*	if ( _effects )
-	{
-		Arts::disconnect( _effectrack, _play->amanPlay() );
-		Arts::disconnect( _bs2a, _effectrack );
-	} else {
-		Arts::disconnect( _bs2a, _play->amanPlay() );
-	}*/
-
 	_play->stop();
 	if ( _effects ) _effectrack.stop();
 	_bs2a.stop();
@@ -81,12 +73,10 @@ void KAudioPlayStreamPrivate::initaRts() {
 	if ( _effects )
 	{
 		Arts::connect( _effectrack, _play->amanPlay() );
-//		Arts::connect( _bs2a, _effectrack );
+		Arts::connect( _bs2a, _effectrack );
 	} else {
-//		Arts::connect( _bs2a, _play->amanPlay() );
+		Arts::connect( _bs2a, _play->amanPlay() );
 	}
-
-	//Arts::connect( _effectrack, _play->amanPlay() );
 
 	_play->start();
 	if ( _effects ) _effectrack.start();
@@ -125,8 +115,6 @@ void KAudioPlayStream::start( int samplingRate, int bits, int channels )
 		d->_artssender = Arts::ByteSoundProducerV2::_from_base( d->_sender );
 		Arts::connect( d->_artssender, "outdata", d->_bs2a, "indata" );
 
-		Arts::connect( d->_bs2a, d->_effectrack );
-
 		d->_bs2a.start();
 		d->_artssender.start();
 
@@ -150,8 +138,6 @@ void KAudioPlayStream::stop()
 		// Shortly stop the play so we dont get clicks and artefacts
 		d->_play->stop();
 		d->_play->start();
-
-		Arts::disconnect( d->_bs2a, d->_effectrack );
 
 		Arts::disconnect( d->_artssender, d->_bs2a );
 		d->_artssender = Arts::ByteSoundProducerV2::null();
