@@ -158,7 +158,9 @@ bool Collector::collect()
   if (InterpreterImp::s_hook) {
     InterpreterImp *scr = InterpreterImp::s_hook;
     do {
-      //fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
+#ifdef KJS_DEBUG_MEM
+      fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
+#endif
       scr->mark();
       scr = scr->next;
     } while (scr != InterpreterImp::s_hook);
@@ -175,7 +177,12 @@ bool Collector::collect()
       // Check for created=true, marked=false and (gcallowed=false or refcount>0)
       if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
           ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount ) ) {
-        //fprintf( stderr, "Collector marking imp=%p\n",(void*)imp);
+#ifdef KJS_DEBUG_MEM
+        if ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 )
+          fprintf( stderr, "Collector marking imp=%p (%s) because no GC allowed on it\n",(void*)imp, typeid(*imp).name());
+        else
+          fprintf( stderr, "Collector marking imp=%p (%s) because refcount=%d\n",(void*)imp, typeid(*imp).name(), imp->refcount);
+#endif
         imp->mark();
       }
     }
@@ -192,7 +199,9 @@ bool Collector::collect()
       // Can delete if marked==false
       if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED ) {
         // emulate destructing part of 'operator delete()'
-        //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
+#ifdef KJS_DEBUG_MEM
+        fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
+#endif
         imp->~ValueImp();
       }
     }
@@ -253,8 +262,7 @@ bool Collector::collect()
   }
   if (!currentBlock)
     currentBlock = last;
-#if 0
-  // This is useful to track down memory leaks
+#ifdef KJS_DEBUG_MEM
   static int s_count = 0;
   fprintf(stderr, "Collector done (was run %d)\n",s_count);
   if (s_count++ % 50 == 2)
@@ -269,15 +277,14 @@ void Collector::finalCheck()
   CollectorBlock *block = root;
   while (block) {
     ValueImp **r = block->mem;
-    for (int i = 0; i < block->size; i++, r++) {
-      if (*r ) {
-        fprintf( stderr, "Collector::finalCheck() still having ValueImp %p (%s)  [marked:%d gcAllowed:%d created:%d refcount:%d]\n",
-                 (void*)(*r), typeid( **r ).name(),
-                 (bool)((*r)->_flags & ValueImp::VI_MARKED),
-                 (bool)((*r)->_flags & ValueImp::VI_GCALLOWED),
-                 (bool)((*r)->_flags & ValueImp::VI_CREATED),
-                 (*r)->refcount);
-      }
+    for (int i = 0; i < block->filled; i++, r++) {
+      assert( *r );
+      fprintf( stderr, "Collector::finalCheck() still having ValueImp %p (%s)  [marked:%d gcAllowed:%d created:%d refcount:%d]\n",
+               (void*)(*r), typeid( **r ).name(),
+               (bool)((*r)->_flags & ValueImp::VI_MARKED),
+               (bool)((*r)->_flags & ValueImp::VI_GCALLOWED),
+               (bool)((*r)->_flags & ValueImp::VI_CREATED),
+               (*r)->refcount);
     }
     block = block->next;
   }
