@@ -81,7 +81,7 @@ public:
 	/**
 	 * Returns the full path of the ~/.mcop directory
 	 */
-	static string mcopDirectory();
+	static std::string mcopDirectory();
 
 	/**
 	 * Tokenization of a key = value1, "value 2", "value III" line into the key
