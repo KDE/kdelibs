@@ -134,6 +134,12 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 		hide();
 		return false;
 	    }
+            
+            else if ( type == QEvent::Move )
+                move( m_parent->mapToGlobal(QPoint(0, m_parent->height())));
+
+            else if ( type == QEvent::Resize )
+                adjustSize();
         }
     }
 
@@ -141,18 +147,23 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         switch( type ) {
         case QEvent::Show:
             if ( m_parent ) {
-                move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
-		m_parent->installEventFilter( this );
+                move( m_parent->mapToGlobal( QPoint(0, m_parent->height())));
+		qApp->installEventFilter( this );
             }
             resize( sizeHint() );
             break;
         case QEvent::Hide:
             if ( m_parent )
-		m_parent->removeEventFilter( this );
+		qApp->removeEventFilter( this );
             break;
         default:
             break;
 	}
+    }
+    
+    else { // any other object received an event while we're visible
+        if ( type == QEvent::MouseButtonPress )
+            hide();
     }
 
     return KListBox::eventFilter( o, e );
@@ -168,7 +179,7 @@ void KCompletionBox::popup()
         if ( !isVisible() )
             show();
         else if ( size().height() < sizeHint().height() )
-            resize( sizeHint() );
+            adjustSize();
     }
 }
 
