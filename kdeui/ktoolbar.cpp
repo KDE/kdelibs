@@ -100,14 +100,17 @@ public:
 
     int m_iconSize;
     KToolBar::IconText m_iconText;
-    bool m_highlight;
-    bool m_transparent;
-    bool m_honorStyle;
-    bool m_isHorizontal;
+    bool m_highlight : 1;
+    bool m_transparent : 1;
+    bool m_honorStyle : 1;
+    bool m_isHorizontal : 1;
+    bool m_enableContext : 1;
+    bool m_configurePlugged : 1;
+    bool modified : 1;
+    bool positioned : 1;
 
     QWidget *m_parent;
 
-    bool m_enableContext;
     //bool hasRealPos;
     //QMainWindow::ToolBarDock realPos;
     //int realIndex, realOffset;
@@ -115,10 +118,6 @@ public:
     QMainWindow::ToolBarDock oldPos;
 
     KXMLGUIClient *m_xmlguiClient;
-    bool m_configurePlugged;
-
-    bool modified;
-    bool positioned;
 
     struct ToolBarInfo
     {
@@ -133,6 +132,7 @@ public:
 
     ToolBarInfo toolBarInfo;
     QValueList<int> iconSizes;
+    QTimer repaintTimer;
 };
 
 KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
@@ -217,6 +217,8 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     layoutTimer = new QTimer( this );
     connect( layoutTimer, SIGNAL( timeout() ),
              this, SLOT( rebuildLayout() ) );
+    connect( &(d->repaintTimer), SIGNAL( timeout() ),
+             this, SLOT( slotRepaint() ) );
 
     connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
     // request notification of changes in icon style
@@ -1365,7 +1367,7 @@ void KToolBar::resizeEvent( QResizeEvent *e )
     setUpdatesEnabled( FALSE );
     QToolBar::resizeEvent( e );
     if (b)
-       QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
+       d->repaintTimer.start( 100, true );
 }
 
 void KToolBar::slotIconChanged(int group)
@@ -1621,7 +1623,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 bool KToolBar::event( QEvent *e )
 {
     if ( (e->type() == QEvent::LayoutHint) && isUpdatesEnabled() )
-        QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
+       d->repaintTimer.start( 100, true );
         
     if (e->type() == QEvent::ChildInserted )
     {
@@ -1643,6 +1645,7 @@ void KToolBar::slotRepaint()
     // the available space)
     QResizeEvent ev(size(), size());
     resizeEvent(&ev);
+    QApplication::sendPostedEvents( this, QEvent::LayoutHint );
     setUpdatesEnabled( TRUE );
     repaint( FALSE );
 }
