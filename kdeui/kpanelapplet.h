@@ -37,11 +37,12 @@ class KPanelAppletData;
 */
 class KPanelApplet : public QWidget, DCOPObject
 {
-  enum Position { Left = 0, Right, Top, Bottom };
-
   Q_OBJECT;
 
  public:
+
+  enum Position { Left = 0, Right, Top, Bottom };
+
   /**
    * Construct a KApplet widget just like any other widget.
    **/
