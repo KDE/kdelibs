@@ -58,7 +58,7 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
 
 void DavJob::slotData( const QByteArray& data ) 
 {
-  if(m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error)
+  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
     m_str_response.append( QString( data ) );
 }
 
@@ -66,7 +66,7 @@ void DavJob::slotFinished()
 {
   // kdDebug() << "DavJob::slotFinished()" << endl;
   // kdDebug() << m_str_response << endl;
-	if (!m_redirectionURL.isEmpty() && !m_redirectionURL.isMalformed() && (m_command == CMD_SPECIAL)) {
+	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
         QDataStream istream( m_packedArgs, IO_ReadOnly );
 		int s_cmd, s_method;
 		KURL s_url;

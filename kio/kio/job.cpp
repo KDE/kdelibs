@@ -366,7 +366,7 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command), m_totalSize(0)
 {
-    if (m_url.isMalformed())
+    if (!m_url.isValid())
     {
         m_error = ERR_MALFORMED_URL;
         m_errorText = m_url.url();
@@ -708,7 +708,7 @@ void StatJob::slotRedirection( const KURL &url)
 
 void StatJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed())
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid())
     {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
@@ -774,7 +774,7 @@ TransferJob::TransferJob( const KURL& url, int command,
 // Slave sends data
 void TransferJob::slotData( const QByteArray &_data)
 {
-    if(m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error)
+    if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
       emit data( this, _data);
 }
 
@@ -812,7 +812,7 @@ void TransferJob::slotRedirection( const KURL &url)
 void TransferJob::slotFinished()
 {
    //kdDebug(7007) << "TransferJob::slotFinished(" << this << ", " << m_url.prettyURL() << ")" << endl;
-    if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed())
+    if (m_redirectionURL.isEmpty() || !m_redirectionURL.isValid())
         SimpleJob::slotFinished();
     else {
         //kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
@@ -1228,7 +1228,7 @@ void MimetypeJob::slotFinished( )
         emit TransferJob::mimetype( this, m_mimetype );
         m_error = 0;
     }
-    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error )
     {
         // Return slave to the scheduler
         TransferJob::slotFinished();
@@ -1770,7 +1770,7 @@ void ListJob::slotRedirection( const KURL & url )
 
 void ListJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error )
     {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
@@ -3679,7 +3679,7 @@ void MultiGetJob::slotFinished()
 void MultiGetJob::slotData( const QByteArray &_data)
 {
   if(!m_currentEntry) return;// Error, unknown request!
-  if(m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error)
+  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
      emit data(m_currentEntry->id, _data);
 }
 

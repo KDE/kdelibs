@@ -962,7 +962,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	bool man_or_info = ( url_dir->protocol() == QString("man")
 	                     || url_dir->protocol() == QString("info") );
 
-	if ( url_dir->isMalformed()
+	if ( !url_dir->isValid()
 	     || !KProtocolInfo::supportsListing( *url_dir )
 	     || ( !man_or_info
 	          && ( url_dir->directory(false,false).isEmpty()
