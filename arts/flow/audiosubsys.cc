@@ -29,6 +29,10 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
+
 #ifdef HAVE_SYS_SOUNDCARD_H
 #include <sys/soundcard.h>
 #endif
