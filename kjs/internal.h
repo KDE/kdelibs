@@ -257,7 +257,6 @@ namespace KJS {
   class ActivationImp : public Imp {
   public:
     ActivationImp(FunctionImp *f, const List *args);
-    virtual ~ActivationImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   private:

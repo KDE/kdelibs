@@ -722,7 +722,7 @@ namespace KJS {
   // inherited by ProgramNode
   class FunctionBodyNode : public StatementNode {
   public:
-      FunctionBodyNode(SourceElementsNode *s) : source(s) { }
+      FunctionBodyNode(SourceElementsNode *s);
       Completion execute();
   protected:
       SourceElementsNode *source;

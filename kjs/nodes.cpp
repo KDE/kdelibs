@@ -1332,6 +1332,14 @@ Completion FinallyNode::execute()
   return block->execute();
 }
 
+FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
+  : source(s)
+{
+#ifdef KJS_DEBUGGER
+  setLoc(-1, -1);
+#endif
+}
+
 // ECMA 13 + 14 for ProgramNode
 Completion FunctionBodyNode::execute()
 {

@@ -444,10 +444,10 @@ namespace KJS {
      */
     PropList *getPropList(PropList *first = 0L, PropList *last = 0L) const;
 
+  public:
     // reference counting mechanism
     inline Imp* ref() { refcount++; return this; }
     inline bool deref() { return (!--refcount); }
-  public:
     unsigned int refcount;
 
   private:

@@ -361,7 +361,7 @@ Completion DeclaredFunctionImp::execute(const List &)
   int oldSourceId = -1;
   if (dbg) {
     oldSourceId = dbg->sourceId();
-    dbg->setSourceId(block->sourceId());
+    dbg->setSourceId(body->sourceId());
   }
 #endif
 
@@ -403,41 +403,31 @@ Completion AnonymousFunction::execute(const List &)
   return Completion(Normal, Null());
 }
 
-const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
+// ECMA 10.1.8
+class ArgumentsObject : public ObjectImp {
+public:
+  ArgumentsObject(FunctionImp *func, const List *args);
+};
 
-// ECMA 10.1.7 (draft April 98, 10.1.6 previously)
-ActivationImp::ActivationImp(FunctionImp *f, const List *args)
+ArgumentsObject::ArgumentsObject(FunctionImp *func, const List *args)
+  : ObjectImp(UndefClass)
 {
-  func = f;
-
-  put("arguments", this, DontDelete | DontEnum); // circular reference
-#if 0
-  if (func->hasProperty("arguments"))
-    put("OldArguments", func->get("arguments"));
-#endif
   put("callee", Function(func), DontEnum);
   if (args) {
     put("length", Number(args->size()), DontEnum);
     ListIterator arg = args->begin();
     for (int i = 0; arg != args->end(); arg++, i++) {
-      put(UString::from(i), *arg);
+      put(UString::from(i), *arg, DontEnum);
     }
   }
-#if 0
-  func->put("arguments", this);
-#endif
 }
 
+const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
+
 // ECMA 10.1.6
-ActivationImp::~ActivationImp()
+ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
-  /* TODO */
-#if 0
-  if (!hasProperty("OldArguments"))
-    func->deleteProperty("arguments");
-  else
-    func->put("arguments", get("OldArguments")); /* TODO: deep copy ? */
-#endif
+  put("arguments", new ArgumentsObject(f, args), DontDelete);
 }
 
 KJScriptImp* KJScriptImp::curr = 0L;
