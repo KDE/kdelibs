@@ -88,6 +88,8 @@ public:
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 
+    virtual void insertedIntoDocument();
+
     bool noResize() { return noresize; }
     void setLocation( const DOMString& str );
 
