@@ -165,6 +165,8 @@ public:
    */
   virtual void restoreState( QDataStream &stream );
 
+  static QMap<QCString,QCString> actionSlotMap();
+
 signals:
   /**
    * Enable or disable a standard action held by the browser.

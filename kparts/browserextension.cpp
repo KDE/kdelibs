@@ -173,3 +173,24 @@ void BrowserExtension::slotCompleted()
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
   setURLArgs( URLArgs() );
 }
+
+QMap<QCString,QCString> BrowserExtension::actionSlotMap()
+{
+  QMap<QCString,QCString> res;
+
+  res.insert( "cut", SLOT( cut() ) );
+  res.insert( "copy", SLOT( copy() ) );
+  res.insert( "pastecut", SLOT( pastecut() ) );
+  res.insert( "pastecopy", SLOT( pastecopy() ) );
+  res.insert( "trash", SLOT( trash() ) );
+  res.insert( "del", SLOT( del() ) );
+  res.insert( "shred", SLOT( shred() ) );
+  res.insert( "properties", SLOT( properties() ) );
+  res.insert( "editMimeType", SLOT( editMimeType() ) );
+  res.insert( "print", SLOT( print() ) );
+  res.insert( "saveLocalProperties", SLOT( saveLocalProperties() ) );
+  res.insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
+  res.insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
+
+  return res;
+}
