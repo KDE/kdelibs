@@ -532,18 +532,19 @@ void HTMLButtonElementImpl::layout( bool deep )
 {
     if(!w) return;
 
-    int oldW = width;
-    int oldH = getHeight();
+    int oldW = width = 5;
+    int oldH = getHeight() - 5;
     // make it as small as possible. One could think of better strategies though...
     availableWidth = minWidth;
-    HTMLBlockElementImpl::layout(deep);
+    HTMLBlockElementImpl::layout(true);
 
-    if(width != oldW && getHeight() != oldH)
-    { 	   
+    if(width != oldW || getHeight() != oldH)
+    { 	
 	pixmap = QPixmap(width, getHeight());
 	QPainter p(&pixmap);
 	p.eraseRect(0, 0, width, getHeight());
 	dirty = true;
+	printf("erasing, isDirty!\n");
     }
 
     int h = getHeight();
@@ -551,6 +552,7 @@ void HTMLButtonElementImpl::layout( bool deep )
     descent = 5;
     ascent = h;
     width += 5;
+
     setLayouted();
     setBlocking(false);
 }
@@ -598,15 +600,18 @@ void HTMLButtonElementImpl::print(QPainter *painter, int _x, int _y, int _w, int
     printf("button: ascent=%d descent=%d width=%d\n", ascent, descent, width);
     printf("x=%d y=%d\n", x, y);
 #endif
-    if(!w) return;
-    QPainter *p = new QPainter;
-    p->begin(&pixmap);
-    p->translate(-x, -y);
-    HTMLBlockElementImpl::print(p, x, y, width, getHeight(), 0, 0);
-    p->end();
-    delete p;
-    static_cast<QPushButton *>(w)->setPixmap(pixmap);
-    w->resize(w->sizeHint());
+    if(w && dirty)
+    {
+	printf("repainting and setting\n");
+	QPainter *p = new QPainter;
+	p->begin(&pixmap);
+	p->translate(-x, -y);
+	HTMLBlockElementImpl::print(p, x, y, width, getHeight(), 0, 0);
+	p->end();
+	delete p;
+	static_cast<QPushButton *>(w)->setPixmap(pixmap);
+	w->resize(w->sizeHint());
+    }
     if(view && w)
     {
 	tx += x;

@@ -22,13 +22,13 @@ int main(int argc, char *argv[])
 {
     KApplication a(argc, argv, "testkhtml");
 
-    KHTMLWidget *doc = new KHTMLWidget;
+    KHTMLWidget *doc = new KHTMLWidget(0, 0);
     doc->resize(800,500);
     //doc->enableJScript(true);
     doc->enableJava(true);
     //doc->setFollowsLinks(false);
 
-    a.setTopWidget(doc);
+    //a.setTopWidget(doc);
     doc->setURLCursor(QCursor(PointingHandCursor));
     //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
     //			      QColor(Qt::green));
