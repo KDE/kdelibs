@@ -26,6 +26,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest \
 	kcontainertest kdatepicktest kdialogbasetest \
+	kdockwidgetdemo kdocktabctltest kdockwidgettest \
 	kdualcolortest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
 	kiconloadertest kledtest klineedittest klineeditdlgtest \
@@ -33,8 +34,8 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
-	kunbalancedgrdtest kwindowtest kwizardtest panelmenutest \
-	kdockwidgetdemo kdocktabctltest kdockwidgettest
+	kunbalancedgrdtest kwindowtest kwizardtest \
+	itemcontainertest panelmenutest
 
 noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -42,8 +43,9 @@ noinst_HEADERS = \
 		kledtest.h kcontainertest.h \
 		krulertest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h knuminputtest.h panelmenutest.h \
-		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h
+		kdualcolortest.h khashtest.h knuminputtest.h \
+		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
+		itemcontainertest.h panelmenutest.h
 
 METASOURCES = AUTO
 
@@ -81,6 +83,7 @@ ktabctltest_SOURCES = ktabctltest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
+itemcontainertest_SOURCES = itemcontainertest.cpp
 panelmenutest_SOURCES = panelmenutest.cpp
 kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
 kdocktabctltest_SOURCES = kdocktabctltest.cpp
