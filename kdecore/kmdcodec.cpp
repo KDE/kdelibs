@@ -116,7 +116,9 @@ char KCodecs::UUDecMap[128] = {
                               };
 
 // static constants for quoted-printable
-char KCodecs::hexChars[16] = "0123456789ABCDEF";
+char KCodecs::hexChars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                               '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
 const unsigned int KCodecs::maxQPLineLength = 70;
 
 
