@@ -55,7 +55,8 @@ using namespace khtml;
 RenderImage::RenderImage(NodeImpl *_element)
     : RenderReplaced(_element)
 {
-    image = 0;
+    oimage = image = 0;
+
     m_selectionState = SelectionNone;
     berrorPic = false;
     loadEventSent = false;
@@ -67,6 +68,7 @@ RenderImage::RenderImage(NodeImpl *_element)
 RenderImage::~RenderImage()
 {
     if(image) image->deref(this);
+    if (oimage) oimage->deref( this );
 }
 
 QPixmap RenderImage::pixmap() const
@@ -87,7 +89,8 @@ void RenderImage::setContentObject(CachedObject* co )
 {
     if (co && image != co) {
         co->ref( this );
-        if (image) image->deref(this);
+        if (oimage ) oimage->deref( this );
+        oimage = image;
         image = static_cast<CachedImage*>(co);
     }
 }
@@ -98,6 +101,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         RenderReplaced::setPixmap(p, r, o);
         return;
     }
+
+    assert( o != oimage );
 
     bool iwchanged = false;
 
@@ -206,8 +211,10 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
+    CachedImage* i = oimage ? oimage : image;
+
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
-    if ( !image || berrorPic)
+    if ( !i || berrorPic)
     {
         if(cWidth > 2 && cHeight > 2)
         {
@@ -216,7 +223,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
                 qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
-            QPixmap const* pix = image ? &image->pixmap() : 0;
+            QPixmap const* pix = i ? &i->pixmap() : 0;
             if(berrorPic && pix && (cWidth >= pix->width()+4) && (cHeight >= pix->height()+4) )
             {
                 QRect r(pix->rect());
@@ -235,15 +242,15 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
             }
         }
     }
-    else if (image && !image->isTransparent())
+    else if (i && !i->isTransparent())
     {
-        const QPixmap& pix = image->pixmap();
+        const QPixmap& pix = i->pixmap();
         if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
-             pix.width() > 0 && pix.height() > 0 && image->valid_rect().isValid())
+             pix.width() > 0 && pix.height() > 0 && i->valid_rect().isValid())
         {
             if (resizeCache.isNull() && cWidth && cHeight)
             {
-                QRect scaledrect(image->valid_rect());
+                QRect scaledrect(i->valid_rect());
 //                 kdDebug(6040) << "time elapsed: " << dt->elapsed() << endl;
 //                  kdDebug( 6040 ) << "have to scale: " << endl;
 //                  qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
@@ -256,14 +263,14 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
                 scaledrect.setHeight( ( cHeight*scaledrect.height() ) / intrinsicHeight() );
 //                   qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
 //                   qDebug("valid: %d/%d, scaled: %d/%d",
-//                          image->valid_rect().width(), image->valid_rect().height(),
+//                          i->valid_rect().width(), i->valid_rect().height(),
 //                          scaledrect.width(), scaledrect.height());
 
                 // sometimes scaledrect.width/height are off by one because
-                // of rounding errors. if the image is fully loaded, we
+                // of rounding errors. if the i is fully loaded, we
                 // make sure that we don't do unnecessary resizes during painting
                 QSize s(scaledrect.size());
-                if(image->valid_rect().size() == QSize( intrinsicWidth(), intrinsicHeight() )) // fully loaded
+                if(i->valid_rect().size() == QSize( intrinsicWidth(), intrinsicHeight() )) // fully loaded
                     s = QSize(cWidth, cHeight);
                 if(kAbs(s.width() - cWidth) < 2) // rounding errors
                     s.setWidth(cWidth);
@@ -279,10 +286,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
         else
         {
             // we might be just about switching images
-            // so pix contains the old one (we want to paint), but image->valid_rect is still invalid
-            // so use intrinsic Size instead.
-            // ### maybe no progressive loading for the second image ?
-            QRect rect(image->valid_rect().isValid() ? image->valid_rect()
+            QRect rect(i->valid_rect().isValid() ? i->valid_rect()
                        : QRect(0, 0, intrinsicWidth(), intrinsicHeight()));
 
             QPoint offs( _tx + leftBorder + leftPad, _ty + topBorder + topPad);
@@ -371,6 +375,11 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
             image->isErrorImage() ? EventImpl::ERROR_EVENT : EventImpl::LOAD_EVENT,
             false,false);
     }
+
+    if ( oimage ) {
+        oimage->deref(this);
+        oimage = 0;
+    }
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
@@ -416,10 +425,11 @@ void RenderImage::updateFromElement()
            /*&& (!style() || !style()->contentObject())*/
             ) {
             loadEventSent = false;
-            CachedImage* oldimage = image;
+            CachedImage* tempimage = oimage;
+            oimage = image;
             image = new_image;
             image->ref(this);
-            if(oldimage) oldimage->deref(this);
+            if(tempimage) tempimage->deref(this);
             berrorPic = image->isErrorImage();
         }
     }

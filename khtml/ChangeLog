@@ -1,3 +1,8 @@
+2004-01-12  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_image.cpp (updateFromElement): add tracking of
+	an oldimage, to avoid a "shoot out" effect on hovering expired images.
+
 2004-01-11  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_text.cpp (paintBoxDecorations):

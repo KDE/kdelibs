@@ -85,6 +85,8 @@ private:
     DOM::DOMString alt;
 
     CachedImage *image;
+    CachedImage *oimage;
+
     bool berrorPic : 1;
     bool loadEventSent : 1;
     SelectionState m_selectionState : 3; // FIXME: don't forget to enlarge this as the enum grows
