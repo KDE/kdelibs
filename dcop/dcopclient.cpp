@@ -275,7 +275,7 @@ QStringList DCOPClient::attachedApplications()
 {
   QByteArray data, replyData;
   QStringList result;
-  if ( call( "DCOPServer", "", "isApplicationAttached", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "attachedApplications", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
