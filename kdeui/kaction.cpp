@@ -250,9 +250,6 @@ KAction::~KAction()
     if (d->m_kaccel)
       unplugAccel();
 
-    // Unplug from menus and toolbars.
-    unplugAll();
-
     if ( m_parentCollection )
       m_parentCollection->take( this );
 
