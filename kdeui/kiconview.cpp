@@ -29,33 +29,6 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KIconView::slotSettingsChanged(int category)
-{
-    if ( category != KApplication::SETTINGS_MOUSE )
-        return;
-    m_bUseSingle = KGlobalSettings::singleClick();
-    if( m_bUseSingle )
-    {
-        connect( this, SIGNAL( clicked( QIconViewItem *, const QPoint & ) ),
-                 this, SLOT( slotExecute( QIconViewItem *, const QPoint & ) ) );
-        disconnect( this, SIGNAL( doubleClicked( QIconViewItem *, const QPoint & ) ),
-                    this, SLOT( slotExecute( QIconViewItem *, const QPoint & ) ) );
-    }
-    else
-    {
-        connect( this, SIGNAL( doubleClicked( QIconViewItem *, const QPoint & ) ),
-                 this, SLOT( slotExecute( QIconViewItem *, const QPoint & ) ) );
-        disconnect( this, SIGNAL( clicked( QIconViewItem *, const QPoint & ) ),
-                    this, SLOT( slotExecute( QIconViewItem *, const QPoint & ) ) );
-    }
-
-    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
-
-    if( !m_bUseSingle || !m_bChangeCursorOverItem )
-        viewport()->setCursor( oldCursor );
-}
-
 void KIconView::slotOnItem( QIconViewItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
@@ -74,6 +47,41 @@ void KIconView::slotOnViewport()
 
     m_pAutoSelect->stop();
     m_pCurrentItem = 0L;
+}
+
+void KIconView::slotSettingsChanged(int category)
+{
+    if ( category != KApplication::SETTINGS_MOUSE )
+        return;
+    m_bUseSingle = KGlobalSettings::singleClick();
+    if( m_bUseSingle )
+    {
+      connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *, 
+						 const QPoint & ) ),
+	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
+						   const QPoint & ) ) );
+//         disconnect( this, SIGNAL( doubleClicked( QIconViewItem *, 
+// 						 const QPoint & ) ),
+// 		    this, SLOT( slotExecute( QIconViewItem *, 
+// 					     const QPoint & ) ) );
+    }
+    else
+    {
+//         connect( this, SIGNAL( doubleClicked( QIconViewItem *, 
+// 					      const QPoint & ) ),
+//                  this, SLOT( slotExecute( QIconViewItem *, 
+// 					  const QPoint & ) ) );
+      disconnect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
+						    const QPoint & ) ),
+		  this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
+						      const QPoint & ) ) );
+    }
+
+    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+
+    if( !m_bUseSingle || !m_bChangeCursorOverItem )
+        viewport()->setCursor( oldCursor );
 }
 
 void KIconView::slotAutoSelect()
@@ -156,7 +164,7 @@ void KIconView::slotAutoSelect()
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
 }
 
-void KIconView::slotExecute( QIconViewItem *item, const QPoint &pos )
+void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 {
   Window root;
   Window child;
@@ -181,6 +189,13 @@ void KIconView::focusOutEvent( QFocusEvent *fe )
   QIconView::focusOutEvent( fe );
 }
 
+void KIconView::leaveEvent( QEvent *e ) 
+{
+  m_pAutoSelect->stop();
+
+  QIconView::leaveEvent( e );
+}
+
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
@@ -199,6 +214,16 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
   QIconView::contentsMouseDoubleClickEvent( e );
 
-  emit doubleClicked( findItem( e->pos() ), e->globalPos() );
+  QIconViewItem* item = findItem( e->pos() );
+
+  emit doubleClicked( item, e->globalPos() );
+
+  if( (e->button() == LeftButton) && !m_bUseSingle )
+    emitExecute( item, e->globalPos() );
 }
 
+void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos )
+{
+  if( btn == LeftButton )
+    emitExecute( item, pos );
+}

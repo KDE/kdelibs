@@ -85,19 +85,21 @@ signals:
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
 
 protected slots:
- void slotOnItem( QIconViewItem *item );
- void slotOnViewport();
+  void slotOnItem( QIconViewItem *item );
+  void slotOnViewport();
 
- void slotSettingsChanged(int);
+  void slotSettingsChanged(int);
 
- /**
-  * Auto selection happend.
-  */
- void slotAutoSelect();
- void slotExecute( QIconViewItem *item, const QPoint &pos );
+  /**
+   * Auto selection happend.
+   */
+  void slotAutoSelect();
 
 protected:
+  void emitExecute( QIconViewItem *item, const QPoint &pos );
+
   virtual void focusOutEvent( QFocusEvent *fe );
+  virtual void leaveEvent( QEvent *e );
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
 
@@ -109,6 +111,9 @@ protected:
 
   QTimer* m_pAutoSelect;
   int m_autoSelectDelay;
+
+private slots:
+  void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
 
 private:
   class KIconViewPrivate;
