@@ -38,18 +38,6 @@ int main( int argc, char **argv )
 debug ( "[kiconloader demo] started-------------------------" );
 
   KApplication a( argc, argv, "kiconloaderdemo" );
-
-  QString temp;
-  KConfig *config = a.getConfig();
-  config->setGroup("KDE Setup");
-  if( !config->hasKey("IconPath") )
-     {
-       temp = (QString) getenv("KDEDIR");
-       temp += "/lib/pics:";
-       temp += (QString) getenv("KDEDIR");
-       temp += "/lib/pics/toolbar";
-       config->writeEntry("IconPath", temp);
-     }
   MyMain demo;
   a.setMainWidget( (QWidget *) &demo );
   a.setRootDropZone( new KDNDDropZone( (QWidget *) &demo, DndNotDnd ) );
