@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
@@ -196,6 +197,10 @@ KJSO KJS::getString(DOM::DOMString s)
 
 bool KJS::originCheck(const KURL &kurl1, const KURL &kurl2)
 {
+  if ( kurl1.protocol().find( "javascript", 0, false ) == 0 ||
+       kurl2.protocol().find( "javascript", 0, false ) == 0 )
+    return true;
+
   if (kurl1.protocol() == kurl2.protocol() &&
       kurl1.host() == kurl2.host() &&
       kurl1.port() == kurl2.port() &&
