@@ -278,46 +278,22 @@ KFileDialogConfigure::saveConfiguration()
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
 
-  c->writeEntry("Width", myWidth->value());
-  c->writeEntry("Height", myHeight->value());
-  c->writeEntry("PannerPosition", myPanner->value());
+  c->writeEntry("Width", myWidth->value(), true, true);
+  c->writeEntry("Height", myHeight->value(), true, true);
+  c->writeEntry("PannerPosition", myPanner->value(), true, true);
 
-  if ( myDetailView->isChecked() )
-    c->writeEntry("ViewStyle","DetailView");
-  else
-    c->writeEntry("ViewStyle","ShortView");
-
-  if (myShowHidden->isChecked() )
-    c->writeEntry("ShowHidden", 1);
-  else
-    c->writeEntry("ShowHidden", 0);
-
-  if (myShowFilter->isChecked() )
-    c->writeEntry("ShowFilter", 1);
-  else
-    c->writeEntry("ShowFilter", 0);
-
-  if (myShowListLabels->isChecked() )
-    c->writeEntry("ShowListLabels", 1);
-  else
-    c->writeEntry("ShowListLabels", 0);
-
-  if (useSingleClick->isChecked() )
-    c->writeEntry("SingleClick", 1);
-  else
-    c->writeEntry("SingleClick", 0);
+  c->writeEntry("ViewStyle", 
+		myDetailView->isChecked() ? "DetailView" : "ShortView", 
+		true, true);
   
-  if (myShowStatusLine->isChecked() )
-    c->writeEntry("ShowStatusLine", 1);
-  else
-    c->writeEntry("ShowStatusLine", 0);
-
-  c->writeEntry("MixDirsAndFiles", 
-		myMixDirsAndFiles->isChecked());
-
-  c->writeEntry("KeepDirsFirst", 
-		myKeepDirsFirst->isChecked());
-
+  c->writeEntry("ShowHidden", myShowHidden->isChecked(), true, true);
+  c->writeEntry("ShowFilter", myShowFilter->isChecked(), true, true);
+  c->writeEntry("ShowListLabels",myShowListLabels->isChecked(), true, true );
+  c->writeEntry("SingleClick", useSingleClick->isChecked(), true, true);
+  c->writeEntry("ShowStatusLine", myShowStatusLine->isChecked(), true, true);
+  c->writeEntry("MixDirsAndFiles",myMixDirsAndFiles->isChecked(), true, true);
+  c->writeEntry("KeepDirsFirst", myKeepDirsFirst->isChecked(), true, true);
+  c->sync();
   // Restore the old config group
   c->setGroup(oldgroup);
 }
