@@ -32,10 +32,10 @@
 -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>&kde;'s K-icon</title></objectinfo>
+ <objectinfo><title>Les icones del &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
+<!ENTITY kmenu  "Menú <guimenu>K</guimenu>">
