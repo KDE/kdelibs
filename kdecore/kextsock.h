@@ -616,7 +616,7 @@ public:
    * @return true if we art at the given position, or always true if unsupported.
    */
   virtual inline bool at(int i)
-  { return true; }
+  { Q_UNUSED(i);return true; }
 
   /**
    * Returns true if we are at the end. This is not supported on sockets, but
