@@ -333,7 +333,8 @@ KAction* KActionCollection::_take( KAction* action )
   if ( !a || a != action )
       return 0;
 
-  a->m_parentCollection = 0;
+  if ( a->m_parentCollection == this )
+      a->m_parentCollection = 0;
 
   emit removed( action );
   return a;
