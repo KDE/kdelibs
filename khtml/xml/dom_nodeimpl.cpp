@@ -462,7 +462,8 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     newChild->setNextSibling(refChild);
 
     // ### set style in case it's attached
-
+    applyChanges();
+    
     return newChild;
 }
 
@@ -492,7 +493,8 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     newChild->setNextSibling(next);
 
     // ### set style in case it's attached
-
+    applyChanges();
+    
     return oldChild;
 }
 
@@ -514,6 +516,8 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
 
+    applyChanges();
+    
     return oldChild;
 }
 
@@ -536,6 +540,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 	_first = _last = newChild;
     }
 
+    applyChanges();
     // ### set style in case it's attached
     return newChild;
 }
@@ -605,6 +610,8 @@ void NodeBaseImpl::checkIsChild( NodeImpl *oldChild )
 
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 {
+    // do not add applyChanges here! This function is only used during parsing
+    
     // short check for consistency with DTD
     if(!checkChild(id(), newChild->id()))
     {
