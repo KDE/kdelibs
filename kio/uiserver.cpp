@@ -45,6 +45,9 @@ int main(int argc, char **argv)
     KUniqueApplication::addCmdLineOptions();
     KUniqueApplication app;
 
+    // This app is started automatically, no need for session management
+    app.disableSessionManagement();
+
     // setup dcop communication
     if (!app.dcopClient()->isAttached())
         app.dcopClient()->registerAs("kio_uiserver",false);
