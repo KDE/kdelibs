@@ -40,7 +40,7 @@ KMDriverDB* KMDriverDB::self()
 	if (!m_self)
 	{
 		m_self = new KMDriverDB();
-		CHECK_PTR(m_self);
+		Q_CHECK_PTR(m_self);
 	}
 	return m_self;
 }

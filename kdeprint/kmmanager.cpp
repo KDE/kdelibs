@@ -45,9 +45,9 @@ KMManager::KMManager(QObject *parent, const char *name)
 	m_serveroperationmask = 0;
 
 	m_specialmgr = new KMSpecialManager(this);
-	CHECK_PTR(m_specialmgr);
+	Q_CHECK_PTR(m_specialmgr);
 	m_virtualmgr = new KMVirtualManager(this);
-	CHECK_PTR(m_virtualmgr);
+	Q_CHECK_PTR(m_virtualmgr);
 }
 
 KMManager::~KMManager()

@@ -101,7 +101,7 @@ KMManager* KMFactory::manager()
 {
 	if (!m_manager)
 		createManager();
-	CHECK_PTR(m_manager);
+	Q_CHECK_PTR(m_manager);
 	return m_manager;
 }
 
@@ -109,7 +109,7 @@ KMJobManager* KMFactory::jobManager()
 {
 	if (!m_jobmanager)
 		createJobManager();
-	CHECK_PTR(m_jobmanager);
+	Q_CHECK_PTR(m_jobmanager);
 	return m_jobmanager;
 }
 
@@ -117,7 +117,7 @@ KMUiManager* KMFactory::uiManager()
 {
 	if (!m_uimanager)
 		createUiManager();
-	CHECK_PTR(m_uimanager);
+	Q_CHECK_PTR(m_uimanager);
 	return m_uimanager;
 }
 
@@ -125,7 +125,7 @@ KPrinterImpl* KMFactory::printerImplementation()
 {
 	if (!m_implementation)
 		createPrinterImpl();
-	CHECK_PTR(m_implementation);
+	Q_CHECK_PTR(m_implementation);
 	return m_implementation;
 }
 
@@ -138,7 +138,7 @@ KMFilterManager* KMFactory::filterManager()
 {
 	if (!m_filtermanager)
 		m_filtermanager = new KMFilterManager(0, "FilterManager");
-	CHECK_PTR(m_filtermanager);
+	Q_CHECK_PTR(m_filtermanager);
 	return m_filtermanager;
 }
 
@@ -194,7 +194,7 @@ KConfig* KMFactory::printConfig()
 	if (!m_printconfig)
 	{
 		m_printconfig = new KConfig("kdeprintrc");
-		CHECK_PTR(m_printconfig);
+		Q_CHECK_PTR(m_printconfig);
 	}
 	return m_printconfig;
 }
