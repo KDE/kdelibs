@@ -1,3 +1,9 @@
+2004-11-02  Germain Garand  <germain@ebooksfrance.com>
+
+       * css/cssstyleselector.cpp (adjustRenderStyle):
+       ignore relative positioning on table sections. CSS 2.1 does not
+       define that, but it is a consensus amongst all major browsers.
+
 2004-11-01  Sandro Giessl <sandro@giessl.com>
 
         * rendering/render_replaced.cpp (copyWidget): don't fill the

@@ -585,9 +585,10 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
         }
 
         // After performing the display mutation, check table rows.  We do not honor position:relative on
-        // table rows.  This has been established in CSS2.1 (and caused a crash in containingBlock() on
+        // table rows. This has been established in CSS2.1 (and caused a crash in containingBlock() on
         // some sites).
-        if (style->display() == TABLE_ROW && style->position() == RELATIVE)
+        // Likewise, disallow relative positioning on table sections.
+        if ( style->position() == RELATIVE && (style->display() > INLINE_TABLE && style->display() < TABLE_COLUMN_GROUP) )
             style->setPosition(STATIC);
     }
 
