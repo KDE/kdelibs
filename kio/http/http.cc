@@ -528,7 +528,7 @@ void HTTPProtocol::http_checkConnection()
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-      m_request.do_proxy = !revmatch(m_request.hostname.ascii(), m_strNoProxyFor.ascii());
+      m_request.do_proxy = !revmatch(m_request.hostname.latin1(), m_strNoProxyFor.latin1());
 
   if (m_sock)
   {
@@ -655,7 +655,7 @@ HTTPProtocol::http_openConnection()
     if( m_state.do_proxy ) {
       kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_strProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
-      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.ascii(), m_strProxyPort)) {
+      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.latin1(), m_strProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
         return false;
       }
@@ -681,7 +681,7 @@ HTTPProtocol::http_openConnection()
       // apparently we don't want a proxy.  let's just connect directly
       ksockaddr_in server_name;
 
-      if(!KSocket::initSockaddr(&server_name, m_state.hostname.ascii(), m_state.port)) {
+      if(!KSocket::initSockaddr(&server_name, m_state.hostname.latin1(), m_state.port)) {
         error( ERR_UNKNOWN_HOST, m_state.hostname );
         return false;
       }
@@ -844,6 +844,10 @@ bool HTTPProtocol::http_open()
      // HTTP uses "Referer" although the correct spelling is "referrer"
      header += "Referer: "+referrer+"\r\n";
   }
+  else
+  {
+     header += "Referer: " + m_request.url.url() + "\r\n"; // Test
+  }
 
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
@@ -937,10 +941,10 @@ bool HTTPProtocol::http_open()
   // check if we need to login
   if (!password.isNull() || !user.isNull()) {
     if (Authentication == AUTH_Basic || Authentication == AUTH_None) {
-      header += create_basic_auth("Authorization", user.ascii(), password.ascii());
+      header += create_basic_auth("Authorization", user.latin1(), password.latin1());
     } else if (Authentication == AUTH_Digest) {
-      header += create_digest_auth("Authorization", user.ascii(), password.ascii(),
-                                   m_strAuthString.ascii());
+      header += create_digest_auth("Authorization", user.latin1(), password.latin1(),
+                                   m_strAuthString.latin1());
     }
     // Don't do this as the authorization methods already add it!!!
     // header+="\r\n";
@@ -951,13 +955,13 @@ bool HTTPProtocol::http_open()
     kdDebug(7103) << "http_open 3" << endl;
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
-	header += create_basic_auth("Proxy-authorization", m_strProxyUser.ascii(), m_strProxyPass.ascii());
+	header += create_basic_auth("Proxy-Authorization", m_strProxyUser.latin1(), m_strProxyPass.latin1() );
       } else {
 	if (ProxyAuthentication == AUTH_Digest) {
 	  header += create_digest_auth("Proxy-Authorization",
-				       m_strProxyUser.ascii(),
-				       m_strProxyPass.ascii(),
-				       m_strProxyAuthString.ascii());
+				       m_strProxyUser.latin1(),
+				       m_strProxyPass.latin1(),
+				       m_strProxyAuthString.latin1());
 	}
       }
     }
@@ -969,7 +973,7 @@ bool HTTPProtocol::http_open()
   kdDebug(7103) << "Sending header: \n===\n" << header << "\n===" << endl;
   // now that we have our formatted header, let's send it!
   bool sendOk;
-  sendOk = (write(header.ascii(), header.length()) == (ssize_t) header.length());
+  sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk) {
     kdDebug(7103) << "Connection broken! (" << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
@@ -979,7 +983,7 @@ bool HTTPProtocol::http_open()
        http_closeConnection();
        if (!http_openConnection())
           return false;
-       sendOk = (write(header.ascii(), header.length()) == (ssize_t) header.length());
+       sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
     }
     if (!sendOk)
     {
@@ -1134,11 +1138,11 @@ bool HTTPProtocol::readHeader()
       {
          QString cacheControl = (*it).stripWhiteSpace();
  kdDebug(7103) << "Cache-Control =!" << cacheControl << "!" << endl;
-         if (strncasecmp(cacheControl.ascii(), "no-cache", 8) == 0)
+         if (strncasecmp(cacheControl.latin1(), "no-cache", 8) == 0)
          {
             m_bCachedWrite = false; // Don't put in cache
          }
-         else if (strncasecmp(cacheControl.ascii(), "no-store", 8) == 0)
+         else if (strncasecmp(cacheControl.latin1(), "no-store", 8) == 0)
          {
             m_bCachedWrite = false; // Don't put in cache
          }
@@ -1555,7 +1559,7 @@ void HTTPProtocol::http_close()
      if (m_bCachedWrite)
      {
         QString filename = m_state.cef + ".new";
-        unlink( filename.ascii());
+        unlink( filename.latin1());
         return;
      }
   }
@@ -1638,7 +1642,7 @@ const char *HTTPProtocol::getUserAgentString ()
   // function.  so for now, we try to only match a pattern to a
   // hostname once... as long as the requests all come in order
   if ( prev_hostname == m_state.hostname )
-    return strdup(user_agent.ascii());
+    return strdup(user_agent.latin1());
 
   prev_hostname = m_state.hostname;
 
@@ -1701,7 +1705,7 @@ const char *HTTPProtocol::getUserAgentString ()
 #ifdef DO_SSL
   user_agent+="; Supports SSL/HTTPS";
 #endif
-  return strdup(user_agent.ascii());
+  return strdup(user_agent.latin1());
 }
 
 void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
@@ -1728,7 +1732,7 @@ void HTTPProtocol::slave_status()
      http_closeConnection();
      connected = false;
   }
-  kdDebug(7103) << "Got slave_status host = " << (m_state.hostname.ascii() ? m_state.hostname.ascii() : "[None]") << " [" << (connected ? "Connected" : "Not connected") << "]" << endl;
+  kdDebug(7103) << "Got slave_status host = " << (m_state.hostname.latin1() ? m_state.hostname.latin1() : "[None]") << " [" << (connected ? "Connected" : "Not connected") << "]" << endl;
   slaveStatus( m_state.hostname, connected );
 }
 
@@ -2461,7 +2465,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QCString u = m_request.url.url().ascii();
+   QCString u = m_request.url.url().latin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;
@@ -2474,7 +2478,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
 
    CEF = dir + "/" + CEF;
 
-   FILE *fs = fopen( CEF.ascii(), "r");
+   FILE *fs = fopen( CEF.latin1(), "r");
    if (!fs)
       return 0;
 
@@ -2529,7 +2533,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       return fs;
 
    fclose(fs);
-   unlink( CEF.ascii());
+   unlink( CEF.latin1());
    return 0;
 }
 
@@ -2542,11 +2546,11 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
-   (void) ::mkdir( dir.ascii(), 0700 );
+   (void) ::mkdir( dir.latin1(), 0700 );
 
    QString filename = m_state.cef + ".new";  // Create a new cache entry
 
-   m_fcache = fopen( filename.ascii(), "w");
+   m_fcache = fopen( filename.latin1(), "w");
    if (!m_fcache)
    {
       kdWarning(7103) << "createCacheEntry: opening " << filename << " failed." << endl;
@@ -2555,19 +2559,19 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    fputs(CACHE_REVISION, m_fcache);    // Revision
 
-   fputs(m_request.url.url().ascii(), m_fcache);  // Url
+   fputs(m_request.url.url().latin1(), m_fcache);  // Url
    fputc('\n', m_fcache);
 
    QString date;
    date.setNum( time(0) );
-   fputs(date.ascii(), m_fcache);      // Creation date
+   fputs(date.latin1(), m_fcache);      // Creation date
    fputc('\n', m_fcache);
 
    date.setNum( expireDate );
-   fputs(date.ascii(), m_fcache);      // Expire date
+   fputs(date.latin1(), m_fcache);      // Expire date
    fputc('\n', m_fcache);
 
-   fputs(mimetype.ascii(), m_fcache);  // Mimetype
+   fputs(mimetype.latin1(), m_fcache);  // Mimetype
    fputc('\n', m_fcache);
 
    return;
@@ -2585,7 +2589,7 @@ HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
       fclose(m_fcache);
       m_fcache = 0;
       QString filename = m_state.cef + ".new";
-      unlink( filename.ascii());
+      unlink( filename.latin1());
       return;
    }
 }
@@ -2598,7 +2602,7 @@ HTTPProtocol::closeCacheEntry()
    m_fcache = 0;
    if (result == 0)
    {
-      if (::rename( filename.ascii(), m_state.cef.ascii()) == 0)
+      if (::rename( filename.latin1(), m_state.cef.latin1()) == 0)
       {
          return; // Success
       }
@@ -2621,10 +2625,10 @@ HTTPProtocol::cleanCache()
 
    struct stat stat_buf;
 
-   int result = ::stat(cleanFile.ascii(), &stat_buf);
+   int result = ::stat(cleanFile.latin1(), &stat_buf);
    if (result == -1)
    {
-      int fd = creat( cleanFile.ascii(), 0666);
+      int fd = creat( cleanFile.latin1(), 0666);
       if (fd != -1)
       {
          doClean = true;
@@ -2640,7 +2644,7 @@ HTTPProtocol::cleanCache()
    if (doClean)
    {
       // Touch file.
-      utime(cleanFile.ascii(), 0);
+      utime(cleanFile.latin1(), 0);
       KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop");
    }
 }
