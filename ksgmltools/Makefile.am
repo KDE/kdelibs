@@ -11,7 +11,7 @@ SUBDIRS = customization
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(INSTALL_PROGRAM) $(srcdir)/patches/db2ps $(DESTDIR)$(bindir)
+	$(INSTALL_SCRIPT) $(srcdir)/patches/db2ps $(DESTDIR)$(bindir)
 #	-patch $(TEX_MF)/web2c/texmf.cnf $(srcdir)/patches/texmf.cnf
 
 uninstall-local:
