@@ -22,18 +22,13 @@
 */
 
 #include <klocale.h>
+#include <klineedit.h>
 #include <kmessagebox.h>
 
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
-
 #include <qcheckbox.h>
-
-#include <kbuttonbox.h>
-#include <kdialog.h>
-#include <klineedit.h>
 
 #include "factory.h"
 #include "configdialog.h"
@@ -46,8 +41,6 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     Ok|Cancel, Ok, false )/*, mConfig( config )*/, mResource( resource )
 {
   Factory *factory = Factory::self( resourceFamily );
-
-  resize( 250, 240 );
 
   QFrame *main = makeMainWidget();
 
@@ -89,7 +82,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
       SLOT( slotNameChanged(const QString &)));
 
   slotNameChanged( mName->text() );
-  setMinimumSize( 400, 250 );
+  setMinimumSize( sizeHint() );
 }
 
 void ConfigDialog::setInEditMode( bool value )
