@@ -329,7 +329,7 @@ void KCompletionBox::slotCurrentChanged()
 
 void KCompletionBox::slotItemClicked( QListBoxItem *item )
 {
-    if ( d->down_workaround ) {
+    if ( d->down_workaround && item ) {
         d->down_workaround = false;
         emit highlighted( item->text() );
     }
