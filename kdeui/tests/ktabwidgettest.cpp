@@ -34,7 +34,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( initiateDrag( QWidget * )), SLOT(initiateDrag( QWidget * )));
-  connect( mWidget, SIGNAL( movedTab( const int, const int )), SLOT(movedTab( const int, const int )));
+  connect( mWidget, SIGNAL( movedTab( int, int )), SLOT(movedTab( int, int )));
   mWidget->setTabReorderingEnabled( true );
 
   QWidget * grid = new QWidget(this);
@@ -358,7 +358,7 @@ void Test::mouseMiddleClick(QWidget *w)
   mWidget->removePage( w );
 }
 
-void Test::movedTab(const int from, const int to)
+void Test::movedTab(int from, int to)
 {
   kdDebug() << "Moved tab from index " << from << " to " << to << endl;
 }
