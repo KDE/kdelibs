@@ -3,23 +3,21 @@ Index:
 1. KDE2.1
 2. To have more fun
 3. Other suggestions
-4. KDE 2.0.1 (backport list)
 
 ===============================================================================
 
 1. KDE2.1
-
-=> optimization, not necessary but pretty
-- change text in the kcmarts module regarding latency, it's plain confusing
 
 - ensure DynamicCast(<some null object>) == Object::null()
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
 - StereoEffectStack should support reordering (and probably listing) effects
 - StereoEffectStack should remove effects that are not longer referenced
+ => some work of this is right now in noatun
 - put streamwise blocking into MCOP, see artscat.cc to read really ugly
   source which lives without that feature
 - port visual objects
+ => beginnings are in kdemultimedia/arts/gui
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces
 - port every object
 - recursive scheduling again (with loops & cycles)
@@ -93,8 +91,3 @@ crash/hang).
 
 - maybe use some code from the XMMS-Solaris plugin for the aRtsd sound output.
   http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/                       
-
-4. KDE2.0.1
-
- - merge quick float -> integer conversion (I committed this to HEAD, maybe
-   it would be a good idea to backport it once tested widely)
