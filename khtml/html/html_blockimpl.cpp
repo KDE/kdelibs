@@ -43,9 +43,14 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
     {
         DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "\\2d khtml-center";
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        if ( strcasecmp( attr->value(), "middle" ) == 0 || strcasecmp( attr->value(), "center" ) == 0 )
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER);
+        else if (strcasecmp(attr->value(), "left") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_LEFT);
+        else if (strcasecmp(attr->value(), "right") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_RIGHT);
+        else
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     default:
@@ -64,16 +69,21 @@ void HTMLHRElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch( attr->id() )
     {
-    case ATTR_ALIGN:
-        if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
-            addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
-        else
-            addCSSProperty(CSS_PROP_MARGIN_LEFT, "1px");
-        if( strcasecmp( attr->value(), "right") != 0)
+    case ATTR_ALIGN: {
+        if (strcasecmp(attr->value(), "left") == 0) {
+            addCSSProperty(CSS_PROP_MARGIN_LEFT, "0");
+	    addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
+	}
+        else if (strcasecmp(attr->value(), "right") == 0) {
+	    addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
+	    addCSSProperty(CSS_PROP_MARGIN_RIGHT, "0");
+	}
+	else {
+	    addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
-        else
-            addCSSProperty(CSS_PROP_MARGIN_RIGHT, "1px");
+	}
         break;
+    }
     case ATTR_WIDTH:
     {
         if(!attr->val()) break;

@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -462,7 +462,7 @@ enum EWhiteSpace {
 };
 
 enum ETextAlign {
-    TAAUTO, LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
+    TAAUTO, LEFT, RIGHT, CENTER, JUSTIFY, KHTML_LEFT, KHTML_RIGHT, KHTML_CENTER
 };
 
 enum ETextTransform {
@@ -512,7 +512,7 @@ enum EEmptyCell {
 
 enum ECaptionSide
 {
-    CAPTOP, CAPBOTTOM
+    CAPTOP, CAPBOTTOM, CAPLEFT, CAPRIGHT
 };
 
 
@@ -598,12 +598,12 @@ protected:
         union {
             struct {
                 EEmptyCell _empty_cells : 1 ;
-                ECaptionSide _caption_side : 1;
+                ECaptionSide _caption_side : 2;
                 EListStyleType _list_style_type : 5 ;
                 EListStylePosition _list_style_position :1;
 
                 EVisibility _visibility : 2;
-                ETextAlign _text_align : 3;
+                ETextAlign _text_align : 4;
                 ETextTransform _text_transform : 2;
                 unsigned _text_decorations : 4;
                 ECursor _cursor_style : 5;
@@ -615,8 +615,9 @@ protected:
                 bool _visuallyOrdered : 1;
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
+                unsigned int unused : 30;
             } f;
-            Q_UINT32 _iflags;
+            Q_UINT64 _iflags;
         };
     } inherited_flags;
 

@@ -184,6 +184,8 @@ left
 right
 center
 justify
+-khtml-left
+-khtml-right
 -khtml-center
 #
 # CSS_PROP_LIST_STYLE_POSITION:

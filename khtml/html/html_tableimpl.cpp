@@ -6,6 +6,7 @@
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -549,9 +550,16 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
     {
         DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "\\2d khtml-center";
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        if ( strcasecmp( attr->value(), "middle" ) == 0 || strcasecmp( attr->value(), "center" ) == 0 )
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER);
+        else if (strcasecmp(attr->value(), "absmiddle") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL_CENTER);
+        else if (strcasecmp(attr->value(), "left") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_LEFT);
+        else if (strcasecmp(attr->value(), "right") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_RIGHT);
+        else
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     case ATTR_VALIGN:

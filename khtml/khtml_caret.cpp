@@ -881,13 +881,15 @@ CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
     // ### regard direction
     switch (s->textAlign()) {
       case LEFT:
+      case KHTML_LEFT:
       case TAAUTO:	// ### find out what this does
       case JUSTIFY:
         break;
       case CENTER:
-      case KONQ_CENTER:
+      case KHTML_CENTER:
         _x += cb->contentWidth() / 2;
         break;
+      case KHTML_RIGHT:
       case RIGHT:
         _x += cb->contentWidth();
         break;

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -788,18 +788,23 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     else
     {
         if ( (ml.isVariable() && mr.isVariable()) ||
-             (!ml.isVariable() && containingBlock()->style()->textAlign() == KONQ_CENTER ) )
+             (!ml.isVariable() && !mr.isVariable() &&
+                containingBlock()->style()->textAlign() == KHTML_CENTER) )
         {
             m_marginLeft = (cw - m_width)/2;
             if (m_marginLeft<0) m_marginLeft=0;
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (mr.isVariable())
+        else if (mr.isVariable() ||
+                 (!ml.isVariable() && containingBlock()->style()->direction() == RTL &&
+                  containingBlock()->style()->textAlign() == KHTML_LEFT))
         {
             m_marginLeft = ml.width(cw);
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (ml.isVariable())
+        else if (ml.isVariable() ||
+                 (!mr.isVariable() && containingBlock()->style()->direction() == LTR &&
+                  containingBlock()->style()->textAlign() == KHTML_RIGHT))
         {
             m_marginRight = mr.width(cw);
             m_marginLeft = cw - m_width - m_marginRight;
@@ -1382,13 +1387,15 @@ void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width
         // ### regard direction
 	switch (s->textAlign()) {
 	case LEFT:
+	case KHTML_LEFT:
 	case TAAUTO:	// ### find out what this does
 	case JUSTIFY:
 	    break;
 	case CENTER:
-	case KONQ_CENTER:
+	case KHTML_CENTER:
 	    _x += contentWidth() / 2;
 	    break;
+	case KHTML_RIGHT:
 	case RIGHT:
 	    _x += contentWidth();
 	    break;
