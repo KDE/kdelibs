@@ -787,7 +787,8 @@ VFolderMenu::initDirs()
    }
 
    m_defaultDataDirs = QStringList::split(':', KGlobal::dirs()->kfsstnd_prefixes());
-   m_defaultDataDirs.remove(m_defaultDataDirs.first()); // Remove local dir
+   QString localDir = m_defaultDataDirs.first();
+   m_defaultDataDirs.remove(localDir); // Remove local dir
    
    m_defaultAppDirs = allDataLocations("applications/");
    m_defaultDirectoryDirs = allDataLocations("desktop-directories/");
