@@ -70,7 +70,7 @@ KLocale::KLocale( const char *_catalogue )
 
 #ifdef HAVE_SETLOCALE
     /* Set locale via LC_ALL.  */
-    setlocale (LC_ALL, "");
+    setlocale (LC_ALL, "C");
 #endif
     
     if ( ! _catalogue )
