@@ -217,12 +217,15 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
     KService::Ptr service = KService::serviceByDesktopName(_bin_name);
 
-    if (0 != service) {
+    if (service)
+      _dot_desktop = service->desktopEntryPath();
+  }
 
-      KDesktopFile desktopFile(service->desktopEntryPath(), true);
-      _res_name = desktopFile.readEntry("XClassHintResName", _bin_name);
-      _appStartNotify = !desktopFile.readBoolEntry("NoAppStartNotify", false);
-    }
+  if (!_dot_desktop.isEmpty() )
+  {
+    KDesktopFile desktopFile(_dot_desktop, true);
+    _res_name = desktopFile.readEntry("XClassHintResName", _bin_name);
+    _appStartNotify = !desktopFile.readBoolEntry("NoAppStartNotify", false);
   }
 
   // End app starting notification stuff.
