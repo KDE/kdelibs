@@ -1620,7 +1620,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 
 bool KToolBar::event( QEvent *e )
 {
-    if ( e->type() == QEvent::LayoutHint )
+    if ( (e->type() == QEvent::LayoutHint) && isUpdatesEnabled() )
         QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
         
     if (e->type() == QEvent::ChildInserted )
