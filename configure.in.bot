@@ -1,7 +1,5 @@
 dnl put here things which have to be done as very last part of configure
 
-all_tests=fine
-
 if test "x$have_ssl" != xyes; then
   echo ""
   echo "You're missing openSSL, or your version is too old (before 0.9.5a)."
@@ -99,17 +97,4 @@ if test "$ac_use_cups" != "yes"; then
     echo ""
   fi
   all_tests=bad
-fi
-
-if test "$all_tests" = "fine"; then
-  echo ""
-  echo "Good - your configure finished. Start make now"
-  echo ""
-fi
-
-if test "$all_tests" = "bad"; then
-  echo ""
-  echo "Please remove the file config.cache after installing any libraries"
-  echo "so that configure will find them next time."
-  echo ""
 fi
