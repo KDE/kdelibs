@@ -13,14 +13,14 @@
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY eg     "<abbrev>por ex.</abbrev>">
 <!ENTITY Esc   "<keycap>Esc</keycap>">
-<!ENTITY etc     "etc">
+<!ENTITY etc     "<abbrev>etc.</abbrev>">
 <!ENTITY ex     "<abbrev>por ex.</abbrev>">
-<!ENTITY FAQ     "Perguntas e Respostas - FAQ">
+<!ENTITY FAQ     "Perguntas e Respostas - <acronym>FAQ<acronym>">
 <!ENTITY ie     "isto é">
 <!ENTITY kcontrol       "<application>Centro de Controle do &kde;</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
 <!ENTITY khelpcenter    "<application>Centro de Informações do &kde;</application>">
-<!ENTITY kmenu    "Menu K">
+<!ENTITY kmenu    "Menu <guimenu>K</guimenu>">
 <!ENTITY LMB    "botão <mousebutton>esquerdo</mousebutton> do mouse">
 <!ENTITY MMB    "botão do <mousebutton>meio</mousebutton> do mouse">
 <!ENTITY RMB    "botão <mousebutton>direto</mousebutton> do mouse">

@@ -28,8 +28,6 @@
 - maintenance dsl (for web pages)
 - fpi dsl
 - Fix RFC1766 problem
-- Resynchronise with 1.57 (check if function definitions, variable
-  definitions etc changed)
 
 * DocBook
 - Tidy up the DTD
@@ -66,7 +64,6 @@
 - Language specific parts in document (eg links to dictionaries etc should be
   done with an entity), eg in Translation howto
 - Write FPI script (for external references).
-+ Fix make complaints in lang-conv (error: nothing to be done for all-am)
 - decide on distinction notice and full licence (and adapt files 
   accordingly)
 - CSS: position graphics centered or let text flow around them
@@ -75,10 +72,6 @@
   Versioning should happen with subdirectories that contain the files
   of a given version, until that one is used no longer in the
   documentation.  (write script to check that)
-
-* TeX
-- diacritics have to be changed by a script.
-- Check if the fonts are installed, and don't need too much changing.
 
 * Meaning of characters:
  `*' indicates a TODO item

@@ -3,6 +3,7 @@
 		version="1.0">
 
 <xsl:param name="callout.graphics.path" select="'common/'" doc:type='string'/>
+<xsl:param name="generate.legalnotice.link" select="1"/>
 
 <xsl:template match="guilabel|guimenu|guisubmenu|guimenuitem|interface|guibutton">
   <span style="background-color: rgb(240,240,240); 

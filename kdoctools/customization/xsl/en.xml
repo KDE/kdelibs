@@ -1,17 +1,11 @@
 <localization language="en">
 <!-- Notes for translators:
- 1. Do not translate `&...;' (unless you know the mechanism).
- 2. In the strings ("..."), you can use the following notations, apart from Unicode,
-    ISO entities (e.g. &oacute;), slashed
-    ISO names (e.g. \latin-small-letter-o-with-acute;), or \U-XXXX
-    where X is an upper case hexadecimal, and XXXX is the Unicode
-    value for the character (e.g. \U-00F3).
+     Do not translate `&...;' (unless you know the mechanism).
  -->
-<gentext key="Default" text="Default"/>
 <gentext key="Documentation.by" text="Documentation by"/>
 <gentext key="English" text="English"/>
 <gentext key="LastUpdated" text="Last updated"/>
 <gentext key="Version" text="Version"/>
-<gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<!--<gentext key="home-url" text="http://www.kde.org/"/>-->
+<!--<gentext key="logo-alt" text="The K Desktop Environment Logo"/>-->
 </localization>

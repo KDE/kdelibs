@@ -81,6 +81,7 @@
 <!ENTITY documentation.index "<index></index>">
 ]]>
 <!ENTITY documentation.index "">
+<!--ENTITY kapp "(Oops - someone forgot to fill in the application name here)" -->
 
 <!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">
