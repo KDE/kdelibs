@@ -494,7 +494,7 @@ bool Ftp::ftpLogin()
     {
         *p2 = '\0';
         m_initialPath = p + 1;
-        if ( *p != '/' ) // safety check, for servers that return C:/TEMP/
+        if ( *(p+1) != '/' ) // safety check, for servers that return C:/TEMP/
           m_initialPath.prepend('/');
         kdDebug(7102) << "Initial path set to: " << m_initialPath << endl;
     }
