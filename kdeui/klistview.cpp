@@ -501,8 +501,6 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 	  if (d->startDragPos.isNull())
 		{
 		  d->startDragPos = e->pos();
-	  
-		  kdDebug () << "Pos x = " << d->startDragPos.x() << ", pos y = " << d->startDragPos.y() << endl;
 		}
 	  else if (dragEnabled())
 		{			  
