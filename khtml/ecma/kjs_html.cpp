@@ -187,6 +187,7 @@ bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
 
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
+  //kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   // image and form elements with the name p will be looked up first
@@ -286,6 +287,7 @@ const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
 KJSO KJS::HTMLElement::tryGet(const UString &p) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  //kdDebug() << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -1155,8 +1157,11 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       // read-only: type
       if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber().intValue()); return; }
       else if (p == "value")           { select.setValue(str); return; }
-      // ### p == "length"
-      // read-only: length
+      else if (p == "length")          {
+                                         KJSO coll = getSelectHTMLCollection(select.options(), select);
+                                         coll.put( p, v );
+                                         return;
+                                       }
       // read-only: form
       // read-only: options
       else if (p == "disabled")        { select.setDisabled(v.toBoolean().value()); return; }
