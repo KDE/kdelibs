@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -204,10 +204,8 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return 0;
     }
-    const QString preprocessed = preprocess(rule.string());
-    const QChar *curP = preprocessed.unicode();
-    const QChar *endP = preprocessed.unicode() + preprocessed.length();
-    CSSRuleImpl *r = parseRule(curP, endP);
+    CSSParser p( strictParsing );
+    CSSRuleImpl *r = p.parseRule( rule );
 
     if(!r) {
         exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
@@ -233,30 +231,13 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 
 bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 {
-    strictParsing = strict;
-    const QString preprocessed = preprocess(string.string());
-
 #ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 #endif
 
-    const QChar *curP = preprocessed.unicode();
-    const QChar *endP = preprocessed.unicode() + preprocessed.length();
-
-#ifdef CSS_STYLESHEET_DEBUG
-    kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
-#endif
-
-    while (curP && (curP < endP))
-    {
-        CSSRuleImpl *rule = parseRule(curP, endP);
-        if(rule)
-        {
-           m_lstChildren->append(rule);
-           rule->setParent(this);
-//           rule->init();
-        }
-    }
+    strictParsing = strict;
+    CSSParser p( strict );
+    p.parseSheet( this, string );
     return true;
 }
 

@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "xml/dom_docimpl.h"
+#include "parser.h"
 
 using namespace DOM;
 
@@ -109,6 +110,26 @@ CSSStyleDeclarationImpl *CSSFontFaceRuleImpl::style() const
 
 // --------------------------------------------------------------------------
 
+CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
+                                      const DOM::DOMString &href,
+                                      MediaListImpl *media )
+    : CSSRuleImpl(parent)
+{
+    m_type = CSSRule::IMPORT_RULE;
+
+    m_lstMedia = media;
+    if ( !m_lstMedia )
+	m_lstMedia = new MediaListImpl( this, DOMString() );
+    m_lstMedia->setParent( this );
+    m_lstMedia->ref();
+
+    m_strHref = href;
+    m_styleSheet = 0;
+
+    m_cachedSheet = 0;
+
+    init();
+}
 CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
                                       const DOM::DOMString &href,
                                       const DOM::DOMString &media )
@@ -217,71 +238,15 @@ void CSSImportRuleImpl::init()
 }
 
 // --------------------------------------------------------------------------
-
-
-CSSQuirksRuleImpl::CSSQuirksRuleImpl(StyleBaseImpl *parent)
+CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, MediaListImpl *mediaList, CSSRuleListImpl *ruleList )
     :   CSSRuleImpl( parent )
 {
-    m_type = CSSRule::QUIRKS_RULE;
-    m_lstCSSRules = new CSSRuleListImpl();
+    m_type = CSSRule::MEDIA_RULE;
+    m_lstMedia = mediaList;
+    m_lstMedia->ref();
+    m_lstCSSRules = ruleList;
     m_lstCSSRules->ref();
 }
-
-CSSQuirksRuleImpl::CSSQuirksRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
-                                      const QChar *endP )
-:   CSSRuleImpl( parent )
-{
-    m_type = CSSRule::QUIRKS_RULE;
-    m_lstCSSRules = new CSSRuleListImpl();
-    m_lstCSSRules->ref();
-
-    // Parse CSS data
-    while( curP < endP )
-    {
-//         kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
-//                         << "'" << endl;
-        CSSRuleImpl *rule = parseStyleRule( curP, endP );
-        if ( rule ) {
-            rule->ref();
-            appendRule( rule );
-        }
-        if (!curP) break;
-        while( curP < endP && *curP == QChar( ' ' ) )
-            curP++;
-    }
-}
-
-CSSQuirksRuleImpl::~CSSQuirksRuleImpl()
-{
-    m_lstCSSRules->deref();
-}
-
-CSSRuleListImpl *CSSQuirksRuleImpl::cssRules()
-{
-    return m_lstCSSRules;
-}
-
-unsigned long CSSQuirksRuleImpl::appendRule( CSSRuleImpl *rule )
-{
-    return rule ? m_lstCSSRules->insertRule( rule, m_lstCSSRules->length() ) : 0;
-}
-
-unsigned long CSSQuirksRuleImpl::insertRule( const DOMString &rule,
-                                            unsigned long index )
-{
-    const QChar *curP = rule.unicode();
-    CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
-
-    return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
-}
-
-void CSSQuirksRuleImpl::deleteRule( unsigned long index )
-{
-    m_lstCSSRules->deleteRule( index );
-}
-
-// --------------------------------------------------------------------------
-
 
 CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
     :   CSSRuleImpl( parent )
@@ -292,8 +257,7 @@ CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
     m_lstCSSRules->ref();
 }
 
-CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
-                              const QChar *endP, const DOM::DOMString &media )
+CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const DOM::DOMString &media )
 :   CSSRuleImpl( parent )
 {
     m_type = CSSRule::MEDIA_RULE;
@@ -301,21 +265,6 @@ CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
     m_lstMedia->ref();
     m_lstCSSRules = new CSSRuleListImpl();
     m_lstCSSRules->ref();
-
-    // Parse CSS data
-    while( curP < endP )
-    {
-//         kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
-//                         << "'" << endl;
-        CSSRuleImpl *rule = parseStyleRule( curP, endP );
-        if ( rule ) {
-            rule->ref();
-            appendRule( rule );
-        }
-        if (!curP) break;
-        while( curP < endP && *curP == QChar( ' ' ) )
-            curP++;
-    }
 }
 
 CSSMediaRuleImpl::~CSSMediaRuleImpl()
@@ -337,7 +286,7 @@ CSSRuleListImpl *CSSMediaRuleImpl::cssRules()
     return m_lstCSSRules;
 }
 
-unsigned long CSSMediaRuleImpl::appendRule( CSSRuleImpl *rule )
+unsigned long CSSMediaRuleImpl::append( CSSRuleImpl *rule )
 {
     return rule ? m_lstCSSRules->insertRule( rule, m_lstCSSRules->length() ) : 0;
 }
@@ -345,8 +294,8 @@ unsigned long CSSMediaRuleImpl::appendRule( CSSRuleImpl *rule )
 unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
                                             unsigned long index )
 {
-    const QChar *curP = rule.unicode();
-    CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
+    CSSParser p( strictParsing );
+    CSSRuleImpl *newRule = p.parseRule( rule );
 
     return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the CSS implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -156,8 +156,9 @@ namespace khtml
 				   unsigned int numProps );
 
 	static DOM::CSSStyleSheetImpl *defaultSheet;
+	static DOM::CSSStyleSheetImpl *quirksSheet;
 	static CSSStyleSelectorList *defaultStyle;
-    static CSSStyleSelectorList *defaultQuirksStyle;
+	static CSSStyleSelectorList *defaultQuirksStyle;
 	static CSSStyleSelectorList *defaultPrintStyle;
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
@@ -293,8 +294,7 @@ public:
 	virtual ~CSSStyleSelectorList();
 
 	void append( DOM::CSSStyleSheetImpl *sheet,
-                 const DOM::DOMString &medium = "screen",
-                 int quirksMode = 0 );
+		     const DOM::DOMString &medium = "screen" );
 
 	void collect( QPtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );

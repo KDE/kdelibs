@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 
 #include "dom/css_value.h"
 #include "dom/dom_string.h"
-#include "css/cssparser.h"
+#include "css/css_base.h"
 #include "misc/loader_client.h"
 #include "misc/shared.h"
 

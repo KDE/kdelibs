@@ -1,7 +1,7 @@
 /**
  * This file is part of the CSS implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -73,6 +73,7 @@ CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultQuirksStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
+CSSStyleSheetImpl *CSSStyleSelector::quirksSheet = 0;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
@@ -105,7 +106,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, m_medium, strictParsing ? 1 : 0 );
+        userStyle->append( userSheet, m_medium );
     }
 
     // add stylesheets from document
@@ -115,8 +116,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     QPtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
     for ( ; it.current(); ++it ) {
         if ( it.current()->isCSSStyleSheet() ) {
-            authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ),
-                                 m_medium, strictParsing ? 1 : 0 );
+            authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), m_medium );
         }
     }
 
@@ -150,7 +150,7 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     m_medium = sheet->doc()->view()->mediaType();
 
     authorStyle = new CSSStyleSelectorList();
-    authorStyle->append( sheet, m_medium, strictParsing ? 1 : 0 );
+    authorStyle->append( sheet, m_medium );
 }
 
 void CSSStyleSelector::init()
@@ -177,40 +177,61 @@ CSSStyleSelector::~CSSStyleSelector()
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
     m_medium = sheet->doc()->view()->mediaType();
-    authorStyle->append( sheet, m_medium, strictParsing ? 1 : 0 );
+    authorStyle->append( sheet, m_medium );
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 {
     if(defaultStyle) return;
 
-    QFile f(locate( "data", "khtml/css/html4.css" ) );
-    f.open(IO_ReadOnly);
+    {
+	QFile f(locate( "data", "khtml/css/html4.css" ) );
+	f.open(IO_ReadOnly);
 
-    QCString file( f.size()+1 );
-    int readbytes = f.readBlock( file.data(), f.size() );
-    f.close();
-    if ( readbytes >= 0 )
-        file[readbytes] = '\0';
+	QCString file( f.size()+1 );
+	int readbytes = f.readBlock( file.data(), f.size() );
+	f.close();
+	if ( readbytes >= 0 )
+	    file[readbytes] = '\0';
 
-    QString style = QString::fromLatin1( file.data() );
-    if(s)
-        style += s->settingsToCSS();
-    DOMString str(style);
+	QString style = QString::fromLatin1( file.data() );
+	if(s)
+	    style += s->settingsToCSS();
+	DOMString str(style);
 
-    defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
-    defaultSheet->parseString( str );
+	defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	defaultSheet->parseString( str );
 
-    // Collect only strict-mode rules.
-    defaultStyle = new CSSStyleSelectorList();
-    defaultStyle->append( defaultSheet, "screen", 1 );
+	// Collect only strict-mode rules.
+	defaultStyle = new CSSStyleSelectorList();
+	defaultStyle->append( defaultSheet, "screen" );
 
-    // Collect only quirks-mode rules.
-    defaultQuirksStyle = new CSSStyleSelectorList();
-    defaultQuirksStyle->append( defaultSheet, "screen", 2 );
+	defaultPrintStyle = new CSSStyleSelectorList();
+	defaultPrintStyle->append( defaultSheet, "print" );
+    }
+    {
+	QFile f(locate( "data", "khtml/css/quirks.css" ) );
+	f.open(IO_ReadOnly);
 
-    defaultPrintStyle = new CSSStyleSelectorList();
-    defaultPrintStyle->append( defaultSheet, "print" );
+	QCString file( f.size()+1 );
+	int readbytes = f.readBlock( file.data(), f.size() );
+	f.close();
+	if ( readbytes >= 0 )
+	    file[readbytes] = '\0';
+
+	QString style = QString::fromLatin1( file.data() );
+	if(s)
+	    style += s->settingsToCSS();
+	DOMString str(style);
+
+	quirksSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	quirksSheet->parseString( str );
+
+	// Collect only quirks-mode rules.
+	defaultQuirksStyle = new CSSStyleSelectorList();
+	defaultQuirksStyle->append( defaultSheet, "screen" );
+    }
+
     //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
 }
 
@@ -324,7 +345,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    if ( selectorCache[i].state == Applies ) {
 		++smatch;
 
-		//qDebug("adding property" );
+// 		qDebug("adding property" );
 		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
 		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j ) {
                         if (numPropsToApply >= propsToApplySize ) {
@@ -350,7 +371,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     }
 
-//    qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
 //     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
 //             selectors_size, schecked, smatch, (*propsToApply)->count(), properties_size );
 
@@ -996,8 +1017,7 @@ CSSStyleSelectorList::~CSSStyleSelectorList()
 }
 
 void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
-                                   const DOMString &medium,
-                                   int quirksMode )
+                                   const DOMString &medium )
 {
     if(!sheet || !sheet->isCSSStyleSheet()) return;
 
@@ -1011,8 +1031,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
     for(int i = 0; i< len; i++)
     {
         StyleBaseImpl *item = sheet->item(i);
-        if(item->isStyleRule() && quirksMode != 2)
-        {
+        if( item->isStyleRule() ) {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
             QPtrList<CSSSelector> *s = r->selector();
             for(int j = 0; j < (int)s->count(); j++)
@@ -1021,9 +1040,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 		QPtrList<CSSOrderedRule>::append(rule);
                 //kdDebug( 6080 ) << "appending StyleRule!" << endl;
             }
-        }
-        else if(item->isImportRule())
-        {
+        } else if(item->isImportRule()) {
             CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(item);
 
             //kdDebug( 6080 ) << "@import: Media: "
@@ -1034,34 +1051,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 CSSStyleSheetImpl *importedSheet = import->styleSheet();
                 append( importedSheet, medium );
             }
-        }
-        else if (item->isQuirksRule() && quirksMode != 1) {
-            CSSQuirksRuleImpl *r = static_cast<CSSQuirksRuleImpl *>( item );
-            CSSRuleListImpl *rules = r->cssRules();
-
-            for( unsigned j = 0; j < rules->length(); j++ )
-            {
-                //kdDebug( 6080 ) << "*** Rule #" << j << endl;
-
-                CSSRuleImpl *childItem = rules->item( j );
-                if( childItem->isStyleRule() )
-                {
-                    // It is a StyleRule, so append it to our list
-                    CSSStyleRuleImpl *styleRule =
-                            static_cast<CSSStyleRuleImpl *>( childItem );
-
-                    QPtrList<CSSSelector> *s = styleRule->selector();
-                    for( int j = 0; j < ( int ) s->count(); j++ )
-                    {
-                        CSSOrderedRule *orderedRule = new CSSOrderedRule(
-                                        styleRule, s->at( j ), count() );
-                        QPtrList<CSSOrderedRule>::append( orderedRule );
-                    }
-                }
-            }   // for rules
-        }
-        else if( item->isMediaRule() )
-        {
+        } else if( item->isMediaRule() ) {
             CSSMediaRuleImpl *r = static_cast<CSSMediaRuleImpl *>( item );
             CSSRuleListImpl *rules = r->cssRules();
 
@@ -1212,7 +1202,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 {
     CSSValueImpl *value = prop->value();
 
-    //kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
+//     kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -1220,7 +1210,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     Length l;
     bool apply = false;
 
-    // here follows a long list, defining how to aplly certain properties to the style object.
+    // here follows a long list, defining how to apply certain properties to the style object.
     // rather boring stuff...
     switch(prop->m_id)
     {
@@ -1609,7 +1599,6 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         return;
     }
     break;
-    case CSS_PROP_PAGE:
     case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
     case CSS_PROP_PAGE_BREAK_INSIDE:
@@ -2538,40 +2527,45 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	FontDef fontDef = style->htmlFont().fontDef;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
-	QString family;
-
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
-	    if(!(val->primitiveType() == CSSPrimitiveValue::CSS_STRING)) return;
-	    QString face = static_cast<FontFamilyValueImpl *>(val)->fontName();
- 	    if ( !face.isNull() || face.isEmpty() ) {
- 		if(face == "serif") {
- 		    face = settings->serifFontName();
- 		}
- 		else if(face == "sans-serif") {
- 		    face = settings->sansSerifFontName();
- 		}
- 		else if( face == "cursive") {
- 		    face = settings->cursiveFontName();
- 		}
- 		else if( face == "fantasy") {
- 		    face = settings->fantasyFontName();
- 		}
- 		else if( face == "monospace") {
-  		    face = settings->fixedFontName();
- 		}
- 		else if( face == "konq_default") {
-  		    face = settings->stdFontName();
-  		}
-  		if ( !face.isEmpty() ) {
- 		    fontDef.family = face;
- 		    if (style->setFontDef( fontDef ))
-  			fontDirty = true;
-  		}
+	    QString face;
+            if( val->primitiveType() == CSSPrimitiveValue::CSS_STRING )
+		face = static_cast<FontFamilyValueImpl *>(val)->fontName();
+	    else if ( val->primitiveType() != CSSPrimitiveValue::CSS_IDENT ) {
+		switch( val->getIdent() ) {
+		case CSS_VAL_SERIF:
+		    face = settings->serifFontName();
+		    break;
+		case CSS_VAL_SANS_SERIF:
+		    face = settings->sansSerifFontName();
+		    break;
+		case CSS_VAL_CURSIVE:
+		    face = settings->cursiveFontName();
+		    break;
+		case CSS_VAL_FANTASY:
+		    face = settings->fantasyFontName();
+		    break;
+		case CSS_VAL_MONOSPACE:
+		    face = settings->fixedFontName();
+		    break;
+		case CSS_VAL__KONQ_DEFAULT:
+		    face = settings->stdFontName();
+		    break;
+		default:
+		    return;
+		}
+	    } else {
 		return;
-  	    }
+	    }
+	    if ( !face.isEmpty() ) {
+		fontDef.family = face;
+		if (style->setFontDef( fontDef ))
+		    fontDirty = true;
+	    }
+	    return;
 	}
         break;
     }

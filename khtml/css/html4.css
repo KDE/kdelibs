@@ -1,6 +1,6 @@
 /* 
  * The default style sheet used by khtml to render HTML pages
- * (C) Lars Knoll (knoll@kde.org) 2000
+ * (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *
  * Konqueror/khtml relies on the existance of this style sheet for
  * rendering. Do not remove or modify this file unless you know
@@ -69,7 +69,7 @@ div {
 
 /* to force a block level context for some cases (broken HTML) */
 
--konqblock {
+\2d konqblock {
 	display: block;
 }
 
@@ -85,7 +85,7 @@ blockquote {
 	display: block;
 	margin-left: 40px; 
 	margin-right: 40px;
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 }
 
 Q        {
@@ -118,7 +118,7 @@ APPLET {
 CENTER { 
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behaviour */
-	text-align: -konq-center;
+	text-align: \2d konq-center;
 }  
       
 HR  { 
@@ -129,7 +129,7 @@ HR  {
         border-width: 1px;
         margin-left: 1px; /* will be overwritten by ALIGN */ 
         margin-right: 1px; /* will be overwritten by ALIGN */
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 } 
  
 MAP { 
@@ -200,9 +200,9 @@ TABLE {
 	display: table;
 	border-collapse: separate;
 	vertical-align: middle;
-	text-align: -konq-auto;
+	text-align: \2d konq-auto;
 	border-spacing: 2px;
-        -konq-flow-mode: -konq-around-floats;
+        \2d konq-flow-mode: \2d konq-around-floats;
 }
       
 TABLE[align="center"] { 
@@ -253,7 +253,7 @@ TH {
 
 CAPTION { 
 	display: table-caption;  
-	text-align: -konq-center; 
+	text-align: \2d konq-center; 
 }
 
 /* don't use "TD[align=...] > *". This sould give problems with
@@ -286,7 +286,7 @@ UL, MENU, DIR {
         list-style-type: disc;
         margin: 1em 0;
         padding-left: 40px;
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 }
 
 OL {
@@ -294,12 +294,12 @@ OL {
         list-style-type: decimal;
         margin: 1em 0;
         padding-left: 40px;
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 }
 
 LI {
         display: list-item;
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 }
 
 
@@ -323,7 +323,7 @@ DD {
 
 DL {
 	display: block;
-        -konq-flow-mode: -konq-around-floats
+        \2d konq-flow-mode: \2d konq-around-floats
 } 
 
 DT {
@@ -437,7 +437,7 @@ PLAINTEXT {
 	display: block;
 	font-family: monospace; 
 	white-space: pre; 
-	text-align: -konq-auto;
+	text-align: \2d konq-auto;
 	margin: 1.0em 0px;
 }
       
@@ -540,19 +540,6 @@ wbr {
 
 marquee {
         display: none;
-}
-
-
-@konq-quirks
-{
-    /* Give floated images margins of 3px */
-    img[align="left"] {
-        margin-right: 3px;
-    }
-    
-    img[align="right"] {
-        margin-left: 3px;
-    }
 }
 
 /* noscript is handled internally, as it depends on the html settings */

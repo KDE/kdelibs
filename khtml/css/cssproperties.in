@@ -82,7 +82,7 @@ padding-top
 padding-right
 padding-bottom
 padding-left
-page
+#page
 page-break-after
 page-break-before
 page-break-inside
@@ -135,6 +135,7 @@ margin
 outline
 padding
 #pause
+# some more IE extensions
 scrollbar-base-color
 scrollbar-face-color
 scrollbar-shadow-color

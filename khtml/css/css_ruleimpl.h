@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 
 #include "dom/dom_string.h"
 #include "dom/css_rule.h"
-#include "css/cssparser.h"
+#include "css/css_base.h"
 #include "misc/loader_client.h"
 #include "misc/shared.h"
 
@@ -102,6 +102,8 @@ class CSSImportRuleImpl : public khtml::CachedObjectClient, public CSSRuleImpl
 public:
     CSSImportRuleImpl( StyleBaseImpl *parent, const DOM::DOMString &href,
                        const DOM::DOMString &media );
+    CSSImportRuleImpl( StyleBaseImpl *parent, const DOM::DOMString &href,
+                       MediaListImpl *media );
 
     virtual ~CSSImportRuleImpl();
 
@@ -125,38 +127,14 @@ protected:
     bool m_loading;
 };
 
-class CSSRuleList;
-
-class CSSQuirksRuleImpl : public CSSRuleImpl
-{
-public:
-    CSSQuirksRuleImpl( StyleBaseImpl *parent );
-    CSSQuirksRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
-                      const QChar * endP );
-
-    virtual ~CSSQuirksRuleImpl();
-
-    CSSRuleListImpl *cssRules();
-    unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
-    void deleteRule ( unsigned long index );
-
-    virtual bool isQuirksRule() { return true; }
-    
-protected:
-    CSSRuleListImpl *m_lstCSSRules;
-
-    /* Not part of the DOM */
-    unsigned long appendRule( CSSRuleImpl *rule );
-};
-
 class MediaList;
 
 class CSSMediaRuleImpl : public CSSRuleImpl
 {
 public:
     CSSMediaRuleImpl( StyleBaseImpl *parent );
-    CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
-                      const QChar * endP, const DOM::DOMString &media );
+    CSSMediaRuleImpl( StyleBaseImpl *parent, const DOM::DOMString &media );
+    CSSMediaRuleImpl( StyleBaseImpl *parent, MediaListImpl *mediaList, CSSRuleListImpl *ruleList );
 
     virtual ~CSSMediaRuleImpl();
 
@@ -166,12 +144,12 @@ public:
     void deleteRule ( unsigned long index );
 
     virtual bool isMediaRule() { return true; }
+
+    /* Not part of the DOM */
+    unsigned long append( CSSRuleImpl *rule );
 protected:
     MediaListImpl *m_lstMedia;
     CSSRuleListImpl *m_lstCSSRules;
-
-    /* Not part of the DOM */
-    unsigned long appendRule( CSSRuleImpl *rule );
 };
 
 
@@ -249,6 +227,7 @@ public:
     unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
     void deleteRule ( unsigned long index );
 
+    void append( CSSRuleImpl *rule ) { m_lstCSSRules.append( rule ); }
 protected:
     QPtrList<CSSRuleImpl> m_lstCSSRules;
 };

@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -284,12 +284,11 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     }
     removeProperty(id, nonCSSHint );
 
-    DOMString ppValue = preprocess(value.string(),true);
-    bool success = parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, nonCSSHint, m_lstValues);
-
+    CSSParser parser( strictParsing );
+    bool success = parser.parseValue( this, id, value, important, nonCSSHint );
     if(!success)
 	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
-					<< "] value: [" << value.string() << "]"<< endl;
+			<< "] value: [" << value.string() << "]"<< endl;
     else
         setChanged();
 }
@@ -309,27 +308,13 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
-    DOMString ppPropertyString = preprocess(propertyString.string(),true);
-    QPtrList<CSSProperty> *props = parseProperties(ppPropertyString.unicode(),
-						ppPropertyString.unicode()+ppPropertyString.length());
-    if(!props || !props->count())
-	return;
-
-    props->setAutoDelete(false);
-
     if(!m_lstValues) {
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
     }
 
-    CSSProperty *prop = props->first();
-    while( prop ) {
-	removeProperty(prop->m_id, false);
-	m_lstValues->append(prop);
- 	prop = props->next();
-    }
-
-    delete props;
+    CSSParser parser( strictParsing );
+    parser.parseDeclaration( this, propertyString, false );
     setChanged();
 }
 
