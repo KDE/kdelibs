@@ -163,6 +163,7 @@ QString Decoder::decode(const char *data, int len)
 		    case (ID_BASE+ID_CLOSE_TAG):
 		    case ID_HTML:
 		    case ID_HEAD:
+		    case 0:
 			break;
 		    default:
 			body = true;
