@@ -1667,8 +1667,8 @@ void KExtendedSocket::flush()
       while (a && count + (a->size() - offset) < buf.size())
 	{
 	  memcpy(buf.data() + count, a->data() + offset, a->size() - offset);
-	  offset = 0;
 	  count += a->size() - offset;
+	  offset = 0;
 	  a = outBuf.next();
 	}
 
