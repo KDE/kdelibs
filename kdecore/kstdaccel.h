@@ -27,6 +27,7 @@ class QKeyEvent;
 class KAccelActions;
 
 /**
+ * \namespace KStdAccel
  * Convenient methods for access to the common accelerator keys in
  * the key configuration. These are the standard keybindings that should
  * be used in all KDE applications. They will be configurable,

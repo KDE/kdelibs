@@ -48,8 +48,8 @@ class KInstance;
  *      Execute=32, Taskbar=64
  *
  * KNotify will search for sound files given with a relative path first in
- * the application's sound directory ( share/apps/Application Name/sounds ), then in
- * the KDE global sound directory ( share/sounds ).
+ * the application's sound directory (share/apps/Application Name/sounds), then in
+ * the KDE global sound directory (share/sounds).
  *
  * You can also use the "nopresentation" key, with any the presentations
  * ORed.  Those that are in that field will not appear in the kcontrol

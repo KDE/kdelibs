@@ -25,6 +25,7 @@
 #include <qstringlist.h>
 
 /**
+ * \namespace KShell
  * Provides some basic POSIX shell and bash functionality.
  * @see KStringHandler
  */
