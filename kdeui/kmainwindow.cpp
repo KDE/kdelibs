@@ -463,7 +463,7 @@ void KMainWindow::setupGUI( QSize defaultSize, int options, const QString & xmlf
     }
 
     if( options & Create ){
-        createGUI(xmlfile);
+        createGUI(xmlfile,false);
     }
 
     if( options & Save ){
