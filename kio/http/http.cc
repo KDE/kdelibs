@@ -663,7 +663,7 @@ HTTPProtocol::http_openConnection()
       return false;
     }
 
-    kdDebug() << time(0L) << " Sending connected" << endl;
+    kdDebug(7103) << time(0L) << " Sending connected" << endl;
     // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
     connected();
 
@@ -675,20 +675,20 @@ bool HTTPProtocol::checkSSL()
   // Check if we need to pop up a dialog box to the user
   if ( metaData( "ssl_activate_warnings" ) == "TRUE" )
   {
-    kdDebug() << "SSL warnings activated" << endl;
+    kdDebug(7103) << "SSL warnings activated" << endl;
     bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
     kdDebug() << "ssl_was_in_use: " << ssl_was_in_use << endl;
 
 #ifdef DO_SSL
-    kdDebug() << "m_bUseSSL: " << m_bUseSSL << endl;
-    kdDebug() << "warnOnEnter: " << m_ssl.settings()->warnOnEnter() << endl;
-    kdDebug() << "warnOnUnencrypted: " << m_ssl.settings()->warnOnUnencrypted() << endl;
-    kdDebug() << "warnOnLeave: " << m_ssl.settings()->warnOnLeave() << endl;
-    kdDebug() << "warnOnMixed: " << m_ssl.settings()->warnOnMixed() << endl;
+    kdDebug(7103) << "m_bUseSSL: " << m_bUseSSL << endl;
+    kdDebug(7103) << "warnOnEnter: " << m_ssl.settings()->warnOnEnter() << endl;
+    kdDebug(7103) << "warnOnUnencrypted: " << m_ssl.settings()->warnOnUnencrypted() << endl;
+    kdDebug(7103) << "warnOnLeave: " << m_ssl.settings()->warnOnLeave() << endl;
+    kdDebug(7103) << "warnOnMixed: " << m_ssl.settings()->warnOnMixed() << endl;
 
     if ( !ssl_was_in_use && m_bUseSSL && m_ssl.settings()->warnOnEnter() )
     {
-      kdDebug() << "ENTERING SSL" << endl;
+      kdDebug(7103) << "ENTERING SSL" << endl;
       int result = messageBox( WarningYesNo,
                                i18n("You are about to enter secure mode."
                                     " All transmissions will be encrypted unless"
@@ -709,7 +709,7 @@ bool HTTPProtocol::checkSSL()
 
     if ( ssl_was_in_use )
     {
-      kdDebug() << "LEAVING SSL" << endl;
+      kdDebug(7103) << "LEAVING SSL" << endl;
       // We come from the SSL world. Check if we should popup a warning.
       KConfig cfg("cryptodefaults");
       cfg.setGroup("Warnings");
@@ -870,7 +870,7 @@ bool HTTPProtocol::http_open()
   if (m_state.do_proxy) {
     sprintf(c_buffer, ":%u", m_state.port);
     // The URL for the request uses ftp:// if we are in "ftp-proxy" mode
-    kdDebug() << "Using basis for URL : " << m_protocol << endl;
+    kdDebug(7103) << "Using basis for URL : " << m_protocol << endl;
     header += (m_protocol == "ftp") ? "ftp://" : "http://";
     header += m_state.hostname;
     header += c_buffer;
@@ -930,7 +930,7 @@ bool HTTPProtocol::http_open()
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
-    kdDebug(7113) << "kio_http : Range = " << c_buffer << endl;
+    kdDebug(7103) << "kio_http : Range = " << c_buffer << endl;
   }
 
 
@@ -1156,7 +1156,7 @@ bool HTTPProtocol::readHeader()
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
-     kdDebug(7113) << "readHeader: returning mimetype " << buffer << endl;
+     kdDebug(7103) << "readHeader: returning mimetype " << buffer << endl;
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
      if (!fgets(buffer, 4096, m_fcache) )
@@ -1980,6 +1980,7 @@ void HTTPProtocol::http_closeConnection()
 
 void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
 {
+  kdDebug(7113) << "Hostname is now: " << host << endl;
   m_request.hostname = host;
 
   // try to ensure that the port is something reasonable
