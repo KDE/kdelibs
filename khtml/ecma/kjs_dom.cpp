@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
 #include <qptrdict.h>
 
 #include <kjs/operations.h>
@@ -26,6 +27,7 @@
 #include "kjs_text.h"
 #include "kjs_dom.h"
 #include "kjs_html.h"
+#include <iostream.h>
 
 using namespace KJS;
 
@@ -163,11 +165,15 @@ KJSO DOMNodeList::tryGet(const UString &p) const
 
   if (p == "length")
     result = Number(list.length());
-  // ### add support for list[index] syntax
   else if (p == "item")
     result = new DOMNodeListFunc(list, DOMNodeListFunc::Item);
   else
     result = Undefined();
+
+  // array index ?
+  long unsigned int idx;
+  if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
+    result = getDOMNode(const_cast<DOM::NodeList>(list).item(idx));
 
   return result;
 }
@@ -516,8 +522,12 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
 //  else if (p == "removeNamedItemNS") // new for DOM2 - not yet in khtml
 //    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::RemoveNamedItemNS);
   else
-    return Undefined();
+    result = Undefined();
 
+  // array index ?
+  long unsigned int idx;
+  if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
+    result = getDOMNode(const_cast<DOM::NamedNodeMap>(map).item(idx));
 
   return result;
 }
@@ -542,7 +552,6 @@ Completion DOMNamedNodeMapFunction::tryExecute(const List &args)
       result = getDOMNode(map.removeNamedItem(args[0].toString().value().string()));
       break;
     case Item:
-      // ### add support for list[index] syntax
       result = getDOMNode(map.item(args[0].toNumber().intValue()));
       break;
 /*    case GetNamedItemNS: // new for DOM2 - not yet in khtml
