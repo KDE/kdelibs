@@ -529,6 +529,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {
+    kdDebug(6060) << "CahcedImage::error" << endl;
     p = 0;
 
     notify();

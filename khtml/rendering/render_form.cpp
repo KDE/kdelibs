@@ -166,6 +166,7 @@ void RenderFormElement::layout(bool)
     // now Layout the stuff
     if(m_widget)
         m_widget->resize(m_width, m_height);
+
 }
 
 
@@ -378,28 +379,29 @@ RenderImageButton::RenderImageButton(QScrollView *view,
 				     HTMLFormElementImpl *form)
     : RenderSubmitButton(view, form)
 {
+    image = 0;
 }
 
 RenderImageButton::~RenderImageButton()
 {
+    if(image) image->deref(this);
 }
 
 void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl)
 {
-    if(m_bgImage) m_bgImage->deref(this);
-    m_bgImage = Cache::requestImage(url, baseUrl);
-    m_bgImage->ref(this);
+    kdDebug( 6060 ) << "RenderImageButton::setImageURL" << endl; 
+    if(image) image->deref(this);
+    image = Cache::requestImage(url, baseUrl);
+    image->ref(this);
 }
 
 void RenderImageButton::setPixmap( const QPixmap &p, CachedObject * )
 {
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
-    layout(false);
-    calcMinMaxWidth();
-    m_widget->resize(m_width, m_height);
+    calcMinMaxWidth(); // does the layout and resizing of the button too.
 
-    if(m_parent) m_parent->updateSize();	
+    if(m_parent) updateSize();	
 }
 
 

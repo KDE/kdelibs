@@ -1145,7 +1145,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if(newChild->isInline() || newChild->isFloating())
 	{
 	    // #### this won't work with beforeChild != 0 !!!!
-	    
+	
 //	    kdDebug( 6040 ) << "adding inline child to anonymous box" << endl;
 	    if(!haveAnonymousBox())
 	    {
@@ -1186,6 +1186,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if (style()->display() == INLINE)
 	{
     	    m_inline=false; // inline can't contain blocks
+	    // ### the parent element also needs to put all inline
+	    // children into anonymous block boxes!!!
 	    if (parent() && parent()->isFlow())
 	    	static_cast<RenderFlow*>(parent())->m_childrenInline = false;
 	}

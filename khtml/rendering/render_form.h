@@ -235,6 +235,8 @@ public:
 
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
     virtual void setPixmap( const QPixmap &, CachedObject * );
+
+    CachedObject *image;
 };
 
 
