@@ -61,7 +61,7 @@ public:
    *
    * Writes back any dirty configuration entries.
    */
-  virtual ~KSimpleConfig() {}
+  virtual ~KSimpleConfig();
 
   /**
    * Delete a configuration entry.

@@ -52,6 +52,15 @@ KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
   parseConfigFiles();
 }
 
+KSimpleConfig::~KSimpleConfig()
+{
+  // we need to call the KSimpleConfig version of sync.  Relying on the
+  // regular KConfig sync is bad, because the KSimpleConfig sync has
+  // different behaviour.  Syncing here will insure that the sync() call
+  // in the KConfig destructor doesn't actually do anything.
+  sync();
+}
+
 QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 {
   QString aLocalizedKey = pKey;
@@ -92,11 +101,18 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
       aEntryMap.remove(aIt);
       return false;
     } else {
+      // we have to build up a list of things to remove, because if you
+      // remove things while traversing a QMap with an iterator,
+      // the iterator gets confused.
+      QValueList<KEntryKey> keyList;
       // we want to remove the group and all entries in the group
       for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
-	aEntryMap.remove(aIt);
-      // now remove the special group entry
-      aEntryMap.remove(groupKey);
+	keyList.append(aIt.key());
+    
+      QValueList<KEntryKey>::Iterator kIt(keyList.begin());
+      for (; kIt != keyList.end(); ++kIt)
+	aEntryMap.remove(*kIt);
+
       return true;
     }
   } else
