@@ -225,7 +225,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
 
 	if ( !no_query_exit && not_withdrawn <= 1 ) { // last window close accepted?
 	    if ( queryExit() ) {            // Yes, Quit app?
-		kapp->quit();             // ...and quit aplication.
+		kapp->deref();             // ...and quit aplication.
 	    }  else {
 		// cancel closing, it's stupid to end up with no windows at all....
 		e->ignore();
