@@ -45,32 +45,34 @@ using namespace KRES;
 
 class ConfigViewItem : public QCheckListItem
 {
-public:
-  ConfigViewItem( QListView *parent, Resource* resource, QString identifier = QString::null );
+  public:
+    ConfigViewItem( QListView *parent, Resource* resource ) :
+      QCheckListItem( parent, resource->resourceName(), CheckBox ),
+      mResource( resource ),
+      mIsStandard( false )
+    {
+      setText( 1, mResource->type() );
+      kdDebug() << "RESOURCE: " << mResource->resourceName() << " "
+                << ( mResource->isActive() ? "Active" : "Not active" ) << endl;
+      setOn( mResource->isActive() );
+    }
 
-  void setStandard( bool value )
-  {
-    setText( 2, ( value ? i18n( "yes" ) : QString( "" ) ) );
-    mIsStandard = value;
-  }
+    void setStandard( bool value )
+    {
+      setText( 2, ( value ? i18n( "yes" ) : QString( "" ) ) );
+      mIsStandard = value;
+    }
 
-  bool standard() const { return mIsStandard; }
-  bool readOnly() const { return mResource->readOnly(); }
+    bool standard() const { return mIsStandard; }
+    bool readOnly() const { return mResource->readOnly(); }
 
-  Resource* mResource;
+    Resource *resource() { return mResource; }
 
-private:
-  bool mIsStandard;
+  private:
+    Resource* mResource;
+
+    bool mIsStandard;
 };
-
-ConfigViewItem::ConfigViewItem( QListView *parent, Resource* resource, QString )
-  : QCheckListItem( parent, resource->resourceName(), CheckBox )
-{
-  mResource = resource;
-  mIsStandard = false;
-  setText( 1, resource->type() );
-}
-
 
 ResourcesConfigPage::ResourcesConfigPage( const QString& resourceFamily, QWidget *parent, const char *name )
   : QWidget( parent, name ), mFamily( resourceFamily )
@@ -108,7 +110,10 @@ ResourcesConfigPage::ResourcesConfigPage( const QString& resourceFamily, QWidget
 
   mainLayout->addWidget( groupBox );
 
-  connect( mListView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+  connect( mListView, SIGNAL( selectionChanged() ),
+           SLOT( slotSelectionChanged() ) );
+  connect( mListView, SIGNAL( clicked( QListViewItem * ) ),
+           SLOT( slotItemClicked( QListViewItem * ) ) );
 
   mManager = 0;
   mLastItem = 0;
@@ -139,7 +144,6 @@ void ResourcesConfigPage::load()
   ResourceManager<Resource>::Iterator it;
   for( it = mManager->begin(); it != mManager->end(); ++it ) {
     ConfigViewItem *item = new ConfigViewItem( mListView, *it );
-    item->setOn( (*it)->isActive() );
     if ( *it == standardResource )
       item->setStandard( true );
   }
@@ -161,17 +165,18 @@ void ResourcesConfigPage::load()
 void ResourcesConfigPage::save()
 {
   QListViewItem *item = mListView->firstChild();
-  while ( item != 0 ) {
-    ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
+  while ( item ) {
+    ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
 
     // check if standard resource
-    if ( configItem->standard() && !configItem->readOnly() && configItem->isOn() )
-      mManager->setStandardResource( configItem->mResource );
+    if ( configItem->standard() && !configItem->readOnly() &&
+         configItem->isOn() )
+      mManager->setStandardResource( configItem->resource() );
 
     // check if active or passive resource
-    mManager->setActive( configItem->mResource, ( (QCheckListItem*)item )->isOn() );
+    configItem->resource()->setActive( configItem->isOn() );
 
-    item = item->itemBelow();
+    item = item->nextSibling();
   }
   mManager->sync();
 
@@ -210,7 +215,6 @@ void ResourcesConfigPage::slotAdd()
     mManager->add( resource );
 
     ConfigViewItem *item = new ConfigViewItem( mListView, resource );
-    item->setOn( true );
 
     mLastItem = item;
 
@@ -220,7 +224,7 @@ void ResourcesConfigPage::slotAdd()
       bool onlyReadOnly = true;
       QListViewItem *it = mListView->firstChild();
       while ( it != 0 ) {
-        ConfigViewItem *confIt = dynamic_cast<ConfigViewItem*>( it );
+        ConfigViewItem *confIt = static_cast<ConfigViewItem*>( it );
         if ( !confIt->readOnly() && confIt != item )
           onlyReadOnly = false;
 
@@ -241,7 +245,7 @@ void ResourcesConfigPage::slotAdd()
 void ResourcesConfigPage::slotRemove()
 {
   QListViewItem *item = mListView->currentItem();
-  ConfigViewItem *confItem = dynamic_cast<ConfigViewItem*>( item );
+  ConfigViewItem *confItem = static_cast<ConfigViewItem*>( item );
 
   if ( !confItem )
     return;
@@ -251,8 +255,8 @@ void ResourcesConfigPage::slotRemove()
     return;
   }
 
-  mManager->remove( confItem->mResource );
-  delete confItem->mResource;
+  mManager->remove( confItem->resource() );
+  delete confItem->resource();
 
   if ( item == mLastItem )
     mLastItem = 0;
@@ -266,11 +270,11 @@ void ResourcesConfigPage::slotRemove()
 void ResourcesConfigPage::slotEdit()
 {
   QListViewItem *item = mListView->currentItem();
-  ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
+  ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
   if ( !configItem )
     return;
 
-  Resource *resource = configItem->mResource;
+  Resource *resource = configItem->resource();
 
   ResourceConfigDlg dlg( this, mFamily, resource, "ResourceConfigDlg" );
 
@@ -290,7 +294,7 @@ void ResourcesConfigPage::slotEdit()
 
 void ResourcesConfigPage::slotStandard()
 {
-  ConfigViewItem *item = dynamic_cast<ConfigViewItem*>( mListView->currentItem() );
+  ConfigViewItem *item = static_cast<ConfigViewItem*>( mListView->currentItem() );
   if ( !item )
     return;
 
@@ -306,14 +310,14 @@ void ResourcesConfigPage::slotStandard()
 
   QListViewItem *it = mListView->firstChild();
   while ( it != 0 ) {
-    ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( it );
+    ConfigViewItem *configItem = static_cast<ConfigViewItem*>( it );
     if ( configItem->standard() )
       configItem->setStandard( false );
     it = it->itemBelow();
   }
 
   item->setStandard( true );
-  mManager->setStandardResource( item->mResource );
+  mManager->setStandardResource( item->resource() );
 }
 
 void ResourcesConfigPage::slotSelectionChanged()
@@ -347,6 +351,16 @@ void ResourcesConfigPage::resourceModified( Resource* resource )
 void ResourcesConfigPage::resourceDeleted( Resource* resource )
 {
   kdDebug(5650) << "ResourcesConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
+}
+
+void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
+{
+  ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
+  if ( !configItem ) return;
+
+  if ( configItem->isOn() != configItem->resource()->isActive() ) {
+    emit changed( true );
+  }
 }
 
 #include "resourcesconfigpage.moc"

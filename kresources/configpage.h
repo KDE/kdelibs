@@ -63,6 +63,9 @@ public:
   virtual void resourceModified( Resource* resource );
   virtual void resourceDeleted( Resource* resource );
 
+protected slots:
+  void slotItemClicked( QListViewItem * );
+
 signals:
   void changed(bool);
 
