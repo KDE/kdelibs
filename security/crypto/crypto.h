@@ -83,6 +83,10 @@ public slots:
   void slotGeneratePersonal();
   void slotUseEGD();
   void slotChooseEGD();
+  void slotCWcompatible();
+  void slotCWus();
+  void slotCWexp();
+  void slotCWall();
 
 private:
   QTabWidget *tabs;
@@ -94,10 +98,14 @@ private:
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave;
 
+  /* EGD stuff */
   QPushButton *mChooseEGD;
   QLabel    *mEGDLabel;
   QLineEdit *mEGDPath;
   QCheckBox *mUseEGD;
+
+  /* CipherWizards */
+  QPushButton *mCWall, *mCWus, *mCWexp, *mCWcompatible;
 
   QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
   QListBox *yourSSLBox, *otherSSLBox, *caSSLBox;

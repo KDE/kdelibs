@@ -103,14 +103,14 @@ QString whatstr;
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
-  grid = new QGridLayout(tabSSL, 6, 2, KDialog::marginHint(),
+  grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
                                         KDialog::spacingHint() );
   mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
   whatstr = i18n("TLS is the proposed new implementation of secure sockets."
-                "  Enabling TLS disables SSLv2 and SSLv3.  In most cases"
-                " you should leave this turned off.");
+                "  Enabling TLS in this form disables SSLv2 and SSLv3.  "
+                "You should leave this turned off.");
   QWhatsThis::add(mUseTLS, whatstr);
 
   mUseSSLv2 = new QCheckBox(i18n("Enable SSLv&2"), tabSSL);
@@ -164,9 +164,37 @@ QString whatstr;
 
   loadCiphers();
 
+  //
+  //  CipherWizards
+  //
+  QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards..."), tabSSL);
+  mCWcompatible = new QPushButton(i18n("Most &Compatible"), cwbg);
+  mCWus = new QPushButton(i18n("&US Ciphers Only"), cwbg);
+  mCWexp = new QPushButton(i18n("E&xport Ciphers Only"), cwbg);
+  mCWall = new QPushButton(i18n("Enable &All"), cwbg);
+  connect(mCWcompatible, SIGNAL(clicked()), SLOT(slotCWcompatible()));
+  connect(mCWus, SIGNAL(clicked()), SLOT(slotCWus()));
+  connect(mCWexp, SIGNAL(clicked()), SLOT(slotCWexp()));
+  connect(mCWall, SIGNAL(clicked()), SLOT(slotCWall()));
+  grid->addMultiCellWidget(cwbg, 3, 3, 0, 1);
+  whatstr = i18n("Use these buttons to more easily configure the SSL encryption settings.");
+  QWhatsThis::add(cwbg, whatstr);
+  whatstr = i18n("Select the settings found to be most compatible.");
+  QWhatsThis::add(mCWcompatible, whatstr);
+  whatstr = i18n("Select only the US strong (>= 128 bit) encryption ciphers.");
+  QWhatsThis::add(mCWus, whatstr);
+  whatstr = i18n("Select only the weak ciphers (<= 56 bit).");
+  QWhatsThis::add(mCWexp, whatstr);
+  whatstr = i18n("Select all SSL ciphers and methods.");
+  QWhatsThis::add(mCWall, whatstr);
+
+
+  //
+  //  Settings for the EGD
+  //
   mUseEGD = new QCheckBox(i18n("Use EGD"), tabSSL);
   connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
-  grid->addWidget(mUseEGD, 3, 0);
+  grid->addWidget(mUseEGD, 4, 0);
   QFrame *egdframe = new QFrame(tabSSL);
   QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
                                                       KDialog::spacingHint() );
@@ -178,7 +206,7 @@ QString whatstr;
   mChooseEGD = new QPushButton("...", egdframe);
   connect(mChooseEGD, SIGNAL(clicked()), SLOT(slotChooseEGD()));
   grid2->addWidget(mChooseEGD, 1, 1);
-  grid->addWidget(egdframe, 3, 1);
+  grid->addWidget(egdframe, 4, 1);
   whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
           " daemon (EGD) for initializing the pseudo-random number generator.");
   QWhatsThis::add(mUseEGD, whatstr);
@@ -188,19 +216,22 @@ QString whatstr;
   QWhatsThis::add(mEGDPath, whatstr);
   whatstr = i18n("Click here to browse for the EGD socket file.");
   QWhatsThis::add(mEGDPath, whatstr);
+
+
+
   
 #endif
 
   mWarnOnEnter = new QCheckBox(i18n("Warn on &entering SSL mode"), tabSSL);
   connect(mWarnOnEnter, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnEnter, 4, 0);
+  grid->addWidget(mWarnOnEnter, 5, 0);
   whatstr = i18n("If selected, you will be notified when entering an SSL"
                 " enabled site");
   QWhatsThis::add(mWarnOnEnter, whatstr);
 
   mWarnOnLeave = new QCheckBox(i18n("Warn on &leaving SSL mode"), tabSSL);
   connect(mWarnOnLeave, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnLeave, 4, 1);
+  grid->addWidget(mWarnOnLeave, 5, 1);
   whatstr = i18n("If selected, you will be notified when leaving an SSL"
                 " based site.");
   QWhatsThis::add(mWarnOnLeave, whatstr);
@@ -208,14 +239,14 @@ QString whatstr;
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
   connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnUnencrypted, 5, 0);
+  grid->addWidget(mWarnOnUnencrypted, 6, 0);
   whatstr = i18n("If selected, you will be notified before sending"
                 " unencrypted data via a web browser.");
   QWhatsThis::add(mWarnOnUnencrypted, whatstr);
 
   mWarnOnMixed = new QCheckBox(i18n("Warn on &mixed SSL/non-SSL pages"), tabSSL);
   connect(mWarnOnMixed, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnMixed, 5, 1);
+  grid->addWidget(mWarnOnMixed, 6, 1);
   whatstr = i18n("If selected, you will be notified if you view a page"
                 " that has both encrypted and non-encrypted parts.");
   QWhatsThis::add(mWarnOnMixed, whatstr);
@@ -600,12 +631,12 @@ void KCryptoConfig::defaults()
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 40 );
+    item->setOn( item->bits() >= 56 );
   }
 
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 40 );
+    item->setOn( item->bits() >= 56 );
   }
   mUseEGD->setChecked(false);
   mEGDLabel->setEnabled(false);
@@ -623,6 +654,85 @@ QString KCryptoConfig::quickHelp() const
      " use with most KDE applications, as well as manage your personal"
      " certificates and the known certificate authorities.");
 }
+
+
+void KCryptoConfig::slotCWcompatible() {
+  #ifdef HAVE_SSL
+  CipherItem *item;
+  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 56 );
+  }
+
+  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 56 );
+  }
+
+  mUseTLS->setChecked(false);
+  mUseSSLv2->setChecked(true);
+  mUseSSLv3->setChecked(false);
+  configChanged();
+  #endif
+}
+
+
+void KCryptoConfig::slotCWus() {
+  #ifdef HAVE_SSL
+  CipherItem *item;
+  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 128 );
+  }
+
+  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 128 );
+  }
+
+  configChanged();
+  #endif
+}
+
+
+void KCryptoConfig::slotCWexp() {
+  #ifdef HAVE_SSL
+  CipherItem *item;
+  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() <= 56 && item->bits() > 0);
+  }
+
+  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() <= 56 && item->bits() > 0);
+  }
+
+  configChanged();
+  #endif
+}
+
+
+void KCryptoConfig::slotCWall() {
+  #ifdef HAVE_SSL
+  CipherItem *item;
+  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( true );
+  }
+
+  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( true );
+  }
+
+  mUseTLS->setChecked(false);
+  mUseSSLv2->setChecked(true);
+  mUseSSLv3->setChecked(true);
+  configChanged();
+  #endif
+}
+
 
 
 void KCryptoConfig::slotChooseEGD() {
