@@ -664,10 +664,15 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 
 void DocumentImpl::updateRendering()
 {
+//    int o=changedNodes.count();
+//    int a=0;
     QListIterator<NodeImpl> it(changedNodes);
-    for (; it.current(); ++it) {
-	it.current()->applyChanges( true, true );
+    for (; it.current(); ) {
+        // applyChanges removes current from the list
+	    it.current()->applyChanges( true, true );
+//        a++;
     }
+//    kdDebug() << "UpdateRendering orig="<<o<<" actual="<<a<<endl;
     changedNodes.clear();
 }
 
