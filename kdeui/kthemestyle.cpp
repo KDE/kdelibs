@@ -40,7 +40,6 @@ KThemeStyle::KThemeStyle(const QString &configFile )
 }
 
 KThemeStyle::~KThemeStyle(){
-    kdWarning() << "Kthemestyle destructor called" << endl;
 }
 
 void KThemeStyle::polish(QApplication */*app*/)
