@@ -110,7 +110,8 @@ class KLineEdit : public QLineEdit
 
 public:
     /*
-    * Constructs a KLineEdit object.
+    * Constructs a KLineEdit object with a default text, a parent,
+    * a name and a context menu.
     *
     * @param @p string text to be shown in the edit widget
     * @param @p parent the parent object of this widget
@@ -124,7 +125,8 @@ public:
                bool showMenu = true,
                bool showChanger = true );
     /*
-    *  Constructs a KLineEdit object.
+    * Constructs a KLineEdit object with a parent, a name and a
+    * a context menu.
     *
     * @param @p string text to be shown in the edit widget
     * @param @p parent the parent object of this widget
@@ -433,10 +435,13 @@ protected:
     QPopupMenu *contextMenu, *subMenu;
     // Pointer to Completion object.
     KCompletion *comp;
-
+    // Initialize method called from the constructors
     virtual void initialize( bool , bool );
+    // Method re-implemented to filter key-events...
     virtual void keyPressEvent( QKeyEvent * );
+    // Method re-implemented to filter key-events...
     virtual void mousePressEvent( QMouseEvent * );
+    // Method to rotate the text on rotation events
     void rotateText( const QString& );
 
 private :
