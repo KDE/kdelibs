@@ -33,6 +33,7 @@ class KProtocolInfo::KProtocolInfoPrivate
 {
 public:
   QString docPath;
+  QString protClass;
 };
  
 //
@@ -87,6 +88,9 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_outputType = KProtocolInfo::T_NONE;
     
   d->docPath = config.readPathEntry( "DocPath" );
+  d->protClass = config.readEntry( "Class" ).lower();
+  if (!d->protClass.startsWith(":"))
+     d->protClass.prepend(':');
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -121,7 +125,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving 
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves >> d->docPath;
+        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -177,7 +181,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath;
+        << m_config << m_maxSlaves << d->docPath << d->protClass;
 }
 
 
@@ -393,6 +397,15 @@ QString KProtocolInfo::docPath( const QString& _protocol )
     return QString::null;
 
   return prot->d->docPath;
+}
+
+QString KProtocolInfo::protocolClass( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return QString::null;
+
+  return prot->d->protClass;
 }
 
 // KURL based static functions are implemented in ../kio/kio/kprotoconinfo.cpp
