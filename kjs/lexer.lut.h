@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry mainTableEntries[] = {
+const struct HashEntry mainTableEntries[] = {
    { "instanceof", INSTANCEOF, 0, 0, &mainTableEntries[63] },
    { "var", VAR, 0, 0, &mainTableEntries[47] },
    { "case", CASE, 0, 0, &mainTableEntries[41] },
@@ -76,6 +76,6 @@ static const struct HashEntry mainTableEntries[] = {
    { "volatile", RESERVED, 0, 0, 0 }
 };
 
-static const struct HashTable mainTable = { 2, 67, mainTableEntries, 41 };
+const struct HashTable mainTable = { 2, 67, mainTableEntries, 41 };
 
 } // namespace

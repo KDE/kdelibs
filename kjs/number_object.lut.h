@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry numberTableEntries[] = {
+const struct HashEntry numberTableEntries[] = {
    { "POSITIVE_INFINITY", NumberObjectImp::PosInfinity, DontEnum|DontDelete|ReadOnly, 0, 0 },
    { "MAX_VALUE", NumberObjectImp::MaxValue, DontEnum|DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -15,6 +15,6 @@ static const struct HashEntry numberTableEntries[] = {
    { "NEGATIVE_INFINITY", NumberObjectImp::NegInfinity, DontEnum|DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable numberTable = { 2, 6, numberTableEntries, 5 };
+const struct HashTable numberTable = { 2, 6, numberTableEntries, 5 };
 
 } // namespace
