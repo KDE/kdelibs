@@ -3784,7 +3784,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
     }
   }
 
-  if ( child && child->m_part->inherits( "KHTMLPart" )) {
+  if ( child && child->m_type != khtml::ChildFrame::Object ) {
       // Inform someone that we are about to show something else.
       child->m_bNotify = true;
       requestObject( child, url, args );
