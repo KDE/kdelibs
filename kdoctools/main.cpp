@@ -23,7 +23,7 @@ extern int xmlLoadExtDtdDefaultValue;
 
 extern "C"
 {
-    int kdemain( int argc, char **argv )
+    KDE_EXPORT int kdemain( int argc, char **argv )
     {
         KInstance instance( "kio_help" );
         fillInstance(instance);

@@ -92,7 +92,7 @@ KArtsServer *soundServer;
 
 extern "C"{
 
-int kdemain(int argc, char **argv)
+KDE_EXPORT int kdemain(int argc, char **argv)
 {
     KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
                          "3.0", I18N_NOOP("KDE Notification Server"),
