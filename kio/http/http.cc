@@ -269,6 +269,7 @@ int HTTPProtocol::openStream() {
     }
     KSSLCertificate::KSSLValidation ksv =
                                m_ssl.peerInfo().getPeerCertificate().validate();
+    bool matchingCN = m_ssl.peerInfo().certMatchesAddress();
     kdDebug(7103) << "SSL connection established." << endl;
     kdDebug(7103) << "SSL connection information follows:" << endl
                   << "+-----------------------------------------------" << endl
@@ -282,6 +283,7 @@ int HTTPProtocol::openStream() {
                   << "| Subject: " << m_ssl.peerInfo().getPeerCertificate().getSubject() << endl
                   << "| Issuer: " << m_ssl.peerInfo().getPeerCertificate().getIssuer() << endl
                   << "| Validation: " << (int)ksv << endl
+                  << "| Certificate matches CN: " << matchingCN << endl
                   << "+-----------------------------------------------"
                   << endl;
     setMetaData("ssl_in_use", "TRUE");
