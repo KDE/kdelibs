@@ -2,6 +2,7 @@
 PrintSystem=cups
 Comment=CUPS (Common Unix Print System)
 Comment[af]=cups (gemeenskaplike unix druk stelsel)
+Comment[ara]=CUPS (نظام طباعة يونيكس الشائع)
 Comment[da]=CUPS (Fælles Unix Udskrifts System)
 Comment[eo]=CUPS (Kapabla Uniks-pressistemo)
 Comment[es]=CUPS (sistema de impresión común para Unix)
