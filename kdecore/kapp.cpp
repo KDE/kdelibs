@@ -1155,6 +1155,9 @@ bool checkAccess(const QString& pathname, int mode)
     return false;   // Check for write access is not part of mode => bail out
 
 
+  if (!access( pathname.ascii(), F_OK)) // if it already exists
+      return false;
+
   //strip the filename (everything until '/' from the end
   QString dirName(pathname);
   int pos = dirName.findRev('/');
