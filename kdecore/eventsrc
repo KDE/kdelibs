@@ -149,6 +149,7 @@ Comment[nl]=Het einde van de lijst met overeenkomsten is bereikt
 Comment[pt]=O fim da lista de escolhas foi atingido
 Comment[pt_BR]=O fim da lista de coincidências foi atingido
 Comment[sv]=Slutet på listan med träffar har nåtts
+Comment[zh_CN]=已到达匹配项列表的最后
 default_presentation=1
 
 [Textcompletion: no match]
@@ -230,6 +231,7 @@ Comment[nl]=Er werd geen overeenkomstige aanvulling gevonden
 Comment[pt]=Não foi encontrada qualquer completação
 Comment[pt_BR]=Nenhuma coincidência foi encontrada
 Comment[sv]=Ingen matchande komplettering hittades
+Comment[zh_CN]=没有找到匹配的补全项
 default_presentation=1
 
 [Textcompletion: partial match]
@@ -311,6 +313,7 @@ Comment[nl]=Er is meer dan één mogelijke overeenkomst
 Comment[pt]=Há mais do que uma completação possível
 Comment[pt_BR]=Há mais de uma opção possível
 Comment[sv]=Det finns mer än en möjlig träff
+Comment[zh_CN]=有多于一个的可能匹配项
 default_presentation=1
 
 [cannotopenfile]
@@ -540,6 +543,7 @@ Comment[nl]=Er was een ernstige fout die ervoor zorgde dat dit programma beëind
 Comment[pt]=Ocorreu um erro grave que provocou o fim da execução do programa
 Comment[pt_BR]=Houve um erro sério, que fez o programa finalizar
 Comment[sv]=Ett allvarligt fel uppstod vilket fick programmet att avslutas
+Comment[zh_CN]=有一个严重的错误导致程序退出
 default_presentation=2
 level=4
 
@@ -624,6 +628,7 @@ Comment[nl]=Er gebeurde iets bijzonders in het programma
 Comment[pt]=Ocorreu algo de especial no programa
 Comment[pt_BR]=Algo especial ocorreu no programa
 Comment[sv]=Någonting speciellt inträffade i programmet
+Comment[zh_CN]=程序中发生了特殊情况
 default_presentation=1
 default_sound=KDE_Beep_Beep.wav
 level=1
@@ -711,6 +716,7 @@ Comment[nl]=Er zat een fout in het programma die voor problemen kon zorgen
 Comment[pt]=Ocorreu um erro grave no programa que pode causar problemas
 Comment[pt_BR]=Houve um erro no programa que pode ter causado problemas
 Comment[sv]=Det uppstod ett fel i programmet vilket kan orsaka problem
+Comment[zh_CN]=程序中发生了可能导致问题的错误
 default_presentation=2
 level=2
 
@@ -915,6 +921,7 @@ Comment[nl]=KDE is aan het opstarten
 Comment[pt]=O KDE está a arrancar
 Comment[pt_BR]=KDE está iniciando
 Comment[sv]=KDE startas
+Comment[zh_CN]=KDE 正在启动
 default_presentation=1
 default_sound=KDE_Startup.wav
  
@@ -995,6 +1002,7 @@ Comment[nl]=KDE is aan het afsluiten
 Comment[pt]=O KDE está a terminar
 Comment[pt_BR]=KDE está finalizando
 Comment[sv]=KDE avslutas
+Comment[zh_CN]=KDE 正在退出
 default_presentation=1
 default_sound=KDE_Logout.wav
 
