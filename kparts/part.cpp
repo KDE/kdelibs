@@ -227,6 +227,14 @@ void Part::guiActivateEvent( GUIActivateEvent * )
 {
 }
 
+QWidget *Part::hostContainer( const QString &containerName )
+{
+  if ( !factory() )
+    return 0L;
+  
+  return factory()->container( containerName, this );
+} 
+
 void Part::slotWidgetDestroyed()
 {
   kDebugInfo( 1000, QString(" ********** KPart::slotWidgetDestroyed(), deleting part '%1'").arg(name()) );

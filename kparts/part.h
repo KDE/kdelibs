@@ -160,6 +160,8 @@ protected:
     virtual void partSelectEvent( PartSelectEvent *event );
     virtual void guiActivateEvent( GUIActivateEvent *event );
 
+    QWidget *hostContainer( const QString &containerName );
+
 private slots:
     void slotWidgetDestroyed();
 
@@ -270,7 +272,7 @@ protected:
    * This is the usual behaviour in 99% of the apps
    * Reimplement if you don't like it - test for event->activated() !
    *
-   * Technical note : this is done with GUIActivateEvent and not with 
+   * Technical note : this is done with GUIActivateEvent and not with
    * PartActivateEvent because it's handled by the mainwindow
    * (which gets the even after the PartActivateEvent events have been sent)
    */
@@ -301,7 +303,7 @@ private:
  * (to the same URL or a different one).
  *
  * A read-write part can be set to read-only mode, using @ref setReadWrite.
- * 
+ *
  * Part writers :
  * Any part inheriting ReadWritePart should check @ref isReadWrite
  * before allowing any action that modifies the part.

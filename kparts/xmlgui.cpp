@@ -109,8 +109,7 @@ public:
   XMLGUIContainerNode *m_rootNode;
   QString m_servantName;
   QString m_defaultMergingName;
-
-  int m_genId;
+  QString m_containerName;
 
   bool m_bAcceptSeparator;
 };
@@ -224,7 +223,6 @@ void XMLGUIFactory::addServant( XMLGUIServant *servant )
 
   d->m_rootNode->index = -1;
   d->m_servantName = docElement.attribute( "name" );
-  d->m_genId = 0;
 
   buildRecursive( docElement, d->m_rootNode );
   pruneContainers( d->m_rootNode );
@@ -248,6 +246,19 @@ void XMLGUIFactory::removeServant( XMLGUIServant *servant )
   m_servant = 0L;
   d->m_servantName = QString::null;
 }
+
+QWidget *XMLGUIFactory::container( const QString &containerName, XMLGUIServant *servant )
+{
+  d->m_containerName = containerName;
+  m_servant = servant;
+  
+  QWidget *result = findRecursive( d->m_rootNode );
+  
+  m_servant = 0L;
+  d->m_containerName = QString::null;
+  
+  return result;
+} 
 
 void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode )
 {
@@ -613,4 +624,20 @@ void XMLGUIFactory::pruneContainers( XMLGUIContainerNode *node)
 
   for (; it.current(); ++it)
     pruneContainers( it.current() );
+}
+
+QWidget *XMLGUIFactory::findRecursive( XMLGUIContainerNode *node )
+{
+  if ( node->name == d->m_containerName && node->servant == m_servant )
+    return node->container;
+  
+  QListIterator<XMLGUIContainerNode> it( node->children );
+  for (; it.current(); ++it )
+  {
+    QWidget *cont = findRecursive( it.current() );
+    if ( cont )
+      return cont;
+  }
+  
+  return 0L;
 }

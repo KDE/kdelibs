@@ -140,6 +140,8 @@ class XMLGUIFactory
    */
   void removeServant( XMLGUIServant *servant );
 
+  QWidget *container( const QString &containerName, XMLGUIServant *servant );
+
  private:
   void buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode );
   bool removeRecursive( XMLGUIContainerNode *node );
@@ -152,6 +154,8 @@ class XMLGUIFactory
   XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList );
 
   XMLGUIContainerNode *findContainerNode( XMLGUIContainerNode *parentNode, QWidget *container );
+
+  QWidget *findRecursive( XMLGUIContainerNode *node );
 
   XMLGUIServant *m_servant;
   XMLGUIBuilder *m_builder;
