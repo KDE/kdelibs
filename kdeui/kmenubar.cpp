@@ -23,6 +23,8 @@
 #include <qstring.h>
 #include <qframe.h>
 
+#include "qobjectlist.h"
+
 #include "ktopwidget.h"
 
 #include "kmenubar.moc"
@@ -39,6 +41,9 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.42  1998/11/07 22:39:13  radej
+// sven: Fixed QAccel too (unrepaired what repairEventFilter messed)
 //
 // Revision 1.41  1998/11/07 17:13:57  radej
 // sven: Fixed KAccel, for now
@@ -511,6 +516,21 @@ void KMenuBar::enableMoving(bool flag)
 	}
 
         emit moved (mpos);
+//        if (style() == MotifStyle)
+//          menu->setMouseTracking(false);
+//        else
+//          menu->setMouseTracking(true);
+//----------------------------------------------------------------------------
+        // Repair repaired Accelerators (Eh, those Trolls...)
+        QObjectList	*accelerators = queryList( "QAccel" );
+        QObjectListIt it( *accelerators );
+        QObject *obj;
+        while ( (obj=it.current()) != 0 )
+        {
+          ++it;
+          this->removeEventFilter(obj); //Man...
+          disconnect( this, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
+
           Parent->installEventFilter(obj);
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
         }
