@@ -130,6 +130,7 @@ void kdebug_null( ushort nLevel, ushort nArea,
 void kdebug( ushort nLevel, ushort nArea, 
                          const char* pFormat, ... )
 {
+#ifndef NO_DEBUG
   // Save old group
   QString aOldGroup = kapp->getConfig()->group();
   kapp->getConfig()->setGroup( "KDebug" );
@@ -264,6 +265,7 @@ void kdebug( ushort nLevel, ushort nArea,
 
   // restore old group
   kapp->getConfig()->setGroup( aOldGroup );
+#endif
 }
 
 
