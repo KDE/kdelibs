@@ -729,7 +729,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     {
     case CSS_PROP_AZIMUTH:
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-    case CSS_PROP_BACKGROUND_POSITION:
     case CSS_PROP_BACKGROUND_REPEAT:
     case CSS_PROP_BORDER_TOP_STYLE:
     case CSS_PROP_BORDER_RIGHT_STYLE:
@@ -862,8 +861,42 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 // special properties (css_extensions)
     case CSS_PROP_AZIMUTH:
         // CSS2Azimuth
+      break;
     case CSS_PROP_BACKGROUND_POSITION:
-        // CSS2BackgroundPosition
+      {
+	int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
+	return 	parseShortHand(curP, endP, properties, 2, important, propList);
+      }
+      break;
+    case CSS_PROP_KONQ_BGPOS_X:
+    case CSS_PROP_KONQ_BGPOS_Y:
+      {
+        const struct css_value *cssval = findValue(val, value.length());
+	int val = -1;
+        if (cssval)
+        {
+	  switch( cssval->id ) {
+	  case CSS_VAL_TOP:
+	  case CSS_VAL_LEFT:
+	    val = 0;
+	    break;
+	  case CSS_VAL_CENTER:
+	    val = 50;
+	    break;
+	  case CSS_VAL_BOTTOM:
+	  case CSS_VAL_RIGHT:
+	    val = 100;
+	    break;
+	  default:
+	    break;
+	  }
+	}
+	if(val == -1)
+	  parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
+	else if(!parsedValue)
+	  parsedValue = new CSSPrimitiveValueImpl(val, CSSPrimitiveValue::CSS_PERCENTAGE);
+        break;
+      }
     case CSS_PROP_CURSOR:
         // CSS2Cursor
         // ### should also support URI, but let's ignore that for now.
@@ -1097,39 +1130,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
 // shorthand properties
     case CSS_PROP_BACKGROUND:
-    {
-        // add all shorthand properties to the list...
-        //kdDebug( 6080 ) << "parsing '" << QString(curP, endP - curP) << "'" << endl;
-        bool last = false;
-        while(!last)
-        {
-            bool ignoreSpace=false;
-            const QChar *nextP = curP;
-            while((*nextP != ' ' || ignoreSpace) && *nextP != ';')
-            {
-                if(nextP >= endP) {
-                    last = true;
-                    break;
-                }
-                if (*nextP == '(')
-                   ignoreSpace=true;
-                if (*nextP == ')')
-                   ignoreSpace=false;
-                nextP++;
-            }
-            bool found;
-            //kdDebug( 6080 ) << "parsing '" << QString(curP, nextP - curP) << "'" << endl;
-            found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
-            if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
-            if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
-            if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_REPEAT, important, propList);
-            if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_ATTACHMENT, important, propList);
-            if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
-            curP = nextP+1;
-            if(curP >= endP) break;
-        }
-        return true;
-    }
+      return parseBackground(curP, endP, important, propList);
 
 // add all shorthand properties to the list...
     case CSS_PROP_BORDER:
@@ -1165,35 +1166,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             properties = properties_border_right;
         else return false;
 
-        bool last = false;
-        while(!last)
-        {
-            const QChar *nextP = curP;
-            while(*nextP != ' ' && *nextP != ';')
-            {
-                nextP++;
-                if(nextP >= endP) {
-                    last = true;
-                    break;
-                }
-            }
-            bool found;
-#ifdef CSS_DEBUG
-            kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
-#endif
-            found = parseValue(curP, nextP, properties[0], important, propList);
-            if(!found) found = parseValue(curP, nextP, properties[1], important, propList);
-            if(!found) found = parseValue(curP, nextP, properties[2], important, propList);
-            if(!found) {
-#ifdef CSS_DEBUG
-                kdDebug(6080) << "invalid border prop" << endl;
-#endif
-                return false;
-            }
-            curP = nextP+1;
-            if(curP >= endP) break;
-        }
-        return true;
+        return parseShortHand(curP, endP, properties, 3, important, propList);
     }
 
     case CSS_PROP_BORDER_COLOR:
@@ -1262,6 +1235,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         return parseFont( curP, endP, important, propList );
     }
     case CSS_PROP_LIST_STYLE:
+      {
+	const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
+        return 	parseShortHand(curP, endP, properties, 3, important, propList);
+      }
     case CSS_PROP_OUTLINE:
     case CSS_PROP_PAUSE:
         break;
@@ -1291,6 +1268,152 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     //kdDebug( 6080 ) << "added property " << propId << endl;
 
     return true;
+}
+
+static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
+{
+  last = false;
+  const QChar *nextP = curP;
+  bool ignoreSpace = false;
+  while(nextP <= endP) {
+    if ( *nextP == '(' )
+      ignoreSpace = true;
+    if ( *nextP == ')' )
+      ignoreSpace = false;
+    if ( *nextP == ' ' && !ignoreSpace )
+      break;
+    if ( *nextP == ';' || nextP == endP ) {
+      last = true;
+      break;
+    }
+    nextP++;
+  }
+  return nextP;
+}
+
+bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num, bool important, QList<CSSProperty> *propList, bool multiple)
+{
+  bool last = false;
+  bool fnd[10]; // 10 should be big enough...
+  for( int i = 0; i < num; i++ )
+    fnd[i] = false;
+  while(!last) {
+    const QChar *nextP = getNext( curP, endP, last );;
+      bool found = false;
+      //#ifdef CSS_DEBUG
+      kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
+      //#endif
+      int i = 0;
+      while ( !found && i < num ) {
+	if( multiple || !fnd[i] )
+	  found = parseValue(curP, nextP, properties[i], important, propList);
+	if( found ) {
+	  kdDebug() << "found " << i << endl;
+	  fnd[i] = true;
+	}
+	i++;
+      }
+      if(!found) {
+	//#ifdef CSS_DEBUG
+	  kdDebug(6080) << "invalid property" << endl;
+	  //#endif
+	  return false;
+      }
+      curP = nextP+1;
+      if(curP >= endP) break;
+  }
+  return true;
+}
+
+bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool important, QList<CSSProperty> *propList)
+{
+  // ### implement background position
+  bool last = false;
+  bool fnd[5];
+  for( int i = 0; i < 5; i++ )
+    fnd[i] = false;
+  while(!last) {
+    bool found = false;
+    const QChar *nextP = getNext( curP, endP, last );
+    if(!last && !fnd[0]) {
+      bool l;
+      const QChar *second = getNext( nextP+1, endP, l );
+      if(!fnd[0]) {
+	found = parseValue(curP, second, CSS_PROP_BACKGROUND_POSITION, important, propList);
+	if( found ) {
+	  fnd[0] = true;
+	  nextP = second;
+	}
+      }
+    }
+    //#ifdef CSS_DEBUG
+    kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
+    //#endif
+    if(!found && !fnd[2]) {
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
+      if( found ) {
+	kdDebug() << "color!!!" << endl;
+	fnd[2] = true;
+      }
+    }
+    if( !found ) {
+      int id = -1;
+      QString value(curP, nextP - curP);
+      const struct css_value *cssval = findValue(value.latin1(), value.length());
+      if (cssval)
+	id = cssval->id;
+      int prop = -1;
+      switch(id) {
+      case CSS_VAL_REPEAT:
+      case CSS_VAL_REPEAT_X:
+      case CSS_VAL_REPEAT_Y:
+      case CSS_VAL_REPEAT_NONE:
+	prop = CSS_PROP_BACKGROUND_REPEAT;
+	fnd[3] = true;
+	found = true;
+	break;
+      case CSS_VAL_SCROLL:
+      case CSS_VAL_FIXED:
+	prop = CSS_PROP_BACKGROUND_ATTACHMENT;
+	fnd[4] = true;
+	found = true;
+      case CSS_VAL_CENTER:
+      case CSS_VAL_TOP:
+      case CSS_VAL_BOTTOM:
+      case CSS_VAL_LEFT:
+      case CSS_VAL_RIGHT:
+	// #### remove this, do background position correctly
+	found = true;
+	break;
+      default:
+	break;
+      }
+      if( id != -1 )
+	found = parseValue(curP, nextP, prop, important, propList);
+    }
+    if(!found && !fnd[1]) {
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
+      if( found ) {
+	kdDebug() << "image!!!" << endl;
+	fnd[1] = true;
+      }
+    }
+    if(!found && !fnd[0]) {
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
+      if( found )
+	fnd[0] = true;
+    }
+    if(!found) {
+      //#ifdef CSS_DEBUG
+      kdDebug(6080) << "invalid property" << endl;
+      //#endif
+      // #####
+      //return false;
+    }
+    curP = nextP+1;
+    if(curP >= endP) break;
+  }
+  return true;
 }
 
 // used for shorthand properties xxx{1,4}

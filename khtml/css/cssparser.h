@@ -134,6 +134,10 @@ public:
 	/* parses generic CSSValues, return true, if it found a valid value */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
 			QList<CSSProperty> *propList);
+	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, 
+			    int num, bool important, QList<CSSProperty> *propList, bool multiple = false);
+	bool parseBackground(const QChar *curP, const QChar *endP, bool important, 
+			     QList<CSSProperty> *propList);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
 			  bool important, QList<CSSProperty> *propList);
 	bool parseFont(const QChar *curP, const QChar *endP,

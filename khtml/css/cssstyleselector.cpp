@@ -1098,6 +1098,34 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BACKGROUND_POSITION:
         // CSS2BackgroundPosition
         break;
+    case CSS_PROP_KONQ_BGPOS_X:
+      {
+      if(!primitiveValue) break;
+      Length l;
+      int type = primitiveValue->primitiveType();
+      if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+	l = Length(computeLength(primitiveValue, style), Fixed);
+      else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+      else 
+	return;
+      style->setBackgroundXPosition(l);
+      break;
+      }
+    case CSS_PROP_KONQ_BGPOS_Y:
+      {
+      if(!primitiveValue) break;
+      Length l;
+      int type = primitiveValue->primitiveType();
+      if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+	l = Length(computeLength(primitiveValue, style), Fixed);
+      else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+      else 
+	return;
+      style->setBackgroundYPosition(l);
+      break;
+      }
     case CSS_PROP_BORDER_SPACING:
         {
         if(!primitiveValue) break;

@@ -127,6 +127,7 @@ relative, CSS_VAL_RELATIVE
 repeat, CSS_VAL_REPEAT
 repeat-x, CSS_VAL_REPEAT_X
 repeat-y, CSS_VAL_REPEAT_Y
+repeat-none, CSS_VAL_REPEAT_NONE
 ridge, CSS_VAL_RIDGE
 right, CSS_VAL_RIGHT
 right-side, CSS_VAL_RIGHT_SIDE
