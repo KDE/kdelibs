@@ -512,7 +512,7 @@ bool KSSLCertificate::isValid() {
 
 int KSSLCertificate::purposeToOpenSSL(KSSLCertificate::KSSLPurpose p) const {
 int rc = 0;
-
+#ifdef HAVE_SSL
 	if (p == KSSLCertificate::SSLServer) {
 		rc = X509_PURPOSE_SSL_SERVER;
 	} else if (p == KSSLCertificate::SSLClient) {
@@ -524,7 +524,7 @@ int rc = 0;
 	} else if (p == KSSLCertificate::Any) {
 		rc = X509_PURPOSE_ANY;
 	}
-
+#endif
 return rc;	
 }
 
