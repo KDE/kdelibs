@@ -130,7 +130,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
 
 #ifdef KJS_VERBOSE
   bool needPxSuffix;
-  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << cssPropertyName(propertyName, needPxSuffix) << needPxSuffix ? "px" : "" << endl;
+  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << cssPropertyName(propertyName, needPxSuffix) << ( needPxSuffix ? "px" : "" ) << endl;
 #endif
   // pixelTop returns "CSS Top" as number value in unit pixels
   // posTop returns "CSS top" as number value in unit pixels _if_ its a
