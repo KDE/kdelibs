@@ -113,7 +113,7 @@ bool KProtocolManager::isSourceProtocol( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -125,7 +125,7 @@ bool KProtocolManager::isFilterProtocol( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -137,7 +137,7 @@ bool KProtocolManager::isHelperProtocol( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -154,7 +154,7 @@ bool KProtocolManager::supportsListing( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -166,7 +166,7 @@ QStringList KProtocolManager::listing( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return QStringList();
   }
 
@@ -178,7 +178,7 @@ bool KProtocolManager::supportsReading( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -190,7 +190,7 @@ bool KProtocolManager::supportsWriting( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -202,7 +202,7 @@ bool KProtocolManager::supportsMakeDir( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -214,7 +214,7 @@ bool KProtocolManager::supportsDeleting( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -226,7 +226,7 @@ bool KProtocolManager::supportsLinking( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -238,7 +238,7 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -250,7 +250,7 @@ bool KProtocolManager::mimetypeFastMode( const QString& _protocol, const QString
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return false;
   }
 
@@ -276,7 +276,7 @@ QString KProtocolManager::library( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return QString::null;
   }
 
@@ -289,7 +289,7 @@ QString KProtocolManager::exec( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return QString::null;
   }
 
@@ -301,7 +301,7 @@ KProtocolManager::Type KProtocolManager::inputType( const QString& _protocol ) c
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return T_NONE;
   }
 
@@ -313,7 +313,7 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
     return T_NONE;
   }
 
