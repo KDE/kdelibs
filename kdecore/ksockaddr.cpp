@@ -678,7 +678,7 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
       if (owndata && d->m_sun != NULL)
 	free(d->m_sun);
 
-      (void*)d->m_sun = (sockaddr_un*)malloc(_size);
+      d->m_sun = (sockaddr_un*)malloc(_size);
 
       if (d->m_sun == NULL)
 	{
