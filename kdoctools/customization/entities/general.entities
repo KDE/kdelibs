@@ -162,6 +162,7 @@
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
 <!ENTITY kalarmd "<application>KAlarmd</application>">
+<!ENTITY kamera "<application>Kamera</application>">
 <!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
@@ -239,6 +240,7 @@
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodo	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
+<!ENTITY kolf	"<application>Kolf</application>">
 <!ENTITY kompare	"<application>Kompare</application>">
 <!ENTITY koncd	"<application>KOnCD</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
@@ -315,6 +317,7 @@
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
+<!ENTITY megami	"<application>Megami</application>">
 <!ENTITY Microsoft	'<trademark
  class="registered">Microsoft</trademark>'>
 <!ENTITY MIDI	"<acronym>MIDI</acronym>">
