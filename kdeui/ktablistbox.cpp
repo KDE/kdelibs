@@ -57,7 +57,9 @@
 #include <qdrawutil.h>
 #include <qscrollbar.h>
 #include <qdragobject.h>
-#include <kapp.h>
+
+#include <kglobal.h>
+#include <kstddirs.h>
 
 // This is only for flushKeys().
 #include <X11/Xlib.h>
@@ -358,15 +360,13 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   initMetaObject();
 
-  f = kapp->kde_datadir().copy();
-  f += "/khtmlw/pics/khtmlw_dnd.xpm";
+  f = locate("data", "khtmlw/pics/khtmlw_dnd.xpm");
   dndDefaultPixmap.load(f);
 
-  f = kapp->kde_toolbardir().copy();
-  f += "/up.xpm";
+  f = locate("toolbar", "up.xpm");
   upPix.load(f);
-  f = kapp->kde_toolbardir().copy();
-  f += "/down.xpm";
+
+  f = locate("toolbar", "down.xpm");
   downPix.load(f);
 
   QPalette pal = palette();
@@ -554,7 +554,7 @@ KTabListBoxColumn* KTabListBox::newKTabListBoxColumn(void)
 //-----------------------------------------------------------------------------
 void KTabListBox::readConfig(void)
 {
-  KConfig* conf = KApplication::getKApplication()->getConfig();
+  KConfig* conf = KGlobal::config();
   int beg, end, i, w;
   int cols = numCols(),fixedmin=MINIMUM_SPACE;
   QString str, substr;
@@ -591,7 +591,7 @@ void KTabListBox::readConfig(void)
 //-----------------------------------------------------------------------------
 void KTabListBox::writeConfig(void)
 {
-  KConfig* conf = KApplication::getKApplication()->getConfig();
+  KConfig* conf = KGlobal::config();
   int t;
   QString str;
 

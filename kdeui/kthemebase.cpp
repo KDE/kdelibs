@@ -22,6 +22,7 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
+#include <kstddirs.h>
 
 static char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
@@ -253,11 +254,11 @@ KThemeBase::KThemeBase(const QString &configFile)
     :KStyle()
 {
     if(configFile == QString::null)
-        config = kapp->getConfig();
+        config = KGlobal::config();
     else
         config = new KConfig(configFile, configFile);
     localDir = kapp->localkdedir()+"/share/apps/kstyle/pixmaps/";
-    globalDir = kapp->kde_datadir()+"/kstyle/pixmaps/";
+    globalDir = locate("data", "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
 }                            

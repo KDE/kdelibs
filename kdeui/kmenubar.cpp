@@ -30,6 +30,8 @@
 #include "kmenubar.h"
 
 #include <klocale.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include <kapp.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
@@ -43,6 +45,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.76  1999/06/09 21:52:25  cschlaeg
+// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
+//
 // Revision 1.75  1999/06/06 17:29:44  cschlaeg
 // New layout management implemented for KTMainWindow. This required
 // updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
@@ -370,7 +375,7 @@ void KMenuBar::slotReadConfig ()
   int _highlight;
   bool _transparent;
 
-  KConfig *config = kapp->getConfig();
+  KConfig *config = KGlobal::config();
   QString group = config->group();
   config->setGroup("Toolbar style");
   _highlight =config->readNumEntry("Highlighting", 1);
@@ -816,7 +821,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 			heightForWidth(r.width()));
 	    int dim = fontMetrics().height();
 	    if (!miniGo)
-		miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
+		miniGo = new QPixmap(locate("data", "kpanel/pics/mini/go.xpm"));
 	
 	    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
 	    if (!px.isNull())
