@@ -364,7 +364,7 @@ bool KFileMetaInfo::isValid() const
 
 bool KFileMetaInfo::isEmpty() const
 {
-    return !(bool)(d->items.count());
+    return d->items.isEmpty();
 }
 
 // ### Rolf, can you add some comment, what this method does? 
