@@ -944,7 +944,7 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-if (m_bIsSSL || d->usingTLS) {
+if (0 /*m_bIsSSL || d->usingTLS*/) {
     if (t < 0) t *= -1;
     t *= 10;
     while (t--) {
