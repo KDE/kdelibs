@@ -127,7 +127,6 @@ public:
     bool containsPositioned() const { return m_containsPositioned; }
     bool containsWidget() const { return m_containsWidget; }
     bool hasFirstLine() const { return m_hasFirstLine; }
-    bool changed() const { return m_changed; }
     RenderRoot* root() const;
     
     /**
@@ -149,7 +148,6 @@ public:
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
     void setContainsWidget(bool b=true) { m_containsWidget = b; }
-    void setChanged(bool b=true) { m_changed = b; }
 
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
@@ -319,8 +317,6 @@ public:
 
     QFont font(bool firstLine) const;
 
-    virtual bool applyChanges(bool force);
-
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -364,7 +360,6 @@ private:
     bool m_containsWidget : 1;
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine   : 1;
-    bool m_changed        : 1;
 
     friend class RenderContainer;
     friend class RenderRoot;

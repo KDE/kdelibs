@@ -700,7 +700,7 @@ short RenderObject::verticalPositionHint( bool firstLine ) const
 	vpos = getVerticalPosition( firstLine );
 	if ( !firstLine )
 	    const_cast<RenderObject *>(this)->m_verticalPosition = vpos;
-    }	
+    }
     return vpos;
 
 }
@@ -743,7 +743,7 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
     }
     return vpos;
 }
-    
+
 int RenderObject::lineHeight( bool firstLine ) const
 {
     // is this method ever called?
@@ -776,24 +776,5 @@ void RenderObject::invalidateVerticalPositions()
 	child->invalidateVerticalPositions();
 	child = child->nextSibling();
     }
-}
-
-bool RenderObject::applyChanges(bool force)
-{
-    bool childChanged = false;
-    for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-	if (c->applyChanges(force || changed()))
-	    childChanged = true;
-    }
-
-    if (force || changed()) {
-	calcMinMaxWidth();
-
-	if (changed()) {
-	    updateSize();
-	}
-    }
-
-    return (childChanged || force || changed());
 }
 

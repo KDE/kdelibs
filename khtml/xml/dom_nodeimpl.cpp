@@ -1210,6 +1210,8 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
     if (!attached())
 	return;
 
+    int ow = (m_style?m_style->outlineWidth():0);
+
     if (top)
         recalcStyle();
 
@@ -1221,8 +1223,30 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
         n = n->nextSibling();
     }
 
-    if (m_render)
-	m_render->setChanged(true);
+    if ( !m_render )
+        return;
+
+    if ( top ) {
+        if ( force ) {
+            // force a relayout of this part of the document
+            m_render->updateSize();
+            // force a repaint of this part.
+            // ### if updateSize() changes any size, it will already force a
+            // repaint, so we might do double work here...
+            m_render->repaint();
+        }
+        else {
+            // ### FIX ME
+            if (m_style) ow = QMAX(ow, m_style->outlineWidth());
+            RenderObject *cb = m_render->containingBlock();
+            if (cb && cb != m_render)
+                cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
+            else
+                m_render->repaint();
+        }
+    }
+
+    setChanged(false);
 }
 
 void NodeBaseImpl::attach()
@@ -1334,7 +1358,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
             if (o->isText())
                 xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
             else
-                xPos += o->xPos()+o->intrinsicWidth();
+                xPos += o->xPos()+o->width();
             yPos += o->yPos()+o->height();
             return true;
         }

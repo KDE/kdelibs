@@ -70,7 +70,6 @@ public:
     
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
-    void updateRendering();
 
 protected:
 
@@ -95,7 +94,6 @@ protected:
 
     // used to ignore viewport width when printing to the printer
     bool m_printingMode;
-    bool m_updatesDisabled;
 };
 
 };

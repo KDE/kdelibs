@@ -664,15 +664,11 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 
 void DocumentImpl::updateRendering()
 {
-    if (changedNodes.isEmpty())
-	return;
-
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ++it) {
 	it.current()->applyChanges( true, true );
     }
     changedNodes.clear();
-    static_cast<RenderRoot*>(m_render)->updateRendering();
 }
 
 void DocumentImpl::attach(KHTMLView *w)
@@ -709,14 +705,14 @@ void DocumentImpl::setVisuallyOrdered()
 
 void DocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)
 {
-    static_cast<RenderRoot*>(m_render)
-        ->setSelection(s->renderer(),sp,e->renderer(),ep);
+    if ( m_render )
+        static_cast<RenderRoot*>(m_render)->setSelection(s->renderer(),sp,e->renderer(),ep);
 }
 
 void DocumentImpl::clearSelection()
 {
-    static_cast<RenderRoot*>(m_render)
-        ->clearSelection();
+    if ( m_render )
+        static_cast<RenderRoot*>(m_render)->clearSelection();
 }
 
 Tokenizer *DocumentImpl::createTokenizer()

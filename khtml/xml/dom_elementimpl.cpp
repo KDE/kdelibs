@@ -664,7 +664,7 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
 
     if ( (oldinside != inside && m_style->hasHover()) ||
 	 ( oldactive != m_active && m_style->hasActive() ) )
-        applyChangesNoLayout();
+        applyChanges(true, false);
 
     // reset previous z index
     if ( positioned )
@@ -676,36 +676,13 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
 void ElementImpl::setFocus(bool received)
 {
     NodeBaseImpl::setFocus(received);
-    applyChangesNoLayout();
+    applyChanges(true, false);
 }
 
 void ElementImpl::setActive(bool down)
 {
     NodeBaseImpl::setActive(down);
-    applyChangesNoLayout();
-}
-
-void ElementImpl::applyChangesNoLayout()
-{
-    if (!attached())
-	return;
-
-    int ow = (m_style?m_style->outlineWidth():0);
-
-    recalcStyle();
-
-    if (!m_render)
-        return;
-
-    m_render->setChanged(true);
-
-    // ### FIX ME
-    if (m_style) ow = QMAX(ow, m_style->outlineWidth());
-    RenderObject *cb = m_render->containingBlock();
-    if (cb && cb != m_render)
-	cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
-    else
-	m_render->repaint();
+    applyChanges(true, false);
 }
 
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )

@@ -47,7 +47,6 @@ RenderRoot::RenderRoot(KHTMLView *view)
     setPositioned(true); // to 0,0 :)
 
     m_printingMode = false;
-    m_updatesDisabled = false;
 
     selectionStart = 0;
     selectionEnd = 0;
@@ -95,7 +94,7 @@ void RenderRoot::calcMinMaxWidth()
     m_maxWidth = m_minWidth;
 }
 
-//#define SPEED_DEBUG
+#define SPEED_DEBUG
 
 void RenderRoot::layout()
 {
@@ -228,9 +227,6 @@ void RenderRoot::repaint()
 
 void RenderRoot::updateSize()
 {
-    if (m_updatesDisabled)
-	return;
-
     //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     setMinMaxKnown(false);
     calcMinMaxWidth();
@@ -242,8 +238,6 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-    if (m_updatesDisabled)
-	return;
 
     if (!m_view) return;
 
@@ -449,15 +443,3 @@ int RenderRoot::docWidth() const
     }
     return w;
 }
-
-void RenderRoot::updateRendering()
-{
-    m_updatesDisabled = false;
-    bool wasChanged = applyChanges(false);
-    m_updatesDisabled = true;
-    if (wasChanged) {
-	updateSize();
-	repaint();
-    }
-}
-
