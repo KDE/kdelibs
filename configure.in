@@ -205,6 +205,7 @@ AC_OUTPUT(Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
 	kio/Makefile \
+	kio/file/Makefile \
 	jscript/Makefile \
 	corba/Makefile \
 	corba/kom/Makefile \
@@ -230,5 +231,12 @@ AC_OUTPUT(Makefile \
 	doc/kdebug/Makefile \
 	doc/kspell/Makefile \
 	doc/kded/Makefile \
-	doc/komop/Makefile )
+	doc/komop/Makefile \
+	mimetypes/Makefile \
+	mimetypes/application/Makefile \
+	mimetypes/audio/Makefile \
+	mimetypes/image/Makefile \
+	mimetypes/inode/Makefile \
+	mimetypes/text/Makefile \
+	mimetypes/video/Makefile )
 
