@@ -835,5 +835,5 @@
 
 #------------------------------------------------------------------------------
 # KWallet file
-0	string		KWALLET		application/x-kde-wallet
+0	string		KWALLET\012\015\000\015\012	application/x-kde-wallet
 
