@@ -153,6 +153,10 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 
 int KWalletBackend::unlock(QByteArray& password) {
+
+	if (_open)
+		return -255;  // already open
+
 	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
 		       "/"+_name+".kwl";
 
@@ -163,15 +167,16 @@ int KWalletBackend::unlock(QByteArray& password) {
 	if (!QFile::exists(path)) {
 		QFile newfile(path);
 		if (!newfile.open(IO_ReadWrite))
-			return -2;
+			return -2;   // error opening file
 		newfile.close();
-		return 1;
+		_open = true;
+		return 1;          // new file opened, but OK
 	}
 
 	QFile db(path);
 
 	if (!db.open(IO_ReadOnly))
-		return -2;
+		return -2;         // error opening file
 
 	char magicBuf[10];
 	db.readBlock(magicBuf, KWMAGIC_LEN);
@@ -264,11 +269,15 @@ int KWalletBackend::unlock(QByteArray& password) {
 
 	encrypted.fill(0);
 
+	_open = true;
 	return 0;
 }
 
 	
 int KWalletBackend::lock(QByteArray& password) {
+	if (!_open)
+		return -255;  // not open yet
+
 	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
 		       "/"+_name+".kwl";
 
@@ -358,6 +367,7 @@ int KWalletBackend::lock(QByteArray& password) {
 
 	wholeFile.fill(0);
 
+	_open = false;
 	return 0;
 }
 

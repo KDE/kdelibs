@@ -21,15 +21,23 @@ int main(int argc, char **argv) {
    printf("Passwords initialised.\n");
    int rc = be.lock(apass);
 
-   printf("be.lock(apass) returned %d\n", rc);
+   printf("be.lock(apass) returned %d  (should be -255)\n", rc);
 
    rc = be.unlock(bpass);
 
-   printf("be.unlock(bpass) returned %d\n", rc);
+   printf("be.unlock(bpass) returned %d  (should be 0 or 1)\n", rc);
+
+   rc = be.lock(bpass);
+
+   printf("be.lock(bpass) returned %d  (should be 0)\n", rc);
 
    rc = be.unlock(apass);
 
-   printf("be.unlock(apass) returned %d\n", rc);
+   printf("be.unlock(apass) returned %d  (should be negative)\n", rc);
+
+   rc = be.unlock(bpass);
+
+   printf("be.unlock(bpass) returned %d  (should be 0)\n", rc);
 
    return 0;
 }
