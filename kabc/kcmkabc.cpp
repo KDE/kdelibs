@@ -89,7 +89,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mListView->addColumn( i18n( "Name" ) );
   mListView->addColumn( i18n( "Type" ) );
   mListView->addColumn( i18n( "Standard" ) );
-  mListView->addColumn( i18n( "Location" ) );
+  // Will add it later, when locations are supported by resources
+  // mListView->addColumn( i18n( "Location" ) );
 
   groupBoxLayout->addWidget( mListView );
 
