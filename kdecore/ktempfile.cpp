@@ -157,7 +157,7 @@ QFile *
 KTempFile::file()
 {
    if (mFile) return mFile;
-   (void) fstream(); // Initialize mStream
+   if ( !fstream() ) return 0;
 
    mFile = new QFile();
    mFile->setName( name() );
@@ -169,8 +169,8 @@ QTextStream *
 KTempFile::textStream()
 {
    if (mTextStream) return mTextStream;
+   if ( !file() ) return 0; // Initialize mFile
 
-   (void) file(); // Initialize mFile
    mTextStream = new QTextStream( mFile );
    return mTextStream;
 }
@@ -179,8 +179,8 @@ QDataStream *
 KTempFile::dataStream()
 {
    if (mDataStream) return mDataStream;
+   if ( !file() ) return 0;  // Initialize mFile
 
-   (void) file(); // Initialize mFile
    mDataStream = new QDataStream( mFile );
    return mDataStream;
 }
