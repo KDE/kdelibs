@@ -243,7 +243,7 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     }
     if (found)
     {
-        int index = tb->itemIndex(b->id());
+        index = tb->itemIndex(b->id());
         QRect r = b->geometry();
         if (pos.x() <= ((r.left() + r.right())/2) && index > 0 && index < tb->count()-1)
         {
