@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <winscard.h>
 
+#include <kdebug.h>
 
 KPCSC::KPCSC(bool autoConnect) {
 	_connected = false;
@@ -79,9 +80,12 @@ return connect();
 
 QStringList KPCSC::listReaders(int *err) {
 QStringList res;
+QString readerName=QString::null;
 unsigned long readers;
 char *rstr;
 long rc;
+
+
 
 	if (!_connected) {
 		if (err) *err = -1;
@@ -105,7 +109,20 @@ long rc;
 		return res;
 	}
 
-	res << rstr;
+	
+	
+	for (int i=0;i<readers-1;i++){
+
+		if (rstr[i]=='\0')
+		 { 
+		   res << readerName;
+		   readerName=QString::null;
+		   continue;
+		 }
+		readerName+= rstr[i];
+	}
+
+       
 	delete[] rstr;
 	if (err) *err = 0;
 

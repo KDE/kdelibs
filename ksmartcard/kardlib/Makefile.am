@@ -10,7 +10,7 @@ include_HEADERS = kcardreader.h			\
 		  kcardfactory.h		\
 	          kcardimplementation.h		\
 		  kcardgemsafe_impl.h		\
-	          kcardgsmimplementation.h
+	          kcardgsm_impl.h
 
 noinst_HEADERS = 
 
@@ -22,7 +22,7 @@ libksmartcard_la_SOURCES = \
 				kcardfactory.cc		\
 				kcardimplementation.cc	\
 				kcardgemsafe_impl.cc	\
-				kcardgsmimplementation.cc
+				kcardgsm_impl.cc
 
 
 libksmartcard_la_LDFLAGS = $(all_libraries) $(PCSC_LDFLAGS) -version-info 1:0 -no-undefined

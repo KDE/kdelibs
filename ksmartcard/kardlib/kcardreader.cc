@@ -193,7 +193,7 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 
 	if (rc != SCARD_S_SUCCESS) {
 		response.resize(0);
-		return -1;
+		return rc;
 	}
 
 	response.duplicate(res, resSize);
