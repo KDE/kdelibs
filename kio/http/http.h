@@ -347,10 +347,8 @@ protected:
 
   // Proxy related members
   bool m_bUseProxy;
-  bool m_bAutoProxyCfg;
   int m_iProxyPort;
   KURL m_proxyURL;
-  QString m_strNoProxyFor;
   QString m_strProxyRealm;
 
   ksockaddr_in m_proxySockaddr;
