@@ -997,7 +997,7 @@ int main( int argc, char* argv[] )
     DCOPServer *server = new DCOPServer; // this sets the_server
 
     setjmp (JumpHere);
-    int ret a.exec();
+    int ret = a.exec();
     delete server;
     return ret;
 }
