@@ -73,8 +73,8 @@ class ConfigViewItem : public QCheckListItem
     bool mIsStandard;
 };
 
-ResourcesConfigPage::ResourcesConfigPage( const QString &family, const QString &config,
-                                          QWidget *parent, const char *name )
+ResourcesConfigPage::ResourcesConfigPage( const QString &family, QWidget *parent, 
+                                          const QString &config, const char *name )
   : QWidget( parent, name ), mFamily( family ), mConfig( config )
 {
   kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;

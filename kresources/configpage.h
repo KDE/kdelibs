@@ -43,8 +43,8 @@ class ResourcesConfigPage : public QWidget, public ManagerListener<Resource>
   Q_OBJECT
 
   public:
-    ResourcesConfigPage( const QString &family, const QString &config = QString::null,
-                         QWidget *parent = 0, const char *name = 0 );
+    ResourcesConfigPage( const QString &family, QWidget *parent = 0, 
+                         const QString &config = QString::null, const char *name = 0 );
     virtual ~ResourcesConfigPage();
 
     void load();
