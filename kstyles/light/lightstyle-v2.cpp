@@ -1340,6 +1340,10 @@ int LightStyleV2::pixelMetric( PixelMetric metric,
 	ret = singleton->basestyle->pixelMetric( metric, widget );
 	break;
 
+    case PM_MaximumDragDistance:
+	ret = -1;
+	break;
+
     default:
 	ret = QCommonStyle::pixelMetric(metric, widget);
 	break;

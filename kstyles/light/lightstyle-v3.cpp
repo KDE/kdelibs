@@ -1613,6 +1613,10 @@ int LightStyleV3::pixelMetric( PixelMetric metric,
 	    break;
 	}
 
+   case PM_MaximumDragDistance:
+	ret = -1;
+	break;
+
     default:
 	ret = QCommonStyle::pixelMetric(metric, widget);
 	break;
