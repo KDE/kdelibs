@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 
 #include <qdialog.h>
 #include <klocale.h>
@@ -28,6 +29,7 @@
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <kapp.h>
+#include <kcrash.h>
 
 #include "kscreensaver.h"
 #include "kscreensaver_vroot.h"
@@ -50,6 +52,11 @@ static const KCmdLineOptions options[] =
   { 0,0,0 }
 };
 
+static void crashHandler( int sig )
+{
+    signal( sig, SIG_DFL );
+    abort();
+}
 
 //----------------------------------------------------------------------------
 
@@ -87,6 +94,8 @@ int main(int argc, char *argv[])
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication app;
+
+    KCrash::setCrashHandler( crashHandler );
     KGlobal::locale()->insertCatalogue("klock");
 
     DemoWindow *demoWidget = 0;
