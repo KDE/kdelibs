@@ -65,14 +65,14 @@ static int unix_connect(const char *url)
 	if(remote_addr == 0)
 	{
 		arts_warning("unix_connect: couldn't parse url %s",url);
-		return 0;
+		return -1;
 	}
 
 	int my_socket = socket(AF_UNIX,SOCK_STREAM,0);
 	if(my_socket < 0)
 	{
 		arts_warning("unix_connect: unable to open socket for read");
-		return 0;
+		return -1;
 	}
 
 	struct linger lin;
@@ -84,7 +84,7 @@ static int unix_connect(const char *url)
         arts_warning("unix_connect: unable to set socket linger value to %d",
                 lin.l_linger);
 		close(my_socket);
-        return 0;
+        return -1;
     }
 
 	int rc;
@@ -93,7 +93,7 @@ static int unix_connect(const char *url)
 	{
 		arts_warning("unix_connect: can't connect to server (%s)",url);
 		close(my_socket);
-		return 0;
+		return -1;
 	}
 
 	return my_socket;
@@ -102,7 +102,7 @@ static int unix_connect(const char *url)
 UnixConnection::UnixConnection(string url)
 {
 	fd = unix_connect(url.c_str());
-	_broken = (fd == 0);
+	_broken = (fd == -1);
 
 	if(!_broken)
 	{

@@ -75,14 +75,14 @@ static int tcp_connect(const char *url)
 	if(remote_addr == 0)
 	{
 		arts_warning("tcp_connect: couldn't parse url %s",url);
-		return 0;
+		return -1;
 	}
 
 	int my_socket = socket(AF_INET,SOCK_STREAM,0);
 	if(my_socket < 0)
 	{
 		arts_warning("tcp_connect: unable to open socket for read");
-		return 0;
+		return -1;
 	}
 
 	struct linger lin;
@@ -94,7 +94,7 @@ static int tcp_connect(const char *url)
         arts_warning("tcp_connect: unable to set socket linger value to %d",
                 lin.l_linger);
 		close(my_socket);
-        return 0;
+        return -1;
     }
 
 	int rc;
@@ -103,7 +103,7 @@ static int tcp_connect(const char *url)
 	{
 		arts_warning("tcp_connect: can't connect to server (%s)", url);
 		close(my_socket);
-		return 0;
+		return -1;
 	}
 
 	return my_socket;
@@ -112,7 +112,7 @@ static int tcp_connect(const char *url)
 TCPConnection::TCPConnection(string url)
 {
 	fd = tcp_connect(url.c_str());
-	_broken = (fd == 0);
+	_broken = (fd == -1);
 
 	if(!_broken)
 	{
