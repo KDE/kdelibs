@@ -422,16 +422,18 @@ void KBookmarkOwner::virtual_hook( int, void* )
 
 class KBookmarkMap {
 public:
-    KBookmarkMap(KBookmarkManager *);
+    KBookmarkMap( KBookmarkManager * );
     void update();
-    QValueList<KBookmark> find(const KURL &url);
+    QValueList<KBookmark> find( const KURL &url ) const;
 private:
     typedef QValueList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
     KBookmarkManager *m_manager;
 };
 
-KBookmarkMap::KBookmarkMap(KBookmarkManager *manager) { 
+static KBookmarkMap *s_bk_map = 0;
+
+KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) { 
     m_manager = manager;
 } 
 
@@ -463,6 +465,7 @@ void KBookmarkMap::update()
             // add bookmark to url map
             m_bk_map[bk.url().url()].append(bk);
         }
+
         // find next bookmark, finishing off groups as needed
         KBookmark next;
         while (next = stack.current()->next(bk), next.isNull()) 
@@ -482,40 +485,22 @@ void KBookmarkMap::update()
     // never reached
 }
 
-static bool s_dirty = true; 
-
-/* watcher {
-// set to true on change to "real" bookmark file, 
-// dcop updates???
-// s_dirty = false; 
-// }
-*/
-
-QValueList<KBookmark> KBookmarkMap::find(const KURL &url)
+QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
 {
     //kdDebug(7043) << " KBookmarkMap::find(" << url.url() << ")"
     //              << " size( " << m_bk_map.count() << ")" << endl;
 
-    if (1 || s_dirty) 
-    {
-        update();
-        s_dirty = false;
-    }
-
     return m_bk_map.contains(url.url()) 
          ? m_bk_map[url.url()] : QValueList<KBookmark>();
 }
-
-static KBookmarkMap *s_bk_map = 0;
 
 void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
     //kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
    
     if (!s_bk_map) 
-    {
         s_bk_map = new KBookmarkMap(this);
-    }
+    s_bk_map->update();
     
     QValueList<KBookmark> list = s_bk_map->find(url);
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
@@ -523,7 +508,7 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
         (*it).updateAccessMetadata();
    
     if (emitSignal)
-       emit notifier().updatedAccessMetadata( path(), url );
+        emit notifier().updatedAccessMetadata( path(), url );
 }
 
 #include "kbookmarkmanager.moc"
