@@ -1087,6 +1087,20 @@ void KDirWatchPrivate::slotRescan()
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
 
+bool KDirWatchPrivate::isNoisyFile( const char * filename )
+{
+  // $HOME/.X.err grows with debug output, so don't notify change
+  if ( *filename == '.') {
+    if (strncmp(filename, ".X.err", 6) == 0) return true;
+    if (strncmp(filename, ".xsession-errors", 16) == 0) return true;
+    // fontconfig updates the cache on every KDE app start
+    // (inclusive kio_thumbnail slaves)
+    if (strncmp(filename, ".fonts.cache", 12) == 0) return true;
+  }
+
+  return false;
+}
+
 #ifdef HAVE_FAM
 void KDirWatchPrivate::famEventReceived()
 {
@@ -1117,20 +1131,6 @@ void KDirWatchPrivate::famEventReceived()
   }
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
-}
-
-bool KDirWatchPrivate::isNoisyFile( const char * filename )
-{
-  // $HOME/.X.err grows with debug output, so don't notify change
-  if ( *filename == '.') {
-    if (strncmp(filename, ".X.err", 6) == 0) return true;
-    if (strncmp(filename, ".xsession-errors", 16) == 0) return true;
-    // fontconfig updates the cache on every KDE app start
-    // (inclusive kio_thumbnail slaves)
-    if (strncmp(filename, ".fonts.cache", 12) == 0) return true;
-  }
-
-  return false;
 }
 
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
