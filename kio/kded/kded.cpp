@@ -47,11 +47,9 @@
 
 static void runBuildSycoca()
 {
-   // Avoid relying on $PATH and on /bin/sh -> don't use system()
-   KProcess proc;
-   proc << locate("exe","kbuildsycoca");
-   proc << "--incremental";
-   proc.start( KProcess::Block );
+   QStringList args;
+   args.append("--incremental");
+   KApplication::kdeinitExecWait( "kbuildsycoca", args );
 }
 
 
@@ -126,6 +124,14 @@ void Kded::recreate()
    build(); // Update tree first, to be sure to miss nothing.
 
    runBuildSycoca();
+
+   while( !m_requests.isEmpty())
+   {
+      QCString replyType = "void";
+      QByteArray replyData;
+      kapp->dcopClient()->endTransaction(m_requests.first(), replyType, replyData);
+      m_requests.remove(m_requests.begin());
+   }
 }
 
 void Kded::dirDeleted(const QString& /*path*/)
@@ -149,7 +155,11 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
 {
   if (fun == "recreate()") {
     kdDebug() << "got a recreate signal!" << endl;
-    recreate();
+    if (m_requests.isEmpty())
+    {
+       m_pTimer->start(0, true /* single shot */ );
+    }
+    m_requests.append(kapp->dcopClient()->beginTransaction());
     replyType = "void";
     return true;
   } else

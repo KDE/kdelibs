@@ -24,6 +24,9 @@
 
 #include <qobject.h>
 #include <qstring.h>
+
+#include <dcopclient.h>
+
 #include <ksycoca.h>
 #include <ksycocatype.h>
 
@@ -88,12 +91,15 @@ protected:
     * changed.
     */
    KDirWatch* m_pDirWatch;
+
    /**
     * When a desktop file is updated, a timer is started (5 sec)
     * before rebuilding the binary - so that multiple updates result
     * in only one rebuilding.
     */
    QTimer* m_pTimer;
+   
+   QValueList<DCOPClientTransaction *> m_requests;
 };
 
 #endif
