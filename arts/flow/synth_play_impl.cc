@@ -38,7 +38,8 @@ using namespace Arts;
 class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 						virtual public ASProducer,
 						virtual public StdSynthModule,
-						virtual public IONotify
+						virtual public IONotify,
+						virtual public TimeNotify
 {
 protected:
 	AudioSubSystem *as;
@@ -66,6 +67,7 @@ protected:
 	unsigned long maxsamples;
 	unsigned long channels;
 
+	bool retryOpen;
 public:
 	/*
 	 * functions from the SynthModule interface (which is inherited by
@@ -77,6 +79,7 @@ public:
 		channels = as->channels();
 		maxsamples = 0;
 		outblock = 0;
+		retryOpen = false;
 		inProgress = false;
 
 		haveSubSys = as->attachProducer(this);
@@ -89,9 +92,31 @@ public:
 		audiofd = as->open();
 		if(audiofd < 0)
 		{
-			printf("Synth_PLAY: audio subsystem init failed\n");
-			printf("ASError = %s\n",as->error());
-			return;
+			if(Dispatcher::the()->flowSystem()->suspended())
+			{
+				cerr << "[artsd] /dev/dsp currently unavailable (retrying)\n";
+				Dispatcher::the()->ioManager()->addTimer(1000, this);
+				retryOpen = true;
+			}
+			else
+			{
+				printf("Synth_PLAY: audio subsystem init failed\n");
+				printf("ASError = %s\n",as->error());
+			}
+		}
+	}
+
+	void notifyTime() {
+		assert(retryOpen);
+
+		audiofd = as->open();
+
+		if(audiofd >= 0)
+		{
+			streamStart();
+			cerr << "[artsd] ok" << endl;
+			Dispatcher::the()->ioManager()->removeTimer(this);
+			retryOpen = false;
 		}
 	}
 
@@ -108,6 +133,9 @@ public:
 	}
 
 	void streamEnd() {
+		if(retryOpen)
+			Dispatcher::the()->ioManager()->removeTimer(this);
+
 		artsdebug("Synth_PLAY: closing audio fd\n");
 		if(audiofd >= 0)
 		{
