@@ -341,7 +341,7 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
 {
     KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
 				   false /*HACK*/);
-    static QString unknown = QString::fromLatin1("unknown");
+    static QString& unknown = KGlobal::staticQString("unknown");
     QString i( mt->icon( _url, _url.isLocalFile() ));
 
     // if we don't find an icon, maybe we can use the one for the protocol
