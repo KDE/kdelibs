@@ -244,6 +244,8 @@ namespace KIO {
      */
     TransferJob *http_post( const KURL& url, const QByteArray &postData,
                             bool showProgressInfo = true );
+                            
+    MultiGetJob *multi_get( long id, const KURL &url, const MetaData &metaData);
 
     /**
      * Find mimetype for one file or directory.

@@ -132,6 +132,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https") )
 {
+  m_requestQueue.setAutoDelete(true);
   m_lineBufUnget = 0;
   m_protocol = protocol;
   m_bKeepAlive = false;
@@ -200,6 +201,7 @@ void HTTPProtocol::resetSessionSettings()
   m_bCanResume = false;
   m_bUnauthorized = false;
   m_bIsTunneled = false;
+  setMetaData("request-id", m_request.id);     
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -262,6 +264,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
 
 bool HTTPProtocol::checkRequestURL( const KURL& u )
 {
+  m_request.url = u;
   if (m_request.hostname.isEmpty())
   {
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
@@ -309,8 +312,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
 
   m_request.disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
   m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
-
-  m_request.url = u;
+  m_request.id = metaData("request-id");
   
   return true;
 }
@@ -452,6 +454,44 @@ void HTTPProtocol::post( const KURL& url)
   m_request.do_proxy = m_bUseProxy;
 
   retrieveContent();
+}
+
+void HTTPProtocol::multi_get(int n, QDataStream &stream)
+{
+  m_requestQueue.clear();
+  for(int i = 0; i < n; i++)
+  {
+     KURL url;
+     stream >> url >> mIncomingMetaData;
+
+     if ( !checkRequestURL( url ) )
+        continue;
+
+     kdDebug(7113) << "HTTPProtocol::multi_get " << url.url() << endl;
+
+     m_request.method = HTTP_GET;
+     m_request.path = url.path();
+     m_request.query = url.query();
+     QString tmp = metaData("cache");
+     if (!tmp.isEmpty())
+        m_request.cache = parseCacheControl(tmp);
+     else
+        m_request.cache = DEFAULT_CACHE_CONTROL;
+
+     m_request.passwd = url.pass();
+     m_request.user = url.user();
+     m_request.do_proxy = m_bUseProxy;
+
+     HTTPRequest *newRequest = new HTTPRequest(m_request);
+     m_requestQueue.append(newRequest);
+  }
+  while(!m_requestQueue.isEmpty())
+  {
+     HTTPRequest *request = m_requestQueue.take(0);
+     m_request = *request;
+     delete request;
+     retrieveContent();
+  }
 }
 
 ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
@@ -1952,6 +1992,12 @@ void HTTPProtocol::special( const QByteArray &data)
       cache_update( url, no_cache, expireDate );
       break;
     }
+    case 4: // Multi-get
+    {
+      Q_INT32 n;
+      stream >> n;
+      multi_get(n, stream);
+    } break;
     default:
       assert(0);
   }
@@ -2483,6 +2529,10 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   m_bKeepAlive = false;
   http_close();
+  if (!m_request.id.isEmpty())
+  {
+     sendMetaData();
+  }
   SlaveBase::error( _err, _text );
   m_bError = true;
 }

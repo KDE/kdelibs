@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <qptrlist.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
 
@@ -92,6 +93,7 @@ public:
     QString languages;
     bool allowCompressedPage;
     bool disablePassDlg;
+    QString id;
   } HTTPRequest;
 
   typedef struct
@@ -125,6 +127,7 @@ public:
    * 1 - HTTP POST
    * 2 - Cache has been updated
    * 3 - SSL Certificate Cache has been updated
+   * 4 - HTTP multi get
    */
   virtual void special( const QByteArray &data);
 
@@ -137,6 +140,7 @@ public:
   virtual void closeConnection(); // Forced close of connection
 
   void post( const KURL& url );
+  void multi_get(int n, QDataStream &stream);
   bool checkRequestURL( const KURL& );
   void cache_update( const KURL &url, bool no_cache, time_t expireDate);
 
@@ -303,6 +307,7 @@ protected:
 protected:
   HTTPState m_state;
   HTTPRequest m_request;
+  QPtrList<HTTPRequest> m_requestQueue;
 
   bool m_bEOF;
 

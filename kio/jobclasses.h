@@ -573,6 +573,60 @@ namespace KIO {
         TransferJob *m_subJob;
     };
 
+    // MultiGet Job
+    class MultiGetJob : public TransferJob {
+    Q_OBJECT
+
+    public:
+        MultiGetJob(const KURL& url, bool showProgressInfo);
+
+        virtual void start(Slave *slave);
+
+        void get(long id, const KURL &url, const MetaData &metaData);
+
+    signals:
+        /**
+         * Data from the slave has arrived.
+         * @param data data received from the slave.
+         * End of data (EOD) has been reached if data.size() == 0
+         */
+        void data( long id, const QByteArray &data);
+
+        /**
+         * Mimetype determined
+         */
+        void mimetype( long id, const QString &type );
+        
+        /**
+         * File transfer completed.
+         *
+         * When all files have been processed, result(KIO::Job *) gets
+         * emitted.
+         */
+        void result( long id);
+
+    protected slots:
+        virtual void slotRedirection( const KURL &url);
+        virtual void slotFinished();
+        virtual void slotData( const QByteArray &data);
+        virtual void slotMimetype( const QString &mimetype );
+    private:
+        struct GetRequest {
+        public:
+           GetRequest(long _id, const KURL &_url, const MetaData &_metaData)
+             : id(_id), url(_url), metaData(_metaData) { }
+           long id;
+           KURL url;
+           MetaData metaData;
+        };
+        GetRequest *findEntryById(long id);
+    
+        QPtrList<GetRequest> m_waitQueue;
+        QPtrList<GetRequest> m_activeQueue;
+        bool b_multiGetActive;
+        GetRequest *m_currentEntry;
+    };
+
     // Mimetype Job
     class MimetypeJob : public TransferJob {
     Q_OBJECT
