@@ -686,6 +686,11 @@ void KFileIconView::listingCompleted()
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }
 
+void KFileIconView::contentsWheelEvent( QWheelEvent *e )
+{
+	scrollBy(e->delta(), 0);
+}
+
 // need to remove our tooltip, eventually
 bool KFileIconView::eventFilter( QObject *o, QEvent *e )
 {
