@@ -450,7 +450,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ScrollBarSlider:
 		{
 			bool horizontal = flags & Style_Horizontal;
-			bool active = ( flags & Style_Active ) || ( flags & Style_Down );
+			//bool active = ( flags & Style_Active ) || ( flags & Style_Down );
 			int name = KeramikSlider1;
 			unsigned int count = 3;
 
