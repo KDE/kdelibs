@@ -638,11 +638,14 @@ declaration_list:
     | decl_list {
 	$$ = $1;
     }
-    | error invalid_block {
+    | error invalid_block_list {
 	$$ = false;
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
 #endif
+    }
+    | error {
+	$$ = false
     }
     ;
 
