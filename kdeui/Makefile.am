@@ -60,10 +60,6 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 	  	ktoolboxmgr.moc kled.moc kdbtn.moc knotebook.moc kwizard.moc \
 		ktabbar.moc
 
-ktoolboxmgr.cpp:ktoolboxmgr.moc
-ktoolboxmgr.moc: ktoolboxmgr.h
-	$(MOC) ktoolboxmgr.h -o ktoolboxmgr.moc
-
 kledlamp.cpp:kledlamp.moc
 kledlamp.moc: kledlamp.h
 	$(MOC) kledlamp.h -o kledlamp.moc
