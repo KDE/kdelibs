@@ -444,8 +444,8 @@ private:
 /**
  * @libdoc Spelling Checker Library
  *
- * @ref KSpell offers easy access to International ISpell or ASpell *
- *  (at the user's options) as well as a typical spell-checker GUI
+ * @ref KSpell offers easy access to International ISpell or ASpell 
+ *  (at the user's option) as well as a spell-checker GUI
  *  ("Add", "Replace", etc.).  
  *
  * You can use @ref KSpell to
