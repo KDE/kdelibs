@@ -173,6 +173,27 @@ bool KFileMetaInfoItem::isValid() const
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+// shared data of a KFileMetaInfo
+class KFileMetaInfo::Data : public QShared
+{
+public:
+    Data(const QString& path)
+        : QShared(),
+          path(path)
+    {}
+
+    QString                           path;
+    QString                           mimetype;
+    QStringList                       supportedKeys;
+    QStringList                       preferredKeys;
+    bool                              supportsVariableKeys;
+    QMap<QString, KFileMetaInfoItem>  items;
+
+    static Data* null;
+    static Data* makeNull();
+
+};
+
 // this is one object per file
 
 KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType )

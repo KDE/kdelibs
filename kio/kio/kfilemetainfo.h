@@ -255,27 +255,7 @@ protected:
      **/
     KFilePlugin * const plugin() const;
 
-// shared data of a KFileMetaInfo
-    class Data : public QShared
-    {
-    public:
-        Data(const QString& path)
-            : QShared(),
-              path(path)
-        {}
-
-        QString                           path;
-        QString                           mimetype;
-        QStringList                       supportedKeys;
-        QStringList                       preferredKeys;
-        bool                              supportsVariableKeys;
-        QMap<QString, KFileMetaInfoItem>  items;
-    
-        static Data* null;
-        static Data* makeNull();
-
-    };
-
+    class Data;
     Data* d;
 };
 
