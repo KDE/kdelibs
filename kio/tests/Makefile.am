@@ -23,7 +23,7 @@ LDFLAGS = $(all_libraries) $(KDE_RPATH)
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
-                 kfiltertest kiopassdlgtest kmdcodectest
+                 kfiltertest kiopassdlgtest kmdcodectest kscantest
 
 METASOURCES = AUTO
 
@@ -53,6 +53,7 @@ kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
 ktradertest_SOURCES = ktradertest.cpp
 kmimemagictest_SOURCES = kmimemagictest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
+kscantest_SOURCES = kscantest.cpp
 
 #Needs kfile, so commented out
 #kopenwithtest_SOURCES = kopenwithtest.cpp
