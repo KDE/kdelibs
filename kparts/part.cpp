@@ -448,7 +448,8 @@ bool ReadWritePart::saveAs( const KURL & kurl )
     // We haven't saved yet, or we did but locally - provide a temp file
     if ( m_file.isEmpty() || !m_bTemp )
     {
-      m_file = tmpnam(0);
+      KTempFile tempFile;
+      m_file = tempFile.name();
       m_bTemp = true;
     }
     // otherwise, we already had a temp file
