@@ -16,8 +16,8 @@ Package: kdelibs-doc
 Architecture: all
 Depends: kdelibs2g (= ${Source-Version}), qt1g-doc
 Suggests: kdevelop, kdoc, ktranslator
-Description: KDE core libraries (documentation)
- KDE core libraries (documentation)
+Description: KDE core libraries (kdoc documentation)
+ KDE core libraries (kdoc documentation)
  .
  For use in KDE development
 

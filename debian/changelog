@@ -1,3 +1,21 @@
+kdelibs (4:1.1.1-19990812-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 12 Aug 1999 14:45:00 -0400
+
+kdelibs (4:1.1.1-19990809-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Aug 1999 01:39:00 -0400
+
+kdelibs (4:1.1.1-19990803-1) unstable; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Aug 1999 16:45:56 -0400
+
 kdelibs (4:1.1.1-19990717-1) unstable; urgency=low
 
   * New upstream CVS version

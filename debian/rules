@@ -30,7 +30,7 @@ $(BUILDDIR)/build-stamp:
 	kde_partsdir=/usr/lib/parts \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
-	../configure --prefix=/usr --enable-debug \
+	../configure --prefix=/usr \
 	--disable-rpath \
 	--includedir=/usr/include/kde \
 	--libdir=/usr/lib  
@@ -89,10 +89,9 @@ binary-arch:  build
 	/usr/doc/qt1g-doc/html ; \
 	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
 	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
-	dh_movefiles -pkdelibs-doc usr/share/kdoc
+	dh_movefiles -pkdelibs-doc usr/share/kdoc ; \
 	fi
 	dh_movefiles
-	-rm -rf debian/tmp/usr/doc
 	dh_installdocs 
 	dh_installchangelogs 
 	dh_strip 
