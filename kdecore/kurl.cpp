@@ -168,6 +168,7 @@ void KURL::parse( const char * _url )
 
     QString url(_url);
     malformed = false;
+    path_part_decoded = 0;
 
     if ( _url[0] == '/' )
     {
