@@ -308,9 +308,6 @@ public:
     unsigned short rowSpan() const { return rSpan; }
     void setRowSpan( unsigned short r ) { rSpan = r; }
 
-    bool noWrap() const { return nWrap; }
-    void setNoWrap(bool nw) { nWrap = nw; }
-
     int col() const { return _col; }
     void setCol(int col) { _col = col; }
     int row() const { return _row; }

@@ -746,7 +746,6 @@ HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
   _col = -1;
   _row = -1;
   cSpan = rSpan = 1;
-  m_nowrap = false;
   _id = tag;
   rowHeight = 0;
   m_solid = false;
@@ -788,7 +787,10 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         if(cSpan < 1 || cSpan > 1024) cSpan = 1;
         break;
     case ATTR_NOWRAP:
-        m_nowrap = (attr->val() != 0);
+        if (attr->val() != 0)
+	    addCSSProperty(CSS_PROP_WHITE_SPACE, "\\2d konq-nowrap");
+        else
+	    removeCSSProperty(CSS_PROP_WHITE_SPACE);
         break;
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())

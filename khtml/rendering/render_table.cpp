@@ -1337,10 +1337,8 @@ void RenderTableCell::updateFromElement()
       DOM::HTMLTableCellElementImpl *tc = static_cast<DOM::HTMLTableCellElementImpl *>(node);
       cSpan = tc->colSpan();
       rSpan = tc->rowSpan();
-      nWrap = tc->noWrap();
   } else {
       cSpan = rSpan = 1;
-      nWrap = false;
   }
 }
 
@@ -1412,6 +1410,16 @@ void RenderTableCell::setStyle( RenderStyle *style )
     style->setDisplay(TABLE_CELL);
     RenderFlow::setStyle( style );
     setSpecialObjects(true);
+
+    if (style->whiteSpace() == KONQ_NOWRAP) {
+      // Figure out if we are really nowrapping or if we should just
+      // use normal instead.  If the width of the cell is fixed, then
+      // we don't actually use NOWRAP.
+      if (style->width().isFixed())
+	style->setWhiteSpace(NORMAL);
+      else
+	style->setWhiteSpace(NOWRAP);
+    }
 }
 
 #ifdef BOX_DEBUG

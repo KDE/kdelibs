@@ -370,7 +370,7 @@ public:
 // this applies to decoration_color too
 
 enum EWhiteSpace {
-    NORMAL, PRE, NOWRAP
+  NORMAL, PRE, NOWRAP, KONQ_NOWRAP
 };
 
 enum ETextAlign {

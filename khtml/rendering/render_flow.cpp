@@ -1122,8 +1122,7 @@ void RenderFlow::calcMinMaxWidth()
     bool tableCell = (isTableCell() && !style()->width().isFixed());
 
     // ## maybe we should replace the noWrap stuff in RenderTable by CSS.
-    bool nowrap = style()->whiteSpace() == NOWRAP ||
-		  ( tableCell && static_cast<RenderTableCell *>(this)->noWrap() );
+    bool nowrap = style()->whiteSpace() == NOWRAP;
 
     // non breaking space
     const QChar nbsp = 0xa0;

@@ -1908,6 +1908,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         EWhiteSpace s;
         switch(primitiveValue->getIdent()) {
+	case CSS_VAL__KONQ_NOWRAP: s = KONQ_NOWRAP; break;
         case CSS_VAL_NOWRAP:   s = NOWRAP;      break;
         case CSS_VAL_PRE:      s = PRE;         break;
         case CSS_VAL_NORMAL:

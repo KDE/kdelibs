@@ -188,8 +188,7 @@ public:
 
     int colSpan() const { return cSpan; }
     int rowSpan() const { return rSpan; }
-    bool noWrap() const { return m_nowrap; }
-
+    
     virtual Id id() const { return _id; }
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
