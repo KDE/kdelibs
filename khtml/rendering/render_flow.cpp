@@ -371,6 +371,11 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
         if ( relayoutChildren || floatBottom() > m_y ||
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
                 child->setLayouted(false);
+	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
+	     style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
+	    m_height = floatBottom();
+	    prevMargin = 0;
+	}
 
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
@@ -402,6 +407,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
         // if oldHeight+prevMargin < newHeight
+		
         int margin = child->marginTop();
         //kdDebug(0) << "margin = " << margin << " prevMargin = " << prevMargin << endl;
         margin = collapseMargins(margin, prevMargin);
