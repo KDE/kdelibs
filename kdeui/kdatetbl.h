@@ -124,7 +124,8 @@ protected:
 private:
   class KDateInternalMonthPrivate;
   KDateInternalMonthPrivate *d;
-  QDate mDate;
+  class KQDateInternalMonthPrivate;
+  KQDateInternalMonthPrivate *mDate;
 };
 
 /** Year selection widget.
