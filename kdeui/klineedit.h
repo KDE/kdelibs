@@ -99,7 +99,7 @@ class KURL;
  * KLineEdit *edit = new KLineEdit( this, "mywidget" );
  * KCompletion *comp = edit->completionObject();
  * // Connect to the return pressed signal - optional
- * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
+ * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  * \endcode
  *
  * To use a customized completion objects or your
@@ -110,7 +110,7 @@ class KURL;
  * KURLCompletion *comp = new KURLCompletion();
  * edit->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
- * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
+ * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  * \endcode
  *
  * Note if you specify your own completion object you have to either delete 
