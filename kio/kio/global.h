@@ -276,6 +276,10 @@ namespace KIO
     UDS_LONG = 2,
     UDS_TIME = 4 | UDS_LONG,
 
+    // To add new UDS entries below, you can use a step of 8
+    // (i.e. 8, 16, 24, 32, etc.) Only the last 3 bits are a bitfield,
+    // the rest isn't.
+
     /// Size of the file
     UDS_SIZE = 8 | UDS_LONG,
     UDS_SIZE_LARGE = 32768 | UDS_LONG, // For internal use only
@@ -291,8 +295,12 @@ namespace KIO
     /// This is the only UDS entry that can be repeated.
     /// @since 3.2
     UDS_EXTRA = 48 | UDS_STRING,
-    /// Filename
+    /// Filename - as displayed in directory listings etc.
+    /// "." has the usual special meaning of "current directory"
     UDS_NAME = 64 | UDS_STRING,
+    /// Real underlying filename - used *only* when moving/copying to another directory
+    /// @since 3.4
+    UDS_FILENAME = 72 | UDS_STRING,
     /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,
     /// The last time the file was modified
