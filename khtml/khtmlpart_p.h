@@ -174,6 +174,7 @@ public:
   }
   ~KHTMLPartPrivate()
   {
+    delete m_dcopobject;
     delete m_extension;
     delete m_settings;
     delete m_jscript;
