@@ -291,6 +291,12 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	else
 	    removeCSSProperty(CSS_PROP_BACKGROUND);
 	break;
+    case ATTR_BORDERCOLOR:
+        if(!attr->value().isEmpty()) {
+            addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
+            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+        }
+        break;
     case ATTR_BACKGROUND:
     {
 	if (!attr->value().isEmpty()) {
