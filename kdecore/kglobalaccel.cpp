@@ -180,7 +180,7 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 		   		XKeysymToKeycode(qt_xdisplay(), XK_Num_Lock))
 		   			NumLockMask = (1<<i);
 		}
-		XFree(xmk);
+		XFreeModifiermap(xmk);
 	}
 
 	grabFailed = false;
@@ -400,7 +400,7 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 		   		XKeysymToKeycode(qt_xdisplay(), XK_Num_Lock))
 		   			NumLockMask = (1<<i);
 		}
-		XFree(xmk);
+		XFreeModifiermap(xmk);
 	}
 
 	grabFailed = false;
