@@ -171,7 +171,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	newChild->setNextSibling(beforeChild);
 	beforeChild->setPreviousSibling(newChild);
 
-	newPrev->setNextSibling(newChild);
+	if(newPrev) newPrev->setNextSibling(newChild);
 	newChild->setPreviousSibling(newPrev);
 
     }
@@ -409,7 +409,7 @@ void RenderObject::setKeyboardFocus(DOM::ActivationState b)
   hasKeyboardFocus=b;
 }
 
-QRect RenderObject::viewRect() const 
-{ 
-    return m_containingBlock->viewRect(); 
+QRect RenderObject::viewRect() const
+{
+    return m_containingBlock->viewRect();
 }
