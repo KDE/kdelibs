@@ -164,8 +164,8 @@ void KCrashBookmarkImporterImpl::parse()
         ViewMap views;
         views = parseCrashLog_noemit( *it, m_shouldDelete );
         QString signature;
-        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) 
-            signature += "|"+it.data();
+        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit ) 
+            signature += "|"+vit.data();
         if (signatureMap[signature])
         {
             // Duplicate... throw away and skip
@@ -178,8 +178,8 @@ void KCrashBookmarkImporterImpl::parse()
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
-        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) 
-            emit newBookmark( it.data(), it.data().latin1(), QString("") );
+        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit ) 
+            emit newBookmark( vit.data(), vit.data().latin1(), QString("") );
         if ( outerFolder )
             emit endFolder();
     }
