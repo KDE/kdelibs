@@ -8,7 +8,7 @@ more logical grouping.
 kaboutapplication.cpp
 kaboutdialog.cpp
 kaboutkde.cpp
-kaction.cpp
+kaction.cpp		Holger Freyther <freyther@kde.org>
 kanimwidget.cpp		Waldo Bastian <bastian@kde.org>
 karrowbutton.cpp
 kauthicon.cpp
@@ -40,7 +40,7 @@ keditlistbox.cpp
 kedittoolbar.cpp
 kfontcombo.cpp
 kfontdialog.cpp
-kguiitem.cpp
+kguiitem.cpp		Holger Freyther <freyther@kde.org>
 khelpmenu.cpp
 kiconview.cpp
 kjanuswidget.cpp
@@ -76,7 +76,7 @@ kshortcutdialog.cpp	Ellis Whitehead <ellis@kde.org>
 ksqueezedtextlabel.cpp
 kstatusbar.cpp
 kstdaction.cpp
-kstdguiitem.cpp
+kstdguiitem.cpp		Holger Freyther <freyther@kde.org>
 kstringvalidator.cpp	Marc Mutz <mutz@kde.org>
 ksystemtray.cpp
 ktabctl.cpp
