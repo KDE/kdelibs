@@ -65,7 +65,7 @@ void Style::put(const UString &p, const KJSO& v)
       return;
 
     QString prop = jsNameToProp( p );
-    QString propvalue = v.toString().value().string().string();
+    QString propvalue = v.toString().value().qstring();
 
     if(prop.left(6) == "pixel-")
     {
