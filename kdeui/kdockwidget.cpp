@@ -2138,7 +2138,7 @@ void KDockManager::writeConfig(QDomElement &base)
     QString mainWidgetStr;
 
     // collect widget names
-    QStrList nList;
+    QStringList nList;
     QObjectListIt it(*childDock);
     KDockWidget *obj1;
     while ( (obj1=(KDockWidget*)it.current()) ) {
@@ -2148,19 +2148,34 @@ void KDockManager::writeConfig(QDomElement &base)
         ++it;
     }
 
-    nList.first();
-    while ( nList.current() ) {
-        KDockWidget *obj = getDockWidgetFromName( nList.current() );
-        if (obj->isGroup && (nameList.find( obj->firstName.latin1() ) == -1
+    for (QObjectListIt it(d->containerDocks);it.current();++it)
+    {
+        KDockContainer* dc = dynamic_cast<KDockContainer*>(((KDockWidget*)it.current())->widget);
+        if (dc) {
+                dc->prepareSave(nList);
+        }
+    }
+
+    QStringList::Iterator nListIt=nList.begin();
+    while ( nListIt!=nList.end() ) {
+        KDockWidget *obj = getDockWidgetFromName( *nListIt);
+        if ((obj->isGroup && (!obj->d->isContainer)) && (nameList.find( obj->firstName.latin1() ) == -1
                              || nameList.find(obj->lastName.latin1()) == -1)) {
             // Skip until children are saved (why?)
-            nList.next();
+            ++nListIt;
+//            nList.next();
 //falk?            if ( !nList.current() ) nList.first();
             continue;
         }
 
         QDomElement groupEl;
-
+	if (obj->d->isContainer) {
+      		KDockContainer* x = dynamic_cast<KDockContainer*>(obj->widget);
+       		if (x) {
+			groupEl=doc.createElement("dockContainer");
+          		x->save(groupEl);
+       		}
+    	} else
         if (obj->isGroup) {
             //// Save a group
             groupEl = doc.createElement("splitGroup");
@@ -2202,8 +2217,8 @@ void KDockManager::writeConfig(QDomElement &base)
 
         base.appendChild(groupEl);
         nameList.append(obj->name());
-        nList.remove();
-        nList.first();
+        nList.remove(nListIt);
+        nListIt=nList.begin();
     }
 
     if (main->inherits("KDockMainWindow")) {
@@ -2224,7 +2239,8 @@ void KDockManager::readConfig(QDomElement &base)
 {
     if (base.namedItem("group").isNull()
         && base.namedItem("tabgroup").isNull()
-        && base.namedItem("dock").isNull()) {
+        && base.namedItem("dock").isNull()
+	&& base.namedItem("dockContainer").isNull()) {
         activate();
         return;
     }
@@ -2283,6 +2299,23 @@ void KDockManager::readConfig(QDomElement &base)
     while (!childEl.isNull() ) {
         KDockWidget *obj = 0;
     
+	if (childEl.tagName() == "dockContainer") {
+		
+		KDockWidget *cont=getDockWidgetFromName(stringEntry(childEl, "name"));
+		kdDebug()<<"dockContainer: "<<stringEntry(childEl,"name")<<endl;
+		if (!(cont->d->isContainer)) {
+			kdDebug()<<"restoration of dockContainer is only supported for already existing dock containers"<<endl;
+		} else {
+			KDockContainer *dc=dynamic_cast<KDockContainer*>(cont->getWidget());
+			if (!dc) kdDebug()<<"Error while trying to handle dockcontainer configuration restoration"<<endl;
+				else {
+					dc->load(childEl);
+					removeFromAutoCreateList(cont);
+				}
+			
+		}
+	}
+	else
         if (childEl.tagName() == "splitGroup") {
             // Read a group
             QString name = stringEntry(childEl, "name");
@@ -2772,6 +2805,7 @@ KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
 
   KDockWidget* autoCreate = 0L;
   if ( autoCreateDock ){
+    kdDebug()<<"Autocreating dock: "<<dockName<<endl;
     autoCreate = new KDockWidget( this, dockName.latin1(), QPixmap("") );
     autoCreateDock->append( autoCreate );
   }
@@ -3140,6 +3174,8 @@ void KDockContainer::setToolTip(KDockWidget *, QString &){;}
 void KDockContainer::setPixmap(KDockWidget*,const QPixmap&){;}
 void KDockContainer::load (KConfig*, const QString&){;}
 void KDockContainer::save (KConfig*, const QString&){;}
+void KDockContainer::load (QDomElement&){;}
+void KDockContainer::save (QDomElement&){;}
 void KDockContainer::prepareSave(QStringList &names)
 {
 
