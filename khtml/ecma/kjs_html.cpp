@@ -787,7 +787,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 {
   KJSO result;
 
-  switch (id) {
+  switch (element.elementId()) {
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       if (id == Submit) {
@@ -925,7 +925,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 
 void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
 {
-  DOM::DOMString str = v.toString().value().string();
+  DOM::DOMString str = v.isA(NullType) ? 0 : v.toString().value().string();
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 

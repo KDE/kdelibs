@@ -116,6 +116,7 @@ public:
     khtml::DocLoader *docLoader() { return m_docLoader; }
     void setReloading();
     virtual bool childAllowed( NodeImpl *newChild );
+    void updateRendering();
 
 signals:
     void finishedParsing();

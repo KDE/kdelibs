@@ -516,28 +516,12 @@ bool KHTMLPart::executeScript( const QString &script )
 {
   KJSProxy *proxy = jScript();
 
-  if (proxy) {
-    bool ret = proxy->evaluate( script.unicode(), script.length() );
-
-    // ### perhaps move this into HTMLDocumentImpl?
-    QListIterator<NodeImpl> it(d->m_doc->changedNodes);
-    for (; it.current(); ++it) {
-	it.current()->recalcStyle();
-	if (it.current()->renderer())
-	    it.current()->renderer()->setLayouted(false);
-    }
-    it.toFirst();
-    for (; it.current(); ++it) {
-	if (it.current()->renderer())
-		it.current()->renderer()->updateSize();
-	it.current()->setChanged(false);
-    }
-    d->m_doc->changedNodes.clear();
-
-    return ret;
-  }
-  else
+  if (!proxy)
     return false;
+
+  bool ret = proxy->evaluate( script.unicode(), script.length() );
+  d->m_doc->updateRendering();
+  return ret;
 }
 
 void KHTMLPart::enableJava( bool enable )

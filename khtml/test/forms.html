@@ -1,4 +1,22 @@
-<html> <head> <title>Form Test</title> </head>
+<html>
+<head>
+  <title>Form Test</title>
+  <script language="javascript">
+  
+function printAttrTr(inputName,attrName,val1,val2) {
+  document.write('<tr>');
+  document.write('<td>'+attrName+'</td>');
+  document.write('<td><a href="javascript:document.forms[0].'+inputName+'.'+attrName+'='+val1+'">'+val1+'</a></td>');
+  document.write('<td><a href="javascript:document.forms[0].'+inputName+'.'+attrName+'='+val2+'">'+val2+'</a></td>');
+  document.write('<td><a href="javascript:document.forms[0].'+inputName+'.'+attrName+'=null">null</a></td>');
+  document.write('<td><a href="javascript:document.forms[0].'+inputName+'.removeAttribute(\''+attrName+'\')">remove</a></td>');
+  document.write('<td><a href="javascript:window.alert(document.forms[0].'+inputName+'.'+attrName+')">show</a></td>');
+  document.write('</tr>');
+}  
+  
+  
+  </script>
+</head>
 
 
 <body bgcolor="#FFFFEE">
@@ -6,6 +24,7 @@
 This page is a regression test for forms.<BR>
 The word "Start" should be above the textarea.<BR>
 The word "End" should be underneath the textarea.<BR>
+The links above the form field can be used to test javascript manipulation of various properties
 The text inside the textarea should match with its description.
 <form action="http://localhost/test.cgi" method=get>
 <H2>Textarea</H2>
@@ -27,15 +46,32 @@ This is text inside a &lt;textarea&gt; tag.
 5
 </textarea>
 <P>End
-<H2>Input, name</H2>
+<H2>Input, text</H2>
+<table border="1">
+<script language="Javascript">
+  printAttrTr('inputn','value','\'from script\'','\'\'');
+  printAttrTr('inputn','size',50,10);
+  printAttrTr('inputn','maxLength',50,10);
+  printAttrTr('inputn','disabled',true,false);
+  printAttrTr('inputn','readOnly',true,false);
+</script>
+</table>
 <P>
-&lt;INPUT type=name&gt;
+&lt;INPUT type=text&gt;
 <P>
 Start
 <P>
 <INPUT type=text name=inputn value="test" width=20 size=20 length=20>
 <P>End
 <H2>Input, submit</H2>
+<table border="1">
+<script language="Javascript">
+  printAttrTr('inputs','value','\'from script\'','\'\'');
+  printAttrTr('inputs','size',50,10);
+  printAttrTr('inputs','disabled',true,false);
+  printAttrTr('inputs','readOnly',true,false);
+</script>
+</table>
 <P>
 &lt;INPUT type=submit&gt;
 <P>
@@ -50,6 +86,14 @@ Start
 <input type=image name=image value="konqi" src=konqi.gif>
 <P>End
 <H2>Input, reset</H2>
+<table border="1">
+<script language="Javascript">
+  printAttrTr('inputr','value','\'from script\'','\'\'');
+  printAttrTr('inputr','size',50,10);
+  printAttrTr('inputr','disabled',true,false);
+  printAttrTr('inputr','readOnly',true,false);
+</script>
+</table>
 <P>
 &lt;INPUT type=reset&gt;
 <P>
@@ -58,6 +102,11 @@ Start
 <input type=reset name=inputr value="Reset">
 <P>End
 <H2>Input, hidden</H2>
+<table border="1">
+<script language="Javascript">
+  printAttrTr('inputs','value','\'from script\'','\'\'');
+</script>
+</table>
 <P>
 &lt;INPUT type=hidden&gt;
 <P>
@@ -66,26 +115,45 @@ Start
 <input type=hidden name=inputh value="Hidden test">
 <P>End
 <H2>Input, radio</H2>
+<a href="javascript:document.getElementById('radios').childNodes[0].checked=true">check 1</a> |
+<a href="javascript:document.getElementById('radios').childNodes[3].checked=true">check 2</a> |
+<a href="javascript:document.getElementById('radios').childNodes[6].checked=true">check 3</a> |
+<a href="javascript:document.getElementById('radios').childNodes[9].checked=true">check 4</a> |
+<a href="javascript:document.getElementById('radios').childNodes[12].checked=true">check 5</a> |
+<a href="javascript:document.getElementById('radios').childNodes[12].checked=false">uncheck 5</a> |
+<a href="javascript:s = ''; for (i=0; i < 5; i++) s += (i+1)+': '+
+       document.getElementById('radios').childNodes[i*3].checked+'\n';
+       window.alert(s)">show checked</a>
 <P>
 &lt;INPUT type=radio&gt;
 <P>
 Start
 <P>
-Test<BR>
-<BR><BR>
+<div id="radios">
 <INPUT type=radio name=aid value=1>Button 1<BR>
 <INPUT type=radio name=aid value=2 checked>Button 2<BR>
 <INPUT type="radio" name=aid value=3>Button 3<BR>
 <INPUT type="radio" name=aid value=4>Button 4<BR>
 <INPUT type=radio name=aid value=5>Button 5
+</radios>
 <P>End
-
-<p>
+<H2>Input, checkbox</H2>
+<a href="javascript:document.getElementById('checkboxes').childNodes[0].checked=true">check 1</a> |
+<a href="javascript:document.getElementById('checkboxes').childNodes[0].checked=false">uncheck 1</a><br>
+<a href="javascript:document.getElementById('checkboxes').childNodes[3].checked=true">check 2</a> |
+<a href="javascript:document.getElementById('checkboxes').childNodes[3].checked=false">uncheck 2</a><br>
+<a href="javascript:document.getElementById('checkboxes').childNodes[6].checked=true">check 3</a> |
+<a href="javascript:document.getElementById('checkboxes').childNodes[6].checked=false">uncheck 3</a><br>
+<a href="javascript:s = ''; for (i=0; i < 3; i++) s += (i+1)+': '+
+       document.getElementById('checkboxes').childNodes[i*3].checked+'\n';
+       window.alert(s)">show checked</a>
 <p>input type=checkbox</p>
 <p>Geben Sie bei der Pizzabestellung die gew&uuml;nschten Zutaten an:</p>
+<div id="checkboxes">
   <input type=checkbox name="zutat" value="salami"> Salami<br>
   <input type=checkbox name="zutat" value="pilze" checked> Pilze<br>
   <input type=checkbox name="zutat" value="sardellen" checked> Sardellen
+</div>
 <p>End
 
 <h3>HTML4 form elements:</h3>
@@ -161,8 +229,21 @@ hierarchical SELECT:<br>
              </OPTGROUP>
          </SELECT>
 <p>
+<h2>Input, file</h2>
+Note: changing the file field's value from javascript should not work!<br>
+There should also not be any initial value.<br>
+Size is specified in pixels.<br>
+<table border="1">
+<script language="Javascript">
+  printAttrTr('File','value','/etc/passwd','\'\'');
+  printAttrTr('File','size',50,10);
+  printAttrTr('File','maxLength',50,10);
+  printAttrTr('File','disabled',true,false);
+  printAttrTr('File','readOnly',true,false);
+</script>
+</table>
 <p>input type=file</p>
-<input type=file size=50 maxlength=100000 name="File" accept="*/*"><br>
+<input type=file size=50 maxlength=100000 name="File" accept="*/*" value="initial"><br>
 <br>END<br>
 
 

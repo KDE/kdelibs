@@ -65,8 +65,6 @@ public:
 
     virtual const char *renderName() const { return "RenderForm"; }
 
-    HTMLFormElementImpl *form() { return m_form; }
-
     virtual bool isRendered() const  { return true; }
 
     // enum to get the type of form element
@@ -86,24 +84,15 @@ public:
     virtual Type type() = 0;
 
     /*
-     * override in derived classes to get the encoded name=value pair
-     * for submitting
-     */
-    virtual QCString encoding() = 0;
-
-    /*
      * state() and restoreState() are complimentary functions.
      */
     virtual QString state() { return QString::null; }
     virtual void restoreState(const QString &) { };
 
-    virtual void reset() = 0;
+    virtual void reset() {} // ### remove
     virtual void setChecked(bool) {}
     void setReadonly(bool ro)  { m_readonly = ro; }
     bool readonly() { return m_readonly; }
-
-    const DOMString &name() const { return m_name; }
-    void setName(const DOMString &name) { m_name = name; }
 
     const DOMString &value() const { return m_value; }
     virtual void setValue(const DOMString &value) { m_value = value; }
@@ -112,14 +101,13 @@ public:
     virtual void layout(bool);
 
     virtual bool isInline() const { return true; }
+    HTMLGenericFormElementImpl *element() { return m_element; } // ### temp
 
 protected:
     QCString encodeString( QString e );
     QString decodeString( QString e );
 
-    DOMString m_name;
     DOMString m_value;
-    HTMLFormElementImpl *m_form;
     HTMLGenericFormElementImpl *m_element;
     bool m_readonly;
 };
@@ -150,7 +138,6 @@ public:
     virtual const char *renderName() const { return "RenderHiddenButton"; }
     virtual Type type() { return HiddenButton; }
 
-    virtual QCString encoding();
     virtual void reset() { };
 };
 
@@ -165,9 +152,6 @@ public:
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
     virtual Type type() { return CheckBox; }
-
-    virtual QCString encoding();
-    virtual void reset();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -188,9 +172,7 @@ public:
     virtual const char *renderName() const { return "RenderRadioButton"; }
     virtual Type type() { return RadioButton; }
 
-    virtual void reset();
     virtual void setChecked(bool);
-    virtual QCString encoding();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -215,10 +197,9 @@ public:
     virtual Type type() { return SubmitButton; }
     virtual QString defaultLabel();
 
-    virtual QCString encoding();
-
-    virtual void reset();
     virtual void layout(bool deep = false);
+    bool clicked() { return m_clicked; }
+    void setClicked(bool _clicked) { m_clicked = _clicked; }
 
 public slots:	
     virtual void slotClicked();
@@ -285,11 +266,8 @@ public:
     RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element);
 
     virtual Type type() { return LineEdit; }
-    virtual QCString encoding();
 
     virtual void layout(bool);
-
-    virtual void reset();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -326,11 +304,7 @@ public:
 
     virtual void layout( bool deep = false );
 
-    virtual QCString encoding();
-
     virtual Type type() { return File; }
-
-    virtual void reset();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -426,11 +400,9 @@ public:
 
     virtual Type type() { return MultiLineEdit; }
 
-    virtual void reset();
-    virtual QCString encoding();
-
     virtual QString state();
     virtual void restoreState(const QString &);
+    QString text(); // ### remove
 };
 
 // -------------------------------------------------------------------------

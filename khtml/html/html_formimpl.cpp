@@ -36,6 +36,9 @@
 
 #include <kdebug.h>
 #include <kmimetype.h>
+#include <netaccess.h>
+#include <qfile.h>
+
 #include <iostream.h>
 
 using namespace DOM;
@@ -50,12 +53,13 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     multipart = false;
     _enctype = "application/x-www-form-urlencoded";
     _boundary = "----------0xKhTmLbOuNdArY";
-    formElements.setAutoDelete(false);
 }
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
-    // ### set the form for all formElements to 0
+    QListIterator<HTMLGenericFormElementImpl> it(formElements);
+    for (; it.current(); ++it)
+	it.current()->setForm(0);
 }
 
 ushort HTMLFormElementImpl::id() const
@@ -91,12 +95,13 @@ QByteArray HTMLFormElementImpl::formData()
     bool first = true;
     QCString enc_string = ""; // used for non-multipart data
 
-    RenderFormElement *current = formElements.first();
+    HTMLGenericFormElementImpl *current = formElements.first();
     for( ; current; current = formElements.next() )
     {
-	kdDebug( 6030 ) << "getting data from " << current << " name = " << current->name().string() << " type = " << (int) current->type() << endl;
+	kdDebug( 6030 ) << "getting data from " << current << " name = " << current->nodeName().string() << endl;
 
-        if( current->type() == RenderFormElement::HiddenButton || current->isEnabled() ) {
+        if (!current->disabled()) {
+
             QCString enc(current->encoding());
             kdDebug( 6030 ) << "current encoding = " << enc.data() << endl;
 
@@ -134,13 +139,17 @@ QByteArray HTMLFormElementImpl::formData()
 
                 // if the current type is FILE, then we also need to
                 // include the filename *and* the file type
-                if (current->type() == RenderFormElement::File)
+
+               if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
+                   static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                 {
-                    str += ("; filename=\"" + current->value().string() + "\"\r\n").ascii();
+                    str += ("; filename=\"" + static_cast<HTMLInputElementImpl*>(current)->value().string() + "\"\r\n").ascii();
                     str += "Content-Type: ";
-                    KMimeType::Ptr ptr = KMimeType::findByURL(KURL(current->value().string()), 0, false);
+                    KMimeType::Ptr ptr = KMimeType::findByURL(KURL(static_cast<HTMLInputElementImpl*>(current)->value().string()), 0, false);
                     str += ptr->name().ascii();
                 }
+
+
                 str += "\r\n\r\n";
 
                 // this is where it gets ugly.. we have to memcpy the
@@ -183,6 +192,10 @@ void HTMLFormElementImpl::submit(  )
     kdDebug( 6030 ) << "submit pressed!" << endl;
     if(!view) return;
 
+    DOMString script = getAttribute(ATTR_ONSUBMIT);
+    if (!script.isNull())
+	view->part()->executeScript(script.string());
+
     QByteArray form_data = formData();
 
     kdDebug( 6030 ) << "formdata = " << form_data.data() << endl << "post = " << post << endl << "multipart = " << multipart << endl;
@@ -202,12 +215,18 @@ void HTMLFormElementImpl::reset(  )
 {
     kdDebug( 6030 ) << "reset pressed!" << endl;
 
-    RenderFormElement *current = formElements.first();
+    DOMString script = getAttribute(ATTR_ONRESET);
+    if (!script.isNull())
+	view->part()->executeScript(script.string());
+
+    HTMLGenericFormElementImpl *current = formElements.first();
     while(current)
     {
 	current->reset();
 	current = formElements.next();
     }
+    if (document->isHTMLDocument())
+	static_cast<HTMLDocumentImpl*>(document)->updateRendering();
 }
 
 void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
@@ -248,19 +267,19 @@ void HTMLFormElementImpl::detach()
     HTMLElementImpl::detach();
 }
 
-void HTMLFormElementImpl::radioClicked( RenderFormElement *caller )
+void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
     // ### make this work for form elements that don't have renders
     if(!view) return;
 
-    RenderFormElement *current = formElements.first();
-    while(current)
+    HTMLGenericFormElementImpl *current;
+    for (current = formElements.first(); current; current = formElements.next())
     {
-	if(current->type() == RenderFormElement::RadioButton
-           && current->name() == caller->name() && current != caller)
-	    current->setChecked(false);
-
-	current = formElements.next();
+	if (current->id() == ID_INPUT &&
+	    static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
+	    current != caller && current->name() == caller->name()) {
+	    static_cast<HTMLInputElementImpl*>(current)->setChecked(false);
+	}
     }
 }
 
@@ -272,17 +291,18 @@ void HTMLFormElementImpl::maybeSubmit()
     int total = 0;
 
     // count number of LineEdits / total number
-    RenderFormElement *current = formElements.first();
-    while(current)
-    {
-        if(current->isEnabled() && !current->readonly()) {
-            if(current->type() == RenderFormElement::LineEdit)
-                le++;
 
-            // we're not counting hidden input's here, as they're not enabled
-            total++;
-        }
-	current = formElements.next();
+    HTMLGenericFormElementImpl *current;
+    for (current = formElements.first(); current; current = formElements.next()) {
+	if (!current->disabled() && !current->readOnly()) {
+	    if (current->id() == ID_INPUT &&
+	        (static_cast<HTMLInputElementImpl*>(current)->type() == HTMLInputElementImpl::TEXT ||
+	         static_cast<HTMLInputElementImpl*>(current)->type() == HTMLInputElementImpl::PASSWORD))
+		le++;
+
+            // we're not counting hidden input's here, as they're not enabled (### check this)
+	    total++;
+	}
     }
 
     // if there's only one lineedit or only one possibly successful one, submit
@@ -291,17 +311,18 @@ void HTMLFormElementImpl::maybeSubmit()
 }
 
 
-void HTMLFormElementImpl::registerFormElement(RenderFormElement *e)
+void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 {
     formElements.append(e);
 }
 
-void HTMLFormElementImpl::removeFormElement(RenderFormElement *e)
+void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
   // ### make sure this get's called, when formElements get removed from
   // the document tree
     formElements.remove(e);
 }
+
 
 // -------------------------------------------------------------------------
 
@@ -309,22 +330,29 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
     : HTMLElementImpl(doc)
 {
     _form = f;
+    if (_form)
+	_form->registerFormElement(this);
 
     view = 0;
-    m_disabled = m_readonly = false;
+    m_disabled = m_readOnly = false;
+
 }
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     _form = getForm();
+    if (_form)
+	_form->registerFormElement(this);
 
     view = 0;
-    m_disabled = m_readonly = false;
+    m_disabled = m_readOnly = false;
 }
 
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
 {
+    if (_form)
+	_form->removeFormElement(this);
 }
 
 void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
@@ -335,10 +363,10 @@ void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
 	_name = attr->value();
 	break;
     case ATTR_DISABLED:
-	m_disabled = true;
+	m_disabled = attr->val() != 0;
 	break;
     case ATTR_READONLY:
-        m_readonly = true;
+        m_readOnly = attr->val() != 0;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -368,6 +396,48 @@ void HTMLGenericFormElementImpl::detach()
 {
     view = 0;
     HTMLElementImpl::detach();
+}
+
+QCString HTMLGenericFormElementImpl::encodeString( QString e )
+{
+    static const char *safe = "$-._!*(),"; /* RFC 1738 */
+    unsigned pos = 0;
+    QString encoded;
+
+    while ( pos < e.length() )
+    {
+        QChar c = e[pos];
+
+        if ( (( c >= 'A') && ( c <= 'Z')) ||
+             (( c >= 'a') && ( c <= 'z')) ||
+             (( c >= '0') && ( c <= '9')) ||
+             (strchr(safe, c.latin1()))
+            )
+        {
+            encoded += c;
+        }
+        else if ( c.latin1() == ' ' )
+        {
+            encoded += '+';
+        }
+        else if ( c.latin1() == '\n' )
+        {
+            encoded += QString::fromLatin1("%0D%0A");
+        }
+        else if ( c.latin1() != '\r' )
+        {
+            // HACK! sprintf( buffer, "%%%02X", (int)c );
+            //       encoded += buffer;
+
+            // Instead of this hack, use KURL's method.
+            // For non-latin1 characters, the (int) cast can lead to wrong values.
+            // (even negative ones!) (David)
+            encoded += KURL::encode_string( QString(c) );
+        }
+        pos++;
+    }
+
+    return encoded.latin1();
 }
 
 // -------------------------------------------------------------------------
@@ -606,12 +676,9 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_VALUE:
 	_value = attr->value();
-	currValue = _value.string();
 	break;
     case ATTR_CHECKED:
-	m_checked = (attr->val() != 0);
-	if (_type == RADIO && _form && m_render && m_checked)
-	    _form->radioClicked(static_cast<RenderFormElement*>(m_render));
+	setChecked(attr->val() != 0);
 	break;
     case ATTR_MAXLENGTH:
 	_maxLen = attr->val() ? attr->val()->toInt() : -1;
@@ -708,10 +775,9 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	}
 	if (f)
 	{
-	    f->setName(_name); // ### remove render's knowledge of this
 	    f->setValue(_value); // ### remove
 	    f->setEnabled(!m_disabled); // ### remove render's knowledge of this
-            f->setReadonly(m_readonly); // ### remove render's knowledge of this
+            f->setReadonly(m_readOnly); // ### remove render's knowledge of this
 	
     	    m_render = f;
 	    m_render->setStyle(m_style);
@@ -730,6 +796,131 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     }
     NodeBaseImpl::attach(_view);
 }
+
+
+QCString HTMLInputElementImpl::encoding()
+{
+    QCString encoding = "";
+    if (_name.isEmpty()) return encoding;
+    switch (_type) {
+	case TEXT:
+	case PASSWORD:
+	case HIDDEN:
+	{
+	    if ( _form->enctype() == "application/x-www-form-urlencoded" )
+		encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+	    else
+		encoding = _value.string().latin1();
+	    break;
+	}
+	case CHECKBOX:
+	{
+	    if (checked())
+	    {
+		if ( _form->enctype() == "application/x-www-form-urlencoded" )
+		    encoding = encodeString( _name.string() ) + '=' +
+		    		( _value.isEmpty() ? QCString("on") : encodeString( _value.string() ) );
+		else
+		    encoding = ( _value.isEmpty() ? QCString("on") : QCString(_value.string().latin1()) );
+	    }
+	    break;
+	}
+	case RADIO:
+	{
+	    if (checked())
+	    {
+		if ( _form->enctype() == "application/x-www-form-urlencoded" )
+		    encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+		else
+		    encoding = _value.string().latin1();
+	    }
+	    break;
+	}
+	case SUBMIT:
+	{
+	    if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
+	    {
+		QString val = _value.isNull() ? static_cast<RenderSubmitButton*>(m_render)->defaultLabel() :
+		              value().string();
+		if ( _form->enctype() == "application/x-www-form-urlencoded" )
+		    encoding = encodeString( _name.string() ) + '=' + encodeString( val );
+		else
+		    encoding = val.latin1();
+	    }
+	    if (m_render)
+		static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
+	    break;
+	}
+	case FILE: {
+//	    m_value = m_edit->text();
+
+	    if ( _form->enctype() == "application/x-www-form-urlencoded" )
+		encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+	    else
+	    {
+		QString local;
+		if ( !KIO::NetAccess::download(KURL(_value.string()), local) );
+		{
+		    QFile file(local);
+		    if (file.open(IO_ReadOnly))
+		    {
+			uint size = file.size();
+			char *buf = new char[ size ];
+			file.readBlock( buf, size );
+			file.close();
+
+			encoding.duplicate(buf, size);
+
+			delete[] buf;
+		    }
+		    KIO::NetAccess::removeTempFile( local );
+		}
+	    }
+	    break;
+	}	
+	default:
+	break;
+    }
+    return encoding;
+}
+
+void HTMLInputElementImpl::saveDefaultAttrs()
+{
+    _defaultValue = getAttribute(ATTR_VALUE);
+    _defaultChecked = (getAttribute(ATTR_CHECKED) != 0);
+}
+
+void HTMLInputElementImpl::reset()
+{
+    cerr << "HTMLInputElementImpl::reset()\n";
+    setAttribute(ATTR_VALUE,_defaultValue);
+    setAttribute(ATTR_CHECKED,_defaultChecked);
+    if ((_type == SUBMIT || _type == RESET || _type == BUTTON || _type == IMAGE) && m_render)
+	static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
+}
+
+void HTMLInputElementImpl::setChecked(bool _checked)
+{
+    m_checked = _checked;
+    if (_type == RADIO && _form && m_render && m_checked)
+	_form->radioClicked(this);
+    setChanged(true);
+}
+
+void HTMLInputElementImpl::setValue(DOMString val)
+{
+    switch (_type) {
+	case TEXT:
+	case FILE:
+	case PASSWORD:
+	    _value = val;
+	    setChanged(true);
+	    break;
+	default:
+	    setAttribute(ATTR_VALUE,val);
+    }
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -934,8 +1125,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
         RenderSelect *f = new RenderSelect(view, this);
 	if (f)
 	{
-	    f->setName(_name);
-            f->setReadonly(m_readonly);
+            f->setReadonly(m_readOnly);
             f->setEnabled(!m_disabled);
 
     	    m_render = f;
@@ -945,6 +1135,14 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
 	}
     }
     NodeBaseImpl::attach(_view);
+}
+
+
+QCString HTMLSelectElementImpl::encoding()
+{
+    // ### move encoding stuff for selects to here
+    if (!m_render) return "";
+    return static_cast<RenderSelect*>(m_render)->encoding();
 }
 
 // -------------------------------------------------------------------------
@@ -1181,8 +1379,7 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 
 	if (f)
 	{
-	    f->setName(_name);
-            f->setReadonly(m_readonly);
+            f->setReadonly(m_readOnly);
 	    f->setEnabled(!m_disabled);
 
     	    m_render = f;
@@ -1194,5 +1391,35 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
     NodeBaseImpl::attach(_view);
 }
 
+QCString HTMLTextAreaElementImpl::encoding()
+{
+    QCString encoding;
+    if (_name.isEmpty()) return encoding;
+    if (!m_render) return ""; // ### make this work independent of render
+
+    if ( _form->enctype() == "application/x-www-form-urlencoded" )
+        encoding = encodeString( _name.string() ) + '=' +
+		   encodeString( static_cast<RenderTextArea*>(m_render)->text() );
+    else
+        encoding += static_cast<RenderTextArea*>(m_render)->text().latin1();
+
+    return encoding;
+}
+
+void HTMLTextAreaElementImpl::reset()
+{
+    // ### use default value as specified in HTML file
+    setValue("");
+}
+
+void HTMLTextAreaElementImpl::setValue(DOMString _value)
+{
+    m_value = _value;
+    setChanged(true);
+}
 
 // -------------------------------------------------------------------------
+
+
+
+

@@ -74,12 +74,14 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach();
 
-    void radioClicked( khtml::RenderFormElement *caller );
+    void radioClicked( HTMLGenericFormElementImpl *caller );
     void maybeSubmit();
 
     void registerFormElement(khtml::RenderFormElement *);
     void removeFormElement(khtml::RenderFormElement *);
 
+    void registerFormElement(HTMLGenericFormElementImpl *);
+    void removeFormElement(HTMLGenericFormElementImpl *);
 
 protected:
     DOMString url;
@@ -89,7 +91,7 @@ protected:
     bool post;
     bool multipart;
     KHTMLView *view;
-    QList<khtml::RenderFormElement> formElements;
+    QList<HTMLGenericFormElementImpl> formElements;
 };
 
 // -------------------------------------------------------------------------
@@ -114,6 +116,16 @@ public:
 
     virtual void reset() {}
     bool disabled() const { return m_disabled; }
+    bool readOnly() const { return m_readOnly; }
+    const DOMString &name() const { return _name; }
+    void setForm(HTMLFormElementImpl *f) { _form = f; }
+
+    /*
+     * override in derived classes to get the encoded name=value pair
+     * for submitting
+     */
+    virtual QCString encoding() { return ""; }
+    QCString encodeString( QString e );
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -121,7 +133,7 @@ protected:
     DOMString _name;
     HTMLFormElementImpl *_form;
     KHTMLView *view;
-    bool m_disabled, m_readonly;
+    bool m_disabled, m_readOnly;
 };
 
 // -------------------------------------------------------------------------
@@ -211,11 +223,14 @@ public:
     virtual tagStatus endTag() { return INPUTEndTag; }
 
     bool checked() { return m_checked; }
+    void setChecked(bool _checked);
     long maxLength() const { return _maxLen; }
     int size() const { return _size; }
     long tabIndex() const;
     DOMString type() const;
+
     DOMString value() const { return _value; }
+    void setValue(DOMString val);
 
     QString state();
 
@@ -228,16 +243,21 @@ public:
 
     virtual void attach(KHTMLView *w);
 
+    virtual QCString encoding();
+    typeEnum inputType() { return _type; }
+    virtual void saveDefaultAttrs();
+    virtual void reset();
+
 protected:
     typeEnum _type;
     DOMString _value;
-    QString currValue;
     bool m_checked;
-    // ### move _size and _maxLen to render objects?
     int _maxLen;
     int _size;
     DOMString _src;
     bool _clicked;
+    DOMString _defaultValue;
+    bool _defaultChecked;
 };
 
 // -------------------------------------------------------------------------
@@ -315,6 +335,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
+    virtual QCString encoding();
 
 protected:
     int m_size;
@@ -414,11 +435,18 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
+    virtual QCString encoding();
+    virtual void reset();
+    DOMString value() { return m_value; } // ### set this from children during parsing
+    void setValue(DOMString _value);
+
 
 protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
+    // DOM Specs seem to indicate that this is not kept in sync with our child text nodes
+    DOMString m_value;
 
     friend khtml::RenderTextArea;
 };

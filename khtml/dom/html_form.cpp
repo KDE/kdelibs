@@ -412,13 +412,13 @@ void HTMLInputElement::setAlt( const DOMString &value )
 bool HTMLInputElement::checked() const
 {
     if(!impl) return 0;
-    return !((HTMLInputElementImpl *)impl)->getAttribute(ATTR_CHECKED).isNull();
+    return ((HTMLInputElementImpl*)impl)->checked();
 }
 
 void HTMLInputElement::setChecked( bool _checked )
 {
     if(impl)
-        ((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, _checked ? "" : 0);
+	((HTMLInputElementImpl*)impl)->setChecked(_checked);
 }
 
 bool HTMLInputElement::disabled() const
@@ -529,12 +529,14 @@ void HTMLInputElement::setUseMap( const DOMString &value )
 DOMString HTMLInputElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return ((HTMLInputElementImpl*)impl)->value();
 }
 
 void HTMLInputElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    if (impl)
+	((HTMLInputElementImpl*)impl)->setValue(value);
+
 }
 
 void HTMLInputElement::blur(  )
@@ -1065,12 +1067,12 @@ DOMString HTMLTextAreaElement::type() const
 DOMString HTMLTextAreaElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return ((HTMLTextAreaElementImpl *)impl)->value();
 }
 
 void HTMLTextAreaElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    if(impl) ((HTMLTextAreaElementImpl *)impl)->setValue(value);
 }
 
 void HTMLTextAreaElement::blur(  )

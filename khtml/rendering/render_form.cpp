@@ -31,7 +31,6 @@
 #include <klocale.h>
 #include <klistbox.h>
 #include <kfiledialog.h>
-#include <netaccess.h>
 
 #include <qpushbutton.h>
 #include <qradiobutton.h>
@@ -47,6 +46,7 @@
 #include "dom_docimpl.h"
 
 #include "html/html_formimpl.h"
+#include "html/html_documentimpl.h"
 #include "misc/htmlhashes.h"
 
 #include "rendering/render_form.h"
@@ -60,56 +60,15 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     : RenderWidget(view)
 {
     m_element = element;
-    m_form = m_element->form();
-    if(m_form) m_form->registerFormElement(this);
-
 }
 
 RenderFormElement::~RenderFormElement()
 {
-     if(m_form) m_form->removeFormElement(this);
 }
 
 QCString RenderFormElement::encodeString( QString e )
 {
-    static const char *safe = "$-._!*(),"; /* RFC 1738 */
-    unsigned pos = 0;
-    QString encoded;
-
-    while ( pos < e.length() )
-    {
-        QChar c = e[pos];
-
-        if ( (( c >= 'A') && ( c <= 'Z')) ||
-             (( c >= 'a') && ( c <= 'z')) ||
-             (( c >= '0') && ( c <= '9')) ||
-             (strchr(safe, c.latin1()))
-            )
-        {
-            encoded += c;
-        }
-        else if ( c.latin1() == ' ' )
-        {
-            encoded += '+';
-        }
-        else if ( c.latin1() == '\n' )
-        {
-            encoded += QString::fromLatin1("%0D%0A");
-        }
-        else if ( c.latin1() != '\r' )
-        {
-            // HACK! sprintf( buffer, "%%%02X", (int)c );
-            //       encoded += buffer;
-
-            // Instead of this hack, use KURL's method.
-            // For non-latin1 characters, the (int) cast can lead to wrong values.
-            // (even negative ones!) (David)
-            encoded += KURL::encode_string( QString(c) );
-        }
-        pos++;
-    }
-
-    return encoded.latin1();
+    return static_cast<HTMLGenericFormElementImpl*>(m_element)->encodeString(e);
 }
 
 QString RenderFormElement::decodeString( QString e )
@@ -219,22 +178,6 @@ RenderHiddenButton::RenderHiddenButton(QScrollView *view,
 {
 }
 
-QCString RenderHiddenButton::encoding()
-{
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-    {
-	encoding = encodeString( m_name.string() );
-	encoding += '=';
-	encoding += encodeString( m_value.string() );
-    }
-    else
-	encoding = m_value.string().latin1();
-    return encoding;
-}
-
-
 // -------------------------------------------------------------------------------
 
 RenderCheckBox::RenderCheckBox(QScrollView *view,
@@ -244,24 +187,6 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     QCheckBox *b = new QCheckBox(view->viewport());
     setQWidget(b);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
-}
-
-QCString RenderCheckBox::encoding()
-{
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-    if (static_cast<HTMLInputElementImpl*>(m_element)->checked())
-    {
-      if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-      {
-          encoding = encodeString( m_name.string() );
-          encoding += '=';
-          encoding += ( m_value.isEmpty() ? QCString("on") : encodeString( m_value.string() ) );
-      }
-      else
-	        encoding = ( m_value.isEmpty() ? QCString("on") : QCString(m_value.string().latin1()) );
-    }
-    return encoding;
 }
 
 QString RenderCheckBox::state()
@@ -274,14 +199,6 @@ QString RenderCheckBox::state()
 void RenderCheckBox::restoreState(const QString &state)
 {
    static_cast<QCheckBox *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
-}
-
-void RenderCheckBox::reset()
-{
-//    setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked()); // this changes with javascript!
-
-    // ### allow for resettting to default as specified in html file (not modified by javascript)
-    static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
 }
 
 void RenderCheckBox::layout(bool deep)
@@ -309,26 +226,6 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
-QCString RenderRadioButton::encoding()
-{
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-    if ( static_cast<QRadioButton *>(m_widget)->isChecked() )
-    {
-        if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-        {
-            encoding = encodeString( m_name.string() );
-            encoding += '=';
-            encoding += encodeString( m_value.string() );
-        }
-        else
-            encoding = m_value.string().latin1();
-    }
-
-    return encoding;
-}
-
-
 void RenderRadioButton::setChecked(bool checked)
 {
     static_cast<QRadioButton *>(m_widget)->setChecked(checked);
@@ -346,21 +243,11 @@ void RenderRadioButton::restoreState(const QString &state)
    static_cast<QRadioButton *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
 }
 
-void RenderRadioButton::reset()
-{
-//    setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-
-    // ### allow for resettting to default as specified in html file (not modified by javascript)
-    m_element->setAttribute(ATTR_CHECKED,0);
-}
-
 void RenderRadioButton::slotClicked()
 {
-    // ### make radio button groups work properly when not inside a form
-//    if (m_form)
-//	m_form->radioClicked(this);
-
     m_element->setAttribute(ATTR_CHECKED,"");
+    if (m_element->ownerDocument()->isHTMLDocument())
+	static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
 }
 
 void RenderRadioButton::layout(bool deep)
@@ -391,38 +278,8 @@ void RenderSubmitButton::slotClicked()
 {
     m_clicked = true;
     static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
-    if (m_form)
-	m_form->submit();
-}
-
-QCString RenderSubmitButton::encoding()
-{
-    QCString encoding;
-
-    if (m_name.isEmpty()) return encoding;
-
-    QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isNull() ?
-                    defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
-
-    if (m_clicked)
-    {
-        if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-        {
-            encoding = encodeString( m_name.string() );
-            encoding += '=';
-            encoding += encodeString( value );
-        }
-        else
-            encoding = value.latin1();
-    }
-
-    m_clicked = false;
-    return encoding;
-}
-
-void RenderSubmitButton::reset()
-{
-    m_clicked = false;
+    if (m_element->form())
+	m_element->form()->submit();
 }
 
 void RenderSubmitButton::layout(bool deep)
@@ -494,8 +351,8 @@ RenderResetButton::~RenderResetButton()
 void RenderResetButton::slotClicked()
 {
     static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
-    if (m_form)
-	m_form->reset();
+    if (m_element->form())
+	m_element->form()->reset();
 }
 
 QString RenderResetButton::defaultLabel() {
@@ -542,25 +399,8 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
 void RenderLineEdit::slotReturnPressed()
 {
-    if (m_form)
-	m_form->maybeSubmit();
-}
-
-QCString RenderLineEdit::encoding()
-{
-    DOMString val = static_cast<HTMLInputElementImpl*>(m_element)->value();
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-    {
-        encoding = encodeString( m_name.string() );
-        encoding += '=';
-        encoding += encodeString( val.string() );
-    }
-    else
-        encoding = val.string().latin1();
-
-    return encoding;
+    if (m_element->form())
+	m_element->form()->maybeSubmit();
 }
 
 QString RenderLineEdit::state()
@@ -607,15 +447,6 @@ void RenderLineEdit::layout(bool)
     m_width = s.width();
 
     RenderFormElement::layout(false);
-}
-
-void RenderLineEdit::reset()
-{
-    // ### I don't think this is correct - supposed to be *default* value
-    if(static_cast<HTMLInputElementImpl*>(m_element)->value() != 0)
-	static_cast<QLineEdit *>(m_widget)->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
-    else
-	static_cast<QLineEdit *>(m_widget)->setText(QString::null);
 }
 
 void RenderLineEdit::slotTextChanged(const QString &string)
@@ -667,7 +498,11 @@ RenderFileButton::~RenderFileButton()
 void RenderFileButton::slotClicked()
 {
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
-    setValue( DOMString(file_name) );
+    if (!file_name.isNull()) {
+	// ### truncate if > maxLength
+	m_element->setAttribute(ATTR_VALUE,DOMString(file_name));
+	m_edit->setText(file_name);
+    }
 }
 
 void RenderFileButton::layout( bool )
@@ -712,51 +547,10 @@ void RenderFileButton::restoreState(const QString &state)
     m_element->setAttribute(ATTR_VALUE,DOMString(state.left(state.length()-1)));
 }
 
-void RenderFileButton::reset()
-{
-    m_element->setAttribute(ATTR_VALUE,DOMString(QString::null));
-}
-
 void RenderFileButton::slotReturnPressed()
 {
-    if (m_form)
-	m_form->maybeSubmit();
-}
-
-QCString RenderFileButton::encoding()
-{
-    m_value = m_edit->text();
-
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-    {
-        encoding = encodeString( m_name.string() );
-        encoding +=  '=';
-        encoding += encodeString( static_cast<HTMLInputElementImpl*>(m_element)->value().string() );
-    }
-    else
-    {
-        QString local;
-        if ( !KIO::NetAccess::download(KURL(static_cast<HTMLInputElementImpl*>(m_element)->value().string()), local) );
-        {
-            QFile file(local);
-            if (file.open(IO_ReadOnly))
-            {
-                uint size = file.size();
-                char *buf = new char[ size ];
-                file.readBlock( buf, size );
-                file.close();
-
-                encoding.duplicate(buf, size);
-
-                delete[] buf;
-            }
-            KIO::NetAccess::removeTempFile( local );
-        }
-    }
-
-    return encoding;
+    if (m_element->form())
+	m_element->form()->maybeSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
@@ -1001,8 +795,7 @@ void RenderSelect::close()
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-       kdDebug( 6040 ) << "Restoring SelectElem name=" << m_name.string() <<
-                            " state=" << state << endl;
+       kdDebug( 6040 ) << "Restoring SelectElem state=" << state << endl;
        restoreState( state );
     }
     setLayouted(false);
@@ -1013,6 +806,7 @@ void RenderSelect::close()
 
 void RenderSelect::reset()
 {
+    // ### move this to HTMLSelectElementImpl
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
 
     NodeImpl* current = f->firstChild();
@@ -1044,12 +838,14 @@ void RenderSelect::reset()
 
 QCString RenderSelect::encoding()
 {
+    // ### move this to HTMLSelectElementImpl
     QCString encoding = "";
+    DOMString m_name = m_element->name();
 
     if(m_name.isEmpty() || m_element->disabled()) return encoding;
 
     QCString prefix;
-    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+    if ( m_element->form()->enctype() == "application/x-www-form-urlencoded" )
     {
         prefix = encodeString( m_name.string() );
         prefix += '=';
@@ -1279,28 +1075,6 @@ void RenderTextArea::layout( bool )
     RenderFormElement::layout(false);
 }
 
-void RenderTextArea::reset()
-{
-    static_cast<QMultiLineEdit*>(m_widget)->setText(m_value.string());
-}
-
-QCString RenderTextArea::encoding()
-{
-    QCString encoding;
-    if (m_name.isEmpty()) return encoding;
-
-    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
-    {
-        encoding = encodeString( m_name.string() );
-        encoding += '=';
-        encoding += encodeString( static_cast<TextAreaWidget *>(m_widget)->text() );
-    }
-    else
-        encoding += static_cast<TextAreaWidget *>(m_widget)->text().latin1();
-
-    return encoding;
-}
-
 QString RenderTextArea::state()
 {
    // Make sure the string is not empty!
@@ -1327,12 +1101,16 @@ void RenderTextArea::close( )
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-       kdDebug( 6040 ) << "Restoring TextAreaElem name=" << m_name.string() <<
-                            " state=" << state << endl;
+       kdDebug( 6040 ) << "Restoring TextAreaElem state=" << state << endl;
        restoreState( state );
     }
 
     RenderFormElement::close();
+}
+
+QString RenderTextArea::text()
+{
+    return static_cast<TextAreaWidget *>(m_widget)->text();
 }
 
 // ---------------------------------------------------------------------------

@@ -327,6 +327,7 @@ void KHTMLParser::parseToken(Token *t)
     {
 	ElementImpl *e = static_cast<ElementImpl *>(n);
 	e->setAttribute(t->attrs);
+	e->saveDefaultAttrs(); // for form field reset and the like
 
 	// take care of optional close tags
 	if(e->endTag() == DOM::OPTIONAL)
