@@ -299,58 +299,7 @@ void BuildHelper::processElement( const QDomElement &e )
 
     if ( ( isActionTag = ( tag == tagAction ) ) ||
            customTags.findIndex( tag ) != -1 )
-    {
-        if ( !parentNode->container )
-            return;
-
-        MergingIndexList::Iterator it( m_state.currentClientMergingIt );
-
-        bool haveGroup = false;
-        QString group( e.attribute( attrGroup ) );
-        if ( !group.isEmpty() )
-        {
-            group.prepend( attrGroup );
-            haveGroup = true;
-        }
-
-        int idx;
-        if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely
-            // cached running merging index values.
-            idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
-        else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
-            // if we don't have a current merging index, then we want to append our action
-            idx = parentNode->index;
-        else
-            idx = (*m_state.currentClientMergingIt).value;
-
-
-        containerClient = parentNode->findChildContainerClient( m_state.guiClient, group, it );
-
-        if ( isActionTag )
-        {
-            // look up the action and plug it in
-            KAction *action = m_state.guiClient->action( e );
-
-            if ( !action )
-                return;
-
-            action->plug( parentNode->container, idx );
-
-            // save a reference to the plugged action, in order to properly unplug it afterwards.
-            containerClient->actions.append( action );
-        }
-        else
-        {
-            assert( parentNode->builder );
-
-            int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
-            if ( id != 0 )
-                containerClient->customElements.append( id );
-        }
-
-        // adjust any following merging indices and the current running index for the container
-        parentNode->adjustMergingIndices( 1, it );
-    }
+        processActionOrCustomElement( e, isActionTag );
     /*
      * The "Merge" tag specifies that all containers and actions from *other* clients should be
      * inserted/plugged in at the current index, and not appended.
@@ -505,6 +454,67 @@ void BuildHelper::processElement( const QDomElement &e )
                                          ignoreDefaultMergingIndex );
         }
     }
+}
+
+void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isActionTag )
+{
+    static const QString &attrGroup = KGlobal::staticQString( "group" );
+
+    if ( !parentNode->container )
+        return;
+
+    MergingIndexList::Iterator it( m_state.currentClientMergingIt );
+
+    bool haveGroup = false;
+    QString group( e.attribute( attrGroup ) );
+    if ( !group.isEmpty() )
+    {
+        group.prepend( attrGroup );
+        haveGroup = true;
+    }
+
+    int idx;
+    if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely
+                     // cached running merging index values.
+        idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+    else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
+        // if we don't have a current merging index, then we want to append our action
+        idx = parentNode->index;
+    else
+        idx = (*m_state.currentClientMergingIt).value;
+
+    containerClient = parentNode->findChildContainerClient( m_state.guiClient, group, it );
+
+    if ( isActionTag )
+        processActionElement( e, idx );
+    else
+        processCustomElement( e, idx );
+
+    // adjust any following merging indices and the current running index for the container
+    parentNode->adjustMergingIndices( 1, it );
+}
+
+void BuildHelper::processActionElement( const QDomElement &e, int idx )
+{
+    // look up the action and plug it in
+    KAction *action = m_state.guiClient->action( e );
+
+    if ( !action )
+        return;
+
+    action->plug( parentNode->container, idx );
+
+    // save a reference to the plugged action, in order to properly unplug it afterwards.
+    containerClient->actions.append( action );
+}
+
+void BuildHelper::processCustomElement( const QDomElement &e, int idx )
+{
+    assert( parentNode->builder );
+
+    int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
+    if ( id != 0 )
+        containerClient->customElements.append( id );
 }
 
 /* vim: et sw=4

@@ -154,6 +154,10 @@ public:
     void processElement( const QDomElement &element );
 
 private:
+    void processActionOrCustomElement( const QDomElement &e, bool isActionTag );
+    void processActionElement( const QDomElement &e, int idx );
+    void processCustomElement( const QDomElement &e, int idx );
+
     QStringList customTags;
     QStringList containerTags;
 
