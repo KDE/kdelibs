@@ -121,7 +121,7 @@ public:
     virtual void layout(bool);
 
     virtual bool isInline() { return false; }
-    NodeImpl *addChild(NodeImpl *child);
+    virtual NodeImpl *addChild(NodeImpl *child);
     void close();
     virtual void attach(KHTMLWidget *w);
 

@@ -277,8 +277,10 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 
     NodeImpl *prev = refChild->previousSibling();
 
-    if (prev)
-      prev->setNextSibling(newChild);
+    if (prev) 
+	prev->setNextSibling(newChild);
+    else
+	_first = newChild;
     refChild->setPreviousSibling(newChild);
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
@@ -299,13 +301,15 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     NodeImpl *prev = oldChild->previousSibling();
     NodeImpl *next = oldChild->nextSibling();
 
-    if (prev)
-      prev->setNextSibling(newChild);
-    if (next)
-      next->setPreviousSibling(newChild);
+    if (prev) prev->setNextSibling(newChild);
+    if (next) next->setPreviousSibling(newChild);
+    if(_first == oldChild) _first = newChild;
+    if(_last == oldChild) _last = newChild;
+
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(next);
@@ -322,11 +326,15 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     prev = oldChild->previousSibling();
     next = oldChild->nextSibling();
 
-    next->setPreviousSibling(prev);
-    prev->setNextSibling(next);
+    if(next) next->setPreviousSibling(prev);
+    if(prev) prev->setNextSibling(next);
+    if(_first == oldChild) _first = next;
+    if(_last == oldChild) _last = prev;
 
+    oldChild->setPreviousSibling(0);
+    oldChild->setNextSibling(0);
     oldChild->setParent(0);
-
+    
     return oldChild;
 }
 
@@ -419,7 +427,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // short check for consistency with DTD
     if(!checkChild(id(), newChild->id()))
     {
-        //printf("AddChild failed! id=%d, child->id=%d\n", id(), newChild->id());
+        printf("AddChild failed! id=%d, child->id=%d\n", id(), newChild->id());
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 

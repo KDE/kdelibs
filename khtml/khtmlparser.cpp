@@ -354,7 +354,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	HTMLElementImpl *e;
 	bool ignore = false;
 
-	switch(n->id())
+	switch(id)
 	{
 	    // head elements in the body should be ignored.
 	case ID_HTML:
@@ -371,6 +371,55 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    e = new HTMLUListElementImpl(document);
 	    insertNode(e);
 	    return;
+	    break;
+	case ID_FORM:
+	{
+	    printf("--> badly placed form!!!\n");
+	    NodeImpl *node = current;
+	    // in case the form is opened inside the table (<table><form ...><tr> or similar)
+	    // we need to move it outside the table.
+	    if(node->id() == ID_TR)
+		node = node->parentNode();
+	    if(node->id() == ID_THEAD)
+		node = node->parentNode();
+	    if(node->id() == ID_TBODY)
+		node = node->parentNode();
+	    if(node->id() == ID_TFOOT)
+		node = node->parentNode();
+	
+	    if(node->id() == ID_TABLE)
+	    {
+		printf("trying to add form outside of table\n");
+		node->ref();
+		NodeImpl *parent = node->parentNode();
+		parent->removeChild(node);
+		printf("trying to add forn to %d\n", parent->id());
+		try
+		{
+		    parent->addChild(n);
+		}
+		catch(DOMException e)
+		{
+		    printf("adding form outside of table failed!!!!\n");
+		    // readd the child... this should work
+		    parent->addChild(node);
+		    node->deref();
+		    throw e;
+		}
+		try
+		{
+		    n->addChild(node);
+		}
+		catch(DOMException e)
+		{
+		    printf("adding table to form failed!!!!\n");
+		    // this should never happen!
+		    exit(1);
+		}
+		node->deref();
+		return;
+	    }
+	}
 	default:
 	    break;
 	}

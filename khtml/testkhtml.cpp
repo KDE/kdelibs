@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
     KHTMLWidget *doc = new KHTMLWidget;
     doc->resize(800,500);
-    doc->enableJScript(true);
+    //doc->enableJScript(true);
     doc->enableJava(true);
     //doc->setFollowsLinks(false);
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 			      QColor(Qt::green));
     doc->openURL(argv[1]);
     a.setTopWidget(doc);
-    QWidget::connect(doc, SIGNAL(setTitle(const QString &)), 
+    QWidget::connect(doc, SIGNAL(setTitle(const QString &)),
 		     doc, SLOT(setCaption(const QString &)));
     doc->show();
 
