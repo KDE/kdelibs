@@ -39,6 +39,8 @@
 #include <qregexp.h>
 #include <qtimer.h>
 #include <qsocket.h>
+#include <qdatetime.h>
+
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -262,11 +264,35 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
 	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+
 	// change host and port for remote stuffs
 	if (!p->uri().isEmpty())
 	{
-		req.setHost(p->uri().host());
-		req.setPort(p->uri().port());
+		m_hostSuccess = false;
+		m_lookupDone = false;
+		// Give 3 seconds to connect to the printer, or abort
+		KExtendedSocket *kes = new KExtendedSocket(p->uri().host(),
+							p->uri().port());
+		connect(kes, SIGNAL(connectionSuccess()), this, SLOT(hostPingSlot()));
+		connect(kes, SIGNAL(connectionFailed(int)), this, SLOT(hostPingFailedSlot()));
+		if (kes->startAsyncConnect() != 0) {
+			delete kes;
+			m_hostSuccess = false;
+		} else {
+			QDateTime tm = QDateTime::currentDateTime().addSecs(2);
+			while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
+				qApp->processEvents();
+
+			delete kes;
+
+			if (!m_lookupDone)
+				m_hostSuccess = false;
+		}
+
+		if (m_hostSuccess == true) {
+			req.setHost(p->uri().host());
+			req.setPort(p->uri().port());
+		}
 	}
 	// disable location as it has been transferred to listing (for filtering)
 	//keys.append("printer-location");
@@ -1053,6 +1079,16 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
 				"Error: %1." ).arg( errcode == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
 	setUpdatePossible( false );
+}
+
+void KMCupsManager::hostPingSlot() {
+	m_hostSuccess = true;
+	m_lookupDone = true;
+}
+
+void KMCupsManager::hostPingFailedSlot() {
+	m_hostSuccess = false;
+	m_lookupDone = true;
 }
 
 //*****************************************************************************************************
