@@ -429,6 +429,12 @@ void SlaveBase::sendAuthenticationKey( const QCString& key,
     m_pConnection->send( MSG_AUTH_KEY, data );
 }
 
+void SlaveBase::delCachedAuthentication( const QString& key )
+{
+    KIO_DATA << key.utf8() ;
+    m_pConnection->send( MSG_DEL_AUTH_KEY, data );
+}
+
 void SlaveBase::sigsegv_handler (int)
 {
     // Debug and printf should be avoided because they might
@@ -1006,14 +1012,14 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     client.setVar( (auth_key+"-pass"), info.password.utf8(), 0, grp_key );
     if ( !info.realmValue.isEmpty() )
     {
-      client.setVar( (auth_key + "-realm"), info.realmValue.utf8(), 0, grp_key );
+      client.setVar( (auth_key+"-realm"), info.realmValue.utf8(), 0, grp_key );
       QString new_path = info.url.path();
       if( new_path.isEmpty() )
         new_path = '/';
       client.setVar( (auth_key+"-path"), new_path.utf8(), 0, grp_key );
     }
     if ( !info.digestInfo.isEmpty() )
-      client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
+      client.setVar( (auth_key+"-extra"), info.digestInfo.utf8(), 0, grp_key );
 
     kdDebug(7019) << "Cached new authentication for: " << auth_key << endl
                   << "  User= " << info.username << endl

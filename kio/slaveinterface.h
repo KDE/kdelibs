@@ -109,7 +109,8 @@ class SlaveInterfacePrivate;
    MSG_NET_DROP,
    MSG_NEED_SUBURL_DATA,
    MSG_CANRESUME,
-   MSG_AUTH_KEY
+   MSG_AUTH_KEY,
+   MSG_DEL_AUTH_KEY
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -185,10 +186,18 @@ signals:
      * one is found for use in the io-slaves.
      *
      * @param key     token under which authorization is stored.
-     * @param group   group token under which authorization is stored.
+     * @param grpkey  group token under which authorization is stored.
      * @param keep    if true, user requested password to be cached for entire KDE session.
      */
-    void authorizationKey( const QCString & key, const QCString & grp, bool keep );
+    void authorizationKey( const QCString & key, const QCString & grpkey, bool keep );
+
+    /**
+     * Emitted when an io-slave requests cached password to be
+     * deleted for the specified group.
+     *
+     * @param grpkey     group token under which authorization is stored.
+     */
+    void delAuthorization( const QCString& grpkey );
 
 protected:
     /////////////////

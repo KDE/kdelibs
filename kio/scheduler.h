@@ -42,8 +42,8 @@ namespace KIO {
      *
      * There are 3 possible ways for a job to get a slave:
      *
-     * 1) Direct. 
-     * This is the default. When you create a job the 
+     * 1) Direct.
+     * This is the default. When you create a job the
      * KIO::Scheduler will be notified and will find either an existing
      * slave that is idle or it will create a new slave for the job.
      *
@@ -52,8 +52,8 @@ namespace KIO {
      *
      *
      * 2) Scheduled
-     * If you create a lot of jobs, you might want not want to have a 
-     * slave for each job. If you schedule a job, a maximum number 
+     * If you create a lot of jobs, you might want not want to have a
+     * slave for each job. If you schedule a job, a maximum number
      * of slaves will be created. When more jobs arrive, they will be
      * queued. When a slave is finished with a job, it will be assigned
      * a job from the queue.
@@ -65,10 +65,10 @@ namespace KIO {
      * 3) Connection Oriented
      * For some operations it is important that multiple jobs use
      * the same connection. This can only be ensured if all these jobs
-     * use the same slave. 
+     * use the same slave.
      *
      * You can ask the scheduler to open a slave for connection oriented
-     * operations. You can then use the scheduler to assign jobs to this 
+     * operations. You can then use the scheduler to assign jobs to this
      * slave. The jobs will be queued and the slave will handle these jobs
      * one after the other.
      *
@@ -76,23 +76,23 @@ namespace KIO {
      *    Slave *slave = KIO::Scheduler::getConnectedSlave(
      *            KURL("pop3://bastian:password@mail.kde.org"));
      *    TransferJob *job1 = KIO::get(
-     *            KURL("pop3://bastian:password@mail.kde.org/msg1"));         
+     *            KURL("pop3://bastian:password@mail.kde.org/msg1"));
      *    KIO::Scheduler::assignJobToSlave(slave, job1);
      *    TransferJob *job2 = KIO::get(
-     *            KURL("pop3://bastian:password@mail.kde.org/msg2"));        
+     *            KURL("pop3://bastian:password@mail.kde.org/msg2"));
      *    KIO::Scheduler::assignJobToSlave(slave, job2);
      *    TransferJob *job3 = KIO::get(
      *            KURL("pop3://bastian:password@mail.kde.org/msg3"));
      *    KIO::Scheduler::assignJobToSlave(slave, job3);
      *
-     *    ... Wait for jobs to finish...     
+     *    ... Wait for jobs to finish...
      *
      *    KIO::Scheduler::disconnectSlave(slave);
      **/
 
     class Scheduler : public QObject, virtual public DCOPObject {
 	Q_OBJECT
-	
+
     public:
 	typedef QList<SimpleJob> JobList;
 
@@ -129,7 +129,7 @@ namespace KIO {
          * @see disconnectSlave
          */
         static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &metaData = MetaData() )
-		{ return self()->_getConnectedSlave(url, metaData); }        
+		{ return self()->_getConnectedSlave(url, metaData); }
 
         /*
          * Use @p slave to do @p job.
@@ -165,7 +165,7 @@ namespace KIO {
          */
         static bool disconnectSlave(KIO::Slave *slave)
         	{ return self()->_disconnectSlave(slave); }
-        	
+
         /**
          * Function to connect signals emitted by the scheduler.
          *
@@ -201,6 +201,7 @@ namespace KIO {
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
         void slotAuthorizationKey( const QCString&, const QCString&, bool keep );
+        void slotDelAuthorization( const QCString& );
 
     protected:
         bool startJobScheduled(ProtocolInfo *protInfo);
@@ -251,6 +252,7 @@ namespace KIO {
 
 
     typedef QList<AuthKey> AuthKeyList;
+    typedef QListIterator<AuthKey> AuthKeyIterator;
     AuthKeyList cachedAuthKeys;
 
     JobList newJobs;
@@ -286,7 +288,6 @@ namespace KIO {
      * @param list list of cached authentication key to be deleted.
      */
     void delCachedAuthKeys( const AuthKeyList& list );
-
 };
 
 };

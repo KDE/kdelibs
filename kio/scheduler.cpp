@@ -119,13 +119,11 @@ Scheduler::Scheduler()
     slaveList = new SlaveList;
     idleSlaves = new SlaveList;
     coIdleSlaves = new SlaveList;
-    connect(&slaveTimer, SIGNAL(timeout()),
-	    SLOT(startStep()));
-    connect(&coSlaveTimer, SIGNAL(timeout()),
-	    SLOT(slotScheduleCoSlave()));
-    connect(&cleanupTimer, SIGNAL(timeout()),
-	    SLOT(slotCleanIdleSlaves()));
+    connect(&slaveTimer, SIGNAL(timeout()), SLOT(startStep()));
+    connect(&coSlaveTimer, SIGNAL(timeout()), SLOT(slotScheduleCoSlave()));
+    connect(&cleanupTimer, SIGNAL(timeout()), SLOT(slotCleanIdleSlaves()));
     busy = false;
+    cachedAuthKeys.setAutoDelete( true );
 }
 
 Scheduler::~Scheduler()
@@ -136,7 +134,6 @@ Scheduler::~Scheduler()
     if( !cachedAuthKeys.isEmpty() )
       delCachedAuthKeys( cachedAuthKeys );
 
-    cachedAuthKeys.setAutoDelete(true);
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
@@ -221,7 +218,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
 void Scheduler::_cancelJob(SimpleJob *job) {
 //    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
     Slave *slave = job->slave();
-    if ( !slave  ) 
+    if ( !slave  )
     {
         // was not yet running (don't call this on a finished job!)
         newJobs.removeRef(job);
@@ -413,12 +410,12 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job)
        {
           if (job->url() == urlOnHold)
           {
-kdDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
+             kdDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
              slave = slaveOnHold;
           }
           else
           {
-kdDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
+             kdDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
              slaveOnHold->kill();
           }
           slaveOnHold = 0;
@@ -516,19 +513,28 @@ void Scheduler::slotAuthorizationKey( const QCString& key,
     regCachedAuthKey( key, group );
 }
 
+void Scheduler::slotDelAuthorization( const QCString& grpkey )
+{
+    AuthKey* key = cachedAuthKeys.first();
+    for( ; key !=0 ; key=cachedAuthKeys.next() )
+    {
+        if( key->isGroupMatch(grpkey) )
+        {
+            cachedAuthKeys.remove();
+            break;
+        }
+    }
+}
+
 bool Scheduler::pingCacheDaemon() const
 {
     KDEsuClient client;
     int sucess = client.ping();
     if( sucess == -1 )
     {
-        //fprintf(stdout, "No running \"kdesu\" daemon found. Attempting to start one...\n");
         sucess = client.startServer();
         if( sucess == -1 )
-        {
-            //fprintf(stdout, "Cannot start a new \"kdesu\" deamon!!\n");
             return false;
-        }
     }
     return true;
 }
@@ -542,20 +548,16 @@ bool Scheduler::regCachedAuthKey( const QCString& key, const QCString& group )
     KDEsuClient client;
     QCString ref_key = key.copy() + "-refcount";
     int count = client.getVar(ref_key).toInt( &ok );
-    kdDebug(7006) << "Register key: " << ref_key << endl;
     if( ok )
     {
         QCString val;
         val.setNum( count+1 );
-        kdDebug(7006) << "Setting reference count to: " << val << endl;
-        if( client.setVar( ref_key, val, 0, group) == -1 )
-            kdDebug(7006) << "Unable to increment reference count!" << endl;
+        client.setVar( ref_key, val, 0, group);
     }
     else
     {
-        kdDebug(7006) << "Setting reference count to: 1" << endl;
         if( client.setVar( ref_key, "1", 0, group ) == -1 )
-            kdDebug(7006) << "Unable to set reference count!" << endl;
+            return false;
     }
     return true;
 }
@@ -568,7 +570,7 @@ void Scheduler::delCachedAuthKeys( const AuthKeyList& list )
         int count;
         KDEsuClient client;
         QCString val, ref_key;
-        QListIterator<AuthKey> it( list );
+        AuthKeyIterator it( list );
         for ( ; it.current(); ++it )
         {
             AuthKey* auth_key = it.current();

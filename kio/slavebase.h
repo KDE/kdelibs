@@ -629,13 +629,29 @@ protected:
 
     /**
      * Creates a basic key to be used to cache the password.
+     *
+     * @param url   the url from which the key is supposed to be generated
      */
     QString createAuthCacheKey( const KURL& url );
 
     /**
      * Sends the authentication key to the application.
+     *
+     * @param
+     * @param
+     * @param
      */
     void sendAuthenticationKey( const QCString&, const QCString&, bool );
+
+    /**
+     * Delete any cached password with the given key.
+     *
+     * To use this function simply invoke it by doing
+     * delCachedAuthentication( createAuthCacheKey(KURL) );
+     *
+     * @param key  the cached password group-key to be deleted.
+     */
+    void delCachedAuthentication( const QString& key );
 
     /**
      * Used by the slave to check if it can connect
@@ -682,11 +698,6 @@ protected:
      * Internal function to transmit meta data to the application.
      */
     void sendMetaData();
-
-    /*
-     * @deprecated.  Added only for BC with KDE 2.0
-     */
-    void delCachedAuthentication( const QString& ) {};
 
     /**
      * Name of the protocol supported by this slave
