@@ -2640,7 +2640,7 @@ void KApplication::read_app_startup_id()
 
 int KApplication::random()
 {
-   static int init = false;
+   static bool init = false;
    if (!init)
    {
       unsigned int seed;
