@@ -385,10 +385,12 @@ void KFileDialog::slotOk()
             accept();
         }
         else // FIXME: !exists() -> create dir
+	if ( (mode() & KFile::File) != KFile::File ) {
             KMessageBox::error( d->mainWidget,
                                 i18n("You have to select a directory!"),
                                 i18n("Not a directory") );
         return;
+	}
     }
 
     KIO::StatJob *job = 0L;
