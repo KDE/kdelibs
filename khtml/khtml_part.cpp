@@ -310,7 +310,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As.." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding.." ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
-  QStringList encodings = KGlobal::charsets()->availableCharsetNames();
+  QStringList encodings = KGlobal::charsets()->availableEncodingNames();
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
