@@ -16,7 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "../kio/kio/kprotocolinfo.h"
+#include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 
 #include <kstandarddirs.h>
@@ -399,6 +399,7 @@ QString KProtocolInfo::docPath( const QString& _protocol )
   return prot->d->docPath;
 }
 
+#if 0
 QString KProtocolInfo::protocolClass( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -407,6 +408,7 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
 
   return prot->d->protClass;
 }
+#endif
 
 // KURL based static functions are implemented in ../kio/kio/kprotoconinfo.cpp
 
