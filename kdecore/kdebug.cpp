@@ -37,7 +37,6 @@
 #include <qfile.h>
 #include <qintdict.h>
 #include <qstring.h>
-#include <qtextstream.h>
 #include <qdatetime.h>
 #include <qpoint.h>
 #include <qrect.h>
@@ -105,49 +104,45 @@ static QString getDescrFromNum(unsigned int _num)
     return QString::null;
   }
 
-  unsigned long number = 0;
-  bool longOK;
-
-  QTextStream *ts = new QTextStream(&file);
-  ts->setEncoding( QTextStream::Latin1 );
-  while (!ts->eof()) {
-    const QString data(ts->readLine());
-    int i = 0;
-    int len = data.length();
-
-    QChar ch = data[0];
-    if (ch == '#' || ch.isNull()) {
+  uint lineNumber=0;
+  QCString line(1024);
+  while (file.readLine(line.data(),line.size()-1) > 0) {
+    lineNumber++;
+    if ( !line[0] || line[0]=='#' || line[0]=='\n')
+      continue; // We have an eof, a comment or an empty line
+    const int len=line.length();
+    int i=0;
+    while (i < len && line[i] <= ' ')
+      i++;
+    if ( i >= len)
+      continue; // Line with spaces or control characters only
+    char ch=line[i];
+    if (ch < '0' && ch > '9') {
+      qWarning("Syntax error: no number (line %u)",lineNumber);
       continue;
     }
-    while (ch.isSpace()) {
-      if (!(i < len))
-	continue;
-      ++i;
-      ch = data[i];
+    const int numStart=i;
+    do {
+      i++;
+      if (i > len)
+        break;
+      ch=line[i];
+    } while ( ch >= '0' && ch <= '9');
+    if (i > len) {
+      qWarning("Syntax error: number at end of line (line %u)",lineNumber);
+      continue;
     }
-    if (ch.isNumber()) {
-	int numStart = i ;
-	while (ch.isNumber())  {
-	  if (!(i < len))
-	    continue;
-	  ++i;
-	  ch = data[i];
-	}
-	number = data.mid(numStart,i).toULong(&longOK);
+    bool ok=false;
+    const unsigned long number=line.mid(numStart,i).toULong(&ok);
+    if (!ok) {
+      qWarning("Syntax error: wrong number (line %u)",lineNumber);
+      continue;
     }
-    while (ch.isSpace()) {
-      if (!(i < len))
-	continue;
-      ++i;
-      ch = data[i];
-    }
-    const QString description(data.mid(i, len));
-    //qDebug("number: [%i] description: [%s]", number, description.latin1());
-
+    // Using QString::stripWhiteSpace seems to be a little faster than QCString's
+    const QString description(QString::fromLatin1(line.mid(i)).stripWhiteSpace());
     KDebugCache->insert(number, new KDebugEntry(number,description));
   }
 
-  delete ts;
   file.close();
 
   ent = KDebugCache->find( _num );
