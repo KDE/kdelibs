@@ -55,7 +55,7 @@ extern "C" {
     script->setCurrent(0L);
     // this is somewhat ugly. But the only way I found to control the
     // dlopen'ed interpreter (*no* linking!) were callback functions.
-    return new KJSProxy(script, &kjs_eval, &kjs_clear);
+    return new KJSProxy(script, &kjs_eval, &kjs_clear, &kjs_destroy);
   }
   // evaluate code
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
@@ -64,6 +64,10 @@ extern "C" {
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
+  {
+    script->clear();
+  }
+  void kjs_destroy(KJScript *script)
   {
     delete script;
   }
