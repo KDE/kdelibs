@@ -65,7 +65,7 @@ void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, cons
     DOMNode::tryPut(exec, propertyName,value,attr);
 }
 
-Value DOMCharacterDataFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMCharacterDataFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 
@@ -111,7 +111,7 @@ Value DOMText::tryGet(ExecState *exec, const UString &p) const
     return DOMCharacterData::tryGet(exec, p);
 }
 
-Value DOMTextFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMTextFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 

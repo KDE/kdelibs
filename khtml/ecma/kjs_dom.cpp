@@ -898,7 +898,7 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
   namedNodeMaps.remove(map.handle());
 }
 
-Value DOMNamedNodeMap::tryGet(ExecState *exec, const UString &p) const
+Value DOMNamedNodeMap::tryGet(ExecState* /*exec*/, const UString &p) const
 {
   Value result;
 
