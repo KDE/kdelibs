@@ -31,7 +31,7 @@ void KThemeStyle::polish(QApplication *app)
 {
   oldPalette = app->palette();
   if(isPixmap(Background)){
-      QPalette newPalette;
+      QPalette newPalette = oldPalette;
       QBrush bgBrush(oldPalette.color(QPalette::Normal,
                                       QColorGroup::Background),
                      *uncached(Background));
