@@ -29,11 +29,34 @@ typedef QValueList<QCString> QCStringList;
 
 /**
  * @short Structure that holds command line options.
+ *
+ * @see KCmdLineArgs
+ * @see KCmdLineArgs::addCmdLineOptions()
  */
 struct KCmdLineOptions
 {
+   /**
+    * The name of the argument as it should be called on the command line and
+    * appear in <i>myapp --help</i>.
+    *
+    * Note that if this option starts with "no" that you will need to test for
+    * the name without the "no" and the result will be the inverse of what is
+    * specified. i.e. if "nofoo" is the name of the option and
+    * <i>myapp --nofoo</i> is called:
+    * 
+    * \code
+    * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
+    * \endcode
+    */
    const char *name;
+   /**
+    * The text description of the option as should appear in 
+    * <i>myapp --help</i>.  This value should be wrapped with I18N_NOOP().
+    */
    const char *description;
+   /**
+    * The default value (if it is not specified on the command line).
+    */
    const char *def; // Default
 };
 
