@@ -103,6 +103,10 @@ public:
      */
     void hideNoCloseOnExit();
     /**
+     * Hide the "Run in &terminal" Checkbox
+     */
+    void hideRunInTerminal();
+    /**
      * @return the chosen service in the application tree
      * Can be null, if the user typed some text and didn't select a service.
      */

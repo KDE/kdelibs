@@ -715,6 +715,12 @@ void KOpenWithDlg::hideNoCloseOnExit()
     nocloseonexit->hide();
 }
 
+void KOpenWithDlg::hideRunInTerminal()
+{
+    terminal->hide();
+    hideNoCloseOnExit();
+}
+
 void KOpenWithDlg::accept()
 {
     KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
