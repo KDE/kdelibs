@@ -13,7 +13,12 @@
  
 body {
         margin: 0px;
+        color: black;
         background-color: white;
+}
+
+a {
+        color: #0000C0;
 }
 
 /* decorative header */
