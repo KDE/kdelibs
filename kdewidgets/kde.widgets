@@ -153,6 +153,14 @@ ToolTip=URL Label (KDE)
 ConstructorArgs=("KURLLabel", QString::null, parent, name)
 Group=Display (KDE)
 
+[KURLComboRequester]
+ToolTip=URL Requester (KDE)
+ImplClass=KURLRequester
+WhatsThis=A widget holding a combobox and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
+ConstructorArgs=(new KComboBox(true), parent, name)
+IncludeFile=kurlrequester.h
+Group=Input (KDE)
+
 [KURLRequester]
 ToolTip=URL Requester (KDE)
 WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog opened when clicking on the pushbutton

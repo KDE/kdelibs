@@ -40,6 +40,7 @@
 #include "ksqueezedtextlabel.h"
 #include "ktextbrowser.h"
 #include "ktextedit.h"
+#include "kurlrequester.h"
 #include "kurllabel.h"
 #include "kurlrequester.h"
 
@@ -357,6 +358,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KTextEdit", widget);
 
+	widget.group = "Input (KDE)";
+	widget.iconSet = "kurlcomborequester.png";
+	widget.includeFile = "kurlrequester.h";
+	widget.toolTip = "URL Requester (KDE)";
+	widget.whatsThis = "KURLComboRequester";
+	widget.isContainer = false;
+	m_widgets.insert("KURLComboRequester", widget);
+
 	widget.group = "Display (KDE)";
 	widget.iconSet = "kurllabel.png";
 	widget.includeFile = "kurllabel.h";
@@ -446,6 +455,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KTextBrowser(parent, name);
 	if (key == "KTextEdit")
 		return new KTextEdit(parent, name);
+	if (key == "KURLComboRequester")
+		return new KURLRequester(new KComboBox(true), parent, name);
 	if (key == "KURLLabel")
 		return new KURLLabel("KURLLabel", QString::null, parent, name);
 	if (key == "KURLRequester")
