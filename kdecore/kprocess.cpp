@@ -184,7 +184,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   run_mode = runmode;
   status = 0;
 
-  arglist = (char **)malloc( (n+1)*sizeof(char *));
+  arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
   CHECK_PTR(arglist);
   for (i=0; i < n; i++)
     arglist[i] = arguments.at(i);
@@ -204,7 +204,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   int fd[2];
   if (0 > pipe(fd))
   {
-     fd[0] = 0; fd[1] = 0; // Pipe failed.. continue
+     fd[0] = fd[1] = 0; // Pipe failed.. continue
   }
 
   runs = true;
@@ -422,7 +422,7 @@ bool KProcess::closeStderr()
   bool rv;
 
   if (communication & Stderr) {
-    communication = (Communication) (communication & ~Stderr);
+    communication = static_cast<Communication>(communication & ~Stderr);
     delete errnot;
     errnot = 0;
     close(err[0]);
@@ -621,7 +621,7 @@ int KProcess::commSetupDoneC()
     ok &= dup2( open( "/dev/null", O_WRONLY ), STDOUT_FILENO ) != -1;
   if (communication & Stderr) {
     ok &= dup2(err[1], STDERR_FILENO) != -1;
-    ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
+    ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&so), sizeof(so));
   }
   else
     ok &= dup2( open( "/dev/null", O_WRONLY ), STDERR_FILENO ) != -1;
@@ -857,7 +857,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 QString KShellProcess::quote(const QString &arg)
 {
     QString res = arg;
-    res.replace(QRegExp(QString::fromLatin1("'")),
+    res.replace(QRegExp(QChar('\'')),
                 QString::fromLatin1("'\"'\"'"));
     res.prepend('\'');
     res.append('\'');
@@ -907,4 +907,3 @@ bool KShellProcess::isExecutable(const QCString &filename)
 }
 
 #include "kprocess.moc"
-
