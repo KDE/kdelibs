@@ -86,6 +86,13 @@ class KStartupInfo
         static void appStarted();
 
         /**
+         * Sends explicit notification that the startup notification
+         * with id startup_id should end.
+         * @since 3.2
+         */ 
+        static void appStarted( const QCString& startup_id );
+
+        /**
          * If your application shows temporarily some window during its startup,
          * for example a dialog, and only after closing it shows the main window,
          * startup notification would normally be shown while the dialog is visible.

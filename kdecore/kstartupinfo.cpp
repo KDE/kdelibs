@@ -466,27 +466,30 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
 
 void KStartupInfo::appStarted()
     {
-    if( kapp != NULL ) // KApplication constructor unsets the env. variable
-        {
-        KStartupInfoId id;
-        id.initId( kapp->startupId());
-        if( !id.none())
-            KStartupInfo::sendFinish( id );
-        }
+    if( kapp != NULL )  // KApplication constructor unsets the env. variable
+        appStarted( kapp->startupId());
+    else
+        appStarted( KStartupInfo::currentStartupIdEnv().id());
+    }
+
+void KStartupInfo::appStarted( const QCString& startup_id )
+    {
+    KStartupInfoId id;
+    id.initId( startup_id );
+    if( id.none())
+        return;
+    if( kapp != NULL )
+        KStartupInfo::sendFinish( id );
     else if( getenv( "DISPLAY" ) != NULL ) // don't rely on qt_xdisplay()
         {
-        KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
-        if( !id.none())
-            {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-            Display* disp = XOpenDisplay( NULL );
-            if( disp != NULL )
-                {
-                KStartupInfo::sendFinishX( disp, id );
-                XCloseDisplay( disp );
-                }
-#endif
+        Display* disp = XOpenDisplay( NULL );
+        if( disp != NULL )
+            {
+            KStartupInfo::sendFinishX( disp, id );
+            XCloseDisplay( disp );
             }
+#endif
         }
     }
 
