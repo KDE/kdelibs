@@ -252,15 +252,11 @@ void KPropertiesDialog::slotDeleteMyself()
 
 void KPropertiesDialog::addPage(KPropsPage *page)
 {
-  static int i = 0;
-
   connect (page, SIGNAL (changed ()),
            page, SLOT (setDirty ()));
 
+  d->m_pageIndex[page->tabName()] = m_pageList.count();
   m_pageList.append (page);
-  d->m_pageIndex[page->tabName()] = i;
-
-  ++i;
 }
 
 bool KPropertiesDialog::canDisplay( KFileItemList _items )
@@ -608,7 +604,7 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
       while ( m_sRelativePath.left( 1 ).at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
   }
 
-  d->m_frame = properties->dialog()->addPage( i18n("&General") );
+  d->m_frame = properties->dialog()->addPage (tabName());
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
 				     KDialog::spacingHint(), "vbl");
@@ -1006,7 +1002,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
     //KIO::chmod will tell, if we had no right to change permissions
   }
 
-  d->m_frame = properties->dialog()->addPage( i18n("&Permissions") );
+  d->m_frame = properties->dialog()->addPage(tabName());
 
   QBoxLayout *box = new QVBoxLayout( d->m_frame, KDialog::spacingHint() );
 
@@ -1318,7 +1314,7 @@ KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
   : KPropsPage( _props )
 {
   d = new KExecPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage( i18n("E&xecute") );
+  d->m_frame = properties->dialog()->addPage(tabName());
   QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   // Now the widgets in the top layout
@@ -1580,7 +1576,7 @@ KURLPropsPage::KURLPropsPage( KPropertiesDialog *_props )
   : KPropsPage( _props )
 {
   d = new KURLPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage( i18n("U&RL") );
+  d->m_frame = properties->dialog()->addPage(tabName());
   QVBoxLayout * layout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
 
   QLabel *l;
@@ -1673,7 +1669,7 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
   : KPropsPage( _props )
 {
   d = new KApplicationPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage( i18n("&Application") );
+  d->m_frame = properties->dialog()->addPage(tabName());
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   availableExtensionsList = new QListBox( d->m_frame );
@@ -1871,7 +1867,7 @@ public:
 KBindingPropsPage::KBindingPropsPage( KPropertiesDialog *_props ) : KPropsPage( _props )
 {
   d = new KBindingPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage( i18n("A&ssociation") );
+  d->m_frame = properties->dialog()->addPage(tabName());
   patternEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
   commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
   mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
@@ -2023,7 +2019,7 @@ public:
 KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _props )
 {
   d = new KDevicePropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage( i18n("De&vice") );
+  d->m_frame = properties->dialog()->addPage(tabName());
 
   QStringList devices;
   QCString fstabFile;
