@@ -774,3 +774,142 @@ msgstr ""
 #: workspace/qworkspace.cpp:1243
 msgid "&Unshade"
 msgstr ""
+
+#: qxml_clean.cpp:54
+msgid ""
+"_: QXml\n"
+"no error occurred"
+msgstr ""
+
+#: qxml_clean.cpp:55
+msgid ""
+"_: QXml\n"
+"error triggered by consumer"
+msgstr ""
+
+#: qxml_clean.cpp:56
+msgid ""
+"_: QXml\n"
+"unexpected end of file"
+msgstr ""
+
+#: qxml_clean.cpp:57
+msgid ""
+"_: QXml\n"
+"more than one document type definition"
+msgstr ""
+
+#: qxml_clean.cpp:58
+msgid ""
+"_: QXml\n"
+"error occurred while parsing element"
+msgstr ""
+
+#: qxml_clean.cpp:59
+msgid ""
+"_: QXml\n"
+"tag mismatch"
+msgstr ""
+
+#: qxml_clean.cpp:60
+msgid ""
+"_: QXml\n"
+"error occurred while parsing content"
+msgstr ""
+
+#: qxml_clean.cpp:61
+msgid ""
+"_: QXml\n"
+"unexpected character"
+msgstr ""
+
+#: qxml_clean.cpp:62
+msgid ""
+"_: QXml\n"
+"invalid name for processing instruction"
+msgstr ""
+
+#: qxml_clean.cpp:63
+msgid ""
+"_: QXml\n"
+"version expected while reading the XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:64
+msgid ""
+"_: QXml\n"
+"wrong value for standalone declaration"
+msgstr ""
+
+#: qxml_clean.cpp:65
+msgid ""
+"_: QXml\n"
+"encoding declaration or standalone declaration expected while reading the "
+"XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:66
+msgid ""
+"_: QXml\n"
+"standalone declaration expected while reading the XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:67
+msgid ""
+"_: QXml\n"
+"error occurred while parsing document type definition"
+msgstr ""
+
+#: qxml_clean.cpp:68
+msgid ""
+"_: QXml\n"
+"letter is expected"
+msgstr ""
+
+#: qxml_clean.cpp:69
+msgid ""
+"_: QXml\n"
+"error occurred while parsing comment"
+msgstr ""
+
+#: qxml_clean.cpp:70
+msgid ""
+"_: QXml\n"
+"error occurred while parsing reference"
+msgstr ""
+
+#: qxml_clean.cpp:71
+msgid ""
+"_: QXml\n"
+"internal general entity reference not allowed in DTD"
+msgstr ""
+
+#: qxml_clean.cpp:72
+msgid ""
+"_: QXml\n"
+"external parsed general entity reference not allowed in attribute value"
+msgstr ""
+
+#: qxml_clean.cpp:73
+msgid ""
+"_: QXml\n"
+"external parsed general entity reference not allowed in DTD"
+msgstr ""
+
+#: qxml_clean.cpp:74
+msgid ""
+"_: QXml\n"
+"unparsed entity reference in wrong context"
+msgstr ""
+
+#: qxml_clean.cpp:75
+msgid ""
+"_: QXml\n"
+"recursive entities"
+msgstr ""
+
+#: qxml_clean.cpp:76
+msgid ""
+"_: QXml\n"
+"error in the text declaration of an external entity"
+msgstr ""

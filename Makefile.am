@@ -89,6 +89,7 @@ kdedoc:
 qtmessages:
 	if test x$(top_srcdir) = x; then top_srcdir=. ; else top_srcdir=$(top_srcdir); fi ;\
 	cd $$top_srcdir/../qt-copy/src ;\
+	sed -e "s,#define,," xml/qxml.cpp  > qxml_clean.cpp ;\
 	find . -name "*.cpp" | grep -v moc_ > list ;\
 	for file in qfiledialog qcolordialog qprintdialog \
 		qurloperator qftp qhttp qlocal qerrormessage; do \
