@@ -696,12 +696,20 @@ void DCOPClient::bindToApp()
 
 void DCOPClient::suspend()
 {
+#ifdef Q_WS_WIN //TODO: remove (win32 ports sometimes do not create notifiers)
+    if (!d->notifier)
+        return;
+#endif
     assert(d->notifier); // Suspending makes no sense if we didn't had a qApp yet
     d->notifier->setEnabled(false);
 }
 
 void DCOPClient::resume()
 {
+#ifdef Q_WS_WIN //TODO: remove
+    if (!d->notifier)
+        return;
+#endif
     assert(d->notifier); // Should never happen
     d->notifier->setEnabled(true);
 }
