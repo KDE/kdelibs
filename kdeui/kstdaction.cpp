@@ -448,7 +448,7 @@ KAction *KStdAction::save(const QObject *recvr, const char *slot,
 KAction *KStdAction::saveAs(const QObject *recvr, const char *slot,
                                                         QObject *parent, const char *name )
 {
-    return new KAction(i18n("Save &As..."), 0, recvr, slot, parent,
+    return new KAction(i18n("Save &As..."), "filesaveas", 0, recvr, slot, parent,
                        name ? name : stdName(SaveAs));
 }
 
