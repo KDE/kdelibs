@@ -143,6 +143,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             SLOT( executed( QListViewItem * ) ) );
     listview->setAcceptDrops( false );
     listview->setSelectionModeExt( KListView::Single );
+    listview->setAllColumnsShowFocus( true );
     listview->addColumn( i18n( "Name" ) );
     listview->addColumn( i18n( "Description" ) );
     listview->addColumn( i18n( "Author" ) );
