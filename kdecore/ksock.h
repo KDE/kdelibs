@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * reverted the changes, Jacek commited.
+ * Only the RCS comments were affected, but to keep them consistent, I
+ * thought, it's better to revert them.
  * I checked twice, that only comments are affected ;)
  *
  * Revision 1.10  1997/12/18 01:56:25  torben
@@ -99,7 +102,7 @@
   Q_OBJECT
 #include <netinet/in.h> 
 
-  KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
+  KSocket( int _sock ) { sock = _sock; readNotifier = NULL; writeNotifier = NULL; }
 * Create a KSocket with the provided file descriptor.
 * @param _sock	the file descriptor to use.
 */
@@ -116,7 +119,7 @@
 * Destructor. Closes the socket if it is still open.
 */
   ~KSocket();
-  int socket() { return sock; }
+
 /** 
 * Returns a file descriptor for this socket.
 */
@@ -138,7 +141,7 @@
 * writeEvent whenever the socket is ready for writing.
 */
   void enableWrite( bool );
-  long getAddr();
+
 /**
 * Return address.
 */
@@ -223,17 +226,17 @@
 * Destructor. Closes the socket if it was not already closed.
 */
   ~KServerSocket();
-  int socket() { return sock; }
+ * always connect to this signal. If you dont the ServerSocket will
 /** 
 * Get the file descriptor assoziated with the socket.
 */
   int socket() const { return sock; }
-  int getPort();
+
 /** 
 * Returns the port number which is being monitored.
 */
   unsigned short getPort();
-  long getAddr();
+
 /** 
 * The address.
 */

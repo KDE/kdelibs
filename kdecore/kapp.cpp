@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.15  1997/07/25 19:46:41  kalle
+// SGI changes
+//
 // Revision 1.14  1997/07/24 21:04:38  kalle
 // Kalle: Patches for SGI
 //
@@ -835,6 +838,12 @@ void KApplication::kdisplaySetPalette()
 		  path.append(topic);
 		}
 
+	  /* Since this is a library, we must conside the possibilty that
+	   * we are being used by a suid root program. These next two
+	   * lines drop all privileges.
+	   */
+	  setuid( getuid() );
+	  setgid( getgid() );
       execlp( "kdehelp", "kdehelp", path.data(), 0 ); 
       exit( 1 );
 	    path.append(topic);

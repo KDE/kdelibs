@@ -1,6 +1,19 @@
 /*
  * $Id$
  * $Log$
+ * reverted the changes, Jacek commited.
+ * Only the RCS comments were affected, but to keep them consistent, I
+ * thought, it's better to revert them.
+ * I checked twice, that only comments are affected ;)
+ *
+ * Revision 1.13  1997/12/18 01:56:24  torben
+ * Torben: Secure string operations. Use instead of QString::sprintf
+ *
+ * Revision 1.12  1997/11/29 17:58:48  kalle
+ * Alpha patches
+ *
+ * Revision 1.11  1997/11/09 01:52:47  torben
+ * Torben: Fixed port number bug
  *
  * Revision 1.10  1997/10/21 20:44:52  kulow
  * removed all NULLs and replaced it with 0L or "".
@@ -51,49 +64,43 @@
  * 			KConfig: environment variables are resolved in readEntry()
  * 			Added KFloater
 
-KSocket::KSocket( const char *_host, unsigned short int _port )
+#include "ksock.moc"
+  sock( -1 ), readNotifier( NULL ), writeNotifier( NULL )
 #include <errno.h>
-  if ( !connect ( _host, _port ) )
-    {
-	  sock = -1;
-	  return;
-    }
-    
-  readNotifier = 0L; 
-  writeNotifier = 0L;
+#ifdef STDC_HEADERS
 #include <stdlib.h>
 #include <string.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-	  if ( readNotifier == 0L )
+#ifdef HAVE_SYSENT_H
 #include <sysent.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-	    readNotifier->setEnabled( TRUE );
+#if TIME_WITH_SYS_TIME
 # include <sys/time.h>
-  else if ( readNotifier != 0L )
-	readNotifier->setEnabled( FALSE );
+# include <time.h>
+#else
 # if HAVE_SYS_TIME_H
 #  include <sys/time.h>
 # else
 #  include <time.h>
 # endif
 #endif
-	  if ( writeNotifier == 0L )
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port ) :
-	    writeNotifier->setEnabled( TRUE );
+  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
-  else if ( writeNotifier != 0L )
-	writeNotifier->setEnabled( FALSE );
+  domain = PF_UNIX;
+  connect( _path );
 }
 
 void KSocket::enableRead( bool _state )
@@ -124,14 +131,14 @@ void KSocket::enableWrite( bool _state )
 		}
 	  else
 	    writeNotifier->setEnabled( true );
-  if ( hostinfo == 0L )
+    }
   else if ( writeNotifier )
 	writeNotifier->setEnabled( false );
-	  return FALSE;	
+}
 
 void KSocket::slotRead( int )
 {
-  return TRUE;
+  char buffer[2];
   
   int n = recv( sock, buffer, 1, MSG_PEEK );
   if ( n <= 0 )
@@ -141,19 +148,27 @@ void KSocket::slotRead( int )
 }
 
 void KSocket::slotWrite( int )
-	return FALSE;
+{
   emit writeEvent( this );
 }
-	return FALSE;
+
+/*
+ */
+bool KSocket::init_sockaddr( const char *hostname, unsigned short int port )
+{
   if ( domain != PF_INET )
     return false;
   
-	return FALSE;    
+  struct hostent *hostinfo;
+  server_name.sin_family = AF_INET;
+  server_name.sin_port = htons( port );
+  hostinfo = gethostbyname( hostname );
+  
   if ( !hostinfo )
-  return TRUE;
+    {
 	  warning("Unknown host %s.\n",hostname);
 	  return false;	
-long KSocket::getAddr()
+    }
   }
 
   return true;
@@ -162,20 +177,20 @@ long KSocket::getAddr()
 bool KSocket::connect( const char *_host, unsigned short int _port )
 {
   if ( domain != PF_INET )
-  if ( readNotifier != 0L )
+    fatal( "Connecting a PF_UNIX domain socket to a PF_INET domain socket\n");
 
-  if ( writeNotifier != 0L )
+  sock = ::socket(PF_INET,SOCK_STREAM,0);
   if (sock < 0)
   if ( readNotifier )
-  close( sock ); 
+	  sock = -1;
   if ( writeNotifier )
 	  return false;
 	}
-KServerSocket::KServerSocket( int _port )
+  ::close( sock ); 
+  
   if ( 0 > ::connect( sock, (struct sockaddr*)(&server_name), 
 					  sizeof( server_name ) ) )
 	{
-	  sock = -1;
 	  ::close( sock );
 	  sock = -1;
 	  return false;
@@ -192,7 +207,7 @@ unsigned long KSocket::getAddr()
 }
 
 KSocket::~KSocket()
-	  return FALSE;
+{
     if ( readNotifier )
     {
 	delete readNotifier;
@@ -202,26 +217,30 @@ KSocket::~KSocket()
     
   notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
 
-	  return FALSE;
+    {
+	  fatal("Error constructing\n");
+	  return;
     }
 
   if ( !init ( _port ) )
   {
     fatal("Error constructing\n");
-	  return FALSE;
+    return;
+    return false;
+  }
 
 bool KServerSocket::init( unsigned short int _port )
-  return TRUE;
+{
   if ( domain != PF_INET )
     {
-int KServerSocket::getPort()
+	  warning( "Could not create socket\n");
 	  return false;
     }
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
-long KServerSocket::getAddr()
+    return false;
   }
     
   name.sin_family = AF_INET;
@@ -246,7 +265,7 @@ long KServerSocket::getAddr()
 
 unsigned short KServerSocket::getPort()
 {
-  if ( notifier != 0L )
+  if ( domain != PF_INET )
     return false;
 
   struct sockaddr_in name; ksize_t len = sizeof(name);
