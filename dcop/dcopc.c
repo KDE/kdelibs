@@ -632,7 +632,7 @@ dcop_connect()
   char        fileName[512];
   char        hostName[256];
   char        displayName[256];
-  int       i;
+  char      * i;
 
   homeDir = getenv("HOME");
 
@@ -646,7 +646,7 @@ dcop_connect()
 
   strcpy(displayName, display);
   if((i = strrchr(displayName, '.')) > strrchr(displayName, ':') && i)
-      displayName[i] = '\0';
+      *i = '\0';
 
   dcopServer = getenv("DCOPSERVER");
 
