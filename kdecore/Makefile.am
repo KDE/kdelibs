@@ -97,6 +97,6 @@ parser: kentities.gperf
 closure: $(libkdecore_la_OBJECTS)
 	@echo "int main() {}" > closure.cc
 	$(LTCXXCOMPILE) -c closure.cc
-	$(CXXLINK) $(LDFLAGS) -o closure $(libkdecore_la_OBJECTS) $(libkdecore_la_LIBADD) closure.lo
+	$(CXXLINK) $(LDFLAGS) *.o $(libkdecore_la_LIBADD) 
 	@rm -f closure.*
 	@echo "timestamp" > closure
