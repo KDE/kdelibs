@@ -307,10 +307,6 @@ NodeImpl::Id HTMLEmbedElementImpl::id() const
 
 void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 {
-  DOM::DOMStringImpl *stringImpl = attr->val();
-  QConstString cv( stringImpl->s, stringImpl->l );
-  QString val = cv.string();
-
   switch ( attr->id() )
   {
      case ATTR_CODE:
@@ -340,11 +336,12 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
         addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
         break;
      case ATTR_PLUGINPAGE:
-     case ATTR_PLUGINSPAGE:
-        pluginPage = val;
+     case ATTR_PLUGINSPAGE: {
+        pluginPage = attr->value().string();
         break;
+      }
      case ATTR_HIDDEN:
-        if (val.lower()=="yes" || val.lower()=="true")
+        if (attr->value().lower()=="yes" || attr->value().lower()=="true")
            hidden = true;
         else
            hidden = false;
@@ -390,16 +387,14 @@ HTMLFormElementImpl *HTMLObjectElementImpl::form() const
 
 void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 {
-  DOM::DOMStringImpl *stringImpl = attr->val();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch ( attr->id() )
   {
     case ATTR_DATA:
-      url = khtml::parseURL( val ).string();
+      url = khtml::parseURL( attr->val() ).string();
       needWidgetUpdate = true;
       break;
     case ATTR_CLASSID:
-      classId = val;
+      classId = attr->value().string();
       needWidgetUpdate = true;
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
