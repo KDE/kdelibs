@@ -114,9 +114,12 @@ char KCodecs::UUDecMap[128] = {
 /******************************** KCodecs ********************************/
 QCString KCodecs::base64Encode( const QCString& str )
 {
-    QByteArray out;
-    base64Encode( str, out );
-    return QCString( out.data(), out.size()+1 );
+    QByteArray in;
+    in.resize( str.length() );
+    memcpy( in.data(), str.data(), str.length() );
+    QCString out = base64Encode( in );
+    in.resize( 0 );
+    return out;
 }
 
 QCString KCodecs::base64Encode( const QByteArray& in )
@@ -130,7 +133,7 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
 {
     if ( in.isEmpty() )
     {
-        out.resize(0);
+        out.resize( 0 );
         return;
     }
 
@@ -138,8 +141,8 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
     uint didx=0;
     uint len = in.size();
 
-    out.resize(0);
-    out.resize(((len+2)/3)*4);
+    out.resize( 0 );
+    out.resize( ((len+2)/3)*4 );
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
@@ -173,9 +176,10 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
 
 QCString KBase64::base64Decode( const QCString& str )
 {
-    QByteArray out;
-    base64Decode( str, out );
-    return QCString( out.data(), out.size()+1 );
+    QByteArray in;
+    in.resize( str.length() );
+    memcpy( in.data(), str.data(), str.length() );
+    return base64Decode( in );
 }
 
 QCString KBase64::base64Decode( const QByteArray& in )
@@ -189,7 +193,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 {
     if ( in.isEmpty() )
     {
-        out.resize(0);
+        out.resize( 0 );
         return;
     }
 
@@ -197,7 +201,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     uint tail = len;
 
     while( in[tail-1] == '=' ) tail--;
-    out.resize(0);
+    out.resize( 0 );
     out.resize( tail-(len/4) );
     Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
@@ -222,9 +226,10 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 
 QCString KCodecs::uuencode( const QCString& str )
 {
-    QByteArray out;
-    uuencode( str, out );
-    return QCString( out.data(), out.size()+1 );
+    QByteArray in;
+    in.resize( str.length() );
+    memcpy( in.data(), str.data(), str.length() );
+    return uuencode( in );
 }
 
 QCString KCodecs::uuencode( const QByteArray& in )
@@ -238,7 +243,7 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
 {
     if( in.isEmpty() )
     {
-        out.resize(0);
+        out.resize( 0 );
         return;
     }
 
@@ -248,7 +253,7 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
     uint len = in.size();
     uint line_len = 45;
     uint nl_len = strlen(nl);
-    out.resize(0);
+    out.resize( 0 );
     out.resize( (len+2)/3*4 + ((len+line_len-1)/line_len)*(nl_len+1) );
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
@@ -308,14 +313,15 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
 
     // sanity check
     if ( didx !=  out.size()  )
-        out.resize(0);
+        out.resize( 0 );
 }
 
 QCString KCodecs::uudecode( const QCString& str )
 {
-    QByteArray out;
-    uudecode( str, out );
-    return QCString( out.data(), out.size()+1 );
+    QByteArray in;
+    in.resize( str.length() );
+    memcpy( in.data(), str.data(), str.length() );
+    return uudecode( in );
 }
 
 QCString KCodecs::uudecode( const QByteArray& in )
@@ -329,7 +335,7 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 {
     if( in.isEmpty() )
     {
-        out.resize(0);
+        out.resize( 0 );
         return;
     }
 
@@ -337,7 +343,7 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     uint didx = 0;
     uint len = in.size();
     uint line_len, end;
-    out.resize(0);
+    out.resize( 0 );
     out.resize( len/4*3 );
     Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
     for (; sidx < len; )
@@ -384,8 +390,8 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     {
         QByteArray tmp ( out );
         tmp.detach();
-        out.resize(0);
-        out.resize(didx);
+        out.resize( 0 );
+        out.resize( didx );
         memcpy( out.data(), tmp.data(), tmp.size() );
     }
 }
