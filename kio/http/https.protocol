@@ -7,3 +7,4 @@ reading=true
 defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=www
+config=http
