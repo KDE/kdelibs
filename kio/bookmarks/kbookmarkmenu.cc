@@ -33,6 +33,8 @@
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
+#include "kbookmarkimporter_opera.h"
+#include "kbookmarkimporter_ie.h"
 #include "kbookmarkdrag.h"
 
 #include <qstring.h>
@@ -100,6 +102,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 
   m_lstSubMenus.setAutoDelete( true );
   m_actions.setAutoDelete( true );
+
+  m_actionCollection->setHighlightingEnabled(true);
 
   m_bNSBookmark = m_parentAddress.isNull();
   if ( !m_bNSBookmark ) // not for the netscape bookmark
@@ -606,6 +610,7 @@ void KBookmarkMenu::slotNSLoad()
   // only fill menu once
   m_parentMenu->disconnect(SIGNAL(aboutToShow()));
 
+  // not NSImporter, but kept old name for BC reasons
   KBookmarkMenuNSImporter importer( m_pManager, this, m_actionCollection );
   importer.openBookmarks(s_highlightedImportLocation, s_highlightedImportType);
 }
@@ -830,6 +835,18 @@ void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QStri
     KXBELBookmarkImporter importer( location );
     connectToImporter(importer);
     importer.parse();
+  }
+  else if (type == "ie")
+  {
+    KIEBookmarkImporter importer( location );
+    connectToImporter(importer);
+    importer.parseIEBookmarks();
+  }
+  else if (type == "opera")
+  {
+    KOperaBookmarkImporter importer( location );
+    connectToImporter(importer);
+    importer.parseOperaBookmarks();
   }
 }
 
