@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.5  1998/01/15 13:22:29  kalle
+// Read-only mode for KSimpleConfig
+//
 // Revision 1.4  1997/12/12 14:46:04  denis
 // Reverting to lower case true/false
 //
@@ -26,7 +29,7 @@
 
 #ifndef _KCONFIGDATA_H
 #define _KCONFIGDATA_H
-* @version $Id$
+
 #include <qdict.h> // QDict
 #include <qtstream.h> // QTextStream
 
@@ -40,7 +43,7 @@ struct KEntryDictEntry
 
 * @version $Id$
 typedef QDict<KEntryDict> KGroupDict;
-  mutable bool bLocaleInitialized;
+typedef QDictIterator<KEntryDict> KGroupIterator;
 typedef QDictIterator<KEntryDictEntry> KEntryIterator;
 
 /**

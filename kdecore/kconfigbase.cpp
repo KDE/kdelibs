@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.14  1997/12/27 22:57:28  kulow
 // I was a little bit nerved by the QFile warnings caused by the KApplication
 // constructor, so I investigated a little bit ;) Fixed now
@@ -156,8 +159,12 @@ void KConfigBase::parseOneConfigFile( QFile& rFile,
 	  pEntry->bGlobal = bGlobal;
 	  pEntry->bNLS = false;
 
-  if( !data()->bLocaleInitialized && kapp->localeConstructed() )
-	const_cast<KConfigBase*>(this)->setLocale();
+  if( !data()->bLocaleInitialized && kapp->localeConstructed() ) 
+								 pEntry );
+    }
+}
+
+
 void KConfigBase::setGroup( const char* pGroup )
 {
   if( !pGroup )
@@ -381,7 +388,11 @@ bool bOK;
 	  int nIndex = aValue.find( ',' );
 	  if( nIndex == -1 )
   if( !data()->bLocaleInitialized && kapp->localeConstructed() )
-	const_cast<KConfigBase*>(this)->setLocale();
+	  nRed = aValue.left( nIndex ).toInt( &bOK );
+	  
+	  // find second part (green)
+	  int nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
 	  if( nIndex == -1 )
 		return aRetColor;
 	  nGreen = aValue.mid( nOldIndex+1,
