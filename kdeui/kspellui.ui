@@ -9,12 +9,26 @@
             <x>0</x>
             <y>0</y>
             <width>438</width>
-            <height>306</height>
+            <height>308</height>
         </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>5</hsizetype>
+            <vsizetype>5</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="caption">
+        <string>KSpellUI</string>
     </property>
     <grid>
         <property name="name">
             <cstring>unnamed</cstring>
+        </property>
+        <property name="resizeMode">
+            <enum>Minimum</enum>
         </property>
         <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
             <property name="name">

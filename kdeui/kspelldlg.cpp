@@ -97,7 +97,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
            SLOT(slotConfigChanged()) );
 
   setHelp( "spelldlg", "kspell" );
-  setMinimumSize( d->ui->sizeHint() );
+  setMinimumSize( sizeHint() );
   emit ready( false );
 }
 
