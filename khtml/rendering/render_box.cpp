@@ -257,7 +257,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 	int diff = clipy - cy;
 	if ( diff > 0 ) {
 	    cy += diff;
-	    sy -= diff;
+	    sy += diff;
 	    sy %= pixh;
 	    ch -= diff;
 	}
