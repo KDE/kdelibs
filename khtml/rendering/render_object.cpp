@@ -842,7 +842,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     // ### table should have its own, more performant method
     if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->isPositioned() && child->nodeAtPoint(info, _x, _y, tx, ty))
+            if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, tx, ty))
                 inside = true;
     }
 
