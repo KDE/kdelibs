@@ -47,7 +47,7 @@ padding-left: 2em;
 padding-right: 2em;
 }
 
-.sect1, .chapter, .toc {
+.sect1, .chapter, .toc, .synopsis, .appendix, .preface {
 padding: 2em;
 }
 
