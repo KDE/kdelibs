@@ -323,6 +323,9 @@ QString KHTMLSettings::settingsToCSS() const
     if( m_bChangeCursor )
 	str += "\ncursor: pointer;";
     str += "\n}\n";
+    
+    if(!m_underlineLink) // needs own key
+        str += "a:hover { text-decoration: underline; }\n";
 
     return str;
 }
