@@ -17,6 +17,7 @@ Name[ro]=Imagini Encapsulated Postscript
 Name[sl]=Slike v enkapsuliranem PostScriptu
 Name[sr]=Encapsulated PostScript slike
 Name[sv]=Inkapslade PostScript-bilder
+Name[zh_CN.GB2312]=封装后的 Postscript 图像
 Read=true
 Write=true
 Suffices=eps,EPS

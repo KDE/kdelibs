@@ -1,12 +1,17 @@
 [Misc]
 Name=Qt Motif Plus
+Name[de]=Qt-Motif-Plus
 Name[eo]=Qt-Motif Plus
 Name[ro]=Motif Qt Plus
 Comment=Built-in enhanced Motif style
+Comment[de]=Eingebauter, erweiterter Motif-Stil
 Comment[eo]=Enkonstruita etendita Motif-stilo
+Comment[fr]=Style Motif amélioré d'origine
 Comment[hu]=Beépített továbbfejlesztett Motif kinézet
 Comment[nl]=Ingebouwde verbeterde Motifstijl
 Comment[no]=Innebygget utvidet Motif-stil
 Comment[no_NY]=Innebygget utvidet Motif-stil
+Comment[sv]=Inbyggd utökad Motif-stil
+Comment[zh_CN.GB2312]=内建的增强的 Motif 风格
 [KDE]
 widgetStyle=MotifPlus
