@@ -245,6 +245,11 @@ void KMultiTabBarTab::setIcon(const QString& icon)
 	setIconSet(SmallIcon(icon));
 }
 
+void KMultiTabBarTab::setIcon(const QPixmap& icon)
+{
+	setIconSet(icon);
+}
+
 void KMultiTabBarTab::slotClicked()
 {
 	updateState();
