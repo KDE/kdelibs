@@ -203,7 +203,8 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
 
 QStringList KStandardDirs::findAllResources( const QString& type, 
 					     const QString& filter, 
-					     bool recursive) const
+					     bool recursive,
+					     bool uniq) const
 {    
     if (filter.at(0) == '/') // absolute paths we return
 	return filter;
@@ -232,6 +233,24 @@ QStringList KStandardDirs::findAllResources( const QString& type,
 	 it != candidates.end(); it++) 
       lookupDirectory(*it + filterPath, regExp, list, recursive);
 
+    if (uniq) {
+	QStringList suffixes;
+	for(QStringList::Iterator l_it = list.begin(); l_it != list.end(); l_it++) {
+	    QString list_item = *l_it;
+            for(QStringList::ConstIterator p_it = prefixes.begin(); p_it != prefixes.end();
+		p_it++) {
+		QString prefix_item = *p_it;
+		int tmp = list_item.find(prefix_item);
+		if (tmp != -1) {
+		    QString suffix = list_item.right(list_item.length() - prefix_item.length());
+		    if (suffixes.find(suffix) != suffixes.end())
+			l_it = list.remove(l_it);
+		    else
+			suffixes.append(suffix);
+		}
+	    }
+        }
+    }
     return list;
 }
 

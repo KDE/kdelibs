@@ -196,7 +196,8 @@ public:
 	 */
 	QStringList findAllResources( const QString& type, 
 				      const QString& filter = QString::null,
-				      bool recursive = false) const;
+				      bool recursive = false,
+				      bool uniq = false) const;
 
 	/** 
 	 * Finds the executable in the system path. A valid executable must
