@@ -3,6 +3,7 @@
 
 #include <qlist.h>
 #include <qaction.h>
+#include <qdom.h>
 
 #include <ktmainwindow.h>
 #include <ktoolbar.h>
