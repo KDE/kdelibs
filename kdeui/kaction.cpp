@@ -55,7 +55,17 @@ static void get_fonts( QStringList &lst )
         fontDataBase = new QFontDatabase();
         qAddPostRoutine( cleanupFontDatabase );
     }
-    lst = fontDataBase->families();
+    lst.clear();
+    QStringList families = fontDataBase->families();
+    for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it )
+    {
+        QString family = *it;
+        if ( family. contains('-') ) // remove foundry
+            family = family.right( family.length() - family.find('-' ) - 1); 
+        if ( !lst.contains( family ) )
+            lst.append( family );
+    }
+    lst.sort();
 }
 
 static QValueList<int> get_standard_font_sizes()
