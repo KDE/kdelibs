@@ -57,7 +57,7 @@ private:
  * KFileTreeView is able to handle more than one URL, represented by
  * @ref KFileTreeBranch.
  * 
- * Typicall usage:
+ * Typical usage:
  * 1. create a KFileTreeView fitting in your layout and add columns to it
  * 2. call addBranch to create one or more branches
  * 3. retrieve the root item with @ref KFileTreeBranch::root() and set it open
@@ -81,10 +81,13 @@ public:
     KURL currentURL() const;
 
    /**
-    *  adds a branch to the treeview item. This highlevel function creates the branch, adds
-    *  it to the treeview and connects some signals. Note that directory listing does not
-    *  yet start. It is started by expanding the branches root either by opening the root
-    *  item by user or by setOpen on the root item.
+    *  Adds a branch to the treeview item.
+    *
+    *  This high-level function creates the branch, adds it to the treeview and
+    *  connects some signals. Note that directory listing does not start until
+    *  a branch is expanded either by opening the root item by user or by setOpen
+    *  on the root item.
+    *
     *  @returns a pointer to the new branch or zero
     *  @param path is the base url of the branch
     *  @param name is the name of the branch, which will be the text for column 0
