@@ -384,6 +384,7 @@ public:
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
+    QString specialValueText() const { return m_specialvalue; }
 
     /**
      * reimplemented for internal reasons.
