@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=PostScript Font Metrics
+Comment[af]=PostScript Skrif tipe Afmetings
+Comment[ar]=قياسات خط بوستسكريبت
 Comment[az]=PostScript Yazı Növü Metrikləri
 Comment[be]=Мэтрыкі шрыфту PostScript
 Comment[bg]=Метрика на шрифт PostScript
@@ -29,6 +31,7 @@ Comment[it]=Metriche tipi di carattere PostScript
 Comment[ja]=PostScript フォント メトリクス
 Comment[ko]=포스트스크립트 글꼴 메트릭
 Comment[lt]=PostScript šrifto metrika
+Comment[mk]=PostScript метрики на фонт
 Comment[mn]=PostScript Бичиг Metrics
 Comment[nb]=PostScript skrift Metrics
 Comment[nds]=Metriken för PostScript-Schriftoorden

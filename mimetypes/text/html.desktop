@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=HTML Document
+Comment[af]=HTML Dokument
+Comment[ar]=مستند HTML
 Comment[az]=HTML Sənədi
 Comment[be]=Дакумэнт HTML
 Comment[bg]=Уеб страница (HTML)
@@ -31,6 +33,7 @@ Comment[it]=Documento HTML
 Comment[ja]=HTML ドキュメント
 Comment[ko]=HTML 문서
 Comment[lt]=HTML dokumentas
+Comment[mk]=HTML документ
 Comment[mn]=HTML Баримт
 Comment[ms]=Dokumen HTML
 Comment[nb]=HTML-dokument

@@ -1,11 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Spreadsheet
+Comment[af]=OpenOffice.org Spreiblad
 Comment[ar]=مستند OpenOffice.org Spreasheet
 Comment[az]=OpenOffice.org Hesab Cədvəli
 Comment[be]=Электронная табліца OpenOffice.org
 Comment[bg]=Документ на OpenOffice.org Calc
 Comment[bn]=ওপেন-অফিস.অর্গ স্প্রেডশিট
+Comment[br]=Loger OpenOffice.org
 Comment[bs]=OpenOffice.org proračunska tablica
 Comment[ca]=Fulla de càlcul d'OpenOffice.org
 Comment[cs]=Tabulka OpenOffice.org
@@ -30,10 +32,11 @@ Comment[it]=Foglio di calcolo OpenOffice.org
 Comment[ja]=OpenOffice.org スプレッドシート
 Comment[ko]=Openoffice.org 스프레드시트
 Comment[lt]=OpenOffice.org elektroninė lentelė
+Comment[mk]=OpenOffice.org табела
 Comment[mn]=OpenOffice.org Хүснэгтэн боловсруулагч
 Comment[ms]=Hamparan helaian OpenOffice.org 
 Comment[nb]=OpenOffice regneark
-Comment[nds]=Tabell vun OpenOffice.org
+Comment[nds]=Tabell vun OpenOffice
 Comment[nn]=OpenOffice.org-rekneark
 Comment[pa]=OpenOffice.org ਸਾਰਣੀਕਾਰ
 Comment[pl]=Arkusz OpenOffice.org

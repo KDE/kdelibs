@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Locked Folder
+Comment[af]=Toegesluitte Gids
+Comment[ar]=مجلد مقفل
 Comment[az]=Qıfıllanmış Qovluq
 Comment[bg]=Заключена директория
 Comment[bn]=লক করা ফোল্ডার
@@ -18,6 +20,7 @@ Comment[eu]=Karpeta blokeatuta
 Comment[fa]=پوشه‌ی قفل شده
 Comment[fi]=Lukittu kansio
 Comment[fr]=Dossier verrouillé
+Comment[ga]=Comhadlann faoi ghlas
 Comment[gl]=Cartafol Bloqueado
 Comment[he]=תקייה נעולה
 Comment[hi]=तालाबंद फ़ोल्डर
@@ -28,8 +31,10 @@ Comment[it]=Cartella chiusa
 Comment[ja]=ロックされたフォルダ
 Comment[ko]=잠긴 자료방
 Comment[lt]=Užrakintas aplankas
+Comment[mk]=Заклучена датотека
 Comment[mn]=Түгжээтэй Хавтас
 Comment[nb]=Lukket mappe
+Comment[nds]=Afslaten Orner
 Comment[nl]=Afgesloten map
 Comment[nn]=Låst mappe
 Comment[pa]=ਤਾਲਾਬੰਦ ਫੋਲਡਰ

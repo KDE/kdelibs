@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=BitTorrent Download
+Comment[af]=BitTorrent Aflaai
+Comment[ar]=ملف تنزيل BitTorrent
 Comment[az]=BitTorrent Faylı
 Comment[bg]=Изтеглен файл на BitTorrent
 Comment[bn]=বিট-টরেন্ট ডাউনলোড
@@ -26,9 +28,11 @@ Comment[is]=BitTorrent niðurhal
 Comment[it]=Scaricamento BitTorrent
 Comment[ja]=BitTorrent ダウンロード
 Comment[lt]=BitTorrent atsisiuntimas
+Comment[mk]=BitTorrent симнување
 Comment[mn]=BitTorrent татац
 Comment[ms]=Muat Turun BitTorrent
 Comment[nb]=BitTorrent nedlasting
+Comment[nds]=Daalladen mit BitTorrent
 Comment[nl]=BitTorrent-download
 Comment[nn]=BitTorrent-nedlasting
 Comment[pa]=BitTorrent ਡਾਊਨਲੋਡ

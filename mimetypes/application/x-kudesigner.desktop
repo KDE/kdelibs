@@ -3,6 +3,8 @@
 Encoding=UTF-8
 MimeType=application/x-kudesigner
 Comment=Kugar Report Template
+Comment[af]=Kugar Raport Voorbeeld
+Comment[ar]=قالب تقارير كوغار
 Comment[az]=Kugar Report Sənədi
 Comment[be]=Шаблён справаздачы Kugar
 Comment[bg]=Шаблон за рапорт на Kugar
@@ -31,6 +33,7 @@ Comment[is]=Kugar skýrslusnið
 Comment[it]=Modello di rapporti Kugar
 Comment[ja]=Kugar リポートテンプレート
 Comment[lt]=Kugar ataskaitų byla
+Comment[mk]=Kugar шаблон за извештај
 Comment[mn]=Kugar тайлан загвар
 Comment[ms]=Templat Laporan Kugar
 Comment[nb]=Kugar rapportmal

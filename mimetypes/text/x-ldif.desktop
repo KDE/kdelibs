@@ -1,10 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LDAP Addressbook
+Comment[af]=LDAP Adresboek
+Comment[ar]=دفتر عناوين LDAP
 Comment[az]=LDAP Ünvan Kitabçası
 Comment[be]=Адрасная кніга LDAP
 Comment[bg]=Адресник LDAP
 Comment[bn]=এল-ডি-এ-পি (LDAP) অ্যাড্রেসবুক
+Comment[br]=Karned chomlec'hioù LDAP
 Comment[bs]=LDAP adresar
 Comment[ca]=Llibreta d'adreces LDAP
 Comment[cs]=LDAP adresář
@@ -29,9 +32,11 @@ Comment[it]=Rubrica LDAP
 Comment[ja]=LDAP ドキュメント
 Comment[ko]=LDAP 주소록
 Comment[lt]=LDAP adresų knyga
+Comment[mk]=LDAP адресар
 Comment[mn]=LDAP хаягийн дэвтэр
 Comment[ms]=Buku Alamat LDAP
 Comment[nb]=LDAP adressebok
+Comment[nds]=LDAP-Adressbook
 Comment[nl]=LDAP-adresboek
 Comment[nn]=LDAP-adressebok
 Comment[pa]=LDAP ਸਿਰਨਾਵਾਂ ਕਿਤਾਬ

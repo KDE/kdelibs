@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Text Document
+Comment[af]=OpenOffice.org Teks Dokument
 Comment[ar]=مستند نصَي OpenOffice.org 
 Comment[az]=OpenOffice.org Mətn Sənədi
 Comment[be]=Тэкставы дакумэнт OpenOffice.org
@@ -32,10 +33,11 @@ Comment[it]=Documento di testo OpenOffice.org
 Comment[ja]=OpenOffice.org テキストドキュメント
 Comment[ko]=Openoffice.org 글월 문서
 Comment[lt]=OpenOffice.org teksto dokumentas
+Comment[mk]=OpenOffice.org текст документ
 Comment[mn]=OpenOffice.org Текст баримт
 Comment[ms]=Dokumen Teks OpenOffice.org
 Comment[nb]=OpenOffice tekstdokument
-Comment[nds]=Textdokment vun OpenOffice.org
+Comment[nds]=Textdokment vun OpenOffice
 Comment[nl]=OpenOffice.org Text-document
 Comment[nn]=OpenOffice.org-tekstdokument
 Comment[pa]=OpenOffice.org ਪਾਠ ਦਸਤਾਵੇਜ਼

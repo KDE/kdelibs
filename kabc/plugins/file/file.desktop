@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=File
+Name[af]=Lêer
 Name[ar]=ملفّ
 Name[az]=Fayl
 Name[be]=Файл
@@ -31,6 +32,7 @@ Name[is]=Skrá
 Name[ja]=ファイル
 Name[ko]=파일
 Name[lt]=Byla
+Name[mk]=Датотека
 Name[mn]=Файл
 Name[ms]=Fail
 Name[nb]=Fil

@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XML Document
+Comment[af]=XML Dokument
+Comment[ar]=مستند XML
 Comment[az]=XML Sənədi
 Comment[be]=Дакумэнт XML
 Comment[bg]=Документ XML
@@ -20,6 +22,7 @@ Comment[eu]=XML dokumentua
 Comment[fa]=سند XML
 Comment[fi]=XML-asiakirja
 Comment[fr]=Document XML
+Comment[ga]=Cáipéis XML
 Comment[gl]=Documento XML
 Comment[he]=מסמך XML
 Comment[hi]=एक्सएमएल दस्तावेज़ 
@@ -30,6 +33,7 @@ Comment[it]=Documento XML
 Comment[ja]=XML ドキュメント
 Comment[ko]=XML 문서
 Comment[lt]=XML dokumentas
+Comment[mk]=XML документ
 Comment[mn]=XML Баримт
 Comment[ms]=Dokumen XML
 Comment[nb]=XML-dokument
