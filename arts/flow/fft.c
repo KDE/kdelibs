@@ -42,7 +42,7 @@ static int IsPowerOfTwo ( unsigned x )
     if ( x < 2 )
         return FALSE;
 
-    if ( x & (x-1) )        // Thanks to 'byang' for this cute trick!
+    if ( x & (x-1) )        /* Thanks to 'byang' for this cute trick! */
         return FALSE;
 
     return TRUE;

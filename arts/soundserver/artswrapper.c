@@ -181,8 +181,8 @@ int main(int argc, char **argv)
 
 	adjust_priority();
 
-    // drop root priviliges if running setuid root
-	// (due to realtime priority stuff)
+	/* drop root priviliges if running setuid root
+	   (due to realtime priority stuff) */
 	if (geteuid() != getuid()) seteuid(getuid());
 
 	execv(execute,argv);

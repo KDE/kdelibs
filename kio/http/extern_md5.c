@@ -21,7 +21,7 @@
 #include "extern_md5.h"
 #include "base64.h"
 
-// From the HTTP draft
+/* From the HTTP draft */
 #ifdef DO_MD5
 
 void CvtHex(
@@ -98,7 +98,7 @@ void DigestCalcResponse(
       HASH RespHash;
        HASHHEX HA2Hex;
 
-      // calculate H(A2)
+       /* calculate H(A2) */
       MD5_Init(&Md5Ctx);
       MD5_Update(&Md5Ctx, pszMethod, strlen(pszMethod));
       MD5_Update(&Md5Ctx, ":", 1);
@@ -110,7 +110,7 @@ void DigestCalcResponse(
       MD5_Final(HA2, &Md5Ctx);
        CvtHex(HA2, HA2Hex);
 
-      // calculate response
+       /* calculate response */
       MD5_Init(&Md5Ctx);
       MD5_Update(&Md5Ctx, HA1, HASHHEXLEN);
       MD5_Update(&Md5Ctx, ":", 1);

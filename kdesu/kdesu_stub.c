@@ -119,7 +119,7 @@ int xsetenv(char *name, char *value)
     strcpy(s, name);
     strcat(s, "=");
     strcat(s, value);
-    return putenv(s); // yes: no free()!
+    return putenv(s); /* yes: no free()! */
 }
 
 /**
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	params[i].value = xstrdup(buf);
-	// Installation check?
+	/* Installation check? */
 	if ((i == 0) && !strcmp(params[i].value, "stop")) {
 	    printf("end\n");
 	    exit(0);
