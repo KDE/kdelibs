@@ -74,7 +74,7 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 	lastDirectory = new QString(QDir::currentDirPath());
 
     dir = new KDir(*lastDirectory);
-    visitedDirs = new QStrIList();
+    visitedDirs = new QStringList();
 
     // we remember the selected name for init()
     filename_ = dirName;
@@ -278,7 +278,7 @@ void KFileBaseDialog::init()
        pathChanged();
 
     if (!filename_.isNull()) {
-	debugC("edit %s", locationEdit->text(0).ascii());
+	debugC("edit %s", (const char *)(locationEdit->text(0).local8Bit()) );
 	checkPath(filename_);
 	locationEdit->setText(filename_);
     }
@@ -304,7 +304,7 @@ void KFileBaseDialog::okPressed()
 {
     filename_ = locationEdit->currentText();
     if (!filename_.isNull())
-	debugC("filename %s", filename_.ascii());
+	debugC("filename %s", (const char *) (filename_.local8Bit()) );
     else {
 	debugC("no filename");
     }
@@ -479,7 +479,7 @@ QString KFileBaseDialog::dirPath()
 
 void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 {
-    debugC("setDir %s %ld", _pathstr.ascii(), time(0));
+    debugC("setDir %s %ld", (const char *)(_pathstr.local8Bit()), time(0));
     filename_ = QString::null;
     QString pathstr = _pathstr;
 
@@ -535,6 +535,7 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     }
 
     toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot());
+
 }
 
 void KFileBaseDialog::rereadDir()
@@ -592,16 +593,19 @@ void KFileBaseDialog::pathChanged()
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
 
-    char *path= qstrdup(dir->path().ascii());
-    QString pos= strtok(path, "/");
-    QStrList list;
+    // TODO: converting QString to char * isn't good idea. 
+    // Someday, it must be changed to use QString itself.
+    char *path = qstrdup((char *)(dir->path().local8Bit()));
 
-    list.insert(0, i18n("Root Directory").ascii());
-    while (!(pos.isNull())) {
-	list.insert(0, (pos+"/").ascii());
-	pos= strtok(0, "/");
+    QString pos = QString::fromLocal8Bit(strtok(path, "/"));
+
+    QStringList list;
+    list.prepend(i18n("Root Directory"));
+    while( !(pos.isNull()) ){
+      list.prepend(pos+"/");
+      pos = QString::fromLocal8Bit(strtok(0, "/"));
     }
-    toolbar->getCombo(PATH_COMBO)->insertStrList(&list);
+    toolbar->getCombo(PATH_COMBO)->insertStringList(list);
 
     delete [] path;
 
@@ -623,8 +627,8 @@ void KFileBaseDialog::pathChanged()
     // we select a file
     *lastDirectory = dir->url();
 
-    const KFileInfoList *il = dir->entryInfoList(filter,
-						 QDir::Name | QDir::IgnoreCase);
+    const KFileInfoList *il = dir->entryInfoList();
+
     if (!dir->isReadable()) {
 	QMessageBox::message(i18n("Error: Cannot Open Directory"),
 			     i18n("The specified directory does not exist "
@@ -645,12 +649,28 @@ void KFileBaseDialog::pathChanged()
 
 	if ((url.isEmpty()) || (url.right(1)[0] != '/'))
 	    url += "/";
-	if (visitedDirs->find(url.ascii()) == -1)
-	    visitedDirs->inSort(url.ascii());
 
+	// add item to visitedDirs.
+	if( !(visitedDirs->contains(url)) ){
+	  visitedDirs->append(url);
+	  visitedDirs->sort();
+	}
+
+	// find index.
+	int index = 0;
+	QValueListIterator<QString> dir = visitedDirs->begin();
+
+	for(; dir != 0; dir++, index++){
+	  if( *dir == url ){
+	    break;
+	  }
+	}
+
+	// setting locationEdit widget.
 	locationEdit->clear();
-	locationEdit->insertStrList(visitedDirs);
-	locationEdit->setCurrentItem(visitedDirs->at());
+	locationEdit->insertStringList(*visitedDirs);
+	locationEdit->setCurrentItem( index );
+
 
 	if (!selection.isNull())
 	    locationEdit->setText(url + selection);
@@ -1008,7 +1028,7 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
     KURL tmp ( dir->url() );
     tmp.cd(item->fileName());
-    kdebug(KDEBUG_INFO, 250, "dirActivated %s", tmp.path().ascii());
+    kdebug(KDEBUG_INFO, 250, "dirActivated %s", (char *)tmp.path().local8Bit());
     setDir(tmp.path(), true);
 }
 

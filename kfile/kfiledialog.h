@@ -235,7 +235,7 @@ protected:
     KToolBar *toolbar;
     KFileInfoContents *fileList;
 
-    QStrIList *visitedDirs;  // to fill the combo box
+    QStringList *visitedDirs;  // to fill the combo box
     static QString *lastDirectory;
 
     QPopupMenu *bookmarksMenu;
@@ -245,7 +245,7 @@ protected:
     KFileFilter *filterWidget;
 
     KFileBookmarkManager *bookmarks;
-    QStrList history;
+    QStringList history;
     KDir *dir;
 
     QLabel *myStatusLine;

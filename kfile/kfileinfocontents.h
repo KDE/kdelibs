@@ -104,7 +104,7 @@ public:
       * the meaning of index depends on the sorting and the other files
       * in the view. So use this function with care.
       **/
-    virtual const char *text(uint index) const;
+    virtual QString text(uint index) const;
 
     /**
       * a pure virtual function to get a QWidget, that can be added to
@@ -124,7 +124,7 @@ public:
       * file. Since this is faster, this way is used in case a view has
       * other child views.
       **/
-    virtual void setCurrentItem(const char *filename, 
+    virtual void setCurrentItem(QString &filename, 
 				const KFileInfo * entry = 0);
     
     /**

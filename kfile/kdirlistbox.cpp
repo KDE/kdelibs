@@ -108,7 +108,7 @@ void KDirListBoxItem::paint( QPainter *p )
     
     yPos= yPos+2;
     p->drawText( pm->width() + 5, yPos, text() );
-    
+
     if(italic)
 	p->restore();
 }

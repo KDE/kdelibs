@@ -110,13 +110,15 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
     struct stat buf;
     myIsSymLink = false;
 
-    if (lstat((dir + myName).ascii(), &buf) == 0) {
+    QString fullname = dir + myName;
+
+    if (lstat(fullname.local8Bit(), &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat((dir + myName).ascii(), &st) == 0)
+	  if (stat(fullname.local8Bit(), &st) == 0)
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken

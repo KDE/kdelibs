@@ -136,11 +136,11 @@ void KCombiView::highlightItem(unsigned int)
     warning("KCombiView::highlightItem: does nothing");
 }
 
-void KCombiView::setCurrentItem(const char *item, const KFileInfo *i)
+void KCombiView::setCurrentItem(QString &item, const KFileInfo *i)
 {
     if (item != 0) {
 	i = 0;
-	debugC("setCurrentItem %s",item);
+	debugC("setCurrentItem %s",(char *)item.local8Bit());
 	for (uint j = 0; j < count(); j++)
 	    if (at(j)->fileName() == item)
 		i = at(j);

@@ -139,11 +139,11 @@ void KDir::setPath(const QString& url)
     if (tmp.isLocalFile()) { // we can check, if the file is there
 	struct stat buf;
 	QString ts = tmp.path();
-	int ret = stat( ts.ascii(), &buf);
+	int ret = stat( ts.local8Bit(), &buf);
 	readable = (ret == 0);
 	if (readable) { // further checks
 	    DIR *test;
-	    test = opendir(ts.ascii()); // we do it just to test here
+	    test = opendir( ts.local8Bit() ); // we do it just to test here
 	    readable = (test != 0); 
 	    if (test)
 		closedir(test);
@@ -156,7 +156,7 @@ void KDir::setPath(const QString& url)
     if (!tmp.isMalformed())
 	myLocation= tmp.url();
     else
-	warning("Malformed url %s\n", url.ascii());
+	warning("Malformed url %s\n", (const char *)url.local8Bit());
 
     root = (myLocation.path() == "/");
     
@@ -243,7 +243,7 @@ void KDir::getEntries() {
     
     if (!myOpendir) {
 	QString ts = myLocation.path();
-	myOpendir = opendir(ts.ascii());
+	myOpendir = opendir(ts.local8Bit());
 	if (!myOpendir)
 	    return;
 	dp = readdir(myOpendir); // take out the "."
@@ -259,9 +259,9 @@ void KDir::getEntries() {
 	    dp = readdir(myOpendir);
 	    if (!dp)
 		break;
-	    i = new KFileInfo(path, dp->d_name);
+	    i = new KFileInfo(path, QString::fromLocal8Bit(dp->d_name));
 	    CHECK_PTR(i);
-	    if (!i->fileName() || !i->fileName()[0]) {
+	    if (!i->fileName() || i->fileName().isEmpty()) {
 		delete i;
 		continue;
 	    }

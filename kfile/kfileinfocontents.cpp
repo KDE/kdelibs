@@ -97,7 +97,7 @@ void KFileInfoContents::addItemList(const KFileInfoList *list)
     bool repaint_needed = false;
     KFileInfoListIterator it(*list);
     for (; it.current(); ++it) {
-	debugC("insert %s", it.current()->fileName());
+	debugC("insert %s", (const char *)((it.current()->fileName()).local8Bit()));
 	repaint_needed |= addItem(it.current());
     }
     setAutoUpdate(true);
@@ -257,8 +257,8 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 	break;
       case QDir::Name:
       default: 
-	bigger = (stricmp(fi1->fileName(),
-			  fi2->fileName()) > 0);
+	bigger = ( fi1->fileName() > fi2->fileName() );
+	break;
       }
     }
     
@@ -310,17 +310,18 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	else
 	    pos = sorted_length;
     }
+
     // if the namelist already exist, we can use inSort. In general 
     // this is too slow
     if (nameList)
 	nameList->inSort(i->fileName());
-    
+
     insertSortedItem(i, pos); 
     return insertItem(i, pos);
 } 
 
 
-const char *KFileInfoContents::text(uint index) const
+QString KFileInfoContents::text(uint index) const
 {
     if (index < sorted_length)
 	return sortedArray[index]->fileName();
@@ -336,7 +337,7 @@ void KFileInfoContents::select( int index )
 void KFileInfoContents::select( KFileInfo *entry)
 {
     if ( entry->isDir() ) {
-	debugC("selectDir %s",entry->fileName());
+	debugC("selectDir %s",(const char *)((entry->fileName()).local8Bit()));
 	sig->activateDir(entry);
     } else {
 	sig->activateFile(entry);
@@ -359,7 +360,7 @@ void  KFileInfoContents::repaint(bool f)
     widget()->repaint(f);
 }
 
-void KFileInfoContents::setCurrentItem(const char *item, 
+void KFileInfoContents::setCurrentItem(QString &item, 
 				       const KFileInfo *entry)
 {
     uint i;
@@ -520,3 +521,4 @@ void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
 }
 
 #include "kfileinfocontents.moc" // for the signaler
+
