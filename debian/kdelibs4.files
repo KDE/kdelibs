@@ -2,6 +2,8 @@ usr/lib/kde/libkdefx.so.*
 usr/lib/kde/libkdefx.la
 usr/lib/kde/libDCOP.so.*
 usr/lib/kde/libDCOP.la
+usr/lib/kde/libkscript.so.*
+usr/lib/kde/libkscript.la
 usr/lib/kde/dcopserver.so
 usr/lib/kde/dcopserver.la
 usr/lib/kde/libkdefakes.so.*
@@ -73,8 +75,6 @@ usr/lib/kde/libkwalletbackend.so.*
 usr/lib/kde/libkwalletbackend.la
 usr/lib/kde/libkscreensaver.so.*
 usr/lib/kde/libkscreensaver.la
-usr/lib/kde/libkscriptloader.so.*
-usr/lib/kde/libkscriptloader.la
 usr/lib/kde/libshellscript.so.*
 usr/lib/kde/libshellscript.la
 usr/lib/kde/kcookiejar.*
