@@ -5,7 +5,7 @@
 * Generated:	Sat May  1 02:08:43 EST 1999
 */
 
-#include <assert.h>
+#include <qglobal.h>
 #include "kglobal.h"
 
 #include <kapp.h>
@@ -21,22 +21,29 @@
 
 KStandardDirs *KGlobal::dirs()
 {
-    return instance()->dirs();
+    ASSERT (_instance);
+    
+    return _instance->dirs();
 }
 
 KConfig	*KGlobal::config()
 {
-    return instance()->config();
+    ASSERT(_instance);
+    
+    return _instance->config();
 }
 
 KIconLoader *KGlobal::iconLoader()
 {
-    return instance()->iconLoader();
+    ASSERT(_instance);
+    
+    return _instance->iconLoader();
 }
 
 KInstance *KGlobal::instance() 
 {
-    init();
+    ASSERT(_instance);
+    
     return _instance;
 }
 
