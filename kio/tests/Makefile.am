@@ -20,7 +20,8 @@ INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 LDADD = $(top_builddir)/kio/libkio.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest
+check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
+		kioslavetest
 
 METASOURCES = AUTO
 
@@ -29,3 +30,4 @@ getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp
 ktartest_SOURCES = ktartest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
+kioslavetest_SOURCES = kioslavetest.cpp
