@@ -530,15 +530,6 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
   return list;
 }
 
-QStringList KConfigBase::readListEntry( const char* pKey, const QStringList& aDefault,
-		char sep ) const
-{
-	if ( !hasKey( pKey ) )
-		return aDefault;
-	else
-		return readListEntry( pKey, sep );
-}
-
 QValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
 {
   return readIntListEntry(pKey.utf8().data());
