@@ -75,6 +75,7 @@ class KConfig;
 class QToolBar;
 #endif
 
+// KDE 3.0 TODO: this belongs in a namespace!! (Clash with X11/Intrinsic.h!)
 typedef QList<QWidget> WidgetList;
 
 /**
