@@ -96,7 +96,7 @@ bool KSSL::initialize() {
   // set cipher list
   QString clist = m_cfg->getCipherList();
   if (!clist.isEmpty()) 
-    SSL_CTX_set_cipher_list(d->m_ctx, clist.ascii());
+    SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
   m_bInit = true;
 return true;
