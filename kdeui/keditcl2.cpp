@@ -678,6 +678,9 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
+
+  if ( !modal )
+    connect( this, SIGNAL( closeClicked() ), this, SLOT( slotCancel() ) );
 }
 
 KEdFind::~KEdFind()
@@ -696,7 +699,6 @@ void KEdFind::slotCancel( void )
   d->combo->clearEdit();
   KDialogBase::slotCancel();
 }
-
 
 void KEdFind::slotUser1( void )
 {
