@@ -5,7 +5,6 @@
               (C) 1997 Torben Weis (weis@kde.org)
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 2001 Dirk Mueller (mueller@kde.org)
-              (C) 2001 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
