@@ -421,7 +421,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 
     if ( KBookmarkSettings::self()->m_advanced ) 
     {
-        KBookmarkEditDialog dlg( title, url, this );
+        KBookmarkEditDialog dlg( title, url, this, KBookmarkEditDialog::InsertionMode );
         if ( dlg.exec() != KDialogBase::Accepted )
             return KBookmarkGroup();
         title = dlg.finalTitle();

@@ -663,32 +663,44 @@ void KBookmarkMenu::slotNSLoad()
 
 // -----------------------------------------------------------------------------
 
-KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
-                                       QWidget * parent, const char * name, const QString& caption)
+BLAH::BLAH(QWidget *main, QBoxLayout *vbox)
+{
+  QGridLayout *grid = new QGridLayout( vbox, 2, 2 );
+
+  m_title = new KLineEdit( main );
+  grid->addWidget( m_title, 0, 1 );
+  grid->addWidget( new QLabel( m_title, i18n( "Name:" ), main ), 0, 0 );
+
+  m_url = new KLineEdit( main );
+  grid->addWidget( m_url, 1, 1 );
+  grid->addWidget( new QLabel( m_url, i18n( "Location:" ), main ), 1, 0 );
+}
+
+void BLAH::setName(const QString &str)
+  { m_title->setText(str); }
+void BLAH::setLocation(const QString &str) 
+  { m_url->setText(str); }
+
+KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
+                                         QWidget * parent, const char * name, const QString& caption)
   : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder..."))), m_mgr(mgr)
 {
-  setButtonOKText( i18n( "Add" ) );
+  setButtonOKText( (editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" ) );
 
   m_main = new QWidget( this );
   setMainWidget( m_main );
 
   QBoxLayout *vbox = new QVBoxLayout( m_main, spacingHint() );
-  QGridLayout *grid = new QGridLayout( vbox, 2, 2 );
+  m_blah = new BLAH(m_main, vbox);
+  m_blah->setName(title);
+  m_blah->setLocation(url);
 
-  m_title = new KLineEdit( m_main );
-  m_title->setText( title );
-  grid->addWidget( m_title, 0, 1 );
-  grid->addWidget( new QLabel( m_title, i18n( "Name:" ), m_main ), 0, 0 );
-
-  m_url = new KLineEdit( m_main );
-  m_url->setText( url );
-  grid->addWidget( m_url, 1, 1 );
-  grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
-
-  m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
-  connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
-           this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
-  vbox->addWidget( m_folderTree );
+  if (editType == InsertionMode) {
+    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+    connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
+             this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
+    vbox->addWidget( m_folderTree );
+  }
 
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
 }
@@ -716,12 +728,12 @@ QString KBookmarkEditDialog::finalAddress() const
 
 QString KBookmarkEditDialog::finalUrl() const
 { 
-  return m_url->text(); 
+  return m_blah->m_url->text(); 
 }
 
 QString KBookmarkEditDialog::finalTitle() const
 { 
-  return m_title->text(); 
+  return m_blah->m_title->text(); 
 }
 
 void KBookmarkEditDialog::slotInsertFolder()

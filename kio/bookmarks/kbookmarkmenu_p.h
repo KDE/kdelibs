@@ -117,12 +117,24 @@ public:
   }
 };
 
+class BLAH {
+public:
+  KLineEdit * m_url;
+  KLineEdit * m_title;
+  BLAH(QWidget *main, QBoxLayout *vbox);
+  void setName(const QString &str);
+  void setLocation(const QString &str);
+};
+
 class KBookmarkEditDialog : public KDialogBase
 {
   Q_OBJECT
 
 public:
-  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
+  typedef enum { InsertionMode } BookmarkEditType;
+
+  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType,
+                       QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
   QString finalUrl() const;
   QString finalTitle() const;
   QString finalAddress() const;
@@ -135,9 +147,8 @@ protected slots:
 
 private:
   QWidget * m_main;
+  BLAH * m_blah;
   QListView * m_folderTree;
-  KLineEdit * m_url;
-  KLineEdit * m_title;
   QPushButton * m_button;
   KBookmarkManager * m_mgr;
 };
