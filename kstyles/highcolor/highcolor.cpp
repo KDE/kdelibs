@@ -1914,7 +1914,7 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 			if (tb) horiz_grad = tb->orientation() == Qt::Vertical;
 
 			QPainter p( widget );
-			renderGradient(&p, r, parent->colorGroup().mid(), horiz_grad,
+			renderGradient(&p, r, parent->colorGroup().button(), horiz_grad,
 					x_offset, y_offset, pr.width(), pr.height());
 
 			return false;	// Now draw the contents
