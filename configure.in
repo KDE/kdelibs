@@ -62,36 +62,7 @@ AM_CONDITIONAL(HAVE_LIBTIFF, test -n "$LIBTIFF")
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 
-AC_DEFINE_UNQUOTED(KDEDIR, "$prefix")
-
-if test "x$exec_prefix" = xNONE; then
-  ac_kde_exec_prefix=KDEDIR
-else 
-  ac_kde_exec_prefix=$exec_prefix
-fi
-
-AC_DEFUN(AC_DEFINE_PATH,
-[
-  eval "tempdir=`echo $2 | sed -e 's/\$(exec_prefix)/$ac_kde_exec_prefix/' -e 's/\$(prefix)/KDEDIR/'`"
-  AC_DEFINE_UNQUOTED($1, "$tempdir")
-])
-
-# Let make expand exec_prefix.
-test "x$exec_prefix" = xNONE && exec_prefix='$(prefix)' 
-
-AC_DEFINE_PATH(KDE_HTMLDIR, $kde_htmldir)
-AC_DEFINE_PATH(KDE_APPSDIR, $kde_appsdir)
-AC_DEFINE_PATH(KDE_ICONDIR, $kde_icondir)
-AC_DEFINE_PATH(KDE_SOUNDDIR, $kde_sounddir)
-AC_DEFINE_PATH(KDE_DATADIR, $kde_datadir)
-AC_DEFINE_PATH(KDE_LOCALE, $kde_locale)
-AC_DEFINE_PATH(KDE_CGIDIR, $kde_cgidir)
-AC_DEFINE_PATH(KDE_CONFIGDIR, $kde_confdir)
-AC_DEFINE_PATH(KDE_MIMEDIR, $kde_mimedir)
-AC_DEFINE_PATH(KDE_TOOLBARDIR, $kde_toolbardir)
-AC_DEFINE_PATH(KDE_WALLPAPERDIR, $kde_wallpaperdir)
-AC_DEFINE_PATH(KDE_BINDIR, $kde_bindir)
-AC_DEFINE_PATH(KDE_PARTSDIR, $kde_partsdir)
+AC_DEFINE_UNQUOTED(KDEDIR, "$prefix", [The prefix to use as fallback])
 
 ac_cpp_safe=$ac_cpp
 ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
