@@ -70,7 +70,7 @@ void KSSLKeyGen::slotGenerate() {
 
 // FOR NOW, it's DISABLED
 
-	KMessageBox::sorry(NULL, i18n("Sorry, certificate request generation has been disabled for this release due to incomplete code."), i18n("KDE SSL Information"));
+	KMessageBox::sorry(NULL, i18n("Certificate request generation has been disabled for this release due to incomplete code."), i18n("KDE SSL Information"));
 	return;
 
 
@@ -155,7 +155,7 @@ QStringList x;
      << "768"
      << "512";
 #else
-   x << i18n("Sorry, no SSL support.");
+   x << i18n("No SSL support.");
 #endif
 
 return x;

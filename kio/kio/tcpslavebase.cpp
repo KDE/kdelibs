@@ -654,7 +654,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
 
         if (!pkcs) {
-              int rc = messageBox(WarningYesNo, i18n("Couldn't open the "
+              int rc = messageBox(WarningYesNo, i18n("Unable to open the "
                                                      "certificate. Try a "
                                                      "new password?"),
                                                 i18n("SSL"));
@@ -666,7 +666,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
    // If we could open the certificate, let's send it
    if (pkcs) {
       if (!d->kssl->setClientCertificate(pkcs)) {
-            messageBox(Information, i18n("Sorry, the procedure to set the "
+            messageBox(Information, i18n("The procedure to set the "
                                          "client certificate for the session "
                                          "failed."), i18n("SSL"));
          delete pkcs;  // we don't need this anymore

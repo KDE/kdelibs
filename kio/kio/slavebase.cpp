@@ -592,37 +592,37 @@ void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
 }
 
 void SlaveBase::openConnection(void)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, opening connections is not supported with the protocol %1" ).arg(mProtocol)); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Opening connections is not supported with the protocol %1" ).arg(mProtocol)); }
 void SlaveBase::closeConnection(void)
 { } // No response!
 void SlaveBase::stat(KURL const &)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, accessing files is not supported with the protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Accessing files is not supported with the protocol %1").arg(mProtocol) ); }
 void SlaveBase::put(KURL const &, int, bool, bool)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, writing to %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Writing to %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::special(QMemArray<char> const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("There are no special actions available for protocol %1").arg(mProtocol) ); }
 void SlaveBase::listDir(KURL const &)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, listing directories is not supported for protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Listing directories is not supported for protocol %1").arg(mProtocol) ); }
 void SlaveBase::get(KURL const & )
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, retrieving data from %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Retrieving data from %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::mimetype(KURL const &url)
 { get(url); }
 void SlaveBase::rename(KURL const &, KURL const &, bool)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, renaming or moving files within %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Renaming or moving files within %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::symlink(QString const &, KURL const &, bool)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, creating symlinks is not supported with protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Creating symlinks is not supported with protocol %1").arg(mProtocol) ); }
 void SlaveBase::copy(KURL const &, KURL const &, int, bool)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, copying files within %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Copying files within %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::del(KURL const &, bool)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, deleting files from %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Deleting files from %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::mkdir(KURL const &, int)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, creating directories is not supported with protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Creating directories is not supported with protocol %1").arg(mProtocol) ); }
 void SlaveBase::chmod(KURL const &, int)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, changing the attributes of files is not supported with protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Changing the attributes of files is not supported with protocol %1").arg(mProtocol) ); }
 void SlaveBase::setSubURL(KURL const &)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, using suburls with %1 is not supported").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Using sub-URLs with %1 is not supported").arg(mProtocol) ); }
 void SlaveBase::multiGet(QMemArray<char> const &)
-{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, multiple get is not supported with protocol %1").arg(mProtocol) ); }
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Multiple get is not supported with protocol %1").arg(mProtocol) ); }
 
 
 void SlaveBase::slave_status()
