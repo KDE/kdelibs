@@ -106,42 +106,23 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*t
 
 // ------------------------------------------------------------------------
 
-DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
+// KHTMLView might be 0
+DocumentImpl::DocumentImpl(KHTMLView *v)
+    : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
     m_styleSelector = 0;
-    m_view = 0;
-    m_docLoader = new DocLoader(0);
-    visuallyOrdered = false;
-    m_loadingSheet = false;
-    m_sheet = 0;
-    m_elemSheet = 0;
-    m_tokenizer = 0;
-    m_doctype = new DocumentTypeImpl( docPtr() );
-    m_doctype->ref();
-    m_implementation = new DOMImplementationImpl();
-    m_implementation->ref();
-    m_paintDevice = 0;
     m_paintDeviceMetrics = 0;
-    pMode = Strict;
-    m_textColor = "#000000";
-    m_elementNames = 0;
-    m_elementNameAlloc = 0;
-    m_elementNameCount = 0;
-    m_focusNode = 0;
-    m_defaultView = new AbstractViewImpl(this);
-    m_defaultView->ref();
-    m_listenerTypes = 0;
-    m_styleSheets = new StyleSheetListImpl();
-    m_styleSheets->ref();
-}
 
-DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
-{
-    document->doc = this;
-    m_styleSelector = 0;
     m_view = v;
-    m_docLoader = new DocLoader(v->part());
+
+    if ( v ) {
+        m_docLoader = new DocLoader(v->part());
+        setPaintDevice( m_view );
+    }
+    else
+        m_docLoader = new DocLoader( 0 );
+
     visuallyOrdered = false;
     m_loadingSheet = false;
     m_sheet = 0;
@@ -151,8 +132,6 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
     m_doctype->ref();
     m_implementation = new DOMImplementationImpl();
     m_implementation->ref();
-    m_paintDeviceMetrics = 0;
-    setPaintDevice( m_view );
     pMode = Strict;
     m_textColor = "#000000";
     m_elementNames = 0;
@@ -162,7 +141,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
     m_listenerTypes = 0;
-    m_styleSheets = new StyleSheetListImpl();
+    m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
 }
 
@@ -172,10 +151,8 @@ DocumentImpl::~DocumentImpl()
     delete m_sheet;
     delete m_styleSelector;
     delete m_docLoader;
-    if (m_elemSheet )
-        m_elemSheet->deref();
-    if (m_tokenizer)
-        delete m_tokenizer;
+    if (m_elemSheet )  m_elemSheet->deref();
+    delete m_tokenizer;
     m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
@@ -488,16 +465,11 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     return n;
 }
 
-StyleSheetListImpl *DocumentImpl::styleSheets()
-{
-    return m_styleSheets;
-}
-
-
 void DocumentImpl::createSelector()
 {
     applyChanges();
 }
+
 
 // Used to maintain list of all forms in document
 QString DocumentImpl::registerElement(ElementImpl *e)
@@ -551,13 +523,14 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*wh
                                 bool /*entityReferenceExpansion*/)
 {
     return new TreeWalkerImpl;
-//    return 0; // ###
 }
 
 void DocumentImpl::applyChanges(bool,bool force)
 {
     // ### move the following two lines to createSelector????
-    if(m_styleSelector) delete m_styleSelector;
+    delete m_styleSelector;
+    m_styleSelector = 0;
+
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
 
@@ -708,21 +681,12 @@ void DocumentImpl::updateRendering()
 void DocumentImpl::attach(KHTMLView *w)
 {
     m_view = w;
-    m_docLoader->m_part = w->part();
-    setPaintDevice( m_view );
+    if ( m_view ) {
+        m_docLoader->m_part = w->part();
+        setPaintDevice( m_view );
+    }
     if(!m_styleSelector) createSelector();
     m_render = new RenderRoot(w);
-    recalcStyle();
-
-    NodeBaseImpl::attach();
-}
-
-
-void DocumentImpl::attach()
-{
-    m_view = 0;
-    if(!m_styleSelector) createSelector();
-    m_render = new RenderRoot(0);
     recalcStyle();
 
     NodeBaseImpl::attach();
@@ -1305,57 +1269,10 @@ DOMStringImpl *DocumentImpl::elementName(unsigned short _id) const
         return getTagName(_id).implementation()->lower();
 }
 
-QList<StyleSheetImpl> DocumentImpl::authorStyleSheets()
-{
-    // return stylesheets obtained from XML processing instructions and XHTML elements
-    QList<StyleSheetImpl> xml = m_xmlStyleSheets;
-    QList<StyleSheetImpl> html = htmlAuthorStyleSheets();
-    QList<StyleSheetImpl> list;
-    QListIterator<StyleSheetImpl> xmlIt(xml);
-    for (; xmlIt.current(); ++xmlIt)
-        list.append(xmlIt.current());
-    QListIterator<StyleSheetImpl> htmlIt(html);
-    for (; htmlIt.current(); ++htmlIt)
-        list.append(htmlIt.current());
-    return list;
-}
 
-QList<StyleSheetImpl> DocumentImpl::htmlAuthorStyleSheets()
+StyleSheetListImpl* DocumentImpl::styleSheets()
 {
-    QList<StyleSheetImpl> list;
-    NodeImpl *n = this;
-    while (n) {
-        StyleSheetImpl *sheet = 0;
-        if (n->isElementNode() && static_cast<ElementImpl*>(n)->isHTMLElement()) {
-            if (n->id() == ID_LINK)
-                sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-            else if (n->id() == ID_STYLE)
-                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-            else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
-                sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
-        }
-
-        if ( sheet )
-            list.append( sheet );
-        if (n->id() == ID_BODY)
-            n = 0; // no style info should be beyond here anyway
-        else if (n->firstChild())
-            n = n->firstChild();
-        else if (n->nextSibling())
-            n = n->nextSibling();
-        else {
-            while (n && !n->nextSibling())
-                n = n->parentNode();
-            if (n)
-                n = n->nextSibling();
-        }
-    }
-    return list;
-}
-
-void DocumentImpl::addXMLStyleSheet(StyleSheetImpl *_styleSheet)
-{
-    m_xmlStyleSheets.append(_styleSheet);
+    return m_styleSheets;
 }
 
 void DocumentImpl::setFocusNode(ElementImpl *n)
@@ -1458,7 +1375,6 @@ void DocumentImpl::deregisterStyleSheet(StyleSheetImpl *sheet)
     setChanged(true);
     applyChanges(true,true);
 }
-
 
 // ----------------------------------------------------------------------------
 

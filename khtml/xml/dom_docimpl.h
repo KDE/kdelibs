@@ -61,9 +61,7 @@ namespace DOM {
     class GenericRONamedNodeMapImpl;
     class ProcessingInstructionImpl;
     class HTMLElementImpl;
-
     class StyleSheetImpl;
-    class StyleSheetListImpl;
     class CSSStyleSheetImpl;
     class AbstractViewImpl;
     class EventImpl;
@@ -86,8 +84,7 @@ class DocumentImpl : public QObject, public NodeBaseImpl
 {
     Q_OBJECT
 public:
-    DocumentImpl();
-    DocumentImpl(KHTMLView *v);
+    DocumentImpl(KHTMLView *v=0);
     ~DocumentImpl();
 
     virtual const DOMString nodeName() const;
@@ -125,8 +122,6 @@ public:
 
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
 
-    virtual StyleSheetListImpl *styleSheets();
-
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     virtual void createSelector();
 
@@ -159,8 +154,8 @@ public:
     virtual void recalcStyle();
     virtual void updateRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
-    virtual void attach(KHTMLView *w);
-    virtual void attach();
+    
+    void attach(KHTMLView *w=0);
     virtual void detach();
 
     // to get visually ordered hebrew and arabic pages right
@@ -217,8 +212,6 @@ public:
      */
     ElementImpl *findNextLink(ElementImpl *start, bool forward);
 
-    ElementImpl *findNextLink(bool forward) { return findNextLink(m_focusNode, forward); };
-
     // overrides NodeImpl
     virtual bool prepareMouseEvent( int x, int y,
                                     int _tx, int _ty,
@@ -230,11 +223,9 @@ public:
 
     unsigned short elementId(DOMStringImpl *_name);
     DOMStringImpl *elementName(unsigned short _id) const;
-    virtual QList<StyleSheetImpl> authorStyleSheets();
-    QList<StyleSheetImpl> htmlAuthorStyleSheets();
 
-    void addXMLStyleSheet(StyleSheetImpl *_styleSheet);
-
+    StyleSheetListImpl* styleSheets();
+    
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);
 
@@ -306,14 +297,13 @@ protected:
     DOMStringImpl **m_elementNames;
     unsigned short m_elementNameAlloc;
     unsigned short m_elementNameCount;
-    QList<StyleSheetImpl> m_xmlStyleSheets;
 
     ElementImpl *m_focusNode;
     QList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
 
     unsigned short m_listenerTypes;
-    StyleSheetListImpl *m_styleSheets;
+    StyleSheetListImpl* m_styleSheets;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

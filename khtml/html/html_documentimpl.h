@@ -34,14 +34,12 @@ class QString;
 
 namespace DOM {
 
-    class StyleSheetImpl;
     class HTMLCollection;
     class NodeList;
     class Element;
     class HTMLElement;
     class HTMLElementImpl;
     class DOMString;
-    class StyleSheetListImpl;
     class CSSStyleSheetImpl;
     class HTMLMapElementImpl;
 
@@ -72,7 +70,6 @@ public:
     void setOnload( const QString &script ) { onloadScript = script; }
     void setOnunload( const QString &script ) { onUnloadScript = script; }
     virtual ElementImpl *createElement ( const DOMString &tagName );
-    virtual QList<StyleSheetImpl> authorStyleSheets();
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
 

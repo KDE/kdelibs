@@ -178,11 +178,6 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
     return createHTMLElement(name);
 }
 
-QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
-{
-    return htmlAuthorStyleSheets();
-}
-
 void HTMLDocumentImpl::slotHistoryChanged()
 {
     if ( true || !m_render ) // disabled for now

@@ -186,7 +186,7 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
             return false;
 
         DOMString href = attrs.value("href");
-        if (href[0]=='#')            
+        if (href[0]=='#')
             sheetElemId.append(href.string().mid(1));
         else
             // ### some validation on the URL?
@@ -238,9 +238,9 @@ void XMLHandler::exitText()
     if (par != 0)
     {
         if (!sheetElemId.isEmpty() && par->isElementNode())
-        {   
+        {
             QValueList<DOMString>::Iterator it;
-            for( it = sheetElemId.begin(); it != sheetElemId.end(); ++it )        
+            for( it = sheetElemId.begin(); it != sheetElemId.end(); ++it )
             {
                 if (static_cast<ElementImpl*>(par)->getAttribute("id")==*it)
                 {
@@ -248,14 +248,13 @@ void XMLHandler::exitText()
                     DOMString sheet= static_cast<TextImpl*>(m_currentNode)->data();
     //                kdDebug() << sheet.string() << endl;
                     CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document());
-                    styleSheet->ref();
                     styleSheet->parseString(sheet);
-                    m_doc->document()->addXMLStyleSheet(styleSheet);
+                    m_doc->document()->registerStyleSheet( styleSheet );
                     m_doc->document()->applyChanges();
                 }
             }
-        }    
-    
+        }
+
         m_currentNode = par;
     }
 }
@@ -479,9 +478,8 @@ XMLStyleSheetLoader::~XMLStyleSheetLoader()
 void XMLStyleSheetLoader::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
     CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document(), url);
-    styleSheet->ref(); // ### should this be done in addXMLStyleSheet instead? check that it gets deleted...
     styleSheet->parseString(sheet);
-    m_doc->document()->addXMLStyleSheet(styleSheet);
+    m_doc->document()->registerStyleSheet( styleSheet );
     m_doc->document()->applyChanges();
     delete this;
 }
