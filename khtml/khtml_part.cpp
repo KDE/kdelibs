@@ -3131,7 +3131,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY()
-         << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight();
+         << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight() << (Q_INT32) d->m_view->marginWidth() << (Q_INT32) d->m_view->marginHeight();
 
   // save link cursor position
   int focusNodeNumber;
@@ -3203,7 +3203,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 void KHTMLPart::restoreState( QDataStream &stream )
 {
   KURL u;
-  Q_INT32 xOffset, yOffset, wContents, hContents;
+  Q_INT32 xOffset, yOffset, wContents, hContents, mWidth, mHeight;
   Q_UINT32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KURL::List frameURLs;
@@ -3213,8 +3213,11 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
 
-  stream >> u >> xOffset >> yOffset >> wContents >> hContents;
+  stream >> u >> xOffset >> yOffset >> wContents >> hContents >> mWidth >> mHeight;
 
+  d->m_view->setMarginWidth( mWidth );
+  d->m_view->setMarginHeight( mHeight );
+  
   // restore link cursor position
   // nth node is active. value is set in checkCompleted()
   stream >> d->m_focusNodeNumber;
