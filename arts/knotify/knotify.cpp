@@ -110,11 +110,11 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 	}
 	
 	eventRunning=true;
-	if ((present & KNotifyClient::Sound) && (QFile(sound).isReadable()))
+	if ((present & KNotifyClient::Sound)/* && (QFile(sound).isReadable())*/)
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-	if (present & KNotifyClient::Logfile && (QFile(file).isWritable()))
+	if (present & KNotifyClient::Logfile/* && (QFile(file).isWritable())*/)
 		notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);
