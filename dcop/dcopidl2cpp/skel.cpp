@@ -34,7 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 static int const primes[] =
 {
     2,  3,  5,  7, 11, 13, 17, 19, 23, 29,
-    31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
+    31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
     73, 79, 83, 89, 97, 101, 103, 107, 109, 113,
     127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
     179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
@@ -104,8 +104,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			QDomElement a = r.firstChild().toElement();
 			ASSERT( a.tagName() == "TYPE" );
 			argtypes.append( a.firstChild().toText().data() );
-			a = a.nextSibling().toElement();
-			ASSERT ( a.tagName() == "NAME" );
 		    }
 		    funcName += "(";
 		    bool first = TRUE;
@@ -121,7 +119,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 
 	    // create static tables
-	    
+	
 	    int fhash = funcNames.count() + 1;
 	    for ( int i = 0; primes[i]; i++ ) {
 		if ( primes[i] > (int) funcNames.count() ) {
@@ -129,9 +127,9 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    break;
 		}
 	    }
-	    
+	
 	    bool useHashing = funcNames.count() > 7;
-	    if ( useHashing ) 
+	    if ( useHashing )
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
 	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
@@ -139,7 +137,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	    str << "    0" << endl;
 	    str << "};" << endl;
-	    
+	
 	    str << endl;
 	
 	
