@@ -82,6 +82,7 @@
 #include "crypto.h"
 #include "certexport.h"
 #include "kdatetimedlg.h"
+#include <kaboutdata.h>
 
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
