@@ -81,9 +81,9 @@ QString whatstr;
   mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
-  whatstr = i18n("TLS is an older protocol and should only be used if"
-                " SSL v2 or v3 protocols are unavailable or unusable."
-                "  Enabling TLS disables SSLv2 and SSLv3.");
+  whatstr = i18n("TLS is the proposed new implementation of secure sockets."
+                "  Enabling TLS disables SSLv2 and SSLv3.  In most cases"
+                " you should leave this turned off.");
   QWhatsThis::add(mUseTLS, whatstr);
 
   mUseSSLv2 = new QCheckBox(i18n("Enable SSLv&2"), tabSSL);
