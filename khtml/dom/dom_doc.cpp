@@ -228,14 +228,24 @@ Element Document::documentElement() const
 
 Element Document::createElement( const DOMString &tagName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElement(tagName);
-    return 0;
+    if (!impl)
+        return 0;
+    int exceptioncode = 0;
+    Element el = ((DocumentImpl *)impl)->createElement(tagName, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return el;
 }
 
 Element Document::createElementNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElementNS(namespaceURI,qualifiedName);
-    return 0;
+    if (!impl)
+        return 0;
+    int exceptioncode = 0;
+    Element el = ((DocumentImpl *)impl)->createElementNS(namespaceURI, qualifiedName, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return el;
 }
 
 DocumentFragment Document::createDocumentFragment(  )
@@ -288,11 +298,12 @@ Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString
         localName.remove(0, colonpos+1);
     }
 
-    // ### check correctness of parameters
-
-    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */);
-    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
     int exceptioncode = 0;
+    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+
+    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
     if (r.handle() && prefix.implementation())
         r.handle()->setPrefix(prefix.implementation(), exceptioncode);
     if (exceptioncode)

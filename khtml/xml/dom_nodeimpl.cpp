@@ -1399,11 +1399,12 @@ NodeListImpl* NodeBaseImpl::getElementsByTagNameNS ( DOMStringImpl* namespaceURI
     NodeImpl::Id idMask = NodeImpl_IdNSMask | NodeImpl_IdLocalMask;
     if (localName->l && localName->s[0] == '*')
         idMask &= ~NodeImpl_IdLocalMask;
-    if (namespaceURI && namespaceURI->l && namespaceURI->s[0] == '*')
+    if (!namespaceURI || (namespaceURI->l && namespaceURI->s[0] == '*'))
         idMask &= ~NodeImpl_IdNSMask;
 
     return new TagNodeListImpl( this,
-                                getDocument()->tagId(namespaceURI, localName, true), idMask);
+                                getDocument()->tagId(namespaceURI, localName, true, 0),
+                                idMask);
 }
 
 // I don't like this way of implementing the method, but I didn't find any
@@ -1840,7 +1841,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceU
                                                      int &/*exceptioncode*/ ) const
 {
     NodeImpl::Id searchId = m_doc->tagId(namespaceURI.implementation(),
-                                                   localName.implementation(), true);
+                                         localName.implementation(), true, 0);
 
     QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)

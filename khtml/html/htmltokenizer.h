@@ -79,7 +79,7 @@ namespace khtml {
             if(buffer->unicode())
                 a = new AttributeImpl(buffer->unicode(), v.implementation());
             else if ( !attrName.isEmpty() && attrName != "/" )
-                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false),
+                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false, 0),
                                       v.implementation());
 
             if (a) {

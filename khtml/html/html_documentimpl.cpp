@@ -142,7 +142,7 @@ DOMString HTMLDocumentImpl::cookie() const
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
                                   "findDOMCookies(QString,long int)", params,
-                                  replyType, reply)) 
+                                  replyType, reply))
     {
        kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
@@ -233,7 +233,7 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
+ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* /*exceptioncode*/ )
 {
     return createHTMLElement(name);
 }

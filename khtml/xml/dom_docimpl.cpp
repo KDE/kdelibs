@@ -126,40 +126,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 {
     exceptioncode = 0;
 
-    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
-    if (qualifiedName.isNull()) {
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return 0;
-    }
-
-    // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!Element::khtmlValidQualifiedName(qualifiedName)) {
-        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
-        return 0;
-    }
-
-    // NAMESPACE_ERR:
-    // - Raised if the qualifiedName is malformed,
-    // - if the qualifiedName has a prefix and the namespaceURI is null, or
-    // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
-    //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
-    int colonpos = -1;
-    uint i;
-    DOMStringImpl *qname = qualifiedName.implementation();
-    for (i = 0; i < qname->l && colonpos < 0; i++) {
-        if ((*qname)[i] == ':')
-            colonpos = i;
-    }
-
-    if (Element::khtmlMalformedQualifiedName(qualifiedName) ||
-        (colonpos >= 0 && namespaceURI.isNull()) ||
-        (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
-         namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
-
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return 0;
-    }
-
     DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
@@ -176,8 +142,10 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
-    doc->appendChild(element,exceptioncode);
+    ElementImpl *element = doc->createElementNS(namespaceURI, qualifiedName, &exceptioncode);
+    if (!exceptioncode)
+        doc->appendChild(element,exceptioncode);
+
     if (exceptioncode) {
         delete element;
         delete doc;
@@ -343,9 +311,13 @@ ElementImpl *DocumentImpl::documentElement() const
     return static_cast<ElementImpl*>(n);
 }
 
-ElementImpl *DocumentImpl::createElement( const DOMString &name )
+ElementImpl *DocumentImpl::createElement( const DOMString &name, int *pExceptioncode )
 {
-    return new XMLElementImpl( document, name.implementation() );
+    Id id = tagId(0 /* no namespace */, name.implementation(),
+                  false /* allocate */, pExceptioncode);
+    if ( pExceptioncode && *pExceptioncode )
+        return 0;
+    return new XMLElementImpl( document, id );
 }
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
@@ -384,7 +356,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 
 	if(importedNode->nodeType() == Node::ELEMENT_NODE)
 	{
-		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName());
+		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName(), 0);
 		result = tempElementImpl;
 
 		if(static_cast<ElementImpl *>(importedNode)->attributes(true) && static_cast<ElementImpl *>(importedNode)->attributes(true)->length())
@@ -404,7 +376,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 					// ### extract and set new prefix
 				}
 
-				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */);
+				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */, 0);
 				tempElementImpl->setAttribute(nodeId, value.implementation(), exceptioncode);
 
 				if(exceptioncode != 0)
@@ -446,20 +418,47 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	return result;
 }
 
-ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
+ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName, int* pExceptioncode )
 {
-    ElementImpl *e = 0;
     QString qName = _qualifiedName.string();
     int colonPos = qName.find(':',0);
 
+    if ( pExceptioncode ) // skip those checks during parsing
+    {
+        // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
+        if (!Element::khtmlValidQualifiedName(_qualifiedName)) {
+            *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+            return 0;
+        }
+
+        // NAMESPACE_ERR:
+        // - Raised if the qualifiedName is malformed,
+        // - if the qualifiedName has a prefix and the namespaceURI is null, or
+        // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
+        //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
+        if (Element::khtmlMalformedQualifiedName(_qualifiedName) ||
+            (colonPos >= 0 && _namespaceURI.isNull()) ||
+            (colonPos == 3 && _qualifiedName[0] == 'x' && _qualifiedName[1] == 'm' && _qualifiedName[2] == 'l' &&
+             _namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
+
+            *pExceptioncode = DOMException::NAMESPACE_ERR;
+            return 0;
+        }
+    }
+
+    ElementImpl *e = 0;
     if ((_namespaceURI.isNull() && colonPos < 0) ||
         _namespaceURI == XHTML_NAMESPACE) {
         // User requested an element in the XHTML namespace - this means we create a HTML element
         // (elements not in this namespace are treated as normal XML elements)
         e = createHTMLElement(qName.mid(colonPos+1));
-        int exceptioncode = 0;
+        int _exceptioncode = 0;
         if (colonPos >= 0)
-            e->setPrefix(qName.left(colonPos),  exceptioncode);
+            e->setPrefix(qName.left(colonPos), _exceptioncode);
+        if ( _exceptioncode ) {
+            if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
+            return 0;
+        }
     }
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
@@ -1534,7 +1533,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
     return 0;
 }
 
-NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
+NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int* pExceptioncode)
 {
     // Each document maintains a mapping of attrname -> id for every attr name
     // encountered in the document.
@@ -1596,6 +1595,11 @@ NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_
     // unknown
     if (readonly) return 0;
 
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(_name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
+
     // Name not found in m_attrNames, so let's add it
     // ### yeah, this is lame. use a dictionary / map instead
     if (m_attrNameCount+1 > m_attrNameAlloc) {
@@ -1630,7 +1634,7 @@ DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
     }
 }
 
-NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
+NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int *pExceptioncode)
 {
     if (!_name || !_name->l) return 0;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
@@ -1680,8 +1684,9 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
     }
 
     // Look in the m_elementNames array for the name
+    //DOMString nme(n.string());
+    DOMString nme( _name );
     // ### yeah, this is lame. use a dictionary / map instead
-    DOMString nme(n.string());
     // compatibility mode has to store upper case
     if (htmlMode() != XHtml) nme = nme.upper();
     for (id = 0; id < m_elementNameCount; id++)
@@ -1690,6 +1695,11 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
 
     // unknown
     if (readonly) return 0;
+
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(_name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {

@@ -225,6 +225,7 @@ class XMLElementImpl : public ElementImpl
 
 public:
     XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName);
+    XMLElementImpl(DocumentPtr *doc, Id id);
     XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 

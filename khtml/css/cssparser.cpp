@@ -469,7 +469,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                         if (doc->isHTMLDocument())
                             attr = attr.lower();
                         const DOMString dattr(attr);
-                        cs->attr = doc->attrId(0, dattr.implementation(), false);
+                        cs->attr = doc->attrId(0, dattr.implementation(), false, 0);
                     }
                     else {
                         cs->attr = khtml::getAttrID(attr.lower().ascii(), attr.length());
@@ -547,7 +547,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (doc->isHTMLDocument())
                     tag = tag.lower();
                 const DOMString dtag(tag);
-                cs->tag = doc->tagId(0, dtag.implementation(), false);
+                cs->tag = doc->tagId(0, dtag.implementation(), false, 0);
             }
             else {
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());

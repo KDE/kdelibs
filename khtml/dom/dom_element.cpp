@@ -25,6 +25,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"
 #include "html/html_formimpl.h"
+#include "dom_element.h"
 
 using namespace DOM;
 
@@ -206,7 +207,8 @@ DOMString Element::getAttributeNS( const DOMString &namespaceURI,
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
-                                                 localName.implementation(), true);
+                                                  localName.implementation(), true,
+                                                  0);
     if (!id) return DOMString();
     return static_cast<ElementImpl*>(impl)->getAttribute(id);
 }
@@ -223,9 +225,12 @@ void Element::setAttributeNS( const DOMString &namespaceURI,
         localName.remove(0, colonpos+1);
         // ### extract and set new prefix
     }
-    NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
-                                                    localName.implementation(), false /* allocate */);
     int exceptioncode = 0;
+    NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
+                                                  localName.implementation(), false /* allocate */,
+                                                  &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
     static_cast<ElementImpl*>(impl)->setAttribute(id, value.implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
@@ -236,7 +241,8 @@ void Element::removeAttributeNS( const DOMString &namespaceURI,
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
-                                                    localName.implementation(), true);
+                                                  localName.implementation(), true,
+                                                  0);
     if (!id) return;
 
     int exceptioncode = 0;
@@ -250,7 +256,8 @@ Attr Element::getAttributeNodeNS( const DOMString &namespaceURI,
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
-                                                    localName.implementation(), true);
+                                                  localName.implementation(), true,
+                                                  0);
     if (!id) return 0;
 
     ElementImpl* e = static_cast<ElementImpl*>(impl);
@@ -286,7 +293,8 @@ bool Element::hasAttributeNS( const DOMString &namespaceURI,
 {
     if (!impl || !static_cast<ElementImpl*>(impl)->attributes()) return false; // ### throw ?
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
-                                                    localName.implementation(), true);
+                                                  localName.implementation(), true,
+                                                  0);
     if (!id) return false;
 
     if (!static_cast<ElementImpl*>(impl)->attributes(true /*readonly*/)) return false;
@@ -311,32 +319,45 @@ CSSStyleDeclaration Element::style()
     return 0;
 }
 
-bool Element::khtmlValidAttrName(const DOMString &/*name*/)
+bool Element::khtmlValidAttrName(const DOMString &name)
 {
-    // ###
+    // Check if name is valid
+    // http://www.w3.org/TR/2000/REC-xml-20001006#NT-Name
+    DOMStringImpl* _name = name.implementation();
+    QChar ch = _name->s[0];
+    if ( !ch.isLetter() && ch != '_' && ch != ':' )
+        return false; // first char isn't valid
+    for ( uint i = 0; i < _name->l; ++i )
+    {
+        ch = _name->s[i];
+        if ( !ch.isLetter() && !ch.isDigit() && ch != '.'
+             && ch != '-' && ch != '_' && ch != ':'
+             && ch.category() != QChar::Mark_SpacingCombining
+             /* no idea what "extender is" */ )
+            return false;
+    }
     return true;
 }
 
-bool Element::khtmlValidPrefix(const DOMString &/*name*/)
+bool Element::khtmlValidPrefix(const DOMString &name)
 {
-    // ###
-    return true;
+    return khtmlValidAttrName(name);
 }
 
-bool Element::khtmlValidQualifiedName(const DOMString &/*name*/)
+bool Element::khtmlValidQualifiedName(const DOMString &name)
 {
-    // ###
-    return true;
+    return khtmlValidAttrName(name);
 }
 
-bool Element::khtmlMalformedQualifiedName(const DOMString &/*name*/)
+bool Element::khtmlMalformedQualifiedName(const DOMString &name)
 {
-    // ###
-    return false;
+    // #### Not clearly defined in the DOM spec...
+    // But we know for sure that a null qualified name is malformed
+    return name.isNull();
 }
 
 bool Element::khtmlMalformedPrefix(const DOMString &/*name*/)
 {
-    // ###
+    // ####
     return false;
 }

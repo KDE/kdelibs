@@ -130,7 +130,7 @@ public:
 
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
-    virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElement ( const DOMString &tagName, int* exceptioncode );
     DocumentFragmentImpl *createDocumentFragment ();
     TextImpl *createTextNode ( DOMStringImpl* data ) { return new TextImpl( docPtr(), data); }
     TextImpl *createTextNode ( const QString& data )
@@ -141,7 +141,7 @@ public:
     Attr createAttribute(NodeImpl::Id id);
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
-    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
+    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName, int *exceptioncode );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
@@ -281,10 +281,10 @@ public:
     // ### think about implementing ref'counting for the id's
     // in order to be able to reassign those that are no longer in use
     // (could make problems when it is still kept somewhere around, i.e. styleselector)
-    NodeImpl::Id tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
+    NodeImpl::Id tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int *exceptioncode);
     DOMString tagName(NodeImpl::Id _id) const;
 
-    NodeImpl::Id attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
+    NodeImpl::Id attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int *exceptioncode);
     DOMString attrName(NodeImpl::Id _id) const;
 
     // the namespace uri is mapped to the same id for both

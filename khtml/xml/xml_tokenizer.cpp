@@ -76,7 +76,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         exitText();
 
     ElementImpl *newElement;
-    newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    newElement = m_doc->document()->createElementNS(namespaceURI, qName, 0);
 
     int i;
     for (i = 0; i < atts.length(); i++) {
@@ -86,7 +86,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         DOMString val(atts.value(i));
         NodeImpl::Id id = m_doc->document()->attrId(uri.implementation(),
                                                     ln.implementation(),
-                                                    false /* allocate */);
+                                                    false /* allocate */, 0);
         newElement->setAttribute(id, val.implementation(), exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
@@ -361,13 +361,13 @@ void XMLTokenizer::finish()
 
         // Create elements for display
         DocumentImpl *doc = m_doc->document();
-        NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html");
-        NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body");
-        NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
+        NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html", 0);
+        NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body", 0);
+        NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1", 0);
         NodeImpl       *headingText = doc->createTextNode(i18n("XML parsing error"));
         NodeImpl     *errorText = doc->createTextNode(handler.errorProtocol());
-        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
-        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
+        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr", 0);
+        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre", 0);
         NodeImpl       *lineText = doc->createTextNode(line+"\n");
         NodeImpl       *errorLocText = doc->createTextNode(errorLocPtr);
 

@@ -258,9 +258,13 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 
 NodeImpl *ElementImpl::cloneNode(bool deep)
 {
-    // ### we loose the namespace here ... FIXME
-    ElementImpl *clone = getDocument()->createElement(tagName());
+    ElementImpl *clone = getDocument()->createElement(tagName(), 0);
     if (!clone) return 0;
+
+    // clone prefix (namespace)
+    clone->m_prefix = m_prefix;
+    if ( clone->m_prefix )
+        clone->m_prefix->ref();
 
     // clone attributes
     if(namedAttrMap)
@@ -484,7 +488,13 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
     : ElementImpl(doc)
 {
-    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,  false /* allocate */);
+    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,
+                                  false /* allocate */, 0);
+}
+
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, Id id)
+    : ElementImpl(doc), m_id(id)
+{
 }
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
@@ -502,7 +512,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
         DOMStringImpl* localName = _qualifiedName->copy();
         localName->ref();
         localName->remove(0,colonpos+1);
-        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */);
+        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */, 0);
         localName->deref();
         m_prefix = _qualifiedName->copy();
         m_prefix->ref();
@@ -510,7 +520,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
     }
     else {
         // no prefix
-        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */);
+        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */, 0);
         m_prefix = 0;
     }
 }
@@ -527,10 +537,11 @@ DOMString XMLElementImpl::localName() const
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 {
-    // ### we loose namespace here FIXME
-    // should pass id around
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(), getDocument()->tagName(m_id).implementation());
-    clone->m_id = m_id;
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(), m_id);
+    // clone prefix (namespace)
+    clone->m_prefix = m_prefix;
+    if ( clone->m_prefix )
+        clone->m_prefix->ref();
 
     // clone attributes
     if(namedAttrMap)
@@ -672,7 +683,7 @@ NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& namespaceURI,
     assert(element);
     if (!element) return 0;
     return element->getDocument()->attrId(namespaceURI.implementation(),
-                                            localName.implementation(), readonly);
+                                            localName.implementation(), readonly, 0);
 }
 
 void NamedAttrMapImpl::clearAttributes()
