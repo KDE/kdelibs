@@ -359,7 +359,9 @@
 13002   Kate (View Manager)
 13010   Kate (XML/Syntax)
 13020   Kate (Document)
+13025	Kate (Commands)
 13030   Kate (View)
+13035	Kate (Renderer)
 13035   Kate (Code Completion)
 13040   Kate (Plugins)
 
