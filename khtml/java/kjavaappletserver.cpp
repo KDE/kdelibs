@@ -149,12 +149,21 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // Cut off trailing slash if any
         if( jPath[jPath.length()-1] == '/' )
             jPath.remove(jPath.length()-1, 1);
-
+            
         QDir dir( jPath );
         if( dir.exists( "bin/java" ) )
+        {
             jvm_path = jPath + "/bin/java";
-        else if( QFile::exists(jPath) ) //check here to see if they entered the whole path the java exe
+        } 
+        else if (dir.exists( "/jre/bin/java" ) )
+        { 
+            jvm_path = jPath + "/jre/bin/java";
+        } 
+        else if( QFile::exists(jPath) )
+        {
+            //check here to see if they entered the whole path the java exe
             jvm_path = jPath;
+        }
     }
 
     //check to see if jvm_path is valid and set d->appletLabel accordingly
@@ -211,7 +220,6 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         p->setSystemProperty( "http.proxyHost", url.host() );
         p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
     }
-    // p->setSystemProperty("kjas.debug", "");
 
     //set the main class to run
     p->setMainClass( "org.kde.kjas.server.Main" );
