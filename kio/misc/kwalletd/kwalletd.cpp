@@ -428,8 +428,6 @@ void KWalletD::changePassword(const QString& wallet, uint wId) {
 
 
 void KWalletD::doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId) {
-Q_UNUSED(appid)
-
 QIntDictIterator<KWallet::Backend> it(_wallets);
 KWallet::Backend *w = 0L;
 int handle = -1;
@@ -442,7 +440,7 @@ bool reclose = false;
 	}
 
 	if (!it.current()) {
-		handle = open(wallet, wId);
+		handle = doTransactionOpen(appid, wallet, wId);
 		if (-1 == handle) {
 			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
