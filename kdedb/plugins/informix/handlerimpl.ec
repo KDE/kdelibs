@@ -341,7 +341,7 @@ QString HandlerImpl::nativeType( const QString & fieldName ) const
 
     if (i == numFields) 
 	{
-        DBENGINE->pushError( new KDB::ObjectNotFound(fieldName));
+        DBENGINE->pushError( new KDB::ObjectNotFound(this, fieldName));
         return QString::null;
     }
 

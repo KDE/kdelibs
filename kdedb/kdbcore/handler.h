@@ -30,7 +30,7 @@
 namespace KDB {
 
 // will contain the handler to a set of records
-class Handler : public KShared {
+class Handler : public Object, public KShared {
 
 public:
     virtual ~Handler() {};

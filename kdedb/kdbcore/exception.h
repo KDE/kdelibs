@@ -46,97 +46,112 @@ class Exception : public QObject {
 public:
     /**
      * Builds an exception with the given description
-     *     */
-    Exception (const QString & description) :m_description(description)
+     * Stores name and type of the originating object
+     */
+    Exception (const QObject *origin, const QString & description)
+        : m_description(description)
         {
+            m_originName = QString::fromLocal8Bit(origin->name());
+            m_originType = QString::fromLocal8Bit(origin->className());
             kdDebug(20000) << k_funcinfo << description << endl;
         };
     /**
      * this is the detailed description of the exception
      */
-    QString description() { return m_description; };
+    QString description() const { return m_description; };
 
+    /**
+     * the name of the generating object
+     */
+    QString originName() const { return m_originName; };
+
+    /**
+     * the type of the originating object
+     */
+    QString orignType() const { return m_originType; };
+    
 private:
     QString m_description;
-
+    QString m_originName;
+    QString m_originType;
 };
 
 class PluginException : public Exception {
     Q_OBJECT
 public:
-    PluginException (const QString & description) : Exception( description ) {};
+    PluginException (const QObject *origin, const QString & description) : Exception( origin,  description ) {};
 };
 
 class PluginNotFound : public PluginException {
     Q_OBJECT
 public:
-    PluginNotFound (const QString & description) : PluginException( description ){};
+    PluginNotFound (const QObject *origin, const QString & description) : PluginException( origin, description ){};
 };
 
 class LibraryError : public PluginException {
     Q_OBJECT
 public:
-    LibraryError (const QString & description) : PluginException( description ){};
+    LibraryError (const QObject *origin, const QString & description) : PluginException( origin, description ){};
 };
 
 class UnsupportedCapability: public PluginException {
     Q_OBJECT
 public:
-    UnsupportedCapability(const QString & description) : PluginException( description ){};
+    UnsupportedCapability(const QObject *origin, const QString & description) : PluginException( origin, description ){};
 };
 
 class DataException : public Exception {
     Q_OBJECT
 public:
-    DataException (const QString & description) : Exception( description ){};
+    DataException (const QObject *origin, const QString & description) : Exception( origin, description ){};
 };
 
 class ConversionException : public DataException {
     Q_OBJECT
 public:
-    ConversionException (const QString & description) : DataException( description ){};
+    ConversionException (const QObject *origin, const QString & description) : DataException( origin, description ){};
 };
 
 class ServerError : public DataException {
     Q_OBJECT
 public:
-    ServerError (const QString & description) : DataException( description ){};
+    ServerError (const QObject *origin, const QString & description) : DataException( origin, description ){};
 };
 
 class ObjectNotFound : public DataException {
     Q_OBJECT
 public:
-    ObjectNotFound (const QString & description) : DataException( description ){};
+    ObjectNotFound (const QObject *origin, const QString & description) : DataException( origin, description ){};
 };
 
 class SQLError : public DataException {
     Q_OBJECT
 public:
-    SQLError (const QString & description) : DataException( description ){};
+    SQLError (const QObject *origin, const QString & description) : DataException( origin, description ){};
 };
 
 class InvalidRequest : public DataException {
     Q_OBJECT
 public:
-    InvalidRequest (const QString & description) : DataException( description ){};
+    InvalidRequest (const QObject *origin, const QString & description) : DataException( origin, description ){};
 };
  
 class ConnectionException : public Exception {
     Q_OBJECT
 public:
-    ConnectionException (const QString & description) : Exception( description ){};
+    ConnectionException (const QObject *origin, const QString & description) : Exception( origin, description ){};
 };
 
 class HostNotFound : public ConnectionException {
     Q_OBJECT
 public:
-    HostNotFound (const QString & description) : ConnectionException( description ){};
+    HostNotFound (const QObject *origin, const QString & description) : ConnectionException( origin, description ){};
 };
 
 class InvalidLogin : public ConnectionException {
     Q_OBJECT
 public:
-    InvalidLogin (const QString & description) : ConnectionException( description ){};
+    InvalidLogin (const QObject *origin, const QString & description) : ConnectionException( origin, description ){};
 };
 
 }

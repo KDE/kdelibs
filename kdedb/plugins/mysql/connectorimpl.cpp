@@ -78,7 +78,7 @@ ConnectorImpl::connect()
     bool ret = true;
 
     if (isConnected()) {
-        DBENGINE->pushError(new KDB::InvalidRequest("Already connected to server"));
+        DBENGINE->pushError(new KDB::InvalidRequest(this, "Already connected to server"));
         return false;
     }
 
@@ -99,7 +99,7 @@ ConnectorImpl::connect()
         case CR_CONN_HOST_ERROR:
         case CR_CONNECTION_ERROR:
         case ER_ACCESS_DENIED_ERROR:
-            DBENGINE->pushError( new KDB::InvalidLogin(mysql_error(connection())));
+            DBENGINE->pushError( new KDB::InvalidLogin(this, mysql_error(connection())));
             ret = false;
             break;
         case CR_IPSOCK_ERROR:
@@ -107,15 +107,15 @@ ConnectorImpl::connect()
         case CR_SOCKET_CREATE_ERROR:
         case CR_VERSION_ERROR:
         case CR_NAMEDPIPEOPEN_ERROR:
-            DBENGINE->pushError( new KDB::ServerError(mysql_error(connection())));
+            DBENGINE->pushError( new KDB::ServerError(this, mysql_error(connection())));
             ret = false;
             break;
         case CR_UNKNOWN_HOST:
-            DBENGINE->pushError( new KDB::HostNotFound(mysql_error(connection())));
+            DBENGINE->pushError( new KDB::HostNotFound(this, mysql_error(connection())));
             ret = false;
             break;
         default:
-            DBENGINE->pushError(new KDB::ServerError(mysql_error(connection())));
+            DBENGINE->pushError(new KDB::ServerError(this, mysql_error(connection())));
             ret = false;
             break;
         }
@@ -205,6 +205,8 @@ ConnectorImpl::fields(const QString & tableName)
         //kdDebug(20012) << "Normalized type = " << norm << endl;
 
         r << Value(norm);
+
+        // TODO: where is the rest of the field def ?!?
         
         res << r;
     }
@@ -254,7 +256,7 @@ ConnectorImpl::setCurrentDatabase(const QString &name)
 
     connect(); // create a new connection
     if ( mysql_select_db(connection(), name.utf8()) != 0 ) {
-        DBENGINE->pushError( new KDB::ServerError(mysql_error(connection())));
+        DBENGINE->pushError( new KDB::ServerError(this, mysql_error(connection())));
         return false;
     }
     return true;
@@ -268,7 +270,7 @@ ConnectorImpl::execute(const QString &sql)
 
     if ( (mysql_real_query(connection(), sql.latin1(), len )) != 0 ) {
         //here test for different types of errors???
-        DBENGINE->pushError( new KDB::ServerError(mysql_error(connection())) );
+        DBENGINE->pushError( new KDB::ServerError(this, mysql_error(connection())) );
         return 0;
     }
 
@@ -475,19 +477,19 @@ ConnectorImpl::dropTable(const QString & name)
 void 
 ConnectorImpl::beginTransaction()
 {
-    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+    DBENGINE->pushError(new KDB::UnsupportedCapability(this, "Transactions not supported by DBMS"));
 }
 
 void 
 ConnectorImpl::commit()
 {
-    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+    DBENGINE->pushError(new KDB::UnsupportedCapability(this, "Transactions not supported by DBMS"));
 }
 
 void 
 ConnectorImpl::rollback() 
 {
-    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+    DBENGINE->pushError(new KDB::UnsupportedCapability(this, "Transactions not supported by DBMS"));
 }
 /*
   TINYINT

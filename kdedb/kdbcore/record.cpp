@@ -93,9 +93,11 @@ Record::field(const QString &n)
         ++it;
     }
 
-    if (!it.current()) {
-        pushError(new ObjectNotFound(n));
-    }
+    /* Object not found is not an exception here
+       if (!it.current()) {
+       pushError(new ObjectNotFound(this, n));
+       }
+    */
     
     return *(it.current());
 

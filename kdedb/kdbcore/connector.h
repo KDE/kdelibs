@@ -28,6 +28,7 @@
 #include <qstringlist.h>
 
 #include "exception.h"
+#include "object.h"
 #include "kdb.h"
 
 namespace KDB {
@@ -49,7 +50,7 @@ class Table;
  * @version kdbcore 0.0.2
  */
  
-class Connector {
+class Connector :public Object {
 
  public:
     Connector();

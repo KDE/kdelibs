@@ -242,7 +242,7 @@ HandlerImpl::nativeType(const QString &fieldName) const
     }
 
     if (i == numFields) {
-        DBENGINE->pushError( new KDB::ObjectNotFound(fieldName));
+        DBENGINE->pushError( new KDB::ObjectNotFound(this, fieldName));
         return QString::null;
     }
 
@@ -418,7 +418,7 @@ HandlerImpl::update(KDB_ULONG pos, KDB::Row row)
 }
 
 bool
-HandlerImpl::remove(KDB_ULONG pos, KDB::Row row)
+HandlerImpl::remove(KDB_ULONG /* pos */, KDB::Row row)
 { 
     kdDebug(20012) << k_funcinfo << endl;
     /*

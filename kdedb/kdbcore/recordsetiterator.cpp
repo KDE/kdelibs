@@ -104,7 +104,7 @@ RecordsetIterator::current() const
         connect(rec, SIGNAL(deleted(KDB::Record *)), m_rset, SLOT(slotRecordDeleted(KDB::Record *)));
         return RecordPtr(rec);
     } else {
-        Object::pushError( new InvalidRequest("Iterator has been invalidated"));
+        Object::pushError( new InvalidRequest(this, "Iterator has been invalidated"));
         return 0L;
     }
 }

@@ -84,6 +84,7 @@ PluginImpl::createObject(KDB::capability cap)
         ret = m_control;
         break;
     default:
+        pushError(new KDB::UnsupportedCapability(this, "this plugin does not support the requested capability"));
         break;
     }
 

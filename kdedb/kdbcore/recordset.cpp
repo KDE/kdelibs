@@ -118,7 +118,7 @@ Recordset::slotRecordUpdated(Record *rec, bool isNew)
         res = m_handle->update(rec->absolutePosition(),row);
 
     if (!res) {
-        pushError(new DataException("unable to update recordset"));
+        pushError(new DataException(this, "unable to update recordset"));
     } else {
         m_changed = true;
         emit changed();
@@ -132,7 +132,7 @@ Recordset::slotRecordDeleted(Record *rec)
 {
     Row row = fromRecord(rec);
     if (!m_handle->remove(rec->absolutePosition(), row)) {
-        pushError(new DataException("unable to update recordset"));
+        pushError(new DataException(this, "unable to update recordset"));
     } else {
         m_changed = true;
         emit changed();

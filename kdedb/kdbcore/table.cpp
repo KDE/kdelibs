@@ -46,13 +46,13 @@ Table::Table(Connector *conn, QObject *parent, const char *name, bool design )
 
             // size
             if (nField > 2) {
-                unsigned int size = r[2].asInt(); 
+                unsigned int size = r[2].toInt(); 
                 if (size) f->setSize(size);
             }
 
             // precision
             if (nField > 3) {
-                unsigned int prec = r[3].asInt();
+                unsigned int prec = r[3].toInt();
                 if (prec) f->setPrecision(prec);
             }
 
@@ -149,7 +149,7 @@ Table::appendField(Field *f)
 {
     // must change it to an alter when in design mode.
     if (!designMode()) {
-        pushError(new InvalidRequest(QString("Table %1 is not in design mode").arg(name())));
+        pushError(new InvalidRequest(this, QString("Table %1 is not in design mode").arg(name())));
         return false;
     }
     m_fields.append(f);
@@ -163,7 +163,7 @@ Table::removeField(const QString &name)
 {
     // must change it to an alter when in design mode.
     if (!designMode()) {
-        pushError(new InvalidRequest(QString("Table %1 is not in design mode").arg(this->name())));
+        pushError(new InvalidRequest(this, QString("Table %1 is not in design mode").arg(this->name())));
         return false;
     }
     Field * f = getField(name);
@@ -187,10 +187,11 @@ RecordsetPtr
 Table::openRecordset() 
 {
     if (m_design) {
-        pushError(new InvalidRequest(QString("Table %1 is in design mode").arg(name())));
+        pushError(new InvalidRequest(this, QString("Table %1 is in design mode").arg(name())));
         return 0L;
     }
-    return new Recordset(connector, QString("Select * from %1").arg(name()), const_cast<Table *>(this));
+
+    return RecordsetPtr(new Recordset(connector, QString("Select * from %1").arg(name()), const_cast<Table *>(this)));
 }
 
 

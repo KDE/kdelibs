@@ -69,7 +69,7 @@ KDB::Capability *
 PluginImpl::createObject(KDB::capability /* cap */)
 {
     //kdDebug(20012) << "PluginImpl::createObject" << endl;
-    pushError( new KDB::UnsupportedCapability("this plugin does nothing!"));
+    pushError( new KDB::UnsupportedCapability(this, "this plugin does nothing!"));
     return 0L;
 }
 

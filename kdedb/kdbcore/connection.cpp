@@ -99,7 +99,7 @@ Connection::open()
     connector->setPassword(m_pwd);
     
     if (connector->user().isEmpty()) {
-        pushError(new InvalidLogin("No user supplied")); //no connection if the user is unknown
+        pushError(new InvalidLogin(this, "No user supplied")); //no connection if the user is unknown
         delete connector;
         connector = 0L;
         return false;
@@ -236,7 +236,7 @@ Database *
 Connection::createDatabase(const QString &name) 
 {
     if (!connector) {
-        pushError(new InvalidRequest("not connected"));
+        pushError(new InvalidRequest(this, "not connected"));
         return 0L;
     }
     connector->createDatabase(name);

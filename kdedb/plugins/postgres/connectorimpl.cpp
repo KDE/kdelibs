@@ -96,7 +96,7 @@ bool ConnectorImpl::connect()
     conn = c;
     
     if (PQstatus(connection()) == CONNECTION_BAD) {
-        DBENGINE->pushError(new KDB::InvalidLogin(PQerrorMessage(connection())));
+        DBENGINE->pushError(new KDB::InvalidLogin(this, PQerrorMessage(connection())));
         conn = 0L;
         setConnected(false);
         return false;
@@ -246,15 +246,15 @@ ConnectorImpl::execute(const QString &sql)
 {
     PGresult * res = PQexec(connection(),sql.latin1());
     if (!res){
-        DBENGINE->pushError(new KDB::ServerError(PQerrorMessage(connection())));
+        DBENGINE->pushError(new KDB::ServerError(this, PQerrorMessage(connection())));
         return 0L;
     }
     
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         if (PQresultStatus(res) == PGRES_TUPLES_OK)
-            DBENGINE->pushError(new KDB::SQLError("not a command query!"));
+            DBENGINE->pushError(new KDB::SQLError(this, "not a command query!"));
         else
-            DBENGINE->pushError(new KDB::SQLError(PQresultErrorMessage(res)));
+            DBENGINE->pushError(new KDB::SQLError(this, PQresultErrorMessage(res)));
         return 0;
     }
 
@@ -269,15 +269,15 @@ ConnectorImpl::query(const QString &SQL)
 {
     PGresult * res = PQexec(connection(),SQL.latin1());
     if (!res){
-        DBENGINE->pushError(new KDB::ServerError(PQerrorMessage(connection())));
+        DBENGINE->pushError(new KDB::ServerError(this, PQerrorMessage(connection())));
         return 0L;
     }
     
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         if (PQresultStatus(res) == PGRES_COMMAND_OK)
-            DBENGINE->pushError(new KDB::SQLError("not a select query!"));
+            DBENGINE->pushError(new KDB::SQLError(this, "not a select query!"));
         else
-            DBENGINE->pushError(new KDB::SQLError(PQresultErrorMessage(res)));
+            DBENGINE->pushError(new KDB::SQLError(this, PQresultErrorMessage(res)));
         return 0;
     }
 
@@ -336,12 +336,12 @@ ConnectorImpl::oidToTypeName(Oid oid)
         // we must do everything here to avoid recursive calls from HandlerImpl
         PGresult * res = PQexec(connection(),sql.latin1());
         if (!res){
-            DBENGINE->pushError(new KDB::ServerError(PQerrorMessage(connection())));
+            DBENGINE->pushError(new KDB::ServerError(this, PQerrorMessage(connection())));
             return QString::null;
         }
         
         if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-            DBENGINE->pushError(new KDB::SQLError(PQresultErrorMessage(res)));
+            DBENGINE->pushError(new KDB::SQLError(this, PQresultErrorMessage(res)));
             return QString::null;
         }
 

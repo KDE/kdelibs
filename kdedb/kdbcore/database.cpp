@@ -61,7 +61,8 @@ Database::getTable(const QString &name)
     QStringList::Iterator it = m_tables.find(name);
 
     if (it == m_tables.end() ) {
-        pushError(new ObjectNotFound(QString("Table %1 not found").arg(name)));
+        // not found is not an error condition !!!!
+        // pushError(new ObjectNotFound(QString("Table %1 not found").arg(name)));
         return 0L;
     }
 
@@ -115,7 +116,8 @@ Database::getQuery(const QString &name)
     QStringList::Iterator it = m_queries.find(name);
 
     if (it == m_queries.end() ) {
-        pushError(new ObjectNotFound(QString("Query %1 not found").arg(name)));
+        // not found is not an error condition !!!!
+        // pushError(new ObjectNotFound(QString("Query %1 not found").arg(name)));
         return 0L;
     }
 
@@ -167,7 +169,7 @@ Database::removeTable(const QString &name)
 {
     QStringList::Iterator it = m_tables.find(name);
     if (it == m_tables.end() ) {
-        pushError(new ObjectNotFound(QString("Table %1 not found").arg(name)));
+        pushError(new ObjectNotFound(this, QString("Table %1 not found").arg(name)));
         return false;
     }
 
@@ -201,7 +203,7 @@ Database::removeQuery(const QString &name)
 {
     QStringList::Iterator it = m_queries.find(name);
     if (it == m_queries.end() ) {
-        pushError(new ObjectNotFound(QString("Query %1 not found").arg(name)));
+        pushError(new ObjectNotFound(this, QString("Query %1 not found").arg(name)));
         return false;
     }
 
