@@ -244,9 +244,9 @@ void XMLGUIFactory::removeServant( XMLGUIServant *servant )
 
 void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode )
 {
-  static QString tagAction = QString::fromLatin1( "Action" );
-  static QString tagMerge = QString::fromLatin1( "Merge" );
-  static QString tagSeparator = QString::fromLatin1( "Separator" );
+  static QString tagAction = QString::fromLatin1( "action" );
+  static QString tagMerge = QString::fromLatin1( "merge" );
+  static QString tagSeparator = QString::fromLatin1( "separator" );
   static QString attrName = QString::fromLatin1( "name" );
 
   /*
@@ -279,7 +279,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
      * The "Merge" tag specifies that all containers and actions from *other* servants should be
      * inserted/plugged in at the current index, and not at the "end" .
      */
-    if ( e.tagName() == tagMerge )
+    if ( e.tagName().lower() == tagMerge )
     {
       QString mergingName = e.attribute( attrName );
       if ( mergingName.isEmpty() )
@@ -293,7 +293,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
       ignoreMergingIndex = true;
     }
-    else if ( e.tagName() == tagAction || e.tagName() == tagSeparator )
+    else if ( e.tagName().lower() == tagAction || e.tagName().lower() == tagSeparator )
     {
       if ( !parentNode->container || !parentNode->container->isWidgetType() )
         continue;
@@ -316,7 +316,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	parentNode->clients.append( containerClient );
       }
 
-      if ( e.tagName() == tagAction )
+      if ( e.tagName().lower() == tagAction )
       {
         QAction *action = m_servant->action( e );
 

@@ -129,7 +129,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
 
   id = -1;
 
-  if ( element.tagName() == "MenuBar" )
+  if ( element.tagName().lower() == "menubar" )
   {
     KMenuBar *bar = menuBar();
     if ( !bar->isVisible() )
@@ -137,11 +137,15 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
     return bar;
   }
 
-  if ( element.tagName() == "Menu" && parent )
+  if ( element.tagName().lower() == "menu" && parent )
   {
     QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ) );
 
     QString text = i18n(element.namedItem( "text" ).toElement().text().latin1());
+    if (text.isEmpty())  // try with capital T
+      text = i18n(element.namedItem( "Text" ).toElement().text().latin1());
+    if (text.isEmpty())  // still no luck
+      text = i18n("No text!");
 
     if ( parent->inherits( "KMenuBar" ) )
       id = ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
@@ -151,14 +155,14 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
     return popup;
   }
 
-  if ( element.tagName() == "Separator" && parent )
+  if ( element.tagName().lower() == "separator" && parent )
   {
     KActionSeparator *separator = new KActionSeparator;
     separator->plug( parent, index );
     return separator;
   }
 
-  if ( element.tagName() == "ToolBar" )
+  if ( element.tagName().lower() == "toolbar" )
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
     KToolBar *bar = new KToolBar(this, element.attribute( "name" ), -1, honor);
@@ -203,7 +207,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
     return bar;
   }
 
-  if ( element.tagName() == "StatusBar" )
+  if ( element.tagName().lower() == "statusbar" )
   {
     enableStatusBar( KStatusBar::Show );
     return statusBar();
