@@ -83,6 +83,12 @@ public:
   static bool isAuthorizedDesktopFile(const QString& path);
 
   /**
+   * Returns the location where changes for the .desktop file @p path
+   * should be written to.
+   */
+  static QString locateLocal(const QString &path);
+
+  /**
    * Returns the value of the "Type=" entry.
    * @return the type or QString::null if not specified
    */

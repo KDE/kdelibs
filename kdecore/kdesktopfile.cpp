@@ -54,6 +54,50 @@ KDesktopFile::~KDesktopFile()
   // no need to do anything
 }
 
+QString KDesktopFile::locateLocal(const QString &path)
+{
+  QString local;
+  if (path.endsWith(".directory"))
+  {
+    if (!path.startsWith("/"))
+    {
+      local = ::locateLocal("apps", path); // Relative to apps
+    }
+    else
+    {
+      // XDG Desktop menu items come with absolute paths, we need to 
+      // extract their relative path and then build a local path.
+      local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", path);
+      if (local.startsWith("/"))
+      {
+        // What now? Use filename only and hope for the best.
+        local = path.mid(path.findRev('/')+1);
+      }
+      local = ::locateLocal("xdgdata-dirs", local);
+    }
+  }
+  else
+  {
+    if (!path.startsWith("/"))
+    {
+      local = ::locateLocal("apps", path); // Relative to apps
+    }
+    else
+    {
+      // XDG Desktop menu items come with absolute paths, we need to 
+      // extract their relative path and then build a local path.
+      local = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
+      if (local.startsWith("/"))
+      {
+        // What now? Use filename only and hope for the best.
+        local = path.mid(path.findRev('/')+1);
+      }
+      local = ::locateLocal("xdgdata-apps", local);
+    }
+  }
+  return local;
+}
+
 bool KDesktopFile::isDesktopFile(const QString& path)
 {
   int len = path.length();
