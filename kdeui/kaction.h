@@ -379,7 +379,7 @@ public:
     virtual bool isEnabled() const;
 
     /** Returns true if this action's shortcut is configurable. */
-    virtual bool isConfigurable() const;
+    virtual bool isShortcutConfigurable() const;
 
     virtual QString group() const;
 
@@ -425,7 +425,7 @@ public slots:
     /**
      * Sets the keyboard shortcut associated with this action.
      */
-    virtual void setShortcut( const KShortcut& );
+    virtual bool setShortcut( const KShortcut& );
 
     virtual void setGroup( const QString& );
 
@@ -461,7 +461,7 @@ public slots:
     virtual void setEnabled(bool enable);
 
     /** Indicate whether the user may configure the action's shortcut. */
-    virtual void setConfigurable( bool );
+    virtual void setShortcutConfigurable( bool );
 
     /**
      * Emulate user's interaction programmatically, by activating the action.
@@ -1616,26 +1616,25 @@ public:
   virtual void createKeyMap( KAccelActions& ) const;
   virtual void setKeyMap( const KAccelActions& map );
   // Used for reading shortcut configuration from a non-XML rc file.
-  bool readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
+  bool readShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
   // Used for writing shortcut configuration to a non-XML rc file.
-  bool writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 ) const;
-
+  bool writeShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 ) const;
 
   void setInstance( KInstance *instance );
   KInstance *instance() const;
+
+  /**
+   * Use this to tell the KActionCollection what rc file its configuration
+   * is stored in.
+   */
+  void setXMLFile( const QString& );
+  const QString& xmlFile() const;
 
   void setHighlightingEnabled( bool enable );
   bool highlightingEnabled() const;
 
   void connectHighlight( QWidget *container, KAction *action );
   void disconnectHighlight( QWidget *container, KAction *action );
-
-public slots:
-  /**
-   * Clears the entire actionCollection, deleting all actions.
-   * @see #remove
-   */
-  void clear();
 
 signals:
   void inserted( KAction* );
@@ -1647,17 +1646,11 @@ signals:
   void actionStatusText( const QString &text );
   void clearStatusText();
 
-#ifndef KDE_NO_COMPAT
-public:
-  virtual void insert( KAction* );
-  virtual void remove( KAction* );
-  virtual KAction* take( KAction* );
-#else
 protected:
-  virtual void insert( KAction* );
-  virtual void remove( KAction* );
-  virtual KAction* take( KAction* );
-#endif
+  void _clear();
+  void _insert( KAction* );
+  void _remove( KAction* );
+  KAction* _take( KAction* );
 
 private slots:
    void slotMenuItemHighlighted( int id );
@@ -1674,10 +1667,87 @@ private:
 public:
   KActionCollection( QObject *parent, const char *name = 0, KInstance *instance = 0 );
 
+  void insert( KAction* );
+  void remove( KAction* );
+  KAction* take( KAction* );
+
   KActionCollection operator+ ( const KActionCollection& ) const;
   KActionCollection& operator= ( const KActionCollection& );
   KActionCollection& operator+= ( const KActionCollection& );
+
+public slots:
+  /**
+   * Clears the entire actionCollection, deleting all actions.
+   * @see #remove
+   */
+  void clear();
 #endif // !KDE_NO_COMPAT
+};
+
+// TODO: move these to another header file? -- ellis
+#include <kshortcutlist.h>
+//---------------------------------------------------------------------
+// class KActionShortcutList
+//---------------------------------------------------------------------
+
+class KActionShortcutList : public KShortcutList
+{
+ public:
+	KActionShortcutList( KActionCollection* );
+	virtual ~KActionShortcutList();
+
+	virtual uint count() const;
+	virtual QString name( uint i ) const;
+	virtual QString label( uint ) const;
+	virtual QString whatsThis( uint ) const;
+	virtual const KShortcut& shortcut( uint ) const;
+	virtual const KShortcut& shortcutDefault( uint ) const;
+	virtual bool isConfigurable( uint ) const;
+	virtual bool setShortcut( uint, const KShortcut& );
+
+	virtual const KInstance* instance() const;
+
+	virtual QVariant getOther( Other, uint index ) const;
+	virtual bool setOther( Other, uint index, QVariant );
+
+	virtual bool save() const;
+
+ protected:
+	KActionCollection& m_actions;
+
+ private:
+	class KAccelShortcutListPrivate* d;
+};
+
+//---------------------------------------------------------------------
+// class KActionPtrShortcutList
+//---------------------------------------------------------------------
+
+class KActionPtrShortcutList : public KShortcutList
+{
+ public:
+	KActionPtrShortcutList( KActionPtrList& );
+	virtual ~KActionPtrShortcutList();
+
+	virtual uint count() const;
+	virtual QString name( uint i ) const;
+	virtual QString label( uint ) const;
+	virtual QString whatsThis( uint ) const;
+	virtual const KShortcut& shortcut( uint ) const;
+	virtual const KShortcut& shortcutDefault( uint ) const;
+	virtual bool isConfigurable( uint ) const;
+	virtual bool setShortcut( uint, const KShortcut& );
+
+	virtual QVariant getOther( Other, uint index ) const;
+	virtual bool setOther( Other, uint index, QVariant );
+
+	virtual bool save() const;
+
+ protected:
+	KActionPtrList& m_actions;
+
+ private:
+	class KAccelShortcutListPrivate* d;
 };
 
 #endif

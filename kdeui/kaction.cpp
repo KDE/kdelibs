@@ -30,22 +30,24 @@
 
 #include "kaction.h"
 
+#include <qfontdatabase.h>
+#include <qobjectlist.h>
+#include <qptrdict.h>
+#include <qwhatsthis.h>
+#include <qtl.h>
+#include <qtooltip.h>
+#include <qvariant.h>
+
 #include <kguiitem.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kmenubar.h>
-#include <qobjectlist.h>
 #include <kapplication.h>
 #include <kaccel.h>
 #include <kaccelbase.h>
 #include <kconfig.h>
 #include <kstdaccel.h>
 #include <kurl.h>
-#include <qtl.h>
-#include <qptrdict.h>
-#include <qfontdatabase.h>
-#include <qwhatsthis.h>
-#include <qtooltip.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
 #include <kmainwindow.h>
@@ -97,6 +99,10 @@ int KAction::getToolButtonID()
     return toolbutton_no--;
 }
 
+//---------------------------------------------------------------------
+// KAction::KActionPrivate
+//---------------------------------------------------------------------
+
 class KAction::KActionPrivate : public KGuiItem
 {
 public:
@@ -131,6 +137,10 @@ public:
 
   QValueList<Container> m_containers;
 };
+
+//---------------------------------------------------------------------
+// KAction
+//---------------------------------------------------------------------
 
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -297,7 +307,7 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
   return true;
 }
 
-void KAction::setShortcut( const KShortcut& cut )
+bool KAction::setShortcut( const KShortcut& cut )
 {
   d->m_cut = cut;
 
@@ -313,6 +323,8 @@ void KAction::setShortcut( const KShortcut& cut )
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     updateShortcut( i );
+
+  return true;
 }
 
 void KAction::setAccel( int keyQt )
@@ -408,7 +420,7 @@ bool KAction::isEnabled() const
   return d->isEnabled();
 }
 
-bool KAction::isConfigurable() const
+bool KAction::isShortcutConfigurable() const
 {
   return d->m_configurable;
 }
@@ -647,7 +659,7 @@ void KAction::updateEnabled( int i )
       static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
 }
 
-void KAction::setConfigurable( bool b )
+void KAction::setShortcutConfigurable( bool b )
 {
     d->m_configurable = b;
 }
@@ -2674,7 +2686,7 @@ void KActionPtrList::createKeyMap( KAccelActions& map ) const
   map.clear();
   for( ConstIterator it = begin(); it != end(); ++it ) {
     KAction* action = *it;
-    if( action->isConfigurable() ) {
+    if( action->isShortcutConfigurable() ) {
       map.insert( action->name(), action->plainText(), QString::null,
         action->shortcutDefault(), action->shortcutDefault() );
       if( action->shortcut() != action->shortcutDefault() ) {
@@ -2731,6 +2743,7 @@ public:
   {
   }
   KInstance *m_instance;
+  QString m_sXMLFile;
   KAccel *m_kaccel;
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
@@ -2803,7 +2816,7 @@ void KActionCollection::setWidget( QWidget* w )
     kdWarning(125) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
 }
 
-void KActionCollection::insert( KAction* action )
+void KActionCollection::_insert( KAction* action )
 {
   KAction *a = d->m_actionDict[ action->name() ];
   if ( a == action )
@@ -2814,12 +2827,12 @@ void KActionCollection::insert( KAction* action )
   emit inserted( action );
 }
 
-void KActionCollection::remove( KAction* action )
+void KActionCollection::_remove( KAction* action )
 {
-  delete take (action);
+  delete _take( action );
 }
 
-KAction* KActionCollection::take( KAction* action )
+KAction* KActionCollection::_take( KAction* action )
 {
   KAction *a = d->m_actionDict.take( action->name() );
   if ( !a || a != action )
@@ -2829,12 +2842,17 @@ KAction* KActionCollection::take( KAction* action )
   return a;
 }
 
-void KActionCollection::clear()
+void KActionCollection::_clear()
 {
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   while ( it.current() )
-    remove( it.current() );
+    _remove( it.current() );
 }
+
+void KActionCollection::insert( KAction* action )   { _insert( action ); }
+void KActionCollection::remove( KAction* action )   { _remove( action ); }
+KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
+void KActionCollection::clear()                     { _clear(); }
 
 KAccel* KActionCollection::accel()
 {
@@ -2871,29 +2889,43 @@ KAction* KActionCollection::action( int index ) const
 
 void KActionCollection::createKeyMap( KAccelActions& map ) const
 {
-  actions().createKeyMap( map );
+  kdDebug(125) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
+  map.clear();
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  for( ; it.current(); ++it ) {
+    KAction* action = it.current();
+    if( action->isShortcutConfigurable() ) {
+      map.insert( action->name(), action->plainText(), QString::null,
+        action->shortcutDefault(), action->shortcutDefault() );
+      if( action->shortcut() != action->shortcutDefault() ) {
+        KAccelAction* pAccelAction = map.actionPtr( action->name() );
+        if( pAccelAction )
+          pAccelAction->setShortcut( action->shortcut() );
+      }
+    }
+  }
 }
 
 void KActionCollection::setKeyMap( const KAccelActions& map )
 {
-  actions().setKeyMap( map );
+  kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
+  for( uint i = 0; i < map.count(); i++ )
+  {
+    const KAccelAction* aa = map.actionPtr( i );
+    KAction* act = action( aa->name().latin1() );
+    if( act )
+      act->setShortcut( aa->shortcut() );
+  }
 }
 
 bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig )
 {
-  KAccelActions aa;
-  createKeyMap( aa );
-  aa.readActions( sConfigGroup, pConfig );
-  setKeyMap( aa );
-  return true;
+  return KActionShortcutList(this).readSettings( sConfigGroup, pConfig );
 }
 
 bool KActionCollection::writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig ) const
 {
-  KAccelActions aa;
-  createKeyMap( aa );
-  aa.writeActions( sConfigGroup, pConfig );
-  return true;
+  return KActionShortcutList((KActionCollection*)this).writeSettings( sConfigGroup, pConfig );
 }
 
 uint KActionCollection::count() const
@@ -2979,6 +3011,16 @@ void KActionCollection::setInstance( KInstance *instance )
 KInstance *KActionCollection::instance() const
 {
   return d->m_instance;
+}
+
+void KActionCollection::setXMLFile( const QString& sXMLFile )
+{
+  d->m_sXMLFile = sXMLFile;
+}
+
+const QString& KActionCollection::xmlFile() const
+{
+  return d->m_sXMLFile;
 }
 
 void KActionCollection::setHighlightingEnabled( bool enable )
@@ -3156,6 +3198,150 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
   return *this;
 }
 #endif
+
+//---------------------------------------------------------------------
+// KActionShortcutList
+//---------------------------------------------------------------------
+
+KActionShortcutList::KActionShortcutList( KActionCollection* pColl )
+: m_actions( *pColl )
+	{ }
+KActionShortcutList::~KActionShortcutList()
+	{ }
+uint KActionShortcutList::count() const
+	{ return m_actions.count(); }
+QString KActionShortcutList::name( uint i ) const
+	{ return m_actions.action(i)->name(); }
+QString KActionShortcutList::label( uint i ) const
+	{ return m_actions.action(i)->text(); }
+QString KActionShortcutList::whatsThis( uint i ) const
+	{ return m_actions.action(i)->whatsThis(); }
+const KShortcut& KActionShortcutList::shortcut( uint i ) const
+	{ return m_actions.action(i)->shortcut(); }
+const KShortcut& KActionShortcutList::shortcutDefault( uint i ) const
+	{ return m_actions.action(i)->shortcutDefault(); }
+bool KActionShortcutList::isConfigurable( uint i ) const
+	{ return m_actions.action(i)->isShortcutConfigurable(); }
+bool KActionShortcutList::setShortcut( uint i, const KShortcut& cut )
+	{ return m_actions.action(i)->setShortcut( cut ); }
+const KInstance* KActionShortcutList::instance() const
+	{ return m_actions.instance(); }
+QVariant KActionShortcutList::getOther( Other, uint ) const
+	{ return QVariant(); }
+bool KActionShortcutList::setOther( Other, uint, QVariant )
+	{ return false; }
+
+bool KActionShortcutList::save() const
+{
+	kdDebug(125) << "KActionShortcutList::save(): xmlFile = " << m_actions.xmlFile() << endl;
+
+	if( m_actions.xmlFile().isEmpty() )
+		return writeSettings();
+
+	QString tagActionProp = QString::fromLatin1("ActionProperties");
+	QString tagAction     = QString::fromLatin1("Action");
+	QString attrName      = QString::fromLatin1("name");
+	QString attrShortcut  = QString::fromLatin1("shortcut");
+	QString attrAccel     = QString::fromLatin1("accel"); // Depricated attribute
+
+	// Read XML file
+	QString sXml( KXMLGUIFactory::readConfigFile( m_actions.xmlFile(), false, instance() ) );
+	QDomDocument doc;
+	doc.setContent( sXml );
+
+	// Process XML data
+
+	// first, lets see if we have existing properties
+	QDomElement elem;
+	QDomElement it = doc.documentElement();
+	// KXMLGUIFactory::removeDOMComments( it ); <-- What was this for? --ellis
+	it = it.firstChild().toElement();
+	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
+		if( it.tagName() == tagActionProp ) {
+			elem = it;
+			break;
+		}
+	}
+
+	// if there was none, create one
+	if( elem.isNull() ) {
+		elem = doc.createElement( tagActionProp );
+		doc.firstChild().appendChild( elem );
+	}
+
+	// now, iterate through our actions
+	uint nSize = count();
+	for( uint i = 0; i < nSize; i++ ) {
+		const QString& sName = name(i);
+
+		bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
+		//kdDebug() << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+
+		// now see if this element already exists
+		QDomElement act_elem;
+		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
+			if( it.attribute( attrName ) == sName ) {
+				act_elem = it;
+				break;
+			}
+		}
+
+		// nope, create a new one
+		if( act_elem.isNull() ) {
+			if( bSameAsDefault )
+				continue;
+			//kdDebug() << "\tnode doesn't exist." << endl;
+			act_elem = doc.createElement( tagAction );
+			act_elem.setAttribute( attrName, sName );
+		}
+
+		act_elem.removeAttribute( attrAccel );
+		if( bSameAsDefault ) {
+			act_elem.removeAttribute( attrShortcut );
+			//kdDebug() << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+			if( act_elem.attributes().count() == 1 )
+				elem.removeChild( act_elem );
+		} else {
+			act_elem.setAttribute( attrShortcut, shortcut(i).toStringInternal() );
+			elem.appendChild( act_elem );
+		}
+	}
+
+	// Write back to XML file
+	return KXMLGUIFactory::saveConfigFile( doc, m_actions.xmlFile(), instance() );
+}
+
+//---------------------------------------------------------------------
+// KActionPtrShortcutList
+//---------------------------------------------------------------------
+
+KActionPtrShortcutList::KActionPtrShortcutList( KActionPtrList& list )
+: m_actions( list )
+	{ }
+KActionPtrShortcutList::~KActionPtrShortcutList()
+	{ }
+uint KActionPtrShortcutList::count() const
+	{ return m_actions.count(); }
+QString KActionPtrShortcutList::name( uint i ) const
+	{ return m_actions[i]->name(); }
+QString KActionPtrShortcutList::label( uint i ) const
+	{ return m_actions[i]->text(); }
+QString KActionPtrShortcutList::whatsThis( uint i ) const
+	{ return m_actions[i]->whatsThis(); }
+const KShortcut& KActionPtrShortcutList::shortcut( uint i ) const
+	{ return m_actions[i]->shortcut(); }
+const KShortcut& KActionPtrShortcutList::shortcutDefault( uint i ) const
+	{ return m_actions[i]->shortcutDefault(); }
+bool KActionPtrShortcutList::isConfigurable( uint i ) const
+	{ return m_actions[i]->isShortcutConfigurable(); }
+bool KActionPtrShortcutList::setShortcut( uint i, const KShortcut& cut )
+	{ return m_actions[i]->setShortcut( cut ); }
+QVariant KActionPtrShortcutList::getOther( Other, uint ) const
+	{ return QVariant(); }
+bool KActionPtrShortcutList::setOther( Other, uint, QVariant )
+	{ return false; }
+bool KActionPtrShortcutList::save() const
+	{ return false; }
 
 #include "kaction.moc"
 
