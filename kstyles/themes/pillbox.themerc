@@ -1,6 +1,9 @@
 [Misc]
 Name=Pillbox
+Name[da]=Pilleboks
 Comment=Pillbox unthemed style.
+Comment[ca]=Estil sense tema Pillbox.
+Comment[da]=Pilleboksstil uden tema
 Comment[de]=Pillenschachtel (kein komplettes Design)
 [KDE]
 widgetStyle=pillboxstyle.la
