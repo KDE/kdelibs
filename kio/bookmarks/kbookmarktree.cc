@@ -53,6 +53,7 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
+#include <qheader.h>
 #include <qlistview.h>
 
 #include <kiconloader.h>

@@ -56,7 +56,6 @@
 #include <kstdaction.h>
 #include <kconfig.h>
 
-#include <qheader.h>
 #include <qlistview.h>
 
 #include <kiconloader.h>
