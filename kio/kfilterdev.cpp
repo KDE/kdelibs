@@ -36,14 +36,6 @@ public:
     KFilterBase::Result result;
 };
 
-KFilterDev::KFilterDev( KFilterBase * _filter )
-    : filter(_filter)
-{
-    assert(filter);
-    d = new KFilterDevPrivate;
-    setFlags(IO_Sequential);
-}
-
 KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
     : filter(_filter)
 {

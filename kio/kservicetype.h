@@ -103,8 +103,6 @@ public:
   /**
    * @return true if this service type inherits another one
    */
-  // This is a temporary measure because parentServiceType()
-  // is a bit slow. To be removed in KDE 3.0
   bool isDerived() const { return m_bDerived; }
 
   /**
@@ -167,7 +165,7 @@ protected:
   QMap<QString,QVariant::Type> m_mapPropDefs;
 
   bool m_bValid:1;
-  bool m_bDerived:1; // BCI : QString instead
+  bool m_bDerived:1;
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

@@ -26,10 +26,6 @@ class QGridLayout;
 
 namespace KIO {
 
-// ### remove for 3.0
-// compatibility has been completely broken, here's a workaround
-#define PasswordDialog PassDlg
-    
 /**
  * A dialog for requesting a login and a password from the end user.
  *
@@ -120,9 +116,6 @@ public:
      */
     QString username() const;
 
-    // ### remove for 3.0
-    QString user();
-    
     /**
      * Determines whether supplied authorization should
      * persist even after the application has been closed.

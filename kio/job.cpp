@@ -100,7 +100,7 @@ Job::~Job()
     kapp->deref();
 }
 
-void Job::addSubjob(Job *job)
+void Job::addSubjob(Job *job, bool inheritMetaData)
 {
     //kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
     subjobs.append(job);
@@ -115,7 +115,8 @@ void Job::addSubjob(Job *job)
     connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
              SLOT(slotInfoMessage(KIO::Job*, const QString &)) );
 
-    job->setMetaData(m_outgoingMetaData);
+    if (inheritMetaData)
+       job->mergeMetaData(m_outgoingMetaData);
 }
 
 void Job::removeSubjob( Job *job )
@@ -266,6 +267,13 @@ void Job::addMetaData( const QMap<QString,QString> &values)
     QMapConstIterator<QString,QString> it = values.begin();
     for(;it != values.end(); ++it)
       m_outgoingMetaData.insert(it.key(), it.data());
+}
+
+void Job::mergeMetaData( const QMap<QString,QString> &values)
+{
+    QMapConstIterator<QString,QString> it = values.begin();
+    for(;it != values.end(); ++it)
+      m_outgoingMetaData.insert(it.key(), it.data(), false);
 }
 
 MetaData Job::outgoingMetaData() const
@@ -1851,11 +1859,6 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 files.append( info ); // Files and any symlinks
         }
     }
-}
-
-void CopyJob::startNextJob()
-{
-  // Don't break BC.
 }
 
 void CopyJob::statNextSrc()

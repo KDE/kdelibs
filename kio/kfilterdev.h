@@ -37,13 +37,10 @@ class KFilterDev : public QIODevice
 public:
     /**
      * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
+     * @param autoDeleteFilterbase when true this object will become the
+     * owner of @p filter.
      */
-    KFilterDev( KFilterBase * filter ); // BCI remove and add default value to 2nd constructor
-    /**
-     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
-     * Call this with autodeleteFilterBase so that the KFilterDev owns the KFilterBase.
-     */
-    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase );
+    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false);
     /**
      * Destructs the KFilterDev.
      */
@@ -83,6 +80,7 @@ public:
      * working on @p file . The returned QIODevice has to be deleted
      * after using.
      * @deprecated. Use @ref deviceForFile instead.
+     * To be removed in KDE 3.0
      */
     static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
 

@@ -88,20 +88,6 @@ public:
   OfferList offers() const;
 
   /**
-   * @return the service type_s_ for which this profile is responsible.
-   * @internal - you're not supposed to call this !
-   */
-  QString serviceType() const { return m_strServiceType; }
-
-  /**
-   * @return the preferred service (convenience method)
-   * @param needApp if we need an service of type Application
-   * (as opposed to any service, including non-app services)
-   * @deprecated, see the other @ref preferredService.
-   */
-  static KService::Ptr preferredService( const QString & serviceType, bool needApp );  // ### remove in KDE 3.0
-
-  /**
    * @return the preferred service (convenience method)
    * for _serviceType and _genericServiceType (Application, type of component, or empty).
    *
@@ -120,20 +106,16 @@ public:
    * @return the offers associated with a given servicetype, sorted by preference
    * This is what KTrader uses to get the list of offers, before applying the
    * constraints and preferences.
-   */
-  static OfferList offers( const QString& servicetype );
-
-  /**
-   * @return the offers associated with the combination of two service types
-   * This is almost like an "blah in ServiceTypes" constraint in the Trader,
+   *
+   * If @p genericServiceType is specified a list is returned with 
+   * the offers associated with the combination of the two service types.
+   * This is almost like an "foo in ServiceTypes" constraint in the Trader,
    * but the difference is that to order the offers, we will look at entries
    * specifically for those two service types. Typically, this is used for
    * getting the list of embeddable components that can handle a given mimetype.
    * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
    */
-  static OfferList offers( const QString& servicetype, const QString& genericServiceType );
-
-  //BCI : merge both offers methods, and genericServiceType = QString::null
+  static OfferList offers( const QString& servicetype, const QString& genericServiceType = QString::null );
 
   static const QPtrList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
 
@@ -186,12 +168,13 @@ private:
 
   /**
    * ServiceType of this profile.
-   * For BCI reasons, this is actually m_strServiceType + "%!%" + m_strGenericServiceType
    */
   QString m_strServiceType;
 
-  ///BCI m_strGenericServiceType;
-  ///BCI: d pointer
+  /**
+   * Secondary ServiceType of this profile.
+   */
+  QString m_strGenericServiceType;
 
   static void initStatic();
   static QPtrList<KServiceTypeProfile>* s_lstProfiles;

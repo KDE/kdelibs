@@ -735,14 +735,6 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   return result;
 }
 
-// For BC purposes only - remove for KDE 3.0
-QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const KURL& _url )
-{
-  if ( !_url.isLocalFile() )
-    return QValueList<Service>();
-  return userDefinedServices( _url.path(), true );
-}
-
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
   QValueList<Service> result;

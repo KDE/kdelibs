@@ -801,30 +801,6 @@ void KDirLister::clearMimeFilter()
     d->mimeFilter.clear();
 }
 
-// ## the deprecated one
-void KDirLister::setMimeFilter( const QString& mimefilter )
-{
-    //kdWarning(7003) << "This is the deprecated setMimeFilter( " << mimefilter << " )!!!" << endl;
-    d->mimeFilter = QStringList::split(' ', mimefilter);
-}
-
-// ## the deprecated one
-const QString& KDirLister::mimeFilter() const
-{
-    //kdWarning(7003) << "This is the deprecated mimeFilter()!!!" << endl;
-    d->deprecated_mimeFilter = QString::null;
-    QStringList::ConstIterator it = d->mimeFilter.begin();
-    while ( it != d->mimeFilter.end() ) {
-        if ( it != d->mimeFilter.begin() )
-            d->deprecated_mimeFilter += ' ';
-        d->deprecated_mimeFilter += *it;
-
-        ++it;
-    }
-
-    return d->deprecated_mimeFilter;
-}
-
 const QString& KDirLister::nameFilter() const
 {
     return d->nameFilter;

@@ -50,6 +50,7 @@
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
 #include "kio/connection.h"
+#include "kio/ioslave_defaults.h"
 
 using namespace KIO;
 
@@ -426,11 +427,6 @@ void SlaveBase::mimeType( const QString &_type)
   }
   while (cmd != CMD_NONE);
   mOutgoingMetaData.clear();
-}
-
-// remove in KDE 3.0
-void SlaveBase::gettingFile( const QString & )
-{
 }
 
 void SlaveBase::warning( const QString &_msg)
@@ -1250,7 +1246,7 @@ int SlaveBase::connectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultConnectTimeout();
+    return DEFAULT_CONNECT_TIMEOUT;
 }
 
 int SlaveBase::proxyConnectTimeout()
@@ -1260,7 +1256,7 @@ int SlaveBase::proxyConnectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultProxyConnectTimeout();
+    return DEFAULT_PROXY_CONNECT_TIMEOUT;
 }
 
 
@@ -1271,7 +1267,7 @@ int SlaveBase::responseTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultResponseTimeout();
+    return DEFAULT_RESPONSE_TIMEOUT;
 }
 
 
@@ -1282,5 +1278,5 @@ int SlaveBase::readTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultReadTimeout();
+    return DEFAULT_READ_TIMEOUT;
 }

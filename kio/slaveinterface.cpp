@@ -225,9 +225,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	emit speed( ul );
 	break;
     case INF_GETTING_FILE:
-	stream >> str1;
-
-	emit gettingFile( str1 );
 	break;
     case INF_ERROR_PAGE:
 	emit errorPage();
@@ -303,7 +300,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         kdDebug(7007) << "Got auth-key:      " << key << endl
                       << "    group-key:     " << group << endl
                       << "    keep password: " << keep << endl;
-        emit authenticationKey( key, group );
         emit authorizationKey( key, group, keep );
         break;
     }

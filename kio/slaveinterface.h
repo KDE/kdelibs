@@ -81,11 +81,11 @@ class SlaveInterfacePrivate;
    INF_PROCESSED_SIZE = 11,
    INF_SPEED,
    INF_REDIRECTION = 20,
-   INF_MIME_TYPE,
-   INF_ERROR_PAGE,
-   INF_WARNING,
-   INF_GETTING_FILE, // ?
-   INF_NEED_PASSWD,
+   INF_MIME_TYPE = 21,
+   INF_ERROR_PAGE = 22,
+   INF_WARNING = 23,
+   INF_GETTING_FILE, // Deprecated
+   INF_NEED_PASSWD = 25,
    INF_INFOMESSAGE,
    INF_META_DATA,
    INF_NETWORK_STATUS,
@@ -172,18 +172,8 @@ signals:
     void errorPage() ;
     void mimeType( const QString & ) ;
     void warning( const QString & ) ;
-    void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
-
-    /**
-     * @deprecated.  Use @ref authorizationKey instead.
-     *
-     * NOTE: Do not connect to both this and @ref authorizationKey.
-     * @ref authData at the same time!
-     */
-     // BC: Remove me in KDE 3.0
-    void authenticationKey( const QCString &, const QCString & );
 
     /**
      * Emitted whenever login (username/password) information

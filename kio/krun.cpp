@@ -85,7 +85,9 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
   KURL::List lst;
   lst.append( u );
 
-  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype, true /*need app*/ );
+  static const QString& app_str = KGlobal::staticQString("Application");
+
+  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype, app_str );
 
   if ( !offer )
   {
@@ -732,7 +734,7 @@ void KRun::slotStatResult( KIO::Job * job )
   }
 }
 
-void KRun::slotScanMimeType( KIO::Job *job, const QString &mimetype )
+void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
 {
   if ( mimetype.isEmpty() )
     kdWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug." << endl;

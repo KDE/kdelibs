@@ -361,8 +361,6 @@ public:
    * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
    */
   static QValueList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
-  // For BC purposes only, remove for KDE 3.0
-  static QValueList<Service> userDefinedServices( const KURL& _url );
 
   /**
    * @param _path is the path of the desktop entry.

@@ -243,13 +243,6 @@ public:
   void clearMimeFilter();
 
   /**
-   * @deprecated
-   * Sets mime filters separated with space.
-   * ## remove for 3.0
-   */
-  void setMimeFilter( const QString& );
-
-  /**
    * @returns the current name filter, as set via @ref setNameFilter()
    */
   const QString& nameFilter() const;
@@ -259,12 +252,6 @@ public:
    * Empty, when no mime filter is set.
    */
   QStringList mimeFilters() const;
-
-  /**
-   * @deprecated
-   * @returns the current mime filter as set via @ref setMimeFilter()
-   */
-  const QString& mimeFilter() const;
 
   /**
    * @returns true if @p name matches a filter in the list,
@@ -484,12 +471,6 @@ protected:
 
   bool m_isShowingDotFiles;
   bool m_bComplete;
-
-  /**
-   * Keep entries found - used by slotUpdate*
-   * ## in 3.0 replace with d->buffer;
-   */
-  QValueList<KIO::UDSEntry> m_buffer;
 
   /** List only directories */
   bool m_bDirOnlyMode;

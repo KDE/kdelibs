@@ -30,8 +30,6 @@
 
 template class QPtrList<KServiceTypeProfile>;
 
-#define HACK_ST_SEPARATOR "%!%"
-
 /*********************************************
  *
  * KServiceTypeProfile
@@ -92,12 +90,6 @@ void KServiceTypeProfile::initStatic()
 }
 
 //static
-KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype )
-{
-    return offers( _servicetype, QString::null );
-}
-
-//static
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
 {
     OfferList offers;
@@ -111,7 +103,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         // We want all profiles for servicetype, if we have profiles.
         QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
         for( ; it.current(); ++it )
-            if ( it.current()->serviceType().startsWith( _servicetype + HACK_ST_SEPARATOR ) )
+            if ( it.current()->m_strServiceType == _servicetype )
             {
                 offers += it.current()->offers();
             }
@@ -164,7 +156,8 @@ KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QSt
 {
   initStatic();
 
-  m_strServiceType = _servicetype + HACK_ST_SEPARATOR + _genericServiceType;
+  m_strServiceType = _servicetype;
+  m_strGenericServiceType = _genericServiceType;
 
   s_lstProfiles->append( this );
 }
@@ -211,11 +204,13 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
 {
   initStatic();
   static const QString& app_str = KGlobal::staticQString("Application");
-  QString hackedType = _servicetype + HACK_ST_SEPARATOR + ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
+  
+  const QString &_genservicetype  = ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
   QPtrListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
-    if ( it.current()->serviceType() == hackedType )
+    if (( it.current()->m_strServiceType == _servicetype ) &&
+        ( it.current()->m_strGenericServiceType == _genservicetype)) 
       return it.current();
 
   return 0;
@@ -226,16 +221,13 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 {
   OfferList offers;
 
-  int posHack = m_strServiceType.find( HACK_ST_SEPARATOR );
-  QString serviceType = m_strServiceType.left( posHack );
-  QString genericServiceType = m_strServiceType.mid( posHack + strlen(HACK_ST_SEPARATOR) );
-  kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
-  KService::List list = KServiceType::offers( serviceType );
+  kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
+  KService::List list = KServiceType::offers( m_strServiceType );
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
     //kdDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
-    if ( genericServiceType.isEmpty() || (*it)->hasServiceType( genericServiceType ) )
+    if ( m_strGenericServiceType.isEmpty() || (*it)->hasServiceType( m_strGenericServiceType ) )
     {
       // Now look into the profile, to find this service's preference.
       QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
@@ -258,19 +250,13 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
         offers.append( o );
       }
     }/* else
-      kdDebug(7014) << "Doesn't have " << genericServiceType << endl;*/
+      kdDebug(7014) << "Doesn't have " << m_strGenericServiceType << endl;*/
   }
 
   qBubbleSort( offers );
 
   //kdDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
   return offers;
-}
-
-KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, bool needApp )
-{
-    static const QString& app_str = KGlobal::staticQString("Application");
-    return preferredService( _serviceType, needApp ? app_str : QString::null );
 }
 
 KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, const QString & _genericServiceType )

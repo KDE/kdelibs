@@ -849,7 +849,8 @@ bool
 Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
 //    kdDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")" << endl;
-    if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
+    QString dummy;
+    if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url(), dummy ))
         ||
         (!newJobs.removeRef(job)))
     {

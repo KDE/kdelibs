@@ -285,25 +285,6 @@ void KProtocolManager::badProxy( const QString &proxy )
     d->pac->badProxy( proxy );
 }
 
-QString KProtocolManager::slaveProtocol( const QString & protocol )
-{
-  if ( useProxy() )
-  {
-    KURL u = proxyFor(protocol);
-    if ( u.isValid() )
-    {
-      // HACK: This will be removed once kio_http
-      // gets ported over to TCPSlaveBase!!
-      QString p = u.protocol();
-      if ( p == QString::fromLatin1("http") &&
-           protocol == QString::fromLatin1("https") )
-        p = protocol;
-      return p;
-    }
-  }
-  return protocol;
-}
-
 /*
     Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
     nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
@@ -496,73 +477,3 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   return d->useragent;
 }
 
-/*================================ !!DEPRECATED!! ===========================*/
-
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setReadTimeout( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setConnectTimeout( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setProxyConnectTimeout( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setResponseTimeout( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setMarkPartial( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setMinimumKeepSize( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setAutoResume( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setPersistentConnections( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setUseCache( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setMaxCacheSize( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setMaxCacheAge( int ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setUseProxy( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setUseReverseProxy( bool ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setProxyType( ProxyType ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setProxyAuthMode( ProxyAuthMode ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setFtpProxy( const QString& ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setHttpProxy( const QString& ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setNoProxyFor( const QString& ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setProxyFor( const QString&, const QString& ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setCacheControl( KIO::CacheControl ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setUserAgentList( const QStringList& ){}
-// obsolete, remove me in KDE 3.0
-void KProtocolManager::setProxyConfigScript( const QString& ){}
-// obsolete, remove me in KDE 3.0
-QStringList KProtocolManager::userAgentList()
-{ return QStringList(); }
-// obsolete, remove me in KDE 3.0
-int KProtocolManager::defaultConnectTimeout()
-{ return DEFAULT_CONNECT_TIMEOUT; }
-// obsolete, remove me in KDE 3.0
-int KProtocolManager::defaultProxyConnectTimeout()
-{ return DEFAULT_PROXY_CONNECT_TIMEOUT; }
-// obsolete, remove me in KDE 3.0
-int KProtocolManager::defaultResponseTimeout()
-{ return DEFAULT_RESPONSE_TIMEOUT; }
-// obsolete, remove me in KDE 3.0
-int KProtocolManager::defaultReadTimeout()
-{ return DEFAULT_READ_TIMEOUT; }
-// obsolete, remove me in KDE 3.0
-int KProtocolManager::minimumTimeoutThreshold()
-{ return MIN_TIMEOUT_VALUE; }
-// obsolete, remove me in KDE 3.0
-QString KProtocolManager::ftpProxy()
-{ return proxyFor( "ftp" ); }
-// obsolete, remove me in KDE 3.0
-QString KProtocolManager::httpProxy()
-{ return proxyFor( "http" ); }

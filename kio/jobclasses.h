@@ -146,8 +146,15 @@ namespace KIO {
 
         /**
          * Add key/value pairs to the meta data that is sent to the slave.
+         * If a certain key already existed, it will be overridden.
          */
         void addMetaData(const QMap<QString,QString> &values);
+
+        /**
+         * Add key/value pairs to the meta data that is sent to the slave.
+         * If a certain key already existed, it will remain unchanged.
+         */
+        void mergeMetaData(const QMap<QString,QString> &values);
 
         /**
          * @internal. For the scheduler. Do not use.
@@ -247,8 +254,11 @@ namespace KIO {
          * Add a job that has to be finished before a result
          * is emitted. This has obviously to be called before
          * the finish signal is emitted by the slave.
+         *
+         * If @p inheritMetaData is true, the subjob will 
+         * inherit the meta data from this job.
          */
-        virtual void addSubjob( Job *job );
+        virtual void addSubjob( Job *job, bool inheritMetaData=true );
 
         /**
          * Mark a sub job as being done. If it's the last to
@@ -840,7 +850,6 @@ namespace KIO {
         void copyingLinkDone( KIO::Job *, const KURL &from, const QString& target, const KURL& to );
 
     protected:
-        void startNextJob(); // BC only. Not used.
         void statNextSrc();
 
         // Those aren't slots but submethods for slotResult.

@@ -181,11 +181,6 @@ public:
     void mimeType( const QString &_type );
 
     /**
-     * @deprecated Don't use.
-     */
-    void gettingFile( const QString &_file );
-
-    /**
      * Call to signal a warning, to be displayed in a dialog box.
      */
     void warning( const QString &msg );

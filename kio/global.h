@@ -59,14 +59,11 @@ namespace KIO
 
   /**
    * Converts size from kilo-bytes to the string representation.
-   * Don't use convertSize( size * 1024 ), this easily goes off the 32-bit limit.
-   *
-   * ### KDE 3.0 : add support for long long
    *
    * @param  size  size in kilo-bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
-    QString convertSizeFromKB( unsigned long kbSize );
+   QString convertSizeFromKB( KIO::filesize_t kbSize );
 
   /**
    * Calculates remaining time from total size, processed size and speed.

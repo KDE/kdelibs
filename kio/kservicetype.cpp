@@ -61,10 +61,13 @@ KServiceType::init( KDesktopFile *config)
   m_strComment = config->readComment();
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   m_strIcon = config->readIcon();
+
+  // We store this as property to preserve BC, we can't change that
+  // because KSycoca needs to remain BC between KDE 2.x and KDE 3.x
   QString sDerived = config->readEntry( "X-KDE-Derived" );
-  m_bDerived = !sDerived.isEmpty(); // BCI: we'd better store a QString :)
+  m_bDerived = !sDerived.isEmpty();
   if ( m_bDerived )
-    m_mapProps.insert( "X-KDE-Derived", sDerived ); // That's the way we store it to preserve BC
+    m_mapProps.insert( "X-KDE-Derived", sDerived ); 
 
   QStringList tmpList = config->groupList();
   QStringList::Iterator gIt = tmpList.begin();
