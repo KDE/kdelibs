@@ -16,8 +16,8 @@
 #include <qdir.h>
 
 #include <kapp.h>
-#include <kdebug.h>
 #include <kglobal.h>
+#include <kdebug.h>
 #include <kstddirs.h>
 
 #include "kregistry.h"
@@ -67,7 +67,6 @@ void KRegistry::addFactory( KRegFactory *_factory )
   // QStringList::ConstIterator end = _factory->pathList().end(); doesn't work ??? (David)
   for( ; it != _factory->pathList().end(); ++it )
   {
-    kdebug( KDEBUG_INFO, 7011, "addFactory : adding path %s", (*it).ascii() );
     m_lstToplevelDirs.append( *it );
     if ( m_bLoaded )
       readDirectory( *it, true );
@@ -76,8 +75,6 @@ void KRegistry::addFactory( KRegFactory *_factory )
 
 bool KRegistry::readDirectory( const QString& _path, bool _init )
 {
-  kdebug( KDEBUG_INFO, 7011, "Reading directory %s", _path.ascii() );
-
   QDir d( _path );                               // set QDir ...
   if ( !d.exists() )                            // exists&isdir?
     return false;                             // return false
@@ -138,7 +135,6 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
 	  i2 = exists( file );                  // find it in list...
 	  if ( i2 != -1 )                              // got it?
 	    {                                         // Yeah!
-	      //kdebug( KDEBUG_INFO, 7011, "Updating %s", file.data() );
 	      KRegEntry *entry = m_lstEntries.at( i2 );
 	      entry->mark();
 	      if ( !entry->update() )                // update it (if needed)
@@ -155,8 +151,6 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
 		{
 		  // Create a new entry
 		  m_lstEntries.append( createEntry( file ) );
-		  if ( !_init )
-		    kdebug( KDEBUG_INFO, 7011, "KRegistry: New item %s", file.data() );
 		  m_bModified = true;
 		}
 	    }
@@ -183,7 +177,6 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
     {
       if ( !a->isMarked() && a->isInDirectory( path ) )
 	{
-	  kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file().ascii());
 	  m_lstEntries.remove( m_lstEntries.at() );
 	  a = m_lstEntries.current();
 	  m_bModified = true;
@@ -223,8 +216,6 @@ void KRegistry::load( const QString& _dbfile )
 	QString file;
 	str >> file;
 
-	// kdebug( KDEBUG_INFO, 7011, "STORE: %s", file.ascii());
-	
 	KRegEntry *entry = 0;
 	if ( file == "//Dummy//" )
 	{
@@ -246,10 +237,7 @@ void KRegistry::load( const QString& _dbfile )
 
   QStringList::Iterator it = m_lstToplevelDirs.begin();
   for( ; it != m_lstToplevelDirs.end(); ++it )
-  {
-    kdebug( KDEBUG_INFO, 7011, "========== SCANNING %s ==============", (*it).ascii() );
     readDirectory( *it, true );
-  }
 
   m_bLoaded = true;
 }
@@ -298,14 +286,11 @@ void KRegistry::update( const QString& _path )
 
 void KRegistry::dirDeleted( const QString& _path )
 {
-  kdebug( KDEBUG_INFO, 7011, "KRegistry: Dir deleted %s", _path.ascii() );
-
   KRegEntry *a = m_lstEntries.first();
   while( a )
   {
     if ( a->isInDirectory( _path, true ) )
     {
-      kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file().ascii() );
       m_lstEntries.remove( m_lstEntries.at() );
       a = m_lstEntries.current();
       continue;
@@ -316,7 +301,6 @@ void KRegistry::dirDeleted( const QString& _path )
 
 KRegEntry* KRegistry::createEntry( QDataStream& _str, const QString& _file )
 {
-  // kdebug( KDEBUG_INFO, 7011, "KRegistry: createEntry from datastream for %s", _file.ascii());
   KRegFactory *f;
   for( f = m_lstFactories.first(); f != 0L; f = m_lstFactories.next() )
   {
@@ -399,13 +383,10 @@ bool KRegEntry::isInDirectory( const QString& _path, bool _allow_subdir ) const
 
 bool KRegEntry::update()
 {
-  // kdebug( KDEBUG_INFO, 7011, "Checking %s", m_strFile.ascii() );
-
   // Does the file still exist ?
   struct stat statbuff;
   if (stat( m_strFile.ascii(), &statbuff) == -1)
   {
-    kdebug( KDEBUG_INFO, 7011, "Removing us" );
     // We are going to be deleted now
     unmark();
     // No need to care about updates. However, we say that
@@ -416,7 +397,6 @@ bool KRegEntry::update()
   // Still readable ?
   if ( access( m_strFile.ascii(), R_OK ) == -1 )
   {
-    kdebug( KDEBUG_INFO, 7011, "We are no longer readable" );
     // We are going to be deleted now
     unmark();
     // No need to care about updates. However, we say that
@@ -426,8 +406,6 @@ bool KRegEntry::update()
 
   if ( statbuff.st_ctime == m_ctime )
     return true; // nothing happened
-
-  kdebug( KDEBUG_INFO, 7011, "OUTDATED %s %d old was %d", m_strFile.data(), statbuff.st_ctime, m_ctime );
 
   return updateIntern();
 }
