@@ -58,19 +58,19 @@ KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
 }
 
 KFileSharePropsPlugin::~KFileSharePropsPlugin()
-{  
+{
     delete d;
 }
 
 bool KFileSharePropsPlugin::supports( const KFileItemList& items )
 {
-    // Do not show dialog if in advanced mode, 
+    // Do not show dialog if in advanced mode,
     // because the advanced dialog is shown already.
     if (KFileShare::shareMode() == KFileShare::Advanced) {
-        kdDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced" << endl; 
+        kdDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced" << endl;
         return false;
-    }        
-    
+    }
+
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
     {
@@ -120,7 +120,7 @@ void KFileSharePropsPlugin::init()
         }
         if ( !ok )
         {
-            vbox->addWidget( new QLabel( i18n( "Only directories in your home directory can be shared."),
+            vbox->addWidget( new QLabel( i18n( "Only folders in your home folder can be shared."),
                                          m_widget ), 0 );
         }
         else
@@ -148,7 +148,7 @@ void KFileSharePropsPlugin::init()
                 m_rbUnShare->setChecked(true);
 
             // Some help text
-            QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
+            QLabel *label = new QLabel( i18n("Sharing this folder makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
             label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
             vbox->addWidget( label, 0 );
 
@@ -173,12 +173,12 @@ void KFileSharePropsPlugin::init()
     {
         vbox->setSpacing( 10 );
         if (KFileShare::sharingEnabled()) {
-          vbox->addWidget( new QLabel( i18n("You need to be authorized to share directories."),
+          vbox->addWidget( new QLabel( i18n("You need to be authorized to share folders."),
                     m_widget ), 0 );
         } else {
           vbox->addWidget( new QLabel( i18n("File sharing is disabled."),
                     m_widget ), 0 );
-        }                    
+        }
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
         m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
@@ -214,24 +214,24 @@ void KFileSharePropsPlugin::applyChanges()
              QString path = (*it)->url().path();
              ok = setShared( path, share );
              if (!ok) {
-                if (share) 
+                if (share)
                   KMessageBox::detailedError(properties,
                     i18n("Sharing folder '%1' failed.").arg(path),
                     i18n("An error occurred while trying to share folder '%1'. "
                          "Make sure that the Perl script 'fileshareset' is set suid root.")
                          .arg(path));
-                else                    
+                else
                   KMessageBox::error(properties,
                     i18n("Unsharing folder '%1' failed.").arg(path),
                     i18n("An error occurred while trying to unshare folder '%1'. "
                          "Make sure that the Perl script 'fileshareset' is set suid root.")
                          .arg(path));
-                         
+
                 properties->abortApplying();
-                break;                         
-             }                  
+                break;
+             }
         }
-        
+
         // Get the change back into our cached info
         KFileShare::readShareList();
     }
