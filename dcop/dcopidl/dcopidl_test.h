@@ -28,6 +28,7 @@ public:
     };
     class SomeForwardFooPrivate;
     Test();
+    Test() : DCOPObject("name") {}
     ~Test();
     int getPageOfObj( int obj );
     void setCell( KSpreadTable *table,

@@ -532,7 +532,7 @@ type_name
 	| T_STRUCT Identifier { $$ = $2; }
 	| T_CLASS Identifier { $$ = $2; }
 	| Identifier T_LESS templ_type_list T_GREATER {
-		QString *tmp = new QString("%1&lt;%2&gt;");
+		QString *tmp = new QString("%1&lt;%2&gt; "); /* the space is necessary for "a<b<c> >" */
 		*tmp = tmp->arg(*($1));
 		*tmp = tmp->arg(*($3));
 		$$ = tmp;
@@ -649,15 +649,16 @@ default
 	: /* empty */
 	  {
 	  }
-	| T_EQUAL default_value
+	| T_EQUAL value
 	  {
 	  }
-	| T_EQUAL T_LEFT_PARANTHESIS type T_RIGHT_PARANTHESIS default_value /* cast */
+	| T_EQUAL T_LEFT_PARANTHESIS type T_RIGHT_PARANTHESIS value /* cast */
 	  {
 	  }
 	;
 
-default_value
+/* Literal or calculated value, used for an initialization */
+value
 	: T_STRING_LITERAL
           {
           }
@@ -724,21 +725,20 @@ function_header
 	  }
 	;
 
-argument
-    : number {}
-    | bool_value {}
-    | T_IDENTIFIER T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS {}
-	;
-
-arguments
-	: argument {}
-	| argument T_COMMA arguments {}
+/* In an inline constructor:
+   List of values used as initialization for member var, or as params to parent constructor */
+values
+	: value {}
+	| value T_COMMA values {}
+	| /* empty */ {}
 	;
 	
+/* One initialization done by an inline constructor */
 init_item
-	: T_IDENTIFIER T_LEFT_PARANTHESIS arguments T_RIGHT_PARANTHESIS {}
+	: T_IDENTIFIER T_LEFT_PARANTHESIS values T_RIGHT_PARANTHESIS {}
 	;
 
+/* List of initializations done by an inline constructor */
 init_list
 	: init_item {}
 	| init_item T_COMMA init_list {}
@@ -815,7 +815,7 @@ Identifier_list_rest
 	;
 
 Identifier_list_entry : T_IDENTIFIER {}
-                      | T_IDENTIFIER T_EQUAL default_value {}
+                      | T_IDENTIFIER T_EQUAL value {}
                       | asterisks T_IDENTIFIER {}
 	;
 
