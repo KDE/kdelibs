@@ -117,10 +117,10 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
     else
     {
       if ( t != text() ) // no need to flicker
-        {
-          int curpos = t.length();
-          validateAndSet( t, curpos, curpos, curpos );
-        }
+      {
+        int curpos = t.length();
+        validateAndSet( t, curpos, curpos, curpos );
+      }
     }
 }
 
@@ -143,7 +143,7 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
        QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
        // Skip rotation if previous/next match is null or the same tex
        if ( input.isNull() || input == displayText() )
-            return;
+        return;
        setCompletedText( input, hasMarkedText() );
     }
 }
@@ -156,12 +156,13 @@ void KLineEdit::makeCompletion( const QString& txt )
 
     QString match = comp->makeCompletion( txt );
     KGlobalSettings::Completion mode = completionMode();
-    if ( mode ==  KGlobalSettings::CompletionPopup )
+    if ( mode == KGlobalSettings::CompletionPopup ||
+         mode == KGlobalSettings::CompletionShell )
     {
-        if ( match.isNull() )
-          hideCompletionBox();
-        else
-          setCompletedItems( comp->allMatches() );
+       if ( match.isNull() )
+        hideCompletionBox();
+       else
+        setCompletedItems( comp->allMatches() );
     }
     else
     {
@@ -170,7 +171,7 @@ void KLineEdit::makeCompletion( const QString& txt )
         if ( match.isNull() || match == txt )
             return;
         bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                               mode == KGlobalSettings::CompletionMan );
+                        mode == KGlobalSettings::CompletionMan );
         setCompletedText( match, marked );
     }
 }
@@ -196,6 +197,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( !hasMarkedText() && len && cursorPosition() == len )
                 {
+                    kdDebug() << "Auto Completion: " << txt << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -205,25 +207,24 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 return;
             }
         }
-
         else if ( mode == KGlobalSettings::CompletionPopup )
-	 {
-	    QLineEdit::keyPressEvent ( e );            
-	    QString keycode = e->text();
-	    QString txt = text();
-	    int key = e->key();
-            
-	    if (((!keycode.isNull() && keycode.unicode()->isPrint())||
-		 (key == Qt::Key_Delete || key == Qt::Key_BackSpace)) &&
-		txt != d->prevText)
+        {
+            QLineEdit::keyPressEvent ( e );
+            QString keycode = e->text();
+            QString txt = text();
+            int key = e->key();
+
+            if (((!keycode.isNull() && keycode.unicode()->isPrint())||
+                (key == Qt::Key_Delete || key == Qt::Key_BackSpace)) &&
+                txt != d->prevText)
             {
-	        //kdDebug() << "Completing: " << txt << endl;
+                kdDebug() << "Popup Completion: " << txt << endl;
                 if ( emitSignals() )
                     emit completion(txt);
                 if ( handleSignals() )
                     makeCompletion(txt);
                 e->accept();
-	        d->prevText = txt;
+                d->prevText = txt;
             }
             return;
         }
@@ -238,9 +239,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 // and the cursor is at the end of the string.
                 QString txt = text();
                 int len = txt.length();
-                if ( mode == KGlobalSettings::CompletionShell &&
-                     cursorPosition() == len && len != 0 )
+                if ( cursorPosition() == len && len != 0 )
                 {
+                    kdDebug() << "Shell Completion: " << txt << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -297,7 +298,8 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 
         KGlobalSettings::Completion oldMode = completionMode();
         int result = d->popupMenu->exec( e->globalPos() );
-        if ( !d->hasReference ) {
+        if ( !d->hasReference )
+        {
             delete d->popupMenu;
             d->popupMenu = 0;
         }
@@ -340,26 +342,26 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 
 void KLineEdit::initPopup()
 {
-    if( compObj() ) 
+    if( compObj() )
     {
         d->subMenu->clear();
-    
+
         d->subMenu->insertItem( i18n("None"), NoCompletion );
         d->subMenu->insertItem( i18n("Manual"), ShellCompletion );
         d->subMenu->insertItem( i18n("Popup"), PopupCompletion );
         d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
         d->subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
-    
+
         KGlobalSettings::Completion mode = completionMode();
-        d->subMenu->setItemChecked( NoCompletion, 
+        d->subMenu->setItemChecked( NoCompletion,
                                     mode == KGlobalSettings::CompletionNone );
-        d->subMenu->setItemChecked( ShellCompletion, 
+        d->subMenu->setItemChecked( ShellCompletion,
                                     mode == KGlobalSettings::CompletionShell );
-        d->subMenu->setItemChecked( PopupCompletion, 
+        d->subMenu->setItemChecked( PopupCompletion,
                                     mode == KGlobalSettings::CompletionPopup );
-        d->subMenu->setItemChecked( AutoCompletion, 
+        d->subMenu->setItemChecked( AutoCompletion,
                                     mode == KGlobalSettings::CompletionAuto );
-        d->subMenu->setItemChecked( SemiAutoCompletion, 
+        d->subMenu->setItemChecked( SemiAutoCompletion,
                                     mode == KGlobalSettings::CompletionMan );
         if ( mode != KGlobalSettings::completionMode() )
         {
@@ -372,7 +374,7 @@ void KLineEdit::initPopup()
     bool allMarked = (markedText().length() == text().length());
     d->popupMenu->setItemEnabled( Cut, flag && hasMarkedText() );
     d->popupMenu->setItemEnabled( Copy, flag && hasMarkedText() );
-    d->popupMenu->setItemEnabled( Paste, flag && 
+    d->popupMenu->setItemEnabled( Paste, flag &&
                                  !QApplication::clipboard()->text().isEmpty());
     d->popupMenu->setItemEnabled( Clear, flag && !text().isEmpty() );
     d->popupMenu->setItemEnabled( Unselect, hasMarkedText() );
