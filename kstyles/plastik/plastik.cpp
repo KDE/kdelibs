@@ -400,41 +400,17 @@ void PlastikStyle::renderContour(QPainter *p,
     // second part... fill edges in case we don't paint alpha-blended
     p->setPen( backgroundColor );
     if (!alphaBlend) {
-        if(drawLeft && drawTop) {
-            switch(flags&Round_UpperLeft) {
-                case true:
-                    p->drawPoint( r.x(), r.y() );
-                    break;
-                default:
-                    break;
-            }
+        if(flags&Round_UpperLeft && drawLeft && drawTop) {
+            p->drawPoint( r.x(), r.y() );
         }
-        if(drawLeft && drawBottom) {
-            switch(flags&Round_BottomLeft) {
-                case true:
-                    p->drawPoint( r.x(), r.bottom() );
-                    break;
-                default:
-                    break;
-            }
+        if(flags&Round_BottomLeft && drawLeft && drawBottom) {
+            p->drawPoint( r.x(), r.bottom() );
         }
-        if(drawRight && drawTop) {
-            switch(flags&Round_UpperRight) {
-                case true:
-                    p->drawPoint( r.right(), r.y() );
-                    break;
-                default:
-                    break;
-            }
+        if(flags&Round_UpperRight && drawRight && drawTop) {
+            p->drawPoint( r.right(), r.y() );
         }
-        if(drawRight && drawBottom) {
-            switch(flags&Round_BottomRight) {
-                case true:
-                    p->drawPoint( r.right(), r.bottom() );
-                    break;
-                default:
-                    break;
-            }
+        if(flags&Round_BottomRight && drawRight && drawBottom) {
+            p->drawPoint( r.right(), r.bottom() );
         }
     }
 
