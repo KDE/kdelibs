@@ -429,7 +429,7 @@ void KPty::logout()
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
     utmp << "/usr/sbin/utempter" << "-d" << d->ttyName;
-    utmp.start(KPty::Block);
+    utmp.start(KProcess::Block);
 #elif defined(USE_LOGIN)
     const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))
