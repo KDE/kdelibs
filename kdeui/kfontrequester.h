@@ -43,6 +43,7 @@ class KFontRequester : public QWidget
 
   Q_PROPERTY( QString title READ title WRITE setTitle )
   Q_PROPERTY( QString sampleText READ sampleText WRITE setSampleText )
+  Q_PROPERTY( QFont font READ font WRITE setFont )
 
   public:
 
@@ -62,7 +63,7 @@ class KFontRequester : public QWidget
      * @return The currently selected font in the requester.
      */
     QFont font() const { return m_selFont; }
-
+ 
     /**
      * @return Returns TRUE if only fixed fonts are displayed.
      */
