@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 <xsl:template match="releaseinfo" mode="titlepage.mode">
+  <br/>
   <xsl:call-template name="gentext">
     <xsl:with-param name="key">revision</xsl:with-param>
   </xsl:call-template>
@@ -15,12 +16,28 @@
 <xsl:template match="author" mode="titlepage.mode">
   <h3 class="{name(.)}"><!--Documentation by--> <!-- to internationalise -->
     <xsl:call-template name="person.name"/>
+    <xsl:text> </xsl:text>
+	<xsl:apply-templates mode="titlepage.mode" select="./affiliation"/>
   </h3>
-  <xsl:apply-templates mode="titlepage.mode" select="./affiliation"/>
 </xsl:template>
 
-<!-- other things to be added:
-disable email-link of author on title page, add date phrase: Last updated, revision? -->
+<!-- Reduces affiliation to emailaddress -->
+<xsl:template match="affiliation" mode="titlepage.mode">
+    <xsl:apply-templates mode="titlepage.mode" select="./address/email"/>
+</xsl:template>
+
+<!-- Don't add a link to the author's email address on the page -->
+<xsl:template match="email" mode="titlepage.mode">
+  <xsl:call-template name="inline.monoseq">
+    <xsl:with-param name="content">
+      <xsl:text>&lt;</xsl:text>
+       <xsl:apply-templates/>
+      <xsl:text>&gt;</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+
+<!-- other things to be added: add date phrase: Last updated -->
 
 <xsl:template match="othercredit" mode="titlepage.mode">
   <p class="{name(.)}">
