@@ -930,19 +930,19 @@ void KHTMLPart::overURL( const QString &url )
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
 {
   KURL u( url );
-  
+
    QString target = _target;
   if ( target.isEmpty() )
     target = d->m_baseTarget;
 
   KURL cURL = completeURL( url, target );
-  
+
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
   {
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As .." ), cURL );
     return;
   }
- 
+
   if ( !d->m_bComplete )
     closeURL();
 
@@ -1661,6 +1661,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !url.isEmpty() )
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
  				     actionCollection(), "savelinkas" );
+  
   DOM::Element e;
   e = khtml->nodeUnderMouse();
 
@@ -1672,6 +1673,12 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   }
 
   setXML( doc );
+  
+  if ( actionCollection()->count() > 0 )
+  {
+    QDomElement e = document().documentElement().namedItem( "Menu" ).toElement();
+    e.insertBefore( document().createElement( "separator" ), e.firstChild() );
+  }
 }
 
 KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
