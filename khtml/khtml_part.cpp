@@ -3834,17 +3834,18 @@ void KHTMLPart::slotSecurity()
 
 void KHTMLPart::slotSaveFrame()
 {
-    if ( !d->m_activeFrame )
-        return; // should never be the case, but one never knows :-)
+    KParts::ReadOnlyPart *frame = currentFrame();
+    if ( !frame )
+        return;
 
-    KURL srcURL( static_cast<KParts::ReadOnlyPart *>( d->m_activeFrame )->url() );
+    KURL srcURL( frame->url() );
 
     if ( srcURL.fileName(false).isEmpty() )
         srcURL.setFileName( "index.html" );
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, "text/html" );
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save Frame As" ), srcURL, metaData, "text/html" );
 }
 
 void KHTMLPart::slotSetEncoding()

@@ -13,6 +13,7 @@
   <Separator weakSeparator="1" />
   <Action name="reloadframe"/>
   <Action name="printFrame"/>
+  <Action name="saveFrame"/>
   <Action name="viewFrameSource" />
   <Action name="viewFrameInfo" />
  </Menu>

@@ -469,6 +469,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       // and because print frame is already in the toolbar and the menu.
       // But leave this here, so that it's easy to readd it.
       new KAction( i18n( "Print Frame..." ), "frameprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+      new KAction( i18n( "Save &Frame As..." ), 0, d->m_khtml, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
 
       actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
       actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
