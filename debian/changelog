@@ -1,3 +1,9 @@
+kdelibs-cvs (4:2.0-19990601-1) experimental; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 01 Jun 1999 01:00:28 -0400
+
 kdelibs-cvs (4:2.0-19990524-1) experimental; urgency=low
 
   * migrating back to / from /opt
