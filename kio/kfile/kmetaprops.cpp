@@ -139,6 +139,7 @@ void KFileMetaPropsPlugin::createLayout()
   
     // create a scroll view in the page
     d->m_view = new MetaPropsScrollView(d->m_topframe);
+
     tmp->addWidget(d->m_view);
   
     d->m_frame = d->m_view->frame();
@@ -173,26 +174,44 @@ void KFileMetaPropsPlugin::createLayout()
             toplayout->addWidget( new QLabel(w, item.translatedKey() + ":",
                                              d->m_frame), count, 0);
             // start and end column for the value widget
-            int left=1,right=3;
-
+            
+            QHBoxLayout* sublayout = new QHBoxLayout;
+            toplayout->addLayout(sublayout, count, 1);
+            
             if (item.prefix()!=QString::null)
             {
-                left = 2;
                 QLabel* label = new QLabel( item.prefix(), d->m_frame );
-                label->setAlignment( Qt::AlignRight );
-                toplayout->addWidget( label, count, 1 );
+                label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+                sublayout->addWidget( label );
+                label->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                                 QSizePolicy::Fixed));
+                
+                if (w->isA("QLabel"))
+                      w->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
+                                                   QSizePolicy::Fixed));
+                
             }
+            else
+                if (w->isA("QLabel"))
+                {
+                      w->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                                   QSizePolicy::Fixed));
+                      ((QLabel*)w)->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+                }
+
+            sublayout->addWidget( w );
 
             if (item.suffix()!=QString::null)
             {
-                right = 2;
                 QLabel* label = new QLabel( item.suffix(), d->m_frame );
-                label->setAlignment( Qt::AlignLeft );
-                toplayout->addWidget( label, count, 3 );
+                label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
+                sublayout->addWidget( label );
+                label->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
+                                                 QSizePolicy::Fixed));
             }
-        
-            toplayout->addMultiCellWidget( w, count, count, left, right );
+
             count++;
+
         }
     }
   
