@@ -285,6 +285,18 @@ QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
   return list;
 }
 
+QValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
+{
+  QStringList strlist = readListEntry(pKey);
+  QValueList<int> list;
+  for (QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); it++)
+    // I do not check if the toInt failed because I consider the number of items
+    // more important than their value
+    list << (*it).toInt();
+
+  return list;
+}
+
 int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
 {
   bool ok;
@@ -849,6 +861,16 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
   if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry ( const QString& pKey, const QValueList<int> &list,
+			       bool bPersistent, bool bGlobal, bool bNLS )
+{
+    QStringList strlist;
+    QValueList<int>::ConstIterator end = list.end();
+    for (QValueList<int>::ConstIterator it = list.begin(); it != end; it++)
+	strlist << QString::number(*it);
+    writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
 }
 
 QString KConfigBase::writeEntry( const QString& pKey, int nValue,

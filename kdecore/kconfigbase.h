@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.39  2000/01/12 02:52:19  dsweet
+// doc cleaning
+//
 // Revision 1.38  2000/01/09 19:18:31  dsweet
 // Spiffed up documentation.
 //
@@ -241,6 +244,14 @@ public:
   QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
+   * Read a list of Integers.
+   *
+   * @param pKey The key to search for.
+   * @return The list.
+   */
+  QValueList<int> readIntListEntry( const QString& key ) const;
+
+  /**
    * Read a numerical value.
    *
    * Read the value of an entry specified by @p rKey in the current group
@@ -397,7 +408,7 @@ public:
    *
    * @param pKey                The key to search for.
    * @param pDefault    A default value returned if the key was not found.
-   * @return The value for this key or a @ref currentDateTime() 
+   * @return The value for this key or a @ref currentDateTime()
    *  (Qt global function) if no value was found.
    */
   QDateTime readDateTimeEntry( const QString& pKey,
@@ -492,6 +503,29 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+
+
+ /**
+   * @ref writeEntry() overridden to accept a list of Integers.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param rKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
+  void writeEntry( const QString& pKey, const QValueList<int>& rValue,
+		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
    * Write the key/value pair.
@@ -1051,7 +1085,7 @@ public:
         { _config->setGroup( group ); }
 
   ~KConfigGroupSaver() { _config->setGroup( _oldgroup ); }
-    
+
     KConfigBase* config() { return _config; };
 
 private:
