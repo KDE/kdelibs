@@ -975,7 +975,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    const QChar *nextP = curP;
 	    while(*nextP != ' ' && *nextP != ';')
 	    {
-		if(nextP >= endP) last = true;
+		if(nextP >= endP) {
+                    last = true;
+                    break;
+                }
 		nextP++;
 	    }
 	    bool found;
@@ -1029,7 +1032,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    const QChar *nextP = curP;
 	    while(*nextP != ' ' && *nextP != ';')
 	    {
-		if(nextP >= endP) last = true;
+		if(nextP >= endP) {
+                    last = true;
+                    break;
+                } 
 		nextP++;
 	    }
 	    bool found;
@@ -1136,7 +1142,10 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
 	const QChar *nextP = curP;
 	while(*nextP != ' ' && *nextP != ';')
 	{
-	    if(nextP >= endP) last = true;
+	    if(nextP >= endP) {
+                last = true;
+                break;
+            }
 	    nextP++;
 	}
 	list.append(curP);
