@@ -166,7 +166,7 @@ static KCmdLineOptions options[] =
     { "supportedMimetypes",
       I18N_NOOP("Prints all mimetypes for which metadata support is "
                 "available."), 0 },
-    
+
     { "q", 0, 0 }, // short option for --quiet
     { "quiet",
       I18N_NOOP("Don't print a warning when more than one file was given "
@@ -209,14 +209,14 @@ static void printSupportedMimeTypes()
     QStringList allMimeTypes = KFileMetaInfoProvider::self()->supportedMimeTypes();
     if ( allMimeTypes.isEmpty() )
     {
-        cout << 
-            i18n("No support for metadata extraction found.").local8Bit() 
+        cout <<
+            i18n("No support for metadata extraction found.").local8Bit()
              << endl;
         return;
     }
-        
+
     cout << i18n("Supported MimeTypes:").local8Bit() << endl;
-        
+
     QStringList::ConstIterator it = allMimeTypes.begin();
     for ( ; it != allMimeTypes.end(); it++ )
         cout << (*it).local8Bit() << endl;
@@ -243,7 +243,7 @@ static void showPropertiesDialog( const KCmdLineArgs *args )
 
 static void printMimeTypes( const KCmdLineArgs *args )
 {
-    for ( int i = 0; i < args->count(); i++ ) 
+    for ( int i = 0; i < args->count(); i++ )
     {
         KURL url = args->url( i );
         KMimeType::Ptr mt = KMimeType::findByURL( url );
@@ -271,15 +271,15 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
     for ( ; (props = it.current()); ++it )
     {
         cout << props->argument() << ":" << endl;
-        
+
         if ( args->isSet( "listsupported" ) )
         {
-            cout << "Supported Keys" << endl;
+            cout << i18n("Supported Keys").local8Bit() << endl;
             printList( props->supportedKeys() );
         }
         if ( args->isSet( "listpreferred" ) )
         {
-            cout << "Preferred Keys" << endl;
+            cout << i18n("Preferred Keys").local8Bit() << endl;
             printList( props->preferredKeys() );
         }
         if ( args->isSet( "listavailable" ) )
@@ -313,11 +313,11 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
                 cout << (*group).local8Bit() << endl;
                 printList( props->preferredValues( *group ) );
             }
-            
+
         }
     }
-    
-        
+
+
 }
 
 int main( int argc, char **argv )
@@ -331,6 +331,8 @@ int main( int argc, char **argv )
 
     about.addAuthor( "Carsten Pfeiffer", 0, "pfeiffer@kde.org",
 		     "http://devel-home.kde.org/~pfeiffer/" );
+
+    KGlobal::locale()->setMainCatalogue("kdelibs");
 
     KCmdLineArgs::init( argc, argv, &about );
 
@@ -348,7 +350,7 @@ int main( int argc, char **argv )
 
     if ( args->isSet( "supportedMimetypes" ) )
         printSupportedMimeTypes();
-    
+
     int files = args->count();
     if ( files == 0 )
         KCmdLineArgs::usage( i18n("No files specified") ); // exit()s
@@ -366,17 +368,17 @@ int main( int argc, char **argv )
         if ( args->isSet( "mimetype" ) )
             printMimeTypes( args );
 
-        FileProps *props = new FileProps( args->arg(i), 
-                                            args->url(i).path() );
+        FileProps *props = new FileProps( args->arg(i),
+                                          args->url(i).path() );
         if ( props->isValid() )
             m_props.append( props );
         else if ( !quiet )
             cerr << args->arg(i) << ": " <<
                 i18n("Cannot determine metadata").local8Bit() << endl;
     }
-    
-    
+
+
     processMetaDataOptions( m_props, args );
-    
+
     return 0;
 }
