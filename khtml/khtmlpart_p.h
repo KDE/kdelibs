@@ -282,6 +282,7 @@ public:
   DOM::NodeImpl *m_findNode;
 
   QString m_strSelectedURL;
+  QString m_strSelectedURLTarget;
   QString m_referrer;
 
   struct SubmitForm
@@ -304,6 +305,7 @@ public:
   DOM::Node m_selectionEnd;
   long m_endOffset;
   QString m_overURL;
+  QString m_overURLTarget;
 
   bool m_startBeforeEnd:1;
   bool m_bDnd:1;

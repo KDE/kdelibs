@@ -437,7 +437,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	mev.innerNode.handle()->setPressed();
 
     if (!swallowEvent) {
-	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
 	QApplication::sendEvent( m_part, &event );
 
 	emit m_part->nodeActivated(mev.innerNode);
@@ -478,7 +478,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	mev.innerNode.handle()->setPressed();
 
     if (!swallowEvent) {
-	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
 	QApplication::sendEvent( m_part, &event );
 
 	// ###
@@ -578,7 +578,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     d->prevMouseY = ym;
 
     if (!swallowEvent) {
-        khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+        khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
         QApplication::sendEvent( m_part, &event );
     }
 }
@@ -614,7 +614,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	mev.innerNode.handle()->setPressed(false);
 
     if (!swallowEvent) {
-	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
 	QApplication::sendEvent( m_part, &event );
     }
 }
@@ -731,7 +731,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 
 void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 {
-    if (d->ignoreEvents)
+    if (d->ignoreEvents || !m_part->xmlDocImpl())
         return;
     int xm = _ce->x();
     int ym = _ce->y();

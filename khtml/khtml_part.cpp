@@ -125,20 +125,6 @@ FrameList::Iterator FrameList::find( const QString &name )
     return it;
 }
 
-
-static QString splitUrlTarget(const QString &url, QString *target=0)
-{
-   QString result = url;
-   if(url.startsWith("target://"))
-   {
-      KURL u(url);
-      result = u.ref();
-      if (target)
-         *target = u.host();
-   }
-   return result;
-}
-
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
                       GUIProfile prof )
 : KParts::ReadOnlyPart( parent, name )
@@ -1035,7 +1021,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
       if( pos == -1 )
       {
         delay = qData.stripWhiteSpace().toInt();
-          scheduleRedirection( qData.toInt(), m_url.url() );
+        scheduleRedirection( qData.toInt(), m_url.url());
       }
       else
       {
@@ -1061,7 +1047,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
                 end_pos = index;
           }
         }
-        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ) );
+        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ));
       }
       d->m_bHTTPRefresh = true;
     }
@@ -1622,7 +1608,9 @@ KURL KHTMLPart::completeURL( const QString &url )
   return KURL( d->m_doc->completeURL( url ) );
 }
 
-void KHTMLPart::scheduleRedirection( int delay, const QString &url )
+// ### implement lockhistory being optional (sometimes javascript wants
+// to do redirection that end up in the history!)
+void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool /* doLockHistory*/ )
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
@@ -1630,8 +1618,8 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
        d->m_delayRedirect = delay;
        d->m_redirectURL = url;
        if ( d->m_bComplete ) {
-	   d->m_redirectionTimer.stop();
-	   d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+         d->m_redirectionTimer.stop();
+         d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
        }
     }
 }
@@ -1639,12 +1627,8 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 void KHTMLPart::slotRedirect()
 {
   QString u = d->m_redirectURL;
-  //kdDebug( 6050 ) << "KHTMLPart::slotRedirect() " << u << endl;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  QString target;
-  u = splitUrlTarget( u, &target );
-  //kdDebug( 6050 ) << "KHTMLPart::slotRedirect() " << u << " " << target << endl;
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
@@ -1662,7 +1646,7 @@ void KHTMLPart::slotRedirect()
     args.reload = true;
 
   args.setLockHistory( true );
-  urlSelected( u, 0, 0, target, args );
+  urlSelected( u, 0, 0, QString::null, args );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
@@ -3623,10 +3607,12 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
    d->m_dragStartPos = _mouse->pos();
 
-  if ( !event->url().isNull() )
-    d->m_strSelectedURL = event->url().string();
-  else
-    d->m_strSelectedURL = QString::null;
+   if ( !event->url().isNull() ) {
+     d->m_strSelectedURL = event->url().string();
+     d->m_strSelectedURLTarget = event->target().string();
+   }
+   else
+     d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
 
   if ( _mouse->button() == LeftButton ||
        _mouse->button() == MidButton )
@@ -3666,8 +3652,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
   if ( _mouse->button() == RightButton )
   {
-    popupMenu( splitUrlTarget(d->m_strSelectedURL) );
-    d->m_strSelectedURL = QString::null;
+    popupMenu( d->m_strSelectedURL );
+    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
   }
 }
 
@@ -3678,7 +3664,6 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * )
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
-  DOM::DOMString url = event->url();
   DOM::Node innerNode = event->innerNode();
 
 #ifndef QT_NO_DRAGANDDROP
@@ -3689,7 +3674,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
-          KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
+          KURL u( completeURL( d->m_strSelectedURL) );
           KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
           if ( !d->m_referrer.isEmpty() )
             urlDrag->metaData()["referrer"] = d->m_referrer;
@@ -3700,7 +3685,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           if( i ) {
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
-            KURL u( completeURL( splitUrlTarget( khtml::parseURL(i->getAttribute(ATTR_SRC)).string() ) ) );
+            KURL u( completeURL( khtml::parseURL(i->getAttribute(ATTR_SRC)).string() ) );
             KURLDrag* urlDrag = KURLDrag::newDrag( u, 0L );
             if ( !d->m_referrer.isEmpty() )
               urlDrag->metaData()["referrer"] = d->m_referrer;
@@ -3719,13 +3704,13 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
-    d->m_strSelectedURL = "";
+    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
     return;
   }
 #endif
 
-  QString target;
-  QString surl = splitUrlTarget(url.string(), &target);
+  DOM::DOMString url = event->url();
+  DOM::DOMString target = event->target();
 
   // Not clicked -> mouse over stuff
   if ( !d->m_bMousePressed )
@@ -3750,27 +3735,27 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
             int x(_mouse->x() - vx), y(_mouse->y() - vy);
 
-            d->m_overURL = surl + QString("?%1,%2").arg(x).arg(y);
-            overURL( d->m_overURL, target, shiftPressed );
+            d->m_overURL = url.string() + QString("?%1,%2").arg(x).arg(y);
+            d->m_overURLTarget = target.string();
+            overURL( d->m_overURL, target.string(), shiftPressed );
             return;
           }
         }
       }
 
       // normal link
-      QString target;
-      QString surl = splitUrlTarget(url.string(), &target);
-      if ( d->m_overURL.isEmpty() || d->m_overURL != surl )
+      if ( d->m_overURL.isEmpty() || d->m_overURL != url || d->m_overURLTarget != target )
       {
-        d->m_overURL = surl;
-        overURL( d->m_overURL, target, shiftPressed );
+        d->m_overURL = url.string();
+        d->m_overURLTarget = target.string();
+        overURL( d->m_overURL, target.string(), shiftPressed );
       }
     }
     else  // Not over a link...
     {
       if( !d->m_overURL.isEmpty() ) // and we were over a link  -> reset to "default statusbar text"
       {
-        d->m_overURL = QString::null;
+        d->m_overURL = d->m_overURLTarget = QString::null;
         emit onURL( QString::null );
         // Default statusbar text can be set from javascript. Otherwise it's empty.
         emit setStatusBarText( d->m_kjsDefaultStatusBarText );

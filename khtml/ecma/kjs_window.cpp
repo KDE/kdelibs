@@ -673,8 +673,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       QString str = value.toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if ( p )
-        m_part->scheduleRedirection(0, p->htmlDocument().
-                                    completeURL(str).string().prepend( "target://_self/?#" ));
+        m_part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
       return;
     }
     case Onabort:
@@ -1037,14 +1036,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
           while ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
+          part->scheduleRedirection(0, url.url());
           return Window::retrieve(part);
       }
       if ( uargs.frameName == "_parent" )
       {
           if ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
+          part->scheduleRedirection(0, url.url());
           return Window::retrieve(part);
       }
       uargs.serviceType = "text/html";
@@ -1537,7 +1536,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-  m_part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
+  m_part->scheduleRedirection(0, url.url());
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
@@ -1569,12 +1568,11 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       QString str = args[0].toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->part();
       if ( p )
-        part->scheduleRedirection(0, p->htmlDocument().
-                                  completeURL(str).string().prepend( "target://_self/?#" ));
+        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
       break;
     }
     case Location::Reload:
-      part->scheduleRedirection(0, part->url().url().prepend( "target://_self/?#" ) );
+      part->scheduleRedirection(0, part->url().url());
       break;
     case Location::ToString:
       return String(location->toString(exec));

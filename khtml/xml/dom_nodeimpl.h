@@ -150,16 +150,18 @@ public:
     struct MouseEvent
     {
         MouseEvent( int _button, MouseEventType _type,
-                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0)
+                    const DOMString &_url = DOMString(), const DOMString& _target = DOMString(),
+                    NodeImpl *_innerNode = 0)
             {
                 button = _button; type = _type;
-                url = _url;
+                url = _url; target = _target;
                 innerNode = _innerNode;
             }
 
         int button;
         MouseEventType type;
         DOMString url; // url under mouse or empty
+        DOMString target;
         Node innerNode;
     };
 

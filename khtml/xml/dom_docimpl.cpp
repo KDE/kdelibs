@@ -1332,7 +1332,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             bool ok = false;
             int delay = 0;
 	    delay = content.implementation()->toInt(&ok);
-            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
+            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
             int delay = 0;
             bool ok = false;
@@ -1391,8 +1391,10 @@ bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
             DOMString href = khtml::parseURL(e->getAttribute(ATTR_HREF));
             DOMString target = e->getAttribute(ATTR_TARGET);
 
-            if (!target.isNull() && !href.isNull())
-                ev->url = DOMString("target://") + target + DOMString("/#") + href;
+            if (!target.isNull() && !href.isNull()) {
+                ev->target = target;
+                ev->url = href;
+            }
             else
                 ev->url = href;
 //            qDebug("url: *%s*", ev->url.string().latin1());
@@ -1796,7 +1798,6 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             oldFocusNode->setFocus(false);
 	    oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
 	    oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
-
             if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
                 oldFocusNode->deref(); // deletes this
                 return;
