@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, kdoc, qt2.1-doc, kde-qt-addon-dev, jade, sgml-base, docbook, libssl09-dev, mesag-dev
+Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev, libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, kdoc, qt2.2-doc, kde-qt-addon-dev, jade, sgml-base, docbook, libssl09-dev, mesag-dev
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
@@ -19,7 +19,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-doc
 Architecture: all
 Section: doc
-Suggests: kdelibs3 (= ${Source-Version}), kdelibs3-dev (= ${Source-Version}), libqt2.1-dev
+Suggests: kdelibs3 (= ${Source-Version}), kdelibs3-dev (= ${Source-Version}), libqt2.2-dev
 Replaces: kdelibs3-doc-cvs
 Conflicts: kdelibs3-doc-cvs
 Provides: kdelibs-doc
@@ -31,7 +31,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev
-Depends: kdelibs3 (= ${Source-Version}), libqt2.1-dev, libjpeg62-dev, xlib6g-dev, kde-qt-addon-dev
+Depends: kdelibs3 (= ${Source-Version}), libqt2.2-dev, libjpeg62-dev, xlib6g-dev, kde-qt-addon-dev
 Suggests: kdelibs-doc
 Replaces: kdelibs3-dev-cvs
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-dev-cvs

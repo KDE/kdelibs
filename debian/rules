@@ -75,10 +75,10 @@ binary-arch:  build
 	if test -f /usr/bin/qt2kdoc; then \
 	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
 	  (mkdir -p debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference) ; \
-	  qt2kdoc --url=/usr/share/doc/qt2.1-doc/doc/html \
+	  qt2kdoc --url=/usr/share/doc/qt2.2-doc/doc/html \
                   --outdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
                   --compress \
-                  /usr/share/doc/qt2.1-doc/doc/html ; \
+                  /usr/share/doc/qt2.2-doc/doc/html ; \
 	  makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
                      --kdocopt='--skip-internal --compress' \
                      --outputdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html ; \
