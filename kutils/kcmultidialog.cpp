@@ -220,7 +220,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         switch( dialogface )
         {
             case TreeList:
-                parentmodulenames += moduleinfo.moduleName();;
+                parentmodulenames += moduleinfo.moduleName();
                 page = addHBoxPage( parentmodulenames, moduleinfo.comment(),
                         SmallIcon( moduleinfo.icon(),
                             IconSize( KIcon::Small ) ) );
