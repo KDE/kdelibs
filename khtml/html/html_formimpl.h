@@ -82,6 +82,12 @@ public:
 
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
+    /*
+
+     * state() and restoreState() are complimentary functions.
+     */
+    virtual QString state() { return QString::null; }
+    virtual void restoreState(const QString &) { };
 
 protected:
     DOMString url;
@@ -115,8 +121,13 @@ public:
     virtual void detach();
 
     virtual void reset() {}
+
     bool disabled() const { return m_disabled; }
+    void setDisabled(bool _disabled) { m_disabled = _disabled; }
+
     bool readOnly() const { return m_readOnly; }
+    void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
+
     const DOMString &name() const { return _name; }
     void setForm(HTMLFormElementImpl *f) { _form = f; }
 
@@ -126,6 +137,7 @@ public:
      */
     virtual QCString encoding() { return ""; }
     QCString encodeString( QString e );
+//    QString decodeString( QString e );
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -229,13 +241,14 @@ public:
     long tabIndex() const;
     DOMString type() const;
 
-    DOMString value() const { return _value; }
+    DOMString value() const { return m_value; }
     void setValue(DOMString val);
 
     DOMString filename() const { return m_filename; }
     void setFilename(DOMString _filename) { m_filename = _filename; }
 
-    QString state();
+    virtual QString state();
+    virtual void restoreState(const QString &);
 
     void blur();
     void focus();
@@ -248,12 +261,17 @@ public:
 
     virtual QCString encoding();
     typeEnum inputType() { return _type; }
-    virtual void saveDefaultAttrs();
+    virtual void saveDefaults();
     virtual void reset();
+
+    // for images
+    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
+                             int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset );
 
 protected:
     typeEnum _type;
-    DOMString _value;
+    DOMString m_value;
     bool m_checked;
     int _maxLen;
     int _size;
@@ -325,7 +343,8 @@ public:
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
 
-    QString state();
+    virtual QString state();
+    virtual void restoreState(const QString &);
 
     void blur (  );
     void focus (  );
@@ -431,7 +450,8 @@ public:
 
     DOMString type() const;
 
-    QString state();
+    virtual QString state();
+    virtual void restoreState(const QString &);
 
     void blur (  );
     void focus (  );
@@ -446,8 +466,9 @@ public:
     virtual void attach(KHTMLView *w);
     virtual QCString encoding();
     virtual void reset();
-    DOMString value() { return m_value; } // ### set this from children during parsing
+    DOMString value() { return m_value; }
     void setValue(DOMString _value);
+    virtual void saveDefaults();
 
 
 protected:
@@ -456,6 +477,7 @@ protected:
     WrapMethod m_wrap;
     // DOM Specs seem to indicate that this is not kept in sync with our child text nodes
     DOMString m_value;
+    DOMString _defaultValue;
 
     friend khtml::RenderTextArea;
 };

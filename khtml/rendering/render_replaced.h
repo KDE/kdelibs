@@ -69,8 +69,6 @@ public:
 
     virtual void printReplaced(QPainter *p, int _tx, int _ty);
 
-    bool isEnabled() const  { return m_widget ? m_widget->isEnabled() : false; }
-    void setEnabled(bool enabled) { if(m_widget) m_widget->setEnabled(enabled); }
     virtual short verticalPositionHint() const;
 
     virtual short intrinsicWidth() const;

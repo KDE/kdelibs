@@ -296,8 +296,8 @@ void HTMLFormElementImpl::maybeSubmit()
     for (current = formElements.first(); current; current = formElements.next()) {
 	if (!current->disabled() && !current->readOnly()) {
 	    if (current->id() == ID_INPUT &&
-	        (static_cast<HTMLInputElementImpl*>(current)->type() == HTMLInputElementImpl::TEXT ||
-	         static_cast<HTMLInputElementImpl*>(current)->type() == HTMLInputElementImpl::PASSWORD))
+	        (static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT ||
+	         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::PASSWORD))
 		le++;
 
             // we're not counting hidden input's here, as they're not enabled (### check this)
@@ -439,6 +439,47 @@ QCString HTMLGenericFormElementImpl::encodeString( QString e )
 
     return encoded.latin1();
 }
+
+/*
+// not sure if this is still needed
+QString HTMLGenericFormElementImpl::decodeString( QString e )
+{
+    unsigned int pos = 0;
+    unsigned int len = e.length();
+    QString decoded;
+
+    while ( pos < len )
+    {
+        if (e[pos] == QChar('%'))
+        {
+            if (pos+2 < len)
+            {
+                DOMString buffer(e.unicode()+pos+1, 2);
+                bool ok;
+                unsigned char val = buffer.string().toInt(&ok, 16);
+                if (((char) val) != '\r')
+                {
+                    decoded += (char) val;
+                }
+            }
+            else
+            {
+                decoded += e[pos];
+            }
+        }
+        else if (e[pos] == '+')
+        {
+            decoded += ' ';
+        }
+        else
+        {
+            decoded += e[pos];
+        }
+        pos++;
+    }
+    return decoded;
+}
+*/
 
 // -------------------------------------------------------------------------
 
@@ -618,31 +659,66 @@ DOMString HTMLInputElementImpl::type() const
 
 QString HTMLInputElementImpl::state( )
 {
-   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
-   if (formElement)
-      return formElement->state();
-   return QString::null;
+    switch (_type) {
+	case TEXT:
+	case PASSWORD:
+	    return m_value.string()+'.'; // Make sure the string is not empty!
+	case CHECKBOX:
+	    return QString::fromLatin1(m_checked ? "on" : "off");
+	case RADIO:
+	    return QString::fromLatin1(m_checked ? "on" : "off");
+	case FILE:
+	    return m_filename.string()+'.';
+	default:
+	    return QString::null;
+    }
 }
+
+
+
+void HTMLInputElementImpl::restoreState(const QString &state)
+{
+    switch (_type) {
+	case TEXT:
+	case PASSWORD:
+	    m_value = DOMString(state.left(state.length()-1));
+	    break;
+	case CHECKBOX:
+	case RADIO:
+	    m_checked = state == QString::fromLatin1("on");
+	    break;
+	case FILE:
+	    m_value = m_filename = DOMString(state.left(state.length()-1));
+	    break;
+	default:
+	break;
+    }
+    setChanged(true);
+}
+
 
 void HTMLInputElementImpl::blur(  )
 {
+    // ###
     kdDebug( 6030 ) << "HTMLInputElementImpl::blur(  )" << endl;
 
 }
 
 void HTMLInputElementImpl::focus(  )
 {
+    // ###
     kdDebug( 6030 ) << " HTMLInputElementImpl::focus(  )" << endl;
-
 }
 
 void HTMLInputElementImpl::select(  )
 {
+    // ###
     kdDebug( 6030 ) << " HTMLInputElementImpl::select(  )" << endl;
 }
 
 void HTMLInputElementImpl::click(  )
 {
+    // ###
     kdDebug( 6030 ) << " HTMLInputElementImpl::click(  )" << endl;
 }
 
@@ -677,7 +753,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 	    _type = BUTTON;
 	break;
     case ATTR_VALUE:
-	_value = attr->value();
+	m_value = attr->value();
 	break;
     case ATTR_CHECKED:
 	setChecked(attr->val() != 0);
@@ -722,73 +798,48 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	RenderFormElement *f = 0;
-	
 	switch(_type)
 	{
-	case TEXT:
-	{
-	    f = new RenderLineEdit(view, this);
-	    break;
+	    case TEXT:
+		m_render = new RenderLineEdit(view, this);
+		break;
+	    case PASSWORD:
+		m_render = new RenderLineEdit(view, this);
+		break;
+	    case CHECKBOX:
+		m_render = new RenderCheckBox(view, this);
+		break;
+	    case RADIO:
+		m_render = new RenderRadioButton(view, this);
+		break;
+	    case SUBMIT:
+		m_render = new RenderSubmitButton(view, this);
+		break;
+	    case IMAGE:
+	    {
+		RenderImageButton *i = new RenderImageButton(view, this);
+//		i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL(),
+//	                   static_cast<HTMLDocumentImpl *>(document)->docLoader());
+		m_render = i;
+		break;
+	    }
+	    case RESET:
+		m_render = new RenderResetButton(view, this);
+		break;
+	    case FILE:
+		m_render = new RenderFileButton(view, this);
+		break;
+	    case HIDDEN:
+//		m_render = new RenderHiddenButton(view, this);
+		m_render = 0;
+		break;
+	    case BUTTON:
+		m_render = new RenderPushButton(view, this);
+		break;
 	}
-	case PASSWORD:
-	{
-	    f = new RenderLineEdit(view, this);
-	    break;
-	}
-	case CHECKBOX:
-	{
-	    f = new RenderCheckBox(view, this);
-	    f->setChecked(m_checked);
-	    break;
-	}
-	case RADIO:
-	{
-	    f = new RenderRadioButton(view, this);
-	    f->setChecked(m_checked);
-	    break;
-	}
-	case SUBMIT:
-	{
-	    f = new RenderSubmitButton(view, this);
-	    break;
-	}
-	case IMAGE:
-	{
-	    RenderImageButton *i = new RenderImageButton(view, this);
-	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL(),
-	                   static_cast<HTMLDocumentImpl *>(document)->docLoader());
-	    f = i;
-	    break;
-	}
-	case RESET:
-	{
-	    f = new RenderResetButton(view, this);
-	    break;
-	}
-	case FILE:
-        {
-            f = new RenderFileButton(view, this);
-            break;
-        }
-	case HIDDEN:
-        {
-            f = new RenderHiddenButton(view, this);
-            break;
-        }
-	case BUTTON:
-	{
-	    f = new RenderPushButton(view, this);
-	    break;
-	}
-	}
-	if (f)
-	{
-	    f->setValue(_value); // ### remove
-	    f->setEnabled(!m_disabled); // ### remove render's knowledge of this
-            f->setReadonly(m_readOnly); // ### remove render's knowledge of this
 	
-    	    m_render = f;
+	if (m_render)
+	{
 	    m_render->setStyle(m_style);
 	    m_render->ref();
             kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
@@ -797,13 +848,19 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
             {
                kdDebug( 6030 ) << "Restoring InputElem name=" << _name.string() <<
                             " state=" << state << endl;
-               f->restoreState( state );
+               restoreState( state );
             }
 
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
 	}
     }
     NodeBaseImpl::attach(_view);
+    if (_type == IMAGE) {
+	static_cast<RenderImageButton*>(m_render)->setImageUrl(_src,
+		static_cast<HTMLDocumentImpl *>(document)->URL(),
+		static_cast<HTMLDocumentImpl *>(document)->docLoader());
+
+    }
 }
 
 
@@ -818,9 +875,9 @@ QCString HTMLInputElementImpl::encoding()
 	case HIDDEN:
 	{
 	    if ( _form->enctype() == "application/x-www-form-urlencoded" )
-		encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+		encoding = encodeString( _name.string() ) + '=' + encodeString( m_value.string() );
 	    else
-		encoding = _value.string().latin1();
+		encoding = m_value.string().latin1();
 	    break;
 	}
 	case CHECKBOX:
@@ -829,9 +886,9 @@ QCString HTMLInputElementImpl::encoding()
 	    {
 		if ( _form->enctype() == "application/x-www-form-urlencoded" )
 		    encoding = encodeString( _name.string() ) + '=' +
-		    		( _value.isEmpty() ? QCString("on") : encodeString( _value.string() ) );
+		    		( m_value.isEmpty() ? QCString("on") : encodeString( m_value.string() ) );
 		else
-		    encoding = ( _value.isEmpty() ? QCString("on") : QCString(_value.string().latin1()) );
+		    encoding = ( m_value.isEmpty() ? QCString("on") : QCString(m_value.string().latin1()) );
 	    }
 	    break;
 	}
@@ -840,9 +897,9 @@ QCString HTMLInputElementImpl::encoding()
 	    if (checked())
 	    {
 		if ( _form->enctype() == "application/x-www-form-urlencoded" )
-		    encoding = encodeString( _name.string() ) + '=' + encodeString( _value.string() );
+		    encoding = encodeString( _name.string() ) + '=' + encodeString( m_value.string() );
 		else
-		    encoding = _value.string().latin1();
+		    encoding = m_value.string().latin1();
 	    }
 	    break;
 	}
@@ -850,7 +907,7 @@ QCString HTMLInputElementImpl::encoding()
 	{
 	    if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
 	    {
-		QString val = _value.isNull() ? static_cast<RenderSubmitButton*>(m_render)->defaultLabel() :
+		QString val = m_value.isNull() ? static_cast<RenderSubmitButton*>(m_render)->defaultLabel() :
 		              value().string();
 		if ( _form->enctype() == "application/x-www-form-urlencoded" )
 		    encoding = encodeString( _name.string() ) + '=' + encodeString( val );
@@ -895,7 +952,7 @@ QCString HTMLInputElementImpl::encoding()
     return encoding;
 }
 
-void HTMLInputElementImpl::saveDefaultAttrs()
+void HTMLInputElementImpl::saveDefaults()
 {
     _defaultValue = getAttribute(ATTR_VALUE);
     _defaultChecked = (getAttribute(ATTR_CHECKED) != 0);
@@ -923,17 +980,30 @@ void HTMLInputElementImpl::setValue(DOMString val)
     switch (_type) {
 	case TEXT:
 	case PASSWORD:
-	    _value = val;
+	    m_value = val;
 	    setChanged(true);
 	    break;
 	case FILE:
 	    // sorry, can't change this!
-	    _value = m_filename;
+	    m_value = m_filename;
 	default:
 	    setAttribute(ATTR_VALUE,val);
     }
 }
 
+bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
+                             int _tx, int _ty, DOMString &url,
+                             NodeImpl *&innerNode, long &offset )
+{
+    bool wasPressed = pressed();
+    HTMLGenericFormElementImpl::mouseEvent(_x,_y,button,type,_tx,_ty,url,innerNode,offset);
+    if (type == MouseClick || (type == MouseRelease && wasPressed)) {
+	// ### if the above mouse event called a javascript which deleted us, then
+	// we will probably crash here
+	_form->submit();
+    }
+    return true;
+}
 
 // -------------------------------------------------------------------------
 
@@ -1051,10 +1121,14 @@ void HTMLSelectElementImpl::remove( long /*index*/ )
 
 QString HTMLSelectElementImpl::state( )
 {
-   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
-   if (formElement)
-      return formElement->state();
-   return QString::null;
+    return m_render ? static_cast<RenderSelect*>(m_render)->state() : QString::null;
+}
+
+void HTMLSelectElementImpl::restoreState(const QString &state)
+{
+    if (m_render)
+	static_cast<RenderSelect*>(m_render)->restoreState(state);
+    setChanged(true);
 }
 
 void HTMLSelectElementImpl::blur(  )
@@ -1138,9 +1212,6 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
         RenderSelect *f = new RenderSelect(view, this);
 	if (f)
 	{
-            f->setReadonly(m_readOnly);
-            f->setEnabled(!m_disabled);
-
     	    m_render = f;
 	    m_render->setStyle(m_style);
 	    m_render->ref();
@@ -1324,10 +1395,14 @@ DOMString HTMLTextAreaElementImpl::type() const
 
 QString HTMLTextAreaElementImpl::state( )
 {
-   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
-   if (formElement)
-      return formElement->state();
-   return QString::null;
+   // Make sure the string is not empty!
+   return m_value.string()+'.';
+}
+
+void HTMLTextAreaElementImpl::restoreState(const QString &state)
+{
+    m_value = DOMString(state.left(state.length()-1));
+    setChanged(true);
 }
 
 void HTMLTextAreaElementImpl::blur(  )
@@ -1399,13 +1474,14 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 
 	if (f)
 	{
-            f->setReadonly(m_readOnly);
-	    f->setEnabled(!m_disabled);
-
     	    m_render = f;
 	    m_render->setStyle(m_style);
 	    m_render->ref();
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
+	
+            QString state = document->registerElement(this);
+            if (!state.isEmpty())
+		restoreState( state );
 	}
     }
     NodeBaseImpl::attach(_view);
@@ -1428,8 +1504,8 @@ QCString HTMLTextAreaElementImpl::encoding()
 
 void HTMLTextAreaElementImpl::reset()
 {
-    // ### use default value as specified in HTML file
-    setValue("");
+    // ### check that this uses default value as specified in HTML file
+    setValue(m_value);
 }
 
 void HTMLTextAreaElementImpl::setValue(DOMString _value)
@@ -1465,6 +1541,18 @@ void HTMLTextAreaElementImpl::onChange()
     if (!script.isEmpty())
 	view->part()->executeScript(script.string());
 }
+
+
+void HTMLTextAreaElementImpl::saveDefaults()
+{
+    _defaultValue = getAttribute(m_value);
+}
+
+
+
+
+
+
 
 
 

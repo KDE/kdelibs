@@ -65,74 +65,12 @@ RenderFormElement::~RenderFormElement()
 {
 }
 
-QCString RenderFormElement::encodeString( QString e )
-{
-    return static_cast<HTMLGenericFormElementImpl*>(m_element)->encodeString(e);
-}
-
-QString RenderFormElement::decodeString( QString e )
-{
-    unsigned int pos = 0;
-    unsigned int len = e.length();
-    QString decoded;
-
-    while ( pos < len )
-    {
-        if (e[pos] == QChar('%'))
-        {
-            if (pos+2 < len)
-            {
-                DOMString buffer(e.unicode()+pos+1, 2);
-                bool ok;
-                unsigned char val = buffer.string().toInt(&ok, 16);
-                if (((char) val) != '\r')
-                {
-                    decoded += (char) val;
-                }
-            }
-            else
-            {
-                decoded += e[pos];
-            }
-        }
-        else if (e[pos] == '+')
-        {
-            decoded += ' ';
-        }
-        else
-        {
-            decoded += e[pos];
-        }
-        pos++;
-    }
-    return decoded;
-}
-
 void RenderFormElement::layout(bool)
 {
-    //kdDebug( 6040 ) << "inside RenderFormElement::layout()" << endl;
-
-#if 0
-    // honor style sheet stuff
-    int h = 0;
-
-    if(parent()) {
-        if((h = m_style->width().width(containingBlockWidth())) > 0) {
-            kdDebug( 6040 ) << "overwriting width to " << h << endl;
-            m_width = h;
-        }
-
-
-        if((h = m_style->height().width(containingBlockHeight())) > 0) {
-            kdDebug( 6040 ) << "overwriting height to " << h << endl;
-            m_height = h;
-        }
-    }
-#endif
-
-    // now Layout the stuff
-    if(m_widget)
+    if(m_widget) {
         m_widget->resize(m_width, m_height);
+        m_widget->setEnabled(!m_element->disabled());
+    }
 
 }
 
@@ -188,18 +126,6 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
 }
 
-QString RenderCheckBox::state()
-{
-   return static_cast<HTMLInputElementImpl*>(m_element)->checked() ?
-             QString::fromLatin1("on") :
-             QString::fromLatin1("off");
-}
-
-void RenderCheckBox::restoreState(const QString &state)
-{
-   static_cast<QCheckBox *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
-}
-
 void RenderCheckBox::layout(bool deep)
 {
     static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
@@ -228,18 +154,6 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
 void RenderRadioButton::setChecked(bool checked)
 {
     static_cast<QRadioButton *>(m_widget)->setChecked(checked);
-}
-
-QString RenderRadioButton::state()
-{
-   return static_cast<QRadioButton *>(m_widget)->isChecked() ?
-             QString::fromLatin1("on") :
-             QString::fromLatin1("off");
-}
-
-void RenderRadioButton::restoreState(const QString &state)
-{
-   static_cast<QRadioButton *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
 }
 
 void RenderRadioButton::slotClicked()
@@ -277,6 +191,7 @@ void RenderSubmitButton::slotClicked()
 {
     m_clicked = true;
     static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    // ### if the above line calls some javascript which deletes us we will probably crash here
     if (m_element->form())
 	m_element->form()->submit();
 }
@@ -298,51 +213,28 @@ QString RenderSubmitButton::defaultLabel() {
 
 RenderImageButton::RenderImageButton(QScrollView *view,
 				     HTMLInputElementImpl *element)
-    : RenderSubmitButton(view, element)
+    : RenderImage()
 {
-    image = 0;
+    m_element = element;
+
+//###    connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
+//    m_clicked = false;
 }
 
 RenderImageButton::~RenderImageButton()
 {
-    if(image) image->deref(this);
-}
-
-void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
-{
-    //kdDebug( 0 ) << "RenderImageButton::setImageURL" << endl;
-    if(image) image->deref(this);
-    image = docLoader->requestImage(url, baseUrl);
-    image->ref(this);
-}
-
-void RenderImageButton::setPixmap( const QPixmap &p, CachedObject *, bool *manualUpdate )
-{
-    //kdDebug( 0 ) << "RenderImageButton::setPixmap" << endl;
-    static_cast<QPushButton *>(m_widget)->setPixmap(p);
-    // Image dimensions have been changed, recalculate layout
-
-    if(m_parent)
-    {
-        if (manualUpdate)
-        {
-            if (*manualUpdate)
-                updateSize();
-            else
-                *manualUpdate = true;
-        }
-        else
-            updateSize();	
-    }
 }
 
 void RenderImageButton::layout(bool deep)
 {
-    // #### use the predefined width and height.
-    m_widget->resize(m_widget->sizeHint());
+/*    m_widget->resize(m_widget->sizeHint());
     m_width = m_widget->width();
     m_height = m_widget->height();
     //RenderButton::layout(deep);
+*/
+
+    // #### use the predefined width and height.
+    RenderImage::layout(deep);
 }
 
 // -------------------------------------------------------------------------------
@@ -400,7 +292,8 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
-    if(element->type() == "PASSWORD") edit->setEchoMode( QLineEdit::Password );
+    if(element->inputType() == HTMLInputElementImpl::PASSWORD)
+	edit->setEchoMode( QLineEdit::Password );
 
     setQWidget(edit);
 }
@@ -409,17 +302,6 @@ void RenderLineEdit::slotReturnPressed()
 {
     if (m_element->form())
 	m_element->form()->maybeSubmit();
-}
-
-QString RenderLineEdit::state()
-{
-   // Make sure the string is not empty!
-   return static_cast<QLineEdit *>(m_widget)->text()+'.';
-}
-
-void RenderLineEdit::restoreState(const QString &state)
-{
-   static_cast<QLineEdit *>(m_widget)->setText(state.left(state.length()-1));
 }
 
 void RenderLineEdit::layout(bool)
@@ -449,7 +331,7 @@ void RenderLineEdit::layout(bool)
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
     if (input->maxLength() > 0)
 	edit->setMaxLength(input->maxLength());
-    edit->setReadOnly(m_readonly);
+    edit->setReadOnly(m_element->readOnly());
 
     m_height = s.height();
     m_width = s.width();
@@ -536,23 +418,12 @@ void RenderFileButton::layout( bool )
     m_edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->filename().string());
     m_edit->setMaxLength(input->maxLength());
 
-    m_edit->setReadOnly(m_readonly);
+    m_edit->setReadOnly(m_element->readOnly());
 
     m_height = s.height();
     m_width  = s.width();
 
     RenderFormElement::layout(false);
-}
-
-QString RenderFileButton::state()
-{
-    // Make sure the string is not empty!
-    return static_cast<HTMLInputElementImpl*>(m_element)->filename().string()+'.';
-}
-
-void RenderFileButton::restoreState(const QString &state)
-{
-    static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(state.left(state.length()-1)));
 }
 
 void RenderFileButton::slotReturnPressed()
@@ -855,7 +726,7 @@ QCString RenderSelect::encoding()
     QCString prefix;
     if ( m_element->form()->enctype() == "application/x-www-form-urlencoded" )
     {
-        prefix = encodeString( m_name.string() );
+        prefix = m_element->encodeString( m_name.string() );
         prefix += '=';
     }
     if (m_listBox) {
@@ -867,10 +738,10 @@ QCString RenderSelect::encoding()
             if (w->isSelected(i) && p) {
                 if(p->value().isNull()) {
                     if(w->item(i))
-                        encoding += prefix + encodeString(w->item(i)->text());
+                        encoding += prefix + m_element->encodeString(w->item(i)->text());
                 }
                 else
-                    encoding += prefix + encodeString(p->value().string());
+                    encoding += prefix + m_element->encodeString(p->value().string());
 
                 if (first)
                 {
@@ -886,9 +757,9 @@ QCString RenderSelect::encoding()
 	HTMLOptionElementImpl* p = listOptions[w->currentItem()];
 	if (p) {
 	    if(p->value().isNull())
-		encoding += prefix + encodeString(w->currentText());
+		encoding += prefix + m_element->encodeString(w->currentText());
 	    else
-		encoding += prefix + encodeString(p->value().string());
+		encoding += prefix + m_element->encodeString(p->value().string());
 	}
     }
 
@@ -1060,7 +931,7 @@ void RenderTextArea::layout( bool )
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    w->setReadOnly(m_readonly);
+    w->setReadOnly(m_element->readOnly());
     w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string());
 
     QFontMetrics m = w->fontMetrics();
@@ -1077,34 +948,16 @@ void RenderTextArea::layout( bool )
     RenderFormElement::layout(false);
 }
 
-QString RenderTextArea::state()
-{
-   // Make sure the string is not empty!
-   return static_cast<TextAreaWidget *>(m_widget)->text()+'.';
-}
-
-void RenderTextArea::restoreState(const QString &state)
-{
-   static_cast<TextAreaWidget *>(m_widget)->setText(state.left(state.length()-1));
-}
-
-
 void RenderTextArea::close( )
 {
     HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    if(f->firstChild() && f->firstChild()->id() == ID_TEXT)
+    if(f->firstChild() && f->firstChild()->id() == ID_TEXT) {
         f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
+	f->saveDefaults();
+    }
 
     layout();
-
-    // Restore state
-    QString state = f->ownerDocument()->registerElement(f);
-    if ( !state.isEmpty())
-    {
-       kdDebug( 6040 ) << "Restoring TextAreaElem state=" << state << endl;
-       restoreState( state );
-    }
 
     RenderFormElement::close();
 }
