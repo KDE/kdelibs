@@ -838,7 +838,7 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    actionMenu = new KActionMenu( i18n("Menu"), this, "popupMenu" );
+    actionMenu = new QPopupMenu(0L /* use "this" to see the shortcuts */, "popupMenu" );
 
     upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
     backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
@@ -914,7 +914,6 @@ void KDirOperator::setupActions()
 
     // insert them into the actionCollection
     myActionCollection = new KActionCollection( this, "action collection" );
-    myActionCollection->insert( actionMenu );
     myActionCollection->insert( backAction );
     myActionCollection->insert( forwardAction );
     myActionCollection->insert( homeAction );
@@ -956,18 +955,18 @@ void KDirOperator::setupMenu()
 
 
     // now plug everything into the popupmenu
-    actionMenu->insert( upAction );
-    actionMenu->insert( backAction );
-    actionMenu->insert( forwardAction );
-    actionMenu->insert( homeAction );
-    actionMenu->insert( actionSeparator );
+    upAction->plug( actionMenu );
+    backAction->plug( actionMenu );
+    forwardAction->plug( actionMenu );
+    homeAction->plug( actionMenu );
+    actionSeparator->plug( actionMenu );
 
-    actionMenu->insert( mkdirAction );
-    actionMenu->insert( actionSeparator );
+    mkdirAction->plug( actionMenu );
+    actionSeparator->plug( actionMenu );
 
-    actionMenu->insert( sortActionMenu );
-    actionMenu->insert( actionSeparator );
-    actionMenu->insert( viewActionMenu );
+    sortActionMenu->plug( actionMenu );
+    actionSeparator->plug( actionMenu );
+    viewActionMenu->plug( actionMenu );
 }
 
 

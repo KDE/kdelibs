@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qaccel.h>
 #include <qbitmap.h>
 #include <qbuttongroup.h>
 #include <qcollection.h>
@@ -237,7 +236,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     coll->action( "forward" )->plug( toolbar );
     coll->action( "home" )->plug( toolbar );
     coll->action( "reload" )->plug( toolbar );
-
+    KAccel * accel = new KAccel(this);
+    coll->action( "up" )->plugAccel( accel );
+    coll->action( "back" )->plugAccel( accel );
+    coll->action( "forward" )->plugAccel( accel );
+    coll->action( "home" )->plugAccel( accel );
+    coll->action( "reload" )->plugAccel( accel );
 
     bookmarks= new KFileBookmarkManager();
     CHECK_PTR( bookmarks );
