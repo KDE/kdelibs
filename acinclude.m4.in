@@ -140,6 +140,9 @@ if test -n "$qt_libraries"; then
   KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $qt_libraries $KDE_EXTRA_RPATH"
 fi
 
+dnl I have no idea, why I used KDE_TEST_RPATH once
+KDE_TEST_RPATH="$KDE_RPATH"
+
 ac_compile='${CXX-g++} -c $CXXFLAGS $all_includes $CPPFLAGS conftest.$ac_ext'
 if AC_TRY_EVAL(ac_compile); then
   AC_MSG_RESULT(yes)
