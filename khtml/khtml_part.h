@@ -711,6 +711,11 @@ public:
    */
   void preloadScript(const QString &url, const QString &script);
 
+  /**
+   * @internal
+   */  
+  bool restored() const;
+  
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

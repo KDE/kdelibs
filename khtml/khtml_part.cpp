@@ -168,6 +168,8 @@ public:
 #endif
     m_cacheId = 0;
     m_frameNameId = 1;
+    
+    m_restored = false;
 
     m_bJScriptForce = false;
     m_bJScriptOverride = false;
@@ -250,6 +252,7 @@ public:
   bool m_bPluginsForce :1;
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
+  bool m_restored :1;
   int m_frameNameId;
   int m_dcop_counter;
   DCOPObject *m_dcopobject;
@@ -595,6 +598,8 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
   d->m_workingURL = url;
+  
+  d->m_restored = true;
 
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
@@ -728,7 +733,8 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-
+  d->m_restored = false;
+  
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
   {
@@ -3635,6 +3641,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
     else
        restoreURL( u );
   }
+  
+  d->m_restored = true;
 
 }
 
@@ -4563,6 +4571,11 @@ QCString KHTMLPart::dcopObjectId() const
 long KHTMLPart::cacheId() const
 {
   return d->m_cacheId;
+}
+
+bool KHTMLPart::restored() const
+{
+  return d->m_restored;   
 }
 
 using namespace KParts;
