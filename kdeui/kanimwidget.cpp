@@ -121,7 +121,7 @@ void KAnimWidget::leaveEvent( QEvent *e )
 {
   setFrameStyle( StyledPanel | Sunken );
 
-  QFrame::enterEvent( e );
+  QFrame::leaveEvent( e );
 }
 
 void KAnimWidget::mousePressEvent( QMouseEvent *e )
