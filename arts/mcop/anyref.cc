@@ -21,6 +21,7 @@
     */
 
 #include "anyref.h"
+#include <assert.h>
 
 using namespace Arts;
 using namespace std;

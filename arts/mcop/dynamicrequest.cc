@@ -22,6 +22,7 @@
 
 #include "dynamicrequest.h"
 #include "core.h"
+#include <iostream.h>
 
 using namespace Arts;
 using namespace std;

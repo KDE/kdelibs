@@ -36,7 +36,8 @@
  * Plugin capability, cleanups and port to KDialogBase by
  *  Simon Hausmann <hausmann@kde.org>
  */
-
+ 
+#include <config.h>
 #include <pwd.h>
 #include <grp.h>
 #include <sys/types.h>

@@ -20,6 +20,7 @@
 
     */
 
+#include <config.h>
 #include "mcoputils.h"
 #include "mcopconfig.h"
 #include "objectmanager.h"

@@ -20,6 +20,7 @@
 
     */
 
+#include <config.h>
 #include "startupmanager.h"
 #include "extensionloader.h"
 #include <iostream>
