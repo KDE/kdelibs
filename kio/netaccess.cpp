@@ -31,6 +31,7 @@
 #include <qfile.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/job.h>
@@ -46,7 +47,14 @@ bool NetAccess::download(const KURL& u, QString & target)
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
     target = u.path();
-    return checkAccess(target, R_OK);
+    bool accessible = checkAccess(target, R_OK);
+    if(!accessible)
+    {
+        if(!lastErrorMsg)
+            lastErrorMsg = new QString;
+        *lastErrorMsg = i18n("File '%1' is not readable").arg(target);
+    }
+    return accessible;
   }
 
   if (target.isEmpty())
