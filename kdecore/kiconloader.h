@@ -148,6 +148,11 @@ public:
      */
     KIconTheme *theme();
 
+    /**
+     * Returns a pointer to the KIconEffect object used by the icon loader.
+     */
+    KIconEffect *iconEffect();
+
  private:
     /**
      * @internal

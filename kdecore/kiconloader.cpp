@@ -600,6 +600,11 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context) const
     return res2;
 }
 
+KIconEffect * KIconLoader::iconEffect()
+{
+    return &d->mpEffect;
+}
+
 // Easy access functions
 
 QPixmap DesktopIcon(const QString& name, int force_size, int state,
