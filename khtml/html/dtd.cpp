@@ -76,7 +76,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_EM
     0, // ID_EMBED
     3, // ID_FIELDSET
-    1, // ID_FONT
+    5, // ID_FONT
     3, // ID_FORM
     0, // ID_FRAME
     9, // ID_FRAMESET
