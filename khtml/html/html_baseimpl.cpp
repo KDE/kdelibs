@@ -128,12 +128,20 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_ONLOAD:
-        removeHTMLEventListener(EventImpl::LOAD_EVENT);
-        addEventListener( EventImpl::LOAD_EVENT, new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string(), false), false );
+        ownerDocument()->setWindowEventListener(EventImpl::LOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
-        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
-        addEventListener( EventImpl::UNLOAD_EVENT, new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string(), false), false );
+        ownerDocument()->setWindowEventListener(EventImpl::UNLOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
+    case ATTR_ONBLUR:
+        ownerDocument()->setWindowEventListener(EventImpl::BLUR_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
+    case ATTR_ONFOCUS:
+        ownerDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -391,12 +399,12 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
-        removeHTMLEventListener(EventImpl::LOAD_EVENT);
-        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        setHTMLEventListener(EventImpl::LOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
-        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
-        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

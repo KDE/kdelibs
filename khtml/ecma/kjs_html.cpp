@@ -42,12 +42,14 @@
 
 // ### HACK
 #include <xml/dom_docimpl.h>
+#include <xml/dom2_eventsimpl.h>
 #include <khtmlview.h>
 
 #include <kjs/operations.h>
 #include "kjs_dom.h"
 #include "kjs_html.h"
 #include "kjs_window.h"
+#include "kjs_events.h"
 
 #include <htmltags.h>
 #include <kdebug.h>
@@ -256,7 +258,22 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
     KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
     QString str = v.toString().value().qstring();
     part->scheduleRedirection(0, str);
-  } else
+  }
+  else if (p == "onClick" || p == "onclick")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,getJSEventListener(v,true));
+  else if (p == "onDblClick" || p == "ondblclick")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,getJSEventListener(v,true));
+  else if (p == "onKeyDown" || p == "onkeydown")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,getJSEventListener(v,true));
+  else if (p == "onKeyPress" || p == "onkeypress")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,getJSEventListener(v,true));
+  else if (p == "onKeyUp" || p == "onkeyup")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,getJSEventListener(v,true));
+  else if (p == "onMouseDown" || p == "onmousedown")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,getJSEventListener(v,true));
+  else if (p == "onMouseUp" || p == "onmouseup")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,getJSEventListener(v,true));
+  else
     DOMDocument::tryPut(p,v);
 }
 
@@ -438,8 +455,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
       else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
       else if (p == "click")           return new HTMLElementFunction(element,HTMLElementFunction::Click);
-      else
-      {
+      else {
         // ### SLOOOOOOOW
         bool ok;
         uint u = p.toULong(&ok);

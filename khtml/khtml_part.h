@@ -52,6 +52,8 @@ namespace DOM
   class HTMLFormElementImpl;
   class HTMLAnchorElementImpl;
   class Node;
+  class HTMLEventListener;
+  class EventListener;
 };
 
 namespace khtml
@@ -130,7 +132,6 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFrameElementImpl;
   friend class DOM::HTMLIFrameElementImpl;
   friend class DOM::HTMLObjectElementImpl;
-  friend class DOM::HTMLElementImpl;
   friend class DOM::HTMLAnchorElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
@@ -139,6 +140,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::JSEventListener;
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;
+  friend class DOM::DocumentImpl;
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
@@ -1016,6 +1018,7 @@ private:
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   QVariant executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
+  DOM::EventListener *createHTMLEventListener( QString code );
 
   DOM::HTMLDocumentImpl *docImpl() const;
   DOM::DocumentImpl *xmlDocImpl() const;

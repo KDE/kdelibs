@@ -44,6 +44,7 @@
 #include "kjs_dom.h"
 #include "kjs_range.h"
 #include "kjs_traversal.h"
+#include "kjs_events.h"
 
 #include <qevent.h>
 #include "khtmlview.h"
@@ -51,6 +52,7 @@
 #include <html_documentimpl.h>
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 using namespace KJS;
 
@@ -307,7 +309,30 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
       p == "scrollBy" ||
       p == "scrollTo" ||
       p == "setInterval" ||
-      p == "setTimeout" ||
+      p == "setTimeout" ||      
+      p == "onAbort" || p == "onabort" ||
+      p == "onBlur" || p == "onblur" ||
+      p == "onChange" || p == "onchange" ||
+      p == "onClick" || p == "onclick" ||
+      p == "onDblClick" || p == "ondblclick" ||
+      p == "onDragDrop" || p == "ondragdrop" ||
+      p == "onError" || p == "onerror" ||
+      p == "onFocus" || p == "onfocus" ||
+      p == "onKeyDown" || p == "onkeydown" ||
+      p == "onKeyPress" || p == "onkeypress" ||
+      p == "onKeyUp" || p == "onkeyup" ||
+      p == "onLoad" || p == "onload" ||
+      p == "onMouseDown" || p == "onmousedown" ||
+      p == "onMouseMove" || p == "onmousemove" ||
+      p == "onMouseOut" || p == "onmouseout" ||
+      p == "onMouseOver" || p == "onmouseover" ||
+      p == "onMouseUp" || p == "onmouseup" ||
+      p == "onMove" || p == "onmove" ||
+      p == "onReset" || p == "onreset" ||
+      p == "onResize" || p == "onresize" ||
+      p == "onSelect" || p == "onselect" ||
+      p == "onSubmit" || p == "onsubmit" ||
+      p == "onUnload" || p == "onunload" ||      
       HostImp::hasProperty(p,recursive) ||
       m_part->findFrame( p.qstring() ))
     return true;
@@ -477,6 +502,52 @@ KJSO Window::get(const UString &p) const
     else
       return Undefined();
   }
+  else if (p == "onAbort" || p == "onabort")
+    return getListener(DOM::EventImpl::ABORT_EVENT);
+  else if (p == "onBlur" || p == "onblur")
+    return getListener(DOM::EventImpl::BLUR_EVENT);
+  else if (p == "onChange" || p == "onchange")
+    return getListener(DOM::EventImpl::CHANGE_EVENT);
+  else if (p == "onClick" || p == "onclick")
+    return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
+  else if (p == "onDblClick" || p == "ondblclick")
+    return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+  else if (p == "onDragDrop" || p == "ondragdrop")
+    return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
+  else if (p == "onError" || p == "onerror")
+    return getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
+  else if (p == "onFocus" || p == "onfocus")
+    return getListener(DOM::EventImpl::FOCUS_EVENT);
+  else if (p == "onKeyDown" || p == "onkeydown")
+    return getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
+  else if (p == "onKeyPress" || p == "onkeypress")
+    return getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
+  else if (p == "onKeyUp" || p == "onkeyup")
+    return getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
+  else if (p == "onLoad" || p == "onload")
+    return getListener(DOM::EventImpl::LOAD_EVENT);
+  else if (p == "onMouseDown" || p == "onmousedown")
+    return getListener(DOM::EventImpl::MOUSEDOWN_EVENT);
+  else if (p == "onMouseMove" || p == "onmousemove")
+    return getListener(DOM::EventImpl::MOUSEMOVE_EVENT);
+  else if (p == "onMouseOut" || p == "onmouseout")
+    return getListener(DOM::EventImpl::MOUSEOUT_EVENT);
+  else if (p == "onMouseOver" || p == "onmouseover")
+    return getListener(DOM::EventImpl::MOUSEOVER_EVENT);
+  else if (p == "onMouseUp" || p == "onmouseup")
+    return getListener(DOM::EventImpl::MOUSEUP_EVENT);
+  else if (p == "onMove" || p == "onmove")
+    return getListener(DOM::EventImpl::KHTML_MOVE_EVENT);
+  else if (p == "onReset" || p == "onreset")
+    return getListener(DOM::EventImpl::RESET_EVENT);
+  else if (p == "onResize" || p == "onresize")
+    return getListener(DOM::EventImpl::RESIZE_EVENT);
+  else if (p == "onSelect" || p == "onselect")
+    return getListener(DOM::EventImpl::SELECT_EVENT);
+  else if (p == "onSubmit" || p == "onsubmit")
+    return getListener(DOM::EventImpl::SUBMIT_EVENT);
+  else if (p == "onUnload" || p == "onunload")
+    return getListener(DOM::EventImpl::UNLOAD_EVENT);
 
   KHTMLPart *kp = m_part->findFrame( p.qstring() );
   if (kp)
@@ -500,25 +571,67 @@ void Window::put(const UString &p, const KJSO &v)
   if (p == "status") {
     String s = v.toString();
     m_part->setJSStatusBarText(s.value().qstring());
-  } else if (p == "defaultStatus" || p == "defaultstatus") {
+  }
+  else if (p == "defaultStatus" || p == "defaultstatus") {
     String s = v.toString();
     m_part->setJSDefaultStatusBarText(s.value().qstring());
-  } else if (p == "location") {
+  }
+  else if (p == "location") {
     QString str = v.toString().value().qstring();
     m_part->scheduleRedirection(0, Window::retrieveActive()->m_part->
                               completeURL(str).url().prepend( "target://_self/#" ));
-  } else if (p == "onload") {
-    if (isSafeScript() && v.isA(ConstructorType)) {
-      // ### other attributes like this?
-      DOM::Element body;
-      if (!m_part->htmlDocument().isNull() &&
-          !(body = m_part->htmlDocument().body()).isNull())
-        body.setAttribute("onload",((FunctionImp*)v.imp())->name().string() + "()");
-    }
-  } else if (p == "name") {
+  }
+  else if (p == "onAbort" || p == "onabort")
+    setListener(DOM::EventImpl::ABORT_EVENT,v);
+  else if (p == "onBlur" || p == "onblur")
+    setListener(DOM::EventImpl::BLUR_EVENT,v);
+  else if (p == "onChange" || p == "onchange")
+    setListener(DOM::EventImpl::CHANGE_EVENT,v);
+  else if (p == "onClick" || p == "onclick")
+    setListener(DOM::EventImpl::KHTML_CLICK_EVENT,v);
+  else if (p == "onDblClick" || p == "ondblclick")
+    setListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,v);
+  else if (p == "onDragDrop" || p == "ondragdrop")
+    setListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT,v);
+  else if (p == "onError" || p == "onerror")
+    setListener(DOM::EventImpl::KHTML_ERROR_EVENT,v);
+  else if (p == "onFocus" || p == "onfocus")
+    setListener(DOM::EventImpl::FOCUS_EVENT,v);
+  else if (p == "onKeyDown" || p == "onkeydown")
+    setListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,v);
+  else if (p == "onKeyPress" || p == "onkeypress")
+    setListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,v);
+  else if (p == "onKeyUp" || p == "onkeyup")
+    setListener(DOM::EventImpl::KHTML_KEYUP_EVENT,v);
+  else if (p == "onLoad" || p == "onload")
+    setListener(DOM::EventImpl::LOAD_EVENT,v);
+  else if (p == "onMouseDown" || p == "onmousedown")
+    setListener(DOM::EventImpl::MOUSEDOWN_EVENT,v);
+  else if (p == "onMouseMove" || p == "onmousemove")
+    setListener(DOM::EventImpl::MOUSEMOVE_EVENT,v);
+  else if (p == "onMouseOut" || p == "onmouseout")
+    setListener(DOM::EventImpl::MOUSEOUT_EVENT,v);
+  else if (p == "onMouseOver" || p == "onmouseover")
+    setListener(DOM::EventImpl::MOUSEOVER_EVENT,v);
+  else if (p == "onMouseUp" || p == "onmouseup")
+    setListener(DOM::EventImpl::MOUSEUP_EVENT,v);
+  else if (p == "onMove" || p == "onmove")
+    setListener(DOM::EventImpl::KHTML_MOVE_EVENT,v);
+  else if (p == "onReset" || p == "onreset")
+    setListener(DOM::EventImpl::RESET_EVENT,v);
+  else if (p == "onResize" || p == "onresize")
+    setListener(DOM::EventImpl::RESIZE_EVENT,v);
+  else if (p == "onSelect" || p == "onselect")
+    setListener(DOM::EventImpl::SELECT_EVENT,v);
+  else if (p == "onSubmit" || p == "onsubmit")
+    setListener(DOM::EventImpl::SUBMIT_EVENT,v);
+  else if (p == "onUnload" || p == "onunload")
+    setListener(DOM::EventImpl::UNLOAD_EVENT,v);
+  else if (p == "name") {
     if (isSafeScript())
       m_part->setName( v.toString().value().qstring().local8Bit().data() );
-  } else {
+  }
+  else {
     if (isSafeScript())
       Imp::put(p, v);
   }
@@ -549,6 +662,32 @@ bool Window::isSafeScript() const
 {
   KHTMLPart *act = (KHTMLPart*)KJS::Global::current().extra();
   return act && originCheck(m_part->url(), act->url());
+}
+
+void Window::setListener(int eventId, KJSO func)
+{
+  if (!isSafeScript())
+    return;
+  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl*>(m_part->htmlDocument().handle());
+  if (!doc)
+    return;
+
+  doc->setWindowEventListener(eventId,getJSEventListener(func,true));
+}
+
+KJSO Window::getListener(int eventId) const
+{
+  if (!isSafeScript())
+    return Undefined();
+  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl*>(m_part->htmlDocument().handle());
+  if (!doc)
+    return Undefined();
+
+  DOM::EventListener *listener = doc->getWindowEventListener(eventId);
+  if (listener)
+    return static_cast<JSEventListener*>(listener)->listenerObj();
+  else
+    return Null();
 }
 
 Completion WindowFunc::tryExecute(const List &args)

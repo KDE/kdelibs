@@ -21,6 +21,7 @@
 
 #include <kjs/kjs.h>
 #include <kjs/object.h>
+#include <kjs/function.h>
 
 #include <khtml_part.h>
 #include <html_element.h>
@@ -34,6 +35,7 @@
 #include "kjs_window.h"
 #include "kjs_navigator.h"
 #include "kjs_debugwin.h"
+#include "kjs_events.h"
 
 using namespace KJS;
 
@@ -52,7 +54,8 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 
   // proxy class operating via callback functions
   KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_execFuncCall,
-                                 &kjs_clear, &kjs_special, &kjs_destroy);
+                                 &kjs_clear, &kjs_special, &kjs_destroy,
+				 &kjs_createHTMLEventHandler);
   proxy->khtmlpart = khtmlpart;
 
 #ifdef KJS_DEBUGGER
@@ -167,3 +170,17 @@ namespace KJS {
     }
     return QVariant(); // ### return proper value
   }
+
+  DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code)
+  {
+    KJS::Constructor constr(KJS::Global::current().get("Function").imp());
+    KJS::List args;
+    args.append(KJS::String("event"));
+    args.append(KJS::String(code));
+    KJS::KJSO handlerFunc = constr.construct(args);
+    return new KJS::JSEventListener(handlerFunc,true);
+  }
+
+
+
+

@@ -74,7 +74,13 @@ public:
 	SCROLL_EVENT,
 	// khtml events (not part of DOM)
 	KHTML_DBLCLICK_EVENT, // for html ondblclick
-	KHTML_CLICK_EVENT // for html onclick
+	KHTML_CLICK_EVENT, // for html onclick
+	KHTML_DRAGDROP_EVENT,
+	KHTML_ERROR_EVENT,
+	KHTML_KEYDOWN_EVENT,
+	KHTML_KEYPRESS_EVENT,
+	KHTML_KEYUP_EVENT,
+	KHTML_MOVE_EVENT	
     };
 
     EventImpl();
@@ -261,19 +267,6 @@ public:
     EventImpl::EventId id;
     EventListener *listener;
     bool useCapture;
-};
-
-
-class HTMLEventListener : public EventListener {
-public:
-    HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool thisIsCurrentTarget = true );
-    virtual ~HTMLEventListener();
-    virtual void handleEvent(Event &evt);
-    virtual DOMString eventListenerType();
-protected:
-    QString m_scriptCode;
-    KHTMLPart *m_part;
-    bool thisIsCurrent;
 };
 
 }; //namespace

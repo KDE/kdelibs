@@ -1385,6 +1385,54 @@ CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DO
     return 0; // ###
 }
 
+void DocumentImpl::defaultEventHandler(EventImpl *evt)
+{
+    // if any html event listeners are registered on the window, then dispatch them here
+    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Event ev = evt;
+    for (; it.current(); ++it) {
+        if (it.current()->id == evt->id()) {
+            it.current()->listener->handleEvent(ev);
+	    return;
+	}
+    }
+}
+
+void DocumentImpl::setWindowEventListener(int id, EventListener *listener)
+{
+    removeWindowEventListener(id);
+    if (listener) {
+	RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
+	m_windowEventListeners.append(rl);
+    }
+}
+
+EventListener *DocumentImpl::getWindowEventListener(int id)
+{
+    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current(); ++it) {
+	if (it.current()->id == id) {
+	    return it.current()->listener;
+	}
+    }
+}
+
+void DocumentImpl::removeWindowEventListener(int id)
+{
+    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current(); ++it) {
+	if (it.current()->id == id) {
+	    m_windowEventListeners.removeRef(it.current());
+	    return;
+	}
+    }
+}
+
+EventListener *DocumentImpl::createHTMLEventListener(QString code)
+{
+    return view()->part()->createHTMLEventListener(code);
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentPtr *doc) : NodeBaseImpl(doc)

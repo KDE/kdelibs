@@ -26,6 +26,7 @@
 #include <qptrdict.h>
 #include <qlist.h>
 #include "khtml_part.h"
+#include <xml/dom_nodeimpl.h>
 
 using namespace KJS;
 
@@ -34,10 +35,11 @@ QList<JSEventListener> jsEventListeners;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(KJSO _listener)
+JSEventListener::JSEventListener(KJSO _listener, bool _html)
 {
     listener = _listener;
     jsEventListeners.append(this);
+    html = _html;
 }
 
 JSEventListener::~JSEventListener()
@@ -60,22 +62,36 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
 DOM::DOMString JSEventListener::eventListenerType()
 {
-    return "JSEventListener";
+    if (html)
+	return "HTMLEventListener";
+    else
+	return "JSEventListener";
 }
 
-JSEventListener *KJS::getJSEventListener(const KJSO &obj)
+JSEventListener *KJS::getJSEventListener(const KJSO &obj, bool html)
 {
+  if (obj.isA(KJS::NullType))
+    return 0;
+    
   QListIterator<JSEventListener> it(jsEventListeners);
 
   for (; it.current(); ++it)
     if (it.current()->listenerObj().imp() == obj.imp())
       return it.current();
 
-  JSEventListener *listener = new JSEventListener(obj);
+  JSEventListener *listener = new JSEventListener(obj,html);
   jsEventListeners.append(listener);
   return listener;
 }
 
+KJSO KJS::getNodeEventListener(DOM::Node n, int eventId)
+{
+    DOM::EventListener *listener = n.handle()->getHTMLEventListener(eventId);
+    if (listener)
+	return static_cast<JSEventListener*>(listener)->listenerObj();
+    else
+	return Null();
+}
 
 // -------------------------------------------------------------------------
 

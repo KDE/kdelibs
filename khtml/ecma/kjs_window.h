@@ -89,6 +89,8 @@ namespace KJS {
     bool isSafeScript() const;
     Location *location() const;
     virtual String toString() const;
+    void setListener(int eventId, KJSO func);
+    KJSO getListener(int eventId) const;
   private:
     QGuardedPtr<KHTMLPart> m_part;
     QGuardedPtr<KHTMLPart> opener;

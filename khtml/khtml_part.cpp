@@ -45,6 +45,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
 #include "java/kjavaappletcontext.h"
 using namespace DOM;
@@ -4141,6 +4142,18 @@ QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &funct
 
     return proxy->executeFunctionCall(thisVal,functionObj,args);
 }
+
+
+DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
+{
+    KJSProxy *proxy = jScript();
+
+    if (!proxy)
+	return 0;
+	
+    return proxy->createHTMLEventHandler(code);
+}
+
 
 using namespace KParts;
 #include "khtml_part.moc"

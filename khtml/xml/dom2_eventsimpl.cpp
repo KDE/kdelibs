@@ -599,34 +599,3 @@ bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 	    listener == other.listener &&
 	    useCapture == other.useCapture);
 }
-
-// -----------------------------------------------------------------------------
-
-HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool thisIsCurrentTarget)
-{
-    m_part = _part;
-    m_scriptCode = _scriptCode;
-    thisIsCurrent = thisIsCurrentTarget;
-}
-
-HTMLEventListener::~HTMLEventListener()
-{
-}
-
-void HTMLEventListener::handleEvent(Event &evt)
-{
-    // ### make event information available to script somehow?
-    // See DOM2 Events section 1.3.2
-
-    // If the script returns false, we prevent default actions (e.g. submitting a form)
-    // most events need currentTarget, but some (thos that have window as this value (eg. onload) need target as this value.
-    QVariant ret = m_part->executeScript( thisIsCurrent ? evt.currentTarget() : evt.target(), m_scriptCode );
-    if (ret.type() == QVariant::Bool && ret.toBool() == false)
-	evt.preventDefault();
-
-}
-
-DOMString HTMLEventListener::eventListenerType()
-{
-    return "HTMLEventListener";
-}

@@ -65,6 +65,8 @@ namespace DOM {
     class CSSStyleSheetImpl;
     class AbstractViewImpl;
     class EventImpl;
+    class EventListener;
+    class RegisteredEventListener;
 
 class DOMImplementationImpl : public DomShared
 {
@@ -254,6 +256,11 @@ public:
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
+    virtual void defaultEventHandler(EventImpl *evt);
+    virtual void setWindowEventListener(int id, EventListener *listener);
+    EventListener *getWindowEventListener(int id);
+    virtual void removeWindowEventListener(int id);
+    EventListener *createHTMLEventListener(QString code);
 
 signals:
     virtual void finishedParsing();
@@ -302,6 +309,7 @@ protected:
 
     unsigned short m_listenerTypes;
     StyleSheetListImpl* m_styleSheets;
+    QList<RegisteredEventListener> m_windowEventListeners;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

@@ -425,6 +425,28 @@ void NodeImpl::removeHTMLEventListener(int id)
         }
 }
 
+void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
+{
+    removeHTMLEventListener(id);
+    if (listener)
+	addEventListener(id,listener,false);    
+}
+
+EventListener *NodeImpl::getHTMLEventListener(int id)
+{
+    if (!m_regdListeners) // nothing to remove
+        return 0;
+
+    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    for (; it.current(); ++it)
+        if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "HTMLEventListener") {
+            return it.current()->listener;
+        }
+    return 0;
+}
+
+
 bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode)
 {
     evt->setTarget(this);

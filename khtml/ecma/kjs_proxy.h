@@ -21,12 +21,14 @@
 #define _KJS_PROXY_H_
 
 #include <qvariant.h>
+#include <qstring.h>
 
 class KJScript;
 class KHTMLPart;
 
 namespace DOM {
   class Node;
+  class EventListener;
 };
 
 namespace KJS {
@@ -42,6 +44,7 @@ typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, bool, 
 typedef void (KJSClearFunc)(KJScript *script, KHTMLPart *part);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
+typedef DOM::EventListener* (KJSCreateHTMLEventHandlerFunc)(KJScript *script, QString code);
 extern "C" {
   KJSCreateFunc kjs_create;
   KJSEvalFunc kjs_eval;
@@ -49,6 +52,7 @@ extern "C" {
   KJSClearFunc kjs_clear;
   KJSSpecialFunc kjs_special;
   KJSDestroyFunc kjs_destroy;
+  KJSCreateHTMLEventHandlerFunc kjs_createHTMLEventHandler;
 }
 
 /**
@@ -57,13 +61,16 @@ extern "C" {
 class KJSProxy {
 public:
   KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSExecFuncCall fc,
-           KJSClearFunc c, KJSSpecialFunc sp, KJSDestroyFunc d)
-    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d), inEvaluate(false) { }
+           KJSClearFunc c, KJSSpecialFunc sp, KJSDestroyFunc d,
+	   KJSCreateHTMLEventHandlerFunc cheh)
+    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d), 
+      createHTMLEH(cheh), inEvaluate(false) { }
   ~KJSProxy() { (*destr)(script); }
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
   QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
+  DOM::EventListener *createHTMLEventHandler(QString code);
   KHTMLPart *khtmlpart;
 private:
   KJSCreateFunc *create;
@@ -73,6 +80,7 @@ private:
   KJSClearFunc *clr;
   KJSSpecialFunc *spec;
   KJSDestroyFunc *destr;
+  KJSCreateHTMLEventHandlerFunc *createHTMLEH;
   bool inEvaluate;
 };
 
@@ -107,6 +115,13 @@ inline void KJSProxy::clear() {
     (*clr)(script,khtmlpart);
     script = 0L;
   }
+}
+
+inline DOM::EventListener *KJSProxy::createHTMLEventHandler(QString code)
+{
+  if (!script)
+    script = (*create)(khtmlpart);
+  return (*createHTMLEH)(script,code);
 }
 
 #endif

@@ -332,12 +332,12 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       needWidgetUpdate = true;
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
-        removeHTMLEventListener(EventImpl::LOAD_EVENT);
-        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        setHTMLEventListener(EventImpl::LOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
-        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
-        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
       HTMLElementImpl::parseAttribute( attr );

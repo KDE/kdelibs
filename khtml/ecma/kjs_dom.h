@@ -47,6 +47,8 @@ namespace KJS {
 
     virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
     virtual String toString() const;
+    void setListener(int eventId,KJSO func) const;
+    KJSO getListener(int eventId) const;
 
   protected:
     DOM::Node node;

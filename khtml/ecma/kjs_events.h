@@ -27,16 +27,18 @@ namespace KJS {
 
   class JSEventListener : public DOM::EventListener {
   public:
-    JSEventListener(KJSO _listener);
+    JSEventListener(KJSO _listener, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     KJSO listenerObj() { return listener; }
   protected:
     KJSO listener;
+    bool html;
   };
 
-  JSEventListener *getJSEventListener(const KJSO &obj);
+  JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
+  KJSO getNodeEventListener(DOM::Node n, int eventId);
 
   // Prototype object Event
   class EventPrototype : public DOMObject {

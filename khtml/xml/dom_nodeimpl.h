@@ -263,6 +263,8 @@ public:
     void removeEventListener(const DOMString &type, EventListener *listener,
                                      bool useCapture,int &exceptioncode);
     void removeHTMLEventListener(int id);
+    void setHTMLEventListener(int id, EventListener *listener);
+    EventListener *getHTMLEventListener(int id);
 
     bool dispatchEvent(EventImpl *evt, int &exceptioncode);
     bool dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
