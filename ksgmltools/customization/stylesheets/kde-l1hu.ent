@@ -8,8 +8,8 @@
     value for the character (e.g. \U-00F3).
     Let us know should you know of other encodings that work.
  -->
-<!ENTITY Default "Default">
+<!ENTITY Default "Alap\U-00E9;rtelmez\U-00E9;s">
 <!ENTITY Hungarian "Magyar">
-<!ENTITY Version "Version">
-<!ENTITY LastUpdated "Last updated">
+<!ENTITY Version "Verzi\U-00F3;">
+<!ENTITY LastUpdated "Utols\U-00F3; friss\U-00ED;t\U-00E9;s">
 <!--ENTITY By "By"-->
