@@ -155,7 +155,9 @@ QString KURIFilterData::iconName()
             }
             case KURIFilterData::EXECUTABLE:
             {
-                KService::Ptr service = KService::serviceByDesktopName( m_pURI.url() );
+                QString tmp = m_pURI.url();
+                tmp = tmp.mid( tmp.findRev( '/' ) + 1 ); // strip path if given
+                KService::Ptr service = KService::serviceByDesktopName( tmp );
                 if (service)
                     m_strIconName = service->icon();
                 else
