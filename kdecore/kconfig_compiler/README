@@ -33,7 +33,7 @@ type the following special types are supported:
   when being stored in the configuration file.
   
 - Enum  This indicates an enumaration. The possible enum values should
-  be provided via the <values> tag. Enum values are accessed as integers
+  be provided via the <choices> tag. Enum values are accessed as integers
   by the application but stored as string in the configuration file. This
   makes it possible to add more values at a later date without breaking
   compatibility.
@@ -63,7 +63,7 @@ There are several possibilities to parameterize entries.
 
 An entry can be parameterized using a fixed range parameter specified with
 the <parameter> tag. Such parameter can either be an Enum or an int. An Enum
-parameter should specify the possible enumeration values with the <values>
+parameter should specify the possible enumeration values with the <choices>
 tag. An int parameter should specify its maximum value. Its minimum value
 is always 0.
 
@@ -104,12 +104,12 @@ void setColor(int ColorIndex, const QColor &v) function.
 Example 2:
   <entry name="Sound$(SoundEvent)" type="String" key="sound_$(SoundEvent)">
     <parameter name="SoundEvent" type="Enum"/>
-    <values>
-      <value>Explosion</value>
-      <value>Crash</value>
-      <value>Missile</value>
-      <value>Shield</value>
-    </values>
+    <choices>
+      <choice>Explosion</choice>
+      <choice>Crash</choice>
+      <choice>Missile</choice>
+      <choice>Shield</choice>
+    </choices>
     <default param="Explosion">boom.wav</default>
     <default param="Crash">crash.wav</default>
     <default param="Missile">missile.wav</default>
