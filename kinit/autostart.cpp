@@ -43,7 +43,7 @@ public:
 };
 
 AutoStart::AutoStart()
-  : m_phase(1), m_phasedone(false)
+  : m_phase(0), m_phasedone(false)
 {
   m_startList = new AutoStartList;
   m_startList->setAutoDelete(true);
