@@ -85,6 +85,8 @@ KZip::KZip( QIODevice * dev )
 {
     kdDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
     d = new KZipPrivate;
+    setDevice( new KZipFilter( dev ) );
+
 }
 
 void KZip::prepareDevice( const QString & filename,
@@ -572,6 +574,11 @@ KZipFilter::KZipFilter(const QString& filename)
     dev = new QFile ( filename );
 }
 
+KZipFilter::KZipFilter(QIODevice * _dev)
+{
+    dev = _dev;
+}
+
 bool KZipFilter::open(int _mode)
 {
     return dev->open(_mode);
@@ -613,8 +620,8 @@ Q_LONG KZipFilter::readBlock(char * c, long unsigned int i)
     if (cmethod == 8) //zip deflated
     {
         // Inflate contents!
-        QByteArray * dataBuffer = new QByteArray( i );
-	dev->readBlock( reinterpret_cast<char *>(dataBuffer->data() ), i);
+        QByteArray * dataBuffer = new QByteArray( csize );
+	dev->readBlock( reinterpret_cast<char *>(dataBuffer->data() ), csize);
         z_stream d_stream;      /* decompression stream */
 
         d_stream.zalloc = ( alloc_func ) 0;
@@ -632,7 +639,7 @@ Q_LONG KZipFilter::readBlock(char * c, long unsigned int i)
                 reinterpret_cast <
                 unsigned char *>(c);
             d_stream.avail_out = i ;
-            err = inflate( &d_stream, Z_NO_FLUSH );
+            err = inflate( &d_stream, Z_FINISH );
             if ( err == Z_STREAM_END )
                 break;
             if ( err < 0 ) { // some error
@@ -684,7 +691,7 @@ Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
 	    kdDebug(7040) << "compression part reached... " << endl;
 	    kdDebug(7040) << "crc : " << QString::number( crc , 16) << endl;
         // Deflate contents!
-        QByteArray * dataBuffer = new QByteArray( i );
+        QByteArray * dataBuffer = new QByteArray( i + 100 );
         z_stream d_stream;      /* decompression stream */
 //	    kdDebug(7040) << "compression part 1 " << endl;
 
@@ -704,7 +711,7 @@ Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
         d_stream.next_out = (unsigned char *)dataBuffer->data();
 //	    kdDebug(7040) << "compression part 5 " << endl;
 
-        d_stream.avail_out = i ;
+        d_stream.avail_out = i + 100 ;
         err = deflate( &d_stream, Z_FINISH );
         if ( err == Z_STREAM_END )
             kdDebug(7040) << "Z_STREAM_END " << endl;
