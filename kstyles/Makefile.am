@@ -1,3 +1,3 @@
 
-SUBDIRS=highcolor stepplugin utils pics themes \
-	basicplugin klegacy riscos megagradient
+SUBDIRS=utils pics themes \
+	basicplugin klegacy riscos
