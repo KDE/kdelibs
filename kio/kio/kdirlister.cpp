@@ -307,15 +307,15 @@ void KDirListerCache::stop( KDirLister *lister )
       lister->d->numJobs--;
 
       // move lister to urlsCurrentlyHeld
-      QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url];
-      if ( !listers )
+      QPtrList<KDirLister> *holders = urlsCurrentlyHeld[url];
+      if ( !holders )
       {
-        listers = new QPtrList<KDirLister>;
-        listers->append( lister );
-        urlsCurrentlyHeld.insert( url, listers );
+        holders = new QPtrList<KDirLister>;
+        holders->append( lister );
+        urlsCurrentlyHeld.insert( url, holders );
       }
       else
-        listers->append( lister );
+        holders->append( lister );
 
       emit lister->canceled( KURL( url ) );
 
@@ -354,15 +354,15 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
     return;
 
   // move lister to urlsCurrentlyHeld
-  listers = urlsCurrentlyHeld[_url.url()];
-  if ( !listers )
+  QPtrList<KDirLister> *holders = urlsCurrentlyHeld[_url.url()];
+  if ( !holders )
   {
-    listers = new QPtrList<KDirLister>;
-    listers->append( lister );
-    urlsCurrentlyHeld.insert( _url.url(), listers );
+    holders = new QPtrList<KDirLister>;
+    holders->append( lister );
+    urlsCurrentlyHeld.insert( _url.url(), holders );
   }
   else
-    listers->append( lister );
+    holders->append( lister );
 
   lister->d->numJobs--;
   emit lister->canceled( _url );
