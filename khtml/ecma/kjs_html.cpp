@@ -3238,7 +3238,8 @@ const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
 Image::Image(ExecState* exec, const DOM::Document &d)
   : DOMObject(exec->interpreter()->builtinObjectPrototype()), doc(d), img(0),
   m_onLoadListener(0L)
-{ }
+{
+}
 
 Value Image::tryGet(ExecState *exec, const UString &propertyName) const
 {
@@ -3305,7 +3306,10 @@ void Image::notifyFinished(khtml::CachedObject * finishedObj)
     evt->setTarget( 0 );
     evt->ref();
     DOM::Event e(evt);
+    Object thisObj( this );
+    m_onLoadListener->hackSetThisObj( thisObj );
     m_onLoadListener->handleEvent( e );
+    m_onLoadListener->hackUnsetThisObj();
     evt->deref();
   }
 }

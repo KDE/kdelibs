@@ -72,14 +72,19 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
     List scope;
     List oldScope = listener.scope();
-    //if (thisVal.type() != NullType)
-    if ( !thisObj.isNull() ) {
+    if ( thisObj.isValid() ) {
       scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope(exec);
       if ( !scope.isEmpty() ) {
         List curScope = oldScope.copy();
         curScope.prependList( scope );
         listener.setScope( curScope );
       }
+    }
+    else {
+      if ( m_hackThisObj.isValid() )
+        thisObj = m_hackThisObj;
+      else
+        kdWarning() << "Null 'this' object! evt=" << evt.type().string() << " currentTarget==" << evt.currentTarget().handle() << endl;
     }
 
     Window *window = static_cast<Window*>(win.imp());

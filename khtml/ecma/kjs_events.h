@@ -38,13 +38,15 @@ namespace KJS {
      */
     JSEventListener(Object _listener, const Object &_win, bool _html = false);
     virtual ~JSEventListener();
+    void hackSetThisObj( Object& thisObj ) { m_hackThisObj = thisObj; }
+    void hackUnsetThisObj() { m_hackThisObj = Object(0L); }
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     Object listenerObj() { return listener; }
   protected:
     Object listener;
     bool html;
-    Object win;
+    Object win, m_hackThisObj;
   };
 
   Value getNodeEventListener(DOM::Node n, int eventId);
