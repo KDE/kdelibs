@@ -1,4 +1,25 @@
-// $Id$
+/*
+ * $Id$
+ *
+ * Copyright (C) 2000 Alex Zepeda <jazepeda@pacbell.net>
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * This file is part of the KDE project
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -290,6 +311,14 @@ KSSLSettings kss;
 
 void TCPSlaveBase::certificatePrompt()
 {
+QString certname;   // the cert to use this session
+bool send = false, prompt = false, save = false, forcePrompt = false;
+
+  if (metaData("ssl_no_client_cert") == "TRUE") return;
+  forcePrompt = (metaData("ssl_force_cert_prompt") == "TRUE");
+  forcePrompt = true;   // FIXME
+
+  // Delete the old cert since we're certainly done with it now
   if (d->pkcs) {
      delete d->pkcs;
      d->pkcs = NULL;
@@ -297,61 +326,114 @@ void TCPSlaveBase::certificatePrompt()
 
   if (!d->kssl) return;
 
-QStringList certs = KSSLCertificateHome::getCertificateList();
+  // Look for a certificate on a per-host basis
+  certname = KSSLCertificateHome::getDefaultCertificateName(d->host, &send, &prompt);
 
-  if (certs.isEmpty()) return;
+  // Look for a general certificate
+  if (certname.isEmpty() && !prompt && !forcePrompt) {
+     certname = 
+      KSSLCertificateHome::getDefaultCertificateName(&send, &prompt);
+  }
 
-  if (!d->dcc) {
-     d->dcc = new DCOPClient;
-     d->dcc->attach();
-     if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-        KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
-                                                QStringList() );
+  if (certname.isEmpty() && !prompt && !forcePrompt) return;
+
+  // Ok, we're supposed to prompt the user....
+  if ((certname.isEmpty() && prompt) || forcePrompt) {
+     QStringList certs = KSSLCertificateHome::getCertificateList();
+
+     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed..
+
+     if (!d->dcc) {
+        d->dcc = new DCOPClient;
+        d->dcc->attach();
+        if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+           KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                   QStringList() );
+        }
+     }
+
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << certs;
+     bool rc = d->dcc->call("kio_uiserver", "UIServer", 
+                     "showSSLCertDialog(QStringList)", data, rettype, retval);
+
+     if (rc && rettype == "KSSLCertDlgRet") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        KSSLCertDlgRet drc;
+        retStream >> drc;
+        if (drc.ok) {
+           send = drc.send;
+           save = drc.save;
+           certname = drc.choice;
+        }
      }
   }
 
-  QByteArray data, retval;
-  QCString rettype;
-  QDataStream arg(data, IO_WriteOnly);
-  arg << certs;
-  bool rc = d->dcc->call("kio_uiserver", "UIServer", 
-               "showSSLCertDialog(QStringList)", data, rettype, retval);
+  // The user may have said to not send the certificate, but to save the choice
+  if (!send) {
+     if (save) {
+        // FIXME
+     }
+     return;
+  }
 
-  if (rc && rettype == "KSSLCertDlgRet") {
-     QDataStream retStream(retval, IO_ReadOnly);
-     KSSLCertDlgRet drc;
-     retStream >> drc;
-     if (drc.ok) {
-        if (!drc.send) {
-           if (drc.save) {
-              // FIXME
-           }
-           return;
-        }
-        kdDebug() << "Client certificate dialog results...  Send? " 
-                  << drc.send << " Save? " << drc.save << " Cert: " 
-                  << drc.choice << endl;
-        KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(drc.choice, "");
+  // We're almost committed.  If we can read the cert, we'll send it now.
+  KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
+  if (!pkcs) {           // We need the password
+     do {
+        QString pass;
+        QByteArray authdata, authval;
+        QCString rettype;
+        KIO::AuthInfo ai;
+        QDataStream qds(authdata, IO_WriteOnly);
+        ai.prompt = i18n("Enter the certificate password:");
+        ai.caption = i18n("SSL Certificate Password");
+        ai.setModified(true);
+        ai.username = certname;
+        ai.keepPassword = false;
+        qds << ai;
+
+        bool rc = d->dcc->call("kio_uiserver", "UIServer", 
+                      "openPassDlg(KIO::AuthInfo)", authdata, rettype, authval);
+        if (!rc) break;
+                
+        if (rettype != "QByteArray") continue;
+
+        QDataStream qdret(authval, IO_ReadOnly);
+        QByteArray authdecode;
+        qdret >> authdecode;
+        QDataStream qdtoo(authdecode, IO_ReadOnly);
+        qdtoo >> ai;
+        if (!ai.isModified()) break;
+        pass = ai.password;
+
+        pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
         if (!pkcs) {
-//           do {
-// FIXME
-//           } while (!pkcs);
+           int rc = messageBox(WarningYesNo, 
+              i18n("Couldn't open the certificate.  Try a new password?"), 
+              i18n("SSL"));
+              if (rc == KMessageBox::No) break;
         }
-
-        if (pkcs) {
-           if (drc.save) {
-           // FIXME
-           }
-           if (!d->kssl->setClientCertificate(pkcs)) {
-// FIXME:
-              kdDebug() << "ERROR: client certificate could not be set." << endl;
-              delete pkcs;
-           }
-           d->pkcs = pkcs;
-        }
-     }
+     } while (!pkcs);
   }
+
+   // If we could open the certificate, let's send it
+   if (pkcs) {
+      if (save) {
+      // FIXME
+      }
+      if (!d->kssl->setClientCertificate(pkcs)) {
+         messageBox(Information, i18n("Sorry, the procedure to set the client certificate for the session failed."), i18n("SSL"));
+         delete pkcs;  // we don't need this anymore
+      }
+      d->pkcs = pkcs;
+   }
+
 }
+
+
 
 
 bool TCPSlaveBase::usingTLS()
