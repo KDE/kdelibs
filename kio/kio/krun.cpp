@@ -475,8 +475,15 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   if( startup_notify )
   {
       KStartupInfoData data;
-      data.addPid( pid );
-      KStartupInfo::sendChange( id, data );
+      if ( pid ) // successfully started
+      {
+          data.addPid( pid );
+          KStartupInfo::sendChange( id, data );
+      } else // not started (e.g. executable not found)
+      {
+          data.setHostname();
+          KStartupInfo::sendFinish( id, data );
+      }
       KStartupInfo::resetStartupEnv();
   }
   return pid;
@@ -516,6 +523,7 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
   {
       args = KRun::processDesktopExec(_service, _urls, false, tempFiles);
   }
+  kdDebug(7010) << "runTempService: KProcess args=" << args << endl;
 
   KProcess * proc = new KProcess;
   *proc << args;
