@@ -335,6 +335,7 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
 
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
+  setMinimumSize(sizeHint());
 
   // now load in our toolbar combo box
   loadToolbarCombo();
@@ -505,8 +506,6 @@ void KEditToolbarWidget::setupLayout()
   top_layout->addLayout(list_layout,10);
   top_layout->addWidget(d->m_helpArea);
   top_layout->addWidget(new KSeparator(this));
-
-  setMinimumSize(sizeHint());
 }
 
 void KEditToolbarWidget::loadToolbarCombo()
@@ -897,7 +896,7 @@ void KEditToolbarWidget::slotDownButton()
 {
   ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
 
-  // make sure we're not the top item already
+  // make sure we're not the bottom item already
   if (!item->itemBelow())
     return;
 
