@@ -399,6 +399,7 @@ namespace khtml
 	void slotData( KIO::Job *, const QByteArray & );
 	void servePendingRequests();
 
+    protected:
 	QPtrList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
