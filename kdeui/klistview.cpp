@@ -435,7 +435,7 @@ void KListView::cleanRect()
 
 void KListView::viewportPaintEvent(QPaintEvent *event)
 {
-    KListView::viewportPaintEvent(event);
+    QListView::viewportPaintEvent(event);
     QColor barcolor(foregroundColor());	
 	
     if (invalidateRect)
