@@ -93,25 +93,38 @@ static int openSocket()
 #define MAX_SOCK_FILE 255
   char sock_file[MAX_SOCK_FILE];
   char *home_dir = getenv("HOME");
+  char *kde_home = getenv("KDEHOME");
   char *display;
 
-  if (!home_dir || !home_dir[0])
+  sock_file[0] = 0;
+
+  if (!kde_home || !kde_home[0])
   {
-     fprintf(stderr, "Aborting. $HOME not set!");
-     exit(255);
-  }   
-  chdir(home_dir);
-  if (strlen(home_dir) > (MAX_SOCK_FILE-100))
-  {
-     fprintf(stderr, "Aborting. Home directory path too long!");
-     exit(255);
+     kde_home = "~/.kde/";
   }
-  strcpy(sock_file, home_dir);
+
+  if (kde_home[0] == '~')
+  {
+     if (!home_dir || !home_dir[0])
+     {
+        fprintf(stderr, "Aborting. $HOME not set!");
+        exit(255);
+     }
+     if (strlen(home_dir) > (MAX_SOCK_FILE-100))
+     {
+        fprintf(stderr, "Aborting. Home directory path too long!");
+        exit(255);
+     }
+     kde_home++;
+     strcat(sock_file, home_dir);
+  }
+  strcat(sock_file, kde_home);
+
   /** Strip trailing '/' **/
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
   
-  strcat(sock_file, "/.kdeinit-");
+  strcat(sock_file, "/socket-");
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
@@ -130,7 +143,7 @@ static int openSocket()
      fprintf(stderr, "Aborting. Socket name will be too long.\n");
      exit(255);
   }
-  strcat(sock_file, "-");
+  strcat(sock_file, "/kdeinit-");
   strcat(sock_file, display);
 
   if (strlen(sock_file) >= sizeof(server.sun_path))
@@ -152,7 +165,6 @@ static int openSocket()
   server.sun_family = AF_UNIX;
   strcpy(server.sun_path, sock_file);
   socklen = sizeof(server);
-
   if(connect(s, (struct sockaddr *)&server, socklen) == -1) 
   {
      perror("connect() failed: ");
