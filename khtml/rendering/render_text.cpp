@@ -549,18 +549,14 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
 
-    int space_width = fm->width(QChar(' '));
-    //int minus_width = fm->width(QChar('-'));
-
     int len = str->l;
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
         char c;
         do {
-            c = (*(str->s+i+wordlen)).latin1();
             wordlen++;
-        } while(c != ' ' && c != '\n' && i+wordlen < len); // && c != '-'
+        } while( !(isBreakable( str->s+i+wordlen )) && i+wordlen < len); // && c != '-'
         if(i+wordlen < len) wordlen--;
         if (wordlen)
         {
@@ -570,11 +566,19 @@ void RenderText::calcMinMaxWidth()
         }
         if(i+wordlen < len)
         {
-            if( c == ' ')
+            if ( c == '\n' )
+            {
+                assert(c == '\n');
+                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+                currMinWidth = 0;
+                if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+                currMaxWidth = 0;
+            }
+            else
             {
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
-                currMaxWidth += space_width;
+                currMaxWidth += fm->width( *(str->s+i+wordlen) );
             }
             /* else if( c == '-')
             {
@@ -583,14 +587,6 @@ void RenderText::calcMinMaxWidth()
                 currMinWidth = 0;
                 currMaxWidth += minus_width;
             }*/
-            else
-            {
-                assert(c == '\n');
-                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-                currMinWidth = 0;
-                if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-                currMaxWidth = 0;
-            }
         }
         i += wordlen;
     }

@@ -172,5 +172,24 @@ protected:
 };
 
 
+inline bool isBreakable( const QChar *c )
+{
+    char ch = c->latin1();
+    if ( ! ch ) {
+	// not latin1, need to do more sophisticated checks for asian fonts
+	unsigned char row = c->row();
+	if ( row < 0x11 ) // no asian font
+	    return false;
+	if ( row > 0x2d && row < 0xfb || row == 0x11 )
+	    return true;
+    } else {
+	if ( ch == ' ' || ch == '\n' )
+	    return true;
+    }
+    return false;
+}
+
+
+
 };
 #endif

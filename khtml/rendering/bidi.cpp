@@ -947,7 +947,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
                 // proportional font, needs a bit more work.
                 QChar *lastSpace = ch;
                 while(len) {
-                    if( ch->direction() == QChar::DirWS || *ch == '\n' ) {
+                    if( isBreakable( ch ) ) {
                         tmpW += fm->width(QConstString(lastSpace, ch - lastSpace).string());
 #ifdef DEBUG_LINEBREAKS
                         kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, ch - lastSpace).string() << "'" << endl;
