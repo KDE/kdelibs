@@ -56,6 +56,7 @@
 #include <ksockaddr.h>
 #include <ksocks.h>
 #include <kio/ioslave_defaults.h>
+#include <kio/slaveconfig.h>
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
 #define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
@@ -307,14 +308,14 @@ void Ftp::openConnection()
  */
 bool Ftp::connect( const QString &host, unsigned short int port )
 {
-  struct servent *pse;
+  if ( port == 0 ) {
+      struct servent *pse;
+      if ( ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
+          port = 21;
+      else
+          port = ntohs(pse->s_port);
+  }
   int on = 1;
-
-  if ( port == 0 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
-    port = 21;
-  else if ( port == 0 )
-    port = ntohs(pse->s_port);
-
   // require an Internet Socket
   ksControl = new KExtendedSocket(host, port, KExtendedSocket::inetSocket);
   if (ksControl == NULL)
@@ -814,20 +815,21 @@ bool Ftp::ftpOpenDataConnection()
   int on = 1;
 
   ////////////// First try passive (EPSV & PASV) modes
+  if ( KIO::SlaveConfig::self()->configData( "ftp", m_host, "DisablePassiveMode" ) != "true" )
+  {
+    if (ftpOpenEPSVDataConnection())
+      return true;
+    if (ftpOpenPASVDataConnection())
+      return true;
 
-  if (ftpOpenEPSVDataConnection())
-    return true;
-  if (ftpOpenPASVDataConnection())
-    return true;
+    // if we sent EPSV ALL already and it was accepted, then we can't
+    // use active connections any more
+    if (m_extControl & epsvAllSent)
+      return false;
 
-  // if we sent EPSV ALL already and it was accepted, then we can't
-  // use active connections any more
-  if (m_extControl & epsvAllSent)
-    return false;
-
-  if (ftpOpenEPRTDataConnection())
-    return true;
-
+    if (ftpOpenEPRTDataConnection())
+      return true;
+  }
   ////////////// Fallback : PORT mode
   m_bPasv = false;
 
