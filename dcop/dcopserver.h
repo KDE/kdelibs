@@ -152,5 +152,4 @@ private:
 };
 
 extern DCOPServer* the_server;
-
 #endif

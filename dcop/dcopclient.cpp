@@ -73,7 +73,7 @@ extern "C" {
 #include <unistd.h>
 }
 
-extern QMap<QCString, DCOPObject *> *dcopObjMap; // defined in dcopobject.cpp
+extern QMap<QCString, DCOPObject *> * kde_dcopObjMap; // defined in dcopobject.cpp
 
 /*********************************************
  * Keep track of local clients
@@ -1372,9 +1372,9 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    {
 	       l << "qt"; // the Qt bridge object
 	    }
-	    if ( dcopObjMap ) {
-		QMap<QCString, DCOPObject *>::ConstIterator it( dcopObjMap->begin());
-		for (; it != dcopObjMap->end(); ++it) {
+	    if ( kde_dcopObjMap ) {
+		QMap<QCString, DCOPObject *>::ConstIterator it( kde_dcopObjMap->begin());
+		for (; it != kde_dcopObjMap->end(); ++it) {
 		    if ( !it.key().isEmpty() ) {
 			if ( it.key() == d->defaultObject )
 			    l << "default";

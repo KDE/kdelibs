@@ -63,6 +63,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // #define DCOP_DEBUG
 
+DCOPServer* the_server;
+
 template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
 template class QPtrList<DCOPListener>;
@@ -369,8 +371,6 @@ qWarning("DCOPServer: Flushing data, fd = %d", IceConnectionNumber(_iceConn));
    DCOPIceWrite(_iceConn, _data);
 }
 
-DCOPServer* the_server = 0;
-
 class DCOPListener : public QSocketNotifier
 {
 public:
@@ -411,11 +411,11 @@ DCOPConnection::signalConnectionList()
     return _signalConnectionList;
 }
 
-IceAuthDataEntry *authDataEntries = 0;
-static char *addAuthFile = 0;
+static IceAuthDataEntry *authDataEntries;
+static char *addAuthFile;
 
-static IceListenObj *listenObjs = 0;
-int numTransports = 0;
+static IceListenObj *listenObjs;
+static int numTransports;
 static int ready[2];
 
 
@@ -861,11 +861,11 @@ if (opcode == DCOPCall)
     }
 }
 
-IcePaVersionRec DCOPServerVersions[] = {
+static const IcePaVersionRec DCOPServerVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-IcePoVersionRec DUMMYVersions[] = {
+static const IcePoVersionRec DUMMYVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor, 0 }
 };
 

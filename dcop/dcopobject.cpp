@@ -25,13 +25,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopclient.h>
 
-QMap<QCString, DCOPObject *> *dcopObjMap = 0;
+QMap<QCString, DCOPObject *> *kde_dcopObjMap;
 
-inline QMap<QCString, DCOPObject *> *objMap()
+static inline QMap<QCString, DCOPObject *> *objMap()
 {
-  if (!dcopObjMap)
-    dcopObjMap = new QMap<QCString, DCOPObject *>;
-  return dcopObjMap;
+  if (!kde_dcopObjMap)
+    kde_dcopObjMap = new QMap<QCString, DCOPObject *>;
+  return kde_dcopObjMap;
 }
 
 class DCOPObject::DCOPObjectPrivate
