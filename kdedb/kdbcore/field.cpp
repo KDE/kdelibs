@@ -151,9 +151,25 @@ Field::comment()
     return m_comment;
 }
 
+Value *
+Field::operator ->()
+{
+    if (isNull()) {
+        return new Value("NULL");
+    }
+    
+    return &m_val;
+    
+}
+
 Value
 Field::value()
 {
+    if (isNull()) {
+        kdDebug(20000) << "field " << name() << " is NULL" << endl;
+        return Value("NULL");
+    }
+    
     return m_val;
 }
 
@@ -177,3 +193,10 @@ Field::operator =(const Value &v)
     setValue(v);
     return *this;
 }
+
+bool
+Field::isNull()
+{
+    return (m_val.type() == Value::Invalid);
+}
+

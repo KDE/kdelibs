@@ -120,7 +120,7 @@ class Field :public Object {
 
     Field &operator = (const Value &v);
     
-    Value *operator ->() { return &m_val; };
+    Value *operator ->();
 
     bool changed();
  private:
