@@ -937,7 +937,7 @@ void KDockWidget::dockBack()
     QObjectList* cl = queryList("KDockWidget");
     QObjectListIt it( *cl );
     QObject * obj;
-    while ( (obj=it.current()) != 0 ) {
+    while ( !found && (obj=it.current()) != 0 ) {
       ++it;
       QWidget* widg = (QWidget*)obj;
       if( widg == formerBrotherDockWidget)
@@ -963,7 +963,7 @@ void KDockWidget::dockBack()
 
 bool KDockWidget::isDockBackPossible()
 {
-  if( formerBrotherDockWidget == 0L)
+  if( (formerBrotherDockWidget == 0L) || !(formerBrotherDockWidget->dockSite() & formerDockPos))
     return false;
   else
     return true;
