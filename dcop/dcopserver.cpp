@@ -1572,7 +1572,8 @@ extern "C" int kdemain( int argc, char* argv[] )
     // check if we are already running
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
-    if (isRunning(DCOPClient::dcopServerFileOld()))
+    if (QCString(getenv("DCOPAUTHORITY")).isEmpty() &&
+        isRunning(DCOPClient::dcopServerFileOld()))
     {
        // Make symlink for compatibility
        QCString oldFile = DCOPClient::dcopServerFileOld();
