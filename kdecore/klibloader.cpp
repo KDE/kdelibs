@@ -60,7 +60,7 @@ template class QAsciiDict<KLibrary>;
 
 extern "C" {
 extern int lt_dlopen_flag;
-};
+}
 
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )
