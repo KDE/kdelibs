@@ -1221,6 +1221,8 @@ void Cache::clear()
     statistics();
 #endif
     cache->setAutoDelete( true );
+    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
+        assert(it.current()->canDelete());
     delete cache; cache = 0;
     delete lru;   lru = 0;
     delete nullPixmap; nullPixmap = 0;
