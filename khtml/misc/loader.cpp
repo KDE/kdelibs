@@ -308,6 +308,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
 
     m = 0;
+    p = 0;
     pixPart = new QPixmap;
     bg = 0;
     typeChecked = false;
@@ -324,6 +325,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
 
 CachedImage::~CachedImage()
 {
+    delete p;
     delete m;
     delete bg;
     delete pixPart;
@@ -342,8 +344,9 @@ void CachedImage::ref( CachedObjectClient *c )
     m_clients.remove(c);
     m_clients.append(c);
 
-//    if( m_status != Pending || m )
-//	notify( c );
+    // for mouseovers, dynamic changes
+    if( m_status != Pending)
+	do_notify( pixmap(), valid_rect() );
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -461,6 +464,8 @@ const QPixmap &CachedImage::pixmap( ) const
         else
             return m->framePixmap();
     }
+    else if(p)
+        return *p;
 
     return *Cache::nullPixmap;
 }
@@ -468,13 +473,37 @@ const QPixmap &CachedImage::pixmap( ) const
 
 QSize CachedImage::pixmap_size() const
 {
-    return (m ? m->framePixmap().size() : QSize());
+    return (m ? m->framePixmap().size() : ( p ? p->size() : QSize()));
 }
 
 
 QRect CachedImage::valid_rect() const
 {
-    return (m ? m->getValidRect() : QRect());
+    return (m ? m->getValidRect() : ( p ? p->rect() : QRect()));
+}
+
+
+void CachedImage::do_notify(const QPixmap& p, const QRect& r)
+{
+    QList<CachedObjectClient> updateList;
+    CachedObjectClient *c;
+    for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
+#ifdef CACHE_DEBUG
+        qDebug("found a client to update...");
+#endif
+        bool manualUpdate = false; // set the pixmap, dont update yet.
+        c->setPixmap( p, r, this, &manualUpdate );
+        if (manualUpdate)
+            updateList.append(c);
+    }
+    for ( c = updateList.first(); c != 0; c = updateList.next() ) {
+        bool manualUpdate = true; // Update!
+        // Actually we want to do c->updateSize()
+        // This is a terrible hack which does the same.
+        // updateSize() does not exist in CachecObjectClient only
+        // in RenderBox()
+        c->setPixmap( p, r, this, &manualUpdate );
+    }
 }
 
 
@@ -485,27 +514,7 @@ void CachedImage::movieUpdated( const QRect& r )
            m->framePixmap().size().width(), m->framePixmap().size().height());
 #endif
 
-
-    QPixmap pixmap = m->framePixmap();
-    QList<CachedObjectClient> updateList;
-    CachedObjectClient *c;
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG
-        qDebug("found a client to update...");
-#endif
-        bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( pixmap, r, this, &manualUpdate );
-        if (manualUpdate)
-           updateList.append(c);
-    }
-    for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-        bool manualUpdate = true; // Update!
-        // Actually we want to do c->updateSize()
-        // This is a terrible hack which does the same.
-        // updateSize() does not exist in CachecObjectClient only
-        // in RenderBox()
-        c->setPixmap( pixmap, r, this, &manualUpdate );
-   }
+    do_notify(m->framePixmap(), r);
 }
 
 void CachedImage::movieStatus(int status)
@@ -564,16 +573,28 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
     m_size = _buffer.size();
 
     if(eof)
+    {
+        if(typeChecked && !formatType)
+        {
+            p = new QPixmap();
+            p->loadFromData( _buffer.buffer() );
+            // set size of image.
+            if( p && !p->isNull() ) {
+                m_size = p->width() * p->height() * p->depth() / 8;
+
+                do_notify(*p, p->rect());
+            }
+        }
         computeStatus();
+    }
 }
+
 
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {
 #ifdef CACHE_DEBUG
     kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
-
-//    notify();
 }
 
 

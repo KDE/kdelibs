@@ -228,9 +228,13 @@ namespace khtml
 	 */
 	void movieUpdated( const QRect &rect );
         void movieStatus(int);
-	
+
+    private:
+        void do_notify(const QPixmap& p, const QRect& r);
+
     public:
-	QMovie *m;
+	QMovie* m;
+        QPixmap* p;
 
     protected:
 	void clear();

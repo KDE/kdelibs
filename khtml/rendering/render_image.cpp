@@ -54,7 +54,6 @@ RenderImage::~RenderImage()
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
-
     if(o != image) {
 	RenderReplaced::setPixmap(p, r, o);
 	return;
@@ -62,21 +61,22 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 
     if (manualUpdate && *manualUpdate)
     {
-//    	kdDebug( 6040 ) << "Image: manualUpdate" << endl;
         updateSize();	
-//	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         return;
     }
 
     // Image dimensions have been changed, recalculate layout
 //    kdDebug( 6040 ) << "Image: setPixmap" << endl;
+
     if(o->pixmap_size() !=  pixSize)
     {	
     	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
 	pix = p;
         pixSize = o->pixmap_size();
+        kdDebug( 6040 ) << "Image size is now " << pixSize.width() << " " << pixSize.height() << endl;
 	setLayouted(false);
 	setMinMaxKnown(false);
+        kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
     	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
 	// the updateSize() call should trigger a repaint too
         if (manualUpdate) {
@@ -100,25 +100,22 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
-    //kdDebug( 6040 ) << "Image::printObject (" << width() << "/" << height() << ")" << endl;
-
     int cWidth = contentWidth();
     int cHeight = contentHeight();
     int leftBorder = borderLeft();
     int topBorder = borderTop();
 
-
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
-
     if ( pix.isNull() )
     {
 	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
 			      Qt::black, Qt::white );
+        //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
 	qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, cWidth, cHeight,
 			 colorGrp, true, 1 );
 	if(!alt.isEmpty())
 	{
-	    QString text = alt.string();  	
+	    QString text = alt.string();
 	    p->setFont(style()->font());
 	    p->setPen( style()->color() );
 	    int ax = _tx + leftBorder + 5;
@@ -132,14 +129,13 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     }
     else
     {
-	if ( (cWidth != image->pixmap_size().width() ||
-              cHeight != image->pixmap_size().height() ) &&
-	    pix.width() && pix.height() )
+	if ( (cWidth != image->pixmap_size().width() ||  cHeight != image->pixmap_size().height() ) &&
+             pix.width() && pix.height())
 	{
-            kdDebug( 6040 ) << "have to scale: " << endl;
-            kdDebug( 6040 ) << "cWidth " << cWidth << " cHeight " << cHeight
-                            << " pw: " << image->pixmap_size().width()
-                            << " ph: " << image->pixmap_size().height() << endl;
+//            kdDebug( 6040 ) << "have to scale: " << endl;
+//            kdDebug( 6040 ) << "cWidth " << cWidth << " cHeight " << cHeight
+//                            << " pw: " << image->pixmap_size().width()
+//                             << " ph: " << image->pixmap_size().height() << endl;
 
             QRect scaledrect(image->valid_rect());
 	    if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
@@ -154,13 +150,14 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                     // might be a big bogus, so try to be sure
                     scaledrect.setBottom(QMAX(scaledrect.bottom()-2, 0));
 	    }
-            qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
+//            qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
 	
 	}
 	else
         {
-            //qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
+            QRect rect(image->valid_rect()) ;
+            //          qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, image->valid_rect() );
         }
     }
@@ -177,14 +174,9 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
 void RenderImage::calcMinMaxWidth()
 {
-//    if(minMaxKnown()) return;
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
-//    setMinMaxKnown();
-
-    // contentWidth
-
     short oldwidth = m_width;
 
     calcWidth();
@@ -193,15 +185,18 @@ void RenderImage::calcMinMaxWidth()
     	resizeCache.resize(0,0);		
 
     m_maxWidth = m_minWidth = m_width;
-
+    setMinMaxKnown();
 }
 
 void RenderImage::layout()
 {
-    if(layouted()) return;
+    if(layouted())
+    {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "Image::layout(?) width=" << m_width << ", layouted=" << layouted() << endl;
+        qDebug("should not be called");
 #endif
+        return;
+    }
 
     calcMinMaxWidth();
     calcHeight();
