@@ -57,7 +57,9 @@ public:
         Removable   =  2,
         Modifiable  =  4,
         Cummulative =  8,
-        Averaged    = 16
+        Averaged    = 16,
+        MultiLine   = 32,
+        SqueezeText = 64
     };
 
     /**
@@ -88,8 +90,7 @@ public:
         Bitrate     = 7,
         Length      = 8,
         Hidden      = 9,
-        Thumbnail   = 10,
-        MultiLine   = 11
+        Thumbnail   = 10
     };
 
     /**

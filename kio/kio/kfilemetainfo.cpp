@@ -189,7 +189,7 @@ QString KFileMetaInfoItem::string( bool mangle ) const
               int minutes = d->value.toInt() / 60 % 60;
               int hours   = d->value.toInt() / 3600;
               s = hours ? QString().sprintf("%d:%02d:%02d",hours, minutes, seconds)
-                        : QString().sprintf("%0d:%02d", minutes, seconds);
+                        : QString().sprintf("%02d:%02d", minutes, seconds);
             } else
                 s = KGlobal::locale()->formatNumber( d->value.toInt() , 0);
             break;
