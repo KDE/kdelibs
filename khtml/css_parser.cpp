@@ -45,6 +45,8 @@ using namespace DOM;
 #include "kcssprop.c"
 #include "kcssvalues.c"
 
+#include <stdio.h>
+
 bool StyleBaseImpl::deleteMe()
 {
     if(!m_parent && _ref <= 0) return true;
