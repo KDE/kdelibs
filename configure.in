@@ -89,13 +89,6 @@ AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
 
-dnl KDE_CHECK_MICO()
-dnl IDL_DEPENDENCIES='$(IDL) $(top_srcdir)/corba/cuteidl/sti/CUTE.h'
-dnl AC_SUBST(IDL_DEPENDENCIES)
-dnl IDL='$(top_builddir)/corba/cuteidl/cuteidl'
-dnl AC_SUBST(IDL)
-dnl KDE_CHECK_PYTHON(1.5)
-
 if test -n "$qt_includes"; then
   QNAMESPACE_H="$qt_includes/qnamespace.h"
 fi
@@ -112,21 +105,6 @@ AC_SUBST(topdir)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
 AC_SUBST(LIBICE)
-
-KOM_INCLUDES='-I$(top_srcdir)/corba/kom -I$(top_builddir)/corba/kom'
-AC_SUBST(KOM_INCLUDES)
-
-PARTSUI_INCLUDES='-I$(top_srcdir)/corba/partsui -I$(top_builddir)/corba/partsui'
-AC_SUBST(PARTSUI_INCLUDES)
-
-PARTS_INCLUDES='-I$(top_srcdir)/corba/parts -I$(top_builddir)/corba/parts'
-AC_SUBST(PARTS_INCLUDES)
-
-LIB_KOM='$(top_builddir)/corba/kom/libkom.la'
-AC_SUBST(LIB_KOM)
-
-idldir="\$(includedir)/idl"
-AC_SUBST(idldir)
 
 LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la'
 AC_SUBST(LIB_KDECORE)
@@ -211,22 +189,6 @@ AC_OUTPUT(Makefile \
 	kio/file/Makefile \
 	kio/kded/Makefile \
 	kio/tests/Makefile \
-	corba/Makefile \
-	corba/cuteidl/Makefile \
-	corba/cuteidl/sti/Makefile \
-	corba/cuteidl/test/Makefile \
-	corba/kom/Makefile \
-	corba/kded/Makefile \
-	corba/partsui/Makefile \
-	corba/parts/Makefile \
-	corba/interfaces/Makefile \
-	corba/tutorials/Makefile \
-	corba/tutorials/composing/Makefile \
-	corba/tutorials/signals/Makefile \
-	corba/tutorials/events/Makefile \
-	corba/tutorials/embedding1/Makefile \
-	corba/tutorials/embedding2/Makefile \
-	corba/tutorials/kded/Makefile \
 	mediatool/Makefile \
 	kspell/Makefile \
 	kab/Makefile \
@@ -237,8 +199,6 @@ AC_OUTPUT(Makefile \
 	doc/kfile/Makefile \
 	doc/kdebug/Makefile \
 	doc/kspell/Makefile \
-	doc/kded/Makefile \
-	doc/komop/Makefile \
 	mimetypes/Makefile \
 	mimetypes/application/Makefile \
 	mimetypes/audio/Makefile \
