@@ -94,6 +94,9 @@
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 
+<!ENTITY ksgmltools "<application>ksgmltools</application>">
+<!ENTITY docbook "<productname>DocBook <acronym>SGML</acronym></productname>">
+
 
 <!-- KDE olink specification -->
 <!ENTITY kde-modespec
