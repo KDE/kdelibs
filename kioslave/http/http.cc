@@ -4456,7 +4456,7 @@ void HTTPProtocol::cleanCache()
 //**************************  AUTHENTICATION CODE ********************/
 
 
-void HTTPProtocol::configAuth( const char *p, bool b )
+void HTTPProtocol::configAuth( char *p, bool b )
 {
   HTTP_AUTH f = AUTH_None;
   const char *strAuth = p;
@@ -4470,7 +4470,7 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   else if (strncasecmp (p, "Digest", 6) ==0 )
   {
     f = AUTH_Digest;
-    memcpy(p, "Digest", 6); // Correct for upper-case variations.
+    memcpy((void *)p, "Digest", 6); // Correct for upper-case variations.
     p += 6;
   }
   else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)

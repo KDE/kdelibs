@@ -243,7 +243,7 @@ protected:
     */
   void addEncoding(QString, QStringList &);
 
-  void configAuth( const char *, bool );
+  void configAuth( char *, bool );
 
   bool httpOpen();             // Open transfer
   void httpClose(bool keepAlive);  // Close transfer
