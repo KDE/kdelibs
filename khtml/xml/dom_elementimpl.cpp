@@ -667,10 +667,13 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const AttributeList &list)
     len = list.length();
     attrs = new AttrImpl* [len];
 
-    for (i = 0; i < len; i++) {
+    // first initialize attrs vector, then call parseAttribute on it
+    // this allows parseAttribute to use getAttribute
+    for (i = 0; i < len; i++)
 	attrs[i] = new AttrImpl(list[i],element->ownerDocument(),element);
+    for (i = 0; i < len; i++)
 	element->parseAttribute(attrs[i]);
-    }
+
     // used only during parsing - we don't call applyChanges() here
     return *this;
 }
@@ -685,11 +688,17 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     len = other.len;
     attrs = new AttrImpl* [len];
     uint i;
+
+    // first initialize attrs vector, then call parseAttribute on it
+    // this allows parseAttribute to use getAttribute
     for (i = 0; i < len; i++) {
 	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(false));
 	attrs[i]->_element = element;
-	element->parseAttribute(attrs[i]);
     }
+
+    for(i = 0; i < len; i++)
+	element->parseAttribute(attrs[i]);
+
     element->setChanged(true);
     return *this;
 }
