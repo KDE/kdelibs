@@ -656,6 +656,12 @@ int main(int argc, char *argv[])
   check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "false");
   check("port()?", QString("%1").arg(baseURL.port()), "80");
 
+  baseURL = "ptal://mlc:usb@PC_970"; // User=mlc, password=usb, host=PC_970
+  check("isMalformed()?", baseURL.isMalformed() ? "true" : "false", "false");
+  check("host()?", baseURL.host(), "pc_970");
+  check("user()?", baseURL.user(), "mlc");
+  check("pass()?", baseURL.pass(), "usb");
+
   printf("\nTest OK !\n");
 }
 
