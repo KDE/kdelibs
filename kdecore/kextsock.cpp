@@ -26,11 +26,13 @@
 #include <sys/socket.h>
 #include <sys/times.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/un.h>
 
 #ifdef HAVE_RES_INIT
 # include <arpa/nameser.h>
 # include <resolv.h>
+extern "C" int res_init();
 #endif
 
 #include <stdio.h>
