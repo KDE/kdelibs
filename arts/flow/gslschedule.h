@@ -242,6 +242,7 @@ class StdScheduleNode :public ScheduleNode
 public:
 
 	GslModule *gslModule;
+	bool gslRunning;
 
 	StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem);
 	virtual ~StdScheduleNode();
@@ -306,6 +307,7 @@ public:
 
 	/* interface to StdScheduleNode */
 	void schedule(unsigned long samples);
+	void updateStarted();
 };
 
 };

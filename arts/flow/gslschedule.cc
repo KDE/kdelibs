@@ -38,6 +38,9 @@
 
 /* HACK */
 class GslMainLoop {
+protected:
+	list<GslClass *> freeClassList;
+
 public:
 	GslEngineLoop loop;
 
@@ -86,6 +89,29 @@ public:
 	
 		gslDataCalculated = false;
 		waitOnTransNeedData = false;
+
+		if(!freeClassList.empty())
+		{
+			arts_debug("collecting free classes");
+	
+			/*
+			 * make sure that all transactions that are still pending
+			 * get finished (especially important in threaded case,
+			 * since an entry in the free list doesn't necessarily
+			 * mean that the module has entierly been freed)
+			 */
+			waitOnTrans();
+
+			list<GslClass *>::iterator fi;
+			for(fi = freeClassList.begin(); fi != freeClassList.end(); fi++)
+				free(*fi);
+
+			freeClassList.clear();
+		}
+	}
+	void freeGslClass(GslClass *klass)
+	{
+		freeClassList.push_back(klass);
 	}
 } gslMainLoop;
 
@@ -252,7 +278,7 @@ void AudioPort::connect(Port *psource)
 	position = buffer->position;
 	source->destcount++;
 	sourcemodule = source->parent;
-	fprintf(stderr,"gsl_job_connect\n");
+	arts_debug("gsl_job_connect");
 
 	GslTrans *trans = gsl_trans_open();
 	gsl_trans_add(trans, gsl_job_connect(source->parent->gslModule,
@@ -280,7 +306,7 @@ void AudioPort::disconnect(Port *psource)
 	buffer = lbuffer;
 
 	// GSL disconnect
-	fprintf(stderr,"gsl_job_disconnect\n");
+	arts_debug("gsl_job_disconnect");
 	GslTrans *trans = gsl_trans_open();
 	gsl_trans_add(trans, gsl_job_disconnect(parent->gslModule,
 										    gslEngineChannel));
@@ -381,16 +407,17 @@ void StdScheduleNode::freeConn()
 
 	if(gslModule)
 	{
-		fprintf(stderr, "gsl_job_discard\n");
+		arts_debug("gsl_job_discard");
 		gsl_transact(gsl_job_discard(gslModule),0);
+
 		gslModule = 0;
+		gslRunning = false;
 	}
 }
 
 void StdScheduleNode::gslProcess(GslModule *module, guint n_values)
 {
 	StdScheduleNode *node = (StdScheduleNode *)module->user_data;
-
 	if(!node->running)		/* FIXME: need reasonable suspend in the engine */
 		return;
 
@@ -417,7 +444,7 @@ void StdScheduleNode::gslProcess(GslModule *module, guint n_values)
 
 static void gslModuleFree(gpointer data, const GslClass *klass)
 {
-	free(const_cast<GslClass *>(klass));
+	gslMainLoop.freeGslClass(const_cast<GslClass *>(klass));
 }
 
 void StdScheduleNode::rebuildConn()
@@ -454,13 +481,14 @@ void StdScheduleNode::rebuildConn()
 	gslClass->n_ostreams = outConnCount;
 	gslClass->process = gslProcess;
 	gslClass->free = gslModuleFree;
-	gslClass->mflags = GSL_ALWAYS_PROCESS;
 
-	fprintf(stderr, "gsl_module_new\n");
+	arts_debug("gsl_module_new");
 	gslModule = gsl_module_new (gslClass, (StdScheduleNode *)this);
 
 	GslTrans *trans = gsl_trans_open();
 	gsl_trans_add(trans,gsl_job_integrate(gslModule));
+	gsl_trans_add(trans,gsl_job_set_consumer(gslModule, running));
+	gslRunning = running;
 
 	/* since destroying the old module and creating a new one will destroy
 	 * all the connections, we need to restore them here
@@ -528,6 +556,7 @@ StdScheduleNode::StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem)
 	suspended = false;
 	module = 0;
 	gslModule = 0;
+	gslRunning = false;
 	queryInitStreamFunc = 0;
 	inConn = outConn = 0;
 	inConnCount = outConnCount = 0;
@@ -618,7 +647,7 @@ void StdScheduleNode::start()
 
 	//cout << "start" << endl;
 	accessModule();
-	fprintf(stderr,"MODULE: StdScheduleNode = %p; module = %p\n", (StdScheduleNode *)this, module);
+	arts_debug("MODULE: StdScheduleNode = %p; module = %p", (StdScheduleNode *)this, module);
 	module->streamInit();
 	module->streamStart();
 }
@@ -637,6 +666,7 @@ void StdScheduleNode::requireFlow()
 	// cout << "rf" << module->_interfaceName() << endl;
 	//request(requestSize());
 	/* GSL! flowSystem->schedule(requestSize()); */
+	flowSystem->updateStarted();
 	gslMainLoop.run();
 }
 
@@ -965,7 +995,7 @@ StdFlowSystem::StdFlowSystem()
     g_thread_init(0);
     gsl_init(0);
     gsl_engine_init(false, 512, 44100);
-	gsl_engine_debug_enable(GslEngineDebugLevel(GSL_ENGINE_DEBUG_JOBS | GSL_ENGINE_DEBUG_SCHED));
+	/*gsl_engine_debug_enable(GslEngineDebugLevel(GSL_ENGINE_DEBUG_JOBS | GSL_ENGINE_DEBUG_SCHED));*/
 	//gsl_transact(gsl_job_process_check(gslCheck, 0, 0), 0);
 	gslMainLoop.initialize();
 	fprintf(stderr,"done...\n");
@@ -1149,6 +1179,31 @@ FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
 		return FlowSystemReceiver::_from_base(new ASyncNetReceive(ap, sender));
 	}
 	return FlowSystemReceiver::null();
+}
+
+void StdFlowSystem::updateStarted()
+{
+	list<StdScheduleNode*>::iterator ni;
+	GslTrans *trans = 0;
+
+	for(ni = nodes.begin(); ni != nodes.end(); ni++)
+	{
+		StdScheduleNode *node = *ni;
+
+		if(node->running != node->gslRunning)
+		{
+			if(!trans)
+				trans = gsl_trans_open();
+			gsl_trans_add(trans, gsl_job_set_consumer(node->gslModule, node->running));
+			node->gslRunning = node->running;
+		}
+	}
+
+	if(trans)
+	{
+		arts_debug("GSL: a few nodes changed their running state");
+		gsl_trans_commit(trans);
+	}
 }
 
 void StdFlowSystem::schedule(unsigned long samples)
