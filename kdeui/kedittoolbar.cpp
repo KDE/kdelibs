@@ -560,37 +560,6 @@ void KEditToolbarWidget::loadToolbarCombo()
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
-void KEditToolbarWidget::saveToolbarStyle()
-{
-  KConfig *config = instance()->config();
-
-  StyleMap::Iterator it = d->m_styleMap.begin();
-  for( ; it != d->m_styleMap.end(); ++it)
-  {
-    QString bar_name(it.key());
-    int icon_text(it.data().m_iconText);
-    int icon_size(it.data().m_iconSize);
-    int position(it.data().m_position);
-
-    QString group_name;
-    if (bar_name == "mainToolBar")
-      group_name = QString::fromLatin1("Toolbar style");
-    else
-      group_name = bar_name + QString::fromLatin1(" Toolbar style");
-
-    config->setGroup(group_name);
-
-    if (it.data().m_textChanged)
-      config->writeEntry(QString::fromLatin1("IconText"), icon_text);
-    if (it.data().m_sizeChanged)
-      config->writeEntry(QString::fromLatin1("IconSize"), icon_size);
-    if (it.data().m_posChanged)
-      config->writeEntry(QString::fromLatin1("Position"), position);
-  }
-
-  config->sync();
-}
-
 void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
 {
   static QString attrName      = QString::fromLatin1( "name" );
@@ -599,21 +568,22 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   static QString attrPosition  = QString::fromLatin1( "position" );
 
   QString name(elem.attribute(attrName));
-  QString icon_text(elem.attribute(attrIconText));
-  QString icon_size(elem.attribute(attrIconSize));
-  QString position(elem.attribute(attrPosition));
+  QString icon_text(elem.attribute(attrIconText).lower());
+  QString position(elem.attribute(attrPosition).lower());
+  QString icon_str(elem.attribute(attrIconSize));
+  int icon_size = (icon_str.isEmpty()) ? -1 : icon_str.toInt();
 
   m_textCombo->setEnabled(true);
   m_iconCombo->setEnabled(true);
   m_posCombo->setEnabled(true);
 
-  if (icon_text == QString::fromLatin1("IconOnly"))
+  if (icon_text == QString::fromLatin1("icononly"))
     m_textCombo->setCurrentItem(0);
-  else if (icon_text == QString::fromLatin1("IconTextRight"))
+  else if (icon_text == QString::fromLatin1("icontextright"))
     m_textCombo->setCurrentItem(1);
-  else if (icon_text == QString::fromLatin1("TextOnly"))
+  else if (icon_text == QString::fromLatin1("textonly"))
     m_textCombo->setCurrentItem(2);
-  else if (icon_text == QString::fromLatin1("IconTextBottom"))
+  else if (icon_text == QString::fromLatin1("icontextbottom"))
     m_textCombo->setCurrentItem(3);
   else if ( name == "mainToolBar")
   {
@@ -625,33 +595,33 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   else
     m_textCombo->setCurrentItem(0);
 
-  if (icon_size == QString::fromLatin1("Small"))
-    m_iconCombo->setCurrentItem(0);
-  else if (icon_size == QString::fromLatin1("Medium"))
-    m_iconCombo->setCurrentItem(1);
-  else if (icon_size == QString::fromLatin1("Large"))
-    m_iconCombo->setCurrentItem(2);
-  else if ( name == "mainToolBar")
+  if ( (icon_size == -1) && (name == "mainToolBar") )
   {
     KConfig *config = KGlobal::config();
     config->setGroup(QString::fromLatin1("Toolbar style"));
     int index = config->readNumEntry(QString::fromLatin1("IconSize"), 0);
     m_iconCombo->setCurrentItem(index);
   }
-  else
+  else if ( icon_size == -1 )
+    m_iconCombo->setCurrentItem(1);
+  else if ( icon_size < 20)
     m_iconCombo->setCurrentItem(0);
+  else if ( icon_size < 25 )
+    m_iconCombo->setCurrentItem(1);
+  else
+    m_iconCombo->setCurrentItem(2);
 
-  if (position == QString::fromLatin1("Top"))
+  if (position == QString::fromLatin1("top"))
     m_posCombo->setCurrentItem(0);
-  else if (position == QString::fromLatin1("Left"))
+  else if (position == QString::fromLatin1("left"))
     m_posCombo->setCurrentItem(1);
-  else if (position == QString::fromLatin1("Right"))
+  else if (position == QString::fromLatin1("right"))
     m_posCombo->setCurrentItem(2);
-  else if (position == QString::fromLatin1("Bottom"))
+  else if (position == QString::fromLatin1("bottom"))
     m_posCombo->setCurrentItem(3);
-  else if (position == QString::fromLatin1("Floating"))
+  else if (position == QString::fromLatin1("floating"))
     m_posCombo->setCurrentItem(4);
-  else if (position == QString::fromLatin1("Flat"))
+  else if (position == QString::fromLatin1("flat"))
     m_posCombo->setCurrentItem(5);
   else
     m_posCombo->setCurrentItem(0);
@@ -703,7 +673,6 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, action->name());
         act->setText(1, action->plainText());
-        KIconLoader *loader = KGlobal::iconLoader();
         if (!action->iconName().isNull())
           act->setPixmap(0, BarIcon(action->iconName(), 16));
 
@@ -730,7 +699,6 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
     act->setText(1, action->plainText());
-    KIconLoader *loader = KGlobal::iconLoader();
     act->setPixmap(0, BarIcon(action->iconName(), 16));
   }
 
@@ -1016,35 +984,25 @@ void KEditToolbarWidget::slotTextClicked(int index)
   static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
 
   enableOk(true);
-  QString current_name(m_toolbarCombo->currentText());
 
-  ToolbarList::Iterator it = d->m_barList.begin();
-  for ( ; it != d->m_barList.end(); ++it)
+  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
+  switch (index)
   {
-    QString toolbar_name((*it).attribute(attrName));
-    (*it).setAttribute(attrNoMerge, "1");
-
-    // does the current toolbar match our stored one?
-    if (toolbar_name == current_name)
-    {
-      switch (index)
-      {
-      case 0:
-      default:
-        (*it).setAttribute(attrIconText, QString::fromLatin1("IconOnly"));
-        break;
-      case 1:
-        (*it).setAttribute(attrIconText, QString::fromLatin1("IconTextRight"));
-        break;
-      case 2:
-        (*it).setAttribute(attrIconText, QString::fromLatin1("TextOnly"));
-        break;
-      case 3:
-        (*it).setAttribute(attrIconText, QString::fromLatin1("IconTextBottom"));
-      break;
-      }
-    }
+  case 0:
+  default:
+    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconOnly"));
+    break;
+  case 1:
+    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconTextRight"));
+    break;
+  case 2:
+    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("TextOnly"));
+    break;
+  case 3:
+    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconTextBottom"));
+  break;
   }
+  updateLocal(d->m_currentToolbarElem);
 }
 
 void KEditToolbarWidget::slotPosClicked(int index)
@@ -1054,39 +1012,31 @@ void KEditToolbarWidget::slotPosClicked(int index)
   static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
 
   enableOk(true);
-  QString current_name(m_toolbarCombo->currentText());
 
-  ToolbarList::Iterator it = d->m_barList.begin();
-  for ( ; it != d->m_barList.end(); ++it)
+  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
+  switch (index)
   {
-    QString toolbar_name((*it).attribute(attrName));
-    (*it).setAttribute(attrNoMerge, "1");
-
-    // does the current toolbar match our stored one?
-    if (toolbar_name == current_name)
-    {
-      switch (index)
-      {
-      case 0:
-      default:
-        (*it).setAttribute(attrPosition, QString::fromLatin1("Top"));
-        break;
-      case 1:
-        (*it).setAttribute(attrPosition, QString::fromLatin1("Left"));
-        break;
-      case 2:
-        (*it).setAttribute(attrPosition, QString::fromLatin1("Bottom"));
-        break;
-      case 3:
-        (*it).setAttribute(attrPosition, QString::fromLatin1("Floating"));
-        break;
-      case 4:
-        (*it).setAttribute(attrPosition, QString::fromLatin1("Flat"));
-        break;
-      }
-    }
+  case 0:
+  default:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Top"));
+    break;
+  case 1:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Left"));
+    break;
+  case 2:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Right"));
+    break;
+  case 3:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Bottom"));
+    break;
+  case 4:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Floating"));
+    break;
+  case 5:
+    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Flat"));
+    break;
   }
-
+  updateLocal(d->m_currentToolbarElem);
 }
 
 void KEditToolbarWidget::slotIconClicked(int index)
@@ -1096,32 +1046,21 @@ void KEditToolbarWidget::slotIconClicked(int index)
   static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
 
   enableOk(true);
-  QString current_name(m_toolbarCombo->currentText());
-
-  ToolbarList::Iterator it = d->m_barList.begin();
-  for ( ; it != d->m_barList.end(); ++it)
+  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
+  switch (index)
   {
-    QString toolbar_name((*it).attribute(attrName));
-    (*it).setAttribute(attrNoMerge, "1");
-
-    // does the current toolbar match our stored one?
-    if (toolbar_name == current_name)
-    {
-      switch (index)
-      {
-      case 0:
-      default:
-        (*it).setAttribute(attrIconSize, QString::fromLatin1("Small"));
-        break;
-      case 1:
-        (*it).setAttribute(attrIconSize, QString::fromLatin1("Medium"));
-        break;
-      case 2:
-        (*it).setAttribute(attrIconSize, QString::fromLatin1("Large"));
-        break;
-      }
-    }
+  case 0:
+  default:
+    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("16"));
+    break;
+  case 1:
+    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("22"));
+    break;
+  case 2:
+    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("32"));
+    break;
   }
+  updateLocal(d->m_currentToolbarElem);
 }
 
 void KEditToolbarWidget::updateLocal(QDomElement& elem)

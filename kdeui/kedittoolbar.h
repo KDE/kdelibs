@@ -269,7 +269,6 @@ protected:
   void setupLayout();
 
   void loadToolbarCombo();
-  void saveToolbarStyle();
   void loadActionList(QDomElement& elem);
   void loadToolbarStyles(QDomElement& elem);
   void updateLocal(QDomElement& elem);
