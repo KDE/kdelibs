@@ -29,6 +29,7 @@ class KInstance;
 class KPluginInfo;
 class QWidgetStack;
 class KConfig;
+class KConfigGroup;
 
 /**
  * @short A widget to select what plugins to load and configure the plugins.
@@ -87,8 +88,8 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *                     category is not set the Category key is ignored
          *                     and all plugins are shown.
          * @param config       The KConfig object that holds the state of the
-         *                     plugins being enabled or not. By default it will
-         *                     use instance->config(). It is recommended to
+         *                     plugins being enabled or not. By default it should
+         *                     be instance->config(). It is recommended to
          *                     always pass a KConfig object if you use
          *                     KSettings::PluginPage since you never know from where the
          *                     page will be called (think global config app).
@@ -102,6 +103,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
 
         /**
          * Add a list of KParts plugins. Convenience method for the one above.
+         * If not set explicitely, @p config is set to instance->config().
          */
         void addPlugins( const KInstance * instance,
                 const QString & catname = QString::null,
@@ -157,7 +159,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
         void load();
 
         /**
-         * Save the configuration 
+         * Save the configuration
          */
         void save();
 
@@ -199,7 +201,14 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          */
         void checkNeedForTabWidget();
 
-        class KPluginSelectorPrivate;
+        /**
+         * @internal
+         */
+	void addPluginsInternal( const QValueList<KPluginInfo*> plugininfos,
+                                 const QString & catname, const QString & category,
+                                 KConfigGroup* cfgGroup );
+
+	class KPluginSelectorPrivate;
         KPluginSelectorPrivate * d;
 };
 

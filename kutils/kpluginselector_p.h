@@ -39,41 +39,12 @@ class KCModuleInfo;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KUTILS_EXPORT KPluginSelectionWidget : public QWidget
+class KPluginSelectionWidget : public QWidget
 {
     Q_OBJECT
     public:
         /**
-         * Create a new Plugin Selector widget for KParts plugins.
-         *
-         * If you want to support different
-         * types of plugins use the following constructor.
-         * Using this constructor the Type field will be ignored.
-         *
-         * The information about the plugins will be loaded from the
-         * share/apps/&lt;instancename&gt;/kpartplugins directory.
-         *
-         * @param instanceName The name of the plugin's parent.
-         * @param kps          A KPluginSelector object.
-         * @param parent       The parent widget.
-         * @param catname      The translated name of the category.
-         * @param category     The unstranslated category key name.
-         * @param config       Set the KConfigGroup object that holds the
-         *                     state of the plugins being enabled or not.
-         * @param name         The name of the widget (passed to QWidget)
-         * @internal
-         */
-        KPluginSelectionWidget( const QString & instanceName, KPluginSelector * kps,
-                QWidget * parent, const QString & catname,
-                const QString & category, KConfigGroup * config = 0,
-                const char * name = 0 );
-
-        /**
-         * Create a new Plugin Selector widget for non-KParts plugins.
-         *
-         * If you want to support different
-         * types of plugins use the following constructor.
-         * Using this constructor the Type field will be ignored.
+         * Create a new Plugin Selector widget.
          *
          * @param plugininfos  A list of KPluginInfo objects containing the
          *                     necessary information for the plugins you want to
@@ -206,7 +177,6 @@ class KUTILS_EXPORT KPluginSelectionWidget : public QWidget
          */
         void embeddPluginKCMs( KPluginInfo *, bool );
 
-        QValueList<KPluginInfo*> kpartsPluginInfos() const;
         void init( const QValueList<KPluginInfo*> & plugininfos, const QString & );
         void checkDependencies( const KPluginInfo * );
 

@@ -121,11 +121,10 @@ void KPluginListViewToolTip::maybeTip( const QPoint &pos )
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
-    KPluginSelectionWidgetPrivate( const QString & _instanceName,
-            KPluginSelector * _kps, const QString & _cat,
-            KConfigGroup * _config )
-        : instanceName( _instanceName )
-        , widgetstack( 0 )
+    KPluginSelectionWidgetPrivate( KPluginSelector * _kps,
+                                   const QString & _cat,
+                                   KConfigGroup * _config )
+     : widgetstack( 0 )
         , kps( _kps )
         , config( _config )
         , tooltip( 0 )
@@ -145,7 +144,6 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 
     QMap<QCheckListItem*, KPluginInfo*> pluginInfoMap;
 
-    QString instanceName; // isNull() for non-KParts plugins
     QWidgetStack * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
@@ -164,21 +162,12 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     int changed;
 };
 
-KPluginSelectionWidget::KPluginSelectionWidget( const QString & instanceName,
-        KPluginSelector * kps, QWidget * parent, const QString & catname,
-        const QString & category, KConfigGroup * config, const char * name )
-    : QWidget( parent, name )
-, d( new KPluginSelectionWidgetPrivate( instanceName, kps, catname, config ) )
-{
-    init( kpartsPluginInfos(), category );
-}
-
 KPluginSelectionWidget::KPluginSelectionWidget(
         const QValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
         QWidget * parent, const QString & catname, const QString & category,
         KConfigGroup * config, const char * name )
     : QWidget( parent, name )
-, d( new KPluginSelectionWidgetPrivate( 0, kps, catname, config ) )
+    , d( new KPluginSelectionWidgetPrivate( kps, catname, config ) )
 {
     init( plugininfos, category );
 }
@@ -186,19 +175,6 @@ KPluginSelectionWidget::KPluginSelectionWidget(
 inline QString KPluginSelectionWidget::catName() const
 {
     return d->catname;
-}
-
-QValueList<KPluginInfo*> KPluginSelectionWidget::kpartsPluginInfos() const
-{
-    if( d->instanceName.isNull() )
-    {
-        QValueList<KPluginInfo*> list;
-        return list; //nothing
-    }
-
-    QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
-            d->instanceName + "/kpartplugins/*.desktop", true, false );
-    return KPluginInfo::fromFiles( desktopfilenames );
 }
 
 void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
@@ -336,7 +312,7 @@ inline void KPluginSelectionWidget::updateConfigPage()
 void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
         bool checked )
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    //kdDebug( 702 ) << k_funcinfo << endl;
     d->currentplugininfo = plugininfo;
     d->currentchecked = checked;
 
@@ -406,12 +382,11 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
 
     QCheckListItem * citem = static_cast<QCheckListItem *>( item );
     bool checked = citem->isOn();
-    kdDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
-        << " QCheckListItem" << endl;
+    //kdDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
+    //    << " QCheckListItem" << endl;
 
     KPluginInfo * info = d->pluginInfoMap[ citem ];
-    if( info->isHidden() )
-        kdFatal( 702 ) << "bummer" << endl;
+    Q_ASSERT( !info->isHidden() );
 
     if ( info->isPluginEnabled() != checked )
     {
@@ -444,7 +419,7 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
 
 void KPluginSelectionWidget::load()
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    //kdDebug( 702 ) << k_funcinfo << endl;
 
     for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
@@ -547,7 +522,7 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
 {
     QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
     hbox->setAutoAdd( true );
-    
+
     QSplitter* splitter = new QSplitter( QSplitter::Horizontal, this );
     d->frame = new QFrame( splitter, "KPluginSelector left frame" );
     d->frame->setFrameStyle( QFrame::NoFrame );
@@ -595,45 +570,33 @@ void KPluginSelector::checkNeedForTabWidget()
     }
 }
 
+static QValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
+{
+    if( instanceName.isNull() )
+        return QValueList<KPluginInfo*>(); //nothing
+
+    const QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
+            instanceName + "/kpartplugins/*.desktop", true, false );
+    return KPluginInfo::fromFiles( desktopfilenames );
+}
+
 void KPluginSelector::addPlugins( const QString & instanceName,
         const QString & catname, const QString & category, KConfig * config )
 {
     checkNeedForTabWidget();
-    // FIXME: mem leak: the KSimpleConfig object needs to be deleted
-    KConfigGroup * cfgGroup = new KConfigGroup( config ? config :
-            new KSimpleConfig( instanceName ), "KParts Plugins" );
+    Q_ASSERT( config ); // please set config, or use addPlugins( instance, ... ) which takes care of it
+    if ( !config ) // KDE4: ensure that config is always set; make it second in the arg list?
+        config = new KSimpleConfig(  instanceName ); // memleak!
+    KConfigGroup * cfgGroup = new KConfigGroup( config, "KParts Plugins" );
     kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
-    KPluginSelectionWidget * w;
-    if( d->tabwidget )
-    {
-        w = new KPluginSelectionWidget( instanceName, this,
-                d->tabwidget, catname, category, cfgGroup );
-        d->tabwidget->addTab( w, catname );
-        connect( d->tabwidget, SIGNAL( currentChanged( QWidget * ) ), w,
-                SLOT( tabWidgetChanged( QWidget * ) ) );
-    }
-    else
-        w = new KPluginSelectionWidget( instanceName, this, d->frame,
-                catname, category, cfgGroup );
-    w->setMinimumSize( 200, 200 );
-    connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
-            SIGNAL( configCommitted( const QCString & ) ) );
-    d->pswidgets += w;
+    const QValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
+    addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
-void KPluginSelector::addPlugins( const KInstance * instance, const QString &
-        catname, const QString & category, KConfig * config )
+void KPluginSelector::addPluginsInternal( const QValueList<KPluginInfo*> plugininfos,
+                                          const QString & catname, const QString & category,
+                                          KConfigGroup* cfgGroup )
 {
-    addPlugins( instance->instanceName(), catname, category, config );
-}
-
-void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
-        const QString & catname, const QString & category, KConfig * config )
-{
-    checkNeedForTabWidget();
-    KConfigGroup * cfgGroup = new KConfigGroup( config ? config : KGlobal::config(), "Plugins" );
-    kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
     KPluginSelectionWidget * w;
     if( d->tabwidget )
     {
@@ -651,6 +614,24 @@ void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
     connect( w, SIGNAL( configCommitted( const QCString & ) ), this,
             SIGNAL( configCommitted( const QCString & ) ) );
     d->pswidgets += w;
+}
+
+void KPluginSelector::addPlugins( const KInstance * instance, const QString &
+        catname, const QString & category, KConfig * config )
+{
+    if ( !config )
+        config = instance->config();
+    addPlugins( instance->instanceName(), catname, category, config );
+}
+
+void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
+        const QString & catname, const QString & category, KConfig * config )
+{
+    checkNeedForTabWidget();
+    // the KConfigGroup becomes owned by KPluginSelectionWidget
+    KConfigGroup * cfgGroup = new KConfigGroup( config ? config : KGlobal::config(), "Plugins" );
+    kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
+    addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
 QWidgetStack * KPluginSelector::widgetStack()
