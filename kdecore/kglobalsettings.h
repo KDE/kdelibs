@@ -140,7 +140,6 @@ class KGlobalSettings
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
      *
-     * @details
      *         CompletionNone:
      *         No completion is used.
      *
