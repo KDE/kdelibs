@@ -29,28 +29,48 @@
 #include <ksimpleconfig.h>
 #include <qregexp.h>
 
-KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamps,
-                       const char * outputCharset,bool oamps){
+KCharsetConverterData::KCharsetConverterData(const char * inputCharset
+                       ,const char * outputCharset,int flags){
 
   kchdebug("Creating converter...");
+  inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
+  outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
+  if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
+  isOK=initialize(inputCharset,outputCharset);
+  kchdebug("done");				   
+}
+
+KCharsetConverterData::KCharsetConverterData(const char * inputCharset
+                                             ,int flags){
+
+  kchdebug("Creating converter...");
+  inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
+  outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
+  if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
+  isOK=initialize(inputCharset,"iso-8859-1");
+  kchdebug("done");
+}
+
+KCharsetConverterData::~KCharsetConverterData(){
+
+  if (convFromUniDict) delete convFromUniDict;
+}
+
+bool KCharsetConverterData::initialize(const char * inputCharset
+				      ,const char * outputCharset){
+					   
   convTable=0;
   convToUniDict=0;
   convFromUniDict=0;
-
-  isOK=FALSE;
-  inAmps=iamps;
-  outAmps=oamps;
-  if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
-  
   input=kcharsetsData->charsetEntry(inputCharset);
   if (!input) {
     kchdebug("Couldn't set input charset to %s\n",inputCharset);
-    return;
+    return FALSE;
   }  
   output=kcharsetsData->charsetEntry(outputCharset);
   if (!output) {
     kchdebug("Couldn't set output charset to %s\n",outputCharset);
-    return;
+    return FALSE;
   }
   
   setInputSettings();
@@ -61,27 +81,21 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
   else if (unicodeIn){
     conversionType=FromUnicode;
     kchdebug("Conversion: from unicode\n");
-    if (!createFromUnicodeDict()) return;
+    if (!createFromUnicodeDict()) return FALSE;
   }  
   else if (unicodeOut){
     conversionType=ToUnicode;
     kchdebug("Conversion: to unicode\n");
-    if (!getToUnicodeTable()) return;
+    if (!getToUnicodeTable()) return FALSE;
   }  
   else{
     conversionType=EightToEight;
     kchdebug("Conversion: no unicode\n");
-    if (!getToUnicodeTable()) return;
-    if (!createFromUnicodeDict()) return;
+    if (!getToUnicodeTable()) return FALSE;
+    if (!createFromUnicodeDict()) return FALSE;
   } 
-  isOK=TRUE;
-  kchdebug("done");
-}
-
-KCharsetConverterData::~KCharsetConverterData(){
-
-  if (convFromUniDict) delete convFromUniDict;
-}
+  return TRUE;
+}					   
 
 bool KCharsetConverterData::getToUnicodeTable(){
 
@@ -94,33 +108,6 @@ bool KCharsetConverterData::getToUnicodeTable(){
     }
   }
   return TRUE;
-}
-
-KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamps,bool oamps){
-
-  kchdebug("Creating converter...");
-  convTable=0;
-  convToUniDict=0;
-  convFromUniDict=0;
-
-  isOK=FALSE;
-  if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
-  inAmps=iamps;
-  outAmps=oamps;
-  input=kcharsetsData->charsetEntry(inputCharset);
-  if (!input) {
-    kchdebug("Couldn't set output charset to %s\n",output->name);
-    return;
-  }
-  output=kcharsetsData->charsetEntry("iso-8859-1");
-  if (!output) {
-    kchdebug("Couldn't set output charset to iso-8859-1\n");
-    return;
-  }
-  setInputSettings();
-  setOutputSettings();
-  isOK=TRUE;
-  kchdebug("done");
 }
 
 void KCharsetConverterData::setInputSettings(){
@@ -295,10 +282,10 @@ void KCharsetConverterData::convert(const QString &str
   kchdebug("Converting:\n-----\n%s\n-----\n",(const char *)str);
   if (!isOK) return;
   if (conversionType == NoConversion ){
-    result.text=str;
+    result.cText=str;
     return ;
   }
-  result.text="";
+  result.cText="";
   
   int i;
   int tmp;
@@ -360,8 +347,8 @@ void KCharsetConverterData::convert(const QString &str
     }
     else chr=0;
     kchdebug("Converted to: %x\n",chr);
-    if (outputEnc==UTF8) encodeUTF8(chr,result.text);
-    else if (outputEnc==UTF7) encodeUTF7(chr,result.text);
+    if (outputEnc==UTF8) encodeUTF8(chr,result.cText);
+    else if (outputEnc==UTF7) encodeUTF7(chr,result.cText);
     else if (chr==0)
       if (outAmps){
         if (conversionType!=FromUnicode){
@@ -374,16 +361,16 @@ void KCharsetConverterData::convert(const QString &str
 	   }  
 	}   
         else index2=index;
-	if (index2) result.text+="&#"+QString().setNum(index2)+';';
-	else result.text+="?";
+	if (index2) result.cText+="&#"+QString().setNum(index2)+';';
+	else result.cText+="?";
       }  
-      else result.text+="?";
+      else result.cText+="?";
     else
       if (outBits==16){
-        result.text+=(char)(chr>>8);
-	result.text+=(char)(chr&255);
+        result.cText+=(char)(chr>>8);
+	result.cText+=(char)(chr&255);
       }
-      else result.text+=(char)chr;
+      else result.cText+=(char)chr;
       
     if (inBits<=8)
       i++;
@@ -391,6 +378,7 @@ void KCharsetConverterData::convert(const QString &str
       i+=2;
   }
   kchdebug("Result:\n-----\n%s\n-----\n",(const char *)result);
+  result.cCharset=output;
 }
 
 bool KCharsetConverterData::createFromUnicodeDict(){
@@ -434,6 +422,7 @@ void KCharsetsData::scanDirectory(const char *path){
 
   kchdebug("Scanning directory: %s\n",path);
   QDir d(path);
+  if ( ! d.exists() ) return;
   d.setFilter(QDir::Files);
   d.setSorting(QDir::Name);
   const QFileInfoList *list=d.entryInfoList();

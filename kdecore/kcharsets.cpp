@@ -23,7 +23,7 @@
 #include "qstrlist.h"
 #include "qfontinf.h"
 #include "qregexp.h"
-#include <stdio.h>
+#include <kapp.h>
 
 KCharsetsData *KCharsets::data=0;
 KCharsetsData *KCharsetConverterData::kcharsetsData=0;
@@ -31,20 +31,18 @@ KCharsetsData *KCharsetConverterData::kcharsetsData=0;
 /////////////////////////////////////////////////////////////////
 
 KCharsetConverter::KCharsetConverter(const char * inputCharset
-                                    ,bool iamps
-				    ,bool oamps){
+				    ,int flags){
 				    
   if (!inputCharset) {
     warning("KCharsetConverter: NULL charset on input!\n");
     inputCharset="us-ascii";    
   }  
-  data=new KCharsetConverterData(inputCharset,iamps,oamps);
+  data=new KCharsetConverterData(inputCharset,flags);
 }
 
 KCharsetConverter::KCharsetConverter(const char * inputCharset
-				    ,bool iamps
 				    ,const char *outputCharset
-				    ,bool oamps){
+				    ,int flags){
   if (!inputCharset) {
     warning("KCharsetConverter: NULL charset on input!\n");
     inputCharset="us-ascii";    
@@ -53,22 +51,7 @@ KCharsetConverter::KCharsetConverter(const char * inputCharset
     warning("KCharsetConverter: NULL charset on output!\n");
     outputCharset="us-ascii";    
   }  
-  data=new KCharsetConverterData(inputCharset,iamps,outputCharset,oamps);
-}
-
-KCharsetConverter::KCharsetConverter(const char * inputCharset
-                                    ,const char * outputCharset
-				    ,bool oamps){
-
-  if (!inputCharset) {
-    warning("KCharsetConverter: NULL charset on input!\n");
-    inputCharset="us-ascii";    
-  }  
-  if (!outputCharset) {
-    warning("KCharsetConverter: NULL charset on output!\n");
-    outputCharset="us-ascii";    
-  }  
-  data=new KCharsetConverterData(inputCharset,FALSE,outputCharset,oamps);
+  data=new KCharsetConverterData(inputCharset,outputCharset,flags);
 }
 
 KCharsetConverter::~KCharsetConverter(){
@@ -299,4 +282,14 @@ const char * KCharsets::name(const QFont& font){
   kchdebug("ce=%p ce->name=%s\n",ce,ce?ce->name:0);
   if (ce) return ce->name;
   else return "unknown";
-} 
+}
+
+const char * KCharsetConversionResult::charset()const{
+
+  return cCharset->name;
+}
+
+QFont & KCharsetConversionResult::setQFont(QFont &font)const{
+
+  return KApplication::getKApplication()->getCharsets()->setQFont(font);
+}

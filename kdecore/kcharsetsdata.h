@@ -83,10 +83,13 @@ friend class KCharsets;
    bool encodeUTF8(unsigned int code,QString &result);
    bool createFromUnicodeTable();
 public:
-   KCharsetConverterData(const char * inputCharset,bool iamps,
-                         const char * outputCharset,bool oamps);
-   KCharsetConverterData(const char * inputCharset,bool iamps,bool oamps);
+   KCharsetConverterData(const char * inputCharset
+                         ,const char * outputCharset
+                         ,int flags);
+   KCharsetConverterData(const char * inputCharset
+                         ,int flags);
    ~KCharsetConverterData();
+   bool initialize(const char * inputCharset,const char * outputCharset);
    void convert(const QString &str,KCharsetConversionResult &r);
    bool ok()const{ return isOK; }
 };

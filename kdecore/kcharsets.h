@@ -40,25 +40,34 @@ class KCharsetEntry;
 
 class KCharsetConversionResult{
 friend class KCharsetConverterData;   
-   KCharsetEntry * charset;
-   QString text;
-   QString face;
+   KCharsetEntry * cCharset;
+   QString cText;
 public:
 /**
 * Operator to cast to QString type
 */
    operator const QString &()const
-         { return text; }
+         { return cText; }
 /**
 * Operator to cast to const char * type
 */
    operator const char *()const
-         { return text; }
-//   QFont font(const QFont & def)const
-//         { QFont fnt(def); return setQFont(fnt); }
-//   QFont & setQFont(QFont &font)
-//         { 
-//   QFont::CharSet qtCharset();
+         { return cText; }
+/**
+* Gives charset of translated string
+*/
+   const char * charset()const;
+   
+/**
+* Returns font, that can be used to display converted string
+*/
+   QFont font(const QFont & def)const
+         { QFont fnt(def); return setQFont(fnt); }
+	 
+/**
+* Sets up font, to display converted string
+*/
+   QFont & setQFont(QFont &font)const;
 };
 
 class KCharsetConverterData;
@@ -77,36 +86,38 @@ class KCharsetConverter{
    KCharsetConverterData *data;
    KCharsetConversionResult result;
 public:
+   enum Flags{
+     INPUT_AMP_SEQUENCES=1,
+     OUTPUT_AMP_SEQUENCES=2,
+     AMP_SEQUENCES=INPUT_AMP_SEQUENCES|OUTPUT_AMP_SEQUENCES,
+     UNKNOWN_TO_ASCII=4,
+     UNKNOWN_TO_QUESTION_MARKS=0,
+   };
 /**
 * Constructor. Start conversion to displayable charset
 *
 * @param inputCharset source charset 
-* @param iamps are AmpStrings in source text ("&xxx;") to be converted to
-*           corresponding characters
-* @param oamps are AmpStrings to be put into output text if given character
-*        is not available in chosen charset 
+* @param flags conversion flags. It can be one or several OR-ed values:
+*     INPUT_AMP_SEQUENCES - convert amp-sequences on input to coresponding characters
+*     OUTPUT_AMP_SEQUENCES - convert unknown characters to amp-sequences
+*     AMP_SEQUENCES - two above together 
+*     UNKNOWN_TO_ASCII - convert unknown characters to ASCII equivalents (not implemented yet)
+*     UNKNOWN_TO_QUESTION_MARKS - convert unknown characters to '?'
+*           
 */
-   KCharsetConverter(const char * inputCharset,bool iamps=FALSE,bool oamps=FALSE);
-/**
-* Constructor. Start conversion between two charsets
-*
-* @param inputCharset source charset 
-* @param iamps if AmpStrings in source text ("&xxx;") are to be converted to
-*           corresponding characters
-* @param outputCharset destination charset 
-* @param oamps if AmpStrings should be put into output text if given character
-*        is not available in chosen charset 
-*/
-   KCharsetConverter(const char * inputCharset,bool iamps,const char *outputCharset,bool oamps=FALSE);
+   KCharsetConverter(const char * inputCharset
+		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
 /**
 * Constructor. Start conversion between two charsets
 *
 * @param inputCharset source charset 
 * @param outputCharset destination charset 
-* @param oamps if AmpStrings should be put into output text if given character
-*        is not available in chosen charset 
+* @param flags conversion flags. @ref KCharsetConverter
+*
 */
-   KCharsetConverter(const char * inputCharset,const char *outputCharset,bool oamps=FALSE);
+   KCharsetConverter(const char * inputCharset
+                     ,const char *outputCharset
+		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
 /**
 * Destructor.
 */
