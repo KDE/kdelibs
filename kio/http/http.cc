@@ -1174,6 +1174,7 @@ bool HTTPProtocol::readHeader()
 
   m_etag = QString::null;
   m_lastModified = QString::null;
+  m_strCharset = QString::null;
 
   time_t dateHeader = 0;
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
@@ -1183,9 +1184,6 @@ bool HTTPProtocol::readHeader()
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
   QString disposition; // Incase we get a Content-Disposition
-  QString httpRefresh; // Incase we get a http-refresh request
-
-  m_strCharset = QString::null;
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -1350,7 +1348,7 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
       kdDebug(7113) << buffer << endl;
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-      httpRefresh = QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace();
+      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace() );
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
@@ -1812,10 +1810,6 @@ bool HTTPProtocol::readHeader()
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
      mimeType( m_strMimeType );
   }
-
-  // Set up the http-refresh signal if necessary
-  if ( !httpRefresh.isEmpty() )
-    setMetaData( "http-refresh", httpRefresh );
 
   if (m_request.method == HTTP_HEAD)
      return true;
