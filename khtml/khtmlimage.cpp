@@ -19,6 +19,7 @@
 
 #include "khtmlimage.h"
 #include "khtml_part.h"
+#include "xml/dom_docimpl.h"
 #include "misc/loader.h"
 
 #include <qvbox.h>
@@ -98,6 +99,11 @@ bool KHTMLImage::openURL( const KURL &url )
     m_mimeType = m_ext->urlArgs().serviceType;
 
     m_khtml->begin( m_url );
+
+    DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
+    if ( impl && m_ext->urlArgs().reload )
+        impl->setReloading();
+
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();
 

@@ -163,9 +163,9 @@ public:
     m_bJavaOverride = false;
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
-    
+
     m_metaRefreshEnabled = true;
-    
+
     m_bFirstData = true;
 
     // inherit security settings from parent
@@ -563,7 +563,16 @@ bool KHTMLPart::openURL( const KURL &url )
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
 
-  if ( d->m_frames.count() == 0 && (url.htmlRef() != m_url.htmlRef()) && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
+  // in case we have a) no frameset, b) the url is identical with the currently
+  // displayed one (except for the htmlref!) , c) the url request is not a POST
+  // operation and d) the caller did not request to reload the page we try to
+  // be smart and instead of reloading the whole document we just jump to the
+  // request html anchor
+  if ( d->m_frames.count() == 0 &&
+       (url.htmlRef() != m_url.htmlRef()) &&
+       urlcmp( url.url(), m_url.url(), true, true ) &&
+       args.postData.size() == 0 &&
+       !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
