@@ -336,14 +336,10 @@ class KIOConnection
     }
     InputStream getInputStream() throws IOException {
         Main.debug ("getInputStream(" + jobid + ") " + url);
-        if (!connected)
-            connect(true);
         return in;
     }
     OutputStream getOutputStream() throws IOException {
         Main.debug ("getOutputStream(" + jobid + ") " + url);
-        if (!connected)
-            connect(false);
         return out;
     }
 }
@@ -448,28 +444,38 @@ final class KJASHttpURLConnection extends HttpURLConnection
     }
     public synchronized void connect() throws IOException {
         Main.debug ("KJASHttpURLConnection.connect " + url);
+        SecurityManager security = System.getSecurityManager();
+        if (security != null)
+            security.checkPermission(getPermission());
         kioconnection.connect(doInput);
+        connected = true;
     }
     public void disconnect() {
         kioconnection.disconnect();
+        connected = false;
     }
     public InputStream getInputStream() throws IOException {
+        doInput = true;
+        doOutput = false;
+        connect();
         return kioconnection.getInputStream();
     }
     public OutputStream getOutputStream() throws IOException {
+        doInput = false;
+        doOutput = true;
+        connect();
         return kioconnection.getOutputStream();
     }
 }
 
 final class KJASSimpleURLConnection extends URLConnection
 {
-    private KIOSimpleConnection kioconnection;
+    private KIOSimpleConnection kioconnection = null;
     private int default_port;
 
     KJASSimpleURLConnection(URL u, int p) {
         super(u);
         default_port = p;
-        kioconnection = new KIOSimpleConnection(u);
     }
     public boolean usingProxy() {
         return false; // FIXME
@@ -481,16 +487,35 @@ final class KJASSimpleURLConnection extends URLConnection
         return new SocketPermission(url.getHost() + ":" + p, "connect");
     }
     public synchronized void connect() throws IOException {
+        if (kioconnection != null)
+            return;
         Main.debug ("KJASSimpleURLConnection.connection " + url);
+        SecurityManager security = System.getSecurityManager();
+        if (security != null)
+            security.checkPermission(getPermission());
+        kioconnection = new KIOSimpleConnection(url);
         kioconnection.connect(doInput);
+        connected = true;
     }
     public void disconnect() {
+        if (kioconnection == null)
+            return;
         kioconnection.disconnect();
+        kioconnection = null;
+        connected = false;
     }
     public InputStream getInputStream() throws IOException {
+        doInput = true;
+        doOutput = false;
+        if (kioconnection == null)
+            connect();
         return kioconnection.getInputStream();
     }
     public OutputStream getOutputStream() throws IOException {
+        doInput = false;
+        doOutput = true;
+        if (kioconnection == null)
+            connect();
         return kioconnection.getOutputStream();
     }
 }
@@ -516,11 +541,7 @@ final class KJASSimpleURLStreamHandler extends URLStreamHandler
         default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        URLConnection conn = new KJASSimpleURLConnection(u, default_port);
-        SecurityManager security = System.getSecurityManager();
-        if (security != null)
-            security.checkPermission(conn.getPermission());
-        return conn;
+        return new KJASSimpleURLConnection(u, default_port);
     }
     protected int getDefaultPort() {
         return default_port;
