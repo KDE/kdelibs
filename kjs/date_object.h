@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifndef _DATE_OBJECT_H_
@@ -120,7 +119,7 @@ namespace KJS {
   };
 
   // helper functions
-  Value parseDate(const String &s);
+  Value parseDate(const UString &u);
   double KRFCDate_parseDate(const UString &_date);
   Value timeClip(const Value &t);
   int local_timeoffset();
