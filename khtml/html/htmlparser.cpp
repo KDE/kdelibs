@@ -27,14 +27,6 @@
 
 //#define PARSER_DEBUG
 
-#ifdef GrayScale
-#undef GrayScale
-#endif
-
-#ifdef Color
-#undef Color
-#endif
-
 #include "htmlparser.h"
 
 #include "dom_nodeimpl.h"

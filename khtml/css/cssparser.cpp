@@ -424,6 +424,8 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     if (!curP)
         return(0);
 
+    CSSSelector::Relation relation = CSSSelector::Descendant;
+
     const QChar *startP = curP;
     while (curP <= endP)
     {
@@ -433,6 +435,7 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
             if (cs)
             {
                 cs->tagHistory = selecStack;
+		cs->relation = relation;
                 selecStack = cs;
             }
 	    else
@@ -446,15 +449,17 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
             if (!curP)
                 return(selecStack);
 
+	    relation = CSSSelector::Descendant;
 	    if(*curP == '+')
 	    {
-		cs->relation = CSSSelector::Sibling;
+		relation = CSSSelector::Sibling;
 		curP++;
 		curP = parseSpace(curP, endP);
 	    }
 	    else if(*curP == '>')
 	    {
-		cs->relation = CSSSelector::Child;
+		printf("child selector\n");
+		relation = CSSSelector::Child;
 		curP++;
 		curP = parseSpace(curP, endP);
 	    }
@@ -1436,7 +1441,7 @@ CSSSelector::CSSSelector(void)
 {
     attr = 0;
     match = None;
-    relation = Child;
+    relation = Descendant;
 }
 
 CSSSelector::~CSSSelector(void)

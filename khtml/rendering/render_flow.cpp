@@ -57,6 +57,14 @@ static inline int MIN(int a, int b)
     return a < b ? a : b;
 }
 
+static inline int collapseMargins(int a, int b)
+{
+    if(a > 0 && b > 0) return (a > b ? a : b );
+    if(a > 0 && b < 0) return a - b;
+    if(a < 0 && b > 0) return b - a;
+    return ( a > b ? -b : -a);
+}
+
 
 RenderFlow::RenderFlow(RenderStyle* style)
     : RenderBox(style)
@@ -246,16 +254,16 @@ static int getIndent(RenderObject *child)
 
     Length marginLeft = child->style()->marginLeft();
     Length marginRight = child->style()->marginRight();
-    
+
     // ### hack to make <td align=> work. maybe it should be done with
     //	   css class selectors or something?
-/*    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell()) 
+/*    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell())
     {
     	if (child->containingBlock()->style()->textAlign()==RIGHT)
     	{
     	    marginLeft.type=Variable;
     	}
-	else if (child->containingBlock()->style()->textAlign()==CENTER) 
+	else if (child->containingBlock()->style()->textAlign()==CENTER)
 	{
 	    marginLeft.type=Variable;
 	    marginRight.type=Variable;
@@ -306,7 +314,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
-	margin = MAX(margin, prevMargin);
+	margin = collapseMargins(margin, prevMargin);
 	m_height += margin;
 
     	// html blocks flow around floats	
@@ -681,6 +689,8 @@ RenderFlow::clearFloats()
     if(prev)
     {
 	if(prev->isTableCell()) return;
+	// ### FIXME
+	//offset = m_previous->height() + collapseMargins(prev->marginBottom(), marginTop());
 	offset = m_y - prev->yPos();
     }
     else
@@ -935,7 +945,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	xPos += paddingLeft();
 
     int margin = 0;
-    
+
     if(m_last && !m_last->isInline() && !m_last->isFloating())
     {
 	m_height += m_last->height();
@@ -1013,7 +1023,9 @@ void RenderFlow::addChild(RenderObject *newChild)
     if(!newChild->isInline() && !newChild->isFloating())
     {
 	newChild->setParent(this);
-//	printf("new child's margin = %d\n", newChild->marginTop());
+	//printf("new child's margin = %d\n", newChild->marginTop());
+	// ### FIXME
+	//margin = collapseMargins(margin, newChild->marginTop());
 	//### see comment in layoutBlockChildren
 	if(checkClear(newChild)) margin = 0;
 	margin = MAX(margin, newChild->marginTop());
@@ -1023,7 +1035,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	newChild->calcWidth();
 	newChild->setPos(xPos + getIndent(newChild), m_height);
     }
-    
+
     if(newChild->isFloating())
     {
     	insertFloat(newChild);
