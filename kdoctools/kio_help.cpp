@@ -189,25 +189,28 @@ void HelpProtocol::get( const KURL& url )
     kdDebug( 7119 ) << "target " << target.url() << endl;
 
     QString file = target.path();
-    QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
-    if (!KStandardDirs::exists(file)) {
-        file = docbook_file;
-    } else {
-        QFileInfo fi(file);
-        if (fi.isDir()) {
-            file = file + "/index.docbook";
+    if ( !mGhelp ) {
+        QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
+        if (!KStandardDirs::exists(file)) {
+            file = docbook_file;
         } else {
-            if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
-                get_file( target );
-                return;
-            } else
-                file = docbook_file;
+            QFileInfo fi(file);
+            if (fi.isDir()) {
+                file = file + "/index.docbook";
+            } else {
+                if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
+                    get_file( target );
+                    return;
+                } else
+                    file = docbook_file;
+            }
         }
     }
 
     infoMessage(i18n("Preparing document"));
 
     if ( mGhelp ) {
+        file.replace( QRegExp( ".html" ), ".xml" );
         QString xsl = "customization/kde-nochunk.xsl";
         mParsed = transform(file, locate("dtd", xsl));
 
