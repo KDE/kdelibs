@@ -511,7 +511,7 @@ namespace KStdAction
 	/**
 	* Display "Tip of the Day"
 	*/
-	KAction *tipofDay(const QObject *recvr, const char *slot,
+	KAction *tipOfDay(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );
 
 	/**

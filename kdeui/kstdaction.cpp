@@ -319,7 +319,7 @@ KAction *helpContents( const QObject *recvr, const char *slot, KActionCollection
 	{ return KStdAction::create( HelpContents, name, recvr, slot, parent ); }
 KAction *whatsThis( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( WhatsThis, name, recvr, slot, parent ); }
-KAction *tipofDay( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+KAction *tipOfDay( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( TipofDay, name, recvr, slot, parent ); }
 KAction *reportBug( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( ReportBug, name, recvr, slot, parent ); }
