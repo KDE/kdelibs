@@ -168,9 +168,7 @@ public:
 	static Object_base *_create(const std::string& subClass = "Object");
 
 	// comparision
-	inline bool _isEqual(Object_base *object) {
-		return (_internalObjectID == object->_internalObjectID);
-	}
+	bool _isEqual(Object_base *object) const;
 
 	// static converter (from reference)
 	static Object_base *_fromString(std::string objectref);

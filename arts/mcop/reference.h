@@ -170,7 +170,7 @@ public:
 	}
 	
 	// Comparision
-	inline bool _isEqual(const Object& other) {
+	inline bool _isEqual(const Object& other) const {
 		if(isNull() != other.isNull()) return false;
 
 		// we can assume that things are created here, as we've
