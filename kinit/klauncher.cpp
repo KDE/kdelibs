@@ -1005,9 +1005,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
          request->dcop_name = v.toString().utf8();
       if (request->dcop_name.isEmpty())
       {
-         request->dcop_name = request->name;
-         // Strip directory
-         request->dcop_name = request->dcop_name.mid(request->dcop_name.findRev('/')+1);
+         request->dcop_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
       }
    }
 
