@@ -1,5 +1,5 @@
 INCLUDES = $(all_includes) $(SSL_INCLUDES)
-lib_LTLIBRARIES = libkcm_crypto.la
+kde_module_LTLIBRARIES = libkcm_crypto.la
 
 libkcm_crypto_la_SOURCES = crypto.cpp 
 
