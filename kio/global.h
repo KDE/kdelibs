@@ -174,6 +174,13 @@ namespace KIO
 
   QString findDeviceMountPoint( const QString& device );
 
+    /**
+    * checks if the path belongs to a file system that is probably
+    * slow. It checks for NFS or for paths belonging to automounted
+    * paths not yet mounted
+    */
+    bool probably_slow_mounted(const QString& filename);
+
 /************
  *
  * Universal Directory Service

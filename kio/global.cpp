@@ -527,7 +527,7 @@ static void check_mount_point(const char *mountpoint, const char *mounttype,
     }
 }
 
-bool probably_slow_mounted(const QString& filename)
+bool KIO::probably_slow_mounted(const QString& filename)
 {
     char                realname[MAXPATHLEN];
 

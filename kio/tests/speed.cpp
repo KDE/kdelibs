@@ -5,6 +5,7 @@
 #include <kio/job.h>
 #include <kcmdlineargs.h>
 #include <qdir.h>
+#include <kio/global.h>
 
 using namespace KIO;
 
@@ -47,12 +48,12 @@ static KCmdLineOptions options[] =
 int main(int argc, char **argv) {
 
     KCmdLineArgs::init( argc, argv, "speedapp", "A KIO::listRecursive testing tool", "0.0" );
- 
+
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app;
- 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
+
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     KURL url;
     if ( args->count() == 1 )
@@ -61,6 +62,7 @@ int main(int argc, char **argv) {
       url = "file:" + QDir::currentDirPath();
     args->clear();
 
+    fprintf(stderr, "%s is probably %s mounted\n", url.url().local8Bit().data(), KIO::probably_slow_mounted(url.path()) ? "slow" : "normal");
     SpeedTest test( url );
     app.exec();
 
