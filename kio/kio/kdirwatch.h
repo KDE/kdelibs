@@ -41,7 +41,7 @@ class KDirWatchPrivate;
   * creation.
   *
   * When a watched file is changed, i.e. attributes changed or written
-  * to, KDirWatch will emit the signal @ref fileDirty().
+  * to, KDirWatch will emit the signal @ref dirty().
   *
   * Scanning of particular directories or files can be stopped temporarily
   * and restarted. The whole class can be stopped and restarted.
@@ -87,8 +87,8 @@ class KDirWatch : public QObject
     * false (the default), the signals dirty(), created(), deleted()
     * can be emitted, all for the watched directory.
     * When @p watchFiles is true, all files in the watched directory
-    * are watched for changes, too. Thus, the signals fileDirty(),
-    * fileCreated(), fileDeleted() can be emitted.
+    * are watched for changes, too. Thus, the signals dirty(),
+    * created(), deleted() can be emitted.
     *
     * @param path the path to watch
     * @param watchFiles if true, the KDirWatch will also watch files
