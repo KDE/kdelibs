@@ -818,11 +818,15 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
 
     // When the first data arrives, the metadata has just been made available
+
     kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
     kdDebug() << "SSL in use ? " << d->m_ssl_in_use << endl;
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
     kdDebug() << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+
+    // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
+
     d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
     d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
     d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
@@ -831,6 +835,10 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
+    //
+    QString charset = d->m_job->queryMetaData("charset");
+    if ( !charset.isEmpty() )
+        setCharset( charset );
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -2008,7 +2016,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     return;
 
   KParts::URLArgs args;
-  
+
   if ( strcmp( action, "get" ) == 0 )
   {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
@@ -2026,13 +2034,13 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     else // contentType must be "multipart/form-data"
       d->m_userHeaders = "Content-Type: " + contentType + "; boundary=" + boundary;
   }
-  
+
   // ### bail out if a submit() call from JS occured while parsing
   if ( d->m_bParsing ) {
     kdWarning( 6070 ) << "Ignoring submit() while parsing" << endl;
     return;
   }
-  
+
   emit d->m_extension->openURLRequest( u, args );
 
 }
