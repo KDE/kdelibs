@@ -31,7 +31,6 @@
 #include <kbuttonbox.h>
 
 #include "kkeydialog.h"
-#include "kkeydialog.h"
 
 
 /*****************************************************************************/
@@ -820,6 +819,8 @@ void KKeyChooser::listSync()
 }
 
 #define MAX_FCTN_LENGTH 50
+#define MAX_KEY_LENGTH 15
+#define MAX_KEY_MODIFIER_LENGTH 15
 
 const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 {
