@@ -275,7 +275,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Title:
       return getString(doc.title());
     case Referrer:
-      return getString(doc.referrer());
+      return String(doc.referrer()); // not getString - DOMTS HTMLDocument02.html
     case Domain:
       return String(doc.domain());
     case URL:
