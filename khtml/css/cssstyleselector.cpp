@@ -1003,9 +1003,35 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_TABLE_LAYOUT:
     case CSS_PROP_TEXT_TRANSFORM:
     case CSS_PROP_UNICODE_BIDI:
-    case CSS_PROP_VISIBILITY:
 	break;
+    case CSS_PROP_VISIBILITY:
+	{
+	if(value->valueType() == CSSValue::CSS_INHERIT) {
+	    if(!e->parentNode()) return;
+	    style->setVisiblity(e->parentNode()->style()->visiblity());
+	    return;
+	}
 
+        if(!primitiveValue->getIdent()) return;
+
+        EVisiblity s;
+        switch(primitiveValue->getIdent()) {
+	case CSS_VAL_VISIBLE:
+	    s = VISIBLE;
+	    break;
+	case CSS_VAL_HIDDEN:
+	    s = HIDDEN;
+	    break;
+	case CSS_VAL_COLLAPSE:
+	    s = COLLAPSE;
+	    break;
+	default:
+	    return;
+        }
+        style->setVisiblity(s);
+	break;
+	}
+	
     case CSS_PROP_WHITE_SPACE:
 	if(value->valueType() == CSSValue::CSS_INHERIT) {
 	    if(!e->parentNode()) return;
@@ -1064,7 +1090,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    case CSS_VAL_DEFAULT:
 		c = CURSOR_DEFAULT; break;
 		// ### shouldn't that be crosshair????
-	    case CSS_VAL_CROSS:
+	    case CSS_VAL_CROSSHAIR:
 		c = CURSOR_CROSS; break;
 	    case CSS_VAL_POINTER:
 		c = CURSOR_POINTER; break;

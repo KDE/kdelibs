@@ -125,8 +125,6 @@ RenderFlow::~RenderFlow()
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
-    if ( !m_visible )
-	return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::print() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
@@ -165,7 +163,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	relativePositionOffset(_tx, _ty);
 
     // 1. print background, borders etc
-    if(m_printSpecial && !isInline())
+    if(m_printSpecial && !isInline() && m_visible)
 	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print floats and other non-flow objects

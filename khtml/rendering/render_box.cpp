@@ -172,9 +172,6 @@ int RenderBox::height() const
 void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 				  int _tx, int _ty)
 {
-    if ( !m_visible )
-	return;
-    
     _tx += m_x;
     _ty += m_y;
 

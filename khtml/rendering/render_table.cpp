@@ -1408,8 +1408,6 @@ void RenderTable::setCellWidths()
 void RenderTable::print( QPainter *p, int _x, int _y,
 				  int _w, int _h, int _tx, int _ty)
 {
-    if ( !m_visible )
-	return;
 
 //    if(!layouted()) return;
 
@@ -1429,7 +1427,8 @@ void RenderTable::print( QPainter *p, int _x, int _y,
      kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
-    printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+     if(m_visible)
+	 printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     if ( tCaption )
     {
@@ -1720,8 +1719,6 @@ void RenderTableCell::absolutePosition(int &xPos, int &yPos)
 void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
-    if ( !m_visible )
-	return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;

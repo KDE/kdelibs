@@ -432,6 +432,8 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
 		      int tx, int ty)
 {
+    if ( !m_visible ) 
+	return;
     printObject(p, x, y, w, h, tx, ty);
 }
 

@@ -160,7 +160,7 @@ bool RenderListItem::checkChildren() const
 void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
 {
-    if ( !m_height || !m_visible )
+    if ( !m_height )
 	return;
 
 #ifdef DEBUG_LAYOUT
@@ -214,6 +214,8 @@ void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
 void RenderListMarker::printObject(QPainter *p, int, int,
 				    int, int, int _tx, int _ty)
 {
+    if( !m_visible )
+	return;
 #ifdef DEBUG_LAYOUT
 
         kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
