@@ -37,10 +37,10 @@ static const char version[] = "1.0";
 
 static const KCmdLineOptions options[] =
 {
- { "shutdown", I18N_NOOP("Shut down cookie jar."), 0 },
- { "remove <domain>", I18N_NOOP("Remove cookies for domain."), 0 },
- { "remove-all", I18N_NOOP("Remove all cookies."), 0 },
- { "reload-config", I18N_NOOP("Reload configuration file."), 0 },
+ { "shutdown", I18N_NOOP("Shut down cookie jar"), 0 },
+ { "remove <domain>", I18N_NOOP("Remove cookies for domain"), 0 },
+ { "remove-all", I18N_NOOP("Remove all cookies"), 0 },
+ { "reload-config", I18N_NOOP("Reload configuration file"), 0 },
  KCmdLineLastOption
 };
 

@@ -45,10 +45,10 @@ extern "C"
 
 static const KCmdLineOptions options[] =
 {
-  { "setup", I18N_NOOP("Setup screen saver."), 0 },
-  { "window-id wid", I18N_NOOP("Run in the specified XWindow."), 0 },
-  { "root", I18N_NOOP("Run in the root XWindow."), 0 },
-  { "demo", I18N_NOOP("Start screen saver in demo mode."), "default"},
+  { "setup", I18N_NOOP("Setup screen saver"), 0 },
+  { "window-id wid", I18N_NOOP("Run in the specified XWindow"), 0 },
+  { "root", I18N_NOOP("Run in the root XWindow"), 0 },
+  { "demo", I18N_NOOP("Start screen saver in demo mode"), "default"},
   KCmdLineLastOption
 };
 

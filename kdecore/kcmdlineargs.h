@@ -141,25 +141,25 @@ class KCmdLineArgsPrivate;
  *  \code
  *  static const KCmdLineOptions options[] =
  *  {
- *     { "a", I18N_NOOP("A short binary option."), 0 },
- *     { "b \<file>", I18N_NOOP("A short option which takes an argument."), 0 },
- *     { "c \<speed>", I18N_NOOP("As above but with a default value."), "9600" },
- *     { "option1", I18N_NOOP("A long binary option, off by default."), 0 },
- *     { "nooption2", I18N_NOOP("A long binary option, on by default."), 0 },
+ *     { "a", I18N_NOOP("A short binary option"), 0 },
+ *     { "b \<file>", I18N_NOOP("A short option which takes an argument"), 0 },
+ *     { "c \<speed>", I18N_NOOP("As above but with a default value"), "9600" },
+ *     { "option1", I18N_NOOP("A long binary option, off by default"), 0 },
+ *     { "nooption2", I18N_NOOP("A long binary option, on by default"), 0 },
  *     { ":", I18N_NOOP("Extra options:"), 0 },
- *     { "option3 \<file>", I18N_NOOP("A long option which takes an argument."), 0 },
- *     { "option4 \<speed>", I18N_NOOP("A long option which takes an argument, defaulting to 9600."), "9600" },
+ *     { "option3 \<file>", I18N_NOOP("A long option which takes an argument"), 0 },
+ *     { "option4 \<speed>", I18N_NOOP("A long option which takes an argument, defaulting to 9600"), "9600" },
  *     { "d", 0, 0 },
- *     { "option5", I18N_NOOP("A long option which has a short option as alias."), 0 },
+ *     { "option5", I18N_NOOP("A long option which has a short option as alias"), 0 },
  *     { "e", 0, 0 },
- *     { "nooption6", I18N_NOOP("Another long option with an alias."), 0 },
+ *     { "nooption6", I18N_NOOP("Another long option with an alias"), 0 },
  *     { "f", 0, 0 },
  *     { "option7 \<speed>", I18N_NOOP("'--option7 speed' is the same as '-f speed'"), 0 },
  *     { "!option8 \<cmd>", I18N_NOOP("All options following this one will be treated as arguments", 0 },
- *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
- *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
- *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
- *     { "", I18N_NOOP("Additional help text not associated with any particular option.") 0 },
+ *     { "+file", I18N_NOOP("A required argument 'file'), 0 },
+ *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'"), 0 },
+ *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'), 0 },
+ *     { "", I18N_NOOP("Additional help text not associated with any particular option") 0 },
  *     KCmdLineLastOption // End of options.
  *  };
  *  \endcode

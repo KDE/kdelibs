@@ -683,12 +683,12 @@ QStringList KBuildSycoca::existingResourceDirs()
 }
 
 static KCmdLineOptions options[] = {
-   { "nosignal", I18N_NOOP("Do not signal applications to update."), 0 },
-   { "noincremental", I18N_NOOP("Disable incremental update, re-read everything."), 0 },
-   { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
-   { "global", I18N_NOOP("Create global database."), 0 },
-   { "menutest", I18N_NOOP("Perform menu generation test run only."), 0 },
-   { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes."), 0 },
+   { "nosignal", I18N_NOOP("Do not signal applications to update"), 0 },
+   { "noincremental", I18N_NOOP("Disable incremental update, re-read everything"), 0 },
+   { "checkstamps", I18N_NOOP("Check file timestamps"), 0 },
+   { "global", I18N_NOOP("Create global database"), 0 },
+   { "menutest", I18N_NOOP("Perform menu generation test run only"), 0 },
+   { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
    KCmdLineLastOption
 };
 
