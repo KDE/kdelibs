@@ -98,6 +98,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -144,6 +147,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -196,6 +202,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -248,6 +257,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
@@ -298,6 +310,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -347,6 +362,9 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * The second button always has the text "Cancel".
@@ -396,6 +414,8 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   *
   * @param options  see OptionsType
   *
@@ -449,6 +469,9 @@ public:
   *                last answer (either Yes or No).
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
@@ -507,6 +530,9 @@ public:
   *                last answer (either Yes or No).
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                If @p dontAskAgainName starts with a ':' then the setting
+  *                is stored in the global config file.
   * @param options  see OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned

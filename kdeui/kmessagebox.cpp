@@ -353,7 +353,7 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
-    config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no");
+    config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no", true, (dontShowAgainName[0] == ':'));
     config->sync();
 }
 
@@ -364,7 +364,7 @@ KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
-    config->writeEntry( dontShowAgainName, false);
+    config->writeEntry( dontShowAgainName, false, true, (dontShowAgainName[0] == ':'));
     config->sync();
 }
 
