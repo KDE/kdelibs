@@ -58,6 +58,7 @@ extern "C" {
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qcombobox.h>
+#include <qgroupbox.h>
 
 #include <kdialog.h>
 #include <kdirsize.h>

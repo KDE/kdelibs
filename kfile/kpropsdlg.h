@@ -27,26 +27,10 @@
 #ifndef __propsdlg_h
 #define __propsdlg_h
 
-extern "C" {
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-}
-
-#include <cstdio>
-
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
-#include <qlayout.h>
 #include <qstring.h>
 #include <qlist.h>
-#include <qcombobox.h>
-#include <qgroupbox.h>
-#include <qlistbox.h>
-#include <qtooltip.h>
 
 #include <kurl.h>
-#include <klocale.h>
 #include <kfileitem.h>
 #include <kdialogbase.h>
 
