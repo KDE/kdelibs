@@ -55,6 +55,8 @@ public:
   static QString httpProxy();
   static QString noProxyFor();
 
+  static bool useCache();
+
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
    * If after this timeout read doesn't finish reading packet, read operation is

@@ -297,6 +297,13 @@ bool KProtocolManager::useProxy()
   return config.readBoolEntry( "UseProxy", false );
 }
 
+bool KProtocolManager::useCache()
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  return config.readBoolEntry( "UseCache", true );
+}
+
 QString KProtocolManager::ftpProxy()
 {
   KConfig config("kioslaverc", true, false);
