@@ -31,6 +31,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "html_documentimpl.h"
+#include <khtml_settings.h>
 
 #include "htmlhashes.h"
 
