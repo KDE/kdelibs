@@ -65,6 +65,7 @@ public:
   virtual void slotIsDirectory();
   virtual void slotIsFile();
   virtual void slotRenamed( const char *_new );
+  virtual void slotResume( bool _resume );
   
   virtual void slotTotalSize( unsigned long _bytes );
   virtual void slotTotalFiles( unsigned long _files );
@@ -102,6 +103,9 @@ signals:
   void sigListEntry( int id, UDSEntry& _entry );
   void sigMimeType( int id, const char *_mimetype );
   void sigRenamed( int id, const char *_new );
+  void sigCopying(int id, const char *_file );
+  void sigResumed( int id, bool _resume );
+
   /**
    * @param _data may be 0L if the file has zero size.
    */

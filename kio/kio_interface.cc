@@ -210,6 +210,16 @@ bool ConnectionSignals::renamed( const char *_new )
   return true;
 }
 
+bool ConnectionSignals::resumed( bool _resume )
+{
+  assert( m_pConnection );
+
+  m_pConnection->buffer()[0] = '0' + (char)_resume;
+
+  m_pConnection->send( MSG_RESUME, m_pConnection->buffer(), 1 );
+  return true;
+}
+
 bool ConnectionSignals::totalSize( unsigned long _bytes )
 {
   assert( m_pConnection );
@@ -569,6 +579,14 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case MSG_RENAMED:
       slotRenamed( ( const char*)_p );
+      break;
+    case MSG_RESUME:
+      {
+	bool resume = false;
+	if ( *((char*)_p) == '1' )
+	  resume = true;
+	slotResume( resume );
+      }
       break;
     case MSG_ERROR:
       {	

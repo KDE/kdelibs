@@ -486,6 +486,11 @@ void KIOJob::slotRenamed( const char *_new )
   emit sigRenamed( m_id, _new );
 }
 
+void KIOJob::slotResume( bool _resume )
+{
+  emit sigResumed( m_id, _resume );
+}
+
 void KIOJob::slotTotalSize( unsigned long _bytes )
 {
   if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
@@ -562,6 +567,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->copyingFile( _from, _to );
 
+  emit sigCopying( m_id, _from );
   cerr << "CopyingFile " << _from << " -> " << _to << endl;
 }
 

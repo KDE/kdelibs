@@ -50,6 +50,7 @@
 #define MSG_IS_DIRECTORY 106 // Used by CMD_ISDIR
 #define MSG_IS_FILE 107      // Used by CMD_ISDIR
 #define MSG_RENAMED 108
+#define MSG_RESUME 109
 
 #define ERR_CANNOT_OPEN_FOR_READING 1
 #define ERR_CANNOT_OPEN_FOR_WRITING 2
@@ -91,6 +92,7 @@
 #define ERR_OUT_OF_MEMORY 36
 #define ERR_COULD_NOT_STAT 37
 #define ERR_COULD_NOT_CLOSEDIR 38
+#define ERR_CANNOT_RESUME 39
 
 /************
  *
@@ -179,6 +181,7 @@ public:
   virtual bool isDirectory();
   virtual bool isFile();
   virtual bool renamed( const char *_new );
+  virtual bool resumed( bool _resume );
 
   ///////////
   // Info Signals
@@ -245,6 +248,7 @@ public:
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
   virtual void slotRenamed( const char* _new ) { };
+  virtual void slotResume( bool _resume ) { };
   
   ///////////
   // Infos
