@@ -190,11 +190,17 @@ public:
    * their main window). This can be achieved with a simple call to
    * setDecoration() even if the window is already mapped.
    *
+   * KWM understands the following values at present:
+   *   0 :  Not decorated at all
+   *   1 :  Normal decoration (transient windows with dialog decoration,
+   *        shaped windows not decorated at all)
+   *   2 :  Tiny decoration (just a little frame)
+   *
    * Note: X11R6 does not offer a standard property or protocoll for
    * this purpose. So kwm uses a KDE specific property which may have
    * no effect with other window managers.  
    */
-  static void setDecoration(Window w, bool value);
+  static void setDecoration(Window w, long value);
 
   /** 
    * Invokes the logout process (session management, logout dialog, ...)
@@ -362,7 +368,7 @@ public:
    */
 
   static int desktop(Window w);
-  static QRect geometry(Window w);
+  static QRect geometry(Window w, bool including_frame = FALSE);
 
   /**
    * geometry restore is only defined for maximized window. It is the
@@ -372,7 +378,7 @@ public:
   static bool isIconified(Window w);
   static bool isMaximized(Window w);
   static bool isSticky(Window w);
-  static bool isDecorated(Window w);
+  static long getDecoration(Window w);
   static bool fixedSize(Window w);
   static bool containsUnsavedData(Window w);
   static bool unsavedDataHintDefined(Window w);

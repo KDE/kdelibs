@@ -162,7 +162,7 @@ QString KWM::getProperties(Window w){
   data[n++]=isIconified(w)?1:0;
   data[n++]=isMaximized(w)?1:0;
   data[n++]=isSticky(w)?1:0;
-  data[n++]=isDecorated(w)?1:0;
+  data[n++]=getDecoration(w);
   
   QString s;
   for (i=0;i<n;i++){
@@ -206,7 +206,7 @@ void KWM::setProperties(Window w, const QString &props){
   setIconify(w, (data[n++] != 0) );
   setMaximize(w, (data[n++] != 0) );
   setSticky(w, (data[n++] != 0) );
-  setDecoration(w, (data[n++] != 0) );
+  setDecoration(w, data[n++] );
 }
 
 
@@ -298,11 +298,11 @@ void KWM::setDockWindow(Window w){
   setSimpleProperty(w, a, 1);
 }
 
-void KWM::setDecoration(Window w, bool value){
+void KWM::setDecoration(Window w, long value){
   static Atom a = 0;
   if (!a)
-    a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATED", False);
-  setSimpleProperty(w, a, value?1:0);
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATION", False);
+  setSimpleProperty(w, a, value);
 }
 
 
@@ -645,9 +645,16 @@ int KWM::desktop(Window w){
   }
   return (int) result;
 }
-QRect KWM::geometry(Window w){
-  XWindowAttributes attr;
+QRect KWM::geometry(Window w, bool including_frame){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_FRAME_GEOMETRY", False);
   QRect result;
+  if (including_frame){
+    if (getQRectProperty(w, a, result))
+      return result;
+  }
+  XWindowAttributes attr;
   if (XGetWindowAttributes(qt_xdisplay(), w, &attr)){
     int x, y;
     Window child;
@@ -699,15 +706,15 @@ bool KWM::isSticky(Window w){
   }
   return result != 0;
 }
-bool KWM::isDecorated(Window w){
+long KWM::getDecoration(Window w){
   static Atom a = 0;
   if (!a)
-    a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATED", False);
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATION", False);
   long result = 1;
   if (!getSimpleProperty(w, a, result)){
-    setDecoration(w, result != 0);
+    setDecoration(w, result);
   }
-  return result != 0;
+  return result;
 }
 bool KWM::fixedSize(Window w){
   XSizeHints size;
