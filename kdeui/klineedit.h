@@ -81,7 +81,7 @@ class KURL;
  *
  * NOTE that if the @p EchoMode for this widget is set to something other
  * than @p QLineEdit::Normal, the completion mode will always be defaulted
- * to @ref KGlobal::CompletionNone.  This is done purposefully to guard
+ * to @ref KGlobalSettings::CompletionNone.  This is done purposefully to guard
  * against protected entries such as passwords being cached in @ref KCompletion's
  * list. Hence, if the @p EchoMode is not @ref QLineEdit::Normal, the completion
  * mode is automatically disabled.
@@ -144,7 +144,7 @@ class KLineEdit : public QLineEdit, public KCompletionBase
 public:
 
     /**
-     * Construct a @ref KLineEdit object with a default text, a parent,
+     * Constructs a KLineEdit object with a default text, a parent,
      * and a name.
      *
      * @param string Text to be shown in the edit widget.
@@ -154,7 +154,7 @@ public:
     KLineEdit( const QString &string, QWidget *parent, const char *name = 0 );
 
     /**
-     * Construct a @ref KLineEdit object with a parent and a name.
+     * Constructs a KLineEdit object with a parent and a name.
      *
      * @param string Text to be shown in the edit widget.
      * @param parent The parent object of this widget.
@@ -230,7 +230,7 @@ public:
     bool isURLDropsEnabled() const;
 
     /**
-     * By default, @ref KLineEdit recognizes @p Key_Return and @p Key_Enter and emits
+     * By default, KLineEdit recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
@@ -259,8 +259,7 @@ public:
     /**
      * @returns the completion-box, that is used in completion mode
      * @ref KGlobalSettings::CompletionPopup.
-     * This method will create a completion-box by calling
-     * @ref makeCompletionBox, if none is there, yet.
+     * This method will create a completion-box if none is there, yet.
      *
      * @param create Set this to false if you don't want the box to be created
      *               i.e. to test if it is available.
@@ -279,7 +278,7 @@ signals:
      *
      *  The argument is the current text.  Note that this
      * signal is @em not emitted if the widget's @p EchoMode is set to
-     * @ref QLineEdit::Password.
+     * @ref QLineEdit::EchoMode.
      */
     void returnPressed( const QString& );
 
@@ -306,7 +305,7 @@ signals:
      * @ref KCompletionBase::setKeyBinding for details.
      *
      * Note that this signal is @em not emitted if the completion
-     * mode is set to @p CompletionNone or @p EchoMode is @em not  normal.
+     * mode is set to @p KGlobalSettings::CompletionNone or @p echoMode() is @em not  normal.
      */
     void textRotation( KCompletionBase::KeyBindingType );
 

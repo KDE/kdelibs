@@ -538,9 +538,21 @@ public:
      * for these items are defined in @ref KStdAccel.
      */
     enum KeyBindingType {
+        /**
+         * Text completion (by default Ctrl-E).
+         */
         TextCompletion,
+        /**
+         * Switch to previous completion (by default Ctrl-Up).
+         */
         PrevCompletionMatch,
+        /**
+         * Switch to next completion (by default Ctrl-Down).
+         */
         NextCompletionMatch,
+        /**
+         * Substring completion (by default Ctrl-T).
+         */
         SubstringCompletion
     };
 

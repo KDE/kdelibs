@@ -136,28 +136,32 @@ class KGlobalSettings
     static bool showContextMenusOnPress ();
 
     /**
-     * Returns the configured completion mode.
-     *
-     * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
-     *
-     *         CompletionNone:
-     *         No completion is used.
-     *
-     *         CompletionAuto:
-     *         Text is automatically filled in whenever possible.
-     *
-     *         CompletionMan:
-     *         Same as automatic except shortest match is used for completion
-     *
-     *         CompletionShell:
-     *         Complete text much in the same way as a typical *nix shell would
-     *
-     *         CompletionPopup:
-     *         Lists all possible matches in a popup list-box to choose from.
+     * This enum describes the completion mode used for by the @ref KCompletion class.
+     * See <a href="http://developer.kde.org/documentation/standards/kde/style/keys/completion.html">
+     * the styleguide</a>.
      **/
-
-   enum Completion { CompletionNone=1, CompletionAuto, CompletionMan,
-                                CompletionShell, CompletionPopup };
+   enum Completion {
+       /**
+        * No completion is used.
+        */
+       CompletionNone=1,
+       /**
+        * Text is automatically filled in whenever possible.
+        */
+       CompletionAuto,
+       /**
+        * Same as automatic except shortest match is used for completion.
+        */
+       CompletionMan,
+       /**
+        * Complete text much in the same way as a typical *nix shell would.
+        */
+       CompletionShell,
+       /**
+        * Lists all possible matches in a popup list-box to choose from.
+        */
+       CompletionPopup
+   };
 
     /**
      * Returns the preferred completion mode setting.

@@ -166,10 +166,21 @@ public:
 
   /**
    * Run-modes for a child process.
-   *
-   * @see  KProcess
   */
-  enum RunMode { DontCare, NotifyOnExit, Block };
+  enum RunMode {
+      /**
+       * The application does not receive notifications from the subprocess when
+       * it is finished or aborted.
+       */
+       DontCare,
+       /**
+        * The application is notified when the subprocess dies.
+        */
+       NotifyOnExit,
+       /**
+        * The application is suspended until the started process is finished.
+        */
+       Block };
 
   /** Constructor */
   KProcess();

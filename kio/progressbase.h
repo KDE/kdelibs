@@ -98,12 +98,15 @@ public:
   bool onlyClean() const { return m_bOnlyClean; }
 
 public slots:
-  // this method should be called for correct cancelation of IO operation
-  // connect this to the progress widgets buttons etc.
+  /**
+   * This method should be called for correct cancelation of IO operation
+   * Connect this to the progress widgets buttons etc.
+   */
   void slotStop();
-
-  // this method is called when the widget should be cleaned ( after job is finished )
-  // redefine this for custom behaviour
+  /**
+   * This method is called when the widget should be cleaned (after job is finished).
+   * redefine this for custom behavior.
+   */
   virtual void slotClean();
 
   // progress slots

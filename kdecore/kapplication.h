@@ -154,7 +154,7 @@ public:
   /**
    * Returns the current application object.
    *
-   * This is similar to the global @ref QApplication pointer @ref qApp. It
+   * This is similar to the global @ref QApplication pointer qApp. It
    * allows access to the single global KApplication object, since
    * more than one cannot be created in the same application. It
    * saves you the trouble of having to pass the pointer explicitly

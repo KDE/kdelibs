@@ -977,7 +977,7 @@ signals:
      * Emitted also if you change state
      * with @ref setButton() or @ref toggleButton()
      * If you make a button normal again, with
-     * @ref setToggle (false), this signal won't
+     * setToggle(false), this signal won't
      * be emitted.
      */
     void toggled(int);

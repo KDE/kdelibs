@@ -175,9 +175,8 @@ protected:
    * Contains all key,value entries, as well as some "special"
    * keys which indicate the start of a group of entries.
    *
-   * These
-   * special keys will have the .key portion of their @ref KEntryKey
-   * set to @ref QString::null.
+   * These special keys will have the .key portion of their @ref KEntryKey
+   * set to QString::null.
    */
   KEntryMap aEntryMap;
 

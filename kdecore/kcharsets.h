@@ -77,7 +77,7 @@ public:
     /**
      * Overloaded member function. Tries to find an entity in the
      * @ref QString str.
-     * @returns a decoded entity if one could be found, @ref QChar::null
+     * @returns a decoded entity if one could be found, QChar::null
      * otherwise
      * @param len is a return value, that gives the length of the decoded
      * entity.

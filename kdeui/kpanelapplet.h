@@ -99,7 +99,14 @@ class KPanelApplet : public QFrame
 
 public:
 
+    /**
+     * This enum describes the type of the applet.
+     */
     enum Type { Normal = 0, Stretch };
+    /**
+     * This enum holds flags which can be ORed together to describe
+     * which items the context menu over the applet handle contains.
+     */
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Direction { Up = 0, Down, Left, Right };
 

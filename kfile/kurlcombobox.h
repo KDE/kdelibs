@@ -46,6 +46,9 @@ class KURLComboBox : public KComboBox
     Q_PROPERTY(int maxItems READ maxItems WRITE setMaxItems DESIGNABLE true)
 
 public:
+    /**
+     * This enum describes which kind of items is shown in the combo box.
+     */
     enum Mode { Files = -1, Directories = 1, Both = 0 };
     /**
      * This Enumeration is used in @ref setURL() to determine which items

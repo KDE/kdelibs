@@ -65,7 +65,7 @@ public:
      * Sets the text and alignment of the main description label.
      *
      * @param label The text of the label.
-     *              Use @ref QString::null to remove an existing one.
+     *              Use QString::null to remove an existing one.
      *
      * @param a one of @p AlignLeft, @p AlignHCenter, YAlignRight and
      *          @p AlignTop, @p AlignVCenter, @p AlignBottom.

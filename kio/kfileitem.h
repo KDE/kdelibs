@@ -40,7 +40,7 @@ class KFileItem
 {
 public:
   /**
-   * Create an item representing a file, from an UDSEntry (see kio/global.h)
+   * Creates an item representing a file, from a @ref UDSEntry.
    * This is the preferred constructor when using KIO::listDir().
    *
    * @param _entry the KIO entry used to get the file, contains info about it
@@ -55,13 +55,13 @@ public:
              bool _urlIsDirectory = false );
 
   /**
-   * Create an item representing a file, from all the necessary info for it
+   * Creates an item representing a file, from all the necessary info for it.
    * @param _mode the file mode (according to stat())
    * Set to -1 if unknown. For local files, KFileItem will use stat().
    * @param _mode the mode (S_IFDIR...)
    * @param _permissions the access permissions
    * If you set both the mode and the permissions, you save a ::stat() for
-   * local files
+   * local files.
    * Set to -1 if you don't know the mode or the permission.
    * @param _url the file url
    *
@@ -72,7 +72,7 @@ public:
              bool _determineMimeTypeOnDemand = false );
 
   /**
-   * Create an item representing a file, for which the mimetype is already known
+   * Creates an item representing a file, for which the mimetype is already known.
    * @param url the file url
    * @param mimeType the name of the file's mimetype
    * @param mode the mode (S_IFDIR...)
@@ -86,35 +86,36 @@ public:
   KFileItem( const KFileItem &item );
 
   /**
-   * Destructor
+   * Destructs the KFileItem. Extra data set via setExtraData()
+   * is not deleted.
    */
   virtual ~KFileItem();
 
   /**
-   * Re-read information (currently only permissions and mimetype)
-   * This is called when the _file_ changes
+   * Re-reads information (currently only permissions and mimetype).
+   * This is called when the _file_ changes.
    */
   void refresh();
 
   /**
-   * Re-read mimetype information
-   * This is called when the mimetype database changes
+   * Re-reads mimetype information.
+   * This is called when the mimetype database changes.
    */
   void refreshMimeType();
 
   /**
-   * @return the url of the file
+   * Returns the url of the file.
    */
   const KURL & url() const { return m_url; }
 
   /**
-   * Set the item's URL. Do not call unless you know what you are doing!
-   * (used for example when an item got renamed)
+   * Sets the item's URL. Do not call unless you know what you are doing!
+   * (used for example when an item got renamed).
    */
   void setURL( const KURL &url );
 
   /**
-   * @return the permissions of the file (stat.st_mode containing only permissions)
+   * Returns the permissions of the file (stat.st_mode containing only permissions).
    */
   mode_t permissions() const { return m_permissions; }
 
@@ -124,28 +125,28 @@ public:
   QString permissionsString() const;
 
   /**
-   * @return the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...)
+   * Returns the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).
    */
   mode_t mode() const { return m_fileMode; }
 
   /**
-   * @return the owner of the file.
+   * Returns the owner of the file.
    */
   QString user() const;
 
   /**
-   * @return the group of the file.
+   * Returns the group of the file.
    */
   QString group() const;
 
   /**
-   * @returns true if this item represents a link in the UNIX sense of
+   * Returns true if this item represents a link in the UNIX sense of
    * a link.
    */
   bool isLink() const { return m_bLink; }
 
   /**
-   * @returns true if this item represents a directory
+   * Returns true if this item represents a directory.
    */
   bool isDir() const;
 
@@ -162,12 +163,12 @@ public:
   bool isReadable() const;
 
   /**
-   * @return the link destination if isLink() == true
+   * Returns the link destination if isLink() == true.
    */
   QString linkDest() const;
 
   /**
-   * @return the size of the file, if known
+   * Returns the size of the file, if known.
    */
   KIO::filesize_t size() const;
 
@@ -187,13 +188,13 @@ public:
   QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;
 
   /**
-   * @return true if the file is a local file
+   * Returns true if the file is a local file.
    */
   bool isLocalFile() const { return m_bIsLocalURL; }
 
   /**
-   * @return the text of the file item
-   * It's not exactly the filename since some decoding happens ('%2F'->'/')
+   * Returns the text of the file item.
+   * It's not exactly the filename since some decoding happens ('%2F'->'/').
    */
   const QString& text() const { return m_strText; }
 
@@ -213,37 +214,36 @@ public:
   }
 
   /**
-   * @return the mimetype of the file item
+   * Returns the mimetype of the file item.
    */
   QString mimetype() const;
 
   /**
-   * @return the mimetype of the file item
+   * Returns the mimetype of the file item.
    * If determineMimeTypeOnDemand was used, this will determine the mimetype first.
    */
   KMimeType::Ptr determineMimeType();
   /**
-   * @return the currently-known mimetype of the file item
+   * Returns the currently known mimetype of the file item.
    * This will not try to determine the mimetype if unknown.
    */
   KMimeType::Ptr mimeTypePtr() { return m_pMimeType; }
 
   bool isMimeTypeKnown() const;
-
   /**
-   * @return the descriptive comment for this mime type, or
-   *         the mime type itself if none is present.
+   * Returns the descriptive comment for this mime type, or
+   * the mime type itself if none is present.
    */
   QString mimeComment();
 
   /**
-   * @return the full path name to the icon that represents
-   *         this mime type.
+   * Returns the full path name to the icon that represents
+   * this mime type.
    */
   QString iconName();
 
   /**
-   * Returns a pixmap representing the file
+   * Returns a pixmap representing the file.
    * @param _size Size for the pixmap in pixels. Zero will return the
    * globally configured default size.
    * @param _state The state of the icon: KIcon::DefaultState,
@@ -253,13 +253,13 @@ public:
   QPixmap pixmap( int _size, int _state=0 ) const;
 
   /**
-   * @return the string to be displayed in the statusbar e.g. when the mouse
-   *         is over this item
+   * Returns the string to be displayed in the statusbar,
+   * e.g. when the mouse is over this item
    */
   QString getStatusBarInfo();
 
   /**
-   * @return true if files can be dropped over this item
+   * Returns true if files can be dropped over this item.
    * Contrary to popular belief, not only dirs will return true :)
    * Executables, .desktop files, will do so as well.
    */
@@ -271,14 +271,14 @@ public:
    */
   void run();
 
-  /**
-   * Give the file a "hidden" flag, so that a view doesn't show it.
+  /*
+   * Gives the file a "hidden" flag, so that a view doesn't show it.
    * E.g. a filefilter sets this flag if this item matches *.cpp or not.
    * @see #isHidden
    */
     //  void setHidden( bool b ) { m_bHidden = b; }
 
-  /**
+  /*
    * @returns this item's hidden flag. True if a view shall not show it, false
    * otherwise.
    * @see #setHidden
@@ -286,7 +286,7 @@ public:
     //  bool isHidden() const { return m_bHidden; }
 
   /**
-   * @return the UDS entry. Used by the tree view to access all details
+   * Returns the UDS entry. Used by the tree view to access all details
    * by position.
    */
   const KIO::UDSEntry & entry() const { return m_entry; }

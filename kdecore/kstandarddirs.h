@@ -320,7 +320,7 @@ public:
 	 *			even if its executable bit is not set.
 	 *
 	 * @return The path of the executable. If it was not found,
-	 *         it will return @ref QString::null.
+	 *         it will return QString::null.
 	 */
 	static QString findExe( const QString& appname,
 				const QString& pathstr=QString::null,

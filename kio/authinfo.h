@@ -166,9 +166,9 @@ public:
     * generate or supply a unique id can effectively use it
     * to distinguish passwords.
     *
-    * If you are instead interested in caching the authentication
-    * info for multiple users to the same server, refer to @ref
-    * multipleUserCaching below.
+    * (If you are instead interested in caching the authentication
+    * info for multiple users to the same server, refer to
+    * multipleUserCaching below)
     *
     * This setting is @em optional and not set by default.
     */
