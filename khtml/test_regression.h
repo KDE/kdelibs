@@ -134,9 +134,10 @@ public:
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4};
+    bool checkPaintdump( const QString& againstFilename);
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
-    bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
+    bool reportResult( bool passed, const QString & description = QString::null );
     void createMissingDirs(QString path);
 
     QImage renderToImage();

@@ -22,8 +22,7 @@
  */
 
 #include <stdlib.h>
-#include <setjmp.h>
-#include <signal.h>
+#include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
 
@@ -85,8 +84,6 @@ using namespace DOM;
 using namespace KJS;
 
 bool visual = false;
-
-static sigjmp_buf *cur_label = 0;
 
 // -------------------------------------------------------------------------
 
@@ -330,24 +327,6 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
     return result;
 }
 
-// signal handler
-static void sighandler(int sig) {
-    signal(SIGSEGV, sighandler);
-    signal(SIGILL, sighandler);
-    signal(SIGFPE, sighandler);
-    if (cur_label) {
-	signal(SIGABRT, sighandler);
-        siglongjmp(*cur_label, sig);
-    }
-
-    signal(SIGABRT, SIG_DFL);
-    const char msg[]="Signal %d occurred. Aborting\n";
-    fflush(stdout); fflush(stderr);
-    printf(msg, sig);
-    fprintf(stderr, msg, sig);
-    abort();
-}
-
 // -------------------------------------------------------------------------
 
 static KCmdLineOptions options[] =
@@ -434,14 +413,11 @@ int main(int argc, char *argv[])
         toplevel->show();
 
     if (!getenv("KDE_DEBUG")) {
-        signal(SIGSEGV, sighandler);
-        signal(SIGABRT, sighandler);
-        signal(SIGILL, sighandler);
-        signal(SIGFPE, sighandler);
-
         // set ulimits
-        static rlimit vmem_limit = { 0, 512*1024*1024 };	// 512Mb Memory should suffice
+        rlimit vmem_limit = { 128*1024*1024, RLIM_INFINITY };	// 64Mb Memory should suffice
         setrlimit(RLIMIT_AS, &vmem_limit);
+        rlimit stack_limit = { 8*1024*1024, RLIM_INFINITY };	// 8Mb Memory should suffice
+        setrlimit(RLIMIT_STACK, &stack_limit);
     }
 
     // run the tests
@@ -613,24 +589,14 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
                 failure_type |= AllFailure;
             if ( failureFiles.contains ( filename + "-render" ) )
                 failure_type |= RenderFailure;
+            if ( failureFiles.contains ( filename + "-dump.png" ) )
+                failure_type |= PaintFailure;
             if ( failureFiles.contains ( filename + "-dom" ) )
                 failure_type |= DomFailure;
             runTests(relFilename, false, failure_type );
 	}
     }
     else if (info.isFile()) {
-        sigjmp_buf recover_label;
-	int signum = sigsetjmp(recover_label, true);
-	if (signum) {
-	    cur_label = 0;
-	    reportResult(false, QString("Signal %1 caught").arg(signum), true);
-	    fprintf(stderr, "!!! SIGNAL %d caught while processing %s !!!\n",
-	    	signum, info.fileName().latin1());
-	    return false;
-	}
-
-	cur_label = &recover_label;
-
         khtml::Cache::init();
 
 	QString relativeDir = QFileInfo(relPath).dirPath();
@@ -647,11 +613,8 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
-	    cur_label = 0;
 	    return false;
 	}
-
-	cur_label = 0;
     } else if (mustExist) {
         fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
         return false;
@@ -859,7 +822,6 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
         }
     }
 
-    kdDebug() << "pixmaps are the same\n";
     return true;
 }
 
@@ -981,40 +943,36 @@ void RegressionTest::testStaticFile(const QString & filename)
         return;
     }
 
-    int known_failures = m_known_failures;
+    int back_known_failures = m_known_failures;
 
     if ( m_genOutput ) {
         if ( m_known_failures & DomFailure)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-dom"), QString::null );
-        if ( known_failures & RenderFailure )
+        if ( m_known_failures & RenderFailure )
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
-        m_known_failures = known_failures;
+        if ( m_known_failures & PaintFailure )
+            m_known_failures = AllFailure;
         renderToImage().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
+        printf("Generated %s\n", QString( m_baseDir + "/baseline/" + filename + "-dump.png" ).latin1() );
+        reportResult( true, QString::null );
     } else {
         // compare with output file
         if ( m_known_failures & DomFailure)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-dom"), QString::null );
-        if ( known_failures & RenderFailure )
+
+        if ( m_known_failures & RenderFailure )
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
-        m_known_failures = known_failures;
 
-        QImage baseline;
-        baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
-        QImage output = renderToImage();
-        if ( !imageEqual( baseline, output ) ) {
-            output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 60);
-            doFailureReport( baseline.size(), output.size(), m_baseDir, filename );
-        }
-        else {
-            ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-compare.html" ) );
-            ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-dump.png" ) );
-        }
-
+        if ( m_known_failures & PaintFailure )
+            m_known_failures = AllFailure;
+        reportResult( checkPaintdump(filename), QString::null );
     }
+
+    m_known_failures = back_known_failures;
 }
 
 void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
@@ -1088,6 +1046,34 @@ void RegressionTest::testJSFile(const QString & filename )
     evalJS( interp, m_baseDir + "/tests/"+ filename, true );
 }
 
+bool RegressionTest::checkPaintdump(const QString &filename)
+{
+    QString againstFilename( filename + "-dump.png" );
+    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
+    if ( cvsIgnored( absFilename ) ) {
+        m_known_failures = NoFailure;
+        return true;
+    }
+    bool result = false;
+
+    QImage baseline;
+    baseline.load( absFilename, "PNG");
+    QImage output = renderToImage();
+    if ( !imageEqual( baseline, output ) ) {
+        output.save(m_baseDir + "/output/" + againstFilename, "PNG", 60);
+        doFailureReport( baseline.size(), output.size(), m_baseDir, filename );
+    }
+    else {
+        ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-compare.html" ) );
+        ::unlink( QFile::encodeName( m_baseDir + "/output/" + againstFilename ) );
+        result = true;
+    }
+
+    return result;
+}
+
+
+
 bool RegressionTest::checkOutput(const QString &againstFilename)
 {
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
@@ -1103,7 +1089,6 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     bool result = true;
 
     // compare result to existing file
-
     QString outputFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
     bool kf = false;
     if ( m_known_failures & AllFailure )
@@ -1150,15 +1135,12 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     return result;
 }
 
-bool RegressionTest::reportResult(bool passed, const QString & description, bool error)
+bool RegressionTest::reportResult(bool passed, const QString & description)
 {
     if (m_genOutput)
 	return true;
 
-    if (error) {
-        printf("ERROR: ");
-	m_errors++;
-    } else if (passed) {
+    if (passed) {
         if ( m_known_failures & AllFailure ) {
             printf("PASS (unexpected!): ");
             m_passes_fail++;
@@ -1190,7 +1172,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description, bool
 
     printf("\n");
     fflush(stdout);
-    return passed && !error;
+    return passed;
 }
 
 void RegressionTest::createMissingDirs(QString path)
