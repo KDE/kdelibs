@@ -370,26 +370,35 @@ void KSSLCertificate::setChain(void *c) {
 void KSSLCertificate::setCert(X509 *c) {
 #ifdef HAVE_SSL
   d->m_cert = c;
-  d->_extensions.setFlags(0,0,0,0);
   if (c) {
+  	d->_extensions.flags = 0;
 	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
 #if 0
-	int cnt = d->kossl->X509_get_ext_count(c);
-	  for (int i = 0; i < cnt; i++) {
-		  X509_EXTENSION *ext = d->kossl->X509_get_ext(c,i);
-		  // FIXME: delete ext?  delete thisval?
-		  const char *thisobj, *thisval;
-		  thisobj = d->kossl->OBJ_nid2ln(d->kossl->OBJ_obj2nid(ext->object));
-		  thisval = d->kossl->i2s_ASN1_OCTET_STRING(ext->method, ext->value);
-		  kdDebug(7029) << "SSL Certificate: found extension " << thisobj << " = " << thisval << endl;
-//		  d->kossl->ASN1_OBJECT_free(thisobj);
-	  }
-#endif
-
 	kdDebug(7029) << "---------------- Certificate ------------------" 
 		      << endl;
 	kdDebug(7029) << getSubject() << endl;
+#endif
+
+	for (int j = 0; j < d->kossl->X509_PURPOSE_get_count(); j++) {
+		X509_PURPOSE *ptmp = d->kossl->X509_PURPOSE_get0(j);
+		int id = d->kossl->X509_PURPOSE_get_id(ptmp);
+		for (int ca = 0; ca < 2; ca++) {
+			int idret = d->kossl->X509_check_purpose(c, id, ca);
+			if (idret == 1) {   // have it
+//				kdDebug() << "PURPOSE: " << id << (ca?" CA":"") << endl;
+				if (!ca)
+					d->_extensions.flags |= (1L <<(id-1));
+				else d->_extensions.flags |= (1L <<(16+id-1));
+			} else {
+				if (!ca)
+					d->_extensions.flags &= ~(1L <<(id-1));
+				else d->_extensions.flags &= ~(1L <<(16+id-1));
+			}
+		}
+	}
+
+#if 0
 	kdDebug(7029) << "flags: " << QString::number(c->ex_flags, 2)
 		      << " keyusage: " << QString::number(c->ex_kusage, 2)
 		      << " xkeyusage: " << QString::number(c->ex_xkusage, 2)
@@ -401,31 +410,31 @@ void KSSLCertificate::setCert(X509 *c) {
 		kdDebug(7029) << "     --- Extended key usage extensions found" << endl;
 	if (c->ex_flags & EXFLAG_NSCERT)
 		kdDebug(7029) << "     --- NS extensions found" << endl;
-	d->_extensions.setFlags(c->ex_flags, c->ex_kusage, c->ex_xkusage, c->ex_nscert);
-	if (d->_extensions.certTypeSSLCA())
-		kdDebug(7029) << "NOTE: this is an SSL CA file." << endl;
-	if (d->_extensions.certTypeEmailCA())
-		kdDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
-	if (d->_extensions.certTypeCodeCA())
-		kdDebug(7029) << "NOTE: this is a CODE CA file." << endl;
-	if (d->_extensions.trustCompatible())
-		kdDebug(7029) << "NOTE: this is trust compatible." << endl;
-	if (d->_extensions.certTypeSSLClient())
-		kdDebug(7029) << "NOTE: this is an SSL client." << endl;
-	if (d->_extensions.certTypeSSLServer())
-		kdDebug(7029) << "NOTE: this is an SSL server." << endl;
-	if (d->_extensions.certTypeNSSSLServer())
-		kdDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
-	if (d->_extensions.certTypeSMIME())
-		kdDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
-	if (d->_extensions.certTypeSMIMEEncrypt())
-		kdDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
-	if (d->_extensions.certTypeSMIMESign())
-		kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
-	if (d->_extensions.certTypeCRLSign())
-		kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
+
+        if (d->_extensions.certTypeSSLCA())
+                kdDebug(7029) << "NOTE: this is an SSL CA file." << endl;
+        if (d->_extensions.certTypeEmailCA())
+                kdDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
+        if (d->_extensions.certTypeCodeCA())
+                kdDebug(7029) << "NOTE: this is a CODE CA file." << endl;
+        if (d->_extensions.certTypeSSLClient())
+                kdDebug(7029) << "NOTE: this is an SSL client." << endl;
+        if (d->_extensions.certTypeSSLServer())
+                kdDebug(7029) << "NOTE: this is an SSL server." << endl;
+        if (d->_extensions.certTypeNSSSLServer())
+                kdDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
+        if (d->_extensions.certTypeSMIME())
+                kdDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
+        if (d->_extensions.certTypeSMIMEEncrypt())
+                kdDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
+        if (d->_extensions.certTypeSMIMESign())
+                kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
+        if (d->_extensions.certTypeCRLSign())
+                kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
+
 	kdDebug(7029) << "-----------------------------------------------" 
 		      << endl;
+#endif
   }
 #endif
   d->m_stateCached = false;
@@ -752,6 +761,8 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
   break;
   case KSSLCertificate::PrivateKeyFailed:
      return i18n("Private key test failed.");
+  break;
+  default:
   break;
   }
 

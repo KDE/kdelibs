@@ -41,19 +41,14 @@ public:
   bool certTypeSMIMEEncrypt();
   bool certTypeSMIMESign();
   bool certTypeCRLSign();
-  bool trustCompatible();
 
 private:
   class KSSLX509V3Private;
   KSSLX509V3Private *d;
-  unsigned long _flags, _keyUsage, _xKeyUsage, _nsCert;
 
 protected:
   KSSLX509V3();
-  void setFlags(unsigned long flags,
-		unsigned long keyUsage,
-		unsigned long extendedKeyUsage,
-		unsigned long nsCert);
+  long flags;    // warning: this is only valid for up to 16 flags + 16 CA.
 };
 
 #endif

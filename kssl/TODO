@@ -22,7 +22,4 @@
 - kio_ftps and kio_nntps could be quite nice to have (ftp is quite a problem to
   implement though)
 
-- X509v3 should use X509_PURPOSE instead of the bit checks.  This will be more
-  reliable and is quite easy to implement, really.
-
 
