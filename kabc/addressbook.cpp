@@ -25,12 +25,12 @@
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kglobal.h>
 #include <kinstance.h>
 
-#include "simpleformat.h"
-#include "vcardformat.h"
 #include "resource.h"
+#include "resourcedlg.h"
 
 #include "addressbook.h"
 #include "addressbook.moc"
@@ -276,12 +276,14 @@ void AddressBook::insertAddressee( const Addressee &a )
       (*it) = a;
       if ( changed ) {
         (*it).setRevision( QDateTime::currentDateTime() );
-        (*it).setChanged(); 
+        (*it).setChanged( true ); 
       }
       return;
     }
   }
   d->mAddressees.append( a );
+  Addressee addr = d->mAddressees.last();
+  addr.setChanged( true );
 }
 
 void AddressBook::removeAddressee( const Addressee &a )
@@ -289,6 +291,9 @@ void AddressBook::removeAddressee( const Addressee &a )
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
+      Resource *resource = a.resource();
+      if ( resource )
+          resource->removeAddressee( a );
       removeAddressee( it );
       return;
     }
@@ -449,4 +454,28 @@ bool AddressBook::addResource( Resource *resource )
 bool AddressBook::removeResource( Resource *resource )
 {
   return mResources.remove( resource );
+}
+
+bool AddressBook::saveAll()
+{
+    kdDebug(5700) << "AddressBook::saveAll()" << endl;
+
+    bool ok = true;
+    Resource *resource = 0;
+
+    for ( uint i = 0; i < mResources.count(); ++i ) {
+	resource = mResources.at( i );
+	if ( !resource->readOnly() ) {
+	    Ticket *ticket = requestSaveTicket( resource );
+	    if ( !ticket ) {
+		kdError(5700) << "Can't save to standard addressbook. It's locked." << endl;
+	        return false;
+	    }
+
+	    if ( !save( ticket ) )
+		ok = false;
+	}
+    }
+
+    return ok;
 }

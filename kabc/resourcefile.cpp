@@ -220,3 +220,8 @@ QString ResourceFile::identifier() const
 {
     return fileName();
 }
+
+void ResourceFile::removeAddressee( const Addressee& addr )
+{
+    mFormat->removeAddressee( addr );
+}

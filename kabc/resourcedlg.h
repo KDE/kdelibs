@@ -16,28 +16,40 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+    $Id$
 */
-#ifndef KABC_BINARYFORMAT_H
-#define KABC_BINARYFORMAT_H
-// $Id$
 
-#include <qstring.h>
+#ifndef RESOURCEDLG_H
+#define RESOURCEDLG_H
 
-#include "format.h"
+#include <qdialog.h>
+#include <qmap.h>
+
+#include <klistbox.h>
+
+#include "addressbook.h"
+#include "resource.h"
 
 namespace KABC {
 
-class AddressBook;
-
-/*
-  @short binary file format for addressbook entries.
-*/
-class BinaryFormat : public Format
+class ResourceDlg : QDialog
 {
+    Q_OBJECT
 public:
-    bool load( AddressBook *, Resource *, const QString &fileName );
-    bool save( AddressBook *, Resource *, const QString &fileName );
-    void removeAddressee( const Addressee& addr );
+    ResourceDlg( AddressBook *ab, QWidget *parent = 0, const char *name = 0);
+
+    KListBox *resourceId;
+
+public slots:
+    Resource *exec();
+
+protected slots:
+    void accept();
+
+private:
+    QMap<int, Resource*> resourceMap;
+    Resource *mResource;
 };
 
 }

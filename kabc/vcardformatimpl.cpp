@@ -180,6 +180,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
   
     a.setResource( resource );
     addressBook->insertAddressee( a );
+    a.setChanged( false );
   }
 
   
@@ -265,6 +266,10 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
   return false;
 }
 
+void VCardFormatImpl::removeAddressee( const Addressee& )
+{
+    // FIXME: implement when splitting vcard file into single files
+}
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
 {

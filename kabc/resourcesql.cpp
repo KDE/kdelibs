@@ -207,6 +207,7 @@ bool ResourceSql::load()
 	}
 
 	addressBook()->insertAddressee( addr );
+	addr.setChanged( false );
     }
  
     return true;

@@ -10,6 +10,7 @@ Resource::Resource( AddressBook *ab ) :
     mAddressBook->addResource( this );
     mReadOnly = true;
     mFastResource = true;
+    mName = "NoName";
 }
 
 Resource::~Resource()
@@ -51,6 +52,11 @@ QString Resource::identifier()
     return "NoIdentifier";
 }
 
+void Resource::removeAddressee( const Addressee& )
+{
+	// do nothing
+}
+
 void Resource::setReadOnly( bool value )
 {
 	mReadOnly = value;
@@ -71,3 +77,12 @@ bool Resource::fastResource()
 	return mFastResource;
 }
 
+void Resource::setName( const QString& name )
+{
+    mName = name;
+}
+
+QString Resource::name()
+{
+    return mName;
+}

@@ -46,6 +46,11 @@ class Format {
       Save addressbook to file.
     */
     virtual bool save( AddressBook *, Resource *, const QString &fileName ) = 0;
+	
+    /**
+      Remove a addressee from file.
+    */
+    virtual void removeAddressee( const Addressee& addr ) = 0;
 };
 
 }

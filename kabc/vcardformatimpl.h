@@ -43,6 +43,7 @@ class VCardFormatImpl {
   public:
     bool load( AddressBook *, Resource *, const QString &fileName );
     bool save( AddressBook *, Resource *, const QString &fileName );
+	void removeAddressee( const Addressee& addr );
 
   protected:
     void addTextValue (VCARD::VCard *, VCARD::EntityType, const QString & );

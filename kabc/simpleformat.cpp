@@ -75,6 +75,7 @@ bool SimpleFormat::load( AddressBook *addressBook, Resource *resource, const QSt
     }
 
     addressBook->insertAddressee( addr );
+    addr.setChanged( false );
   }
 
   return true;
@@ -118,4 +119,9 @@ bool SimpleFormat::save( AddressBook *addressBook, Resource *resource, const QSt
   }
 
   return true;
+}
+
+void SimpleFormat::removeAddressee( const Addressee& )
+{
+    // FIXME: Implement when splitting simple file into single files
 }

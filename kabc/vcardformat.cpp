@@ -43,3 +43,8 @@ bool VCardFormat::save( AddressBook *addressBook, Resource *resource, const QStr
 {
   return mImpl->save( addressBook, resource, fileName );
 }
+
+void VCardFormat::removeAddressee( const Addressee& addr )
+{
+  return mImpl->removeAddressee( addr );
+}

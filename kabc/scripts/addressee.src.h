@@ -248,7 +248,7 @@ class Addressee
 	/**
 	  Mark addressee as changed
 	 */
-	void setChanged();
+	void setChanged( bool value );
 
 	/**
 	  Return whether the addressee is changed

@@ -48,13 +48,8 @@ AddressBook *StdAddressBook::self()
 bool StdAddressBook::save()
 {
     kdDebug(5700) << "StdAddressBook::save()" << endl;
-    Ticket *ticket = self()->requestSaveTicket();
-    if ( !ticket ) {
-	kdError() << "Can't save to standard addressbook. It's locked." << endl;
-	return false;
-    }
 
-    return self()->save( ticket );
+    return self()->saveAll();
 }
 
 
@@ -65,7 +60,6 @@ StdAddressBook::StdAddressBook()
     config.setGroup( "General" );
 
     QStringList keys = config.readListEntry( "ResourceKeys" );
-    bool firstResource = true;
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config.setGroup( "Resource_" + (*it) );
 	QString type = config.readEntry( "ResourceType" );
@@ -77,11 +71,12 @@ StdAddressBook::StdAddressBook()
 
 	resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
 	resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
+	resource->setName( config.readEntry( "ResourceName" ) );
+    }
 
-	QString ident = resource->identifier();
-
-	if ( addResource( resource ) )
-	    mIdentifier += ident + ( firstResource ? "" : ":" );
+    for ( uint i = 0; i < mResources.count(); ++i ) {
+	Resource *resource = mResources.at( i );
+	mIdentifier += ( i == 0 ? "" : ":" ) + resource->identifier();
     }
 
     load();

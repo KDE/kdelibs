@@ -65,6 +65,7 @@ bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, const QSt
 	s >> addressee;
 	addressee.setResource( resource );
 	addressBook->insertAddressee( addressee );
+	addressee.setChanged( false );
     }
 
     return true;
@@ -99,7 +100,7 @@ bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QSt
     for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
 	if ( (*it).resource() != resource && (*it).resource() != 0 )
 	    continue;
-	
+
 	s << (*it);
 	counter++;
     }
@@ -111,4 +112,9 @@ bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QSt
     file.close();
 
     return true;
+}
+
+void BinaryFormat::removeAddressee( const Addressee& )
+{
+    // FIXME: implement when splitting binary file into single files
 }

@@ -21,49 +21,33 @@
 */
 
 #include <klocale.h>
+#include <kbuttonbox.h>
 
 #include <qgroupbox.h>
-#include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
 
-#include "resourcefactory.h"
-#include "resourceconfigdlg.h"
+#include "resourcedlg.h"
 
-ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
-	KConfig *config, const char *name )
-    : QDialog( parent, name, true ), mConfig( config )
+using namespace KABC;
+
+ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
+    : QDialog( parent, name, true )
 {
-    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
-    mConfigWidget = factory->configWidget( type, this );
-    if ( mConfigWidget && mConfig )
-	mConfigWidget->loadSettings( mConfig );
-
-    setCaption( i18n( "Resource Configuration" ) );
+    setCaption( i18n( "Resource Selection" ) );
+    resize( 300, 200 );
 
     QVBoxLayout *mainLayout = new QVBoxLayout( this );
     
     QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
-    groupBox->setTitle( i18n( "General Settings" ) );
+    groupBox->setTitle( i18n( "Resources" ) );
 
-    new QLabel( i18n( "Name:" ), groupBox );
-
-    resourceName = new KLineEdit( groupBox );
-
-    resourceIsReadOnly = new QCheckBox( i18n( "Read-Only" ), groupBox );
-
-    resourceIsFast = new QCheckBox( i18n( "Fast resource" ), groupBox );
+    resourceId = new KListBox( groupBox );
 
     mainLayout->addWidget( groupBox );
 
-    if ( mConfigWidget ) {
-	mainLayout->addSpacing( 10 );
-	mainLayout->addWidget( mConfigWidget );
-	mConfigWidget->show();
-    }
     mainLayout->addSpacing( 10 );
 
-    buttonBox = new KButtonBox( this );
+    KButtonBox *buttonBox = new KButtonBox( this );
 
     buttonBox->addStretch();    
     buttonBox->addButton( i18n( "&Apply" ), this, SLOT( accept() ) );
@@ -71,19 +55,39 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
     buttonBox->layout();
 
     mainLayout->addWidget( buttonBox );
+
+
+    // setup listbox
+    uint counter = 0;
+    for ( uint i = 0; i < ab->mResources.count(); ++i ) {
+	Resource *resource = ab->mResources.at( i );
+	if ( resource && !resource->readOnly() ) {
+	    resourceMap.insert( counter, resource );
+	    resourceId->insertItem( resource->name() + " " +
+		    ( resource->fastResource() ? i18n( "(search)" ) : "" ) );
+	    counter++;
+	}
+    }
+
+    mResource = 0;
+
+    resourceId->setCurrentItem( 0 );
 }
 
-int ResourceConfigDlg::exec()
+Resource *ResourceDlg::exec()
 {
-    return QDialog::exec();
+    QDialog::exec();
+    return mResource;
 }
 
-void ResourceConfigDlg::accept()
+void ResourceDlg::accept()
 {
-    if ( mConfigWidget && mConfig )
-	mConfigWidget->saveSettings( mConfig );
+    if ( resourceId->currentItem() != -1 )
+	mResource = resourceMap[ resourceId->currentItem() ];
+    else
+	mResource = 0;
 
     QDialog::accept();
 }
 
-#include "resourceconfigdlg.moc"
+#include "resourcedlg.moc"

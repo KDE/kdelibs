@@ -44,17 +44,23 @@ class Resource {
 
     virtual QString identifier();
 
+    virtual void removeAddressee( const Addressee& addr );
+
     virtual void setReadOnly( bool value );
     virtual bool readOnly();
 
     virtual void setFastResource( bool value );
     virtual bool fastResource();
 
+    virtual void setName( const QString& name );
+    virtual QString name();
+
   protected:
     Ticket *createTicket( Resource * );
 
   private:
     AddressBook *mAddressBook;
+    QString mName;
     bool mReadOnly;
     bool mFastResource;
 };

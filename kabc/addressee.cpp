@@ -1089,9 +1089,9 @@ Resource *Addressee::resource() const
     return mData->resource;
 }
 
-void Addressee::setChanged()
+void Addressee::setChanged( bool value )
 {
-	mData->changed = true;
+	mData->changed = value;
 }
 
 bool Addressee::changed()

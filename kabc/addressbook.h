@@ -44,6 +44,7 @@ class AddressBook : public QObject
     friend QDataStream &operator<<( QDataStream &, const AddressBook & );
     friend QDataStream &operator>>( QDataStream &, AddressBook & );
     friend class Resource;
+    friend class ResourceDlg;
 
   public:
     /**
@@ -126,6 +127,11 @@ class AddressBook : public QObject
       @param ticket a ticket object returned by @ref requestSaveTicket()
     */
     bool save( Ticket *ticket );
+
+    /**
+      Save address book. Query all resources to save their addressees
+    */
+    bool saveAll();
 
     /**
       Return iterator for first entry of address book.
@@ -240,10 +246,11 @@ class AddressBook : public QObject
     void addressBookUnlocked( AddressBook * );
 
   private:
-    QPtrList<Resource> mResources;
-
     struct AddressBookData;
     AddressBookData *d;
+
+  protected:
+    QPtrList<Resource> mResources;
 
   protected:
     /**

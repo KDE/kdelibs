@@ -13,14 +13,14 @@ libkabc_la_SOURCES = \
   addresseedialog.cpp distributionlist.cpp \
   distributionlisteditor.cpp resource.cpp \
   vcard21parser.cpp field.cpp resourcefactory.cpp \
-  resourceconfigwidget.cpp
+  resourceconfigwidget.cpp resourcedlg.cpp
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h geo.h phonenumber.h \
-  stdaddressbook.h timezone.h resource.h resourcefile.h \
+  stdaddressbook.h timezone.h resource.h \
   vcard21parser.h field.h resourcefactory.h \
-  resourceconfigwidget.h
+  resourceconfigwidget.h resourcedlg.h
 
 METASOURCES = AUTO
 
