@@ -188,6 +188,8 @@ void KDE::PlayObject::attachPlayObject( Arts::PlayObject playObject )
 
 	m_playObject = playObject;
 	emit playObjectCreated();
+	if ( object().isNull() )
+		return;
 	switch ( d->internalState ) {
 	case Arts::posIdle:
 		object().halt();
