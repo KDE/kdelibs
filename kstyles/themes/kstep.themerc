@@ -1,31 +1,5 @@
 [Misc]
 Name=KDE Step
-Name[da]=KDE Trin
-Name[de]=KDE-Step
-Name[eo]=KDE-Pa≈ùo
-Name[no]=KDE Steg
-Name[ro]=Stil Step KDE
 Comment=Unthemed Next-like style
-Comment[af]=Next-tipe temalose sty;e
-Comment[ca]=Estil del tipus Next sense temes
-Comment[cs]=Styl jako NeXT (net√©movan√Ω)
-Comment[da]=Next-lignende stil uden tema
-Comment[de]=NeXT-Stil (kein komplettes Design)
-Comment[eo]=Next-Step-stilo neetosa
-Comment[et]=Next'i laadne teemata stiil
-Comment[fi]=Teemoittamaton Next:n kaltainen tyyli
-Comment[fr]=Style sans thËme similaire ‡ Next
-Comment[hu]=Next-szer˚ kinÈzet
-Comment[it]=Stile Next (senza tema)
-Comment[ja]=Next•π•ø•§•Î
-Comment[mi]=Next-szer˚ kinÈzet
-Comment[no]=Next-lignende stil uten tema
-Comment[no_NY]=Next-aktig stil
-Comment[pt]=Estilo tipo Next
-Comment[pt_BR]=Estilo tipo Next
-Comment[ro]=Stil NeXT f„r„ tem„
-Comment[sl]=Netematski slog, podoben NextStepu
-Comment[sr]=Bez teme, nalik na NeXT
-Comment[sv]=Otemad Next-linkande stil
 [KDE]
 widgetStyle=kstepstyle.la

@@ -1,29 +1,5 @@
 [Misc]
 Name=Qt Windows
-Name[eo]=Qt Vindozo
-Name[no]=Qt-Vinduer
-Name[ro]=Stil Windows Qt
 Comment=Built-in unthemed Windows 9x style
-Comment[af]=Ingboude temalose Windows 9x style
-Comment[ca]=Estil incorporat Windows 9x sense temes
-Comment[cs]=Zabudovan√Ω Windows 9x styl (net√©movan√Ω)
-Comment[da]=Indbygget Windows 9x stil uden tema
-Comment[de]=Eingebauter Windows-9x-Stil (kein komplettes Design)
-Comment[eo]=Originala Vindozo 9x-stilo sen temoj
-Comment[et]=Windows 9x laadne teemata stiil
-Comment[fi]=Sis√§√§nrakennettu teemoittamatom Windows 9x tyyli
-Comment[fr]=Style Windows 9x d'origine sans thËme
-Comment[hu]=BeÈpÌtett Windows 9x kinÈzet
-Comment[it]=Stile Windows 9x interno (senza tema)
-Comment[ja]=Windows9x•π•ø•§•Î
-Comment[mi]=BeÈpÌtett Windows 9x kinÈzet
-Comment[no]=Innebygget Windows 9x-stil uten tema
-Comment[no_NY]=Innebygd Windows 9x-stil
-Comment[pt]=Estilo embutido Windows 9x
-Comment[pt_BR]=Estilo embutido Windows 9x
-Comment[ro]=Stil Windows 9x f„r„ tem„, intern
-Comment[sl]=Vgrajen obiƒçajni stil Windows 9x
-Comment[sr]=Ugraeni, bez teme, Windows 9x stil
-Comment[sv]=Inbyggd otemad Windows 9x-stil
 [KDE]
 widgetStyle=Windows 95
