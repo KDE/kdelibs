@@ -77,7 +77,7 @@ ksqueezedtextlabel.cpp
 kstatusbar.cpp
 kstdaction.cpp
 kstdguiitem.cpp
-kstringvalidator.cpp
+kstringvalidator.cpp	Marc Mutz <mutz@kde.org>
 ksystemtray.cpp
 ktabctl.cpp
 ktextbrowser.cpp
