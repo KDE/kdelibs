@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>GUIBase</class>
 <widget class="QMainWindow">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>490</width>
-            <height>312</height>
+            <width>356</width>
+            <height>182</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,7 +19,7 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QPushButton" row="8" column="0">
+        <widget class="QPushButton" row="7" column="0">
             <property name="name">
                 <cstring>pbStart</cstring>
             </property>
@@ -27,107 +27,7 @@
                 <string>Start</string>
             </property>
         </widget>
-        <widget class="QLayoutWidget" row="5" column="0" rowspan="1" colspan="4">
-            <property name="name">
-                <cstring>layout1</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="KLed">
-                    <property name="name">
-                        <cstring>kLedExample_9</cstring>
-                    </property>
-                    <property name="state">
-                        <enum>Off</enum>
-                    </property>
-                    <property name="shape">
-                        <enum>Rectangular</enum>
-                    </property>
-                    <property name="look">
-                        <enum>Raised</enum>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel7</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Stopped</string>
-                    </property>
-                </widget>
-                <widget class="KLed">
-                    <property name="name">
-                        <cstring>kLedExample_9_2</cstring>
-                    </property>
-                    <property name="state">
-                        <enum>On</enum>
-                    </property>
-                    <property name="shape">
-                        <enum>Rectangular</enum>
-                    </property>
-                    <property name="look">
-                        <enum>Raised</enum>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel7_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Running</string>
-                    </property>
-                </widget>
-                <widget class="KLed">
-                    <property name="name">
-                        <cstring>kLedExample_9_3</cstring>
-                    </property>
-                    <property name="state">
-                        <enum>On</enum>
-                    </property>
-                    <property name="shape">
-                        <enum>Rectangular</enum>
-                    </property>
-                    <property name="look">
-                        <enum>Raised</enum>
-                    </property>
-                    <property name="color">
-                        <color>
-                            <red>255</red>
-                            <green>0</green>
-                            <blue>0</blue>
-                        </color>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel7_3</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Suspended</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer1</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-            </hbox>
-        </widget>
-        <widget class="QPushButton" row="8" column="1">
+        <widget class="QPushButton" row="7" column="1">
             <property name="name">
                 <cstring>pbStop</cstring>
             </property>
@@ -138,7 +38,7 @@
                 <string>Stop</string>
             </property>
         </widget>
-        <widget class="QPushButton" row="8" column="3">
+        <widget class="QPushButton" row="7" column="3">
             <property name="name">
                 <cstring>pbQuit</cstring>
             </property>
@@ -146,7 +46,7 @@
                 <string>Quit</string>
             </property>
         </widget>
-        <spacer row="8" column="2">
+        <spacer row="7" column="2">
             <property name="name">
                 <cstring>spacer4</cstring>
             </property>
@@ -185,37 +85,6 @@
                 <enum>Horizontal</enum>
             </property>
         </widget>
-        <widget class="Line" row="7" column="0" rowspan="1" colspan="4">
-            <property name="name">
-                <cstring>line3</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>HLine</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-        </widget>
-        <spacer row="6" column="1">
-            <property name="name">
-                <cstring>spacer2</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
             <property name="name">
                 <cstring>tlProgress</cstring>
@@ -260,50 +129,37 @@
                 <set>WordBreak|AlignCenter</set>
             </property>
         </widget>
-        <widget class="QGroupBox" row="4" column="0" rowspan="1" colspan="4">
+        <widget class="Line" row="6" column="0" rowspan="1" colspan="4">
             <property name="name">
-                <cstring>gbThrStatus</cstring>
+                <cstring>line3</cstring>
             </property>
-            <property name="title">
-                <string>Thread Status</string>
+            <property name="frameShape">
+                <enum>HLine</enum>
             </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="spacing">
-                    <number>2</number>
-                </property>
-                <widget class="QFrame">
-                    <property name="name">
-                        <cstring>frameThrStatus</cstring>
-                    </property>
-                    <property name="frameShape">
-                        <enum>NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Plain</enum>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer5</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-            </hbox>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
         </widget>
+        <spacer row="5" column="2">
+            <property name="name">
+                <cstring>spacer6</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>40</height>
+                </size>
+            </property>
+        </spacer>
     </grid>
 </widget>
 <toolbars>

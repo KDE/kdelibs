@@ -2,9 +2,12 @@ lib_LTLIBRARIES = libweaverextensions.la
 
 INCLUDES= -I../weaver $(all_includes)
 
-include_HEADERS = weaverlogger.h
+include_HEADERS = weaverlogger.h weavervisualizer.h
 
-libweaverextensions_la_SOURCES = weaverlogger.cpp
+noinst_HEADERS = visualizerwidget.h
+
+libweaverextensions_la_SOURCES = weaverlogger.cpp weavervisualizer.cpp \
+	visualizerwidget.cpp
 
 libweaverextensions_la_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) -version-info 0:0
 

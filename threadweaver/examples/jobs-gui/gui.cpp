@@ -13,6 +13,7 @@ extern "C" {
 #include <qgroupbox.h>
 
 #include <weaverlogger.h>
+#include <weavervisualizer.h>
 
 #include "gui.h"
 
@@ -35,6 +36,9 @@ GUI::GUI ( QWidget *parent, const char *name)
 {
     WeaverThreadLogger *logger = new WeaverThreadLogger (this);
     logger->attach (&weaver);
+    WeaverThreadVisualizer *vis = new WeaverThreadVisualizer (this);
+    vis->attach (&weaver);
+
     connect ( &weaver, SIGNAL ( finished() ), SLOT (slotStopped () ) );
     connect ( &weaver, SIGNAL ( jobDone(Job*) ), SLOT (slotJobDone (Job*) ) );
     connect ( &weaver, SIGNAL ( suspended() ), SLOT (slotStopped () ) );
