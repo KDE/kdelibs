@@ -1236,5 +1236,6 @@ int inet_pton(int af, const char *cp, void *buf)
 
 namespace KDE
 {
+  /// @internal
   extern const int resolverFlags = KRF_getaddrinfo | KRF_resolver | KRF_afinet6 | KRF_inet_ntop | KRF_inet_pton;
 }

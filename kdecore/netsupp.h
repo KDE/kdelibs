@@ -46,20 +46,18 @@
 
 /*** IPv6 structures that might be missing from some implementations ***/
 
-/**
+/** @internal
  * An IPv6 address.
  * This is taken from RFC 2553
- * @internal
  */
 struct kde_in6_addr
 {
   unsigned char __u6_addr[16];
 };
 
-/**
+/** @internal
  * An IPv6 socket address
  * This is taken from RFC 2553.
- * @internal
  */
 struct kde_sockaddr_in6
 {
@@ -168,6 +166,9 @@ extern void kde_freeaddrinfo(struct kde_addrinfo *p);
 #if !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
 
 # ifndef HAVE_STRUCT_ADDRINFO
+/**
+ * @internal
+ */
 struct addrinfo
 {
   int ai_flags;			/* Input flags.  */
@@ -247,11 +248,15 @@ struct addrinfo
 
 namespace KDE
 {
+  /// @internal
   extern int getaddrinfo(const char *name, const char *service,
 			 const struct addrinfo* hint,
 			 struct addrinfo** result);
+  /// @internal
   extern void freeaddrinfo(struct addrinfo* ai);
+  /// @internal
   extern char *gai_strerror(int errorcode);
+  /// @internal
   extern int getnameinfo(const struct sockaddr *sa,
 			 unsigned int salen,
 			 char *host, size_t hostlen,
@@ -271,6 +276,7 @@ namespace KDE
 
 namespace KDE
 {
+  /// @internal
   extern int inet_pton(int af, const char *cp, void* buf);
 }
 
@@ -281,6 +287,7 @@ namespace KDE
 
 namespace KDE
 {
+  /// @internal
   extern const char* inet_ntop(int af, const void *cp, char *buf, size_t len);
 }
 
