@@ -538,7 +538,7 @@ static const ushort tag_list_11[] = {
     0
 };
 
-bool check_array(ushort child, const ushort *tagList)
+static bool check_array(ushort child, const ushort *tagList)
 {
     int i = 0;
     while(tagList[i] != 0)
