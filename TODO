@@ -134,6 +134,11 @@ that we would like to make for the next binary incompatible release.
 - It would be nice if some insan^H^H^H brave soul had a look at the KAccel/KShortcut/KKeyWhatever
   classes and cleaned it up.
 
+- KKeyDialog needs to be improved. It should simplify using KKeyChooser by not having to instantiate
+  KDialogBase without restricting the possibilities of KKeyChooser (for instance, being able to
+  configure global and application accels in one dialog). If there is only little time, simply
+  expose the KKeyChooser object instead of making it private and inaccessible.
+
 - Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
   amount of bool-usage in the CTORs (see KDialogBase, for instance)
 
