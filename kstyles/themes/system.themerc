@@ -242,7 +242,6 @@ Name[oc]=Sistemo++
 Name[sl]=Sistem++
 Name[tr]=Sistem++
 Name[xxx]=xx
-Name[zh_TW.Big5]=系統++
 Comment=System themed style
 Comment[af]=stelsel getemade styl
 Comment[az]=Sistem örtülü tərz
@@ -285,7 +284,7 @@ Comment[tr]=Sistem temalı stil
 Comment[vi]=Kiểu hềEthống đã dùng theme 
 Comment[xxx]=xx
 Comment[zh_CN.GB2312]=系统主题风格
-Comment[zh_TW.Big5]=主題式的系統風格
+Comment[zh_TW.Big5]=系統主題風格
 
 [General]
 foreground=0,0,0

@@ -50,6 +50,6 @@ Comment[tr]=Yerleşik, temasız CDE stili
 Comment[vi]=Kiểu CDE chưa dùng theme có sẵn 
 Comment[xxx]=xx
 Comment[zh_CN.GB2312]=内建的无主题 CDE 风格
-Comment[zh_TW.Big5]=內建的非主題式 CDE 風格
+Comment[zh_TW.Big5]=內建的無主題 CDE 風格
 [KDE]
 widgetStyle=CDE

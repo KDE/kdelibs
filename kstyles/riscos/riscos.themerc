@@ -236,7 +236,6 @@ Name[ko]=리스크 OS
 Name[mt]=OS RISC
 Name[sl]=OS RISC
 Name[xxx]=xx
-Name[zh_TW.Big5]=RISC 作業系統
 Comment=RISC OS-like theme
 Comment[af]=risc os-hou van tema
 Comment[ara]=تيمة مشابهة لRISC OS
@@ -272,6 +271,7 @@ Comment[tr]=RISC OS-benzeri stil
 Comment[vi]=Theme kiểu RISC OS 
 Comment[xxx]=xx
 Comment[zh_CN.GB2312]=类似 Sgi 的风格
+Comment[zh_TW.Big5]=類似 RISC 的風格
 SButtonPosition=Opposite
 FrameWidth=1
 
