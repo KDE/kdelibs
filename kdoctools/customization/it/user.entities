@@ -7,18 +7,24 @@
  -->
 <!-- Entit&agrave; inglesi tradotte -->
 
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY cdrom  '<hardware>unit&agrave; CD-ROM</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>ad es.</abbrev>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>ecc.</abbrev>">
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>
 <!ENTITY ie     "cio&egrave;">
 <!ENTITY kcontrol       '<application>Centro di controllo di &kde;</application>'>
+<!ENTITY kcontrolcenter	"<application>Centro di controllo di &kde;</application>">
 <!ENTITY khelpcenter    '<application>Centro di informazioni di &kde;</application>'>
 <!ENTITY LMB    "tasto <mousebutton>sinistro</mousebutton> del mouse">
 <!ENTITY MMB    "tasto <mousebutton>centrale</mousebutton> del mouse">
-<!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
 
 <!-- Entit&agrave; aggiunte dai traduttori -->
 
