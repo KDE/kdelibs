@@ -21,20 +21,24 @@
 
 KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent, const char *name )
  : QLabel ( parent, name ) {
-  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  setSizePolicy(myLabelSizePolicy);
+  setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   fullText = text;
   squeezeTextToLabel();
 }
 
 KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent, const char *name )
  : QLabel ( parent, name ) {
-  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  setSizePolicy(myLabelSizePolicy);
+  setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 }
 
 void KSqueezedTextLabel::resizeEvent( QResizeEvent * ) {
   squeezeTextToLabel();
+}
+
+QSize KSqueezedTextLabel::minimumSizeHint() const
+{
+  // Don't let QLabel return anything as minimum
+  return QSize( -1, -1 );
 }
 
 void KSqueezedTextLabel::setText( const QString &text ) {
