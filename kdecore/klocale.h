@@ -24,6 +24,9 @@
 #include <qstringlist.h>
 
 class QStrList;
+class QDate;
+class QTime;
+class QDateTime;
 
 /*
   #ifndef klocale
@@ -35,11 +38,11 @@ class QStrList;
   *
   * KLocale provides support for country specific stuff like
   * the national language.
-  * Currently it supports only translating, but it's planned
-  * to add here methods for getting the currency sign and other
-  * things too.
+  *
+  * KLocale supports translating, as well as specifying the format
+  * for numbers, currency, time, and date.
   * 
-  * @author Stephan Kulow (coolo@kde.org)
+  * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>
   * @short class for supporting locale settings and national language
   */
 class KLocale {
@@ -81,6 +84,136 @@ public:
       */
     const QString translate( const char *index );
     
+    /**
+     * various positions for where to place the positive or negative
+     * sign when they are related to a monetary value.
+     */
+    enum SignPosition { ParensAround = 0, BeforeQuantityMoney = 1,
+			AfterQuantityMoney = 2,
+			BeforeMoney = 3, AfterMoney = 4 };
+
+    /**
+     * Specicies what a decimal point should look like ("." or "," etc.)
+     * according to the current locale or user settings.
+     */
+    QString decimalSymbol() const;
+    
+    /**
+     */
+    QString thousandsSeparator() const;
+    
+    /**
+     * Specifies what the symbol denoting currency in the current locale
+     * as as defined by user settings should look like.
+     */
+    QString currencySymbol() const;
+    
+    /**
+     * Specifies what a decimal point should look like ("." or "," etc.)
+     * for monetary values, according to the current locale or user
+     * settings.
+     */
+    QString monetaryDecimalSymbol() const;
+    
+    /**
+     * Specifies what a thousands separator for monetary values should
+     * look like ("," or " " etc.) according to the current locale or
+     * user settings.
+     */
+    QString monetaryThousandsSeparator() const;
+    
+    /**
+     * Specifies what a positive sign should look like ("+", " ", etc.)
+     * according to the current locale or user settings.
+     */
+    QString positiveSign() const;
+    
+    /**
+     * Specifies what a negative sign should look like ("-", etc.)
+     * according to the current locale or user settings.
+     */
+    QString negativeSign() const;
+    
+    /**
+     * The number of fractional digits to include in numeric/monetary
+     * values (usually 2).
+     */
+    int fracDigits() const;
+    
+    /**
+     * If and only if the currency symbol precedes a positive value,
+     * this will be true.
+     */
+    bool positivePrefixCurrencySymbol() const;
+    
+    /**
+     * If and only if the currency symbol precedes a negative value,
+     * this will be true.
+     */
+    bool negativePrefixCurrencySymbol() const;
+
+    /**
+     * Denotes where to place a positive sign in relation to a 
+     * monetary value.
+     *
+     * @see #SignPosition
+     */
+    SignPosition positiveMonetarySignPosition() const;
+
+    /**
+     * Denotes where to place a negative sign in relation to a 
+     * monetary value.
+     *
+     * @see #SignPosition
+     */
+    SignPosition negativeMonetarySignPosition() const;
+
+    /**
+     * Given an double, convert that to a numeric string containing
+     * the localized monetary equivalent.
+     * 
+     * e.g. given 123456, return "$123,456".  
+     */
+    QString formatMoney(double num) const;
+
+    /**
+     * This function differs from the above only in that it can take
+     * a QString as the argument for convenience.
+     */
+    QString formatMoney(const QString &numStr) const;
+
+    /**
+     * Given an double, convert that to a numeric string containing
+     * the localized numeric equivalent.
+     * 
+     * e.g. given 123456.78, return "123.456.78" (for Europe).  
+     */
+    QString formatNumber(double num) const;
+
+    /**
+     * This function differs from the above only in that it can take
+     * a QString as the argument for convenience.
+     */
+    QString formatNumber(const QString &numStr) const;
+
+    /**
+     * Return a string formatted to the current locale's conventions
+     * regarding dates.
+     */
+    QString formatDate(const QDate &pDate) const;
+
+    /**
+     * Return a string formatted to the current locale's conventions
+     * regarding times.
+     */
+    QString formatTime(const QTime &pTime) const;
+
+    /**
+     * Return a string formatted to the current locale's conventions
+     * regarding both date and time.
+     */
+    QString formatDateTime(const QDateTime &pDateTime) const;
+
     /**
       * Creates an alias for the string text. It will be translated
       * and stored under the integer constant index.
@@ -165,17 +298,18 @@ public:
 			      const QString& charset);
 
     /**
-     * if the application can handle localized numeric values, it should
-     * call this function.
+     * if the application can handle localized numeric and monetary
+     * values, it should call this function.
      * 
-     * By default, this is disabled
-     **/
+     * By default, this is disabled.
+     */
     void enableNumericLocale(bool on = true);
 
     /**
-     * returns, if the radix character for numeric conversions is set to
-     * locale settings or to the POSIX standards.
-     **/
+     * @return True if the application has instructed KLocale that it can
+     * handle localized numeric and monetary values, if POSIX only (the
+     * default), false.
+     */
     bool numericLocaleEnabled() const;
      
 private:
@@ -184,6 +318,8 @@ private:
     QString lang;
     QString chset;
     QString lc_numeric;
+    QString lc_monetary;
+    QString lc_time;
     bool numeric_enabled;
     QString langs;
 

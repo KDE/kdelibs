@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
+    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,15 +22,20 @@
 #include <config.h>
 #endif
 
+#include <time.h>
+
 // Overloading of all standard locale functions makes no sense
 // Let application use them
 #ifdef HAVE_LOCALE_H 
 #include <locale.h>
+#include <monetary.h>
 #endif
 
 #include <stdlib.h>
 
 #include <qdir.h>
+#include <qdatetime.h>
+
 #include "kglobal.h"
 #include "kstddirs.h"
 
@@ -148,10 +154,13 @@ void KLocale::splitLocale(const QString& aStr,
 
 #ifdef ENABLE_NLS
 
-KLocale::KLocale( QString catalogue ) : lang(0)
+KLocale::KLocale( QString catalogue ) 
+  : lang(0)
 {
 #ifdef HAVE_SETLOCALE
-    /* Set locale via LC_ALL according to environment variables  */
+    /* "" instructs setlocale to use the default locale
+       which is selected from the environment variable LANG.
+    */
     setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
@@ -172,6 +181,7 @@ KLocale::KLocale( QString catalogue ) : lang(0)
 	if (!g_lang) 
 	    languages = config->readEntry("Language", "default");
 #ifdef HAVE_SETLOCALE
+	// override environment with KDE configuration values
 	setting = config->readEntry("Collate", "default");
 	if (setting!="default") 
 	    setlocale (LC_COLLATE, setting.ascii());
@@ -197,7 +207,7 @@ KLocale::KLocale( QString catalogue ) : lang(0)
 #ifdef HAVE_SETLOCALE
     // setlocale reads variables LC_* and LANG, and it may use aliases,
     // so we don't have to do it
-    g_lang = setlocale(LC_MESSAGES,0);
+    g_lang = setlocale(LC_MESSAGES, 0);
 #else   
     g_lang = getenv("LANG");
 #endif
@@ -258,9 +268,12 @@ KLocale::KLocale( QString catalogue ) : lang(0)
     
     chset=chrset;
 #ifdef HAVE_SETLOCALE
-    lc_numeric=setlocale(LC_NUMERIC,0);
-    setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
     setlocale(LC_MESSAGES,lang);
+    lc_numeric  = setlocale(LC_NUMERIC, 0); // save these values
+    lc_monetary = setlocale(LC_MONETARY, 0); 
+    lc_time     = setlocale(LC_TIME, 0);
+    setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
+    setlocale(LC_MONETARY, "C");        // by default disable LC_MONETARY
     if (set_locale_vars){
         // set environment variables for all categories
 	// maybe we should treat LC_NUMERIC differently (netscape problem)
@@ -282,6 +295,8 @@ KLocale::KLocale( QString catalogue ) : lang(0)
     }  
 #else
     lc_numeric="C";
+    lc_monetary="C";
+    lc_time="C";
 #endif
     numeric_enabled=false;
 
@@ -321,6 +336,173 @@ const QString KLocale::translate(const char* msgid)
     return QString::fromLocal8Bit( text );
 }
 
+QString KLocale::decimalSymbol() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->decimal_point);
+#else
+  return QString(".");
+#endif
+}
+
+QString KLocale::thousandsSeparator() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->thousands_sep);
+#else
+  return QString(",");
+#endif
+}
+
+QString KLocale::currencySymbol() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->currency_symbol);
+#else
+  return QString("$");
+#endif
+}
+
+QString KLocale::monetaryDecimalSymbol() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->mon_decimal_point);
+#else
+  return QString(".");
+#endif
+}
+
+QString KLocale::monetaryThousandsSeparator() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->mon_thousands_sep);
+#else
+  return QString(",");
+#endif
+}
+
+QString KLocale::positiveSign() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->positive_sign);
+#else
+  return QString("+");
+#endif
+}
+
+QString KLocale::negativeSign() const {
+#ifdef HAVE_SETLOCALE
+  return QString(localeconv()->negative_sign);
+#else
+  return QString("-");
+#endif
+}
+
+int KLocale::fracDigits() const {
+#ifdef HAVE_SETLOCALE
+  return (int) localeconv()->int_frac_digits;
+#else
+  return 2;
+#endif
+}
+
+bool KLocale::positivePrefixCurrencySymbol() const {
+#ifdef HAVE_SETLOCALE
+  return (bool) localeconv()->p_cs_precedes;
+#else
+  return true;
+#endif
+}
+
+bool KLocale::negativePrefixCurrencySymbol() const {
+#ifdef HAVE_SETLOCALE
+  return (bool) localeconv()->n_cs_precedes;
+#else
+  return true;
+#endif
+}
+
+KLocale::SignPosition KLocale::positiveMonetarySignPosition() const
+{
+#ifdef HAVE_SETLOCALE
+  return (SignPosition) localeconv()->p_sign_posn;
+#else
+  return BeforeQuantityMoney;
+#endif
+}
+
+KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
+{
+#ifdef HAVE_SETLOCALE
+  return (SignPosition) localeconv()->n_sign_posn;
+#else
+  return ParensAround;
+#endif
+}
+
+QString KLocale::formatMoney(double num) const
+{
+#ifdef HAVE_SETLOCALE
+  if (numeric_enabled) {
+    char s[256];
+    
+    if (strfmon(s, 255, "%(n", num) != -1) {
+      return QString(s);
+    } else {
+      return QString().setNum(num);
+    }
+  } else 
+#endif
+    return QString().setNum(num);
+}
+
+QString KLocale::formatMoney(const QString &numStr) const
+{
+  return formatMoney(numStr.toDouble());
+}
+
+QString KLocale::formatNumber(double num) const
+{
+#ifdef HAVE_SETLOCALE
+  return QString().sprintf("%'.2f", num);
+#endif
+  return QString().setNum(num);
+}
+
+QString KLocale::formatNumber(const QString &numStr) const
+{
+  return formatNumber(numStr.toDouble());
+}
+
+QString KLocale::formatDate(const QDate &pDate) const
+{
+  struct tm tm;
+  char s[256];
+
+  tm.tm_mday = pDate.day();
+  tm.tm_mon = pDate.month() - 1;
+  tm.tm_year = pDate.year() - 1900;
+
+  if (strftime(s, 255, "%x", &tm) != 0)
+    return QString(s);
+  else
+    return pDate.toString();
+}
+
+QString KLocale::formatTime(const QTime &pTime) const
+{
+  struct tm tm;
+  char s[256];
+
+  tm.tm_sec = pTime.second();
+  tm.tm_min = pTime.minute();
+  tm.tm_hour = pTime.hour();
+
+  if (strftime(s, 255, "%X", &tm) != 0)
+    return QString(s);
+  else
+    return pTime.toString();
+}
+
+QString KLocale::formatDateTime(const QDateTime &pDateTime) const
+{
+  return formatDate(pDateTime.date()) + formatTime(pDateTime.time());
+}
+
 void KLocale::aliasLocale( const char* text, long int index)
 {
     aliases.insert(index, new QString(translate(text)));
@@ -331,33 +513,37 @@ const QString KLocale::getLocale(const QString& cat){
 
     cat.upper();
     if (cat=="LC_NUMERIC") return lc_numeric;
+    if (cat=="LC_MONETARY") return lc_monetary;
 #ifdef HAVE_SETLOCALE        
     else if (cat=="LC_MESSAGES") return setlocale(LC_MESSAGES,0);
     else if (cat=="LC_COLLATE") return setlocale(LC_COLLATE,0);
     else if (cat=="LC_TIME") return setlocale(LC_TIME,0);
     else if (cat=="LC_CTYPE") return setlocale(LC_CTYPE,0);
-    else if (cat=="LC_MONETARY") return setlocale(LC_MONETARY,0);
 #endif	
     else return "C";
 }
 
 void KLocale::enableNumericLocale(bool on){
 #ifdef HAVE_SETLOCALE
-    if (on) 
-	setlocale(LC_NUMERIC,lc_numeric.ascii());
-    else 
-	setlocale(LC_NUMERIC,"C");  
-    numeric_enabled=on;
+  if (on) {
+    setlocale(LC_NUMERIC, lc_numeric.ascii());
+    setlocale(LC_MONETARY, lc_monetary.ascii());
+  } else {
+    setlocale(LC_NUMERIC, "C");
+    setlocale(LC_MONETARY, "C");
+  }
+  numeric_enabled=on;
 #else  
-    numeric_enabled=false;
+  numeric_enabled=false;
 #endif
 }
 
-bool KLocale::numericLocaleEnabled()const{
-    return numeric_enabled;
+bool KLocale::numericLocaleEnabled() const {
+  return numeric_enabled;
 }
  
-QStringList KLocale::languageList()const{
+QStringList KLocale::languageList() const
+{
 
 // a list to be returned
     QStringList list;
@@ -393,6 +579,91 @@ const QString KLocale::translate(const char* msgid)
     return msgid;
 }
 
+QString KLocale::decimalSymbol() const {
+  return QString(".");
+}
+
+QString KLocale::thousandsSeparator() const {
+  return QString(",");
+}
+
+QString KLocale::currencySymbol() const {
+  return QString("$");
+}
+
+QString KLocale::monetaryDecimalSymbol() const {
+  return QString(".");
+}
+
+QString KLocale::monetaryThousandsSeparator() const {
+  return QString(",");
+}
+
+QString KLocale::positiveSign() const {
+  return QString("+");
+}
+
+QString KLocale::negativeSign() const {
+  return QString("-");
+}
+
+int KLocale::fracDigits() const {
+  return 2;
+}
+
+bool KLocale::positivePrefixCurrencySymbol() const {
+  return true;
+}
+
+bool KLocale::negativePrefixCurrencySymbol() const {
+  return true;
+}
+
+KLocale::SignPosition KLocale::positiveMonetarySignPosition() const
+{
+  return BeforeQuantityMoney;
+}
+
+KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
+{
+  return ParensAround;
+}
+
+QString KLocale::formatMoney(double num) const
+{
+  return QString().setNum(num);
+}
+
+QString KLocale::formatMoney(const QString &numStr) const
+{
+  return numStr;
+}
+
+QString KLocale::formatNumber(double num) const
+{
+  return QString().setNum(num);
+}
+
+QString KLocale::formatNumber(const QString &numStr) const
+{
+  return numStr;
+}
+
+QString KLocale::formatDate(const QDate &pDate) const
+{
+  return pDate.toString();
+}
+
+QString KLocale::formatTime(const QTime &pTime) const
+{
+  return pTime.toString();
+}
+
+QString KLocale::formatDateTime(const QDateTime &pDateTime) const
+{
+  return formatDate(pDateTime.date()) + formatTime(pDateTime.time());
+}
+
 void KLocale::aliasLocale(const char *text, long int index)
 {
     aliases.insert(index, new QString(text));
@@ -402,14 +673,10 @@ const QString KLocale::getLocale(const QString& ){
     return "C";
 }
 
-void  KLocale::enableNumericLocale(bool){
-}
-
-bool  KLocale::numericLocaleEnabled()const{
-    return false;
+void  KLocale::enableNumericLocale(bool enable) {
 }
  
-QStringList KLocale::languageList()const{
+QStringList KLocale::languageList() const {
     return QStringList();
 }
 

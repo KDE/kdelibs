@@ -205,20 +205,20 @@ void KApplication::init()
 	  bSuccess = aConfigFile.open( IO_ReadOnly );
 	  if( !bSuccess )
 		{
-		  // we didn't succeed to open an app-config file
+		  // we didn't succeed to open an local app-config file
 		  pConfig = new KConfig( aGlobalAppConfigName );
 		  eConfigState = APPCONFIG_NONE;
 		}
 	  else
 		{
-		  // we succeeded to open an app-config file read-only
+		  // we succeeded to open an local app-config file read-only
 		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
 		  eConfigState = APPCONFIG_READONLY;
 		}
 	}
   else
 	{
-	  // we succeeded to open an app-config file read-write
+	  // we succeeded to open an local app-config file read-write
 	  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
 	  eConfigState = APPCONFIG_READWRITE;
 	}
