@@ -39,6 +39,10 @@
 #include <sys/stream.h>
 #endif
 
+#ifdef __OpenBSD__
+#include <sys/ioctl.h>
+#endif
+
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>                // Needed on some systems.
 #endif
@@ -448,6 +452,10 @@ int PtyProcess::SetupTTY(int fd)
     ioctl(slave, I_PUSH, "ptem");
     ioctl(slave, I_PUSH, "ldterm");
 
+#endif
+
+#ifdef __OpenBSD__
+    ioctl(slave, TIOCSCTTY, (char *)NULL);
 #endif
 
     // Connect stdin, stdout and stderr
