@@ -71,87 +71,89 @@ KAboutData::KAboutData( const char *appName,
    if( appName ) {
      char *p = strrchr(appName, '/');
      if( p )
-       mAppName = p+1;
+	 mAppName = p+1;
+     else
+	 mAppName = appName;
    } else
      mAppName = 0;
 }
 
-void 
+void
 KAboutData::addAuthor( const char *name, const char *task,
 		    const char *emailAddress, const char *webAddress )
 {
   mAuthorList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-void 
+void
 KAboutData::addCredit( const char *name, const char *task,
 		    const char *emailAddress, const char *webAddress )
 {
   mCreditList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-void 
+void
 KAboutData::setLicenseText( const char *licenseText )
 {
   mLicenseText = licenseText;
 }
 
-const char * 
-KAboutData::appName() const 
-{ 
-   return mAppName; 
+const char *
+KAboutData::appName() const
+{
+   return mAppName;
 }
 
-QString 
-KAboutData::programName() const 
-{ 
-   return i18n(mProgramName); 
+QString
+KAboutData::programName() const
+{
+   return i18n(mProgramName);
 }
 
-QString 
-KAboutData::version() const 
-{ 
-   return QString::fromLatin1(mVersion); 
+QString
+KAboutData::version() const
+{
+   return QString::fromLatin1(mVersion);
 }
 
-QString 
-KAboutData::shortDescription() const 
-{ 
-   return i18n(mShortDescription); 
+QString
+KAboutData::shortDescription() const
+{
+   return i18n(mShortDescription);
 }
 
-QString 
-KAboutData::homepage() const 
-{ 
-   return QString::fromLatin1(mHomepageAddress); 
+QString
+KAboutData::homepage() const
+{
+   return QString::fromLatin1(mHomepageAddress);
 }
 
-QString 
-KAboutData::bugAddress() const 
-{ 
-   return QString::fromLatin1(mBugEmailAddress); 
+QString
+KAboutData::bugAddress() const
+{
+   return QString::fromLatin1(mBugEmailAddress);
 }
 
-const QValueList<KAboutPerson> 
+const QValueList<KAboutPerson>
 KAboutData::authors() const
 {
    return mAuthorList;
 }
 
-const QValueList<KAboutPerson> 
+const QValueList<KAboutPerson>
 KAboutData::credits() const
 {
    return mCreditList;
 }
 
-QString 
-KAboutData::otherText() const 
+QString
+KAboutData::otherText() const
 {
-   return i18n(mOtherText); 
+   return i18n(mOtherText);
 }
 
 
-QString 
+QString
 KAboutData::license() const
 {
   if( mLicenseKey != 0 )
