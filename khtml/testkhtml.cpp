@@ -36,6 +36,7 @@
 #include <rendering/render_style.h>
 #include <kmainwindow.h>
 #include <kcmdlineargs.h>
+#include <kaction.h>
 #include "domtreeview.h"
 
 static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , {0, 0, 0} };
@@ -59,6 +60,11 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart( toplevel, 0,
 				    toplevel, 0, KHTMLPart::BrowserViewGUI );
 
+    Dummy *dummy = new Dummy( doc );
+    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
+
+    doc->openURL( args->url(0) );
     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
     dtv->show();
     dtv->setGeometry(0, 0, 360, 800);
@@ -74,6 +80,12 @@ int main(int argc, char *argv[])
     e = d.createElement( "action" );
     e.setAttribute( "name", "debugDOMTree" );
     viewMenu.appendChild( e );
+    QDomElement toolBar = d.documentElement().firstChild().nextSibling().toElement();
+    e = d.createElement( "action" );
+    e.setAttribute( "name", "reload" );
+    toolBar.insertBefore( e, toolBar.firstChild() );
+
+    (void)new KAction( "Reload", "reload", Qt::Key_F5, dummy, SLOT( reload() ), doc->actionCollection(), "reload" );
 
     toplevel->guiFactory()->addClient( doc );
 
@@ -87,11 +99,6 @@ int main(int argc, char *argv[])
     toplevel->show();
     ((QScrollView *)doc->widget())->viewport()->show();
 
-    Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
-
-    doc->openURL( args->url(0) );
 
     int ret = a.exec();
 
