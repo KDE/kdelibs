@@ -40,7 +40,7 @@ class TelParam : public Param
 	
 	private:
 		
-		QList<TelType> types_;
+		QPtrList<TelType> types_;
 };
 
 }

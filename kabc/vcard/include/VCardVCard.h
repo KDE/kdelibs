@@ -22,7 +22,7 @@
 #define  VCARD_VCARD_H
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <VCardEnum.h>
 #include <VCardEntity.h>
@@ -47,12 +47,12 @@ class VCard : public Entity
 	
 	QCString group() { parse(); return group_; }
 	
-	QList<ContentLine>	contentLineList() { parse(); return contentLineList_; }
+	QPtrList<ContentLine>	contentLineList() { parse(); return contentLineList_; }
 	
 	private:
 
 	QCString		group_;
-	QList<ContentLine>	contentLineList_;
+	QPtrList<ContentLine>	contentLineList_;
 };
 
 }

@@ -21,7 +21,7 @@
 #ifndef  CONTENTLINE_H
 #define  CONTENTLINE_H
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include "VCardEnum.h"
 #include "VCardEntity.h"
@@ -62,7 +62,7 @@ class ContentLine : public Entity
 		
 		QCString		group_;
 		QCString		name_;
-		QList<Param>		paramList_;
+		QPtrList<Param>		paramList_;
 		Value			* value_;
 		
 		ParamType		paramType_;

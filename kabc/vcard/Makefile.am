@@ -1,6 +1,6 @@
 INCLUDES = \
-	-I$(top_srcdir)/vCard/include \
-	-I$(top_srcdir)/vCard/include/generated \
+	-I$(srcdir)/include \
+	-I$(srcdir)/include/generated \
 	$(all_includes)
 
 lib_LTLIBRARIES = libvcard.la

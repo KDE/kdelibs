@@ -21,7 +21,7 @@
 #ifndef  VALUE_H
 #define  VALUE_H
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <VCardEntity.h>
 
@@ -35,8 +35,8 @@ class Value : public Entity
 	virtual Value *clone() { return new Value( *this ); }
 };
 
-typedef QList<Value> ValueList;
-typedef QListIterator<Value> ValueListIterator;
+typedef QPtrList<Value> ValueList;
+typedef QPtrListIterator<Value> ValueListIterator;
 
 }
 

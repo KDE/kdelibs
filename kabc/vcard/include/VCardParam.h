@@ -22,7 +22,7 @@
 #define  PARAM_H
 
 #include <qcstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <VCardEntity.h>
 
@@ -48,8 +48,8 @@ class Param : public Entity
 		QCString value_;
 };
 
-typedef QList<Param> ParamList;
-typedef QListIterator<Param> ParamListIterator;
+typedef QPtrList<Param> ParamList;
+typedef QPtrListIterator<Param> ParamListIterator;
 
 }
 

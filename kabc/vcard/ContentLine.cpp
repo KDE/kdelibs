@@ -105,7 +105,7 @@ ContentLine::operator == (ContentLine & x)
 {
 	x.parse();
 	
-	QListIterator<Param> it(x.paramList());
+	QPtrListIterator<Param> it(x.paramList());
 	
 	if (!paramList_.find(it.current()))
 		return false;
