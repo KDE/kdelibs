@@ -198,9 +198,9 @@ namespace
         }
     };
 
-    // myIPAddress()
+    // myIpAddress()
     // @returns the local machine's IP address in dotted quad notation
-    struct MyIPAddress : public Function
+    struct MyIpAddress : public Function
     {
         virtual Value call( ExecState*, Object&, const List& args )
         {
@@ -401,8 +401,8 @@ namespace
                     Object( new IsInNet ) );
         global.put( exec, "dnsResolve",
                     Object( new DNSResolve ) );
-        global.put( exec, "myIPAddress",
-                    Object( new MyIPAddress ) );
+        global.put( exec, "myIpAddress",
+                    Object( new MyIpAddress ) );
         global.put( exec, "dnsDomainLevels",
                     Object( new DNSDomainLevels ) );
         global.put( exec, "shExpMatch",
