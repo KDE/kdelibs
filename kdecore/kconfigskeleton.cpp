@@ -918,6 +918,7 @@ void KConfigSkeleton::readConfig()
   
   QString origGroup = mConfig->group();
 
+  mConfig->reparseConfiguration();
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
