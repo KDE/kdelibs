@@ -384,6 +384,27 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   m_bReload = _reload;
 
+  if ( !m_bReload && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
+  {
+    KURL u( m_strWorkingURL );
+    
+    m_strURL = m_strWorkingURL;
+    
+    emit started( m_strWorkingURL );
+    
+    if ( !u.htmlRef().isEmpty() )
+      gotoAnchor( u.htmlRef() );
+    else
+      setContentsPos( 0, 0 );
+
+    m_bComplete = true;
+    m_bParsing = false;
+      
+    emit completed();
+    
+    return;
+  }
+
   KIOCachedJob* job = new KIOCachedJob;
 
   job->setGUImode( KIOJob::NONE );
