@@ -39,6 +39,7 @@
 //
 #include "kcharsetsdata.h"
 #include "kcharsets.h"
+#include "qstrlist.h"
 #include "qfontinf.h"
 #include "qregexp.h"
 #include <stdio.h>
