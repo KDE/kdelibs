@@ -334,7 +334,7 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-    if ( !url.isEmpty() && !(w->part()->onlyLocalReferences() && u.protocol() != "file"))
+    if ( url.isEmpty() || !(w->part()->onlyLocalReferences() && u.protocol() != "file"))
         w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
