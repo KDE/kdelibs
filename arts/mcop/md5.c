@@ -36,15 +36,15 @@ static void MD5Transform(uint32 buf[4], uint32 in[16]);
 void MD5sum(unsigned char *message, long len, char *md5sum)
 {
 	long finalsize = len+1; /* in bytes */
-	int i,j;
-	unsigned char w;
+	int i = 0, j = 0;
+	unsigned char w = '\0';
 	uint32 buffer[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
 	uint32 in[16];
 
 	while((finalsize & 63) != 56) finalsize++;
 	finalsize += 8;
-
-	for(i=0,j=0;i<finalsize;i++)
+	
+	for( i=0, j=0;i<finalsize;i++)
 	{
 		if(i < len) {
 			w = message[i];
@@ -75,7 +75,7 @@ void MD5sum(unsigned char *message, long len, char *md5sum)
 		}
 	}
 
-	for(i=0,j=0;j<4;j++)
+	for( i=0, j=0;j<4;j++)
 	{
 		md5sum[i++] = buffer[j] & 0xff;
 		md5sum[i++] = (buffer[j] >> 8) & 0xff;
@@ -120,12 +120,10 @@ void MD5sum(unsigned char *message, long len, char *md5sum)
  */
 static void MD5Transform(uint32 buf[4], uint32 in[16])
 {
-    uint32 a, b, c, d;
-
-    a = buf[0];
-    b = buf[1];
-    c = buf[2];
-    d = buf[3];
+    uint32 a = buf[0];
+    uint32 b = buf[1];
+    uint32 c = buf[2];
+    uint32 d = buf[3];
 
     MD5STEP(F1, a, b, c, d, in[0] + 0xd76aa478, 7);
     MD5STEP(F1, d, a, b, c, in[1] + 0xe8c7b756, 12);
