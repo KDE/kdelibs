@@ -79,8 +79,8 @@ void kDebugError( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugFatal( const char* fmt, ... );
 void kDebugFatal( unsigned short area, const char* fmt, ... );
 void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... );
-void kDebugPError( const char* msg );
-void kDebugPError( unsigned short area, const char* msg );
+void kDebugPError( const char* fmt, ... );
+void kDebugPError( unsigned short area, const char* fmt, ... );
 
 #ifdef NDEBUG
 inline void kDebugInfo( const char* , ... ) {}

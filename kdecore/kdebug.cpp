@@ -382,14 +382,22 @@ void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... )
     }
 }
 
-void kDebugPError( const char* msg )
+void kDebugPError( const char* fmt, ... )
 {
-    kDebugError( "%s: %s", msg, strerror(errno) );
+    char buf[4096];
+    va_list arguments;
+    va_start( arguments, fmt );
+    vsprintf( buf, fmt, arguments );
+    kDebugError( "%s: %s", buf, strerror(errno) );
 }
 
-void kDebugPError( unsigned short area, const char* msg )
+void kDebugPError( unsigned short area, const char* fmt, ... )
 {
-    kDebugError( area, "%s: %s", msg, strerror(errno) );
+    char buf[4096];
+    va_list arguments;
+    va_start( arguments, fmt );
+    vsprintf( buf, fmt, arguments );
+    kDebugError( area, "%s: %s", buf, strerror(errno) );
 }
 
 // For compatibility
