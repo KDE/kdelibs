@@ -22,6 +22,9 @@ StyleSheets:
 DOM:
 	* lots of functions in the Impl classes
 	* fix the set/retrieve functions, which use boolean values
+	  -->> mostly done, still need to fix parseAttribute() calls	
+	* introduce assignment operators HTMLBodyElement b = Node n;
+	  these should just set impl to 0 if the assignment is impossible
 
 misc:
 	* mouse handling
@@ -32,7 +35,6 @@ Frames:
 	  konqueror
 
 JScript:
-	* still need to add hooks in the tokenizer
 	* return value for events/ event propagation
 
 Java:
