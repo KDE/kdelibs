@@ -55,7 +55,7 @@
  *
  * The default key-binding for completion and rotation is determined from the
  * global settings in @ref KStdAccel.  However, these values can be set locally to
- * override the global settings.  Simply invoking @see useGlobalSettings then
+ * override the global settings.  Simply invoking @ref useGlobalSettings then
  * allows you to immediately default the bindings back to the global settings
  * again.  You can also default the key-bindings by simply invoking the @ref
  * setXXXKey method without any argumet.
@@ -208,15 +208,15 @@ public:
     * Enables or disables basic completion feature for this widget.
     *
     * This is a convienence method that can automatically create a completion
-    * object for you and activate.  The completion object is an instance of the base class
-    * @ref KCompletion.
+    * object for you and activate.  The completion object is an instance of the
+    * base class @ref KCompletion.
     *
     * If you need to make use of a more specialized completion object, use
     * @ref setCompletionObject.  Also unlike setCompletionObject the completion
     * object created by this method will be automatically deleted when the widget
     * is destroyed.  To avoid this set the boolean paramter below to false.
     *
-    * @param @p autoDelete if true, delete the completion object on destruction.
+    * @parm @p autoDelete if true, delete the completion object on destruction.
     */
     void setEnableCompletion( bool autoDelete = true );
 
@@ -240,7 +240,7 @@ public:
     * Note that if you invoke this function with the argument se to false,
     * no rotation signals will be emitted.   Thus, this widget will not be
     * able to handle the rotation signals even if @ref setHandleRotation has
-    * been or is called.  See also @see setHandleRotation.
+    * been or is called.  See also @ref setHandleRotation.
     */
     void setEnableRotationSignal( bool enable ) { m_bEmitRotation = enable; }
 
@@ -382,7 +382,7 @@ public:
     * Returns the key-binding used for completion.
     *
     * If the key binding contains modifier key(s), the @bf sum of the key and
-    * the modifier will be returned. See also @see setCompletionKey.  Note that
+    * the modifier will be returned. See also @ref setCompletionKey.  Note that
     * this method is only useful when this widget is editable.  Otherwise this
     * method has no meaning.
     *
@@ -524,7 +524,7 @@ public slots:
     virtual void multipleCompletions( const QStringList& );
 
     /**
-    * This slot is a re-implemention of @see QComboBox::setEditText.
+    * This slot is a re-implemention of @ref QComboBox::setEditText.
     * It is re-implemeted to provide a consitent look when items are
     * completed as well as selected from the list box.  The argument
     * is the text to set in the line edit box.
@@ -555,46 +555,97 @@ public slots:
     */
     virtual void iterateDownInList();
 
+    /**
+    * Selects the text in the lined edit.  Does nothing
+    * if this widget is not editable.
+    */
+    virtual void selectText()     { if( m_pEdit != 0 ) m_pEdit->selectAll(); }
+
+    /**
+    * Un-marks all selected text in the lined edit.  Does
+    * nothing if this widget is not editable.
+    */
+    virtual void deselectText()   { if( m_pEdit != 0 ) m_pEdit->deselect(); }
 
 protected slots:
 
-    // Slots for manupilating the content of the line-edit from the
-    // context menu.
-    virtual void copy()       { m_pEdit->copy(); }
-    virtual void cut()        { m_pEdit->cut(); }
-    virtual void paste()      { m_pEdit->paste(); }
-    virtual void clear()      { m_pEdit->clear(); }
-    virtual void select()     { m_pEdit->selectAll(); }
-    virtual void unselect()   { m_pEdit->deselect(); }
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionNone.
+    */
+    virtual void modeNone() { setCompletionMode( KGlobal::CompletionNone ); }
 
-    // Slots for manupilating completion mode from the context menu.
-    virtual void modeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionManual
+    */
     virtual void modeManual() { setCompletionMode( KGlobal::CompletionMan );  }
-    virtual void modeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
-    virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
 
-    // deals with text changing in the line edit in editable mode.
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionAuto
+    */
+    virtual void modeAuto() { setCompletionMode( KGlobal::CompletionAuto ); }
+
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionShell
+    */
+    virtual void modeShell() { setCompletionMode( KGlobal::CompletionShell );}
+
+    /**
+    * Sets the comepltion mode to the global default setting
+    * defined by @ref KGlobal::completionMode().
+    */
+    virtual void modeDefault() { useGlobalSettings(); }
+
+    /**
+    * Deals with text changing in the line edit in
+    * editable mode.
+    */
     virtual void entryChanged( const QString& );
-    // deals with highlighting the seleted item when return
-    // is pressed in the list box (editable-mode only).
+
+    /**
+    * Deals with highlighting the seleted item when return
+    * is pressed in the list box (editable-mode only).
+    */
     virtual void itemSelected( QListBoxItem* );
-    // deals with processing text completions.
+
+    /**
+    * Deals with text changes in auto completion mode.
+    */
     virtual void makeCompletion( const QString& );
-    // emits a returnPressed signal with a QString parameter.
+
+    /**
+    * Emits a returnPressed signal with a QString parameter
+    * that contains the current display text.
+    */
     virtual void returnKeyPressed();
-    // populates the context menu before it is displayed
+
+    /**
+    * Populates the context menu before it is displayed.
+    */
     virtual void aboutToShowMenu();
-    // populates the sub menu before it is displayed
+
+    /**
+    * Populates the sub menu before it is displayed.
+    */
     virtual void aboutToShowSubMenu( int );
-    //
+
+    /**
+    * Resets the completion object pointer when it is destroyed
+    */
     void completionDestroyed() { m_pCompObj = 0; }
 
 
 protected:
-    // Initializes the variables upon construction.
+    /**
+    * Initializes the variables upon construction.
+    */
     virtual void init( bool );
-    // Override the key-press event for "select-only" box.
+
+    /**
+    * Overridden from QComboBox to provide automatic selection
+    * in "select-only" mode.
+    */
     virtual void keyPressEvent ( QKeyEvent* );
+
     /*
     * Rotates the text on rotation events
     */

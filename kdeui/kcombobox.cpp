@@ -51,8 +51,6 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name, bool hsig )
         list = queryList( "QPopupMenu" );
         it = QObjectListIt( *list );
         m_pContextMenu = (QPopupMenu*) it.current();
-        setEnableContextMenu(); // enable context menu by default
-        m_iSubMenuId = -1;
         m_bEnableMenu = true;
         delete list;
     }
@@ -99,9 +97,10 @@ void KComboBox::init( bool hsig )
     m_iPrevpos = 0; // keeps cursor position whenever it changes.
     m_iPrevlen = 0; // keeps length of text as it changes.
 
-    // Initialize the context Menu.  By default the popup
-    // menu as well as the mode switching entry are enabled.
+    // Initialize the context Menu.  The popup menu as well as
+    // the mode switching entry have to be manually enabled.
     m_pSubMenu = 0;
+    m_iSubMenuId = -1;
 
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobal::completionMode();
@@ -305,6 +304,10 @@ void KComboBox::aboutToShowSubMenu( int itemID )
         m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionAuto );
         id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()) );
         m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
+        m_pSubMenu->insertSeparator();
+        id = m_pSubMenu->insertItem( i18n("Default"), this, SLOT(modeDefault()) );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
+
     }
 }
 
@@ -399,19 +402,43 @@ void KComboBox::rotateText( const QString& input )
 void KComboBox::iterateUpInList()
 {
     if( m_pCompObj != 0 )
+    {
+        // This clears KCompletion so that if the user
+        // deleted the current text and pressed the rotation
+        // keys,  KCompletion will properly rotate through
+        // all enteries.  Hack to the max :)
+        if( m_pEdit != 0 && m_pEdit->text().length() == 0 &&
+            m_pCompObj->lastMatch().length() != 0 )
+        {
+            m_pCompObj->makeCompletion( QString::null );
+        }
         rotateText( m_pCompObj->previousMatch() );
+    }
 }
 
 void KComboBox::iterateDownInList()
 {
     if( m_pCompObj != 0 )
+    {
+        // This clears KCompletion so that if the user
+        // deleted the current text and pressed the rotation
+        // keys,  KCompletion will properly rotate through
+        // all enteries.  Hack to the max :)
+        if( m_pEdit != 0 && m_pEdit->text().length() == 0 &&
+            m_pCompObj->lastMatch().length() != 0 )
+        {
+            m_pCompObj->makeCompletion( QString::null );
+        }
         rotateText( m_pCompObj->nextMatch() );
+    }
 }
 
 void KComboBox::itemSelected( QListBoxItem* item )
 {
     if( item != 0 && m_pEdit != 0 )
+    {
         m_pEdit->setSelection(0, m_pEdit->text().length() );
+    }
 }
 
 
