@@ -4334,7 +4334,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
 KParts::PartManager *KHTMLPart::partManager()
 {
-  if ( !d->m_manager )
+  if ( !d->m_manager && d->m_view )
   {
     d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget(), this, "khtml part manager" );
     d->m_manager->setAllowNestedParts( true );
