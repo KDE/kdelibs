@@ -52,8 +52,7 @@ KAnimWidget::KAnimWidget( const QStringList& icons, int size,
 
   d->size = size;
   setIcons( icons );
-//  setFrameStyle( WinPanel | Raised );
-  setFrameStyle( NoFrame );
+  setFrameStyle( StyledPanel | Sunken );
 }
 
 KAnimWidget::~KAnimWidget()
@@ -105,7 +104,7 @@ void KAnimWidget::enterEvent( QEvent *e )
 
 void KAnimWidget::leaveEvent( QEvent *e )
 {
-  setFrameStyle( NoFrame );
+  setFrameStyle( StyledPanel | Sunken );
 
   QFrame::enterEvent( e );
 }
@@ -147,22 +146,18 @@ void KAnimWidget::drawContents( QPainter *p )
   }
   else
   {
-  
     x = 0;
     y = 0;
   }  
   
-  p2.drawPixmap (x, y, d->pixmap);
+  p2.drawPixmap(x, y, d->pixmap);
   p->drawPixmap( 0, 0, pm);
 }
 
 void KAnimWidget::updateIcons()
 {
   if (parent()->inherits( "KToolBar" ))
-  {
-    if ( d->size == 0 )
-      d->size = ((KToolBar*)parent())->iconSize();
-  }
+    d->size = ((KToolBar*)parent())->iconSize();
 
   d->pixmaps.clear();
 
@@ -174,6 +169,6 @@ void KAnimWidget::updateIcons()
 
   d->iter   = d->pixmaps.begin();
   d->pixmap = *d->iter;
-  if ( d->pixmap.width() != width() || d->pixmap.height() != height() )
-    resize(d->pixmap.width(), d->pixmap.height());
+  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) )
+    resize(d->pixmap.width()+2, d->pixmap.height()+2);
 }
