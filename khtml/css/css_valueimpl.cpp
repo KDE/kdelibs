@@ -250,9 +250,10 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 						bool important, bool nonCSSHint)
 {
+    bool parseMode = strictParsing;
     strictParsing = false;
     setProperty( id, value, important, nonCSSHint);
-    strictParsing = true;
+    strictParsing = parseMode;
 #if 0 // ### FIXME after 2.0
     if(!value.unicode() || value.length() == 0)
 	return;
