@@ -338,6 +338,14 @@ can simply call the accessor method (i.e. in updateText() call text() to get the
 
 <H3><A NAME="kio">Changes in kio</A></H3>
 
+<H4>KPropertiesDialog</H4>
+<ul>
+  <li>The header file has been renamed from kpropsdlg.h to kpropertiesdialog.h.</li>
+  <li>KPropertiesDialog::KPropertiesDialog(const KURL&, mode_t, QWidget*,
+      const char*, bool, bool ) has been removed since mode_t was no longer
+      used. Simply omit the mode_t parameter.</li>
+</ul>
+
 <H4>KTarGz/KTarBase/KTarData</H4>
 <ul>
   <li>The KTarBase and KTarData classes have been removed.</li>
