@@ -298,7 +298,9 @@ int KSSL::peek(void *buf, int len) {
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
+  int rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
+  if (rc == 0) rc = -1;      // OpenSSL returns 0 on error too
+  return rc;
 #else
   return -1;
 #endif
@@ -308,7 +310,9 @@ int KSSL::read(void *buf, int len) {
 int KSSL::write(const void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
+  int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
+  if (rc == 0) rc = -1;      // OpenSSL returns 0 on error too
+  return rc;
 #else
   return -1;
 #endif
