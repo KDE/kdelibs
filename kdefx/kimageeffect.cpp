@@ -37,6 +37,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "kimageeffect.h"
 
+#include <config.h>
+
 #define MaxRGB 255L
 #define DegreesToRadians(x) ((x)*M_PI/180.0)
 
