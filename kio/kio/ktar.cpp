@@ -59,7 +59,7 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             mimetype = KMimeType::findByFileContent( filename )->name();
 	else
 	    mimetype = KMimeType::findByPath( filename, 0, true )->name();
-        kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
+        kdDebug(7041) << "KTar::KTar mimetype=" << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
         if ( mimetype == "application/x-tgz" || mimetype == "application/x-targz" || // the latter is deprecated but might still be around
@@ -132,7 +132,7 @@ void KTar::setOrigFileName( const QCString & fileName )
 {
     if ( !isOpened() || !(mode() & IO_WriteOnly) )
     {
-        kdWarning() << "KTar::setOrigFileName: File must be opened for writing first.\n";
+        kdWarning(7041) << "KTar::setOrigFileName: File must be opened for writing first.\n";
         return;
     }
     static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
@@ -182,7 +182,7 @@ bool KTar::openArchive( int mode )
                 // because the other digits are filled with all sorts of different chars by different tars ...
                 if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) )
                 {
-                    kdWarning() << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
+                    kdWarning(7041) << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
                     return false;
                 }
 	    }
@@ -255,7 +255,7 @@ bool KTar::openArchive( int mode )
                 isDumpDir = true;
             }
             //bool islink = ( typeflag == '1' || typeflag == '2' );
-            //kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
+            //kdDebug(7041) << "typeflag=" << typeflag << " islink=" << islink << endl;
 
             if (isdir)
                 access |= S_IFDIR; // f*cking broken tar files
@@ -263,7 +263,7 @@ bool KTar::openArchive( int mode )
             KArchiveEntry* e;
             if ( isdir )
             {
-                //kdDebug() << "KArchive::open directory " << nm << endl;
+                //kdDebug(7041) << "KArchive::open directory " << nm << endl;
                 e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
             }
             else
@@ -287,10 +287,10 @@ bool KTar::openArchive( int mode )
                     if ( typeflag == '1' )
                     {
                         size = nm.length(); // in any case, we don't want to skip the real size, hence this resetting of size
-                        kdDebug() << "HARD LINK, setting size to " << size << endl;
+                        kdDebug(7041) << "HARD LINK, setting size to " << size << endl;
                     }
 
-                    //kdDebug() << "KArchive::open file " << nm << " size=" << size << endl;
+                    //kdDebug(7041) << "KArchive::open file " << nm << " size=" << size << endl;
 
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->at(), size );
@@ -299,9 +299,9 @@ bool KTar::openArchive( int mode )
                 // Skip contents + align bytes
                 int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kdDebug() << "KArchive::open, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
+                //kdDebug(7041) << "KArchive::open, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
                 if (! dev->at( dev->at() + skip ) )
-                    kdWarning() << "KArchive::open skipping " << skip << " failed" << endl;
+                    kdWarning(7041) << "KArchive::open skipping " << skip << " failed" << endl;
             }
 
             if ( pos == -1 )
@@ -343,13 +343,13 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
 {
     if ( !isOpened() )
     {
-        kdWarning() << "KArchive::writeDir: You must open the tar file before writing to it\n";
+        kdWarning(7041) << "KTar::writeDir: You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & IO_WriteOnly) )
     {
-        kdWarning() << "KArchive::writeDir: You must open the tar file for writing\n";
+        kdWarning(7041) << "KTar::writeDir: You must open the tar file for writing\n";
         return false;
     }
 
@@ -395,13 +395,13 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
 {
     if ( !isOpened() )
     {
-        kdWarning() << "KArchive::writeFile: You must open the tar file before writing to it\n";
+        kdWarning(7041) << "KArchive::writeFile: You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & IO_WriteOnly) )
     {
-        kdWarning() << "KArchive::writeFile: You must open the tar file for writing\n";
+        kdWarning(7041) << "KArchive::writeFile: You must open the tar file for writing\n";
         return false;
     }
 

@@ -185,6 +185,8 @@
 7033        KFileMetaInfo
 7034        KFileMetainfo (plugins)
 7040        KZip
+7041        KTar
+7042        KAr
 
 # 71xx      are for kioslaves
 7101        kio_file
