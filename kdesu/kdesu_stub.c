@@ -227,6 +227,7 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	printf("kdesu_stub: user %s does not exist!\n", params[P_USER].value);
 	exit(1);
     }
+    xsetenv("HOME", pw->pw_dir);
     sprintf(buf, "%s/.kde/", pw->pw_dir);
     xsetenv("KDEHOME", buf);
 
