@@ -71,6 +71,7 @@ HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
     parser = p;
     currToken = 0;
     cachedScript = 0;
+    executingScript = false;
 
     reset();
 }
