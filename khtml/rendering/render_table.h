@@ -228,6 +228,8 @@ public:
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
+    virtual short width() const;
+
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );

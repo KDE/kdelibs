@@ -1129,6 +1129,10 @@ void RenderTableSection::setCellWidths()
     }
 }
 
+short RenderTableSection::width() const
+{
+    return table()->width();
+}
 
 void RenderTableSection::calcRowHeight()
 {
