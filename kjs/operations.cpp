@@ -21,8 +21,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#ifndef HAVE_FLOAT_H
+#ifndef HAVE_FLOAT_H   /* just for !Windows */
 #define HAVE_FLOAT_H 0
+#define HAVE_FUNC__FINITE 0
 #endif
 
 #include <stdio.h>
@@ -36,7 +37,7 @@
 #endif
 #endif /* HAVE_FUNC_ISINF */
 
-#if HAVE_FLOAT_H /* for Windows */
+#if HAVE_FLOAT_H
 #include <float.h>
 #endif
 
@@ -51,7 +52,7 @@ bool KJS::isNaN(double d)
 #ifdef HAVE_FUNC_ISNAN
   return isnan(d);
 #elif defined HAVE_FLOAT_H
-  return _isnan(d) != 0;	
+  return _isnan(d) != 0;
 #else
   return !(d == d);
 #endif
@@ -59,17 +60,15 @@ bool KJS::isNaN(double d)
 
 bool KJS::isInf(double d)
 {
-#ifdef HAVE_FUNC_ISINF
+#if defined(HAVE_FUNC_ISINF)
   return isinf(d);
-#elif defined HAVE_FLOAT_H
+#elif HAVE_FUNC_FINITE
+  return finite(d) == 0 && d == d;
+#elif HAVE_FUNC__FINITE
   return _finite(d) == 0 && d == d;
 #else
-#ifdef HAVE_FUNC_FINITE
-  return finite(d) == 0 && d == d;
-#else
   return false;
-#endif /* HAVE_FUNC_FINITE */
-#endif /* HAVE_FUNC_ISINF */
+#endif
 }
 
 // ECMA 11.9.3
