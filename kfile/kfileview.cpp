@@ -18,8 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kfileinfocontents.h"
-#include <qpixmap.h>
+#include "kfileview.h"
 #include <qsignal.h>
 #include <kapp.h>
 #include "config-kfile.h"
@@ -32,45 +31,75 @@
 #undef Unsorted
 #endif
 
-QPixmap *KFileInfoContents::folder_pixmap = 0;
-QPixmap *KFileInfoContents::locked_folder = 0;
-QPixmap *KFileInfoContents::file_pixmap = 0;
-QPixmap *KFileInfoContents::locked_file = 0;
-
-KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
+KFileView::KFileView()
 {
-    sorted_max = 10000;
-    sortedArray = new KFileInfo*[sorted_max];
-    sorted_length = 0;
     reversed   = false;        // defaults
     mySortMode = Increasing;
-    mySorting  = sorting;
-    keepDirsFirst = true;
+    mySorting  = QDir::Name;
 
-    useSingleClick = use;
+    sig = new KFileViewSignaler();
+    sig->setName("view-signaller");
 
-    nameList = 0;
-
-    ASSERT (folder_pixmap && locked_folder && file_pixmap && locked_file);
-
-    sig = new KFileInfoContentsSignaler();
     filesNumber = 0;
     dirsNumber = 0;
+    first = 0;
+    // last = 0;
+
+    view_mode = All;
+    selection_mode = Single;
+
 }
 
-KFileInfoContents::~KFileInfoContents()
+KFileView::~KFileView()
 {
-    delete [] sortedArray;
-    delete nameList;
     delete sig;
 }
 
-
-bool KFileInfoContents::addItem(const KFileInfo *i)
+void KFileView::setOperator(QObject *ops)
 {
-    if (!acceptsFiles() && i->isFile())
+    if (ops) {
+	QObject::connect(sig,
+			 SIGNAL( activatedMenu(const KFileViewItem * ) ),
+			 ops, SLOT(activatedMenu(const KFileViewItem * ) ) );
+	
+	QObject::connect(sig,
+			 SIGNAL( dirActivated(const KFileViewItem *) ),
+			 ops, SLOT( selectDir(const KFileViewItem*) ) );
+	
+	QObject::connect(sig,
+			 SIGNAL( fileSelected(const KFileViewItem *) ),
+			 ops, SLOT( selectFile(const KFileViewItem*) ) );
+	
+	QObject::connect(sig,
+			 SIGNAL( fileHighlighted(const KFileViewItem *) ),
+			 ops, SLOT( highlightFile(const KFileViewItem*) ) );
+    } else
+	sig->disconnect((QObject*)0);
+}
+
+void KFileView::activateMenu( const KFileViewItem *i )
+{
+    sig->activateMenu( i );
+}
+
+/*
+bool KFileView::addItem( KFileViewItem *i )
+{
+    if (!updateNumbers(i))
 	return false;
-    if (!acceptsDirs() && i->isDir())
+
+    return insertItem(i);
+}
+*/
+bool KFileView::updateNumbers(const KFileViewItem *i)
+{
+    if (i->isHidden())
+	return false;
+
+    if (!( viewMode() & Files ) && i->isFile())
+	return false;
+
+    if (!( viewMode() & Directories ) && i->isDir())
 	return false;
 
     if (i->isDir())
@@ -78,26 +107,126 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
     else
 	filesNumber++;
 
-    return addItemInternal(i);
+    return true;
 }
 
-void KFileInfoContents::addItemList(const KFileInfoList *list)
+void KFileView::addItemList(const KFileViewItemList *list)
 {
-    setAutoUpdate(false);
+    KFileViewItem *tmp, *tfirst = 0;
+    int counter = 0;
 
-    bool repaint_needed = false;
-    KFileInfoListIterator it(*list);
-    for (; it.current(); ++it) {
-	debugC("insert %s", (const char *)((it.current()->fileName()).local8Bit()));
-	repaint_needed |= addItem(it.current());
+    for (KFileViewItemListIterator it(*list); it.current(); ++it) {
+
+	tmp = it.current();
+
+	if (!updateNumbers(tmp))
+	    continue;
+
+	counter++;
+
+	if (!tfirst) {
+	    tfirst = tmp;
+	    tfirst->setNext(0);
+	    continue;
+	}
+	
+	tmp->setNext(tfirst);
+	tfirst = tmp;
     }
-    setAutoUpdate(true);
-
-    if (repaint_needed)
-	repaint(true);
+    insertSorted(tfirst, counter);
 }
 
-void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
+void qt_qstring_stats();
+
+void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
+{
+    debugC("insertedSorted %ld %d", time(0), counter);
+
+    KFileViewItem **sortedArray = new KFileViewItem*[counter];
+    KFileViewItem *it;
+    uint index;
+    for (it = tfirst, index = 0; it; index++, it = it->next())
+	sortedArray[index] = it;
+
+    ASSERT(index == counter);
+
+    QuickSort(sortedArray, 0, counter - 1);
+    tfirst = sortedArray[0];
+    tfirst->setNext(0);
+
+    KFileViewItem *tlast = tfirst;
+    for (index = 1; index < counter; index++) {
+	tlast->setNext(sortedArray[index]);
+	tlast = sortedArray[index];
+	sortedArray[index]->setNext(0);
+    }
+    delete [] sortedArray;
+
+    debugC("inserting %ld %p", time(0), first);
+
+#if 0
+      for (it = first; it; it = it->next()) {
+      removeItem(it);
+      }
+#else
+    clearView();
+#endif
+
+    first = mergeLists(first, tfirst);
+
+    for (it = first; it; it = it->next())
+	insertItem(it);
+
+#ifdef Q2HELPER
+    qt_qstring_stats();
+#endif
+}
+
+KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
+{
+    if (!list1)
+	return list2;
+
+    if (!list2)
+	return list1;
+
+    KFileViewItem *newlist;
+
+    if (compareItems(list1, list2) < 0) {
+	newlist = list1;
+	list1 = list1->next();
+    } else {
+	newlist = list2;
+	list2 = list2->next();
+    }
+
+    KFileViewItem *newstart = newlist;
+
+    while (list1 || list2) {
+
+	if (!list1) { // first list empty
+	    newlist->setNext(list2);
+	    break;
+	}
+	if (!list2) { // second list empty
+	    newlist->setNext(list1);
+	    break;
+	}
+	if (compareItems(list1, list2) < 0) {
+	    newlist->setNext(list1);
+	    newlist = list1;
+	    list1 = list1->next();
+	} else {
+	    newlist->setNext(list2);
+	    newlist = list2;
+	    list2 = list2->next();
+	}
+    }
+
+    return newstart;
+}
+
+void KFileView::setSorting(QDir::SortSpec new_sort)
 {
     QDir::SortSpec old_sort =
 	static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
@@ -117,60 +246,25 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     if (count() <= 1) // nothing to do in this case
 	return;
 
-    if ( mySorting & QDir::DirsFirst )
-        keepDirsFirst = true;
-    else
-        keepDirsFirst = false;
-
-    setAutoUpdate(false);
-    clearView();
-
-    debugC("qsort %ld", time(0));
-    QuickSort(sortedArray, 0, sorted_length - 1);
-    debugC("qsort %ld", time(0));
-    for (uint i = 0; i < sorted_length; i++)
-        insertItem(sortedArray[i], i);
-    debugC("qsort %ld", time(0));
-    setAutoUpdate(true);
-    repaint(true);
+    insertSorted(first, count());
 }
 
-void KFileInfoContents::clear()
+void KFileView::clear()
 {
-    sorted_length = 0;
-    delete nameList;
-    nameList = 0;
     clearView();
     filesNumber = 0;
     dirsNumber = 0;
-}
-
-void KFileInfoContents::connectDirSelected( QObject *receiver,
-					    const char *member)
-{
-    sig->connect(sig, SIGNAL(dirActivated(KFileInfo*)), receiver, member);
-}
-
-void KFileInfoContents::connectFileHighlighted( QObject *receiver,
-					 const char *member)
-{
-    sig->connect(sig, SIGNAL(fileHighlighted(KFileInfo*)), receiver, member);
-}
-
-void KFileInfoContents::connectFileSelected( QObject *receiver,
-				      const char *member)
-{
-    sig->connect(sig, SIGNAL(fileSelected(KFileInfo*)), receiver, member);
+    first = 0;
 }
 
 // this implementation is from the jdk demo Sorting
-void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
+void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 {
     int lo = lo0;
     int hi = hi0;
-    const KFileInfo *mid;
+    const KFileViewItem *mid;
 
-    if ( hi0 > lo0)
+    if ( hi0 >= lo0)
 	{
 	
 	    /* Arbitrarily establishing partition element as the midpoint of
@@ -197,9 +291,9 @@ void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
 		    if( lo <= hi )
 			{
 			    if (lo != hi) {
-				const KFileInfo *T = a[lo];
+				const KFileViewItem *T = a[lo];
 				a[lo] = a[hi];
-				a[hi] = const_cast<KFileInfo*>(T);
+				a[hi] = const_cast<KFileViewItem*>(T);
 			    }
 			    ++lo;
 			    --hi;
@@ -221,17 +315,15 @@ void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
 	}
 }
 
-int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
+int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) const
 {
-    static int counter = 0;
-    counter++;
-    if (counter % 1000 == 0)
-	debugC("compare %d", counter);
-
     bool bigger = true;
 
-    if (keepDirsFirst && (fi1->isDir() != fi2->isDir()))
-      bigger = !fi1->isDir();
+    if (fi1 == fi2)
+	return 0;
+	
+    if (fi1->isDir() != fi2->isDir())
+	bigger = !fi1->isDir();
     else {
 
       QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
@@ -248,7 +340,7 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 	break;
       case QDir::Name:
       default:
-	bigger = ( fi1->fileName() > fi2->fileName() );
+	bigger = ( fi1->name() > fi2->name() );
 	break;
       }
     }
@@ -256,127 +348,64 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     if (reversed)
       bigger = !bigger;
 
-    // debugC("compare %s against %s: %s", fi1->fileName(), fi2->fileName(), bigger ? "bigger" : "smaller");
+    // debugC("compare " + fi1->fileName() + " against " +
+    // fi2->fileName() + ": " + ( bigger ? "bigger" : "smaller"));
 
     return (bigger ? 1 : -1);
 }
 
-int KFileInfoContents::findPosition(const KFileInfo *i, int left)
+void KFileView::select( const KFileViewItem *entry )
 {
-    int pos = left;
-    int right = sorted_length - 1;
+    debugC("select %s", entry->name().ascii());
+    assert(entry);
 
-    while (left < right-1) {
-	pos = (left + right) / 2;
-	if (compareItems(i, sortedArray[pos]) < 0)
-	    right = pos;
-	else
-	    left = pos;
-    }
-
-    // if pos is the left side (rounded), it may be, that we haven't
-    // compared to the right side and gave up too early
-    if (pos == left && compareItems(i, sortedArray[right]) > 0)
-	pos = right+1;
-    else
-	pos = right;
-
-    if (pos == -1)
-	pos = sorted_length;
-
-    // debugC("findPosition %s %d", i->fileName(), pos);
-    return pos;
-}
-
-bool KFileInfoContents::addItemInternal(const KFileInfo *i)
-{
-    int pos = -1;
-
-    if ( sorted_length > 1 && mySorting != QDir::Unsorted) {
-	// insertation using log(n)
-	pos = findPosition(i, 0);
+    if ( entry->isDir() ) {
+	debugC("selectDir %s", entry->name().ascii());
+	sig->activateDir(entry);
     } else {
-	if (sorted_length == 1 && compareItems(i, sortedArray[0]) < 0)
-	    pos = 0;
-	else
-	    pos = sorted_length;
+	sig->activateFile(entry);
     }
-
-    // if the namelist already exist, we can use inSort. In general
-    // this is too slow
-    if (nameList)
-	nameList->inSort(i->fileName().ascii());
-
-    insertSortedItem(i, pos);
-    return insertItem(i, pos);
 }
 
-
-QString KFileInfoContents::text(uint index) const
-{
-    if (index < sorted_length)
-	return sortedArray[index]->fileName();
-    else
-	return "";
-}
-
-void KFileInfoContents::select( uint index )
-{
-  if (index < sorted_length)
-    select(sortedArray[index]);
-}
-
-void KFileInfoContents::select( KFileInfo *entry)
-{
-  assert(entry);
-
-  if ( entry->isDir() ) {
-    debugC("selectDir %s",(const char *)((entry->fileName()).local8Bit()));
-    sig->activateDir(entry);
-  } else {
-    sig->activateFile(entry);
-  }
-}
-
-void KFileInfoContents::highlight( KFileInfo *entry )
+void KFileView::highlight( const KFileViewItem *entry )
 {
     sig->highlightFile(entry);
 }
 
-void KFileInfoContents::highlight( int index )
-{
-    highlight(sortedArray[index]);
-}
-
-
-void  KFileInfoContents::repaint(bool f)
+void  KFileView::updateView(bool f)
 {
     widget()->repaint(f);
 }
 
-void KFileInfoContents::setCurrentItem(const QString &item,
-				       const KFileInfo *entry)
+void KFileView::updateView(const KFileViewItem *)
 {
-    uint i;
-    if (item != 0) {
-	for (i = 0; i < sorted_length; i++)
-	    if (sortedArray[i]->fileName() == item) {
-		highlightItem(i);
-		highlight(i);
+    debug("repaint not reimplemented in %s", widget()->name("KFileView"));
+}
+
+void KFileView::setCurrentItem(const QString &item,
+			       const KFileViewItem *entry)
+{
+    if (!item.isNull()) {
+	KFileViewItem *it = first;
+	while (it) {
+	    if (it->name() == item) {
+		highlightItem(it);
+		highlight(it);
 		return;
 	    }
-    } else
-	for (i = 0; i < sorted_length; i++)
-	    if (sortedArray[i] == entry) {
-		highlightItem(i);
-		return;
-	    }
+	    it = it->next();
+	}
+    } else {
+	highlightItem(entry);
+	return;
+    }
 
     warning("setCurrentItem: no match found.");
 }
 
-QString KFileInfoContents::findCompletion( const char *base,
-					   bool activateFound )
+#if 0
+QString KFileView::findCompletion( const char *base,
+				   bool activateFound )
 {
 
     if (!nameList) {
@@ -454,20 +483,20 @@ QString KFileInfoContents::findCompletion( const char *base,
 
 	bool matchExactly = (name == body);
 
-	if (matchExactly && (activateFound || useSingleClick))
+	if (matchExactly && activateFound)
 	    {
 	      for (uint j = 0; j < sorted_length; j++)
 		{
-		  KFileInfo *i = sortedArray[j];
+		  KFileViewItem *i = sortedArray[j];
 		
 		    if (i->fileName() == name) {
 			if (sortedArray[j]->isDir())
 			    body += "/";
-			highlightItem(j);
+			highlightItem(i);
 			if (activateFound)
-			    select(j);
+			    select(i);
 			else
-			    highlight(j);
+			    highlight(i);
 			break;
 		    }
 		}
@@ -481,38 +510,27 @@ QString KFileInfoContents::findCompletion( const char *base,
     }
 
 }
+#endif
 
-void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
+void KFileView::setSelectMode( SelectionMode sm )
 {
-    //  debug("insert %s %d", item->fileName(), pos);
-    if (sorted_length == sorted_max) {
-	sorted_max *= 2;
-	KFileInfo **newArray = new KFileInfo*[sorted_max];
-	int found = 0;
-	for (uint j = 0; j < sorted_length; j++) {
-	    if (j == pos) {
-		found = 1;
-		newArray[j] = const_cast<KFileInfo*>(item);
-	    }
-	    newArray[j+found] = sortedArray[j];
-	}
-	if (!found)
-	    newArray[pos] = const_cast<KFileInfo*>(item);
-	
-	delete [] sortedArray;
-	sortedArray = newArray;
-	sorted_length++;
-	return;
-    }
-
-    // faster repositioning (very fast :)
-    memmove(sortedArray + pos+1,
-	    sortedArray + pos,
-	    (sorted_max - 1 - pos) * sizeof(KFileInfo*));
-
-    sortedArray[pos] = const_cast<KFileInfo*>(item);
-    sorted_length++;
+    selection_mode = sm;
 }
 
-#include "kfileinfocontents.moc" // for the signaler
+KFileView::SelectionMode KFileView::selectMode() const
+{
+    return selection_mode;
+}
+
+void KFileView::setViewMode( ViewMode vm )
+{
+    view_mode = vm;
+}
+
+KFileView::ViewMode KFileView::viewMode() const
+{
+    return view_mode;
+}
+
+#include "kfileview.moc"
 
