@@ -587,7 +587,8 @@ void KHTMLPart::clear()
     delete d->m_decoder;
 
   d->m_decoder = 0;
-
+  d->m_haveEncoding = false;
+  
   if ( d->m_view )
     d->m_view->clear();
 
@@ -2149,7 +2150,7 @@ void KHTMLPart::setFontBaseInternal( int base, bool absolute )
 	d->m_fontBase = 0;
 
    d->m_paDecFontSizes->setEnabled( d->m_fontBase > 0 );
-    
+
     updateFontSize( d->m_fontBase );
 }
 
