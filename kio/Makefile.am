@@ -21,7 +21,7 @@ AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 INCLUDES=  -I$(srcdir)/.. $(all_includes) $(SSL_INCLUDES)
 
 SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac \
-	kdesasl gzip $(BZIP2DIR)
+	kdesasl gzip kssld $(BZIP2DIR)
 
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice ktelnetservice
