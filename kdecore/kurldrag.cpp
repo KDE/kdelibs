@@ -26,22 +26,30 @@
 #include <kdeversion.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
+
+class KURLDragPrivate
+{
+public:
+    bool m_exportAsText;
+};
 
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
-    : QUriDrag(dragSource, name), m_metaData()
+    : QUriDrag(dragSource, name), m_metaData(), d( 0 )
 {
     init(urls);
 }
 
 KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString,QString>& metaData,
                     QWidget* dragSource, const char * name )
-    : QUriDrag(dragSource, name), m_metaData(metaData)
+    : QUriDrag(dragSource, name), m_metaData(metaData), d( 0 )
 {
     init(urls);
 }
 
 KURLDrag::~KURLDrag()
 {
+    delete d;
 }
 
 void KURLDrag::init(const KURL::List &urls)
@@ -52,9 +60,17 @@ void KURLDrag::init(const KURL::List &urls)
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
     {
-        m_urls.append( urlToString(*uit).latin1() ); 
+        m_urls.append( urlToString(*uit).latin1() );
     }
     setUris(m_urls);
+}
+
+void KURLDrag::setExportAsText( bool exp )
+{
+    // For now d is only used here, so create it on demand
+    if ( !d )
+        d = new KURLDragPrivate;
+    d->m_exportAsText = exp;
 }
 
 KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
@@ -135,13 +151,15 @@ const char * KURLDrag::format( int i ) const
     if ( i == 0 )
         return "text/uri-list";
     else if ( i == 1 )
-        return "text/plain";
-    else if ( i == 2 )
         return "application/x-kio-metadata";
+    if ( d && d->m_exportAsText == false )
+        return 0;
+    if ( i == 2 )
+        return "text/plain";
     else if ( i == 3 ) //Support this for apps that use plain XA_STRING clipboard
         return "text/plain;charset=ISO-8859-1";
     else if ( i == 4 ) //Support this for apps that use the UTF_STRING clipboard
-        return "text/plain;charset=UTF-8"; 
+        return "text/plain;charset=UTF-8";
     else return 0;
 }
 
@@ -249,5 +267,4 @@ QString KURLDrag::urlToString(const KURL &url)
 // deprecated ctor
 KURLDrag::KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
                     QWidget * dragSource, const char* name ) :
-QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ) {}
-
+QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}

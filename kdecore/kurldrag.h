@@ -71,6 +71,14 @@ public:
   virtual ~KURLDrag();
 
   /**
+   * By default, KURLDrag also exports the URLs as plain text, for e.g. dropping onto a text editor.
+   * But in some cases this might not be wanted, e.g. if using the KURLDrag in a KMultipleDrag
+   * and another component of the multiple-drag provides better plain text data.
+   * In such a case, setExportAsText( false ) should be called.
+   */
+  void setExportAsText( bool exp );
+
+  /**
    * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
    */
   static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
@@ -102,7 +110,7 @@ public:
 
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs and a set of metadata. Decoding will fail if 
+   * into a list of KURLs and a set of metadata. Decoding will fail if
    * at least one decoded value is not a valid KURL.
    * You should be using this one, if possible.
    * @param e the mime source
