@@ -103,14 +103,18 @@ PKCS12 *newpkcs = NULL;
 
   newpkcs = KOSSL::self()->d2i_PKCS12_fp(fp, &newpkcs);
 
-  if (!newpkcs) return NULL;
+  fclose(fp);
+  if (!newpkcs) {
+	KOSSL::self()->ERR_clear_error();
+	return NULL;
+  }
 
   KSSLPKCS12 *c = new KSSLPKCS12;
   c->setCert(newpkcs);
 
   // Now we parse it to see if we can decrypt it and interpret it
   if (!c->parse(password)) {
-     delete c;  c = NULL;
+        delete c;  c = NULL;
   }
 
   return c;
@@ -172,6 +176,7 @@ X509 *x = NULL;
   } else {
     _caStack = NULL;
     _pkey = NULL;
+    kossl->ERR_clear_error();
   }
 #endif
 return false;  
