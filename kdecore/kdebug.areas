@@ -61,6 +61,7 @@
 7103	kio_http
 7104	kcookiejar
 7105	kio_pop3
+7106	kio_smb
 
 # old stuff
 8000	corba
