@@ -111,7 +111,13 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         deleteWordForward();
         e->accept();
         return;
-    }
+    }/*
+	 
+	 HACK HACK! WORK ARROUND!
+	 it looks like there is a bug in qt... commenting these lines fixes
+	 some cursor movement problems with BIDI... please uncomment these 
+	 lines after QT is fixed
+	 
     else if ( KStdAccel::backwardWord().contains( key ) )
     {
       moveCursor(MoveWordBackward, false );
@@ -123,7 +129,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
       moveCursor( MoveWordForward, false );
       e->accept();
       return;
-    }
+    }*/
     else if ( KStdAccel::next().contains( key ) )
     {
       moveCursor( MovePgDown, false );
