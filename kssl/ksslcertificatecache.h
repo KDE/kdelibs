@@ -17,6 +17,9 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+// WARNING: THIS CODE IS INCOMPLETE AND MAY CHANGE WITHOUT NOTICE
+
 #ifndef _INCLUDE_KSSLCCACHE_H
 #define _INCLUDE_KSSLCCACHE_H
 
