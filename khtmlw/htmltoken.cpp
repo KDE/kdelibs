@@ -372,7 +372,7 @@ void HTMLTokenizer::write( const char *str )
 	        charEntity = false;
                 memcpy(dest,searchBuffer+1, searchCount);
 		dest += searchCount;
-		//*dest++ = *src++;
+		// *dest++ = *src++;
 		if ( pre )
 		    prePos += searchCount;	    
 	    }
@@ -631,7 +631,8 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tquote)
 	    {
-	    	*dest++ = *src; // Just add it
+		if (discard == NoneDiscard)
+		    pending = SpacePending;
 	    }
 	    else if ( tag )
 	    {
@@ -679,7 +680,8 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tquote)
 	    {
-	    	*dest++ = *src; // Just add it
+		if (discard == NoneDiscard)
+		    pending = SpacePending;
 	    }
 	    else if ( tag )
 	    {
@@ -711,6 +713,9 @@ void HTMLTokenizer::write( const char *str )
 		src++;
 		if ( *(dest-1) == '=' && !tquote )
 		{
+		    // according to HTML4 DTD, we can simplify
+		    // strings like "  my \nstring " to "my string"
+		    discard = SpaceDiscard; // ignore leading spaces
 		    pending = NonePending;
 		    tquote = true;
 		    *dest++ = '\"';
