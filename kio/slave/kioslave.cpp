@@ -36,6 +36,7 @@
 #include <kstddirs.h>
 #include <ktempfile.h>
 #include <klocale.h>
+#include <kprotocolmanager.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -184,9 +185,10 @@ KIODaemon::requestSlave(const QString &protocol,
 
     kDebugInfo(7016, "requestSlave( %s, %s, %s)",
 		protocol.ascii(), host.ascii(), app_socket.ascii());
-    QString protocol_library = QString::fromLatin1("%1/.libs/kio_%2.la").arg(protocol).arg(protocol);
+    QString libname = KProtocolManager::self().library( protocol );
+    QString protocol_library = QString::fromLatin1("%1/.libs/%2").arg(protocol).arg(libname);
     if (!QFile::exists(protocol_library))
-	 protocol_library = locate("lib", QString("kio_%1.la").arg(protocol));
+	 protocol_library = locate("lib", libname);
 
     if (protocol_library.isNull()) {
 	error = i18n("error: no such protocol");
