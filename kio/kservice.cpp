@@ -67,13 +67,13 @@ KService::init( KDesktopFile *config )
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
-    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    /*kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
                     << " has no Type=... entry."
                     << " It should be \"Application\" or \"Service\"" << endl;
     m_bValid = false;
-    return;
-  }
-  if ( m_strType != "Application" && m_strType != "Service" )
+    return;*/
+    m_strType = "Application";
+  } else if ( m_strType != "Application" && m_strType != "Service" )
   {
     kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
                     << " has Type=" << m_strType
