@@ -414,39 +414,42 @@ void KateView::setupEditActions()
     i18n("Select to Matching Bracket"),      SHIFT +  CTRL + Key_6,
     this, SLOT(shiftToMatchingBracket()),
     ac, "select_matching_bracket" );
+  // anders: shortcuts doing any changes should not be created in browserextension
+  if ( !m_doc->m_bReadOnly )
+  {
+    new KAction(
+      i18n("Transpose Characters"),           CTRL          + Key_T,
+      this, SLOT(transpose()),
+      ac, "transpose_char" );
+//   new KAction(
+//      i18n("Transpose Words"),                CTRL + SHIFT + Key_T,
+//      this, SLOT(transposeWord()),
+//      ac, "transpose_word" );
+//   new KAction(
+//      i18n("Transpose Line"),                 CTRL + SHIFT + Key_T, ??? What key combo?
+//      this, SLOT(transposeLine()),
+//      ac, "transpose_line" );
 
-  new KAction(
-    i18n("Transpose Characters"),           CTRL          + Key_T,
-    this, SLOT(transpose()),
-    ac, "transpose_char" );
-// new KAction(
-//    i18n("Transpose Words"),                CTRL + SHIFT + Key_T,
-//    this, SLOT(transposeWord()),
-//    ac, "transpose_word" );
-// new KAction(
-//    i18n("Transpose Line"),                 CTRL + SHIFT + Key_T, ??? What key combo?
-//    this, SLOT(transposeLine()),
-//    ac, "transpose_line" );
+//   new KAction(
+//     i18n("Delete Word"),                    CTRL + Key_K, ??? What key combo?
+//     this, SLOT(killWord()),
+//     ac, "delete_word" );
+    new KAction(
+      i18n("Delete Line"),                    CTRL + Key_K,
+      this, SLOT(killLine()),
+      ac, "delete_line" );
 
-//  new KAction(
-//    i18n("Delete Word"),                    CTRL + Key_K, ??? What key combo?
-//    this, SLOT(killWord()),
-//    ac, "delete_word" );
-  new KAction(
-    i18n("Delete Line"),                    CTRL + Key_K,
-    this, SLOT(killLine()),
-    ac, "delete_line" );
+    new KAction(
+      i18n("Delete Word Left"),               CTRL + Key_Backspace,
+      this, SLOT(deleteWordLeft()),
+      ac, "delete_word_left" );
 
-  new KAction(
-    i18n("Delete Word Left"),               CTRL + Key_Backspace,
-    this, SLOT(deleteWordLeft()),
-    ac, "delete_word_left" );
-
-  new KAction(
-    i18n("Delete Word Right"),              CTRL + Key_Delete,
-    this, SLOT(deleteWordRight()),
-    ac, "delete_word_right" );
-
+    new KAction(
+      i18n("Delete Word Right"),              CTRL + Key_Delete,
+      this, SLOT(deleteWordRight()),
+      ac, "delete_word_right" );
+  }
+  
   connect( this, SIGNAL(gotFocus(Kate::View*)),
            this, SLOT(slotGotFocus()) );
   connect( this, SIGNAL(lostFocus(Kate::View*)),
