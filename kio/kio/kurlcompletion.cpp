@@ -23,6 +23,7 @@
 #include <config.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <limits.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
