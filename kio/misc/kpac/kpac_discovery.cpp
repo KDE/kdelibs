@@ -76,7 +76,7 @@ bool KPACDiscovery::tryDiscovery()
             if (m_data.find('.') == -1) // only TLD left, bail out
                 return false;
             m_curl.setProtocol("http");
-            m_curl.setHost("wpad." + m_data);
+            m_curl.setHost("wpad." + m_data + ".");
             m_curl.setPath("/wpad.dat");
             kdDebug(7025) << "KPACDiscovery::tryDiscovery(): returning " << m_curl.prettyURL() << endl;
             return true;
