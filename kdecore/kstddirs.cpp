@@ -201,6 +201,61 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
   closedir( dp );
 }
 
+static void lookupPrefix(const QString& prefix, const QString& relpath,
+			 const QRegExp &regexp, 
+			 QStringList& list, bool recursive)
+{
+    if (relpath.isNull())
+	return lookupDirectory(prefix, regexp, list, recursive);
+    
+    QString path;
+    QString rest;
+    
+    if (relpath.length())
+    {
+       int slash = relpath.find('/');
+       if (slash < 0)
+	   rest = relpath.left(relpath.length() - 1);
+       else {
+	   path = relpath.left(slash + 1);
+	   rest = relpath.mid(slash + 1);
+       }
+    }
+
+    QRegExp pathExp(path, true, true);
+    DIR *dp = opendir( QFile::encodeName(prefix) );
+    if (!dp) {
+	warning("%s doesn't exist!", prefix.ascii());
+	return;
+    }
+
+    assert(prefix.at(prefix.length() - 1) == '/');
+
+    struct dirent *ep;
+    struct stat buff;
+
+    while( ( ep = readdir( dp ) ) != 0L )
+    {
+	QString fn( QFile::decodeName(ep->d_name));
+	if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+	    continue;
+
+	if (!pathExp.match(fn))
+	    continue; // No match
+	
+	fn = prefix + fn;
+	if ( stat( fn.ascii(), &buff ) != 0 ) {
+	    QString tmp = QString("Error statting %1:").arg( fn );
+	    perror(tmp.ascii());
+	    continue; // Couldn't stat (Why not?)
+	}
+	if ( S_ISDIR( buff.st_mode ))
+	    lookupPrefix(fn + '/', rest, regexp, list, recursive);
+    }
+    
+    closedir( dp );
+}
+
 QStringList KStandardDirs::findAllResources( const QString& type, 
 					     const QString& filter, 
 					     bool recursive,
@@ -231,7 +286,7 @@ QStringList KStandardDirs::findAllResources( const QString& type,
     
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) 
-      lookupDirectory(*it + filterPath, regExp, list, recursive);
+      lookupPrefix(*it, filterPath, regExp, list, recursive);
 
     if (uniq) {
 	QStringList suffixes;
