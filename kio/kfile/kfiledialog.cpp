@@ -1539,9 +1539,9 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 
     KURLComboBox *combo = d->pathCombo;
     combo->setURLs( kc->readListEntry( RecentURLs ) );
-    combo->setURL( ops->url() );
     combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
                                           DefaultRecentURLsNumber ) );
+    combo->setURL( ops->url() );
     autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
                                                 DefaultDirectoryFollowing );
 
