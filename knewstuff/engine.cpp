@@ -52,8 +52,8 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
 
 Engine::Engine( KNewStuff *newStuff, const QString &type,
                 const QString &providerList, QWidget *parentWidget ) :
-                mParentWidget( parentWidget ), 
-		mDownloadDialog( 0 ), mUploadDialog( 0 ), 
+                mParentWidget( parentWidget ),
+		mDownloadDialog( 0 ), mUploadDialog( 0 ),
 		mProviderDialog( 0 ), mUploadProvider( 0 ),
                 mProviderList( providerList ), mNewStuff( newStuff ),
 		mType( type )
@@ -144,6 +144,7 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
         for ( p = knewstuff.firstChild(); !p.isNull(); p = p.nextSibling() ) {
           QDomElement stuff = p.toElement();
           if ( stuff.tagName() != "stuff" ) continue;
+          if ( stuff.attribute("type", mType ) != mType) continue;
 
           Entry *entry = new Entry( stuff );
           mNewStuffList.append( entry );
@@ -151,7 +152,7 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
           mDownloadDialog->show();
 
           mDownloadDialog->addEntry( entry );
-    
+
           kdDebug(5850) << "KNEWSTUFF: " << entry->name() << endl;
 
           kdDebug(5850) << "  SUMMARY: " << entry->summary() << endl;
@@ -235,7 +236,7 @@ void Engine::selectUploadProvider( Provider::List *providers )
   }
 
   mProviderDialog->clear();
-  
+
   mProviderDialog->show();
   mProviderDialog->raise();
 
@@ -286,7 +287,7 @@ void Engine::upload( Entry *entry )
   if ( mUploadProvider->noUpload() ) {
     KURL noUploadUrl = mUploadProvider->noUploadUrl();
     if ( noUploadUrl.isEmpty() ) {
-      text.append( i18n("Please upload the files manually.") ); 
+      text.append( i18n("Please upload the files manually.") );
       KMessageBox::information( mParentWidget, text, caption );
     } else {
       int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
@@ -320,7 +321,7 @@ bool Engine::createMetaFile( Entry *entry )
 
   entry->setType(type());
   de.appendChild( entry->createDomElement( doc, de ) );
-  
+
   kdDebug(5850) << "--DOM START--" << endl << doc.toString()
             << "--DOM_END--" << endl;
 
@@ -334,13 +335,13 @@ bool Engine::createMetaFile( Entry *entry )
     mUploadMetaFile = QString::null;
     return false;
   }
-  
+
   QTextStream ts( &f );
   ts.setEncoding( QTextStream::UnicodeUTF8 );
   ts << doc.toString();
-  
+
   f.close();
-  
+
   return true;
 }
 
