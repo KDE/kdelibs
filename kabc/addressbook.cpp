@@ -76,6 +76,13 @@ bool AddressBook::save( Ticket *ticket )
   return success;
 }
 
+bool AddressBook::reload()
+{
+  if ( fileName().isEmpty() ) return false;
+
+  return load( fileName() );
+}
+
 void AddressBook::clear()
 {
   mAddressees.clear();

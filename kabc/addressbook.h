@@ -32,6 +32,7 @@ class QTimer;
 namespace KABC {
 
 class Format;
+class AddressBookPrivate;
 
 /**
   @short Address Book
@@ -137,6 +138,11 @@ class AddressBook : public QObject
       @param ticket a ticket object returned by @ref requestSaveTicket()
     */
     bool save( Ticket *ticket );
+
+    /**
+      Reload currently loaded addressbook.
+    */
+    bool reload();
     
     /**
       Return iterator for first entry of address book.
@@ -249,6 +255,8 @@ class AddressBook : public QObject
     
     QTimer *mFileCheckTimer;
     time_t mChangeTime;
+
+    AddressBookPrivate *d;
 };
 
 }
