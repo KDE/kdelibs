@@ -25,5 +25,5 @@ library. If you want the application to be extended, read kdeutils/kab/TODO.
 ° add "Nick name" field (after KDE 2.0)
 ° improve speed of database indexing
 --------------------------------------------------------------------------------
-                                                     Mirko Sucker, June 2000.
+                                                     Mirko Boehm, June 2000.
 

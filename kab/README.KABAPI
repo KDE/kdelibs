@@ -1,5 +1,6 @@
 The KDE addressbook
 ===================
+
 The kab API is a binary interface for application developers that want to
 use the users addressbook in their own applications. To use it, you have
 to link the binary of your program against "libkab.so", a DLL that exports
@@ -21,4 +22,4 @@ compiled.  Most of the possible problems should by now already be solved
 automatically by the automake script, but you need, for example, a C++
 compiler that handles templates properly.
 
-                                                   Mirko Sucker, September 1998.
+                                                   Mirko Boehm, September 1998.

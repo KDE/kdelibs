@@ -23,4 +23,8 @@ Since this directory provides only the kab library, you will have to
 install the kdeutils package, that contains the sources for kab's binary,
 also.
 
-                                                   Mirko Sucker, March 2000.
+                                                   Mirko Boehm, March 2000.
+
+PS: The situation described above seems to be solved in current
+distributions. All up-to-date compilers do quite well on the sources.
+						   Mirko Boehm, Mai 2001.

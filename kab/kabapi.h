@@ -59,7 +59,7 @@ class KListBox;
   * <tt>Please be careful to test for the return code NotImplemented as 
   * long the kab API is not completely finished.</tt>
   * @short The class KabAPI defines the API to access user address databases.
-  * @author Mirko Sucker <mirko@kde.org>
+  * @author Mirko Boehm <mirko@kde.org>
   * @version $Id$
   * @see #AddressBook #KDialogBase
   */
