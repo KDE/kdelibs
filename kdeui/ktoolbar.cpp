@@ -42,6 +42,8 @@
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
+#include <kpopmenu.h>
+#include <kanimwidget.h>
 
 #include "ktoolbarbutton.h"
 #include "ktoolbaritem.h"
@@ -142,16 +144,17 @@ KToolBar::~KToolBar()
 void KToolBar::init()
 {
   // construct our context popup menu
-  context = new QPopupMenu( 0, "context" );
-  context->insertItem( i18n("Top"),  CONTEXT_TOP );
-  context->setItemChecked(CONTEXT_TOP, true);
-  context->insertItem( i18n("Left"), CONTEXT_LEFT );
-  context->insertItem( i18n("Right"), CONTEXT_RIGHT );
-  context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
-  context->insertSeparator(-1);
-  context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
-  context->insertItem( i18n("Flat"), CONTEXT_FLAT );
-  context->insertSeparator(-1);
+  context = new KPopupMenu( 0, "context" );
+  context->insertTitle(i18n("Toolbar Menu"));
+
+  QPopupMenu *orient = new QPopupMenu( context, "orient" );
+  orient->insertItem( i18n("Top"),  CONTEXT_TOP );
+  orient->insertItem( i18n("Left"), CONTEXT_LEFT );
+  orient->insertItem( i18n("Right"), CONTEXT_RIGHT );
+  orient->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
+  orient->insertSeparator(-1);
+  orient->insertItem( i18n("Floating"), CONTEXT_FLOAT );
+  orient->insertItem( i18n("Flat"), CONTEXT_FLAT );
 
   QPopupMenu *mode = new QPopupMenu( context, "mode" );
   mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
@@ -166,6 +169,8 @@ void KToolBar::init()
 
   context->setFont(KGlobal::menuFont());
 
+  context->insertItem( i18n("Orientation"), orient );
+  orient->setItemChecked(CONTEXT_TOP, true);
   context->insertItem( i18n("Text position"), mode );
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon size"), size );
@@ -385,15 +390,14 @@ void KToolBar::layoutHorizontal(int w)
     Item *item = (*qli)->getItem();
 
     /* handle vertical separator lines */
-    if (item->inherits("QFrame"))
+    if (item->inherits("QFrame") &&
+        (*qli)->itemType() == KToolBarItem::Separator)
     {
       QFrame *frame = (QFrame*)item;
       if (frame->frameShape() == QFrame::HLine)
-      {
         frame->setFrameShape(QFrame::VLine);
-        frame->resize(5, tallest - 2);
-        continue;
-      }
+
+      frame->resize(5, tallest - 4);
     }
 
     // now handle this item if it is NOT right aligned
@@ -498,7 +502,16 @@ void KToolBar::layoutHorizontal(int w)
         tallest = 0;
       }
 
-      (*qli)->move(xOffset, yOffset);
+      /* if this is not a button, then we center it vertically */
+      if ((*qli)->itemType() != KToolBarItem::Button )
+      {
+        int widget_offset = (d->m_maxItemHeight - (*qli)->height())/2;
+        if (widget_offset < 0) widget_offset = 0;
+        (*qli)->move(xOffset, yOffset + widget_offset);
+      }
+      else
+        (*qli)->move(xOffset, yOffset);
+
       xOffset += 3 + (*qli)->width();
 
       /* We need to save the tallest height and the widest width. */
@@ -622,14 +635,14 @@ KToolBar::layoutVertical(int h)
   {
     /* check for the line */
     Item *item = (*qli)->getItem();
-    if (item->inherits("QFrame"))
+    if (item->inherits("QFrame") &&
+        (*qli)->itemType() == KToolBarItem::Separator)
     {
       QFrame *frame = (QFrame*)item;
       if (frame->frameShape() == QFrame::VLine)
-      {
         frame->setFrameShape(QFrame::HLine);
-        frame->resize(d->m_approxItemSize - 2, 5);
-      }
+
+      frame->resize(d->m_maxItemWidth - 4, 5);
     }
 
     /* resize the buttons if necessary */
@@ -646,13 +659,13 @@ KToolBar::layoutVertical(int h)
       }
 
       // the width only applies to certain buttons
-      if ((iconText() == IconTextRight) || (iconText() == TextOnly))
-        continue;
-
-      if (itemWidth < d->m_maxItemWidth)
+      if ((iconText() != IconTextRight) && (iconText() != TextOnly))
       {
-        (*qli)->resize(d->m_maxItemWidth, (*qli)->height());
-        itemWidth  = d->m_maxItemWidth;
+        if (itemWidth < d->m_maxItemWidth)
+        {
+          (*qli)->resize(d->m_maxItemWidth, (*qli)->height());
+          itemWidth  = d->m_maxItemWidth;
+        }
       }
     }
 
@@ -664,8 +677,15 @@ KToolBar::layoutVertical(int h)
       widest = 0;
     }
 
-    /* arrange the toolbar item */
-    (*qli)->move(xOffset, yOffset);
+    /* if this is not a button, then we center it horizontally */
+    if ((*qli)->itemType() != KToolBarItem::Button )
+    {
+      int widget_offset = (d->m_maxItemWidth - (*qli)->width())/2;
+      if (widget_offset < 0) widget_offset = 0;
+      (*qli)->move(xOffset + widget_offset, yOffset);
+    }
+    else
+      (*qli)->move(xOffset, yOffset);
 
     /* auto-size items are set to the minimum auto-size or the width of
      * the widest widget so far. Wider widgets that follow have no
@@ -680,7 +700,7 @@ KToolBar::layoutVertical(int h)
     /* keep track of the maximum with of the column */
     if ((*qli)->width() > widest)
       widest = (*qli)->width();
-    /* keep track of the tallest overall widget */
+    /* keep continuetrack of the tallest overall widget */
     if ((*qli)->height() > tallest)
       tallest = (*qli)->height();
   }
@@ -1547,6 +1567,34 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
   return d->m_items->at();
 }
 
+int KToolBar::insertAnimatedWidget( int id, QObject *receiver,
+                                    const char *signal,
+                                    const QStringList& icons,
+                                    int index )
+{
+  KAnimWidget *anim;
+
+  if ( d->m_honorStyle || name() == "mainToolBar" )
+    anim = new KAnimWidget(icons, KIconLoader::Default, this);
+  else
+    anim = new KAnimWidget(icons, KIconLoader::Medium, this);
+  if ( receiver )
+    connect( anim, SIGNAL(clicked()), receiver, signal);
+
+  KToolBarItem *item = new KToolBarItem(anim, KToolBarItem::AnyWidget, id,
+                                        false);
+
+  if ( index == -1 )
+    d->m_items->append( item );
+  else
+    d->m_items->insert( index, item );
+
+  if ( d->m_position != Flat )
+    item->show();
+  updateRects(true);
+  return d->m_items->at();
+}
+
 /************** LINE EDITOR **************/
 // Inserts a KLineEdit. KLineEdit is derived from QLineEdit and has
 //  another signal, tabPressed, for completions.
@@ -2089,6 +2137,20 @@ QWidget *KToolBar::getWidget (int id)
   for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
     if (b->ID() == id )
       return (b->getItem());
+  return 0;
+}
+
+KAnimWidget *KToolBar::animatedWidget( int id )
+{
+  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+  {
+    if (b->ID() != id )
+      continue;
+
+    QWidget *w = b->getItem();
+    if ( w->inherits( "KAnimWidget" ) )
+      return ((KAnimWidget*)b->getItem());
+  }
   return 0;
 }
 

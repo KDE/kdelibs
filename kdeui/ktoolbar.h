@@ -35,6 +35,8 @@ class KLineEdit;
 class KToolBar;
 class KToolBarItemList;
 class KToolBoxManager;
+class KAnimWidget;
+class KPopupMenu;
 
 class KToolBarPrivate;
 
@@ -328,6 +330,38 @@ public:
    * @return Item index.
    */
   int insertWidget(int id, int width, QWidget *_widget, int index=-1);
+
+  /**
+   * Insert an animated widget.  A @ref KAnimWidget will be created
+   * internally using the icon list you provide.  The icon size will
+   * come from the toolbar icon size so you don't need to set it
+   * directly.  This will emit a signal (clicked()) whenever the
+   * animation widget is clicked.
+   *
+   * @see animatedWidget()
+   *
+   * @param id       The id for this toolbar item
+   * @param receiver The parent of your slot
+   * @param slot     The slot to receive the clicked() signal
+   * @param icons    A list of all icon names to use for the animation
+   * @param index    The item index
+   *
+   * @return The item index
+   */
+  int insertAnimatedWidget(int id, QObject *receiver, const char *slot,
+                           const QStringList& icons, int index = -1);
+
+  /**
+   * This will return a pointer to the given animated widget, if it
+   * exists.
+   *
+   * @see insertAnimatedWidget
+   *
+   * @param id The id for the widget you want to get a pointer to
+   *
+   * @return A pointer to the current animated widget or 0L
+   */
+  KAnimWidget *animatedWidget( int id );
 
   /**
    * Adds connections to items.
@@ -925,7 +959,7 @@ signals:
     void modechange ();
 
 protected:
-  QPopupMenu *context;
+  KPopupMenu *context;
 
   void drawContents ( QPainter *);
   void resizeEvent(QResizeEvent*);
