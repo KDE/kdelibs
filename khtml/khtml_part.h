@@ -713,9 +713,9 @@ public:
 
   /**
    * @internal
-   */  
+   */
   bool restored() const;
-  
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.
@@ -1019,7 +1019,7 @@ private:
 
   void init( KHTMLView *view, GUIProfile prof );
 
-  void clear();
+  void clear( bool clearJS = true );
 
   bool scheduleScript( const DOM::Node &n, const QString& script);
 

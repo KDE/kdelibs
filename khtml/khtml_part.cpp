@@ -210,6 +210,7 @@ public:
     m_focusNodeRestored = false;
     m_opener = 0;
     m_openedByJS = false;
+    m_newJSInterpreterExists = false;
     m_dcopobject = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
   }
@@ -385,6 +386,7 @@ public:
   KParts::Part * m_activeFrame;
   QGuardedPtr<KHTMLPart> m_opener;
   bool m_openedByJS;
+  bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 
   bool m_bPendingChildRedirection;
 };
@@ -1145,7 +1147,7 @@ bool KHTMLPart::autoloadImages() const
   return true;
 }
 
-void KHTMLPart::clear()
+void KHTMLPart::clear( bool clearJS )
 {
     kdDebug( 6090 ) << "KHTMLPart::clear() this = " << this << endl;
   if ( d->m_bCleared )
@@ -1189,7 +1191,7 @@ void KHTMLPart::clear()
   }
 
   // Moving past doc so that onUnload works.
-  if ( d->m_jscript )
+  if ( d->m_jscript && clearJS )
     d->m_jscript->clear();
 
   if ( d->m_view )
@@ -1548,11 +1550,13 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
 void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
-  clear();
+  // Don't destroy JS interpreter if it was created by window.open
+  clear( !d->m_newJSInterpreterExists );
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
+  d->m_newJSInterpreterExists = false;
 
   // ### the setFontSizes in restore currently doesn't seem to work,
   // so let's also reset the font base here, so that the font buttons start
@@ -4521,6 +4525,11 @@ bool KHTMLPart::openedByJS()
 void KHTMLPart::setOpenedByJS(bool _openedByJS)
 {
     d->m_openedByJS = _openedByJS;
+    if ( _openedByJS ) {
+      if ( d->m_jscript )
+        d->m_jscript->clear();
+      d->m_newJSInterpreterExists = true;
+    }
 }
 
 void KHTMLPart::preloadStyleSheet(const QString &url, const QString &stylesheet)
