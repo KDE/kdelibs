@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 193
-#define KDE_VERSION_STRING "1.91 Beta >= 20000624"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000629"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 3
@@ -744,6 +744,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.171  2000/06/25 17:09:26  pfeiffer
+// #define KDE_VERSION 193
+// due to all the doc-updates you have to recompile everything anyway
+//
 // Revision 1.170  2000/06/25 16:51:37  dsweet
 // Doc edits.
 //
