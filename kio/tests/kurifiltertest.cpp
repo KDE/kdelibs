@@ -3,6 +3,7 @@
 
 #include <kaboutdata.h>
 #include <kapp.h>
+#include <kdebug.h>
 #include <kcmdlineargs.h>
 
 #include "kurifilter.h"
@@ -10,11 +11,11 @@
 void filter( const char* u, QStringList list = QStringList() )
 {
     QString a = QString::fromLatin1( u );
-    cout << "***********************************\nFiltering: " << a << endl;
+    kdDebug() << "***********************************\nFiltering: " << a << endl;
     if (KURIFilter::self()->filterURI(a, list))
-        cout << "After filtering: " << a << "\n***********************************\n" << endl;
+        kdDebug() << "After filtering: " << a << "\n***********************************\n" << endl;
     else
-        cout << "No filtering required\n***********************************\n" << endl;
+        kdDebug() << "No filtering required\n***********************************\n" << endl;
 }
 
 int main(int argc, char **argv) {
