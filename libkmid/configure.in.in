@@ -71,8 +71,8 @@ AC_DEFUN([AC_CHECK_LIBASOUND],
       #include <alsa/asoundlib.h>
       #endif
     ],[
-      #if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 9)
-        /* we have ALSA 0.9.x */
+      #if ((SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 9)) || (SND_LIB_MAJOR == 1)
+        /* we have ALSA 0.9.x or 1.x */
       #else
         #error not ALSA 0.9.x
       #endif
