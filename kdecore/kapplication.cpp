@@ -851,7 +851,7 @@ DCOPClient *KApplication::dcopClient()
 
   s_DCOPClient = new DCOPClient();
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-  if (args->isSet("dcopserver"))
+  if (args && args->isSet("dcopserver"))
   {
     s_DCOPClient->setServerAddress( args->getOption("dcopserver"));
   }
