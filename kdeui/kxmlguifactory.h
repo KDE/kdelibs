@@ -115,6 +115,12 @@ class KXMLGUIFactory : public QObject
    * and which is owned by the @p client. The container name is specified with a "name" attribute in the
    * XML document.
    *
+   * This function is particularly useful for getting hold of a popupmenu defined in an XMLUI file.
+   * For instance:
+   * QPopupMenu *popup = static_cast<QPopupMenu*>(factory()->container("my_popup",this))
+   * where "my_popup" is the name of the menu in the XMLUI file, and
+   * "this" is XMLGUIClient which owns the popupmenu (e.g. the mainwindow, or the part, or the plugin...)
+   *
    * @param useTagName Specifies whether to compare the specified name with the name attribute or
    *        the tag name.
    *
