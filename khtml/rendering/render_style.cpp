@@ -119,9 +119,9 @@ RenderStyle::setBitDefaults()
     inherited_flags._text_decoration = TDNONE;
     inherited_flags._cursor_style = CURSOR_AUTO;
     inherited_flags._font_variant = FVNORMAL;
-
-    _visuallyOrdered = false;
-    _htmlHacks=false;
+    inherited_flags._visuallyOrdered = false;
+    inherited_flags._htmlHacks=false;
+    inherited_flags._unused = 0;
 
     _display = INLINE;
 
@@ -133,13 +133,12 @@ RenderStyle::setBitDefaults()
     _bg_attachment = SCROLL;
     _position = STATIC;
     _floating = FNONE;
-
     _flowAroundFloats=false;
-
     _styleType = NOPSEUDO;
     _hasHover = false;
     _hasFocus = false;
     _hasActive = false;
+    _unused = 0;
 }
 
 
@@ -180,16 +179,11 @@ RenderStyle::RenderStyle(bool)
 }
 
 RenderStyle::RenderStyle(const RenderStyle& other)
-    : DOM::DomShared() // shut up, compiler
+    : DOM::DomShared()
 {
 
     inherited_flags = other.inherited_flags;
-
-    _visuallyOrdered = other._visuallyOrdered;
-    _htmlHacks = other._htmlHacks;
-
     _display = other._display;
-
 
     _overflow = other._overflow;
     _vertical_align = other._vertical_align;
@@ -222,9 +216,6 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 
     inherited = inheritParent->inherited;
     inherited_flags = inheritParent->inherited_flags;
-
-    _visuallyOrdered = inheritParent->_visuallyOrdered;
-    _htmlHacks = inheritParent->_htmlHacks;
 }
 
 RenderStyle::~RenderStyle()
@@ -238,7 +229,7 @@ RenderStyle::~RenderStyle()
 	// to prevent a double deletion.
 	// this works only because the styles below aren't really shared
 	// Dirk said we need another construct as soon as these are shared
-	prev->pseudoStyle = 0;
+        prev->pseudoStyle = 0;
         prev->deref();
     }
 }
@@ -246,25 +237,23 @@ RenderStyle::~RenderStyle()
 bool RenderStyle::operator==(const RenderStyle& o) const
 {
 // compare everything except the pseudoStyle pointer
-    return (*box.get() == *o.box.get() &&
-            *visual.get() == *o.visual.get() &&
-            *background.get() == *o.background.get() &&
-            *surround.get() == *o.surround.get() &&
-            *inherited.get() == *o.inherited.get() &&
-	    inherited_flags == o.inherited_flags &&
+    return (inherited_flags == o.inherited_flags &&
             _display == o._display &&
-            _visuallyOrdered == o._visuallyOrdered &&
-            _htmlHacks == o._htmlHacks &&
             _overflow == o._overflow &&
             _vertical_align == o._vertical_align &&
             _clear == o._clear &&
-            _table_layout && o._table_layout &&
+            _table_layout == o._table_layout &&
             _bg_repeat == o._bg_repeat &&
             _bg_attachment == o._bg_attachment &&
             _position == o._position &&
             _floating == o._floating &&
             _flowAroundFloats == o._flowAroundFloats &&
-            _styleType == o._styleType);
+            _styleType == o._styleType &&
+            *box.get() == *o.box.get() &&
+            *visual.get() == *o.visual.get() &&
+            *background.get() == *o.background.get() &&
+            *surround.get() == *o.surround.get() &&
+            *inherited.get() == *o.inherited.get());
 }
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
@@ -327,10 +316,6 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
     return
 	(
 	    inherited_flags != other->inherited_flags ||
-
-	    _visuallyOrdered != other->_visuallyOrdered ||
-	    _htmlHacks != other->_htmlHacks ||
-
 	    *inherited.get() != *other->inherited.get()
 	    );
 }
@@ -407,7 +392,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // only for lists:
 // 	EListStyleType _list_style_type : 5 ;
 // 	EListStylePosition _list_style_position :1;
-    if ( _display == LIST_ITEM ) {
+    if (_display == LIST_ITEM ) {
 	if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
 	     !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
 	    d = Layout;

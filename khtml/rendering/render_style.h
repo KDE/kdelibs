@@ -176,7 +176,7 @@ enum EPosition {
 };
 
 enum EFloat {
-    FNONE, FLEFT, FRIGHT
+    FNONE = 0, FLEFT, FRIGHT
 };
 
 
@@ -563,30 +563,26 @@ protected:
 	}
 
 	bool _border_collapse : 1 ;
-	EEmptyCell _empty_cells : 2 ; // ### 1 should be enough
+	EEmptyCell _empty_cells : 1 ;
 	ECaptionSide _caption_side : 2;
 	EListStyleType _list_style_type : 5 ;
 	EListStylePosition _list_style_position :1;
 	EVisiblity _visiblity : 2;
 	ETextAlign _text_align : 3;
-	ETextTransform _text_transform : 4;
+	ETextTransform _text_transform : 2;
 	EDirection _direction : 1;
 	EWhiteSpace _white_space : 2;
 	int _text_decoration : 4;
 	ECursor _cursor_style : 4;
 	EFontVariant _font_variant : 1;
+              // non CSS2 inherited
+              bool _visuallyOrdered : 1;
+              bool _htmlHacks :1;
+              int _unused : 1;
     } inherited_flags;
 
-    // 2 bit other inherited
-    bool _visuallyOrdered : 1;
-    bool _htmlHacks :1;
-
 // don't inherit
-
-    // 5 bit non inherited
     EDisplay _display : 5;
-
-    // 26 non inherited
     EOverflow _overflow : 4 ;
     EVerticalAlign _vertical_align : 4;
     EClear _clear : 2;
@@ -595,13 +591,14 @@ protected:
     bool _bg_attachment : 1;
     EPosition _position : 2;
     EFloat _floating : 2;
-
     bool _flowAroundFloats :1;
 
     PseudoId _styleType : 3;
     bool _hasHover : 1;
     bool _hasFocus : 1;
     bool _hasActive : 1;
+
+    int _unused : 2;
 
 // non-inherited attributes
     DataRef<StyleBoxData> box;
@@ -634,31 +631,30 @@ public:
 
     void inheritFrom(const RenderStyle* inheritParent);
 
-    PseudoId styleType() { return _styleType; }
+    PseudoId styleType() { return  _styleType; }
 
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
     bool hasPseudoStyle() const { return pseudoStyle; }
     void removePseudoStyle(PseudoId pi);
 
-    bool hasHover() const { return _hasHover; }
-    bool hasFocus() const { return _hasFocus; }
-    bool hasActive() const { return _hasActive; }
+    bool hasHover() const { return  _hasHover; }
+    bool hasFocus() const { return  _hasFocus; }
+    bool hasActive() const { return  _hasActive; }
 
-    void setHasHover() { _hasHover = true; }
-    void setHasFocus() { _hasFocus = true; }
-    void setHasActive() { _hasActive = true; }
+    void setHasHover() {  _hasHover = true; }
+    void setHasFocus() {  _hasFocus = true; }
+    void setHasActive() {  _hasActive = true; }
 
     bool operator==(const RenderStyle& other) const;
-
-    bool        isFloating() const { return (_floating == FLEFT || _floating == FRIGHT); }
+    bool        isFloating() const { return ( _floating != FNONE); }
     bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasPadding() const { return surround->padding.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
     bool        hasOffset() const { return surround->offset.nonZero(); }
 
-    bool visuallyOrdered() const { return _visuallyOrdered; }
-    void setVisuallyOrdered(bool b) { _visuallyOrdered = b; }
+    bool visuallyOrdered() const { return inherited_flags._visuallyOrdered; }
+    void setVisuallyOrdered(bool b) {  inherited_flags._visuallyOrdered = b; }
 
 // attribute getter methods
 
@@ -669,8 +665,8 @@ public:
     Length  	top() const {  return surround->offset.top; }
     Length  	bottom() const {  return surround->offset.bottom; }
 
-    EPosition 	position() const { return _position; }
-    EFloat  	floating() const { return _floating; }
+    EPosition 	position() const { return  _position; }
+    EFloat  	floating() const { return  _floating; }
 
     Length  	width() const { return box->width; }
     Length  	height() const { return box->height; }
@@ -701,17 +697,17 @@ public:
     EBorderStyle    outlineStyle() const {  return surround->outline.style; }
     const QColor &  	    outlineColor() const {  return surround->outline.color; }
 
-    EOverflow overflow() const { return _overflow; }
+    EOverflow overflow() const { return  _overflow; }
     EVisiblity visiblity() const { return inherited_flags._visiblity; }
-    EVerticalAlign verticalAlign() const { return _vertical_align; }
+    EVerticalAlign verticalAlign() const { return  _vertical_align; }
     Length verticalAlignLength() const { return box->vertical_align; }
 
     Length clipLeft() const { return visual->clip.left; }
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
-    EClear clear() const { return _clear; }
-    ETableLayout inheritedLayout() const { return _table_layout; }
+    EClear clear() const { return  _clear; }
+    ETableLayout inheritedLayout() const { return  _table_layout; }
 
     short colSpan() const { return visual->colspan; }
 
@@ -734,9 +730,9 @@ public:
 
     const QColor & backgroundColor() const { return background->color; }
     CachedImage *backgroundImage() const { return background->image; }
-    EBackgroundRepeat backgroundRepeat() const { return _bg_repeat; }
+    EBackgroundRepeat backgroundRepeat() const { return  _bg_repeat; }
     // backgroundAttachment returns true for scrolling (regular) attachment, false for fixed
-    bool backgroundAttachment() const { return _bg_attachment; }
+    bool backgroundAttachment() const { return  _bg_attachment; }
     Length backgroundXPosition() const { return background->x_position; }
     Length backgroundYPosition() const { return background->y_position; }
 
@@ -771,9 +767,9 @@ public:
 
 // attribute setter methods
 
-    void setDisplay(EDisplay v) { _display = v; }
-    void setPosition(EPosition v) { _position = v; }
-    void setFloating(EFloat v) { _floating = v; }
+    void setDisplay(EDisplay v) {  _display = v; }
+    void setPosition(EPosition v) {  _position = v; }
+    void setFloating(EFloat v) {  _floating = v; }
 
     void setLeft(Length v)  {  SET_VAR(surround,offset.left,v) }
     void setRight(Length v) {  SET_VAR(surround,offset.right,v) }
@@ -804,7 +800,7 @@ public:
     void setOutlineStyle(EBorderStyle v)   {  SET_VAR(surround,outline.style,v) }
     void setOutlineColor(const QColor & v) {  SET_VAR(surround,outline.color,v) }
 
-    void setOverflow(EOverflow v) { _overflow = v; }
+    void setOverflow(EOverflow v) {  _overflow = v; }
     void setVisiblity(EVisiblity v) { inherited_flags._visiblity = v; }
     void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
     void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
@@ -814,8 +810,8 @@ public:
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
 
-    void setClear(EClear v) { _clear = v; }
-    void setTableLayout(ETableLayout v) { _table_layout = v; }
+    void setClear(EClear v) {  _clear = v; }
+    void setTableLayout(ETableLayout v) {  _table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
     void setFont(const QFont & v) { SET_VAR(inherited,font,v) }
@@ -837,7 +833,7 @@ public:
     void setBackgroundColor(const QColor & v) {  SET_VAR(background,color,v) }
     void setBackgroundImage(CachedImage *v) {  SET_VAR(background,image,v) }
     void setBackgroundRepeat(EBackgroundRepeat v) {  _bg_repeat = v; }
-    void setBackgroundAttachment(bool scroll) {  _bg_attachment = scroll; }
+    void setBackgroundAttachment(bool scroll) {   _bg_attachment = scroll; }
     void setBackgroundXPosition(Length v) {  SET_VAR(background,x_position,v) }
     void setBackgroundYPosition(Length v) {  SET_VAR(background,y_position,v) }
 
@@ -868,11 +864,11 @@ public:
     void setFontVariant( EFontVariant f ) { inherited_flags._font_variant = f; }
     void setCursorImage( CachedImage *v ) { SET_VAR(inherited,cursor_image,v) }
 
-    bool htmlHacks() const { return _htmlHacks; }
-    void setHtmlHacks(bool b=true) { _htmlHacks = b; }
+    bool htmlHacks() const { return inherited_flags._htmlHacks; }
+    void setHtmlHacks(bool b=true) { inherited_flags._htmlHacks = b; }
 
-    bool flowAroundFloats() const { return _flowAroundFloats; }
-    void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }
+    bool flowAroundFloats() const { return  _flowAroundFloats; }
+    void setFlowAroundFloats(bool b=true) {  _flowAroundFloats = b; }
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
