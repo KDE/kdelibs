@@ -298,6 +298,17 @@ public:
     virtual ~CustomNodeFilter();
     virtual short acceptNode (const Node &n);
     virtual bool isNull();
+
+    /**
+     * @internal
+     * not part of the DOM
+     *
+     * Returns a name specifying the type of custom node filter. Useful for checking
+     * if an custom node filter is of a particular sublass.
+     *
+     */
+    virtual DOMString customNodeFilterType();
+
 protected:
     /**
      * @internal

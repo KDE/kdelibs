@@ -218,6 +218,11 @@ bool CustomNodeFilter::isNull()
     return false;
 }
 
+DOMString CustomNodeFilter::customNodeFilterType()
+{
+    return "";
+}
+
 // --------------------------------------------------------------
 
 TreeWalker::TreeWalker() {
