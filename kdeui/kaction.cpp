@@ -141,6 +141,7 @@ public:
   {
     m_kaccel = 0;
     m_configurable = true;
+    m_connected = false;
   }
 
   KAccel *m_kaccel;
@@ -153,6 +154,7 @@ public:
   KShortcut m_cutDefault;
 
   bool m_configurable;
+  bool m_connected;	// 'true' if this action has been connected to a slot.
   QVariant m_slotParam;
 
   struct Container
@@ -306,12 +308,8 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
-    if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
-        kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
-    d->setText( text );
-    initShortcut( cut );
-
     if ( receiver && slot ) {
+        d->m_connected = true;
         if ( QString(slot).find( QRegExp("\\(\\s*int\\s*\\)") ) >= 0 ) {
             QRegExp rxVal("\\{(.+)\\}");
             rxVal.setMinimal( true );
@@ -323,6 +321,11 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
         else
             connect( this, SIGNAL( activated() ), receiver, slot );
     }
+
+    if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
+        kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
+    d->setText( text );
+    initShortcut( cut );
 }
 
 bool KAction::isPlugged() const
@@ -497,7 +500,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
   bool b = true;
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
-    if( !d->m_cut.isNull() ) {
+    if( d->m_connected && !d->m_cut.isNull() ) {
       kdDebug() << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
       b = kaccel->insert( name(), d->plainText(), QString::null,
           d->m_cut,
