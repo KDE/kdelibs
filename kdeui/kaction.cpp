@@ -1221,10 +1221,21 @@ void KSelectAction::changeItem( int index, const QString& text )
     changeItem( i, index, text );
 }
 
-void KSelectAction::changeItem( int, int, const QString& )
+void KSelectAction::changeItem( int id, int index, const QString& text)
 {
-    //QWidget* w = container( i );
-    // HANDLE KToolBar??
+  if ( index < 0 )
+        return;
+
+  QWidget* w = container( id );
+  if ( w->inherits( "KToolBar" ) )
+  {
+     QWidget* r = (static_cast<KToolBar*>( w ))->getWidget( itemId( id ) );
+     if ( r->inherits( "QComboBox" ) )
+     {
+        QComboBox *b = static_cast<QComboBox*>( r );
+        b->changeItem(text, index );
+     }
+  }
 }
 
 void KSelectAction::setItems( const QStringList &lst )
