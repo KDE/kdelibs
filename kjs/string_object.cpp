@@ -255,7 +255,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
       RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
       int lastIndex = 0;
-      u3 = a1.toString(exec); // replacement string
+      Object o1;
+      // Test if 2nd arg is a function (new in JS 1.3)
+      if ( a1.type() == ObjectType && a1.toObject(exec).implementsCall() )
+        o1 = a1.toObject(exec);
+      else
+        u3 = a1.toString(exec); // 2nd arg is the replacement string
+
       // This is either a loop (if global is set) or a one-way (if not).
       do {
         int **ovector = regExpObj->registerRegexp( reg, u );
@@ -270,23 +276,41 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
           if (pos > u.size())
             break;
         }
-        UString rstr(u3);
-        bool ok;
-        // check if u3 matches $1 or $2 etc
-        for (int i = 0; (i = rstr.find(UString("$"), i)) != -1; i++) {
-          if (i+1<rstr.size() && rstr[i+1] == '$') {  // "$$" -> "$"
-            rstr = rstr.substr(0,i) + "$" + rstr.substr(i+2);
-            continue;
+
+        UString rstr;
+        // Prepare replacement
+        if ( o1.isNull() )
+        {
+          rstr = u3;
+          bool ok;
+          // check if u3 matches $1 or $2 etc
+          for (int i = 0; (i = rstr.find(UString("$"), i)) != -1; i++) {
+            if (i+1<rstr.size() && rstr[i+1] == '$') {  // "$$" -> "$"
+              rstr = rstr.substr(0,i) + "$" + rstr.substr(i+2);
+              continue;
+            }
+            // Assume number part is one char exactly
+            unsigned long pos = rstr.substr(i+1,1).toULong(&ok);
+            if (ok && pos <= (unsigned)reg->subPatterns()) {
+              rstr = rstr.substr(0,i)
+                     + u.substr((*ovector)[2*pos],
+                                (*ovector)[2*pos+1]-(*ovector)[2*pos])
+                     + rstr.substr(i+2);
+              i += (*ovector)[2*pos+1]-(*ovector)[2*pos] - 1; // -1 offsets i++
+            }
           }
-          // Assume number part is one char exactly
-          unsigned long pos = rstr.substr(i+1,1).toULong(&ok);
-          if (ok && pos <= (unsigned)reg->subPatterns()) {
-            rstr = rstr.substr(0,i)
-                      + u.substr((*ovector)[2*pos],
-                                     (*ovector)[2*pos+1]-(*ovector)[2*pos])
-                      + rstr.substr(i+2);
-            i += (*ovector)[2*pos+1]-(*ovector)[2*pos] - 1; // -1 offsets i++
-          }
+        } else // 2nd arg is a function call. Spec from http://devedge.netscape.com/library/manuals/2000/javascript/1.5/reference/string.html#1194258
+        {
+          List l;
+          l.append(String(mstr)); // First arg: complete matched substring
+          // Then the submatch strings
+          for ( unsigned int sub = 1; sub <= reg->subPatterns() ; ++sub )
+            l.append( String( u.substr((*ovector)[2*sub],
+                               (*ovector)[2*sub+1]-(*ovector)[2*sub]) ) );
+          l.append(Number(pos)); // The offset within the string where the match occurred
+          l.append(String(s)); // Last arg: the string itself. Can't see the difference with the 1st arg!
+          Object thisObj = exec->interpreter()->globalObject();
+          rstr = o1.call( exec, thisObj, l ).toString(exec);
         }
         lastIndex = pos + rstr.size();
         u = u.substr(0, pos) + rstr + u.substr(pos + len);
