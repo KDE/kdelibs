@@ -23,12 +23,12 @@ public:
   virtual void slotMkdir( const char *_url, int _mode );
 
   virtual void slotCopy( const char* _source, const char *_dest );
-  virtual void slotCopy( list<string>& _source, const char *_dest );
+  virtual void slotCopy( QStringList& _source, const char *_dest );
 
   virtual void slotMove( const char *_source, const char *_dest );
-  virtual void slotMove( list<string>& _source, const char *_dest );
+  virtual void slotMove( QStringList& _source, const char *_dest );
 
-  virtual void slotDel( list<string>& _source );
+  virtual void slotDel( QStringList& _source );
 
   virtual void slotListDir( const char *_url );
   virtual void slotTestDir( const char *_url );
@@ -58,7 +58,7 @@ protected:
     mode_t m_type;
   };
 
-  void doCopy( list<string>& _source, const char *_dest, bool _rename, bool _move = false );
+  void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );
 
   long listRecursive( const char *_path, list<Copy>& _files,
 		      list<CopyDir>& _dirs, bool _rename );

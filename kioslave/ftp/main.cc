@@ -89,18 +89,14 @@ FtpProtocol::FtpProtocol( Connection *_conn ) : IOProtocol( _conn )
 
 void FtpProtocol::slotMkdir( const char *_url, int _mode )
 {
-  string url = _url;
-  
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
-    error( ERR_MALFORMED_URL, url.c_str() );
+  if ( usrc.isMalformed() ) {
+    error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-  {
+  if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
     error( ERR_INTERNAL, "kio_ftp got non ftp file in mkdir command" );
     m_cmd = CMD_NONE;
     return;
@@ -108,8 +104,7 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
 
   // Connect to the ftp server
   if ( !ftp.isConnected() )
-    if ( !ftp.ftpConnect( usrc ) )
-      {
+    if ( !ftp.ftpConnect( usrc ) ) {
 	error( ftp.error(), ftp.errorText() );
 	ftp.ftpDisconnect( true );
 	m_cmd = CMD_NONE;
@@ -119,20 +114,16 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
   FtpEntry* e = ftp.ftpStat( usrc );
 
   if ( !e  ) {
-    if ( !ftp.ftpMkdir( usrc.path() ) )
-      {
-	error( ERR_COULD_NOT_MKDIR, url.c_str() );
+    if ( !ftp.ftpMkdir( usrc.path() ) ) {
+	error( ERR_COULD_NOT_MKDIR, strdup(_url) );
 	ftp.ftpDisconnect();
 	m_cmd = CMD_NONE;
 	return;
-      }
-    else
-      {
+      } else {
 	// set the desired attributes for dir
 	if ( _mode != -1 )
-	  if ( !ftp.ftpChmod( usrc.path(), _mode ) )
-	    {
-	      error( ERR_CANNOT_CHMOD, url.c_str() );
+	  if ( !ftp.ftpChmod( usrc.path(), _mode ) ) {
+	      error( ERR_CANNOT_CHMOD, strdup(_url) );
 	      ftp.ftpDisconnect();
 	      m_cmd = CMD_NONE;
 	      return;
@@ -144,22 +135,21 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
       }
   }
 
-  if ( S_ISDIR( e->type ) )  // !!! ok ?
-  {
-    error( ERR_DOES_ALREADY_EXIST, url.c_str() );
+  if ( S_ISDIR( e->type ) )  { // !!! ok ?
+    error( ERR_DOES_ALREADY_EXIST, strdup(_url) );
     ftp.ftpDisconnect();
     m_cmd = CMD_NONE;
     return;
   }
-    
-  error( ERR_COULD_NOT_MKDIR, url.c_str() );
+
+  error( ERR_COULD_NOT_MKDIR, strdup(_url) );
   ftp.ftpDisconnect();
   m_cmd = CMD_NONE;
   return;
 }
 
 
-void FtpProtocol::slotCopy( list<string>& _source, const char *_dest )
+void FtpProtocol::slotCopy( QStringList& _source, const char *_dest )
 {
   doCopy( _source, _dest, false );
 }
@@ -167,14 +157,14 @@ void FtpProtocol::slotCopy( list<string>& _source, const char *_dest )
 
 void FtpProtocol::slotCopy( const char* _source, const char *_dest )
 {
-  list<string> lst;
-  lst.push_back( _source );
+  QStringList lst;
+  lst.append( _source );
   
   doCopy( lst, _dest, true );
 }
 
 
-void FtpProtocol::slotMove( list<string>& _source, const char *_dest )
+void FtpProtocol::slotMove( QStringList& _source, const char *_dest )
 {
   doCopy( _source, _dest, false, true );
 }
@@ -182,41 +172,38 @@ void FtpProtocol::slotMove( list<string>& _source, const char *_dest )
 
 void FtpProtocol::slotMove( const char* _source, const char *_dest )
 {
-  list<string> lst;
-  lst.push_back( _source );
+  QStringList lst;
+  lst.append( _source );
   
   doCopy( lst, _dest, true, true );
 }
 
 
-void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename, bool _move )
+void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move )
 {
   if ( _rename )
-    assert( _source.size() == 1 );
+    assert( _source.count() == 1 );
   
   debug( "kio_ftp : Making copy to %s", _dest );
   
   // Check whether the URLs are wellformed
-  list<string>::iterator soit = _source.begin();
-  for( ; soit != _source.end(); ++soit )
-  {    
-    debug( "kio_ftp : Checking %s", soit->c_str() );
-    KURL usrc( soit->c_str() );
-    if ( usrc.isMalformed() )
-    {
-      error( ERR_MALFORMED_URL, soit->c_str() );
+  QStringList::Iterator soit = _source.begin();
+  for( ; soit != _source.end(); ++soit ) {
+    qDebug( "kio_ftp : Checking %s", (*soit).ascii() );
+    KURL usrc( *soit );
+    if ( usrc.isMalformed() ) {
+      error( ERR_MALFORMED_URL, (*soit) );
       m_cmd = CMD_NONE;
       return;
     }
-    if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-    {
+    if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
       error( ERR_INTERNAL, "kio_ftp got non ftp file as source in copy command" );
       m_cmd = CMD_NONE;
       return;
     }
   }
 
-  debug( "kio_ftp : All URLs ok %s", _dest );
+  qDebug( "kio_ftp : All URLs ok %s", _dest );
 
   // Make a copy of the parameter. if we do IPC calls from here, then we overwrite
   // our argument. This is tricky! ( but saves memory and speeds things up )
@@ -224,20 +211,18 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   
   // Check wellformedness of the destination
   KURL udest( dest );
-  if ( udest.isMalformed() )
-  {
+  if ( udest.isMalformed() ) {
     error( ERR_MALFORMED_URL, dest );
     m_cmd = CMD_NONE;
     return;
   }
 
-  debug( "kio_ftp : Dest ok %s", dest.data() );
+  debug( "kio_ftp : Dest ok %s", dest.ascii() );
 
   // Find IO server for destination
   QString exec = KProtocolManager::self().executable( udest.protocol() );
 
-  if ( exec.isEmpty() )
-  {
+  if ( exec.isEmpty() ) {
     error( ERR_UNSUPPORTED_PROTOCOL, udest.protocol() );
     m_cmd = CMD_NONE;
     return;
@@ -254,9 +239,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   debug( "kio_ftp : IO server ok %s", dest.ascii() );
 
   // Connect to the ftp server
-  KURL usrc( _source.front().c_str() );
-  if ( !ftp.ftpConnect( usrc ) )
-  {
+  KURL usrc( _source.first() );
+  if ( !ftp.ftpConnect( usrc ) ) {
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
@@ -277,15 +261,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
   soit = _source.begin();
   debug( "kio_ftp : Looping" );
-  for( ; soit != _source.end(); ++soit )
-  {    
-    debug( "kio_ftp : Executing %s", soit->c_str() );
-    KURL usrc( soit->c_str() );
-    debug( "kio_ftp : Parsed URL" );
+  for( ; soit != _source.end(); ++soit ) {
+    qDebug( "kio_ftp : Executing %s", (*soit).ascii() );
+    KURL usrc( *soit );
+    qDebug( "kio_ftp : Parsed URL" );
     // Did an error occur ?
     int s;
-    if ( ( s = listRecursive( usrc.path(), files, dirs, _rename ) ) == -1 )
-    {
+    if ( ( s = listRecursive( usrc.path(), files, dirs, _rename ) ) == -1 ) {
       ftp.ftpDisconnect();
       // Error message is already sent
       m_cmd = CMD_NONE;
@@ -295,22 +277,19 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     size += s;
   }
 
-  debug( "kio_ftp : Recursive 1 %s", dest.data() );
+  debug( "kio_ftp : Recursive 1 %s", dest.ascii() );
 
   /*
   // Check wether we do not copy a directory in itself or one of its subdirectories
   struct stat buff2;
-  if ( udest.isLocalFile() && stat( udest.path(), &buff2 ) == 0 )
-  {
+  if ( udest.isLocalFile() && stat( udest.path(), &buff2 ) == 0 ) {
     bool b_error = false;
-    for( soit = _source.begin(); soit != _source.end(); ++soit )
-    {    
-      KURL usrc( *soit );  
+    for( soit = _source.begin(); soit != _source.end(); ++soit ) {    
+      KURL usrc( *soit );
 
       struct stat buff1;
       // Can we stat both the source, too ? ( Should always be the case )
-      if ( stat( usrc.path(), &buff1 ) == 0 )
-      {
+      if ( stat( usrc.path(), &buff1 ) == 0 ) {
 	bool b_error = false;
 	// Are source and dest equal ? => error
 	if ( buff1.st_ino == buff2.st_ino )
@@ -318,8 +297,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       }
     }
   
-    if ( !b_error )
-    {
+    if ( !b_error ) {
       // Iterate over all subdirectories
       list<CopyDir>::iterator it = dirs.begin();
       for( ; it != dirs.end() && !b_error; it++ )
@@ -328,23 +306,21 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     }
 
     // Do we have a cylic copy now ? => error
-    if ( b_error )
-    {
-      error( ERR_CYCLIC_COPY, soit->c_str() );
+    if ( b_error ) {
+      error( ERR_CYCLIC_COPY, *soit );
       m_cmd = CMD_NONE;
       return;
     }
   }
   */
 
-  debug( "kio_ftp : Recursive ok %s", dest.data() );
+  qDebug( "kio_ftp : Recursive ok %s", dest.ascii() );
 
   m_cmd = CMD_GET;
   
   // Start a server for the destination protocol
   Slave slave( exec );
-  if ( slave.pid() == -1 )
-  {
+  if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
@@ -354,7 +330,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   // Put a protocol on top of the job
   FtpIOJob job( &slave, this );
 
-  debug( "kio_ftp : Job started ok %s", dest.ascii() );
+  qDebug( "kio_ftp : Job started ok %s", dest.ascii() );
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
@@ -367,14 +343,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   
   // Replace the relative destinations with absolut destinations
   // by prepending the destinations path
-  string tmp1 = udest.path( 1 ).data();
+  QString tmp1 = udest.path( 1 );
   // Strip '/'
-  string tmp1_stripped = udest.path( -1 ).data();
+  QString tmp1_stripped = udest.path( -1 );
 
   list<CopyDir>::iterator dit = dirs.begin();
-  for( ; dit != dirs.end(); dit++ )
-  {
-    string tmp2 = dit->m_strRelDest;
+  for( ; dit != dirs.end(); dit++ ) {
+    QString tmp2 = dit->m_strRelDest.c_str();
     if ( _rename )
       dit->m_strRelDest = tmp1_stripped;
     else
@@ -382,8 +357,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     dit->m_strRelDest += tmp2;
   }
   list<Copy>::iterator fit = files.begin();
-  for( ; fit != files.end(); fit++ )
-  {
+  for( ; fit != files.end(); fit++ ) {
     string tmp2 = fit->m_strRelDest;
     if ( _rename ) // !!! && fit->m_strRelDest == "" )
       fit->m_strRelDest = tmp1_stripped;
@@ -402,16 +376,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   bool overwrite_all = false;
   bool auto_skip = false;
   bool resume_all = false;
-  list<string> skip_list;
-  list<string> overwrite_list;
+  QStringList skip_list, overwrite_list;
   
   // Create all directories
   dit = dirs.begin();
-  for( ; dit != dirs.end(); dit++ )
-  { 
+  for( ; dit != dirs.end(); dit++ ) { 
     // Repeat until we got no error
-    do
-    {
+    do {
       job.clearError();
 
       KURL ud( udest );
@@ -420,20 +391,20 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
       // Is this URL on the skip list ?
       bool skip = false;
-      list<string>::iterator sit = skip_list.begin();
+      QStringList::Iterator sit = skip_list.begin();
       for( ; sit != skip_list.end() && !skip; sit++ )
 	// Is d a subdirectory of *sit ?
-	if ( strncmp( sit->c_str(), d.data(), sit->size() ) == 0 )
+	if ( *sit==d )
 	  skip = true;
-      
+
       if ( skip )
 	continue;
 
       // Is this URL on the overwrite list ?
       bool overwrite = false;
-      list<string>::iterator oit = overwrite_list.begin();
+      QStringList::Iterator oit = overwrite_list.begin();
       for( ; oit != overwrite_list.end() && !overwrite; oit++ )
-	if ( strncmp( oit->c_str(), d.data(), oit->size() ) == 0 )
+	if ( *oit == d )
 	  overwrite = true;
       
       if ( overwrite )
@@ -449,23 +420,18 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	job.dispatch();
 
       // Did we have an error ?
-      if ( job.hasError() )
-      {
+      if ( job.hasError() ) {
 	// Can we prompt the user and ask for a solution ?
-	if ( /* m_bGUI && */ job.errorId() == ERR_DOES_ALREADY_EXIST )
-	{    
-	  string old_path = udest.path( 1 ).data();
-	  string old_url = udest.url( 1 ).data();
+	if ( /* m_bGUI && */ job.errorId() == ERR_DOES_ALREADY_EXIST ) {    
+	  QString old_path = udest.path( 1 );
+	  QString old_url = udest.url( 1 );
 	  // Should we skip automatically ?
-	  if ( auto_skip )
-	  {
+	  if ( auto_skip ) {
 	    job.clearError();
 	    // We dont want to copy files in this directory, so we put it on the skip list.
-	    skip_list.push_back( old_url );
+	    skip_list.append( old_url );
 	    continue;
-	  }
-	  else if ( overwrite_all )
-	  {    
+	  } else if ( overwrite_all ) {    
 	    job.clearError();
 	    continue;
 	  }
@@ -474,24 +440,20 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  if ( dirs.size() > 1 )
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
-	  QString tmp2 = udest.url();
-	  QString n;
+	  QString tmp2 = udest.url(), n;
 	  RenameDlg_Result r = open_RenameDlg( dit->m_strAbsSource.c_str(), tmp2, m, n );
-	  if ( r == R_CANCEL ) 
-	  {
+	  if ( r == R_CANCEL ) {
 	    ftp.ftpDisconnect();
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == R_RENAME )
-	  {
+	  } else if ( r == R_RENAME ) {
 	    KURL u( n );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
 	    // The new path with trailing '/'
-	    string tmp3 = u.path( 1 ).data();
+	    QString tmp3 = u.path( 1 );
 	    ///////
 	    // Replace old path with tmp3 
 	    ///////
@@ -501,49 +463,39 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    // Change the name of all subdirectories
 	    dit2++;
 	    for( ; dit2 != dirs.end(); dit2++ )
-	      if ( strncmp( dit2->m_strRelDest.c_str(), old_path.c_str(), old_path.size() ) == 0 )
-		dit2->m_strRelDest.replace( 0, old_path.size(), tmp3 );
+	      if ( strncmp( dit2->m_strRelDest.c_str(), old_path, old_path.length() ) == 0 )
+		dit2->m_strRelDest.replace( 0, old_path.length(), tmp3 );
 	    // Change all filenames
 	    list<Copy>::iterator fit2 = files.begin();
 	    for( ; fit2 != files.end(); fit2++ )
-	      if ( strncmp( fit2->m_strRelDest.c_str(), old_path.c_str(), old_path.size() ) == 0 )
-		fit2->m_strRelDest.replace( 0, old_path.size(), tmp3 );
+	      if ( strncmp( fit2->m_strRelDest.c_str(), old_path, old_path.length() ) == 0 )
+		fit2->m_strRelDest.replace( 0, old_path.length(), tmp3 );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_SKIP )
-	  {
+	  } else if ( r == R_SKIP ) {
 	    // Skip all files and directories that start with 'old_url'
-	    skip_list.push_back( old_url );
+	    skip_list.append( old_url );
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
-	  }
-	  else if ( r == R_AUTO_SKIP )
-	  {
+	  } else if ( r == R_AUTO_SKIP ) {
 	    // Skip all files and directories that start with 'old_url'
-	    skip_list.push_back( old_url );
+	    skip_list.append( old_url );
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    auto_skip = true;
-	  }
-	  else if ( r == R_OVERWRITE )
-	  {
+	  } else if ( r == R_OVERWRITE ) {
 	    // Dont bother for subdirectories
-	    overwrite_list.push_back( old_url );
+	    overwrite_list.append( old_url );
 	    // Clear the error => The current command is not repeated => we will
 	    // overwrite every file in this directory or any of its subdirectories
 	    job.clearError();
-	  }
-	  else if ( r == R_OVERWRITE_ALL )
-	  {
+	  } else if ( r == R_OVERWRITE_ALL ) {
 	    job.clearError();
 	    overwrite_all = true;
-	  }
-	  else
+	  } else
 	    assert( 0 );
 	}
 	// No need to ask the user, so raise an error
-	else
-	{    
+	else {    
 	  error( job.errorId(), job.errorText() );
 	  ftp.ftpDisconnect();
 	  m_cmd = CMD_NONE;
@@ -592,10 +544,10 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
       // Is this URL on the skip list ?
       bool skip = false;
-      list<string>::iterator sit = skip_list.begin();
+      QStringList::Iterator sit = skip_list.begin();
       for( ; sit != skip_list.end() && !skip; sit++ )
 	// Is 'd' a file in directory '*sit' or one of its subdirectories ?
-	if ( strncmp( sit->c_str(), d.data(), sit->size() ) == 0 )
+	if ( *sit==d )
 	  skip = true;
     
       if ( skip )
@@ -610,11 +562,11 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       // debug( "kio_ftp : Writing to %s", d );
        
       // Is this URL on the overwrite list ?
-      list<string>::iterator oit = overwrite_list.begin();
+      QStringList::Iterator oit = overwrite_list.begin();
       for( ; oit != overwrite_list.end() && !overwrite; oit++ )
-	if ( strncmp( oit->c_str(), d.data(), oit->size() ) == 0 )
+	if (*oit==d)
 	  overwrite = true;
-      
+
       // implicitly set permissions rw-r--r-- for anonymous ftp
       int md = -1;
       // but when it's not anonymous ftp, set permissions as in original source
@@ -631,14 +583,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       if ( job.hasError() ) {
 	int currentError = job.errorId();
 
-	debug("################# COULD NOT PUT %d",currentError);
+	qDebug("################# COULD NOT PUT %d",currentError);
 	// if ( /* m_bGUI && */ job.errorId() == ERR_WRITE_ACCESS_DENIED )
 	if ( /* m_bGUI && */  currentError != ERR_DOES_ALREADY_EXIST &&
 			      currentError != ERR_DOES_ALREADY_EXIST_FULL )
 	{
 	  // Should we skip automatically ?
-	  if ( auto_skip )
-	  {
+	  if ( auto_skip ) {
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
@@ -646,37 +597,30 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  QString tmp2 = ud.url();
 	  SkipDlg_Result r;
 	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
-	  if ( r == S_CANCEL )
-	  {
+	  if ( r == S_CANCEL ) {
 	    error( ERR_USER_CANCELED, "" );
 	    ftp.ftpDisconnect();
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == S_SKIP )
-	  {
+	  } else if ( r == S_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
-	  }
-	  else if ( r == S_AUTO_SKIP )
-	  {
+	  } else if ( r == S_AUTO_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
-	  }
-	  else
+	  } else
 	    assert( 0 );
 	}
 	// Can we prompt the user and ask for a solution ?
 	else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
 		  currentError == ERR_DOES_ALREADY_EXIST_FULL )
-	{    
+	{
 	  // Should we skip automatically ?
-	  if ( auto_skip )
-	  {
+	  if ( auto_skip ) {
 	    job.clearError();
 	    continue;
 	  }
@@ -687,8 +631,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  if ( KProtocolManager::self().autoResume() && m_bCanResume &&
 		    currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 	    r = R_RESUME_ALL;
-	  }
-	  else {
+	  } else {
 	    RenameDlg_Mode m;
 
 	    // ask for resume only if transfer can be resumed and if it is not
@@ -709,15 +652,12 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    r = open_RenameDlg( fit->m_strAbsSource.c_str(), tmp2, m, n );
 	  }
 
-	  if ( r == R_CANCEL ) 
-	  {
+	  if ( r == R_CANCEL ) {
 	    error( ERR_USER_CANCELED, "" );
 	    ftp.ftpDisconnect();
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == R_RENAME )
-	  {
+	  } else if ( r == R_RENAME ) {
 	    KURL u( n );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
@@ -725,46 +665,32 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    // Change the destination name of the current file
 	    fit->m_strRelDest = u.path( -1 );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_SKIP )
-	  {
+	  } else if ( r == R_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
-	  }
-	  else if ( r == R_AUTO_SKIP )
-	  {
+	  } else if ( r == R_AUTO_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    auto_skip = true;
-	  }
-	  else if ( r == R_OVERWRITE )
-	  {
+	  } else if ( r == R_OVERWRITE ) {
 	    overwrite = true;
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_OVERWRITE_ALL )
-	  {
+	  } else if ( r == R_OVERWRITE_ALL ) {
 	    overwrite_all = true;
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_RESUME )
-	  {
+	  } else if ( r == R_RESUME ) {
 	    resume = true;
 	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_RESUME_ALL )
-	  {
+	  } else if ( r == R_RESUME_ALL ) {
 	    resume_all = true;
 	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else
+	  } else
 	    assert( 0 );
 	}
 	// No need to ask the user, so raise an error
-	else
-	{    
+	else {    
 	  error( currentError, job.errorText() );
 	  ftp.ftpDisconnect();
 	  m_cmd = CMD_NONE;
@@ -786,10 +712,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     KURL tmpurl( "ftp:/" );
     tmpurl.setPath( fit->m_strAbsSource.c_str() );
 
-    debug( "kio_ftp : Opening %s", fit->m_strAbsSource.c_str() );
+    qDebug( "kio_ftp : Opening %s", fit->m_strAbsSource.c_str() );
    
-    if ( !ftp.ftpOpen( tmpurl, Ftp::READ, offset ) )
-    {
+    if ( !ftp.ftpOpen( tmpurl, Ftp::READ, offset ) ) {
       error( ftp.error(), ftp.errorText() );
       ftp.ftpDisconnect();
       m_cmd = CMD_NONE;
@@ -808,7 +733,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       n = ftp.read( buffer, 2048 );
 
       // !!! slow down loop for local testing
-//       for ( int tmpi = 0; tmpi < 1000000; tmpi++ ) ;
+      // for ( int tmpi = 0; tmpi < 1000000; tmpi++ ) ;
 
       job.data( buffer, n );
       processed_size += n;
@@ -872,25 +797,20 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
 void FtpProtocol::slotGet( const char *_url )
 {
-  string url = _url;
-  
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
-    error( ERR_MALFORMED_URL, url.c_str() );
+  if ( usrc.isMalformed() ) {
+    error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-  {
+  if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
     error( ERR_INTERNAL, "kio_ftp got non ftp file in get command" );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( !ftp.ftpConnect( usrc ) )
-  {
+  if ( !ftp.ftpConnect( usrc ) ) {
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
@@ -898,25 +818,22 @@ void FtpProtocol::slotGet( const char *_url )
   }
   
   FtpEntry *e = ftp.ftpStat( usrc );
-  if ( !e )
-  {
-    error( ERR_DOES_NOT_EXIST, url.c_str() );
+  if ( !e ) {
+    error( ERR_DOES_NOT_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
   
-  if ( S_ISDIR( e->type ) )
-  {
-    error( ERR_IS_DIRECTORY, url.c_str() );
+  if ( S_ISDIR( e->type ) ) {
+    error( ERR_IS_DIRECTORY, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
   m_cmd = CMD_GET;
   
-  if ( !ftp.open( usrc, Ftp::READ ) )
-  {
-    error( ERR_CANNOT_OPEN_FOR_READING, url.c_str() );
+  if ( !ftp.open( usrc, Ftp::READ ) ) {
+    error( ERR_CANNOT_OPEN_FOR_READING, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
@@ -924,22 +841,20 @@ void FtpProtocol::slotGet( const char *_url )
   ready();
 
   gettingFile( _url );
-  
+
   totalSize( e->size );  
   int processed_size = 0;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
   
-  char buffer[ 4096 ];
-  while( !ftp.atEOF() )
-  {
+  char buffer[ 2048 ];
+  while( !ftp.atEOF() ) {
     int n = ftp.read( buffer, 2048 );
     data( buffer, n );
 
     processed_size += n;
     time_t t = time( 0L );
-    if ( t - t_last >= 1 )
-    {
+    if ( t - t_last >= 1 ) {
       processedSize( processed_size );
       speed( processed_size / ( t - t_start ) );
       t_last = t;
@@ -947,7 +862,7 @@ void FtpProtocol::slotGet( const char *_url )
   }
 
   dataEnd();
-  
+
   ftp.close();
 
   processedSize( e->size );
@@ -965,8 +880,7 @@ void FtpProtocol::slotGetSize( const char* _url ) {
   
   // Check wether URL is wellformed
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-    {
+  if ( usrc.isMalformed() ) {
       error( ERR_MALFORMED_URL, _url );
       m_cmd = CMD_NONE;
       return;
@@ -1015,30 +929,28 @@ void FtpProtocol::slotGetSize( const char* _url ) {
 
 void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
 {
-  string url_orig = _url;
-  string url_part = url_orig + ".part";
+  QString url_orig = _url;
+  QString url_part = url_orig + ".part";
 
-  KURL udest_orig( url_orig.c_str() );
-  KURL udest_part( url_part.c_str() );
+  KURL udest_orig( url_orig );
+  KURL udest_part( url_part );
 
   bool m_bMarkPartial = KProtocolManager::self().markPartial();
 
-  if ( udest_orig.isMalformed() )
-  {
-    error( ERR_MALFORMED_URL, url_orig.c_str() );
+  if ( udest_orig.isMalformed() ) {
+    error( ERR_MALFORMED_URL, url_orig );
     m_cmd = CMD_NONE;
     finished();
     return;
   }
 
-  if ( strcmp( udest_orig.protocol(), "ftp" ) != 0L )
-  {
+  if ( strcmp( udest_orig.protocol(), "ftp" ) != 0L ) {
     error(ERR_INTERNAL,"kio_ftp got non ftp file as as destination in put command" );
     m_cmd = CMD_NONE;
     finished();
     return;
   }
-  
+
   // Connect to the ftp server, only if we are not connected
   // this prevents connecting twice in recursive copying ( mkdir connects first time )
   if ( !ftp.isConnected() )
@@ -1189,17 +1101,16 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 }
 
 
-void FtpProtocol::slotDel( list<string>& _source )
+void FtpProtocol::slotDel( QStringList& _source )
 {
   // Check wether the URLs are wellformed
-  list<string>::iterator soit = _source.begin();
-  for( ; soit != _source.end(); ++soit )
-  {    
-    debug( "kio_ftp : Checking %s", soit->c_str() );
-    KURL usrc( soit->c_str() );
+  QStringList::Iterator soit = _source.begin();
+  for( ; soit != _source.end(); ++soit ) {    
+    debug( "kio_ftp : Checking %s", (*soit).ascii() );
+    KURL usrc( *soit );
 
     if ( usrc.isMalformed() ) {
-      error( ERR_MALFORMED_URL, soit->c_str() );
+      error( ERR_MALFORMED_URL, *soit);
       m_cmd = CMD_NONE;
       return;
     }
@@ -1211,21 +1122,20 @@ void FtpProtocol::slotDel( list<string>& _source )
     }
   }
 
-  debug( "kio_ftp : All URLs ok" );
+  qDebug( "kio_ftp : All URLs ok" );
 
   // Get a list of all source files and directories
   list<Copy> fs;
   list<CopyDir> ds;
   int size = 0;
-  debug( "kio_ftp : Iterating" );
+  qDebug( "kio_ftp : Iterating" );
 
   soit = _source.begin();
-  debug( "kio_ftp : Looping" );
-  for( ; soit != _source.end(); ++soit )
-  {    
-    debug( "kio_ftp : Executing %s", soit->c_str() );
-    KURL usrc( soit->c_str() );
-    debug( "kio_ftp : Parsed URL" );
+  qDebug( "kio_ftp : Looping" );
+  for( ; soit != _source.end(); ++soit ) {    
+    qDebug( "kio_ftp : Executing %s", (*soit).ascii() );
+    KURL usrc(*soit);
+    qDebug( "kio_ftp : Parsed URL" );
 
     // Did an error occur ?
 //    int s;
@@ -1240,7 +1150,7 @@ void FtpProtocol::slotDel( list<string>& _source )
 //    size += s;
   }
 
-  debug( "kio_ftp : Recursive ok" );
+  qDebug( "kio_ftp : Recursive ok" );
 
   if ( fs.size() == 1 )
     m_cmd = CMD_DEL;
@@ -1343,36 +1253,32 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
     return listRecursive2( "/", c.m_strRelDest.c_str(), _files, _dirs );
   }
   
-  string p;
-  p.assign( _path, len );
-  debug( "kio_ftp : ########## RECURSIVE LISTING %s", p.c_str() );
+  QString p=_path;
+  qDebug( "kio_ftp : ########## RECURSIVE LISTING %s", p.ascii() );
   
   KURL tmpurl( "ftp:/" );
-  tmpurl.setPath( p.c_str() );
+  tmpurl.setPath( p );
   FtpEntry* e = ftp.ftpStat( tmpurl );
-  if ( !e )
-  {
-    error( ERR_DOES_NOT_EXIST, p.c_str() );
+  if ( !e )  {
+    error( ERR_DOES_NOT_EXIST, p);
     return -1;
   }
-  
-  KURL u( p.c_str() );
+
+  KURL u( p );
   // Should be checked before, but who knows
   if ( u.isMalformed() )
     assert( 0 );
 
   // Is the source not a directory ? => so just copy it and we are done.
-  if ( !S_ISDIR( e->type ) )
-  {
-    debug( "kio_ftp : not a dir" );
-    string fname;
+  if ( !S_ISDIR( e->type ) ) {
+    qDebug( "kio_ftp : not a dir" );
+    QString fname;
     if ( _rename )
       fname = "";
-    else
-    {
+    else {
       fname = u.filename();
       // Should be impossible, but who knows ...
-      if ( fname.empty() )
+      if ( fname.isEmpty() )
 	assert( 0 );
     }
 
@@ -1387,15 +1293,14 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
   }
 
   // The source is a directory. So we have to go into recursion here.
-  string tmp1;
+  QString tmp1;
   if ( _rename )
     tmp1 = u.path( 0 );
-  else
-  {    
+  else {    
     tmp1 = u.directory( true );
     tmp1 += "/";
   }
-  string tmp2;
+  QString tmp2;
   if ( _rename )
     tmp2 = "";
   else
@@ -1406,9 +1311,9 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
   c.m_access = e->access;
   c.m_type = e->type;
   _dirs.push_back( c );
-  debug( "kio_ftp : ########### STARTING RECURSION with %s and %s",tmp1.c_str(), tmp2.c_str() );
-  
-  return listRecursive2( tmp1.c_str(), tmp2.c_str(), _files, _dirs );
+  debug( "kio_ftp : ########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
+
+  return listRecursive2( tmp1, tmp2, _files, _dirs );
 }
 
 
@@ -1418,52 +1323,47 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
   long size = 0;
   
   cerr << "listRecursive2 " << _abs_path << "  " << _rel_path << endl;
-  string p = _abs_path;
+  QString p = _abs_path;
   p += _rel_path;
 
-  scanningDir( p.c_str() );
+  scanningDir( p );
   
   KURL tmpurl( "ftp:/" );
-  tmpurl.setPath( p.c_str() );
-  if ( !ftp.ftpOpenDir( tmpurl ) )
-  {
+  tmpurl.setPath( p );
+  if ( !ftp.ftpOpenDir( tmpurl ) ) {
     if ( m_bAutoSkip )
       return 0;
 
-    SkipDlg_Result result = open_SkipDlg( p.c_str(), true );
-    if ( result == S_CANCEL )
-    {
-      // error( ERR_CANNOT_ENTER_DIRECTORY, p.c_str() );
+    SkipDlg_Result result = open_SkipDlg( p, true );
+    if ( result == S_CANCEL ) {
+      // error( ERR_CANNOT_ENTER_DIRECTORY, p );
       return -1;
-    }
-    else if ( result == S_AUTO_SKIP )
+    } else if ( result == S_AUTO_SKIP )
       m_bAutoSkip = true;
     return 0;
   }
 
-  list<string> recursion;
+  QStringList recursion;
 
-  debug( "kio_ftp : ##Listing" );
+  qDebug( "kio_ftp : ##Listing" );
   
   FtpEntry *e;
-  while ( ( e = ftp.readdir() ) != 0L )
-  {
-    debug( "kio_ftp : #%s", e->name.c_str() );
+  while ( ( e = ftp.readdir() ) != 0L ) {
+    qDebug( "kio_ftp : #%s", e->name.c_str() );
     
     if ( e->name == "." || e->name == ".." )
       continue;
     
-    string p2 = p;
+    QString p2 = p;
     p2 += "/";
-    p2 += e->name;
+    p2 += e->name.c_str();
   
-    string tmp = _rel_path;
+    QString tmp = _rel_path;
     tmp += "/";
-    tmp += e->name;
-  
-    if ( !S_ISDIR( e->type ) )
-    {
-      debug( "kio_ftp : Appending '%s' '%s'", p2.c_str(), tmp.c_str() );
+    tmp += e->name.c_str();
+
+    if ( !S_ISDIR( e->type ) ) {
+      qDebug( "kio_ftp : Appending '%s' '%s'", p2.ascii(), tmp.ascii() );
       Copy c;
       c.m_strAbsSource = p2;
       c.m_strRelDest = tmp;
@@ -1472,9 +1372,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_size = e->size;
       _files.push_back( c );
       size += e->size;
-    }
-    else
-    {
+    } else {
       CopyDir c;
       c.m_strAbsSource = p2;
       c.m_strRelDest = tmp;
@@ -1482,45 +1380,39 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_type = e->type;
       _dirs.push_back( c );
 
-      recursion.push_back( tmp );
+      recursion.append( tmp );
     }
   }
 
-  if ( !ftp.ftpCloseDir() )
-  {
+  if ( !ftp.ftpCloseDir() ) {
     // error( ERR_COULD_NOT_CLOSEDIR, p.c_str() );
     return -1;
   }
   
-  list<string>::iterator it = recursion.begin();
-  for( ; it != recursion.end(); ++it )
-  {    
+  QStringList::Iterator it = recursion.begin();
+  for( ; it != recursion.end(); ++it ) {    
     long s;
-    if ( ( s = listRecursive2( _abs_path, it->c_str(), _files, _dirs ) ) == -1 )
+    if ( ( s = listRecursive2( _abs_path, (*it).ascii(), _files, _dirs ) ) == -1 )
       return -1;
     size += s;
   }
-  
+
   return size;
 }
 
 
 void FtpProtocol::slotListDir( const char *_url )
 {
-  debug( "kio_ftp : =============== LIST %s ===============", _url  );
-  
-  string url = _url;
+  qDebug( "kio_ftp : =============== LIST %s ===============", _url  );
   
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
-    error( ERR_MALFORMED_URL, url.c_str() );
+  if ( usrc.isMalformed() ) {
+    error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-  {
+  if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
     error( ERR_INTERNAL, "kio_ftp got non ftp file as source in copy command" );
     m_cmd = CMD_NONE;
     return;
@@ -1544,9 +1436,8 @@ void FtpProtocol::slotListDir( const char *_url )
 
   m_cmd = CMD_LIST;
   
-  if ( !ftp.opendir( usrc ) )
-  {
-    error( ERR_CANNOT_ENTER_DIRECTORY, url.c_str() );
+  if ( !ftp.opendir( usrc ) ) {
+    error( ERR_CANNOT_ENTER_DIRECTORY, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1612,40 +1503,32 @@ void FtpProtocol::slotListDir( const char *_url )
 
 void FtpProtocol::slotTestDir( const char *_url )
 {
-  string url = _url;
-  
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
-    error( ERR_MALFORMED_URL, url.c_str() );
+  if ( usrc.isMalformed() ) {
+    error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
-    
-  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-  {
+
+  if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
     error( ERR_INTERNAL, "kio_ftp got non ftp file as source in copy command" );
     m_cmd = CMD_NONE;
     return;
   }
-  debug( "kio_ftp : =============== slotTestDir ==============" );
+  qDebug( "kio_ftp : =============== slotTestDir ==============" );
   FtpEntry* e;
-  if ( !( e = ftp.stat( usrc ) ) )
-  {
+  if ( !( e = ftp.stat( usrc ) ) ) {
     debug( "kio_ftp : =========== ERROR ========" );
-    error( ERR_DOES_NOT_EXIST, url.c_str() );
+    error( ERR_DOES_NOT_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
   
-  if ( S_ISDIR( e->type ) )
-  {
-    debug( "kio_ftp : ========== DONE DIR ========= %s", _url );    
+  if ( S_ISDIR( e->type ) ) {
+    qDebug( "kio_ftp : ========== DONE DIR ========= %s", _url );    
     isDirectory();
-  }
-  else
-  {
-    debug( "kio_ftp : ========== DONE FILE ========= %s", _url );
+  } else {
+    qDebug( "kio_ftp : ========== DONE FILE ========= %s", _url );
     isFile();
   }
 
