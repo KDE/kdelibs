@@ -5,10 +5,11 @@
 
 using namespace khtml;
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int toAdd, QPainter::TextDirection d ) const
+void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, 
+        int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
 {
     // ### fixme for RTL
-    if ( !letterSpacing && !wordSpacing && !toAdd ) {
+    if ( !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
 	// simply draw it
 	p->drawText( x, y, QConstString(str, len).string(), len, d );
     } else {
@@ -39,7 +40,13 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int toAdd, 
 	    }
 	    if ( d == QPainter::RTL )
 		x -= chw;
-	    p->drawText( x, y, s, i, 1, d );
+            if ( to==-1 || (i>=from && i<to) )
+            {
+                if ( bg.isValid() )
+                    p->fillRect( x, y-fm.ascent(), chw, fm.height(), bg );
+
+	        p->drawText( x, y, s, i, 1, d );
+            }
 	    if ( d != QPainter::RTL )
 		x += chw;
 	}

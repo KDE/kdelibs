@@ -46,37 +46,15 @@ void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, i
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
 
-    int _len = m_len;
-    int _width = m_width;
-    if(endPos > 0 && endPos < m_len) {
-        _len = endPos;
-    }
-    _len -= startPos;
-
-    //kdDebug(6040) << "TextSlave::printSelection startPos (relative)=" << startPos << " len (of selection)=" << _len << "  (m_len=" << m_len << ")" << endl;
-
-    if (_len != m_len)
-        _width = f->width(m_text + startPos, _len );
-
-    int _offset = 0;
-    if ( startPos > 0 )
-	_offset = f->width(m_text, startPos );
-    if ( m_reversed ) {
-	_offset = m_width - _width - _offset;
-    } 
-
-
     p->save();
     QColor c = style->color();
     p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
-    QFontMetrics fm = p->fontMetrics();
-    p->fillRect(m_x + tx + _offset, m_y + ty + m_baseline - fm.ascent(), _width, fm.height(), c);
 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    f->drawText(p, m_x + tx + _offset, m_y + ty, m_text + startPos, _len, 
-		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR);
+    f->drawText(p, m_x + tx, m_y + ty, m_text, m_len, 
+		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
     p->restore();
 }
 
@@ -371,7 +349,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 {
 //     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                   << " _tx=" << _tx << " _ty=" << _ty << endl;
-    TextSlave *lastPointAfterInline;
+    TextSlave *lastPointAfterInline=0;
     
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
