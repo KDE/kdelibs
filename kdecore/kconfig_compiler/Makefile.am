@@ -29,10 +29,11 @@ METASOURCES = AUTO
 
 CLEANFILES = exampleprefs_base.h exampleprefs_base.cpp
 
-TESTFILES = test1.kcfg test2.kcfg test3.kcfg
+TESTFILES = test1.kcfg test2.kcfg test3.kcfg test4.kcfg
 
 check:
 	for i in $(TESTFILES); \
-	  do perl $(top_srcdir)/kdecore/kconfig_compiler/checkkcfg.pl \
+	  do xmllint -noout -dtdvalid $(srcdir)/kcfg.dtd $(srcdir)/tests/$$i; \
+	  perl $(top_srcdir)/kdecore/kconfig_compiler/checkkcfg.pl \
           $(top_srcdir)/kdecore/kconfig_compiler/tests/$$i; done
 	  

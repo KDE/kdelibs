@@ -73,6 +73,9 @@ sub checkfile()
 
   if ( $error > 0 ) {
     print "\n  FAILED: $error errors found.\n";
+    if ( $error > 5 ) {
+      system( "diff -u $file.ref $filename" ); 
+    }
     exit 1;
   } else {
     print "  OK\n";
