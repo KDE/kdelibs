@@ -116,7 +116,7 @@ void KAudioConverter::requestPlayObject(const KURL &url)
 
 	delete offers;
 
-	if(objectType == "")
+	if(objectType.empty())
 	{
 		m_incoming = 0;
 		return;
