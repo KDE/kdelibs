@@ -69,6 +69,7 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0), m
     // Notify the UI Server and get a progress id
     if ( showProgressInfo )
     {
+        kdDebug(7007) << " -- with progress info -- " << endl;
         m_progressId = Observer::self()->newJob( this );
         // Connect global progress info signal
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
@@ -453,7 +454,7 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url.path() << url.query() << Q_INT8( reload ? 1 : 0);
-    TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, showProgressInfo );
+    TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
     return job;
 }
 
@@ -471,7 +472,7 @@ TransferJob *KIO::put( const KURL& url, int permissions,
                   bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << Q_INT8( overwrite ? 1 : 0 ) << Q_INT8( resume ? 1 : 0 ) << permissions << url.path();
-    TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, showProgressInfo );
+    TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
     return job;
 }
 
@@ -479,7 +480,7 @@ TransferJob *KIO::put( const KURL& url, int permissions,
 
 MimetypeJob::MimetypeJob( const KURL& url, int command,
                   const QByteArray &packedArgs )
-    : TransferJob(url, command, packedArgs, false)
+    : TransferJob(url, command, packedArgs, QByteArray(), false)
 {
 }
 
@@ -608,9 +609,9 @@ void FileCopyJob::startCopyJob()
 void FileCopyJob::startDataPump()
 {
     kdDebug(7007) << "FileCopyJob::startDataPump()" << endl;
-    m_getJob = get( m_src );
+    m_getJob = get( m_src, false );
     kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
-    m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume);
+    m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false);
     kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << endl;
     m_putJob->suspend();
     addSubjob( m_getJob );
@@ -683,7 +684,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       m_copyJob = 0;
       if (m_move)
       {
-         m_delJob = file_delete( m_src ); // Delete source
+         m_delJob = file_delete( m_src, false ); // Delete source
          addSubjob(m_delJob);
       }
    }
@@ -706,7 +707,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       }
       if (m_move)
       {
-         m_delJob = file_delete( m_src ); // Delete source
+         m_delJob = file_delete( m_src, false ); // Delete source
          addSubjob(m_delJob);
       }
    }
@@ -719,21 +720,21 @@ void FileCopyJob::slotResult( KIO::Job *job)
 }
 
 FileCopyJob *KIO::file_copy( const KURL& src, const KURL& dest, int permissions,
-                             bool overwrite, bool resume)
+                             bool overwrite, bool resume, bool showProgressInfo)
 {
-   return new FileCopyJob( src, dest, permissions, false, overwrite, resume, false );
+   return new FileCopyJob( src, dest, permissions, false, overwrite, resume, showProgressInfo );
 }
 
 FileCopyJob *KIO::file_move( const KURL& src, const KURL& dest, int permissions,
-                             bool overwrite, bool resume)
+                             bool overwrite, bool resume, bool showProgressInfo)
 {
-   return new FileCopyJob( src, dest, permissions, true, overwrite, resume, false );
+   return new FileCopyJob( src, dest, permissions, true, overwrite, resume, showProgressInfo );
 }
 
-SimpleJob *KIO::file_delete( const KURL& src)
+SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 {
     KIO_ARGS << src.path() << Q_INT8(true); // isFile
-    return new SimpleJob(src, CMD_DEL, packedArgs, false );
+    return new SimpleJob(src, CMD_DEL, packedArgs, showProgressInfo );
 }
 
 //////////
@@ -1581,13 +1582,13 @@ void CopyJob::copyNextFile()
             }
         } else if (m_move) // Moving a file
         {
-            newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
+            newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false );
             kdDebug() << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit moving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
-            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
+            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false );
             kdDebug() << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
         }
@@ -1864,7 +1865,7 @@ void DeleteJob::deleteNextFile()
         } else
         {
             // Normal deletion
-            job = KIO::file_delete( *it );
+            job = KIO::file_delete( *it, false );
 	    emit deleting( this, *it );
         }
         if ( isLink ) symlinks.remove(it);
@@ -1973,13 +1974,13 @@ void DeleteJob::slotResult( Job *job )
                 {
                     // KShred your KTie
                     KIO_ARGS << int(3) << url.path();
-                    SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
+                    SimpleJob *job = KIO::special(KURL("file:/"), packedArgs, false);
                     addSubjob(job);
                 }
                 else
                 {
                    // Normal deletion
-                   SimpleJob *job = KIO::file_delete(url);
+                   SimpleJob *job = KIO::file_delete(url, false);
                    addSubjob( job );
                 }
             }

@@ -134,7 +134,8 @@ namespace KIO {
      * @param resume
      */
     FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
-                            bool overwrite=false, bool resume=false);
+                            bool overwrite=false, bool resume=false,
+                            bool showProgressInfo = true);
 
     /**
      * Moves a single file.
@@ -147,13 +148,14 @@ namespace KIO {
      * @param resume
      */
     FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
-                            bool overwrite=false, bool resume=false);
+                            bool overwrite=false, bool resume=false,
+                            bool showProgressInfo = true);
 
     /**
      * Delete a single file.
      * @param src file to delete
      */
-    SimpleJob *file_delete( const KURL& src);
+    SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
     /**
      * Create a link
