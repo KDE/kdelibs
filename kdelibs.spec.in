@@ -1,6 +1,6 @@
 # You might want to change the next 3 lines, the rest should be ok.
-Prefix: /opt/kde2
-%define qtversion 2.2.0
+Prefix: /opt/kde3
+%define qtversion 3.0.0
 %define qtdir /usr/lib/qt-%{qtversion}
 
 Name: kdelibs
