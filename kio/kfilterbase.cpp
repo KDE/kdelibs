@@ -43,9 +43,9 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
     KURL url;
     url.setPath( fileName );
-    kdDebug() << "KFilterBase::findFilterByFileName url=" << url.url() << endl;
+    kdDebug(7005) << "KFilterBase::findFilterByFileName url=" << url.url() << endl;
     KMimeType::Ptr mime = KMimeType::findByURL( url );
-    kdDebug() << "KFilterBase::findFilterByFileName mime=" << mime->name() << endl;
+    kdDebug(7005) << "KFilterBase::findFilterByFileName mime=" << mime->name() << endl;
     return findFilterByMimeType(mime->name());
 }
 
@@ -56,7 +56,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     KTrader::OfferList::ConstIterator it = offers.begin();
     KTrader::OfferList::ConstIterator end = offers.end();
 
-    kdDebug() << "KFilterBase::findFilterByMimeType got " << offers.count() << " offers" << endl;
+    kdDebug(7005) << "KFilterBase::findFilterByMimeType got " << offers.count() << " offers" << endl;
     for (; it != end; ++it )
     {
         if ((*it)->library().isEmpty()) { continue; }
