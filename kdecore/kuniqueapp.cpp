@@ -42,6 +42,7 @@
 #include "kuniqueapp.h"
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
+bool KUniqueApplication::s_nofork = false;
 
 static KCmdLineOptions kunique_options[] =
 {
@@ -104,16 +105,16 @@ KUniqueApplication::start()
 {
   addCmdLineOptions(); // Make sure to add cmd line options
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
-  bool nofork = !args->isSet("fork");
+  s_nofork = !args->isSet("fork");
   delete args;
 
   const char *appName = KCmdLineArgs::about->appName();
 
-  if (nofork)
+  if (s_nofork)
   {
      s_DCOPClient = new DCOPClient();
      s_DCOPClient->registerAs(appName, false);
-     s_DCOPClient->send(appName, appName, "newInstanceNoFork()", QByteArray());
+     // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
   DCOPClient *dc;
@@ -256,6 +257,10 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
   s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
   d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
+
+  if (s_nofork)
+    // Can't call newInstance directly from the constructor since it's virtual...
+    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
 }
 
 KUniqueApplication::~KUniqueApplication()
@@ -263,11 +268,16 @@ KUniqueApplication::~KUniqueApplication()
   delete d;
 }
 
+void KUniqueApplication::newInstanceNoFork()
+{
+  newInstance();
+  // What to do with the return value ?
+}
+
 bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
 				 QCString &, QByteArray &)
 {
-  if ((fun == "newInstance()") ||
-      (fun == "newInstanceNoFork()")) 
+  if (fun == "newInstance()")
   {
     delayRequest(fun, data);
     return true;
@@ -301,12 +311,6 @@ KUniqueApplication::processDelayed()
      if (request->fun == "newInstance()") {
        QDataStream ds(request->data, IO_ReadOnly);
        KCmdLineArgs::loadAppArgs(ds);
-       int exitCode = newInstance();
-       QDataStream rs(replyData, IO_WriteOnly);
-       rs << exitCode;
-       replyType = "int";
-     } else
-     if (request->fun == "newInstanceNoFork()") {
        int exitCode = newInstance();
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;

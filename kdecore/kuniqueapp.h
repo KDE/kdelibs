@@ -149,8 +149,11 @@ private slots:
    */
   void processDelayed();
 
+  void newInstanceNoFork();
+
 private:
   static DCOPClient *s_DCOPClient;
+  static bool s_nofork;
 
   KUniqueApplicationPrivate *d;
 };
