@@ -117,7 +117,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   hbLayout->addWidget( rbProgressLittle, 5 );
 
   progressButtons->setButton( pr );
-  progressMode = pr;
+  changeProgressMode( pr );
 
   // run & stop butons
   hbLayout = new QHBoxLayout( topLayout, 15 );
@@ -140,15 +140,15 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   topLayout->addWidget( close, 5 );
 
+  main_widget->setMinimumSize( main_widget->sizeHint() );
   setView( main_widget );
+
+  littleProgress = new KIOLittleProgressDlg( statusBar() );
+  statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
 
   kmain = this;
 
   show();
-}
-
-
-KioslaveTest::~KioslaveTest() {
 }
 
 
@@ -172,6 +172,12 @@ void KioslaveTest::changeOperation( int id ) {
 
 void KioslaveTest::changeProgressMode( int id ) {
   progressMode = id;
+
+  if ( progressMode == ProgressLittle ) {
+    enableStatusBar( KStatusBar::Show );
+  } else {
+    enableStatusBar( KStatusBar::Hide );
+  }
 }
 
 
@@ -205,6 +211,7 @@ void KioslaveTest::startJob() {
 
   case ProgressLittle:
     job->setGUImode( KIOJob::LITTLE );
+    job->connectProgress( littleProgress );
     break;
 
   default:
@@ -236,9 +243,9 @@ void KioslaveTest::startJob() {
   }
 
   connect( job, SIGNAL( sigFinished( int ) ),
-	   SLOT( slotFinished( int ) ) );
+	   SLOT( slotFinished() ) );
   connect( job, SIGNAL( sigCanceled( int ) ),
-	   SLOT( slotFinished( int ) ) );
+	   SLOT( slotFinished() ) );
   connect( job, SIGNAL( sigError( int, int, const char* ) ),
 	   SLOT( slotError( int, int, const char* ) ) );
 
@@ -250,14 +257,14 @@ void KioslaveTest::slotError( int, int errid, const char* errortext ) {
   QString msg = KIO::kioErrorString( errid, errortext );
   QMessageBox::critical(this, i18n("Kioslave Error Message"), msg );
 
-  pbStart->setEnabled( true );
-  pbStop->setEnabled( false );
+  slotFinished();
 }
 
 
-void KioslaveTest::slotFinished( int ) {
+void KioslaveTest::slotFinished() {
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
+  littleProgress->clean();
 }
 
 

@@ -21,6 +21,7 @@
 
 #include <ktmainwindow.h>
 
+#include "kio_littleprogress_dlg.h"
 #include "kio_job.h"
 
 class KioslaveTest : public KTMainWindow {
@@ -28,7 +29,7 @@ class KioslaveTest : public KTMainWindow {
 
 public:
   KioslaveTest( QString src, QString dest, uint op, uint pr );
-  ~KioslaveTest();
+  ~KioslaveTest() {}
 
   enum Operations { List, Get, Copy, Move, Delete };
 
@@ -76,11 +77,13 @@ protected slots:
   void stopJob();
 
   void slotError( int, int errid, const char* errortext );
-  void slotFinished( int );
+  void slotFinished();
 
 private:
   KIOJob *job;
   QWidget *main_widget;
+
+  KIOLittleProgressDlg *littleProgress;
 
   int selectedOperation;
   int progressMode;
