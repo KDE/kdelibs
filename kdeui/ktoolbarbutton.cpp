@@ -42,6 +42,7 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstyle.h>
+#include <kglobalsettings.h>
 
 #include <kiconloader.h>
 
@@ -572,7 +573,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
       _painter->setFont(KGlobal::toolBarFont());
       if(d->m_isRaised)
-        _painter->setPen(blue);
+        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, width()-dx, height(), tf, d->m_text);
     }
   }
@@ -593,7 +594,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
       _painter->setFont(KGlobal::toolBarFont());
       if(d->m_isRaised)
-        _painter->setPen(blue);
+        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);
     }
   }
@@ -625,7 +626,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
       _painter->setFont(KGlobal::toolBarFont());
       if(d->m_isRaised)
-        _painter->setPen(blue);
+        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);
     }
   }
