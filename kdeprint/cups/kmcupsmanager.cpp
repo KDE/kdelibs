@@ -971,7 +971,7 @@ QString KMCupsManager::stateInformation()
 
 void KMCupsManager::checkUpdatePossibleInternal()
 {
-	kdDebug() << "Checking for update possible" << endl;
+	kdDebug(500) << "Checking for update possible" << endl;
 	delete m_socket;
 	/*m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
 	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
@@ -986,7 +986,7 @@ void KMCupsManager::checkUpdatePossibleInternal()
 
 void KMCupsManager::slotConnectionSuccess()
 {
-	kdDebug() << "Connection success, trying to send a request..." << endl;
+	kdDebug(500) << "Connection success, trying to send a request..." << endl;
 	m_socket->close();
 	
 	IppRequest req;
@@ -996,7 +996,7 @@ void KMCupsManager::slotConnectionSuccess()
 		setUpdatePossible( true );
 	else
 	{
-		kdDebug() << "Unable to get printer list" << endl;
+		kdDebug(500) << "Unable to get printer list" << endl;
 		if ( trials > 0 )
 		{
 			trials--;
@@ -1013,14 +1013,14 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kdDebug() << "Starting async connect" << endl;
+	kdDebug(500) << "Starting async connect" << endl;
 	//m_socket->startAsyncConnect();
 	m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
 }
 
 void KMCupsManager::slotConnectionFailed( int errcode )
 {
-	kdDebug() << "Connection failed trials=" << trials << endl;
+	kdDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
 	{
 		//m_socket->setTimeout( ++to );

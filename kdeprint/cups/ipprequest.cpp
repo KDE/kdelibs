@@ -33,28 +33,28 @@
 
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
 {
-	kdDebug() << "==========" << endl;
+	kdDebug(500) << "==========" << endl;
 	if (s.isEmpty())
-		kdDebug() << (answer ? "Answer" : "Request") << endl;
+		kdDebug(500) << (answer ? "Answer" : "Request") << endl;
 	else
-		kdDebug() << s << endl;
-	kdDebug() << "==========" << endl;
+		kdDebug(500) << s << endl;
+	kdDebug(500) << "==========" << endl;
 	if (!req)
 	{
-		kdDebug() << "Null request" << endl;
+		kdDebug(500) << "Null request" << endl;
 		return;
 	}
-	kdDebug() << "State = 0x" << QString::number(req->state, 16) << endl;
-	kdDebug() << "ID = 0x" << QString::number(req->request.status.request_id, 16) << endl;
+	kdDebug(500) << "State = 0x" << QString::number(req->state, 16) << endl;
+	kdDebug(500) << "ID = 0x" << QString::number(req->request.status.request_id, 16) << endl;
 	if (answer)
 	{
-		kdDebug() << "Status = 0x" << QString::number(req->request.status.status_code, 16) << endl;
-		kdDebug() << "Status message = " << ippErrorString(req->request.status.status_code) << endl;
+		kdDebug(500) << "Status = 0x" << QString::number(req->request.status.status_code, 16) << endl;
+		kdDebug(500) << "Status message = " << ippErrorString(req->request.status.status_code) << endl;
 	}
 	else
-		kdDebug() << "Operation = 0x" << QString::number(req->request.op.operation_id, 16) << endl;
-	kdDebug() << "Version = " << (int)(req->request.status.version[0]) << "." << (int)(req->request.status.version[1]) << endl;
-	kdDebug() << endl;
+		kdDebug(500) << "Operation = 0x" << QString::number(req->request.op.operation_id, 16) << endl;
+	kdDebug(500) << "Version = " << (int)(req->request.status.version[0]) << "." << (int)(req->request.status.version[1]) << endl;
+	kdDebug(500) << endl;
 
 	ipp_attribute_t *attr = req->attrs;
 	while (attr)
@@ -89,7 +89,7 @@ void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::nu
 			if (i != (attr->num_values-1))
 				s += ", ";
 		}
-		kdDebug() << s << endl;
+		kdDebug(500) << s << endl;
 		attr = attr->next;
 	}
 }
@@ -148,8 +148,9 @@ void IppRequest::init()
 		request_ = 0;
 	}
 	request_ = ippNew();
-	//kdDebug() << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
-	cups_lang_t*	lang = cupsLangGet(KGlobal::locale()->language().latin1());
+	kdDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
+        QCString langstr = KGlobal::locale()->language().latin1();
+	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)
 	lang->encoding = CUPS_UTF8;
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_CHARSET, "attributes-charset", NULL, cupsLangEncoding(lang));
@@ -291,7 +292,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	if (myHost.isEmpty()) myHost = CupsInfos::self()->host();
 	if (myPort <= 0) myPort = CupsInfos::self()->port();
 	http_t	*HTTP = httpConnect(myHost.latin1(),myPort);
-	
+
 	connect_ = (HTTP != NULL);
 
 	if (HTTP == NULL)
@@ -308,7 +309,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 	httpClose(HTTP);
-	
+
 	if (dump_ > 1)
 	{
 		dumpRequest(request_, true);
