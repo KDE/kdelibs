@@ -8,8 +8,8 @@
 // but still demonstrate the use. You would use I18N_NOOP
 #define I18N_NOP(x) x
 
-static const char *version = "v0.0.2 1999 (c) Waldo Bastian";
-static const char *description = I18N_NOP("This is a test program.");
+static const char version[] = "v0.0.2 1999 (c) Waldo Bastian";
+static const char description[] = I18N_NOP("This is a test program.");
 
 static KCmdLineOptions options[] =
 {

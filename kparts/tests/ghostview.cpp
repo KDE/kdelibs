@@ -96,8 +96,8 @@ static KCmdLineOptions options[] =
  { "+file(s)",          "Files to load", 0 },
  KCmdLineLastOption
 };
-static const char *version = "v0.0.1 2000 (c) David Faure";
-static const char *description = "This is a test shell for the kghostview part.";
+static const char version[] = "v0.0.1 2000 (c) David Faure";
+static const char description[] = "This is a test shell for the kghostview part.";
 
 int main( int argc, char **argv )
 {

@@ -455,8 +455,8 @@ void KioslaveTest::stopJob() {
   pbStart->setEnabled( true );
 }
 
-static const char *version = "v0.0.0 0000";   // :-)
-static const char *description = "Test for kioslaves";
+static const char version[] = "v0.0.0 0000";   // :-)
+static const char description[] = "Test for kioslaves";
 static KCmdLineOptions options[] =
 {
  { "s", 0, 0 },

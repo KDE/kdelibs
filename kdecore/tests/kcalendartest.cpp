@@ -18,7 +18,7 @@ class KLocale;
 
 void test(QDate & date);
 
-static const char *description = "KCalendarTest";
+static const char description[] = "KCalendarTest";
 
 static KCmdLineOptions options[] =
 {

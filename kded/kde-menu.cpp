@@ -42,8 +42,8 @@ static KCmdLineOptions options[] = {
    KCmdLineLastOption
 };
 
-static const char *appName = "kde-menu";
-static const char *appVersion = "1.0";
+static const char appName[] = "kde-menu";
+static const char appVersion[] = "1.0";
 static bool utf8;
 
 static bool bPrintMenuId;

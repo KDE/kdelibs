@@ -48,11 +48,11 @@ time_t currentDate;
 int m_maxCacheAge;
 int m_maxCacheSize;
 
-static const char *appName = "kio_http_cache_cleaner";
+static const char appName[] = "kio_http_cache_cleaner";
 
-static const char *description = I18N_NOOP("KDE HTTP cache maintenance tool");
+static const char description[] = I18N_NOOP("KDE HTTP cache maintenance tool");
 
-static const char *version = "1.0.0";
+static const char version[] = "1.0.0";
 
 static const KCmdLineOptions options[] =
 {

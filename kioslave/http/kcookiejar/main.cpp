@@ -30,10 +30,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klocale.h>
 #include <kapplication.h>
 
-static const char *description =
+static const char description[] =
 	I18N_NOOP("HTTP Cookie Daemon");
 
-static const char *version = "1.0";
+static const char version[] = "1.0";
 
 static const KCmdLineOptions options[] =
 {

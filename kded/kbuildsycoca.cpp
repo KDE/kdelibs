@@ -689,8 +689,8 @@ static KCmdLineOptions options[] = {
    KCmdLineLastOption
 };
 
-static const char *appName = "kbuildsycoca";
-static const char *appVersion = "1.1";
+static const char appName[] = "kbuildsycoca";
+static const char appVersion[] = "1.1";
 
 class WaitForSignal : public QObject
 {
