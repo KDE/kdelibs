@@ -1,22 +1,22 @@
 /*
     kimiface.h - KDE Instant Messenger DCOP Interface
 	
-	Refactored out of
-	
-	kopeteiface.h - Kopete DCOP Interface
-
-    Copyright (c) 2002 by Hendrik vom Lehn       <hennevl@hennevl.de>
 			  (c) 2004    Will Stephenson	 	 <lists@stevello.free-online.co.uk>
-    Kopete    (c) 2002-2003     by the Kopete developers  <kopete-devel@kde.org>
 
-    *************************************************************************
-    *                                                                       *
-    * This program is free software; you can redistribute it and/or modify  *
-    * it under the terms of the GNU General Public License as published by  *
-    * the Free Software Foundation; either version 2 of the License, or     *
-    * (at your option) any later version.                                   *
-    *                                                                       *
-    *************************************************************************
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KIMIFACE_H
@@ -85,7 +85,7 @@ k_dcop:
 	virtual bool addContact( const QString &contactId, const QString &protocol ) = 0;
 // SIGNALS
 k_dcop_signals:
-	void contactStatusChanged( const QString &uid);
+	void contactPresenceChanged( QString uid, QCString appId, int presence );
 };
 
 #endif
