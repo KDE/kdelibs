@@ -65,8 +65,8 @@ KCrash::setCrashHandler (HandlerType handler)
 {
   if (!handler)
     signal (SIGSEGV, SIG_DFL);
-
-  signal (SIGSEGV, handler);
+  else
+    signal (SIGSEGV, handler);
 
   _crashHandler = handler;
 }
@@ -77,7 +77,7 @@ KCrash::defaultCrashHandler (int signal)
   // Handle possible recursions
   static int crashRecursionCounter = 0;
 
-  printf("KCRash: crashing.... crashRecusrionCounter = %d\n", crashRecursionCounter);
+  printf("KCrash: crashing.... crashRecusrionCounter = %d\n", crashRecursionCounter);
   printf("Appname = %p apppath = %p\n", appName, appPath);
 
   crashRecursionCounter++;
