@@ -657,8 +657,11 @@ KCmdLineArgs::qt_argc()
    if (!argsList)
       KApplication::addCmdLineOptions(); // Lazy bastards!
 
-   KCmdLineArgs *args = parsedArgs("qt");
+   static int qt_argc = -1;
+   if( qt_argc != -1 )
+      return &qt_argc;
 
+   KCmdLineArgs *args = parsedArgs("qt");
    assert(args); // No qt options have been added!
    if (!argv)
    {
@@ -670,8 +673,8 @@ KCmdLineArgs::qt_argc()
    }
 
    assert(argc >= (args->count()+1));
-   argc = args->count() +1;
-   return &argc;
+   qt_argc = args->count() +1;
+   return &qt_argc;
 }
 
 /**
@@ -685,6 +688,10 @@ KCmdLineArgs::qt_argv()
    if (!argsList)
       KApplication::addCmdLineOptions(); // Lazy bastards!
 
+   static char** qt_argv;
+   if( qt_argv != NULL )
+      return &qt_argv;
+
    KCmdLineArgs *args = parsedArgs("qt");
    assert(args); // No qt options have been added!
    if (!argv)
@@ -696,14 +703,16 @@ KCmdLineArgs::qt_argv()
       exit(255);
    }
 
+   qt_argv = new char*[ args->count() + 2 ];
+   qt_argv[ 0 ] = qstrdup( appName());
    int i = 0;
    for(; i < args->count(); i++)
    {
-      argv[i+1] = (char *) args->arg(i);
+      qt_argv[i+1] = qstrdup((char *) args->arg(i));
    }
-   argv[i+1] = 0;
+   qt_argv[i+1] = 0;
 
-   return &argv;
+   return &qt_argv;
 }
 
 void
