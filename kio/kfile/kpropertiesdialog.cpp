@@ -1356,7 +1356,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gb = new QGroupBox ( i18n("Access Permissions"), d->m_frame );
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 6, 2, 15);
+  gl = new QGridLayout (gb, 6, 2, KDialog::marginHint(), KDialog::spacingHint());
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
@@ -1415,7 +1415,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 4, 3, 15);
+  gl = new QGridLayout (gb, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
   gl->addRowSpacing(0, 10);
 
   /*** Set Owner ***/
