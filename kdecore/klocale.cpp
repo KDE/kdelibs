@@ -192,6 +192,8 @@ KLocale::KLocale( const QString& _catalogue )
     initFormat(config);
 }
 
+extern void qt_set_locale_codec( QTextCodec *codec );        
+
 void KLocale::setEncodingLang(const QString &_lang)
 {
   _codec = 0;
@@ -210,6 +212,8 @@ void KLocale::setEncodingLang(const QString &_lang)
   // default to 8 bit unicode
   if (!_codec)
     _codec = QTextCodec::codecForName( "UTF-8" );
+
+  qt_set_locale_encoding(_codec);
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)
