@@ -66,7 +66,7 @@ public:
 	/**
 	ServiceBrowser constructor.
 	 
-	@param type  Type of services to browse for (example: "_http._tcp"). 
+	@param types List of service types to browse for (example: "_http._tcp"). 
 	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types 
 	present on network
 	@param domains  DomainBrowser object used to specify domains to browse. You do not have to connect 
@@ -75,6 +75,12 @@ public:
 	@param autoResolve If set to TRUE, after disovering new service it will be resolved and then 
 	reported with serviceAdded() signal. It raises network usage by resolving all services, 
 	so use it only when necessary.
+	 */
+	ServiceBrowser(const QStringList& types,DomainBrowser* domains=0,bool autoResolve=false);
+
+	/**
+	The same as above, but allows only one service type
+	@param type Type of services to browse for
 	 */
 	ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
 	
@@ -183,13 +189,13 @@ private:
 	ServiceBrowserPrivate *d;
 
 	bool allFinished();
+	void init(const QStringList&, DomainBrowser*, bool);
 	QValueList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
 private slots:
 	void serviceResolved(bool success);
 	void gotNewService(DNSSD::RemoteService::Ptr);
 	void gotRemoveService(DNSSD::RemoteService::Ptr);
 	void queryFinished();
-	void init(const QString&, DomainBrowser*, bool);
 
 };
 

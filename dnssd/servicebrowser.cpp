@@ -39,7 +39,7 @@ public:
 	{}
 	QValueList<RemoteService::Ptr> m_services;
 	QValueList<RemoteService::Ptr> m_duringResolve;
-	QString m_type;
+	QStringList m_types;
 	bool m_autoresolve;
 	DomainBrowser* m_domains;
 	bool m_running;
@@ -53,11 +53,17 @@ ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool a
 		else init(type,new DomainBrowser(this),autoResolve);
 }
 
-void ServiceBrowser::init(const QString& type,DomainBrowser* domains,bool autoResolve)
+ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,bool autoResolve)
+{
+	if (domains) init(types,domains,autoResolve);
+		else init(types,new DomainBrowser(this),autoResolve);
+}
+
+void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,bool autoResolve)
 {
 	d = new ServiceBrowserPrivate();
 	d->resolvers.setAutoDelete(true);
-	d->m_type=type;
+	d->m_types=type;
 	d->m_autoresolve=autoResolve;
 	d->m_domains = domains;
 	connect(d->m_domains,SIGNAL(domainAdded(const QString& )),this,SLOT(addDomain(const QString& )));
@@ -146,28 +152,31 @@ void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 
 void ServiceBrowser::removeDomain(const QString& domain)
 {
-	d->resolvers.remove(domain);
-	for ( QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); 
-		     it!=d->m_services.end(); ++it)
+	while (d->resolvers[domain]) d->resolvers.remove(domain);
+	QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
+	while (it!=d->m_services.end()) 
 		// use section to skip possible trailing dot
 		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
-		emit serviceRemoved(*it);
+			emit serviceRemoved(*it);
 			it = d->m_services.remove(it);
-		}
+		} else ++it;
 }
 
 void ServiceBrowser::addDomain(const QString& domain)
 {
 	if (!d->m_running) return;
 	if (!(d->resolvers[domain])) {
-		Query* b = new Query(d->m_type,domain);
-		connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
-			SLOT(gotNewService(DNSSD::RemoteService::Ptr)));
-		connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
-			SLOT(gotRemoveService(DNSSD::RemoteService::Ptr)));
-		connect(b,SIGNAL(finished()),this,SLOT(queryFinished()));
-		b->startQuery();
-		d->resolvers.insert(domain,b);
+		QStringList::ConstIterator itEnd = d->m_types.end();
+		for (QStringList::ConstIterator it=d->m_types.begin(); it!=itEnd; it++) {
+			Query* b = new Query((*it),domain);
+			connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
+				SLOT(gotNewService(DNSSD::RemoteService::Ptr)));
+			connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
+				SLOT(gotRemoveService(DNSSD::RemoteService::Ptr)));
+			connect(b,SIGNAL(finished()),this,SLOT(queryFinished()));
+			b->startQuery();
+			d->resolvers.insert(domain,b);
+		}
 	}
 }
 
