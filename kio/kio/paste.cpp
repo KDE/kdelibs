@@ -105,7 +105,7 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
   QMimeSource *data = QApplication::clipboard()->data();
 
   KURL::List urls;
-  if ( QUriDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
+  if ( KURLDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
     if ( urls.count() == 0 ) {
       KMessageBox::error( 0L, i18n("The clipboard is empty"));
       return 0;
