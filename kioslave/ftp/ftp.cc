@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if TIME_WITH_SYS_TIME
 #include <time.h>
@@ -227,7 +228,7 @@ void Ftp::closeConnection()
     if( sControl != 0 )
     {
       kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
-      if ( !ftpSendCmd( "quit" ) || rspbuf[0] != '2' )
+      if ( !ftpSendCmd( "quit", 0 ) || rspbuf[0] != '2' )
         kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err="
             << QString(QChar(rspbuf[0]))+QChar(rspbuf[1])+QChar(rspbuf[2]) << endl;
       free( nControl );
@@ -487,7 +488,7 @@ bool Ftp::ftpLogin()
         }
       }
       kdDebug(7102) << "Sending Login name: " << user << endl;
-      bool loggedIn = (ftpSendCmd( tempbuf ) &&
+      bool loggedIn = (ftpSendCmd( tempbuf, 0 ) &&
                        !strncmp( rspbuf, "230", 3));
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
@@ -503,7 +504,7 @@ bool Ftp::ftpLogin()
         tempbuf = "pass ";
         tempbuf += pass.latin1();
         kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
-        loggedIn = (ftpSendCmd( tempbuf ) && !strncmp(rspbuf, "230", 3));
+        loggedIn = (ftpSendCmd( tempbuf, 0 ) && !strncmp(rspbuf, "230", 3));
       }
 
       if ( loggedIn )
@@ -521,16 +522,16 @@ bool Ftp::ftpLogin()
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
-  if( ftpSendCmd( "syst" ) && rspbuf[0] == '2' )
+  if( ftpSendCmd( "syst", 0 ) && rspbuf[0] == '2' )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
     {
-      (void)ftpSendCmd( "site dirstyle" );
+      (void)ftpSendCmd( "site dirstyle", 0 );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
       if( !strncmp( rspbuf, "200 MSDOS-like directory output is on", 37 ))
          //It was in Unix style already!
-         (void)ftpSendCmd( "site dirstyle" );
+         (void)ftpSendCmd( "site dirstyle", 0 );
 
     }
   }
@@ -557,7 +558,7 @@ bool Ftp::ftpLogin()
                       // TODO: Add support for arbitrary commands
                       // besides simply changing directory!!
                       if ( (*it).startsWith( "cwd" ) )
-                          ftpSendCmd( (*it).latin1() );
+                          ftpSendCmd( (*it).latin1(), 0 );
                   }
                   break;
               }
@@ -567,7 +568,7 @@ bool Ftp::ftpLogin()
 
   // Get the current working directory
   kdDebug(7102) << "Searching for pwd" << endl;
-  if ( !ftpSendCmd( "pwd" ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( "pwd", 0 ) || rspbuf[0] != '2' )
   {
     kdDebug(7102) << "Couldn't issue pwd command" << endl;
     error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host) ); // or anything better ?
@@ -611,8 +612,10 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
 
   if ( cmd.left(4).lower() != "pass" ) // don't print out the password
     kdDebug(7102) << cmd.data() << endl;
-
-  if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
+  void (*oldsighandler)(int) = signal(SIGPIPE, SIG_IGN);
+  int num = KSocks::self()->write(sControl, buf.data(), buf.length());
+  signal(SIGPIPE, oldsighandler);
+  if (num <= 0 )  {
     error( ERR_COULD_NOT_WRITE, QString::null );
     return false;
   }
@@ -622,7 +625,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   {
       kdDebug(7102) << "got 421 -> timeout" << endl;
     // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
-    if ( cmd=="list" && maxretries > 0 ) // Only retry for "list". retr/stor/... need to redo the whole thing
+    if ( maxretries > 0 )
     {
       // It might mean a timeout occured, let's try logging in again
       m_bLoggedOn = false;
@@ -636,7 +639,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
       kdDebug(7102) << "Logged back in, reissuing command" << endl;
       // On success, try the command again
       return ftpSendCmd( cmd, maxretries - 1 );
-    } else
+    } else if (cmd != "quit")
     {
       error( ERR_SERVER_TIMEOUT, m_host );
       return false;
@@ -983,7 +986,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   QCString buf = "type ";
   buf += _mode;
 
-  if ( !ftpSendCmd( buf ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( buf, 0 ) || rspbuf[0] != '2' )
   {
     error( ERR_COULD_NOT_CONNECT, QString::null );
     return false;
@@ -998,7 +1001,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
     sprintf(buf, "rest %ld", _offset);
-    if ( !ftpSendCmd( buf ) )
+    if ( !ftpSendCmd( buf, 0 ) )
        return false;
     if ( rspbuf[0] != '3' ) {
       error( ERR_CANNOT_RESUME, _path ); // should never happen
@@ -1013,7 +1016,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     tmp += _path.ascii();
   }
 
-  if ( !ftpSendCmd( tmp ) || rspbuf[0] != '1' ) {
+  if ( !ftpSendCmd( tmp, 0 ) || rspbuf[0] != '1' ) {
     if ( _offset > 0 && strcmp(_command, "retr") == 0 && rspbuf[0] == '4')
     {
       // Failed to resume
@@ -1132,7 +1135,7 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
     return false;
   cmd = "RNTO ";
   cmd += dst.ascii();
-  return ftpSendCmd( cmd ) && rspbuf[0] == '2';
+  return ftpSendCmd( cmd, 0 ) && rspbuf[0] == '2';
 }
 
 void Ftp::del( const KURL& url, bool isfile )
@@ -1164,7 +1167,7 @@ void Ftp::del( const KURL& url, bool isfile )
   QCString cmd = isfile ? "DELE " : "RMD ";
   cmd += path.ascii();
 
-  if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
+  if ( !ftpSendCmd( cmd, isfile ? 1 : 0 ) || rspbuf[0] != '2' )
     error( ERR_CANNOT_DELETE, path );
   else
     finished();
@@ -1448,7 +1451,7 @@ void Ftp::stat( const KURL &url)
   // Now cwd the parent dir, to prepare for listing
   tmp = "cwd ";
   tmp += parentDir.latin1();
-  if ( !ftpSendCmd( tmp ) )
+  if ( !ftpSendCmd( tmp, 0 ) )
     // error already emitted
     return;
 
@@ -2173,7 +2176,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
       {
         QCString cmd = "DELE ";
         cmd += dest.ascii();
-        (void) ftpSendCmd( cmd );
+        (void) ftpSendCmd( cmd, 0 );
       }
     }
     return;
@@ -2240,7 +2243,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
 
   buf="SIZE ";
   buf+=path.ascii();
-  if ( !ftpSendCmd( buf ) || rspbuf[0] !='2' ) {
+  if ( !ftpSendCmd( buf, 0 ) || rspbuf[0] !='2' ) {
     m_size = 0;
     return false;
   }
