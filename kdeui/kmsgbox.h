@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1998/09/14 20:44:07  kulow
+ * I know, Ok is ok too, but OK is more OK some GUI guides say :)
+ *
  * Revision 1.9  1998/09/01 20:22:04  kulow
  * I renamed all old qt header files to the new versions. I think, this looks
  * nicer (and gives the change in configure a sense :)
@@ -174,7 +177,7 @@ public:
      *			its translation in the current user's locale if
      *			available.
      *
-     * @return 1 if yes is clicked, 0 otherwise.
+     * @return 1 if yes is clicked, 2 otherwise.
      */
     static int yesNo( QWidget *parent = 0, const char *caption = 0, 
 		    const char *message = 0, int type = 0,
