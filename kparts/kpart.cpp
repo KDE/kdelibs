@@ -21,6 +21,11 @@ KPart::~KPart()
 {
 }
 
+void KPart::embed( QWidget * parentWidget )
+{
+  m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
+}
+
 QString KPart::readConfigFile( const QString& filename ) const
 {
     QFile file( filename );

@@ -44,8 +44,8 @@ Shell::Shell()
 
   m_splitter->show();
   
-  m_part1->widget()->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
-  m_part2->widget()->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
+  m_part1->embed( m_splitter );
+  m_part2->embed( m_splitter );
 
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );

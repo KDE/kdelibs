@@ -27,11 +27,13 @@ public:
     virtual KPlugin* plugin( const char* libname );
 
     /**
-     * Note that you have to recreate the returned widget in order to insert it 
-	 * into your widget hierarchy. Also note that the KPart is still the holder 
+	 * Embed this part into a host widget.
+     * Note that the KPart is still the holder 
 	 * of the QWidget, meaning that if you delete the KPart,
-     * then the widget gets destroyed as well, and vice-versa.
+     * then the widget gets destroyed as well, and vice-versa (TODO).
      */
+	virtual void embed( QWidget * parentWidget );
+
     virtual QWidget *widget() { return m_widget; }
 
 protected:
