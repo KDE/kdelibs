@@ -36,11 +36,10 @@ class RangeImpl : public DomShared
     friend class DocumentImpl;
 public:
     RangeImpl(DocumentImpl *rootContainer);
-    RangeImpl(const NodeImpl *sc, const long so, const NodeImpl *ec, const long eo);
+    RangeImpl(NodeImpl *sc, const long so, NodeImpl *ec, const long eo);
 
     ~RangeImpl();
 
-    // ### remove the get from these methods (i.e. getStartContainer() -> startContainer())
     NodeImpl *startContainer() const;
     long startOffset() const;
     NodeImpl *endContainer() const;
@@ -48,8 +47,8 @@ public:
     bool collapsed() const;
 
     NodeImpl *commonAncestorContainer();
-    void setStart ( const NodeImpl *refNode, long offset, int &exceptioncode );
-    void setEnd ( const NodeImpl *refNode, long offset, int &exceptioncode );
+    void setStart ( NodeImpl *refNode, long offset, int &exceptioncode );
+    void setEnd ( NodeImpl *refNode, long offset, int &exceptioncode );
     void collapse ( bool toStart );
     short compareBoundaryPoints ( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode );
     short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );

@@ -51,7 +51,7 @@ RangeImpl::RangeImpl(DocumentImpl *rootContainer)
     m_detached = false;
 }
 
-RangeImpl::RangeImpl(const NodeImpl *sc, const long so, const NodeImpl *ec, const long eo)
+RangeImpl::RangeImpl(NodeImpl *sc, const long so, NodeImpl *ec, const long eo)
 {
     m_startContainer = sc;
     m_startOffset = so;
@@ -118,7 +118,7 @@ bool RangeImpl::collapsed() const
     return m_collapsed;
 }
 
-void RangeImpl::setStart( const NodeImpl *refNode, long offset, int &exceptioncode )
+void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
 {
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
@@ -141,7 +141,7 @@ void RangeImpl::setStart( const NodeImpl *refNode, long offset, int &exceptionco
     }
 }
 
-void RangeImpl::setEnd( const NodeImpl *refNode, long offset, int &exceptioncode )
+void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
 {
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
@@ -491,7 +491,7 @@ DOMString RangeImpl::toString(  )
 DOMString RangeImpl::toHTML(  )
 {
     // ### implement me!!!!
-    
+
     // this is just to avoid compiler warnings
     DOMString d;
     return d;
@@ -616,7 +616,7 @@ DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &except
 		return 0;
         }
         else
-            _clone = _tempCurrent; 
+            _clone = _tempCurrent;
     }
 
     NodeImpl *_tempParent;                       // we use this to traverse upwords trough the tree
