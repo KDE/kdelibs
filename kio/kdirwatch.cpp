@@ -24,6 +24,8 @@
 #include <kapp.h>
 #include <kdebug.h>
 
+#include <config.h>
+
 #include "kdirwatch.h"
 
 #include <iostream.h>

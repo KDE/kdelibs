@@ -18,8 +18,6 @@
 #ifndef _KDIRWATCH_H
 #define _KDIRWATCH_H
 
-#include <config.h>
-
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
