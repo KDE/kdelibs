@@ -243,6 +243,11 @@ for flag in '-v' '-V' '--version' '-version'; do
    fi
 done
 
+if test -z "$compiler_version"; then
+   AC_DEFINE_UNQUOTED(KDE_COMPILER_VERSION, "unknown", [what C++ computer were used for compilation])
+   AC_MSG_RESULT(unknown)
+fi
+
 AC_MSG_CHECKING([for uname])
 uname_string=`uname -smr`
 AC_DEFINE_UNQUOTED(KDE_COMPILING_OS, "$uname_string", [what OS used for compilation])
