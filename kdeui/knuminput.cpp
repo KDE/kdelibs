@@ -34,16 +34,9 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
-#include <cassert>
-#include <cmath>
+#include <assert.h>
 #include <math.h>
-using std::abs;
-using std::floor;
-using std::log10;
 #include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
 
 // glibc 2.1 compatibility
 inline double round(double d) { return rint(d); }
