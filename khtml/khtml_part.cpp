@@ -3339,8 +3339,6 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_bits
          << d->m_ssl_cert_state;
 
-  // Save frame data
-  stream << (Q_UINT32)d->m_frames.count();
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
   KURL::List frameURLLst;
@@ -3350,23 +3348,25 @@ void KHTMLPart::saveState( QDataStream &stream )
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
   {
+    if ( !(*it).m_part )
+       continue;
+
     frameNameLst << (*it).m_name;
     frameServiceTypeLst << (*it).m_serviceType;
     frameServiceNameLst << (*it).m_serviceName;
-    if ( (*it).m_part )
-      frameURLLst << (*it).m_part->url();
-    else
-      frameURLLst << KURL();
+    frameURLLst << (*it).m_part->url();
 
     QByteArray state;
     QDataStream frameStream( state, IO_WriteOnly );
 
-    if ( (*it).m_part && (*it).m_extension )
+    if ( (*it).m_extension )
       (*it).m_extension->saveState( frameStream );
 
     frameStateBufferLst << state;
   }
 
+  // Save frame data
+  stream << (Q_UINT32) frameNameLst.count();
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
 }
 
@@ -3469,7 +3469,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       if ( child->m_part )
       {
         child->m_bCompleted = false;
-        if ( child->m_extension )
+        if ( child->m_extension && !(*fBufferIt).isEmpty() )
         {
           QDataStream frameStream( *fBufferIt, IO_ReadOnly );
           child->m_extension->restoreState( frameStream );
@@ -3525,6 +3525,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       if ( (*childFrame).m_part )
       {
         if ( (*childFrame).m_extension )
+        if ( (*childFrame).m_extension && !(*fBufferIt).isEmpty() )
         {
           QDataStream frameStream( *fBufferIt, IO_ReadOnly );
           (*childFrame).m_extension->restoreState( frameStream );
