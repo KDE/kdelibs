@@ -82,13 +82,11 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-check_PROGRAMS 	= testkhtml testcss testrender
-#testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
-#testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
+check_PROGRAMS 	= testkhtml testcss testrender testkhtml_static
 testkhtml_SOURCES = testkhtml.cpp
 testkhtml_LDADD = libkhtml.la
-#testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
-#testkhtml_LDADD = $(libkhtml_la_LIBADD)
+testkhtml_static_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
+testkhtml_static_LDADD = $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testcss_SOURCES = testcss.cpp
 testcss_LDADD = libkhtml.la
 testrender_SOURCES = testrender.cpp
