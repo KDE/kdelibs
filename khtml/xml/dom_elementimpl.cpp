@@ -612,9 +612,7 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
     {
         bool known = m_render->absolutePosition(_tx, _ty);
-
-        if ( known && (_y >= _ty) && (_y < _ty + m_render->height())
-                   && (_x >= _tx) && (_x < _tx + m_render->width()) )
+	if (known && m_render->containsPoint(_x,_y,_tx,_ty))
         {
             if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
             {

@@ -1457,6 +1457,14 @@ void RenderFlow::specialHandler(RenderObject *o)
 
 }
 
+bool RenderFlow::containsPoint(int _x, int _y, int _tx, int _ty)
+{
+    if (!RenderBox::containsPoint(_x,_y,_tx,_ty))
+	return false;
+
+    return ((_x >= _tx+leftOffset(_y-_ty)) && (_x <= _tx+rightOffset(_y-_ty)));
+}
+
 void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);

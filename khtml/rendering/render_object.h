@@ -442,6 +442,8 @@ public:
     void removeFromSpecialObjects();
 
     virtual void detach();
+
+    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
     
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
