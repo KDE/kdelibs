@@ -781,6 +781,11 @@ void KHTMLPart::write( const QString &str )
 
 void KHTMLPart::end()
 {
+    // make sure nothing's left in there...
+    if(!d->m_decoder->encoding()) {
+	d->m_decoder->setEncoding("iso8859-1");
+	write(" ");
+    }
     d->m_doc->finishParsing();
 }
 
