@@ -61,6 +61,7 @@ namespace khtml
     QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     QGuardedPtr<KParts::BrowserExtension> m_extension;
+    QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
     QString m_serviceName;
     QString m_serviceType;
     QStringList m_services;

@@ -231,7 +231,7 @@ public:
    * Returns a pointer to the @ref KParts::BrowserExtension.
    */
   KParts::BrowserExtension *browserExtension() const;
-
+  KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
   /**
    * Returns a pointer to the HTML document's view.
    */

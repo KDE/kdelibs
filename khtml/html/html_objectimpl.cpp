@@ -27,7 +27,9 @@
 #include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include <qstring.h>
+#include <qvariant.h>
 #include <qmap.h>
+#include <qtimer.h>
 #include <kdebug.h>
 
 #include "xml/dom_docimpl.h"
@@ -48,9 +50,64 @@ using namespace DOM;
 using namespace khtml;
 
 // -------------------------------------------------------------------------
+LiveConnectElementImpl::LiveConnectElementImpl(DocumentPtr *doc)
+  : HTMLElementImpl(doc), liveconnect(0L), timer (new QTimer(this)) {
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+}
+
+bool LiveConnectElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
+    if (!liveconnect)
+        return false;
+    return liveconnect->get(objid, field, type, retobjid, value);
+}
+
+bool LiveConnectElementImpl::put(const unsigned long objid, const QString & field, const QString & value) {
+    if (!liveconnect)
+        return false;
+    return liveconnect->put(objid, field, value);
+}
+
+bool LiveConnectElementImpl::call(const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
+    if (!liveconnect)
+        return false;
+    return liveconnect->call(objid, func, args, type, retobjid, value);
+}
+
+void LiveConnectElementImpl::unregister(const unsigned long objid) {
+    if (!liveconnect)
+        return;
+    liveconnect->unregister(objid);
+}
+
+void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args) {
+    if (timer->isActive())
+        timer->stop();
+    script.sprintf("document.%s.%s(", getAttribute(ATTR_NAME).string().latin1(), event.latin1());
+    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
+    for ( ; i != args.end(); i++) {
+        if (i != args.begin())
+            script += ",";
+        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
+            script += "\"";
+            script += (*i).second;
+            script += "\"";
+        } else
+            script += (*i).second;
+    }
+    script += ")";
+    timer->start(0, true);
+    kdDebug(6036) << "HTMLEmbedElementImpl::liveConnectEvent " << script << endl;
+}
+
+void LiveConnectElementImpl::timerDone() {
+    KHTMLView* w = getDocument()->view();
+    w->part()->executeScript(script);
+}
+
+// -------------------------------------------------------------------------
 
 HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentPtr *doc)
-  : HTMLElementImpl(doc)
+  : LiveConnectElementImpl(doc)
 {
 }
 
@@ -117,6 +174,8 @@ void HTMLAppletElementImpl::attach()
 
 	args.insert( "baseURL", getDocument()->baseURL() );
         m_render = new RenderApplet(this, args);
+        KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
+        liveconnect = w->applet()->getLiveConnectExtension();
     }
     else
         // ### remove me. we should never show an empty applet, instead
@@ -132,53 +191,10 @@ void HTMLAppletElementImpl::attach()
     NodeBaseImpl::attach();
 }
 
-bool HTMLAppletElementImpl::getMember(const QString & name, JType & type, QString & val) {
-#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if ( !m_render || !m_render->isApplet() )
-        return false;
-    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
-    return (w && w->applet() && w->applet()->getMember(name, type, val));
-#else
-    return false;
-#endif
-}
-
-bool HTMLAppletElementImpl::callMember(const QString & name, const QStringList & args, JType & type, QString & val) {
-#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if ( !m_render || !m_render->isApplet() )
-        return false;
-    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
-    return (w && w->applet() && w->applet()->callMember(name, args, type, val));
-#else
-    return false;
-#endif
-}
-
-bool HTMLAppletElementImpl::putMember(const QString & name, const QString & val) {
-#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if ( !m_render || !m_render->isApplet() )
-        return false;
-    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
-    return (w && w->applet() && w->applet()->putMember(name, val));
-#else
-    return false;
-#endif
-}
-
-void HTMLAppletElementImpl::derefObject(const int id) {
-#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if ( !m_render || !m_render->isApplet() )
-        return;
-    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
-    if (w && w->applet())
-        w->applet()->derefObject(id);
-#endif
-}
-
 // -------------------------------------------------------------------------
 
 HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+    : LiveConnectElementImpl(doc)
 {
 }
 
@@ -267,6 +283,10 @@ void HTMLEmbedElementImpl::attach()
             m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
             parentNode()->renderer()->addChild(m_render, nextRenderer());
             static_cast<RenderPartObject*>(m_render)->updateWidget();
+            liveconnect = w->part()->liveConnectExtension(static_cast<RenderPartObject*>(m_render));
+            if (liveconnect)
+                connect(liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<LiveConnectElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+            kdDebug(6036) << "HTMLEmbedElementImpl::attach " << (void*) liveconnect << endl;
         }
     }
 
@@ -424,3 +444,5 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     }
 }
+
+#include "html_objectimpl.moc"

@@ -32,7 +32,7 @@
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_objectimpl.h"
-#include "java/kjavaappletcontext.h"
+#include <kparts/browserextension.h>
 
 #include "khtml_part.h"
 #include "khtmlview.h"
@@ -959,24 +959,30 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 */
 
-class JavaMember : public ObjectImp {
+class EmbedLiveConnect : public ObjectImp {
 public:
-    JavaMember(DOM::HTMLElement elm, UString n, JType t, int id = 0)
-        : element (elm), name(n), jtype(t), jid(id) {}
-    ~JavaMember() {
-        DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+    EmbedLiveConnect(DOM::HTMLElement elm, UString n, KParts::LiveConnectExtension::Type t, int id = 0)
+        : element (elm), name(n), objtype(t), objid(id) {}
+    ~EmbedLiveConnect() {
+        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         if (elm)
-            elm->derefObject(jid);
+            elm->unregister(objid);
     }
     static Value getValue(const DOM::HTMLElement elm, const QString & name,
-                          const JType jtype, const QString & value, int id=0)
+                          const KParts::LiveConnectExtension::Type t, 
+                          const QString & value, int id=0)
     {
-        switch(jtype) {
-            case JBoolean:
-                return Boolean(!strcmp(value.latin1(), "true"));
-            case JFunction:
-                return Value(new JavaMember(elm, name, jtype, id));
-            case JNumber: {
+        switch(t) {
+            case KParts::LiveConnectExtension::TypeBool: {
+                bool ok;
+                int i = value.toInt(&ok);
+                if (ok)
+                    return Boolean(i);
+                return Boolean(!strcasecmp(value.latin1(), "true"));
+            }
+            case KParts::LiveConnectExtension::TypeFunction:
+                return Value(new EmbedLiveConnect(elm, name, t, id));
+            case KParts::LiveConnectExtension::TypeNumber: {
                 bool ok;
                 int i = value.toInt(&ok);
                 if (ok)
@@ -984,52 +990,42 @@ public:
                 else
                     return Number(value.toDouble(&ok));
             }
-            case JObject:
-                return Value(new JavaMember(elm, name, jtype, value.toInt()));
-            case JString:
+            case KParts::LiveConnectExtension::TypeObject:
+                return Value(new EmbedLiveConnect(elm, name, t, value.toInt()));
+            case KParts::LiveConnectExtension::TypeString:
                 return String(value);
-            case JVoid:
+            case KParts::LiveConnectExtension::TypeVoid:
             default:
                 return Undefined();
         }
     }
     virtual Value get(ExecState *, const UString & prop) const {
-        DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-        JType rettype;
+        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+        KParts::LiveConnectExtension::Type rettype;
         QString retvalue;
-        QString newname;
-        if (jid)
-            newname += QString::number(jid) + ".";
-        newname += prop.qstring();
-        if (elm && elm->getMember(newname, rettype, retvalue))
-            return getValue(element, prop.qstring(), rettype, retvalue, jid);
+        unsigned long retobjid;
+        if (elm && elm->get(objid, prop.qstring(), rettype, retobjid, retvalue))
+            return getValue(element, prop.qstring(), rettype, retvalue, retobjid);
         return Undefined();
     }
-    virtual void put(ExecState * exec, const UString &propertyName, const Value & value, int=None) {
-        DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-        QString newname;
-        if (jid)
-            newname += QString::number(jid) + ".";
-        newname += propertyName.qstring();
+    virtual void put(ExecState * exec, const UString &prop, const Value & value, int=None) {
+        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         if (elm)
-            elm->putMember(newname, value.toString(exec).qstring());
+            elm->put(objid, prop.qstring(), value.toString(exec).qstring());
     }
     virtual bool implementsCall() const {
-        return jtype == JFunction;
+        return objtype == KParts::LiveConnectExtension::TypeFunction;
     }
     virtual Value call(ExecState * exec, Object &, const List &args) {
-        DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         QStringList qargs;
         for (ListIterator i = args.begin(); i != args.end(); i++)
             qargs.append((*i).toString(exec).qstring());
-        JType rettype;
+        KParts::LiveConnectExtension::Type rettype;
         QString retvalue;
-        QString newname;
-        if (jid)
-            newname += QString::number(jid) + ".";
-        newname += name.qstring();
-        if (elm && elm->callMember(newname, qargs, rettype, retvalue))
-            return getValue(element, name.qstring(), rettype, retvalue, jid);
+        unsigned long retobjid;
+        if (elm && elm->call(objid, name.qstring(), qargs, rettype, retobjid, retvalue))
+            return getValue(element, name.qstring(), rettype, retvalue, retobjid);
         return Undefined();
     }
     virtual bool toBoolean(ExecState *) const { return true; }
@@ -1037,14 +1033,14 @@ public:
         return String(toString(exec));
     }
     virtual UString toString(ExecState *) const {
-        return UString(jtype == JFunction ? "[Function]" : "[Object]");
+        return UString(objtype == KParts::LiveConnectExtension::TypeFunction ? "[Function]" : "[Object]");
     }
 private:
-    JavaMember(const JavaMember &);
+    EmbedLiveConnect(const EmbedLiveConnect &);
     DOM::HTMLElement element;
     UString name;
-    JType jtype;
-    int jid;
+    KParts::LiveConnectExtension::Type objtype;
+    unsigned long objid;
 };
 
 Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) const
@@ -1090,12 +1086,14 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
         }
       }
   }
-  case ID_APPLET: {
-      DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+  case ID_APPLET:
+  case ID_EMBED: {
+      DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
       QString retvalue;
-      JType rettype;
-      if (elm && elm->getMember(propertyName.qstring(), rettype, retvalue))
-          return JavaMember::getValue(element, propertyName.qstring(), rettype, retvalue);
+      KParts::LiveConnectExtension::Type rettype;
+      unsigned long retobjid;
+      if (elm && elm->get(0, propertyName.qstring(), rettype, retobjid, retvalue))
+          return EmbedLiveConnect::getValue(element, propertyName.qstring(), rettype, retvalue);
       break;
   }
   default:
@@ -2018,10 +2016,11 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
         return;
       }
     }
-    case ID_APPLET: {
-      DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-      if (elm && elm->putMember(propertyName.qstring(),
-                                value.toString(exec).qstring()))
+    case ID_APPLET:
+    case ID_EMBED: {
+      DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+      if (elm && elm->put(0, propertyName.qstring(), 
+                          value.toString(exec).qstring()))
           return;
       break;
     }

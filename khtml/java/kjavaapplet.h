@@ -25,6 +25,7 @@
 #define KJAVAAPPLET_H
 
 #include <kurl.h>
+#include <kparts/browserextension.h>
 
 #include <qobject.h>
 #include <qmap.h>
@@ -44,6 +45,28 @@
 class KJavaAppletWidget;
 class KJavaAppletContext;
 class KJavaAppletPrivate;
+
+class KJavaLiveConnect : public KParts::LiveConnectExtension
+{
+Q_OBJECT
+
+public:
+
+    KJavaLiveConnect(KJavaAppletContext*, KJavaApplet*);
+
+    bool get( const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
+    bool put( const unsigned long, const QString & field, const QString & value );
+    bool call( const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
+    void unregister( const unsigned long objid );
+signals:
+
+  virtual void partEvent( const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args );
+
+private:
+
+  KJavaAppletContext *context;
+  KJavaApplet *applet;
+};
 
 class KJavaApplet : public QObject
 {
@@ -132,12 +155,11 @@ public:
     QMap<QString,QString>& getParams();
 
     /**
-     * Get a member value of this applet, return true on success
+     * Get the LiveConnectExtension of this applet
      */
-    bool getMember(const QString & name, JType & type, QString & value);
-    bool putMember(const QString & name, const QString & value);
-    bool callMember(const QString &, const QStringList &, JType &, QString &);
-    void derefObject(const int id);
+    KParts::LiveConnectExtension * getLiveConnectExtension() { 
+        return liveconnect;
+    }
 
     /**
      * Set the window title for swallowing
@@ -195,6 +217,7 @@ private:
     KJavaAppletPrivate*    d;
     QMap<QString, QString> params;
     KJavaAppletContext*    context;
+    KJavaLiveConnect*      liveconnect;
     int                    id;
 };
 

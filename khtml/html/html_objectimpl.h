@@ -26,11 +26,11 @@
 
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
-#include "java/kjavaappletcontext.h"
-
+#include <kparts/browserextension.h>
 #include <qstringlist.h>
 
 class KHTMLView;
+class QTimer;
 
 // -------------------------------------------------------------------------
 namespace DOM {
@@ -38,7 +38,30 @@ namespace DOM {
 class HTMLFormElementImpl;
 class DOMStringImpl;
 
-class HTMLAppletElementImpl : public HTMLElementImpl
+class LiveConnectElementImpl : public QObject, public HTMLElementImpl
+{
+    Q_OBJECT
+public:
+    LiveConnectElementImpl(DocumentPtr *doc);
+
+    bool get(const unsigned long, const QString &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
+    bool put(const unsigned long, const QString &, const QString &);
+    bool call(const unsigned long, const QString &, const QStringList &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
+    void unregister(const unsigned long);
+protected slots:
+    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
+protected:
+    KParts::LiveConnectExtension *liveconnect;
+private slots:
+    void timerDone();
+private:
+    QTimer *timer;
+    QString script;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLAppletElementImpl : public LiveConnectElementImpl
 {
 public:
     HTMLAppletElementImpl(DocumentPtr *doc);
@@ -50,17 +73,13 @@ public:
     virtual void parseAttribute(AttributeImpl *token);
     virtual void attach();
 
-    bool getMember(const QString &, JType &, QString &);
-    bool putMember(const QString &, const QString &);
-    bool callMember(const QString &, const QStringList &, JType &, QString &);
-    void derefObject(const int);
 protected:
     khtml::VAlign valign;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLEmbedElementImpl : public HTMLElementImpl
+class HTMLEmbedElementImpl : public LiveConnectElementImpl
 {
 public:
     HTMLEmbedElementImpl(DocumentPtr *doc);

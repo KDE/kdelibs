@@ -2552,6 +2552,15 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
   return requestObject( &(*it), completeURL( url ), args );
 }
 
+KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
+    QValueList<khtml::ChildFrame>::ConstIterator it = d->m_objects.begin();
+    QValueList<khtml::ChildFrame>::ConstIterator end = d->m_objects.end();
+    for(; it != end; ++it )
+        if ((*it).m_frame == frame)
+            return (*it).m_liveconnect;
+    return 0L;
+}
+
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
   if (!checkLinkSecurity(url))
@@ -2705,6 +2714,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
+    child->m_liveconnect = KParts::LiveConnectExtension::childObject( part );
   }
 
   checkEmitLoadEvent();

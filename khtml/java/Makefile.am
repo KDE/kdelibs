@@ -13,7 +13,7 @@ include_HEADERS = kjavaapplet.h kjavaappletcontext.h \
 	kjavaappletserver.h kjavaprocess.h
 
 libkjava_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 1:0 -no-undefined
-libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KIO)
+libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KIO) $(LIB_KPARTS)
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml $(all_includes) 
 
