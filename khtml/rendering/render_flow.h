@@ -73,8 +73,6 @@ public:
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
-    virtual void specialHandler(RenderObject */*special*/);
-
     virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition() const;
@@ -107,11 +105,11 @@ public:
     inline int rightBottom();
     bool checkClear(RenderObject *child);
 
+    void insertSpecialObject(RenderObject *o);
+
     // from BiDiParagraph
     virtual void closeParagraph() { positionNewFloats(); }
 
-    void insertFloat(RenderObject *child);
-    void insertPositioned(RenderObject *child);
     void removeSpecialObject(RenderObject *o);
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
@@ -136,18 +134,23 @@ public:
 protected:
 
     struct SpecialObject {
-        SpecialObject() {
-            count = 0;
-            noPaint = false;
-            startY = 0;
-            endY = 0;
-        }
         enum Type {
             FloatLeft,
             FloatRight,
             Positioned
-         };
+	};
 
+        SpecialObject(Type _type) {
+	    node = 0;
+	    startY = 0;
+	    endY = 0;
+	    type = _type;
+	    left = 0;
+	    width = 0;
+            count = 0;
+            noPaint = false;
+
+        }
         RenderObject* node;
         int startY;
         int endY;

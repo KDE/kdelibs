@@ -209,18 +209,9 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
         // A special object may be registered with several different objects... so we only print the
-        // object if we are it's containing block (or in the case of an object inside an anonymous box,
-        // the anonymous box's containing block)
-        RenderObject *cb;
-        if (r->node->parent()->isAnonymousBox())
-            cb = r->node->parent()->containingBlock();
-        else
-            cb = r->node->containingBlock();
-
-	if (cb == this) {
-	    RenderObject *o = r->node;
-	    //kdDebug(0) << renderName() << "printing positioned at " << tx + o->xPos() << "/" << ty + o->yPos()<< endl;
-	    o->print(p, x, y, w, h, tx , ty);
+        // object if we are it's containing block
+	if (r->node->containingBlock() == this) {
+	    r->node->print(p, x, y, w, h, tx , ty);
 	}
 
     }
@@ -375,7 +366,7 @@ void RenderFlow::layoutBlockChildren()
         if (child->isPositioned())
         {
             // child->layout();
-            static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
+            static_cast<RenderFlow*>(child->containingBlock())->insertSpecialObject(child);
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl;
             child = child->nextSibling();
             continue;
@@ -384,7 +375,7 @@ void RenderFlow::layoutBlockChildren()
 	} else if ( child->isFloating() ) {
 	    // margins of floats and other objects do not collapse. The hack below assures this.
 	    m_height += prevMargin;
-	    insertFloat( child );
+	    insertSpecialObject( child );
 	    positionNewFloats();
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
 	    m_height -= prevMargin;
@@ -477,75 +468,55 @@ bool RenderFlow::checkClear(RenderObject *child)
     return true;
 }
 
-void
-RenderFlow::insertPositioned(RenderObject *o)
+void RenderFlow::insertSpecialObject(RenderObject *o)
 {
-    //kdDebug() << renderName() << "::insertPositioned " << this<< isAnonymousBox() << " " << o << endl;
-    if(!specialObjects) {
-        specialObjects = new QSortedList<SpecialObject>;
-        specialObjects->setAutoDelete(true);
+    // Create the list of special objects if we don't aleady have one
+    if (!specialObjects) {
+	specialObjects = new QSortedList<SpecialObject>;
+	specialObjects->setAutoDelete(true);
+    }
+    else {
+	// Don't insert the object again if it's already in the list
+	QPtrListIterator<SpecialObject> it(*specialObjects);
+	SpecialObject* f;
+	while ( (f = it.current()) ) {
+	    if (f->node == o) return;
+	    ++it;
+	}
     }
 
-    // don't insert it twice!
-    QPtrListIterator<SpecialObject> it(*specialObjects);
-    SpecialObject* f;
-    while ( (f = it.current()) ) {
-        if (f->node == o) return;
-        ++it;
+    // Create the special object entry & append it to the list
+
+    SpecialObject *newObj;
+    if (o->isPositioned()) {
+	// positioned object
+	newObj = new SpecialObject(SpecialObject::Positioned);
+
+	setContainsPositioned(true);
+    }
+    else if (o->isFloating()) {
+	// floating object
+	o->layout();
+
+	if(o->style()->floating() == FLEFT)
+	    newObj = new SpecialObject(SpecialObject::FloatLeft);
+	else
+	    newObj = new SpecialObject(SpecialObject::FloatRight);
+
+	newObj->startY = -1;
+	newObj->endY = -1;
+	newObj->width = o->width() + o->marginLeft() + o->marginRight();
+    }
+    else {
+	// We should never get here, as insertSpecialObject() should only ever be called with positioned or floating
+	// objects.
+	assert(false);
     }
 
-    if (!f) f = new SpecialObject;
+    newObj->count = specialObjects->count();
+    newObj->node = o;
 
-    f->type = SpecialObject::Positioned;
-    f->node = o;
-    f->count = specialObjects->count();
-
-    specialObjects->append(f);
-
-    setContainsPositioned(true);
-}
-
-void
-RenderFlow::insertFloat(RenderObject *o)
-{
-    //kdDebug( 6040 ) << renderName() << " " << (void *)this << "::insertFloat(" << o <<")" << endl;
-//    if (isAnonymousBox() && parent()->isFlow()) {
-//        static_cast<RenderFlow*>(parent())->insertFloat(o);
-//        return;
-//    }
-
-    // a floating element
-    if(!specialObjects) {
-        specialObjects = new QSortedList<SpecialObject>;
-        specialObjects->setAutoDelete(true);
-    }
-
-    // don't insert it twice!
-    QPtrListIterator<SpecialObject> it(*specialObjects);
-    SpecialObject* f;
-    while ( (f = it.current()) ) {
-        if (f->node == o) return;
-        ++it;
-    }
-
-    o->layout();
-
-    if(!f) f = new SpecialObject;
-
-    f->count = specialObjects->count();
-    f->startY = -1;
-    f->endY = -1;
-    f->width = o->width() + o->marginLeft() + o->marginRight();
-
-    if(o->style()->floating() == FLEFT)
-        f->type = SpecialObject::FloatLeft;
-    else
-        f->type = SpecialObject::FloatRight;
-    f->node = o;
-
-    specialObjects->append(f);
-//    kdDebug( 6040 ) << "inserting node " << o << " number of specialobject = " << //     specialObjects->count() << endl;
-
+    specialObjects->append(newObj);
 }
 
 void RenderFlow::removeSpecialObject(RenderObject *o)
@@ -971,7 +942,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		++it;
 	    }
 	    if ( !f ) {
-		SpecialObject *special = new SpecialObject;
+		SpecialObject *special = new SpecialObject(r->type);
 		special->count = specialObjects->count();
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
@@ -982,7 +953,6 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		    special->left -= marginLeft();
 		special->width = r->width;
 		special->node = r->node;
-		special->type = r->type;
 		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
 		kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
@@ -1274,7 +1244,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         assert(beforeChild->parent()->isAnonymousBox());
         assert(beforeChild->parent()->parent() == this);
 
-        if (newChild->isInline() || newChild->isFloating()) {
+        if (newChild->isInline()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
             return;
         }
@@ -1304,7 +1274,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     // prevent non-layouted elements from getting printed by pushing them far above the top of the
     // page
-    if (!newChild->isInline() && !newChild->isFloating())
+    if (!newChild->isInline())
         newChild->setPos(newChild->xPos(), -500000);
 
     if (!newChild->isText())
@@ -1316,7 +1286,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.
     // So, if our children are currently inline and block child has to be inserted, we move all our
     // inline children into anonymous block boxes
-    if ((m_childrenInline && !newChild->isInline() && !newChild->isFloating()))
+    if ((m_childrenInline && !newChild->isInline()))
     {
         makeChildrenNonInline(beforeChild);
         if (beforeChild) {
@@ -1370,7 +1340,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         }
     }
 
-    if(!newChild->isInline() && !newChild->isFloating()) // block child
+    if(!newChild->isInline()) // block child
     {
         // If we are inline ourselves and have become block, we have to make sure our parent
         // makes the necessary adjustments so that all of it's other children are moved into
@@ -1408,12 +1378,12 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
     while (child) {
         next = child->nextSibling();
 
-        if (child->isInline() || child->isFloating()) {
+        if (child->isInline()) {
             boxLast = child;
         }
 
-        if ((!child->isInline() && !child->isFloating() && boxFirst != child) ||
-            (!next && (boxFirst->isInline() || boxFirst->isFloating())) ||
+        if ((!child->isInline() && boxFirst != child) ||
+            (!next && (boxFirst->isInline())) ||
             child == box2Start) {
 
             // Create a new anonymous box containing all children starting from boxFirst
@@ -1443,7 +1413,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             box->setLayouted(false);
         }
 
-        if (!child->isInline() && !child->isFloating())
+        if (!child->isInline())
             boxFirst = boxLast = next;
 
         child = next;
@@ -1458,16 +1428,6 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
         }
     }
     setLayouted(false);
-}
-
-void RenderFlow::specialHandler(RenderObject *o)
-{
-//    kdDebug( 6040 ) << "specialHandler" << endl;
-    if(o->isFloating())
-        insertFloat(o);
-    else if(o->isPositioned())
-        static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
-
 }
 
 // ### uuuhhh.. nasty. Go away! Now! (Dirk)

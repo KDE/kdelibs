@@ -640,11 +640,15 @@ void RenderObject::setStyle(RenderStyle *style)
 
 void RenderObject::setContainsPositioned(bool p)
 {
+    if (m_containsPositioned == p)
+	return;
+
+    RenderObject *cb = containingBlock();
     if (p)
     {
         m_containsPositioned = true;
-        if (containingBlock()!=this)
-            containingBlock()->setContainsPositioned(true);
+        if (cb!=this)
+            cb->setContainsPositioned(true);
     }
     else
     {
@@ -662,8 +666,8 @@ void RenderObject::setContainsPositioned(bool p)
         else
         {
             m_containsPositioned = false;
-            if (containingBlock()!=this)
-                containingBlock()->setContainsPositioned(false);
+            if (cb!=this)
+                cb->setContainsPositioned(false);
         }
     }
 }

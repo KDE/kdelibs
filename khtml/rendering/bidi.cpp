@@ -830,7 +830,7 @@ void RenderFlow::layoutInlineChildren()
                 //kdDebug(6041) << "layouting replaced or floating child" << endl;
                 o->layout();
                 if(o->isPositioned())
-                    static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
+                    static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
             }
             else if(o->isText())
                 static_cast<RenderText *>(o)->deleteSlaves();
@@ -924,7 +924,10 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
         }
         if( o->isSpecial() ) {
             // add to special objects...
-            specialHandler(o);
+	    if(o->isFloating())
+		insertSpecialObject(o);
+	    else if(o->isPositioned())
+		static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
 
             // check if it fits in the current line.
             // If it does, position it now, otherwise, position
