@@ -767,6 +767,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
 #ifdef PLAYERDEBUG
   printf("Syncronizing ...\n");
 #endif
+  midi->allNotesOff();
   if (halt) 
     midi->sync(1);
   else 

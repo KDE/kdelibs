@@ -130,16 +130,33 @@ void AlsaOut::openDev (int)
                 fprintf(stderr, "Couldn't open sequencer: %s", snd_strerror(errno));
 
   di->queue = snd_seq_alloc_queue(di->handle);
+  if (di->queue < 0) {fprintf(stderr, "Couldn't allocate queue"); return; };
   di->client = snd_seq_client_id(di->handle);
+  if (di->client < 0) {fprintf(stderr, "Couldn't get client id"); return; };
   di->tgt = new snd_seq_addr_t;
   di->tgt->client=di->tgtclient;
   di->tgt->port=di->tgtport;
 
   di->src = new snd_seq_addr_t;
   di->src->client = di->client;
-  di->src->port = snd_seq_create_simple_port(di->handle, NULL,
+  int port = snd_seq_create_simple_port(di->handle, NULL,
 	SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE
 	| SND_SEQ_PORT_CAP_READ, SND_SEQ_PORT_TYPE_MIDI_GENERIC);
+  if ( port < 0 )
+  {
+    delete di->src;
+    delete di->tgt;
+    di->src=0;
+    di->tgt=0;
+    _ok=0;
+    time=0;
+    snd_seq_free_queue(di->handle, di->queue);
+    snd_seq_close(di->handle);
+    fprintf(stderr, "Cannot connect to %d:%d\n",di->tgtclient,di->tgtport);
+    return;
+  }
+  di->src->port = port;
+  
 
   int r=snd_seq_connect_to(di->handle, di->src->port, di->tgt->client, di->tgt->port);
   if (r < 0) { _ok=0; fprintf(stderr, "Cannot connect to %d:%d\n",di->tgtclient,di->tgtport); }
@@ -164,6 +181,7 @@ void AlsaOut::closeDev (void)
       snd_seq_free_queue(di->handle, di->queue);
       snd_seq_close(di->handle);
     }
+    di->handle=0;
   }
 
 #endif
