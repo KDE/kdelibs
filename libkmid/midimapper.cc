@@ -77,7 +77,7 @@ void MidiMapper::getValue(char *s,char *v)
 {
   char *c=s;
   while ((*c!=0)&&(*c!='=')) c++;
-  if (c==0) v[0]=0;
+  if (*c==0) v[0]=0;
   else
   {
     c++;
