@@ -209,8 +209,19 @@ public:
   KActionCollection( QObject *parent, const char *name = 0, KInstance *instance = 0 );
 
   void insert( KAction* );
-  void remove( KAction* );
-  KAction* take( KAction* );
+  
+  /**
+   * Removes an action from the collection and deletes it.
+   * @param action The KAction to remove.
+   */ 
+  void remove( KAction* action );
+  
+  /**
+   * Removes an action from the collection.
+   * @return NULL if not found else returns action.
+   * @param action the KAction to remove.
+   */ 
+  KAction* take( KAction* action );
 
   KActionCollection operator+ ( const KActionCollection& ) const;
   KActionCollection& operator= ( const KActionCollection& );
