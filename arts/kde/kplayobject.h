@@ -185,7 +185,7 @@ class PlayObjectFactory;
   * internal state until the real Arts::PlayObject got created, afterwards
   * the state of the Arts::PlayObject will be returned.
   */
-class PlayObject : public QObject
+class KDE_EXPORT PlayObject : public QObject
 {
 Q_OBJECT
 public:

@@ -24,6 +24,8 @@
 
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 namespace Arts
 {
 	class QIOManager;
@@ -59,7 +61,7 @@ namespace Arts
  * }
  * \endcode
  */
-class KArtsDispatcher : public QObject
+class KDE_EXPORT KArtsDispatcher : public QObject
 {
 Q_OBJECT
 public:
