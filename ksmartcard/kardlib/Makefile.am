@@ -23,10 +23,7 @@ libksmartcard_la_LDFLAGS = $(all_libraries) $(PCSC_LDFLAGS) -version-info 1:0 -n
 libksmartcard_la_LIBADD = $(LIB_KDEUI) $(LIB_KIO)
 libksmartcard_la_DEPENDENCIES = $(LIB_KDEUI) $(LIB_KIO)
 
-libksmartcard_la_METASOURCES = AUTO
-
 bin_PROGRAMS = testkdepcsc
 testkdepcsc_SOURCES = teste.cc
-testkdepcsc_LDADD = $(LIB_KDEUI) -lksmartcard
-testkdepcsc$(EXEEXT): libksmartcard.la
+testkdepcsc_LDADD = $(LIB_KDEUI) libksmartcard.la
 

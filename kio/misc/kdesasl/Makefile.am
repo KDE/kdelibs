@@ -10,5 +10,3 @@ libkdesasl_la_SOURCES = kdesasl.cpp
 libkdesasl_la_LDFLAGS = $(all_libraries) -version-info 1:0 -no-undefined
 libkdesasl_la_LIBADD = $(LIB_KDECORE)
 
-libkdesasl_la_METASOURCES = AUTO
-

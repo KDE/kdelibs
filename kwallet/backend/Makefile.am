@@ -22,10 +22,3 @@ noinst_HEADERS = blowfishtables.h	\
 		 blockcipher.h		\
 		 blowfish.h
 
-
-
-METASOURCES = AUTO
-
-
-
-

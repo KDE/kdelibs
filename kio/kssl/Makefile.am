@@ -56,7 +56,5 @@ libkssl_la_SOURCES	= \
 # convenience lib - no _LDFLAGS or _LIBADD
 libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 
-libkssl_la_METASOURCES = AUTO
-
 SUBDIRS = kssl
 

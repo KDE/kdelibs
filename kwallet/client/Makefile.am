@@ -8,15 +8,5 @@ libkwalletclient_la_LIBADD = $(LIB_QT)
 libkwalletclient_la_SOURCES = 		\
 			       kwalletentry.cc
 
-
 libkwalletclient_la_METASOURCES = AUTO
-
-#noinst_HEADERS =
-
-
-
-METASOURCES = AUTO
-
-
-
 

@@ -3,8 +3,6 @@ INCLUDES= $(SSL_INCLUDES) -I$(top_srcdir)/kio/kssl -I$(top_srcdir) $(all_include
 lib_LTLIBRARIES = libkcertpart.la
 KCERTPARTVERSION=	2.2.0
 KCERTPARTPATCH=	0
-METASOURCES= AUTO
-
 
 libkcertpart_la_SOURCES	= kcertpart.cc                   
 
