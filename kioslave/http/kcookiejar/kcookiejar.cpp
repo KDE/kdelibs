@@ -213,9 +213,9 @@ int KHttpCookieList::compareItems( void * item1, void * item2)
     int pathLen1 = ((KHttpCookie *)item1)->path().length();
     int pathLen2 = ((KHttpCookie *)item2)->path().length();
     if (pathLen1 > pathLen2)
-        return 1;
-    if (pathLen1 < pathLen2)
         return -1;
+    if (pathLen1 < pathLen2)
+        return 1;
     return 0;
 }
 
@@ -585,6 +585,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         // Error parsing _url
         return KHttpCookieList();
     }
+    QString defaultPath;
+    int i = path.findRev('/');
+    if (i > 0)
+       defaultPath = path.left(i);
 
     //  The hard stuff :)
     for(;;)
@@ -601,8 +605,9 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
             // Host = FQDN
             // Default domain = ""
-            // Default path = ""
-            KHttpCookie *cookie = new KHttpCookie(fqdn, "", "", Name, Value);
+            // Default path according to rfc2109
+            
+            KHttpCookie *cookie = new KHttpCookie(fqdn, "", defaultPath, Name, Value);
             if (windowId)
                cookie->mWindowIds.append(windowId);
             cookie->mCrossDomain = crossDomain;
