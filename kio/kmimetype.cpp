@@ -525,7 +525,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
     return false;
   }
 
-  kdebug( KDEBUG_INFO, 7009, "TYPE = %s", type.data() );
+  //kdebug( KDEBUG_INFO, 7009, "TYPE = %s", type.data() );
 
   if ( type == "FSDevice" )
     return runFSDevice( _url, cfg );
