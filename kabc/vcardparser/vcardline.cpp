@@ -35,22 +35,6 @@ VCardLine::VCardLine( const QString &identifier, const QVariant &value )
   mValue = value;
 }
 
-VCardLine::VCardLine(  const VCardLine& line )
-{
-  mIdentifier = line.mIdentifier;
-  mParamMap   = line.mParamMap;
-  mValue      = line.mValue;
-}
-
-VCardLine&
-VCardLine::operator=(  const VCardLine& line )
-{
-  mIdentifier = line.mIdentifier;
-  mParamMap   = line.mParamMap;
-  mValue      = line.mValue;
-  return *this;
-}
-
 VCardLine::~VCardLine()
 {
 }

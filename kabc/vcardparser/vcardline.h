@@ -35,8 +35,6 @@ class VCardLine
     VCardLine();
     VCardLine( const QString &identifier );
     VCardLine( const QString &identifier, const QVariant &value );
-    VCardLine( const VCardLine& line );
-    VCardLine& operator=( const VCardLine& line );
 
     ~VCardLine();
 
