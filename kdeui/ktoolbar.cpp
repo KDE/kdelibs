@@ -94,7 +94,7 @@ public:
 
         oldPos = QMainWindow::DockUnmanaged;
 
-        positioned = FALSE;
+        modified = m_isHorizontal = positioned = FALSE;
     }
 
     int m_iconSize;
