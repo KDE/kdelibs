@@ -42,7 +42,7 @@ namespace KParts
          *
          * Example of usage:
          * <pre>
-         *     MyPlugin *plugin = KParts::ComponentFactory::createInstance&lt;MyPlugin&gt;( factory, parent );
+         *     MyPlugin *plugin = KParts::ComponentFactory::createInstanceFromFactory&lt;MyPlugin&gt;( factory, parent );
          * </pre>
          *
          * @param factory The factory to ask for the creation of the component
@@ -74,7 +74,7 @@ namespace KParts
          *
          * Example of usage:
          * <pre>
-         *     KViewPart *doc = KParts::ComponentFactory::createInstance&lt;KViewPart&gt;( factory, parent );
+         *     KViewPart *doc = KParts::ComponentFactory::createPartInstanceFromFactory&lt;KViewPart&gt;( factory, parent );
          * </pre>
          *
          * @param factory The factory to ask for the creation of the component
