@@ -2272,7 +2272,7 @@ QString KHTMLPart::selectedText() const
   QString text;
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
-      if(n.nodeType() == DOM::Node::TEXT_NODE) {
+      if(n.nodeType() == DOM::Node::TEXT_NODE && n.handle()->renderer()) {
         QString str = n.nodeValue().string();
         hasNewLine = false;
         if(n == d->m_selectionStart && n == d->m_selectionEnd)
