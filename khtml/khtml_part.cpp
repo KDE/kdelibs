@@ -2930,7 +2930,7 @@ bool KHTMLPart::findTextNext()
             // Otherwise (if we keep the 'last node', and it has a '\n') we might be stuck
             // on that object forever...
             obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
-          } while ( obj && !obj->element() );
+          } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
         }
         if ( obj )
           lastNode = obj->element();
