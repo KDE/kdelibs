@@ -97,7 +97,7 @@ private:
   KIO::Job *job;
   QWidget *main_widget;
 
-  StatusbarProgress *statusProgress;
+  KIO::StatusbarProgress *statusProgress;
 
   int selectedOperation;
   int progressMode;
