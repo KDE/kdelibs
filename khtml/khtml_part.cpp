@@ -841,7 +841,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
+  //kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy)
@@ -850,7 +850,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_doc->updateRendering();
 
-  kdDebug(6050) << "KHTMLPart::executeScript - done" << endl;
+  //kdDebug(6050) << "KHTMLPart::executeScript - done" << endl;
   return ret;
 }
 
