@@ -49,7 +49,7 @@ messages:
 	dirs=`cat dirs` ;\
 	find $$dirs -maxdepth 1 -name "*.cpp" -print > files ;\
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
-	$(EXTRACTRC) `find $$dirs -maxdepth 2 -name "*.rc" -o -name "*.ui"` > rc.cpp	;\
+	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc" -o -name "*.ui"` > rc.cpp	;\
 	: > kde.pot ;\
 	$(XGETTEXT) -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot;
 	$(XGETTEXT) common_texts.cpp -o kde.pot
