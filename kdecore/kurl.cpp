@@ -193,11 +193,12 @@ void KURL::parse( const char * _url )
       return;
     }
     // Only allow valid URL's that begin with "/". (Dawit A.)
-    if ( url[0] == '/' && url.find (QRegExp ("//[a-zA-Z0-9]+.*")) == -1 )
+    if ( url[0] == '/' && url.find (QRegExp ("^//[a-zA-Z0-9]+.*")) == -1 )
     {
 	// Create a light weight URL with protocol
 	path_part_decoded = _url;
 	path_part = path_part_decoded.data();
+       cleanPath();  // clean path before doing anything else!!
 	KURL::encodeURL( path_part );
 	protocol_part = "file";
 	return;
