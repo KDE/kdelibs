@@ -27,7 +27,7 @@ public slots:
     void slotPrint();
     void slotReturn();
     void slotSave();
-    void slotList(const char *str);
+    void slotList(const QString &str);
     void slotOpen();
     void slotCompletion();
     void slotCompletionsMenu(int id);
@@ -65,7 +65,7 @@ protected:
     QMultiLineEdit *widget;
     QTimer *timer;
     QProgressBar *pr;
-    KRadioGroup *rg;
+    KToolBarRadioGroup *rg;
 };
 #endif
 

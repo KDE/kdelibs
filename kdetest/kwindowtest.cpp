@@ -11,6 +11,7 @@
 #include <kapp.h>
 #include <ktmainwindow.h>
 #include <kmenubar.h>
+#include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
 #include <qmultilinedit.h>
 #include "kwindowtest.h"
@@ -194,7 +195,7 @@ testWindow::testWindow (QWidget *, const char *name)
     tb1->setToggle(7);
 
     //Create
-    rg = new KRadioGroup (tb1);
+    rg = new KToolBarRadioGroup (tb1);
 
     rg->addButton(4);
     rg->addButton(5);
@@ -310,14 +311,14 @@ void testWindow::slotReturn()
 {
     QString s = "You entered ";
     s = s + toolBar->getLinedText(5);
-    statusBar->changeItem(s.data(), 0);
+    statusBar->changeItem(s, 0);
 
 }
-void testWindow::slotList(const char *str)
+void testWindow::slotList(const QString &str)
 {
     QString s = "You chose ";
     s = s + str;
-    statusBar->changeItem(s.data(), 0);
+    statusBar->changeItem(s, 0);
 }
 
 void testWindow::slotCompletion()
