@@ -65,7 +65,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         QString value = currentLine.mid( colon + 1 );
 
         QStringList params = QStringList::split( ';', key );
-        vCardLine.setIdentifier( params[0].lower() );
+        vCardLine.setIdentifier( params[0] );
         if ( params.count() > 1 ) { // find all parameters
           for ( uint i = 1; i < params.count(); ++i ) {
             QStringList pair = QStringList::split( '=', params[i] );
@@ -151,7 +151,7 @@ QString VCardParser::createVCards( const VCard::List& list )
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
-          textLine = (*lineIt).identifier().upper();
+          textLine = (*lineIt).identifier();
 
           params = (*lineIt).parameterList();
           hasEncoding = false;

@@ -28,13 +28,13 @@ VCardLine::VCardLine()
 VCardLine::VCardLine( const QString &identifier )
   : mParamMap( 0 )
 {
-  mIdentifier = identifier.lower();
+  mIdentifier = identifier;
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
   : mParamMap( 0 )
 {
-  mIdentifier = identifier.lower();
+  mIdentifier = identifier;
   mValue = value;
 }
 
@@ -84,7 +84,7 @@ VCardLine& VCardLine::operator=( const VCardLine& line )
 
 void VCardLine::setIdentifier( const QString& identifier )
 {
-  mIdentifier = identifier.lower();
+  mIdentifier = identifier;
 }
 
 QString VCardLine::identifier() const
