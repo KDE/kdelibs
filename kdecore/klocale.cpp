@@ -2064,7 +2064,11 @@ QString KLocale::twoAlphaToLanguageName(const QString &code) const
   if (!d->languages)
     d->languages = new KConfig("all_languages", true, false, "locale");
 
-  d->languages->setGroup(code.lower());
+  QString groupName = code;
+  const int i = groupName.find('_');
+  groupName.replace(0, i, groupName.left(i).lower());
+
+  d->languages->setGroup(groupName);
   return d->languages->readEntry("Name");
 }
 
