@@ -310,7 +310,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 		tmp[0] = e->ascii();
 		QString res = findCompletion(tmp);
 		if (!res.isNull())
-		    debugC("found %s",res.data());
+		    debugC("found %s",res.ascii());
 	    } else
 		e->ignore();
 	}

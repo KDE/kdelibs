@@ -457,7 +457,7 @@ QString KFileInfoContents::findCompletion( const char *base,
         }
 	name = backup;
         
-	debugC("completion base (%s) name (%s) body (%s)", base, name, body.data());
+	debugC("completion base (%s) name (%s) body (%s)", base, name, body.ascii());
 
 	bool matchExactly = (name == body);
 

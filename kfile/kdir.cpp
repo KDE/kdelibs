@@ -139,7 +139,7 @@ void KDir::setPath(const QString& url)
     if (tmp.isLocalFile()) { // we can check, if the file is there
 	struct stat buf;
 	QString ts = tmp.path();
-	int ret = stat(ts.data(), &buf);
+	int ret = stat( ts, &buf);
 	readable = (ret == 0);
 	if (readable) { // further checks
 	    DIR *test;

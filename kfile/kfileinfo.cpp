@@ -109,13 +109,13 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
     struct stat buf;
     myIsSymLink = false;
 
-    if (lstat((dir + myName).data(), &buf) == 0) {
+    if (lstat(dir + myName, &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat((dir + myName).data(), &st) == 0)
+	  if (stat(dir + myName, &st) == 0)
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken
@@ -295,7 +295,7 @@ QString KFileInfo::dateTime(time_t _time) {
 
     QString month = ("   " + *months[t.date().month() - 1]).right(3);
     QString text = QString("%1 %2 %3").arg(month).
-	arg(number.data()).arg(sTime.data());
+	arg(number).arg(sTime);
 
     return text;
 }

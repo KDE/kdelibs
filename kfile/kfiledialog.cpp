@@ -56,8 +56,6 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 			 bool acceptURLs)
     : QDialog(parent, name, modal), boxLayout(0)
 {
-    KIOJob::initStatic();
-
     QAccel *a = new QAccel( this );
     a->connectItem(a->insertItem(Key_T + CTRL), this,
 		   SLOT(completion()));
@@ -71,7 +69,7 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
     if (!lastDirectory)
 	lastDirectory = new QString(QDir::currentDirPath());
 
-    dir = new KDir(lastDirectory->data());
+    dir = new KDir(*lastDirectory);
     visitedDirs = new QStrIList();
 
     // we remember the selected name for init()
@@ -148,7 +146,7 @@ void KFileBaseDialog::init()
 
     QDir tmpdir( bmFile );
     if ( !tmpdir.exists() )
-      tmpdir.mkdir(bmFile.data());
+      tmpdir.mkdir( bmFile );
 
     bmFile += "bookmarks.html";
 
@@ -304,7 +302,7 @@ void KFileBaseDialog::okPressed()
 {
     filename_ = locationEdit->currentText();
     if (!filename_.isNull())
-	debugC("filename %s", filename_.data());
+	debugC("filename %s", filename_.ascii());
     else {
 	debugC("no filename");
     }
@@ -710,7 +708,7 @@ void KFileBaseDialog::comboActivated(int index)
 {
     KDir tmp = *dir;
     for (int i= 0; i < index; i++) {
-	debugC("cdUp %s",tmp.url().data());
+	debugC("cdUp %s",tmp.url().ascii());
 	tmp.cdUp();
     }
     setDir(tmp.url(), true);
@@ -729,7 +727,7 @@ void KFileBaseDialog::back()
 
     updateHistory( true, !backStack.isEmpty());
 
-    setDir(s->data(), false);
+    setDir(*s, false);
     delete s;
 }
 
@@ -744,7 +742,7 @@ void KFileBaseDialog::forward()
 
     QString *s = forwardStack.pop();
     updateHistory( !forwardStack.isEmpty(), true);
-    setDir(s->data(), false);
+    setDir(*s, false);
     delete s;
 }
 
@@ -1017,7 +1015,7 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
     tmp += tmps;
     tmp += "/";
 */
-    debugC("dirActivated %s", tmp.path());
+    debugC("dirActivated %s", tmp.path().ascii());
     setDir(tmp.path(), true);
 }
 
@@ -1042,7 +1040,7 @@ void KFileBaseDialog::fileActivated(KFileInfo *item)
     filename_ += tmps;
     emit fileSelected(filename_);
 */
-    emit fileSelected( acceptUrls ? tmp.url().data() : tmp.path() );
+    emit fileSelected( acceptUrls ? tmp.url() : tmp.path() );
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = false;
@@ -1073,7 +1071,7 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
     filename_ += tmp;
     locationEdit->setText(filename_);
 */
-    locationEdit->setText( acceptUrls ? tmp.url().data() : tmp.path() );
+    locationEdit->setText( acceptUrls ? tmp.url() : tmp.path() );
     emit fileHighlighted(highlighted);
 }
 
@@ -1148,7 +1146,7 @@ void KFileBaseDialog::setSelection(const QString& name)
 	if (sep >= 0) { // there is a / in it
 	    setDir(filename.left(sep), true);
 	    filename = filename.mid(sep+1, filename.length() - sep);
-	    debugC("filename %s", filename.data());
+	    debugC("filename %s", filename.ascii());
 	    selection = filename;
 	}
 	if (acceptUrls)
@@ -1182,7 +1180,7 @@ void KFileBaseDialog::completion() // SLOT
 						base.length()));
 	
 	if (!complete.isNull()) {
-	    debugC("Complete %s", complete.data());
+	    debugC("Complete %s", complete.ascii());
 	    if ( complete != "../" ) {
                 locationEdit->setText(base + complete);
 		filename_ = base + complete;
@@ -1240,7 +1238,7 @@ QString KFileDialog::getOpenFileURL(const QString& url, const QString& filter,
 
     delete dlg;
     if (!retval.isNull())
-	debugC("getOpenFileURL: returning %s", retval.data());
+	debugC("getOpenFileURL: returning %s", retval.ascii());
 
     return retval;
 }
@@ -1274,7 +1272,7 @@ QString KFileBaseDialog::getDirectory(const QString& url,
 
     delete dlg;
     if (!retval.isNull())
-	debugC("getDirectory: returning %s", retval.data());
+	debugC("getDirectory: returning %s", retval.ascii());
 
     return retval;
 }
@@ -1342,8 +1340,8 @@ void KFileBaseDialog::updateStatusLine()
 	lFileText = i18n("files");
 
     lStatusText = i18n("%1 %2 and %3 %4")
-	.arg(fileList->numDirs()).arg(lDirText.data())
-	.arg(fileList->numFiles()).arg(lFileText.data());
+	.arg(fileList->numDirs()).arg( lDirText )
+	.arg(fileList->numFiles()).arg( lFileText );
     myStatusLine->setText(lStatusText);
 }
 
@@ -1434,7 +1432,7 @@ QString KFilePreviewDialog::getOpenFileURL(const QString& url, const QString& fi
 
     delete dlg;
     if (!retval.isNull())
-	debugC("getOpenFileURL: returning %s", retval.data());
+	debugC("getOpenFileURL: returning %s", retval.ascii());
 
     return retval;
 }
