@@ -386,14 +386,15 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     QByteArray form_data = formData(ok);
     if (ok) {
+        DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
         if(m_post) {
-            view->part()->submitForm( "post", m_url.string(), form_data,
+            view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
                                       enctype().string(),
                                       boundary().string() );
         }
         else {
-            view->part()->submitForm( "get", m_url.string(), form_data,
+            view->part()->submitForm( "get", url.string(), form_data,
                                       m_target.string() );
         }
     }
@@ -430,14 +431,12 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ACTION:
-        m_url = khtml::parseURL(attr->value());
         break;
     case ATTR_TARGET:
         m_target = attr->value();
         break;
     case ATTR_METHOD:
-        if ( strcasecmp( attr->value(), "post" ) == 0 )
-            m_post = true;
+        m_post = ( strcasecmp( attr->value(), "post" ) == 0 );
         break;
     case ATTR_ENCTYPE:
         setEnctype( attr->value() );
@@ -1583,7 +1582,7 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
     recalcListItems();
 
     QString state = _state;
-    if(!state.isEmpty() && !state.contains('X') && !m_multiple) {
+    if(!state.isEmpty() && !state.contains('X') && !m_multiple && m_size <= 1) {
         qWarning("should not happen in restoreState!");
         state[0] = 'X';
     }
@@ -1774,7 +1773,7 @@ void HTMLSelectElementImpl::recalcListItems()
         if (current->id() == ID_OPTION) {
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
-            if (!foundSelected && !m_multiple) {
+            if (!foundSelected && !m_multiple && m_size <= 1) {
                 foundSelected = static_cast<HTMLOptionElementImpl*>(current);
                 foundSelected->m_selected = true;
             }

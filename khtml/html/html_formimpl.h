@@ -96,8 +96,8 @@ public:
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
 
+private:
     QPtrList<HTMLGenericFormElementImpl> formElements;
-    DOMString m_url;
     DOMString m_target;
     DOMString m_enctype;
     DOMString m_boundary;
