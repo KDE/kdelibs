@@ -106,6 +106,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Help,          KStdAccel::Help, "help", 0, 0, "help" },
 	{ HelpContents,  KStdAccel::AccelNone, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "contents" },
 	{ WhatsThis,     KStdAccel::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "contexthelp" },
+	{ TipofDay,      KStdAccel::AccelNone, "help_show_tip", I18N_NOOP("Tip of the &Day..."), 0, "idea" },
 	{ ReportBug,     KStdAccel::AccelNone, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, 0 },
 	{ AboutApp,      KStdAccel::AccelNone, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
 	{ AboutKDE,      KStdAccel::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0,"about_kde" },
@@ -318,6 +319,8 @@ KAction *helpContents( const QObject *recvr, const char *slot, KActionCollection
 	{ return KStdAction::create( HelpContents, name, recvr, slot, parent ); }
 KAction *whatsThis( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( WhatsThis, name, recvr, slot, parent ); }
+KAction *tipofDay( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return KStdAction::create( TipofDay, name, recvr, slot, parent ); }
 KAction *reportBug( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( ReportBug, name, recvr, slot, parent ); }
 KAction *aboutApp( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )

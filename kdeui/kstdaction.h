@@ -143,7 +143,7 @@ namespace KStdAction
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
-		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE
+		Help, HelpContents, WhatsThis, TipofDay, ReportBug, AboutApp, AboutKDE
 	};
 
 	/**
@@ -506,6 +506,12 @@ namespace KStdAction
 	* Trigger the What's This cursor.
 	*/
 	KAction *whatsThis(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display "Tip of the Day"
+	*/
+	KAction *tipofDay(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );
 
 	/**
