@@ -110,8 +110,10 @@ public:
     /**
      * Upload file @p src to URL @p target.
      *
-     * Both must be specified,
-     * unlike @ref download.
+     * Both must be specified, unlike @ref download.
+     * Note that this is assumed to be used for saving a file over
+     * the network, so overwriting is set to true. This is not the
+     * case with @ref copy.
      *
      * @param src URL Referencing the file to upload.
      *
@@ -122,6 +124,7 @@ public:
 
     /**
      * Alternative method for copying over the network.
+     * Overwrite is false, so this will fail if @target exists.
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::file_copy (not KIO::copy!).

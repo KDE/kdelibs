@@ -82,7 +82,7 @@ bool NetAccess::upload(const QString& src, const KURL& target)
   NetAccess kioNet;
   KURL s;
   s.setPath(src);
-  return kioNet.copyInternal( s, target, false /*not overwrite*/ );
+  return kioNet.copyInternal( s, target, true /*overwrite*/ );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target )
