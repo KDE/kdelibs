@@ -47,6 +47,6 @@ noinst_HEADERS= xview.h eps.h tiffr.h krl.h g3r.h ico.h jp2.h
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(all_includes)
 
 servicedir = $(kde_servicesdir)
-service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio ppm.kimgio \
+service_DATA = png.kimgio xpm.kimgio bmp.kimgio gif.kimgio pbm.kimgio pgm.kimgio ppm.kimgio \
 	       xbm.kimgio jpeg.kimgio xv.kimgio krl.kimgio eps.kimgio \
                $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES)
