@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "konq_htmlsettings.h"
-#include "konqdefaults.h"
+#include "khtmlsettings.h"
+#include "khtmldefaults.h"
 #include "mousedefaults.h"
 #include <kconfig.h>
 #include <kapp.h>
