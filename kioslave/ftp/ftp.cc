@@ -59,6 +59,7 @@
 #include <ksocks.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
+#include <kremoteencoding.h>
 
 #define FTP_LOGIN   QString::fromLatin1("anonymous")
 #define FTP_PASSWD  QString::fromLatin1("anonymous@")
@@ -1089,7 +1090,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if ( !_path.isEmpty() ) {
     tmp += " ";
-    tmp += _path.ascii();
+    tmp += remoteEncoding()->encode(_path);
   }
 
   if ( !ftpSendCmd( tmp ) || rspbuf[0] != '1' ) {
@@ -1149,7 +1150,7 @@ bool Ftp::ftpCloseCommand()
 
 void Ftp::mkdir( const KURL & url, int permissions )
 {
-  QString path = url.path();
+  QString path = remoteEncoding()->encode(url);
   if (!m_bLoggedOn)
   {
       openConnection();
@@ -1163,7 +1164,7 @@ void Ftp::mkdir( const KURL & url, int permissions )
   assert( m_bLoggedOn );
 
   QCString buf = "mkd ";
-  buf += path.latin1();
+  buf += remoteEncoding()->encode(path);
 
   if ( !ftpSendCmd( buf ) || rspbuf[0] != '2' )
   {
@@ -1204,7 +1205,7 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   // TODO honor overwrite
   assert( m_bLoggedOn );
 
-  QCString filepath = src.ascii();
+  QCString filepath = remoteEncoding()->encode(src);
   int pos = filepath.findRev("/");
 
   QCString cwd_cmd = "CWD ";
@@ -1214,7 +1215,7 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   from_cmd += filepath.mid(pos+1);
 
   QCString to_cmd = "RNTO ";
-  to_cmd += dst.ascii();
+  to_cmd += remoteEncoding()->encode(dst);
 
   if ( !ftpSendCmd( cwd_cmd ) || rspbuf[0] != '2')
       return false;
@@ -1230,7 +1231,6 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
 
 void Ftp::del( const KURL& url, bool isfile )
 {
-  QString path = url.path();
   if (!m_bLoggedOn)
   {
       openConnection();
@@ -1248,17 +1248,17 @@ void Ftp::del( const KURL& url, bool isfile )
     // When deleting a directory, we must exit from it first
     // The last command probably went into it (to stat it)
     QCString tmp = "cwd ";
-    tmp += url.directory().ascii();
+    tmp += remoteEncoding()->directory(url);
 
     (void) ftpSendCmd( tmp );
     // ignore errors
   }
 
   QCString cmd = isfile ? "DELE " : "RMD ";
-  cmd += path.ascii();
+  cmd += remoteEncoding()->encode(url);
 
   if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
-    error( ERR_CANNOT_DELETE, path );
+    error( ERR_CANNOT_DELETE, url.path() );
   else
     finished();
 }
@@ -1275,7 +1275,7 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
   sprintf(buf, "%o ", permissions & 511 );
 
   cmd += buf;
-  cmd += path.ascii();
+  cmd += remoteEncoding()->encode(path);
 
   return ftpSendCmd( cmd ) && rspbuf[0] == '2';
 }
@@ -1467,7 +1467,7 @@ void Ftp::stat( const KURL &url)
   // Try cwd into it, if it works it's a dir (and then we'll list the parent directory to get more info)
   // if it doesn't work, it's a file (and then we'll use dir filename)
   QCString tmp = "cwd ";
-  tmp += path.latin1();
+  tmp += remoteEncoding()->encode(path);
   if ( !ftpSendCmd( tmp ) )
   {
     kdDebug(7102) << "stat: ftpSendCmd returned false" << endl;
@@ -1540,7 +1540,7 @@ void Ftp::stat( const KURL &url)
 
   // Now cwd the parent dir, to prepare for listing
   tmp = "cwd ";
-  tmp += parentDir.latin1();
+  tmp += remoteEncoding()->encode(parentDir);
   if ( !ftpSendCmd( tmp ) )
     // error already emitted
     return;
@@ -1725,7 +1725,7 @@ bool Ftp::ftpOpenDir( const QString & path )
   // We try to change to this directory first to see whether it really is a directory.
   // (And also to follow symlinks)
   QCString tmp = "cwd ";
-  tmp += ( !path.isEmpty() ) ? path.latin1() : "/";
+  tmp += ( !path.isEmpty() ) ? remoteEncoding()->encode(path) : "/";
 
   if ( !ftpSendCmd( tmp ) || rspbuf[0] != '2' )
   {
@@ -1815,23 +1815,28 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                 if ((p_date_3 = strtok(NULL," ")) != 0)
                   if ((p_name = strtok(NULL,"\r\n")) != 0)
                   {
-                    if ( p_access[0] == 'l' )
-                    {
-                      tmp = p_name;
-                      int i = tmp.findRev( QString::fromLatin1(" -> ") );
-                      if ( i != -1 ) {
-                        de.link = p_name + i + 4;
-                        tmp.truncate( i );
-                        p_name = tmp.ascii();
-                      }
-                      else
-                        de.link = QString::null;
-                    }
-                    else
-                      de.link = QString::null;
 
-                    if (strchr(p_name, '/'))
-                       return 0L; // Don't trick us!
+		    {
+		       QCString tmp( p_name );
+		       if ( p_access[0] == 'l' )
+		       {
+			 int i = tmp.findRev( " -> " );
+			 if ( i != -1 ) {
+			   de.link = remoteEncoding()->decode(p_name + i + 4);
+			   tmp.truncate( i );
+			 }
+			 else
+			   de.link = QString::null;
+		       }
+		       else
+			 de.link = QString::null;
+
+		       if (tmp.find('/') != -1)
+			 return 0L; // Don't trick us!
+		       // Some sites put more than one space between the date and the name
+ 		       // e.g. ftp://ftp.uni-marburg.de/mirror/
+		       de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
+		    }
 
                     de.access = 0;
                     de.type = S_IFREG;
@@ -1884,13 +1889,9 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // maybe fromLocal8Bit would be better in some cases,
                     // but what proves that the ftp server is in the same encoding
                     // than the user ??
-                    de.owner    = QString::fromLatin1(p_owner);
-                    de.group    = QString::fromLatin1(p_group);
+                    de.owner    = remoteEncoding()->decode(p_owner);
+                    de.group    = remoteEncoding()->decode(p_group);
                     de.size     = STRTOLL(p_size, 0, 10);
-                    QCString tmp( p_name );
-                    // Some sites put more than one space between the date and the name
-                    // e.g. ftp://ftp.uni-marburg.de/mirror/
-                    de.name     = QString::fromLatin1(tmp.stripWhiteSpace());
 
                     // Parsing the date is somewhat tricky
                     // Examples : "Oct  6 22:49", "May 13  1999"
@@ -1995,7 +1996,7 @@ void Ftp::get( const KURL & url )
   {
       // Not a file, or doesn't exist. We need to find out.
       QCString tmp = "cwd ";
-      tmp += url.path().latin1();
+      tmp += remoteEncoding()->encode(url);
       if ( ftpSendCmd( tmp ) && rspbuf[0] == '2' )
       {
           // Ok it's a dir in fact
@@ -2015,7 +2016,7 @@ void Ftp::get( const KURL & url )
   if ( !resumeOffset.isEmpty() )
   {
       offset = resumeOffset.toLongLong();
-      kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
+      kdDebug(7102) << "Ftp::get got offset from medata : " << (long)offset << endl;
   }
 
   if ( !ftpOpenCommand( "retr", url.path(), textMode ? 'A' : 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
@@ -2033,7 +2034,7 @@ void Ftp::get( const KURL & url )
   if ( m_size != UnknownSize )
     bytesLeft = m_size - offset;
 
-  kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
+  kdDebug(7102) << "Ftp::get starting with offset=" << (long)offset << endl;
   KIO::fileoffset_t processed_size = offset;
 
   char buffer[ 2048 ];
@@ -2202,7 +2203,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   {
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
-      cmd += dest_orig.ascii();
+      cmd += remoteEncoding()->encode(dest_orig);
       if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
@@ -2224,7 +2225,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   } else if ( bMarkPartial && ftpSize( dest_part, 'I' ) ) { // file with extension .part exists
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
-      cmd += dest_part.ascii();
+      cmd += remoteEncoding()->encode(dest_part);
       if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
@@ -2254,7 +2255,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kdDebug(7102) << "Offset = " << offset << "d" << endl;
+    kdDebug(7102) << "Offset = " << (long)offset << "d" << endl;
   }
 
   if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
@@ -2288,7 +2289,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
            ( m_size < (unsigned long) config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
       {
         QCString cmd = "DELE ";
-        cmd += dest.ascii();
+        cmd += remoteEncoding()->encode(dest);
         (void) ftpSendCmd( cmd );
       }
     }
@@ -2341,7 +2342,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
   }
 
   buf="SIZE ";
-  buf+=path.ascii();
+  buf+=remoteEncoding()->encode(path);
   if ( !ftpSendCmd( buf ) || rspbuf[0] !='2' ) {
     m_size = UnknownSize;
     return false;
