@@ -963,7 +963,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
       paint.setPen( colorGroup().light() );
       paint.moveTo( 0, height()-1 );
       paint.lineTo( curx, height()-1 );
-      paint.moveTo( QMIN( curx + curWidth, width() /*- 50*/ ), height()-1 );
+      paint.moveTo( QMIN( curx + curWidth, width() ), height()-1 );
       paint.lineTo( width() - 1, height()-1 );
       break;
     case TAB_RIGHT:
@@ -1247,7 +1247,7 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
   /* reset bar position to 0 if it allowed or if _currentTab == -1 ( no current tab ) */
   switch ( tabPos ){
     case TAB_TOP:
-      if ( width() - 50 > tabsWidth() || _currentTab == -1 ){
+      if ( width() > tabsWidth() || _currentTab == -1 ){
         barPainter->delta = 0;
         leftTab = 0;
       }
@@ -1259,7 +1259,7 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
         barPainter->resize( QMIN(tabsWidth(),maxAllowWidth),  height() - 1 );
       break;
     case TAB_RIGHT:
-      if ( height() - 50 > tabsWidth() || _currentTab == -1 ){
+      if ( height() > tabsWidth() || _currentTab == -1 ){
         barPainter->delta = 0;
         leftTab = 0;
       }
