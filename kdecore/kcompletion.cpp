@@ -236,7 +236,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     postProcessMatch( &completion );
 
-    if ( !string.isEmpty() ) { // only emit match when string != ""
+    if ( !string.isEmpty() ) { // only emit match when string is empty
         //kdDebug(0) << "KCompletion: Match: " << completion << endl;
         emit match( completion );
     }

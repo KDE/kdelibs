@@ -1131,7 +1131,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        request->arg_list.append(arg.local8Bit());
    }
 
-   if( startup_id == "" )
+   if( startup_id.isEmpty() )
        startup_id = "0"; // no ASN with kdeinit_exec unless requested
 
    request->name = app.local8Bit();
