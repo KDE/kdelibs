@@ -995,7 +995,9 @@ Completion WindowFunc::tryExecute(const List &args)
       }
 
         // prepare arguments
-        KURL url = part->htmlDocument().completeURL(str).string();
+        KURL url;
+	if (!str.isEmpty())
+	  url = part->htmlDocument().completeURL(str).string();
 
         KParts::URLArgs uargs;
         uargs.frameName = args[1].isDefined() ?
@@ -1014,7 +1016,8 @@ Completion WindowFunc::tryExecute(const List &args)
 	    uargs.serviceType = QString::null;
 	    if (uargs.frameName == "_blank")
               uargs.frameName = QString::null;
-	    emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
+	    if (!url.isEmpty())
+	      emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
 	    result = Window::retrieve(khtmlpart); // global object
         } else
             result = Undefined();
