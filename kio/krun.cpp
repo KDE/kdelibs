@@ -85,6 +85,8 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 void KRun::shellQuote( QString &_str )
 {
     // Credits to Walter, says Bernd G. :)
+    if (_str.isEmpty()) // Don't create an explicit empty parameter
+        return;
     QString res = "'";
     res += _str.replace(QRegExp("'"), "'\"'\"'");
     res += "'";
