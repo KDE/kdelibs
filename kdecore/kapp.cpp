@@ -30,6 +30,8 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qkeycode.h>
+#include <qlineedit.h>
+#include <qmultilineedit.h>
 #include <qpopupmenu.h>
 #include <qsessionmanager.h>
 #include <qlist.h>
@@ -52,6 +54,7 @@
 #include <kdatastream.h>
 #include <klibloader.h>
 #include <kmimesourcefactory.h>
+#include <kstdaccel.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -187,6 +190,71 @@ void KApplication::x11FilterDestroyed()
         delete x11Filter;
         x11Filter = 0;
     }
+}
+
+bool KApplication::notify(QObject *receiver, QEvent *event)
+{
+    QEvent::Type t = event->type();
+    if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
+    {
+       static uint _selectAll = KStdAccel::selectAll();
+       QLineEdit *edit = dynamic_cast<QLineEdit *>(receiver);
+       if (edit)
+       {
+          // We have a keypress for a lineedit...
+          QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
+          if (KStdAccel::isEqual(kevent, _selectAll))
+          {
+             if (t == QEvent::KeyPress)
+             {
+                edit->selectAll();
+                return true;
+             }
+             else
+             {
+                kevent->accept();
+             }
+          }
+          // Ctrl-U deletes from start of line.
+          if (KStdAccel::isEqual(kevent, Qt::CTRL + Qt::Key_U))
+          {
+             if (t == QEvent::KeyPress)
+             {
+                if (!edit->isReadOnly())
+                {
+                   QString t(edit->text());
+                   t = t.mid(edit->cursorPosition());
+                   edit->validateAndSet(t, 0, 0, 0);
+                }
+                return true;
+             }
+             else
+             {
+                kevent->accept();
+             }
+              
+          }
+       }
+       QMultiLineEdit *medit = dynamic_cast<QMultiLineEdit *>(receiver);
+       if (medit)
+       {
+          // We have a keypress for a multilineedit...
+          QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
+          if (KStdAccel::isEqual(kevent, _selectAll))
+          {
+             if (t == QEvent::KeyPress)
+             {
+                medit->selectAll();
+                return true;
+             }
+             else
+             {
+                kevent->accept();
+             }
+          }
+       }
+    }
+    return QApplication::notify(receiver, event);
 }
 
 

@@ -583,6 +583,11 @@ private:
 
 public:
   /**
+   * @internal
+   */
+  bool notify(QObject *receiver, QEvent *event);
+
+  /**
       @internal
     */
   int xioErrhandler();
@@ -780,6 +785,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.186  2000/09/09 14:13:43  rikkus
+// Removed libmapnotify() function from kapp
+// Added pid() method to kprocess and marked getPid() as deprecated (just making
+// the API more consistent)
+// Made some methods in kprocess const.
+//
 // Revision 1.185  2000/08/31 19:56:48  waba
 // WABA: Cleaning up the mess: s^KTMainWindow^KMainWindow^
 //

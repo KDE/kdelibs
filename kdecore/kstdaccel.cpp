@@ -96,6 +96,7 @@ QString KStdAccel::action(StdAccel id)
      case PopupMenuContext: return "PopupMenuContext";
      case WhatThis:         return "WhatThis";
      case Reload:           return "Reload";
+     case SelectAll:        return "SelectAll";
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -136,6 +137,7 @@ uint KStdAccel::defaultKey(StdAccel id)
      case PopupMenuContext: return Qt::Key_Menu;
      case WhatThis:         return Qt::SHIFT + Qt::Key_F1;
      case Reload:           return Qt::Key_F5;
+     case SelectAll:        return Qt::CTRL + Qt::Key_A;
      case NB_STD_ACCELS:    return 0;
     }
     
@@ -177,6 +179,7 @@ QString KStdAccel::description(StdAccel id)
      case PopupMenuContext: return i18n("Popup Menu Context");
      case WhatThis:         return i18n("What's This");
      case Reload:           return i18n("Reload");
+     case SelectAll:        return i18n("Select All");
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -343,4 +346,9 @@ uint KStdAccel::whatsThis()
 uint KStdAccel::reload()
 {
   return key(Reload);
+}
+
+uint KStdAccel::selectAll()
+{
+  return key(SelectAll);
 }
