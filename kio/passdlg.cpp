@@ -31,7 +31,7 @@
 
 using namespace KIO;
 
-PassDlg::PassDlg( QWidget* parent, const char* name, bool modal, 
+PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
 		          WFlags wflags, const QString& _head,
 		          const QString& _user, const QString& _pass )
         : KDialog(parent, name, modal, wflags)
@@ -40,19 +40,17 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
    QVBoxLayout *layout = new QVBoxLayout( this, marginHint(), spacingHint() );
    //
    // Bei Bedarf einen kleinen Kommentar als Label einfuegen
-   //
+   // NB20000703: Hmm??? Something about pretty comments? Made the change
+   //             anyway, now the slave decides about the whole string.
    QString msg;
-   if ( !_head.isNull() )
+   if ( !_head.isEmpty() )
    {
-		msg = i18n("<qt>"
-       	 		   "<center><nobr>Authorization is required to access</nobr></center>"
-				   "<center>%1</center>"
-				   "</qt>").arg( _head );
+        msg = "<qt><center><nobr>" + _head + "</nobr></center></qt>";
 
    }
    else
    {
-   		msg = i18n( "Enter your user name and password." );
+        msg = i18n( "Enter your user name and password." );
    }
 
    QLabel *l = new QLabel(msg, this);

@@ -377,7 +377,7 @@ bool Ftp::ftpLogin( const QString & user )
     if (needPass) {
       //kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
       if ( m_pass.isEmpty() ) {
-        QString tmp = m_user + "@" + m_host;
+        QString tmp = i18n("Authorization is required for %1").arg(m_user + "@" + m_host);
         if ( !openPassDlg( tmp, m_user, m_pass, m_host ) )
         {
           error( ERR_USER_CANCELED, m_host );

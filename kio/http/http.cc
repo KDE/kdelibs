@@ -1312,7 +1312,7 @@ bool HTTPProtocol::readHeader()
     if (m_strRealm.isEmpty())
       m_strRealm = m_state.hostname;
 
-    if (!openPassDlg( i18n( "<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname ) ,
+    if (!openPassDlg( i18n( "Authorization is required for <b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname ) ,
     				  m_request.user, m_request.passwd, m_strRealm + "@" + m_request.hostname )) {
       error(ERR_ACCESS_DENIED, m_state.hostname);
       return false;
