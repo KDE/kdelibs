@@ -131,7 +131,7 @@ B2Style::~B2Style()
 {
 }
 
-void B2Style::polish(QPalette &pal)
+void B2Style::polish(QPalette &)
 {
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
@@ -430,103 +430,54 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             p->fillRect(addPageR, activeControl == AddPage ?
                         g.brush(QColorGroup::Midlight) :
                         g.brush(QColorGroup::Mid));
+            p->setPen(g.dark());
             if(horiz){
-                if(addPageR.width() > 3){
-                    // do the groove manually - shadeRects have a top bevel
-                    p->setPen(g.dark());
-                    p->drawLine(addPageR.x(), addPageR.y()+6,
-                                addPageR.right()-3, addPageR.y()+6);
-                    p->setPen(Qt::black);
-                    p->drawLine(addPageR.x(), addPageR.y()+7,
-                                addPageR.right()-4, addPageR.y()+7);
-                    p->setPen(g.light());
-                    p->drawLine(addPageR.x(), addPageR.y()+9,
-                                addPageR.right()-2, addPageR.y()+9);
-                    p->drawLine(addPageR.right()-2, addPageR.y()+6,
-                                addPageR.right()-2, addPageR.y()+9);
-                }
-                // outer lines
-                p->setPen(g.dark());
-                p->drawLine(addPageR.x(), addPageR.y(),
-                            addPageR.right(), addPageR.y());
-                p->drawLine(addPageR.x(), addPageR.bottom(),
-                            addPageR.right(), addPageR.bottom());
+                p->drawLine(addPageR.x(), addPageR.y(), addPageR.right(),
+                            addPageR.y());
+                p->drawLine(addPageR.x(), addPageR.bottom(), addPageR.right(),
+                            addPageR.bottom());
+                p->setPen(activeControl==AddPage ? g.mid() : g.button());
+                p->drawLine(addPageR.x(), addPageR.y()+1, addPageR.right(),
+                            addPageR.y()+1);
             }
             else{
-                if(addPageR.height() > 3){
-                    // do the groove manually - shadeRects have a top bevel
-                    p->setPen(g.dark());
-                    p->drawLine(addPageR.x()+6, addPageR.y(), addPageR.x()+6,
-                                addPageR.bottom()-3);
-                    p->setPen(Qt::black);
-                    p->drawLine(addPageR.x()+7, addPageR.y(), addPageR.x()+7,
-                                addPageR.bottom()-4);
-                    p->setPen(g.light());
-                    p->drawLine(addPageR.x()+9, addPageR.y(), addPageR.x()+9,
-                                addPageR.bottom()-2);
-                    p->drawLine(addPageR.x()+6, addPageR.bottom()-2,
-                                addPageR.x()+9, addPageR.bottom()-2);
-                }
-                // outer lines
-                p->setPen(g.dark());
-                p->drawLine(addPageR.right(), addPageR.y(),
-                            addPageR.right(), addPageR.bottom());
                 p->drawLine(addPageR.x(), addPageR.y(), addPageR.x(),
+                            addPageR.bottom());
+                p->drawLine(addPageR.right(), addPageR.y(), addPageR.right(),
+                            addPageR.bottom());
+                p->setPen(activeControl==AddPage ? g.mid() : g.button());
+                p->drawLine(addPageR.x()+1, addPageR.y(), addPageR.x()+1,
                             addPageR.bottom());
             }
         }
     }
     if(controls & SubPage){
         if(subPageR.height()){
-            p->fillRect(subPageR.x(), subPageR.y(), subPageR.width(),
-                        subPageR.height(),
-                        activeControl == SubPage ?
+            p->fillRect(subPageR, activeControl == SubPage ?
                         g.brush(QColorGroup::Midlight) :
                         g.brush(QColorGroup::Mid));
+            p->setPen(g.dark());
             if(horiz){
-                if(subPageR.width() > 3){
-                    // groove
-                    p->setPen(g.dark());
-                    p->drawLine(subPageR.x()+2, subPageR.y()+6,
-                                subPageR.right(), subPageR.y()+6);
-                    p->drawLine(subPageR.x()+2, subPageR.y()+6,
-                                subPageR.x()+2, subPageR.y()+9);
-                    p->setPen(Qt::black);
-                    p->drawLine(subPageR.x()+3, subPageR.y()+7,
-                                subPageR.right(), subPageR.y()+7);
-                    p->setPen(g.light());
-                    p->drawLine(subPageR.x()+2, subPageR.y()+9,
-                                subPageR.right(), subPageR.y()+9);
-
-                }
-                // outer lines
-                p->setPen(g.dark());
-                p->drawLine(subPageR.x(), subPageR.y(),
-                            subPageR.right(), subPageR.y());
+                p->drawLine(subPageR.x(), subPageR.y(), subPageR.right(),
+                            subPageR.y());
                 p->drawLine(subPageR.x(), subPageR.bottom(), subPageR.right(),
                             subPageR.bottom());
+                p->setPen(activeControl==SubPage ? g.mid() : g.button());
+                p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.right(),
+                            subPageR.y()+1);
+                p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.x(),
+                            subPageR.bottom()-1);
             }
             else{
-                if(subPageR.height() > 3){
-                    // groove
-                    p->setPen(g.dark());
-                    p->drawLine(subPageR.x()+6, subPageR.y()+2, subPageR.x()+6,
-                                subPageR.bottom());
-                    p->drawLine(subPageR.x()+6, subPageR.y()+2,
-                                subPageR.x()+9, subPageR.y()+2);
-                    p->setPen(Qt::black);
-                    p->drawLine(subPageR.x()+7, subPageR.y()+3, subPageR.x()+7,
-                                subPageR.bottom());
-                    p->setPen(g.light());
-                    p->drawLine(subPageR.x()+9, subPageR.y()+2, subPageR.x()+9,
-                                subPageR.bottom());
-                }
-                // outer lines
-                p->setPen(g.dark());
-                p->drawLine(subPageR.right(), subPageR.y(),
-                                subPageR.right(), subPageR.bottom());
                 p->drawLine(subPageR.x(), subPageR.y(), subPageR.x(),
                             subPageR.bottom());
+                p->drawLine(subPageR.right(), subPageR.y(), subPageR.right(),
+                            subPageR.bottom());
+                p->setPen(activeControl==SubPage ? g.mid() : g.button());
+                p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.x()+1,
+                            subPageR.bottom());
+                p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.right()-1,
+                            subPageR.y());
             }
         }
     }
