@@ -21,11 +21,11 @@
 
 #include "kmwinfopage.h"
 #include "kmwizard.h"
-#include "kactivelabel.h"
 
 #include <qlabel.h>
 #include <qlayout.h>
 #include <klocale.h>
+#include <kactivelabel.h>
 
 KMWInfoPage::KMWInfoPage(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)

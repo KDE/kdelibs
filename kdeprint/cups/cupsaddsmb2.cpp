@@ -20,7 +20,6 @@
 #include "cupsaddsmb2.h"
 #include "cupsinfos.h"
 #include "sidepixmap.h"
-#include "kactivelabel.h"
 
 #include <qtimer.h>
 #include <qprogressbar.h>
@@ -34,6 +33,7 @@
 #include <kio/passdlg.h>
 #include <kdebug.h>
 #include <kseparator.h>
+#include <kactivelabel.h>
 
 #include <cups/cups.h>
 #include <ctype.h>
