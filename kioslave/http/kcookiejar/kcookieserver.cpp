@@ -559,7 +559,8 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      mCookieJar->setDomainAdvice(domains[0],
+      
+      mCookieJar->setDomainAdvice(domains[domains.count() > 3 ? 3 : 0],
                                   KCookieJar::strToAdvice(advice));
       // Save the cookie config if it has changed
       mCookieJar->saveConfig( mConfig );

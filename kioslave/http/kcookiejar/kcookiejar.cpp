@@ -998,14 +998,6 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 
        if (!valid)
        {
-          // Maybe the domain doesn't start with a "."
-          QString domain = '.' + cookiePtr->domain();
-          if (domains.contains(domain))
-             valid = true;
-       }
-       
-       if (!valid)
-       {
           // Maybe it points to a sub-domain
           if (cookiePtr->domain().endsWith("."+cookiePtr->host()))
              valid = true;
@@ -1112,7 +1104,8 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
 //
 void KCookieJar::setDomainAdvice(KHttpCookiePtr cookiePtr, KCookieAdvice _advice)
 {
-    QString domain = stripDomain(cookiePtr); // We file the cookie under this domain.
+    QString domain;
+    stripDomain(cookiePtr->host(), domain); // We file the cookie under this domain.
 
     setDomainAdvice(domain, _advice);
 }
