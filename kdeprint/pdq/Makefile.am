@@ -20,6 +20,7 @@ libkdeprint_pdq_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
 
 parser.cpp: parser.yy
 	cd $(srcdir) && bison -t -d -v -o parser.cpp parser.yy
+parser.cpp.h: parser.cpp
 
 scanner.cpp: scanner.ll parser.cpp
 	cd $(srcdir) && flex -B -8 -oscanner.cpp scanner.ll
