@@ -85,7 +85,7 @@ namespace KParts
      * Use the factory through the K_EXPORT_COMPONENT_FACTORY macro, like that:
      * \code
      * typedef KParts::GenericFactory&lt;YourKPart&gt; YourKPartFactory;
-     * K_EXPORT_COMPONENT_FACTORY( yourlibrary, YourKPartFactory );
+     * K_EXPORT_COMPONENT_FACTORY( yourlibrary, YourKPartFactory )
      * \endcode
      * yourlibrary is the library name that you compiled your KPart into.
      */
