@@ -19,7 +19,33 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   LDFLAGS="$ac_ldflags_save"
 ])
 
-AC_CHECK_LIBAUDIOFILE
+dnl Posix realtime scheduling - this is helpful if you want arts to run with
+dnl higher priority than everthing else
 
+AC_DEFUN(AC_CHECK_REALTIME_SCHED,
+[
+AC_MSG_CHECKING([for posix realtime scheduling support])
+AC_CACHE_VAL(ac_cv_realtime_sched,
+[
+AC_TRY_LINK([
+#include <sched.h>
+],
+[
+sched_getscheduler(0);
+],
+ac_cv_realtime_sched=yes,
+ac_cv_realtime_sched=no)
+])
+AC_MSG_RESULT($ac_cv_realtime_sched)
+if eval "test \"`echo `$ac_cv_realtime_sched\" = yes"; then
+  AC_DEFINE(HAVE_REALTIME_SCHED,1,
+        [Define if your system supports realtime scheduling])
+fi
+])
+
+dnl call the tests
+
+AC_CHECK_LIBAUDIOFILE
+AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
 

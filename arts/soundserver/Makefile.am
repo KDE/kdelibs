@@ -24,13 +24,19 @@ libkmedia2_idl_la_LDFLAGS = -no-undefined
 
 ###### "real" programs
 
-bin_PROGRAMS = artsd artsplay artscat
+bin_PROGRAMS = artsd artsplay artscat artswrapper
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsd_SOURCES = simplesoundserver_impl.cc artsd.cc wavplayobject_impl.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
+
+artswrapper_OBJS = artswrapper.o
+
+artswrapper.o: $(srcdir)/artswrapper.c
+	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE='"$(bindir)/artsd"' \
+			$(srcdir)/artswrapper.c
 
 ## create a kdeinit startable version as well
 
