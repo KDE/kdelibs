@@ -114,10 +114,10 @@ void KDiskFreeSp::dfDone()
             v=t.readLine();
             s=s.append(v);
             s=s.simplifyWhiteSpace();
-            kdDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
+            //kdDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
 	 }//if silly linefeed
 
-      kdDebug(kfile_area) << "[" << s << "]" << endl;
+      //kdDebug(kfile_area) << "[" << s << "]" << endl;
 
       //QString deviceName = s.left(s.find(BLANK));
       s=s.remove(0,s.find(BLANK)+1 );
@@ -129,26 +129,26 @@ void KDiskFreeSp::dfDone()
       u=s.left(s.find(BLANK));
       unsigned long kBSize = u.toULong();
       s=s.remove(0,s.find(BLANK)+1 );
-      kdDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
+      //kdDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
 
       u=s.left(s.find(BLANK));
       unsigned long kBUsed = u.toULong();
       s=s.remove(0,s.find(BLANK)+1 );
-      kdDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
+      //kdDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
 
       u=s.left(s.find(BLANK));
       unsigned long kBAvail = u.toULong();
       s=s.remove(0,s.find(BLANK)+1 );
-      kdDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
+      //kdDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
 
 
       s=s.remove(0,s.find(BLANK)+1 );  // delete the capacity 94%
       QString mountPoint = s.stripWhiteSpace();
-      kdDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
+      //kdDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
 
       if ( mountPoint == m_mountPoint )
       {
-        kdDebug(kfile_area) << "Found mount point. Emitting" << endl;
+        //kdDebug(kfile_area) << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
         emit foundMountPoint( kBSize, kBUsed, kBAvail, mountPoint ); // sic!
       }
