@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Jacek Konieczny (jajcus@zeus.polsl.gliwice.pl)
+    Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
     $Id$
 
     This library is free software; you can redistribute it and/or
@@ -16,576 +16,555 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-	*/
+*/
+#include "kcharsets.h"
 
-#define KCHARSETS_CPP 
-#include "kcharsetsdata.h"
-#include "qstrlist.h"
-#include "qfontinfo.h"
-#include "qregexp.h"
+#include "kentities.c"
+
 #include <kapp.h>
 
+#include <qfontinfo.h>
+#include <X11/Xlib.h>
+#include <stdio.h>
 
-KCharsetsData *KCharsets::data=0;
-KCharsetsData *KCharset::data=0;
-KCharsets *KCharset::charsets=0;
-KCharsetsData *KCharsetConverterData::kcharsetsData=0;
-uint KCharsets::count=0;
+#define CHARSETS_COUNT 23
+static char *charsetsStr[CHARSETS_COUNT]={
+    "unicode",
+    "iso-8859-1",
+    "iso-8859-2",
+    "iso-8859-3",
+    "iso-8859-4",
+    "iso-8859-5",
+    "iso-8859-6",
+    "iso-8859-7",
+    "iso-8859-8",
+    "iso-8859-9",
+    "iso-8859-10",
+    "iso-8859-11",
+    "iso-8859-12",
+    "iso-8859-13",
+    "iso-8859-14",
+    "iso-8859-15",
+    "koi8r",
+    "set-ja",
+    "set-ko",
+    "set-th-th",
+    "set-zh",
+    "set-zh-tw",
+    "Any"
+};
+static char *xNames[CHARSETS_COUNT]={
+    "iso10646-1",
+    "iso8859-1",
+    "iso8859-2",
+    "iso8859-3",
+    "iso8859-4",
+    "iso8859-5",
+    "iso8859-6",
+    "iso8859-7",
+    "iso8859-8",
+    "iso8859-9",
+    "iso8859-10",
+    "iso8859-11",
+    "iso8859-12",
+    "iso8859-13",
+    "iso8859-14",
+    "iso8859-15",
+    "koi8",
+    "unknown",
+    "unknown",
+    "unknown",
+    "unknown",
+    "unknown",
+    ""  // this will always return true...
+};
 
-/////////////////////////////////////////////////////////////////
+static QFont::CharSet charsetsIds[CHARSETS_COUNT]={
+    QFont::Unicode,
+    QFont::ISO_8859_1,
+    QFont::ISO_8859_2,
+    QFont::ISO_8859_3,
+    QFont::ISO_8859_4,
+    QFont::ISO_8859_5,
+    QFont::ISO_8859_6,
+    QFont::ISO_8859_7,
+    QFont::ISO_8859_8,
+    QFont::ISO_8859_9, 
+    QFont::ISO_8859_10,
+    QFont::ISO_8859_11,
+    QFont::ISO_8859_12,
+    QFont::ISO_8859_13,
+    QFont::ISO_8859_14,
+    QFont::ISO_8859_15,
+    QFont::KOI8R,
+    QFont::Set_Ja,
+    QFont::Set_Ko,
+    QFont::Set_Th_TH,
+    QFont::Set_Zh,
+    QFont::Set_Zh_TW,
+    QFont::AnyCharSet
+};
 
-KCharset::KCharset(){
-  
-   if (!data || !charsets){
-      fatal("KCharset constructor called when no KCharsets object created");
-      return;
-   }   
-   entry=0;
+
+KFontStruct::KFontStruct() 
+{ 
+    family = QString::null;
+    charset = QFont::AnyCharSet;
+    fixed = KCharsets::FixedUnknown;
+    slant = KCharsets::SlantUnknown;
+    weight = KCharsets::WeightUnknown;
+    scalable = false; 
 }
 
-KCharset::KCharset(const KCharsetEntry *e){
-  
-   if (!data || !charsets){
-      fatal("KCharset constructor called when no KCharsets object created");
-      return;
-   }   
-   entry=e;
+KFontStruct &KFontStruct::operator = (QFont &f)
+{
+    family = f.family();
+    charset = f.charSet();
+    fixed = f.fixedPitch() ? KCharsets::Fixed : KCharsets::Proportional; 
+    slant = f.italic() ? KCharsets::Italic : KCharsets::Normal;
+    weight = f.bold() ? KCharsets::Bold : KCharsets::Medium;
+    scalable = false; // we don't know...
+
+    return *this;
 }
 
-KCharset::KCharset(const char *str){
+KFontStruct &KFontStruct::operator = (KFontStruct &fs)
+{
+    family = fs.family;
+    charset = fs.charset;
+    fixed = fs.fixed;
+    slant = fs.slant;
+    weight = fs.weight;
+    scalable = fs.scalable;
 
-   if (!data || !charsets){
-      fatal("KCharset constructor called when no KCharsets object created");
-      return;
-   }   
-   entry=data->charsetEntry(str);
+    return *this;
 }
 
-KCharset::KCharset(const QString s){
-
-   if (!data || !charsets){
-      fatal("KCharset constructor called when no KCharsets object created");
-      return;
-   }   
-   entry=data->charsetEntry(s);
-}
-
-KCharset::KCharset(QFont::CharSet qtCharset){
-
-  if (!data || !charsets){
-      fatal("KCharset constructor called when no KCharsets object created");
-      return;
-   }  
-  entry=data->charsetEntry(qtCharset);
-}
-
-KCharset::KCharset( const KCharset& kc){
-
-  if (!data || !charsets){
-     fatal("KCharset copy constructor called when no KCharsets object created (???)");
-     return;
-  }   
-  entry=kc.entry;
-}
-
-KCharset& KCharset::operator= ( const KCharset& kc){
-
-  entry=kc.entry;
-  return *this;
-}
- 
-const char * KCharset::name()const{
-  
-  if (entry) return entry->name;
-  else return "unknown";
-}
-
-bool KCharset::isDisplayable(){
-
-  if (!entry) return FALSE;  
-  
-  return data->isDisplayable((KCharsetEntry *)entry); /* discard const */
-}
-
-bool KCharset::isDisplayable(const char *face){
-
-  if (!entry) return FALSE;
-  if (!face) return FALSE;
-  
-  kchdebug("Testing if %s is displayable in %s\n",name(),face);
-  if ( stricmp(name(),"any")==0 ){
-    kchdebug("Yes - it is any charset\n");
-    return TRUE;
-  }  
-
-  QFont::CharSet qcharset=entry->qtCharset;
-  kchdebug("qtcharset=%i\n",qcharset);
-  
-  if ( qcharset==QFont::AnyCharSet )
-     if (data->charsetOfFace(entry,face)){
-       kchdebug("Yes: face %s is of charset: %s\n",face,entry->name);
-       return TRUE;
-     }  
-     else{
-       kchdebug("No: face %s is not of charset: %s\n",face,entry->name);
-       return FALSE;
-     }  
-  else{
+KFontStruct::operator QFont()
+{
     QFont f;
-    f.setCharSet(qcharset);
-    f.setFamily(face);
-    QFontInfo fi(f);
-    kchdebug("fi.charset()=%i\n",fi.charSet());
-    if (fi.charSet()!=qcharset || fi.family() != face) {
-      kchdebug("No: qtCharset is specified, but doesn't work\n");
-      return FALSE;
-    }  
-    else{
-      kchdebug("Yes: qtCharset is specified and it works\nn");
-      return TRUE;
-    }   
-  }  
+    f.setFamily(family);
+    f.setCharSet(charset);
+    if( fixed == KCharsets::Fixed )
+       f.setFixedPitch(true);
+    else 
+       f.setFixedPitch(false);
+    if( slant == KCharsets::Italic )
+       f.setItalic(true);
+    else
+       f.setItalic(false);
+    if( weight == KCharsets::Bold )
+       f.setBold(true);
+    else
+       f.setBold(false);
+
+    return f;
 }
 
-bool KCharset::isRegistered()const{
 
-  if (!entry) return FALSE;
-  if (entry->registered) return TRUE;
-  else return FALSE;
+// --------------------------------------------------------------------------
+
+KCharsets::KCharsets()
+{
+    // do some initialization
 }
 
-QFont::CharSet KCharset::qtCharset()const{
+QChar KCharsets::fromEntity(const QString &str) const
+{
+    QChar res = QChar::null;
 
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return QFont::AnyCharSet;
-  }  
-  if (!stricmp(name(),"any")) return QFont::AnyCharSet;
-  if (entry) return entry->qtCharset;
-  return QFont::AnyCharSet;
-}
+    int pos = 0;
+    if(str[pos] == '&') pos++;
 
-int KCharset::bits()const{
-
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return 8;
-  }  
-  if ( stricmp(name(),"unicode") == 0 ) return 16;
-  else if ( stricmp(name(),"iso-10640") == 0 ) return 16;
-  else if ( stricmp(name(),"us-ascii") ==0 ) return 7;
-  else if ( stricmp(name(),"unicode-1-1-utf-8") == 0 ) return 8;
-  else if ( stricmp(name(),"unicode-1-1-utf-7") == 0 ) return 7;
-  else return 8;
-}
-
-QFont &KCharset::setQFont(QFont &fnt){
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return fnt;
-  }  
-  if ( (stricmp(charsets->name(fnt),name()) == 0)
-     || data->charsetOfFace(entry,fnt.family())) return fnt;
-     
-  kchdebug("setQFont: Setting font to: \"%s\"\n",name());
-  QString faceStr=data->faceForCharset(entry);
-
-  /* If Qt doesn't support this charset we must use the hack */
-  if (qtCharset()==QFont::AnyCharSet && !faceStr.isNull()){
-     kchdebug("setQFont: Face for font: \"%s\"\n", faceStr.ascii());
-     faceStr.replace(QRegExp("\\*"),fnt.family());
-     kchdebug("setQFont: New face for font: \"%s\"\n", faceStr.ascii());
-     fnt.setCharSet(QFont::AnyCharSet);
-     fnt.setFamily(faceStr);
-     QFontInfo fi(fnt);
-     if (fi.family()!=faceStr) // hack doesn't work.
-        // Maybe we know a face wich will work
-        if (entry->good_family && !(entry->good_family->isEmpty())){
-	    kchdebug("trying to find replacement font\n");
-	    QFontInfo fi(fnt);
-	    QString search;
-	    if(!fi.fixedPitch()) search += "-p";
-	    search += "-s"; // prefer scalable fonts
-	    if(fi.bold()) search += "-s";
-	    if(fi.italic()) search += "-i"; 
-    
-	    while(!search.isEmpty())
-	    {
-		int pos;
-		if((pos = entry->good_family->find(search)) != -1)
-		{
-		    int start = entry->good_family->findRev("/", pos);
-		    QString face = entry->good_family->mid(start+1, pos-start-1);
-		    kchdebug("replacement: %s\n", face.ascii());
-		    fnt.setFamily(face);
-		    break;
-		}	  
-		search.truncate(search.length()-2);
-	    }
-	    if(search.isEmpty())
-	    {
-		QString face = entry->good_family->left(entry->good_family->find("/")-1);
-		kchdebug("replacement: %s\n", face.ascii());
-		fnt.setFamily(face);
-	    }
+    // Check for '&#000' or '&#x0000' sequence
+    if (str[pos] == '#' && str.length()-pos > 1) {
+	bool ok;
+	pos++;
+	if (str[pos] == 'x' || str[pos] == 'X') {
+	    pos++;
+	    // '&#x0000', hexadeciaml character reference	
+	    QString tmp(str.unicode()+pos, str.length()-pos);
+	    res = tmp.toInt(&ok, 16); 
+	} else {
+	    //  '&#0000', deciaml character reference
+	    QString tmp(str.unicode()+pos, str.length()-pos);
+	    res = tmp.toInt(&ok, 10); 
 	}
-  }
-  else{
-    kchdebug("setQFont: trying to set charset to %i (family = %s\n", 
-	     (int)qtCharset(), fnt.family().ascii());
-    fnt.setCharSet(qtCharset());
-    QFontInfo fi(fnt);
-    int ch = fi.charSet();
-    kchdebug("setQFont: got charset %i\n",ch);
-    if( ch == QFont::AnyCharSet ) ch = QFont::Latin1; // small hack... 
-    if (ch != qtCharset() && qtCharset() != QFont::AnyCharSet)
-    {
-//#define kchdebug printf
-      kchdebug("setQFont: didn't get charset: %d <--> %d\n", ch, qtCharset());
-      if (entry->good_family && !(entry->good_family->isEmpty())){
-	  kchdebug("trying to find replacement font\n");
-	  QFontInfo fi(fnt);
-	  QString search;
-	  if(!fi.fixedPitch()) search += "-p";
-	  search += "-s"; // prefer scalable fonts
-	  if(fi.bold()) search += "-s";
-	  if(fi.italic()) search += "-i"; 
-	  search+= "/";
-
-	  while(search.length() > 1)
-	  {
-	      int pos;
-	      if((pos = entry->good_family->find(search)) != -1)
-	      {
-		  int start = entry->good_family->findRev("/", pos);
-		  QString face = entry->good_family->mid(start+1, pos-start-1);
-		  kchdebug("replacement: %s\n", face.ascii());
-		  fnt.setFamily(face);
-		  break;
-	      }	  
-	      search.truncate(search.length()-3);
-	      search += "/";
-	  }
-	  if(search.length() == 1)
-	  {
-	      QString face = entry->good_family->left(entry->good_family->find("/")-1);
-	      kchdebug("last replacement: %s\n", face.ascii());
-	      fnt.setFamily(face);
-	  }
-#undef kchdebug
-      }	  
-      else if (!faceStr.isNull()){ /* nothing else works - we must use the hack */
-         kchdebug("setQFont: Face for font: \"%s\"\n",faceStr.ascii());
-         faceStr.replace(QRegExp("\\*"),fnt.family());
-         kchdebug("setQFont: New face for font: \"%s\"\n", faceStr.ascii());
-         fnt.setCharSet(QFont::AnyCharSet);
-         fnt.setFamily(faceStr);
-      }
+	return res;
     }
-  }  
-  kchdebug("setQFont: New charset: \"%s\"\n",charsets->name(fnt));
-  return fnt;
+
+    const entity *e = findEntity(str.ascii(), str.length());
+
+    if(!e)
+    {
+	printf("unknown entity '%s', len = %d\n", str.ascii(), str.length());
+	return QChar::null;
+    }
+    //printf("got entity %s = %x\n", str.ascii(), e->code);	
+
+    return QChar(e->code);
 }
 
-KCharset::operator const KCharsetEntry *()const{
- 
-  return entry;
-}
-
-bool KCharset::printable(int chr){
-
-  if (!entry) return FALSE;
-  if (entry->toUnicode)
-    if (entry->toUnicode[chr]!=0) return TRUE;
-    else;
-  else if (entry->toUnicodeDict)
-    if ((*entry->toUnicodeDict)[chr]!=0) return TRUE;
-  return FALSE;
-}
-
-QString KCharset::xCharset(){
-
-  if (!entry) return QString::null;
-  QString xch=data->toX(entry->name);
-  if ( !xch.isEmpty() ) return xch; 
-  if (strnicmp(entry->name,"iso-",4)==0){
-     return QString("iso")+QString(entry->name).mid(4,100);
-  }
-  return entry->name;
-}
-
-KCharsetConverter::KCharsetConverter(KCharset inputCharset
-				    ,int flags){
-				    
-  if (!inputCharset.ok()) {
-    warning("KCharsetConverter: NULL charset on input!\n");
-    inputCharset="us-ascii";    
-  }  
-  data=new KCharsetConverterData(inputCharset,flags);
-}
-
-KCharsetConverter::KCharsetConverter(KCharset inputCharset
-				    ,KCharset outputCharset
-				    ,int flags){
-  if (!inputCharset.ok()) {
-    warning("KCharsetConverter: NULL charset on input!\n");
-    inputCharset="us-ascii";    
-  }  
-  if (!outputCharset.ok()) {
-    warning("KCharsetConverter: NULL charset on output!\n");
-    outputCharset="us-ascii";    
-  }  
-  data=new KCharsetConverterData(inputCharset,outputCharset,flags);
-}
-
-KCharsetConverter::~KCharsetConverter(){
-  delete data;
-}
-
-bool  KCharsetConverter::ok(){
-
-  return data->ok();
-}
-
-const char * KCharsetConverter::outputCharset(){
-
-  return data->outputCharset();
-}
-   
-KCharsetConversionResult::KCharsetConversionResult(
-                                        const KCharsetConversionResult& kccr){
-  cCharset=kccr.cCharset;
-  cText=kccr.cText;
-}
-
-KCharsetConversionResult& KCharsetConversionResult::operator =(
-                           const KCharsetConversionResult& kccr){
-  cCharset=kccr.cCharset;
-  cText=kccr.cText;
-  return *this;
-}
-
-const KCharsetConversionResult & KCharsetConverter::convert(const char *str){
-
-  data->convert(str,result);
-  return result;
+QChar KCharsets::fromEntity(const QString &str, int &len) const
+{
+    // entities are never longer than 8 chars... we start from
+    // that length and work backwards...
+    len = 8;
+    while(len > 0)
+    {
+	QString tmp = str.left(len);
+	QChar res = fromEntity(tmp);
+	if( res != QChar::null ) return res;
+	len--;
+    }
+    return QChar::null;
 }
 
 
-const QList<KCharsetConversionResult> & KCharsetConverter::multipleConvert(
-                                                             const char *str){
-static QList<KCharsetConversionResult> resultList;
-
-  resultList.setAutoDelete(TRUE);
-  resultList.clear();
-  data->convert(str,resultList);
-  return resultList;
+QString KCharsets::toEntity(const QChar &ch) const
+{
+    QString ent;
+    ent.sprintf("&0x%x", ch.unicode());
+    return ent;
 }
 
-const KCharsetConversionResult & KCharsetConverter::convert(unsigned ch){
-  
-  return data->convert(ch);
+QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
+{
+    KFontStruct mask;
+    mask.family = family;
+
+    KFontStructList lst = getFontList(mask);
+
+    QList<QFont::CharSet> chList;
+    KFontStruct *fs;
+
+    for(fs = lst.first(); fs != 0; fs = lst.next() )
+    {
+	if(!chList.contains(&(fs->charset)))
+	{
+	    QFont::CharSet *c = new QFont::CharSet;
+	    *c = fs->charset;
+	    chList.append(c);
+	}
+	return chList;
+    }
 }
 
-const KCharsetConversionResult & KCharsetConverter::convertTag(const char *tag){
-
-  int tmp;
-  return data->convertTag(tag,tmp);
-}
-   
-const KCharsetConversionResult & KCharsetConverter::convertTag(const char *tag
-							       ,int &l){
-
-  return data->convertTag(tag,l);
-}
-
-char * KCharsetConversionResult::copy()const{
+QStringList KCharsets::availableCharsetNames(QString family)
+{
+    KFontStruct mask;
+    mask.family = family;
     
-    return qstrdup(cText.data());
-}
-   
-/////////////////////////////////////////////////////////////////////
-KCharsets::KCharsets(){
-
-  if (!data){
-     data=new KCharsetsData();
-     KCharsetConverterData::kcharsetsData=data;
-     KCharset::data=data;
-     KCharset::charsets=this;
-     count++;
-  }   
-}
-
-KCharsets::~KCharsets(){
-  if(!--count)
-    delete data;
+    KFontStructList lst = getFontList(mask);
+    
+    QStringList chList;
+    KFontStruct *fs;
+    
+    for(fs = lst.first(); fs != 0; fs = lst.next() )
+    {
+	if(fs->charset != QFont::AnyCharSet )
+	{
+	    QString name = this->name(fs->charset);
+	    if(!chList.contains(name))
+		chList.append(name);
+	}
+    }
+    return chList;
 }
 
-KCharset KCharsets::defaultCharset()const{
+QFont KCharsets::fontForChar( const QChar &ch, const QFont &f ) const
+{
+    QFontInfo fi(f);
 
-   return defaultCh();
+    // unicode can display any char...
+    if (fi.charSet() == QFont::Unicode) return f;
+
+    // here comes the work...
+    return f;
 }
 
-KCharset KCharsets::defaultCh()const{
+void KCharsets::setQFont(QFont &f, QString charset)
+{
+    setQFont(f, nameToID(charset));
+}
+void KCharsets::setQFont(QFont &f, QFont::CharSet charset)
+{
+    KFontStruct mask;
+    KFontStructList list;
+    mask = f;
 
-  return data->defaultCharset();
+
+    mask.charset = charset;
+    list = getFontList(mask);
+    if(!list.isEmpty())
+    {
+	f.setCharSet(charset);
+	return;
+    }
+
+    // let's try unicode...
+    mask.charset = QFont::Unicode;
+    list = getFontList(mask);
+    if(!list.isEmpty())
+    {
+	// just setting the charset to unicode should work
+	f.setCharSet(QFont::Unicode);
+	return;
+    }
+
+    // ok... we don't have the charset in the specified family, let's
+    // try to find a replacement.
+
+    mask.charset = charset;
+    list = getFontList(mask);
+    if(!list.isEmpty())
+    {
+	f.setFamily(list.first()->family);
+	f.setCharSet(charset);
+	return;
+    }
+
+    mask.charset = QFont::Unicode;
+    mask.family = QString::null;
+    list = getFontList(mask);
+    if(!list.isEmpty())
+    {
+	f.setFamily(list.first()->family);
+	f.setCharSet(QFont::Unicode);
+	return;
+    }
+
+    KFontStruct m;
+    m.charset = charset;
+    list = getFontList(m);
+    if(!list.isEmpty())
+    {
+	f.setFamily(list.first()->family);
+	f.setCharSet(charset);
+	return;
+    }
+
+    f.setCharSet(QFont::AnyCharSet);
+    return;
+}    
+
+bool KCharsets::isAvailable(const QString &charset)
+{
+    return isAvailable(nameToID(charset));
 }
 
-bool KCharsets::setDefault(KCharset ch){
+bool KCharsets::isAvailable(QFont::CharSet charset)
+{
+    KFontStruct fs;
+    fs.charset = charset;
 
-  if ( ch.ok() ){
-     data->setDefaultCharset(ch.entry);
-     return TRUE; 
-  }   
-  warning("Wrong charset (%s)! Setting to default (us-ascii)", ch.name());
-  const KCharsetEntry *ce=data->charsetEntry("us-ascii");
-  data->setDefaultCharset(ce);
-  return FALSE;  
+    KFontStructList list = getFontList(fs);
+    if(!list.isEmpty()) return true;
+    return false;
 }
 
-QStrList KCharsets::available()const{
 
-  QStrList w;
-  int i;
-  for(i=0;data->charsetEntry(i);i++)
-    w.append(data->charsetEntry(i)->name);
-  return w;  
-}
+KFontStructList KCharsets::getFontList(KFontStruct mask)
+{
+ 
+    char **fontNames;
+    int numFonts;
 
-QStrList KCharsets::displayable(const char *face){
+    QString qfontname;
+    Display *kde_display;
+  
+    kde_display = kapp->getDisplay();
 
-  QStrList w;
-  int i;
-  for(i=0;data->charsetEntry(i);i++)
-    if (KCharset(data->charsetEntry(i)).isDisplayable(face))
-          w.append(data->charsetEntry(i)->name);
-  return w;  
-}
+    QString maskStr("-*-");
+    if(!mask.family.isEmpty())
+	maskStr += mask.family;
+    else
+	maskStr += "*";
 
-QStrList KCharsets::displayable(){
+    // we sort out wrong slants afterwards...
+    switch ( mask.weight )
+    {
+    case WeightUnknown:
+	maskStr += "-*-*-*-*-";
+	break;
+    case Medium:
+	maskStr += "-medium-*-*-*-";
+	break;
+    case Bold:
+	maskStr += "-bold-*-*-*-";
+	break;
+    }	
+    if(mask.scalable)
+	maskStr += "0-0-*-*-*-"; // perhaps "0-0-0-0-*-" ????
+    else
+	maskStr += "*-*-*-*-*-"; 
 
-  QStrList w;
-  int i;
-  for(i=0;data->charsetEntry(i);i++){
-    const char *charset=data->charsetEntry(i)->name;
-    if (isDisplayable(charset))
-          w.append(charset);
-  }
+    maskStr += xCharsetName(mask.charset);
+
+    fontNames = XListFonts(kde_display, maskStr.latin1(), 32767, &numFonts);
+
+    KFontStructList lst;
+
+    for(int i = 0; i < numFonts; i++){
+	KFontStruct *f = new KFontStruct;
 	
-  return w;  
+
+	// FIXME: don't use QString. At least QCstring
+	qfontname = fontNames[i];
+	int dash = qfontname.find ('-', 1, TRUE); // find next dash
+	if (dash == -1) continue;
+	
+	// the font name is between the second and third dash so:
+	// let's find the third dash:
+	
+	int dash_two = qfontname.find ('-', dash + 1 , TRUE);
+	if (dash == -1) continue;
+	// fish the name of the font info string
+	f->family = qfontname.mid(dash +1, dash_two - dash -1);
+	
+	if(qfontname.find("-p-") != -1) 
+	    f->fixed = Proportional;
+	else
+	    f->fixed = Fixed;
+	if(qfontname.find("-r-") != -1) 
+	    f->slant = Normal;
+	else
+	    f->slant = Italic;
+	if(qfontname.find("-0-0-") != -1) f->scalable = true;
+	if(qfontname.find("-b-") != -1) 
+	    f->weight = Bold;
+	else
+	    f->weight = Medium;
+
+	// get the charset...
+	dash = qfontname.findRev('-');
+	dash = qfontname.findRev('-', dash-1);
+	QString xname = qfontname.right(qfontname.length()-dash-1);
+	f->charset = xNameToID(xname);
+
+	lst.append(f);
+    }
+    XFreeFontNames(fontNames);
+    return lst;
 }
 
-QStrList KCharsets::registered()const{
-
-  QStrList w;
-  int i;
-  for(i=0;data->charsetEntry(i);i++)
-    if (data->charsetEntry(i)->registered)
-       w.append(data->charsetEntry(i)->name);
-  return w;  
+bool KCharsets::hasUnicode(QString family)
+{
+    KFontStruct fs;
+    fs.family = family;
+    fs.charset = QFont::Unicode;
+    KFontStructList l = getFontList(fs);
+    return !l.isEmpty();
 }
 
-bool KCharsets::isAvailable(KCharset charset){
-
-  return charset.isAvailable();
-}
-
-bool KCharsets::isDisplayable(KCharset charset){
-
-  return charset.isDisplayable();
-}
-
-bool KCharsets::isRegistered(KCharset charset){
-
-  return charset.isRegistered();
-}
-
-int KCharsets::bits(KCharset charset){
-
-  return charset.bits();
-}
-
-const char * KCharsets::name(QFont::CharSet qtcharset){
-
-  if (qtcharset==QFont::AnyCharSet) return "unknown";
-  return KCharset(qtcharset);
-}
-
-KCharset KCharsets::charset(QFont::CharSet qtcharset){
-
-  return KCharset(qtcharset);
-}
-
-QFont::CharSet KCharsets::qtCharset(){
-
-  return qtCharset(data->defaultCharset());
-}
-
-QFont::CharSet KCharsets::qtCharset(KCharset set){
-
-  return set.qtCharset();
-}
-
-QFont &KCharsets::setQFont(QFont &fnt,KCharset charset){
-
-  return charset.setQFont(fnt);
+bool KCharsets::hasUnicode(QFont &font)
+{
+    return hasUnicode(font.family());
 }
 
 
-QFont &KCharsets::setQFont(QFont &fnt){
-
-  return KCharset(data->defaultCharset()).setQFont(fnt);
+QString KCharsets::xCharsetName(QFont::CharSet charSet)
+{
+    switch( charSet )
+    {
+    case QFont::Unicode:
+	return "iso10646-1";
+    case QFont::ISO_8859_1:
+	return "iso8859-1";
+    case QFont::ISO_8859_2:
+	return "iso8859-2";
+    case QFont::ISO_8859_3:
+	return "iso8859-3";
+    case QFont::ISO_8859_4:
+	return "iso8859-4";
+    case QFont::ISO_8859_5:
+	return "iso8859-5";
+    case QFont::ISO_8859_6:
+	return "iso8859-6";
+    case QFont::ISO_8859_7:
+	return "iso8859-7";
+    case QFont::ISO_8859_8:
+	return "iso8859-8";
+    case QFont::ISO_8859_9: 
+	return "iso8859-9";
+    case QFont::ISO_8859_10:
+	return "iso8859-10";
+    case QFont::ISO_8859_11:
+	return "iso8859-11";
+    case QFont::ISO_8859_12:
+	return "iso8859-12";
+    case QFont::ISO_8859_13:
+	return "iso8859-13";
+    case QFont::ISO_8859_14:
+	return "iso8859-14";
+    case QFont::ISO_8859_15:
+	return "iso8859-15";
+    case QFont::KOI8R:
+	return "koi8-*";
+    case QFont::Set_Ja:
+    case QFont::Set_Ko:
+    case QFont::Set_Th_TH:
+    case QFont::Set_Zh:
+    case QFont::Set_Zh_TW:
+    case QFont::AnyCharSet:
+    default:
+	break;
+    }
+    return "*-*";
 }
 
-KCharset KCharsets::charset(const QFont& font){
+QFont::CharSet KCharsets::nameToID(QString name)
+{
+    name = name.lower();
 
-  kchdebug("Testing charset of font: %s, qtcharset=%i\n",font.family().ascii(), font.charSet());
-  if (font.charSet()!=QFont::AnyCharSet) return charset(font.charSet());
-  const KCharsetEntry * ce=data->charsetOfFace(font.family());
-  kchdebug("ce=%p ce->name=%s\n",ce,ce?ce->name:0);
-  return KCharset(ce);
+    int i = 0;
+    while(i < CHARSETS_COUNT)
+    {
+	if( name == charsetsStr[i] )
+	    return charsetsIds[i];
+	i++;
+    }
+    while(i < CHARSETS_COUNT)
+    {
+	if( name == xNames[i] )
+	    return charsetsIds[i];
+	i++;
+    }
+    return QFont::AnyCharSet;
 }
 
-const char * KCharsets::name(const QFont& font){
-  
-  return charset(font); 
+QString KCharsets::name(const QFont &f)
+{
+    int i = 0;
+    QFont::CharSet c = f.charSet();
+
+    return name(c);
 }
+    
+QString KCharsets::name(QFont::CharSet c)
+{
+    int i = 0;
 
-KCharset KCharsetConversionResult::charset()const{
-
-  if (cCharset == 0) return "";
-  return cCharset;
-}
-
-QFont & KCharsetConversionResult::setQFont(QFont &font)const{
-
-  if (!cCharset) return font;
-  return KApplication::getKApplication()
-         ->getCharsets()->setQFont(font,cCharset->name);
-}
-
-
-const KCharsetConversionResult & KCharsets::convert(unsigned ch){
-  
-  return data->convert(ch);
-}
-
-const KCharsetConversionResult & KCharsets::convertTag(const char *tag){
-
-  int tmp;
-  return data->convertTag(tag,tmp);
+    while(i < CHARSETS_COUNT)
+    {
+	if( c == charsetsIds[i] )
+	    return charsetsStr[i];
+	i++;
+    }
+    return "any";
 }
  
-const KCharsetConversionResult & KCharsets::convertTag(const char *tag
-							,int &l){
-  return data->convertTag(tag,l);
-}
- 
-KCharset KCharsets::charsetFromX(const QString &xName){
-  
-  QString name=data->fromX(xName);
-  KCharset kch;
-  if (!name.isEmpty()) kch=KCharset(name);
-  return kch;
-}
 
+QFont::CharSet KCharsets::xNameToID(QString name)
+{
+    name = name.lower();
+    
+    int i = 0;
+    while(i < CHARSETS_COUNT)
+    {
+	if( name == xNames[i] )
+	    return charsetsIds[i];
+	i++;
+    }
+    return QFont::AnyCharSet;
+}

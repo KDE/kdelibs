@@ -441,7 +441,7 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 	  if (KGlobal::locale())
 	    chStr = KGlobal::locale()->charset();
 	  else chStr = "iso-8859-1";
-	kapp->getCharsets()->setQFont(aRetFont,chStr);
+	KGlobal::charsets()->setQFont(aRetFont,chStr);
       }
       
       // find fifth part (weight)
@@ -882,10 +882,12 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
   if( rFont.rawMode() )
     nFontBits = nFontBits | 0x20;
 
-  if (kapp) {
-    KGlobal::charsets()->name(rFont);
-  }
-  else aCharset="default";
+  //printf("charset = %d\n", rFont.charSet());
+
+  if( rFont.charSet() != QFont::AnyCharSet )
+      aCharset.sprintf("%d", rFont.charSet());
+  else
+      aCharset = "default";
   aValue.sprintf( "%s,%d,%d,%s,%d,%d", rFont.family().ascii(), rFont.pointSize(),
 		  rFont.styleHint(), aCharset.ascii(),
 		  rFont.weight(), nFontBits );

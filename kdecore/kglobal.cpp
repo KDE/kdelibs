@@ -16,6 +16,8 @@
 #include<kiconloader.h>
 #include<kstddirs.h>
 
+#include<qfont.h>
+
 KApplication *KGlobal::kApp()
 {
 //	assert( kapp != 0 ); 	// This would be good, but not practical
@@ -80,18 +82,53 @@ KLocale	*KGlobal::locale()
 KCharsets *KGlobal::charsets()
 {
 	if( _charsets == 0 ) {
-		_charsets = new KCharsets;
+		_charsets =new KCharsets();
 	}
 
 	return _charsets;
 }
+
+QFont KGlobal::generalFont()
+{
+    if(_generalFont) return *_generalFont;
+
+    KConfig *c = KGlobal::config();
+
+    c->setGroup( "General" );
+    _generalFont = new QFont(c->readFontEntry("font"));
+    if( *_generalFont == QFont::defaultFont() )
+    {
+	*_generalFont = QFont("helvetica", 12, QFont::Normal);
+	charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
+    }
+    return *_generalFont;
+}
+	
+QFont KGlobal::fixedFont()
+{
+    if(_fixedFont) return *_fixedFont;
+
+    KConfig *c = KGlobal::config();
+    c->setGroup( "General" );
+    _fixedFont = new QFont(c->readFontEntry("fixedFont"));
+    if( *_fixedFont == QFont::defaultFont() )
+    {
+      *_fixedFont = QFont("fixed", 12, QFont::Normal);
+      charsets()->setQFont(*_fixedFont, charsets()->charsetForLocale());
+    }
+    return *_fixedFont;
+}
+ 
+
 
 void KGlobal::freeAll()
 {	
 	delete _iconLoader;	_iconLoader = 0;
 
 	delete _locale;		_locale = 0;
-	delete _charsets;	_charsets = 0;
+	if(_charsets) delete _charsets,	_charsets = 0;
+	if(_generalFont) delete _generalFont, _generalFont = 0;
+	if(_fixedFont) delete _fixedFont, _fixedFont = 0;
 
 //	FIXME: KApp also deletes pConfig!
 //	delete _config;		
@@ -114,3 +151,6 @@ KIconLoader     *KGlobal::_iconLoader	= 0;
 
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
+
+QFont           *KGlobal::_generalFont  = 0;
+QFont           *KGlobal::_fixedFont    = 0;

@@ -170,14 +170,12 @@ public:
 	*/
   QPopupMenu* getHelpMenu( bool bAboutQtMenu, const QString& appAboutText );
 							
-
   /**
     * Get character set information.
     * @return a pointer to the KCharsets object of the application
     * @see KCharsets
     */
-  KCharsets* getCharsets()const
-	{ return pCharsets; }
+  KCharsets* getCharsets()const;
 
   /**
 	* Get the application icon.
@@ -502,7 +500,6 @@ private:
   QString aWmCommand; // for userdefined session management
   ConfigState eConfigState;
   static QStrList* pSearchPaths;
-  static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compatibility
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
   void* dummy4;
@@ -538,8 +535,6 @@ private:
   QColor activeTitleColor_;
   QColor activeTextColor_;
   int contrast_;
-  QFont generalFont_;
-  QFont fixedFont_;
   GUIStyle applicationStyle_;
 
 public:
@@ -645,6 +640,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.81  1999/06/11 11:35:44  kulow
+// making aboutKDE protected. We should get rid of private for functions! ;)
+//
 // Revision 1.80  1999/05/28 07:44:15  pbrown
 // some cleanups to KConfig, including only calling rollback() when there are
 // actually dirty entries to roll back.  Minor cleanups to KDE font list

@@ -11,6 +11,7 @@ class KConfig;
 class KLocale;
 class KIconLoader;
 class KCharsets;
+class QFont;
 
 /**
 * Accessors to KDE global objects.
@@ -43,6 +44,10 @@ public:
 
 	static KLocale		*locale();
 	static KCharsets	*charsets();
+
+	static QFont            generalFont();
+	static QFont            fixedFont();
+
 		
 	KGlobal();
 	KGlobal( const KGlobal& );
@@ -57,6 +62,10 @@ public:
 
 	static 	KLocale		*_locale;
 	static 	KCharsets	*_charsets;
+
+	static  QFont           *_generalFont;
+	static  QFont           *_fixedFont;
+
 
 protected:
 	friend class KApplication;

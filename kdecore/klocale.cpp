@@ -146,7 +146,7 @@ void KLocale::splitLocale(const QString& aStr,
 		int l=f.readLine(buf,256);
 		if (l>0){
 		    if (buf[l-1]=='\n') buf[l-1]=0;
-		    if (KCharset(buf).ok()) chset=buf;
+		    if (KGlobal::charsets()->isAvailable(buf)) chset=buf;
 		}
 		delete [] buf;
 		f.close();
@@ -305,7 +305,8 @@ KLocale::KLocale( QString catalogue )
 
     insertCatalogue( catalogue );
     insertCatalogue( SYSTEM_MESSAGES );
-    if (chset.isEmpty() || !KCharset(chset).ok()) chset="us-ascii";
+    if (chset.isEmpty() || !KGlobal::charsets()->isAvailable(chset)) 
+	chset="us-ascii";
 
     aliases.setAutoDelete(true);
 }

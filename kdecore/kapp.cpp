@@ -82,8 +82,6 @@
 #include <kconfig.h>
 #include <kstddirs.h>
 
-KCharsets* KApplication::pCharsets = 0L;
-
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
 //extern bool bAreaCalculated;
@@ -222,8 +220,6 @@ void KApplication::init()
 	  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
 	  eConfigState = APPCONFIG_READWRITE;
 	}
-
-  pCharsets = new KCharsets();
 
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
@@ -572,8 +568,6 @@ QPixmap KApplication::getMiniIcon() const
 KApplication::~KApplication()
 {
   removeEventFilter( this );
-
-  delete pCharsets;
 
   delete pSearchPaths;
 
@@ -1023,18 +1017,7 @@ void KApplication::readSettings()
 
   //  Read the font specification from config.
   //  Initialize fonts to default first or it won't work !!
-		
-  pCharsets->setDefault(KGlobal::locale()->charset());
-  generalFont_ = QFont("helvetica", 12, QFont::Normal);
-  pCharsets->setQFont(generalFont_);
-  fixedFont_ = QFont("fixed", 12, QFont::Normal);
-  pCharsets->setQFont(fixedFont_);
-
-  config->setGroup( "General" );
-  generalFont_ = config->readFontEntry( "font", &generalFont_ );
-  fixedFont_ = config->readFontEntry( "fixedFont", &fixedFont_ );
-
-
+	
   // cursor blink rate
   //
   num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
@@ -1090,8 +1073,8 @@ void KApplication::kdisplaySetStyleAndFont()
   //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
-    if ( font() != generalFont_)
-	QApplication::setFont( generalFont_, TRUE );
+    if ( font() != KGlobal::generalFont())
+	QApplication::setFont( KGlobal::generalFont(), TRUE );
   applyGUIStyle(applicationStyle_);
 
   emit kdisplayStyleChanged();
@@ -1458,16 +1441,6 @@ int KApplication::contrast()
     return contrast_;
 }
 
-QFont KApplication::generalFont()
-{
-    return generalFont_;
-}
-
-QFont KApplication::fixedFont()
-{
-    return fixedFont_;
-}
-
 
 Qt::GUIStyle KApplication::applicationStyle()
 {
@@ -1475,6 +1448,27 @@ Qt::GUIStyle KApplication::applicationStyle()
 }
 
 
+#if 1 // FIXME: deprecated functions, to be removed for 2.0...
+KCharsets* KApplication::getCharsets()const
+{
+  return KGlobal::charsets();
+}
+QFont KApplication::generalFont()
+{
+    printf("Kapplication::generalFont() will be removed soon.\n" 
+	  "Use KGlobal::generalFont() instead.\n");
+    return KGlobal::generalFont();
+}
+
+QFont KApplication::fixedFont()
+{
+    printf("Kapplication::getCharsets() will be removed soon.\n" 
+	   "Use KGlobal::fixedFont() instead.\n");
+    return KGlobal::fixedFont();
+}
+
+
+#endif
 
 #include "kapp.moc"
 

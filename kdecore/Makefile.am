@@ -31,14 +31,14 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h qproperty.h \
     kstartparams.h kallocator.h
 
-noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
+noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
-	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
-	kchartables.cpp kpixmap.cpp dither.cpp \
+	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp \
+	kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kclipboard.cpp \
 	kprotocolmanager.cpp\
 	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kglobal.cpp \
