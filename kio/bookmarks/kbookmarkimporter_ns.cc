@@ -74,7 +74,7 @@ void KNSBookmarkImporterImpl::parse()
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QCString additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
-                emit newBookmark( KStringHandler::csqueeze(qname),
+                emit newBookmark( qname,
                                   link, codec->toUnicode(additionalInfo) );
               }
             }
@@ -87,7 +87,7 @@ void KNSBookmarkImporterImpl::parse()
                 bool folded = (additionalInfo.left(6) == "FOLDED");
                 if (folded) additionalInfo.remove(0,7);
 
-                emit newFolder( KStringHandler::csqueeze(qname),
+                emit newFolder( qname,
                                 !folded,
                                 codec->toUnicode(additionalInfo) );
             }
