@@ -1,8 +1,8 @@
 kdelibs (4:2.1-20010118-1) unstable; urgency=low
  
    * more upstream bug fixes
-     fix mimetype configuration
      fix JS and onmouseovers
+   * mimetype fixes (Closes: #76455)
    * fix build order for libarts-alsa
    * Fixing library dependencies for libarts (Closes: #82901)
  
