@@ -34,6 +34,7 @@
 #include <klocale.h>
 #include <kurlcompletion.h>
 #include <kurldrag.h>
+#include <kprotocolinfo.h>
 
 #include "kurlrequester.h"
 
@@ -228,11 +229,14 @@ void KURLRequester::slotOpenDialog()
     
     KFileDialog *dlg = fileDialog();
     if ( !d->text().isEmpty() ) {
-	dlg->setSelection( url() );
+        KURL u( url() );
+        // If we won't be able to list it (e.g. http), then don't try :)
+        if ( KProtocolInfo::supportsListing( u.protocol() ) )
+	    dlg->setSelection( u.url() );
     }
 
     if ( dlg->exec() == QDialog::Accepted )
-	setURL( dlg->selectedURL().url() );
+	setURL( dlg->selectedURL().prettyURL() );
 }
 
 

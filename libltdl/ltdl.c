@@ -112,6 +112,7 @@ typedef	struct lt_dlhandle_t {
 	lt_ptr_t app_private;	/* application private data */
 } lt_dlhandle_t;
 
+
 static const char objdir[] = LTDL_OBJDIR;
 #ifdef	LTDL_SHLIB_EXT
 static const char shlib_ext[] = LTDL_SHLIB_EXT;
@@ -284,12 +285,14 @@ strrchr(str, ch)
 # endif
 #endif
 
+int lt_dlopen_flag = LTDL_LAZY_OR_NOW;
+
 static lt_module_t
 sys_dl_open (loader_data, filename)
 	lt_dlloader_data_t loader_data;
 	const char *filename;
 {
-	lt_module_t module = dlopen(filename, LTDL_LAZY_OR_NOW);
+	lt_module_t module = dlopen(filename, lt_dlopen_flag);
 	if (!module) {
 #if HAVE_DLERROR
 		last_error = dlerror();

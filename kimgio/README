@@ -14,8 +14,8 @@ KRL	<read>
 To use these formats, you must 
 
 1. link the application with the libkimgio library
-2. Include the <kimgio.h> header
-3. call kimgioRegister() once, somewhere in your code
+2. Include the <kimageio.h> header
+3. call KImageIO::registerFormats() once, somewhere in your code
    before you load an image.
 
 

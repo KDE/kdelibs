@@ -1,3 +1,77 @@
+kdelibs (4:2.1.0.1-5) unstable; urgency=low
+ 
+  * Several fixes moving us towards 2.1.1
+  * Several "don't crash when..." fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 15 Mar 2001 10:26:00 -0700
+
+kdelibs (4:2.1.0.1-4) unstable; urgency=low
+ 
+  * More upstream fixes
+  * Add in a pam_env statement to kde pam file.  This *should* fix problems
+    people have had with kde not reading in their environment settings
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 13 Mar 2001 16:24:00 -0700
+
+kdelibs (4:2.1.0.1-3) unstable; urgency=low
+ 
+  * More upstream fixes
+    location object fixes for JavaScript
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
+
+kdelibs (4:2.1.0.1-2) unstable; urgency=low
+ 
+  * More upstream fixes
+    several khtml fixes especially with css
+    more font fixes
+    more session fixes..hopefully solving some of the reports
+  * built with new kdoc
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
+
+kdelibs (4:2.1.0.1-1) unstable; urgency=low
+ 
+  * Fix proxy authentication
+  * Several other upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 08 Mar 2001 15:22:00 -0700
+
+kdelibs (4:2.1.0-3) unstable; urgency=low
+ 
+  * More upstream fixes
+   Fix for URLs like "http://www.kde.org?query=bla" and "http://www.kde.org#ref"
+   Fix for crashes opening http://www.radiocomercial.pt
+   Fix for accessing cookies via javascript
+   Fix for problem with filenames getting cut with umlauts
+   Fix for problem with permission changes in properties dialog
+   Don't unzip if the filename ends with .gz
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 07 Mar 2001 01:54:00 -0700
+
+kdelibs (4:2.1.0-2) unstable; urgency=low
+ 
+  * Adding libbz2-dev and libsasl-dev into Build-Depends so that the ioslaves
+    will be built on other archs.  Other archs probably didn't even notice. 
+  * dcopserver freeze fix
+  * Several other http fixes along with hopefully proper fixes to
+    the url entry problems
+  * Applying patch for Simplified Chinese support
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 04 Mar 2001 09:09:00 -0700
+
+kdelibs (4:2.1.0-1) unstable; urgency=low
+ 
+   * Re-pulling from CVS instead of using the official tarballs.  The
+     official tarballs had problems which made it hard to handle patches
+   * Version changed to 2.1.0 instead of 2.1-final as we are post 2.1-final
+     and pre 2.1.1 which will be released in about a month.  This also allows
+     for the source upload.
+   * Modified ksgmltools configure.in.in to handle new location of sgml files
+   * Updating build-depends
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Feb 2001 19:00:00 -0700
+
 kdelibs (4:2.1-final-1) unstable; urgency=low
  
    * New upstream version

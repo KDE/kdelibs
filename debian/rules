@@ -5,7 +5,7 @@
 SHELL=/bin/sh
 
 BUILDDIR = $(shell pwd)
-QTDOCDIR  = usr/share/doc/qt2.2-doc/doc/html
+QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 
@@ -23,8 +23,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--with-sgml-cat=/etc/sgml
+	--includedir=/usr/include/kde --without-ssl --without-alsa
 
 	make
 

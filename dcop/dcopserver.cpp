@@ -1222,6 +1222,7 @@ DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
    IceGetHeader( conn->iceConn, majorOpcode, DCOPSend,
                  sizeof(DCOPMsg), DCOPMsg, pMsg );
    pMsg->length += datalen;
+   pMsg->key = 1; // important!
    _DCOPIceSendBegin( conn->iceConn );
    IceSendData(conn->iceConn, datalen, const_cast<char *>(ba.data()));
    _DCOPIceSendEnd();

@@ -665,8 +665,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
     if ( imgSource )
     {
-        imgSource->maybeReady();
         imgSource->setEOF(eof);
+        imgSource->maybeReady();
     }
 
     if(eof)

@@ -17,10 +17,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _HTML_OBJECT_H_
-#define _HTML_OBJECT_H_
+#ifndef _KJS_HTML_H_
+#define _KJS_HTML_H_
 
 #include <html_document.h>
+#include <html_form.h>
 #include <html_base.h>
 #include <html_misc.h>
 
@@ -85,10 +86,19 @@ namespace KJS {
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
     ~HTMLCollection();
     virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const { return Boolean(true); }
-  private:
+  protected:
     DOM::HTMLCollection collection;
+  };
+
+  class HTMLSelectCollection : public HTMLCollection {
+  public:
+    HTMLSelectCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+      : HTMLCollection(c), element(e) { }
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
+  private:
+      DOM::HTMLSelectElement element;
   };
 
   class HTMLCollectionFunc : public DOMFunction {
@@ -145,6 +155,7 @@ namespace KJS {
   };
 
   KJSO getHTMLCollection(DOM::HTMLCollection c);
+  KJSO getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e);
 
 
 }; // namespace

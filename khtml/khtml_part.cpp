@@ -185,6 +185,7 @@ public:
     m_bHTTPRefresh = false;
 
     m_bFirstData = true;
+    m_submitForm = 0;
 
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -2287,7 +2288,7 @@ void KHTMLPart::slotSaveDocument()
   if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm"), d->m_cacheId );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("*.html *.htm|HTML files"), d->m_cacheId );
 }
 
 void KHTMLPart::slotSecurity()
@@ -2585,6 +2586,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   }
 
   child->m_args.reload = d->m_bReloading;
+  // make sure the part has a way to find out about the mimetype.
+  // we actually set it in child->m_args in requestObject already,
+  // but it's useless if we had to use a KHTMLRun instance, as the
+  // point the run object is to find out exactly the mimetype.
+  child->m_args.serviceType = mimetype;
 
   child->m_bCompleted = false;
   if ( child->m_extension )
@@ -2652,14 +2658,12 @@ KParts::PartManager *KHTMLPart::partManager()
 
 void KHTMLPart::submitFormAgain()
 {
-  if( !d->m_bParsing )
-  {
+  if( !d->m_bParsing && d->m_submitForm)
     KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
-    delete d->m_submitForm;
-    d->m_submitForm = 0;
-  }
-  else
-    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
+
+  delete d->m_submitForm;
+  d->m_submitForm = 0;
+  disconnect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
 }
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
@@ -2721,7 +2725,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     d->m_submitForm->submitFormData = formData;
     d->m_submitForm->submitContentType = contentType;
     d->m_submitForm->submitBoundary = boundary;
-    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
+    connect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
   }
   else
     emit d->m_extension->openURLRequest( u, args );
@@ -3563,7 +3567,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
   else
       // selection stuff
-      if( d->m_bMousePressed && !innerNode.isNull() ) {
+      if( d->m_bMousePressed && !innerNode.isNull() && ( _mouse->state() == LeftButton )) {
         int offset;
         DOM::Node node;
         //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
@@ -3694,6 +3698,15 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
      urlSelected( url, _mouse->button(), _mouse->state(), target );
    }
+   else if (_mouse->button() == MidButton)
+   {
+     QClipboard *cb = QApplication::clipboard();
+     QCString plain("plain");
+     QString url = cb->text(plain);
+     KURL u(url);
+     if (u.isValid())
+        urlSelected(url, 0,0, "_top");
+   }
 
 #if 0 // We shouldn't need this, we had to move here anyway
   if(!innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE) {
@@ -3807,7 +3820,7 @@ void KHTMLPart::slotFind()
                this, SLOT( slotFindDialogDestroyed() ) );
   }
 
-  d->m_findDialog->setNewSearch();
+  d->m_findDialog->setPart( part );
   d->m_findDialog->setText( part->d->m_lastFindState.text );
   d->m_findDialog->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
   d->m_findDialog->setDirection( part->d->m_lastFindState.direction );

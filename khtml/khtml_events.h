@@ -31,7 +31,7 @@ class MouseEvent : public KParts::Event
 {
 public:
   MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode );
+		   const DOM::Node &innerNode, long /*offset UNUSED REMOVE 3.0*/ = 0);
   virtual ~MouseEvent();
 
   QMouseEvent *qmouseEvent() const { return m_qmouseEvent; }
@@ -53,7 +53,7 @@ public:
   void setURLHandlingEnabled( bool enable );
 
   // return the offset of innerNode
-  int offset() const;
+  long offset() const;
 
 private:
   QMouseEvent *m_qmouseEvent;
@@ -70,7 +70,7 @@ class MousePressEvent : public MouseEvent
 {
 public:
   MousePressEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode )
+		   const DOM::Node &innerNode, long = 0 )
   : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode )
   {}
 
@@ -85,7 +85,7 @@ class MouseDoubleClickEvent : public MouseEvent
 {
 public:
   MouseDoubleClickEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		         const DOM::Node &innerNode )
+		         const DOM::Node &innerNode, long = 0 )
   : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, innerNode )
   {}
 
@@ -100,7 +100,7 @@ class MouseMoveEvent : public MouseEvent
 {
 public:
   MouseMoveEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode )
+		   const DOM::Node &innerNode, long = 0 )
   : MouseEvent( s_strMouseMoveEvent, mouseEvent, x, y, url, innerNode )
   {}
 
@@ -114,7 +114,7 @@ class MouseReleaseEvent : public MouseEvent
 {
 public:
   MouseReleaseEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		     const DOM::Node &innerNode )
+		     const DOM::Node &innerNode, long = 0 )
   : MouseEvent( s_strMouseReleaseEvent, mouseEvent, x, y, url, innerNode )
   {}
 

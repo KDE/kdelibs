@@ -152,7 +152,7 @@ protected:
    * Constructor is called when the user profile is read for the
    * first time.
    */
-  KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType );
+  KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType = QString::null );
 
   /**
    * Add a service to this profile.

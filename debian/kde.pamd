@@ -2,6 +2,7 @@
 
 auth       required     pam_unix.so shadow nullok
 auth       required     pam_nologin.so
+auth       required     pam_env.so
 account    required     pam_unix.so
 session    required     pam_unix.so
 password   required     pam_unix.so nullok obscure min=4 max=8 md5

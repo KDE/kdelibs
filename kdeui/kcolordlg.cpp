@@ -1143,7 +1143,7 @@ void KColorDialog::slotRGBChanged( void )
 
 void KColorDialog::slotHtmlChanged( void )
 {
-  if (d->bRecursion) return;
+  if (d->bRecursion || d->htmlName->text().isEmpty()) return;
 
   unsigned int red = 256;
   unsigned int grn = 256;

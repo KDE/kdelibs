@@ -52,6 +52,8 @@ using namespace khtml;
         map["teal"] = "#008080";
         map["fuchsia"] = "#ff00ff";
         map["aqua"] = "#00ffff";
+	map["crimson"] = "#dc143c";
+	map["indigo"] = "#4b0082";
     };
 };
 
@@ -83,7 +85,18 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         {
             color.setRgb((0xff << 24) | val);
             return;
-        } else if ( name[0] < 'a' || name[0] > 'z' ) {
+        }
+        // recognize #12345 (duplicate the last character)
+        if(name[0] == '#') {
+            bool ok;
+            int val = name.right(5).toInt(&ok, 16);
+            if(ok)
+            {
+                color.setRgb((0xff << 24) | (val * 16 + val&0xf));
+                return;
+            }
+        }
+        if ( name[0] < 'a' || name[0] > 'z' ) {
 	    color = QColor();
 	    return;
 	}

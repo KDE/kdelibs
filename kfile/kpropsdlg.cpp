@@ -437,6 +437,7 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   ASSERT( m_items.count() == 1 );
   kdDebug() << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
   m_singleUrl = _newUrl;
+  m_items.first()->setURL( _newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Exec page, set it dirty, so that a full file is saved locally
   for ( QListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )

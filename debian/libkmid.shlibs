@@ -1,2 +1,2 @@
-libqtmcop 0 libkmid (>= 4:2.1-final-0) | libkmid-alsa (>= 4:2.1-final-0)
-libkmid 0 libkmid (>= 4:2.1-final-0) | libkmid-alsa (>= 4:2.1-final-0)
+libqtmcop 0 libkmid (>= 4:2.1.0-0) | libkmid-alsa (>= 4:2.1.0-0)
+libkmid 0 libkmid (>= 4:2.1.0-0) | libkmid-alsa (>= 4:2.1.0-0)
