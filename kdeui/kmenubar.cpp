@@ -35,6 +35,7 @@
 #include <kstyle.h>
 #include <kapp.h>
 #include <kwin.h>
+#include <kwinmodule.h>
 #include <kglobal.h>
 
 #include <X11/Xlib.h>
@@ -188,16 +189,15 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     }
     if ( d->topLevel && ev->type() == QEvent::Resize )
 	return FALSE; // hinder QMenubar to adjust its size
-    
+
   return QMenuBar::eventFilter( obj, ev );
 }
 
 void KMenuBar::showEvent( QShowEvent* )
 {
     if ( d->topLevel ) {
-	int w = QApplication::desktop()->width();
-	setGeometry(0, -frameWidth()-2, w, heightForWidth( w ) );
-	qDebug("setstrut: %d (height is %d)", height() - frameWidth() - 2, height() );
+	QRect area = QApplication::desktop()->geometry();
+	setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
 	KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
 	if ( parentWidget() ) {
 	    QObjectList   *accelerators = queryList( "QAccel" );
