@@ -317,30 +317,9 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( s_addressesDirty )
         loadAddresses();
 
-    QString match;
-    int curPos = cursorPosition();
-    if ( mode != KGlobalSettings::CompletionNone )
-    {
-        match = s_completion->makeCompletion( s );
-        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
-          match = s_completion->makeCompletion( "\"" + s );
-        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
-          match = s_completion->makeCompletion( "$$" + s );
-    }
-
-    kdDebug() << "** completion for: " << s << " : " << match << endl;
-
     if ( ctrlT )
     {
-        QStringList addresses = s_completion->items();
-        QStringList::Iterator it = addresses.begin();
-        QStringList completions;
-        for (; it != addresses.end(); ++it)
-        {
-            if ((*it).find(s,0,false) >= 0)
-                completions.append( *it );
-        }
-
+        QStringList completions = s_completion->substringCompletion( s );
         if (completions.count() > 1) {
             m_previousAddresses = prevAddr;
             box->setItems( completions );
@@ -360,36 +339,45 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     {
         case KGlobalSettings::CompletionPopup:
         {
-            if ( !match.isNull() )
+            m_previousAddresses = prevAddr;
+            QStringList items = s_completion->allMatches( s );
+            items += s_completion->allMatches( "\"" + s );
+            items += s_completion->substringCompletion( '<' + s );
+            uint beforeDollarCompletionCount = items.count();
+            
+            if( !s.contains( ' ' )) // one word, possibly given name
+                items += s_completion->allMatches( "$$" + s );
+            
+            if ( items.isEmpty() )
+                box->hide();
+            else
             {
-                m_previousAddresses = prevAddr;
-		QStringList items = s_completion->allMatches( s );
-                items += s_completion->allMatches( "\"" + s );
-		items += s_completion->substringCompletion( '<' + s );
-		if( !s.contains( ' ' )) // one word, possibly given name
-		    items += s_completion->allMatches( "$$" + s );
-    		for( QStringList::Iterator it = items.begin();
-		     it != items.end();
-		     ++it )
-		{ // remove the '$$whatever$' part
-		    int pos = (*it).find( '$', 2 );
-		    if( pos < 0 ) // ???
-		        continue;
-		    (*it)=(*it).mid( pos + 1 );
-		}
-		items = removeMailDupes( items );
-		box->setItems( items );
+                if ( items.count() > beforeDollarCompletionCount )
+                {
+                    // remove the '$$whatever$' part                    
+                    for( QStringList::Iterator it = items.begin();
+                         it != items.end();
+                         ++it )
+                    { 
+                        int pos = (*it).find( '$', 2 );
+                        if( pos < 0 ) // ???
+                            continue;
+                        (*it)=(*it).mid( pos + 1 );
+                    }
+                }
+                
+                items = removeMailDupes( items );
+                box->setItems( items );
                 box->setCancelledText( text() );
                 box->popup();
             }
-            else
-                box->hide();
 
             break;
         }
 
         case KGlobalSettings::CompletionShell:
         {
+            QString match = s_completion->makeCompletion( s );
             if ( !match.isNull() && match != s )
             {
                 slotSetTextAsEdited( prevAddr + match );
@@ -401,9 +389,11 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         case KGlobalSettings::CompletionMan: // Short-Auto in fact
         case KGlobalSettings::CompletionAuto:
         {
+            QString match = s_completion->makeCompletion( s );
             if ( !match.isNull() && match != s )
             {
                 QString adds = prevAddr + match;
+                int curPos = cursorPosition();
                 validateAndSet( adds, curPos, curPos, adds.length() );
             }
             break;
@@ -556,11 +546,11 @@ QStringList AddressLineEdit::addresses()
 
   QStringList result;
   QString space = QChar(' ');
-  QString empty = ""; 
+  QString empty = "";
   QRegExp needQuotes("[^ 0-9A-Za-z\\x0080-\\xFFFF]");
   QString endQuote = "\" ";
   QString addr, email;
- 
+
   KABC::AddressBook *addressBook = KABC::StdAddressBook::self();
   KABC::AddressBook::Iterator it;
   for( it = addressBook->begin(); it != addressBook->end(); ++it ) {
