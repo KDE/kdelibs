@@ -266,7 +266,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
       //kdDebug(7011) << QString("KSycoca::findFactory : found factory %1").arg(aId) << endl;
       if (aId == 0)
       {
-         kdFatal(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!\n" << endl;
+         kdError(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!\n" << endl;
          break;
       }
       (*m_str) >> aOffset;
