@@ -40,5 +40,8 @@ miscdir = $(kde_datadir)/kdeprint
 
 EXTRA_DIST = postscript.ppd.gz
 
-model_DATA = @CUPS_MODEL@
-modeldir = @CUPS_MODELDIR@
+install-data-local:
+	if test -n "$(cups_modeldir)" && test ! -f $(cups_modeldir)/postscript.ppd.gz; then \
+		$(INSTALL_DATA) $(srcdir)/postscript.ppd.gz $(DESTDIR)$(cups_modeldir)/postscript.ppd.gz || true ;\
+	fi
+

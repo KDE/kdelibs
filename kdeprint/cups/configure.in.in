@@ -1,25 +1,19 @@
 dnl Whether to install the PostScript driver
-AC_MSG_CHECKING(installation of PS driver needed)
+AC_MSG_CHECKING([installation of PS driver needed])
 ac_cups_share_test="/usr/share/cups /usr/local/share/cups /opt/share/cups /opt/local/share/cups"
-ac_cups_share=""
+cups_modeldir=""
 for d in $ac_cups_share_test; do
-	if test -d $d; then
-		ac_cups_share=$d
+	if test -d $d && test -d $d/model; then
+		cups_modeldir=$d/model
 		break
 	fi
 done
 
-CUPS_MODEL=""
-CUPS_MODELDIR=""
-if test "$ac_cups_share" != "" -a ! -f "$ac_cups_share/model/postscript.ppd.gz"; then
-	CUPS_MODELDIR="$ac_cups_share/model"
-	CUPS_MODEL="postscript.ppd.gz"
-fi
-AC_SUBST(CUPS_MODEL)
-AC_SUBST(CUPS_MODELDIR)
+AC_SUBST(cups_modeldir)
 
-if test "$CUPS_MODEL" != ""; then
-	AC_MSG_RESULT($CUPS_MODEL)
+if test -n "$cups_modeldir"; then
+	AC_MSG_RESULT(yes)
 else
-	AC_MSG_RESULT(none)
+	AC_MSG_RESULT(no)
 fi
+
