@@ -40,7 +40,7 @@
 
 #include <qwidget.h>
 #include <qdir.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kurl.h>
 #include <khtmlview.h>
 

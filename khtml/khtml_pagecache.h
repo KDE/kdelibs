@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include <qcstring.h>
 #include <qvaluelist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KHTMLPageCachePrivate;
 

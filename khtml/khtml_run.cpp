@@ -23,9 +23,6 @@
 #include "khtml_run.h"
 #include <kio/job.h>
 #include <kdebug.h>
-#include <kuserprofile.h>
-#include <kmessagebox.h>
-#include <kstringhandler.h>
 #include <klocale.h>
 #include <khtml_ext.h>
 #include <qwidget.h>
