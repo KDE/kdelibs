@@ -20,6 +20,7 @@
 
 #include <qlabel.h>
 
+class KActionCollection;
 class KPopupMenu;
 class KSystemTrayPrivate;
 
@@ -116,11 +117,18 @@ protected:
      */
     virtual void contextMenuAboutToShow( KPopupMenu* menu );
 
+
+    /**
+       Easy access to the actions in the context menu
+       Currently includes KStdAction::Quit and minimizeRestore
+    */
+    KActionCollection* actionCollection();
+
     /**
        Reimplemented for internal reasons.
      */
     void showEvent( QShowEvent * );
-    
+
     /**
        Reimplemented for internal reasons.
      */
@@ -137,6 +145,7 @@ private slots:
     void toggleMinimizeRestore();
 private:
     KPopupMenu* menu;
+    // minimizeRestoreId is no longer needed. remove in KDE 4.0
     int minimizeRestoreId;
     uint hasQuit :1;
 protected:

@@ -17,6 +17,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+#include "kaction.h"
+#include "kshortcut.h"
 #include "ksystemtray.h"
 #include "kpopupmenu.h"
 #include "kapplication.h"
@@ -39,9 +42,28 @@ const int XFocusIn = FocusIn;
 extern Time qt_x_time;
 #endif
 
+class KSystemTrayPrivate
+{
+public:
+    KSystemTrayPrivate()
+    {
+        actionCollection = 0;
+    }
+
+    ~KSystemTrayPrivate()
+    {
+        delete actionCollection;
+    }
+
+    KActionCollection* actionCollection;
+};
+
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
+    d = new KSystemTrayPrivate;
+    d->actionCollection = new KActionCollection(this);
+
 #ifndef Q_WS_QWS
     // FIXME(E): Talk with QWS
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
@@ -51,11 +73,24 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     menu = new KPopupMenu( this );
     menu->insertTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
+    KAction* quitAction = KStdAction::quit(this, SIGNAL(quitSelected()), d->actionCollection);
+
+    if (parentWidget())
+    {
+        connect(quitAction, SIGNAL(activated()), parentWidget(), SLOT(close()));
+        new KAction(i18n("Minimize"), KShortcut(), 
+                    this, SLOT( toggleMinimizeRestore() ), 
+                    d->actionCollection, "minimizeRestore");
+    }
+    else
+    {
+        connect(quitAction, SIGNAL(activated()), qApp, SLOT(closeAllWindows()));
+    }
 }
 
 KSystemTray::~KSystemTray()
 {
-
+    delete d;
 }
 
 
@@ -63,16 +98,15 @@ void KSystemTray::showEvent( QShowEvent * )
 {
     if ( !hasQuit ) {
 	menu->insertSeparator();
-	int quitID;
-	if ( parentWidget() ) {
-	    minimizeRestoreId = menu->insertItem(i18n("Minimize"), this, SLOT( toggleMinimizeRestore() ) );
-	    quitID=menu->insertItem(SmallIcon("exit"), i18n("&Quit"), parentWidget(), SLOT(close() ) );
-	}
-	else {
-	    minimizeRestoreId = -1;
-	    quitID=menu->insertItem(SmallIcon("exit"), i18n("&Quit"), qApp, SLOT(closeAllWindows() ) );
-	}
-	menu->connectItem(quitID,this,SIGNAL(quitSelected()));
+        KAction* action = d->actionCollection->action("minimizeRestore");
+
+        if (action)
+        {
+            action->plug(menu);
+        }
+
+        action = d->actionCollection->action(KStdAction::name(KStdAction::Quit));
+        action->plug(menu);
 	hasQuit = 1;
     }
 }
@@ -116,10 +150,11 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 	// fall through
     case RightButton:
 	if ( parentWidget() ) {
+            KAction* action = d->actionCollection->action("minimizeRestore");
 	    if ( parentWidget()->isVisible() )
-		menu->changeItem( minimizeRestoreId, i18n("Minimize") );
+		action->setText( i18n("Minimize") );
 	    else
-		menu->changeItem( minimizeRestoreId, i18n("Restore") );
+		action->setText( i18n("Restore") );
 	}
 	contextMenuAboutToShow( menu );
 	menu->popup( e->globalPos() );
@@ -160,6 +195,11 @@ void KSystemTray::toggleMinimizeRestore()
     } else {
 	parentWidget()->hide();
     }
+}
+
+KActionCollection* KSystemTray::actionCollection()
+{
+    return d->actionCollection;
 }
 
 void KSystemTray::virtual_hook( int, void* )
