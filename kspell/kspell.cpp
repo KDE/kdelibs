@@ -16,6 +16,7 @@
 
 #include <kapp.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include "kspell.h"
 #include <kwm.h>
 
@@ -54,16 +55,16 @@ enum {
 
 KSpell::KSpell (QWidget *_parent, QString _caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc,
-		bool _progressbar)
+		bool _progressbar, bool _modal )
 {
-
+  modaldlg = _modal;
   progressbar = _progressbar;
 
   proc=0;
   ksconfig=0;
   temp=0;
   ksdlg=0;
-  
+
 
 
   //won't be using the dialog in ksconfig, just the option values
@@ -98,8 +99,12 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   trystart=0;
   maxtrystart=2;
 
-  // caller wants to know when kspell is ready
-  connect (this, SIGNAL (ready(KSpell *)), obj, slot);
+  if ( obj && slot )
+      // caller wants to know when kspell is ready
+      connect (this, SIGNAL (ready(KSpell *)), obj, slot);
+  else
+      // Hack for modal spell checking
+      connect (this, SIGNAL (ready(KSpell *)), this, SLOT( slotModalReady() ) );
 
   proc=new KProcIO;
 
@@ -163,13 +168,13 @@ KSpell::startIspell(void)
   // -S : sort suggestions by probable correctness
   if (trystart==0) //don't connect these multiple times
     {
-      connect (proc, SIGNAL (  receivedStderr (KProcess *, char *, int)), 
+      connect (proc, SIGNAL (  receivedStderr (KProcess *, char *, int)),
 	       this, SLOT (ispellErrors (KProcess *, char *, int)));
-      
-      
+
+
       connect(proc, SIGNAL(processExited(KProcess *)),
 	      this, SLOT (ispellExit (KProcess *)));
-      
+
       OUTPUT(KSpell2);
     }
 
@@ -205,7 +210,7 @@ void KSpell::KSpell2 (KProcIO *)
       emit ready(this);
       return;
     }
-    
+
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
     {
@@ -236,12 +241,12 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   if (dialogsetup)
     return;
 
-  
+
   //Set up the dialog box
-  ksdlg=new KSpellDlg (parent, "dialog", 
-		       progressbar && reallyuseprogressbar);
+  ksdlg=new KSpellDlg (parent, "dialog",
+		       progressbar && reallyuseprogressbar, modaldlg );
   ksdlg->setCaption (caption);
-  connect (ksdlg, SIGNAL (command (int)), this, 
+  connect (ksdlg, SIGNAL (command (int)), this,
 		SLOT (slotStopCancel (int)) );
   connect (this, SIGNAL ( progress (unsigned int) ),
 	   ksdlg, SLOT ( slotProgress (unsigned int) ));
@@ -257,13 +262,13 @@ bool KSpell::addPersonal (QString word)
   QString qs (word);
 
   //we'll let ispell do the work here b/c we can
-  qs=qs.simplifyWhiteSpace();  
+  qs=qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
   qs.prepend ("&");
   personaldict=TRUE;
-  
+
   return proc->fputs (qs.data());
 }
 
@@ -277,7 +282,7 @@ bool KSpell::ignore (QString word)
   QString qs (word);
 
   //we'll let ispell do the work here b/c we can
-  qs.simplifyWhiteSpace();  
+  qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
@@ -300,7 +305,7 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
 	    || qs[i].isSpace())
 	  qs.remove(i,1);
   }
-  
+
   return proc->fputs (qs.ascii(), appendCR);
 }
 
@@ -309,21 +314,21 @@ KSpell::cleanFputs (QString s, bool appendCR)
 {
   QString qs(s);
   unsigned int j=0,l=qs.length();
-  
+
   if (l<MAXLINELENGTH)
     {
       for (unsigned int i=0;i<l;i++,j++)
 	{
-	  if (//qs.at(i-1)=='\n' && 
+	  if (//qs.at(i-1)=='\n' &&
 	      ispunct ((char)(QChar)qs.at(i)) // #### Should use qs[i].isPunct()
 	    && qs.at(i)!='\'' && qs.at(i)!='\"')
 	    qs.replace (i,1," ");
-	  
+	
 	}
-      
+
       if (qs.isEmpty())
 	qs="";
-      
+
       return proc->fputs (qs.ascii(), appendCR);
     }
   else
@@ -335,7 +340,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
 {
   QString qs (buffer);
 
-  qs.simplifyWhiteSpace();  
+  qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
@@ -354,7 +359,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
 
   proc->fputs ("%"); // turn off terse mode
   proc->fputs (buffer.ascii()); // send the word to ispell
-  
+
   return TRUE;
 }
 
@@ -364,7 +369,7 @@ void KSpell::checkWord2 (KProcIO *)
 
 
   proc->fgets (temp, TEMPsz, TRUE); //get ispell's response
-  
+
   NOOUTPUT(checkWord2);
 
   int e;
@@ -402,7 +407,7 @@ QString KSpell::funnyWord (QString word)
 	  QString shorty;
 	  unsigned int j;
 	  int k;
-	  
+	
 	  for (j=i+1;word [j]!='\0' && word [j]!='+' &&
 		 word [j]!='-';j++)
 	    shorty+=word [j];
@@ -416,7 +421,7 @@ QString KSpell::funnyWord (QString word)
 	    {
               qs+='-';
               qs+=shorty;  //it was a hyphen, not a '-' from ispell
-            }         
+            }
 	}
       else
 	qs+=word [i];
@@ -424,7 +429,7 @@ QString KSpell::funnyWord (QString word)
   return qs;
 }
 	
-  
+
 int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *sugg)
   // buffer is checked, word and sugg are filled in
   // returns
@@ -450,7 +455,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
     {
       int i,j;
 
-      
+
       QString qs (buffer);
       word = qs.mid (2,qs.find (' ',3)-2);
       //check() needs this
@@ -501,18 +506,15 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
 	    {
 	      temp = qs.mid (i,(j=qs.find (',',i))-i);
 	      sugg->append (funnyWord (temp).ascii());
-	      
+	
 	      i=j+2;
 	    }
 	}
-
       if (sugg->count()==1 && sugg->at(0) == word)
 	return GOOD;
 
       return MISTAKE;
     }
-      
-      
   kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer.data());
   kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@chaos.umd.edu");
   kdebug(KDEBUG_ERROR, 750, "Thank you!");
@@ -577,7 +579,7 @@ void KSpell::checkList3a (KProcIO *)
 void KSpell::checkList3 ()
 {
   int e, tempe;
-  
+
   disconnect (this, SIGNAL (ez()), this, SLOT (checkList3()));
 
 
@@ -585,7 +587,7 @@ void KSpell::checkList3 ()
 
     do
       {
-	tempe=proc->fgets (temp, TEMPsz, TRUE); //get ispell's response      
+	tempe=proc->fgets (temp, TEMPsz, TRUE); //get ispell's response
 	if (tempe>0)
 	  {
 	    lastpos++;
@@ -603,7 +605,7 @@ void KSpell::checkList3 ()
 		    emit corrected (orig, replacement(), lastpos);
 		    //  newbuffer.replace (lastpos,orig.length(),word);
 		  }
-		else 
+		else
 		  {
 		    cwword=word;
 		    dlgon=TRUE;
@@ -615,7 +617,7 @@ void KSpell::checkList3 ()
 	  }
       	emitProgress (); //maybe
       } while (tempe>=0);
-    
+
     if (!dlgon) //is this condition needed?
       emit eza();
 }
@@ -623,7 +625,7 @@ void KSpell::checkList3 ()
 void KSpell::checkList4 ()
 {
   dlgon=FALSE;
-    
+
   disconnect (this, SIGNAL (dialog3()), this, SLOT (checkList4()));
 
   //others should have been processed by dialog() already
@@ -649,7 +651,7 @@ void KSpell::checkList4 ()
   emit eza();
 }
 
-bool KSpell::check (QString _buffer)
+bool KSpell::check( const QString _buffer )
 {
   QString qs;
 
@@ -658,23 +660,34 @@ bool KSpell::check (QString _buffer)
   dialog3slot = SLOT (check3 ());
 
   //  kdebug(KDEBUG_INFO, 750, "KS: check");
-  origbuffer=_buffer;
-  if ((totalpos=origbuffer.length())==0)
-    {
+  origbuffer = _buffer;
+  if ( ( totalpos = origbuffer.length() ) == 0 )
+  {
       emit done(origbuffer.data());
       return FALSE;
-    }
+  }
 
+  // Torben: I corrected the \n\n problem directly in the
+  //         origbuffer since I got errors otherwise
+  if ( origbuffer.right(2) != "\n\n" )
+  {
+      if (origbuffer.at(origbuffer.length()-1)!='\n')
+      {
+	  origbuffer+='\n';
+	  origbuffer+='\n'; //shouldn't these be removed at some point?
+      }
+      else
+	  origbuffer+='\n';
+  }
 
-  int i;
+  newbuffer = origbuffer;
 
-  newbuffer=origbuffer;
-
-  if (newbuffer.at(newbuffer.length()-1)!='\n')
+  /* if (newbuffer.at(newbuffer.length()-1)!='\n')
     {
       newbuffer+='\n';
       origbuffer+='\n';
-    }
+      } */
+
   OUTPUT(check2);
   proc->fputs ("!");
 
@@ -683,7 +696,7 @@ bool KSpell::check (QString _buffer)
 
   emitProgress ();
 
-  i=origbuffer.find('\n', lastline)+1;
+  int i = origbuffer.find('\n', lastline)+1;
   qs=origbuffer.mid (lastline, i-lastline);
   cleanFputs (qs,FALSE);
 
@@ -701,21 +714,21 @@ void KSpell::check2 (KProcIO *)
 
   do
     {
-      tempe=proc->fgets (temp, TEMPsz); //get ispell's response      
+      tempe=proc->fgets (temp, TEMPsz); //get ispell's response
       //	  kdebug(KDEBUG_INFO, 750, "2:(%d)", tempe);
-      
+
       if (tempe>0)
 	{
 	  //	  kdebug(KDEBUG_INFO, 750, "2:[%s]", temp);
-	  
+	
 	  if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 	      e==REPLACE)
 	    {
 	      dlgresult=-1;
 	      lastpos=posinline+lastlastline+offset;
-	      
+	
 	      //orig is set by parseOneResponse()
-	      
+	
 	      if (e==REPLACE)
 		{
 		  dlgreplacement=word;
@@ -732,11 +745,11 @@ void KSpell::check2 (KProcIO *)
 		  return;
 		}
 	    }
-	    
+	
 	  }
 
-      emitProgress (); //maybe      
-    
+      emitProgress (); //maybe
+
     } while (tempe>0);
 
   proc->ackRead();
@@ -750,15 +763,15 @@ void KSpell::check2 (KProcIO *)
     {
       int i;
       QString qs;
-      
+
       //      kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
-      
+
       lastpos=(lastlastline=lastline)+offset; //do we really want this?
       i=origbuffer.find('\n', lastline)+1;
       qs=origbuffer.mid (lastline, i-lastline);
       cleanFputs (qs.ascii(),FALSE);
       lastline=i;
-      return;  
+      return;
     }
   else
   //This is the end of it all
@@ -785,7 +798,7 @@ void KSpell::check3 ()
     case KS_REPLACE:
     case KS_REPLACEALL:
       offset+=replacement().length()-cwword.length();
-      newbuffer.replace (lastpos, cwword.length(), 
+      newbuffer.replace (lastpos, cwword.length(),
 			 replacement().ascii());
       break;
     case KS_CANCEL:
@@ -871,7 +884,7 @@ void KSpell::dialog2 (int result)
 KSpell:: ~KSpell ()
 {
 
-  if (proc)  
+  if (proc)
     {
       delete proc;
     }
@@ -948,4 +961,55 @@ void KSpell::moveDlg (int x, int y)
   pt2=parent->mapToGlobal (pt);
   ksdlg->move (pt2.x(),pt2.y());
 }
+
+// --------------------------------------------------
+// Stuff for modal (blocking) spell checking
+//
+// Written by Torben Weis <weis@kde.org>. So please
+// send bug reports regarding the modal stuff to me.
+// --------------------------------------------------
+
+int KSpell::modalCheck( QString& text )
+{
+    modalreturn = 0;
+    modaltext = text;
+
+    modalWidgetHack = new QWidget(0,0,WType_Modal);
+    modalWidgetHack->setGeometry(-10,-10,2,2);
+
+    // qDebug("KSpell1");
+    KSpell* spell = new KSpell( 0L, i18n("Spell Checker"), 0 ,0, 0, TRUE, TRUE );
+    // qDebug("KSpell2");
+    modalWidgetHack->show();
+    qApp->enter_loop();
+    // qDebug("KSpell3");
+
+    text = modaltext;
+    delete spell;
+    return modalreturn;
+}
+
+void KSpell::slotModalReady()
+{
+    // qDebug("MODAL READY");
+    ASSERT( isOk() );
+    connect( this, SIGNAL( done( const char* ) ), this, SLOT( slotModalDone( const char* ) ) );
+    check( modaltext );
+}
+
+void KSpell::slotModalDone( const char *_buffer )
+{
+    // qDebug("MODAL DONE %s", _buffer );
+    modaltext = _buffer;
+    cleanUp();
+
+    modalWidgetHack->close(true);
+    modalWidgetHack = 0;
+    qApp->exit_loop();
+}
+
+QString KSpell::modaltext;
+int KSpell::modalreturn = 0;
+QWidget* KSpell::modalWidgetHack = 0;
+
 #include "kspell.moc"

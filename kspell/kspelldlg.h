@@ -42,7 +42,7 @@ class KSpellDlg : public QWidget
 
 public:
   KSpellDlg (QWidget *parent, const char *name,
-	     bool _progressbar = FALSE);
+	     bool _progressbar = FALSE, bool _modal = FALSE );
 
   inline QString replacement (void)
     { return newword; }
@@ -79,7 +79,7 @@ protected:
 protected slots:
   void ignore();
   void add();
-  void ignoreAll();  
+  void ignoreAll();
   void cancel();
   void replace();
   void replaceAll();
