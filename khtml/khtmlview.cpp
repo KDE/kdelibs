@@ -872,6 +872,10 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
+//     kdDebug(6000) << "mouse move: " << _mouse->pos()
+// 		  << " button " << _mouse->button()
+// 		  << " state " << _mouse->state() << endl;
+
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -965,8 +969,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-
-    kdDebug( 6000 ) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
@@ -1308,7 +1310,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (allowWidgetMouseEvents && !w->inherits("QScrollBar")) {
+		if (!w->inherits("QScrollBar")) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
@@ -1321,7 +1323,6 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 			viewportMouseReleaseEvent(&me2);
 		    else
 			viewportMouseDoubleClickEvent(&me2);
-		    //block = me2.isAccepted();
 		    block = true;
                 }
 		break;
@@ -1920,7 +1921,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
 						detail,screenX,screenY,clientX,clientY,
 						ctrlKey,altKey,shiftKey,metaKey,
-						button,0);
+						button,0, _mouse);
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
         if (me->defaultHandled() || me->defaultPrevented())

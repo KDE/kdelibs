@@ -30,6 +30,7 @@
 #include "xml/dom2_viewsimpl.h"
 
 class KHTMLPart;
+class QMouseEvent;
 
 namespace DOM {
 
@@ -170,9 +171,6 @@ protected:
 
 };
 
-
-
-
 // Introduced in DOM Level 2: - internal
 class MouseEventImpl : public UIEventImpl {
 public:
@@ -191,7 +189,8 @@ public:
 		   bool shiftKeyArg,
 		   bool metaKeyArg,
 		   unsigned short buttonArg,
-		   NodeImpl *relatedTargetArg);
+		   NodeImpl *relatedTargetArg,
+		   QMouseEvent *qe = 0);
     virtual ~MouseEventImpl();
     long screenX() const { return m_screenX; }
     long screenY() const { return m_screenY; }
@@ -225,6 +224,8 @@ public:
 			const Node &relatedTargetArg);
     virtual bool isMouseEvent() { return true; }
     virtual DOMString eventModuleName() { return "MouseEvents"; }
+
+    QMouseEvent *qEvent() const { return m_qevent; }
 protected:
     long m_screenX;
     long m_screenY;
@@ -232,12 +233,13 @@ protected:
     long m_clientY;
     long m_layerX;
     long m_layerY;
-    bool m_ctrlKey;
-    bool m_altKey;
-    bool m_shiftKey;
-    bool m_metaKey;
+    bool m_ctrlKey : 1;
+    bool m_altKey  : 1;
+    bool m_shiftKey : 1;
+    bool m_metaKey : 1;
     unsigned short m_button;
     NodeImpl *m_relatedTarget;
+    QMouseEvent *m_qevent;
 };
 
 

@@ -306,6 +306,7 @@ MouseEventImpl::MouseEventImpl()
     m_metaKey = false;
     m_button = 0;
     m_relatedTarget = 0;
+    m_qevent = 0;
 }
 
 MouseEventImpl::MouseEventImpl(EventId _id,
@@ -322,7 +323,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 			       bool shiftKeyArg,
 			       bool metaKeyArg,
 			       unsigned short buttonArg,
-			       NodeImpl *relatedTargetArg)
+			       NodeImpl *relatedTargetArg,
+			       QMouseEvent *qe)
 		   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
     m_screenX = screenXArg;
@@ -338,6 +340,7 @@ MouseEventImpl::MouseEventImpl(EventId _id,
     if (m_relatedTarget)
 	m_relatedTarget->ref();
     computeLayerPos();
+    m_qevent = qe;
 }
 
 MouseEventImpl::~MouseEventImpl()
@@ -407,6 +410,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
 
     // ### make this on-demand. its soo sloooow
     computeLayerPos();
+    m_qevent = 0;
 }
 
 //---------------------------------------------------------------------------------------------

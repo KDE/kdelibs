@@ -125,7 +125,6 @@ protected:
 };
 
 extern bool allowWidgetPaintEvents;
-extern bool allowWidgetMouseEvents;
 
 class RenderReplacedFlow : public RenderFlow
 {

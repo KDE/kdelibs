@@ -42,7 +42,6 @@
 #include <kdebug.h>
 
 bool khtml::allowWidgetPaintEvents = false;
-bool khtml::allowWidgetMouseEvents = true;
 
 using namespace khtml;
 using namespace DOM;
@@ -390,7 +389,7 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
 #include <private/qinternal_p.h>
 
 
-void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty)
+void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int, int tx, int ty)
 {
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
@@ -479,54 +478,86 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
 class EventPropagator : public QWidget {
 public:
-    void sendEvent(QEvent *e) {
-	event(e);
+    void sendEvent(QMouseEvent *e) {
+	switch(e->type()) {
+	case QEvent::MouseButtonPress:
+	    mousePressEvent(e);
+	    break;
+	case QEvent::MouseButtonRelease:
+	    mouseReleaseEvent(e);
+	    break;
+	case QEvent::MouseButtonDblClick:
+	    mouseDoubleClickEvent(e);
+	    break;
+	case QEvent::MouseMove:
+	    mouseMoveEvent(e);
+	    break;
+	default:
+	    break;
+	}
     }
 };
 
 void RenderWidget::handleEvent(const DOM::MouseEventImpl& ev)
 {
-    allowWidgetMouseEvents = false;
+    QMouseEvent *me = ev.qEvent();
 
     int absx = 0;
     int absy = 0;
 
     absolutePosition(absx, absy);
 
-    QPoint p(ev.clientX()-absx, ev.clientY()-absy);
+    QPoint p(ev.clientX() - absx + m_view->contentsX(),
+	     ev.clientY() - absy + m_view->contentsY());
     QMouseEvent::Type type;
-    int button = NoButton;
+    int button = 0;
+    int state = 0;
 
-    switch(ev.id())  {
-    case EventImpl::MOUSEDOWN_EVENT:
-        type = QMouseEvent::MouseButtonPress;
-        break;
-    case EventImpl::MOUSEUP_EVENT:
-        type = QMouseEvent::MouseButtonRelease;
-        break;
-    case EventImpl::MOUSEMOVE_EVENT:
-    default:
-        type = QMouseEvent::MouseMove;
-        break;
-    }
-    switch (ev.button()) {
-    case 0:
-	button = LeftButton;
-	break;
-    case 1:
-	button = MidButton;
-	break;
-    case 2:
-	button = RightButton;
-	break;
-    default:
-	break;
+    if (me) {
+	button = me->button();
+	state = me->state();
+	type = me->type();
+    } else {
+	switch(ev.id())  {
+	case EventImpl::MOUSEDOWN_EVENT:
+	    type = QMouseEvent::MouseButtonPress;
+	    break;
+	case EventImpl::MOUSEUP_EVENT:
+	    type = QMouseEvent::MouseButtonRelease;
+	    break;
+	case EventImpl::MOUSEMOVE_EVENT:
+	default:
+	    type = QMouseEvent::MouseMove;
+	    break;
+	}
+	switch (ev.button()) {
+	case 0:
+	    button = LeftButton;
+	    break;
+	case 1:
+	    button = MidButton;
+	    break;
+	case 2:
+	    button = RightButton;
+	    break;
+	default:
+	    break;
+	}
+	if (ev.ctrlKey())
+	    state |= ControlButton;
+	if (ev.altKey())
+	    state |= AltButton;
+	if (ev.shiftKey())
+	    state |= ShiftButton;
+	if (ev.metaKey())
+	    state |= MetaButton;
     }
 
-//     kdDebug(6000) << "sending event to widget " << m_widget << endl;
-    QMouseEvent e(type, p, button, button);
+//     kdDebug(6000) << "sending event to widget "
+// 		  << " pos=" << p << " type=" << type
+// 		  << " button=" << button << " state=" << state << endl;
+    QMouseEvent e(type, p, button, state);
     static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
-    allowWidgetMouseEvents = true;
 }
 
 void RenderWidget::deref(RenderArena *arena)
