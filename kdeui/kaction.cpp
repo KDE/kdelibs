@@ -1339,7 +1339,7 @@ void KSelectAction::setComboWidth( int width )
     updateComboWidth( i );
 
 }
-QPopupMenu* KSelectAction::popupMenu()
+QPopupMenu* KSelectAction::popupMenu() const
 {
 	kdDebug(125) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
@@ -2321,8 +2321,9 @@ KActionMenu::KActionMenu( const QString& text, const QString& icon,
 
 KActionMenu::~KActionMenu()
 {
-  kdDebug(125) << "KActionMenu::~KActionMenu()" << endl; // ellis
-  delete d; d = 0;
+    unplugAll();
+    kdDebug(125) << "KActionMenu::~KActionMenu()" << endl; // ellis
+    delete d; d = 0;
 }
 
 void KActionMenu::popup( const QPoint& global )
@@ -2330,7 +2331,7 @@ void KActionMenu::popup( const QPoint& global )
   popupMenu()->popup( global );
 }
 
-KPopupMenu* KActionMenu::popupMenu()
+KPopupMenu* KActionMenu::popupMenu() const
 {
   return d->m_popup;
 }
@@ -2538,11 +2539,13 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
   return KAction::plug( widget, index );
 }
 
-KPopupMenu *KToolBarPopupAction::popupMenu()
+KPopupMenu *KToolBarPopupAction::popupMenu() const
 {
-  if ( !m_popup )
-      m_popup = new KPopupMenu;
-  return m_popup;
+    if ( !m_popup ) {
+	KToolBarPopupAction *that = const_cast<KToolBarPopupAction*>(this);
+	that->m_popup = new KPopupMenu;
+    }
+    return m_popup;
 }
 
 ////////
@@ -3013,7 +3016,7 @@ void KActionCollection::slotToolBarButtonHighlighted( int id, bool highlight )
 
 void KActionCollection::slotDestroyed()
 {
-  d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
+    d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
 }
 
 KAction *KActionCollection::findAction( QWidget *container, int id )

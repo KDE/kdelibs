@@ -914,7 +914,7 @@ public:
      */
     virtual int comboWidth() const;
 
-    QPopupMenu* popupMenu();
+    QPopupMenu* popupMenu() const;
 
 public slots:
     /**
@@ -1373,7 +1373,7 @@ public:
     virtual void insert( KAction*, int index = -1 );
     virtual void remove( KAction* );
 
-    KPopupMenu* popupMenu();
+    KPopupMenu* popupMenu() const;
     void popup( const QPoint& global );
 
     /**
@@ -1495,7 +1495,7 @@ public:
      * button. You may want to plug items into it on creation, or connect to
      * aboutToShow for a more dynamic menu.
      */
-    KPopupMenu *popupMenu();
+    KPopupMenu *popupMenu() const;
 
     /**
      * Returns true if this action creates a delayed popup menu
