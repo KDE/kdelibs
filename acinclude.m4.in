@@ -1956,7 +1956,7 @@ fi
 
 AC_DEFUN(KDE_CHECK_LIBPTHREAD,
 [
-AC_CHECK_LIB(pthread, main, [LIBPTHREAD="-lpthread"], LIBPTHREAD= )
+AC_CHECK_LIB(pthread, pthread_create, [LIBPTHREAD="-lpthread"], LIBPTHREAD= )
 AC_SUBST(LIBPTHREAD)
 ])
 
