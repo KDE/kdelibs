@@ -48,12 +48,12 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   }
 
   int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
-  
+
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = KNotifyClient::instance()->instanceName();
- ds << message << appname << text << sound << file << present << level
-    << winId << uniqueId;
+  ds << message << appname << text << sound << file << present << level
+     << winId << uniqueId;
 
   if ( !KNotifyClient::startDaemon() )
       return 0;
@@ -62,7 +62,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   {
       return uniqueId;
   }
-  
+
   return 0;
 }
 

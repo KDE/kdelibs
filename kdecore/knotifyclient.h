@@ -201,7 +201,7 @@ namespace KNotifyClient
 	 * @param present The presentation method(s) of the event
 	 * @param level The error message level, defaulting to "Default"
 	 * @param sound The sound file to play if selected with @p present
-	 * @param file The log file to play if selected with @p present
+	 * @param file The log file to append the message to if selected with @p present
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
 	int userEvent(const QString &text=QString::null, int present=Default, int level=Default,
@@ -251,7 +251,7 @@ namespace KNotifyClient
 	 * @param present The presentation method(s) of the event
 	 * @param level The error message level, defaulting to "Default"
 	 * @param sound The sound file to play if selected with @p present
-	 * @param file The log file to play if selected with @p present
+	 * @param file The log file to append the message to if selected with @p present
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
