@@ -98,10 +98,10 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
         name->ref();
         break;
     case ATTR_WIDTH:
-        addCSSProperty(CSS_PROP_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_WIDTH, attr->value());
         break;
     case ATTR_HEIGHT:
-        addCSSProperty(CSS_PROP_HEIGHT, attr->value());
+        addCSSLength(CSS_PROP_HEIGHT, attr->value());
         break;
     case ATTR_ALIGN:
 	addHTMLAlignment( attr->value() );
@@ -211,6 +211,10 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
         break;
      case ATTR_BORDER:
         addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+        addCSSProperty( CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID );
+        addCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID );
+        addCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID );
+        addCSSProperty( CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID );
         break;
      case ATTR_VSPACE:
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());

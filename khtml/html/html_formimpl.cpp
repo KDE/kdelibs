@@ -916,7 +916,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
         // a CSS_PROP_WIDTH here!
-        // webdesigner are stupid - and IE/NS behave the same
+        // webdesigner are stupid - and IE/NS behave the same ( Dirk )
         break;
     case ATTR_HEIGHT:
         addCSSLength(CSS_PROP_HEIGHT, attr->value() );

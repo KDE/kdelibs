@@ -281,12 +281,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
         border=1;
 #endif
         m_noBorder = !border;
-        QString str;
-        str.sprintf("%dpx", border);
-        addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, str);
+        addCSSLength(CSS_PROP_BORDER_WIDTH, DOMString( QString::number( border) ) );
 #if 0
         // wanted by HTML4 specs
         if(!border)
@@ -633,17 +628,11 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_BORDER:
-    {
-        int border;
-        border = attr->val() ? attr->val()->toInt() : 0;
-        QString str;
-        str.sprintf("%dpx", border);
-        addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, str);
-        addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, str);
+        addCSSLength(CSS_PROP_BORDER_TOP_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_BORDER_RIGHT_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_BORDER_LEFT_WIDTH, attr->value());
         break;
-    }
     case ATTR_ROWSPAN:
         // ###
         rSpan = attr->val() ? attr->val()->toInt() : 1;

@@ -84,18 +84,14 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_MARGINWIDTH:
     {
-        QString str;
-        str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_MARGIN_LEFT, str );
-        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str );
+        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
         break;
     }
     case ATTR_MARGINHEIGHT:
     {
-        QString str;
-        str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_MARGIN_TOP, str);
-        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
+        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
         break;
     }
     case ATTR_BGCOLOR:
@@ -149,16 +145,12 @@ void HTMLBodyElementImpl::attach()
 {
     KHTMLView* w = ownerDocument()->view();
     if(w->marginWidth() != -1) {
-        QString str;
-        str.sprintf("%dpx",w->marginWidth());
-        addCSSProperty(CSS_PROP_MARGIN_LEFT, str);
-        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str);
+        addCSSLength(CSS_PROP_MARGIN_LEFT, w->marginWidth());
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, w->marginWidth());
     }
     if(w->marginHeight() != -1) {
-        QString str;
-        str.sprintf("%dpx",w->marginHeight());
-        addCSSProperty(CSS_PROP_MARGIN_TOP, str);
-        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
+        addCSSLength(CSS_PROP_MARGIN_TOP, w->marginHeight());
+        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, w->marginHeight());
     }
 
     ownerDocument()->createSelector();
@@ -178,7 +170,6 @@ void HTMLBodyElementImpl::attach()
 	getDocument()->createSelector();
 
     HTMLElementImpl::attach();
-
 }
 
 bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, MouseEvent *ev)
