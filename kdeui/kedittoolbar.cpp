@@ -126,6 +126,7 @@ public:
     m_instance = instance;
     m_isPart   = false;
     m_helpArea = 0L;
+    m_kdialogProcess = 0;
   }
   ~KEditToolbarWidgetPrivate()
   {
@@ -210,6 +211,7 @@ public:
 
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
+  KProcIO* m_kdialogProcess;
   bool m_hasKDialog;
 };
 
@@ -855,10 +857,11 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 
 void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 {
+  ToolbarItem* toolitem = static_cast<ToolbarItem *>(item);
   if (item)
   {
     m_insertAction->setEnabled(true);
-    QString statusText = static_cast<ToolbarItem *>(item)->statusText();
+    QString statusText = toolitem->statusText();
     d->m_helpArea->setText( statusText );
   }
   else
@@ -870,8 +873,13 @@ void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 
 void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
 {
+  ToolbarItem* toolitem = static_cast<ToolbarItem *>(item);
   m_removeAction->setEnabled( item != 0 );
-  d->m_changeIcon->setEnabled( item != 0 && d->m_hasKDialog );
+
+  static const QString &tagAction = KGlobal::staticQString( "Action" );
+  d->m_changeIcon->setEnabled( item != 0 &&
+                               d->m_hasKDialog &&
+                               toolitem->internalTag() == tagAction );
 
   if (item)
   {
@@ -884,7 +892,7 @@ void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
       m_downAction->setEnabled(true);
     else
       m_downAction->setEnabled(false);
-    QString statusText = static_cast<ToolbarItem *>(item)->statusText();
+    QString statusText = toolitem->statusText();
     d->m_helpArea->setText( statusText );
   }
   else
@@ -1117,36 +1125,45 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
 
 void KEditToolbarWidget::slotChangeIcon()
 {
-  // we're modified, so let this change
-  emit enableOk(true);
-
-  ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
   // We can't use KIconChooser here, since it's in libkio
   // ##### KDE4: reconsider this, e.g. move KEditToolbar to libkio
-  KProcIO proc;
+  d->m_kdialogProcess = new KProcIO;
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
-  proc << kdialogExe;
-  // This was supposed to make it modal to the toolbar editor, but it prevents any repaints!!!
-  //proc << "--embed";
-  //proc << QString::number( topLevelWidget()->winId() );
-  proc << "--geticon";
-  proc << "Toolbar";
-  proc << "Actions";
-  if ( !proc.start( KProcess::Block ) ) {
+  (*d->m_kdialogProcess) << kdialogExe;
+  (*d->m_kdialogProcess) << "--embed";
+  (*d->m_kdialogProcess) << QString::number( topLevelWidget()->winId() );
+  (*d->m_kdialogProcess) << "--geticon";
+  (*d->m_kdialogProcess) << "Toolbar";
+  (*d->m_kdialogProcess) << "Actions";
+  if ( !d->m_kdialogProcess->start( KProcess::NotifyOnExit ) ) {
     kdError(240) << "Can't run " << kdialogExe << endl;
+    delete d->m_kdialogProcess;
+    d->m_kdialogProcess = 0;
     return;
   }
 
-  if ( !proc.normalExit() || proc.exitStatus() != 0 ) {
+  m_activeList->setEnabled( false ); // don't change the current item
+  m_toolbarCombo->setEnabled( false ); // don't change the current toolbar
+
+  connect( d->m_kdialogProcess, SIGNAL( processExited( KProcess* ) ),
+           this, SLOT( slotProcessExited( KProcess* ) ) );
+}
+
+void KEditToolbarWidget::slotProcessExited( KProcess* )
+{
+  m_activeList->setEnabled( true );
+  m_toolbarCombo->setEnabled( true );
+
+  QString icon;
+  if ( !d->m_kdialogProcess->normalExit() ||
+       d->m_kdialogProcess->exitStatus() != 0 ||
+       d->m_kdialogProcess->readln(icon, true) <= 0 ) {
+    delete d->m_kdialogProcess;
+    d->m_kdialogProcess = 0;
     return;
   }
 
-  QString line;
-  int length = proc.readln(line, true);
-  if ( length <= 0 )
-    return;
-
-  QString icon = line;
+  ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
   item->setPixmap(0, BarIcon(icon, 16));
 
   d->m_currentXmlData.m_isModified = true;
@@ -1157,6 +1174,11 @@ void KEditToolbarWidget::slotChangeIcon()
   QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
   Q_ASSERT( !act_elem.isNull() );
   act_elem.setAttribute( "icon", icon );
+
+  // we're modified, so let this change
+  emit enableOk(true);
+  delete d->m_kdialogProcess;
+  d->m_kdialogProcess = 0;
 }
 
 void KEditToolbar::virtual_hook( int id, void* data )

@@ -23,6 +23,7 @@
 #include <kxmlguiclient.h>
 #include <kdialogbase.h>
 
+class KProcess;
 class KActionCollection;
 class QComboBox;
 class QToolButton;
@@ -378,6 +379,9 @@ protected slots:
   void slotDownButton();
 
   void slotChangeIcon();
+
+private slots:
+  void slotProcessExited( KProcess* );
 
 protected:
   void setupLayout();
