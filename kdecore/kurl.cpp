@@ -123,7 +123,10 @@ static QString encodeHost( const QString& segment, bool encode_slash, int encodi
 #ifndef KDE_QT_ONLY
   Q_UNUSED( encode_slash );
   Q_UNUSED( encoding_hint );
-  return KIDNA::toAscii(segment);
+  QString host = KIDNA::toAscii(segment);
+  if (host.isEmpty())
+     return segment;
+  return host;
 #else
   return encode(segment, encode_slash ? 0 : 1, encoding_hint);
 #endif
