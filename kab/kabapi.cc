@@ -1,30 +1,20 @@
 /* -*- C++ -*-
- * This file implements the application programming interface
- * for using kab's addressbook files within other programs.
- * Parse it with kdoc to get the API documentation.
- * 
- * the KDE addressbook
- * copyright:  (C) Mirko Sucker, 1998, 1999
- * mail to:    Mirko Sucker <mirko@kde.org>
- * requires:   recent C++-compiler, at least Qt 2.0
- 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Library General Public
- License as published by the Free Software Foundation; either
- version 2 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Library General Public License for more details.
- 
- You should have received a copy of the GNU Library General Public License
- along with this library; see the file COPYING.LIB.  If not, write to
- the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- Boston, MA 02111-1307, USA.
- 
- * $Id$
- */
+   This file implements the application programming interface
+   for using kab's addressbook files within other programs.
+   Parse it with kdoc to get the API documentation.
+
+   the KDE addressbook
+
+   $ Author: Mirko Boehm $
+   $ Copyright: (C) 1996-2000, Mirko Boehm $
+   $ Contact: mirko@kde.org
+         http://www.kde.org $
+   $ License: GPL with the following explicit clarification:
+         This code may be linked against any version of the Qt toolkit
+         from Troll Tech, Norway. $
+
+   $Id$	 
+*/
 
 #include "kabapi.h"
 #include <klistbox.h>
