@@ -69,7 +69,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 {
    m_sycoca_mmap = 0;
    m_str = 0;
-   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
+   QString path = KGlobal::dirs()->saveLocation("tmp") + "ksycoca";
+   //kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
    delete d->database;
    d->database = 0L;
    QFile *database = new QFile(path);
@@ -222,15 +223,16 @@ bool KSycoca::checkVersion(bool abortOnError)
         return false; // No database found
 
       // We should never get here... if a database was found then m_str shouldn't be 0L.
+      assert(m_str);
    }
    m_str->device()->at(0);
    Q_INT32 aVersion;
    (*m_str) >> aVersion;
    if ( aVersion < KSYCOCA_VERSION )
    {
+      kdWarning(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << " or higher." << endl;
       if (!abortOnError) return false;
       kdError(7011) << "Outdated database ! Stop kded and restart it !" << endl;
-      kdError(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << " or higher." << endl;
       abort();
    }
    return true;
