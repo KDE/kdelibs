@@ -227,6 +227,7 @@ widgetStyle=basicstyle.la
 ShadeStyle=Motif
 ScrollBarExtent=20
 Name=RISC OS
+Name[cs]=Risc OS
 Name[da]=Risc os
 Name[de]=RISC-OS
 Name[eo]=Risc-OS
