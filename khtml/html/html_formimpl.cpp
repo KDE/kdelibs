@@ -1231,9 +1231,15 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
             // can't submit file in www-url-form encoded
             if (multipart) {
+                if (value().string().stripWhiteSpace().isEmpty())
+                {
+                    encoding += dummy;
+                    return false;
+                }
+            
                 KURL fileurl(value().string());
                 KIO::UDSEntry filestat;
-
+                
                 if (!KIO::NetAccess::stat(fileurl, filestat)) {
                     KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
                     return false;
