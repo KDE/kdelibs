@@ -245,7 +245,7 @@ class KDialogBase : public KDialog
      *  @li @p TreeList - A dialog with a tree on the left side and a
      *                    representation of the contents on the right side.
      *  @li @p Tabbed -   A dialog using a @ref QTabWidget.
-     *  @li @p Plain -    A normal dialog.
+     *  @li @p Plain -    A normal dialog. Use @ref plainPage() as parent for widgets.
      *  @li @p Swallow
      *  @li @p IconList - A dialog with an iconlist on the left side and a
      *                    representation of the contents on the right side.
