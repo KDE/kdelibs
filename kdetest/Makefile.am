@@ -37,7 +37,7 @@ check_PROGRAMS =kledlamptest kprogresstest \
 		kgradienttest kmemtest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
-		kspelltest kidlservertest kidlclienttest a
+		kspelltest kidlservertest kidlclienttest
 
 
 noinst_HEADERS = \
@@ -53,7 +53,6 @@ METASOURCES = AUTO
 LDADD =  $(LIB_KDEUI)
 
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
-a_SOURCES = a.cpp
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
 dialogbasetest_SOURCES = dialogbasetest.cpp
