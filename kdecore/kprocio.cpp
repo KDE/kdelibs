@@ -242,7 +242,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
   if ((len<0) && 
       ((unsigned int)rbi<recvbuffer.length()))
   {
-     recvbuffer=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
+     recvbuffer=recvbuffer.mid (rbi);
      rbi=0;
      if (partial)
      {
