@@ -127,12 +127,10 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
         
         if (icon.right(4) == ".xpm") {
             icon.truncate(icon.length() - 4);
-            warning("stripping .xpm from icon %s", name.ascii());
         }
 
         if (icon.right(4) == ".png") {
             icon.truncate(icon.length() - 4);
-            warning("stripping .png from icon %s", name.ascii());
         }
        
         icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
@@ -184,7 +182,6 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
 	
 	if (path.right(4) == ".xpm") {
 	    path.truncate(path.length() - 4);
-	    warning("stripping .xpm from icon %s", name.ascii());
 	}
 	full_path = locate(iconType, path + ".png", library);
 	if (full_path.isNull())

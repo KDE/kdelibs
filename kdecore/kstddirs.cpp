@@ -375,35 +375,33 @@ KStandardDirs::findAllResources( const char *type,
 
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
-    QStringList *candidates = dircache.find(type);
-    if (!candidates) { // filling cache
-        QDir testdir;
-	candidates = new QStringList();
-	QStringList *dirs = absolutes.find(type);
-	if (dirs)
-	    for (QStringList::ConstIterator it = dirs->begin();
-		 it != dirs->end(); it++) {
-		testdir.setPath(*it);
-		if (testdir.exists() && !candidates->contains(*it))
-		    candidates->append(*it);
-	    }
-	dirs = relatives.find(type);
-	if (dirs)
-	    for (QStringList::ConstIterator pit = prefixes.fromLast();
-		 pit != prefixes.end(); pit--)
-		for (QStringList::ConstIterator it = dirs->begin();
-		     it != dirs->end(); it++)
-		{
-		    QString path = *pit + *it;
-		    testdir.setPath(path);
-		    if (testdir.exists() && !candidates->contains(path)) {
-			// debug("adding mix %s for type %s", path.ascii(), type.ascii());
-			candidates->append(path);
-		    }
-		}
-	dircache.insert(type, candidates);
-    }
-    return *candidates;
+  QStringList *candidates = dircache.find(type);
+  
+  if (!candidates) { // filling cache
+    QDir testdir;
+    candidates = new QStringList();
+    QStringList *dirs = absolutes.find(type);
+    if (dirs)
+      for (QStringList::ConstIterator it = dirs->begin();
+	   it != dirs->end(); ++it) {
+	testdir.setPath(*it);
+	if (testdir.exists() && !candidates->contains(*it))
+	  candidates->append(*it);
+      }
+    dirs = relatives.find(type);
+    if (dirs)
+      for (QStringList::ConstIterator pit = prefixes.fromLast();
+	   pit != prefixes.end(); --pit)
+	for (QStringList::ConstIterator it = dirs->begin();
+	     it != dirs->end(); ++it) {
+	  QString path = *pit + *it;
+	  testdir.setPath(path);
+	  if (testdir.exists() && !candidates->contains(path))
+	    candidates->append(path);
+	}
+    dircache.insert(type, candidates);
+  }
+  return *candidates;
 }
 
 QString KStandardDirs::findExe( const QString& appname,
@@ -651,8 +649,12 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	QString key = it2.key();
 	if (key.left(4) == "dir_")
 	{
-	    addResourceDir(key.mid(5, key.length()), it2.data());
-	    debug("adding custom dir %s", it2.data().ascii());
+	    if (addResourceDir(key.mid(4, key.length()), it2.data()))
+	      debug("adding custom dir %s of type %s", it2.data().ascii(),
+		    key.mid(4,key.length()).data());
+	    else
+	      debug("couldn't add custom dir %s of type %s", it2.data().ascii(),
+		    key.mid(4,key.length()).data());
 	}
     }
 
