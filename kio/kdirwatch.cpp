@@ -42,14 +42,14 @@ public:
   struct Entry
   {
     time_t m_ctime;
-    int m_clients;    
+    int m_clients;
 #ifdef HAVE_FAM
     FAMRequest fr;
 #endif
   };
 
   typedef QMap<QString,Entry> EntryMap;
-  
+
   QTimer *timer;
   EntryMap m_mapDirs;
 
@@ -123,6 +123,7 @@ KDirWatch::~KDirWatch()
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
+  delete d->timer;
   delete d; d = 0;
 }
 
