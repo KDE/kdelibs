@@ -122,16 +122,20 @@ KNotifyDialog::~KNotifyDialog()
 {
 }
 
-void KNotifyDialog::addApplicationEvents( const char *appName )
+void KNotifyDialog::addApplicationEvents( const char *appName, bool show )
 {
     addApplicationEvents( QString::fromUtf8( appName ) +
-                          QString::fromLatin1( "/eventsrc" ) );
+                          QString::fromLatin1( "/eventsrc" ), show );
 }
 
-void KNotifyDialog::addApplicationEvents( const QString& path )
+void KNotifyDialog::addApplicationEvents( const QString& path, bool show )
 {
-    if ( m_notifyWidget->addApplicationEvents( path ) )
+    Application *app = m_notifyWidget->addApplicationEvents( path );
+    if ( app && show )
+    {
+        m_notifyWidget->setCurrentApplication( app );
         m_notifyWidget->sort();
+    }
 }
 
 void KNotifyDialog::clearApplicationEvents()
@@ -172,7 +176,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     SelectionCombo::fill( m_comboDisable );
 
     m_listview->setFullWidth( true );
-    
+
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -261,7 +265,7 @@ void KNotifyWidget::showAdvanced( bool show )
     }
 }
 
-bool KNotifyWidget::addApplicationEvents( const QString& path )
+Application * KNotifyWidget::addApplicationEvents( const QString& path )
 {
     kdDebug() << "**** knotify: adding path: " << path << endl;
 
@@ -275,13 +279,10 @@ bool KNotifyWidget::addApplicationEvents( const QString& path )
         Application *app = new Application( relativePath );
         m_apps.append( app );
 
-        // ### delay eventually
-        addToView( app->eventList() );
-
-        return true;
+        return app;
     }
 
-    return false;
+    return 0L;
 }
 
 void KNotifyWidget::clear()
@@ -353,6 +354,15 @@ void KNotifyWidget::updateWidgets( const Event& event )
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
 
     blockSignals( false );
+}
+
+void KNotifyWidget::setCurrentApplication( Application *app )
+{
+    if ( !app )
+        return;
+    
+    m_listview->clear();
+    addToView( app->eventList() );
 }
 
 void KNotifyWidget::addToView( const EventList& events )
@@ -465,21 +475,6 @@ void KNotifyWidget::sort( bool ascending )
     m_listview->setSorting( 0, ascending );
     m_listview->sort();
 }
-
-// move to kcmknotify!
-//
-// void KNotifyWidget::load()
-// {
-//     m_apps.clear();
-//     QStringList fullpaths(KGlobal::dirs()->findAllResources("data", "*/eventsrc", false, true));
-//     QString path;
-//     for (QStringList::Iterator it=fullpaths.begin(); it!=fullpaths.end(); ++it) {
-//         path = makeRelative( *it );
-//         if ( !path.isEmpty() ) {
-//             m_apps.append( new Application( path ));
-//         }
-//     }
-// }
 
 void KNotifyWidget::selectItem( QListViewItem *item )
 {

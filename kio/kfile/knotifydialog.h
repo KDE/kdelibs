@@ -66,8 +66,8 @@ public:
                           const KAboutData *aboutData =
                           KGlobal::instance()->aboutData() );
 
-    virtual void addApplicationEvents( const char *appName );
-    virtual void addApplicationEvents( const QString& path );
+    virtual void addApplicationEvents( const char *appName, bool show = true );
+    virtual void addApplicationEvents( const QString& path, bool show = true );
     virtual void clearApplicationEvents();
 
 private slots:
@@ -115,12 +115,15 @@ namespace KNotify
         }
 
         ApplicationList& apps() { return m_apps; }
-        bool addApplicationEvents( const QString& path );
+        /**
+         * Returns 0L if no application events could be found
+         */
+        Application * addApplicationEvents( const QString& path );
 
         void reload( bool revertToDefaults = false );
 
         void sort( bool ascending = true );
-        void selectItem( QListViewItem *item );
+        void setCurrentApplication( Application *app );
 
     public slots:
         virtual void clear();
@@ -167,6 +170,7 @@ namespace KNotify
         QString makeRelative( const QString& );
         void addToView( const EventList& events );
         void widgetChanged( int what, bool on, QWidget *buddy = 0L );
+        void selectItem( QListViewItem *item );
 
         ApplicationList m_apps;
 
