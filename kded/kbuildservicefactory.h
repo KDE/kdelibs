@@ -76,9 +76,9 @@ private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);
 
+  QDict<KService> m_serviceDict;
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
-  QDict<KService> m_serviceDict;
 };
 
 #endif

@@ -18,13 +18,17 @@
 #ifndef __kbuildsycoca_h__
 #define __kbuildsycoca_h__ 
 
+#include <sys/stat.h>
+
 #include <qobject.h>
 #include <qstring.h>
 #include <qdict.h>
+
+#include <kservice.h>
 #include <ksycoca.h>
 #include <ksycocatype.h>
 #include <ksycocaentry.h>
-#include <sys/stat.h>
+#include "vfolder_menu.h"
 
 class QDataStream;
 
@@ -33,20 +37,21 @@ class KBuildSycoca : public KSycoca
 {
    Q_OBJECT
 public:
-   typedef QValueList<KSycocaEntry::List> KSycocaEntryListList;
-public:
    KBuildSycoca();
    virtual ~KBuildSycoca();
 
    /**
     * Recreate the database file
     */
-   void recreate(KSycocaEntryListList *, QDict<Q_UINT32> *);
+   void recreate();
 
    static bool checkTimestamps( Q_UINT32 timestamp );
 
    static QStringList existingResourceDirs();
 
+protected slots:
+   void slotCreateEntry(const QString &file, KService **entry);
+       
 protected:
 
    /**
@@ -55,9 +60,20 @@ protected:
    void processGnomeVfs();
 
    /**
+    * Add single entry to the sycoca database.
+    * Either from a previous database or regenerated from file.
+    */
+   KSycocaEntry *createEntry(const QString &file);
+
+   /**
+    * Convert a VFolderMenu::SubMenu to KServiceGroups.
+    */
+   void createMenu(QString name, VFolderMenu::SubMenu *menu);
+
+   /**
     * Build the whole system cache, from .desktop files
     */
-   bool build(KSycocaEntryListList *, QDict<Q_UINT32> *);
+   bool build();
    
    /**
     * Save the ksycoca file

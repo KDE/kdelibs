@@ -212,7 +212,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
-     //kdDebug(7020) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
+     //kdDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();
      entrySize = str.device()->at() - start;
@@ -233,7 +233,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     //kdDebug(7020) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
+     //kdDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
      str << (*it);
      str << dict[(*it)]->offset();
    }
@@ -255,7 +255,7 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
      if (!m_propertyTypeDict.contains(pit.key()))
        m_propertyTypeDict.insert(pit.key(), pit.data());
      else
-       qWarning("Property '%s' is defined multiple times (%s)", pit.key().latin1(), serviceType->name().latin1());
+       kdWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
    }
 }
 

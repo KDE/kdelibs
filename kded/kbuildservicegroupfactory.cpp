@@ -32,14 +32,14 @@ KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
   KServiceGroupFactory()
 {
    m_resourceList = new KSycocaResourceList();
-   m_resourceList->add( "apps", "*.directory" );
+//   m_resourceList->add( "apps", "*.directory" );
 }
 
 // return all service types for this factory
 // i.e. first arguments to m_resourceList->add() above
 QStringList KBuildServiceGroupFactory::resourceTypes()
 {
-    return QStringList() << "apps";
+    return QStringList(); // << "apps";
 }
 
 KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
@@ -48,64 +48,69 @@ KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
 }
 
 KServiceGroup *
-KBuildServiceGroupFactory::createEntry( const QString& file, const char *resource )
+KBuildServiceGroupFactory::createEntry( const QString&, const char * )
 {
-  return addNewEntry(file, resource, 0);
+  // Unused
+  kdWarning("!!!! KBuildServiceGroupFactory::createEntry called!");
+  return 0; 
 }
 
-KServiceGroup *
-KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resource, KSycocaEntry *newEntry)
+
+void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService *newEntry)
 {
-  if (strcmp(resource, "apps") != 0) return 0;
-
-  QString name = file;
-  int pos = name.findRev('/');
-  if (pos != -1) {
-     name = name.left(pos+1);
-  } else {
-     name = "/";
-  }
-
   KServiceGroup *entry = 0;
-  KSycocaEntry::Ptr *ptr = m_entryDict->find(name);
+  KSycocaEntry::Ptr *ptr = m_entryDict->find(menuName);
   if (ptr)
      entry = dynamic_cast<KServiceGroup *>(ptr->data());
 
   if (!entry)
   {
-     // Create new group entry
-     QString fullPath = locate( resource, name + ".directory");
+    kdWarning(7021) << "KBuildServiceGroupFactory::addNewEntryTo( " << menuName << ", " << newEntry->name() << " ): menu does not exists!" << endl;
+    return;
+  }
+  entry->addEntry( newEntry );
+}
 
-     entry = new KServiceGroup(fullPath, name);
-     addEntry( entry, resource );
+void
+KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file)
+{
+  KServiceGroup *entry = 0;
+  KSycocaEntry::Ptr *ptr = m_entryDict->find(menuName);
+  if (ptr)
+  {
+    kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): menu already exists!" << endl;
+    return;
+  }
 
-     if (name != "/")
+  // Create new group entry
+  entry = new KServiceGroup(file, menuName);
+  addEntry( entry, "apps" ); // "vfolder" ??
+
+  if (menuName != "/")
+  {
+     // Make sure parent dir exists.
+     KServiceGroup *parentEntry = 0;
+     QString parent = menuName.left(menuName.length()-1);
+     int i = parent.findRev('/');
+     if (i > 0) {
+        parent = parent.left(i+1);
+     } else {
+        parent = "/";
+     }
+     parentEntry = 0;
+     ptr = m_entryDict->find(parent);
+     if (ptr)
+        parentEntry = dynamic_cast<KServiceGroup *>(ptr->data());
+     if (!parentEntry)
      {
-        // Make sure parent dir exists.
-        KServiceGroup *parentEntry = 0;
-        QString parent = name.left(name.length()-1);
-        int i = parent.findRev('/');
-        if (i > 0) {
-           parent = parent.left(i+1);
-        } else {
-           parent = "/";
-        }
-        parentEntry = 0;
-        ptr = m_entryDict->find(parent);
-        if (ptr)
-           parentEntry = dynamic_cast<KServiceGroup *>(ptr->data());
-        if (!parentEntry)
-        {
-           parentEntry = addNewEntry( parent, resource, 0 );
-        }
-        if (parentEntry && !entry->isDeleted())
+        kdWarning(7021) << "KBuildServiceGroupFactory::addNew( " << menuName << ", " << file << " ): parent menu does not exist!" << endl;
+     }
+     else
+     {
+        if (!entry->isDeleted())
            parentEntry->addEntry( entry );
      }
   }
-  if (newEntry)
-     entry->addEntry( newEntry );
-
-  return entry;
 }
 
 KServiceGroup *

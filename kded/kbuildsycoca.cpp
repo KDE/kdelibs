@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure <faure@kde.org>
+ *  Copyright (C) 2002-2003 Waldo Bastian <bastian@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,6 +21,7 @@
 
 #include "kbuildsycoca.h"
 #include "kresourcelist.h"
+#include "vfolder_menu.h"
 
 #include <kservice.h>
 #include <kmimetype.h>
@@ -52,11 +54,23 @@
 #include <unistd.h>
 #include <time.h>
 
+typedef QDict<KSycocaEntry> myEntryDict;
+typedef QValueList<KSycocaEntry::List> KSycocaEntryListList;
+
 static Q_UINT32 newTimestamp = 0;
 
 static KBuildServiceFactory *g_bsf = 0;
-
+static KBuildServiceGroupFactory *g_bsgf = 0;
+static KSycocaFactory *g_factory = 0;
+static KCTimeInfo *g_ctimeInfo = 0;
+static QDict<Q_UINT32> *g_ctimeDict = 0;
+static const char *g_resource = 0;
+static myEntryDict *g_entryDict = 0;
+static KSycocaEntryListList *g_allEntries = 0;
 static QStringList *g_changeList = 0;
+static bool g_changed = false;
+
+static VFolderMenu *g_vfolder = 0;
 
 static const char *cSycocaPath = 0;
 
@@ -146,13 +160,66 @@ void KBuildSycoca::processGnomeVfs()
    fclose( f );
 }
 
-// returns false if the database is up to date
-bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
-                         QDict<Q_UINT32> *ctimeDict)
+KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
 {
-  typedef QDict<KSycocaEntry> myEntryDict;
+   Q_UINT32 timeStamp = g_ctimeInfo->ctime(file);
+   if (!timeStamp)
+   {
+      timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file, true);
+   }
+   KSycocaEntry* entry = 0;
+   if (g_allEntries)
+   {
+      assert(g_ctimeDict);
+      Q_UINT32 *timeP = (*g_ctimeDict)[file];
+      Q_UINT32 oldTimestamp = timeP ? *timeP : 0;
+
+      if (timeStamp && (timeStamp == oldTimestamp))
+      {
+         // Re-use old entry
+         entry = g_entryDict->find(file);
+         // remove from g_ctimeDict; if g_ctimeDict is not empty
+         // after all files have been processed, it means
+         // some files were removed since last time
+         g_ctimeDict->remove( file );
+      }
+      else if (oldTimestamp)
+      {
+         g_changed = true;
+         kdDebug(7021) << "modified: " << file << endl;
+      }
+      else 
+      {
+         g_changed = true;
+         kdDebug(7021) << "new: " << file << endl;
+      }
+   }
+   g_ctimeInfo->addCTime(file, timeStamp );
+   if (!entry)
+   {
+      // Create a new entry
+      entry = g_factory->createEntry( file, g_resource );
+   }
+   if ( entry && entry->isValid() )
+   {
+      g_factory->addEntry( entry, g_resource );
+      return entry;
+   }
+   return 0;
+}
+
+void KBuildSycoca::slotCreateEntry(const QString &file, KService **service)
+{
+   KSycocaEntry *entry = createEntry(file);
+   *service = dynamic_cast<KService *>(entry);
+}
+
+// returns false if the database is up to date
+bool KBuildSycoca::build()
+{
   typedef QPtrList<myEntryDict> myEntryDictList;
   myEntryDictList *entryDictList = 0;
+  myEntryDict *serviceEntryDict = 0;
 
   entryDictList = new myEntryDictList();
   // Convert for each factory the entryList to a Dict.
@@ -163,9 +230,9 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
        factory = m_lstFactories->next() )
   {
      myEntryDict *entryDict = new myEntryDict();
-     if (allEntries)
+     if (g_allEntries)
      {
-         KSycocaEntry::List list = (*allEntries)[i++];
+         KSycocaEntry::List list = (*g_allEntries)[i++];
          for( KSycocaEntry::List::Iterator it = list.begin();
             it != list.end();
             ++it)
@@ -173,6 +240,8 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
             entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>(*it));
          }
      }
+     if (factory == g_bsf)
+        serviceEntryDict = entryDict;
      entryDictList->append(entryDict);
   }
 
@@ -196,19 +265,19 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
     }
   }
 
-  KCTimeInfo *ctimeInfo = new KCTimeInfo();
+  g_ctimeInfo = new KCTimeInfo(); // This is a build factory too, don't delete!!
   bool uptodate = true;
   // For all resources
   for( QStringList::ConstIterator it1 = allResources.begin();
        it1 != allResources.end();
        ++it1 )
   {
-     bool changed = false;
-     const char *resource = (*it1).ascii();
+     g_changed = false;
+     g_resource = (*it1).ascii();
 
      QStringList relFiles;
 
-     (void) KGlobal::dirs()->findAllResources( resource,
+     (void) KGlobal::dirs()->findAllResources( g_resource,
                                                QString::null,
                                                true, // Recursive!
                                                true, // uniq
@@ -217,14 +286,14 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
 
      // Now find all factories that use this resource....
      // For each factory
-     myEntryDict *entryDict = entryDictList->first();
-     for (KSycocaFactory *factory = m_lstFactories->first();
-          factory;
-          factory = m_lstFactories->next(),
-          entryDict = entryDictList->next() )
+     g_entryDict = entryDictList->first();
+     for (g_factory = m_lstFactories->first();
+          g_factory;
+          g_factory = m_lstFactories->next(),
+          g_entryDict = entryDictList->next() )
      {
         // For each resource the factory deals with
-        const KSycocaResourceList *list = factory->resourceList();
+        const KSycocaResourceList *list = g_factory->resourceList();
         if (!list) continue;
 
         for( KSycocaResourceList::ConstIterator it2 = list->begin();
@@ -242,62 +311,68 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
                // Check if file matches filter
                if (res.filter.search(*it3) == -1) continue;
 
-               Q_UINT32 timeStamp = ctimeInfo->ctime(*it3);
-               if (!timeStamp)
-               {
-                   timeStamp = KGlobal::dirs()->calcResourceHash( resource, *it3, true);
-               }
-               KSycocaEntry* entry = 0;
-               if (allEntries)
-               {
-                   assert(ctimeDict);
-                   Q_UINT32 *timeP = (*ctimeDict)[*it3];
-                   Q_UINT32 oldTimestamp = timeP ? *timeP : 0;
-
-                   if (timeStamp && (timeStamp == oldTimestamp))
-                   {
-                      // Re-use old entry
-                      entry = entryDict->find(*it3);
-                      // remove from ctimeDict; if ctimeDict is not empty
-                      // after all files have been processed, it means
-                      // some files were removed since last time
-                      ctimeDict->remove( *it3 );
-                   }
-                   else if (oldTimestamp)
-                   {
-                      changed = true;
-                      kdDebug(7021) << "modified: " << (*it3) << endl;
-                   }
-                   else 
-                   {
-                      changed = true;
-                      kdDebug(7021) << "new: " << (*it3) << endl;
-                   }
-               }
-               ctimeInfo->addCTime(*it3, timeStamp );
-               if (!entry)
-               {
-                   // Create a new entry
-                   entry = factory->createEntry( *it3, resource );
-               }
-               if ( entry && entry->isValid() )
-                  factory->addEntry( entry, resource );
+               createEntry(*it3);
            }
         }
-        if ((factory == g_bsf) && (strcmp(resource, "apps") == 0))
+        if ((g_factory == g_bsf) && (strcmp(g_resource, "services") == 0))
            processGnomeVfs();
      }
-     if (changed || !allEntries)
+     if (g_changed || !g_allEntries)
      {
         uptodate = false;
-        g_changeList->append(resource);
+        g_changeList->append(g_resource);
+     }
+  }
+
+  bool result = !uptodate || !g_ctimeDict->isEmpty();
+  
+  if (result)
+  {
+     g_resource = "apps";
+     g_factory = g_bsf;
+     g_entryDict = serviceEntryDict;
+     g_changed = false;
+
+     g_vfolder = new VFolderMenu;
+
+     connect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
+             this, SLOT(slotCreateEntry(const QString &, KService **)));
+             
+     VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
+
+     g_bsgf->addNew("/", QString::null);
+     createMenu(QString::null, kdeMenu);
+
+     disconnect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
+             this, SLOT(slotCreateEntry(const QString &, KService **)));
+
+     if (g_changed || !g_allEntries)
+     {
+        uptodate = false;
+        g_changeList->append(g_resource);
      }
   }
   
-  return !uptodate || !ctimeDict->isEmpty();
+  return result;
 }
 
-void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
+void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
+{
+  for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
+  {
+     QString subName = name+subMenu->name+"/";
+     g_bsgf->addNew(subName, subMenu->directoryFile);
+     createMenu(subName, subMenu);
+  }
+  if (name.isEmpty())
+     name = "/";
+  for(QDictIterator<KService> it(menu->items); it.current(); ++it)
+  {
+     g_bsgf->addNewEntryTo(name, it.current());
+  }
+}
+
+void KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
 
@@ -318,12 +393,12 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
-  g_bsf = new KBuildServiceFactory(stf, bsgf);
+  g_bsgf = new KBuildServiceGroupFactory();
+  g_bsf = new KBuildServiceFactory(stf, g_bsgf);
   (void) new KBuildImageIOFactory();
   (void) new KBuildProtocolInfoFactory();
 
-  if( build(allEntries, ctimeDict)) // Parse dirs
+  if( build()) // Parse dirs
   {
     save(); // Save database
     if (m_str->device()->status())
@@ -576,6 +651,9 @@ int main(int argc, char **argv)
      Q_UINT32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
      Q_UINT32 ksycoca_update_sig = KSycoca::self()->updateSignature();
      
+
+     ksycoca_kfsstnd = current_kfsstnd;
+     
      if ((current_update_sig != ksycoca_update_sig) ||
          (current_kfsstnd != ksycoca_kfsstnd) ||
          (current_language != ksycoca_language))
@@ -613,14 +691,14 @@ int main(int argc, char **argv)
       QCString qSycocaPath = QFile::encodeName(sycocaPath());
       cSycocaPath = qSycocaPath.data();
 
-      KBuildSycoca::KSycocaEntryListList *allEntries = 0;
-      QDict<Q_UINT32> *ctimeDict = 0;
+      g_allEntries = 0;
+      g_ctimeDict = 0;
       if (incremental)
       {
          KSycoca *oldSycoca = KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
-         allEntries = new KBuildSycoca::KSycocaEntryListList;
-         ctimeDict = new QDict<Q_UINT32>(523);
+         g_allEntries = new KSycocaEntryListList;
+         g_ctimeDict = new QDict<Q_UINT32>(523);
 
          // Must be in same order as in KBuildSycoca::recreate()!
          factories->append( new KServiceTypeFactory );
@@ -636,17 +714,17 @@ int main(int argc, char **argv)
          {
              KSycocaEntry::List list;
              list = factory->allEntries();
-             allEntries->append( list );
+             g_allEntries->append( list );
          }
          delete factories; factories = 0;
          KCTimeInfo *ctimeInfo = new KCTimeInfo;
-         ctimeInfo->fillCTimeDict(*ctimeDict);
+         ctimeInfo->fillCTimeDict(*g_ctimeDict);
          delete oldSycoca;
       }
       cSycocaPath = 0;
 
       KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-      sycoca->recreate(allEntries, ctimeDict);
+      sycoca->recreate();
    }
 
    if (args->isSet("signal"))

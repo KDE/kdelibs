@@ -45,10 +45,9 @@ public:
   virtual KServiceGroup * createEntry(int) { assert(0); return 0L; }
 
   /**
-   * Adds the entry newEntry to the correct group, creating the group if
-   * necassery. If newEntry is 0, only the group is created.
+   * Adds the entry @p newEntry to the menu @p menuName
    */
-  KServiceGroup *addNewEntry( const QString& file, const char *resource, KSycocaEntry *newEntry);
+  void addNewEntryTo( const QString &menuName, KService *newEntry);
 
   /**
    * Adds the entry @p newEntry to the "parent group" @p parent, creating
@@ -59,7 +58,12 @@ public:
   KServiceGroup *addNewChild( const QString &parent, const char *resource, KSycocaEntry *newEntry);
  
   /**
-   * Add a new entry
+   * Add new menu @p menuName defined by @p file
+   */
+  void addNew( const QString &menuName, const QString& file);
+
+  /**
+   * Add a new menu entry
    */
   virtual void addEntry( KSycocaEntry *newEntry, const char *resource );
 

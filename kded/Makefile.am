@@ -34,7 +34,8 @@ kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicegroupfactory.cpp \
 				kbuildimageiofactory.cpp \
 				kbuildprotocolinfofactory.cpp \
-				kctimefactory.cpp
+				kctimefactory.cpp \
+				vfolder_menu.cpp
 
 bin_PROGRAMS = kded kbuildsycoca kdontchangethehostname
 
@@ -61,6 +62,9 @@ noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 
 servicetype_DATA = kdedmodule.desktop
 servicetypedir = $(kde_servicetypesdir)
+
+applnk_DATA = default_applications.menu
+applnkdir = $(kde_appsdir)
 
 update_DATA = kded.upd
 updatedir = $(kde_datadir)/kconf_update

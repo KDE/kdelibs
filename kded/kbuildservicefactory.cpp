@@ -32,13 +32,13 @@
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 	KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
+  m_serviceDict(977),
   m_serviceTypeFactory( serviceTypeFactory ),
-  m_serviceGroupFactory( serviceGroupFactory ),
-  m_serviceDict(977)
+  m_serviceGroupFactory( serviceGroupFactory )
 {
    m_resourceList = new KSycocaResourceList();
-   m_resourceList->add( "apps", "*.desktop" );
-   m_resourceList->add( "apps", "*.kdelnk" );
+//   m_resourceList->add( "apps", "*.desktop" );
+//   m_resourceList->add( "apps", "*.kdelnk" );
    m_resourceList->add( "services", "*.desktop" );
    m_resourceList->add( "services", "*.kdelnk" );
 }
@@ -73,12 +73,6 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 
   if (name.isEmpty())
      return 0;
-
-  if ( name == ".directory")
-  {
-     m_serviceGroupFactory->addNewEntry(file, resource, 0);
-     return 0;
-  }
 
   // Is it a .desktop file?
   if ((name.right(8) != ".desktop") && (name.right(7) != ".kdelnk"))
@@ -198,13 +192,6 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    KSycocaFactory::addEntry(newEntry, resource);
 
    KService * service = (KService *) newEntry;
-   if (!service->isDeleted())
-   {
-      m_serviceGroupFactory->addNewEntry(service->entryPath(), resource, service);
-      QString parent = service->parentApp();
-      if (!parent.isEmpty())
-         m_serviceGroupFactory->addNewChild(parent, resource, service);
-   }
 
    QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );
