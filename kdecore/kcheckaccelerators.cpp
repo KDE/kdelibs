@@ -77,11 +77,11 @@
 */
 
 KCheckAccelerators::KCheckAccelerators( QObject* parent )
-    : QObject( parent, "kapp_accel_filter" ), block( false ), drklash(0)
+    : QObject( parent, "kapp_accel_filter" ), key(0), block( false ), drklash(0)
 {
     parent->installEventFilter( this );
     KConfigGroupSaver saver( KGlobal::config(), "Development" );
-    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators", "F12" ).stripWhiteSpace();
+    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).stripWhiteSpace();
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( cuts.count() > 0 )
@@ -96,7 +96,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
     if ( block )
         return false;
     if ( e->type() == QEvent::Accel ) {
-        if ( static_cast<QKeyEvent *>(e)->key() == key ) {
+        if ( key && (static_cast<QKeyEvent *>(e)->key() == key) ) {
     	    block = true;
 	    checkAccelerators( false );
 	    block = false;
