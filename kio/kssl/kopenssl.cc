@@ -257,6 +257,7 @@ KConfig *cfg;
 	     << "libssl.so.0"
 	     << "libssl.so.0.9.6"
 	     << "libssl.so.0.9.6b"
+	     << "libssl.so.0.9.6c"
              #endif
 	     ;
 
@@ -268,6 +269,7 @@ KConfig *cfg;
 	     << "libcrypto.so.0"
 	     << "libcrypto.so.0.9.6"
 	     << "libcrypto.so.0.9.6b"
+	     << "libcrypto.so.0.9.6c"
              #endif
 	     ;
 
