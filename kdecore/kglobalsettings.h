@@ -30,6 +30,7 @@
 #define KDE_DEFAULT_VISUAL_ACTIVATE true
 #define KDE_DEFAULT_VISUAL_ACTIVATE_SPEED 50
 #define KDE_DEFAULT_WHEEL_ZOOM false
+#define KDE_DEFAULT_ICON_ON_PUSHBUTTON false
 
 /**
  * Access the KDE global configuration.
@@ -443,6 +444,16 @@ class KGlobalSettings
      * @since 3.2
      */
     static QRect desktopGeometry(QWidget* w);
+
+    /**
+     * This function determines if the user wishes to see icons on the
+     * push buttons.
+     *
+     * @return Returns true if user wants to show icons.
+     *
+     * @since 3.2
+     */
+    static bool showIconsOnPushButtons();
 
 private:
     /**

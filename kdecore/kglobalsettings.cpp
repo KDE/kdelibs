@@ -600,8 +600,9 @@ bool KGlobalSettings::isMultiHead()
 
 bool KGlobalSettings::wheelMouseZooms()
 {
-    KConfigGroup group( KGlobal::config(), "KDE" );
-    return group.readBoolEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readBoolEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
 }
 
 QRect KGlobalSettings::splashScreenDesktopGeometry()
@@ -657,5 +658,13 @@ QRect KGlobalSettings::desktopGeometry(QWidget* w)
     } else {
         return dw->geometry();
     }
+}
+
+bool KGlobalSettings::showIconsOnPushButtons()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readBoolEntry("ShowIconsOnPushButtons",
+        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
