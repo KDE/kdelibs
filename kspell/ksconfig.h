@@ -24,6 +24,7 @@ class QCheckBox;
 class QComboBox;
 class QLabel;
 
+class KConfig;
 
 enum Encoding {
   KS_E_ASCII=0,
