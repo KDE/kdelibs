@@ -88,5 +88,5 @@ AC_CHECK_FUNC(fabs, , AC_CHECK_LIB(m, fabs,
 AC_SUBST(M_LIBS)
 
 dnl AC_OUTPUT(kdoctools/libxslt/xsltconfig.h kdoctools/libxslt/xsltwin32config.h)
-
+dnl AC_OUTPUT(kdoctools/checkXML)
 

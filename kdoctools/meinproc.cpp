@@ -214,7 +214,7 @@ int main(int argc, char **argv) {
             goto end;
         }
 
-        if (output.find( "<FILENAME " ) == -1 )
+        if (output.find( "<FILENAME " ) == -1 || args->isSet( "stdout" ))
         {
             QFile file;
             if (args->isSet( "stdout" ) ) {

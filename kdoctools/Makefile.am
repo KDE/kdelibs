@@ -19,7 +19,7 @@ noinst_HEADERS = kio_help.h
 kdelnk_DATA = help.protocol
 kdelnkdir = $(kde_servicesdir)
 
-bin_PROGRAMS = meinproc checkXML xml2man
+bin_PROGRAMS = meinproc xml2man
 meinproc_LDADD = xslt_pure.o libxslt/libxslt.la $(FILTER_LIBS)
 meinproc_SOURCES = meinproc.cpp $(FILTER_SOURCES)
 
@@ -32,10 +32,7 @@ xslt_pure.o: xslt.cpp
 	$(CXXCOMPILE) -DSIMPLE_XSLT -c xslt_pure.cpp
 	-rm -f xslt_pure.cpp
 
-checkXML_SOURCES = $(FILTER_SOURCES) checkXML.cpp xslt.cpp kio_help.cpp
-checkXML_LDADD = libxslt/libxslt.la $(FILTER_LIBS)
-
-bin_SCRIPTS = xmlizer kdb2html
+bin_SCRIPTS = xmlizer kdb2html checkXML
 
 METASOURCES = AUTO
 
