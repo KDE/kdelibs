@@ -107,6 +107,8 @@ static char * (*K_BN_bn2hex)(const BIGNUM *) = NULL;
 static int (*K_X509_digest)(const X509 *,const EVP_MD *, unsigned char *, unsigned int *) = NULL;
 static EVP_MD* (*K_EVP_md5)() = NULL;
 static void (*K_ASN1_INTEGER_free)(ASN1_INTEGER *) = NULL;
+static int (*K_OBJ_obj2nid)(ASN1_OBJECT *) = NULL;
+static const char * (*K_OBJ_nid2ln)(int) = NULL;
 #endif    
 };
 
@@ -227,6 +229,8 @@ KConfig *cfg;
       K_X509_digest = (int (*)(const X509 *,const EVP_MD *, unsigned char *, unsigned int *)) _cryptoLib->symbol("X509_digest");
       K_EVP_md5 = (EVP_MD *(*)()) _cryptoLib->symbol("EVP_md5");
       K_ASN1_INTEGER_free = (void (*)(ASN1_INTEGER *)) _cryptoLib->symbol("ASN1_INTEGER_free");
+      K_OBJ_obj2nid = (int (*)(ASN1_OBJECT *)) _cryptoLib->symbol("OBJ_obj2nid");
+      K_OBJ_nid2ln = (const char *(*)(int)) _cryptoLib->symbol("OBJ_nid2ln");
 #endif
    }
 
@@ -774,6 +778,17 @@ void KOpenSSLProxy::ASN1_INTEGER_free(ASN1_INTEGER *a) {
    if (K_ASN1_INTEGER_free) (K_ASN1_INTEGER_free)(a);
 }
 
+
+int KOpenSSLProxy::OBJ_obj2nid(ASN1_OBJECT *o) {
+   if (K_OBJ_obj2nid) return (K_OBJ_obj2nid)(o);
+   else return -1;
+}
+
+
+const char * KOpenSSLProxy::OBJ_nid2ln(int n) {
+   if (K_OBJ_nid2ln) return (K_OBJ_nid2ln)(n);
+   else return NULL;
+}
 
 
 #endif

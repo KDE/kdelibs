@@ -63,6 +63,9 @@
 
 
 
+static char hv[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+
 class KSSLCertificatePrivate {
 public:
   KSSLCertificatePrivate() {
@@ -152,13 +155,39 @@ return rc;
 }
 
 
+QString KSSLCertificate::getSignatureText() const {
+QString rc = "";
+
+#ifdef HAVE_SSL
+char *s;
+int n, i;
+
+        i = d->kossl->OBJ_obj2nid(d->m_cert->sig_alg->algorithm);
+        rc = i18n("Signature Algorithm: ");
+        rc += (i == NID_undef)?i18n("Unknown"):d->kossl->OBJ_nid2ln(i);
+ 
+        rc += i18n("\nSignature Contents:");
+        n = d->m_cert->signature->length;
+        s = (char *)d->m_cert->signature->data;
+        for (i = 0; i < n; i++) {
+           if (i%20 != 0) rc += ":";
+           else rc += "\n       ";
+           rc.append(hv[(s[i]&0xf0)>>4]);
+           rc.append(hv[s[i]&0x0f]);
+        }
+
+#endif
+
+return rc;
+}
+
+
 QString KSSLCertificate::getMD5DigestText() const {
 QString rc = "";
 
 #ifdef HAVE_SSL
    unsigned int n;
    unsigned char md[EVP_MAX_MD_SIZE];
-   char hv[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
  
    if (!d->kossl->X509_digest(d->m_cert, d->kossl->EVP_md5(), md, &n)) {
       return rc;
@@ -220,7 +249,7 @@ char *x = NULL;
       rc = rc.arg(strlen(x)*4);
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n          ";
+        else if (i%40 == 0) rc += "\n        ";
         rc += x[i];
       }
       rc += "\n";
@@ -240,7 +269,7 @@ char *x = NULL;
       rc = rc.arg(strlen(x)*4);  // hack - this may not be always accurate
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n          ";
+        else if (i%40 == 0) rc += "\n        ";
         rc += x[i];
       }
       rc += "\n";
@@ -250,7 +279,7 @@ char *x = NULL;
       rc += i18n("160 bit Prime Factor: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n          ";
+        else if (i%40 == 0) rc += "\n        ";
         rc += x[i];
       }
       rc += "\n";
@@ -260,7 +289,7 @@ char *x = NULL;
       rc += QString("g: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n          ";
+        else if (i%40 == 0) rc += "\n        ";
         rc += x[i];
       }
       rc += "\n";
@@ -270,7 +299,7 @@ char *x = NULL;
       rc += i18n("Public Key: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n          ";
+        else if (i%40 == 0) rc += "\n        ";
         rc += x[i];
       }
       rc += "\n";

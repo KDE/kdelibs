@@ -98,6 +98,7 @@ public:
   QString getKeyType() const;
   QString getPublicKeyText() const;
   QString getMD5DigestText() const;
+  QString getSignatureText() const;
 
   bool isValid();
   KSSLValidation validate();

@@ -520,6 +520,17 @@ public:
    void ASN1_INTEGER_free(ASN1_INTEGER *x);
 
 
+   /*
+    *  
+    */
+   int OBJ_obj2nid(ASN1_OBJECT *o);
+
+   /*
+    *  
+    */
+   const char * OBJ_nid2ln(int n);
+
+
 #endif
 
 private:
