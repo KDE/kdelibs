@@ -19,7 +19,7 @@
 #define __kio_pass_dlg_h__
 
 #include <qstring.h>
-#include <qdialog.h>
+#include <kdialog.h>
 #include <qlineedit.h>
 
 namespace KIO {
@@ -28,7 +28,7 @@ namespace KIO {
    * A dialog for requesting a login and a password to the user
    * KIO-Slave authors should have a look at @ref SlaveBase::openPassDlg instead.
    */
-  class PassDlg : public QDialog {
+  class PassDlg : public KDialog {
     Q_OBJECT
   public:
     /**
