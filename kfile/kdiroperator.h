@@ -449,6 +449,15 @@ class KDirOperator : public QWidget
      */
     bool dirHighlighting() const;
 
+    /**
+     * @returns true if we are in directory-only mode, that is, no files are
+     * shown.
+     */
+    bool dirOnlyMode() const {
+        return ( (myMode & KFile::Directory) &&
+                 (myMode & (KFile::File | KFile::Files)) == 0 );
+    }
+
 protected:
     /**
      * Sets a custom KFileReader to list directories.
@@ -627,15 +636,6 @@ protected slots:
      * Toggles case sensitive / case insensitive sorting
      */
     void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
-
-    /**
-     * @returns true if we are in directory-only mode, that is, no files are
-     * shown.
-     */
-    bool dirOnlyMode() const {
-        return ( (myMode & KFile::Directory) &&
-                 (myMode & (KFile::File | KFile::Files)) == 0 );
-    }
 
     /**
      * Tries to make the given @p match as current item in the view and emits

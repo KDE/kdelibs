@@ -349,7 +349,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     locationEdit->setHandleSignals( true );
     (void) locationEdit->completionBox();
 
-    locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
@@ -632,7 +631,6 @@ void KFileDialog::slotOk()
 	    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
 		QFileInfo info( d->url.path() );
 		if ( info.isDir() ) {
-		    locationEdit->insertItem( d->url.path(+1), 1 );
 		    d->filenames = QString::null;
 		    d->urlList.clear();
 		    d->urlList.append( d->url );
@@ -645,7 +643,6 @@ void KFileDialog::slotOk()
 			return;
 
 		    else {
-			locationEdit->insertItem( d->url.prettyURL(+1), 1 );
 			accept();
 		    }
 		}
@@ -743,7 +740,6 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     }
 
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
-    locationEdit->insertItem( sJob->url().prettyURL(), 1 );
 
     if ( count == 0 )
         accept();
@@ -752,10 +748,31 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 
 void KFileDialog::accept()
 {
+    setResult( QDialog::Accepted ); // parseSelectedURLs() checks that
+    
     *lastDirectory = ops->url();
     if (!d->fileClass.isEmpty())
        KRecentDirs::add(d->fileClass, ops->url().url());
 
+    KURL::List list = selectedURLs();
+    QValueListConstIterator<KURL> it = list.begin();
+    for ( ; it != list.end(); ++it ) {
+        const KURL& url = *it;
+        // we strip the last slash (-1) because KURLComboBox does that as well
+        // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
+        // work.
+        QString file = url.isLocalFile() ? url.path(-1) : url.prettyURL(-1);
+        
+        // remove dupes
+        for ( int i = 0; i < locationEdit->count(); i++ ) {
+            if ( locationEdit->text( i ) == file ) {
+                locationEdit->removeItem( i-- );
+                break;
+            }
+        }
+        locationEdit->insertItem( file, 1 );
+    }
+    
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
     saveConfig( c, ConfigGroup );
