@@ -42,7 +42,7 @@ libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.c
 
 libkhtml_la_METASOURCES = AUTO
 
-include_HEADERS = khtmlview.h khtml_part.h khtml_events.h
+include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h
 
 noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h
 

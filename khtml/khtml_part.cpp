@@ -297,8 +297,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paLoadImages = 0;
 
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->enableJavaScript();
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
+  // PENDING(lars) pass hostname to the following methods
+  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
+  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
 
   autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
 
@@ -2182,8 +2183,9 @@ void KHTMLPart::reparseConfiguration()
 
   autoloadImages( settings->autoLoadImages() );
 
-  d->m_bJScriptEnabled = settings->enableJavaScript();
-  d->m_bJavaEnabled = settings->enableJava();
+  // PENDING(lars) Pass hostname to the following two methods.
+  d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
+  d->m_bJavaEnabled = settings->isJavaEnabled();
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 

@@ -25,6 +25,7 @@ class KConfig;
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qfont.h>
+#include <qmap.h>
 
 /**
  * Settings for the HTML view.
@@ -34,6 +35,16 @@ class KConfig;
 class KHTMLSettings
 {
 public:
+
+  /**
+   * This enum specifies whether Java/JavaScript execution is allowed.
+   */
+  enum KJavaScriptAdvice {
+    KJavaScriptDunno=0,
+    KJavaScriptAccept,
+    KJavaScriptReject
+  };
+
   /**
    * @internal Constructor
    */
@@ -84,8 +95,15 @@ public:
   bool autoLoadImages() { return m_bAutoLoadImages; }
 
   // Java and JavaScript
-  bool enableJava() { return m_bEnableJava; }
-  bool enableJavaScript() { return m_bEnableJavaScript; }
+  bool isJavaEnabled( const QString& hostname = QString::null );
+  bool isJavaScriptEnabled( const QString& hostname = QString::null );
+
+  // helpers for parsing domain-specific configuration, used in KControl module as well
+  static KJavaScriptAdvice strToAdvice(const QString& _str);
+  static void splitDomainAdvice(const QString& configStr, QString &domain, 
+								KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice);
+  static const char* adviceToStr(KJavaScriptAdvice _advice);
+
 
 private:
   bool m_bChangeCursor;
@@ -112,6 +130,8 @@ private:
   bool m_bAutoLoadImages;
   bool m_bEnableJava;
   bool m_bEnableJavaScript;
+  QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
+  QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
 
   //  static KonqHTMLSettings * s_HTMLSettings;
 };
