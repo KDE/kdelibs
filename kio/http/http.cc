@@ -340,7 +340,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_sock = 0;
   m_fcache = 0;
   m_bKeepAlive = false;
-  m_iSize = 0;
+  m_iSize = -1;
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
   {
@@ -802,7 +802,7 @@ bool HTTPProtocol::http_open()
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
-  m_iSize = 0;
+  m_iSize = -1;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -1352,7 +1352,7 @@ bool HTTPProtocol::readHeader()
   if (!m_qContentEncodings.isEmpty())
   {
      // If we still have content encoding we can't rely on the Content-Length.
-     m_iSize = 0;
+     m_iSize = -1;
   }
 
   // FINALLY, let the world know what kind of data we are getting
@@ -1392,7 +1392,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
     m_bChunked = true;
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     //if ( m_cmd != CMD_COPY )
-      m_iSize = 0;
+      m_iSize = -1;
   } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip")) {
     encs.append(QString::fromLatin1("gzip"));
   } else if ((encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
@@ -2051,7 +2051,7 @@ bool HTTPProtocol::readBody( )
   bool useMD5 = !m_sContentMD5.isEmpty();
 #endif
 
-  totalSize( m_iSize );
+  totalSize( (m_iSize > -1) ? m_iSize : 0 );
 
   infoMessage( i18n( "Retrieving data from %1" ).arg( m_request.hostname ) );
 
@@ -2093,7 +2093,7 @@ bool HTTPProtocol::readBody( )
   MD5_CTX context;
   MD5_Init(&context);
 #endif
-  if (m_iSize)
+  if (m_iSize > -1)
     m_iBytesLeft = m_iSize;
   else
     m_iBytesLeft = 1;
@@ -2104,7 +2104,7 @@ bool HTTPProtocol::readBody( )
     int bytesReceived;
     if (m_bChunked)
        bytesReceived = readChunked();
-    else if (m_iSize)
+    else if (m_iSize > -1)
        bytesReceived = readLimited();
     else {
        bytesReceived = readUnlimited();
