@@ -328,7 +328,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
     if(m_parent)
     {
         m_parent->absolutePosition(xPos, yPos);
-        if(!isInline() && xPos != -1)
+        if((!isInline() || isReplaced()) && xPos != -1)
             xPos += m_x, yPos += m_y;
     }
     else
