@@ -224,8 +224,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QLineEdit::keyPressEvent ( e );
             QString txt = text();
             QString keycode = e->text();
-            int len = txt.length();
-            int key = e->key();
 
             if ( txt != old_txt )
             {
