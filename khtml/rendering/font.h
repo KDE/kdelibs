@@ -70,13 +70,14 @@ public:
     Font( const FontDef &fd )
         :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
         {}
+    Font(const Font& o)
+        : fontDef(o.fontDef), f(o.f), fm(o.fm), scFont(o.scFont), letterSpacing(o.letterSpacing), wordSpacing(o.wordSpacing) { if (o.scFont) scFont = new QFont(*o.scFont); }
     ~Font() { delete scFont; }
 
     bool operator == ( const Font &other ) const {
         return (fontDef == other.fontDef &&
                 letterSpacing == other.letterSpacing &&
-                wordSpacing == other.wordSpacing &&
-		scFont == other.scFont );
+                wordSpacing == other.wordSpacing );
     }
 
     void update( QPaintDeviceMetrics *devMetrics ) const;
