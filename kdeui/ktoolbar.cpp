@@ -831,12 +831,13 @@ void KToolBar::setBarPos (BarPosition bpos)
 
 KToolBar::BarPosition KToolBar::barPos() const
 {
-    if ( !mainWindow() )
+    KToolBar *that = const_cast<KToolBar*>(this);
+    if ( !that->mainWindow() )
         return KToolBar::Top;
     QMainWindow::ToolBarDock dock;
     int dm1, dm2;
     bool dm3;
-    mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
+    that->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
     if ( dock == QMainWindow::Unmanaged ) {
 #if 0
         if ( d->hasRealPos )
@@ -1088,10 +1089,11 @@ QString KToolBar::settingsGroup() const
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";
-    if ( mainWindow() )
+    KToolBar *that = const_cast<KToolBar*>(this);
+    if ( that->mainWindow() )
     {
         configGroup.prepend(" ");
-        configGroup.prepend( mainWindow()->name() );
+        configGroup.prepend( that->mainWindow()->name() );
     }
     return configGroup;
 }
