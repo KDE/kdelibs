@@ -170,6 +170,7 @@ int main(int argc, char **argv) {
 
     // Search Engine tests
     filter( "gg:foo bar", "http://www.google.com/search?q=foo%20bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( "bug:55798", "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
     // BR ...
     filter( "gg:C++", "http://www.google.com/search?q=C%2B%2B&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "ya:foo bar was here", 0, -1 ); // this triggers default search, i.e. google
