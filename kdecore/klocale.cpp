@@ -842,12 +842,6 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
   return rst;
 }
 
-
-QString KLocale::formatDateTime(const QDateTime &pDateTime) const
-{
-  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
-}
-
 bool KLocale::use12Clock()
 {
   return _timefmt.contains(QString::fromLatin1("%p")) > 0;
@@ -985,11 +979,6 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
   return result;
 }
 
-QString KLocale::formatDateTime(const QDateTime &pDateTime) const
-{
-  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
-}
-
 bool KLocale::use12Clock()
 {
   return true;
@@ -1013,6 +1002,11 @@ void KLocale::setLanguage(
 }
 
 #endif /* ENABLE_NLS */
+
+QString KLocale::formatDateTime(const QDateTime &pDateTime) const
+{
+  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
+}
 
 QString KLocale::getAlias(long key) const
 {
