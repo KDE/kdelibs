@@ -2033,10 +2033,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
     kdDebug( 6050 ) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
-    emit started( 0L );
+//    emit started( 0L );
 
     FrameIt fIt = d->m_frames.begin();
     FrameIt fEnd = d->m_frames.end();
+
+    for (; fIt != fEnd; ++fIt )
+        (*fIt).m_bCompleted = false;
+
+    fIt = d->m_frames.begin();
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
