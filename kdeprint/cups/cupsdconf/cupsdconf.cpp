@@ -275,7 +275,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 					   default: t << "User" << endl; break;
 					}
 				}
-				if (!loc->authgroupname_.isNull()) t << "AuthGroupName " << loc->authgroupname_ << endl;
+				if (!loc->authgroupname_.isEmpty()) t << "AuthGroupName " << loc->authgroupname_ << endl;
 				if (loc->order_ != -1) t << "Order " << (loc->order_ == ORDER_ALLOW_DENY ? "Allow,Deny" : "Deny,Allow") << endl;
 				for (sit=loc->allow_.begin();sit!=loc->allow_.end();++sit)
 					t << "Allow From " << (*sit) << endl;
