@@ -58,10 +58,16 @@ namespace KJS {
     friend class Location;
     friend class WindowFunc;
     friend class WindowQObject;
-    friend Window *newWindow(KHTMLPart*);
     Window(KHTMLPart *p);
   public:
     ~Window();
+    /**
+     * Returns and registers a window object. In case there's already a Window
+     * for the specified part p this will be returned in order to have unique
+     * bindings.
+     */
+    static Window *retrieve(KHTMLPart *p);
+
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
@@ -70,22 +76,17 @@ namespace KJS {
     void clearTimeout(int timerId);
     void scheduleClose();
     bool isSafeScript() const;
+    Location *location() const;
   private:
     QGuardedPtr<KHTMLPart> part;
     QGuardedPtr<KHTMLPart> opener;
     Screen *screen;
     History *history;
     FrameArray *frames;
+    Location *loc;
     bool openedByJS;
     WindowQObject *winq;
   };
-
-  /**
-   * Returns and registers a window object. In case there's already a Window
-   * for the specified part p this will be returned in order to have unique
-   * bindings.
-   */
-  Window *newWindow(KHTMLPart *p);
 
   class WindowFunc : public DOMFunction {
   public:
@@ -120,15 +121,13 @@ namespace KJS {
 
   class Location : public HostImp {
   public:
-    ~Location();
-    static Location* retrieve(KHTMLPart *);
-
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO &v);
     virtual KJSO toPrimitive(Type preferred) const;
     virtual String toString() const;
   private:
-    Location(KHTMLPart *p);
+    friend class Window;
+    Location(KHTMLPart *p) : part(p) { }
     QGuardedPtr<KHTMLPart> part;
   };
 

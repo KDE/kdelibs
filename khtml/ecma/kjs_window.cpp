@@ -54,22 +54,9 @@ using namespace KJS;
 
 static QPtrDict<Window> *window_dict = 0L;
 
-// ### put into class Window namespace
-Window *KJS::newWindow(KHTMLPart *p)
-{
-  Window *w;
-  if (!window_dict)
-    window_dict = new QPtrDict<Window>;
-  else if ((w = window_dict->find(p)) != 0L)
-    return w;
-
-  w = new Window(p);
-  window_dict->insert(p, w);
-
-  return w;
-}
-
 namespace KJS {
+
+////////////////////// History Object ////////////////////////
 
 class History : public HostImp {
   friend class HistoryFunc;
@@ -101,6 +88,8 @@ private:
 };
 
 }; // namespace KJS
+
+////////////////////// Screen Object ////////////////////////
 
 // table for screen object
 /*
@@ -162,8 +151,10 @@ KJSO Screen::get(const UString &p) const
   }
 }
 
+////////////////////// Window Object ////////////////////////
+
 Window::Window(KHTMLPart *p)
-  : part(p), screen(0), history(0), frames(0),
+  : part(p), screen(0), history(0), frames(0), loc(0),
     openedByJS(false), winq(0L)
 {
 }
@@ -176,6 +167,27 @@ Window::~Window()
     window_dict = 0L;
   }
   delete winq;
+}
+
+Window *Window::retrieve(KHTMLPart *p)
+{
+  Window *w;
+  if (!window_dict)
+    window_dict = new QPtrDict<Window>;
+  else if ((w = window_dict->find(p)) != 0L)
+    return w;
+
+  w = new Window(p);
+  window_dict->insert(p, w);
+
+  return w;
+}
+
+Location *Window::location() const
+{
+  if (!loc)
+    const_cast<Window*>(this)->loc = new Location(part);
+  return loc;
 }
 
 bool Window::hasProperty(const UString &p, bool recursive) const
@@ -302,7 +314,7 @@ KJSO Window::get(const UString &p) const
     return Number(part->frames().count());
   else if (p == "location") {
     if (isSafeScript())
-      return KJSO(Location::retrieve(part));
+      return KJSO(location());
     else
       return Undefined();
   }
@@ -316,7 +328,7 @@ KJSO Window::get(const UString &p) const
     if (opener.isNull())
       return Null(); 	// ### a null Window might be better, but == null
     else                // doesn't work yet
-      return newWindow(opener);
+      return retrieve(opener);
   else if (p == "outerHeight")
     return Number(part->view() ? part->view()->height() : 0); // ###
   else if (p == "outerWidth")
@@ -326,7 +338,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "pageYOffset")
     return Number(part->view()->contentsY());
   else if (p == "parent")
-    return KJSO(newWindow(part->parentPart() ? part->parentPart() : (KHTMLPart*)part));
+    return KJSO(retrieve(part->parentPart() ? part->parentPart() : (KHTMLPart*)part));
   else if (p == "personalbar")
     return Undefined(); // ###
   else if (p == "screenX")
@@ -350,12 +362,12 @@ KJSO Window::get(const UString &p) const
   else if (p == "resizeTo")
     return Function(new WindowFunc(this, WindowFunc::ResizeTo));
   else if (p == "self" || p == "window")
-    return KJSO(newWindow(part));
+    return KJSO(retrieve(part));
   else if (p == "top") {
     KHTMLPart *p = part;
     while (p->parentPart())
       p = p->parentPart();
-    return KJSO(newWindow(p));
+    return KJSO(retrieve(p));
   }
   else if (p == "screen")
     return KJSO(screen ? screen :
@@ -405,7 +417,7 @@ KJSO Window::get(const UString &p) const
 
   KHTMLPart *kp = part->findFrame( p.qstring() );
   if (kp)
-    return KJSO(newWindow(kp));
+    return KJSO(retrieve(kp));
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript() &&
@@ -593,7 +605,7 @@ Completion WindowFunc::tryExecute(const List &args)
         KParts::ReadOnlyPart *newPart = 0L;
         emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
-	    Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
+	    Window *win = Window::retrieve(static_cast<KHTMLPart*>(newPart));
 	    win->opener = part;
 	    win->openedByJS = true;
 	    uargs.serviceType = QString::null;
@@ -806,37 +818,13 @@ KJSO FrameArray::get(const UString &p) const
   // Therefore we have to be a bit careful with memory managment.
   if (frame && frame->inherits("KHTMLPart")) {
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
+    return KJSO(Window::retrieve(const_cast<KHTMLPart*>(khtml)));
   }
 
   return HostImp::get(p);
 }
 
-static QPtrDict<Location> *location_dict = 0L;
-
-// private to ensure use of dictionary via retrieve()
-Location::Location(KHTMLPart *p) : part(p) { }
-
-Location::~Location()
-{
-  location_dict->remove(part);
-  if (location_dict->isEmpty()) {
-    delete location_dict;
-    location_dict = 0L;
-  }
-}
-
-Location* Location::retrieve(KHTMLPart *p)
-{
-  Location *loc;
-  if (!location_dict)
-    location_dict = new QPtrDict<Location>;
-  else if ((loc = location_dict->find(p)) != 0L)
-    return loc;
-  loc = new Location(p);
-  location_dict->insert(p, loc);
-  return loc;
-}
+////////////////////// Location Object ////////////////////////
 
 KJSO Location::get(const UString &p) const
 {

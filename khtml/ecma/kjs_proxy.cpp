@@ -73,7 +73,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 #endif
     KJS::Global global(Global::current());
 
-    KJSO window(newWindow(khtmlpart));
+    KJSO window(Window::retrieve(khtmlpart));
     global.put("window", window);
     // make "window" prefix implicit for shortcuts like alert()
     global.setFilter(window);
