@@ -27,7 +27,8 @@ class KHTMLWidget;
 
 namespace KJS {
 
-  enum { IDDocument, IDURL, IDURL2S, IDTitle, IDTitle2S, IDDocWrite };
+  enum { IDDocument, IDURL, IDURL2S, IDTitle, IDTitle2S, IDDocWrite,
+	 IDDomain, IDDomain2S };
 
   class KJSDocProperty;
 

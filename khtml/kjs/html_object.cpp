@@ -56,6 +56,7 @@ HTMLDocument::HTMLDocument(KHTMLWidget *w, int id)
   case IDDocument:
     put("URL", new HTMLDocument(htmlw, IDURL), attr, true);
     put("title", new HTMLDocument(htmlw, IDTitle), attr, true);
+    put("domain", new HTMLDocument(htmlw, IDDomain), attr, true);
     put("write", new HTMLDocFunction(htmlw, IDDocWrite), attr, true);
     break;
   case IDURL:
@@ -63,6 +64,9 @@ HTMLDocument::HTMLDocument(KHTMLWidget *w, int id)
     break;
   case IDTitle:
     put("toString", new HTMLDocFunction(htmlw, IDTitle2S), attr, true);
+    break;
+  case IDDomain:
+    put("toString", new HTMLDocFunction(htmlw, IDDomain2S), attr, true);
     break;
   }
 }
@@ -81,10 +85,13 @@ KJSO *HTMLDocFunction::execute()
     result = new KJSUndefined();
     break;
   case IDURL2S:
-    result = new KJSString(htmlw->htmlDocument().URL());
+    result = new KJSString(doc.URL());
     break;
   case IDTitle2S:
-    result = new KJSString(htmlw->htmlDocument().title());
+    result = new KJSString(doc.title());
+    break;
+  case IDDomain2S:
+    result = new KJSString(doc.domain());
     break;
   default:
     assert((result = 0L));
