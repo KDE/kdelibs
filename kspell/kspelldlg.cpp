@@ -12,7 +12,6 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 		      char *ID):
   QWidget (0, name, WStyle_DialogBorder)
 {
-  const buttonwidth=80, labelwidth=100;
 
     children=new QList<QWidget>;
     layout = new QGridLayout (this, 8, 4, 10, 1);

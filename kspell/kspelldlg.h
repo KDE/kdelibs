@@ -24,6 +24,8 @@ enum {
   KS_STOP=       7
 };
 
+enum Geometries {buttonwidth=80, labelwidth=100};
+
 class KSpellDlg : public QWidget
 {
   Q_OBJECT
