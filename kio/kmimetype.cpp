@@ -653,7 +653,7 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   // at the global file, or at a file not in share/mimelnk...
 
   KShellProcess p;
-  p << "kfmclient" << "openProperties" << url.path().local8Bit();
+  p << "kfmclient" << "openProperties" << KShellProcess::quote(url.path());
   p.start(KProcess::DontCare);
   return p.getPid();
 }
