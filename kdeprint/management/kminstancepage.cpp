@@ -211,7 +211,11 @@ void KMInstancePage::slotSettings()
 	{
 		if (src == i18n("(Default)")) src = QString::null;
 		KMPrinter	*pr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
-		if (pr && (pr->isSpecial() || KMFactory::self()->manager()->completePrinterShort(pr)))
+		if ( !pr )
+			KMessageBox::error( this, i18n( "Unable to find instance %1." ).arg( m_view->currentText() ) );
+		else if ( !pr->isSpecial() && !KMFactory::self()->manager()->completePrinterShort( pr ) )
+			KMessageBox::error( this, i18n( "Unable to retrieve printer informations. Message from printing system: %1." ).arg( KMFactory::self()->manager()->errorMsg() ) );
+		else
 		{
 			int oldAppType = KMFactory::self()->settings()->application;
 			KMFactory::self()->settings()->application = -1;
@@ -226,6 +230,8 @@ void KMInstancePage::slotSettings()
 			}
 		}
 	}
+	else
+		KMessageBox::error( this, i18n( "The instance name is empty. Please select an instance." ) );
 
 	KMTimer::self()->release();
 }
