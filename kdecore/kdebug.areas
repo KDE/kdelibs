@@ -127,6 +127,7 @@
 5511        kpilotdaemon
 5512        kpilotconduit
 5600        gofai
+5650        kresources
 5700        kabc
 5710        kabc/vcard
 5720        kaddressbook
