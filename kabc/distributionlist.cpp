@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
+
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -241,7 +243,7 @@ bool DistributionListManager::save()
 DistributionListWatcher* DistributionListWatcher::mSelf = 0;
 
 DistributionListWatcher::DistributionListWatcher()
- : QObject( 0, "DistributionListWatcher" )
+ : QObject( qApp, "DistributionListWatcher" )
 {
   mDirWatch = new KDirWatch;
   mDirWatch->addFile( locateLocal( "data", "kabc/distlists" ) );
@@ -258,6 +260,8 @@ DistributionListWatcher::~DistributionListWatcher()
 
 DistributionListWatcher *DistributionListWatcher::self()
 {
+  kdWarning( qApp ) << "No QApplication object available, you'll get a memleak!" << endl;
+
   if ( !mSelf )
     mSelf = new DistributionListWatcher();
 
