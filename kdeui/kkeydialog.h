@@ -326,6 +326,9 @@ public:
 		bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( coll, parent, save_settings ); }
 
+private:
+	KKeyDialog( KKeyChooser::ActionType, bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
+
  protected:
 	virtual void virtual_hook( int id, void* data );
 

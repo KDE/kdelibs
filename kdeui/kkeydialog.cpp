@@ -184,14 +184,10 @@ KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent,
 KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
-			bool bAllowWinKey )
+			bool /*bAllowWinKey*/ )
 : QWidget( parent )
 {
-	ActionType type;
-	if( bAllowWinKey )
-		type = (bCheckAgainstStdKeys) ? ApplicationGlobal : Global;
-	else
-		type = Application;
+	ActionType type = (bCheckAgainstStdKeys) ? ApplicationGlobal : Global;
 
 	initGUI( type, bAllowLetterShortcuts );
 	insert( actions );
@@ -851,6 +847,19 @@ int KKeyChooserItem::compare( QListViewItem* item, int iCol, bool bAscending ) c
 /* (by using KDialogBase there is almost no code left ;)                */
 /*                                                                      */
 /************************************************************************/
+KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent, const char* name )
+: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
+{
+	m_pKeyChooser = new KKeyChooser( this, type, bAllowLetterShortcuts );
+	setMainWidget( m_pKeyChooser );
+	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
+	enableButton( Help, false );
+
+	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
+	QSize sz = size();
+	resize( group.readSizeEntry( "Dialog Size", &sz ) );
+}
+
 KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
 : KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
 {
@@ -924,7 +933,7 @@ int KKeyDialog::configure( KAccel* keys, bool bAllowLetterShortcuts, QWidget *pa
 
 int KKeyDialog::configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
-	KKeyDialog dlg( bAllowLetterShortcuts, parent );
+	KKeyDialog dlg( KKeyChooser::ApplicationGlobal, bAllowLetterShortcuts, parent );
 	dlg.m_pKeyChooser->insert( keys );
 	bool b = dlg.configure( bSaveSettings );
 	if( b && bSaveSettings )
