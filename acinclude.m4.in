@@ -110,6 +110,7 @@ printf("kde_toolbardir=\\"%s\\"\n", KApplication::kde_toolbardir().data());
 printf("kde_wallpaperdir=\\"%s\\"\n", KApplication::kde_wallpaperdir().data());
 printf("kde_bindir=\\"%s\\"\n", KApplication::kde_bindir().data());
 printf("kde_partsdir=\\"%s\\"\n", KApplication::kde_partsdir().data());
+return 0;
 }
 EOF
 
