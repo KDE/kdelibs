@@ -79,10 +79,16 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         setChanged();
         break;
     case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value());
+        if (!attr->value().isEmpty())
+            addCSSLength(CSS_PROP_WIDTH, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_WIDTH);
         break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        if (!attr->value().isEmpty())
+            addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_HEIGHT);
         break;
     case ATTR_BORDER:
         // border="noborder" -> border="0"

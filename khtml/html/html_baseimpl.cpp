@@ -574,21 +574,27 @@ NodeImpl::Id HTMLIFrameElementImpl::id() const
 
 void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
 {
-  switch (  attr->id() )
-  {
+    switch (  attr->id() )
+    {
     case ATTR_WIDTH:
-      addCSSLength( CSS_PROP_WIDTH, attr->value());
-      break;
+        if (!attr->value().isEmpty())
+            addCSSLength(CSS_PROP_WIDTH, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_WIDTH);
+        break;
     case ATTR_HEIGHT:
-      addCSSLength( CSS_PROP_HEIGHT, attr->value() );
-      break;
+        if (!attr->value().isEmpty())
+            addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_HEIGHT);
+        break;
     case ATTR_SRC:
-      needWidgetUpdate = true; // ### do this for scrolling, margins etc?
-      HTMLFrameElementImpl::parseAttribute( attr );
-      break;
+        needWidgetUpdate = true; // ### do this for scrolling, margins etc?
+        HTMLFrameElementImpl::parseAttribute( attr );
+        break;
     default:
-      HTMLFrameElementImpl::parseAttribute( attr );
-  }
+        HTMLFrameElementImpl::parseAttribute( attr );
+    }
 }
 
 void HTMLIFrameElementImpl::attach()

@@ -76,10 +76,16 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
 	    }
             break;
         case ATTR_WIDTH:
-            addCSSLength( CSS_PROP_WIDTH, attr->value());
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_WIDTH, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_WIDTH);
             break;
         case ATTR_HEIGHT:
-            addCSSLength( CSS_PROP_HEIGHT, attr->value());
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_HEIGHT, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_HEIGHT);
             break;
         default:
             HTMLElementImpl::parseAttribute( attr );
