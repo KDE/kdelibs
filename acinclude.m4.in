@@ -624,23 +624,31 @@ dnl this was AC_PROG_CC. I had to include it manualy, since I had to patch it
     GCC=
   fi
 
-  if test "$ac_use_debug_code" = "yes"; then
-    AC_PROG_CC_G
-    if test $ac_cv_prog_cc_g = yes; then
-      CFLAGS="-g"
-    fi
-  else
-    if test "$GCC" = "yes"; then
-      CFLAGS="-O2"
-      LDFLAGS="-s"
+  if test -z "$CFLAGS"; then
+    if test "$ac_use_debug_code" = "yes"; then
+      AC_PROG_CC_G
+      if test $ac_cv_prog_cc_g = yes; then
+        CFLAGS="-g"
+      fi
     else
-      CFLAGS=""
+      if test "$GCC" = "yes"; then
+        CFLAGS="-O2"
+      else
+        CFLAGS=""
+      fi
     fi
+
+    if test "$GCC" = "yes"; then
+     CFLAGS="$CFLAGS -Wall"
+    fi
+
   fi
 
-  if test "$GCC" = "yes"; then
-     CFLAGS="$CFLAGS -Wall"
+  if test -z "$LDLFLAGS" && test "$ac_use_debug_code" = "no" && test "$GCC" = "yes"; then
+     LDFLAGS="-s"
   fi
+
+
 
 
 dnl this is AC_PROG_CPP. I had to include it here, since autoconf checks
@@ -698,13 +706,13 @@ dnl dependecies between AC_PROG_CPP and AC_PROG_CC (or is it automake?)
 #endif
 EOF
 
-  ac_try="$CXX -E conftest.C"
-  if { (eval echo configure:__online__: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; } | egrep yes >/dev/null 2>&1; then
-    ac_cv_prog_CC=yes
-  else
-    ac_cv_prog_CC=no
-  fi
-  AC_MSG_RESULT($ac_cv_prog_CC)
+    ac_try="$CXX -E conftest.C"
+    if { (eval echo configure:__online__: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; } | egrep yes >/dev/null 2>&1; then
+      ac_cv_prog_CC=yes
+    else
+      ac_cv_prog_CC=no
+    fi
+    AC_MSG_RESULT($ac_cv_prog_CC)
   
   fi  
 
