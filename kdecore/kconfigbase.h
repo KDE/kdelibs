@@ -1706,6 +1706,7 @@ public:
    * file should be opened explicitly in a seperate config object.
    *
    * @param key The key of the entry to revert.
+   * @since 3.2
    */
   void revertToDefault(const QString &key);
 
@@ -1726,6 +1727,8 @@ public:
    * This ensures that as long as the entry is not modified to differ 
    * from the dynamically determined default, the application will
    * follow changes of the default.
+   * @param key The key of the entry to check.
+   * @since 3.2
    */
   bool hasDefault(const QString &key) const;
 
