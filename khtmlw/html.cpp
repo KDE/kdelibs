@@ -4334,6 +4334,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	{
 	    if ( strchr( token+6, '%' ) )
 		percent = atoi( token + 6 );
+	    else if ( strchr( token+6, '*' ) )
+	    { /* ignore */ }
 	    else
 		width = atoi( token + 6 );
 	}
@@ -4554,6 +4556,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			{
 			    if ( strchr( token + 6, '%' ) )
 				percent = atoi( token + 6 );
+			    else if ( strchr( token + 6, '*' ) )
+			    { /* ignore */ }
 			    else
 			    {
 				width = atoi( token + 6 );
