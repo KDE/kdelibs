@@ -483,6 +483,7 @@ namespace KIO {
      * @param src file to delete
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
+     * @since 3.4
      */
     CopyJob *trash( const KURL& src, bool showProgressInfo = true );
 
@@ -493,6 +494,7 @@ namespace KIO {
      * @param src the files to delete
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
+     * @since 3.4
      */
     CopyJob *trash( const KURL::List& src, bool showProgressInfo = true );
 
