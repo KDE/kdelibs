@@ -207,12 +207,12 @@ The following code will create a file resource and save a contact into it:
 77:  } else {
 78:    if ( !ab.save( ticket ) ) {
 79:      kdError() << "Saving failed!" << endl;
+80:      ab.releaseSaveTicket( ticket );
 81:    }
 82:
-83:    ab.releaseSaveTicket( ticket );
-84:  }
-85:
-86:  return 0;
+83:  }
+84:
+85:  return 0;
 
 In line 1 the KABC::AddressBook is created.  In line 4 you creat the
 KABC::ResourceFile (which will handle the loading/saving).
@@ -298,11 +298,12 @@ if the resource is already locked by another application.
 So when we retrieved a valid ticket in line 74, we try to save our changes in
 line 78.
 The KABC::AddressBook::save() function takes the save ticket as argument and
-returns whether saving succeeded.
+returns whether saving succeeded.  It also releases the save ticket when successful.
 
 Important!
-You have to release the save ticket after saving like done in line 83,
-otherwise possible locks, created by the resources, won't be removed.
+If the save() call fails, you have to release the save ticket manually, as is
+done in line 80, otherwise possible locks, created by the resources, won't be
+removed.
 
 You can see also, that manual use is quite easy for the KABC::AddressBook class
 and for the ResourceFile. For more information about the API of KABC::Addressee
