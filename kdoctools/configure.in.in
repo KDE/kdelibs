@@ -71,6 +71,7 @@ else
 	AC_MSG_RESULT([ok])
 fi
 ])
+KDOCTOOLS_CHECK_BZIP2
 
 if test -n "$HELP_SUBDIR"; then  
   MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
