@@ -45,8 +45,9 @@ Area codes for KDebug system
 3601-3700 ktetris
 3701-3800 kview
 3801-3900 ksamba
-3901-4000 kciv
-
+3901-4000 ktalk
+4001-4100 kirc
+4101-4200 kciv
 
 30001-65534 koffice
 
