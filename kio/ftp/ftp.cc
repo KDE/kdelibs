@@ -448,7 +448,8 @@ bool Ftp::ftpLogin()
           info.commentLabel = i18n( "Site:" );
           info.comment = i18n("<b>%1</b>").arg( m_host );
 
-          if ( !openPassDlg( info ) )
+          bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+          if ( disablePassDlg || !openPassDlg( info ) )
           {
             error( ERR_USER_CANCELED, m_host );
             return false;
