@@ -33,7 +33,7 @@ namespace KIO {
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
-class PasswordDialog : public KDialogBase 
+class PasswordDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
      *
      * @param prompt        instructional text to be shown.
      * @param user          username, if known initially.
-     * @param enableKeep    if true, makes password persistent until KDE is shutdown.
+     * @param enableKeep    if true, shows checkbox that makes password persistent until KDE is shutdown.
      * @param modal         if true, the dialog will be modal (default:true).
      * @param parent        the parent widget (default:NULL).
      * @param name          the dialog name (default:NULL).
@@ -80,7 +80,7 @@ public:
      * @return the password
      */
     QString password() const;
-    
+
     /**
      * Returns the username entered by the user.
      * @return the user name
@@ -93,6 +93,14 @@ public:
      * @return true to keep the password
      */
     bool keepPassword() const;
+
+    /**
+     * Check or uncheck the "keep password" checkbox.
+     * This can be used to check it before showing the dialog, to tell
+     * the user that the password is stored already (e.g. in the wallet).
+     * enableKeep must have been set to true in the constructor.
+     */
+    void setKeepPassword( bool b );
 
     /**
      * Sets the username field read-only and sets the

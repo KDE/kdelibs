@@ -43,6 +43,7 @@ struct PasswordDialog::PasswordDialogPrivate
     KLineEdit* userEdit;
     KLineEdit* passEdit;
     QLabel* prompt;
+    QCheckBox* keepCheckBox;
 
     bool keep;
     short unsigned int nRow;
@@ -69,6 +70,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d = new PasswordDialogPrivate;
     d->keep = false;
     d->nRow = 0;
+    d->keepCheckBox = 0;
 
     KConfig* cfg = KGlobal::config();
     KConfigGroupSaver saver( cfg, "Passwords" );
@@ -141,11 +143,11 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         d->layout->addRowSpacing( 7, 4 );
         // Row 8: Keep Password
         hbox = new QHBox( main );
-        QCheckBox *cb = new QCheckBox( i18n("&Keep password"), hbox );
-        cb->setFixedSize( cb->sizeHint() );
+        d->keepCheckBox = new QCheckBox( i18n("&Keep password"), hbox );
+        d->keepCheckBox->setFixedSize( d->keepCheckBox->sizeHint() );
         d->keep = cfg->readBoolEntry("Keep", false );
-        cb->setChecked( d->keep );
-        connect(cb, SIGNAL(toggled( bool )), SLOT(slotKeep( bool )));
+        d->keepCheckBox->setChecked( d->keep );
+        connect(d->keepCheckBox, SIGNAL(toggled( bool )), SLOT(slotKeep( bool )));
         d->layout->addWidget( hbox, 8, 2 );
     }
 
@@ -174,6 +176,12 @@ QString PasswordDialog::password() const
     return d->passEdit->text();
 }
 
+void PasswordDialog::setKeepPassword( bool b )
+{
+    if ( d->keepCheckBox )
+        d->keepCheckBox->setChecked( b );
+}
+
 bool PasswordDialog::keepPassword() const
 {
     return d->keep;
@@ -182,7 +190,7 @@ bool PasswordDialog::keepPassword() const
 static void calculateLabelSize(QLabel *label)
 {
    QString qt_text = label->text();
-      
+
    int pref_width = 0;
    int pref_height = 0;
    // Calculate a proper size for the text.
