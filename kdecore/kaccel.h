@@ -217,27 +217,27 @@ class KAccel
 	
 	/**
 	 * Inserts an accelerator item and returns -1 if the key code
-	 * 	defaultKeyCode is not valid.
-	 *	
-	 * Arguments:
+	 *	defaultKeyCode is not valid.
 	 *
-	 *  @param descr is the localized name of the action, useful in menus or the keybinding
-	 *            editor.
-	 *  @param action is the internal accelerator item action name. It is supposed to be the same
-	 *            for all language.
-	 *  @param defaultKeyCode is a key code to be used as the default for the action.
-	 *  @param configurable indicates whether a user can configure the key
-	 *	binding using the KKeyChooser GUI and whether the key will be written
-	 *	back to configuration files on calling writeSettings.
-	 *
-	 * If an action already exists the old association and connections will be
-	 * removed..
-	 * 	
+	 *  @param descr is the localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action is the internal accelerator item action name. It
+	 *  is supposed to be the same for all language.
+	 *  @param defaultKeyCode is a key code to be used as the default
+	 *  for the action.  
+	 *  @param configurable indicates whether a user can configure
+	 *  the key binding using the KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files on calling
+	 *  writeSettings.
+	 * If an action already exists the old association and connections
+	 * will be removed..
+
 	 */
-	bool insertItem( const QString& descr, const QString& action, uint defaultKeyCode,
-			 bool configurable = TRUE );
-	bool insertItem( const QString& descr, const QString& action, uint defaultKeyCode,
-			 int id, QPopupMenu *qmenu, bool configurable = TRUE );
+	bool insertItem( const QString& descr, const QString& action, 
+			uint defaultKeyCode, bool configurable = TRUE );
+	bool insertItem( const QString& descr, const QString& action, 
+			uint defaultKeyCode, int id, QPopupMenu *qmenu, 
+			bool configurable = TRUE );
 	
 	 /**
 	 * Inserts an accelerator item and returns -1 if the key code
@@ -283,14 +283,16 @@ class KAccel
 
 
 	/**
-	 * Convenience function without the need to specify a
-	 * localized function name for the user. This is useful if the accelerator is
-	 * only used internally, without appearing in a menu or a keybinding editor.
+	 * Convenience function without the need to specify a localized
+	 * function name for the user. This is useful if the accelerator
+	 * is only used internally, without appearing in a menu or a
+	 * keybinding editor.
 	 */
 	bool insertItem( const QString& action, uint defaultKeyCode,
 				 bool configurable = TRUE );
 	bool insertItem( const QString& action, uint defaultKeyCode,
-				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
+				 int id, QPopupMenu *qmenu, 
+				 bool configurable = TRUE );
 
 
 	/**

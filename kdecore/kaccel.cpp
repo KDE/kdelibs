@@ -751,7 +751,8 @@ uint stringToKey(const QString& key)
 		else if ( str=="CTRL" ) keyCode |= Qt::CTRL;
 		else if ( str=="ALT" )  keyCode |= Qt::ALT;
 		else if (codeFound) {
-			kdebug(KDEBUG_WARN, 125, "stringToKey::Duplicate keycode");
+			kdebug(KDEBUG_WARN, 125, 
+				"stringToKey::Duplicate keycode");
 			return 0;
 		} else {
 			// search for keycode
@@ -763,7 +764,9 @@ uint stringToKey(const QString& key)
 				}
 			}
 			if ( j==NB_KEYS ) {
-				kdebug(KDEBUG_WARN, 125, "stringToKey::Unknown key name %s", str.ascii());
+				kdebug(KDEBUG_WARN, 125, 
+					"stringToKey::Unknown key name %s", 
+					str.ascii());
 				return 0;
 			}
 		}
