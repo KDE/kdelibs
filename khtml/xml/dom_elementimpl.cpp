@@ -665,7 +665,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     setMouseInside(inside);
 
     if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
-        applyChanges(false,false);
+        applyChanges(true,false);
 
     // reset previous z index
     if ( positioned )
