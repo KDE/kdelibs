@@ -1149,7 +1149,11 @@ void KListView::setSelectionModeExt (SelectionModeExt mode)
 	  setSelectionMode (static_cast<QListView::SelectionMode>(static_cast<int>(mode)));
 	  break;
 
+    case Konqueror:
+      setSelectionMode (QListView::Extended);
+
 	default:
+      kdDebug () << "Warning: illegal selection mode " << mode << " set!" << endl;
 	  break;
 	}
 }
