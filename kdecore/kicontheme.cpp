@@ -43,6 +43,7 @@ public:
     QString example, screenshot;
     QString linkOverlay, lockOverlay, zipOverlay, shareOverlay;
     bool hidden;
+    KSharedConfig::Ptr sharedConfig;
 };
 
 /**
@@ -131,7 +132,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	fileName = mDir + "index.theme";
 	mainSection="Icon Theme";
     }
-    KSimpleConfig cfg(fileName);
+    // Use KSharedConfig to avoid parsing the file many times, from each kinstance.
+    // Need to keep a ref to it to make this useful
+    d->sharedConfig = KSharedConfig::openConfig( fileName, true /*readonly*/, false /*useKDEGlobals*/ );
+    KConfig& cfg = *d->sharedConfig;
+    //was: KSimpleConfig cfg(fileName);
+
     cfg.setGroup(mainSection);
     mName = cfg.readEntry("Name");
     mDesc = cfg.readEntry("Comment");
