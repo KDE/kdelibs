@@ -56,7 +56,10 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
     bool forced = true;
     if ( mimetype.isEmpty() )
     {
-        mimetype = KMimeType::findByFileContent( filename )->name();
+	if ( QFile::exists( filename ) )
+            mimetype = KMimeType::findByFileContent( filename )->name();
+	else
+	    mimetype = KMimeType::findByPath( filename, 0, true )->name();
         kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
