@@ -47,15 +47,22 @@ public:
 
 KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  KConfigSkeleton *config,
-		  KDialogBase::DialogType dialogType,
+		  DialogType dialogType,
 		  int dialogButtons,
-		  KDialogBase::ButtonCode defaultButton,
+		  ButtonCode defaultButton,
 		  bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder,
 		  parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
     d(new KConfigDialogPrivate(dialogType)) 
 {		  
-  openDialogs.insert(name, this);
+  if ( name ) {
+    openDialogs.insert(name, this);
+  } else {
+    QCString genericName;
+    genericName.sprintf("SettingsDialog-%p", this);
+    openDialogs.insert(genericName, this);
+    setName(genericName);
+  }
 
   d->mgr = new KConfigDialogManager(this, config);
 
@@ -75,7 +82,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
   connect(this, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
 
-  enableButton(KDialogBase::Apply, false);
+  enableButton(Apply, false);
 }
 
 KConfigDialog::~KConfigDialog()
@@ -92,14 +99,14 @@ void KConfigDialog::addPage(QWidget *page,
 {
   if(d->shown)
   {
-    kdDebug(240) << "KConfigDialog::addPage, can not a page after the dialog has been shown.";
+    kdDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
     return;
   }
   switch(d->type)
   {
-    case KDialogBase::TreeList:
-    case KDialogBase::IconList:
-    case KDialogBase::Tabbed: {
+    case TreeList:
+    case IconList:
+    case Tabbed: {
       QVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
@@ -107,26 +114,24 @@ void KConfigDialog::addPage(QWidget *page,
     }
     break;
 
-    case KDialogBase::Swallow: 
+    case Swallow: 
     {
       page->reparent(this, 0, QPoint());
       setMainWidget(page);
     }
     break;
 
-    case KDialogBase::Plain:
+    case Plain:
     {
-      page->reparent(this, 0, QPoint());
-      QFrame *page = plainPage();
-      QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 0 );
-      page->reparent(((QWidget*)page), 0, QPoint());
+      QFrame *main = plainPage();
+      QVBoxLayout *topLayout = new QVBoxLayout( main, 0, 0 );
+      page->reparent(((QWidget*)main), 0, QPoint());
       topLayout->addWidget( page );
-      setMainWidget(page);
     }
     break;
 
     default:
-      kdDebug(240) << "KConfigDialog::addWidget" << " unknown type.";
+      kdDebug(240) << "KConfigDialog::addpage: unknown type.";
   }
   if(manage)
     d->mgr->addWidget(page);
@@ -150,8 +155,8 @@ void KConfigDialog::updateButtons()
   static bool only_once = false;
   if (only_once) return;
   only_once = true;
-  enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-  enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
+  enableButton(Apply, d->mgr->hasChanged() || hasChanged());
+  enableButton(Default, !(d->mgr->isDefault() && isDefault()));
   emit widgetModified();
   only_once = false;
 }
@@ -167,8 +172,8 @@ void KConfigDialog::show()
 {
   updateWidgets();
   d->mgr->updateWidgets();
-  enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-  enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
+  enableButton(Apply, d->mgr->hasChanged() || hasChanged());
+  enableButton(Default, !(d->mgr->isDefault() && isDefault()));
   d->shown = true;
   KDialogBase::show();
 }

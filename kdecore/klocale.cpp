@@ -1124,7 +1124,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
               buffer.append(calendar()->monthString(pDate, true));
 	      break;
 	    case 'e':
-              buffer.append(calendar()->dayString(pDate, false));
+              buffer.append(calendar()->dayString(pDate, true));
 	      break;
 	    case 'm':
               buffer.append(calendar()->monthString(pDate, false));

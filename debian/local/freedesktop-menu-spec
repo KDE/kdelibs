@@ -1,0 +1,51 @@
+#!/usr/sbin/install-menu
+# freedesktop menu spec - menu generation
+# http://www.freedesktop.org/Standards/menu-spec
+# Also used as /etc/menu-methods/kdelibs-bin
+# Copyright 2004 - Chris Cheney <ccheney@debian.org>
+# Licensed under the GNU General Public License, version 2.
+
+!include menu.h
+
+compat="menu-2"
+
+function Dirs() =
+	ifempty($section,ifroot(
+	"<AppDir>/var/lib/kde/debian-apps</AppDir>\n"
+	"<DirectoryDir>/var/lib/kde/debian-dirs</DirectoryDir>\n",
+	"<DirectoryDir>"
+	parent(parent(prefix()))
+	"/.local/share/desktop-directories/kde/debian</DirectoryDir>\n"));
+
+function DirEntry() =
+	Dirs()
+	"<Name>" title() "</Name>\n"
+	"<Directory>" "debian" replacewith(tolower($section),"/","-") ".directory" "</Directory>\n"
+	"<Include>\n"
+	"<Category>" "X-Debian" replacewith($section,"/","-") "</Category>\n"
+	"</Include>\n";
+
+outputencoding="UTF-8";
+
+supported;
+ x11 = ;
+ text = ;
+endsupported;
+
+startmenu = "<Menu>\n" DirEntry();
+endmenu = "</Menu>\n";
+submenutitle = "";
+
+treewalk = "(M)";
+
+genmenu = "debian-menu.menu";
+
+rootsection = "";
+
+prerun = "rm -rf " prefix() "/*";
+
+preoutput = "<!DOCTYPE Menu PUBLIC \"-//freedesktop//DTD Menu 0.8//EN\"\n \"http://www.freedesktop.org/standards/menu-spec/menu-0.8.dtd\">\n<!-- Automatically generated do not edit -->\n";
+
+rootprefix = "/var/lib/kde/debian-menus";
+
+userprefix = ".config/menus";

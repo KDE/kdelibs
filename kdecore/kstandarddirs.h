@@ -77,6 +77,7 @@ class KStandardDirsPrivate;
  * @li exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
  * @li html - HTML documentation.
  * @li icon - Icons, see KIconLoader.
+ * @li kcfg - Configuration meta information files used by KConfig XT.
  * @li lib - Libraries.
  * @li locale - Translation files for KLocale.
  * @li mime - Mime types.

@@ -485,7 +485,7 @@ bool RenderFrameSet::canResize( int _x, int _y )
     return false;
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderFrameSet::dump(QTextStream &stream, const QString &ind) const
 {
     RenderBox::dump(stream,ind);
@@ -600,7 +600,7 @@ void RenderPartObject::updateWidget()
 
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
       url = o->url.string();
-      if( url.isEmpty()) return;
+      if( url.isEmpty() || !o->getDocument()->isURLAllowed(url) ) return;
       part->requestFrame( this, url, o->name.string(), QStringList(), true );
   // ### this should be constant true - move iframe to somewhere else
   } else {
@@ -704,7 +704,7 @@ void RenderPartObject::updateWidget()
               }
           }
       }
-      if (url.isEmpty() || !part->requestObject( this, url, serviceType, params ))
+      if (url.isEmpty() || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
       else
           objbase->setLiveConnect(part->liveConnectExtension(this));
@@ -749,6 +749,8 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
             kdDebug(6031) << "set to activex" << endl;
             if (part->requestObject( childFrame, url, args ))
                 return true; // success
+
+            return false;
         }
     }
     // Dissociate ourselves from the current event loop (to prevent crashes
@@ -787,6 +789,9 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     if ( embed )
 	serviceType = embed->serviceType;
 
+    // prepare for the local eventloop in KMessageBox
+    ref();
+
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
     KParts::BrowserExtension *ext = part->browserExtension();
     if( embed && !embed->pluginPage.isEmpty() && ext ) {
@@ -819,6 +824,8 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     if ( element() && (
          element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET))
         static_cast<HTMLObjectBaseElementImpl*>( element() )->renderAlternative();
+
+    deref();
 }
 
 void RenderPartObject::layout( )

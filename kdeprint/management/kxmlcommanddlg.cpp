@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -704,7 +704,7 @@ void KXmlCommandAdvancedDlg::removeItem(QListViewItem *item)
 
 void KXmlCommandAdvancedDlg::slotMoveUp()
 {
-	QListViewItem	*item = m_view->currentItem(), *prev(0);
+	QListViewItem	*item = m_view->currentItem(), *prev = 0;
 	if (item && (prev=findPrev(item)))
 	{
 		QListViewItem	*after(0);
@@ -723,7 +723,7 @@ void KXmlCommandAdvancedDlg::slotMoveUp()
 
 void KXmlCommandAdvancedDlg::slotMoveDown()
 {
-	QListViewItem	*item = m_view->currentItem(), *next(0);
+	QListViewItem	*item = m_view->currentItem(), *next = 0;
 	if (item && (next=findNext(item)))
 	{
 		item->moveItem(next);

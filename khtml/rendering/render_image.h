@@ -44,9 +44,7 @@ public:
     virtual ~RenderImage();
 
     virtual const char *renderName() const { return "RenderImage"; }
-
-
-    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty, PaintAction );
+    virtual void paint( PaintInfo& i, int tx, int ty );
 
     virtual void layout();
 

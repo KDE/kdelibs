@@ -286,6 +286,10 @@ public:
      * Enable text squeezing in read-only line edits if text too long.
      * This only works when the widget is in read-only mode.
      *
+     * Note that once text squeezing is enabled, @ref QLineEdit::text
+     * and @ref QLineEdit::displayText return the squeezed text. If
+     * you want the original text, use @ref originalText.
+     *
      * @since 3.2
      */    
     void setEnableSqueezedText( bool enable );
@@ -296,6 +300,15 @@ public:
      * @since 3.2
      */
     bool isSqueezedTextEnabled() const;
+
+    /**
+     * Returns the original text if text squeezing is enabled and
+     * the widget is in read-only mode. Otherwise, it returns the 
+     * same thing as @ref QLineEdit::text(). 
+     * 
+     * @since 3.2
+     */
+    QString originalText() const;
 
 signals:
 
@@ -428,6 +441,11 @@ protected slots:
      */
     void slotCancelled() {}
 
+    /**
+     * Resets the current displayed text. 
+     * Call this function to revert a text completion if the user 
+     * cancels the request. Mostly applies to popup completions.
+     */
     void userCancelled(const QString & cancelText);
 
 protected:

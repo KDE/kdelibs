@@ -96,14 +96,14 @@ DOMString HTMLDocumentImpl::referrer() const
 DOMString HTMLDocumentImpl::domain() const
 {
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = KURL(URL()).host(); // Initially set to the host
+        m_domain = URL().host(); // Initially set to the host
     return m_domain;
 }
 
 void HTMLDocumentImpl::setDomain(const DOMString &newDomain)
 {
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = KURL(URL()).host().lower(); // Initially set to the host
+        m_domain = URL().host().lower(); // Initially set to the host
 
     if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
         m_domain = newDomain.lower();
@@ -143,7 +143,7 @@ DOMString HTMLDocumentImpl::cookie() const
     QCString replyType;
     QByteArray params, reply;
     QDataStream stream(params, IO_WriteOnly);
-    stream << URL() << windowId;
+    stream << URL().url() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
                                   "findDOMCookies(QString,long int)", params,
                                   replyType, reply))
@@ -177,7 +177,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     QCString fake_header("Set-Cookie: ");
     fake_header.append(value.string().latin1());
     fake_header.append("\n");
-    stream << URL() << fake_header << windowId;
+    stream << URL().url() << fake_header << windowId;
     if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
                                   "addCookies(QString,QCString,long int)", params))
     {
@@ -419,7 +419,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         }
 
         if ( hMode == XHtml )
-            pMode = Strict;
+            pMode = publicId;
     }
     // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;

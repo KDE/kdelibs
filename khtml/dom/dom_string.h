@@ -121,7 +121,7 @@ inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) {
 	return (stream << string.string());
 }
 #else
-inline kndbgstream &operator<<(kndbgstream &stream, const DOMString &string) {
+inline kndbgstream &operator<<(kndbgstream &stream, const DOMString &) {
 	return stream;
 }
 #endif

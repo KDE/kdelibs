@@ -39,6 +39,7 @@
 #include <qframe.h>
 #include <qheader.h>
 #include <qintdict.h>
+#include <qlineedit.h>
 #include <qlistbox.h>
 #include <qmenubar.h>
 #include <qpainter.h>
@@ -284,7 +285,6 @@ KeramikStyle::KeramikStyle()
 
 	QSettings settings;
 
-	highlightLineEdits = settings.readBoolEntry("/keramik/Settings/highlightLineEdits", false);
 	highlightScrollBar = settings.readBoolEntry("/keramik/Settings/highlightScrollBar", true);
 	animateProgressBar = settings.readBoolEntry("/keramik/Settings/animateProgressBar", false);
 
@@ -833,7 +833,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			}
 			break;
 		}
-
+		
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
 		case PE_Indicator:
@@ -861,7 +861,18 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// line edit frame
 		case PE_PanelLineEdit:
 		{
-			if ( !highlightLineEdits )
+			if (!opt.isDefault() && opt.lineWidth() == 1)
+			{
+				//1-pixel frames can not be simply clipped wider frames, as that would produce too little contrast on the lower border
+				p->setPen( cg.dark() );
+				p->drawLine( x, y, x + w - 1, y );
+				p->drawLine( x, y, x, y + h - 1 );
+				
+				p->setPen( cg.light().dark( 110 ) );
+				p->drawLine( x + w - 1, y, x + w - 1, y + h - 1 );
+				p->drawLine( x, y + h - 1, x + w - 1, y + h - 1);
+			}
+			else
 			{
 				p->setPen( cg.dark() );
 				p->drawLine( x, y, x + w - 1, y );
@@ -875,38 +886,6 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				p->setPen( cg.light().dark( 110 ) );
 				p->drawLine( x + w - 2, y + 1, x + w - 2, y + h - 2 );
 				p->drawLine( x + 1, y + h - 2, x + w - 2, y + h - 2);
-
-			}
-			else
-			{
-				if ( (flags & Style_HasFocus) && (flags & QStyle::Style_Enabled) )
-				{
-					p->setPen(cg.highlight().light(85));
-					p->drawRect( r );
-
-					// a bit lighter ->not so thick
-					p->setPen( cg.highlight().light(120) );
-					p->drawLine(x+1, y+1, x2-1, y+1);
-					p->drawLine(x+1, y+1, x+1, y2-1);
-					p->drawLine(x+1, y2-1, x2-1, y2-1);
-					p->drawLine(x2-1, y+1, x2-1, y2-1);
-				}
-				else
-				{
-					p->setPen( cg.background().light(45));
-					p->drawLine(x, y, x2, y);
-					p->drawLine(x, y, x, y2);
-					p->setPen( cg.background().light(85));
-					p->drawLine(x, y2, x2, y2);
-					p->drawLine(x2, y, x2, y2);
-
-					// Fill the rest  with base color
-					p->setPen(cg.base());
-					p->drawLine(x+1, y+1, x2-1, y+1);
-					p->drawLine(x+1, y+1, x+1, y2-1);
-					p->drawLine(x+1, y2-1, x2-1, y2-1);
-					p->drawLine(x2-1, y+1, x2-1, y2-1);
-				}
 			}
 			break;
 		}
@@ -2324,9 +2303,6 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ButtonMargin:				// Space btw. frame and label
 			return 4;
 
-		case PM_ButtonDefaultIndicator:
-			return 4;
-
 		case PM_SliderLength:
 			return 12;
 		case PM_SliderControlThickness:
@@ -2358,8 +2334,6 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
                         loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
 		case PM_DefaultFrameWidth:
-			if (highlightLineEdits && widget && widget->inherits("QLineEdit"))
-				return 2;
 			return 1;
 
 		case PM_MenuButtonIndicator:
@@ -2497,7 +2471,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 
 			return QSize( w, h );
 		}
-
+		
 		default:
 			return KStyle::sizeFromContents( contents, widget, contentSize, opt );
 	}
@@ -2854,4 +2828,4 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 }
 
 // vim: ts=4 sw=4 noet
-// kate: indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

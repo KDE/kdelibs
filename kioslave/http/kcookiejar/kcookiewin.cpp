@@ -77,6 +77,8 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
            :KDialog( parent, "cookiealert", true )
 {
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
+    KWin::setState( winId(), NET::StaysOnTop );
+    KWin::setOnDesktop(winId(), KWin::currentDesktop());
     setCaption( i18n("Cookie Alert") );
     setIcon( SmallIcon("cookie") );
     // all cookies in the list should have the same window at this time, so let's take the first
@@ -160,6 +162,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     bbLay->setSpacing( KDialog::spacingHint() );
     QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
     btn->setDefault( true );
+    btn->setFocus();
     connect( btn, SIGNAL(clicked()), SLOT(accept()) );
     bbLay->addWidget( btn );
     btn = new QPushButton( i18n("&Reject"), bbox );

@@ -359,7 +359,8 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
     // delay showApplet if size is unknown and m_view not shown
     if (applet->size().width() > 0 || m_view->isVisible())
         w->showApplet ();
-    emit started (0L);
+    if (!applet->failed ())
+        emit started (0L);
     return url.isValid ();
 }
 

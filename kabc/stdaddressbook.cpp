@@ -93,7 +93,7 @@ StdAddressBook::StdAddressBook( bool asynchronous )
 StdAddressBook::~StdAddressBook()
 {
   if ( mAutomaticSave )
-    save();
+    saveAll();
 }
 
 void StdAddressBook::init( bool asynchronous )
@@ -136,34 +136,42 @@ void StdAddressBook::init( bool asynchronous )
     load();
 }
 
-bool StdAddressBook::save()
+bool StdAddressBook::saveAll()
 {
-  kdDebug(5700) << "StdAddressBook::save()" << endl;
-
+  kdDebug(5700) << "StdAddressBook::saveAll()" << endl;
   bool ok = true;
-  AddressBook *ab = self();
 
-  ab->deleteRemovedAddressees();
+  deleteRemovedAddressees();
 
   KRES::Manager<Resource>::ActiveIterator it;
-  KRES::Manager<Resource> *manager = ab->resourceManager();
+  KRES::Manager<Resource> *manager = resourceManager();
   for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
     if ( !(*it)->readOnly() && (*it)->isOpen() ) {
-      Ticket *ticket = ab->requestSaveTicket( *it );
+      Ticket *ticket = requestSaveTicket( *it );
       if ( !ticket ) {
-        ab->error( i18n( "Unable to save to resource '%1'. It is locked." )
+        error( i18n( "Unable to save to resource '%1'. It is locked." )
                    .arg( (*it)->resourceName() ) );
         return false;
       }
 
-      if ( !ab->save( ticket ) ) {
+      if ( !AddressBook::save( ticket ) ) {
         ok = false;
-        ab->releaseSaveTicket( ticket );
+        releaseSaveTicket( ticket );
       }
     }
   }
 
   return ok;
+}
+
+bool StdAddressBook::save()
+{
+  kdDebug(5700) << "StdAddressBook::save()" << endl;
+
+  if ( mSelf ) 
+    return mSelf->saveAll();
+  else
+    return true;  
 }
 
 void StdAddressBook::close()

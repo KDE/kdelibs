@@ -205,7 +205,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
 		m_reversed ? QPainter::RTL : QPainter::LTR,
-		startPos, endPos, hbg, m_y + ty, height(), deco);
+		startPos, endPos, hbg, m_y + ty, text->lineHeight(m_firstLine), deco);
 }
 
 #ifdef APPLE_CHANGES
@@ -233,7 +233,7 @@ void InlineTextBox::paintDecoration( QPainter *pt, int _tx, int _ty, int deco)
     }
 }
 #else
-void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco, bool begin, bool end)
+void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)
 {
     _tx += m_x;
     _ty += m_y;
@@ -241,11 +241,6 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     int width = m_width - 1;
 
     RenderObject *p = object();
-    if (begin && p->parent()->isInline() && p->parent()->firstChild()==p)
-        width -= p->paddingLeft() + p->borderLeft();
-
-    if (end && p->parent()->isInline() && p->parent()->lastChild()==p)
-        width -= p->paddingRight() + p->borderRight();
 
     QColor underline, overline, linethrough;
     p->getTextDecorationColors(deco, underline, overline, linethrough, p->style()->htmlHacks());
@@ -266,62 +261,6 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     // support it. Lars
 }
 #endif
-
-void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, int curr, int count)
-{
-    int topExtra = p->borderTop() + p->paddingTop();
-    int bottomExtra = p->borderBottom() + p->paddingBottom();
-    // ### firstline
-    int halfleading = (p->m_lineHeight - style->font().pixelSize() ) / 2;
-
-    _tx += m_x;
-    _ty += m_y + halfleading - topExtra;
-
-    int width = m_width;
-    bool begin = !curr;
-    bool end = (curr == count-1);
-
-    // the height of the decorations is:  topBorder + topPadding + CSS font-size + bottomPadding + bottomBorder
-    int height = style->font().pixelSize() + topExtra + bottomExtra;
-
-    if (begin && p->parent()->isInline() && p->parent()->firstChild() == p)
-	_tx -= p->paddingLeft() + p->borderLeft();
-
-    QColor c = style->backgroundColor();
-    CachedImage *i = style->backgroundImage();
-    if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
-        pt->fillRect(_tx, _ty, width, height, c);
-
-    if(i) {
-        if (begin && end) {
-             p->parent()->paintBackgroundExtended(pt, c, i, _ty, height,
-                                _tx, _ty, width, height,
-                                p->borderLeft(), p->borderRight());
-        } else {
-            int mw = 0;
-            int startX = _tx;
-            for (int ix=0; ix<count; ix++) {
-                if(ix == curr) startX -= mw;
-                mw += static_cast<InlineBox*>(renderText()->m_lines[ix])->width();
-            }
-            QRect clipRect(_tx, _ty, width, height);
-            clipRect = pt->xForm(clipRect);
-            pt->save();
-            pt->setClipRect( clipRect );
-            p->parent()->paintBackgroundExtended(pt, c, i, _ty, height,
-                                startX, _ty, mw, height, 
-                                p->borderLeft(), p->borderRight());
-            pt->restore();
-        }
-    }
-
-#ifdef DEBUG_VALIGN
-    pt->fillRect(_tx, _ty, width, height, Qt::cyan );
-#endif
-
-    if(style->hasBorder())
-        p->paintBorder(pt, _tx, _ty, width, height, style, begin, end);
-}
 
 /**
  * Distributes pixels to justify text.
@@ -372,7 +311,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     if (justified) {
 
         for( int i = 0; i < m_len; i++ )
-            if ( text->str->s[m_start+i].isSpace() )
+            if ( text->str->s[m_start+i].category() == QChar::Separator_Space )
 	        numSpaces++;
 
     }/*end if*/
@@ -384,7 +323,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 	delta -= m_width;
 	while(pos < m_len) {
 	    int w = f->width( text->str->s, text->str->l, m_start + pos);
-	    if (justified && text->str->s[m_start + pos].isSpace())
+	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
 	    w -= w2;
@@ -396,7 +335,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     } else {
 	while(pos < m_len) {
 	    int w = f->width( text->str->s, text->str->l, m_start + pos);
-	    if (justified && text->str->s[m_start + pos].isSpace())
+	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
 	    w -= w2;
@@ -425,7 +364,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
     if (end - start == 1) start = end;
 
     offset = (start + end) / 2;
-    ax = m_x + width(offset);
+    ax = m_x + widthFromStart(offset);
     if (ax > _x) end = offset;
     else if (ax < _x) start = offset;
     else break;
@@ -433,7 +372,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
   return m_start + offset;
 }
 
-int InlineTextBox::width(int pos) const
+int InlineTextBox::widthFromStart(int pos) const
 {
   // gasp! sometimes pos is i < 0 which crashes Font::width
   pos = kMax(pos, 0);
@@ -452,7 +391,7 @@ int InlineTextBox::width(int pos) const
 
 //    QConstString cstr = QConstString(t->str->s + m_start, m_len);
     for( int i = 0; i < m_len; i++ )
-      if ( t->str->s[m_start+i].isSpace() )
+      if ( t->str->s[m_start+i].category() == QChar::Separator_Space )
 	numSpaces++;
     if (numSpaces == 0) break;
 
@@ -462,7 +401,7 @@ int InlineTextBox::width(int pos) const
     int current = 0;	// current position
     while (current < pos) {
       // add spacing
-      while (current < pos && t->str->s[m_start + current].isSpace()) {
+      while (current < pos && t->str->s[m_start + current].category() == QChar::Separator_Space) {
 	w += f->getWordSpacing();
 	w += f->getLetterSpacing();
 	w += justifyWidth(numSpaces, toAdd);
@@ -472,14 +411,15 @@ int InlineTextBox::width(int pos) const
       if (current >= pos) break;
 
       // seek next space
-      while (current < pos && !t->str->s[m_start + current].isSpace())
+      while (current < pos && t->str->s[m_start + current].category() != QChar::Separator_Space)
         current++;
 
       // check run without spaces
-      w += f->width(t->str->s + m_start, m_len, start, current - start);
-      start = current;
-
-    }/*wend*/
+      if ( current > start ) {
+          w += f->width(t->str->s + m_start, m_len, start, current - start);
+          start = current;
+      }
+    }
 
     return w;
 
@@ -569,8 +509,6 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
-
-    m_minOfs = 0;
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
@@ -686,18 +624,12 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
 {
     assert(parent());
 
-    _tx -= paddingLeft() + borderLeft();
-    _ty -= borderTop() + paddingTop();
-    
-    int height = m_lineHeight + borderTop() + paddingTop() +
-              borderBottom() + paddingBottom();
-
     bool inside = false;
     if (style()->visibility() != HIDDEN) {
         InlineTextBox *s = m_lines.count() ? m_lines[0] : 0;
         int si = 0;
         while(s) {
-            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
+            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + s->m_height) &&
                (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) ) {
                 inside = true;
                 break;
@@ -708,7 +640,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
     }
 
     // #### ported over from Safari. Can this happen at all? (lars)
-    #if 0
+
     if (inside && element()) {
         if (info.innerNode() && info.innerNode()->renderer() &&
             !info.innerNode()->renderer()->isInline()) {
@@ -726,7 +658,6 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
         if(!info.innerNonSharedNode())
             info.setInnerNonSharedNode(element());
     }
-    #endif
 
     return inside;
 }
@@ -805,7 +736,7 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   const QFontMetrics &fm = t->metrics( s->m_firstLine );
   height = fm.height(); // s->m_height;
 
-  _x = s->m_x + s->width(pos);
+  _x = s->m_x + s->widthFromStart(pos);
   _y = s->m_y + s->baseline() - fm.ascent();
   width = 1;
   if (override) {
@@ -896,21 +827,29 @@ short RenderText::rightmostPosition() const
     return 0;
 }
 
-void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-                      int tx, int ty, PaintAction paintAction)
+
+void RenderText::paint( PaintInfo& pI, int tx, int ty)
 {
-//kdDebug(6040) << "RenderText::paintObject: phase: " << paintAction << endl;
-    Q_UNUSED(paintAction);
+    if (pI.phase != PaintActionForeground || style()->visibility() != VISIBLE)
+        return;
+
+    int s = m_lines.count() - 1;
+    if ( s < 0 ) return;
+
+    // ### incorporate padding/border here!
+    if ( ty + m_lines[0]->m_y > pI.r.bottom() + 64 ) return;
+    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < pI.r.top() ) return;
+
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
-    InlineTextBox f(0, y-ty);
+    InlineTextBox f(0, pI.r.top()-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
-    bool isPrinting = (p->device()->devType() == QInternal::Printer);
+    bool isPrinting = (pI.p->device()->devType() == QInternal::Printer);
     if(si >= 0)
     {
         // Move up until out of area to be painted
-        while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h, m_lineHeight))
+        while(si > 0 && m_lines[si-1]->checkVerticalPoint(pI.r.y(), ty, pI.r.height(), m_lineHeight))
             si--;
 
         // Now calculate startPos and endPos, for painting selection.
@@ -953,13 +892,13 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    if (isPrinting)
 	    {
                 int lh = lineHeight( false ) + paddingBottom() + borderBottom();
-                if (ty+s->m_y < y)
+                if (ty+s->m_y < pI.r.y())
                 {
                    // This has been painted already we suppose.
                    continue;
                 }
 
-                if (ty+lh+s->m_y > y+h)
+                if (ty+lh+s->m_y > pI.r.bottom())
                 {
                    RenderCanvas *rootObj = canvas();
                    if (ty+s->m_y < rootObj->truncatedAt())
@@ -972,24 +911,19 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
             int d = _style->textDecorationsInEffect();
 
-            if(_style->font() != p->font()) {
-                p->setFont(_style->font());
-	    }
+            if(_style->font() != pI.p->font())
+                pI.p->setFont(_style->font());
+
 	    //has to be outside the above if because of small caps.
 	    font = &_style->htmlFont();
 
-            if (shouldPaintBackgroundOrBorder() &&
-                ((pseudoStyle && s->m_firstLine) ||
-                (!pseudoStyle && parent()->isInline())))
-                s->paintBoxDecorations(p, _style, this, tx, ty, si, (int)m_lines.count());
-
-            if(_style->color() != p->pen().color())
-                p->setPen(_style->color());
+            if(_style->color() != pI.p->pen().color())
+                pI.p->setPen(_style->color());
 
 	    if (s->m_len > 0) {
 	        if (!haveSelection) {
 	            //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
-		    font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
+		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 	        }
 		else {
@@ -1001,16 +935,16 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     if (paintSelectedTextSeparately) {
 #endif
                         if (sPos >= ePos)
-                            font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline,
+                            font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                            str->s, str->l, s->m_start, s->m_len,
                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
                         else {
                             if (sPos-1 >= 0)
-                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                             str->l, s->m_start, s->m_len,
                                             s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
                             if (ePos < s->m_len)
-                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                             str->l, s->m_start, s->m_len,
                                             s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
                         }
@@ -1021,7 +955,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                         if (selectionColor != p->pen().color())
                             p->setPen(selectionColor);
 
-                        font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                        font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                        str->l, s->m_start, s->m_len,
                                        s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, sPos, ePos);
                     }
@@ -1029,9 +963,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 }
 	    }
 
-            if(d != TDNONE)
-            {
-                s->paintDecoration(p, font, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
+            if (d != TDNONE && pI.phase == PaintActionForeground) {
+                pI.p->setPen(_style->color());
+                s->paintDecoration(pI.p, font, tx, ty, d);
             }
 
             if (haveSelection) {
@@ -1040,7 +974,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		int ePos = kMin( endPos - offset, int( s->m_len ) );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
-		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos, d);
+		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);
 
             }
             if(renderOutline) {
@@ -1073,32 +1007,16 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 #endif
 
-        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y-ow, ty, h, m_lineHeight));
+        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(pI.r.y()-ow, ty, pI.r.height(), m_lineHeight));
 
         if(renderOutline)
 	  {
 	    linerects.append(new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight));
 	    linerects.append(new QRect());
 	    for (unsigned int i = 1; i < linerects.count() - 1; i++)
-                paintTextOutline(p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
+                paintTextOutline(pI.p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
 	  }
     }
-}
-
-void RenderText::paint( QPainter *p, int x, int y, int w, int h,
-                      int tx, int ty, PaintAction paintAction)
-{
-    if (paintAction != PaintActionForeground || style()->visibility() != VISIBLE)
-        return;
-
-    int s = m_lines.count() - 1;
-    if ( s < 0 ) return;
-
-    // ### incorporate padding/border here!
-    if ( ty + m_lines[0]->m_y > y + h + 64 ) return;
-    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < y ) return;
-
-    paintObject(p, x, y, w, h, tx, ty, paintAction);
 }
 
 void RenderText::calcMinMaxWidth()
@@ -1281,8 +1199,6 @@ int RenderText::height() const
     else
         retval = metrics( false ).height();
 
-    retval += paddingTop() + paddingBottom() + borderTop() + borderBottom();
-
     return retval;
 }
 
@@ -1308,7 +1224,7 @@ InlineBox* RenderText::createInlineBox(bool, bool isRootLineBox)
     return new (renderArena()) InlineTextBox(this);
 }
 
-void RenderText::position(InlineBox* box, int from, int len, bool reverse, int spaceAdd)
+void RenderText::position(InlineBox* box, int from, int len, bool reverse)
 {
 //kdDebug(6040) << "position: from="<<from<<" len="<<len<<endl;
     // ### should not be needed!!!
@@ -1316,19 +1232,9 @@ void RenderText::position(InlineBox* box, int from, int len, bool reverse, int s
     //KHTMLAssert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
     // It is now needed. BRs need text boxes too otherwise caret navigation
     // gets stuck (LS)
-    //if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
+    // if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
 
     reverse = reverse && !style()->visuallyOrdered();
-
-    // ### margins and RTL
-    if(from == 0 && parent()->isInline() && parent()->firstChild()==this)
-    {
-        box->m_x += paddingLeft() + borderLeft() + marginLeft();
-        box->m_width -= marginLeft();
-    }
-
-    if(from + len >= int(str->l) && parent()->isInline() && parent()->lastChild()==this)
-        box->m_width -= marginRight();
 
 #ifdef DEBUG_LAYOUT
     QChar *ch = str->s+from;
@@ -1340,7 +1246,6 @@ void RenderText::position(InlineBox* box, int from, int len, bool reverse, int s
     s->m_start = from;
     s->m_len = len;
     s->m_reversed = reverse;
-    s->m_toAdd = spaceAdd;
     //kdDebug(6040) << "m_start: " << s->m_start << " m_len: " << s->m_len << endl;
 
     if(m_lines.count() == m_lines.size())
@@ -1364,29 +1269,10 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
-    int w;
-    if ( f == &style()->htmlFont() && from == 0 && len == str->l ) {
- 	 w = m_maxWidth;
-	 if(parent()->isInline()) {
-	     if( parent()->firstChild() == static_cast<const RenderObject*>(this) )
-		 w +=  borderLeft() + paddingLeft() + marginLeft();
-	     if( parent()->lastChild() == static_cast<const RenderObject*>(this) )
-		 w += borderRight() + paddingRight() + marginRight();
-	 }
-	 return w;
-    }
+    if ( f == &style()->htmlFont() && from == 0 && len == str->l )
+ 	 return m_maxWidth;
 
-    w = f->width(str->s, str->l, from, len );
-
-    // ### add margins and support for RTL
-
-    if(parent()->isInline()) {
-        if(from == 0 && parent()->firstChild() == static_cast<const RenderObject*>(this))
-            w += borderLeft() + paddingLeft() + marginLeft();
-        if(from + len == str->l &&
-           parent()->lastChild() == static_cast<const RenderObject*>(this))
-            w += borderRight() + paddingRight() +marginRight();
-    }
+    int w = f->width(str->s, str->l, from, len );
 
     //kdDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;
     return w;
@@ -1616,7 +1502,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 true);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
 static QString quoteAndEscapeNonPrintables(const QString &s)
 {

@@ -8,16 +8,16 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-3.0.4)
+qt-copy QT_3_2_BRANCH (This is qt-3.2.3)
 arts
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
 
-It is important that you compile AND INSTALL the above packages in the 
+It is important that you compile AND INSTALL the above packages in the
 above order.
 
-Further you will need GNU make, autoconf 2.52, automake 1.5 and 
+Further you will need GNU make, autoconf 2.52, automake 1.5 and
 a working C++ compiler (eg. gcc 2.95.2)
 
 Preparations
@@ -25,9 +25,9 @@ Preparations
 
 Before you start you must decide two things:
 
-1) Where do you want to have Qt installed? Qt is a bit lame in that it 
-basically installs itself in its own source-tree, but symlinks are your 
-friend. E.g you could link /usr/local/lib/qt3 to where you keep your Qt 
+1) Where do you want to have Qt installed? Qt is a bit lame in that it
+basically installs itself in its own source-tree, but symlinks are your
+friend. E.g you could link /usr/local/lib/qt3 to where you keep your Qt
 source. Qt libs then end up in /usr/local/lib/qt3/lib.
 
 2) Where do you want to have KDE installed. A good candidate is /usr/local/kde
@@ -41,7 +41,7 @@ setenv KDEDIR /usr/local/kde
 
 Now you want to make sure that Qt and KDE libraries are picked up correctly.
 
-On systems that respond to environment variables something similar to the 
+On systems that respond to environment variables something similar to the
 following is appropriate:
 
 export LD_LIBRARY_PATH=$KDEDIR/lib:$QTDIR/lib
@@ -52,8 +52,8 @@ ldconfig -m $QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
-See http://www.kde.org/kde2-and-kde3.html for tips about setting up
-KDE 3.0 next to KDE 2.x.
+See http://developer.kde.org/build/build2ver.html for tips about setting up
+two versions next to each other.
 
 Preparing CVS modules
 =====================
@@ -84,21 +84,21 @@ make
 Common problems
 ===============
 
-Wrong Qt paths: 
-One of the biggest problems is picking up the correct version of Qt, 
-especially if your system has more version of Qt installed. Be aware 
-that information about library paths gets saved in the "config.cache" 
-file, "Makefile.in" as well as "Makefile" files. So it can be that after 
-some struggle to get QTDIR/KDEDIR setup correctly your setup is actually 
+Wrong Qt paths:
+One of the biggest problems is picking up the correct version of Qt,
+especially if your system has more version of Qt installed. Be aware
+that information about library paths gets saved in the "config.cache"
+file, "Makefile.in" as well as "Makefile" files. So it can be that after
+some struggle to get QTDIR/KDEDIR setup correctly your setup is actually
 correct, but old -incorrect- settings are still lying around.
 
-The best thing to do in such a case is to do a "make cvs-clean". This 
-removes all files which aren't stored in CVS. You can then start all over 
-again with "makefile -f Makefile.cvs". Make sure you don't have any important 
+The best thing to do in such a case is to do a "make cvs-clean". This
+removes all files which aren't stored in CVS. You can then start all over
+again with "makefile -f Makefile.cvs". Make sure you don't have any important
 files lying around in your source tree any more, they will be deleted!
 
 New directories:
-When a new directory gets added to CVS it usually only contains a 
+When a new directory gets added to CVS it usually only contains a
 Makefile.am but not a Makefile. If you try to compile such a directory
 you will get an error like:
 
@@ -112,7 +112,7 @@ you will get an error like:
   make[1]: Leaving directory /home/gregturp/KDE/kdelibs'
   make: *** [all-recursive-am] Error 2
 
-The solution is to redo "make -f Makefile.cvs; ./configure". 
+The solution is to redo "make -f Makefile.cvs; ./configure".
 
 You can create a single Makefile from a Makefile.am file with the
 kdesdk/scripts/create_makefile script. Make sure to run it from the toplevel
@@ -128,10 +128,10 @@ If you encounter _LINK_ problems you are probably doing something wrong.
 Do a "make cvs-clean" and start from scratch, usually this solves the problem.
 
 If you encounter missing include files, especially if the files start with
-a 'q', you probably have not setup your QTDIR correct or have the wrong 
+a 'q', you probably have not setup your QTDIR correct or have the wrong
 version of Qt.
 
-If you encounter compile errors after updating from CVS, check whether you 
+If you encounter compile errors after updating from CVS, check whether you
 need to update kdelibs as well. If the problems persists, wait a few hours,
 usually compile errors are fixed shortly after they have been introduced.
 

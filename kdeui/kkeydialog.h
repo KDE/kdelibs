@@ -202,8 +202,7 @@ class KKeyChooser : public QWidget
 
  private:
         bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser );
-        static bool promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType action, QWidget* parent )
-;
+        static bool promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType action, QWidget* parent );
         static void removeStandardShortcut( const QString& name, KKeyChooser* chooser );
         static void removeGlobalShortcut( const QString& name, KKeyChooser* chooser );
         static void readGlobalKeys( QMap< QString, KShortcut >& map );

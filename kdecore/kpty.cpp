@@ -127,6 +127,10 @@ extern "C" {
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
 
+#ifndef CTRL
+# define CTRL(x) ((x) & 037)
+#endif
+
 #define TTY_GROUP "tty"
 
 ///////////////////////
@@ -290,7 +294,7 @@ bool KPty::open()
   unlockpt(d->masterFd);
 #endif
 
-  d->slaveFd = ::open(d->ttyName.data(), O_RDWR);
+  d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
     kdWarning(175) << "Can't open slave pseudo teletype" << endl;
@@ -429,7 +433,7 @@ void KPty::logout()
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
     utmp << "/usr/sbin/utempter" << "-d" << d->ttyName;
-    utmp.start(KPty::Block);
+    utmp.start(KProcess::Block);
 #elif defined(USE_LOGIN)
     const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))

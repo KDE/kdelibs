@@ -202,6 +202,10 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   }
 }
 
+bool ProgressItem::keepOpen() const
+{
+    return defaultProgress->keepOpen();
+}
 
 ProgressItem::~ProgressItem() {
     delete defaultProgress;
@@ -804,7 +808,7 @@ void UIServer::jobFinished( int id )
   ProgressItem *item = findItem( id );
 
   // remove item from the list and delete the corresponding defaultprogress
-  if ( item ) {
+  if ( item && !item->keepOpen()) {
     delete item;
   }
 }
@@ -1054,7 +1058,7 @@ void UIServer::slotUpdate() {
   }
 
   int iTotalFiles = 0;
-  int iTotalSize = 0;
+  KIO::filesize_t iTotalSize = 0;
   int iTotalSpeed = 0;
   QTime totalRemTime;
 
@@ -1324,7 +1328,7 @@ void UIServer::resizeEvent(QResizeEvent* e)
 
 bool UIServer::queryClose()
 {
-  if ( !m_shuttingDown ) {
+  if (( !m_shuttingDown ) && !kapp->sessionSaving()) {
     hide();
     return false;
   }

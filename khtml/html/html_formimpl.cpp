@@ -80,6 +80,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     m_enctype = "application/x-www-form-urlencoded";
     m_boundary = "----------" + KApplication::randomString( 42 + 13 );
     m_acceptcharset = "UNKNOWN";
+    m_malformed = false;
 }
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
@@ -262,16 +263,16 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                     // if the current type is FILE, then we also need to
                     // include the filename
-                    if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
-                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
+                    if (current->id() == ID_INPUT &&
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE &&
+                        current->renderer())
                     {
-                        QString path = static_cast<HTMLInputElementImpl*>(current)->value().string();
-                        if (path.length()) fileUploads << path;
-                        QString onlyfilename = path.mid(path.findRev('/')+1);
+                        KURL path ( static_cast<HTMLInputElementImpl*>(current)->value().string());
 
-                        hstr += fixUpfromUnicode(codec, "; filename=\"" + onlyfilename + "\"");
-                        if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty()) {
-                            KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
+                        if(path.isValid()) {
+                            fileUploads << path.prettyURL(0, KURL::StripFileProtocol);
+                            KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().ascii();
@@ -805,8 +806,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::MOUSEMOVE_EVENT:
         case EventImpl::MOUSEOUT_EVENT:
         case EventImpl::MOUSEOVER_EVENT:
-        case EventImpl::KHTML_KEYDOWN_EVENT:
-        case EventImpl::KHTML_KEYUP_EVENT:
+        case EventImpl::KEYDOWN_EVENT:
+        case EventImpl::KEYUP_EVENT:
         case EventImpl::KHTML_KEYPRESS_EVENT:
             if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
 		evt->setDefaultHandled();
@@ -825,11 +826,11 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
             if (ext)
                 ext->editableWidgetFocused(widget);
         }
-        if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KHTML_KEYDOWN_EVENT)
+        if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KEYDOWN_EVENT)
         {
             setActive();
         }
-        else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+        else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KEYUP_EVENT)
         {
 	    if (m_active)
 	    {
@@ -926,7 +927,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	if (!act && evt->id()==EventImpl::KHTML_KEYUP_EVENT) {
+	if (!act && evt->id()==EventImpl::KEYUP_EVENT) {
 	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
@@ -948,6 +949,12 @@ void HTMLButtonElementImpl::activate()
     }
     if(m_form && m_type == RESET)
         m_form->reset();
+}
+
+void HTMLButtonElementImpl::click()
+{
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
 
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
@@ -1156,8 +1163,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         if (m_render && m_type == IMAGE) m_render->updateFromElement();
         break;
     case ATTR_USEMAP:
-    case ATTR_ACCESSKEY:
         // ### ignore for the moment
+        break;
+    case ATTR_ACCESSKEY:
         break;
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
@@ -1356,31 +1364,30 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 return false;
 
             QString local;
-            QCString dummy("");
-
             KURL fileurl(value().string());
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
             QWidget* toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
-            if (multipart && KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
-                KFileItem fileitem(filestat, fileurl, true, false);
-
-                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
-                    QFile file(local);
-                    if (file.open(IO_ReadOnly)) {
-                        QCString filearray(file.size()+1);
-                        int readbytes = file.readBlock( filearray.data(), file.size());
-                        if ( readbytes >= 0 )
-                            filearray[readbytes] = '\0';
-                        file.close();
-
-                        encoding += filearray;
+            if (multipart) {
+                QCString filearray( "" );
+                if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
+                    KFileItem fileitem(filestat, fileurl, true, false);
+                    if ( fileitem.isFile() &&
+                         KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
+                        QFile file(local);
+                        filearray.resize(file.size()+1);
+                        if ( file.open( IO_ReadOnly ) ) {
+                            int readbytes = file.readBlock( filearray.data(), file.size());
+                            if ( readbytes >= 0 )
+                                filearray[readbytes] = '\0';
+                            file.close();
+                        }
                         KIO::NetAccess::removeTempFile( local );
-
-                        return true;
                     }
                 }
+                encoding += filearray;
+                return true;
             }
             // else fall through
         }
@@ -1466,15 +1473,20 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         if (m_type == RADIO || m_type == CHECKBOX || m_type == SUBMIT || m_type == RESET || m_type == BUTTON ) {
 	    bool check = false;
-	    if (active() && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+	    if (active() && ( evt->id() == EventImpl::KEYUP_EVENT ||
+	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) ) {
 		TextEventImpl *te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
 	    }
 	    if (check) {
-		if (m_type == RADIO || m_type == CHECKBOX)
-		    setChecked(m_type == RADIO ? true : !checked());
-		click();
+	        if (evt->id() == EventImpl::KEYUP_EVENT) {
+		    if (m_type == RADIO || m_type == CHECKBOX)
+		        setChecked(m_type == RADIO ? true : !checked());
+		    click();
+		}
+	        // Tell the parent that we handle this key (keyup and keydown), even though only keyup activates (#70478)
+	        evt->setDefaultHandled();
 	    }
         }
 
@@ -1485,7 +1497,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // must dispatch a DOMActivate event - a click event will not do the job.
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	    if (!act && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+	    if (!act && evt->id() == EventImpl::KEYUP_EVENT) {
 		QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;
@@ -1589,7 +1601,6 @@ void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ACCESSKEY:
-        // ### ignore for the moment
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -1811,7 +1822,6 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         m_multiple = (attr->val() != 0);
         break;
     case ATTR_ACCESSKEY:
-        // ### ignore for the moment
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
@@ -2218,7 +2228,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
             m_wrap = ta_NoWrap;
         break;
     case ATTR_ACCESSKEY:
-        // ignore for the moment
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,

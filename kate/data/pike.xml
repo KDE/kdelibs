@@ -2,7 +2,7 @@
 <!DOCTYPE language SYSTEM "language.dtd">
 <!-- Pike syntax highlightning v1.0 by Paul Pogonyshev -->
 <!-- FIXME: Find a way to prevent ranges (e.g. [1..] or [0..99]) from matching as floats. -pp -->
-<language name="Pike" version="1.1" kateversion="2.1" section="Scripts" extensions="*.pike" mimetype="application/x-pike;text/x-pike" casesensitive="1">
+<language name="Pike" version="1.02" kateversion="2.1" section="Scripts" extensions="*.pike" mimetype="application/x-pike;text/x-pike" casesensitive="1">
   <highlighting>
     <list name="keywords">
       <item> break </item>
@@ -57,8 +57,8 @@
 	<Detect2Chars attribute="Comment" context="Line Comment" char="/" char1="/"/>
 	<Detect2Chars attribute="Comment" context="Line Comment" char="#" char1="!"/>
 	<Detect2Chars attribute="Comment" context="Block Comment" char="/" char1="*" beginRegion="Comment"/>
-	<StringDetect attribute="Preprocessor" context="Outscoped" String="#if 0" beginRegion="Outscoped"/>
-	<DetectChar attribute="Preprocessor" context="Preprocessor" char="#"/>
+	<RegExpr attribute="Preprocessor" context="Outscoped" String="^\s*#\s*if\s+0" beginRegion="Outscoped"/>
+	<RegExpr attribute="Preprocessor" context="Preprocessor" String="^\s*#"/>
       </context>
       <context attribute="String" lineEndContext="#pop" name="String">
 	<RegExpr attribute="String Char" context="#stay" String="\\d[0-9]+"/>
@@ -81,13 +81,14 @@
 	<LineContinue attribute="Preprocessor" context="#stay"/>
       </context>
       <context attribute="Comment" lineEndContext="#stay" name="Outscoped">
-	<StringDetect attribute="Comment" context="Outscoped Internals" String="#if"/>
-	<RegExpr attribute="Preprocessor" context="#pop" String="#e(ndif|lse)" endRegion="Outscoped"/>
 	<RegExpr attribute="Note" context="#stay" String="(FIXME|TODO|NOT(IC)?E):?"/>
+	<RegExpr attribute="Comment" context="Outscoped intern" String="^\s*#\s*if\s+0" />
+	<RegExpr attribute="Comment" context="Outscoped" String="^\s*#\s*if" />
+	<RegExpr attribute="Preprocessor" context="#pop" String="^\s*#\s*(endif|else|elif)" endRegion="Outscoped"/>
       </context>
-      <context attribute="Comment" lineEndContext="#stay" name="Outscoped Internals">
-	<StringDetect attribute="Comment" context="Outscoped Internals" String="#if"/>
-	<StringDetect attribute="Comment" context="#pop" String="#endif"/>
+      <context attribute="Comment" lineEndContext="#stay" name="Outscoped intern">
+	<RegExpr attribute="Comment" context="Outscoped intern" String="^\s*#\s*if" />
+	<RegExpr attribute="Comment" context="#pop" String="^\s*#\s*endif" />
       </context>
     </contexts>
     <itemDatas>

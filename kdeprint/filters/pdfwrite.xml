@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <kprintfilter name="pdfwrite">
-	<filtercommand data="gs -q -dNOPAUSE -sDEVICE=pdfwrite -sPAPERSIZE=%psl -sOutputFile=%filteroutput %filterargs -c save pop -f %filterinput" />
+	<filtercommand data="gs -q -dNOPAUSE -dSAFER -dPARANOIDSAFER -sDEVICE=pdfwrite -sPAPERSIZE=%psl -sOutputFile=%filteroutput %filterargs -c save pop -f %filterinput" />
 	<filterargs>
 	</filterargs>
 	<filterinput>

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -79,4 +79,12 @@ void KMWInfoBase::setCurrent(int i)
 		m_edits.at(i)->selectAll();
 		m_edits.at(i)->setFocus();
 	}
+}
+
+QLineEdit* KMWInfoBase::lineEdit( int i )
+{
+	if ( i >= 0 && i < m_nlines )
+		return m_edits.at( i );
+	else
+		return NULL;
 }

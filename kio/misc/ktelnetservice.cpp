@@ -55,6 +55,8 @@ int main(int argc, char **argv)
 	cmd << "-e";
         if ( url.protocol() == "telnet" )
             cmd << "telnet";
+        else if ( url.protocol() == "ssh" )
+            cmd << "ssh";
         else if ( url.protocol() == "rlogin" )
             cmd << "rlogin";
         else {
@@ -80,8 +82,12 @@ int main(int argc, char **argv)
         else if (!url.path().isEmpty())
            cmd << url.path(); // telnet:host
         
-	if (url.port())
+	if (url.port()){
+            if ( url.protocol() == "ssh" )
+		cmd << "-p" << QString::number(url.port());
+	    else
 		cmd << QString::number(url.port());
+	}
 
 	app.kdeinitExec("konsole", cmd);
 

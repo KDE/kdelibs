@@ -81,13 +81,13 @@ class KateConfigPage : public Kate::ConfigPage
   public:
     KateConfigPage ( QWidget *parent=0, const char *name=0 );
     virtual ~KateConfigPage ();
-  
+
   public:
     bool changed () { return m_changed; }
-    
+
   private slots:
     void somethingHasChanged ();
-    
+
   private:
     bool m_changed;
 };
@@ -151,7 +151,7 @@ class IndentConfigTab : public KateConfigPage
 class SelectConfigTab : public KateConfigPage
 {
   Q_OBJECT
-  
+
   public:
     SelectConfigTab(QWidget *parent);
 
@@ -198,7 +198,7 @@ class ViewDefaultsConfig : public KateConfigPage
   public:
     ViewDefaultsConfig( QWidget *parent );
     ~ViewDefaultsConfig();
-  
+
   private:
     QCheckBox *m_line;
     QCheckBox *m_folding;
@@ -210,7 +210,7 @@ class ViewDefaultsConfig : public KateConfigPage
     QLabel *m_dynwrapIndicatorsLabel;
     KComboBox *m_dynwrapIndicatorsCombo;
     QButtonGroup *m_bmSort;
-  
+
   public slots:
   void apply ();
   void reload ();
@@ -237,6 +237,7 @@ class EditKeyConfiguration: public KateConfigPage
   private:
     bool m_ready;
     class KateDocument *m_doc;
+    class KActionCollection *m_ac;
     KKeyChooser* m_keyChooser;
 };
 
@@ -264,15 +265,15 @@ class KatePartPluginListItem;
 class KatePartPluginListView : public KListView
 {
   Q_OBJECT
-  
+
   friend class KatePartPluginListItem;
-  
+
   public:
     KatePartPluginListView (QWidget *parent = 0, const char *name = 0);
-  
+
   signals:
     void stateChange(KatePartPluginListItem *, bool);
-  
+
   private:
     void stateChanged(KatePartPluginListItem *, bool);
 };
@@ -290,7 +291,7 @@ class PluginConfigPage : public KateConfigPage
     void reload () {};
     void reset () {};
     void defaults () {};
-    
+
   private:
     KatePartPluginListView *listView;
     QPtrList<KatePartPluginListItem> m_items;
@@ -306,7 +307,7 @@ class PluginConfigPage : public KateConfigPage
 class KMimeTypeChooser : public QVBox
 {
   Q_OBJECT
-  
+
   public:
     KMimeTypeChooser( QWidget *parent=0, const QString& text=QString::null, const QStringList &selectedMimeTypes=0,
                       bool editbutton=true, bool showcomment=true, bool showpattern=true );
@@ -373,7 +374,7 @@ class HlConfigPage : public KateConfigPage
 
   private:
     void writeback ();
-  
+
     QComboBox *hlCombo;
     QLineEdit *wildcards;
     QLineEdit *mimetypes;

@@ -31,6 +31,8 @@
 #include <assert.h>
 
 #include "decoder.h"
+#include "guess_ja.h"
+
 using namespace khtml;
 
 #include "htmlhashes.h"
@@ -45,231 +47,7 @@ using namespace khtml;
 #include <kdebug.h>
 #include <klocale.h>
 
-namespace khtml {
 
-class KanjiCode
-{
-public:
-    enum Type {ASCII, JIS, EUC, SJIS, UNICODE, UTF8 };
-    static enum Type judge(const char *str, int length);
-    static const int ESC;
-    static const int _SS2_;
-    static const unsigned char kanji_map_sjis[];
-    static int ISkanji(int code)
-    {
-	if (code >= 0x100)
-		    return 0;
-	return (kanji_map_sjis[code & 0xff] & 1);
-    }
-
-    static int ISkana(int code)
-    {
-	if (code >= 0x100)
-		    return 0;
-	return (kanji_map_sjis[code & 0xff] & 2);
-    }
-
-};
-
-}
-
-const int KanjiCode::ESC = 0x1b;
-const int KanjiCode::_SS2_ = 0x8e;
-
-const unsigned char KanjiCode::kanji_map_sjis[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0
-};
-
-/*
- * EUC-JP is
- *     [0xa1 - 0xfe][0xa1 - 0xfe]
- *     0x8e[0xa1 - 0xfe](SS2)
- *     0x8f[0xa1 - 0xfe][0xa1 - 0xfe](SS3)
- *
- * Shift_Jis is
- *     [0x81 - 0x9f, 0xe0 - 0xef(0xfe?)][0x40 - 0x7e, 0x80 - 0xfc]
- *
- * Shift_Jis Hankaku Kana is
- *     [0xa1 - 0xdf]
- */
-
-/*
- * KanjiCode::judge() is based on judge_jcode() from jvim
- *     http://hp.vector.co.jp/authors/VA003457/vim/
- *
- * Special Thanks to Kenichi Tsuchida
- */
-
-/*
- * Maybe we should use QTextCodec::heuristicContentMatch()
- * But it fails detection. It's not useful.
- */
-
-enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
-{
-    enum Type code;
-    int i;
-    int bfr = false;		/* Kana Moji */
-    int bfk = 0;		/* EUC Kana */
-    int sjis = 0;
-    int euc = 0;
-
-    const unsigned char *ptr = (const unsigned char *) str;
-
-    code = ASCII;
-
-    i = 0;
-    while (i < length) {
-	if (ptr[i] == ESC && (length- i >= 3)) {
-	    if ((ptr[i + 1] == '$' && ptr[i + 2] == 'B')
-	    || (ptr[i + 1] == '(' && ptr[i + 2] == 'B')) {
-		code = JIS;
-		goto breakBreak;
-	    } else if ((ptr[i + 1] == '$' && ptr[i + 2] == '@')
-		    || (ptr[i + 1] == '(' && ptr[i + 2] == 'J')) {
-		code = JIS;
-		goto breakBreak;
-	    } else if (ptr[i + 1] == '(' && ptr[i + 2] == 'I') {
-		code = JIS;
-		i += 3;
-	    } else if (ptr[i + 1] == ')' && ptr[i + 2] == 'I') {
-		code = JIS;
-		i += 3;
-	    } else {
-		i++;
-	    }
-	    bfr = false;
-	    bfk = 0;
-	} else {
-	    if (ptr[i] < 0x20) {
-		bfr = false;
-		bfk = 0;
-		/* ?? check kudokuten ?? && ?? hiragana ?? */
-		if ((i >= 2) && (ptr[i - 2] == 0x81)
-			&& (0x41 <= ptr[i - 1] && ptr[i - 1] <= 0x49)) {
-		    code = SJIS;
-		    sjis += 100;	/* kudokuten */
-		} else if ((i >= 2) && (ptr[i - 2] == 0xa1)
-			&& (0xa2 <= ptr[i - 1] && ptr[i - 1] <= 0xaa)) {
-		    code = EUC;
-		    euc += 100;		/* kudokuten */
-		} else if ((i >= 2) && (ptr[i - 2] == 0x82) && (0xa0 <= ptr[i - 1])) {
-		    sjis += 40;		/* hiragana */
-		} else if ((i >= 2) && (ptr[i - 2] == 0xa4) && (0xa0 <= ptr[i - 1])) {
-		    euc += 40;	/* hiragana */
-		}
-	    } else {
-		/* ?? check hiragana or katana ?? */
-		if ((length- i > 1) && (ptr[i] == 0x82) && (0xa0 <= ptr[i + 1])) {
-		    sjis++;	/* hiragana */
-		} else if ((length - i > 1) && (ptr[i] == 0x83)
-			 && (0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x9f)) {
-		    sjis++;	/* katakana */
-		} else if ((length - i > 1) && (ptr[i] == 0xa4) && (0xa0 <= ptr[i + 1])) {
-		    euc++;	/* hiragana */
-		} else if ((length - i > 1) && (ptr[i] == 0xa5) && (0xa0 <= ptr[i + 1])) {
-		    euc++;	/* katakana */
-		}
-		if (bfr) {
-		    if ((i >= 1) && (0x40 <= ptr[i] && ptr[i] <= 0xa0) && ISkanji(ptr[i - 1])) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0x81 <= ptr[i - 1] && ptr[i - 1] <= 0x9f) && ((0x40 <= ptr[i] && ptr[i] < 0x7e) || (0x7e < ptr[i] && ptr[i] <= 0xfc))) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0xfd <= ptr[i] && ptr[i] <= 0xfe) && (0xa1 <= ptr[i - 1] && ptr[i - 1] <= 0xfe)) {
-			code = EUC;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0xfd <= ptr[i - 1] && ptr[i - 1] <= 0xfe) && (0xa1 <= ptr[i] && ptr[i] <= 0xfe)) {
-			code = EUC;
-			goto breakBreak;
-		    } else if ((i >= 1) && (ptr[i] < 0xa0 || 0xdf < ptr[i]) && (0x8e == ptr[i - 1])) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if (ptr[i] <= 0x7f) {
-			code = SJIS;
-			goto breakBreak;
-		    } else {
-			if (0xa1 <= ptr[i] && ptr[i] <= 0xa6) {
-			    euc++;	/* sjis hankaku kana kigo */
-			} else if (0xa1 <= ptr[i] && ptr[i] <= 0xdf) {
-			    ;	/* sjis hankaku kana */
-			} else if (0xa1 <= ptr[i] && ptr[i] <= 0xfe) {
-			    euc++;
-			} else if (0x8e == ptr[i]) {
-			    euc++;
-			} else if (0x20 <= ptr[i] && ptr[i] <= 0x7f) {
-			    sjis++;
-			}
-			bfr = false;
-			bfk = 0;
-		    }
-		} else if (0x8e == ptr[i]) {
-		    if (length - i <= 1) {
-			;
-		    } else if (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xdf) {
-			/* EUC KANA or SJIS KANJI */
-			if (bfk == 1) {
-			    euc += 100;
-			}
-			bfk++;
-			i++;
-		    } else {
-			/* SJIS only */
-			code = SJIS;
-			goto breakBreak;
-		    }
-		} else if (0x81 <= ptr[i] && ptr[i] <= 0x9f) {
-		    /* SJIS only */
-		    code = SJIS;
-		    if ((length - i >= 1)
-			    && ((0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x7e)
-			    || (0x80 <= ptr[i + 1] && ptr[i + 1] <= 0xfc))) {
-			goto breakBreak;
-		    }
-		} else if (0xfd <= ptr[i] && ptr[i] <= 0xfe) {
-		    /* EUC only */
-		    code = EUC;
-		    if ((length - i >= 1)
-			    && (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xfe)) {
-			goto breakBreak;
-		    }
-		} else if (ptr[i] <= 0x7f) {
-		    ;
-		} else {
-		    bfr = true;
-		    bfk = 0;
-		}
-	    }
-	    i++;
-	}
-    }
-    if (code == ASCII) {
-	if (sjis > euc) {
-	    code = SJIS;
-	} else if (sjis < euc) {
-	    code = EUC;
-	}
-    }
-breakBreak:
-    return (code);
-}
 
 Decoder::Decoder()
 {
@@ -282,10 +60,14 @@ Decoder::Decoder()
     visualRTL = false;
     haveEncoding = false;
     m_autoDetectLanguage = SemiautomaticDetection;
+    kc = NULL;
 }
+
 Decoder::~Decoder()
 {
     delete m_decoder;
+    if (kc)
+        delete kc;
 }
 
 void Decoder::setEncoding(const char *_encoding, bool force)
@@ -494,20 +276,7 @@ QString Decoder::decode(const char *data, int len)
             enc = automaticDetectionForHebrew( (const unsigned char*) data, len );
             break;
         case Decoder::Japanese:
-            switch ( KanjiCode::judge( data, len ) ) {
-                case KanjiCode::JIS:
-                    enc = "jis7";
-                    break;
-                case KanjiCode::EUC:
-                    enc = "eucjp";
-                    break;
-                case KanjiCode::SJIS:
-                    enc = "sjis";
-                    break;
-                default:
-                    enc = NULL;
-                    break;
-            }
+            enc = automaticDetectionForJapanese( (const unsigned char*) data, len );
             break;
         case Decoder::Turkish:
             enc = automaticDetectionForTurkish( (const unsigned char*) data, len );
@@ -566,10 +335,6 @@ QString Decoder::decode(const char *data, int len)
         out = m_decoder->toUnicode(data, len);
     }
 
-    // the hell knows, why the output does sometimes have a QChar::null at
-    // the end...
-    if( out[out.length()-1].isNull() )
-        assert(0);
     return out;
 }
 
@@ -700,6 +465,27 @@ QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int siz
     }
 
     return "iso-8859-8-i";
+}
+
+QCString Decoder::automaticDetectionForJapanese( const unsigned char* ptr, int size )
+{
+    if (!kc)
+        kc = new JapaneseCode();
+
+    switch ( kc->guess_jp( (const char*)ptr, size ) ) {
+    case JapaneseCode::JIS:
+        return "jis7";
+    case JapaneseCode::EUC:
+        return "eucjp";
+    case JapaneseCode::SJIS:
+        return "sjis";
+     case JapaneseCode::UTF8:
+        return "utf8";
+    default:
+        break;
+    }
+
+    return "";
 }
 
 QCString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int size )

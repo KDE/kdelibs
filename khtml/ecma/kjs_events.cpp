@@ -29,6 +29,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
 #include "xml/dom2_eventsimpl.h"
+#include "khtml_part.h"
 
 #include <kdebug.h>
 
@@ -59,9 +60,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   KJSProxy *proxy = 0L;
   if (part)
-    proxy = KJSProxy::proxy( part );
+    proxy = part->jScript();
 
-  if (proxy && listener.implementsCall()) {
+  Object listenerObj = Object::dynamicCast( listener );
+  if (proxy && listenerObj.implementsCall()) {
     ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
@@ -72,13 +74,13 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    ScopeChain oldScope = listener.scope();
+    ScopeChain oldScope = listenerObj.scope();
     if ( thisObj.isValid() ) {
       ScopeChain scope = oldScope;
       // Add the event's target element to the scope
       // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
       static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
-      listener.setScope( scope );
+      listenerObj.setScope( scope );
     }
     else {
       if ( m_hackThisObj.isValid() ) { // special hack for Image
@@ -100,10 +102,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     KJSCPUGuard guard;
     guard.start();
-    Value retval = listener.call(exec, thisObj, args);
+    Value retval = listenerObj.call(exec, thisObj, args);
     guard.stop();
 
-    listener.setScope( oldScope );
+    listenerObj.setScope( oldScope );
 
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );
@@ -126,15 +128,6 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_HTMLEventListener";
     else
 	return "_khtml_JSEventListener";
-}
-
-Value KJS::getNodeEventListener(DOM::Node n, int eventId)
-{
-    DOM::EventListener *listener = n.handle()->getHTMLEventListener(eventId);
-    if (listener)
-	return static_cast<JSEventListener*>(listener)->listenerObj();
-    else
-	return Null();
 }
 
 // -------------------------------------------------------------------------
@@ -311,26 +304,26 @@ Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &
 
 Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
 {
-  DOMObject *ret;
-  if (e.isNull())
+  DOM::EventImpl *ei = e.handle();
+  if (!ei)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(e.handle())))
-    return Value(ret);
+  DOMObject *ret = interp->getDOMObject(ei);
+  if (!ret) {
+    if (ei->isTextEvent())
+      ret = new DOMTextEvent(exec, e);
+    else if (ei->isMouseEvent())
+      ret = new DOMMouseEvent(exec, e);
+    else if (ei->isUIEvent())
+      ret = new DOMUIEvent(exec, e);
+    else if (ei->isMutationEvent())
+      ret = new DOMMutationEvent(exec, e);
+    else
+      ret = new DOMEvent(exec, e);
 
-  DOM::DOMString module = e.eventModuleName();
-  if (module == "UIEvents")
-    ret = new DOMUIEvent(exec, static_cast<DOM::UIEvent>(e));
-  else if (module == "MouseEvents")
-    ret = new DOMMouseEvent(exec, static_cast<DOM::MouseEvent>(e));
-  else if (module == "TextEvents")
-    ret = new DOMTextEvent(exec, static_cast<DOM::TextEvent>(e));
-  else if (module == "MutationEvents")
-    ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEvent>(e));
-  else
-    ret = new DOMEvent(exec, e);
+    interp->putDOMObject(ei, ret);
+  }
 
-  interp->putDOMObject(e.handle(),ret);
   return Value(ret);
 }
 
@@ -429,14 +422,10 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     return Number(static_cast<DOM::UIEvent>(event).layerY());
   case PageX:
     // NS-compatibility
-    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
-      return Number(static_cast<DOM::MouseEvent>(event).clientX());
-    return Number(0);
+    return Number(static_cast<DOM::UIEvent>(event).pageX());
   case PageY:
     // NS-compatibility
-    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
-      return Number(static_cast<DOM::MouseEvent>(event).clientY());
-    return Number(0);
+    return Number(static_cast<DOM::UIEvent>(event).pageY());
   case Which:
     // NS-compatibility
     return Number(static_cast<DOM::UIEvent>(event).which());
@@ -470,22 +459,22 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 
 /*
 @begin DOMMouseEventTable 2
-  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
-  button	DOMMouseEvent::Button	DontDelete|ReadOnly
-  clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
-  clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
-  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
-  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
-  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
-  offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
-  offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
-  relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
   screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
   screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
-  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
-  toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
+  clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
   x		DOMMouseEvent::X	DontDelete|ReadOnly
+  clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
   y		DOMMouseEvent::Y	DontDelete|ReadOnly
+  offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
+  offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
+  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
+  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
+  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
+  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
+  button	DOMMouseEvent::Button	DontDelete|ReadOnly
+  relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
+  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+  toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
 @end
 @begin DOMMouseEventProtoTable 1
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15

@@ -145,7 +145,7 @@ public:
     int horizontalScrollbarHeight();
     void moveScrollbarsAside();
     void positionScrollbars(const QRect &damageRect);
-    void paintScrollbars(QPainter* p, const QRect& damageRect);
+    void paintScrollbars(RenderObject::PaintInfo& pI);
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
     void updateScrollPositionFromScrollbars();
@@ -194,7 +194,7 @@ public:
 
     void detach(RenderArena* renderArena);
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     void dump(QTextStream &stream, const QString &ind = QString::null);
 #endif
 

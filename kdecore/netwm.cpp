@@ -259,7 +259,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_USER_TIME",
 	    "_NET_WM_HANDLED_ICONS",
             "_NET_STARTUP_ID",
-            "_NET_AM_ALLOWED_ACTIONS",
+            "_NET_WM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",

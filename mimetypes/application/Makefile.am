@@ -15,7 +15,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-python.desktop x-python-bytecode.desktop \
 	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
-	x-tzo.desktop x-lzop.desktop x-mswinurl.desktop \
+	x-tzo.desktop x-lzop.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
 	xhtml+xml.desktop vnd.ms-excel.desktop vnd.ms-word.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
@@ -25,8 +25,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-mswrite.desktop illustrator.desktop x-abiword.desktop \
 	x-gnumeric.desktop x-graphite.desktop x-karbon.desktop x-kchart.desktop \
 	x-kformula.desktop x-kivio.desktop x-kontour.desktop \
-	x-kpresenter.desktop x-krita.desktop x-kspread-crypt.desktop \
-	x-kspread.desktop x-kugar.desktop x-kword-crypt.desktop x-kword.desktop \
+	x-kpresenter.desktop x-krita.desktop \
+	x-kspread.desktop x-kugar.desktop x-kword.desktop \
 	x-quattropro.desktop x-amipro.desktop x-tgif.desktop \
 	x-lyx.desktop x-zerosize.desktop x-kpovmodeler.desktop x-cda.desktop \
 	pkcs7-mime.desktop pkcs10.desktop sieve.desktop \

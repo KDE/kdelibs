@@ -52,8 +52,6 @@ public:
     void detach(int &exceptioncode);
 
 
-
-
     /**
      * This function has to be called if you delete a node from the
      * document tree and you want the Iterator to react if there
@@ -96,54 +94,55 @@ class TreeWalkerImpl : public khtml::Shared<TreeWalkerImpl>
 public:
     TreeWalkerImpl();
     TreeWalkerImpl(const TreeWalkerImpl &other);
-    TreeWalkerImpl(Node n, NodeFilter *f=0);
-    TreeWalkerImpl(Node n, long _whatToShow, NodeFilter *f=0);
+    TreeWalkerImpl(NodeImpl *n, NodeFilter f);
+    TreeWalkerImpl(NodeImpl *n, long _whatToShow, NodeFilterImpl *f,
+                   bool entityReferenceExpansion);
     TreeWalkerImpl & operator = (const TreeWalkerImpl &other);
 
 
     ~TreeWalkerImpl();
 
-    Node getRoot();
+    NodeImpl *getRoot() const;
 
-    unsigned long getWhatToShow();
+    unsigned long getWhatToShow() const;
 
-    NodeFilter getFilter();
+    NodeFilterImpl *getFilter() const;
 
-    bool getExpandEntityReferences();
+    bool getExpandEntityReferences() const;
 
-    Node getCurrentNode();
+    NodeImpl *getCurrentNode() const;
 
-    void setCurrentNode(const Node _currentNode);
+    void setCurrentNode( NodeImpl *_currentNode);
 
-    Node parentNode();
+    NodeImpl *parentNode();
 
-    Node firstChild();
+    NodeImpl *firstChild();
 
-    Node lastChild ();
+    NodeImpl *lastChild ();
 
-    Node previousSibling ();
+    NodeImpl *previousSibling ();
 
-    Node nextSibling();
+    NodeImpl *nextSibling();
 
-    Node previousNode();
+    NodeImpl *previousNode();
 
-    Node nextNode();
+    NodeImpl *nextNode();
 
 
     /**
      * Sets which node types are to be presented via the TreeWalker
      */
     void setWhatToShow(long _whatToShow);
-    void setFilter(NodeFilter *_filter);
+    void setFilter(NodeFilterImpl *_filter);
     void setExpandEntityReferences(bool value);
 
-    Node getParentNode(Node n);
-    Node getFirstChild(Node n);
-    Node getLastChild(Node n);
-    Node getPreviousSibling(Node n);
-    Node getNextSibling(Node n);
+    NodeImpl *getParentNode(NodeImpl *n);
+    NodeImpl *getFirstChild(NodeImpl *n);
+    NodeImpl *getLastChild(NodeImpl *n);
+    NodeImpl *getPreviousSibling(NodeImpl *n);
+    NodeImpl *getNextSibling(NodeImpl *n);
 
-    short isAccepted(Node n);
+    short isAccepted(NodeImpl *n);
 
 protected:
     /**
@@ -157,7 +156,7 @@ protected:
      * The filter used to screen nodes.
      *
      */
-    NodeFilter *m_filter;
+    NodeFilterImpl *m_filter;
 
     /**
      * The value of this flag determines whether entity reference
@@ -184,9 +183,10 @@ protected:
      * type.
      *
      */
-    Node m_currentNode;
+    NodeImpl *m_currentNode;
 
-    Node m_rootNode;
+    NodeImpl *m_rootNode;
+    DocumentImpl *m_doc;
 };
 
 

@@ -497,19 +497,19 @@ QString KCharsets::languageForEncoding( const QString &encoding )
 
 QString KCharsets::encodingForName( const QString &descriptiveName )
 {
-    const int left = descriptiveName.find( '(' );
+    const int left = descriptiveName.findRev( '(' );
     
     if (left<0) // No parenthesis, so assume it is a normal encoding name
-	return descriptiveName;
+	return descriptiveName.stripWhiteSpace();
     
-    QString name(descriptiveName.mid(left+2));
+    QString name(descriptiveName.mid(left+1));
     
-    const int right = name.find( ')' );
+    const int right = name.findRev( ')' );
     
     if (right<0) 
         return name;
-	
-    return name.left(right-1);
+
+    return name.left(right).stripWhiteSpace();
 }
 
 QStringList KCharsets::descriptiveEncodingNames()

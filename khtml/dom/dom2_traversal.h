@@ -190,6 +190,7 @@ class NodeFilter
 public:
     NodeFilter();
     NodeFilter(const NodeFilter &other);
+    NodeFilter(NodeFilterImpl *i);
 
     virtual NodeFilter & operator = (const NodeFilter &other);
 
@@ -256,7 +257,6 @@ public:
     static NodeFilter createCustom(CustomNodeFilter *custom);
 
 protected:
-    NodeFilter(NodeFilterImpl *i);
     NodeFilterImpl *impl;
 };
 
@@ -401,7 +401,7 @@ public:
     /**
      * see currentNode
      */
-    void setCurrentNode(const Node _currentNode);
+    void setCurrentNode(const Node &_currentNode);
 
     /**
      * Moves to and returns the parent node of the current node. If

@@ -102,7 +102,7 @@ the warning, add the following two lines to the application's configuration
 file (or to kdeglobals to disable the warning for all applications):
 
 [KDE Action Restrictions]
-warn_config_unwritable=false
+warn_unwritable_config=false
 
 Example:
 chown root.root /home/user/.kde/share/config/kickerrc
@@ -206,7 +206,6 @@ action/editfiletype
 action/properties
 action/openwith
 action/openintab
-action/openintabfront
 action/kdesktop_rmb // RMB menu
 
 Kicker related: 

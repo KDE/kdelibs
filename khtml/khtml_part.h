@@ -84,6 +84,7 @@ namespace khtml
   class CSSStyleSelector;
   class HTMLTokenizer;
   class Decoder;
+  class XMLTokenizer;
 }
 
 namespace KJS {
@@ -91,8 +92,10 @@ namespace KJS {
     class WindowFunc;
     class ExternalFunc;
     class JSEventListener;
+    class JSNodeFilter;
     class DOMDocument;
     class SourceFile;
+    class ScheduledAction;
 }
 
 namespace KParts
@@ -192,6 +195,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
   friend class KJS::Window;
+  friend class KJS::ScheduledAction;
+  friend class KJS::JSNodeFilter;
   friend class KJS::WindowFunc;
   friend class KJS::ExternalFunc;
   friend class KJS::JSEventListener;
@@ -203,7 +208,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
   friend class khtml::HTMLTokenizer;
-  friend class XMLTokenizer;
+  friend class khtml::XMLTokenizer;
   friend class khtml::RenderWidget;
   friend class khtml::CSSStyleSelector;
   friend class KHTMLPartIface;
@@ -410,14 +415,24 @@ public:
   /**
    * Security option.
    *
-   * Specify whether only local references ( stylesheets, images, scripts, subdocuments )
-   * should be loaded. ( default false - everything is loaded, if the more specific
-   * options allow )
+   * Specify whether only file:/ or data:/ urls are allowed to be loaded without
+   * user confirmation by KHTML.
+   * ( for example referenced by stylesheets, images, scripts, subdocuments, embedded elements ).
+   *
+   * This option is mainly intended for enabling the "mail reader mode", where you load untrusted
+   * content with a file:/ url.
+   *
+   * Please note that enabling this option currently automatically disables Javascript, 
+   * Java and Plugins support. This might change in the future if the security model
+   * is becoming more sophisticated, so don't rely on this behaviour.
+   *
+   * ( default false - everything is loaded unless forbidden by KApplication::authorizeURLAction).
    */
   void setOnlyLocalReferences( bool enable );
 
   /**
-   * Returns whether references should be loaded ( default false )
+   * Returns whether only file:/ or data:/ references are allowed 
+   * to be loaded ( default false ). @see setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
 
@@ -1082,15 +1097,8 @@ public slots:
   void setCaretMode(bool enable);
 
   /**
-   * Makes the document editable.
-   *
-   * Setting this property to @p true makes the document, and its
-   * subdocuments (such as frames, iframes, objects) editable as a whole.
-   * FIXME: insert more information about navigation, features etc. as seen fit
-   *
-   * @param enable @p true to set document editable, @p false to set it
-   *	read-only.
-   * @since 3.2 (pending, do not use)
+   * do not use
+   * @internal
    */
   void setEditable(bool enable);
 
@@ -1297,6 +1305,11 @@ private slots:
   /*
    * @internal
    */
+  void slotUserSheetStatDone( KIO::Job* );
+
+  /*
+   * @internal
+   */
   void slotJobSpeed( KIO::Job*, unsigned long );
 
   /**
@@ -1460,6 +1473,8 @@ private:
 
   void emitCaretPositionChanged(const DOM::Node &node, long offset);
 
+  void setDebugScript( bool enable );
+  
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

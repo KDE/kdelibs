@@ -74,6 +74,11 @@ DefaultProgress::DefaultProgress( QWidget* parent, const char* /*name*/ )
     init();
 }
 
+bool DefaultProgress::keepOpen() const
+{
+    return d->keepOpenChecked;
+}
+
 void DefaultProgress::init()
 {
   d = new DefaultProgressPrivate;
@@ -290,7 +295,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
-  if ( d->noCaptionYet ) {
+    if ( d->noCaptionYet ) {
     setCaption(i18n("Copy File(s) Progress"));
     d->noCaptionYet = false;
   }

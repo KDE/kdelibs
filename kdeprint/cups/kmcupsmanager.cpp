@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -736,16 +736,16 @@ void* KMCupsManager::loadCupsdConfFunction(const char *name)
 {
 	if (!m_cupsdconf)
 	{
-		m_cupsdconf = KLibLoader::self()->library("libcupsdconf");
+		m_cupsdconf = KLibLoader::self()->library("cupsdconf");
 		if (!m_cupsdconf)
 		{
-			setErrorMsg(i18n("Library libcupsdconf not found. Check your installation."));
+			setErrorMsg(i18n("Library cupsdconf not found. Check your installation."));
 			return NULL;
 		}
 	}
 	void*	func = m_cupsdconf->symbol(name);
 	if (!func)
-		setErrorMsg(i18n("Symbol %1 not found in libcupsdconf library.").arg(name));
+		setErrorMsg(i18n("Symbol %1 not found in cupsdconf library.").arg(name));
 	return func;
 }
 

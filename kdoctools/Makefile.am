@@ -37,7 +37,8 @@ bin_SCRIPTS = checkXML
 
 METASOURCES = AUTO
 
-update_DATA = kio_help.upd move_kio_help_cache.sh
+update_DATA = kio_help.upd
+update_SCRIPTS = move_kio_help_cache.sh
 updatedir = $(kde_datadir)/kconf_update
 
 messages:

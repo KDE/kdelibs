@@ -282,7 +282,12 @@ int rc;
 		return -1;
 
 	if (d->session) {
-		if (1 == d->kossl->SSL_set_session(d->m_ssl,
+		if (static_cast<SSL_SESSION*>(d->session->_session)->sess_cert == 0)
+		{
+			kdDebug(7029) << "Can't reuse session, no certificate." << endl;
+			delete d->session;
+			d->session = 0;
+		} else if (1 == d->kossl->SSL_set_session(d->m_ssl,
 			static_cast<SSL_SESSION*>(d->session->_session))) {
 			kdDebug(7029) << "Session ID is being reused." << endl;
 		} else {
@@ -363,7 +368,12 @@ int rc;
 		return -1;
 
 	if (d->session) {
-		if (1 == d->kossl->SSL_set_session(d->m_ssl,
+		if (static_cast<SSL_SESSION*>(d->session->_session)->sess_cert == 0)
+		{
+			kdDebug(7029) << "Can't reuse session, no certificate." << endl;
+			delete d->session;
+			d->session = 0;
+		} else if (1 == d->kossl->SSL_set_session(d->m_ssl,
 			static_cast<SSL_SESSION*>(d->session->_session))) {
 			kdDebug(7029) << "Session ID is being reused." << endl;
 		} else {

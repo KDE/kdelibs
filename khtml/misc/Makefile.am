@@ -17,18 +17,18 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL) -funsigned-bitfields
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
-	decoder.cpp    loader.cpp loader_jpeg.cpp \
-	htmlhashes.cpp helper.cpp arena.cpp 
+	decoder.cpp    loader.cpp loader_jpeg.cpp guess_ja.cpp\
+	htmlhashes.cpp helper.cpp arena.cpp
 libkhtmlmisc_la_LIBADD = $(LIBJPEG)
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
-	decoder.h khtmllayout.h loader_jpeg.h loader.h \
+	decoder.h khtmllayout.h loader_jpeg.h loader.h guess_ja.h\
 	stringit.h htmlhashes.h helper.h shared.h arena.h 
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/dcop -I$(top_srcdir)/kio -I$(top_srcdir)/libltdl \

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -53,6 +53,8 @@ void KPipeProcess::close()
 	if (m_pipe != NULL)
 	{
 		QFile::close();
+		/* pipe must be close to be sure the process is terminated */
+		pclose( m_pipe );
 		m_pipe = NULL;
 	}
 }

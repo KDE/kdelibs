@@ -79,6 +79,16 @@ public:
 
     virtual bool isFormElement() const { return true; }
 
+    // form elements never have border/padding
+    virtual int borderTop() const { return 0; }
+    virtual int borderBottom() const { return 0; }
+    virtual int borderLeft() const { return 0; }
+    virtual int borderRight() const { return 0; }
+    virtual int paddingTop() const { return 0; }
+    virtual int paddingBottom() const { return 0; }
+    virtual int paddingLeft() const { return 0; }
+    virtual int paddingRight() const { return 0; }
+
     virtual void updateFromElement();
 
     virtual void layout();
@@ -279,8 +289,7 @@ public:
 
     virtual const char *renderName() const { return "RenderFieldSet"; }
 protected:
-    virtual void paintBoxDecorations(QPainter *p,int, int _y,
-                                       int, int _h, int _tx, int _ty);
+    virtual void paintBoxDecorations(PaintInfo& pI, int _tx, int _ty);
     void paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
                                   int h, const RenderStyle *style, int lx, int lw);
     bool findLegend( int &lx, int &ly, int &lw, int &lh);

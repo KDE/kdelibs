@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001-2003 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001-2003 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -69,8 +69,9 @@ static QString processLocaleString( const QString& s )
 	return res;
 }
 
-static QValueList<float> splitNumberString( const QString& s )
+static QValueList<float> splitNumberString( const QString& _s )
 {
+        QString s = _s.simplifyWhiteSpace();
 	QValueList<float> l;
 	int p1 = 1, p2 = 0;
 	while ( true )
@@ -83,7 +84,8 @@ static QValueList<float> splitNumberString( const QString& s )
 		}
 		else
 		{
-			l.append( s.mid( p1 ).toFloat() );
+			// ignore the final quote
+			l.append( s.mid( p1, s.length() - p1 - 1 ).toFloat() );
 			break;
 		}
 	}

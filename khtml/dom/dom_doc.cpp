@@ -372,8 +372,17 @@ NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
 TreeWalker Document::createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
                                 bool entityReferenceExpansion)
 {
-    if (impl) return ((DocumentImpl *)impl)->createTreeWalker(root,whatToShow,filter,entityReferenceExpansion);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+     int exceptioncode = 0;
+
+     TreeWalkerImpl *tw = static_cast<DocumentImpl *>(impl)->createTreeWalker(
+         root.handle(), whatToShow, filter.handle(), entityReferenceExpansion, exceptioncode);
+     if (exceptioncode)
+         throw DOMException(exceptioncode);
+
+     return tw;
 }
 
 Event Document::createEvent(const DOMString &eventType)

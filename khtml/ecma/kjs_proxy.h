@@ -66,9 +66,6 @@ public:
 
   KHTMLPart *m_part;
   int m_handlerLineno;
-
-  // Helper method, to access the private KHTMLPart::jScript()
-  static KJSProxy *proxy( KHTMLPart *part );
 };
 
 class KJSCPUGuard {

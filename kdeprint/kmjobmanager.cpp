@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -173,12 +173,24 @@ const QPtrList<KMJob>& KMJobManager::jobList(bool reload)
 		discardAllJobs();
 		QDictIterator<JobFilter>	it(m_filter);
 		int	joblimit = limit();
+		bool threadjobs_updated = false;
 		for (; it.current(); ++it)
 		{
-			if (it.current()->m_type[ActiveJobs] > 0)
-				listJobs(it.currentKey(), ActiveJobs, joblimit);
-			if (it.current()->m_type[CompletedJobs] > 0)
-				listJobs(it.currentKey(), CompletedJobs, joblimit);
+			if ( it.current()->m_isspecial )
+			{
+				if ( !threadjobs_updated )
+				{
+					threadJob()->updateManager( this );
+					threadjobs_updated = true;
+				}
+			}
+			else
+			{
+				if (it.current()->m_type[ActiveJobs] > 0)
+					listJobs(it.currentKey(), ActiveJobs, joblimit);
+				if (it.current()->m_type[CompletedJobs] > 0)
+					listJobs(it.currentKey(), CompletedJobs, joblimit);
+			}
 		}
 		m_threadjob->updateManager(this);
 		removeDiscardedJobs();
@@ -200,7 +212,7 @@ void KMJobManager::validatePluginActions(KActionCollection*, const QPtrList<KMJo
 {
 }
 
-void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type)
+void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type, bool isSpecial)
 {
 	struct JobFilter	*jf = m_filter.find(pr);
 	if (!jf)
@@ -209,6 +221,7 @@ void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type)
 		m_filter.insert(pr, jf);
 	}
 	jf->m_type[type]++;
+	jf->m_isspecial = isSpecial;
 }
 
 void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)

@@ -1,8 +1,541 @@
-<!-- This file contains entities (only!) to make authoring/translating
-     a document easier.  They are necessarily language-specific.
-     In the case of name clashes, entities in this file always lose.
-     Keep the entities simple, but _always_ provide them with full markup.
-     Please keep the entities sorted on the name: it will avoid duplicate
-     names (which if they occur will cost you a _lot_ of time)
- -->
-
+<!ENTITY  AIX-l               "Аиксу"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  AIX-n               "Аикс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Alt                 "<keycap>Alt</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Alt-n               "<keycap>алт</keycap>"  >
+<!ENTITY  artl-g              "Уметничке лиценце"  >
+<!ENTITY  artl-n              "Уметничка лиценца"  >
+<!ENTITY  arts-n              "<application>Артс</application>"  >
+<!ENTITY  autoconf-n          "<application>Аутоконф</application>"  >
+<!ENTITY  automake-n          "<application>Аутосправ</application>"  >
+<!ENTITY  Backspace           "<keycap>Backspace</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Backspace-n         "<keycap>назад</keycap>"  >
+<!ENTITY  bash-a              "<application>Беш</application>"  >
+<!ENTITY  bash-n              "<application>Беш</application>"  >
+<!ENTITY  BSDl-g              "БСД лиценце"  >
+<!ENTITY  BSDl-n              "БСД лиценца"  >
+<!ENTITY  CD-n                "<acronym>ЦД</acronym>"  >
+<!ENTITY  CD-nju              "<acronym>ЦД</acronym>"  >
+<!ENTITY  CD-ROM-l            "<acronym>ЦД-РОМ</acronym>у"  >
+<!ENTITY  CD-ROM-n            "<acronym>ЦД-РОМ</acronym>"  >
+<!ENTITY  CDE-g               "<acronym>ЦДЕ</acronym>а"  >
+<!ENTITY  CDE-n               "<acronym>ЦДЕ</acronym>"  >
+<!ENTITY  cdrom               "<hardware>CD-ROM drive</hardware>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Cpp-a               "<acronym>Ц++</acronym>"  >
+<!ENTITY  Cpp-l               "Ц++у"  >
+<!ENTITY  Cpp-n               "Ц++"  >
+<!ENTITY  Cpp-nju             "Ц++"  >
+<!ENTITY  csh-a               "<application>Цсх</application>"  >
+<!ENTITY  csh-n               "<application>Цсх</application>"  >
+<!ENTITY  Ctrl                "<keycap>Ctrl</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Ctrl-n              "<keycap>ктрл</keycap>"  >
+<!ENTITY  CVS-a               "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-ajs             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-aju             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-d               "<acronym>ЦВС</acronym>у"  >
+<!ENTITY  cvs-g               "<application>Цвса</application>"  >
+<!ENTITY  CVS-g               "<acronym>ЦВС</acronym>а"  >
+<!ENTITY  CVS-gju             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  cvs-gmu             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-iju             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-ljs             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVS-n               "<acronym>ЦВС</acronym>"  >
+<!ENTITY  cvs-n               "<application>Цвс</application>"  >
+<!ENTITY  CVS-nju             "<acronym>ЦВС</acronym>"  >
+<!ENTITY  CVSexp-a            "Систем упоредних верзија"  >
+<!ENTITY  CVSexp-n            "Систем упоредних верзија"  >
+<!ENTITY  cvsup-a             "<application>Цвсуп</application>"  >
+<!ENTITY  cvsup-aju           "<application>Цвсуп</application>"  >
+<!ENTITY  cvsup-g             "<application>Цвсупа</application>"  >
+<!ENTITY  cvsup-ljz           "<application>Цвсуп</application>"  >
+<!ENTITY  cvsup-n             "<application>Цвсуп</application>"  >
+<!ENTITY  DaveBarr-n          "<personname><firstname>Дејв</firstname> <surname>Бар</surname></personname>"  >
+<!ENTITY  DCOPserver-d        "<acronym>ДЦОП</acronym>-серверу"  >
+<!ENTITY  DCOPserver-n        "<acronym>ДЦОП</acronym>-сервер"  >
+<!ENTITY  Debian-gmu          "Дебијанових"  >
+<!ENTITY  Debian-n            "Дебијан"  >
+<!ENTITY  Debian-nmu          "Дебијанови"  >
+<!ENTITY  DOS-a               "<acronym>ДОС</acronym>"  >
+<!ENTITY  DOS-imz             "<acronym>ДОС</acronym>"  >
+<!ENTITY  DOS-n               "<acronym>ДОС</acronym>"  >
+<!ENTITY  dpi                 "<acronym>dpi</acronym>"  >
+    <!--NOCHECK:-->
+<!ENTITY  DVI-g               "<acronym>ДВИ</acronym>ја"  >
+<!ENTITY  DVI-n               "<acronym>ДВИ</acronym>"  >
+<!ENTITY  eg                  "<abbrev>e.g.</abbrev>"  >
+    <!--NOCHECK:-->
+<!ENTITY  eg-                 "<abbrev>нпр.</abbrev>"  >
+<!ENTITY  egcs-n              "<application>Егцс</application>"  >
+<!ENTITY  ELF-i               "<acronym>ЕЛФ</acronym>ом"  >
+<!ENTITY  ELF-n               "<acronym>ЕЛФ</acronym>"  >
+<!ENTITY  Emacs-n             "<application>Емакс</application>"  >
+<!ENTITY  Enter               "<keycap>Enter</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Esc                 "<keycap>Esc</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Esc-n               "<keycap>есц</keycap>"  >
+<!ENTITY  etc                 "<abbrev>etc.</abbrev>"  >
+    <!--NOCHECK:-->
+<!ENTITY  etc-                "<abbrev>итд.</abbrev>"  >
+<!ENTITY  Eterm-n             "<application>Етерм</application>"  >
+<!ENTITY  ext2-a              "екст2"  >
+<!ENTITY  ext2-imz            "екст2"  >
+<!ENTITY  ext2-n              "екст2"  >
+<!ENTITY  F1-n                "<keycap>Ф1</keycap>"  >
+<!ENTITY  F2-n                "<keycap>Ф2</keycap>"  >
+<!ENTITY  F7-n                "<keycap>Ф7</keycap>"  >
+<!ENTITY  F8-n                "<keycap>Ф8</keycap>"  >
+<!ENTITY  F9-n                "<keycap>Ф9</keycap>"  >
+<!ENTITY  FAQ                 "<acronym>FAQ</acronym>"  >
+    <!--NOCHECK:-->
+<!ENTITY  FAQ-a               "<acronym>ЧПП</acronym>"  >
+<!ENTITY  FAQ-d               "<acronym>ЧПП</acronym>у"  >
+<!ENTITY  FAQ-g               "<acronym>ЧПП</acronym>а"  >
+<!ENTITY  FAQ-gm              "<acronym>ЧПП</acronym>ова"  >
+<!ENTITY  FAQ-i               "<acronym>ЧПП</acronym>ом"  >
+<!ENTITY  FAQ-l               "<acronym>ЧПП</acronym>у"  >
+<!ENTITY  FAQ-n               "<acronym>ЧПП</acronym>"  >
+<!ENTITY  FDLexp-g            "Лиценце слободне документације"  >
+<!ENTITY  FDLexp-i            "Лиценцом слободне документације"  >
+<!ENTITY  FDLexp-n            "Лиценца слободне документације"  >
+<!ENTITY  FHS-n               "<acronym>ФХС</acronym>"  >
+<!ENTITY  FHSexp-n            "стандард хијерархије фајлова"  >
+<!ENTITY  FreeBSD-a           "ФриБСД"  >
+<!ENTITY  FreeBSD-lmu         "ФриБСД"  >
+<!ENTITY  FreeBSD-n           "ФриБСД"  >
+<!ENTITY  FTP-aju             "<acronym>ФТП</acronym>"  >
+<!ENTITY  FTP-amu             "<acronym>ФТП</acronym>"  >
+<!ENTITY  FTP-gju             "<acronym>ФТП</acronym>"  >
+<!ENTITY  FTP-imu             "<acronym>ФТП</acronym>"  >
+<!ENTITY  FTP-lju             "<acronym>ФТП</acronym>"  >
+<!ENTITY  FTP-n               "<acronym>ФТП</acronym>"  >
+<!ENTITY  gcc-a               "<application>Гцц</application>"  >
+<!ENTITY  gcc-n               "<application>Гцц</application>"  >
+<!ENTITY  gettext-n           "<application>Геттекст</application>"  >
+<!ENTITY  GIF-ajz             "<acronym>ГИФ</acronym>"  >
+<!ENTITY  GIF-am              "<acronym>ГИФ</acronym>ове"  >
+<!ENTITY  GIF-amz             "<acronym>ГИФ</acronym>"  >
+<!ENTITY  GIF-ijz             "<acronym>ГИФ</acronym>"  >
+<!ENTITY  GIF-n               "<acronym>ГИФ</acronym>"  >
+<!ENTITY  GIF-njz             "<acronym>ГИФ</acronym>"  >
+<!ENTITY  GIMP-n              "<application>Гимп</application>"  >
+<!ENTITY  GNU-ajz             "Гнуову"  >
+<!ENTITY  GNU-amu             "Гнуове"  >
+<!ENTITY  GNU-djz             "Гнуовој"  >
+<!ENTITY  GNU-gju             "Гнуовог"  >
+<!ENTITY  GNU-gjz             "Гнуове"  >
+<!ENTITY  GNU-gms             "Гнуових"  >
+<!ENTITY  GNU-n               "Гну"  >
+<!ENTITY  GNU-nju             "Гнуов"  >
+<!ENTITY  GNU-njz             "Гнуова"  >
+<!ENTITY  GPL-i               "<acronym>ОЈЛ</acronym>ом"  >
+<!ENTITY  GPL-n               "<acronym>ОЈЛ</acronym>"  >
+<!ENTITY  GPLexp-a            "Општу јавну лиценцу"  >
+<!ENTITY  GPLexp-d            "Општој јавној лиценци"  >
+<!ENTITY  GPLexp-i            "Општом јавном лиценцом"  >
+<!ENTITY  GPLexp-n            "Општа јавна лиценца"  >
+<!ENTITY  GTK-a               "<acronym>ГТК</acronym>"  >
+<!ENTITY  GTK-n               "<acronym>ГТК</acronym>"  >
+<!ENTITY  GUI-g               "<acronym>ГУИ</acronym>ја"  >
+<!ENTITY  GUI-gm              "<acronym>ГУИ</acronym>јâ"  >
+<!ENTITY  GUI-gmu             "<acronym>ГУИ</acronym>"  >
+<!ENTITY  GUI-n               "<acronym>ГУИ</acronym>"  >
+<!ENTITY  HOWTO-n             "КАКОДА"  >
+<!ENTITY  HTTP-imu            "<acronym>ХТТП</acronym>"  >
+<!ENTITY  HTTP-n              "<acronym>ХТТП</acronym>"  >
+<!ENTITY  i18n-gju            "<acronym>и18ног</acronym>"  >
+<!ENTITY  i18n-n              "<acronym>и18н</acronym>"  >
+<!ENTITY  IBM-n               "<acronym>ИБМ</acronym>"  >
+<!ENTITY  ie                  "<abbrev>i.e.</abbrev>"  >
+    <!--NOCHECK:-->
+<!ENTITY  ie-                 "<abbrev>тј.</abbrev>"  >
+<!ENTITY  infocenter          "<application>Info Center</application>"  >
+    <!--NOCHECK:-->
+<!ENTITY  IRIX-l              "Ириксу"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  IRIX-n              "Ирикс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  ISP-g               "<acronym>ИСП</acronym>а"  >
+<!ENTITY  ISP-i               "<acronym>ИСП</acronym>ом"  >
+<!ENTITY  ISP-n               "<acronym>ИСП</acronym>"  >
+<!ENTITY  Java-a              "Јаву"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Java-amu            "Јава"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Java-gju            "Јава"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Java-n              "Јава"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  JavaScript-a        "Јаваскрипт"  >
+<!ENTITY  JavaScript-amu      "Јаваскрипт"  >
+<!ENTITY  JavaScript-n        "Јаваскрипт"  >
+<!ENTITY  kasteroids-n        "<application>К-астероиди</application>"  >
+<!ENTITY  kate-a              "<application>Кејт</application>"  >
+<!ENTITY  kate-n              "<application>Кејт</application>"  >
+<!ENTITY  kcontrol-l          "<application>К-контроли</application>"  >
+<!ENTITY  kcontrol-n          "<application>К-контрола</application>"  >
+<!ENTITY  kcontrolcenter      "<application>&kde; Control Center</application>"  >
+    <!--NOCHECK:-->
+<!ENTITY  kde-a               "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-ajs             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-aju             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-ajz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-amu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-amz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-d               "<acronym>КДЕ</acronym>у"  >
+<!ENTITY  kde-dmu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-dmz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-g               "<acronym>КДЕ</acronym>а"  >
+<!ENTITY  kde-gjs             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-gju             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-gmu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-gmz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-i               "<acronym>КДЕ</acronym>ом"  >
+<!ENTITY  kde-iju             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-imu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-l               "<acronym>КДЕ</acronym>у"  >
+<!ENTITY  kde-ljs             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-lju             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-lmu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-lmz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-n               "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-nju             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-nmu             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kde-nmz             "<acronym>КДЕ</acronym>"  >
+<!ENTITY  kdeaddons-n         "<acronym>КДЕ</acronym>-додаци"  >
+<!ENTITY  kdeadmin-n          "<acronym>КДЕ</acronym>-администрација"  >
+<!ENTITY  kdeartwork-n        "<acronym>КДЕ</acronym>-уметност"  >
+<!ENTITY  kdebase-g           "<acronym>КДЕ</acronym>-основе"  >
+<!ENTITY  kdebase-n           "<acronym>КДЕ</acronym>-основа"  >
+<!ENTITY  kdebindings-n       "<acronym>КДЕ</acronym>-везе"  >
+<!ENTITY  kdecc-a             "<application>К контролни центар</application>"  >
+<!ENTITY  kdecc-g             "<application>К контролног центра</application>"  >
+<!ENTITY  kdecc-l             "<application>К контролном центру</application>"  >
+<!ENTITY  kdecc-n             "<application>К контролни центар</application>"  >
+<!ENTITY  kdeedu-n            "<acronym>КДЕ</acronym>-образовање"  >
+<!ENTITY  kdeexp-g            "К радног окружења"  >
+<!ENTITY  kdeexp-n            "К радно окружење"  >
+<!ENTITY  kdegames-n          "<acronym>КДЕ</acronym>-игре"  >
+<!ENTITY  kdegraphics-n       "<acronym>КДЕ</acronym>-графика"  >
+<!ENTITY  kdelibs-n           "<acronym>КДЕ</acronym>-библиотеке"  >
+<!ENTITY  kdemultimedia-n     "<acronym>КДЕ</acronym>-мултимедија"  >
+<!ENTITY  kdenetwork-n        "<acronym>КДЕ</acronym>-мрежа"  >
+<!ENTITY  kdesktop-n          "<application>К радна површина</application>"  >
+<!ENTITY  kdetoys-n           "<acronym>КДЕ</acronym>-играчке"  >
+<!ENTITY  kdeutils-n          "<acronym>КДЕ</acronym>-алати"  >
+<!ENTITY  kdevelop-n          "<acronym>КДЕ</acronym>-развој"  >
+<!ENTITY  kdm-a               "<application>Кдм</application>"  >
+<!ENTITY  kdm-g               "<application>Кдма</application>"  >
+<!ENTITY  kdm-n               "<application>Кдм</application>"  >
+<!ENTITY  keyC-n              "<keycap>C</keycap>"  >
+<!ENTITY  keyMinus-n          "<keycap>-</keycap>"  >
+<!ENTITY  keyPlus-n           "<keycap>+</keycap>"  >
+<!ENTITY  keyV-n              "<keycap>V</keycap>"  >
+<!ENTITY  khelpcenter-a       "<application>К центар помоћи</application>"  >
+<!ENTITY  khelpcenter-g       "<application>К центра помоћи</application>"  >
+<!ENTITY  khelpcenter-n       "<application>К центар помоћи</application>"  >
+<!ENTITY  kicker-a            "<application>Кикер</application>"  >
+<!ENTITY  kicker-g            "<application>Кикера</application>"  >
+<!ENTITY  kicker-l            "<application>Кикеру</application>"  >
+<!ENTITY  kicker-n            "<application>Кикер</application>"  >
+<!ENTITY  kicon               "<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'s K-icon</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"  >
+    <!--NOCHECK:-->
+<!ENTITY  kiconedit-a         "<application>К уређивач икона</application>"  >
+<!ENTITY  kiconedit-n         "<application>К уређивач икона</application>"  >
+<!ENTITY  klipper-n           "<application>Клипер</application>"  >
+<!ENTITY  KLyX-n              "<application>Кликс</application>"  >
+<!ENTITY  kmahjongg-n         "<application>К-махђонг</application>"  >
+<!ENTITY  kmail-a             "<application>К-пошту</application>"  >
+<!ENTITY  kmail-l             "<application>К-пошти</application>"  >
+<!ENTITY  kmail-n             "<application>К-пошта</application>"  >
+<!ENTITY  kmenu               "<guimenu>K</guimenu> menu"  >
+    <!--NOCHECK:-->
+<!ENTITY  kmenu-a             "<guibutton>К</guibutton>-мени"  >
+<!ENTITY  kmenu-g             "<guibutton>К</guibutton>-менија"  >
+<!ENTITY  kmenu-l             "<guibutton>К</guibutton>-менију"  >
+<!ENTITY  kmenu-n             "<guibutton>К</guibutton>-мени"  >
+<!ENTITY  kmenuedit-a         "<guibutton>К</guibutton>-мени"  >
+<!ENTITY  kmenuedit-g         "<application>К уређивача менија</application>"  >
+<!ENTITY  kmenuedit-n         "<guibutton>К</guibutton>-мени"  >
+<!ENTITY  knewsticker-a       "<application>К куцач вести</application>"  >
+<!ENTITY  knewsticker-n       "<application>К куцач вести</application>"  >
+<!ENTITY  knode-a             "<application>К-чвор</application>"  >
+<!ENTITY  knode-l             "<application>К-чвору</application>"  >
+<!ENTITY  knode-n             "<application>К-чвор</application>"  >
+<!ENTITY  konqueror-a         "<application>Конкерер</application>"  >
+<!ENTITY  konqueror-g         "<application>Конкерера</application>"  >
+<!ENTITY  konqueror-gju       "<application>Конкереровог</application>"  >
+<!ENTITY  konqueror-gjz       "<application>Конкерерове</application>"  >
+<!ENTITY  konqueror-i         "<application>Конкерером</application>"  >
+<!ENTITY  konqueror-l         "<application>Конкереру</application>"  >
+<!ENTITY  konqueror-n         "<application>Конкерер</application>"  >
+<!ENTITY  konsole-a           "<application>Конзолу</application>"  >
+<!ENTITY  konsole-g           "<application>Конзоле</application>"  >
+<!ENTITY  konsole-n           "<application>Конзола</application>"  >
+<!ENTITY  korn-n              "<application>Корн</application>"  >
+<!ENTITY  kpatience-n         "<application>К-стрпљење</application>"  >
+<!ENTITY  kppp-a              "<application>КППП</application>"  >
+<!ENTITY  kppp-aju            "<application>КПППов</application>"  >
+<!ENTITY  kppp-g              "<application>КПППа</application>"  >
+<!ENTITY  kppp-l              "<application>КПППу</application>"  >
+<!ENTITY  kppp-n              "<application>КППП</application>"  >
+<!ENTITY  ksnake-n            "<application>К-змија</application>"  >
+<!ENTITY  ksnapshot-n         "<application>К-снимак</application>"  >
+<!ENTITY  kstart-g            "<application>К-покрета</application>"  >
+<!ENTITY  kstart-n            "<application>К-покрет</application>"  >
+<!ENTITY  kterm-n             "<application>Ктерм</application>"  >
+<!ENTITY  kwin-g              "<application>К-проза</application>"  >
+<!ENTITY  kwin-n              "<application>К-проз</application>"  >
+<!ENTITY  LeeWeeTiong-n       "<personname><firstname>Ли Ви</firstname> <surname>Тионг</surname></personname>"  >
+<!ENTITY  LGPL-i              "<acronym>МОЈЛ</acronym>ом"  >
+<!ENTITY  LGPL-n              "<acronym>МОЈЛ</acronym>"  >
+<!ENTITY  LGPLexp-g           "Мање опште јавне лиценце"  >
+<!ENTITY  LGPLexp-n           "Мања општа јавна лиценца"  >
+<!ENTITY  Linux-a             "Линукс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Linux-g             "Линукса"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Linux-l             "Линуксу"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Linux-lmu           "Линукс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Linux-n             "Линукс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Linux-nmz           "Линукс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  LMB                 "<mousebutton>left</mousebutton> mouse button"  >
+    <!--NOCHECK:-->
+<!ENTITY  LMB-a               "<mousebutton>лево</mousebutton> дугме миша"  >
+<!ENTITY  LMB-g               "<mousebutton>левог</mousebutton> дугмета миша"  >
+<!ENTITY  LMB-i               "<mousebutton>левим</mousebutton> дугметом миша"  >
+<!ENTITY  LMB-n               "<mousebutton>лево</mousebutton> дугме миша"  >
+<!ENTITY  LyX-g               "<application>Ликса</application>"  >
+<!ENTITY  LyX-n               "<application>Ликс</application>"  >
+<!ENTITY  LZW-gju             "<acronym>ЛЗВв</acronym>"  >
+<!ENTITY  LZW-n               "<acronym>ЛЗВв</acronym>"  >
+<!ENTITY  Mac-g               "Мека"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Mac-n               "Мек"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  MatthiasEttrich-n   "<personname><firstname>Матијас</firstname> <surname>Етрих</surname></personname>"  >
+<!ENTITY  MetroX-n            "Метро-икс"  >
+<!ENTITY  Microsoft-gju       "Мајкрософтовог"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Microsoft-n         "Мајкрософт"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  MIME-amu            "<acronym>МИМЕ</acronym>"  >
+<!ENTITY  MIME-n              "<acronym>МИМЕ</acronym>"  >
+<!ENTITY  MMB                 "<mousebutton>middle</mousebutton> mouse button"  >
+    <!--NOCHECK:-->
+<!ENTITY  MMB-a               "<mousebutton>средње</mousebutton> дугме миша"  >
+<!ENTITY  MMB-i               "<mousebutton>средњим</mousebutton> дугметом миша"  >
+<!ENTITY  MMB-n               "<mousebutton>средње</mousebutton> дугме миша"  >
+<!ENTITY  MRU-amz             "<acronym>МРУ</acronym>"  >
+<!ENTITY  MRU-n               "<acronym>МРУ</acronym>"  >
+<!ENTITY  MRU-nmz             "<acronym>МРУ</acronym>"  >
+<!ENTITY  msgfmt-n            "<application>Мсгфмт</application>"  >
+<!ENTITY  MTU-a               "<acronym>МТУ</acronym>"  >
+<!ENTITY  MTU-ajz             "<acronym>МТУ</acronym>"  >
+<!ENTITY  MTU-amz             "<acronym>МТУ</acronym>"  >
+<!ENTITY  MTU-g               "<acronym>МТУa</acronym>"  >
+<!ENTITY  MTU-n               "<acronym>МТУ</acronym>"  >
+<!ENTITY  MTU-nmz             "<acronym>МТУ</acronym>"  >
+<!ENTITY  neomagic-aju        "Неомеџиков"  >
+<!ENTITY  neomagic-n          "Неомеџик"  >
+<!ENTITY  Netscape-amu        "<application>Нетскејпове</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Netscape-n          "<application>Нетскејп</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Netscape-nmu        "<application>Нетскејпови</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  NetscapeComposer-a  "<application>Нетскејпов Састављач</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  NetscapeComposer-n  "<application>Нетскејпов Састављач</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  noatun-a            "<application>Ноатун</application>"  >
+<!ENTITY  noatun-n            "<application>Ноатун</application>"  >
+<!ENTITY  NumLock-i           "<keycap>нумлоком</keycap>"  >
+<!ENTITY  NumLock-n           "<keycap>нумлок</keycap>"  >
+<!ENTITY  NumLockX-a          "<application>Нумлок-икс</application>"  >
+<!ENTITY  NumLockX-n          "<application>Нумлок-икс</application>"  >
+<!ENTITY  OpenSSL-n           "<application>ОпенССЛ</application>"  >
+<!ENTITY  OS                  "operating system"  >
+    <!--NOCHECK:-->
+<!ENTITY  OS-dm               "<acronym>ОС</acronym>овима"  >
+<!ENTITY  OS-n                "<acronym>ОС</acronym>"  >
+<!ENTITY  OS2-g               "ОС/2"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  OS2-n               "ОС/2"  >
+<!ENTITY  PageDown-n          "<keycap>стр.доле</keycap>"  >
+<!ENTITY  PageUp-n            "<keycap>стр.горе</keycap>"  >
+<!ENTITY  Perl-a              "Перл"  >
+<!ENTITY  Perl-n              "Перл"  >
+<!ENTITY  PostScript-g        "Постскрипта"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  PostScript-n        "Постскрипт"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  PPP-ajz             "<application>ППП</application>"  >
+<!ENTITY  PPP-n               "<application>ППП</application>"  >
+<!ENTITY  Python-a            "Питон"  >
+<!ENTITY  Python-n            "Питон"  >
+<!ENTITY  qdc-                "“"  >
+<!ENTITY  qdo-                "„"  >
+<!ENTITY  qsc-                "’"  >
+<!ENTITY  qso-                "‘"  >
+<!ENTITY  Qt-a                "КуТ"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-d                "КуТу"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-g                "КуТа"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-gmz              "КуТ"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-i                "КуТом"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-l                "КуТу"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-n                "КуТ"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  Qt-nju              "КуТ"  >
+    <!--<trademark></trademark>-->
+<!ENTITY  RainerEndres-n      "<personname><firstname>Рајнер</firstname> <surname>Ендрес</surname></personname>"  >
+<!ENTITY  RCS-l               "<acronym>РЦС</acronym>у"  >
+<!ENTITY  RCS-n               "<acronym>РЦС</acronym>"  >
+<!ENTITY  RCSexp-n            "Систем за контролу ревизија"  >
+<!ENTITY  RedHat-amu          "Редхетове"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  RedHat-lmu          "Редхетовим"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  RedHat-n            "Редхет"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  RedHat-nju          "Редхетов"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  RMB                 "<mousebutton>right</mousebutton> mouse button"  >
+    <!--NOCHECK:-->
+<!ENTITY  RMB-a               "<mousebutton>десно</mousebutton> дугме миша"  >
+<!ENTITY  RMB-i               "<mousebutton>десним</mousebutton> дугметом миша"  >
+<!ENTITY  RMB-n               "<mousebutton>десно</mousebutton> дугме миша"  >
+<!ENTITY  root-n              "администратор"  >
+<!ENTITY  rpath-am            "р-путање"  >
+<!ENTITY  rpath-n             "р-путања"  >
+<!ENTITY  RPM-am              "<acronym>РПМ</acronym>ове"  >
+<!ENTITY  RPM-gmu             "<acronym>РПМ</acronym>"  >
+<!ENTITY  RPM-n               "<acronym>РПМ</acronym>"  >
+<!ENTITY  RPM-nmu             "<acronym>РПМ</acronym>"  >
+<!ENTITY  Shift               "<keycap>Shift</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Shift-n             "<keycap>шифт</keycap>"  >
+<!ENTITY  StarOffice-a        "<application>Стар-офис</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  StarOffice-n        "<application>Стар-офис</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  StephanKulow-g      "<personname><firstname>Стефана</firstname> <surname>Кулова</surname></personname>"  >
+<!ENTITY  StephanKulow-n      "<personname><firstname>Стефан</firstname> <surname>Кулов</surname></personname>"  >
+<!ENTITY  stow-n              "<application>Стоу</application>"  >
+<!ENTITY  SuSE-lju            "<acronym>СуСЕовом</acronym>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  SuSE-lmu            "<acronym>СуСЕовим</acronym>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  SuSE-n              "<acronym>СуСЕ</acronym>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Tab                 "<keycap>Tab</keycap>"  >
+    <!--NOCHECK:-->
+<!ENTITY  Tab-n               "<keycap>таб</keycap>"  >
+<!ENTITY  tcsh-a              "<application>Тцсх</application>"  >
+<!ENTITY  tcsh-n              "<application>Тцсх</application>"  >
+<!ENTITY  Trolltech-a         "Тролтех"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Trolltech-n         "Тролтех"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  TrueType-amu        "Трутајп"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  TrueType-gmu        "Трутајп>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  TrueType-n          "Трутајп"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Unisys-gju          "Унисисовог"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Unisys-n            "Унисис"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-a              "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-aju            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-amu            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-amz            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-g              "Уникса"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-gm             "Униксâ"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-gmu            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-lmu            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-n              "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  UNIX-nmz            "Уникс"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  URL-a               "<acronym>УРЛ</acronym>"  >
+<!ENTITY  URL-n               "<acronym>УРЛ</acronym>"  >
+<!ENTITY  Windows-g           "Виндоуза"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Windows-l           "Виндоузу"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  Windows-n           "Виндоуз"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  x-                  "н"  >
+<!ENTITY  X-a                 "<application>Икс</application>"  >
+<!ENTITY  X-g                 "<application>Икса</application>"  >
+<!ENTITY  X-l                 "<application>Иксу</application>"  >
+<!ENTITY  X-n                 "<application>Икс</application>"  >
+<!ENTITY  X-Server-a          "<application>Икс-сервер</application>"  >
+<!ENTITY  X-Server-n          "<application>Икс-сервер</application>"  >
+<!ENTITY  X-Window-a          "Икс прозорски систем"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  X-Window-g          "Икс прозорског система"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  X-Window-gmu        "Икс прозорских"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  X-Window-n          "Икс прозорски систем"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  X11-a               "<application>Икс-11</application>"  >
+<!ENTITY  X11-n               "<application>Икс-11</application>"  >
+<!ENTITY  X11l-g              "Икс11 лиценце"  >
+<!ENTITY  X11l-n              "Икс11 лиценца"  >
+<!ENTITY  Xclock-n            "<application>Икс-часовник</application>"  >
+<!ENTITY  xdm-a               "<application>Иксдм</application>"  >
+<!ENTITY  xdm-g               "<application>Иксдма</application>"  >
+<!ENTITY  xdm-n               "<application>Иксдм</application>"  >
+<!ENTITY  XEmacs-a            "<application>Икс Емакс</application>"  >
+<!ENTITY  XEmacs-n            "<application>Икс Емакс</application>"  >
+<!ENTITY  XForms-a            "<application>Икс-форме</application>"  >
+<!ENTITY  XForms-n            "<application>Икс-форме</application>"  >
+<!ENTITY  XFree86-a           "<application>Иксфри86</application>"  >
+<!ENTITY  XFree86-g           "<application>Иксфрија86</application>"  >
+<!ENTITY  XFree86-l           "<application>Иксфрију86</application>"  >
+<!ENTITY  XFree86-n           "<application>Иксфри86</application>"  >
+<!ENTITY  xfsft-n             "<application>Икссфт</application>"  >
+<!ENTITY  Xinerama-i          "Ксинерамом"  >
+<!ENTITY  Xinerama-n          "Ксинерама"  >
+<!ENTITY  xkeycaps-n          "<application>Икс-кикапс</application>"  >
+<!ENTITY  XLib-a              "<application>Икслиб</application>"  >
+<!ENTITY  XLib-n              "<application>Икслиб</application>"  >
+<!ENTITY  xterm-n             "<application>Икстерм</application>"  >
+<!ENTITY  XTrueType-gju       "<application>Икс-трутајп</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  XTrueType-n         "<application>Икс-трутајп</application>"  >
+    <!--<trademark class='registered'></trademark>-->
+<!ENTITY  YaST-n              "<application>ЈаСТ</application>"  >

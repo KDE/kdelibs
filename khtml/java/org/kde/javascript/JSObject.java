@@ -139,7 +139,7 @@ public class JSObject extends netscape.javascript.JSObject {
     public Object call(String func, Object [] args) throws netscape.javascript.JSException {
         Main.info("JSObject.call: " + jsobject + "." + func);
         String script = new String("." + func + "(");
-        for (int i = 0; i < args.length; i++)
+        for (int i = 0; args != null && i < args.length; i++)
             script += (i > 0 ? "," : "") + convertValueJ2JS(args[i]);
         script += ")";
         return evaluate(script, false);

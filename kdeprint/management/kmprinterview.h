@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@ public:
 	~KMPrinterView();
 
 	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinter( KMPrinter* );
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }
 

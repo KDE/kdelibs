@@ -54,8 +54,7 @@ void RenderBody::setStyle(RenderStyle* style)
     scrollbarsStyled = false;
 }
 
-void RenderBody::paintBoxDecorations(QPainter *p,int, int _y,
-				       int, int _h, int _tx, int _ty)
+void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
     QColor c;
@@ -69,14 +68,14 @@ void RenderBody::paintBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    int my = kMax(_ty,_y);
-    int end = kMin( _y + _h,  _ty + h );
+    int my = kMax(_ty, paintInfo.r.y());
+    int end = kMin( paintInfo.r.y()+paintInfo.r.height(), _ty + h );
     int mh = end - my;
 
-    paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+    paintBackground(paintInfo.p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-	paintBorder( p, _tx, _ty, w, h, style() );
+	paintBorder( paintInfo.p, _tx, _ty, w, h, style() );
 
 }
 

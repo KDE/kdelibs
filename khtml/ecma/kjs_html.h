@@ -30,6 +30,7 @@
 
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
+#include "xml/dom_nodeimpl.h"  // for NodeImpl::Id
 
 namespace KJS {
 
@@ -81,7 +82,7 @@ namespace KJS {
            LinkSheet, TitleText, MetaName, MetaHttpEquiv, MetaContent, MetaScheme,
            BaseHref, BaseTarget, IsIndexForm, IsIndexPrompt, StyleDisabled,
            StyleSheet, StyleType, StyleMedia, BodyBackground, BodyVLink, BodyText,
-           BodyLink, BodyALink, BodyBgColor, ElementScrollHeight, ElementScrollWidth,
+           BodyLink, BodyALink, BodyBgColor,  BodyScrollLeft, BodyScrollTop, BodyScrollHeight, BodyScrollWidth,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
@@ -232,6 +233,24 @@ namespace KJS {
 
   Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
   Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
+
+  /* Helper function object for determining the number
+   * of occurrences of xxxx as in document.xxxx or window.xxxx.
+   * The order of the TagLength array is the order of preference.
+   */
+  class NamedTagLengthDeterminer {
+  public:
+    struct TagLength {
+      DOM::NodeImpl::Id id; unsigned long length; DOM::NodeImpl *last;
+    };
+    NamedTagLengthDeterminer(const DOM::DOMString& n, TagLength *t, int l)
+      : name(n), tags(t), nrTags(l) {}
+    void operator () (DOM::NodeImpl *start);
+  private:
+    const DOM::DOMString& name;
+    TagLength *tags;
+    int nrTags;
+  };
 
 
 } // namespace

@@ -337,7 +337,7 @@ class ImageSource : public QDataSource
 {
 public:
     ImageSource(QByteArray buf)
-        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( false )
+        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( true )
         {}
 
     int readyToSend()
@@ -792,13 +792,16 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #ifdef CACHE_DEBUG
             kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
 #endif
-                if(p->isNull())
-                {
-                    m_hadError = true;
-                    do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
-                }
-                else
-                    do_notify(*p, p->rect());
+            if(p->isNull())
+            {
+                m_hadError = true;
+                do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
+            }
+            else
+                do_notify(*p, p->rect());
+
+            for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
+                it()->notifyFinished( this );
         }
     }
 }
@@ -921,16 +924,16 @@ bool DocLoader::needReload(const KURL &fullURL)
     return reload;
 }
 
-#define DOCLOADER_SECCHECK \
+#define DOCLOADER_SECCHECK(doRedirectCheck) \
     KURL fullURL (m_doc->completeURL( url.string() )); \
     if ( !fullURL.isValid() || \
          ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
-         ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
+         doRedirectCheck && ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
          return 0L;
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
-    DOCLOADER_SECCHECK;
+    DOCLOADER_SECCHECK(true);
 
     CachedImage* i = Cache::requestObject<CachedImage, CachedObject::Image>( this, fullURL, 0);
 
@@ -941,9 +944,9 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 }
 
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const QString& charset,
-						   const char *accept )
+						   const char *accept, bool userSheet )
 {
-    DOCLOADER_SECCHECK;
+    DOCLOADER_SECCHECK(!userSheet);
 
     CachedCSSStyleSheet* s = Cache::requestObject<CachedCSSStyleSheet, CachedObject::CSSStyleSheet>( this, fullURL, accept );
     if ( s ) {
@@ -954,7 +957,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
-    DOCLOADER_SECCHECK;
+    DOCLOADER_SECCHECK(true);
 
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
     if ( s )

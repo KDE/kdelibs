@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -52,7 +52,7 @@ TreeListBoxItem::TreeListBoxItem(QListBox *lb, const QPixmap& pix, const QString
 		}
 		// search last "child" of the parent item, to put the new one
 		// at the end
-		TreeListBoxItem	*childItem = static_cast<TreeListBoxItem*>(parentItem), *prevItem(0);
+		TreeListBoxItem	*childItem = static_cast<TreeListBoxItem*>(parentItem), *prevItem = 0;
 		while (childItem->next())
 		{
 			TreeListBoxItem	*nextItem = static_cast<TreeListBoxItem*>(childItem->next());

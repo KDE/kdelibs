@@ -619,6 +619,8 @@ KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
   KService * s = KServiceFactory::self()->findServiceByDesktopName( _name.lower() );
+  if (!s && !_name.startsWith("kde-"))
+     s = KServiceFactory::self()->findServiceByDesktopName( "kde-"+_name.lower() );
   return KService::Ptr( s );
 }
 

@@ -83,10 +83,12 @@ bool KGlobalSettings::singleClick()
 KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 {
     int tearoff;
+    bool effectsenabled;
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
+    effectsenabled = c->readBoolEntry( "EffectsEnabled", false);
     tearoff =c->readNumEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
-    return (TearOffHandle) tearoff;
+    return effectsenabled ? (TearOffHandle) tearoff : Disable;
 }
 
 bool KGlobalSettings::changeCursorOverIcon()

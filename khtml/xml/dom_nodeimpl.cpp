@@ -38,6 +38,7 @@
 #include "ecma/kjs_proxy.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "dom_nodeimpl.h"
 
 
 using namespace DOM;
@@ -52,7 +53,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_tabIndex( 0 ),
       m_hasId( false ),
       m_hasStyle( false ),
-      m_pressed( false ),
       m_attached(false),
       m_changed( false ),
       m_hasChangedChild( false ),
@@ -88,15 +88,12 @@ DOMString NodeImpl::nodeValue() const
   return DOMString();
 }
 
-void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &exceptioncode )
+void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &/*exceptioncode*/ )
 {
-    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
-    if (isReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-        return;
-    }
-
-    // be default nodeValue is null, so setting it has no effect
+    // by default nodeValue is null, so setting it has no effect
+    // don't throw NO_MODIFICATION_ALLOWED_ERR from here, DOMTS-Core-Level1's hc_nodevalue03
+    // (createEntityReference().setNodeValue())) says it would be wrong.
+    // This must be done by subclasses instead.
 }
 
 DOMString NodeImpl::nodeName() const
@@ -223,7 +220,7 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
-    qDebug("NodeImpl::toHTML");
+    kdDebug(6020) << "NodeImpl::toHTML" << endl;
     NodeImpl* fc = firstChild();
     if ( fc )
         return fc->recursive_toHTML(true);
@@ -604,11 +601,12 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
 
 
     int exceptioncode = 0;
-
-//    int clientX, clientY;
-//    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
-    int clientX = _mouse->x(); // ### adjust to be relative to view
-    int clientY = _mouse->y(); // ### adjust to be relative to view
+    int pageX = _mouse->x();
+    int pageY = _mouse->y();
+    int clientX = pageX;
+    int clientY = pageY;
+    if ( getDocument()->view() )
+        getDocument()->view()->viewportToContents( clientX, clientY, pageX, pageY );
 
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
@@ -633,7 +631,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     bool metaKey = false; // ### qt support?
 
     EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
-                   detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,
+                   detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
@@ -884,16 +882,16 @@ void NodeImpl::closeRenderer()
         m_rendererNeedsClose = true;
 }
 
- void NodeImpl::attach()
- {
+void NodeImpl::attach()
+{
     assert(!attached());
-	assert(!m_render || (m_render->style() && m_render->parent()));
+    assert(!m_render || (m_render->style() && m_render->parent()));
     if (m_render && m_rendererNeedsClose) {
         m_render->close();
         m_rendererNeedsClose = false;
     }
     m_attached = true;
- }
+}
 
 void NodeImpl::detach()
 {
@@ -1222,15 +1220,6 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     if (!oldChild || oldChild->parentNode() != this) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
-    }
-
-    // Dispatch pre-removal mutation events
-    getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
-	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return 0;
     }
 
     dispatchChildRemovalEvents(oldChild,exceptioncode);
@@ -1626,7 +1615,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
             return;
     }
 
-    // dispatch the DOMNOdeInsertedInfoDocument event to all descendants
+    // dispatch the DOMNodeInsertedIntoDocument event to all descendants
     bool hasInsertedListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
     NodeImpl *p = this;
     while (p->parentNode())
@@ -1658,7 +1647,7 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
 
     bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
 
-    // dispatch the DOMNOdeRemovedFromDocument event to all descendants
+    // dispatch the DOMNodeRemovedFromDocument event to all descendants
     NodeImpl *p = this;
     while (p->parentNode())
 	p = p->parentNode();
@@ -1856,8 +1845,6 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 
 // ----------------------------------------------------------------------------
 
-// ### unused
-#if 0
 GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
     : NamedNodeMapImpl()
 {
@@ -1867,22 +1854,23 @@ GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
 
 GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 {
-    while (m_contents->count() > 0)
+    while (!m_contents->isEmpty())
         m_contents->take(0)->deref();
 
     delete m_contents;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAware*/, DOMStringImpl* /*qName*/ ) const
 {
+    // ## do we need namespace support in this class?
     QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
-        if (it.current()->nodeName() == name)
+        if (it.current()->id() == id)
             return it.current();
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::setNamedItem ( NodeImpl* /*arg*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -1890,7 +1878,7 @@ Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &excepti
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::removeNamedItem ( NodeImpl::Id /*id*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -1900,8 +1888,6 @@ Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int
 
 NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
 {
-    // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
-    // (also for other similar methods)
     if (index >= m_contents->count())
         return 0;
 
@@ -1913,47 +1899,23 @@ unsigned long GenericRONamedNodeMapImpl::length(  ) const
     return m_contents->count();
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI,
-                                                     const DOMString &localName,
-                                                     int &/*exceptioncode*/ ) const
-{
-    NodeImpl::Id searchId = m_doc->tagId(namespaceURI.implementation(),
-                                                   localName.implementation(), true);
-
-    QPtrListIterator<NodeImpl> it(*m_contents);
-    for (; it.current(); ++it)
-        if (it.current()->id() == searchId)
-            return it.current();
-
-    return 0;
-}
-
-NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &exceptioncode )
-{
-    // can't modify this list through standard DOM functions
-    // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-}
-
-NodeImpl *GenericRONamedNodeMapImpl::removeNamedItemNS( const DOMString &/*namespaceURI*/,
-                                                        const DOMString &/*localName*/,
-                                                        int &exceptioncode )
-{
-    // can't modify this list through standard DOM functions
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-}
-
 void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
 {
     // The spec says that in the case of duplicates we only keep the first one
-    int exceptioncode = 0;
-    if (getNamedItem(n->nodeName(),exceptioncode))
+    if (getNamedItem(n->id(), false, 0))
         return;
 
     n->ref();
     m_contents->append(n);
 }
 
-#endif
+NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
+                                              DOMStringImpl* localName, bool readonly)
+{
+    if (!m_doc)
+	return 0;
+
+    return m_doc->getId(NodeImpl::ElementId,
+                        namespaceURI, 0, localName, readonly,
+                        false /*don't lookupHTML*/);
+}

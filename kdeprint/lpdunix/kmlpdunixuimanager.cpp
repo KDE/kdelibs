@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,6 +18,8 @@
  **/
 
 #include "kmlpdunixuimanager.h"
+#include "kpqtpage.h"
+#include "kprinterpropertydialog.h"
 
 #include <klocale.h>
 
@@ -35,4 +37,9 @@ int KMLpdUnixUiManager::pluginPageCap()
 {
 	return KMUiManager::pluginPageCap();
 	//return KMUiManager::NoAutoCollate;
+}
+
+void KMLpdUnixUiManager::setupPrinterPropertyDialog( KPrinterPropertyDialog *dlg )
+{
+	dlg->addPage( new KPQtPage( dlg, "QtPage" ) );
 }

@@ -387,6 +387,7 @@ public:
 
     /**
       Actions that can be done with a window (_NET_WM_ALLOWED_ACTIONS).
+      @since 3.2
     **/
     enum Action {
         ActionMove           = 1<<0,
@@ -501,6 +502,8 @@ public:
         @li WM2AllowedActions
         @li WM2RestackWindow
         @li WM2MoveResizeWindow
+        
+        @since 3.2
 
     **/
     enum Property2 {
@@ -524,6 +527,7 @@ public:
        Source of the request.
        @li FromApplication the request comes from a normal application
        @li FromTool the request comes from pager or similar tool
+       @since 3.2
     **/
     // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
     enum RequestSource {

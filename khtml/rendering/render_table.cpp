@@ -379,8 +379,7 @@ void RenderTable::setCellWidths()
     }
 }
 
-void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
-			 int _tx, int _ty, PaintAction paintAction)
+void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 {
 
     if(!layouted()) return;
@@ -393,31 +392,30 @@ void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
 #endif
     if (!overhangingContents() && !isRelPositioned() && !isPositioned())
     {
-        if((_ty > _y + _h) || (_ty + height() < _y)) return;
-        if((_tx > _x + _w) || (_tx + width() < _x)) return;
+        if((_ty > pI.r.y() + pI.r.height()) || (_ty + height() < pI.r.y())) return;
+        if((_tx > pI.r.x() + pI.r.width()) || (_tx + width() < pI.r.x())) return;
     }
 
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
-    if(( paintAction == PaintActionElementBackground || paintAction == PaintActionChildBackground ) &&
+    if(( pI.phase == PaintActionElementBackground || pI.phase == PaintActionChildBackground ) &&
        style()->visibility() == VISIBLE)
-	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+	paintBoxDecorations(pI, _tx, _ty);
 
-    if ( paintAction == PaintActionElementBackground )
+    if ( pI.phase == PaintActionElementBackground )
         return;
 
-    if ( paintAction == PaintActionChildBackgrounds )
-        paintAction = PaintActionChildBackground;
+    PaintAction oldphase = pI.phase;
+    if ( pI.phase == PaintActionChildBackgrounds )
+        pI.phase = PaintActionChildBackground;
 
-    RenderObject *child = firstChild();
-    while( child ) {
+    for( RenderObject *child = firstChild(); child; child = child->nextSibling())
 	if ( child->isTableSection() || child == tCaption )
-	    child->paint( p, _x, _y, _w, _h, _tx, _ty, paintAction );
-	child = child->nextSibling();
-    }
+	    child->paint( pI, _tx, _ty );
 
+    pI.phase = oldphase;
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty, "blue");
 #endif
@@ -628,7 +626,7 @@ RenderObject* RenderTable::removeChildNode(RenderObject* child)
 }
 
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTable::dump(QTextStream &stream, const QString &ind) const
 {
     RenderBlock::dump(stream, ind);
@@ -1204,8 +1202,7 @@ int RenderTableSection::layoutRows( int toAdd )
 }
 
 
-void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
-				int tx, int ty, PaintAction paintAction)
+void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 {
     unsigned int totalRows = grid.size();
     unsigned int totalCols = table()->columns.size();
@@ -1213,6 +1210,7 @@ void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
     tx += m_x;
     ty += m_y;
 
+    int x = pI.r.x(), y = pI.r.y(), w = pI.r.width(), h = pI.r.height();
     // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
@@ -1254,7 +1252,7 @@ void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
 #ifdef TABLE_PRINT
 		kdDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->paint( p, x, y, w, h, tx, ty, paintAction);
+		cell->paint( pI, tx, ty);
 	    }
 	}
     }
@@ -1298,7 +1296,7 @@ RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
@@ -1512,7 +1510,7 @@ RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
@@ -1590,7 +1588,8 @@ void RenderTableCell::calcMinMaxWidth()
     if (element() && style()->whiteSpace() == NORMAL) {
         // See if nowrap was set.
         DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
-        if (!nowrap.isNull() && style()->width().isFixed())
+        if (!nowrap.isNull() && style()->width().isFixed() &&
+            m_minWidth < style()->width().value() )
             // Nowrap is set, but we didn't actually use it because of the
             // fixed width set on the cell.  Even so, it is a WinIE/Moz trait
             // to make the minwidth of the cell into the fixed width.  They do this
@@ -1687,8 +1686,7 @@ static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 }
 #endif
 
-void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
-			    int _tx, int _ty, PaintAction paintAction)
+void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
@@ -1701,10 +1699,10 @@ void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
     _ty += m_y + _topExtra;
 
     // check if we need to do anything at all...
-    if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
-        || (_ty + m_height + _bottomExtra < _y))) return;
+    if(!overhangingContents() && ((_ty-_topExtra > pI.r.y() + pI.r.height())
+        || (_ty + m_height + _bottomExtra < pI.r.y()))) return;
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintObject(pI, _tx, _ty);
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
@@ -1712,8 +1710,7 @@ void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
 }
 
 
-void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
-                                       int, int _h, int _tx, int _ty)
+void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -1758,19 +1755,19 @@ void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
 	}
     }
 
-    int my = kMax(_ty,_y);
-    int end = kMin( _y + _h,  _ty + h );
+    int my = kMax(_ty,pI.r.y());
+    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
     int mh = end - my;
 
     if ( bg || c.isValid() )
-	paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+	paintBackground(pI.p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-        paintBorder(p, _tx, _ty, w, h, style());
+        paintBorder(pI.p, _tx, _ty, w, h, style());
 }
 
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 {
     RenderFlow::dump(stream,ind);
@@ -1817,7 +1814,7 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
     RenderContainer::addChild(child,beforeChild);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableCol::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);

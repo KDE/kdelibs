@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,9 +22,8 @@
 
 #include "kmwizardpage.h"
 
-class QLabel;
 class QLineEdit;
-class QCheckBox;
+class QButtonGroup;
 
 class KMWPassword : public KMWizardPage
 {
@@ -32,12 +31,13 @@ public:
 	KMWPassword(QWidget *parent = 0, const char *name = 0);
 
 	bool isValid(QString&);
+	void initPrinter( KMPrinter* );
 	void updatePrinter(KMPrinter*);
 
 private:
-	QLineEdit	*m_login;
-	QLineEdit	*m_password;
-	QCheckBox	*m_guest;
+	QLineEdit    *m_login;
+	QLineEdit    *m_password;
+	QButtonGroup *m_btngroup;
 };
 
 #endif

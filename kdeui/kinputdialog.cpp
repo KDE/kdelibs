@@ -160,7 +160,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotUpdateButtons( const QString & ) ) );
     connect( this, SIGNAL( user1Clicked() ),
       d->m_comboBox, SLOT( clearEdit() ) );
-
+	slotUpdateButtons( d->m_comboBox->currentText() );
     d->m_comboBox->setFocus();
   } else {
     d->m_listBox = new KListBox( frame );

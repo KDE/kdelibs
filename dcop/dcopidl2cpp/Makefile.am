@@ -17,4 +17,4 @@ dcopidl_output.kidl: ../dcopidl/dcopidl $(srcdir)/dcopidl_test.h
 
 check-local: dcopidl_output.kidl
 	./dcopidl2cpp dcopidl_output.kidl
-	md5sum dcopidl_output_*
+	$(MD5SUM) dcopidl_output_*

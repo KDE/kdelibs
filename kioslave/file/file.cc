@@ -132,6 +132,9 @@ void FileProtocol::chmod( const KURL& url, int permissions )
 void FileProtocol::mkdir( const KURL& url, int permissions )
 {
     QCString _path( QFile::encodeName(url.path()));
+    
+    kdDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions << endl;
+        
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
@@ -192,7 +195,7 @@ void FileProtocol::get( const KURL& url )
 
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
-    KMimeType::Ptr mt = KMimeType::findByURL( url.path(), buff.st_mode, true /* local URL */ );
+    KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
     KIO::filesize_t processed_size = 0;
@@ -277,14 +280,14 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     QString dest_orig = url.path();
     QCString _dest_orig( QFile::encodeName(dest_orig));
 
-    kdDebug(7101) << "Put " << dest_orig << endl;
+    kdDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
 
     QString dest_part( dest_orig );
     dest_part += QString::fromLatin1(".part");
     QCString _dest_part( QFile::encodeName(dest_part));
 
     KDE_struct_stat buff_orig;
-    bool orig_exists = (KDE_stat( _dest_orig.data(), &buff_orig ) != -1);
+    bool orig_exists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
     bool part_exists = false;
     bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
@@ -293,7 +296,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         KDE_struct_stat buff_part;
         part_exists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
 
-        if (part_exists && !_resume && buff_part.st_size > 0)
+        if (part_exists && !_resume && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
             kdDebug(7101) << "FileProtocol::put : calling canResume with "
                           << KIO::number(buff_part.st_size) << endl;
@@ -442,6 +445,12 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     // after full download rename the file back to original name
     if ( bMarkPartial )
     {
+        // If the original URL is a symlink and we were asked to overwrite it,
+        // remove the symlink first. This ensures that we do not overwrite the
+        // current source if the symlink points to it.
+        if( _overwrite && S_ISLNK( buff_orig.st_mode ) )
+          remove( _dest_orig.data() );
+        
         if ( ::rename( _dest.data(), _dest_orig.data() ) )
         {
             kdWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
@@ -469,6 +478,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 void FileProtocol::copy( const KURL &src, const KURL &dest,
                          int _mode, bool _overwrite )
 {
+    kdDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
+        
     QCString _src( QFile::encodeName(src.path()));
     QCString _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
@@ -490,7 +501,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     }
 
     KDE_struct_stat buff_dest;
-    bool dest_exists = ( KDE_stat( _dest.data(), &buff_dest ) != -1 );
+    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -503,6 +514,15 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
         {
            error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
            return;
+        }
+        
+        // If the destination is a symlink and overwrite is TRUE,
+        // remove the symlink first to prevent the scenario where 
+        // the symlink actually points to current source!
+        if (_overwrite && S_ISLNK(buff_dest.st_mode))
+        {
+            kdDebug(7101) << "copy(): LINK DESTINATION" << endl;
+            remove( _dest.data() );
         }
     }
 
@@ -534,17 +554,19 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
     totalSize( buff_src.st_size );
 
-    off_t processed_size = 0;
+    KIO::filesize_t processed_size = 0;
     char buffer[ MAX_IPC_SIZE ];
     int n;
 #ifdef USE_SENDFILE
-    bool use_sendfile=true;
+    bool use_sendfile=buff_src.st_size < 0x7FFFFFFF;
 #endif
     while( 1 )
     {
 #ifdef USE_SENDFILE
        if (use_sendfile) {
-            n = ::sendfile( dest_fd, src_fd, &processed_size, MAX_IPC_SIZE );
+            off_t sf = processed_size;
+            n = ::sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
+            processed_size = sf;
             if ( n == -1 && errno == EINVAL ) { //not all filesystems support sendfile()
                 kdDebug(7101) << "sendfile() not supported, falling back " << endl;
                 use_sendfile = false;
@@ -821,7 +843,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
             }
         }
     } else {
-        kdWarning() << "lstat didn't work on " << path.data() << endl;
+        // kdWarning() << "lstat didn't work on " << path.data() << endl;
         return false;
     }
 
@@ -899,11 +921,6 @@ void FileProtocol::stat( const KURL & url )
      * This is the reason for the -1
      */
     QCString _path( QFile::encodeName(url.path(-1)));
-    KDE_struct_stat buff;
-    if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
-	return;
-    }
 
     QString sDetails = metaData(QString::fromLatin1("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
@@ -912,7 +929,6 @@ void FileProtocol::stat( const KURL & url )
     UDSEntry entry;
     if ( !createUDSEntry( url.fileName(), _path, entry, details ) )
     {
-	// Should never happen
 	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
 	return;
     }

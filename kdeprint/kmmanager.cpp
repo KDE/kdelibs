@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -481,7 +481,7 @@ QStringList KMManager::detectLocalPrinters()
 
 int KMManager::addPrinterWizard(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management");
+	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
 	if (!lib)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1").arg(KLibLoader::self()->lastErrorMessage()));
 	else
@@ -497,7 +497,7 @@ int KMManager::addPrinterWizard(QWidget *parent)
 
 bool KMManager::invokeOptionsDialog(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management");
+	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
 	if (!lib)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1").arg(KLibLoader::self()->lastErrorMessage()));
 	else

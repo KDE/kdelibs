@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -390,7 +390,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 			}
 			else
 			{
-				if (!outputToFile() && startviewer)
+				if (/* !outputToFile() && */ startviewer)
 				{
 					QStringList args;
 					args << "-d";
@@ -873,10 +873,11 @@ void KPrinter::setPrintProgram(const QString& prg)
 	}
 	else
 	{
-		setOption("kde-isspecial", "1");
 		QString	s(prg);
 		if (s.find("%in") == -1)
 			s.append(" %in");
+		setOutputToFile( s.find( "%out" ) != -1 );
+		setOption("kde-isspecial", "1");
 		setOption("kde-special-command", s);
 	}
 }

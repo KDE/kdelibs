@@ -335,7 +335,7 @@ KServiceType::Ptr KServiceType::parentType()
   {
     d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
     if (!d->parentType)
-      kdWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
+      kdDebug(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
   }
   
   d->parentTypeLoaded = true;

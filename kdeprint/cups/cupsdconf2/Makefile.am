@@ -2,23 +2,20 @@
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile $(all_includes)
 
-bin_PROGRAMS = cupsdconf
-cupsdconf_SOURCES = main.cpp
-
-cupsdconf_LDADD   =  libcupsdconf.la
-cupsdconf_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+bin_PROGRAMS =
+lib_LTLIBRARIES =
+kdeinit_LTLIBRARIES = cupsdconf.la
 
 # library creation
-lib_LTLIBRARIES = libcupsdconf.la
-libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdpage.cpp cupsdcomment.cpp cupsdsplash.cpp \
+cupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdpage.cpp cupsdcomment.cpp cupsdsplash.cpp \
 			  cupsdserverpage.cpp cupsdlogpage.cpp cupsdjobspage.cpp cupsdfilterpage.cpp \
 			  qdirlineedit.cpp cupsddirpage.cpp portdialog.cpp cupsdnetworkpage.cpp \
 			  editlist.cpp cupsdbrowsingpage.cpp browsedialog.cpp cupsdsecuritypage.cpp \
 			  locationdialog.cpp addressdialog.cpp cups-util.c \
-			  qdirmultilineedit.cpp sizewidget.cpp
-libcupsdconf_la_METASOURCES = AUTO
-libcupsdconf_la_LDFLAGS = $(all_libraries) -avoid-version -no-undefined
-libcupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
+			  qdirmultilineedit.cpp sizewidget.cpp main.cpp
+cupsdconf_la_METASOURCES = AUTO
+cupsdconf_la_LDFLAGS = -avoid-version -module $(all_libraries) $(KDE_RPATH)
+cupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
 
 noinst_HEADERS = cupsdconf.h cupsdpage.h cupsddialog.h cupsdcomment.h cupsdsplash.h \
 		 cupsdserverpage.h cupsdlogpage.h cupsdjobspage.h cupsdfilterpage.h \
@@ -34,5 +31,5 @@ cupsdconfdatadir   = $(kde_datadir)/kdeprint
 # Translations
 messages:
 	perl cupsdcomment.pl < cupsd.conf.template > cupsd.conf.template.cpp
-	$(XGETTEXT) $(libcupsdconf_la_SOURCES) main.cpp cupsd.conf.template.cpp -o $(podir)/cupsdconf.pot
+	$(XGETTEXT) *.cpp -o $(podir)/cupsdconf.pot
 	rm -f cupsd.conf.template.cpp

@@ -52,12 +52,14 @@
 #include "kjs_traversal.h"
 #include "kjs_css.h"
 #include "kjs_events.h"
+#include "xmlhttprequest.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "khtml_settings.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "misc/htmltags.h"
 #include "html/html_documentimpl.h"
 
 using namespace KJS;
@@ -115,6 +117,7 @@ namespace KJS {
 } // namespace KJS
 
 #include "kjs_window.lut.h"
+#include "rendering/render_replaced.h"
 
 ////////////////////// Screen Object ////////////////////////
 
@@ -256,6 +259,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   screen	Window::_Screen		DontDelete|ReadOnly
   Image		Window::Image		DontDelete|ReadOnly
   Option	Window::Option		DontDelete|ReadOnly
+  XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
   prompt	Window::Prompt		DontDelete|Function 2
@@ -319,7 +323,6 @@ Window::Window(KHTMLPart *p)
 
 Window::~Window()
 {
-  kdDebug(6070) << "Window::~Window this=" << this << " part=" << m_part << endl;
   delete winq;
 }
 
@@ -354,7 +357,7 @@ Window *Window::retrieveActive(ExecState *exec)
 Value Window::retrieve(KHTMLPart *p)
 {
   assert(p);
-  KJSProxy *proxy = KJSProxy::proxy( p );
+  KJSProxy *proxy = p->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "Window::retrieve part=" << p << " '" << p->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
@@ -427,10 +430,17 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (m_part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = m_part->htmlDocument().all();
-    DOM::HTMLElement element = coll.namedItem(q);
-    if (!element.isNull())
-      return true;
+    DOM::HTMLDocument doc = m_part->htmlDocument();
+    // Keep in sync with tryGet
+    NamedTagLengthDeterminer::TagLength tags[3] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+    };
+    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
+    for (int i = 0; i < 3; i++)
+      if (tags[i].length > 0)
+        return true;
+
+    return !doc.getElementById(p.string()).isNull();
   }
 
   return false;
@@ -551,10 +561,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case InnerHeight:
       if (!m_part->view())
         return Undefined();
+      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       return Number(m_part->view()->visibleHeight());
     case InnerWidth:
       if (!m_part->view())
         return Undefined();
+      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       return Number(m_part->view()->visibleWidth());
     case Length:
       return Number(m_part->frames().count());
@@ -627,6 +639,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return Value(new ImageConstructorImp(exec, m_part->document()));
     case Option:
       return Value(new OptionConstructorImp(exec, m_part->document()));
+    case XMLHttpRequest:
+      return Value( new XMLHttpRequestConstructorImp( exec,m_part->document() ) );
     case Close:
     case Scroll: // compatibility
     case ScrollBy:
@@ -669,11 +683,11 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Onfocus:
       return getListener(exec,DOM::EventImpl::FOCUS_EVENT);
     case Onkeydown:
-      return getListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT);
+      return getListener(exec,DOM::EventImpl::KEYDOWN_EVENT);
     case Onkeypress:
       return getListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT);
     case Onkeyup:
-      return getListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT);
+      return getListener(exec,DOM::EventImpl::KEYUP_EVENT);
     case Onload:
       return getListener(exec,DOM::EventImpl::LOAD_EVENT);
     case Onmousedown:
@@ -722,11 +736,23 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript(exec) &&
       m_part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = m_part->htmlDocument().all();
-    DOM::HTMLElement element = coll.namedItem(p.string());
-    if (!element.isNull()) {
-      return getDOMNode(exec,element);
+    // This is only for images, forms and applets, see KJS::HTMLDocument::tryGet
+    DOM::HTMLDocument doc = m_part->htmlDocument();
+    NamedTagLengthDeterminer::TagLength tags[3] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+    };
+    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
+    for (int i = 0; i < 3; i++)
+      if (tags[i].length > 0) {
+        if (tags[i].length == 1)
+          return getDOMNode(exec, tags[i].last);
+        // Get all the items with the same name
+        return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
     }
+
+    DOM::Element element = doc.getElementById(p.string() );
+    if ( !element.isNull() )
+      return getDOMNode(exec, element );
   }
 
   // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
@@ -809,7 +835,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Onkeydown:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT,value);
+        setListener(exec,DOM::EventImpl::KEYDOWN_EVENT,value);
       return;
     case Onkeypress:
       if (isSafeScript(exec))
@@ -817,7 +843,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Onkeyup:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT,value);
+        setListener(exec,DOM::EventImpl::KEYUP_EVENT,value);
       return;
     case Onload:
       if (isSafeScript(exec))
@@ -959,7 +985,9 @@ bool Window::checkIsSafeScript(KHTMLPart *activePart) const
   DOM::DOMString thisDomain = thisDocument.domain();
 
   if ( actDomain == thisDomain ) {
+#ifdef KJS_VERBOSE
     kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
+#endif
     return true;
   }
 
@@ -1012,7 +1040,6 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
 
 void Window::clear( ExecState *exec )
 {
-  kdDebug(6070) << "Window::clear " << this << endl;
   delete winq;
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
@@ -1026,7 +1053,7 @@ void Window::clear( ExecState *exec )
   jsEventListeners.clear();
 
   if (!m_part.isNull()) {
-    KJSProxy* proxy = KJSProxy::proxy( m_part );
+    KJSProxy* proxy = m_part->jScript();
     if (proxy) // i.e. JS not disabled
     {
       winq = new WindowQObject(this);
@@ -1425,7 +1452,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     		&& args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      window->resizeTo( tl, tl->width() + args[0].toInt32(exec), tl->height() + args[1].toInt32(exec) );
+      QRect geom = tl->frameGeometry();
+      window->resizeTo( tl,
+                        geom.width() + args[0].toInt32(exec),
+                        geom.height() + args[1].toInt32(exec) );
     }
     return Undefined();
   }
@@ -1598,7 +1628,7 @@ ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, 
 
 void ScheduledAction::execute(Window *window)
 {
-  ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(KJSProxy::proxy(window->m_part)->interpreter());
+  ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(window->m_part->jScript()->interpreter());
 
   interpreter->setProcessingTimerCallback(true);
 
@@ -1609,7 +1639,7 @@ void ScheduledAction::execute(Window *window)
       Q_ASSERT( window->m_part );
       if ( window->m_part )
       {
-        KJS::Interpreter *interpreter = KJSProxy::proxy( window->m_part )->interpreter();
+        KJS::Interpreter *interpreter = window->m_part->jScript()->interpreter();
         ExecState *exec = interpreter->globalExec();
         Q_ASSERT( window == interpreter->globalObject().imp() );
         Object obj( window );

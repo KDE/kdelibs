@@ -109,10 +109,15 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 
     lister->d->rootFileItem = 0;
   }
-  else if ( lister->d->lstDirs.contains( _url ) )
+  else if ( lister->d->lstDirs.find( _url ) != lister->d->lstDirs.end() )
   {
     // stop the job listing _url for this lister
     stop( lister, _url );
+
+    // remove the _url as well, it will be added in a couple of lines again!
+    // forgetDirs with three args does not do this
+    // TODO: think about moving this into forgetDirs
+    lister->d->lstDirs.remove( lister->d->lstDirs.find( _url ) );
 
     // clear _url for lister
     forgetDirs( lister, _url, true );
@@ -356,7 +361,6 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
   // TODO: consider to stop all the "child jobs" of _url as well
   kdDebug(7004) << k_funcinfo << lister << " url=" << _url << endl;
 
-  kdDebug(7004) << "removing listed from urlsCurrentlyListed" << endl;
   QPtrList<KDirLister> *listers = urlsCurrentlyListed[urlStr];
   if ( !listers || !listers->removeRef( lister ) )
     return;
@@ -409,6 +413,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
 
+  emit lister->clear();
   // clear lister->d->lstDirs before calling forgetDirs(), so that
   // it doesn't contain things that itemsInUse doesn't. When emitting
   // the canceled signals, lstDirs must not contain anything that
@@ -421,8 +426,6 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   {
     forgetDirs( lister, *it, false );
   }
-
-  emit lister->clear();
 }
 
 void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool notify )
@@ -1417,7 +1420,7 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
   QDictIterator<DirItem> itu( itemsInUse );
   while ( itu.current() )
   {
-    KURL deletedUrl ( itu.currentKey() );
+    KURL deletedUrl( itu.currentKey() );
     if ( dirUrl.isParentOf( deletedUrl ) )
     {
       // stop all jobs for deletedUrl
@@ -1456,12 +1459,15 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
           else
           {
             bool treeview = kdl->d->lstDirs.count() > 1;
-            forgetDirs( kdl, deletedUrl, treeview );
             if ( !treeview )
             {
-              kdl->d->lstDirs.clear();
               emit kdl->clear();
+              kdl->d->lstDirs.clear();
             }
+            else
+              kdl->d->lstDirs.remove( kdl->d->lstDirs.find( deletedUrl ) );
+
+            forgetDirs( kdl, deletedUrl, treeview );
           }
         }
 
@@ -1677,9 +1683,9 @@ void KDirLister::emitChanges()
       if ( d->changes & MIME_FILTER )
       {
         oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter )
-		 && doMimeExcludeFilter( (*kit)->mimetype(), d->oldMimeExcludeFilter );
+                && doMimeExcludeFilter( (*kit)->mimetype(), d->oldMimeExcludeFilter );
         newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter )
-		&& doMimeExcludeFilter( (*kit)->mimetype(), d->mimeExcludeFilter );
+                && doMimeExcludeFilter( (*kit)->mimetype(), d->mimeExcludeFilter );
 
         if ( oldMime && !newMime )
         {
@@ -2028,8 +2034,8 @@ void KDirLister::emitItems()
 
   if ( tmpRemove )
   {
-    for (KFileItem *tmp=tmpRemove->first(); tmp;tmp=tmpRemove->next())
-	    emit deleteItem( tmp);
+    for ( KFileItem *tmp = tmpRemove->first(); tmp; tmp = tmpRemove->next() )
+      emit deleteItem( tmp );
     delete tmpRemove;
   }
 }

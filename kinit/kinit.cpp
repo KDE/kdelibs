@@ -1016,6 +1016,7 @@ static void launcher_died()
       sleep(1); // Give it some time
    }
 
+   d.launcher_ok = false;
    d.launcher_pid = 0;
    close(d.launcher[0]);
    d.launcher[0] = -1;

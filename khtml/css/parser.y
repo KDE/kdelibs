@@ -105,7 +105,8 @@ static inline int getValueID(const char *tagStr, int len)
 
 %{
 
-static inline int cssyyerror(const char *x ) {
+static inline int cssyyerror(const char *x ) 
+{
 #ifdef CSS_DEBUG
     qDebug( "%s", x );
 #else
@@ -118,8 +119,18 @@ static int cssyylex( YYSTYPE *yylval ) {
     return CSSParser::current()->lex( yylval );
 }
 
+#define null 1
 
 %}
+
+%destructor { delete $$; $$ = 0; } expr;
+%destructor { delete $$; $$ = 0; } maybe_media_list media_list;
+%destructor { delete $$; $$ = 0; } selector_list;
+%destructor { delete $$; $$ = 0; } ruleset_list;
+%destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector selector class attrib pseudo;
+
+%no-lines
+%verbose
 
 %expect 18
 
@@ -213,8 +224,8 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <selector> attrib
 %type <selector> pseudo
 
+%type <ok> declaration_block
 %type <ok> declaration_list
-%type <ok> decl_list
 %type <ok> declaration
 
 %type <b> prio
@@ -252,7 +263,7 @@ khtml_rule:
 ;
 
 khtml_decls:
-    KHTML_DECLS_SYM '{' maybe_space declaration_list '}' {
+    KHTML_DECLS_SYM declaration_block {
 	/* can be empty */
     }
 ;
@@ -480,12 +491,12 @@ unary_operator:
   ;
 
 ruleset:
-    selector_list '{' maybe_space declaration_list '}' {
+    selector_list declaration_block {
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( $1 && $4 && p->numParsedProperties ) {
+	if ( $1 && $2 && p->numParsedProperties ) {
 	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( p->styleElement );
 	    CSSStyleDeclarationImpl *decl = p->createStyleDeclaration( rule );
 	    rule->setSelector( $1 );
@@ -756,64 +767,41 @@ pseudo:
     }
   ;
 
-declaration_list:
-    declaration {
-	$$ = $1;
+declaration_block:
+    '{' maybe_space declaration '}' {
+	$$ = $3;
     }
-    | decl_list declaration {
-	$$ = $1;
-	if ( $2 )
-	    $$ = $2;
-    }
-    | decl_list {
-	$$ = $1;
-    }
-    | error invalid_block_list error {
+    | '{' maybe_space error '}' {
 	$$ = false;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
     }
-    | error {
-	$$ = false;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping all declarations" << endl;
-#endif
+    | '{' maybe_space declaration_list '}' {
+	$$ = $3;
+    }
+    | '{' maybe_space declaration_list declaration '}' {
+	$$ = $3;
+	if ( $4 )
+	    $$ = $4;
+    }
+    | '{' maybe_space declaration_list error '}' {
+	$$ = $3;
     }
     ;
 
-decl_list:
+declaration_list:
     declaration ';' maybe_space {
 	$$ = $1;
     }
-    | error ';' maybe_space {
-	$$ = false;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
+    |
+    error ';' maybe_space {
+        $$ = false;
     }
-    | error invalid_block_list error ';' maybe_space {
-	$$ = false;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
-    }
-    | decl_list declaration ';' maybe_space {
+    | declaration_list declaration ';' maybe_space {
 	$$ = $1;
 	if ( $2 )
 	    $$ = $2;
     }
-    | decl_list error ';' maybe_space {
-	$$ = $1;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
-    }
-    | decl_list error invalid_block_list error ';' maybe_space {
-	$$ = $1;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
+    | declaration_list error ';' maybe_space {
+        $$ = $1;
     }
     ;
 
@@ -839,6 +827,9 @@ declaration:
         }
 	delete p->valueList;
 	p->valueList = 0;
+    }
+    | error invalid_block {
+        $$ = false;
     }
   ;
 
@@ -872,10 +863,6 @@ expr:
 	    $$->addValue( $3 );
 	}
     }
-    | expr error {
-	delete $1;
-	$$ = 0;
-    }
   ;
 
 operator:
@@ -893,6 +880,8 @@ operator:
 term:
   unary_term { $$ = $1; }
    | unary_operator unary_term { $$ = $2; $$.fValue *= $1; }
+  /* DIMEN is an unary_term, but since we store the string we must not modify fValue */
+  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION; }
   | STRING maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
@@ -928,7 +917,6 @@ unary_term:
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | QEMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = Value::Q_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
-  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION; }
     ;
 
 

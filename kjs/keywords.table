@@ -36,7 +36,7 @@ boolean		RESERVED
 byte		RESERVED
 char		RESERVED
 class		RESERVED
-const		RESERVED
+const		VAR
 debugger	RESERVED
 double		RESERVED
 enum		RESERVED

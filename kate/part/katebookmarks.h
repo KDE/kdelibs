@@ -28,7 +28,6 @@ class KateView;
 namespace KTextEditor { class Mark; }
 
 class KAction;
-class KActionMenu;
 class KActionCollection;
 
 class KateBookmarks : public QObject
@@ -44,27 +43,33 @@ class KateBookmarks : public QObject
 
     KateBookmarks::Sorting sorting() { return m_sorting; };
     void setSorting( Sorting s ) { m_sorting = s; };
+  protected:
+    bool eventFilter( QObject *, class QEvent * );
 
   private slots:
     void toggleBookmark();
     void clearBookmarks();
+
     void bookmarkMenuAboutToShow();
     void bookmarkMenuAboutToHide();
+
     void goNext();
     void goPrevious();
 
     void marksChanged ();
-
+    void connectMenuAndDisConnectAgain();
   private:
     KateView*                    m_view;
     KAction*                     m_bookmarkToggle;
     KAction*                     m_bookmarkClear;
     KAction*                     m_goNext;
     KAction*                     m_goPrevious;
-    KActionMenu*                 m_bookmarkMenu;
     Sorting                      m_sorting;
+
+    int _tries; // menu connection hack
 };
 
 #endif // _KateBookmarks_H_
 
+// kate: space-indent on; indent-width 2; replace-tabs on;
 // vim: noet ts=2

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 
 //*********************************************************************************************
 
@@ -208,6 +209,11 @@ void SmbView::processShares()
 		line = lines[index++].stripWhiteSpace();
 		if (line.isEmpty())
 			break;
+		else if ( line.startsWith( "Error returning" ) )
+		{
+			KMessageBox::error( this, line );
+			break;
+		}
 		QString	typestr(line.mid(15, 10).stripWhiteSpace());
 		//QStringList	words = QStringList::split(' ',line,false);
 		//if (words[1] == "Printer")

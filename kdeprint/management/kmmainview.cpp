@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -59,10 +59,8 @@
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
 
-extern "C"
+int kdeprint_management_add_printer_wizard( QWidget* parent )
 {
-	int add_printer_wizard(QWidget *parent)
-	{
 		KMWizard	dlg(parent);
 		int		flag(0);
 		if (dlg.exec())
@@ -77,13 +75,6 @@ extern "C"
 				flag = -1;
 		}
 		return flag;
-	}
-
-	bool config_dialog(QWidget *parent)
-	{
-		KMConfigDialog	dlg(parent);
-		return dlg.exec();
-	}
 }
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
@@ -137,11 +128,8 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	restoreSettings();
 	loadParameters();
 
-	//slotRefresh();
-	//KMTimer::self()->release(true);
-	KMTimer::self()->hold();
-	createMessageWindow( i18n( "Initializing manager..." ) );
-	m_manager->checkUpdatePossible();
+	// delay first update until KMManager is ready
+	reset( i18n( "Initializing manager..." ), true, true );
 }
 
 KMMainView::~KMMainView()
@@ -334,7 +322,7 @@ void KMMainView::initActions()
 
 void KMMainView::slotRefresh()
 {
-	KMTimer::self()->delay(10);
+	// TODO: remove me
 }
 
 void KMMainView::slotTimer()
@@ -343,9 +331,38 @@ void KMMainView::slotTimer()
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
-	if (!ok && m_first)
+	if ( m_first )
 	{
-		showErrorMsg(i18n("An error occurred while retrieving the printer list."));
+		if ( !ok )
+			showErrorMsg(i18n("An error occurred while retrieving the printer list."));
+		else
+		{
+			/* try to select the most appropriate printer:
+			 *    - soft default owner printer
+			 *    - hard default printer
+			 *    - first printer
+			 */
+			QPtrListIterator<KMPrinter> it( *printerlist );
+			KMPrinter *p1 = 0, *p2 = 0, *p3 = 0;
+			while ( it.current() )
+			{
+				if ( !it.current()->isVirtual() )
+				{
+					if ( it.current()->ownSoftDefault() )
+					{
+						p1 = it.current();
+						break;
+					}
+					else if ( it.current()->isHardDefault() )
+						p2 = it.current();
+					else if ( !p3 )
+						p3 = it.current();
+				}
+				++it;
+			}
+			if ( p1 || p2 || p3 )
+				m_printerview->setPrinter( p1 ? p1 : ( p2 ? p2 : p3 ) );
+		}
 		m_first = false;
 	}
 }
@@ -367,7 +384,7 @@ void KMMainView::slotPrinterSelected(const QString& prname)
 		m_actions->action("printer_remove")->setEnabled(!sp || ((mask & KMManager::PrinterRemoval) && p && p->isLocal() && !p->isImplicit()));
 		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) /*&& p->isLocal()*/));
 		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
-		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
+		m_actions->action("printer_soft_default")->setEnabled((p && !p->isSoftDefault()));
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
 		bool	stmask = (sp && (mask & KMManager::PrinterEnabling) && p);
 		m_actions->action("printer_state_change")->setEnabled(stmask && p->isLocal());
@@ -561,7 +578,7 @@ void KMMainView::slotAdd()
 	KMTimer::self()->hold();
 
 	int	result(0);
-	if ((result=add_printer_wizard(this)) == -1)
+	if ((result=kdeprint_management_add_printer_wizard(this)) == -1)
 		showErrorMsg(i18n("Unable to create printer."));
 
 	KMTimer::self()->release((result == 1));
@@ -652,9 +669,7 @@ void KMMainView::slotServerRestart()
 	}
 	else
 	{
-		m_printerview->setPrinterList( 0 );
-		createMessageWindow( i18n( "Restarting server..." ), 0 );
-		m_manager->checkUpdatePossible();
+		reset( i18n( "Restarting server..." ), false, false );
 	}
 }
 
@@ -669,9 +684,7 @@ void KMMainView::slotServerConfigure()
 	}
 	else
 	{
-		m_printerview->setPrinterList( 0 );
-		createMessageWindow( i18n( "Configuring server..." ), 0 );
-		m_manager->checkUpdatePossible();
+		reset( i18n( "Configuring server..." ), false, false );
 	}
 }
 
@@ -693,12 +706,17 @@ void KMMainView::slotManagerConfigure()
 {
 	KMTimer::self()->hold();
 	KMConfigDialog	dlg(this,"ConfigDialog");
-	bool 	refresh(false);
-	if ((refresh=dlg.exec()))
+	if ( dlg.exec() )
 	{
 		loadParameters();
 	}
-	KMTimer::self()->release(refresh);
+	/* when "OK":
+	 *  => the config file is saved
+	 *  => triggering a DCOP signal
+	 *  => configChanged() called
+	 * hence no need to refresh, just release the timer
+	 */
+	KMTimer::self()->release( false );
 }
 
 void KMMainView::slotAddSpecial()
@@ -755,10 +773,7 @@ void KMMainView::reload()
 
 	// We must delay the refresh such that all objects has been
 	// correctly reloaded (otherwise, crash in KMJobViewer).
-	KMTimer::self()->hold();
-	m_printerview->setPrinterList( 0 );
-	createMessageWindow( i18n( "Initializing manager..." ) );
-	m_manager->checkUpdatePossible();
+	reset( i18n( "Initializing manager..." ), true, true );
 }
 
 void KMMainView::showPrinterInfos(bool on)
@@ -834,7 +849,7 @@ void KMMainView::slotToggleFilter(bool on)
 
 void KMMainView::configChanged()
 {
-	slotRefresh();
+	reset( i18n( "Initializing manager..." ), false, true );
 }
 
 void KMMainView::slotUpdatePossible( bool flag )
@@ -858,9 +873,17 @@ void KMMainView::destroyMessageWindow()
 
 void KMMainView::slotInit()
 {
-	KMTimer::self()->hold();
+	reset( i18n( "Initializing manager..." ), true, true );
+}
+
+void KMMainView::reset( const QString& msg, bool useDelay, bool holdTimer )
+{
+	if ( holdTimer )
+		KMTimer::self()->hold();
 	m_printerview->setPrinterList( 0 );
-	createMessageWindow( i18n( "Initializing manager..." ) );
+	if ( !msg.isEmpty() )
+		createMessageWindow( msg, ( useDelay ? 500 : 0 ) );
+	m_first = true;
 	m_manager->checkUpdatePossible();
 }
 

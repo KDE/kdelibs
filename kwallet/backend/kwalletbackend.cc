@@ -19,10 +19,15 @@
  */
 
 #include "kwalletbackend.h"
+
+#include <stdlib.h>
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kmdcodec.h>
+#include <ksavefile.h>
 #include <kstandarddirs.h>
+
 #include <qfile.h>
 #include <qfileinfo.h>
 #include "blowfish.h"
@@ -118,7 +123,20 @@ static int getRandomBlock(QByteArray& randBlock) {
 		}
 	}
 
-	// EGD method?
+	// EGD method
+	char *randFilename;
+	if ((randFilename = getenv("RANDFILE"))) {
+		if (QFile::exists(randFilename)) {
+			QFile devrand(randFilename);
+			if (devrand.open(IO_ReadOnly)) {
+				unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+				if (rc != randBlock.size()) {
+					return -3;      // not enough data read
+				}
+				return 0;
+			}
+		}
+	}
 
 	// Couldn't get any random data!!
 
@@ -320,6 +338,12 @@ int Backend::open(const QByteArray& password) {
 
 	bf.setKey((void *)passhash.data(), passhash.size()*8);
 
+	if (!encrypted.data()) {
+		passhash.fill(0);
+		encrypted.fill(0);
+		return -7; // file structure error
+	}
+
 	int rc = bf.decrypt(encrypted.data(), encrypted.size());
 	if (rc < 0) {
 		passhash.fill(0);
@@ -427,13 +451,15 @@ int Backend::sync(const QByteArray& password) {
 		return -255;  // not open yet
 	}
 
-	QFile qf(_path);
+	KSaveFile sf(_path, 0600);
+	QFile *qf = sf.file();
 
-	if (!qf.open(IO_WriteOnly)) {
+	if (!qf) {
+		sf.abort();
 		return -1;		// error opening file
 	}
 
-	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
+	qf->writeBlock(KWMAGIC, KWMAGIC_LEN);
 
 	// Write the version number
 	QByteArray version(4);
@@ -441,7 +467,7 @@ int Backend::sync(const QByteArray& password) {
 	version[1] = KWALLET_VERSION_MINOR;
 	version[2] = KWALLET_CIPHER_BLOWFISH_CBC;
 	version[3] = KWALLET_HASH_SHA1;
-	qf.writeBlock(version, 4);
+	qf->writeBlock(version, 4);
 
 	// Holds the hashes we write out
 	QByteArray hashes;
@@ -464,7 +490,7 @@ int Backend::sync(const QByteArray& password) {
 
 		md5.reset();
 		md5.update(i.key().utf8());
-		hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
+		hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		hashStream << static_cast<Q_UINT32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
@@ -478,7 +504,7 @@ int Backend::sync(const QByteArray& password) {
 
 				md5.reset();
 				md5.update(j.key().utf8());
-				hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
+				hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 				break;
 			default:
 				assert(0);
@@ -487,7 +513,7 @@ int Backend::sync(const QByteArray& password) {
 		}
 	}
 
-	qf.writeBlock(hashes, hashes.size());
+	qf->writeBlock(hashes, hashes.size());
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -513,6 +539,7 @@ int Backend::sync(const QByteArray& password) {
 	if (getRandomBlock(randBlock) < 0) {
 		sha.reset();
 		decrypted.fill(0);
+		sf.abort();
 		return -3;		// Fatal error: can't get random
 	}
 
@@ -548,6 +575,7 @@ int Backend::sync(const QByteArray& password) {
 	if (!bf.setKey(passhash.data(), passhash.size() * 8)) {
 		passhash.fill(0);
 		wholeFile.fill(0);
+		sf.abort();
 		return -2;
 	}
 
@@ -555,14 +583,19 @@ int Backend::sync(const QByteArray& password) {
 	if (rc < 0) {
 		passhash.fill(0);
 		wholeFile.fill(0);
+		sf.abort();
 		return -2;	// encrypt error
 	}
 
 	passhash.fill(0);        // passhash is UNUSABLE NOW
 
 	// write the file
-	qf.writeBlock(wholeFile, wholeFile.size());
-	qf.close();
+	qf->writeBlock(wholeFile, wholeFile.size());
+	if (!sf.close()) {
+		wholeFile.fill(0);
+		sf.abort();
+		return -4; // write error
+	}
 
 	wholeFile.fill(0);
 

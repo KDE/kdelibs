@@ -131,6 +131,7 @@ void RenderCanvas::layout()
 #endif
     if ( recalcMinMax() )
 	recalcMinMaxWidths();
+
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
     qt.start();
@@ -140,30 +141,29 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
+    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
+    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
+
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
                                        m_view->contentsHeight());
         m_viewportWidth = m_width = s.width();
         m_viewportHeight = m_height = s.height();
+
+        if (m_view->verticalScrollBar()->isVisible())
+            m_view->setVScrollBarMode(KHTMLView::AlwaysOn);
+        else
+            m_view->setVScrollBarMode(KHTMLView::AlwaysOff);
+
+        if (m_view->horizontalScrollBar()->isVisible())
+            m_view->setHScrollBarMode(KHTMLView::AlwaysOn);
+        else
+            m_view->setHScrollBarMode(KHTMLView::AlwaysOff);
     }
     else {
         m_width = m_rootWidth;
         m_height = m_rootHeight;
     }
-    
-    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
-    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
-    
-    if (m_view->verticalScrollBar()->isVisible())
-        m_view->setVScrollBarMode(KHTMLView::AlwaysOn);
-    else
-        m_view->setVScrollBarMode(KHTMLView::AlwaysOff);
-
-    if (m_view->horizontalScrollBar()->isVisible())
-        m_view->setHScrollBarMode(KHTMLView::AlwaysOn);
-    else
-        m_view->setHScrollBarMode(KHTMLView::AlwaysOff);
-
 
     RenderBlock::layout();
 
@@ -190,8 +190,10 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
 
-    m_view->setVScrollBarMode(vsmode);
-    m_view->setHScrollBarMode(hsmode);
+    if ( !m_printingMode ) {
+        m_view->setHScrollBarMode(hsmode);
+        m_view->setVScrollBarMode(vsmode);
+    }
 
     setLayouted();
 }
@@ -208,36 +210,25 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
     return true;
 }
 
-void RenderCanvas::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
-		       PaintAction paintAction)
-{
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
-void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty,  PaintAction paintAction)
+void RenderCanvas::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     // 1. paint background, borders etc
-    if(paintAction == PaintActionElementBackground) {
-        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+    if(paintInfo.phase == PaintActionElementBackground) {
+        paintBoxDecorations(paintInfo, _tx, _ty);
         return;
     }
 
     // 2. paint contents
-    RenderObject *child = firstChild();
-    while(child != 0) {
-        if(!child->layer() && !child->isFloating()) {
-            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-        }
-        child = child->nextSibling();
-    }
+    for( RenderObject *child = firstChild(); child; child=child->nextSibling())
+        if(!child->layer() && !child->isFloating())
+            child->paint(paintInfo, _tx, _ty);
 
     // 3. paint floats.
-    if (paintAction == PaintActionFloat)
-        paintFloats(p, _x, _y, _w, _h, _tx, _ty);
+    if (paintInfo.phase == PaintActionFloat)
+        paintFloats(paintInfo, _tx, _ty);
 
 #ifdef BOX_DEBUG
     if (m_view)
@@ -251,13 +242,12 @@ void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
 
 }
 
-void RenderCanvas::paintBoxDecorations(QPainter *p,int _x, int _y,
-                                       int _w, int _h, int /*_tx*/, int /*_ty*/)
+void RenderCanvas::paintBoxDecorations(PaintInfo& paintInfo, int /*_tx*/, int /*_ty*/)
 {
     if ((firstChild() && firstChild()->style()->visibility() == VISIBLE) || !view())
         return;
 
-    p->fillRect(_x,_y,_w,_h, view()->palette().active().color(QColorGroup::Base));
+    paintInfo.p->fillRect(paintInfo.r, view()->palette().active().color(QColorGroup::Base));
 }
 
 void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)

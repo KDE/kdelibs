@@ -322,7 +322,6 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
 	// configuration dialog, so we should update the checkbox.
       mInstance->mTipOnStart->setChecked(runOnStart);
 
-      mInstance->nextTip();
       mInstance->show();
       mInstance->raise();
   }

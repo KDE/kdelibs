@@ -86,6 +86,7 @@ k_dcop:
   bool cacheRemoveHost(KSSLCertificate cert, QString host);
 
   /* Certificate Authorities */
+  void caVerifyUpdate();
   bool caRegenerate();
 
   QStringList caList();

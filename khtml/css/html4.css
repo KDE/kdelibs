@@ -310,6 +310,10 @@ DL {
 DT {
 	display: block;
 }
+
+DL[compact] > DT {
+	display: compact;
+}
  
 /* for right to left */
       
@@ -381,6 +385,7 @@ INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: medium;
         margin: 0__qem;
+        text-align: -khtml-auto;
 }
 
 INPUT[type="hidden"] {
@@ -394,11 +399,6 @@ INPUT[type="radio"], INPUT[type="checkbox"] {
 
 INPUT[type="text"], INPUT[type="password"] {
 	cursor: text;
-        text-align: left;
-}
-
-INPUT[dir="rtl"] {
-        text-align: right;
 }
 
 INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] { 
@@ -416,7 +416,7 @@ PARAM  {
 }
 
 SELECT { 
-        font-size: sans-serif;
+        font-family: sans-serif;
         color: windowtext; 
         margin: 0__qem;
 }

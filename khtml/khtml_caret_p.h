@@ -404,7 +404,13 @@ public:
   		InlineBox *initBox = 0)
   		: InlineBoxIterator(lit, fromEnd, initBox), m_part(lit.lines->m_part)
   {
-    if (box && !isEditable(box)) fromEnd ? --*this : ++*this;
+    if (box && !isEditable(box)) 
+    {
+      if (fromEnd)
+        --*this;
+      else 
+        ++*this;
+    }
   }
 
   /** empty constructor. Use only to copy another iterator into this one.
@@ -499,7 +505,13 @@ public:
   EditableLineIterator(const LineIterator &it, bool fromEnd = false)
   		: LineIterator(it)
   {
-    if (flowBox && !isEditable(*this)) fromEnd ? operator--() : operator ++();
+    if (flowBox && !isEditable(*this)) 
+    {
+      if (fromEnd) 
+        operator--();
+      else
+        operator ++();
+    }    
     if (!flowBox || !cb) {
 #if DEBUG_CARETMODE > 0
       kdDebug(6200) << "EditableLineIterator: findFlowBox failed" << endl;

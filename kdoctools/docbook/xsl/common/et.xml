@@ -80,10 +80,10 @@
    <l:gentext key="refsection" text="L&#245;ik"/>
    <l:gentext key="RefSynopsisDiv" text="S&#252;nopsis"/>
    <l:gentext key="refsynopsisdiv" text="S&#252;nopsis"/>
-   <l:gentext key="RevHistory" text="Vigade paranduste ajalugu"/>
-   <l:gentext key="revhistory" text="Vigade paranduste ajalugu"/>
-   <l:gentext key="Revision" text="Vigade parandus"/>
-   <l:gentext key="revision" text="Vigade parandus"/>
+   <l:gentext key="RevHistory" text="Versioonide ajalugu"/>
+   <l:gentext key="revhistory" text="Versioonide ajalugu"/>
+   <l:gentext key="Revision" text="Versioon"/>
+   <l:gentext key="revision" text="Versioon"/>
    <l:gentext key="section" text="l&#245;ik"/>
    <l:gentext key="Section" text="Sektsioon"/>
    <l:gentext key="see" text="Vt."/>
@@ -140,7 +140,7 @@
    <l:gentext key="ListofTables" text="Tabelite nimekiri"/>
    <l:gentext key="ListofUnknown" text="Tundmatute nimekiri"/>
    <l:gentext key="listofunknown" text="Tundmatute nimekiri"/>
-   <l:gentext key="nav-home" text="Koju"/>
+   <l:gentext key="nav-home" text="Esileht"/>
    <l:gentext key="nav-next" text="J&#228;rgmine"/>
    <l:gentext key="nav-next-sibling" text="Kiiresti edasi"/>
    <l:gentext key="nav-prev" text="Eelmine"/>

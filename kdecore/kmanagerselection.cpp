@@ -460,15 +460,9 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
             || ev_P->xclient.data.l[ 1 ] != static_cast< long >( selection ))
             return;
 //        kdDebug() << "handling message" << endl;
-        if( ev_P->xclient.data.l[ 2 ] == static_cast< long >( selection_owner ))
-            {
-//            kdDebug() << "already known" << endl;
-            return; // we know this already
-            }
         if( static_cast< long >( owner()) == ev_P->xclient.data.l[ 2 ] )
             {
-//            kdDebug() << "new owner: " << selection_owner << endl;
-            emit newOwner( selection_owner );
+            // owner() emits newOwner() if needed, no need to do it twice
             }
         return;
         }
