@@ -37,6 +37,7 @@ DCOPSignals::DCOPSignals()
 void
 DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByteArray &data, bool excludeSelf)
 {
+#ifdef Q_OS_UNIX
    QCString senderObj;
    QCString fun = _fun;
    int i = fun.find('#');
@@ -81,6 +82,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
                                  current->slot, data);
       }
    }
+#endif //Q_OS_UNIX
 }
 
 /**
@@ -99,6 +101,7 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
                        DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot, bool Volatile)
 {
+#ifdef Q_OS_UNIX
    // TODO: Check if signal and slot match
    QCString signalArgs, slotArgs;
    int i,j;
@@ -154,6 +157,9 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
    if (senderConn)
       senderConn->signalConnectionList()->append(current);
    return true;
+#else //!Q_OS_UNIX
+   return false;
+#endif
 }
 
 /**
@@ -184,6 +190,7 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj
    DCOPSignalConnection *next = 0;
    bool result = false;
 
+#ifdef Q_OS_UNIX
    for(DCOPSignalConnection *current = list->first(); current; current = next)
    {
       next = list->next();
@@ -218,6 +225,7 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj
          current->senderConn->signalConnectionList()->removeRef(current);
       delete current;
    }
+#endif //Q_OS_UNIX
    return result;
 }
 
@@ -230,6 +238,7 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj
 void
 DCOPSignals::removeConnections(DCOPConnection *conn, const QCString &obj)
 {
+#ifdef Q_OS_UNIX
    DCOPSignalConnectionList *list = conn->_signalConnectionList;
    if (!list)
       return; // Nothing to do...
@@ -269,6 +278,7 @@ DCOPSignals::removeConnections(DCOPConnection *conn, const QCString &obj)
       list->removeRef(current);
       delete current;
    }
+#endif //Q_OS_UNIX
 }
 
 

@@ -23,6 +23,22 @@
 #ifndef DCOPGLOBAL_H
 #define DCOPGLOBAL_H "$Id$"
 
+
+#define DCOPVendorString "KDE"
+#define DCOPReleaseString "2.0"
+#define DCOPVersionMajor 2
+#define DCOPVersionMinor 0
+
+#define DCOPSend 1
+#define DCOPCall 2
+#define DCOPReply 3
+#define DCOPReplyFailed 4
+#define DCOPReplyWait 5
+#define DCOPReplyDelayed 6
+#define DCOPFind 7
+
+#ifdef Q_OS_UNIX
+
 #define INT32 QINT32
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -41,19 +57,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#define DCOPVendorString "KDE"
-#define DCOPReleaseString "2.0"
-#define DCOPVersionMajor 2
-#define DCOPVersionMinor 0
-
-#define DCOPSend 1
-#define DCOPCall 2
-#define DCOPReply 3
-#define DCOPReplyFailed 4
-#define DCOPReplyWait 5
-#define DCOPReplyDelayed 6
-#define DCOPFind 7
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,5 +82,7 @@ struct DCOPMsg {
   CARD32 length B32;
   CARD32 key;
 };
+
+#endif //Q_OS_UNIX
 
 #endif

@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopclient.h>
 
-QMap<QCString, DCOPObject *> *kde_dcopObjMap;
+QMap<QCString, DCOPObject *> *kde_dcopObjMap = 0;
 
 static inline QMap<QCString, DCOPObject *> *objMap()
 {

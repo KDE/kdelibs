@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qcstring.h>
 #include <dcoptypes.h>
 #include <kdatastream.h> // needed for proper bool marshalling
+#include "kdelibs.h"
 
 class QDataStream;
 class DCOPObject;
@@ -40,7 +41,7 @@ class DCOPClient;
  * @see DCOPArg
  * @since 3.1
  */
-class DCOPReply
+class DCOP_EXPORT DCOPReply
 {
 public:
   /**
@@ -117,7 +118,7 @@ private:
  * @see DCOPReply
  * @since 3.1
  */
-class DCOPArg  {
+class DCOP_EXPORT DCOPArg  {
 public:
     /**
      * Creates a DCOPArg for DCOPRef::call().
@@ -275,7 +276,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * @author Matthias Ettrich <ettrich@kde.org>, Torben Weis <weis@kde.org>
  */
 
-class DCOPRef
+class DCOP_EXPORT DCOPRef
 {
 public:
     /**
@@ -1465,10 +1466,10 @@ private:
 /**
  * Writes the reference (NOT the object itself) to the stream.
  */
-QDataStream& operator<<( QDataStream&, const DCOPRef& ref );
+DCOP_EXPORT QDataStream& operator<<( QDataStream&, const DCOPRef& ref );
 /**
  * Reads a reference from the stream.
  */
-QDataStream& operator>>( QDataStream&, DCOPRef& ref );
+DCOP_EXPORT QDataStream& operator>>( QDataStream&, DCOPRef& ref );
 
 #endif

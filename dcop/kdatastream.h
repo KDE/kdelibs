@@ -17,7 +17,7 @@ inline QDataStream & operator >> (QDataStream & str, bool & b)
   return str;
 }
 
-#if QT_VERSION < 0x030200
+#if QT_VERSION < 0x030200 && !defined(Q_WS_WIN)
 inline QDataStream & operator << (QDataStream & str, long long int ll)
 {
   Q_UINT32 l1,l2;

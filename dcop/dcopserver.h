@@ -23,6 +23,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DCOPSERVER_H "$Id$"
 
 #include <qobject.h>
+
+#ifdef Q_OS_UNIX //not available yet for win32
+
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <qptrlist.h>
@@ -166,4 +169,7 @@ private:
 };
 
 extern DCOPServer* the_server;
+
+#endif //Q_OS_UNIX
+
 #endif

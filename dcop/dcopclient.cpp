@@ -53,6 +53,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qguardedptr.h>
 #include <qtextstream.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <qapplication.h>
 #include <qsocketnotifier.h>
 #include <qregexp.h>
@@ -67,11 +68,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <X11/Xmd.h> 
 #endif
 extern "C" {
+#ifdef Q_OS_UNIX
 #include <KDE-ICE/ICElib.h>
 #include <KDE-ICE/ICEutil.h>
 #include <KDE-ICE/ICEmsg.h>
 #include <KDE-ICE/ICEproto.h>
-
+#endif
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -115,12 +117,16 @@ void unregisterLocalClient( const QCString &_appId )
 
 template class QPtrList<DCOPObjectProxy>;
 template class QPtrList<DCOPClientTransaction>;
+#ifdef Q_OS_UNIX
 template class QPtrList<_IceConn>;
+#endif
 
 struct DCOPClientMessage
 {
     int opcode;
+#ifdef Q_OS_UNIX
     CARD32 key;
+#endif
     QByteArray data;
 };
 
@@ -151,7 +157,9 @@ class DCOPClientPrivate
 public:
     DCOPClient *parent;
     QCString appId;
+#ifdef Q_OS_UNIX
     IceConn iceConn;
+#endif
     int majorOpcode; // major opcode negotiated w/server and used to tag all comms.
 
     int majorVersion, minorVersion; // protocol versions negotiated w/server
@@ -175,6 +183,7 @@ public:
     Q_INT32 transactionId;
     int opcode;
 
+#ifdef Q_OS_UNIX
     // Special key values:
     // 0 : Not specified
     // 1 : DCOPSend
@@ -183,6 +192,7 @@ public:
     CARD32 key;
     CARD32 currentKey; 
     CARD32 currentKeySaved;
+#endif
 
     QTimer postMessageTimer;
     QPtrList<DCOPClientMessage> messages;
@@ -205,7 +215,9 @@ class DCOPClientTransaction
 {
 public:
     Q_INT32 id;
+#ifdef Q_OS_UNIX
     CARD32 key;
+#endif
     QCString senderId;
 };
 
@@ -252,12 +264,12 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
         disp = "NODISPLAY";
 
     int i;
-    if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
+    if((i = disp.findRev('.')) > disp.findRev(KPATH_SEPARATOR) && i >= 0)
         disp.truncate(i);
 
     if (!old)
     {
-        while( (i = disp.find(':')) >= 0)
+        while( (i = disp.find(KPATH_SEPARATOR)) >= 0)
             disp[i] = '_';
     }
 
@@ -301,7 +313,9 @@ QCString DCOPClient::dcopServerFileOld(const QCString &hostname)
 
 const char* DCOPClientPrivate::serverAddr = 0;
 
+#ifdef Q_OS_UNIX
 static void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  );
+#endif
 
 void DCOPClient::handleAsyncReply(ReplyStruct *replyStruct)
 {
@@ -316,6 +330,7 @@ void DCOPClient::handleAsyncReply(ReplyStruct *replyStruct)
     delete replyStruct;
 }
 
+#ifdef Q_OS_UNIX
 /**
  * Callback for ICE.
  */
@@ -421,10 +436,11 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
         DCOPProcessInternal( d, opcode, key, dataReceived, true );
     }
 }
-
+#endif
 
 void DCOPClient::processPostedMessagesInternal()
 {
+#ifdef Q_OS_UNIX
     if ( d->messages.isEmpty() )
         return;
     QPtrListIterator<DCOPClientMessage> it (d->messages );
@@ -440,8 +456,10 @@ void DCOPClient::processPostedMessagesInternal()
     }
     if ( !d->messages.isEmpty() )
         d->postMessageTimer.start( 100, true );
+#endif
 }
 
+#ifdef Q_OS_UNIX
 /**
    Processes DCOPCall, DCOPFind and DCOPSend
  */
@@ -566,6 +584,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 static IcePoVersionRec DCOPClientVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
+#endif
 
 
 static DCOPClient* dcop_main_client = 0;
@@ -585,10 +604,12 @@ DCOPClient::DCOPClient()
 {
     d = new DCOPClientPrivate;
     d->parent = this;
+#ifdef Q_OS_UNIX
     d->iceConn = 0L;
-    d->majorOpcode = 0;
     d->key = 0;
     d->currentKey = 0;
+#endif
+    d->majorOpcode = 0;
     d->appId = 0;
     d->notifier = 0L;
     d->non_blocking_call_lock = false;
@@ -608,9 +629,11 @@ DCOPClient::DCOPClient()
 
 DCOPClient::~DCOPClient()
 {
+#ifdef Q_OS_UNIX
     if (d->iceConn)
         if (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
             detach();
+#endif
 
     if (d->registered)
         unregisterLocalClient( d->appId );
@@ -686,7 +709,7 @@ static bool isServerSocketOwnedByUser(const char*server)
 {
     if (strncmp(server, "local/", 6) != 0)
         return false; // Not a local socket -> foreign.
-    const char *path = strchr(server, ':');
+    const char *path = strchr(server, KPATH_SEPARATOR);
     if (!path)
         return false;
     path++;
@@ -702,6 +725,7 @@ static bool isServerSocketOwnedByUser(const char*server)
 
 bool DCOPClient::attachInternal( bool registerAsAnonymous )
 {
+#ifdef Q_OS_UNIX
     char errBuf[1024];
 
     if ( isAttached() )
@@ -828,11 +852,15 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
         registerAs( "anonymous", true );
 
     return true;
+#else //!Q_OS_UNIX
+    return false;
+#endif
 }
 
 
 bool DCOPClient::detach()
 {
+#ifdef Q_OS_UNIX
     int status;
 
     if (d->iceConn) {
@@ -852,14 +880,21 @@ bool DCOPClient::detach()
     d->registered = false;
     d->foreign_server = true;
     return true;
+#else //!Q_OS_UNIX
+    return false;
+#endif
 }
 
 bool DCOPClient::isAttached() const
 {
+#ifdef Q_OS_UNIX
     if (!d->iceConn)
         return false;
 
     return (IceConnectionStatus(d->iceConn) == IceConnectAccepted);
+#else //!Q_OS_UNIX
+    return false;
+#endif
 }
 
 bool DCOPClient::isAttachedToForeignServer() const
@@ -949,10 +984,11 @@ QCString DCOPClient::appId() const
 
 int DCOPClient::socket() const
 {
+#ifdef Q_OS_UNIX
     if (d->iceConn)
         return IceConnectionNumber(d->iceConn);
-    else
-        return 0;
+#endif //Q_OS_UNIX
+    return 0;
 }
 
 static inline bool isIdentChar( char x )
@@ -998,6 +1034,7 @@ QCString DCOPClient::senderId() const
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
                       const QCString &remFun, const QByteArray &data)
 {
+#ifdef Q_OS_UNIX
     if (remApp.isEmpty())
        return false;
     DCOPClient *localClient = findLocalClient( remApp );
@@ -1044,10 +1081,10 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 
     //IceFlush(d->iceConn);
 
-    if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
-        return false;
-    else
+    if (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
         return true;
+#endif //Q_OS_UNIX
+    return false;
 }
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
@@ -1769,10 +1806,14 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
                       QCString& replyType, QByteArray &replyData,
                       bool useEventLoop, int timeout, int minor_opcode)
 {
+#ifdef Q_OS_UNIX
     ReplyStruct replyStruct;
     replyStruct.replyType = &replyType;
     replyStruct.replyData = &replyData;
     return callInternal(remApp, remObjId, remFun, data, &replyStruct, useEventLoop, timeout, minor_opcode);
+#else //!Q_OS_UNIX
+    return false;
+#endif
 }
 
 bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
@@ -1780,6 +1821,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
                       ReplyStruct *replyStruct,
                       bool useEventLoop, int timeout, int minor_opcode)
 {
+#ifdef Q_OS_UNIX
     if ( !isAttached() )
         return false;
 
@@ -1927,6 +1969,9 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
     d->currentKey = oldCurrentKey;
     return replyStruct->status != ReplyStruct::Failed;
+#else //!Q_OS_UNIX
+    return false;
+#endif
 }
 
 void DCOPClient::eventLoopTimeout()
@@ -1936,6 +1981,7 @@ void DCOPClient::eventLoopTimeout()
 
 void DCOPClient::processSocketData(int fd)
 {
+#ifdef Q_OS_UNIX
     // Make sure there is data to read!
     fd_set fds;
     timeval timeout;
@@ -1966,6 +2012,7 @@ void DCOPClient::processSocketData(int fd)
         qWarning("received an error processing data from the DCOP server!");
         return;
     }
+#endif //Q_OS_UNIX
 }
 
 void DCOPClient::setDefaultObject( const QCString& objId )
@@ -2007,7 +2054,9 @@ DCOPClient::beginTransaction()
     trans->id = ++d->transactionId;
     if (d->transactionId < 0)  // Ensure that ids > 0
         d->transactionId = 0;
+#ifdef Q_OS_UNIX
     trans->key = d->currentKey;
+#endif
 
     d->transactionList->append( trans );
 
@@ -2057,6 +2106,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
         return;
     }
 
+#ifdef Q_OS_UNIX
     DCOPMsg *pMsg;
 
     QByteArray ba;
@@ -2065,11 +2115,11 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
 
     IceGetHeader(d->iceConn, d->majorOpcode, DCOPReplyDelayed,
                  sizeof(DCOPMsg), DCOPMsg, pMsg);
-
     pMsg->key = trans->key;
     pMsg->length += ba.size();
 
     IceSendData( d->iceConn, ba.size(), const_cast<char *>(ba.data()) );
+#endif
 
     delete trans;
 }
@@ -2159,6 +2209,7 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal
 void
 DCOPClient::setPriorityCall(bool b)
 {
+#ifdef Q_OS_UNIX
     if (b)
     {
        if (d->currentKey == 2)
@@ -2174,6 +2225,7 @@ DCOPClient::setPriorityCall(bool b)
        if ( !d->messages.isEmpty() )
           d->postMessageTimer.start( 0, true ); // Process queued messages
     }
+#endif
 }
 
 
@@ -2190,6 +2242,7 @@ DCOPClient::emergencyClose()
        list.append(it.current());
        ++it;
     }
+#ifdef Q_OS_UNIX
     for(DCOPClient *cl = list.first(); cl; cl = list.next())
     {
         if (cl->d->iceConn) {
@@ -2198,6 +2251,7 @@ DCOPClient::emergencyClose()
             cl->d->iceConn = 0L;
         }
     }
+#endif
 }
 
 const char *

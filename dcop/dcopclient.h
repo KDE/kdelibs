@@ -65,7 +65,7 @@ typedef QValueList<QCString> QCStringList;
  * @see KApplication::dcopClient()
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
-class DCOPClient : public QObject
+class DCOP_EXPORT DCOPClient : public QObject
 {
   Q_OBJECT
 

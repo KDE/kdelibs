@@ -23,8 +23,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DCOPSIGNALS_H "$Id$"
 
 #include <qdict.h>
+#include <qasciidict.h>
 #include <qptrlist.h>
 #include <qstring.h>
+#include "kdelibs.h"
 
 class DCOPConnection;
 
@@ -32,7 +34,7 @@ class DCOPConnection;
   * This requires:
   * DCOPSignalConnectionList * DCOPConnection::signalConnectionList()
 */
-class DCOPSignalConnection
+class DCOP_EXPORT DCOPSignalConnection
 {
 public:
    QCString sender;      // Sender client, empty means any client
@@ -46,7 +48,7 @@ public:
 };
 
 /** \internal */
-class DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
+class DCOP_EXPORT DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
 {
 public:
    DCOPSignalConnectionList() { };
@@ -55,7 +57,7 @@ public:
 /**
  * @internal
  */
-class DCOPSignals
+class DCOP_EXPORT DCOPSignals
 {
 public:
    DCOPSignals();

@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qptrlist.h>
 #include <qvaluelist.h>
 #include <kdatastream.h> // needed for proper bool marshalling
+#include "kdelibs.h"
 
 class DCOPClient;
 typedef QValueList<QCString> QCStringList;
@@ -63,7 +64,7 @@ private:
  * @see DCOPObjectProxy
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
-class DCOPObject
+class DCOP_EXPORT DCOPObject
 {
 public:
   /**
@@ -348,7 +349,7 @@ class DCOPObjectProxyPrivate;
  * @see DCOPClient
  * @author Matthias Ettrich <ettrich@kde.org>
  */
-class DCOPObjectProxy
+class DCOP_EXPORT DCOPObjectProxy
 {
 public:
     /**
