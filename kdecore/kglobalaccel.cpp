@@ -42,7 +42,7 @@ bool KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc,
 		nIDMenu, pMenu, bConfigurable );
 }
 
-bool KGlobalAccel::insertAction( const QString& sAction, KShortcuts cutsDef,
+/*bool KGlobalAccel::insertAction( const QString& sAction, KShortcuts cutsDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
 {
@@ -50,7 +50,7 @@ bool KGlobalAccel::insertAction( const QString& sAction, KShortcuts cutsDef,
 		cutsDef, cutsDef,
 		pObjSlot, psMethodSlot,
 		nIDMenu, pMenu, bConfigurable );
-}
+}*/
 
 bool KGlobalAccel::insertLabel( const QString& sName, const QString& sDesc )
 	{ return d->insertLabel( sName, sDesc ); }

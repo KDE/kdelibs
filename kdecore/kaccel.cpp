@@ -116,14 +116,11 @@ KAccel::~KAccel()
 	delete d;
 }
 
-KAccelActions& KAccel::actions()	{ return d->actions(); }
-
-bool KAccel::isEnabled()
-	{ return d->isEnabled(); }
-void KAccel::setEnabled( bool bEnabled )
-	{ d->setEnabled( bEnabled ); }
-bool KAccel::setAutoUpdate( bool bAuto )
-	{ return d->setAutoUpdate( bAuto ); }
+KAccelBase* KAccel::basePtr()             { return d; }
+KAccelActions& KAccel::actions()          { return d->actions(); }
+bool KAccel::isEnabled()                  { return d->isEnabled(); }
+void KAccel::setEnabled( bool bEnabled )  { d->setEnabled( bEnabled ); }
+bool KAccel::setAutoUpdate( bool bAuto )  { return d->setAutoUpdate( bAuto ); }
 
 bool KAccel::insertAction( const QString& sAction, const QString& sDesc,
 		const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
@@ -175,6 +172,8 @@ bool KAccel::insertAction( KStdAccel::StdAccel id,
 
 bool KAccel::removeAction( const QString& sAction )
 	{ return d->removeAction( sAction ); }
+bool KAccel::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 bool KAccel::updateConnections()
 	{ return d->updateConnections(); }
 bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
@@ -197,12 +196,6 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 	return b;
 }
 
-bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
-	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
-
-KAccelBase* KAccel::basePtr()
-	{ return d; }
-
 bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 {
 	KAccelAction* pAction = d->actionPtr( sAction );
@@ -215,3 +208,35 @@ bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 		return false;
 }
 
+#include <qpopupmenu.h>
+void KAccel::changeMenuAccel( QPopupMenu *menu, int id, const QString& action )
+{
+	KAccelAction* pAction = actions().actionPtr( action );
+	QString s = menu->text( id );
+	if( !pAction || s.isEmpty() )
+		return;
+
+	int i = s.find( '\t' );
+
+	QString k = pAction->getShortcut(0).toString();
+	if( k.isEmpty() )
+		return;
+
+	if ( i >= 0 )
+		s.replace( i+1, s.length()-i, k );
+	else {
+		s += '\t';
+		s += k;
+	}
+
+	QPixmap *pp = menu->pixmap(id);
+	if( pp && !pp->isNull() )
+		menu->changeItem( *pp, s, id );
+	else
+		menu->changeItem( s, id );
+}
+
+void KAccel::changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel )
+{
+	changeMenuAccel( menu, id, KStdAccel::action( accel ) );
+}

@@ -39,7 +39,9 @@ public:
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
 			 bool bConfigurable = true, bool bEnabled = true );
+	// BCI: remove 'virtual's.
 	virtual bool removeAction( const QString& sAction );
+	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 	virtual bool setActionEnabled( const QString& sAction, bool bEnabled );
 
 	bool updateConnections();
@@ -48,11 +50,17 @@ public:
 	void readSettings( KConfig* pConfig = 0 );
 	void writeSettings( KConfig* pConfig = 0 ) const;
 
-	// Functions which mimic QAccel somewhat:
+	// Source compatibility to KDE 2.x
 	virtual bool insertItem( const QString& sDesc, const QString& sAction,
 	                 KShortcuts rgCutDefaults3,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+		{ return setActionSlot( sAction, pObjSlot, psMethodSlot ); }
+	// OBSOLETE!
+	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
+		{ return insertAction( accel, pObjSlot, psMethodSlot ); }
+	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action );
+	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel );
 
 private:
 	class KAccelPrivate* d;

@@ -627,20 +627,20 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 			int nIDMenu, QPopupMenu* pMenu,
 			bool bConfigurable, bool bEnabled )
 {
-	kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
 	//kdDebug(125) << QString( "insertItem("+sAction+", 0x%1, 0x%2)\n" ).arg(keyDef3.key(),0,16).arg(keyDef4.key(),0,16);
 	if( actionPtr( sAction ) )
 		return false;
 
-	kdDebug(125) << "KAccelActions::insertAction() resize" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() resize" << endl;
 	resize( size() + 1 );
-	kdDebug(125) << "KAccelActions::insertAction() back().init" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() back().init" << endl;
 	back().init( sAction, sDesc,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
 		nIDMenu, pMenu,
 		bConfigurable, bEnabled );
-	kdDebug(125) << "KAccelActions::insertAction() end" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() end" << endl;
 
 	return &back();
 }
@@ -651,7 +651,7 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 			int nIDMenu, QPopupMenu* pMenu,
 			bool bConfigurable, bool bEnabled )
 {
-	kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() begin" << endl;
 	//kdDebug(125) << QString( "insertItem("+sAction+", 0x%1, 0x%2)\n" ).arg(keyDef3.key(),0,16).arg(keyDef4.key(),0,16);
 	if( actionPtr( sAction ) )
 		return false;
@@ -662,7 +662,7 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 		pObjSlot, psMethodSlot,
 		nIDMenu, pMenu,
 		bConfigurable, bEnabled );
-	kdDebug(125) << "KAccelActions::insertAction() end" << endl;
+	//kdDebug(125) << "KAccelActions::insertAction() end" << endl;
 
 	return &back();
 }
