@@ -1650,6 +1650,25 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
+
+  //
+  // 2000-04-17 Espen Sand. If size is -1, then resize the combo
+  // to a width that is sifficient to display all strings
+  //
+  if( size == -1 )
+  {
+    size = 0;
+    if( list != 0 )
+    {
+      for( const char *p=list->first(); p; p = list->next() )
+      {
+	int w = fontMetrics().width(p);
+	size = QMAX( size, w );
+      }
+    }
+    size += fontMetrics().maxWidth() * 3;
+  }
+
   item->resize(size, 22);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
@@ -1681,6 +1700,22 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
+
+  //
+  // 2000-04-17 Espen Sand. If size is -1, then resize the combo
+  // to a width that is sifficient to display all strings
+  //
+  if( size == -1 )
+  {
+    size = 0;
+    for( QStringList::ConstIterator it = list.begin(); it != list.end(); ++it )
+    {
+      int w = fontMetrics().width(*it);
+      size = QMAX( size, w );
+    }
+    size += fontMetrics().maxWidth() * 3;
+  }
+  
   item->resize(size, 20);
   item->setEnabled(enabled);
   if (d->m_position != Flat)

@@ -250,7 +250,9 @@ public:
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
-   * are placed at the bottom of the list. Can be autosized.
+   * are placed at the bottom of the list. Can be autosized. If the size 
+   * argument is specified as -1, the width of the combobox is automatically
+   * computed.
    *
    * @see setFullWidth()
    * @see setItemAutoSized()
@@ -269,7 +271,9 @@ public:
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
-   * are placed at the bottom of the list. Can be autosized.
+   * are placed at the bottom of the list. Can be autosized. If the size 
+   * argument is specified as -1, the width of the combobox is automatically
+   * computed.
    *
    * @see setFullWidth()
    * @see setItemAutoSized()
