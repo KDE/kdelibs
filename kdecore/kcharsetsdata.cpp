@@ -518,7 +518,7 @@ KCharsetsData::KCharsetsData(){
   kchdebug("Reading config from %s...\n",(const char *)fileName);
   config=new KSimpleConfig(fileName);
   config->setGroup("general");
-  const char * i18dir=config->readEntry("i18ndir");
+  QString i18dir = config->readEntry("i18ndir");
   if (i18dir) scanDirectory(i18dir);
   kchdebug("Creating alias dictionary...\n");
   KEntryIterator *it=config->entryIterator("aliases");
@@ -553,7 +553,7 @@ void KCharsetsData::scanDirectory(const char *path){
   QFileInfo *fi;
   while( (fi=it.current()) ){
     QString name=fi->fileName();
-    QString alias=name;
+    QString alias=name.copy();
     int comma=alias.find(',');
     if (comma) alias.remove(comma,alias.length()-comma);
     else alias="";
