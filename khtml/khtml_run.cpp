@@ -46,7 +46,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
             mimeType != "inode/directory" && // dirs can't be saved
             !m_strURL.isLocalFile() ) // ... and remote URL
        {
-           KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "KParts/KHTML");
+           KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "Application");
            if ( askSave( m_strURL, offer, mimeType, m_suggestedFilename ) ) // ... -> ask whether to save
            { // true: saving done or canceled
                m_bFinished = true;
