@@ -92,11 +92,11 @@ public:
    virtual KFileTreeBranch* addBranch( KFileTreeBranch * );
 
    /**
-    *  removes the branch with the given number from the treeview.
+    *  removes the branch from the treeview.
     *  @param branch is a pointer to the branch
     *  @returns true on success.
     */
-   virtual bool removeBranch( const KFileTreeBranch *branch );
+   virtual bool removeBranch( KFileTreeBranch *branch );
 
    /**
     *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.

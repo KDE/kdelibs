@@ -442,9 +442,18 @@ KFileTreeBranchList& KFileTreeView::branches()
 }
 
 
-bool KFileTreeView::removeBranch( const KFileTreeBranch *branch )
+bool KFileTreeView::removeBranch( KFileTreeBranch *branch )
 {
-   return( m_branches.remove( branch ));
+   if(m_branches.contains(branch))
+   {
+      takeItem(branch->root());
+      m_branches.remove( branch );
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 void KFileTreeView::setDirOnlyMode( KFileTreeBranch* branch, bool bom )
@@ -648,25 +657,25 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
       if( ! relUrl.isEmpty() && relUrl != QString::fromLatin1("/") )
       {
-	 QString partUrl( relUrl );
+         QString partUrl( relUrl );
 
-	 if( partUrl.endsWith("/"))
-	    partUrl.truncate( relUrl.length()-1 );
+         if( partUrl.endsWith("/"))
+            partUrl.truncate( relUrl.length()-1 );
 
-	 url.addPath( partUrl );
+         url.addPath( partUrl );
 
-	 kdDebug(250) << "assembled complete dir string " << url.prettyURL() << endl;
+         kdDebug(250) << "assembled complete dir string " << url.prettyURL() << endl;
 
-	 KFileItem *fi = brnch->find( url );
-	 if( fi )
-	 {
-	    ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));
-	    kdDebug(250) << "Found item !" <<ret << endl;
-	 }
+         KFileItem *fi = brnch->find( url );
+         if( fi )
+         {
+            ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));
+            kdDebug(250) << "Found item !" <<ret << endl;
+         }
       }
       else
       {
-	 ret = brnch->root();
+         ret = brnch->root();
       }
    }
    return( ret );
