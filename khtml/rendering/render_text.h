@@ -45,9 +45,9 @@ public:
     {
         x = _x;
         y = _y;
+        n = 0;
         m_text = text;
         len = _len;
-        n = 0;
         m_height = height;
         m_baseline = baseline;
         m_width = width;
@@ -75,7 +75,7 @@ public:
 
     int x;
     int y;
-    QChar *m_text;
+    QChar* m_text;
     int len;
 
     TextSlave *n;
@@ -152,7 +152,7 @@ public:
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
     virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/);
     void posOfChar(int ch, int &x, int &y);
-    
+
     virtual short marginLeft() const { return m_style->marginLeft().minWidth(0); }
     virtual short marginRight() const { return m_style->marginRight().minWidth(0); }
 
@@ -164,7 +164,6 @@ protected:
     TextSlave *m_first;
     TextSlave *m_last;
 
-    //int m_boundingHeight;
     int m_contentHeight;
     short m_minWidth;
     short m_maxWidth;

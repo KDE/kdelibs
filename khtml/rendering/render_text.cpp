@@ -66,8 +66,7 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     if (!m_text || len <= 0)
         return;
 
-//    p->setPen(QColor("#000000"));
-    QConstString s(m_text , len);
+    QConstString s(m_text, len);
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     p->drawText(x + _tx, y + _ty + m_baseline, s.string());
 }
@@ -136,9 +135,10 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
         _tx -= p->paddingLeft() + p->borderLeft();
 
     QColor c = style->backgroundColor();
-    if(c.isValid())
-        pt->fillRect(_tx, _ty, width, m_height, c);
     CachedImage *i = style->backgroundImage();
+    if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
+        pt->fillRect(_tx, _ty, width, m_height, c);
+
     if(i)
     {
         // ### might need to add some correct offsets
@@ -219,12 +219,10 @@ RenderText::RenderText(DOMStringImpl *_str)
 
     m_first = 0;
     m_last = 0;
-    //m_boundingHeight = 0;
     m_minWidth = -1;
     m_maxWidth = -1;
     str = _str;
     if(str) str->ref();
-
     fm = 0;
 
     m_selectionState = SelectionNone;
@@ -238,7 +236,7 @@ RenderText::RenderText(DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *style)
 {
     RenderObject::setStyle(style);
-    if(fm) delete fm;
+    delete fm;
     fm = new QFontMetrics(m_style->font());
     m_contentHeight = m_style->lineHeight().width(fm->height());
 }
@@ -246,7 +244,7 @@ void RenderText::setStyle(RenderStyle *style)
 RenderText::~RenderText()
 {
     deleteSlaves();
-    delete fm;
+    delete fm; fm = 0;
     if(str) str->deref();
 }
 
@@ -261,7 +259,6 @@ void RenderText::deleteSlaves()
         s = next;
     }
     m_first = m_last = 0;
-    //m_boundingHeight = 0;
 }
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
@@ -362,7 +359,7 @@ void RenderText::posOfChar(int chr, int &x, int &y)
     if ( s ) {
 	x += s->x;
 	y += s->y;
-    } 
+    }
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
@@ -403,7 +400,12 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 #if 0
     kdDebug( 6040 ) << "charset used: " << m_style->font().charSet() << " mapper: " << fm->mapper()->name() << endl;
 #endif
-    p->setPen( m_style->color() );
+
+    // ### as QPainter::drawText only honors the pen color, we can avoid
+    // updating the pen if the text color is still correct - this saves
+    // quite some time
+    if(m_style->color() != p->pen().color())
+        p->setPen( m_style->color() );
 
     // as the textslaves are ordered from top to bottom
     // as soon as we find one that is "below" our
@@ -528,7 +530,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
                       int tx, int ty)
 {
-    if ( !m_visible /*|| !boundingRect.intersects(QRect(x-tx, y-ty, w, h))*/ )
+    if ( !m_visible )
         return;
 
     printObject(p, x, y, w, h, tx, ty);
@@ -548,7 +550,7 @@ void RenderText::calcMinMaxWidth()
     int currMaxWidth = 0;
 
     int space_width = fm->width(QChar(' '));
-    int minus_width = fm->width(QChar('-'));
+    //int minus_width = fm->width(QChar('-'));
 
     int len = str->l;
     for(int i = 0; i < len; i++)
@@ -556,11 +558,10 @@ void RenderText::calcMinMaxWidth()
         int wordlen = 0;
         char c;
         do {
-            // doesn't hurt as we only do ASCII comparisons.
             c = (*(str->s+i+wordlen)).latin1();
             wordlen++;
-        } while( c != ' ' && c != '\n' && i+wordlen <= len); // && c != '-' 
-        wordlen--;
+        } while(c != ' ' && c != '\n' && i+wordlen < len); // && c != '-'
+        if(i+wordlen < len) wordlen--;
         if (wordlen)
         {
             int w = fm->width(QConstString(str->s+i, wordlen).string());
@@ -597,7 +598,6 @@ void RenderText::calcMinMaxWidth()
     currMinWidth = 0;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
     currMaxWidth = 0;
-
     setMinMaxKnown();
 }
 
