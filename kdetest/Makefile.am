@@ -57,7 +57,7 @@ kstatusbartest_SOURCES = kstatusbartest.cpp
 kspinboxtest_SOURCES = kspinboxtest.cpp
 
 SUFFIXES = .moc
-LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @X_LDFLAGS@ -lX11 -lXext @QT_LDFLAGS@ -lqt
+LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
 
 %.moc: %.h
 	$(MOC) $< -o $@
