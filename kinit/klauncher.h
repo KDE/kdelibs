@@ -94,6 +94,7 @@ public:
    QCString startup_dpy; // Display to send startup notification to.
 #endif
    QValueList<QCString> envs; // env. variables to be app's environment
+   QCString cwd;
 };
 
 struct serviceResult
