@@ -229,7 +229,7 @@ static bool fillinButtonInfo(KToolBarButton* &b, KToolBar* &tb, KAction* &a, QPo
 }
 
 static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
-                           KToolBarButton* &b, KToolBar* &tb, KAction* &a)
+                           KToolBarButton* &b, KToolBar* &tb, KAction* &a, int &index)
 {
     QPtrListIterator<KAction> it( actions );
     kdDebug(7043) << "pos() == " << pos << endl;
@@ -238,8 +238,21 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     for (; (*it); ++it )
     {
         a = (*it);
-        if (fillinButtonInfo(b, tb, a, pos))
+        if (found = fillinButtonInfo(b, tb, a, pos))
             break;
+    }
+    if (found)
+    {
+        int index = tb->itemIndex(b->id());
+        QRect r = b->geometry();
+        if (pos.x() <= ((r.left() + r.right())/2) && index > 0 && index < tb->count()-1)
+        {
+            --it;
+            a = (*it);
+            found = fillinButtonInfo(b, tb, a, pos);
+            Q_ASSERT(found);
+            index = tb->itemIndex(b->id());
+        }
     }
     return found;
 }
@@ -294,13 +307,10 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         KToolBar* otb = tb;
         KToolBarButton* b;
+        int index;
         if (KBookmarkDrag::canDecode( dme )
-         && findDestAction(dme->pos(), dptr()->m_actions, b, tb, a)
+         && findDestAction(dme->pos(), dptr()->m_actions, b, tb, a, index)
         ) {
-            QRect r = b->geometry();
-            int index = tb->itemIndex(b->id());
-            if (dme->pos().x() <= ((r.left() + r.right())/2) && index != 0)
-                index--;
             // delete+insert the separator if moved
             if (sepIndex != index+1 || !otb)
             {
