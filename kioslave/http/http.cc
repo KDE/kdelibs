@@ -2,12 +2,16 @@
 #include <config.h>
 #endif
 
-#include <sys/wait.h>
-#include <sys/types.h>
+#include <kio_manager.h>
+#include <kio_rename_dlg.h>
+#include <kio_skip_dlg.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -20,10 +24,6 @@
 
 #include "http.h"
 
-#include <kio_manager.h>
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
-
 #include <k2url.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
@@ -31,6 +31,7 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass );
 
 void sig_handler( int );
 void sig_handler2( int );
+
 extern "C" {
 #ifdef DO_MD5
   extern char *encode64_digest(char *);
@@ -148,7 +149,7 @@ char* base64_encode_line( const char *s )
 char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm,
 			  const char *_nonce, const char *_domain, const char *_opaque)
 {
-  char *wwwauth, *t2;
+  char *wwwauth;
   QString t1;
   if (!user || !header || !passwd)
     return NULL;
@@ -455,7 +456,8 @@ repeat2:
     len = strlen( buffer );
     while( len && (buffer[ len-1 ] == '\n' || buffer[ len-1 ] == '\r') )
       buffer[ --len ] = 0;
-debug( "kio_http : Header: %s", buffer );
+
+    debug( "kio_http : Header: %s", buffer );
     if ( strncmp( buffer, "Accept-Ranges: none", 19 ) == 0 )
       m_bCanResume = false;
     
@@ -475,6 +477,13 @@ debug( "kio_http : Header: %s", buffer );
       if ( strncmp( buffer + 9, "401", 3 ) == 0 ) {
 	unauthorized = true;
       } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
+
+	// Let's first send an error message
+	// this will be moved to slotErrorPage(), when it will be written
+	http_close();
+	error( ERR_ACCESS_DENIED, url.c_str() );
+	return false;
+
 	// Tell that we will only get an error page here.
 	errorPage();
       }
@@ -690,7 +699,6 @@ void HTTPProtocol::slotGet( const char *_url )
 
   gettingFile( _url );
   
-  int processed_size = 0;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
   
@@ -726,11 +734,8 @@ void HTTPProtocol::slotGet( const char *_url )
       break;
     }
   }
-
   
   http_close();
-
-
 
   if (!big_buffer.isNull()) {
     const char *enc;
@@ -1052,7 +1057,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
       // This is a hack, since total size should be the size of all files together
       // while we transmit only the size of the current file here.
-      //totalSize( m_iSize + offset);
+      totalSize( m_iSize + offset);
 
       canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
 
@@ -1229,6 +1234,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
      * Now we can really copy the stuff
      */
     char buffer[ 2048 ];
+    int read_size = 0;
     while( !feof( m_fsocket ) )
     {
       setup_alarm( ProtocolManager::self()->getReadTimeout() ); // start timeout
@@ -1250,11 +1256,12 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	job.data( buffer, n );
 
 	processed_size += n;
+	read_size += n;
 	time_t t = time( 0L );
 	if ( t - t_last >= 1 )
         {
 	  processedSize( processed_size );
-	  speed( processed_size / ( t - t_start ) );
+	  speed( read_size / ( t - t_start ) );
 	  t_last = t;
 	}
       }
@@ -1272,7 +1279,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     processedSize( processed_size );
     if ( t - t_start >= 1 )
     {
-      speed( processed_size / ( t - t_start ) );
+      speed( read_size / ( t - t_start ) );
       t_last = t;
     }
     processedFiles( ++processed_files );
@@ -1311,10 +1318,12 @@ bool HTTPProtocol::error( int _err, const char *_txt )
  *
  *************************************/
 
+
 HTTPIOJob::HTTPIOJob( Connection *_conn, HTTPProtocol *_HTTP ) : IOJob( _conn )
 {
   m_pHTTP = _HTTP;
 }
+
   
 void HTTPIOJob::slotError( int _errid, const char *_txt )
 {
@@ -1322,6 +1331,7 @@ void HTTPIOJob::slotError( int _errid, const char *_txt )
   
   m_pHTTP->jobError( _errid, _txt );
 }
+
 
 /*************************************
  *
