@@ -347,7 +347,7 @@ void ConfigPage::slotEdit()
     configItem->readOnly = dlg.readOnly();
 
     if ( configItem->standard() && configItem->readOnly ) {
-      KMessageBox::error( this, i18n( "You can't use a read only resource as standard!" ) );
+      KMessageBox::error( this, i18n( "You cannot use a read-only resource as standard!" ) );
       configItem->setStandard( false );
     }
 
@@ -455,12 +455,12 @@ void ConfigPage::slotStandard()
     return;
 
   if ( item->readOnly ) {
-    KMessageBox::error( this, i18n( "You can't use a read only resource as standard!" ) );
+    KMessageBox::error( this, i18n( "You cannot use a read-only resource as standard!" ) );
     return;
   }
 
   if ( !item->isOn() ) {
-    KMessageBox::error( this, i18n( "You can't use a inactive resource as standard!" ) );
+    KMessageBox::error( this, i18n( "You cannot use an inactive resource as standard!" ) );
     return;
   }
 
