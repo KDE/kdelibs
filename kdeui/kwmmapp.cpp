@@ -106,13 +106,16 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     if (a == module_win_remove){
       for (wp=windows.first(); wp; wp=windows.next()){
-	if (*wp == w)
+	if (*wp == w){
 	  windows.remove();
+	  break;
+	}
       }
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
 	if (*wp == w){
 	  windows_sorted.remove();
 	  delete wp;
+	  break;
 	}
       }
       emit windowRemove(w);
