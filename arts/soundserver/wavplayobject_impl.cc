@@ -7,6 +7,7 @@
 #include "stdsynthmodule.h"
 #include "convert.h"
 #include <iostream>
+#include <math.h>
 
 using namespace Arts;
 
@@ -16,6 +17,11 @@ protected:
 	float flpos;
 	poState _state;
 
+	int sampleCount()
+	{
+		if(!wav) return 0;
+		return wav->bufferSize / wav->channelCount / (wav->sampleWidth/8);
+	}
 public:
 	/*
 	 * construction, destruction
@@ -52,18 +58,26 @@ public:
 	}
 
 	poTime currentTime() {
-		return poTime();
+		if(!wav) return poTime(0,0,0,"samples");
+
+		float timesec = flpos / (float)wav->samplingRate;
+		float timems = (timesec - floor(timesec)) * 1000.0;
+
+		return poTime(timesec, timems, (int)flpos, "samples");
 	}
 
 	void currentTime(const class poTime &) {
 	}
 
     poTime overallTime() {
-		return poTime();
+		float timesec = (float)sampleCount() / (float)wav->samplingRate;
+		float timems = (timesec - floor(timesec)) * 1000.0;
+
+		return poTime(timesec, timems, (int)flpos, "samples");
 	}
 
 	poCapabilities capabilities() {
-  		return capPause;  /* no seek supported */
+  		return static_cast<poCapabilities>(capPause+capSeek);
 	}
 
 	string mediaName() {
@@ -79,8 +93,24 @@ public:
 		_state = posPlaying;
 	}
 
-	void seek(const class poTime &) {
-		cout << "seek" << endl;
+	void seek(const class poTime &newTime) {
+		if(!wav) return;
+
+		float fnewsamples = -1;
+		if(newTime.seconds != -1 && newTime.ms != -1)
+		{
+			float flnewtime = (float)newTime.seconds+((float)newTime.ms/1000.0);
+			fnewsamples = flnewtime * (float)wav->samplingRate;
+		}
+		else if(newTime.custom >= 0 && newTime.customUnit == "samples")
+		{
+			fnewsamples = newTime.custom;
+		}
+
+		if(fnewsamples > (float)sampleCount())
+			fnewsamples = (float)sampleCount();
+
+		if(fnewsamples >= 0) flpos = fnewsamples;
 	}
 
 	void pause() {
