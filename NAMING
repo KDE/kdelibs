@@ -33,7 +33,7 @@ LDFLAGS: -module $(KIMGIO_PLUGIN)
 
 KWin plugin
 ===========
-Name: libkwin<clientname>.la
+Name: kwin_<clientname>.la
 LDFLAGS: $(KDE_PLUGIN)
 
 
@@ -51,13 +51,13 @@ LDFLAGS: -module $(KDE_PLUGIN)
 
 KDED Module
 ===========
-Name: libkded_<modulename>.la
+Name: kded_<modulename>.la
 LDFLAGS: -module $(KDE_PLUGIN)
 
 
 Kicker Applet
 =============
-Name: lib<appletname>applet.la
+Name: <appletname>_panelapplet.la
 LDFLAGS: -module -no-undefined
 
 
