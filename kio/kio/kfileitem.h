@@ -256,6 +256,12 @@ public:
   QPixmap pixmap( int _size, int _state=0 ) const;
 
   /**
+   * Returns the overlays (bitfield of KIcon::*Overlay flags) that are used
+   * for this item's pixmap.
+   */
+  int overlays() const;
+
+  /**
    * Returns the string to be displayed in the statusbar,
    * e.g. when the mouse is over this item
    */

@@ -424,6 +424,24 @@ QString KFileItem::iconName()
   return determineMimeType()->icon(m_url, m_bIsLocalURL);
 }
 
+int KFileItem::overlays() const
+{
+  int _state = 0;
+  if ( m_bLink )
+      _state |= KIcon::LinkOverlay;
+
+  if ( !S_ISDIR( m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
+       && !isReadable())
+     _state |= KIcon::LockOverlay;
+
+  if ( m_strName[0] == '.' )
+     _state |= KIcon::HiddenOverlay;
+
+  if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
+     _state |= KIcon::ZipOverlay;
+  return _state;
+}
+
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
   if ( !m_pMimeType )
@@ -436,15 +454,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     return DesktopIcon( "unknown", _size, _state );
   }
 
-  if ( m_bLink )
-      _state |= KIcon::LinkOverlay;
-
-  if ( S_ISDIR( m_fileMode ) // Locked dirs have a special icon
-       && !isReadable())
-     _state |= KIcon::LockOverlay;
-
-  if ( m_strName[0] == '.' )
-     _state |= KIcon::HiddenOverlay;
+  _state |= overlays();
 
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one hasn't been determined for sure
@@ -453,13 +463,13 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   else
       mime = m_pMimeType;
 
-  // Support for gzipped files
+  // Support for gzipped files: extract mimetype of contained file
+  // See also the relevant code in overlays, which adds the zip overlay.
   if ( mime->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
   {
       QString subFileName = m_url.path().left( m_url.path().length() - 3 );
       //kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
       mime = KMimeType::findByURL( subFileName, 0, m_bIsLocalURL );
-      _state |= KIcon::ZipOverlay;
   }
 
   QPixmap p = mime->pixmap( m_url, KIcon::Desktop, _size, _state );
