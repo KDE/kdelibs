@@ -42,19 +42,6 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-// From Qt's spacing
-static const int motifBarFrame          = 2;    // menu bar frame width
-
-static const int motifBarHMargin        = 2;    // menu bar hor margin to item
-#ifndef KTHEMESTYLE_CONSTANTS
-static const int motifBarVMargin        = 1;    // menu bar ver margin to item
-static const int motifItemFrame         = 2;    // menu item frame width
-
-static const int motifItemHMargin       = 5;    // menu item hor text margin
-static const int motifItemVMargin       = 4;    // menu item ver text margin
-
-#define KTHEMESTYLE_CONSTANTS
-#endif
 
 class KMenuBar::KMenuBarPrivate
 {
@@ -124,6 +111,13 @@ void KMenuBar::slotReadConfig()
 
 void KMenuBar::drawContents(QPainter *p)
 {
+// From Qt's spacing
+static const int motifBarFrame          = 2;    // menu bar frame width
+
+static const int motifBarHMargin        = 2;    // menu bar hor margin to item
+
+static const int motifItemHMargin       = 5;    // menu item hor text margin
+static const int motifItemVMargin       = 4;    // menu item ver text margin
     KStyle *stylePtr = kapp->kstyle();
     if(!stylePtr)
         QMenuBar::drawContents(p);
