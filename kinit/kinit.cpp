@@ -255,34 +255,39 @@ fprintf(stderr, "Starting klauncher.\n");
           {
              fprintf(stderr, "Could not load library! Trying exec....\n");
              exec = true;
+             continue;
           }
-          else
-             break;
+          // Finished
+          break;
+       }
+       if (d.n == -1) 
+       {
+          if (errno == ECHILD)
+          {
+             fprintf(stderr, "kdeinit: a child died...\n");
+             continue;
+          }
+          if (errno == EINTR)
+          {
+             fprintf(stderr, "kdeinit: interrupted.\n");
+             continue;
+          }
+       }
+       if (exec)
+       {
+          fprintf(stderr, "Exec successfull.\n");
+          d.result = 0;
+          break;
        }
        if (d.n == 0)
        {
-          if (exec)
-          {
-             fprintf(stderr, "Exec successfull.\n");
-             d.result = 0;
-             break;
-          }
-          else
-          {
-             perror("kdeinit: Pipe closed unexpected.\n");
-             exit(255);
-          }
+          perror("kdeinit: Pipe closed unexpected.\n");
+          d.result = 1; // Error
+          break;
        }
-       if (errno == ECHILD)
-       {
-          fprintf(stderr, "A child died.....\n");
-          continue;
-       }
-       if (errno != EINTR)
-       {
-          perror("kdeinit: Error reading from pipe.\n");
-          exit(255);
-       }
+       perror("kdeinit: Error reading from pipe.\n");
+       d.result = 1; // Error
+       break;
      }
      close(d.fd[0]);
      if (launcher && (d.result == 0)) 
