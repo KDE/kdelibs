@@ -24,10 +24,6 @@
 #include "value.h"
 #include "internal.h"
 
-#include "collector.h"
-#include "value.h"
-#include "internal.h"
-
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
