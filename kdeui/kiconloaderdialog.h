@@ -149,12 +149,20 @@ public:
     void changeDirs( const QStringList &l );
     int exec(QString filter);
 
+    /**
+     * Set the icon type to load: apps, mimetypes, toolbars, devices,
+     * filesystems, listitems, or all (all types)
+     */
+    void setIconType(const QString& _resType);
+
 protected:
     void init();
+    void loadTypes();
 
 protected slots:
     void filterChanged();
     void dirChanged(const QString&);
+    void typeChanged(int);
     void needReload();
 
     void initProgressBar( int steps );
@@ -168,6 +176,7 @@ protected:
     QLabel	      *l_filter;
     QLabel	      *text;
     QComboBox	      *cb_dirs;
+    QComboBox	      *cb_types;
     KIconLoader	      *icon_loader;
     KProgress *progressBar;
 };

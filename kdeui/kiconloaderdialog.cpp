@@ -22,7 +22,6 @@
  *  Boston, MA 02111-1307, USA.
  *
  */
-
 #include <qapplication.h>
 #include <qdir.h>
 #include <qpainter.h>
@@ -185,6 +184,9 @@ void KIconLoaderDialog::init( void )
     QHBoxLayout *hbox = new QHBoxLayout();
     topLayout->addLayout(hbox);
 
+    cb_types = new QComboBox(FALSE, page);
+    hbox->addWidget( cb_types, 10 );
+
     cb_dirs = new QComboBox(FALSE, page);
     hbox->addWidget( cb_dirs, 10 );
 
@@ -194,7 +196,7 @@ void KIconLoaderDialog::init( void )
     hbox->addWidget( i_filter );
 
     canvas = new KIconLoaderCanvas(page);
-    canvas->setMinimumSize( 450, 125 );
+    canvas->setMinimumSize( 500, 125 );
     topLayout->addWidget( canvas );
 
     progressBar = new KProgress( page );
@@ -203,9 +205,9 @@ void KIconLoaderDialog::init( void )
     connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
     connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
     connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
-    connect( cb_dirs, SIGNAL(activated(const QString&)), this,
-	     SLOT(dirChanged(const QString&)) );
-    changeDirs(KGlobal::dirs()->resourceDirs("toolbar"));
+    connect( cb_types, SIGNAL(activated(int)), this, SLOT(typeChanged(int)) );
+    connect( cb_dirs, SIGNAL(activated(const QString&)),
+             this,    SLOT(dirChanged(const QString&)) );
     connect( canvas, SIGNAL( startLoading( int ) ),
 	     this, SLOT( initProgressBar( int ) ) );
     connect( canvas, SIGNAL( progress( int ) ),
@@ -213,7 +215,11 @@ void KIconLoaderDialog::init( void )
     connect( canvas, SIGNAL( finished () ),
 	     this, SLOT( hideProgressBar() ) );
 
+    loadTypes();
+
     incInitialSize( QSize(0,100) );
+
+    setIconType(QString::fromLatin1("toolbars"));
 }
 
 
@@ -272,6 +278,18 @@ void KIconLoaderDialog::changeDirs( const QStringList &l )
 {
     cb_dirs->clear();
     cb_dirs->insertStringList(l);
+    dirChanged( l.first() );
+}
+
+void KIconLoaderDialog::loadTypes()
+{
+    cb_types->clear();
+    cb_types->insertItem("Toolbar");
+    cb_types->insertItem("Application");
+    cb_types->insertItem("Mime Type");
+    cb_types->insertItem("Device");
+    cb_types->insertItem("Filesystem");
+    cb_types->insertItem("List Item");
 }
 
 int KIconLoaderDialog::exec(QString filter)
@@ -287,9 +305,62 @@ int KIconLoaderDialog::exec(QString filter)
     return result();
 }
 
+void KIconLoaderDialog::setIconType(const QString& _resType)
+{
+    QStringList icon_dirs;
+
+    if ( QPixmap::defaultDepth() > 8 )
+        icon_dirs = KGlobal::iconLoader()->iconDirs(_resType);
+    else
+        icon_dirs = KGlobal::iconLoader()->iconDirs(_resType, "locolor");
+
+    changeDirs(icon_dirs);
+
+    if (_resType == "toolbars")
+        cb_types->setCurrentItem(0);
+    else if (_resType == "apps")
+        cb_types->setCurrentItem(1);
+    else if (_resType == "mimetypes")
+        cb_types->setCurrentItem(2);
+    else if (_resType == "devices")
+        cb_types->setCurrentItem(3);
+    else if (_resType == "filesystems")
+        cb_types->setCurrentItem(4);
+    else if (_resType == "listitems")
+        cb_types->setCurrentItem(5);
+}
+
 void KIconLoaderDialog::filterChanged()
 {
     canvas->loadDir( cb_dirs->currentText(), i_filter->text() );
+}
+
+void KIconLoaderDialog::typeChanged(int index)
+{
+    QString icon_type;
+    switch (index)
+    {
+    case 0:
+    default:
+        icon_type = QString::fromLatin1("toolbars");
+        break;
+    case 1:
+        icon_type = QString::fromLatin1("apps");
+        break;
+    case 2:
+        icon_type = QString::fromLatin1("mimetypes");
+        break;
+    case 3:
+        icon_type = QString::fromLatin1("devices");
+        break;
+    case 4:
+        icon_type = QString::fromLatin1("filesystems");
+        break;
+    case 5:
+        icon_type = QString::fromLatin1("listitems");
+        break;
+    }
+    setIconType(icon_type);
 }
 
 void KIconLoaderDialog::dirChanged(const QString& dir)
@@ -324,10 +395,10 @@ KIconLoaderButton::KIconLoaderButton( QWidget *_parent )
     : QPushButton( _parent )
 {
     iconStr = "";
-    resType = "toolbar";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
     iconLoader = KGlobal::iconLoader();
     loaderDialog = new KIconLoaderDialog( this );
+    setIconType(QString::fromLatin1("toolbars"));
 }
 
 KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader,
@@ -335,45 +406,21 @@ KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader,
     : QPushButton( _parent )
 {
     iconStr = "";
-    resType = "toolbar";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
     loaderDialog = new KIconLoaderDialog( _icon_loader, this );
+    setIconType(QString::fromLatin1("toolbars"));
     iconLoader = _icon_loader;
 }
 
 void KIconLoaderButton::setIconType(const QString& _resType)
 {
     resType = _resType;
-    QStringList icon_dirs;
-    QStringList list(KGlobal::dirs()->resourceDirs(resType.latin1()));
-    if (_resType == QString::fromLatin1("icon"))
-	{
-	    QStringList::Iterator iit = list.begin();
-	    for ( ; iit != list.end(); ++iit)
-		{
-                    if ( QPixmap::defaultDepth() > 8 )
-                        icon_dirs.append((*iit) + QString::fromLatin1("large/hicolor/apps"));
-		    icon_dirs.append((*iit) + QString::fromLatin1("large/locolor/apps"));
-                    if ( QPixmap::defaultDepth() > 8 )
-                        icon_dirs.append((*iit) + QString::fromLatin1("medium/hicolor/apps"));
-		    icon_dirs.append((*iit) + QString::fromLatin1("medium/locolor/apps"));
-		}
-	}
-    else
-	icon_dirs = KGlobal::dirs()->resourceDirs(resType.latin1());
 
-    // strip off all directories that don't exist
-    list = icon_dirs;
-    QStringList::Iterator it = list.begin();
-    for ( ; it != list.end(); ++it)
-	if (QFile::exists(*it) == false)
-	    icon_dirs.remove(*it);
-
-    loaderDialog->changeDirs(icon_dirs);
+    loaderDialog->setIconType(resType);
 
     // Reload icon (might differ in new resource type)
     if(!iconStr.isEmpty())
-	setIcon(iconStr);
+        setIcon(iconStr);
 }
 
 void KIconLoaderButton::slotChangeIcon()
@@ -391,10 +438,8 @@ void KIconLoaderButton::slotChangeIcon()
 void KIconLoaderButton::setIcon(const QString& _icon)
 {
     iconStr = _icon;
-    if (resType == QString::fromLatin1("icon"))
-	setPixmap( KGlobal::iconLoader()->loadIcon(iconStr) );
-    else
-	setPixmap( locate(resType.latin1(), iconStr) );
+
+	setPixmap( iconLoader->loadIcon(resType + "/" + iconStr) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()
@@ -402,12 +447,3 @@ KIconLoaderButton::~KIconLoaderButton()
     delete loaderDialog;
 }
 #include "kiconloaderdialog.moc"
-
-
-
-
-
-
-
-
-
