@@ -34,9 +34,12 @@ void kimgioRegister(void)
 
 	// for the libraries that are installed in $KDEDIR/lib (kdesupport)
 	lt_dladdsearchdir(KApplication::kde_bindir() + "/../lib");
+/*
+  Disabled by David, to fix compilation. No idea where this is defined - Stephan ?
 	int rindex = 0;
 	while (kimgio_rpaths[rindex] != 0)
 	    lt_dladdsearchdir(kimgio_rpaths[rindex++]);
+*/
 
 	QDir dir(KApplication::kde_bindir() + "/../lib", "kimg_*.la");
 
