@@ -45,6 +45,15 @@ namespace KIO
   QString convertSize( KIO::filesize_t size );
 
   /**
+   * Convert a size to a string representation
+   * Not unlike QString::number(...)
+   *
+   * @param size size in bytes
+   * @return  converted size as a string - e.g. 123456789
+   */
+  QString number( KIO::filesize_t size );
+
+  /**
    * Convert size from kilo-bytes to the string representation.
    * Don't use convertSize( size * 1024 ), this easily goes off the 32-bit limit.
    *

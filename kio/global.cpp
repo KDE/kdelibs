@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "kio/global.h"
 #include "kio/job.h"
@@ -103,6 +104,13 @@ QString KIO::convertSizeFromKB( unsigned long size /* in KB */ )
         s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(size));
     }
     return s;
+}
+
+QString KIO::number( KIO::filesize_t size )
+{
+    char charbuf[256];
+    sprintf(charbuf, "%lld", size);
+    return QString::fromLatin1(charbuf);
 }
 
 QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
