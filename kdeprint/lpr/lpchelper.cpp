@@ -232,7 +232,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 {
 	if (m_exepath.isEmpty())
 	{
-		msg = i18n("Unable to locate executable %1 in your PATH.").arg("lpc");
+		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lpc");
 		return false;
 	}
 	QString	result = execute(m_exepath + " " + op + " " + KProcess::quote(printer));
@@ -253,7 +253,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 		case 0:
 			break;
 		case -1:
-			msg = i18n("Permission denied");
+			msg = i18n("Permission denied.");
 			break;
 		case -2:
 			msg = i18n("Printer %1 does not exist.").arg(printer);
