@@ -25,6 +25,8 @@
 #include <qdict.h>
 #include <kdebug.h>
 
+template class QDict<KSycocaEntry>;
+
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_pathList(0), m_entryDict(0), m_sycocaDict(0)
 {

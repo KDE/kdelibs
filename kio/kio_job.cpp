@@ -57,6 +57,9 @@
 #include "kio_simpleprogress_dlg.h"
 #include "kio_listprogress_dlg.h"
 
+template class QIntDict<KIOJob>;
+template class QList<KIOSlavePool::Entry>;
+
 /**
  * Maximum number of slaves kept around in KIOSlavePool.
  */

@@ -33,6 +33,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
+template class QList<KSycocaFactory>;
+
 // Read-only constructor
 KSycoca::KSycoca() 
   : DCOPObject("ksycoca")

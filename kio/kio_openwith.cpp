@@ -48,6 +48,8 @@
 #include "kio_openwith.h"
 #include "krun.h"
 
+template class QList<QString>;
+
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
 
