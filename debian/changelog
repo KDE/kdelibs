@@ -1,10 +1,10 @@
-kdelibs (4:2.1-20001212-1) unstable; urgency=low
+kdelibs (4:2.1-20001213-1) unstable; urgency=low
  
-  * New cvs pull
+  * New upstream beta
   * Breaking out aRts pieces into their own packages so that others don't
     need to install kdelibs in it's entirety to use arts.
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 12 Dec 2000 13:25:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 13 Dec 2000 14:22:00 -0700
 
 kdelibs (4:2.0-final-5) unstable; urgency=low
  
