@@ -135,6 +135,7 @@ struct {
 
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
+int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 
 /*
@@ -1341,6 +1342,24 @@ int kdeinit_xio_errhandler( Display *disp )
     return 0;
 }
 
+int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
+{
+#ifndef NDEBUG
+    char errstr[256];
+    XGetErrorText( dpy, err->error_code, errstr, 256 );
+    if ( err->error_code != BadWindow )
+    {
+        fprintf(stderr, "kdeinit: KDE detected X Error: %s %d\n", errstr, err->error_code );
+        fprintf(stderr, "  Major opcode:  %d\n", err->request_code);
+    }
+#else
+    Q_UNUSED(dpy);
+    Q_UNUSED(err);
+#endif
+    return 0;
+}
+
+
 #ifdef Q_WS_X11
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
 static int initXconnection()
@@ -1348,6 +1367,8 @@ static int initXconnection()
   X11display = XOpenDisplay(NULL);
   if ( X11display != 0 ) {
     XSetIOErrorHandler(kdeinit_xio_errhandler);
+    XSetErrorHandler(kdeinit_x_errhandler);
+     
     XCreateSimpleWindow(X11display, DefaultRootWindow(X11display), 0,0,1,1, \
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
