@@ -30,8 +30,6 @@
 #include <sys/stat.h>
 #include <assert.h>
 
-////////////////////
-
 ////
 
-#include "kbookmarkimporter.moc"
+// todo - put stuff in here :)
