@@ -2962,8 +2962,7 @@ unsigned int CSSSelector::specificity()
     if ( nonCSSHint )
         return 0;
 
-    int s = 0;
-    if(tag != -1) s = 1;
+    int s = (tag != -1);
     switch(match)
     {
     case Exact:
