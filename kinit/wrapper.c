@@ -324,13 +324,13 @@ int main(int argc, char **argv)
       if (argc < 1)
       {
          fprintf(stderr, "Usage: %s <application> [<args>]\n", start);
-         exit(255); // usage should be documented somewhere ...
+         exit(255); /* usage should be documented somewhere ... */
       }
       start = argv[0];
    }
    
    if( !wrapper && !ext_wrapper && !kwrapper )
-       { // was called as a symlink
+       { /* was called as a symlink */
        avoid_loops = 1;
 #if defined(WE_ARE_KWRAPPER)
        kwrapper = 1;
