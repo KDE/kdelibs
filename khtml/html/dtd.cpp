@@ -73,7 +73,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_DFN
     5, // ID_DIR
     5, // ID_DIV
-    4, // ID_DL
+    5, // ID_DL
     3, // ID_DT
     1, // ID_EM
     0, // ID_EMBED
@@ -109,7 +109,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     3, // ID_MARQUEE
     5, // ID_MENU
     0, // ID_META
-    4, // ID_NOBR
+    5, // ID_NOBR
    10,// ID_NOEMBED
    10,// ID_NOFRAMES
     3, // ID_NOSCRIPT
