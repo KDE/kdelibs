@@ -142,7 +142,7 @@ namespace KDEPrivate
             return new Product( parentWidget, widgetName, parent, name, args ); 
         }
 
-        static inline Product *create( QWidget *parentWidget, const char *widgetName,
+        static inline Product *create( QWidget* /*parentWidget*/, const char* /*widgetName*/,
                                        QObject *parent, const char *name,
                                        const QStringList &args, Type2Type<QWidget> )
         {
@@ -153,7 +153,7 @@ namespace KDEPrivate
             return new Product( p, name, args );
         }
 
-        static inline Product *create( QWidget */*parentWidget*/, const char */*widgetName*/,
+        static inline Product *create( QWidget* /*parentWidget*/, const char* /*widgetName*/,
                                        QObject *parent, const char *name,
                                        const QStringList &args, Type2Type<QObject> )
         { 
