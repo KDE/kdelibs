@@ -29,6 +29,7 @@
 #include <qfile.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kprocess.h>
 //#include <kstddirs.h>
 //#include <krun.h>
 
@@ -101,7 +102,7 @@ label = new QLabel(i18n("Organization:"), this);
 label->setAutoResize(true);
 grid->addWidget(label, 1, 2);
 
-label = new QLabel(i18n("Org. Unit:"), this);
+label = new QLabel(i18n("Organizational Unit:"), this);
 label->setAutoResize(true);
 grid->addWidget(label, 1, 4);
 
@@ -141,7 +142,7 @@ label = new QLabel(i18n("Organization:"), this);
 label->setAutoResize(true);
 grid->addWidget(label, 7, 2);
 
-label = new QLabel(i18n("Org. Unit:"), this);
+label = new QLabel(i18n("Organizational Unit:"), this);
 label->setAutoResize(true);
 grid->addWidget(label, 7, 4);
 
@@ -277,7 +278,9 @@ grid->addWidget(button, 17, 5);
 
 
 void KSSLInfoDlg::launchConfig() {
-//  KRun::runCommand("kcmshell crypto", "kcmshell", "");
+KShellProcess p;
+  p << "kcmshell" << "crypto";
+  p.start(KProcess::DontCare);
 }
 
 
