@@ -689,7 +689,7 @@ int RenderBox::availableHeight() const
         return h.value;
 
     if (isRoot())
-        return root()->view()->visibleHeight();
+        return kMax(0, root()->height() - 1);
 
     if (h.isPercent())
         return h.width(containingBlock()->availableHeight());
