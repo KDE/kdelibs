@@ -1,3 +1,9 @@
+25.07.97:	new KStatusBar by Sven Radej
+			KRestrictedLine and KIntegerLine by Michael Wiedmann
+			KSpinBox by Andre Fornacon
+			SGI patches by Claus Riemann
+			SPARC CC patches by Stephan Kulow
+
 24.07.97:	new KToolBar and stuff(0.6)
 			Rubberbanding for KTreeList by Rainer Bawidamann
 			Patches for SGI by Claus Riemann
