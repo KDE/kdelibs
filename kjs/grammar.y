@@ -167,7 +167,7 @@ Literal:
   | TRUETOKEN                      { $$ = new BooleanNode(true); }
   | FALSETOKEN                     { $$ = new BooleanNode(false); }
   | NUMBER                         { $$ = new NumberNode($1); }
-  | STRING                         { $$ = new StringNode($1); delete $1; }
+  | STRING                         { $$ = new StringNode($1); }
   | '/'       /* a RegExp ? */     { Lexer *l = Lexer::curr();
                                      if (!l->scanRegExp()) YYABORT;
                                      $$ = new RegExpNode(l->pattern,l->flags);}
@@ -179,8 +179,7 @@ Literal:
 
 PrimaryExpr:
     THIS                           { $$ = new ThisNode(); }
-  | IDENT                          { $$ = new ResolveNode(*$1);
-                                     delete $1; }
+  | IDENT                          { $$ = new ResolveNode(*$1); }
   | Literal
   | ArrayLiteral
   | '(' Expr ')'                   { $$ = new GroupNode($2); }
@@ -217,8 +216,8 @@ PropertyNameAndValueList:
 ;
 
 PropertyName:
-    IDENT                          { $$ = new PropertyNode(*$1); delete $1; }
-  | STRING                         { $$ = new PropertyNode(Identifier(*$1)); delete $1; }
+    IDENT                          { $$ = new PropertyNode(*$1); }
+  | STRING                         { $$ = new PropertyNode(Identifier(*$1)); }
   | NUMBER                         { $$ = new PropertyNode($1); }
 ;
 
@@ -226,7 +225,7 @@ MemberExpr:
     PrimaryExpr
   | FunctionExpr
   | MemberExpr '[' Expr ']'        { $$ = new AccessorNode1($1, $3); }
-  | MemberExpr '.' IDENT           { $$ = new AccessorNode2($1, *$3); delete $3; }
+  | MemberExpr '.' IDENT           { $$ = new AccessorNode2($1, *$3); }
   | NEW MemberExpr Arguments       { $$ = new NewExprNode($2, $3); }
 ;
 
@@ -239,8 +238,7 @@ CallExpr:
     MemberExpr Arguments           { $$ = new FunctionCallNode($1, $2); }
   | CallExpr Arguments             { $$ = new FunctionCallNode($1, $2); }
   | CallExpr '[' Expr ']'          { $$ = new AccessorNode1($1, $3); }
-  | CallExpr '.' IDENT             { $$ = new AccessorNode2($1, *$3);
-                                     delete $3; }
+  | CallExpr '.' IDENT             { $$ = new AccessorNode2($1, *$3); }
 ;
 
 Arguments:
@@ -428,8 +426,8 @@ VariableDeclarationList:
 ;
 
 VariableDeclaration:
-    IDENT                          { $$ = new VarDeclNode(*$1, 0); delete $1; }
-  | IDENT Initializer              { $$ = new VarDeclNode(*$1, $2); delete $1; }
+    IDENT                          { $$ = new VarDeclNode(*$1, 0); }
+  | IDENT Initializer              { $$ = new VarDeclNode(*$1, $2); }
 ;
 
 Initializer:
@@ -470,12 +468,10 @@ IterationStatement:
 	                             DBG($$,@1,@6); }
   | FOR '(' VAR IDENT IN Expr ')'
             Statement              { $$ = new ForInNode(*$4,0,$6,$8);
-	                             DBG($$,@1,@7);
-                                     delete $4; }
+	                             DBG($$,@1,@7); }
   | FOR '(' VAR IDENT Initializer IN Expr ')'
             Statement              { $$ = new ForInNode(*$4,$5,$7,$9);
-	                             DBG($$,@1,@8);
-                                     delete $4; }
+	                             DBG($$,@1,@8); }
 ;
 
 ExprOpt:
@@ -489,11 +485,9 @@ ContinueStatement:
                                        $$ = new ContinueNode(); DBG($$,@1,@2);
                                      } else
 				       YYABORT; }
-  | CONTINUE IDENT ';'             { $$ = new ContinueNode(*$2); DBG($$,@1,@3);
-                                     delete $2; }
+  | CONTINUE IDENT ';'             { $$ = new ContinueNode(*$2); DBG($$,@1,@3); }
   | CONTINUE IDENT error           { if (automatic()) {
                                        $$ = new ContinueNode(*$2);DBG($$,@1,@2);
-				       delete $2;
                                      } else
 				       YYABORT; }
 ;
@@ -504,11 +498,9 @@ BreakStatement:
                                        $$ = new BreakNode(); DBG($$,@1,@1);
                                      } else
 				       YYABORT; }
-  | BREAK IDENT ';'                { $$ = new BreakNode(*$2); DBG($$,@1,@3);
-                                     delete $2; }
+  | BREAK IDENT ';'                { $$ = new BreakNode(*$2); DBG($$,@1,@3); }
   | BREAK IDENT error              { if (automatic()) {
                                        $$ = new BreakNode(*$2); DBG($$,@1,@2);
-				       delete $2;
                                      } else
 				       YYABORT;
                                    }
@@ -566,8 +558,7 @@ DefaultClause:
 
 LabelledStatement:
     IDENT ':' Statement            { $3->pushLabel(*$1);
-                                     $$ = new LabelNode(*$1, $3); DBG($$,@1,@2);
-                                     delete $1; }
+                                     $$ = new LabelNode(*$1, $3); DBG($$,@1,@2); }
 ;
 
 ThrowStatement:
@@ -582,7 +573,7 @@ TryStatement:
 
 Catch:
     CATCH '(' IDENT ')' Block      { CatchNode *c; $$ = c = new CatchNode(*$3, $5);
-				     delete $3; DBG(c,@1,@4); }
+				     DBG(c,@1,@4); }
 ;
 
 Finally:
@@ -596,11 +587,9 @@ FunctionDeclaration:
 ;
 
 FunctionDeclarationInternal:
-    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, $5); DBG($$,@1,@4);
-                                             delete $2; }
+    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, $5); DBG($$,@1,@4); }
   | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
-                                   { $$ = new FuncDeclNode(*$2, $4, $6); DBG($$,@1,@5);
-                                     delete $2; }
+                                   { $$ = new FuncDeclNode(*$2, $4, $6); DBG($$,@1,@5); }
 ;
 
 FunctionExpr:
@@ -611,8 +600,8 @@ FunctionExpr:
 ;
 
 FormalParameterList:
-    IDENT                          { $$ = new ParameterNode(*$1); delete $1; }
-  | FormalParameterList ',' IDENT  { $$ = new ParameterNode($1, *$3); delete $3; }
+    IDENT                          { $$ = new ParameterNode(*$1); }
+  | FormalParameterList ',' IDENT  { $$ = new ParameterNode($1, *$3); }
 ;
 
 FunctionBody:

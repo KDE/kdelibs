@@ -482,6 +482,7 @@ FunctionBodyNode *Parser::parse(const UChar *code, unsigned int length, SourceCo
   //extern int kjsyydebug;
   //kjsyydebug=1;
   int parseError = kjsyyparse();
+  Lexer::curr()->doneParsing();
   FunctionBodyNode *prog = progNode;
   progNode = 0;
   //sid = -1;

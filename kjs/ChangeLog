@@ -1,3 +1,7 @@
+2003-11-06  Harri Porten  <porten@kde.org>
+
+	* adapted patch from Maciej that plugs string leaks on parse errors 
+
 2003-11-05  Zack Rusin  <zack@kde.org>
 
 	* value.cpp: (operator=): increment reference count on the copying

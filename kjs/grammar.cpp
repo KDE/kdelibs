@@ -587,34 +587,34 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NULLTOKEN", "TRUETOKEN", "FALSETOKEN", 
-  "STRING", "NUMBER", "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR", 
-  "CONTINUE", "FUNCTION", "RETURN", "VOID", "DELETE", "IF", "THIS", "DO", 
-  "WHILE", "ELSE", "IN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH", 
-  "RESERVED", "THROW", "TRY", "CATCH", "FINALLY", "EQEQ", "NE", "STREQ", 
-  "STRNEQ", "LE", "GE", "OR", "AND", "PLUSPLUS", "MINUSMINUS", "LSHIFT", 
-  "RSHIFT", "URSHIFT", "PLUSEQUAL", "MINUSEQUAL", "MULTEQUAL", "DIVEQUAL", 
-  "LSHIFTEQUAL", "RSHIFTEQUAL", "URSHIFTEQUAL", "ANDEQUAL", "MODEQUAL", 
-  "XOREQUAL", "OREQUAL", "IDENT", "AUTOPLUSPLUS", "AUTOMINUSMINUS", "'/'", 
-  "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "':'", "'.'", "'+'", 
-  "'-'", "'~'", "'!'", "'*'", "'%'", "'<'", "'>'", "'&'", "'^'", "'|'", 
-  "'?'", "'='", "';'", "$accept", "Literal", "PrimaryExpr", 
-  "ArrayLiteral", "ElementList", "ElisionOpt", "Elision", 
-  "PropertyNameAndValueList", "PropertyName", "MemberExpr", "NewExpr", 
-  "CallExpr", "Arguments", "ArgumentList", "LeftHandSideExpr", 
-  "PostfixExpr", "UnaryExpr", "MultiplicativeExpr", "AdditiveExpr", 
-  "ShiftExpr", "RelationalExpr", "EqualityExpr", "BitwiseANDExpr", 
-  "BitwiseXORExpr", "BitwiseORExpr", "LogicalANDExpr", "LogicalORExpr", 
-  "ConditionalExpr", "AssignmentExpr", "AssignmentOperator", "Expr", 
-  "Statement", "Block", "StatementList", "VariableStatement", 
-  "VariableDeclarationList", "VariableDeclaration", "Initializer", 
-  "EmptyStatement", "ExprStatement", "IfStatement", "IterationStatement", 
-  "ExprOpt", "ContinueStatement", "BreakStatement", "ReturnStatement", 
-  "WithStatement", "SwitchStatement", "CaseBlock", "CaseClausesOpt", 
-  "CaseClauses", "CaseClause", "DefaultClause", "LabelledStatement", 
-  "ThrowStatement", "TryStatement", "Catch", "Finally", 
-  "FunctionDeclaration", "FunctionDeclarationInternal", "FunctionExpr", 
-  "FormalParameterList", "FunctionBody", "Program", "SourceElements", 
+  "$end", "error", "$undefined", "NULLTOKEN", "TRUETOKEN", "FALSETOKEN",
+  "STRING", "NUMBER", "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR",
+  "CONTINUE", "FUNCTION", "RETURN", "VOID", "DELETE", "IF", "THIS", "DO",
+  "WHILE", "ELSE", "IN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH",
+  "RESERVED", "THROW", "TRY", "CATCH", "FINALLY", "EQEQ", "NE", "STREQ",
+  "STRNEQ", "LE", "GE", "OR", "AND", "PLUSPLUS", "MINUSMINUS", "LSHIFT",
+  "RSHIFT", "URSHIFT", "PLUSEQUAL", "MINUSEQUAL", "MULTEQUAL", "DIVEQUAL",
+  "LSHIFTEQUAL", "RSHIFTEQUAL", "URSHIFTEQUAL", "ANDEQUAL", "MODEQUAL",
+  "XOREQUAL", "OREQUAL", "IDENT", "AUTOPLUSPLUS", "AUTOMINUSMINUS", "'/'",
+  "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "':'", "'.'", "'+'",
+  "'-'", "'~'", "'!'", "'*'", "'%'", "'<'", "'>'", "'&'", "'^'", "'|'",
+  "'?'", "'='", "';'", "$accept", "Literal", "PrimaryExpr",
+  "ArrayLiteral", "ElementList", "ElisionOpt", "Elision",
+  "PropertyNameAndValueList", "PropertyName", "MemberExpr", "NewExpr",
+  "CallExpr", "Arguments", "ArgumentList", "LeftHandSideExpr",
+  "PostfixExpr", "UnaryExpr", "MultiplicativeExpr", "AdditiveExpr",
+  "ShiftExpr", "RelationalExpr", "EqualityExpr", "BitwiseANDExpr",
+  "BitwiseXORExpr", "BitwiseORExpr", "LogicalANDExpr", "LogicalORExpr",
+  "ConditionalExpr", "AssignmentExpr", "AssignmentOperator", "Expr",
+  "Statement", "Block", "StatementList", "VariableStatement",
+  "VariableDeclarationList", "VariableDeclaration", "Initializer",
+  "EmptyStatement", "ExprStatement", "IfStatement", "IterationStatement",
+  "ExprOpt", "ContinueStatement", "BreakStatement", "ReturnStatement",
+  "WithStatement", "SwitchStatement", "CaseBlock", "CaseClausesOpt",
+  "CaseClauses", "CaseClause", "DefaultClause", "LabelledStatement",
+  "ThrowStatement", "TryStatement", "Catch", "Finally",
+  "FunctionDeclaration", "FunctionDeclarationInternal", "FunctionExpr",
+  "FormalParameterList", "FunctionBody", "Program", "SourceElements",
   "SourceElement", 0
 };
 #endif
@@ -1498,7 +1498,7 @@ yyparse ()
 #endif
 #endif
 {
-  
+
   register int yystate;
   register int yyn;
   int yyresult;
@@ -1767,7 +1767,7 @@ yyreduce:
 
   case 6:
 #line 170 "grammar.y"
-    { yyval.node = new StringNode(yyvsp[0].ustr); delete yyvsp[0].ustr; ;}
+    { yyval.node = new StringNode(yyvsp[0].ustr); ;}
     break;
 
   case 7:
@@ -1792,7 +1792,7 @@ yyreduce:
   case 10:
 #line 182 "grammar.y"
     { yyval.node = new ResolveNode(*yyvsp[0].ident);
-                                     delete yyvsp[0].ident; ;}
+                                      ;}
     break;
 
   case 13:
@@ -1862,12 +1862,12 @@ yyreduce:
 
   case 27:
 #line 220 "grammar.y"
-    { yyval.pnode = new PropertyNode(*yyvsp[0].ident); delete yyvsp[0].ident; ;}
+    { yyval.pnode = new PropertyNode(*yyvsp[0].ident); ;}
     break;
 
   case 28:
 #line 221 "grammar.y"
-    { yyval.pnode = new PropertyNode(Identifier(*yyvsp[0].ustr)); delete yyvsp[0].ustr; ;}
+    { yyval.pnode = new PropertyNode(Identifier(*yyvsp[0].ustr)); ;}
     break;
 
   case 29:
@@ -1882,7 +1882,7 @@ yyreduce:
 
   case 33:
 #line 229 "grammar.y"
-    { yyval.node = new AccessorNode2(yyvsp[-2].node, *yyvsp[0].ident); delete yyvsp[0].ident; ;}
+    { yyval.node = new AccessorNode2(yyvsp[-2].node, *yyvsp[0].ident); ;}
     break;
 
   case 34:
@@ -1913,7 +1913,7 @@ yyreduce:
   case 40:
 #line 242 "grammar.y"
     { yyval.node = new AccessorNode2(yyvsp[-2].node, *yyvsp[0].ident);
-                                     delete yyvsp[0].ident; ;}
+                                     ;}
     break;
 
   case 41:
@@ -2240,12 +2240,12 @@ yyreduce:
 
   case 135:
 #line 431 "grammar.y"
-    { yyval.decl = new VarDeclNode(*yyvsp[0].ident, 0); delete yyvsp[0].ident; ;}
+    { yyval.decl = new VarDeclNode(*yyvsp[0].ident, 0);  ;}
     break;
 
   case 136:
 #line 432 "grammar.y"
-    { yyval.decl = new VarDeclNode(*yyvsp[-1].ident, yyvsp[0].init); delete yyvsp[-1].ident; ;}
+    { yyval.decl = new VarDeclNode(*yyvsp[-1].ident, yyvsp[0].init); ;}
     break;
 
   case 137:
@@ -2315,14 +2315,14 @@ yyreduce:
 #line 472 "grammar.y"
     { yyval.stat = new ForInNode(*yyvsp[-4].ident,0,yyvsp[-2].node,yyvsp[0].stat);
 	                             DBG(yyval.stat,yylsp[-7],yylsp[-1]);
-                                     delete yyvsp[-4].ident; ;}
+                                     ;}
     break;
 
   case 149:
 #line 476 "grammar.y"
     { yyval.stat = new ForInNode(*yyvsp[-5].ident,yyvsp[-4].init,yyvsp[-2].node,yyvsp[0].stat);
 	                             DBG(yyval.stat,yylsp[-8],yylsp[-1]);
-                                     delete yyvsp[-5].ident; ;}
+                                     ;}
     break;
 
   case 150:
@@ -2346,14 +2346,14 @@ yyreduce:
   case 154:
 #line 492 "grammar.y"
     { yyval.stat = new ContinueNode(*yyvsp[-1].ident); DBG(yyval.stat,yylsp[-2],yylsp[0]);
-                                     delete yyvsp[-1].ident; ;}
+                                     ;}
     break;
 
   case 155:
 #line 494 "grammar.y"
     { if (automatic()) {
                                        yyval.stat = new ContinueNode(*yyvsp[-1].ident);DBG(yyval.stat,yylsp[-2],yylsp[-1]);
-				       delete yyvsp[-1].ident;
+
                                      } else
 				       YYABORT; ;}
     break;
@@ -2374,14 +2374,14 @@ yyreduce:
   case 158:
 #line 507 "grammar.y"
     { yyval.stat = new BreakNode(*yyvsp[-1].ident); DBG(yyval.stat,yylsp[-2],yylsp[0]);
-                                     delete yyvsp[-1].ident; ;}
+                                      ;}
     break;
 
   case 159:
 #line 509 "grammar.y"
     { if (automatic()) {
                                        yyval.stat = new BreakNode(*yyvsp[-1].ident); DBG(yyval.stat,yylsp[-2],yylsp[-1]);
-				       delete yyvsp[-1].ident;
+
                                      } else
 				       YYABORT;
                                    ;}
@@ -2475,7 +2475,7 @@ yyreduce:
 #line 568 "grammar.y"
     { yyvsp[0].stat->pushLabel(*yyvsp[-2].ident);
                                      yyval.stat = new LabelNode(*yyvsp[-2].ident, yyvsp[0].stat); DBG(yyval.stat,yylsp[-2],yylsp[-1]);
-                                     delete yyvsp[-2].ident; ;}
+                                      ;}
     break;
 
   case 177:
@@ -2501,7 +2501,7 @@ yyreduce:
   case 181:
 #line 584 "grammar.y"
     { CatchNode *c; yyval.cnode = c = new CatchNode(*yyvsp[-2].ident, yyvsp[0].stat);
-				     delete yyvsp[-2].ident; DBG(c,yylsp[-4],yylsp[-1]); ;}
+				     DBG(c,yylsp[-4],yylsp[-1]); ;}
     break;
 
   case 182:
@@ -2517,13 +2517,13 @@ yyreduce:
   case 185:
 #line 599 "grammar.y"
     { yyval.func = new FuncDeclNode(*yyvsp[-3].ident, yyvsp[0].body); DBG(yyval.func,yylsp[-4],yylsp[-1]);
-                                             delete yyvsp[-3].ident; ;}
+                                             ;}
     break;
 
   case 186:
 #line 602 "grammar.y"
     { yyval.func = new FuncDeclNode(*yyvsp[-4].ident, yyvsp[-2].param, yyvsp[0].body); DBG(yyval.func,yylsp[-5],yylsp[-1]);
-                                     delete yyvsp[-4].ident; ;}
+                                     ;}
     break;
 
   case 187:
@@ -2538,12 +2538,12 @@ yyreduce:
 
   case 189:
 #line 614 "grammar.y"
-    { yyval.param = new ParameterNode(*yyvsp[0].ident); delete yyvsp[0].ident; ;}
+    { yyval.param = new ParameterNode(*yyvsp[0].ident);  ;}
     break;
 
   case 190:
 #line 615 "grammar.y"
-    { yyval.param = new ParameterNode(yyvsp[-2].param, *yyvsp[0].ident); delete yyvsp[0].ident; ;}
+    { yyval.param = new ParameterNode(yyvsp[-2].param, *yyvsp[0].ident); ;}
     break;
 
   case 191:
