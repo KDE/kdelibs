@@ -395,7 +395,7 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
   case Detail:
     return Number(static_cast<DOM::UIEvent>(event).detail());
   case KeyCode:
-    // NS-compatibility
+    // IE-compatibility
     return Number(static_cast<DOM::UIEvent>(event).keyCode());
   case LayerX:
     // NS-compatibility
@@ -582,8 +582,6 @@ const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMUIEvent::info, &DOMTextE
 /*
 @begin DOMTextEventTable 2
   keyVal   	 DOMTextEvent::Key	     DontDelete|ReadOnly
-# IE's name for it
-  keyCode   	 DOMTextEvent::Key	     DontDelete|ReadOnly
   virtKeyVal	 DOMTextEvent::VirtKey        DontDelete|ReadOnly
   outputString	 DOMTextEvent::OutputString   DontDelete|ReadOnly
   inputGenerated DOMTextEvent::InputGenerated DontDelete|ReadOnly
