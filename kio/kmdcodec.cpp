@@ -114,9 +114,8 @@ char KCodecs::UUDecMap[128] = {
 /******************************** KCodecs ********************************/
 QCString KCodecs::base64Encode( const QCString& str )
 {
-    QByteArray in, out;
-    in.assign( str.data(), str.length() );
-    base64Encode( in, out );
+    QByteArray out;
+    base64Encode( str, out );
     return QCString( out.data(), out.size()+1 );
 }
 
@@ -174,9 +173,8 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
 
 QCString KBase64::base64Decode( const QCString& str )
 {
-    QByteArray in, out;
-    in.assign( str.data(), str.length() );
-    base64Decode( in, out );
+    QByteArray out;
+    base64Decode( str, out );
     return QCString( out.data(), out.size()+1 );
 }
 
@@ -224,9 +222,8 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 
 QCString KCodecs::uuencode( const QCString& str )
 {
-    QByteArray in,out;
-    in.assign( str.data(), str.length() );
-    uuencode( in, out );
+    QByteArray out;
+    uuencode( str, out );
     return QCString( out.data(), out.size()+1 );
 }
 
@@ -316,9 +313,8 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
 
 QCString KCodecs::uudecode( const QCString& str )
 {
-    QByteArray in, out;
-    in.assign( str.data(), str.length() );
-    uudecode( in, out );
+    QByteArray out;
+    uudecode( str, out );
     return QCString( out.data(), out.size()+1 );
 }
 
