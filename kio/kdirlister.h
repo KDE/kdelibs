@@ -194,7 +194,8 @@ protected:
    * Must return a valid KFileItem
    */
   virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&,
-				      bool determineMimeTypeOnDemand );
+				      bool determineMimeTypeOnDemand,
+				      bool urlIsDirectory = false );
 
   /**
    * Called for every item after @ref #createFileItem().
@@ -208,7 +209,7 @@ protected:
    * @see #matchesFilter
    * @see #setNameFilter
    */
-  virtual bool filterItem( const KFileItem * );
+  virtual bool matchesFilter( const KFileItem * );
 
   /**
    * Unregister dirs from kdirwatch and clear list of dirs

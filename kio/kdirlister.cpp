@@ -198,19 +198,17 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     {
       if ( !m_rootFileItem ) // only if we didn't keep the previous dir
       {
-        KURL u( m_url );
-        m_rootFileItem = createFileItem( *(*it), u, m_bDelayedMimeTypes );
+        m_rootFileItem = createFileItem( *(*it), m_url, m_bDelayedMimeTypes );
       }
     }
     else
     {
-      KURL u( m_url );
-      u.addPath( name );
       //kdDebug(1203)<< "Adding " << u.url() << endl;
-      KFileItem* item = createFileItem( *(*it), u, m_bDelayedMimeTypes );
+      KFileItem* item = createFileItem( *(*it), m_url, m_bDelayedMimeTypes, 
+					true );
       assert( item != 0L );
 
-      if ( (m_bDirOnlyMode && !S_ISDIR( item->mode() )) || !filterItem( item ))
+      if ( (m_bDirOnlyMode && !S_ISDIR( item->mode() )) || !matchesFilter( item ))
       {
         delete item;
         continue;
@@ -426,13 +424,15 @@ void KDirLister::forgetDirs()
 }
 
 KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
-				       const KURL& url,
-				       bool determineMimeTypeOnDemand )
+					const KURL& url,
+					bool determineMimeTypeOnDemand,
+					bool urlIsDirectory )
 {
-    return new KFileItem( entry, url, determineMimeTypeOnDemand );
+    return new KFileItem( entry, url, determineMimeTypeOnDemand, 
+			  urlIsDirectory );
 }
 
-bool KDirLister::filterItem( const KFileItem *item )
+bool KDirLister::matchesFilter( const KFileItem *item )
 {
     assert( item != 0L );
 

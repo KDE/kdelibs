@@ -44,11 +44,14 @@ public:
    *
    * @param _entry the KIO entry used to get the file, contains info about it
    * @param _url the file url
-   * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
-   *       should be determined immediately or on demand
+   * @param _determineMimeTypeOnDemand specifies if the mimetype of the given
+   *       URL should be determined immediately or on demand
+   * @param _urlIsDirectory specifies if the url is just the directory of the
+   *       fileitem and the filename from the UDSEntry should be used.
    */
   KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
-	     bool _determineMimeTypeOnDemand = false );
+	     bool _determineMimeTypeOnDemand = false,
+	     bool _urlIsDirectory = false );
 
   /**
    * Create an item representing a file, from all the necessary info for it
@@ -63,8 +66,12 @@ public:
    *
    * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
    *       should be determined immediately or on demand
+   * @param _urlIsDirectory specifies if the url is just the directory of the
+   *       fileitem and the filename from the UDSEntry should be used.
    */
-  KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand = false );
+  KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url,
+	     bool _determineMimeTypeOnDemand = false,
+	     bool _urlIsDirectory = false );
 
   /**
    * Create an item representing a file, for which the mimetype is already known
@@ -126,7 +133,7 @@ public:
    * @returns true if this item represents a directory
    */
   bool isDir() const { return (S_IFDIR & m_fileMode); }
-    
+
   /**
    * @return the link destination if isLink() == true
    */
@@ -152,8 +159,23 @@ public:
    * @return the text of the file item
    * It's not exactly the filename since some decoding happens ('%2F'->'/')
    */
-  QString text() const { return m_strText; }
+  const QString& text() const { return m_strText; }
 
+  /**
+   * @returns the name of the file item (without a path)
+   * Similar to @ref text(), but unencoded, i.e. the original name
+   * If @param lowerCase is true, the name will be returned in lower case,
+   * which is useful to speed up sorting by name, case insensitively.
+   */
+  const QString& name( bool lowerCase = false ) const { 
+      if ( !lowerCase )
+	  return m_strName;
+      else
+	  if ( m_strLowerCaseName.isNull() )
+	      m_strLowerCaseName = m_strName.lower();
+      return m_strLowerCaseName;
+  }
+    
   /**
    * @return the mimetype of the file item
    */
@@ -259,9 +281,15 @@ protected:
   bool m_bIsLocalURL;
 
   /**
-   * The text for this item, i.e. the file name without path
+   * The text for this item, i.e. the file name without path,
+   */
+  QString m_strName;
+
+    /**
+   * The text for this item, i.e. the file name without path, encoded
    */
   QString m_strText;
+
   /**
    * The file mode
    */
@@ -285,6 +313,11 @@ protected:
    */
   KMimeType::Ptr m_pMimeType;
 
+  /**
+   * The filename in lower case (to speed up sorting)
+   */
+  mutable QString m_strLowerCaseName;
+    
 private:
   /**
    * Marked : see @ref #mark()

@@ -35,7 +35,7 @@
 #include <krun.h>
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
-		      bool _determineMimeTypeOnDemand ) :
+		      bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
@@ -67,7 +67,8 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
       break;
 
     case KIO::UDS_NAME:
-      m_strText = KIO::decodeFileName( (*it).m_str );
+      m_strName = (*it).m_str;
+      m_strText = KIO::decodeFileName( m_strName );
       break;
 
     case KIO::UDS_URL:
@@ -83,26 +84,32 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
       break;
   }
   }
+  if ( _urlIsDirectory && !m_strText.isEmpty() )
+      m_url.addPath( m_strText );
   init( _determineMimeTypeOnDemand );
 }
 
-KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand ) :
+KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry(), // warning !
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
-  m_strText( KIO::decodeFileName( _url.fileName() ) ),
+  m_strName( _url.fileName() ),
+  m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode ( _mode ),
   m_permissions( _permissions ),
   m_bLink( false ),
   m_bMarked( false )
 {
+  if ( _urlIsDirectory && !m_strText.isEmpty() )
+      m_url.addPath( m_strText );
   init( _determineMimeTypeOnDemand );
 }
 
 KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 :  m_url( url ),
   m_bIsLocalURL( url.isLocalFile() ),
-  m_strText( KIO::decodeFileName( url.fileName() ) ),
+  m_strName( url.fileName() ),
+  m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode( mode ),
   m_permissions( 0 ),
   m_bLink( false ),
@@ -146,7 +153,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
 
   // determine the mimetype
   if (!m_pMimeType && !_determineMimeTypeOnDemand )
-    m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
+      m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
 
   //  assert (m_pMimeType);
 }
