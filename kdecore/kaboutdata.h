@@ -231,6 +231,10 @@ class KAboutData
 		const char *bugsEmailAddress = "submit@bugs.kde.org"
 		);
 
+    /**
+     * Deconstructor
+     * Deletes private class
+     */ 
      ~KAboutData();
 
     /**
