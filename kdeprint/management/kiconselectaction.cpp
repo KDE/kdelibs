@@ -52,7 +52,7 @@ void KIconSelectAction::updateIcons()
 	if (d->m_menu)
 	{
 		QStringList	lst = items();
-		for (int id=0; id<lst.count(); ++id)
+		for (uint id=0; id<lst.count(); ++id)
 			d->m_menu->changeItem(id, SmallIconSet(d->m_iconlst[id]), lst[id]);
 	}
 }
