@@ -969,7 +969,14 @@ int main( int argc, char **argv )
   if ( !singleton && cfgFileNameArg && parameters.isEmpty() )
     h << "#include <kglobal.h>" << endl;
 
-  h << "#include <kconfigskeleton.h>" << endl << endl;
+  h << "#include <kconfigskeleton.h>" << endl;
+  h << "#include <kdebug.h>" << endl << endl;
+
+  // Includes
+  for( it = includes.begin(); it != includes.end(); ++it ) {
+    h << "#include <" << *it << ">" << endl;
+  }
+
 
   if ( !nameSpace.isEmpty() )
     h << "namespace " << nameSpace << " {" << endl << endl;
@@ -1067,6 +1074,29 @@ int main( int argc, char **argv )
         h << cppType(e->paramType()) << " i, ";
       h << param( t ) << " v )" << endl;
       h << "    {" << endl;
+
+      if (!e->minValue().isEmpty())
+      {
+        h << "      if (v < " << e->minValue() << ")" << endl;
+        h << "      {" << endl;
+        h << "        kdDebug() << \"" << setFunction(n);
+        h << ": value \" << v << \" is less than the minimum value of ";
+        h << e->minValue()<< "\" << endl;" << endl;
+        h << "        v = " << e->minValue() << ";" << endl;
+        h << "      }" << endl << endl;
+      }
+
+      if (!e->maxValue().isEmpty())
+      {
+        h << "      if (v > " << e->maxValue() << ")" << endl;
+        h << "      {" << endl;
+        h << "        kdDebug() << \"" << setFunction(n);
+        h << ": value \" << v << \" is greater than the maximum value of ";
+        h << e->maxValue()<< "\" << endl;" << endl;
+        h << "        v = " << e->maxValue() << ";" << endl;
+        h << "      }" << endl << endl;
+      }
+
       h << "      if (!" << This << "isImmutable( QString::fromLatin1( \"";
       if (!e->param().isEmpty()) {
         h << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
@@ -1217,11 +1247,6 @@ int main( int argc, char **argv )
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
   if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
-
-  // Includes
-  for( it = includes.begin(); it != includes.end(); ++it ) {
-    cpp << "#include <" << *it << ">" << endl;
-  }
 
   // Header required by singleton implementation
   if ( singleton )
