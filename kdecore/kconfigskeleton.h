@@ -89,6 +89,38 @@
     }
 
     /**
+      Set label providing a translated one-line description of the item.
+    */
+    void setLabel( const QString &l )
+    {
+      mLabel = l;
+    }
+    
+    /**
+      Return label of item. See setLabel().
+    */
+    QString label() const
+    {
+      return mLabel;
+    }
+
+    /**
+      Set WhatsThis description og item.
+    */
+    void setWhatsThis( const QString &w )
+    {
+      mWhatsThis = w;
+    }
+    
+    /**
+      Return WhatsThis description of item. See setWhatsThis().
+    */
+    QString whatsThis() const
+    {
+      return mWhatsThis;
+    }
+
+    /**
      * This function is called by @ref KConfigSkeleton to read the value for this setting
      * from a config file.
      * value.
@@ -143,6 +175,9 @@
 
   private:
     bool mIsImmutable;
+
+    QString mLabel;
+    QString mWhatsThis;
   };
 
 

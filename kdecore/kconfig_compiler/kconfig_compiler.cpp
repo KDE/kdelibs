@@ -51,10 +51,12 @@ class CfgEntry
 {
   public:
     CfgEntry( const QString &group, const QString &type, const QString &key,
-              const QString &name, const QString &label, const QString &code,
+              const QString &name, const QString &label,
+              const QString &whatsThis, const QString &code,
               const QString &defaultValue, const QStringList &values, bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
-        mLabel( label ), mCode( code ), mDefaultValue( defaultValue ),
+        mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
+        mDefaultValue( defaultValue ),
         mValues( values ), mHidden( hidden )
     {
     }
@@ -73,6 +75,9 @@ class CfgEntry
 
     void setLabel( const QString &label ) { mLabel = label; }
     QString label() const { return mLabel; }
+
+    void setWhatsThis( const QString &whatsThis ) { mWhatsThis = whatsThis; }
+    QString whatsThis() const { return mWhatsThis; }
 
     void setDefaultValue( const QString &d ) { mDefaultValue = d; }
     QString defaultValue() const { return mDefaultValue; }
@@ -125,6 +130,7 @@ class CfgEntry
     QString mKey;
     QString mName;
     QString mLabel;
+    QString mWhatsThis;
     QString mCode;
     QString mDefaultValue;
     QString mParam;
@@ -256,6 +262,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString key = element.attribute( "key" );
   QString hidden = element.attribute( "hidden" );
   QString label;
+  QString whatsThis;
   QString defaultValue;
   QString code;
   QString param;
@@ -271,6 +278,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     QDomElement e = n.toElement();
     QString tag = e.tagName();
     if ( tag == "label" ) label = e.text();
+    if ( tag == "whatsthis" ) whatsThis = e.text();
     else if ( tag == "code" ) code = e.text();
     else if ( tag == "parameter" )
     {
@@ -436,7 +444,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     preProcessDefault(defaultValue, name, type, values, code);
   }
 
-  CfgEntry *result = new CfgEntry( group, type, key, name, label, code, defaultValue, values,
+  CfgEntry *result = new CfgEntry( group, type, key, name, label, whatsThis,
+                                   code, defaultValue, values,
                                    hidden == "true" );
   if (!param.isEmpty())
   {
@@ -477,10 +486,8 @@ QString cppType( const QString &type )
   else return type;
 }
 
-QString addFunction( const QString &type )
+QString itemType( const QString &type )
 {
-  QString f = "addItem";
-
   QString t;
 
   if ( type == "QString" || type == "QStringList" || type == "QColor" ||
@@ -490,10 +497,31 @@ QString addFunction( const QString &type )
     t = type;
     t.replace( 0, 1, t.left( 1 ).upper() );
   }
+  
+  return t;
+}
+
+QString addFunction( const QString &type )
+{
+  QString f = "addItem";
+
+  QString t = itemType( type );
 
   f += t;
 
   return f;
+}
+
+QString newItem( const QString &type, const QString &name, const QString &key,
+                 const QString defaultValue )
+{
+  QString t = "new KConfigSkeleton::Item" + itemType( type ) +
+              "( currentGroup(), " + key + ", " + varName( name );
+  if ( type == "Enum" ) t += ", values" + name;
+  if ( !defaultValue.isEmpty() ) t += ", " + defaultValue;
+  t += " );";
+
+  return t;
 }
 
 QString paramString(const QString &s, const CfgEntry *e, int i)
@@ -537,6 +565,20 @@ QString paramString(const QString &group, const QStringList &parameters)
     return "\""+group+"\"";
 
   return "QString(\""+paramString+"\")"+arguments;
+}
+
+QString userTextsFunctions( CfgEntry *e )
+{
+  QString txt;
+  if ( !e->label().isEmpty() ) {
+    txt += "  " + varName( e->name() ) + "Item->setLabel( i18n(\"" +
+           e->label() + "\") );\n";
+  }
+  if ( !e->whatsThis().isEmpty() ) {
+    txt += "  " + varName( e->name() ) + "Item->setWhatsThis( i18n(\"" +
+           e->whatsThis() + "\") );\n";    
+  }
+  return txt;
 }
 
 int main( int argc, char **argv )
@@ -587,6 +629,8 @@ int main( int argc, char **argv )
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
+  bool itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
+  bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
   
   globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
 
@@ -804,6 +848,20 @@ int main( int argc, char **argv )
     h << ";" << endl;
     h << "    }" << endl;
 
+    // Item accessor
+    if ( itemAccessors ) {
+      h << endl;
+      h << "    /**" << endl;
+      h << "      Get Item object corresponding to " << n << "()"
+        << endl;
+      h << "    */" << endl;
+      h << "    Item" << itemType( e->type() ) << " *"
+        << getFunction( n ) << "Item()" << endl;
+      h << "    {" << endl;
+      h << "      return " << varName( n ) << "Item;" << endl;
+      h << "    }" << endl;
+    }
+
     h << endl;
   }
 
@@ -851,6 +909,14 @@ int main( int argc, char **argv )
     h << ";" << endl;
   }
 
+  h << endl << "  private:" << endl;
+  if ( itemAccessors ) {
+    for( e = entries.first(); e; e = entries.next() ) {
+      h << "    Item" << itemType( e->type() ) << " *" << varName( e->name() )
+        << "Item;" << endl;
+    }  
+  }  
+
   if (customAddons)
   {
      h << "    // Include custom additions" << endl;
@@ -879,6 +945,8 @@ int main( int argc, char **argv )
 
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
+  if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
+
   // Static class pointer for singleton
   if ( singleton ) {
     cpp << "#include <kstaticdeleter.h>" << endl;
@@ -899,7 +967,7 @@ int main( int argc, char **argv )
   }
 
   // Constructor
-  cpp << className << "::" << className << "(" << endl;
+  cpp << className << "::" << className << "( ";
   for (QStringList::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
@@ -946,12 +1014,15 @@ int main( int argc, char **argv )
       {
         // Normal case
         cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() 
-            << " = new KConfigSkeleton::ItemEnum( currentGroup(), " 
-            << key << ", " << varName(e->name()) << ", values" << e->name();
-        if ( !e->defaultValue().isEmpty() )
-          cpp << ", " << e->defaultValue();
-        cpp << " );" << endl;
+            << " = " << newItem( "Enum", e->name(), key, e->defaultValue() )
+            << endl;
         cpp << "  addItem( \"" << e->name() << "\", item" << e->name() << " );" << endl;
+
+        if ( itemAccessors ) {
+          cpp << "  " << varName( e->name() ) << "Item = item" << e->name()
+              << ";" << endl;
+          if ( setUserTexts ) cpp << userTextsFunctions( e );
+        }
       }
       else
       {
@@ -967,19 +1038,34 @@ int main( int argc, char **argv )
           cpp << ", " << e->paramDefaultValue(i);
         else if ( !e->defaultValue().isEmpty() )
           cpp << ", " << e->defaultValue();
-        cpp << " );" << endl;
+          cpp << " );" << endl;
           cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", item" << e->name() << " );" << endl;
+        
+          if ( itemAccessors ) {
+            cpp << "  " << varName( e->name() ) << "Item = item" << e->name()
+                << ";" << endl;
+            if ( setUserTexts ) cpp << userTextsFunctions( e );
+          }
         }
       }
     } else {
       if (e->param().isEmpty())
       {
-        // Normal case
-        cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", " << key << ", "
-            << varName(e->name());
-        if ( !e->defaultValue().isEmpty() )
-          cpp << ", " << e->defaultValue();
-        cpp << " );" << endl;
+        if ( itemAccessors ) {
+          cpp << "  " << varName( e->name() ) << "Item = "
+              << newItem( e->type(), e->name(), key, e->defaultValue() )
+              << endl;
+          cpp << "  addItem( \"" << e->name() << "\", " << varName( e->name() )
+              << "Item );" << endl;
+          if ( setUserTexts ) cpp << userTextsFunctions( e );
+        } else {
+          // Normal case
+          cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", " << key << ", "
+              << varName(e->name());
+          if ( !e->defaultValue().isEmpty() )
+            cpp << ", " << e->defaultValue();
+          cpp << " );" << endl;
+        }
       }
       else
       {
