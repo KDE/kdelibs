@@ -202,11 +202,14 @@ bool AddressBook::load()
   clear();
 
   Resource *r;
+  bool ok = true;
   for( r = mResources.first(); r; r = mResources.next() )
-    if ( !r->load() )
-	return false;
+    if ( !r->load() ) {
+	kdDebug(5700) << "AddressBook::load(): can't load resource '" << r->name() << "'" << endl;
+	ok = false;
+    }
 
-  return true;
+  return ok;
 }
 
 bool AddressBook::save( Ticket *ticket )

@@ -114,7 +114,7 @@ bool ResourceLDAP::open()
 void ResourceLDAP::close()
 {
     if ( ldap_unbind_s( mLdap ) != LDAP_SUCCESS ) {
-	kdDebug(5770) << "ResourceLDAP: can't unbind from server" << endl;
+	kdDebug(5700) << "ResourceLDAP: can't unbind from server" << endl;
 	return;
     }
 
@@ -136,8 +136,11 @@ bool ResourceLDAP::load()
 	"phoneNumber",
 	 0 };
 
-    ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, "objectClass=person",
-	    (char **)LdapSearchAttr, 0, &res );
+    if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, "objectClass=person",
+	    (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
+	kdDebug(5700) << "ResourceLDAP: can't search on server" << endl;
+	return false;
+    }
 
     for ( msg = ldap_first_entry( mLdap, res ); msg; msg = ldap_next_entry( mLdap, msg ) ) {
 	Addressee addr;
