@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.12  1997/07/25 19:46:39  kalle
+ * SGI changes
+ *
  * Revision 1.11  1997/07/24 21:04:37  kalle
  * Kalle: Patches for SGI
  *
@@ -313,6 +316,8 @@ QString KConfig::readEntry( const QString& rKey,
 	  else if( pDefault )
 		aValue = *pDefault;
     }
+  else if( pDefault )
+	aValue = *pDefault;
 
   // check for environment variables and make necessary translations
   int nDollarPos = aValue.find( '$' );
