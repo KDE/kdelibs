@@ -663,6 +663,7 @@ QString KFileItem::getToolTipText(int maxcount)
 
   tip = "<table cellspacing=0 cellpadding=0>";
 
+  tip += start + i18n("Name:") + mid + text() + end;
   tip += start + i18n("Type:") + mid;
 
   QString type = QStyleSheet::escape(determineMimeType()->comment());
