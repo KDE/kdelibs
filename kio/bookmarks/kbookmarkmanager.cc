@@ -425,15 +425,6 @@ void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 
-class KBookmarkGroupTraverser {
-protected:
-    virtual ~KBookmarkGroupTraverser() { ; }
-    void traverse(const KBookmarkGroup &);
-    virtual void visit(const KBookmark &) { ; }
-    virtual void visitEnter(const KBookmarkGroup &) { ; }
-    virtual void visitLeave(const KBookmarkGroup &) { ; }
-};
-
 class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
     KBookmarkMap( KBookmarkManager * );
@@ -467,45 +458,6 @@ void KBookmarkMap::visit(const KBookmark &bk) {
         // add bookmark to url map
         m_bk_map[bk.url().url()].append(bk);
     }
-}
-
-void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
-{
-    // non-recursive bookmark iterator
-    QPtrStack<KBookmarkGroup> stack;
-    stack.push(&root);
-    KBookmark bk = stack.current()->first();
-    for (;;) {
-        if (bk.isGroup()) 
-        {
-            KBookmarkGroup gp = bk.toGroup();
-            visitEnter(gp);
-            if (!gp.first().isNull()) 
-            {
-                 stack.push(&gp);
-                 bk = gp.first();
-                 continue;
-            }
-            // empty group, therefore, leave already
-            visitLeave(gp);
-        } 
-        else visit(bk);
-
-        // find next bookmark, finishing off groups as needed
-        KBookmark next;
-        while (next = stack.current()->next(bk), next.isNull()) 
-        {
-            // if an empty stack and no next we are done
-            if (stack.isEmpty()) 
-                return;
-            if (stack.count() > 1)
-                visitLeave(*stack.current());
-            bk = *(stack.pop());
-        }
-        bk = next;
-    }
-
-    // never reached
 }
 
 QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const

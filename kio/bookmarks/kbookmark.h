@@ -257,4 +257,13 @@ private:
     // has to be implemented as an attribute of the QDomElement.
 };
 
+class KBookmarkGroupTraverser {
+protected:
+    virtual ~KBookmarkGroupTraverser() { ; }
+    void traverse(const KBookmarkGroup &);
+    virtual void visit(const KBookmark &) { ; }
+    virtual void visitEnter(const KBookmarkGroup &) { ; }
+    virtual void visitLeave(const KBookmarkGroup &) { ; }
+};
+
 #endif

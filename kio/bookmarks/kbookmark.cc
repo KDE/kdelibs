@@ -18,6 +18,7 @@
 */
 
 #include "kbookmark.h"
+#include <qptrstack.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
@@ -368,5 +369,44 @@ void KBookmark::updateAccessMetadata()
     domtext.setData(QString::number(timet));
 
     // still to do - time_modified
+}
+
+void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
+{
+    // non-recursive bookmark iterator
+    QPtrStack<KBookmarkGroup> stack;
+    stack.push(&root);
+    KBookmark bk = stack.current()->first();
+    for (;;) {
+        if (bk.isGroup()) 
+        {
+            KBookmarkGroup gp = bk.toGroup();
+            visitEnter(gp);
+            if (!gp.first().isNull()) 
+            {
+                 stack.push(&gp);
+                 bk = gp.first();
+                 continue;
+            }
+            // empty group, therefore, leave already
+            visitLeave(gp);
+        } 
+        else visit(bk);
+
+        // find next bookmark, finishing off groups as needed
+        KBookmark next;
+        while (next = stack.current()->next(bk), next.isNull()) 
+        {
+            // if an empty stack and no next we are done
+            if (stack.isEmpty()) 
+                return;
+            if (stack.count() > 1)
+                visitLeave(*stack.current());
+            bk = *(stack.pop());
+        }
+        bk = next;
+    }
+
+    // never reached
 }
 
