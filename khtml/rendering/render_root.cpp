@@ -93,7 +93,7 @@ void RenderRoot::calcMinMaxWidth()
     m_maxWidth = m_minWidth;
 }
 
-#define SPEED_DEBUG
+//#define SPEED_DEBUG
 
 void RenderRoot::layout()
 {
@@ -216,16 +216,16 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
 {
 //    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
-    
-    if ( f && m_view ) 
+
+    if ( f && m_view )
     {
 	    x += m_view->contentsX();
 	    y += m_view->contentsY();
     }
-    
+
     QRect vr = viewRect();
     QRect ur(x, y, w, h);
-    
+
     if (ur.intersects(vr))
         if (m_view) m_view->updateContents(x, y, w, h);
 }
