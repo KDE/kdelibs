@@ -684,7 +684,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     if (S_ISREG(item->mode())) // File (or symlink to file)
     {
-        m_sizeLabel->setText(KIO::convertSize(item->size()));
+        m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(item->size())).arg(item->size()));
         m_sizeDetermineButton = 0L;
         m_sizeStopButton = 0L;
     }
@@ -775,7 +775,10 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
   if (job->error())
     job->showErrorDialog( properties->dialog() );
   else
-    m_sizeLabel->setText(KIO::convertSize(static_cast<KDirSize*>(job)->totalSize() ) );
+  {
+    int totalSize = static_cast<KDirSize*>(job)->totalSize();
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(totalSize) );
+  }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)
   m_sizeDetermineButton->setText( i18n("Refresh") );
@@ -830,6 +833,8 @@ void KFilePropsPlugin::applyChanges()
     n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
 
   // Do we need to rename the file ?
+  kdDebug(250) << "oldname = " << oldName << endl;
+  kdDebug(250) << "newname = " << n << endl;
   if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
     KIO::Job * job = 0L;
     KURL oldurl = properties->kurl();
