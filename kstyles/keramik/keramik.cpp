@@ -438,7 +438,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken ) name.append( "-pressed" );
 
 			p->fillRect( r, cg.background() );
-			Keramik::RectTilePainter( name ).draw(p, x, y, w, h, disabled );
+			Keramik::RectTilePainter( name, false ).draw(p, x, y, w, h, disabled );
 			break;
 		}
 
@@ -482,7 +482,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken ) name += ( "-pressed" );
 
 			p->fillRect( r, cg.background() );
-			Keramik::RectTilePainter( name ).draw(p, x, y, w, h, disabled );
+			Keramik::RectTilePainter( name, false ).draw(p, r, disabled );
 
 			break;
 
@@ -532,9 +532,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_HeaderSection:
 			if ( flags & Style_Down )
-				Keramik::RectTilePainter( "listview-pressed" ).draw( p, r );
+				Keramik::RectTilePainter( "listview-pressed", false ).draw( p, r );
 			else
-				Keramik::RectTilePainter( "listview" ).draw( p, r );
+				Keramik::RectTilePainter( "listview", false ).draw( p, r );
 			break;
 
 		case PE_HeaderArrow:
@@ -844,9 +844,9 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			bool horizontal = slider->orientation() == Horizontal;
 
 			if ( horizontal )
-				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, r, disabled );
+				Keramik::RectTilePainter( "slider-hgroove", false ).draw(p, r, disabled );
 			else
-				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, r, disabled );
+				Keramik::RectTilePainter( "slider-vgroove", true, false ).draw( p, r, disabled );
 
 			break;
 		}
@@ -1308,10 +1308,8 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
 			if ( controls & SC_ComboBoxFrame )
 			{
-				QRect frameRect = r;
-				frameRect.addCoords( -3, -3, 0, 0 );
-				if ( cb->editable() ) p->fillRect( frameRect, cg.background() );
-				drawPrimitive( PE_ButtonCommand, p, frameRect, cg, flags );
+				p->fillRect( r, cg.background() );
+				Keramik::RectTilePainter( "pushbutton", false ).draw( p, r, disabled );
 			}
 
 			if ( controls & SC_ComboBoxArrow )
@@ -1335,7 +1333,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 					er.addCoords( -3, -3, 3, 3 );
 					p->fillRect( er, cg.base() );
 					drawPrimitive( PE_PanelLineEdit, p, er, cg );
-					Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
+					Keramik::RectTilePainter( "frame-shadow", false, false, 2, 2 ).draw( p, er );
 				}
 				else if ( cb->hasFocus() )
 				{
@@ -1564,8 +1562,8 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			const QPushButton* btn = static_cast< const QPushButton* >( widget );
 			int w = contentSize.width() + 2 * pixelMetric( PM_ButtonMargin, widget );
 			int h = contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget );
-			if ( btn->text().isEmpty() ) return QSize( w, h );
-			return QSize( w + 31, h + 5 );
+			if ( btn->text().isEmpty() && contentSize.width() < 32 ) return QSize( w, h );
+			return QSize( w + 31, h + 7 );
 		}
 
 		case CT_ComboBox:
@@ -1801,7 +1799,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		object->event( static_cast< QPaintEvent* >( event ) );
 		QWidget* widget = static_cast< QWidget* >( object );
 		QPainter p( widget );
-		Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( &p, widget->rect() );
+		Keramik::RectTilePainter( "frame-shadow", false, false, 2, 2 ).draw( &p, widget->rect() );
 		recursion = false;
 		return true;
 	}
@@ -1816,7 +1814,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		{
 			{
 				QPainter p( listbox );
-				Keramik::RectTilePainter( "combobox-list" ).draw( &p, 0, 0, listbox->width(), listbox->height() );
+				Keramik::RectTilePainter( "combobox-list", false ).draw( &p, 0, 0, listbox->width(), listbox->height() );
 			}
 			QPaintEvent newpaint( paint->region().intersect( listbox->contentsRect() ), paint->erased() );
 			recursion = true;

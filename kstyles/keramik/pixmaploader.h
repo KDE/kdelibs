@@ -65,7 +65,7 @@ namespace Keramik
 		}
 
 	protected:
-		enum TileMode { Fixed, Scaled };
+		enum TileMode { Fixed, Scaled, Tiled };
 
 		virtual unsigned int columns() const = 0;
 		virtual unsigned int rows() const  = 0;
@@ -123,23 +123,21 @@ namespace Keramik
 	class RectTilePainter : public TilePainter
 	{
 	public:
-		RectTilePainter( const QString& name, unsigned int columns = 3, unsigned int rows = 3 );
+		RectTilePainter( const QString& name,
+		                 bool scaleH = true, bool scaleV = true,
+		                 unsigned int columns = 3, unsigned int rows = 3 );
 		virtual ~RectTilePainter() {};
 
 	protected:
 		virtual unsigned int columns() const { return m_columns; }
 		virtual unsigned int rows() const { return m_rows; }
 		virtual QString tileName( unsigned int column, unsigned int row ) const;
-		virtual TileMode columnMode( unsigned int column ) const
-		{
-			return column == 1 ? Scaled : Fixed;
-		}
-		virtual TileMode rowMode( unsigned int row ) const
-		{
-			return row == 1 ? Scaled : Fixed;
-		}
+		virtual TileMode columnMode( unsigned int column ) const;
+		virtual TileMode rowMode( unsigned int row ) const;
 
 	private:
+		bool m_scaleH;
+		bool m_scaleV;
 		unsigned int m_columns;
 		unsigned int m_rows;
 	};
@@ -189,14 +187,8 @@ namespace Keramik
 		virtual unsigned int columns() const { return m_horizontal ? m_count : 1; }
 		virtual unsigned int rows() const { return m_horizontal ? 1 : m_count; }
 		virtual QString tileName( unsigned int column, unsigned int row ) const;
-		virtual TileMode columnMode( unsigned int column ) const
-		{
-			return m_horizontal ? ( column % 2 ) ? Scaled : Fixed : Fixed;
-		}
-		virtual TileMode rowMode( unsigned int row ) const
-		{
-			return m_horizontal ? Fixed : ( row % 2 ) ? Scaled : Fixed;
-		}
+		virtual TileMode columnMode( unsigned int column ) const;
+		virtual TileMode rowMode( unsigned int row ) const;
 
 	private:
 		QString m_type;

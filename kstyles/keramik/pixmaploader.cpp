@@ -152,14 +152,14 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool d
 	int scaleWidth = width, scaleHeight = height;
 
 	for ( unsigned int col = 0; col < columns(); ++col )
-		if ( columnMode( col ) == Scaled )
+		if ( columnMode( col ) != Fixed )
 		{
 			scaledColumns++;
 			lastScaledColumn = col;
 		}
 		else scaleWidth -= tile( col, 0, disabled ).width();
 	for ( unsigned int row = 0; row < rows(); ++row )
-		if ( rowMode( row ) == Scaled )
+		if ( rowMode( row ) != Fixed )
 		{
 			scaledRows++;
 			lastScaledRow = row;
@@ -176,18 +176,23 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool d
 		if ( scaleWidth && !scaledColumns ) xpos += scaleWidth / 2;
 		int h = rowMode( row ) == Fixed ? 0 : scaleHeight / scaledRows;
 		if ( scaledRows && row == lastScaledRow ) h += scaleHeight - scaleHeight / scaledRows * scaledRows;
+		int realH = h ? h : tile( 0, row, disabled ).height();
+		if ( rowMode( row ) == Tiled ) h = 0;
 
 		for ( unsigned int col = 0; col < columns(); ++col )
 		{
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
 			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
+			int realW = w ? w : tile( col, row, disabled ).width();
+			if ( columnMode( col ) == Tiled ) w = 0;
 
 			if ( !tile( col, row, disabled ).isNull() )
-				if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h, disabled ) );
-				else p->drawPixmap( xpos, ypos, tile( col, row, disabled ) );
-			xpos += w ? w : tile( col, row, disabled ).width();
+				if ( w || h )
+					p->drawTiledPixmap( xpos, ypos, realW, realH, scale( col, row, w, h, disabled ) );
+				else p->drawTiledPixmap( xpos, ypos, realW, realH, tile( col, row, disabled ) );
+			xpos += realW;
 		}
-		ypos += h ? h : tile( 0, row, disabled ).height();
+		ypos += realH;
 	}
 }
 
@@ -198,8 +203,12 @@ QString TilePainter::absTileName( unsigned int column, unsigned int row ) const
 	return m_name + "-" + name;
 }
 
-RectTilePainter::RectTilePainter( const QString& name, unsigned int columns, unsigned int rows )
+RectTilePainter::RectTilePainter( const QString& name,
+                                  bool scaleH, bool scaleV,
+                                  unsigned int columns, unsigned int rows )
 	: TilePainter( name ),
+	  m_scaleH( scaleH ),
+	  m_scaleV( scaleV ),
 	  m_columns( columns ),
 	  m_rows( rows )
 {
@@ -209,6 +218,18 @@ QString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 {
 	static QString c = "lcr", r = "tcb";
 	return QString( r.mid( row, 1 ) + c.mid( column, 1 ) );
+}
+
+TilePainter::TileMode RectTilePainter::columnMode( unsigned int column ) const
+{
+	if ( column != 1 ) return Fixed;
+	return m_scaleH ? Scaled : Tiled;
+}
+
+TilePainter::TileMode RectTilePainter::rowMode( unsigned int row ) const
+{
+	if ( row != 1 ) return Fixed;
+	return m_scaleV ? Scaled : Tiled;
 }
 
 ActiveTabPainter::ActiveTabPainter( bool bottom )
@@ -268,6 +289,18 @@ ScrollBarPainter::ScrollBarPainter( const QString& type, int count, bool horizon
 QString ScrollBarPainter::name( bool horizontal )
 {
 	return QString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
+}
+
+TilePainter::TileMode ScrollBarPainter::columnMode( unsigned int column ) const
+{
+	if ( !m_horizontal || !( column % 2 ) ) return Fixed;
+	return ( m_count == 2 ) ? Scaled : Tiled;
+}
+
+TilePainter::TileMode ScrollBarPainter::rowMode( unsigned int row ) const
+{
+	if ( m_horizontal || !( row % 2 ) ) return Fixed;
+	return ( m_count == 2 ) ? Scaled : Tiled;
 }
 
 QString ScrollBarPainter::tileName( unsigned int column, unsigned int row ) const
