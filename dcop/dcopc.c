@@ -628,6 +628,8 @@ dcop_connect()
   char      * homeDir       = 0L;
   char      * dcopServer    = 0L;
   char        errBuf[1024];
+  char        fileName[512];
+  char        hostName[256];
 
   homeDir = getenv("HOME");
 
@@ -643,10 +645,14 @@ dcop_connect()
       return False;
     }
 
-    f = fopen(".DCOPserver", "r");
+    if (gethostname(hostName, 255))
+	    strcpy(hostName, "localhost");
+
+    snprintf(fileName, sizeof(fileName), ".DCOPserver_%s", hostName);
+    f = fopen(fileName, "r");
 
     if (NULL == f) {
-      fprintf(stderr, "Cannot open ~/.DCOPserver\n");
+      fprintf(stderr, "Cannot open ~/%s\n", filename);
       return False;
     }
 

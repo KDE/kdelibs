@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
@@ -680,7 +681,12 @@ DCOPServer::DCOPServer(bool _only_local)
 	} else {
 	    // publish available transports.
 	    QCString fName = ::getenv("HOME");
-	    fName += "/.DCOPserver";
+	    fName += "/.DCOPserver_";
+	    char hostName[256];
+	    if (gethostname(hostName, 255))
+		fName += "localhost";
+	    else
+		fName += hostName;
 	    FILE *f;
 	    f = ::fopen(fName.data(), "w+");
 	    char *idlist = IceComposeNetworkIdList(numTransports, listenObjs);
@@ -722,7 +728,12 @@ DCOPServer::~DCOPServer()
     fName = ::getenv("DCOPSERVER");
     if (fName.isNull()) {
 	fName = ::getenv("HOME");
-	fName += "/.DCOPserver";
+	fName += "/.DCOPserver_";
+	char hostName[256];
+	if (gethostname(hostName, 255))
+	    fName += "localhost";
+	else
+	    fName += hostName;
 	unlink(fName.data());
     }
 
@@ -1063,7 +1074,12 @@ int main( int argc, char* argv[] )
 
     // check if we are already running
     QCString fName = ::getenv("HOME");
-    fName += "/.DCOPserver";
+    fName += "/.DCOPserver_";
+    char hostName[256];
+    if (gethostname(hostName, 255))
+        fName += "localhost";
+    else
+        fName += hostName;
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(IO_ReadOnly);

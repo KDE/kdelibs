@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 
@@ -116,9 +117,17 @@ void KCookie::getICECookie()
 	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
 	}
-	if (!(f = fopen(home + "/.DCOPserver", "r"))) 
+	QCString dcopFile = home + "/.DCOPserver_";
+    char hostName[256];
+    if (gethostname(hostName, 255))
+	    dcopFile += "localhost";
+    else
+        dcopFile += hostName;
+
+	if (!(f = fopen(dcopFile, "r"))) 
 	{
-	    kdWarning(900) << k_lineinfo << "Cannot open ~/.DCOPserver.\n";
+	    kdWarning(900) << k_lineinfo 
+					   << "Cannot open " << dcopFile << ".\n";
 	    return;
 	}
 	dcopsrv = fgets(buf, 1024, f);
