@@ -15,9 +15,9 @@ class B2Style : public KStyle
 public:
     B2Style();
     ~B2Style();
-    void polish(QWidget *w);
-    void unPolish(QWidget *w);
-    void polish(QPalette &p);
+    virtual void polish(QWidget *w);
+    virtual void unPolish(QWidget *w);
+    virtual void polish(QPalette &p);
     void drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken = FALSE,
                     const QBrush *fill = 0 );
