@@ -478,7 +478,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = on || down;
 
 			QString name = "pushbutton";
-			if ( w < 36 || h < 28 ) name += "-small";
+			if ( w < 36 || h < 24 ) name += "-small";
 			if ( sunken ) name += ( "-pressed" );
 
 			p->fillRect( r, cg.background() );
@@ -1330,7 +1330,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				if ( cb->editable() )
 				{
 					QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
-					er.addCoords( -3, -3, 3, 3 );
+					er.addCoords( -2, -2, 2, 2 );
 					p->fillRect( er, cg.base() );
 					drawPrimitive( PE_PanelLineEdit, p, er, cg );
 					Keramik::RectTilePainter( "frame-shadow", false, false, 2, 2 ).draw( p, er );
@@ -1544,6 +1544,9 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_MenuButtonIndicator:
 			return 8;
 
+		case PM_TabBarTabVSpace:
+			return 14;
+
 		default:
 			return KStyle::pixelMetric(m, widget);
 	}
@@ -1570,7 +1573,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 
 		case CT_ComboBox:
 			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 36,
-			              contentSize.height() + 10 );
+			              contentSize.height() + 16 );
 
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
@@ -1669,9 +1672,13 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					return QRect( widget->width() - arrow - 14, 0, arrow, widget->height() );
 
 				case SC_ComboBoxEditField:
-					if ( widget->width() < 36 || widget->height() < 28 )
-						return QRect( 4, 2, widget->width() - arrow - 20, widget->height() - 6 );
+				{
+					if ( widget->width() < 36 || widget->height() < 24 )
+						return QRect( 4, 3, widget->width() - arrow - 20, widget->height() - 6 );
+//					if ( static_cast< const QComboBox* >( widget )->editable() )
+						return QRect( 10, 8, widget->width() - arrow - 30, widget->height() - 16 );
 					return QRect( 8, 6, widget->width() - arrow - 28, widget->height() - 14 );
+				}
 
 				default: break;
 			}
