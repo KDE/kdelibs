@@ -541,6 +541,18 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
+  d->m_ssl_session_id = QString::null;
+  {
+    KHTMLPart *p = parentPart();
+    while (p && p->d->m_ssl_session_id.isEmpty()) {
+      p = p->parentPart();
+    }
+
+    if (p) {
+      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+    }
+  }
+
   if (d->m_restored)
      d->m_cachePolicy = KIO::CC_Cache;
   else if (args.reload)
@@ -1221,6 +1233,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
+    d->m_ssl_session_id = d->m_job->queryMetaData("ssl_session_id");
 
     if (d->m_statusBarIconLabel) {
       QToolTip::remove(d->m_statusBarIconLabel);
@@ -2780,6 +2793,17 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
+  d->m_ssl_session_id = QString::null;
+  {
+    KHTMLPart *p = parentPart();
+    while (p && p->d->m_ssl_session_id.isEmpty()) {
+      p = p->parentPart();
+    }
+
+    if (p) {
+      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+    }
+  }
 
   if ( hasTarget )
   {
@@ -3522,6 +3546,17 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
   args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
+  d->m_ssl_session_id = QString::null;
+  {
+    KHTMLPart *p = parentPart();
+    while (p && p->d->m_ssl_session_id.isEmpty()) {
+      p = p->parentPart();
+    }
+
+    if (p) {
+      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+    }
+  }
 
   // Handle mailto: forms
   if (u.protocol() == "mailto") {
@@ -3924,7 +3959,8 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_bits
          << d->m_ssl_cert_state
          << d->m_ssl_parent_ip
-         << d->m_ssl_parent_cert;
+         << d->m_ssl_parent_cert
+         << d->m_ssl_session_id;
 
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
@@ -4005,7 +4041,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_cipher_bits
          >> d->m_ssl_cert_state
          >> d->m_ssl_parent_ip
-         >> d->m_ssl_parent_cert;
+         >> d->m_ssl_parent_cert
+         >> d->m_ssl_session_id;
 
   setPageSecurity( d->m_ssl_in_use ? Encrypted : NotCrypted );
 
