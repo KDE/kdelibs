@@ -1074,7 +1074,11 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
 bool KLocale::use12Clock() const
 {
-  return _timefmt.contains(QString::fromLatin1("%p")) > 0;
+  if ((_timefmt.contains(QString::fromLatin1("%I")) > 0) ||
+      (_timefmt.contains(QString::fromLatin1("%l")) > 0))
+    return true;
+  else
+    return false;
 }
 
 QString KLocale::languages() const
