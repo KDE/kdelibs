@@ -763,7 +763,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     (void) dcopClient(); // Make sure to have a dcop client.
             
     QDataStream stream(params, IO_WriteOnly);
-    stream << info << errorMsg << windowId << s_seqNr;
+    
+    if (metaData("no-auth-prompt").lower() == "true")
+       stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
+    else
+       stream << info << errorMsg << windowId << s_seqNr;
             
     if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
                                params, replyType, reply ) )
