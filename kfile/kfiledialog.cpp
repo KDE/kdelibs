@@ -48,7 +48,7 @@
 #include <kaction.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <kio/job.h>
 #include <klocale.h>
@@ -546,7 +546,7 @@ void KFileDialog::locationChanged(const QString& txt)
 
     // typing forward - do completion
     else {
-        if ( KGlobal::completionMode() == KGlobal::CompletionAuto )
+        if ( KGlobalSettings::completionMode() == KGlobalSettings::CompletionAuto )
 	    completion();
     }
 
@@ -1153,8 +1153,8 @@ void KFileComboBox::setCompletion(const QString& completion)
     if ( edit->text() != completion )
 	edit->setText( completion );
 
-    if ( KGlobal::completionMode() == KGlobal::CompletionAuto ||
-	 KGlobal::completionMode() == KGlobal::CompletionMan ) {
+    if ( KGlobalSettings::completionMode() == KGlobalSettings::CompletionAuto ||
+	 KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
         edit->setSelection( pos, edit->text().length() );
 	edit->setCursorPosition( pos );
     }
@@ -1175,12 +1175,12 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 	bool ret = false;
 	if ( edit->cursorPosition() == (int) edit->text().length() ) {
 	    if ( e->key() == Qt::Key_End || e->key() == Qt::Key_Right ) {
-	        if ( KGlobal::completionMode() == KGlobal::CompletionShell ) {
+	        if ( KGlobalSettings::completionMode() == KGlobalSettings::CompletionShell ) {
 		    edit->deselect();
 		    emit completion();
 		    ret = true; // don't pass the event any further
 		}
-		else if ( KGlobal::completionMode() == KGlobal::CompletionMan ) {
+		else if ( KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
 		    edit->deselect();
 		    emit completion();
 		    ret = true; // don't pass the event any further

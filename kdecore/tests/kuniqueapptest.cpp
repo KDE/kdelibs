@@ -17,7 +17,7 @@
 */
 
 #include "kuniqueapp.h"
-#include "kglobal.h"
+#include "kglobalsettings.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -72,8 +72,8 @@ main(int argc, char *argv[])
    TestApp a(argc, argv);
 
    printf("Running.\n");
-   printf("useDoubleClicks? %s\n", KGlobal::useDoubleClicks() ? "yes" : "no");
-   printf("completionMode: %d\n", (int) KGlobal::completionMode());
+   printf("singleClick? %s\n", KGlobalSettings::singleClick() ? "yes" : "no");
+   printf("completionMode: %d\n", (int) KGlobalSettings::completionMode());
    kapp->exec();   
    printf("Terminating.\n");
 }
