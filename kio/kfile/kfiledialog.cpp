@@ -826,8 +826,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     docPath.setPath( KGlobalSettings::documentPath() );
     if ( u.path(+1) != docPath.path(+1) ) {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        d->pathCombo->addDefaultURL( u,
-                                     KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+        d->pathCombo->addDefaultURL( docPath,
+                                     KMimeType::pixmapForURL( docPath, 0, KIcon::Small ),
                                      text );
     }
 
@@ -967,7 +967,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                                     d->mainWidget, "LocationEdit");
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
-    
+
     updateLocationWhatsThis ();
     d->locationLabel->setBuddy(locationEdit);
 
@@ -980,7 +980,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     locationEdit->setAutoDeleteCompletionObject( true );
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
              SLOT( fileCompletion( const QString& )) );
-    
+
     connect( locationEdit, SIGNAL( returnPressed() ),
              this, SLOT( slotOk()));
     connect(locationEdit, SIGNAL( activated( const QString&  )),
