@@ -447,7 +447,32 @@ KJSO *MultNode::evaluate()
 // ECMA 11.7
 KJSO *ShiftNode::evaluate()
 {
-  /* TODO */
+  Ptr t1 = term1->evaluate();
+  Ptr v1 = t1->getValue();
+  Ptr t2 = term2->evaluate();
+  Ptr v2 = t2->getValue();
+  Ptr int1 = (oper == OpURShift) ? toUInt32(v1) : toInt32(v1);
+  Ptr int2 = toUInt32(v2);
+  long i1 = static_cast<long>(int1->dVal());
+  long i2 = static_cast<long>(int2->dVal());
+
+  long result;
+  switch (oper) {
+  case OpLShift:
+    result = i1 << i2;
+    break;
+  case OpRShift:
+    result = i1 >> i2;
+    break;
+  case OpURShift:
+    result = i1 >> i2; /* TODO: unsigned shift */
+    break;
+  default:
+    assert(!"ShiftNode: unhandled switch case");
+    result = 0;
+  }
+
+  return new KJSNumber(static_cast<double>(result));
 }
 
 KJSO *AddNode::evaluate()
