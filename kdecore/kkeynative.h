@@ -65,9 +65,9 @@ class KKeyNative
 	KKey key() const;
 	operator KKey() const     { return key(); }
 
-	int code() const;
-	int mod() const;
-	int sym() const;
+	uint code() const;
+	uint mod() const;
+	uint sym() const;
 
 	bool isNull() const;
 	int compare( const KKeyNative& ) const;
@@ -82,24 +82,10 @@ class KKeyNative
 
 	// General query functions. //
 	static bool keyboardHasWinKey();
-
-	/**
-	 * This function is used by KKey to get the native equivalent
-	 *  to Qt keycodes.
-	 */
-	static bool keyQtToSym( int keyQt, int& sym );
-	static bool symToKeyQt( int sym, int& keyQt );
-
-	static bool keyToVariations( const KKey& key, Variations& vkey );
-	static QString symToStringInternal( int sym );
-	static QString symToString( int sym );
-
-	static bool stringToSym( const QString& sKey, int& sym, int& mod );
-
-	static int modX( int modSpec );
+	static uint modX( KKey::ModFlag modFlag );
 
  protected:
-	int m_code, m_mod, m_sym;
+	uint m_code, m_mod, m_sym;
 
  private:
 	class KKeyNativePrivate* d;

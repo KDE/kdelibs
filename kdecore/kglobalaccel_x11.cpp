@@ -3,6 +3,7 @@
 
 #include "kglobalaccel_x11.h"
 #include "kglobalaccel.h"
+#include "kkeyserver_x11.h"
 
 #include <qpopupmenu.h>
 #include <qregexp.h>
@@ -10,20 +11,16 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
-#include <kkey_x11.h>
-#include <kshortcut.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
-#ifdef Q_WS_X11
 #ifdef KeyPress
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
 #undef KeyPress
-#endif
 #endif
 
 static bool g_bGrabFailed;
@@ -48,31 +45,17 @@ extern "C" {
 //	mask of modifiers where we don't care whether they are on or off
 //	(caps lock, num lock, scroll lock)
 static uint g_keyModMaskXAccel = 0;
-static uint g_keyModMaskXAlwaysOff = 0;
 static uint g_keyModMaskXOnOrOff = 0;
 
 static void calculateGrabMasks()
 {
-	g_keyModMaskXAccel = KKeyX11::accelModMaskX();
-	g_keyModMaskXAlwaysOff = ~(
-			KKeyX11::keyModXShift() |
-			KKeyX11::keyModXLock() |
-			KKeyX11::keyModXCtrl() |
-			KKeyX11::keyModXAlt() |
-			KKeyX11::keyModXNumLock() |
-			KKeyX11::keyModXModeSwitch() |
-			KKeyX11::keyModXMeta() |
-			KKeyX11::keyModXScrollLock() );
+	g_keyModMaskXAccel = KKeyServer::accelModMaskX();
 	g_keyModMaskXOnOrOff =
-			KKeyX11::keyModXLock() |
-			KKeyX11::keyModXNumLock() |
-			KKeyX11::keyModXScrollLock();
-
-	// X11 seems to treat the ModeSwitch bit differently than the others --
-	//  namely, it won't grab anything if it's set, but both switched and
-	//  unswiched keys if it's not.
-	//  So we always need to XGrabKey with the bit set to 0.
-	g_keyModMaskXAlwaysOff |= KKeyX11::keyModXModeSwitch();
+			KKeyServer::modXLock() |
+			KKeyServer::modXNumLock() |
+			KKeyServer::modXScrollLock();
+	//kdDebug() << "g_keyModMaskXAccel = " << g_keyModMaskXAccel
+	//	<< "g_keyModMaskXOnOrOff = " << g_keyModMaskXOnOrOff << endl;
 }
 
 //----------------------------------------------------
@@ -97,25 +80,25 @@ bool KGlobalAccelPrivate::emitSignal( Signal )
 
 bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKey& key )
 {
-	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << key.toString() << " )" << endl;
+	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << key.toStringInternal() << " )" << endl;
 	return grabKey( key, true, &action );
 }
 
 bool KGlobalAccelPrivate::connectKey( const KKey& spec )
 {
-	kdDebug(125) << "KGlobalAccel::connectKey( " << spec.toString() << " )" << endl;
+	kdDebug(125) << "KGlobalAccel::connectKey( " << spec.toStringInternal() << " )" << endl;
 	return grabKey( spec, true, 0 );
 }
 
 bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKey& key )
 {
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << key.toString() << " )" << endl;
+	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << key.toStringInternal() << " )" << endl;
 	return grabKey( key, false, &action );
 }
 
 bool KGlobalAccelPrivate::disconnectKey( const KKey& spec )
 {
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << spec.toString() << " )" << endl;
+	kdDebug(125) << "KGlobalAccel::disconnectKey( " << spec.toStringInternal() << " )" << endl;
 	return grabKey( spec, false, 0 );
 }
 
@@ -137,7 +120,7 @@ bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab, KAccelAction* p
 #ifndef __osf__
 // this crashes under Tru64 so .....
 	kdDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
-		.arg( spec.toString() ).arg( bGrab )
+		.arg( spec.toStringInternal() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
 	if( !keyCodeX )
@@ -211,13 +194,11 @@ void KGlobalAccelPrivate::x11MappingNotify()
 {
 	kdDebug(125) << "KGlobalAccelPrivate::x11MappingNotify()" << endl;
 	if( m_bEnabled ) {
-		// Do XUngrabKey()s.
-		setEnabled( false );
 		// Maybe the X modifier map has been changed.
-		KKeyX11::init();
+		KKeyServer::initializeMods();
 		calculateGrabMasks();
 		// Do new XGrabKey()s.
-		setEnabled( true );
+		updateConnections();
 	}
 }
 
@@ -237,7 +218,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	KKeyNative keyNative( pEvent );
 	KKey key = keyNative;
 
-	kdDebug(125) << "x11KeyPress: seek " << key.toString()
+	kdDebug(125) << "x11KeyPress: seek " << key.toStringInternal()
 		<< QString( " keyCodeX: %1 state: %2 keyModX: %3" )
 			.arg( codemod.code, 0, 16 ).arg( pEvent->xkey.state, 0, 16 ).arg( codemod.mod, 0, 16 ) << endl;
 

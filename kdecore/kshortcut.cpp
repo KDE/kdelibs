@@ -1,5 +1,27 @@
+/*  This file is part of the KDE libraries
+    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include "kshortcut.h"
 #include "kkeynative.h"
+#ifdef Q_WS_X11
+#include "kkeyserver_x11.h"
+#endif
 
 #include <qevent.h>
 #include <qstringlist.h>
@@ -8,79 +30,25 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
+#include "../kdeui/kxmlguifactory.h"
 
 //----------------------------------------------------
-struct ModFlagInfo
-{
-	KKey::ModFlag flag;
-	int flagQt;
-	int flagNative;
-	const char* psName;
-	QString sLabel;
-};
 
-static ModFlagInfo g_infoModFlags[KKey::MOD_FLAG_COUNT] =
-{
-	{ KKey::SHIFT, Qt::SHIFT,  0, I18N_NOOP("Shift"), QString() },
-	{ KKey::CTRL,  Qt::CTRL,   0, I18N_NOOP("Ctrl"), QString() },
-	{ KKey::ALT,   Qt::ALT,    0, I18N_NOOP("Alt"), QString() },
-	{ KKey::WIN,   Qt::ALT<<1, 0, I18N_NOOP("Win"), QString() }
-};
-
-static bool g_bInitializedKKey = false;
 static KKey* g_pspec = 0;
 static KKeySequence* g_pseq = 0;
 static KShortcut* g_pcut = 0;
-
-//----------------------------------------------------
-// Helper functions for KKey
-//----------------------------------------------------
-
-static void _intializeKKeyLabels()
-{
-	KConfigGroupSaver cgs( KGlobal::config(), "Keyboard" );
-	g_infoModFlags[0].sLabel = KGlobal::config()->readEntry( "Label Shift", i18n(g_infoModFlags[0].psName) );
-	g_infoModFlags[1].sLabel = KGlobal::config()->readEntry( "Label Ctrl", i18n(g_infoModFlags[1].psName) );
-	g_infoModFlags[2].sLabel = KGlobal::config()->readEntry( "Label Alt", i18n(g_infoModFlags[2].psName) );
-	g_infoModFlags[3].sLabel = KGlobal::config()->readEntry( "Label Win", i18n(g_infoModFlags[3].psName) );
-	g_bInitializedKKey = true;
-}
-
-/*static bool modSpecToModQt( int modSpec, int& modQt )
-{
-	modQt = 0;
-
-	if( modSpec & KKey::SHIFT ) modQt |= Qt::SHIFT;
-	if( modSpec & KKey::CTRL )  modQt |= Qt::CTRL;
-	if( modSpec & KKey::ALT )   modQt |= Qt::ALT;
-	if( modSpec & KKey::WIN )   modQt |= (Qt::ALT<<1);
-
-	return true;
-}*/
-
-static bool modQtToModSpec( int modQt, int& modSpec )
-{
-	modSpec = 0;
-
-	if( modQt & Qt::SHIFT )    modSpec |= KKey::SHIFT;
-	if( modQt & Qt::CTRL )     modSpec |= KKey::CTRL;
-	if( modQt & Qt::ALT )      modSpec |= KKey::ALT;
-	if( modQt & (Qt::ALT<<1) ) modSpec |= KKey::WIN;
-
-	return true;
-}
 
 //----------------------------------------------------
 // KKey
 //----------------------------------------------------
 
 KKey::KKey()                          { clear(); }
-KKey::KKey( int key, int modFlags )   { init( key, modFlags ); }
+KKey::KKey( uint key, uint modFlags ) { init( key, modFlags ); }
 KKey::KKey( int keyQt )               { init( keyQt ); }
-KKey::KKey( const QKeySequence& key ) { init( key ); }
+KKey::KKey( const QKeySequence& seq ) { init( seq ); }
 KKey::KKey( const QKeyEvent* pEvent ) { init( pEvent ); }
-KKey::KKey( const KKey& spec )    { init( spec ); }
-KKey::KKey( const QString& sSpec )    { init( sSpec ); }
+KKey::KKey( const KKey& key )         { init( key ); }
+KKey::KKey( const QString& sKey )     { init( sKey ); }
 
 KKey::~KKey()
 {
@@ -90,27 +58,23 @@ void KKey::clear()
 {
 	m_key = 0;
 	m_mod = 0;
-	//m_flags = 0;
 }
 
-bool KKey::init( int key, int modFlags )
+bool KKey::init( uint key, uint modFlags )
 {
 	m_key = key;
 	m_mod = modFlags;
-	//m_flags = SET | VALID;
 	return true;
 }
 
 bool KKey::init( int keyQt )
 {
-	if( KKeyNative::keyQtToSym( keyQt & 0xffff, m_key ) ) {
-		modQtToModSpec( keyQt, m_mod );
-		//m_flags = SET | VALID;
+	if( KKeyServer::keyQtToSym( keyQt, m_key )
+	    && KKeyServer::keyQtToMod( keyQt, m_mod ) )
 		return true;
-	} else {
+	else {
 		m_key = 0;
 		m_mod = 0;
-		//m_flags = SET;
 		return false;
 	}
 }
@@ -133,7 +97,6 @@ bool KKey::init( const KKey& key )
 {
 	m_key = key.m_key;
 	m_mod = key.m_mod;
-	//m_flags = key.m_flags;
 	return true;
 }
 
@@ -161,18 +124,14 @@ bool KKey::init( const QString& sSpec )
 	}
 	// If there is one non-blank key left:
 	if( (i == rgs.size() - 1 && !rgs[i].isEmpty()) ) {
-		int modTemp;
-		KKeyNative::stringToSym( rgs[i], m_key, modTemp );
-		//if( KKeyNative::stringToSym( rgs[i], m_key, modTemp ) )
-		//	m_flags = SET | VALID;
+		KKeyServer::Sym sym( rgs[i] );
+		m_key = sym.m_sym;
 	}
 
-	if( m_key == 0 ) {
+	if( m_key == 0 )
 		m_mod = 0;
-		//m_flags = 0;
-	}
 
-	kdDebug(125) << "KKey::init( \"" << sSpec << "\" ): this = " << this
+	kdDebug(125) << "KKey::init( \"" << sSpec << "\" ):"
 		<< " m_key = " << QString::number(m_key, 16)
 		<< ", m_mod = " << QString::number(m_mod, 16) << endl;
 
@@ -181,8 +140,8 @@ bool KKey::init( const QString& sSpec )
 
 bool KKey::isNull() const         { return m_key == 0; }
 //bool KKey::isSetAndValid() const  { return m_flags == (SET | VALID); }
-int KKey::key() const             { return m_key; }
-int KKey::modFlags() const        { return m_mod; }
+uint KKey::key() const             { return m_key; }
+uint KKey::modFlags() const        { return m_mod; }
 
 int KKey::compare( const KKey& spec ) const
 {
@@ -200,21 +159,14 @@ int KKey::keyCodeQt() const
 
 QString KKey::toString() const
 {
-	QString sMods, sSym;
+	QString s;
 
-	if( !g_bInitializedKKey )
-		_intializeKKeyLabels();
+	s = KKeyServer::modToStringUser( m_mod );
+	if( !s.isEmpty() )
+		s += '+';
+	s += KKeyServer::symToStringUser( m_key );
 
-	for( int i = MOD_FLAG_COUNT-1; i >= 0; i-- ) {
-		if( m_mod & g_infoModFlags[i].flag ) {
-			sMods += g_infoModFlags[i].sLabel;
-			sMods += '+';
-		}
-	}
-
-	sSym = KKeyNative::symToString( m_key );
-
-	return sMods + sSym;
+	return s;
 }
 
 QString KKey::toStringInternal() const
@@ -224,14 +176,10 @@ QString KKey::toStringInternal() const
 	//	<< " key = " << QString::number(m_key, 16) << endl;
 	QString s;
 
-	for( int i = MOD_FLAG_COUNT-1; i >= 0; i-- ) {
-		if( m_mod & g_infoModFlags[i].flag ) {
-			s += g_infoModFlags[i].psName;
-			s += '+';
-		}
-	}
-
-	s += KKeyNative::symToStringInternal( m_key );
+	s = KKeyServer::modToStringInternal( m_mod );
+	if( !s.isEmpty() )
+		s += '+';
+	s += KKeyServer::symToStringInternal( m_key );
 	return s;
 }
 
@@ -288,10 +236,16 @@ bool KKeySequence::init( const KKey& key )
 
 bool KKeySequence::init( const KKeySequence& seq )
 {
-	m_nKeys = seq.m_nKeys;
-	for( uint i = 0; i < m_nKeys; i++ )
-		m_rgvar[i] = seq.m_rgvar[i];
 	m_bTriggerOnRelease = false;
+	m_nKeys = seq.m_nKeys;
+	for( uint i = 0; i < m_nKeys; i++ ) {
+		if( seq.m_rgvar[i].isNull() ) {
+			kdWarning(125) << "KKeySequence::init( seq ): key[" << i << "] is null." << endl;
+			m_nKeys = 0;
+			return false;
+		}
+		m_rgvar[i] = seq.m_rgvar[i];
+	}
 	return true;
 }
 
@@ -329,7 +283,7 @@ const KKey& KKeySequence::key( uint i ) const
 		return KKey::null();
 }
 
-bool KKeySequence::isTriggerOnRelease() const 
+bool KKeySequence::isTriggerOnRelease() const
 	{ return m_bTriggerOnRelease; }
 
 bool KKeySequence::setKey( uint iKey, const KKey& key )
@@ -493,7 +447,7 @@ bool KShortcut::init( const QString& s )
 	bool bRet = true;
 	QStringList rgs = QStringList::split( ';', s );
 
-	if( s == "none" || rgs.size() == 0 )
+	if( s == "none" || rgs.size() == 0 ) 
 		clear();
 	else if( rgs.size() <= MAX_SEQUENCES ) {
 		m_nSeqs = rgs.size();
@@ -509,14 +463,20 @@ bool KShortcut::init( const QString& s )
 		bRet = false;
 	}
 
-	kdDebug(125) << "KShortcut::init( " << s << " )" << endl;
-	for( uint i = 0; i < m_nSeqs; i++ ) {
-		kdDebug(125) << "\tm_rgseq[" << i << "]: " << QString::number((int) m_rgseq[i].keyCodeQt(),16) << endl;
-		KKeyNative::Variations vars;
-		vars.init( m_rgseq[i].key(0), true );
-		for( uint j = 0; j < vars.count(); j++ )
-			kdDebug(125) << "\t\tvariation = " << QString::number(vars.key(0).keyCodeQt(),16) << endl;
+	if( !s.isEmpty() ) {
+		QString sDebug;
+		QTextStream os( &sDebug, IO_WriteOnly );
+		os << "KShortcut::init( \"" << s << "\" ): ";
+		for( uint i = 0; i < m_nSeqs; i++ ) {
+			os << " m_rgseq[" << i << "]: ";
+			KKeyNative::Variations vars;
+			vars.init( m_rgseq[i].key(0), true );
+			for( uint j = 0; j < vars.count(); j++ )
+				os << QString::number(vars.key(0).keyCodeQt(),16) << ',';
+		}
+		kdDebug(125) << sDebug << endl;
 	}
+
 	return bRet;
 }
 
@@ -648,4 +608,149 @@ KShortcut& KShortcut::null()
 	if( !g_pcut->isNull() )
 		g_pcut->clear();
 	return *g_pcut;
+}
+
+//---------------------------------------------------------------------
+// KShortcutMap
+//---------------------------------------------------------------------
+
+KShortcutSet::KShortcutSet()
+{
+}
+
+KShortcutSet::~KShortcutSet()
+{
+}
+
+bool KShortcutSet::readSettings( const QString& sConfigGroup, KConfigBase* pConfig )
+{
+	kdDebug(125) << "KShortcutSet::readSettings( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
+	if( !pConfig )
+		pConfig = KGlobal::config();
+	// If the config file still has the old group name:
+	// FIXME: need to rename instead -- and don't do this if hasGroup( "Shortcuts" ).
+	if( sConfigGroup == "Shortcuts" && pConfig->hasGroup( "Keys" ) ) {
+		readSettings( "Keys", pConfig );
+		pConfig->deleteGroup( "Keys" );
+	}
+	KConfigGroupSaver cgs( pConfig, sConfigGroup );
+
+	uint nSize = count();
+	for( uint i = 0; i < nSize; i++ ) {
+		if( isConfigurable(i) ) {
+			QString sEntry = pConfig->readEntry( name(i) );
+			if( !sEntry.isNull() ) {
+				if( sEntry == "none" )
+					setShortcut( i, KShortcut() );
+				else
+					setShortcut( i, KShortcut(sEntry) );
+			}
+			kdDebug(125) << "\t" << name(i) << " = '" << sEntry << "'" << endl;
+		}
+	}
+
+	kdDebug(125) << "KShortcutSet::readSettings done" << endl;
+	return true;
+}
+
+bool KShortcutSet::writeSettings( const QString &sGroup, KConfigBase* pConfig, bool bWriteAll, bool bGlobal ) const
+{
+	kdDebug(125) << "KShortcutSet::writeSettings( " << sGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
+	if( !pConfig )
+		pConfig = KGlobal::config();
+	KConfigGroupSaver cs( pConfig, sGroup );
+
+	uint nSize = count();
+	for( uint i = 0; i < nSize; i++ ) {
+		if( isConfigurable(i) ) {
+			const QString& sName = name(i);
+			bool bConfigHasAction = !pConfig->readEntry( sName ).isEmpty();
+			bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
+			// If we're using a global config or this setting
+			//  differs from the default, then we want to write.
+			if( bWriteAll || !bSameAsDefault ) {
+				QString s = shortcut(i).toStringInternal();
+				if( s.isEmpty() )
+					s = "none";
+				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
+				// Is passing bGlobal irrelevant, since if it's true,
+				//  then we're using the global config anyway? --ellis
+				pConfig->writeEntry( sName, s, true, bGlobal );
+			}
+			// Otherwise, this key is the same as default
+			//  but exists in config file.  Remove it.
+			else if( bConfigHasAction ) {
+				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
+				pConfig->deleteEntry( sName, bGlobal );
+			}
+		}
+	}
+
+	pConfig->sync();
+	return true;
+}
+
+bool KShortcutSet::readXML( const QString& )
+{
+	return false;
+}
+
+bool KShortcutSet::writeXML( const QString& /*sXmlFile*/ ) const
+{/*
+	// let's start saving this info
+	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
+	QDomDocument doc;
+	doc.setContent( raw_xml );
+
+	QString tagActionProp = QString::fromLatin1("ActionProperties");
+	QString tagAction     = QString::fromLatin1("Action");
+	QString attrName      = QString::fromLatin1("name");
+	QString attrShortcut  = QString::fromLatin1("shortcut");
+
+	// first, lets see if we have existing properties
+	QDomElement elem;
+	QDomElement it = doc.documentElement();
+	KXMLGUIFactory::removeDOMComments( it );
+	it = it.firstChild().toElement();
+	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
+		if( it.tagName() == tagActionProp ) {
+			elem = it;
+			break;
+		}
+	}
+
+	// if there was none, create one
+	if( elem.isNull() ) {
+		elem = doc.createElement( tagActionProp );
+		doc.firstChild().appendChild(elem);
+	}
+
+	// now, iterate through our actions
+	uint nSize = count();
+	for( uint i = 0; i < nSize; i++ ) {
+		QString& sName = name(i);
+
+		// now see if this element already exists
+		QDomElement act_elem;
+		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
+			if( it.attribute( attrName ) == sName ) {
+				act_elem = it;
+				break;
+			}
+		}
+
+		// nope, create a new one
+		if( act_elem.isNull() ) {
+			act_elem = doc.createElement( tagAction );
+			act_elem.setAttribute( attrName, sName );
+		}
+		act_elem.setAttribute( attrShortcut, shortcut(i).toStringInternal() );
+
+		elem.appendChild( act_elem );
+	}
+
+	// finally, write out the result
+	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
+*/
+	return true;
 }

@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/*  This file is part of the KDE libraries
     Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -24,11 +24,7 @@
 #include <qstring.h>
 
 class QKeyEvent;
-
-class KKey;
-class KKeyNative;
-class KKeySequence;
-class KShortcut;
+class KConfigBase;
 
 /**
  * A KKey object represents a single key with possible modifiers
@@ -70,8 +66,8 @@ class KKey
  // Query methods.
 	bool isNull() const;
 
-	int key() const;
-	int modFlags() const;
+	uint key() const;
+	uint modFlags() const;
 
  // Comparison Methods
 	int compare( const KKey& ) const;
@@ -94,15 +90,15 @@ class KKey
 	 * Under X11, m_key will hold an X11 key symbol.
 	 * For Qt/Embedded, it will hold the Qt key code.
 	 */
-	int m_key;
+	uint m_key;
 
-	int m_mod;
+	uint m_mod;
 
  private:
 	class KKeyPrivate* d;
 
-	KKey( int key, int mod );
-	bool init( int key, int mod );
+	KKey( uint key, uint mod );
+	bool init( uint key, uint mod );
 
 	friend class KKeyNative;
 };
@@ -238,6 +234,31 @@ class KShortcut
  public:
 	operator int () const    { return keyCodeQt(); }
 #endif
+};
+
+class KShortcutSet
+{
+ public:
+	KShortcutSet();
+	virtual ~KShortcutSet();
+
+	virtual uint count() const = 0;
+	virtual int index( const QString& sName ) const = 0;
+	virtual const QString& name( uint ) const = 0;
+	virtual const KShortcut& shortcut( uint ) const = 0;
+	virtual const KShortcut& shortcutDefault( uint ) const = 0;
+	virtual bool isConfigurable( uint ) const = 0;
+	virtual bool setShortcut( uint, const KShortcut& ) = 0;
+
+	virtual bool readSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
+	virtual bool writeSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0,
+			bool bWriteAll = false, bool bGlobal = false ) const;
+
+	virtual bool readXML( const QString& sXMLFile );
+	virtual bool writeXML( const QString& sXMLFile ) const;
+
+ private:
+	class KShortcutSetPrivate* d;
 };
 
 #endif // __KSHORTCUT_H
