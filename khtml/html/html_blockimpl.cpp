@@ -61,7 +61,8 @@ void HTMLBlockquoteElementImpl::attach(KHTMLView *w)
 
 // -------------------------------------------------------------------------
 
-HTMLDivElementImpl::HTMLDivElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLDivElementImpl::HTMLDivElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
 }
 

@@ -49,15 +49,7 @@ HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 {
     m_styleDecls = 0;
     has_tabindex=false;
-
-    DOMString indexstring = getAttribute(ATTR_TABINDEX);
-    if (indexstring.length()) {
-	has_tabindex=true;
-	tabindex=indexstring.string().toInt();
-    } else {
-	has_tabindex=false;
-	tabindex=0;
-    }
+    tabindex=0;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
@@ -284,7 +276,7 @@ bool HTMLElementImpl::isSelectable()
   switch(id())
     {
     case ID_A:
-	if (!getAttribute("href").isNull())
+	if (!getAttribute(ATTR_HREF).isNull())
 	    return true;
 	return false;
     case ID_INPUT:
