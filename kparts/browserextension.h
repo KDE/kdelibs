@@ -252,13 +252,19 @@ signals:
   void enableAction( const char * name, bool enabled );
 
   /**
-   * Open @p url in the browser, optionally forcing @p reload, and
-   * optionnally setting the x and y offsets.
-   *
+   * Ask the host (browser) to open @p url
+   * To set a reload, the x and y offsets, the service type etc., fill in the
+   * appropriate fields in the @p args structure.
+   * Hosts should not connect to this signal but to @ref openURLRequestDelayed.
    */
-  // The @serviceType allows to ...
   void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
+  /**
+   * This signal is emitted when openURLRequest is called, after a 0-seconds timer.
+   * This allows the caller to terminate what it's doing first, before (usually)
+   * being destroyed. Parts should never use this signal, hosts should only connect
+   * to this signal.
+   */
   void openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
