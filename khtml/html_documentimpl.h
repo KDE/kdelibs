@@ -61,7 +61,7 @@ public:
     void write ( const DOMString &text );
     void write ( const QString &text );
     void writeln ( const DOMString &text );
-    Element getElementById ( const DOMString &elementId );
+    ElementImpl *getElementById ( const DOMString &elementId );
     NodeList getElementsByName ( const DOMString &elementName );
 
     // for KHTML

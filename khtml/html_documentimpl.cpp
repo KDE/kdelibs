@@ -21,6 +21,7 @@
  * $Id$
  */
 
+#include <qstack.h>
 
 #include "khtmlparser.h"
 #include "khtmltokenizer.h"
@@ -45,7 +46,6 @@
 #include <kurl.h>
 
 using namespace DOM;
-
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
@@ -155,10 +155,45 @@ void HTMLDocumentImpl::writeln( const DOMString &text )
     write(text);
 }
 
-Element HTMLDocumentImpl::getElementById( const DOMString &elementId )
+ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 {
-    // ###
+    QStack<NodeImpl> nodeStack;
+    NodeImpl *current = _first;
+
+    while(1)
+    {
+	if(!current)
+	{
+	    if(nodeStack.isEmpty()) break;
+	    current = nodeStack.pop();
+	    current = current->nextSibling();
+	}
+	else
+	{
+	    // ### use int fr getAttribute... add method in dom_elementimpl
+	    if(current->isElementNode())
+	    {
+		ElementImpl *e = static_cast<ElementImpl *>(current);
+		if(e->getAttribute("id") == elementId)
+		    return e;
+	    }
+	    
+	    NodeImpl *child = current->firstChild();
+	    if(child)
+	    {	
+		nodeStack.push(current);
+		current = child;
+	    }
+	    else
+	    {
+		current = current->nextSibling();
+	    }
+	}
+    }
+
+    return 0;
 }
+
 
 NodeList HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
 {
