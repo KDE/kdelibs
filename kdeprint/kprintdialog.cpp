@@ -191,7 +191,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" you by using the button and/or editing the line on the right."
 					        " </qt>" );
 
-	QString whatsThisOutputFileLineedit = i18n(" <qt> Edit this line to create a path and file name that suits"
+	QString whatsThisOutputFileLineedit = i18n(" <qt> Edit this line to create a path and filename that suits"
 						" you. (Only available if you \"Print to File\")"
 					        " </qt>" );
 
@@ -693,7 +693,7 @@ bool KPrintDialog::checkOutputFile()
 {
 	bool	value(false);
 	if (d->m_file->url().isEmpty())
-		KMessageBox::error(this,i18n("The output file name is empty."));
+		KMessageBox::error(this,i18n("The output filename is empty."));
 	else
 	{
 		KURL url( d->m_file->url() );

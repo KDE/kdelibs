@@ -147,7 +147,7 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
    m_items[ListProgress::TB_PROGRESS]       =new QCheckListItem(m_columns, i18n("%"), QCheckListItem::CheckBox);
    m_items[ListProgress::TB_COUNT]          =new QCheckListItem(m_columns, i18n("Count"), QCheckListItem::CheckBox);
    m_items[ListProgress::TB_RESUME]         =new QCheckListItem(m_columns, i18n("Resume", "Res."), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_LOCAL_FILENAME] =new QCheckListItem(m_columns, i18n("Local File Name"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_LOCAL_FILENAME] =new QCheckListItem(m_columns, i18n("Local Filename"), QCheckListItem::CheckBox);
    m_items[ListProgress::TB_OPERATION]      =new QCheckListItem(m_columns, i18n("Operation"), QCheckListItem::CheckBox);
 
    layout->addWidget(m_showSystemTrayCb);
@@ -464,7 +464,7 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
   setAllColumnsShowFocus( true );
 
   m_lpcc[TB_OPERATION].title=i18n("Operation");
-  m_lpcc[TB_LOCAL_FILENAME].title=i18n("Local File Name");
+  m_lpcc[TB_LOCAL_FILENAME].title=i18n("Local Filename");
   m_lpcc[TB_RESUME].title=i18n("Resume", "Res.");
   m_lpcc[TB_COUNT].title=i18n("Count");
   m_lpcc[TB_PROGRESS].title=i18n("%");

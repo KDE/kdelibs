@@ -51,7 +51,7 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    grid->addMultiCellWidget(bg, 0, 4, 0, 3);
    _pem->setChecked(true);
 
-   grid->addMultiCellWidget(new QLabel(i18n("File name:"), this), 5, 5, 0, 3);
+   grid->addMultiCellWidget(new QLabel(i18n("Filename:"), this), 5, 5, 0, 3);
 
    _filename = new KLineEdit(this);
    grid->addMultiCellWidget(_filename, 6, 6, 0, 4);

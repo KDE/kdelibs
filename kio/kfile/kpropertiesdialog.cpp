@@ -3384,7 +3384,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   suidCheck->setText(i18n("Ru&n as a different user"));
   grid->addMultiCellWidget(suidCheck, 0, 0, 0, 1);
 
-  suidLabel = new QLabel(i18n( "&User name:" ), tmpQGroupBox);
+  suidLabel = new QLabel(i18n( "&Username:" ), tmpQGroupBox);
   grid->addWidget(suidLabel, 1, 0);
 
   suidEdit = new KLineEdit(tmpQGroupBox);

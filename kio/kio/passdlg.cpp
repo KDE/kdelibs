@@ -94,7 +94,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     d->prompt->setAlignment( Qt::AlignLeft|Qt::AlignVCenter|Qt::WordBreak );
     d->layout->addWidget( d->prompt, 0, 2, Qt::AlignLeft );
     if ( prompt.isEmpty() )
-        setPrompt( i18n( "You need to supply a user name and a password" ) );
+        setPrompt( i18n( "You need to supply a username and a password" ) );
     else
         setPrompt( prompt );
 
@@ -104,7 +104,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     // Row 2-3: Reserved for an additional comment
 
     // Row 4: Username field
-    lbl = new QLabel( i18n("&User name:"), main );
+    lbl = new QLabel( i18n("&Username:"), main );
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
     QHBox* hbox = new QHBox( main );

@@ -196,7 +196,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Full host name of the server:</string>
+            <string>Full hostname of the server:</string>
         </property>
     </widget>
     <widget>

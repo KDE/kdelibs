@@ -69,7 +69,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_passwded = new QLineEdit( this );
 	m_passwded->setEchoMode( QLineEdit::Password );
 	m_servered = new QLineEdit( this );
-	QLabel *m_loginlab = new QLabel( i18n( "&User name:" ), this );
+	QLabel *m_loginlab = new QLabel( i18n( "&Username:" ), this );
 	QLabel *m_serverlab = new QLabel( i18n( "&Samba server:" ), this );
 	QLabel *m_passwdlab = new QLabel( i18n( "&Password:" ), this );
 	m_loginlab->setBuddy( m_logined );
@@ -85,7 +85,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	QWhatsThis::add( m_serverlab, txt );
 	QWhatsThis::add( m_servered, txt );
 
-	txt = i18n( "<p><b>Samba user name</b></p>"
+	txt = i18n( "<p><b>Samba username</b></p>"
 				"User needs to have write access to the <tt>[print$]</tt> share on the Samba server. "
 				"<tt>[print$]</tt> holds printer drivers prepared for download to Windows clients. "
 				"This dialog does not work for Samba servers configured with <tt>security = share</tt> "

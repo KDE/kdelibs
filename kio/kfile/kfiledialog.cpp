@@ -340,7 +340,7 @@ void KFileDialog::slotOk()
             {
                 QString msg;
                 if ( d->operationMode == Saving )
-                    msg = i18n("Please specify the file name to save to.");
+                    msg = i18n("Please specify the filename to save to.");
                 else
                     msg = i18n("Please select the file to open.");
                 KMessageBox::information(this, msg);
@@ -1886,7 +1886,7 @@ void KFileDialog::updateAutoSelectExtension (void)
         if (!d->extension.isEmpty ())
         {
             // remember: sync any changes to the string with below
-            d->autoSelectExtCheckBox->setText (i18n ("Automatically select file name e&xtension (%1)").arg (d->extension));
+            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension (%1)").arg (d->extension));
             whatsThisExtension = i18n ("the extension <b>%1</b>").arg (d->extension);
 
             d->autoSelectExtCheckBox->setEnabled (true);
@@ -1895,7 +1895,7 @@ void KFileDialog::updateAutoSelectExtension (void)
         else
         {
             // remember: sync any changes to the string with above
-            d->autoSelectExtCheckBox->setText (i18n ("Automatically select file name e&xtension"));
+            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension"));
             whatsThisExtension = i18n ("a suitable extension");
 
             d->autoSelectExtCheckBox->setChecked (false);
@@ -1917,14 +1917,14 @@ void KFileDialog::updateAutoSelectExtension (void)
                     "<li>If no extension is specified in the <b>%2</b> "
                     "text area when you click "
                     "<b>Save</b>, %3 will be added to the end of the "
-                    "file name (if the file name does not already exist). "
+                    "filename (if the filename does not already exist). "
                     "This extension is based on the file type that you "
                     "have chosen to save in.<br>"
                     "<br>"
                     "If you do not want KDE to supply an extension for the "
-                    "file name, you can either turn this option off or you "
+                    "filename, you can either turn this option off or you "
                     "can suppress it by adding a period (.) to the end of "
-                    "the file name (the period will be automatically "
+                    "the filename (the period will be automatically "
                     "removed)."
                     "</li>"
                   "</ol>"

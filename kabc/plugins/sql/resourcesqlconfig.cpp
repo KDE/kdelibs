@@ -38,7 +38,7 @@ ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
 
   QGridLayout *mainLayout = new QGridLayout( this, 4, 2 );
 
-  QLabel *label = new QLabel( i18n( "User name:" ), this );
+  QLabel *label = new QLabel( i18n( "Username:" ), this );
   mUser = new KLineEdit( this );
 
   mainLayout->addWidget( label, 0, 0 );
