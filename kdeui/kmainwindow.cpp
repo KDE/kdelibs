@@ -278,7 +278,7 @@ void KMainWindow::setCaption( const QString &caption )
 
 void KMainWindow::setCaption( const QString &caption, bool modified )
 {
-    setCaption( kapp->makeStdCaption(caption, true, modified) );
+    setPlainCaption( kapp->makeStdCaption(caption, true, modified) );
 }
 
 void KMainWindow::setPlainCaption( const QString &caption )
@@ -506,7 +506,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 	QMainWindow::ToolBarDock dock = Top;
 	int index = 0, offset = -1;
 	bool nl = FALSE;
-	
+
 	entry = entryList.next();
 	if (entry == QString::fromLatin1("Top"))
 	    dock = Top;
@@ -520,7 +520,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 	    dock = Top; // TornOff;
 	if (showtoolbar)
 	    toolbar->enable(KToolBar::Show);
-	
+
 	if ( entryList.count() > 2 ) {
 	    entry = entryList.next();
 	    index = entry.toInt();
