@@ -148,6 +148,20 @@ QConstString UString::qconststring() const
   return QConstString((QChar*) data(), size());
 }
 
+KJSO NodeObject::toPrimitive(Type preferred) const
+{
+  if (preferred == HostType) {
+    // return a unique handle for comparisons
+    DOM::Node n = toNode();
+    if (n.isNull())
+      return Null();
+    else
+      return Number((int)n.handle());
+  }
+
+  return String("");
+}
+
 DOM::Node KJS::toNode(const KJSO& obj)
 {
   if (!obj.derivedFrom("Node")) {

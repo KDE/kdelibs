@@ -55,6 +55,7 @@ namespace KJS {
    */
   class NodeObject : public DOMObject {
   public:
+    virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
     virtual DOM::Node toNode() const = 0;
     virtual bool equals(const KJSO& other) const;
   };
