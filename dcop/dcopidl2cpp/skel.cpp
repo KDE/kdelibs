@@ -353,8 +353,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	str << "}" << endl << endl;
 	
 	// Add signal stubs
-
-	// Go over all children of the CLASS tag
 	for(s = e.firstChild().toElement(); !s.isNull(); s = s.nextSibling().toElement() ) {
 	    if (s.tagName() != "SIGNAL")
 		continue;
@@ -418,12 +416,12 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 	    str << "}" << endl << endl;
 	    
-	} // for each class function 
+	}
 
 	for(; namespace_count > 0; --namespace_count )
 	    str << "} // namespace" << endl;
 	str << endl;
-    } // for each CLASS-level tag
+    }
 	
     skel.close();
 }
