@@ -245,8 +245,6 @@ int main()
 	exit(1);
     }
     xsetenv("HOME", pw->pw_dir);
-    sprintf(buf, "%s/.kde/", pw->pw_dir);
-    xsetenv("KDEHOME", buf);
 
     /* Set scheduling/priority */
 
