@@ -88,7 +88,7 @@ bool NumberProtoFuncImp::implementsCall() const
   return true;
 }
 
-UString integer_part_noexp(double d)
+static UString integer_part_noexp(double d)
 {
   int decimalPoint;
   int sign;
@@ -122,7 +122,7 @@ UString integer_part_noexp(double d)
   return str;
 }
 
-UString char_sequence(char c, int count)
+static UString char_sequence(char c, int count)
 {
   char *buf = (char*)malloc(count+1);
   memset(buf,c,count);
