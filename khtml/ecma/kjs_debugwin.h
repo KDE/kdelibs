@@ -43,7 +43,7 @@ class QPushButton;
 namespace KJS {
   class FunctionImp;
   class List;
-  class ScriptInterpreter;
+  class Interpreter;
 };
 
 /**
@@ -89,10 +89,12 @@ class StackFrame {
 
 class SourceFile : public DOM::DomShared {
  public:
-  SourceFile(QString u, QString c, int i) : url(u), code(c), index(i) {}
+  SourceFile(QString u, QString c, int i, KJS::Interpreter *interp) 
+      : url(u), code(c), index(i), interpreter(interp) {}
   QString url;
   QString code;
   int index;
+  KJS::Interpreter *interpreter;
 };
 
 /**
@@ -149,10 +151,11 @@ public:
 
   void highLight(int sourceId, int line);
   void setNextSourceInfo(QString url, int baseLine);
-  void setSourceFile(QString url, QString code);
-  void appendSourceFile(QString url, QString code);
+  void setSourceFile(QString url, QString code, KJS::Interpreter* interp);
+  void appendSourceFile(QString url, QString code, KJS::Interpreter* interp);
   bool inSession() const { return m_inSession; }
   void setMode(Mode m) { m_mode = m; }
+  void clear(KJS::Interpreter *interp);
   KJS::ExecState * getExecState() const { return m_curExecState; }
 
   // functions overridden from KJS:Debugger

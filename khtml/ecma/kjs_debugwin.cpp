@@ -378,7 +378,7 @@ void KJSDebugWin::closeEvent(QCloseEvent *e)
   return QWidget::closeEvent(e);
 }
 
-bool KJSDebugWin::sourceParsed(KJS::ExecState * /*exec*/, int sourceId,
+bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
                                const KJS::UString &source, int /*errorLine*/)
 {
   // the interpreter has parsed some js code - store it in a SourceFragment object
@@ -386,7 +386,7 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState * /*exec*/, int sourceId,
 
   SourceFile *sourceFile = m_sourceFiles[m_nextSourceUrl];
   if (!sourceFile) {
-    sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count());
+    sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count(), exec->interpreter());
     m_sourceSelFiles[sourceFile->index] = sourceFile;
     if (m_nextSourceUrl.isNull() || m_nextSourceUrl == "")
         m_sourceSel->insertItem("???");
@@ -419,7 +419,7 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
               m_sourceSelFiles[i] = m_sourceSelFiles[i+1];
           }
           m_sourceSelFiles.erase(m_sourceSel->count());
-          m_sourceSel->removeItem(m_sourceSel->count()-1);
+          m_sourceFiles.erase(sourceFile->url);
       }
       delete fragment;
   }
@@ -506,16 +506,21 @@ void KJSDebugWin::setCode(const QString &code, int sourceId)
   m_sourceDisplay->clear();
   int numlines = 0;
   for (uint i = 0; i < len; i++) {
-      if (chars[i] == cr)
+      QChar c = chars[i];
+      if (c == cr) {
+        if (i < len-1 && chars[i+1] == newLine)
           continue;
-      else if (chars[i] == newLine) {
+        else
+          c = newLine;
+      }
+      if (c == newLine) {
           m_sourceDisplay->insertItem(new QListBoxPixmap(haveBreakpoint(sourceId, numlines, numlines) ? m_stopIcon : m_emptyIcon,line));
           numlines++;
           line = "";
-      } else if (chars[i] == tab) {
+      } else if (c == tab) {
           line += tabstr;
       } else
-          line += chars[i];
+          line += c;
   }
   if (line.length())
       m_sourceDisplay->insertItem(new QListBoxPixmap(haveBreakpoint(sourceId, numlines, numlines) ? m_stopIcon : m_emptyIcon,line));
@@ -545,26 +550,57 @@ void KJSDebugWin::setNextSourceInfo(QString url, int baseLine)
   m_nextSourceBaseLine = baseLine;
 }
 
-void KJSDebugWin::setSourceFile(QString url, QString code)
+void KJSDebugWin::setSourceFile(QString url, QString code, Interpreter* interp)
 {
-  SourceFile *existing = m_sourceFiles[url];
-  int newindex = m_sourceSel->count();
-  if (existing) {
-      newindex = existing->index;
-      m_sourceSel->removeItem(existing->index);
-      existing->deref();
+  SourceFile *srcfile = m_sourceFiles[url];
+  if (srcfile) {
+    srcfile->code = code;
+    srcfile->interpreter = interp;
+  } else {
+    int index = m_sourceSel->count();
+    srcfile = new SourceFile(url, code, index, interp);
+    m_sourceSel->insertItem(url, index);
+    m_sourceFiles[url] = srcfile;
+    m_sourceSelFiles[index] = srcfile;
   }
-  SourceFile *newSF = new SourceFile(url,code,newindex);
-  m_sourceFiles[url] = newSF;
-  m_sourceSelFiles[newindex] = newSF;
-  m_sourceSel->insertItem(url,newindex);
 }
 
-void KJSDebugWin::appendSourceFile(QString url, QString code)
+void KJSDebugWin::clear(Interpreter* interp) {
+  int delcount = 0;
+  QMap<QString,SourceFile*>::iterator iter = m_sourceFiles.begin();
+  QMap<QString,SourceFile*>::iterator remove = m_sourceFiles.end();
+  for (; iter != m_sourceFiles.end(); iter++) {
+    if (remove != m_sourceFiles.end()) {
+      delete *remove;
+      m_sourceFiles.erase(remove);
+      remove = m_sourceFiles.end();
+    }
+    SourceFile *srcfile = *iter;
+    if (!srcfile)
+      remove = iter;
+    else if (srcfile->interpreter == interp && srcfile->refCount() <= 0) {
+      remove = iter;
+      m_sourceSel->removeItem(srcfile->index);
+      for (int i = srcfile->index; i < m_sourceSelFiles.count() -1; i++) {
+        m_sourceSelFiles[i] = m_sourceSelFiles[i+1];
+        m_sourceSelFiles[i]->index--;
+      }
+      m_sourceSelFiles.erase(m_sourceSelFiles.count()-1);
+      if (m_curSourceFile == srcfile)
+        m_curSourceFile = 0;
+    }
+  }
+  if (remove != m_sourceFiles.end()) {
+    delete *remove;
+    m_sourceFiles.erase(remove);
+  }
+}
+
+void KJSDebugWin::appendSourceFile(QString url, QString code, Interpreter* interp)
 {
   SourceFile *existing = m_sourceFiles[url];
   if (!existing) {
-    setSourceFile(url,code);
+    setSourceFile(url,code, interp);
     return;
   }
   existing->code.append(code);

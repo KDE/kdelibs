@@ -190,10 +190,12 @@ void KJSProxyImpl::clear() {
   if (m_script) {
 #ifdef KJS_DEBUGGER
     KJSDebugWin *debugWin = KJSDebugWin::instance();
-    if (debugWin &&
-        debugWin->getExecState() && 
-        debugWin->getExecState()->interpreter() == m_script)
-      debugWin->stop();
+    if (debugWin) {
+      if (debugWin->getExecState() && 
+          debugWin->getExecState()->interpreter() == m_script)
+        debugWin->stop();
+      debugWin->clear(m_script);
+    }
 #endif
     m_script->clear();
 
@@ -266,13 +268,13 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
 #endif
 }
 
-void KJSProxyImpl::showDebugWindow(bool show)
+void KJSProxyImpl::showDebugWindow(bool /*show*/)
 {
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->show();
 #else
-  Q_UNUSED(show);
+  //Q_UNUSED(show);
 #endif
 }
 
@@ -288,8 +290,10 @@ bool KJSProxyImpl::paused() const
 void KJSProxyImpl::setSourceFile(QString url, QString code)
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::instance())
-    KJSDebugWin::instance()->setSourceFile(url,code);
+  if (KJSDebugWin::instance()) {
+    initScript();
+    KJSDebugWin::instance()->setSourceFile(url,code, m_script);
+  }
 #else
   Q_UNUSED(url);
   Q_UNUSED(code);
@@ -300,8 +304,10 @@ void KJSProxyImpl::setSourceFile(QString url, QString code)
 void KJSProxyImpl::appendSourceFile(QString url, QString code)
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::instance())
-    KJSDebugWin::instance()->appendSourceFile(url,code);
+  if (KJSDebugWin::instance()) {
+    initScript();
+    KJSDebugWin::instance()->appendSourceFile(url,code, m_script);
+  }
 #else
   Q_UNUSED(url);
   Q_UNUSED(code);
