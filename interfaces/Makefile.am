@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = ktexteditor
+SUBDIRS = ktexteditor kscriptinterface
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
 
