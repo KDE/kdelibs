@@ -234,7 +234,7 @@ protected:
   /** a little button for enabling/disabling dragging the dockwidget with the mouse */
   KDockButton_Private* stayButton;
   
-  /** a little button for dock back the dockwidget to it´s previous dockwidget */
+  /** a little button for dock back the dockwidget to it's previous dockwidget */
   KDockButton_Private* dockbackButton;
 
   /** the drag panel (double line) */
@@ -391,7 +391,7 @@ public:
   /**
    * Get the embedded widget.
    *
-   * @return the pointer to the dockwidget's child widget, 0L if there´s no such child
+   * @return the pointer to the dockwidget's child widget, 0L if there's no such child
    */
   QWidget* getWidget() { return widget; };
 
@@ -463,6 +463,9 @@ public:
   virtual void show();
 
 public slots:
+  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
+  void dockBack();
+
   /**
    * Toggles the visibility state of the dockwidget if it is able to be shown or to be hidden. 
    *
@@ -522,8 +525,6 @@ signals:
 	void iMBeingClosed();
 
 protected slots:
-  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
-  void dockBack();
 
   /** Does several things here when it has noticed that the former brother widget (closest neighbor) gets lost.
    * The former brother widget is needed for a possible dockback action, to speak with the Beatles:
