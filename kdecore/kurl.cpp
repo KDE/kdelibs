@@ -108,7 +108,7 @@ void KURL::parse( const QString& _url )
   m_bIsMalformed = FALSE;
 
   QString port;
-  int start;
+  int start = 0;
   uint len = _url.length();
   QChar* buf = new QChar[ len + 1 ];
   QChar* orig = buf;
