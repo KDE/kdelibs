@@ -31,6 +31,7 @@
 #include <qpoint.h>
 #include <qstrlist.h>
 
+class QFontDatabase;
 class QMouseEvent;
 class QSpinBox;
 class KCharSelectTablePrivate;
@@ -129,11 +130,13 @@ public:
 
 protected:
   virtual void fillFontCombo();
+  static void cleanupFontDatabase();
 
   QComboBox *fontCombo;
   QSpinBox *tableSpinBox;
   KCharSelectTable *charTable;
   QStringList fontList;
+  static QFontDatabase * fontDataBase;
 
 protected slots:
   void fontSelected( const QString &_font );

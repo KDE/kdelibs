@@ -36,9 +36,9 @@
 #include <kdialog.h>
 #include <kapp.h>
 
-static QFontDatabase *fontDataBase = 0;
+QFontDatabase * KCharSelect::fontDataBase = 0;
 
-static void cleanupFontDatabase()
+void KCharSelect::cleanupFontDatabase()
 {
     delete fontDataBase;
     fontDataBase = 0;
