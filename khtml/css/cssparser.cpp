@@ -311,7 +311,7 @@ static DOMString getValue( const QChar *curP, const QChar *endP, const QChar *&e
 }
 
 CSSSelector *
-StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector *stack,
+StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
 			      CSSSelector::Relation relation)
 {
     CSSSelector *cs = new CSSSelector();
@@ -492,25 +492,23 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
    if (cs->tag == 0)
    {
        delete cs;
-       delete stack;
        return(0);
    }
 #ifdef CSS_DEBUG
    kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " match=" << (int)cs->match << " value=" << cs->value.string() << " specificity=" << cs->specificity() << "]" << endl;
 #endif
 
-   cs->tagHistory = stack;
-   cs->relation = relation;
-   relation = CSSSelector::SubSelector;
-   stack = cs;
 
    //stack->print();
    if( endVal ) {
        // lets be recursive
-       stack = parseSelector2(endVal, endP, stack, relation);
+       relation = CSSSelector::SubSelector;
+       CSSSelector *stack = parseSelector2(endVal, endP, relation);
+       cs->tagHistory = stack;
+       cs->relation = relation;
    }
 
-   return(stack);
+   return cs;
 }
 
 CSSSelector *
@@ -533,14 +531,27 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     {
         if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
         {
-            selecStack = parseSelector2(startP, curP, selecStack, relation);
-            if (!selecStack)
-                return 0;
+	    CSSSelector *newsel = parseSelector2(startP, curP, relation);
+            if (!newsel) {
+		delete selecStack;
+		return 0;
+	    }
+	    CSSSelector *end = newsel;
+	    while( end->tagHistory )
+		end = end->tagHistory;
+	    end->tagHistory = selecStack;
+	    end->relation = relation;
+	    selecStack = newsel;
 
             curP = parseSpace(curP, endP);
-            if (!curP)
+            if (!curP) {
+#ifdef CSS_DEBUG
+		kdDebug() << "selector stack is:" << endl; 
+		selecStack->print();
+		kdDebug() << endl; 
+#endif
                 return(selecStack);
-
+	    }
             relation = CSSSelector::Descendant;
             if(*curP == '+')
             {
@@ -566,6 +577,9 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
             curP++;
         }
     }
+#ifdef CSS_DEBUG
+    selecStack->print();
+#endif
     return(selecStack);
 }
 
@@ -2214,6 +2228,8 @@ CSSSelector::~CSSSelector(void)
 void CSSSelector::print(void)
 {
     kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
+    if ( tagHistory )
+	tagHistory->print();
 }
 
 int CSSSelector::specificity()

@@ -126,7 +126,7 @@ public:
 	const QChar *parseToChar(const QChar *curP, const QChar *endP,
 				 QChar c, bool chkws, bool endAtBlock = false);
 
-	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP, CSSSelector *stack, CSSSelector::Relation relation);
+	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP, CSSSelector::Relation relation);
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
 	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
 

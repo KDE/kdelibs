@@ -347,6 +347,9 @@ static void cleanpath(QString &path)
 	else
 	    pos += 2;
     }
+    while ( (pos = path.find( "/./" )) != -1) {
+	path.remove( pos, 2 );
+    }
     //kdDebug() << "checkPseudoState " << path << endl; 
 }
 
