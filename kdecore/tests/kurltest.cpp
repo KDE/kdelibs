@@ -522,6 +522,45 @@ int main(int argc, char *argv[])
   KURL umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel", 106);
   check("umlaut2.url()", umlaut2.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
 
+  KURL smb("smb://domain;username:password@server/share");
+  check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
+  check("smb.user()", smb.user(), "domain;username");
+
+  KURL weird;
+  weird = "http://strange<hostname>/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://strange<username>@strange<hostname>/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://strange<username>@ok_hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "true");
+  check("weird.host()", weird.host(), "ok_hostname");
+
+  weird = "http://strange;hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://strange;username@strange;hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://strange;username@ok_hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "true");
+  check("weird.host()", weird.host(), "ok_hostname");
+
+  weird = "http://strange;username:password@strange;hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://strange;username:password@ok_hostname/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "true");
+  check("weird.host()", weird.host(), "ok_hostname");
+
+  weird = "http://[strange;hostname]/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "false");
+
+  weird = "http://[::fff:1:23]/";
+  check("weird.isValid()", weird.isValid() ? "true" : "false", "true");
+  check("weird.host()", weird.host(), "::fff:1:23");
+
   printf("\nTest OK !\n");
 }
 
