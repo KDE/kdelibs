@@ -443,7 +443,8 @@ protected:
 
   // Proxy related members
   bool m_bUseProxy;
-  bool m_bIsTunneled;
+  bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
+  bool m_bIsTunneled; // Whether we have an active SSL tunnel 
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strProxyRealm;
