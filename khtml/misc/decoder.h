@@ -25,6 +25,7 @@
 
 #include <qstring.h>
 class QTextCodec;
+class QTextDecoder;
 
 namespace khtml {
 /**
@@ -46,10 +47,11 @@ public:
     const QTextCodec *codec() const { return m_codec; }
 
     QString flush();
-    
+
 protected:
     // codec used for decoding. default is Latin1.
     QTextCodec *m_codec;
+    QTextDecoder *m_decoder; // only used for utf16
     QCString enc;
 
     QCString buffer;
