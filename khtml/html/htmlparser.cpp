@@ -210,8 +210,8 @@ void KHTMLParser::parseToken(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid).string() << "(" << t->tid << ")"
-                    << " current = " << getTagName(current->id()).string() << "(" << current->id() << ")" << endl;
+    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid) << "(" << t->tid << ")"
+                    << " current = " << getTagName(current->id()) << "(" << current->id() << ")" << endl;
     kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent << endl;
 #endif
 
@@ -1141,9 +1141,9 @@ void KHTMLParser::popBlock( int _id )
     int maxLevel = 0;
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "popBlock(" << getTagName(_id).string() << ")" << endl;
+    kdDebug( 6035 ) << "popBlock(" << getTagName(_id) << ")" << endl;
     while(Elem) {
-        kdDebug( 6035) << "   > " << getTagName(Elem->id).string() << endl;
+        kdDebug( 6035) << "   > " << getTagName(Elem->id) << endl;
         Elem = Elem->next;
     }
     Elem = blockStack;
@@ -1185,7 +1185,7 @@ void KHTMLParser::popOneBlock()
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id).string() << "(" << Elem->id << ")" << endl;
+    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
 #if SPEED_DEBUG < 1
