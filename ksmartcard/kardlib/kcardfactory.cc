@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2001 Fernando Llobregat < >
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +23,13 @@
 #include "kpcsc.h"
 #include "kcardgsmimplementation.h"
 
+#include <qfile.h>
+#include <qvariant.h>
+#include <klibloader.h>
+#include <kservicetype.h>
+
+
+
 KCardImplementation * KCardFactory::getCard (KCardReader * selReader, 
 					     KCardType selcardType, 
 					     KCardATR atr){
@@ -30,7 +38,6 @@ KCardImplementation * KCardFactory::getCard (KCardReader * selReader,
 
 
   case KCardGSMType:
-
     return new KCardGsmImplementation (selReader);
     break;
 
@@ -40,12 +47,67 @@ KCardImplementation * KCardFactory::getCard (KCardReader * selReader,
     break;
 
   default:
-    return 0;
-
+    break;
   }
 
 
-
+return NULL;
 }
+
+
+int KCardFactory::loadModule(KService::Ptr svc) {
+KCardImplementation *x = NULL;
+
+	if (!svc || svc->library().isEmpty())
+		return -1;
+
+	QCString obj = svc->desktopEntryName().latin1();
+
+	KLibLoader *loader = KLibLoader::self();
+
+	QVariant v = svc->property("X-KDE-Factory");
+
+	QString factory = v.isValid() ? v.toString() : QString::null;
+	if (factory.isEmpty())
+		factory = svc->library();
+
+	factory = "create_" + factory;
+	QString libname = "libkscard_" + svc->library();
+
+	KLibrary *lib = loader->library(QFile::encodeName(libname));
+	if (lib) {
+		void *create = lib->symbol(QFile::encodeName(factory));
+		if (!create) {
+			loader->unloadLibrary(QFile::encodeName(factory));
+			return -3;
+		}
+		
+		x = ((KCardImplementation* (*)(const QCString &))create)(obj);
+		if (x) {
+			return 0;
+		} else {
+			loader->unloadLibrary(QFile::encodeName(factory));
+			return -4;
+		}
+	} else {
+		return -2;
+	}
+}
+
+
+int KCardFactory::loadModules() {
+	KService::List kards = KServiceType::offers("KDESmartcard");
+	for (KService::List::ConstIterator it = kards.begin(); 
+					    it != kards.end(); 
+					    ++it) {
+		KService::Ptr service = *it;
+		QString _type = service->property("X-KDE-Smartcard-Type").toString();
+		QString _subType = service->property("X-KDE-Smartcard-SubType").toString();
+		QString _subSubType = service->property("X-KDE-Smartcard-SubSubType").toString();
+		loadModule(service);
+	}
+	return 0;
+}
+
 
 

@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2001 Fernando Llobregat < >
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +25,8 @@
 
 #include "kcardstatus.h"
 
+#include <kservice.h>
+
 class KCardReader;
 class KCardImplementation;
 
@@ -39,7 +42,11 @@ class KCardFactory{
   static KCardImplementation * getCard ( KCardReader *, KCardType, KCardATR );
 
 
+
  private:
+
+  int loadModules();
+  int loadModule(KService::Ptr svc);
 
   class KCardFactoryPrivate;
   KCardFactoryPrivate *d;
