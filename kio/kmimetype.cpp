@@ -129,6 +129,7 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
+    delete mime;
     if ( !s_pDefaultType )
       buildDefaultType();
     return s_pDefaultType;
