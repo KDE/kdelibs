@@ -26,6 +26,8 @@
 
 #include "htmlview.h"
 
+#include <kcursor.h>
+
 QList<KHTMLView> *KHTMLView::viewList = 0L;
 
 KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView *_parent_view ) 
@@ -216,7 +218,7 @@ void KHTMLView::initGUI()
     connect( view, SIGNAL( goLeft() ), this, SLOT( slotGoLeft() ) );
     connect( view, SIGNAL( goRight() ), this, SLOT( slotGoRight() ) );
 
-    view->setURLCursor( upArrowCursor );
+    view->setURLCursor( KCursor::upArrowCursor() );
     view->raise();
 }
 

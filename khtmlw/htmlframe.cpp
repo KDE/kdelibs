@@ -21,6 +21,8 @@
 #include "html.h"
 #include "htmlview.h"
 
+#include <kcursor.h>
+
 #include <strings.h>
 #include <stdlib.h>
 
@@ -365,9 +367,9 @@ HTMLFramePanner::HTMLFramePanner( HTMLFramePanner::Orientation _orientation, QWi
     orientation = _orientation;
 
     if ( orientation == HTMLFramePanner::HORIZONTAL )
-      setCursor( sizeVerCursor );
+      setCursor( KCursor::sizeVerCursor() );
     else
-      setCursor( sizeHorCursor );
+      setCursor( KCursor::sizeHorCursor() );
     
     moveable = TRUE;
 }
@@ -380,11 +382,11 @@ void HTMLFramePanner::setIsMoveable( bool _move )
 {
   moveable = _move;
   if ( !moveable )
-    setCursor( arrowCursor );
+    setCursor( KCursor::arrowCursor() );
   else if ( orientation == HTMLFramePanner::HORIZONTAL )
-    setCursor( sizeVerCursor );
+    setCursor( KCursor::sizeVerCursor() );
   else
-    setCursor( sizeHorCursor );
+    setCursor( KCursor::sizeHorCursor() );
 }
 
 void HTMLFramePanner::mousePressEvent( QMouseEvent *_ev )

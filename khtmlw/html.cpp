@@ -25,6 +25,7 @@
 #include <kapp.h>
 #include <kcharsets.h>
 #include <kimgio.h>
+#include <kcursor.h>
 
 #include <assert.h>
 
@@ -181,7 +182,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     parsing       = false;
     overURL       = "";
     granularity   = 600;
-    linkCursor    = arrowCursor;
+    linkCursor    = KCursor::arrowCursor();
     bIsTextSelected = false;
     charsetConverter = 0;
     blockStack = 0;
@@ -545,14 +546,14 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	    }
 	    else if ( overURL != "" )
 	    {
-		setCursor( arrowCursor );
+		setCursor( KCursor::arrowCursor() );
 		emit onURL( 0 );
 		overURL = "";
 	    }
 	}
 	else if ( overURL != "" )
 	{
-	    setCursor( arrowCursor );
+	    setCursor( KCursor::arrowCursor() );
 	    emit onURL( 0 );
 	    overURL = "";
 	}
