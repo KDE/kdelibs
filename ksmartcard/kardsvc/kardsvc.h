@@ -47,6 +47,8 @@ public:
 k_dcop:
   QStringList getSlotList();
   bool isCardPresent(QString slot);
+  QString getCardATR(QString slot);
+  void reconfigure();
 
 private slots:
   void poll();
@@ -57,6 +59,7 @@ private:
   QTimer *_timer;
   QStringList _readers;
   QMap<QString,long> _states;
+  bool _beepOnEvent, _enablePolling, _launchManager;
 
 };
 

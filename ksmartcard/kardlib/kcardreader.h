@@ -56,6 +56,7 @@ protected:
 private:
 	long _ctx;
 	long _card;
+	unsigned long _state;
 	unsigned long _protocol;
 	QString _name;
 	bool _transacting;

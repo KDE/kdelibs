@@ -50,10 +50,9 @@ extern "C" {
 KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 {
 	_pcsc = new KPCSC;
-	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
-	_timer->start(1500, false);
+	_timer = NULL;
 	_readers = _pcsc->listReaders(NULL);
+	reconfigure();
 }
   
 
@@ -118,15 +117,18 @@ QStringList newReaders = _pcsc->listReaders(&err);
 				_states[*s] = 1;
 				kdDebug() << "kardsvc: card inserted in slot " 
 					  << *s << endl;
-				QApplication::beep();
+				if (_beepOnEvent)
+					QApplication::beep();
 			}
 		} else {
 			if (_states.contains(*s) && _states[*s] == 1) {
 				_states[*s] = 0;
 				kdDebug() << "kardsvc: card removed from slot " 
 					  << *s << endl;
-				QApplication::beep();
-				QApplication::beep();
+				if (_beepOnEvent) {
+					QApplication::beep();
+					QApplication::beep();
+				}
 			}
 		}
 		
@@ -135,6 +137,58 @@ QStringList newReaders = _pcsc->listReaders(&err);
 	}
 }
 
+
+
+QString KardSvc::getCardATR(QString slot) {
+QString res;
+KCardReader *_card = _pcsc->getReader(slot);
+
+	if (!_card) {
+		return QString::null;
+	}
+
+	if (!_card->isCardPresent()) {
+		delete _card;
+		return QString::null;
+	}
+
+	KCardATR kres = _card->getATR();
+	if (kres.size() <= 0) {
+		kdDebug() << "kardsvc: error getting ATR for " << slot << endl;
+		delete _card;
+		return QString::null;
+	}
+
+	for (unsigned int i = 0; i < kres.size(); i++) {
+		if (i == 0) {
+			res = "0x" + QString::number(kres[0], 16);
+		} else {
+			res += " 0x" + QString::number(kres[i], 16);
+		}
+	}
+	
+	delete _card;
+
+return res;
+}
+
+
+void KardSvc::reconfigure() {
+KConfig cfg("ksmartcardrc", false, false);
+
+	_beepOnEvent = cfg.readBoolEntry("Beep on Insert", true);
+	_enablePolling = cfg.readBoolEntry("Enable Polling", true);
+	_launchManager = cfg.readBoolEntry("Launch Manager", true);
+
+	if (_enablePolling && !_timer) {
+		_timer = new QTimer(this);
+		connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
+		_timer->start(1500, false);
+	} else if (!_enablePolling && _timer) {
+		delete _timer;
+		_timer = NULL;
+	}
+}
 
 
 #include "kardsvc.moc"

@@ -22,10 +22,12 @@
 #include "kcardreader.h"
 #include <winscard.h>
 #include <stdlib.h>
+#include <kdebug.h>
 
 
 KCardReader::KCardReader() {
 	_transacting = false;
+	_state = 0;
 }
 
 
@@ -44,11 +46,10 @@ void KCardReader::setCard(long ctx, QString name, long card, unsigned long proto
 
 
 bool KCardReader::isCardPresent() {
-long rc;
-unsigned long state;
+long rc = 0;
 unsigned long x = 0, y = 0;
 
-	rc = SCardStatus(_card, NULL, &x, &state, &_protocol, NULL, &y);
+	rc = SCardStatus(_card, NULL, &x, &_state, &_protocol, NULL, &y);
 	if (rc != SCARD_S_SUCCESS) {
 		return false;
 	}
@@ -146,19 +147,24 @@ return 0;
 
 KCardATR KCardReader::getATR() {
 KCardATR x(0);
-unsigned long state, protocol;
-unsigned long atrLen;
+unsigned long atrLen = 0, rlen = 0;
 
-	long rc = SCardStatus(_card, NULL, NULL, &state, &protocol, NULL, &atrLen);
+	long rc = SCardStatus(_card, NULL, &rlen, &_state, &_protocol, NULL, &atrLen);
 
-	if (rc != SCARD_S_SUCCESS) {
+	if (rc != SCARD_S_SUCCESS || atrLen == 0) {
+		kdDebug() << "first ATR failed." 
+			  << " rc = " << rc
+			  << " atrLen = " << atrLen 
+			  << endl;
 		return x;
 	}
 
 	x.resize(atrLen);
-	rc = SCardStatus(_card, NULL, NULL, &state, &protocol, x.data(), &atrLen);
+	QByteArray reader(rlen+1);
+	rc = SCardStatus(_card, reader.data(), &rlen, &_state, &_protocol, x.data(), &atrLen);
 
 	if (rc != SCARD_S_SUCCESS) {
+		kdDebug() << "second ATR failed." << endl;
 		x.resize(0);
 		return x;
 	}
