@@ -166,7 +166,7 @@ public:
 
   /**
    * The path to the user's home directory.
-   * @return the home phone of the user or QString::null if the
+   * @return the home directory of the user or QString::null if the
    *         user is invalid 
    */
   QString homeDir() const;
