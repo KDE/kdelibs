@@ -70,7 +70,6 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
 
   Q_ASSERT( cfg );
 
-  initCharset(cfg);  // #### HPB: Remove in KDE 3 after porting to Qt 3
   initEncoding(cfg);
   initCatalogue(catalogue);
 
@@ -1345,11 +1344,10 @@ QTime KLocale::readTime(const QString &intstr, bool seconds, bool *ok) const
 	  break;
 	}
     }
-  if (g_12h)
-    {
-      hour %= 12;
-      if (pm) hour += 12;
-    }
+  if (g_12h) {
+    hour %= 12;
+    if (pm) hour += 12;
+  }
 
   if (ok) *ok = true;
   return QTime(hour, minute, second);
@@ -1357,8 +1355,6 @@ QTime KLocale::readTime(const QString &intstr, bool seconds, bool *ok) const
  error:
   if (ok) *ok = false;
   return QTime(-1, -1, -1); // return invalid date if it didn't work
-  // This will be removed in the near future, since it gives a warning on stderr.
-  // The presence of the bool* (since KDE-3.0) removes the need for an invalid QTime.
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
@@ -1468,11 +1464,6 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime,
     .arg( formatTime( pDateTime.time(), includeSeconds ) );
 }
 
-QString KLocale::formatDateTime(const QDateTime &pDateTime) const
-{
-  return formatDateTime(pDateTime, true);
-}
-
 QString i18n(const char* text)
 {
   register KLocale *instance = KGlobal::locale();
@@ -1548,41 +1539,9 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   return QString::null;
 }
 
-// #### HPB: Deprecated. Remove in KDE 3
-QString KLocale::charset() const
-{
-  kdDebug(173) << "Using deprecated method charset()" << endl;
-
-  return m_charset;
-}
-
 bool KLocale::useDefaultLanguage() const
 {
   return language() == defaultLanguage();
-}
-
-// #### HPB: Deprecated. Remove in KDE 3 after porting to Qt 3
-void KLocale::initCharset(KConfig *config)
-{
-  KConfigGroupSaver saver(config, "Locale");
-  m_charset = config->readEntry("Charset");
-
-  if (m_charset.isEmpty())
-    {
-      m_charset = QString::fromLatin1("iso-8859-1");
-    }
-  else
-    {
-      // ### HPB: This code should be rewritten/removed
-      bool bOk;
-      KGlobal::charsets()->codecForName(m_charset, bOk);
-      // if !ok, we have a problem. it will return latin-1 then, but thats
-      // obviously not what the user wants
-      if(!bOk)
-	kdWarning(173) << "charset " << m_charset
-		       << " is not known. using ISO 8859-1 instead." << endl;
-      //m_charset = QString::fromLatin1("iso-8859-1");
-    }
 }
 
 void KLocale::initEncoding(KConfig *config)
@@ -1613,19 +1572,6 @@ void KLocale::initEncoding(KConfig *config)
 void KLocale::initCatalogue( KCatalogue & catalogue )
 {
   catalogue.setFileName( catalogueFileName( language(), catalogue ) );
-}
-
-// #### HPB: Deprecated. Remove in KDE 3 after porting to Qt 3
-bool KLocale::setCharset(const QString & charset)
-{
-  kdDebug(173) << "Using deprecated method setCharset()" << endl;
-
-  if ( charset.isEmpty() )
-    return false;
-
-  m_charset = charset;
-
-  return true;
 }
 
 void KLocale::setDateFormat(const QString & format)
@@ -1839,8 +1785,6 @@ KLocale::KLocale(const KLocale & rhs)
 
 KLocale & KLocale::operator=(const KLocale & rhs)
 {
-  m_charset = rhs.m_charset;
-
   m_weekStartsMonday = rhs.m_weekStartsMonday;
 
   // Numbers and money

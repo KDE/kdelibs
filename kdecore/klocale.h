@@ -43,8 +43,8 @@ class KCatalogue;
  *  call to get a QString with the string in the user's prefered
  *  language.
  *
- *  The argument must be an UTF-8 encoded string (If you only use 
- *  characters that are in US-ASCII you're on the safe side. But 
+ *  The argument must be an UTF-8 encoded string (If you only use
+ *  characters that are in US-ASCII you're on the safe side. But
  *  for e.g. german umlauts or french accents should be recoded to
  *  UTF-8)
  **/
@@ -69,7 +69,7 @@ QString i18n(const char *singular, const char *plural, unsigned long n);
 // with our i18n method. we use uic -tr tr2i18n to redirect
 // to the right i18n() function
 inline QString tr2i18n(const char* message, const char* =0) {
-  return i18n( message); 
+  return i18n( message);
 }
 
 /**
@@ -131,8 +131,8 @@ public:
    * in the system catalog. This makes it possible to override
    * some phrases for your needs.
    *
-   *  The argument must be an UTF-8 encoded string (If you only use 
-   *  characters that are in US-ASCII you're on the safe side. But 
+   *  The argument must be an UTF-8 encoded string (If you only use
+   *  characters that are in US-ASCII you're on the safe side. But
    *  for e.g. german umlauts or french accents should be recoded to
    *  UTF-8)
    *
@@ -192,7 +192,7 @@ public:
 
   /**
    * Changes the current language. The current language will be left
-   * unchanged if failed. It will force a reload of the country specific 
+   * unchanged if failed. It will force a reload of the country specific
    * configuration as well.
    *
    * @param language The language code.
@@ -213,7 +213,7 @@ public:
   bool setLanguage(const QStringList & languages);
 
   /**
-   * Changes the current country. The current country will be left 
+   * Changes the current country. The current country will be left
    * unchanged if failed. It will force a reload of the country specific
    * configuration.
    *
@@ -222,7 +222,7 @@ public:
    * @return True on success.
    */
   bool setCountry(const QString & country);
-  
+
   /**
    * Various positions for where to place the positive or negative
    * sign when they are related to a monetary value.
@@ -255,7 +255,7 @@ public:
    * @return The default currecy symbol used by locale.
    */
   QString currencySymbol() const;
-  
+
   /**
    * Returns what a decimal point should look like ("." or "," etc.)
    * for monetary values, according to the current locale or user
@@ -359,7 +359,7 @@ public:
 #ifndef KDE_NO_COMPAT
   QString formatMoney(const QString &numStr) const;
 #endif
-  
+
   /**
    * Given a double, converts that to a numeric string containing
    * the localized numeric equivalent.
@@ -445,16 +445,6 @@ public:
 
   /**
    * Returns a string formated to the current locale's conventions
-   * regarding both date and time. Defaults to short date format.
-   *
-   * @param pDateTime The date and time to be formated.
-   *
-   * @return The date and time as a string
-   */
-  QString formatDateTime(const QDateTime &pDateTime) const;
-
-  /**
-   * Returns a string formated to the current locale's conventions
    * regarding both date and time.
    *
    * @param pDateTime The date and time to be formated.
@@ -464,7 +454,7 @@ public:
    * @return The date and time as a string
    */
   QString formatDateTime(const QDateTime &pDateTime,
-			 bool shortFormat,
+			 bool shortFormat = true,
 			 bool includeSecs = false) const;
 
   /**
@@ -691,7 +681,7 @@ public:
    */
   void setNegativeMonetarySignPosition(SignPosition signpos);
   /**
-   * Changes the position where the currency symbol should be printed for 
+   * Changes the position where the currency symbol should be printed for
    * positive monetary values.
    *
    * @param prefix True if the currency symbol should be prefixed instead of
@@ -853,24 +843,17 @@ private:
    * @param useEnv True if we should use environment variables
    */
   void initLanguage(KConfig * config, bool useEnv);
-  
-  /**
-   * @internal Figures out which charset the user prefers.
-   *
-   * @param config The configuration object used for init
-   */
-  void initCharset(KConfig * config);
 
   /**
    * @internal Figures out which encoding the user prefers.
-   * 
+   *
    * @param config The configuration object used for init
    */
   void initEncoding(KConfig * config);
 
   /**
    * @internal Figures out which catalogues to use.
-   * 
+   *
    * @param catalogue The name of the main catalogue
    */
   void initCatalogue(const QString & catalogue);
@@ -917,7 +900,7 @@ private:
    * @internal function used to determine if we are using the en_US translation
    */
   bool useDefaultLanguage() const;
-  
+
   /**
    * @internal Checks if the specified language is installed
    */
@@ -931,11 +914,6 @@ private:
 				   const KCatalogue & catalogue);
 
 private:
-  // #### HPB: remove for KDE 3?
-  QString m_charset;
-
-  bool m_weekStartsMonday;
-
   // Numbers and money
   QString m_decimalSymbol;
   QString m_thousandsSeparator;
@@ -945,8 +923,6 @@ private:
   QString m_positiveSign;
   QString m_negativeSign;
   int m_fracDigits;
-  bool m_positivePrefixCurrencySymbol;
-  bool m_negativePrefixCurrencySymbol;
   SignPosition m_positiveMonetarySignPosition;
   SignPosition m_negativeMonetarySignPosition;
 
@@ -957,6 +933,10 @@ private:
 
   QString m_language;
   QString m_country;
+
+  bool m_weekStartsMonday;
+  bool m_positivePrefixCurrencySymbol;
+  bool m_negativePrefixCurrencySymbol;
 
   KLocalePrivate *d;
 };
