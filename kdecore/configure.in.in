@@ -149,7 +149,7 @@ AC_CHECK_HEADERS(sys/mount.h)
 
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
-AM_CONFIG_HEADERS(kdecore/kdemacros.h)
+AM_CONFIG_HEADER(kdecore/kdemacros.h)
 
 SVGICONS=
 	
