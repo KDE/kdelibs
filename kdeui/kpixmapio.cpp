@@ -89,6 +89,9 @@ KPixmapIO::KPixmapIO()
     if (!m_bShm)
     {
 	kdDebug(290) << k_lineinfo << "MIT-SHM not available!\n";
+        d->ximage = 0;
+	d->shminfo = 0;
+	d->shmsize = 0;
 	return;
     }
 
@@ -145,6 +148,9 @@ KPixmapIO::KPixmapIO()
 		<< ", blue = " << blue_shift << endl;
 	kdWarning(290) << "Please report to <jansen@kde.org>\n";
     }
+#else
+    d->shmsize = 0;
+    d->ximage = 0;
 #endif
 }
 
