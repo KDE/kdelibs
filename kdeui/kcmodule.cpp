@@ -108,7 +108,11 @@ void KCModule::setChanged( bool state )
     {
         d->_changed = state;
         if( sender() != this )
+        {
+            disconnect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
             emit changed( state );
+            connect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
+        }
     }
     if( sender() == this )
         kdWarning( 281 ) << "Emitting KCModule::changed( bool ) is deprecated. Please use KCModule::setChanged( bool ) instead." << endl;
