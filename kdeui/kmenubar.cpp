@@ -43,6 +43,13 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
 #define KTHEMESTYLE_CONSTANTS
 #endif
 
+KMenuBar::KMenuBar(QWidget *parent=0, const char *name=0)
+  : QMenuBar(parent, name)
+{
+    mouseActive = false;
+    setFont(KGlobal::menuFont());
+}
+
 void KMenuBar::drawContents(QPainter *p)
 {
 

@@ -70,6 +70,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == "menu" && parent )
   {
     QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
+    popup->setFont(KGlobal::menuFont());
 
     QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
     if (text.isEmpty())  // try with capital T

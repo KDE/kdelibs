@@ -151,6 +151,7 @@ void KToolBar::init()
   mode->insertItem( i18n("Text only"), CONTEXT_TEXT );
   mode->insertItem( i18n("Text aside icons"), CONTEXT_TEXTRIGHT );
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
+  context->setFont(KGlobal::menuFont());
 
   context->insertItem( i18n("Mode"), mode );
 

@@ -294,6 +294,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
 void KToolBarButton::setPopup(QPopupMenu *p)
 {
   d->m_popup = p;
+  d->m_popup->setFont(KGlobal::toolBarFont());
   p->installEventFilter(this);
 }
 
@@ -460,8 +461,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   int dx, dy;
 
-  QFont tmp_font(KGlobal::generalFont());
-  tmp_font = KGlobal::toolBarFont();
+  QFont tmp_font(KGlobal::toolBarFont());
   QFontMetrics fm(tmp_font);
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only

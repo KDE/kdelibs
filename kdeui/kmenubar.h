@@ -21,15 +21,12 @@
 */
 
 //$Id$
-//$Log$
-//Revision 1.34  2000/01/14 00:15:25  radej
-//sven: New kmenubar. Inherits QMenuBar, not movable.
-//
 
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
 
 #include <qmenubar.h>
+#include <kglobal.h>
 
 /**
  * KDE Style-able menubar.
@@ -47,8 +44,7 @@ class KMenuBar : public QMenuBar
     
 public:
 
-    KMenuBar (QWidget *parent=0, const char *name=0)
-        : QMenuBar(parent, name){mouseActive = false;}
+    KMenuBar (QWidget *parent=0, const char *name=0);
     ~KMenuBar (){;}
 
 protected:
