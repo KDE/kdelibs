@@ -112,7 +112,7 @@ class MidiStatus
     void chnController	( uchar chn, uchar ctl , uchar v ); 
 
     /**
-     * Returns the value used for controller @ctl in channel @chn
+     * Returns the value used for controller @p ctl in channel @p chn
      */
     uchar chnController	( uchar chn, uchar ctl ) 
 	{ return chn_controller[chn][ctl]; };
