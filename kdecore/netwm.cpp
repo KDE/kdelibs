@@ -1372,7 +1372,6 @@ void NETRootInfo::update(unsigned long dirty) {
 			}
 		    }
 
-		    delete [] p->kde_system_tray_windows;
 		} else {
 		    unsigned long n;
 		    for (n = 0; n < nitems_ret; n++) {
@@ -1381,8 +1380,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		}
 
 		p->kde_system_tray_windows_count = nitems_ret;
-//		if (p->kde_system_tray_windows)
-//		    delete [] p->kde_system_tray_windows;
+		if (p->kde_system_tray_windows)
+		    delete [] p->kde_system_tray_windows;
 		p->kde_system_tray_windows =
 		    nwindup(wins, p->kde_system_tray_windows_count);
 	    }
