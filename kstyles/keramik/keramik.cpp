@@ -283,6 +283,7 @@ KeramikStyle::KeramikStyle()
 	QSettings settings;
 
 	highlightLineEdits = settings.readBoolEntry("/keramik/Settings/highlightLineEdits", false);
+	highlightScrollBar = settings.readBoolEntry("/keramik/Settings/highlightScrollBar", true);
 	animateProgressBar = settings.readBoolEntry("/keramik/Settings/animateProgressBar", false);
 
 	if (animateProgressBar)
@@ -694,7 +695,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			QColor col = cg.highlight();
 
-			if (customScrollMode)
+			if (customScrollMode || !highlightScrollBar)
 				col = cg.button();
 
 			if (!active)
@@ -1956,11 +1957,10 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 		case CC_ScrollBar:
 		{
 			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
-			if (sb->parentWidget())
+			if (highlightScrollBar && sb->parentWidget()) //Don't do the check if not highlighting anyway
 			{
-				if (sb->parentWidget()->colorGroup().button() !=
-					sb->colorGroup().button())
-						customScrollMode = true;
+				if (sb->parentWidget()->colorGroup().button() != sb->colorGroup().button())
+					customScrollMode = true;
 			}
 			bool horizontal = sb->orientation() == Horizontal;
 			QRect slider, subpage, addpage, subline, addline;

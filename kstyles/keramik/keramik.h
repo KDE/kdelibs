@@ -122,6 +122,7 @@ protected:
 	///Configuration settings
 	bool highlightLineEdits;
 	bool animateProgressBar;
+	bool highlightScrollBar;
 
 protected:
 	mutable bool maskMode;   //Ugly round trip flag to permit masking with little code;
