@@ -1,10 +1,12 @@
 #include <kapp.h>
 #include <kstddirs.h>
+#include <kconfig.h>
 
 int main(int, char **)
 {
-  KStandardDirs t("test");
+  KStandardDirs t;
   t.addKDEDefaults();	
+  KConfig config; // to add custom entries - a bit tricky :/
 
   QString s = t.findResource("icon", "xv.xpm");
   if (s)
@@ -13,5 +15,10 @@ int main(int, char **)
   QStringList list = t.findAllResources("data", "kpanel/pics/", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     debug("data %s", (*it).ascii());
+  }
+
+  list = t.findAllResources("config", "kpanelrc");
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
+    debug("config %s", (*it).ascii());
   }
 }

@@ -1,9 +1,8 @@
 /*
-* kstddirs.cpp -- Implementation of class KStandardDirs.
-* Author:	Sirtaj Singh Kang <taj@kde.org>
-* Version:	$Id$
-* Generated:	Thu Mar  5 16:05:28 EST 1998
-*/
+ * Author: Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
+ * Version:	$Id$
+ * Generated:	Thu Mar  5 16:05:28 EST 1998
+ */
 
 
 #include "config.h"
@@ -166,7 +165,7 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
   DIR *dp = opendir( QFile::encodeName(path));
   if (!dp)
     return;
-  
+
   assert(path.at(path.length() - 1) == '/');
 
   struct dirent *ep;
@@ -183,13 +182,13 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
 
       fn = path + fn;
       if ( stat( fn, &buff ) != 0 ) {
-	printf("Error statting %s:", fn.ascii());
-	perror("");
+	QString tmp = QString("Error statting %1:").arg( fn );
+	perror(tmp.ascii());
 	continue; // Couldn't stat (Why not?)
       }
       if ( recursive ) {
 	if ( S_ISDIR( buff.st_mode ))
-	  lookupDirectory(fn, regexp, list, recursive);
+	  lookupDirectory(fn + '/', regexp, list, recursive);
 	if (regexp.match(fn))
 	  continue; // No match
       }
@@ -213,14 +212,14 @@ QStringList KStandardDirs::findAllResources( const QString& type,
     if (filter.length())
     {
        int slash = filter.findRev('/');
-       if (!slash)
+       if (slash < 0)
 	   filterFile = filter;
        else {
-	   filterPath = filter.left(slash - 1);
+	   filterPath = filter.left(slash + 1);
 	   filterFile = filter.mid(slash + 1);
        }
     }
-
+    
     QStringList candidates = getResourceDirs(type);
     if (filterFile.isEmpty())
 	filterFile = "*";
