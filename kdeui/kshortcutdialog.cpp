@@ -49,6 +49,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 :	KDialog( parent, name ),
 	m_cut( cut )
 {
+	m_iSeq = 0;
 	m_iKey = 0;
 	initGUI();
 
@@ -65,31 +66,39 @@ void KShortcutDialog::initGUI()
 	QButtonGroup* pGroup = new QButtonGroup( this );
 	pHLayout->addWidget( pGroup );
 
-	m_prbPrimary = new QRadioButton( i18n("Primary"), pGroup );
-	m_prbPrimary->setChecked( true );
-	m_peditPrimary = new KShortcutBox( m_cut.seq(0), pGroup );
-	m_peditPrimary->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-	m_pcbPrimary = new QCheckBox( i18n("Multi-Key"), pGroup );
+	m_prbSeq[0] = new QRadioButton( i18n("Primary"), pGroup );
+	m_prbSeq[0]->setChecked( true );
+	connect( m_prbSeq[0], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	m_peditSeq[0] = new KShortcutBox( m_cut.seq(0), pGroup );
+	m_peditSeq[0]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+	m_pcbMultiKey[0] = new QCheckBox( i18n("Multi-Key"), pGroup );
+	m_pcbMultiKey[0]->setChecked( m_cut.seq(0).count() > 1 );
+	connect( m_pcbMultiKey[0], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
 
-	m_prbAlternate = new QRadioButton( i18n("Alternate"), pGroup );
-	m_peditAlternate = new KShortcutBox( m_cut.seq(1), pGroup );
-	m_peditAlternate->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-	m_pcbAlternate = new QCheckBox( i18n("Multi-Key"), pGroup );
+	m_prbSeq[1] = new QRadioButton( i18n("Alternate"), pGroup );
+	connect( m_prbSeq[1], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	m_peditSeq[1] = new KShortcutBox( m_cut.seq(1), pGroup );
+	m_peditSeq[1]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+	m_pcbMultiKey[1] = new QCheckBox( i18n("Multi-Key"), pGroup );
+	m_pcbMultiKey[1]->setChecked( m_cut.seq(1).count() > 1 );
+	connect( m_pcbMultiKey[1], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
 
 	QGridLayout* pLayout = new QGridLayout( pGroup, 2, 3, KDialog::marginHint(), KDialog::spacingHint() );
 	pLayout->setColStretch( 1, 1 );
-	pLayout->addWidget( m_prbPrimary, 0, 0 );
-	pLayout->addWidget( m_peditPrimary, 0, 1 );
-	pLayout->addWidget( m_pcbPrimary, 0, 2 );
-	pLayout->addWidget( m_prbAlternate, 1, 0 );
-	pLayout->addWidget( m_peditAlternate, 1, 1 );
-	pLayout->addWidget( m_pcbAlternate, 1, 2 );
+	pLayout->addWidget( m_prbSeq[0], 0, 0 );
+	pLayout->addWidget( m_peditSeq[0], 0, 1 );
+	pLayout->addWidget( m_pcbMultiKey[0], 0, 2 );
+	pLayout->addWidget( m_prbSeq[1], 1, 0 );
+	pLayout->addWidget( m_peditSeq[1], 1, 1 );
+	pLayout->addWidget( m_pcbMultiKey[1], 1, 2 );
 
 	QVBox* pVBox = new QVBox( this );
 	m_pcmdOK = new QPushButton( i18n("OK"), pVBox );
 	m_pcmdCancel = new QPushButton( i18n("Cancel"), pVBox );
 	m_pcbAutoClose = new QCheckBox( i18n("Auto-Close"), pVBox );
 	m_pcbAutoClose->setChecked( true );
+	// Disable auto-close if the sequence we're editing is a multi-key shortcut.
+	m_pcbAutoClose->setEnabled( !m_pcbMultiKey[0]->isChecked() );
 
 	connect( m_pcmdOK, SIGNAL(clicked()), this, SLOT(accept()) );
 	connect( m_pcmdCancel, SIGNAL(clicked()), this, SLOT(reject()) );
@@ -97,23 +106,27 @@ void KShortcutDialog::initGUI()
 	pHLayout->addWidget( pVBox );
 }
 
+void KShortcutDialog::slotSeqSelected()
+{
+	m_iSeq = m_prbSeq[0]->isChecked() ? 0 : 1;
+	// Start editing at the first key in the sequence.
+	m_iKey = 0;
+
+	// Can't auto-close if editing a multi-key shortcut.
+	m_pcbAutoClose->setEnabled( !m_pcbMultiKey[m_iSeq]->isChecked() );
+}
+
 #ifdef Q_WS_X11
 bool KShortcutDialog::x11Event( XEvent *pEvent )
 {
-	//if( m_bEditing ) {
-		//kdDebug(125) << "x11Event: type: " << pEvent->type << " window: " << pEvent->xany.window << endl;
-		switch( pEvent->type ) {
-			case XKeyPress:
-			case XKeyRelease:
-				x11EventKeyPress( pEvent );
-				return true;
-			case ButtonPress:
-				m_iKey = 0;
-				//captureShortcut( false );
-				//setShortcut( m_cut );
-				//return true;
-		}
-	//}
+	switch( pEvent->type ) {
+		case XKeyPress:
+		case XKeyRelease:
+			x11EventKeyPress( pEvent );
+			return true;
+		case ButtonPress:
+			m_iKey = 0;
+	}
 	return QWidget::x11Event( pEvent );
 }
 
@@ -124,9 +137,6 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 
 	//kdDebug(125) << QString( "keycode: 0x%1 state: 0x%2\n" )
 	//			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 );
-
-	uint iSeq = m_prbPrimary->isChecked() ? 0 : 1;
-	KShortcutBox* pBox = m_prbPrimary->isChecked() ? m_peditPrimary : m_peditAlternate;
 
 	switch( keySymX ) {
 		// Don't allow setting a modifier key as an accelerator.
@@ -142,29 +152,27 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			break;
 		default:
 			if( pEvent->type == XKeyPress && keyNative.sym() ) {
-				kdDebug() << "m_iKey = " << m_iKey << endl;
 				KKey key = keyNative;
-				if( iSeq < m_cut.count() ) {
+				if( m_iSeq < m_cut.count() ) {
 					if( m_iKey == 0 )
-						m_cut.setSeq( iSeq, key );
+						m_cut.setSeq( m_iSeq, key );
 					else
-						m_cut.seq(iSeq).setKey( m_iKey, key );
-				} else if( iSeq == m_cut.count() )
+						m_cut.seq(m_iSeq).setKey( m_iKey, key );
+				} else if( m_iSeq == m_cut.count() )
 					m_cut.insert( key );
 				else
 					return;
 
-				if( (iSeq == 0 && m_pcbPrimary->isChecked())
-				    || (iSeq == 1 && m_pcbAlternate->isChecked()) )
+				if( m_pcbMultiKey[m_iSeq]->isChecked() )
 					m_iKey++;
 
-				pBox->setSeq( m_cut.seq(iSeq) );
+				m_peditSeq[m_iSeq]->setSeq( m_cut.seq(m_iSeq) );
 				//captureShortcut( false );
 				// The parent must decide whether this is a valid
 				//  key, and if so, call setShortcut(uint) with the new value.
 				//emit capturedShortcut( KShortcut(KKey(keyNative)) );
-				kdDebug() << "m_cut = " << m_cut.toString() << endl;
-				if( m_pcbAutoClose->isChecked() )
+				kdDebug(125) << "m_cut = " << m_cut.toString() << endl;
+				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() )
 					accept();
 			}
 			return;
@@ -183,9 +191,9 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 
 	// Display currently selected modifiers, or redisplay old key.
 	if( !keyModStr.isEmpty() )
-		pBox->setText( keyModStr );
+		m_peditSeq[m_iSeq]->setText( keyModStr );
 	else
-		pBox->setSeq( m_cut.seq(iSeq) );
+		m_peditSeq[m_iSeq]->setSeq( m_cut.seq(m_iSeq) );
 }
 #endif // QT_WS_X11
 

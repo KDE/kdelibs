@@ -28,19 +28,20 @@ class KShortcutDialog : public KDialog
 	KShortcutDialog( const KShortcut& cut, QWidget* parent = 0, const char* name = 0 );
 	
 	const KShortcut& cut() const { return m_cut; }
+ 
+ protected slots:
+	void slotSeqSelected();
 
  protected:
 	KShortcut m_cut;
-	QRadioButton* m_prbPrimary;
-	KShortcutBox* m_peditPrimary;
-	QCheckBox*    m_pcbPrimary;
-	QRadioButton* m_prbAlternate;
-	KShortcutBox* m_peditAlternate;
-	QCheckBox*    m_pcbAlternate;
+	QRadioButton* m_prbSeq[2];
+	KShortcutBox* m_peditSeq[2];
+	QCheckBox*    m_pcbMultiKey[2];
 	QPushButton*  m_pcmdOK;
 	QPushButton*  m_pcmdCancel;
 	QCheckBox*    m_pcbAutoClose;
-	uint          m_iKey;
+	uint          m_iSeq;             // index of sequence being edited.
+	uint          m_iKey;             // index of key being edited.
 
  private:
 	void initGUI();
