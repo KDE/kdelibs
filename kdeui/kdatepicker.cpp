@@ -44,6 +44,9 @@
 #include "kdatetbl.h"
 #include "kdatepicker.moc"
 
+// Week numbers are defined by ISO 8601
+// See http://www.merlyn.demon.co.uk/weekinfo.htm for details
+
 class KDatePicker::KDatePickerPrivate
 {
 public:
@@ -62,14 +65,26 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
 {
   // every year can have a different number of weeks
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  int i, weeks = calendar->weeksInYear(calendar->year(date));
 
-  if ( d->selectWeek->count() == weeks ) return;  // we already have the correct number
+  // it could be that we had 53,1..52 and now 1..53 which is the same number but different
+  // so always fill with new values
 
   d->selectWeek->clear();
 
-  for (i = 1; i <= weeks; i++)
-    d->selectWeek->insertItem(i18n("Week %1").arg(i));
+  // We show all week numbers for all weeks between first day of year to last day of year
+  // This of course can be a list like 53,1,2..52
+
+  QDate day(date.year(), 1, 1);
+  int lastMonth = calendar->monthsInYear(day);
+  QDate lastDay(date.year(), lastMonth, calendar->daysInMonth(QDate(date.year(), lastMonth, 1)));
+
+  for (; day <= lastDay; day = calendar->addDays(day, 7 /*calendar->daysOfWeek()*/) )
+  {
+    int year = 0;
+    QString week = i18n("Week %1").arg(calendar->weekNumber(day, &year));
+    if ( year != date.year() ) week += "*";  // show that this is a week from a different year
+    d->selectWeek->insertItem(week);
+  }
 }
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
@@ -142,7 +157,6 @@ void KDatePicker::init( const QDate &dt )
       monthForward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
       monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
   }
-  setDate(dt); // set button texts
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
   connect(monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
@@ -167,6 +181,9 @@ void KDatePicker::init( const QDate &dt )
   bottomLayout->addWidget(d->todayButton);
   bottomLayout->addWidget(line);
   bottomLayout->addWidget(d->selectWeek);
+
+  table->setDate(dt);
+  dateChangedSlot(dt);  // needed because table emits changed only when newDate != oldDate
 }
 
 KDatePicker::~KDatePicker()
@@ -209,7 +226,11 @@ KDatePicker::dateChangedSlot(QDate date)
     line->setText(KGlobal::locale()->formatDate(date, true));
     selectMonth->setText(calendar->monthName(date, false));
     fillWeeksCombo(date);
-    d->selectWeek->setCurrentItem(calendar->weekNumber(date) - 1);
+
+    // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
+    QDate firstDay(date.year(), 1, 1);
+    d->selectWeek->setCurrentItem((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
+
     selectYear->setText(calendar->yearString(date, false));
 
     emit(dateChanged(date));
@@ -240,14 +261,7 @@ KDatePicker::setDate(const QDate& date)
 {
     if(date.isValid())
     {
-        const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-
-        table->setDate(date);
-        fillWeeksCombo(date);
-        d->selectWeek->setCurrentItem(calendar->weekNumber(date) - 1);
-        selectMonth->setText(calendar->monthName(date, false));
-        selectYear->setText(calendar->yearString(date, true));
-        line->setText(KGlobal::locale()->formatDate(date, true));
+        table->setDate(date);  // this also emits dateChanged() which then calls our dateChangedSlot()
         return true;
     }
     else
@@ -298,20 +312,15 @@ void KDatePicker::selectWeekClicked() {}  // ### in 3.2 obsolete; kept for binar
 void
 KDatePicker::weekSelected(int week)
 {
-  week++; // week number starts with 1
-
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
   QDate date = table->getDate();
   int year = calendar->year(date);
 
-  calendar->setYMD(date, year, 1, 1);
-  date = calendar->addDays(date, -7);
-  while (calendar->weekNumber(date) != 1)
-    date = calendar->addDays(date, 1);
+  calendar->setYMD(date, year, 1, 1);  // first day of selected year
 
-  // date is now first day in week 1 some day in week 1
-  date = calendar->addDays(date, (week - calendar->weekNumber(date)) * 7);
+  // calculate the first day in the selected week (day 1 is first day of week)
+  date = calendar->addDays(date, week * 7/*calendar->daysOfWeek()*/ -calendar->dayOfWeek(date) + 1);
 
   setDate(date);
 }
@@ -472,7 +481,6 @@ KDatePicker::setCloseButton( bool enable )
 
     if ( enable ) {
         d->closeButton = new QToolButton( d->tb );
-        d->navigationLayout->addWidget(d->closeButton);
         QToolTip::add(d->closeButton, i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
         connect( d->closeButton, SIGNAL( clicked() ),
