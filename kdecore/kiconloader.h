@@ -118,7 +118,7 @@ public:
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
-     * @return the QPixmap. Can be null when not found, depending on 
+     * @return the QPixmap. Can be null when not found, depending on
      *         @p canReturnNull.
      */
     QPixmap loadIcon(const QString& name, KIcon::Group group, int size=0,
@@ -137,7 +137,7 @@ public:
      * @param canReturnNull Can return a null iconset? If false, iconset
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
-     * @return the icon set. Can be null when not found, depending on 
+     * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
@@ -222,7 +222,7 @@ public:
      * @param group_or_size The icon preferred group or size. If available
      * at this group or size, those icons will be returned, in other case,
      * icons of undefined size will be returned. Positive numbers are groups,
-     * negative numbers are negated sizes. See @ref KIcon::Group and 
+     * negative numbers are negated sizes. See @ref KIcon::Group and
      *    @ref KIcon::StdSizes
      * @param context The icon context.
      * @return A QStringList containing the icon names
@@ -313,6 +313,12 @@ public:
      * @internal
      */
     void addBaseThemes(KIconThemeNode *node, const QString &appname);
+
+    /**
+     * @internal
+     * return the path for the unknown icon in that size
+     */
+    QString unknownIconPath( int size ) const;
 
     /**
      * Checks if name ends in one of the supported icon formats (i.e. .png)

@@ -164,7 +164,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     d->mThemeList = KIconTheme::list();
     if (!d->mThemeList.contains(KIconTheme::defaultThemeName()))
     {
-        kdError(264) << "Error: standard icon theme" 
+        kdError(264) << "Error: standard icon theme"
                      << " \"" << KIconTheme::defaultThemeName() << "\" "
                      << " not found!" << endl;
         d->mpGroups=0L;
@@ -187,7 +187,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     d->links.append(d->mpThemeRoot);
     d->mThemesInTree += KIconTheme::current();
     addBaseThemes(d->mpThemeRoot, appname);
-    
+
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
     KConfig *config = KGlobal::config();
@@ -312,7 +312,7 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 	else if (ext == svg_ext)
 	    extensionLength=4;
     }
-#endif       
+#endif
 
     if ( extensionLength > 0 )
     {
@@ -348,7 +348,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
        the next code doesn't support it on purpose because in fact, it was
        never supported at all. This makes the order in which we look for an
        icon as:
-       
+
        png, svgz, svg, xpm exact match
        next theme in inheritance tree : png, svgz, svg, xpm exact match
        next theme in inheritance tree : png, svgz, svg, xpm exact match
@@ -356,7 +356,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 
        And if the icon couldn't be found then it tries best match in the same
        order.
-       
+
        */
     for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
 	themeNode = d->links.next() )
@@ -367,7 +367,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 	    if (icon.isValid())
 		return icon;
 	}
-        
+
     }
 
     for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
@@ -379,12 +379,25 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 	    if (icon.isValid())
 		return icon;
 	}
-        
+
     }
 
     return icon;
 }
 
+inline QString KIconLoader::unknownIconPath( int size ) const
+{
+    static const QString &str_unknown = KGlobal::staticQString("unknown");
+
+    KIcon icon = findMatchingIcon(str_unknown, size);
+    if (!icon.isValid())
+    {
+        kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
+                     << size << "\n";
+        return QString::null;
+    }
+    return icon.path;
+}
 
 // Finds the absolute path to an icon.
 
@@ -396,6 +409,19 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     if (_name.at(0) == '/')
 	return _name;
+
+    int size;
+    if (group_or_size >= 0)
+	size = d->mpGroups[group_or_size].size;
+    else
+	size = -group_or_size;
+
+    if (_name.isEmpty()) {
+        if (canReturnNull)
+            return QString::null;
+        else
+            return unknownIconPath(size);
+    }
 
     QString name = removeIconExtension( _name );
 
@@ -424,11 +450,6 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	return path;
     }
 
-    int size;
-    if (group_or_size >= 0)
-	size = d->mpGroups[group_or_size].size;
-    else
-	size = -group_or_size;
     KIcon icon = findMatchingIcon(name, size);
 
     if (!icon.isValid())
@@ -440,19 +461,14 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
 	if (canReturnNull)
 	    return QString::null;
-	icon = findMatchingIcon("unknown", size);
-	if (!icon.isValid())
-	{
-	    kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
-		         << size << "\n";
-	    return QString::null;
-	}
+        else
+            return unknownIconPath(size);
     }
     return icon.path;
 }
 
 QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size,
-	int state, QString *path_store, bool canReturnNull) const
+                              int state, QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
     QPixmap pix;
@@ -529,7 +545,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 
     if (!absolutePath)
     {
-
         if (!canReturnNull && name.isEmpty())
             name = str_unknown;
         else
@@ -585,11 +600,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         }
         else
         {
-            icon = findMatchingIcon(favIconOverlay ? QString("www") : name, size);
+            if (!name.isEmpty())
+                icon = findMatchingIcon(favIconOverlay ? QString("www") : name, size);
+
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
-                pix = loadIcon(name, KIcon::User, size, state, path_store, true);
+                if (!name.isEmpty())
+                    pix = loadIcon(name, KIcon::User, size, state, path_store, true);
                 if (!pix.isNull() || canReturnNull)
                     return pix;
 
