@@ -475,8 +475,9 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
     qApp->installEventFilter( this );
 
     if (isActiveWindow())
-      if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
-        XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), RevertToParent, qt_x_time );
+        if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
+            XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                            RevertToParent, qt_x_time );
 
     setAcceptDrops( TRUE );
 }
@@ -574,7 +575,9 @@ bool QXEmbed::eventFilter( QObject *o, QEvent * e)
     case QEvent::WindowActivate:
         if ( o == topLevelWidget() ) {
             if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
-                XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), RevertToParent, qt_x_time );
+                if (! hasFocus() )
+                    XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                                    RevertToParent, qt_x_time );
             if (d->xplain)
                 checkGrab();
             else
@@ -636,6 +639,9 @@ void QXEmbed::keyReleaseEvent( QKeyEvent *)
 void QXEmbed::focusInEvent( QFocusEvent * e ){
     if (!window)
         return;
+    if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
+        XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                        RevertToParent, qt_x_time );
     if (d->xplain) {
         checkGrab();
         sendFocusMessage(window, XFocusIn, NotifyNormal, NotifyPointer );
@@ -658,6 +664,9 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
     } else {
         send_xembed_message( window, XEMBED_FOCUS_OUT );
     }
+    if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
+        XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                        RevertToParent, qt_x_time );
 }
 
 
