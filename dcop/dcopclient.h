@@ -28,7 +28,7 @@ class DCOPClient : public QObject
    * if no server address is ever specified, attach will try its best to
    * find the server anyway.
    */
-  static void setServerAddress(const QString &addr);
+  static void setServerAddress(const QCString &addr);
 
   /**
    * Attach to the DCOP server.

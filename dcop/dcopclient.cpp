@@ -30,7 +30,7 @@ public:
   int majorVersion, minorVersion; // protocol versions negotiated w/server
   char *vendor, *release; // information from server
 
-  static QString serverAddr; // location of server in ICE-friendly format.
+  static char* serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
 };
 
@@ -40,7 +40,7 @@ struct ReplyStruct
   QByteArray* replyData;
 };
 
-QString DCOPClientPrivate::serverAddr = QString::null;
+char* DCOPClientPrivate::serverAddr = 0;
 
 /**
  * Callback for ICE.
@@ -118,9 +118,9 @@ DCOPClient::~DCOPClient()
   delete d;
 }
 
-void DCOPClient::setServerAddress(const QString &addr)
-{ 
-  DCOPClientPrivate::serverAddr = addr; 
+void DCOPClient::setServerAddress(const QCString &addr)
+{
+  DCOPClientPrivate::serverAddr = qstrdup(addr); 
 }
 
 bool DCOPClient::attach()
@@ -136,19 +136,18 @@ bool DCOPClient::attach()
   }
   
   // first, check if serverAddr was ever set.
-  if (d->serverAddr.isEmpty()) {
+  if (!d->serverAddr) {
     // here, we will check some environment variable and find the
     // DCOP server.  Now, we hardcode it.  CHANGE ME
     char buff[1024];
 
     gethostname(buff, 1023);
-    d->serverAddr = "local/" + QString(buff) + ":/tmp/.ICE-unix/5432";
+    d->serverAddr = qstrdup(QString("local/" + QString(buff) + ":/tmp/.ICE-unix/5432").ascii());
     //    serverAddr = "tcp/faui06e:5000";
   }
 
-  if ((d->iceConn = IceOpenConnection((char *) d->serverAddr.ascii(), 
-				      0, 0, d->majorOpcode, sizeof(errBuf),
-				      errBuf)) == 0L) {
+  if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
+                                      sizeof(errBuf), errBuf)) == 0L) {
     qDebug("Could not open connection to DCOP server, msg %s",errBuf);
     return false;
   }
