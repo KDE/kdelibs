@@ -30,9 +30,9 @@
 
 using namespace KJS;
 
-// ------------------------------ NumberInstanceImp ----------------------------
+// ------------------------------ ErrorInstanceImp ----------------------------
 
-const ClassInfo ErrorInstanceImp::info = {"Error", 0, 0, 0};
+const ClassInfo ErrorInstanceImp::info = {"Function", 0, 0, 0};
 
 ErrorInstanceImp::ErrorInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
