@@ -270,9 +270,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
                     <property name="text">
                         <string>I&amp;gnore All</string>
                     </property>
-                    <property name="accel">
-                        <string>Alt+G</string>
-                    </property>
                     <property name="whatsThis" stdset="0">
                         <string>&lt;qt&gt;
 &lt;p&gt;Click here to let all occurrences of the unknown word remain as they are.&lt;/p&gt;
@@ -286,9 +283,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
                     </property>
                     <property name="text">
                         <string>Autocorrect</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>&lt;qt&gt;
