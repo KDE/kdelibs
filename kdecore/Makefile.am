@@ -53,7 +53,7 @@ noinst_HEADERS = kaccelbase.h kaccelprivate.h kckey.h kcompletion_private.h \
 	kextsocklookup.h kglobalaccel_x11.h kkey_x11.h kkeysequenceold.h \
 	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
 	kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
@@ -67,7 +67,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kapplication.cpp kuniqueapplication.cpp \
+	kuniqueapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
