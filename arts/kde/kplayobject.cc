@@ -101,7 +101,10 @@ PlayObject KPlayObject::object()
 bool KPlayObject::isNull()
 {
 	if(!this)
+	{
+		kdDebug() << "KPlayObject::isNull(): (this == 0) will *CEASE TO WORK* in future versions" << endl;
 		return true;
+	}
 	if(object().isNull())
 		return true;
 	return false;
