@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.5  1998/05/05 10:03:50  radej
+ // Improvement for opaque moving (steeling releaseEvent from widget)
+ //
  // Revision 1.4  1998/05/04 16:39:12  radej
  // No more server locking + opaque sizing/moving
  //
@@ -137,7 +140,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   connect (timer, SIGNAL(timeout()), this, SLOT (doMoveInternal()));
   if (transparent)
     drawRectangle(xp, yp, w, h);
-  
+
   timer->start(0);
   qApp->enter_loop();
 }
@@ -150,14 +153,14 @@ void KToolBoxManager::doMoveInternal()
   int trash;
   unsigned int buttons;
 
-  XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
-	       PointerMotionMask, &ev); // to disable mouserelease
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &rx, &ry, &trash, &trash, &buttons );
   
   if (buttons != active_button)
   {
     stop();
+    XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
+	       PointerMotionMask, &ev);
     return;
   }
   
@@ -214,8 +217,14 @@ void KToolBoxManager::doMoveInternal()
     XFlush(qt_xdisplay());
   }
   else
-    XMoveWindow(qt_xdisplay(), widget->winId(), xp, yp);
+  {
+    QPoint p(xp, yp);
+    if (widget->parentWidget() != 0)
+      p=widget->parentWidget()->mapFromGlobal(p);
 
+    XMoveWindow(qt_xdisplay(), widget->winId(), p.x(), p.y());
+    //widget->move(p);
+  }
   XSync(qt_xdisplay(), False);
 
   if (dynamic)
@@ -253,8 +262,6 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   orig_w = w;
   orig_h = h;
 
-  XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
-	       PointerMotionMask, &ev);
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &sx, &sy, &trash, &trash, &active_button);
   
@@ -303,7 +310,8 @@ void KToolBoxManager::doResizeInternal ()
     XFlush(qt_xdisplay());
   }
   else
-    XResizeWindow (qt_xdisplay(), widget->winId(), w, h);
+    widget->resize(w, h);
+//    XResizeWindow (qt_xdisplay(), widget->winId(), w, h);
 
   XSync(qt_xdisplay(), False);
 
@@ -327,17 +335,31 @@ void KToolBoxManager::stop ()
 
   XFlush(qt_xdisplay());
 
-  if (dontmoveres)
+  if (dontmoveres) // do not move or resize caller'll do it himself
   {
     if (!transparent)
-      XMoveResizeWindow(qt_xdisplay(), widget->winId(),
-                        orig_x, orig_y, orig_w, orig_h);
+      if (mode==Moving)
+      {
+        QPoint p(orig_x, orig_y);
+        if (widget->parent() != 0)
+          p=widget->parentWidget()->mapFromGlobal(p);
+
+        widget->move(p);
+      }
+      else if (mode == Resizing)
+        widget->resize(orig_w, orig_h);
   }
   else // do move or resize, even children
   {
     if (transparent) // else if opaque: already moved/sized
       if (mode==Moving)
-        widget->move(xp, yp);
+      {
+        QPoint p(xp, yp);
+        if (widget->parent() != 0)
+          p=widget->parentWidget()->mapFromGlobal(p);
+
+        widget->move(p);
+      }
       else if (mode == Resizing)
         widget->resize(w, h);
   }
@@ -369,6 +391,8 @@ void KToolBoxManager::setGeometry (int _x, int _y, int _w, int _h)
   h=_h;
   if (transparent)
     deleteLastRectangle();
+  else
+    widget->resize(w, h);
   geometryChanged=true;
 }
 
