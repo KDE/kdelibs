@@ -687,8 +687,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if ( emitSignals() )
                   emit completion( txt ); // emit when requested...
 
-                if ( handleSignals() )
+                if ( handleSignals() ) {
+                  if ( d->completionBox )
+                    d->completionBox->setCancelledText( txt );
                   makeCompletion( txt );  // handle when requested...
+                }
 
                 if ( (e->key() == Key_Backspace || e->key() == Key_Delete ) &&
                     mode == KGlobalSettings::CompletionPopupAuto )
