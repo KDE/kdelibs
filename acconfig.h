@@ -28,3 +28,6 @@
 
 /* Define if you need the GNU extensions to compile */
 #undef _GNU_SOURCE
+
+/* Define if you have getdomainname */
+#undef HAVE_GETDOMAINNAME

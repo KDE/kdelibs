@@ -86,7 +86,7 @@ ac_cv_func_getdomainname=yes,
 ac_cv_func_getdomainname=no)
 AC_MSG_RESULT($ac_cv_func_getdomainname)
 if eval "test \"`echo `$ac_cv_func_getdomainname\" = yes"; then
-  AC_DEFINE(HAVE_FUNC_GETDOMAINNAME)
+  AC_DEFINE(HAVE_GETDOMAINNAME)
 fi
 AC_CHECK_KSIZE_T
 
