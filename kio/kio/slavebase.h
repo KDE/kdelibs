@@ -525,11 +525,10 @@ protected:
      *
      * <pre>
      * KIO::AuthInfo authInfo;
-     * bool result = openPassDlg( authInfo );
-     * if ( result )
+     * if ( openPassDlg( authInfo ) )
      * {
-     *    printf( "Username: %s", result.username.latin1() );
-     *    printf( "Password: %s", result.password.latin1() );
+     *    printf( "Username: %s", authInfo.username.latin1() );
+     *    printf( "Password: %s", authInfo.password.latin1() );
      * }
      * </pre>
      *
@@ -537,14 +536,12 @@ protected:
      * if it is known as well as the comment and caption to be displayed:
      *
      * <pre>
-     * authInfo.comment= "Enter username and password to access acmeone";
      * authInfo.caption= "Acme Password Dialog";
-     * authInfo.username= "Wiley E. Caiody";
-     * bool result = openPassDlg( authInfo );
-     * if ( result )
+     * authInfo.username= "Wile E. Coyote";
+     * if ( openPassDlg( authInfo ) )
      * {
-     *    printf( "Username: %s", result.username.latin1() );
-     *    printf( "Password: %s", result.password.latin1() );
+     *    printf( "Username: %s", authInfo.username.latin1() );
+     *    printf( "Password: %s", authInfo.password.latin1() );
      * }
      * </pre>
      *
